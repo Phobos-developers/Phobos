@@ -14,6 +14,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 - The obsolete `[General] WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
+- Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
 
 ### From older Phobos versions
 
@@ -322,6 +323,8 @@ New:
 - TechnoType conversion warhead & superweapon (by Morton)
 - Unlimited skirmish colors (by Morton)
 - Example custom locomotor that circles around the target (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
+- Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar)
+- Crushing tilt and slowdown customization (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -358,6 +361,7 @@ Vanilla fixes:
 - Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
+- Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (by Kerbiter)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -380,6 +384,7 @@ Phobos fixes:
 - Power output / drain should now correctly be applied for buildings created via `LimboDelivery` in campaigns (by Starkku)
 - Fixed shield health bar showing empty bar when shield is still on very low health instead of depleted (by Starkku)
 - Fixed `CanTarget` not considering objects on bridges when checking if cell is empty (by Starkku)
+- Fixed new Phobos script actions not picking team leader correctly based on `LeadershipRating` (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)

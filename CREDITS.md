@@ -35,6 +35,7 @@ This page lists all the individual contributions to the project by their author.
   - Laser graphics fixes
   - Recursive transport killer fix
   - Custom locomotors example implementation and piggybacking test warheads
+  - Jumpjet initial facing fix
   - Techno Attachment logic
   - Migration utility
   - GitHub Actions setup
@@ -195,6 +196,7 @@ This page lists all the individual contributions to the project by their author.
   - `ZShapePointMove` buildup toggle
   - `UndeploysInto` building selling buildup sequence length customization
   - AI naval vehicle production fix
+  - Crushing tilt and slowdown customization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -270,6 +272,7 @@ This page lists all the individual contributions to the project by their author.
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control
+  - Vehicle voxel turret shadows & body multi-section shadows
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

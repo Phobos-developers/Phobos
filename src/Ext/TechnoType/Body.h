@@ -33,6 +33,8 @@ public:
 		std::unique_ptr<InterceptorTypeClass> InterceptorType;
 
 		Valueable<PartialVector3D<int>> TurretOffset;
+		Nullable<bool> TurretShadow;
+		ValueableVector<int> ShadowIndices;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
@@ -143,6 +145,12 @@ public:
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
 		std::vector<Vector3D<int>> InsigniaFrames_Weapon;
 
+		Nullable<bool> TiltsWhenCrushes_Vehicles;
+		Nullable<bool> TiltsWhenCrushes_Overlays;
+		Nullable<double> CrushForwardTiltPerFrame;
+		Valueable<double> CrushOverlayExtraForwardTilt;
+		Valueable<double> CrushSlowdownMultiplier;
+
 		struct AttachmentDataEntry
 		{
 			ValueableIdx<AttachmentTypeClass> Type;
@@ -198,6 +206,8 @@ public:
 			, InterceptorType { nullptr }
 
 			, TurretOffset { { 0, 0, 0 } }
+			, TurretShadow { }
+			, ShadowIndices { }
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}
@@ -304,6 +314,12 @@ public:
 			, Insignia_Weapon {}
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
+
+			, TiltsWhenCrushes_Vehicles {}
+			, TiltsWhenCrushes_Overlays {}
+			, CrushSlowdownMultiplier { 0.2 }
+			, CrushForwardTiltPerFrame {}
+			, CrushOverlayExtraForwardTilt { 0.02 }
 
 			, AttachmentData {}
 		{ }
