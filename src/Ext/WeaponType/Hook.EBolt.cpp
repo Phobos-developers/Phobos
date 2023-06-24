@@ -1,5 +1,7 @@
 #include "Body.h"
 #include <EBolt.h>
+#include <Utilities/Macro.h>
+#include <Helpers/Macro.h>
 
 namespace BoltTemp
 {
@@ -24,6 +26,19 @@ DEFINE_HOOK(0x4C2951, EBolt_DTOR, 0x5)
 
 	BoltTemp::boltWeaponTypeExt.erase(pBolt);
 
+	return 0;
+}
+
+DEFINE_HOOK(0x4C20BC, EBolt_Draw_ArcsAmount, 0x0)
+{
+	GET_STACK(EBolt*, pBolt, 0x40);
+	BoltTemp::pType = BoltTemp::boltWeaponTypeExt.get_or_default(pBolt);
+
+	int a = 32;
+	if(BoltTemp::pType){ a = BoltTemp::pType->Bolt_Arcs;}
+	byte BoltArcsP2B[] = { 0x83, 0x7C, 0x24, 0x28, 0x08};
+	memcpy(&BoltArcsP2B[4], &a, sizeof(&a));
+    Patch(0x4C20BC, 5, BoltArcsP2B).Apply();
 	return 0;
 }
 

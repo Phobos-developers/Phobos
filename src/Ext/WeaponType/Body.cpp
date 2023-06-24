@@ -43,6 +43,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
 
+	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
+
 	this->RadType.Read(exINI, pSection, "RadType", true);
 
 	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
@@ -66,6 +68,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Bolt_Disable1)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)
+		.Process(this->Bolt_Arcs)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
 		.Process(this->CanTarget)
