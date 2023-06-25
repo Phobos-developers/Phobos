@@ -594,7 +594,7 @@ void TechnoExt::Kill(TechnoClass* pThis, ObjectClass* pAttacker, HouseClass* pAt
 		{
 		case AbstractType::Unit:
 		case AbstractType::Aircraft:
-			AresFunctions::SpawnSurvivors(static_cast<FootClass*>(pThis), nullptr, false, false);
+			AresFunctions::SpawnSurvivors(abstract_cast<FootClass*>(pThis), abstract_cast<TechnoClass*>(pAttacker), false, false);
 		default: break;
 		}
 	}
@@ -604,7 +604,7 @@ void TechnoExt::Kill(TechnoClass* pThis, ObjectClass* pAttacker, HouseClass* pAt
 
 void TechnoExt::Kill(TechnoClass* pThis, TechnoClass* pAttacker)
 {
-	TechnoExt::Kill(pThis, pAttacker, pAttacker->Owner);
+	TechnoExt::Kill(pThis, pAttacker, pAttacker ? pAttacker->Owner : nullptr);
 }
 
 void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)

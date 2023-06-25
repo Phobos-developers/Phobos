@@ -177,6 +177,7 @@ void AttachmentClass::AI()
 	}
 }
 
+// Called in Kill_Cargo, handles logics for parent destruction on children
 void AttachmentClass::Destroy(TechnoClass* pSource)
 {
 	if (this->Child)
@@ -186,13 +187,15 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 
 		auto pType = this->GetType();
 
+		if (auto const pChildAsFoot = abstract_cast<FootClass*>(this->Child))
+			LocomotionClass::End_Piggyback(pChildAsFoot->Locomotor);
+
 		if (pType->DestructionWeapon_Child.isset())
 			TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
 
 		if (pType->InheritDestruction && this->Child)
 			TechnoExt::Kill(this->Child, pSource);
-
-		if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
+		else if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
 			this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
 
 		this->Child = nullptr;
