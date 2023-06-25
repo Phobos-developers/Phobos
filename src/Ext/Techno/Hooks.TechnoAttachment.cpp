@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <EventClass.h>
 #include <WarheadTypeClass.h>
 #include <TacticalClass.h>
 
@@ -704,3 +705,51 @@ DEFINE_JUMP(VTABLE, 0x7F5D28, GET_OFFSET(TechnoClass_SortY_Wrapper)) // UnitClas
 
 DEFINE_JUMP(LJMP, 0x568831, 0x568841); // Skip locomotion layer check in MapClass::PickUp
 DEFINE_JUMP(LJMP, 0x4D37A2, 0x4D37AE); // Skip locomotion layer check in FootClass::Mark
+
+// Handle waypoint mode command inheritance
+DEFINE_HOOK(0x4C73D1, EventClass_Execute_MegaMission_HandleChildren, 0x6)
+{
+	GET(EventClass*, pThis, ESI);
+	GET(TechnoClass*, pParent, EDI);
+	GET(AbstractClass*, pArchiveTarget, EBP);
+	GET(Mission, mission, EBX);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pParent);
+	auto const pTarget = pThis->Data.MegaMission.Target.As_Abstract();
+	auto const pDestination = pThis->Data.MegaMission.Destination.As_Abstract();
+	bool isGuard = pThis->Data.MegaMission.Mission == static_cast<char>(Mission::Area_Guard) && pParent->AbstractFlags & AbstractFlags::Foot;
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (!pAttachment->Child || !pAttachment->GetType()->InheritCommands)
+			continue;
+
+		auto const pChild = pAttachment->Child;
+		pChild->QueueMission(mission, false);
+
+		if (isGuard)
+		{
+			pChild->SetTarget(pChild);
+			pChild->SetDestination(pTarget, true);
+			pChild->SetFocus(pTarget);
+		}
+		else
+		{
+			if (pArchiveTarget)
+			{
+				pChild->SetFocus(pArchiveTarget);
+
+				if (auto const pFoot = abstract_cast<FootClass*>(pChild))
+					pFoot->ClearNavQueue();
+			}
+
+			pChild->SetTarget(pTarget);
+			pChild->SetDestination(pDestination, true);
+
+			if (pTarget && pChild->GetTechnoType()->OpenTopped)
+				pChild->SetTargetForPassengers(pTarget);
+		}
+	}
+
+	return 0;
+}
