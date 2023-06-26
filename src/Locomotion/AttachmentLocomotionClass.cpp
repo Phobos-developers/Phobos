@@ -8,6 +8,7 @@
 
 #include <AnimClass.h>
 #include <AircraftClass.h>
+#include <AircraftTrackerClass.h>
 #include <InfantryClass.h>
 #include <UnitClass.h>
 
@@ -123,11 +124,38 @@ ZGradient AttachmentLocomotionClass::Z_Gradient()
 bool AttachmentLocomotionClass::Process()
 {
 	if (this->LinkedTo->IsAlive)
-    {
-        Layer newLayer = this->In_Which_Layer();
-        if (this->PreviousLayer != newLayer)
-            DisplayClass::Instance->Submit(this->LinkedTo);
-    }
+	{
+		Layer newLayer = this->In_Which_Layer();
+		Layer oldLayer = this->PreviousLayer;
+
+		bool changedAirborneStatus = false;
+
+		if (oldLayer != newLayer)
+		{
+			DisplayClass::Instance->Submit(this->LinkedTo);
+
+			if (oldLayer < Layer::Air && Layer::Air <= newLayer)
+			{
+				AircraftTrackerClass::Instance->Add(this->LinkedTo);
+				changedAirborneStatus = true;
+			}
+			else if (newLayer < Layer::Air && Layer::Air <= oldLayer)
+			{
+				AircraftTrackerClass::Instance->Remove(this->LinkedTo);
+				changedAirborneStatus = true;
+			}
+
+			this->PreviousLayer = newLayer;
+		}
+
+		CellStruct oldPos = this->PreviousCell;
+		CellStruct newPos = this->LinkedTo->GetMapCoords();
+
+		if (Layer::Air <= newLayer && !changedAirborneStatus && oldPos != newPos)
+			AircraftTrackerClass::Instance->Update(this->LinkedTo, oldPos, newPos);
+
+		this->PreviousCell = newPos;
+	}
 
 	return LocomotionClass::Process();
 }

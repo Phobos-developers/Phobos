@@ -184,6 +184,7 @@ private:
 public:
 	inline AttachmentLocomotionClass() : LocomotionClass { }
 		, PreviousLayer { Layer::None }
+		, PreviousCell { CellStruct::Empty }
 		, Piggybacker { nullptr }
 	{ }
 
@@ -196,6 +197,10 @@ public:
 		// The layer this locomotor's user was in previously.
 		// Used for resubmitting the FootClass to another layer.
 		Layer PreviousLayer;
+
+		// The cell this locomotor's user was in previously.
+		// Used for tracking the FootClass while it's in air.
+		CellStruct PreviousCell;
 
 		// The piggybacking locomotor.
 		ILocomotionPtr Piggybacker;
