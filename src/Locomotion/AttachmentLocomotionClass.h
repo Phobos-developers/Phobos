@@ -123,7 +123,7 @@ public:
 	// virtual Move __stdcall Can_Enter_Cell(CellStruct cell) override;
 	//virtual bool __stdcall Is_To_Have_Shadow() override;
 	virtual Matrix3D __stdcall Draw_Matrix(VoxelIndexKey* key) override;
-	virtual Matrix3D __stdcall Shadow_Matrix(VoxelIndexKey* key) override;
+	// virtual Matrix3D __stdcall Shadow_Matrix(VoxelIndexKey* key) override;
 	virtual Point2D __stdcall Draw_Point() override;
 	// virtual Point2D __stdcall Shadow_Point() override;
 	virtual VisualType __stdcall Visual_Character(bool raw) override;
