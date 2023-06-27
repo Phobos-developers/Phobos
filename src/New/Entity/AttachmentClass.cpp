@@ -144,6 +144,8 @@ void AttachmentClass::AI()
 		DirStruct childDir = this->Data->IsOnTurret
 			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
 
+		childDir.Raw += DirStruct(this->Data->RotationAdjust).Raw; // overflow = free modulo for rotation
+
 		this->Child->PrimaryFacing.SetCurrent(childDir);
 		// TODO handle secondary facing in case the turret is idle
 
@@ -221,11 +223,13 @@ void AttachmentClass::Unlimbo()
 		CoordStruct childCoord = TechnoExt::GetFLHAbsoluteCoords(
 			this->Parent, this->Data->FLH, this->Data->IsOnTurret);
 
-		DirType childDir = this->Data->IsOnTurret
-			? this->Parent->SecondaryFacing.Current().GetDir() : this->Parent->PrimaryFacing.Current().GetDir();
+		DirStruct childDir = this->Data->IsOnTurret
+			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
+
+		childDir.Raw += DirStruct(this->Data->RotationAdjust).Raw; // overflow = free modulo for rotation
 
 		++Unsorted::IKnowWhatImDoing;
-		this->Child->Unlimbo(childCoord, childDir);
+		this->Child->Unlimbo(childCoord, childDir.GetDir());
 		--Unsorted::IKnowWhatImDoing;
 	}
 }

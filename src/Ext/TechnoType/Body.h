@@ -157,6 +157,7 @@ public:
 			NullableIdx<TechnoTypeClass> TechnoType;
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
+			Valueable<DirType> RotationAdjust;
 
 			bool Load(PhobosStreamReader& stm, bool registerForChange);
 			bool Save(PhobosStreamWriter& stm) const;

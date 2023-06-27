@@ -230,10 +230,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.IsOnTurret", i);
 		isOnTurret.Read(exINI, pSection, tempBuffer);
 
+		Valueable<DirType> rotationAdjust;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.RotationAdjust", i);
+		rotationAdjust.Read(exINI, pSection, tempBuffer);
+
+		AttachmentDataEntry const entry { ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret, rotationAdjust };
 		if (i == AttachmentData.size())
-			this->AttachmentData.push_back({ ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret });
+			this->AttachmentData.push_back(entry);
 		else
-			this->AttachmentData[i] = { ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret };
+			this->AttachmentData[i] = entry;
 	}
 
 	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
@@ -596,6 +601,7 @@ bool TechnoTypeExt::ExtData::AttachmentDataEntry::Serialize(T& stm)
 		.Process(this->TechnoType)
 		.Process(this->FLH)
 		.Process(this->IsOnTurret)
+		.Process(this->RotationAdjust)
 		.Success();
 }
 

@@ -39,6 +39,7 @@ AttachmentX.Type=MNT                  ; AttachmentType (example)
 AttachmentX.TechnoType=               ; TechnoType that can be attached, currently only units are supported
 AttachmentX.FLH=0,0,0                 ; integer - Forward, Lateral, Height
 AttachmentX.IsOnTurret=false          ; boolean
+AttachmentX.RotationAdjust=0          ; rotation in DirType, from -255 to 255
 ```
 
 ### Custom Radiation Types
