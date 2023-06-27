@@ -187,9 +187,6 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 
 		auto pType = this->GetType();
 
-		if (auto const pChildAsFoot = abstract_cast<FootClass*>(this->Child))
-			LocomotionClass::End_Piggyback(pChildAsFoot->Locomotor);
-
 		if (pType->DestructionWeapon_Child.isset())
 			TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
 
