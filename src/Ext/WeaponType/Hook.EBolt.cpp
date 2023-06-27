@@ -39,7 +39,7 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 	GET_STACK(int, plotIndex, STACK_OFFSET(0x408, -0x3E0))
 
 	return plotIndex < BoltTemp::pType->Bolt_Arcs
-        ? DoLoop : Break;
+		? DoLoop : Break;
 }
 
 DEFINE_HOOK(0x4C24E4, Ebolt_DrawFist_Disable, 0x8)
