@@ -371,8 +371,6 @@ void TechnoExt::HandleDestructionAsChild(TechnoClass* pThis)
 
 	if (pExt->ParentAttachment)
 		pExt->ParentAttachment->ChildDestroyed();
-
-	pExt->ParentAttachment = nullptr;
 }
 
 void TechnoExt::UnlimboAttachments(TechnoClass* pThis)

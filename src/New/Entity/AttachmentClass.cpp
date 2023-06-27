@@ -182,7 +182,7 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 {
 	if (this->Child)
 	{
-		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
+		auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
 		pChildExt->ParentAttachment = nullptr;
 
 		auto pType = this->GetType();
@@ -201,11 +201,17 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 
 void AttachmentClass::ChildDestroyed()
 {
-	AttachmentTypeClass* pType = this->GetType();
-	if (pType->DestructionWeapon_Parent.isset())
-		TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
+	if (this->Child)
+	{
+		if (auto const pChildExt = TechnoExt::ExtMap.Find(this->Child))
+			pChildExt->ParentAttachment = nullptr;
 
-	this->Child = nullptr;
+		AttachmentTypeClass* pType = this->GetType();
+		if (pType->DestructionWeapon_Parent.isset())
+			TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
+
+		this->Child = nullptr;
+	}
 }
 
 void AttachmentClass::Unlimbo()

@@ -157,3 +157,20 @@ FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
 DEFINE_JUMP(VTABLE, 0x7ECDF4, GET_OFFSET(JumpjetLocomotionClass_Can_Fire));
 
 //TODO : Issue #690 #655
+
+// This fixes the issue when locomotor is crashing in grounded or
+// hovering state and the crash processing code won't be reached.
+// Can be observed easily when Crashable=yes jumpjet is attached to
+// a unit and then destroyed.
+DEFINE_HOOK(0x54AEDC, JumpjetLocomotionClass_Process_CheckCrashing, 0x0)
+{
+	enum { ProcessMovement = 0x54AEED, Skip = 0x54B16C };
+
+	GET(ILocomotion*, iLoco, ESI);
+	auto const pLoco = static_cast<JumpjetLocomotionClass*>(iLoco);
+
+	return pLoco->Is_Moving_Now()  // stolen code
+		|| pLoco->LinkedTo->IsCrashing
+		? ProcessMovement
+		: Skip;
+}

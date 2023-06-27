@@ -29,7 +29,7 @@ DEFINE_HOOK(0x707CB3, TechnoClass_KillCargo_HandleAttachments, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x5F6609, ObjectClass_RemoveThis_TechnoClass, 0x9)
+DEFINE_HOOK(0x5F6609, ObjectClass_RemoveThis_TechnoClass_NotifyParent, 0x9)
 {
 	GET(TechnoClass*, pThis, ESI);
 
@@ -37,6 +37,15 @@ DEFINE_HOOK(0x5F6609, ObjectClass_RemoveThis_TechnoClass, 0x9)
 	TechnoExt::HandleDestructionAsChild(pThis);
 
 	return 0x5F6612;
+}
+
+DEFINE_HOOK(0x4DEBB4, FootClass_OnDestroyed_NotifyParent, 0x8)
+{
+	GET(FootClass*, pThis, ESI);
+
+	TechnoExt::HandleDestructionAsChild(pThis);
+
+	return 0;
 }
 
 
