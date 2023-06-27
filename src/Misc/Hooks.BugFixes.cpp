@@ -706,3 +706,14 @@ DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 
 	return 0;
 }
+
+// WWP for some reason passed nullptr as source to On_Destroyed even though the real source existed
+DEFINE_HOOK(0x738467, UnitClass_TakeDamage_FixOnDestroyedSource, 0x0)
+{
+	enum { Continue = 0x73866E, ForceKill = 0x73847B };
+
+	GET(UnitClass*, pThis, ESI);
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0x44, 0x10));
+
+	return pThis->Crash(pSource) ? Continue : ForceKill;
+}
