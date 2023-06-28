@@ -9,23 +9,46 @@ This page describes all AI scripting and mapping related additions and changes i
 - Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
-- In **singleplayer campaigns**:
-  - You can now decide whether AI can repair the base nodes/buildings delivered by SW (Ares) by setting
+- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally. `InitialPayload` logic from Ares is not supported yet.
+- If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
+
+## Maps
+
+### Base node repairing (singleplayer only)
+
+- In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW (Ares) by setting `RepairBaseNodes`.
+
+In map file:
 ```ini
 [Country House]
-RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in Easy/ Normal/ Difficult game diffculty.
+RepairBaseNodes=false,false,false  ; list of 3 booleans indicating whether AI repair basenodes in Easy/ Normal/ Difficult game diffculty.
 ```
 
-  - You can now decide whether MCV can redeploy by setting
+### MCV redeploying (singleplayer only)
+
+- You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `MCVRedeploys`. Overrides `[MultiplayerDialogSettings]`->`MCVRedeploys` only in singleplayer campaign missions.
+
+In map file:
 ```ini
 [Basic]
-MCVRedeploys=no  ; boolean, Overrides [MultiplayerDialogSettings]->MCVRedeploys only in campaigns
+MCVRedeploys=false  ; boolean
 ```
-  - **Note that these tags only work within the map file**
 
-- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
-  - `InitialPayload` logic from Ares is not supported yet.
-- If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
+### Show briefing dialog on startup (singleplayer only)
+
+- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available).
+
+In `missionmd.ini`:
+```ini
+[SOMEMISSION]  ; Filename of mission map
+ShowBriefing=  ; boolean
+```
+
+In map file:
+```ini
+[Basic]
+ShowBriefing=false  ; boolean
+```
 
 ## Script Actions
 

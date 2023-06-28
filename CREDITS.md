@@ -215,6 +215,7 @@ This page lists all the individual contributions to the project by their author.
   - Straight projectile trajectory additions
   - Airstrike & spy plane fixed spawn distance & height
   - Negative damage `Verses/PercentAtMax` toggle
+  - Misc. singleplayer mission improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
