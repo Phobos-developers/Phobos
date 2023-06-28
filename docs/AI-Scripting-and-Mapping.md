@@ -24,6 +24,22 @@ In map file:
 RepairBaseNodes=false,false,false  ; list of 3 booleans indicating whether AI repair basenodes in Easy/ Normal/ Difficult game diffculty.
 ```
 
+### Default loading screen and briefing offsets (singleplayer only)
+
+- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
+
+- In `missionmd.ini`:
+```ini
+[Defaults]
+DefaultLS640BriefLocX=0  ; integer
+DefaultLS640BriefLocY=0  ; integer 
+DefaultLS800BriefLocX=0  ; integer
+DefaultLS800BriefLocY=0  ; integer
+DefaultLS640BkgdName=    ; filename - including the .shp extension.
+DefaultLS800BkgdName     ; filename - including the .shp extension.
+DefaultLS800BkgdPal=     ; filename - including the .pal extension
+```
+
 ### MCV redeploying (singleplayer only)
 
 - You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `MCVRedeploys`. Overrides `[MultiplayerDialogSettings]`->`MCVRedeploys` only in singleplayer campaign missions.
