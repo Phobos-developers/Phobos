@@ -131,12 +131,19 @@ void AttachmentClass::CreateChild()
 	}
 }
 
+#define SYNC_CHILD(property) this->Child->property = this->Parent->property
+
 void AttachmentClass::AI()
 {
 	AttachmentTypeClass* pType = this->GetType();
 
 	if (this->Child)
 	{
+		if (this->Child->InLimbo && !this->Parent->InLimbo)
+			this->Unlimbo();
+		else if (!this->Child->InLimbo && this->Parent->InLimbo)
+			this->Limbo();
+
 		this->Child->SetLocation(this->GetChildLocation());
 
 		this->Child->OnBridge = this->Parent->OnBridge;
@@ -158,7 +165,11 @@ void AttachmentClass::AI()
 
 		if (pType->InheritStateEffects)
 		{
+			this->Child->IsFallingDown = this->Parent->IsFallingDown;
+			this->Child->WasFallingDown = this->Parent->WasFallingDown;
 			this->Child->CloakState = this->Parent->CloakState;
+			this->Child->WarpingOut = this->Parent->WarpingOut;
+			this->Child->unknown_280 = this->Parent->unknown_280; // sth related to teleport
 			this->Child->BeingWarpedOut = this->Parent->BeingWarpedOut;
 			this->Child->Deactivated = this->Parent->Deactivated;
 			this->Child->Flash(this->Parent->Flashing.DurationRemaining);
@@ -169,6 +180,7 @@ void AttachmentClass::AI()
 			this->Child->CloakDelayTimer = this->Parent->CloakDelayTimer;
 			this->Child->ChronoLockRemaining = this->Parent->ChronoLockRemaining;
 			this->Child->Berzerk = this->Parent->Berzerk;
+			this->Child->BerzerkDurationLeft = this->Parent->BerzerkDurationLeft;
 			this->Child->ChronoWarpedByHouse = this->Parent->ChronoWarpedByHouse;
 			this->Child->EMPLockRemaining = this->Parent->EMPLockRemaining;
 			this->Child->ShouldLoseTargetNow = this->Parent->ShouldLoseTargetNow;
@@ -178,6 +190,8 @@ void AttachmentClass::AI()
 			this->Child->SetOwningHouse(this->Parent->GetOwningHouse(), false);
 	}
 }
+
+#undef SYNC_CHILD
 
 // Called in Kill_Cargo, handles logics for parent destruction on children
 void AttachmentClass::Destroy(TechnoClass* pSource)
