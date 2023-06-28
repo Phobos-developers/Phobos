@@ -241,6 +241,19 @@ DEFINE_HOOK(0x683E41, ScenarioClass_Start_ShowBriefing, 0x6)
 
 	BriefingTemp::ShowBriefing = true;
 
+	int theme = ScenarioExt::Global()->BriefingTheme;
+
+	if (theme == -1)
+	{
+		SideClass* pSide = SideClass::Array->GetItemOrDefault(ScenarioClass::Instance->PlayerSideIndex);
+
+		if (const auto pSideExt = SideExt::ExtMap.Find(pSide))
+			theme = pSideExt->BriefingTheme;
+	}
+
+	if (theme != -1)
+		ThemeClass::Instance->Queue(theme);
+
 	// Skip over playing scenario theme.
 	return SkipGameCode;
 }

@@ -26,12 +26,14 @@ public:
 	public:
 
 		bool ShowBriefing;
+		int BriefingTheme;
 
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
+			, BriefingTheme { -1 }
 			, Waypoints { }
 			, Variables { }
 		{ }
