@@ -34,6 +34,22 @@ In map file:
 MCVRedeploys=false  ; boolean
 ```
 
+### Set par times and related string labels in missionmd.ini (singleplayer only)
+
+- By default the singleplayer mission par times and message strings are defined in `[Ranking]` section of the map file itself. These can now also be set in the map file's section in `missionmd.ini`, taking precedence over the map file's settings but defaulting to them if not set.
+
+In `missionmd.ini`:
+```ini
+[SOMEMISSION]             ; Filename of mission map
+Ranking.ParTimeEasy=      ; time string (hh:mm:ss)
+Ranking.ParTimeMedium=    ; time string (hh:mm:ss)
+Ranking.ParTimeHard=      ; time string (hh:mm:ss)
+Ranking.UnderParTitle=    ; CSF entry key
+Ranking.UnderParMessage=  ; CSF entry key
+Ranking.OverParTitle=     ; CSF entry key
+Ranking.OverParMessage=   ; CSF entry key
+```
+
 ### Show briefing dialog on startup (singleplayer only)
 
 - You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available).
