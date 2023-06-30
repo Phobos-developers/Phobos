@@ -43,36 +43,6 @@ int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
 int Phobos::Misc::CustomGS_ChangeDelay[7] = { 0, 1, 2, 3, 4, 5, 6 };
 int Phobos::Misc::CustomGS_DefaultDelay[7] = { 0, 1, 2, 3, 4, 5, 6 };
 
-CCINIClass* Phobos::OpenConfig(const char* file)
-{
-	CCINIClass* pINI = GameCreate<CCINIClass>();
-
-	if (pINI)
-	{
-		CCFileClass* cfg = GameCreate<CCFileClass>(file);
-
-		if (cfg)
-		{
-			if (cfg->Exists())
-			{
-				pINI->ReadCCFile(cfg);
-			}
-			GameDelete(cfg);
-		}
-	}
-
-	return pINI;
-}
-
-void Phobos::CloseConfig(CCINIClass*& pINI)
-{
-	if (pINI)
-	{
-		GameDelete(pINI);
-		pINI = nullptr;
-	}
-}
-
 DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
@@ -82,7 +52,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::RealTimeTimers = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers", false);
 	Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers.Adaptive", false);
 
-	CCINIClass* pINI_UIMD = Phobos::OpenConfig(GameStrings::UIMD_INI);
+	CCINIClass* pINI_UIMD = CCINIClass::LoadINIFile(GameStrings::UIMD_INI);
 
 	// LoadingScreen
 	{
@@ -141,9 +111,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "CenterPauseMenuBackground", Phobos::UI::CenterPauseMenuBackground);
 	}
 
-	Phobos::CloseConfig(pINI_UIMD);
+	CCINIClass::UnloadINIFile(pINI_UIMD);
 
-	CCINIClass* pINI_RULESMD = Phobos::OpenConfig(GameStrings::RULESMD_INI);
+	CCINIClass* pINI_RULESMD = CCINIClass::LoadINIFile(GameStrings::RULESMD_INI);
 
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
 
@@ -202,7 +172,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		);
 	}
 
-	Phobos::CloseConfig(pINI_RULESMD);
+	CCINIClass::UnloadINIFile(pINI_RULESMD);
 
 	return 0;
 }
