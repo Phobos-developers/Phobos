@@ -694,15 +694,3 @@ DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
 
 // Stops INI parsing for Anim/BuildingTypeClass on game startup, will only be read on scenario load later like everything else.
 DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);
-
-// Fix initial facing when jumpjet locomotor is being attached
-DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
-{
-	GET(ILocomotion*, iLoco, EBP);
-	auto const pThis = static_cast<JumpjetLocomotionClass*>(iLoco);
-
-	pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
-	pThis->LocomotionFacing.SetDesired(pThis->LinkedTo->PrimaryFacing.Desired());
-
-	return 0;
-}
