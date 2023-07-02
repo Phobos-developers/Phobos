@@ -357,3 +357,28 @@ DEFINE_HOOK(0x4575A2, BuildingClass_Infiltrate_AfterAres, 0xE)
 	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);
 	return 0;
 }
+
+
+DEFINE_HOOK(0x43D6E5, BuildingClass_Draw_ZShapePointMove, 0x5)
+{
+	enum { Apply = 0x43D6EF, Skip = 0x43D712 };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET(Mission, mission, EAX);
+
+	if ((mission != Mission::Selling && mission != Mission::Construction) || BuildingTypeExt::ExtMap.Find(pThis->Type)->ZShapePointMove_OnBuildup)
+		return Apply;
+
+	return Skip;
+}
+
+DEFINE_HOOK(0x4511D6, BuildingClass_AnimationAI_SellBuildup, 0x7)
+{
+	enum { Skip = 0x4511E6, Continue = 0x4511DF };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	return pTypeExt->SellBuildupLength == pThis->Animation.Value ? Continue : Skip;
+}

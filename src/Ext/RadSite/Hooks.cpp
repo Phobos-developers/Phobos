@@ -28,15 +28,17 @@ DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 {
 	GET(BulletClass* const, pThis, ESI);
 	GET_BASE(CoordStruct const*, pCoords, 0x8);
-	GET(WeaponTypeClass*, pWeapon, ECX);
-	GET(int, nAmount, EDI);
 
-	if (pWeapon && nAmount)
+	auto const pWeapon = pThis->GetWeaponType();
+
 	if (pWeapon && pWeapon->RadLevel > 0 && MapClass::Instance->IsWithinUsableArea((*pCoords)))
 	{
+		auto const pExt = BulletExt::ExtMap.Find(pThis);
+		auto const pWH = pThis->WH;
 		auto const cell = CellClass::Coord2Cell(*pCoords);
-		auto const spread = Game::F2I(pWeapon->Warhead->CellSpread);
-		BulletExt::ExtMap.Find(pThis)->ApplyRadiationToCell(cell, spread, nAmount);
+		auto const spread = Game::F2I(pWH->CellSpread);
+
+		pExt->ApplyRadiationToCell(cell, spread, pWeapon->RadLevel);
 	}
 
 	return 0x46920B;

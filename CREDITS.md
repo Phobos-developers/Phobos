@@ -34,6 +34,8 @@ This page lists all the individual contributions to the project by their author.
   - LaserTrails port and rework
   - Laser graphics fixes
   - Recursive transport killer fix
+  - Custom locomotors example implementation and piggybacking test warheads
+  - Jumpjet initial facing fix
   - Migration utility
   - GitHub Actions setup
   - Official docs
@@ -85,6 +87,7 @@ This page lists all the individual contributions to the project by their author.
   - Sharpnel enhancement
   - Vanilla map preview reading bugfix
   - Customizable tooltip background
+  - Parts of Ares calling code
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
@@ -103,6 +106,9 @@ This page lists all the individual contributions to the project by their author.
   - Laser trails for VoxelAnims
   - MakeInfantry logic on BombClass bugfix
   - Debris & meteor impact behaviour settings
+  - Upgrade logic to allow altering of SpySat status
+  - Ares detection and integration
+  - Help with custom locomotors
   - Extension class optimization
 - **FS-21**:
   - Dump Object Info enhancements
@@ -187,6 +193,10 @@ This page lists all the individual contributions to the project by their author.
   - Option to center pause menu background
   - Disguise logic improvements
   - Custom insignias
+  - `ZShapePointMove` buildup toggle
+  - `UndeploysInto` building selling buildup sequence length customization
+  - AI naval vehicle production fix
+  - Crushing tilt and slowdown customization
   - Extension class optimization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
@@ -199,6 +209,9 @@ This page lists all the individual contributions to the project by their author.
   - Real time timers
   - Default campaign game speed override and custom campaign game speed FPS
   - Including INI files and inheriting INI sections
+  - Ares detection and integration
+  - TechnoType conversion warhead & superweapon
+  - Unlimited skirmish colors
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
@@ -232,6 +245,7 @@ This page lists all the individual contributions to the project by their author.
    - Harvester counter
    - Income money string indication upon ore dump
    - Warhead superweapon launch logic
+   - TechnoType conversion placeholder
    - "Shield is broken" trigger event
    - RadialIndicator observer visibility
    - Cloaked objects from allies displaying to player in singleplayer campaigns
@@ -244,6 +258,7 @@ This page lists all the individual contributions to the project by their author.
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
    - Building LightSource tint S/L fix
    - Permanent healthbar display on units targeted by temporal weapons fix
+   - TechnoType conversion placeholder
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -258,16 +273,25 @@ This page lists all the individual contributions to the project by their author.
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control
+  - Vehicle voxel turret shadows & body multi-section shadows
+- **Ares developers**
+  - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
+  - unfinished RadTypes code
+  - prototype deployer fixes
+  - Superweapon launch site & availability code
+  - AI vehicle production update code
+  - parts of TechnoType conversion placeholder code
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help
-- **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes, Superweapon launch site & availability code
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
-- **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
+- **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation
 - **AlexB** - Original FlyingStrings implementation
 - **Joshy** - Original FlyingStrings implementation
+- **CnCVK** - Original custom locomotors experiment
 - **ZΞPHYɌUS** - win/lose themes code
+- **Neargye (Daniil Goncharov)** - [nameof library](https://github.com/Neargye/nameof) (MIT)
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
 - **4SG** - help with docs

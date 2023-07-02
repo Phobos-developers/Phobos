@@ -14,12 +14,13 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 - The obsolete `[General] WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
-
-### From Ares
-
-- `[#include]` section and `[CHILD]:[PARENT]` section inheritance notation are disabled, replaced by Phobos `[$Include]` and `$Inherits`.
+- Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
 
 ### From older Phobos versions
+
+#### From post-0.3 devbuilds
+
+- INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 
 #### From 0.3
 
@@ -306,6 +307,15 @@ New:
 - LaunchSW.DisplayMoney (by Starkku)
 - Disguise logic improvements (by Starkku)
 - Custom insignias (by Starkku)
+- Upgrade logic to allow altering of SpySat status (by Otamaa)
+- Allow `ZShapePointMove` to apply during buildup via `ZShapePointMove.OnBuildup` (by Starkku)
+- `UndeploysInto` building selling buildup sequence length customization (by Starkku)
+- Allow overriding `Shield.AffectTypes` for each Warhead shield interaction (by Starkku)
+- TechnoType conversion warhead & superweapon (by Morton)
+- Unlimited skirmish colors (by Morton)
+- Example custom locomotor that circles around the target (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
+- Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar)
+- Crushing tilt and slowdown customization (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -325,7 +335,7 @@ Vanilla fixes:
 - Fixed `LandTargeting=1` not preventing from targeting TerrainTypes (trees etc.) on land (by Starkku)
 - Fixed `NavalTargeting=6` not preventing from targeting empty water cells or TerrainTypes (trees etc.) on water (by Starkku)
 - Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon (by Starkku)
-- Fixed an issue that causes attached animations on flying objects not layer correctly (by Starkku)
+- Fixed an issue that causes objects in layers outside ground layer to not be sorted correctly (caused issues with animation and jumpjet layering for an instance) (by Starkku)
 - Restored `EVA_StructureSold` for buildings with `UndeploysInto` (by Trsdy)
 - Allow MCV to redeploy in campaigns (by Trsdy)
 - Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` but `ConstructionYard=no` (by Trsdy)
@@ -340,6 +350,9 @@ Vanilla fixes:
 - Fixed disguised infantry not using custom palette for drawing the disguise when needed (by Starkku)
 - Reenabled the obsolete `[General] WarpIn` as default anim type when units are warping in (by Trsdy)
 - Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
+- Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
+- AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
+- Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (by Kerbiter)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -356,13 +369,19 @@ Phobos fixes:
 - Superweapon `Detonate.Weapon` & `Detonate.Warhead` now use the firing house to deal damage and apply Phobos warhead effects even if no firing building is found (by Starkku)
 - `CreateUnit` now uses civilian house as owner instead if the intended owner house has been defeated (this is in-line with how `MakeInfantry` works) (by Starkku)
 - `IsHouseColor` laser trails on techno now correctly change color when it changes owner (by Trsdy)
+- Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where object changes layer (by Starkku)
+- Fixed floating point value parsing precision to match the game (by Starkku)
+- Fixed `DetonateOnAllMapObjects.RequireVerses` not considering shield armor types (by Starkku)
+- Power output / drain should now correctly be applied for buildings created via `LimboDelivery` in campaigns (by Starkku)
+- Fixed shield health bar showing empty bar when shield is still on very low health instead of depleted (by Starkku)
+- Fixed `CanTarget` not considering objects on bridges when checking if cell is empty (by Starkku)
+- Fixed new Phobos script actions not picking team leader correctly based on `LeadershipRating` (by Starkku)
+- Fixed an issue with `Gunner=true` vehicles not correctly using the first passenger's mode with multiple passengers inside (by Starkku)
 - Optimized extension class implementation, should improve performance all around (by Otamaa & Starkku)
-</details>
-
-### 0.3.0.1
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
+</details>
 
 ### 0.3
 

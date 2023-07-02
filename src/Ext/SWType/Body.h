@@ -8,6 +8,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Building/Body.h>
+#include <Misc/TypeConvertHelper.h>
 
 class SWTypeExt
 {
@@ -33,6 +34,7 @@ public:
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
+		Valueable<bool> SW_InitialReady;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -58,6 +60,8 @@ public:
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
+		TypeConvertHelper::ConvertPairs Convert_Pairs;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
 			, SW_Inhibitors {}
@@ -70,6 +74,7 @@ public:
 			, SW_ForbiddenHouses { 0u }
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
+			, SW_InitialReady { false }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -90,6 +95,7 @@ public:
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
+			, Convert_Pairs {}
 		{ }
 
 		// Ares 0.A functions
@@ -108,6 +114,7 @@ public:
 		void ApplyLimboKill(HouseClass* pHouse);
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
+		void ApplyTypeConversion(SuperClass* pSW);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;

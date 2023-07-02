@@ -35,12 +35,12 @@ typedef void JumpType;
 typedef JumpType LJMP;
 struct _LJMP
 {
-	byte command;
+	byte opcode;
 	DWORD pointer;
 
 	constexpr
 		_LJMP(DWORD offset, DWORD pointer) :
-		command(LJMP_LETTER),
+		opcode(LJMP_LETTER),
 		pointer(pointer - offset - 5)
 	{ };
 };
@@ -48,12 +48,12 @@ struct _LJMP
 typedef JumpType CALL;
 struct _CALL
 {
-	byte command;
+	byte opcode;
 	DWORD pointer;
 
 	constexpr
 		_CALL(DWORD offset, DWORD pointer) :
-		command(CALL_LETTER),
+		opcode(CALL_LETTER),
 		pointer(pointer - offset - 5)
 	{ };
 };
@@ -61,13 +61,13 @@ struct _CALL
 typedef JumpType CALL6;
 struct _CALL6
 {
-	byte command;
+	byte opcode;
 	DWORD pointer;
 	byte nop;
 
 	constexpr
 		_CALL6(DWORD offset, DWORD pointer) :
-		command(CALL_LETTER),
+		opcode(CALL_LETTER),
 		pointer(pointer - offset - 5),
 		nop(NOP_LETTER)
 	{ };

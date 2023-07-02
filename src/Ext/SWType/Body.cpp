@@ -22,6 +22,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_ForbiddenHouses)
 		.Process(this->SW_AuxBuildings)
 		.Process(this->SW_NegBuildings)
+		.Process(this->SW_InitialReady)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
@@ -42,6 +43,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Next_RandomWeightsData)
 		.Process(this->SW_Next_RollChances)
 		.Process(this->ShowTimer_Priority)
+		.Process(this->Convert_Pairs)
 		;
 }
 
@@ -69,6 +71,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_ForbiddenHouses = pINI->ReadHouseTypesList(pSection, "SW.ForbiddenHouses", this->SW_ForbiddenHouses);
 	this->SW_AuxBuildings.Read(exINI, pSection, "SW.AuxBuildings");
 	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
+	this->SW_InitialReady.Read(exINI, pSection, "SW.InitialReady");
 
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
@@ -134,6 +137,44 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Detonate_Weapon.Read(exINI, pSection, "Detonate.Weapon", true);
 	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
 	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
+
+	// Convert.From & Convert.To
+	for (size_t i = 0; ; ++i)
+	{
+		ValueableVector<TechnoTypeClass*> convertFrom;
+		NullableIdx<TechnoTypeClass> convertTo;
+		Nullable<AffectedHouse> convertAffectedHouses;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
+		convertFrom.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
+		convertTo.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i);
+		convertAffectedHouses.Read(exINI, pSection, tempBuffer);
+
+		if (!convertTo.isset())
+			break;
+
+		if (!convertAffectedHouses.isset())
+			convertAffectedHouses = AffectedHouse::Owner;
+
+		this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
+	}
+	ValueableVector<TechnoTypeClass*> convertFrom;
+	NullableIdx<TechnoTypeClass> convertTo;
+	Nullable<AffectedHouse> convertAffectedHouses;
+	convertFrom.Read(exINI, pSection, "Convert.From");
+	convertTo.Read(exINI, pSection, "Convert.To");
+	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
+	if (convertTo.isset())
+	{
+		if (!convertAffectedHouses.isset())
+			convertAffectedHouses = AffectedHouse::Owner;
+
+		if (this->Convert_Pairs.size())
+			this->Convert_Pairs[0] = { convertFrom, convertTo, convertAffectedHouses };
+		else
+			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
+	}
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

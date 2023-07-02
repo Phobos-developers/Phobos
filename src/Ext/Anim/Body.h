@@ -18,7 +18,7 @@ public:
 	class ExtData final : public Extension<AnimClass>
 	{
 	public:
-		short DeathUnitFacing;
+		DirType DeathUnitFacing;
 		DirStruct DeathUnitTurretFacing;
 		bool FromDeathUnit;
 		bool DeathUnitHasTurret;
