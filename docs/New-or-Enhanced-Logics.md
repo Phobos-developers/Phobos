@@ -502,7 +502,7 @@ Shrapnel.AffectsBuildings=false  ; boolean
 ### Projectiles blocked by land or water
 
 - It is now possible to make projectiles consider either land or water as obstacles that block their path by setting `SubjectToLand/Water` to true, respectively. Weapons firing such projectiles will consider targets blocked by such obstacles as out of range and will attempt to reposition themselves so they can fire without being blocked by the said obstacles before firing and if `SubjectToLand/Water.Detonate` is set to true, the projectiles will detonate if they somehow manage to collide with the said obstacles.
-  - In a special case, `Level=true` projectiles by default, if neither `SubjectToLand` or `SubjectToWater` are set, consider tiles belonging to non-water tilesets as obstacles, but this behaviour can be overridden by setting these keys.
+  - `Level=true` projectiles detonate on tiles belonging to non-water tilesets by default, but will not consider such tiles as true obstacles. This behaviour can be overridden by setting these keys.
 
 In `rulesmd.ini`:
 ```ini
