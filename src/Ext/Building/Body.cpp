@@ -424,19 +424,5 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 	return 0;
 }
 
-// Removes setting otherwise unused field (0x6FC) when building has airstrike applied on it.
+// Removes setting otherwise unused field (0x6FC) in BuildingClass when building has airstrike applied on it so that it can safely be used to store BuildingExt pointer.
 DEFINE_JUMP(LJMP, 0x41D9FB, 0x41DA05);
-
-/*
-DEFINE_HOOK(0x44E940, BuildingClass_Detach, 0x6)
-{
-	GET(BuildingClass*, pThis, ESI);
-	GET(void*, target, EBP);
-	GET_STACK(bool, all, STACK_OFFSET(0xC, 0x8));
-
-	if (auto pExt = BuildingExt::ExtMap.Find(pThis))
-		pExt->InvalidatePointer(target, all);
-
-	return pThis->LightSource == target ? 0x44E948 : 0x44E94E;
-}
-*/

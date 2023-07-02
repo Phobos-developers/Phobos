@@ -409,30 +409,3 @@ DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 	return 0;
 }
 
-/*
-DEFINE_HOOK(0x70783B, TechnoClass_Detach, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET(void*, target, EBP);
-	GET_STACK(bool, all, STACK_OFFSET(0xC, 0x8));
-
-	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
-		pExt->InvalidatePointer(target, all);
-
-	return pThis->BeingManipulatedBy == target ? 0x707843 : 0x707849;
-}
-
-DEFINE_HOOK(0x710443, TechnoClass_AnimPointerExpired, 0x6)
-{
-	GET(AnimClass*, pAnim, EAX);
-	GET(TechnoClass*, pThis, ECX);
-
-	if (auto pExt = TechnoExt::ExtMap.Find(pThis))
-	{
-		if (auto pShield = pExt->Shield.get())
-			pShield->InvalidatePointer(pAnim, false);
-	}
-
-	return 0;
-}
-*/
