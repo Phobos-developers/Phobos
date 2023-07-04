@@ -246,6 +246,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CrushOverlayExtraForwardTilt.Read(exINI, pSection, "CrushOverlayExtraForwardTilt");
 	this->CrushSlowdownMultiplier.Read(exINI, pSection, "CrushSlowdownMultiplier");
 
+	this->CloakAnim.Read(exINI, pSection, "CloakAnim");
+	this->DecloakAnim.Read(exINI, pSection, "DecloakAnim");
+	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -513,6 +517,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrushForwardTiltPerFrame)
 		.Process(this->CrushOverlayExtraForwardTilt)
 		.Process(this->CrushSlowdownMultiplier)
+
+		.Process(this->CloakAnim)
+		.Process(this->DecloakAnim)
+		.Process(this->Cloak_KickOutParasite)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

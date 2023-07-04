@@ -175,6 +175,10 @@ public:
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
+		Nullable<AnimTypeClass*> CloakAnim;
+		Nullable<AnimTypeClass*> DecloakAnim;
+		Nullable<bool> Cloak_KickOutParasite;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -302,6 +306,10 @@ public:
 			, CrushSlowdownMultiplier { 0.2 }
 			, CrushForwardTiltPerFrame {}
 			, CrushOverlayExtraForwardTilt { 0.02 }
+
+			, CloakAnim {}
+			, DecloakAnim {}
+			, Cloak_KickOutParasite {}
 		{ }
 
 		virtual ~ExtData() = default;

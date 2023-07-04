@@ -81,6 +81,10 @@ public:
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
 
+		Valueable<AnimTypeClass*> CloakAnim;
+		Valueable<AnimTypeClass*> DecloakAnim;
+		Valueable<bool> Cloak_KickOutParasite;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -126,6 +130,9 @@ public:
 			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
+			, CloakAnim { nullptr }
+			, DecloakAnim { nullptr }
+			, Cloak_KickOutParasite { true }
 		{ }
 
 		virtual ~ExtData() = default;
