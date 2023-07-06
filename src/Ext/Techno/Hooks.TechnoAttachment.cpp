@@ -8,6 +8,8 @@
 
 #include <Utilities/Macro.h>
 
+typedef size_t nothing_t;
+
 // DEFINE_HOOK(0x4DA86E, FootClass_AI_UpdateAttachedLocomotion, 0x0)
 // {
 // 	GET(FootClass* const, pThis, ESI);
@@ -67,19 +69,74 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo_LimboAttachments, 0x6)
 	return 0;
 }
 
-
 #pragma region Cell occupation handling
 
+// DEFINE_HOOK(0x7441B6, UnitClass_SetOccupyBit_SkipVirtual, 0x6)
+// {
+// 	enum { Skip = 0x7441F6, Continue = 0 };
+
+// 	GET(UnitClass*, pThis, ECX);
+
+// 	if (TechnoExt::DoesntOccupyCellAsChild(pThis))
+// 		return Skip;
+
+// 	return Continue;
+// }
+
+// DEFINE_HOOK(0x744216, UnitClass_ClearOccupyBit_SkipVirtual, 0x6)
+// {
+// 	enum { Skip = 0x74425E, Continue = 0 };
+
+// 	GET(UnitClass*, pThis, ECX);
+
+// 	if (TechnoExt::DoesntOccupyCellAsChild(pThis))
+// 		return Skip;
+
+// 	return Continue;
+// }
+
+// screw Ares
+
+void __fastcall UnitClass_SetOccupyBit(UnitClass* pThis, nothing_t, const CoordStruct& coords)
+{
+	JMP_THIS(0x7441B0);
+}
+
+void __fastcall UnitClass_SetOccupyBit_SkipVirtual(UnitClass* pThis, nothing_t _, const CoordStruct& coords)
+{
+	if (!TechnoExt::DoesntOccupyCellAsChild(pThis))
+		UnitClass_SetOccupyBit(pThis, _, coords);
+}
+
+void __fastcall UnitClass_ClearOccupyBit(UnitClass* pThis, nothing_t, const CoordStruct& coords)
+{
+	JMP_THIS(0x744210);
+}
+
+void __fastcall UnitClass_ClearOccupyBit_SkipVirtual(UnitClass* pThis, nothing_t _, const CoordStruct& coords)
+{
+	if (!TechnoExt::DoesntOccupyCellAsChild(pThis))
+		UnitClass_ClearOccupyBit(pThis, _, coords);
+}
+
+DEFINE_JUMP(VTABLE, 0x7F5D60, GET_OFFSET(UnitClass_SetOccupyBit_SkipVirtual))
+DEFINE_JUMP(VTABLE, 0x7F5D64, GET_OFFSET(UnitClass_ClearOccupyBit_SkipVirtual))
+
+// TODO ^ same for non-UnitClass, cba for now
+
+// TODO now children block the parent from moving, should not happen
 
 DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
 {
-	enum { IgnoreOccupier = 0x73FC10, Continue = 0x73F530 };
+	enum { ItsMe = 0x73FC10, IgnoreOccupier = 0x73FA87, Continue = 0x73F530 };
 
 	GET(UnitClass*, pThis, EBX);
 	GET(TechnoClass*, pOccupier, ESI);
 
-	if (pThis == pOccupier
-		|| TechnoExt::DoesntOccupyCellAsChild(pOccupier)
+	if (pThis == pOccupier)
+		return ItsMe;
+
+	if (TechnoExt::DoesntOccupyCellAsChild(pOccupier)
 		|| TechnoExt::IsChildOf(pOccupier, pThis))
 	{
 		return IgnoreOccupier;
@@ -105,8 +162,6 @@ DEFINE_HOOK(0x51C251, InfantryClass_CanEnterCell_SkipChildren, 0x0)
 	return Continue;
 }
 
-// above hook seems not enough
-
 enum CellTechnoMode
 {
 	NoAttachments,
@@ -122,8 +177,6 @@ namespace TechnoAttachmentTemp
 {
 	CellTechnoMode currentMode = DefaultBehavior;
 }
-
-typedef size_t nothing_t;
 
 #define DEFINE_CELLTECHNO_WRAPPER(mode) \
 TechnoClass* __fastcall CellTechno_##mode(CellClass* pThis, nothing_t, Point2D *a2, bool check_alt, TechnoClass* techno) \
@@ -473,12 +526,12 @@ DEFINE_HOOK(0x736A2F, UnitClass_RotationAI_ForbidAttachmentRotation, 0x7)
 		: ContinueCheck;
 }
 
-Action __fastcall UnitClass_MouseOverCell(UnitClass* pThis, void* _, CellStruct const* pCell, bool checkFog, bool ignoreForce)
+Action __fastcall UnitClass_MouseOverCell(UnitClass* pThis, nothing_t _, CellStruct const* pCell, bool checkFog, bool ignoreForce)
 {
 	JMP_THIS(0x7404B0);
 }
 
-Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, void* _, CellStruct const* pCell, bool checkFog, bool ignoreForce)
+Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, nothing_t _, CellStruct const* pCell, bool checkFog, bool ignoreForce)
 {
 	Action result = UnitClass_MouseOverCell(pThis, _, pCell, checkFog, ignoreForce);
 
@@ -583,17 +636,17 @@ DEFINE_HOOK(0x4D7D58, FootClass_CellClickedAction_HandleAttachment, 0x6)
 // 	return Continue;
 // }
 
-CoordStruct __fastcall ObjectClass_GetRenderCoords(ObjectClass* pThis, void* _)
+CoordStruct __fastcall ObjectClass_GetRenderCoords(ObjectClass* pThis, nothing_t _)
 {
 	JMP_THIS(0x41BE00);
 }
 
-CoordStruct __fastcall BuildingClass_GetRenderCoords(BuildingClass* pThis, void* _)
+CoordStruct __fastcall BuildingClass_GetRenderCoords(BuildingClass* pThis, nothing_t _)
 {
 	JMP_THIS(0x459EF0);
 }
 
-CoordStruct __fastcall TechnoClass_GetRenderCoords(TechnoClass* pThis, void* _)
+CoordStruct __fastcall TechnoClass_GetRenderCoords(TechnoClass* pThis, nothing_t _)
 {
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 	if (pExt && pExt->ParentAttachment)
