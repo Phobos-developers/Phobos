@@ -201,6 +201,13 @@ DEFINE_HOOK(0x528BAC, INIClass_GetString_Inheritance_NoEntry, 0xA)
 	GET_STACK(int, entryCRC, STACK_OFFSET(stackOffset, 0x8));
 	GET_STACK(int, sectionCRC, STACK_OFFSET(stackOffset, 0x4));
 
+	// if we're in a different CCINIClass now, clear old data
+	if (ini != INIInheritance::LastINIFile)
+	{
+		INIInheritance::LastINIFile = ini;
+		INIInheritance::Inherits.clear();
+	}
+
 	INIInheritance::ReadString(ini, sectionCRC, entryCRC, defaultValue, buffer, length, true, true);
 
 	R->EDI(buffer);
@@ -219,7 +226,6 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 	{
 		INIInheritance::LastINIFile = ini;
 		INIInheritance::SavedIncludes.clear();
-		INIInheritance::Inherits.clear();
 	}
 
 	const auto section = ini->GetSection("$Include");
