@@ -29,6 +29,7 @@ InheritCommands=true                  ; boolean
 LowSelectionPriority=true             ; boolean, whether the child is low priority while attached
 YSortPosition=default                 ; Attachment YSort position enumeration - default|underparent|overparent
 InheritDestruction=true               ; boolean
+OccupiesCell=true                     ; boolean
 DestructionWeapon.Child=              ; WeaponType, detonated on child when parent is destroyed
 DestructionWeapon.Parent=             ; WeaponType, detonated on parent when child is destroyed
 ParentDestructionMission=             ; MissionType, queued to child when parent is destroyed

@@ -20,6 +20,7 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InheritOwner.Read(exINI, section, "InheritOwner");
 	this->InheritStateEffects.Read(exINI, section, "InheritStateEffects");
 	this->InheritDestruction.Read(exINI, section, "InheritDestruction");
+	this->OccupiesCell.Read(exINI, section, "OccupiesCell");
 	this->LowSelectionPriority.Read(exINI, section, "LowSelectionPriority");
 	this->YSortPosition.Read(exINI, section, "YSortPosition");
 
@@ -43,6 +44,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->InheritOwner)
 		.Process(this->InheritStateEffects)
 		.Process(this->InheritDestruction)
+		.Process(this->OccupiesCell)
 		.Process(this->LowSelectionPriority)
 		.Process(this->YSortPosition)
 		// .Process(this->CanBeForceDetached)

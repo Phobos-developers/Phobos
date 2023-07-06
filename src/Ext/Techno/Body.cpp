@@ -393,6 +393,13 @@ bool TechnoExt::IsAttached(TechnoClass* pThis)
 	return pExt && pExt->ParentAttachment;
 }
 
+bool TechnoExt::DoesntOccupyCellAsChild(TechnoClass* pThis)
+{
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+	return pExt && pExt->ParentAttachment
+		&& !pExt->ParentAttachment->GetType()->OccupiesCell;
+}
+
 bool TechnoExt::IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep)
 {
 	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);

@@ -67,6 +67,10 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo_LimboAttachments, 0x6)
 	return 0;
 }
 
+
+#pragma region Cell occupation handling
+
+
 DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
 {
 	enum { IgnoreOccupier = 0x73FC10, Continue = 0x73F530 };
@@ -74,8 +78,12 @@ DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
 	GET(UnitClass*, pThis, EBX);
 	GET(TechnoClass*, pOccupier, ESI);
 
-	if (pThis == pOccupier || TechnoExt::IsChildOf(pOccupier, pThis))
+	if (pThis == pOccupier
+		|| TechnoExt::DoesntOccupyCellAsChild(pOccupier)
+		|| TechnoExt::IsChildOf(pOccupier, pThis))
+	{
 		return IgnoreOccupier;
+	}
 
 	return Continue;
 }
@@ -87,11 +95,109 @@ DEFINE_HOOK(0x51C251, InfantryClass_CanEnterCell_SkipChildren, 0x0)
 	GET(InfantryClass*, pThis, EBP);
 	GET(TechnoClass*, pOccupier, ESI);
 
-	if ((TechnoClass*)pThis == pOccupier || TechnoExt::IsChildOf(pOccupier, (TechnoClass*)pThis))
+	if ((TechnoClass*)pThis == pOccupier
+		|| TechnoExt::DoesntOccupyCellAsChild(pOccupier)
+		|| TechnoExt::IsChildOf(pOccupier, (TechnoClass*)pThis))
+	{
 		return IgnoreOccupier;
+	}
 
 	return Continue;
 }
+
+// above hook seems not enough
+
+enum CellTechnoMode
+{
+	NoAttachments,
+	NoVirtualOrRelatives,
+	NoVirtual,
+	NoRelatives,
+	All,
+
+	DefaultBehavior = All,
+};
+
+namespace TechnoAttachmentTemp
+{
+	CellTechnoMode currentMode = DefaultBehavior;
+}
+
+typedef size_t nothing_t;
+
+#define DEFINE_CELLTECHNO_WRAPPER(mode) \
+TechnoClass* __fastcall CellTechno_##mode(CellClass* pThis, nothing_t, Point2D *a2, bool check_alt, TechnoClass* techno) \
+{ \
+	TechnoAttachmentTemp::currentMode = CellTechnoMode::mode; \
+	auto const retval = pThis->FindTechnoNearestTo(*a2, check_alt, techno); \
+	TechnoAttachmentTemp::currentMode = CellTechnoMode::DefaultBehavior; \
+	return retval; \
+}
+
+DEFINE_CELLTECHNO_WRAPPER(NoAttachments);
+DEFINE_CELLTECHNO_WRAPPER(NoVirtualOrRelatives);
+DEFINE_CELLTECHNO_WRAPPER(NoVirtual);
+DEFINE_CELLTECHNO_WRAPPER(NoRelatives);
+DEFINE_CELLTECHNO_WRAPPER(All);
+
+#undef DEFINE_CELLTECHNO_WRAPPER
+
+DEFINE_HOOK(0x47C432, CellClass_CellTechno_HandleAttachments, 0x0)
+{
+	enum { Continue = 0x47C437, IgnoreOccupier = 0x47C4A7 };
+
+	GET(TechnoClass*, pOccupier, ESI);
+	GET_BASE(TechnoClass*, pSelf, 0x10);
+
+	using namespace TechnoAttachmentTemp;
+	const bool noAttachments =
+		currentMode == CellTechnoMode::NoAttachments;
+	const bool noVirtual =
+		currentMode == CellTechnoMode::NoVirtual ||
+		currentMode == CellTechnoMode::NoVirtualOrRelatives;
+	const bool noRelatives =
+		currentMode == CellTechnoMode::NoRelatives ||
+		currentMode == CellTechnoMode::NoVirtualOrRelatives;
+
+	if (pOccupier == pSelf  // restored code
+		|| noAttachments && TechnoExt::IsAttached(pOccupier)
+		|| noVirtual && TechnoExt::DoesntOccupyCellAsChild(pOccupier)
+		|| noRelatives && TechnoExt::IsChildOf(pOccupier, (TechnoClass*)pSelf))
+	{
+		return IgnoreOccupier;
+	}
+
+	return Continue;
+}
+
+// skip building placement occupation checks for virtuals
+DEFINE_JUMP(CALL, 0x47C805, GET_OFFSET(CellTechno_NoVirtual));
+DEFINE_JUMP(CALL, 0x47C738, GET_OFFSET(CellTechno_NoVirtual));
+
+// skip building attachments in bib check
+DEFINE_JUMP(CALL, 0x4495F2, GET_OFFSET(CellTechno_NoVirtualOrRelatives));
+DEFINE_JUMP(CALL, 0x44964E, GET_OFFSET(CellTechno_NoVirtualOrRelatives));
+
+DEFINE_HOOK(0x4495F7, BuildingClass_ClearFactoryBib_SkipCreatedUnitAttachments, 0x0)
+{
+	enum { BibClear = 0x44969B, NotClear = 0x4495FF };
+
+	GET(TechnoClass*, pBibTechno, EAX);
+
+	if (!pBibTechno)
+		return BibClear;
+
+	GET(BuildingClass*, pThis, ESI);
+
+	TechnoClass* pBuiltTechno = pThis->GetNthLink(0);
+	if (TechnoExt::IsChildOf(pBibTechno, pBuiltTechno))
+		return BibClear;
+
+	return NotClear;
+}
+
+#pragma endregion
+
 
 DEFINE_HOOK(0x6CC763, SuperClass_Place_ChronoWarp_SkipChildren, 0x6)
 {
