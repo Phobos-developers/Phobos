@@ -10,6 +10,7 @@ static constexpr unsigned int RNGCalls_Size = 4096;
 static constexpr unsigned int FacingChanges_Size = 1024;
 static constexpr unsigned int TargetChanges_Size = 1024;
 static constexpr unsigned int DestinationChanges_Size = 1024;
+static constexpr unsigned int MissionOverrides_Size = 256;
 
 template <typename T, unsigned int size>
 class SyncLogEventTracker
@@ -40,59 +41,76 @@ public:
 	const_iterator end() const { return Data.end(); }
 };
 
-struct RNGCallSyncLogEvent
+struct SyncLogEvent
 {
 	bool Initialized;
+	unsigned int Caller;
+	unsigned int Frame;
+
+	SyncLogEvent() = default;
+
+	SyncLogEvent(unsigned int Caller, unsigned int Frame)
+		: Caller(Caller), Frame(Frame)
+	{
+		Initialized = true;
+	}
+};
+
+struct RNGCallSyncLogEvent : SyncLogEvent
+{
 	int Type; // 0 = Invalid, 1 = Unranged, 2 = Ranged
 	bool IsCritical;
 	unsigned int Seed;
 	unsigned int Index;
-	unsigned int Caller;
-	unsigned int Frame;
 	int Min;
 	int Max;
 
 	RNGCallSyncLogEvent() = default;
 
 	RNGCallSyncLogEvent(int Type, bool IsCritical, unsigned int Seed, unsigned int Index, unsigned int Caller, unsigned int Frame, int Min, int Max)
-		: Type(Type), IsCritical(IsCritical), Seed(Seed), Index(Index), Caller(Caller), Frame(Frame), Min(Min), Max(Max)
+		: Type(Type), IsCritical(IsCritical), Seed(Seed), Index(Index), Min(Min), Max(Max), SyncLogEvent(Caller, Frame)
 	{
-		Initialized = true;
 	}
 };
 
-struct FacingChangeSyncLogEvent
+struct FacingChangeSyncLogEvent : SyncLogEvent
 {
-	bool Initialized;
 	unsigned short Facing;
-	unsigned int Caller;
-	unsigned int Frame;
 
 	FacingChangeSyncLogEvent() = default;
 
 	FacingChangeSyncLogEvent(unsigned short Facing, unsigned int Caller, unsigned int Frame)
-		: Facing(Facing), Caller(Caller), Frame(Frame)
+		: Facing(Facing), SyncLogEvent(Caller, Frame)
 	{
-		Initialized = true;
 	}
 };
 
-struct TargetChangeSyncLogEvent
+struct TargetChangeSyncLogEvent : SyncLogEvent
 {
-	bool Initialized;
 	AbstractType Type;
 	DWORD ID;
 	AbstractType TargetType;
 	DWORD TargetID;
-	unsigned int Caller;
-	unsigned int Frame;
 
 	TargetChangeSyncLogEvent() = default;
 
 	TargetChangeSyncLogEvent(const AbstractType& Type, const DWORD& ID, const AbstractType& TargetType, const DWORD& TargetID, unsigned int Caller, unsigned int Frame)
-		: Type(Type), ID(ID), TargetType(TargetType), TargetID(TargetID), Caller(Caller), Frame(Frame)
+		: Type(Type), ID(ID), TargetType(TargetType), TargetID(TargetID), SyncLogEvent(Caller, Frame)
 	{
-		Initialized = true;
+	}
+};
+
+struct MissionOverrideSyncLogEvent : SyncLogEvent
+{
+	AbstractType Type;
+	DWORD ID;
+	int Mission;
+
+	MissionOverrideSyncLogEvent() = default;
+
+	MissionOverrideSyncLogEvent(const AbstractType& Type, const DWORD& ID, int Mission, unsigned int Caller, unsigned int Frame)
+		: Type(Type), ID(ID), Mission(Mission), SyncLogEvent(Caller, Frame)
+	{
 	}
 };
 
@@ -103,11 +121,13 @@ private:
 	static SyncLogEventTracker<FacingChangeSyncLogEvent, FacingChanges_Size> FacingChanges;
 	static SyncLogEventTracker<TargetChangeSyncLogEvent, TargetChanges_Size> TargetChanges;
 	static SyncLogEventTracker<TargetChangeSyncLogEvent, DestinationChanges_Size> DestinationChanges;
+	static SyncLogEventTracker<MissionOverrideSyncLogEvent, MissionOverrides_Size> MissionOverrides;
 
 	static void WriteRNGCalls(FILE* const pLogFile, int frameDigits);
 	static void WriteFacingChanges(FILE* const pLogFile, int frameDigits);
 	static void WriteTargetChanges(FILE* const pLogFile, int frameDigits);
 	static void WriteDestinationChanges(FILE* const pLogFile, int frameDigits);
+	static void WriteMissionOverrides(FILE* const pLogFile, int frameDigits);
 public:
 	static bool HooksDisabled;
 
@@ -115,5 +135,6 @@ public:
 	static void AddFacingChangeSyncLogEvent(unsigned short facing, unsigned int callerAddress);
 	static void AddTargetChangeSyncLogEvent(AbstractClass* pObject, AbstractClass* pTarget, unsigned int callerAddress);
 	static void AddDestinationChangeSyncLogEvent(AbstractClass* pObject, AbstractClass* pTarget, unsigned int callerAddress);
+	static void AddMissionOverrideSyncLogEvent(AbstractClass* pObject, int mission, unsigned int callerAddress);
 	static void WriteSyncLog(const char* logFilename);
 };

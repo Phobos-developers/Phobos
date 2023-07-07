@@ -13,6 +13,7 @@ SyncLogEventTracker<RNGCallSyncLogEvent, RNGCalls_Size> SyncLogger::RNGCalls;
 SyncLogEventTracker<FacingChangeSyncLogEvent, FacingChanges_Size> SyncLogger::FacingChanges;
 SyncLogEventTracker<TargetChangeSyncLogEvent, TargetChanges_Size> SyncLogger::TargetChanges;
 SyncLogEventTracker<TargetChangeSyncLogEvent, DestinationChanges_Size> SyncLogger::DestinationChanges;
+SyncLogEventTracker<MissionOverrideSyncLogEvent, MissionOverrides_Size> SyncLogger::MissionOverrides;
 
 void SyncLogger::AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min, int max)
 {
@@ -58,6 +59,14 @@ void SyncLogger::AddDestinationChangeSyncLogEvent(AbstractClass* pObject, Abstra
 	}
 
 	SyncLogger::DestinationChanges.Add(TargetChangeSyncLogEvent(pObject->WhatAmI(), pObject->UniqueID, targetRTTI, targetID, callerAddress, Unsorted::CurrentFrame));
+}
+
+void SyncLogger::AddMissionOverrideSyncLogEvent(AbstractClass* pObject, int mission, unsigned int callerAddress)
+{
+	if (!pObject)
+		return;
+
+	SyncLogger::MissionOverrides.Add(MissionOverrideSyncLogEvent(pObject->WhatAmI(), pObject->UniqueID, mission, callerAddress, Unsorted::CurrentFrame));
 }
 
 void SyncLogger::WriteSyncLog(const char* logFilename)
@@ -167,6 +176,24 @@ void SyncLogger::WriteDestinationChanges(FILE* const pLogFile, int frameDigits)
 
 		fprintf(pLogFile, "#%05d: RTTI: %02d | ID: %08d | TargetRTTI: %02d | TargetID: %08d | Caller: %08x | Frame: %*d\n",
 			i, destChange.Type, destChange.ID, destChange.TargetType, destChange.TargetID, destChange.Caller, frameDigits, destChange.Frame);
+	}
+
+	fprintf(pLogFile, "\n");
+}
+
+void SyncLogger::WriteMissionOverrides(FILE* const pLogFile, int frameDigits)
+{
+	fprintf(pLogFile, "Mission overrides:\n");
+
+	for (size_t i = 0; i < SyncLogger::MissionOverrides.Size(); i++)
+	{
+		auto const& missionOverride = SyncLogger::MissionOverrides.Get(i);
+
+		if (!missionOverride.Initialized)
+			continue;
+
+		fprintf(pLogFile, "#%05d: RTTI: %02d | ID: %08d | Mission: %02d | Caller: %08x | Frame: %*d\n",
+			i, missionOverride.Type, missionOverride.ID, missionOverride.Mission, missionOverride.Caller, frameDigits, missionOverride.Frame);
 	}
 
 	fprintf(pLogFile, "\n");
@@ -336,6 +363,42 @@ DEFINE_HOOK(0x741970, UnitClass_AssignDestination_SyncLog, 0x6)
 	return 0;
 }
 
+// Mission override logging
+
+DEFINE_HOOK(0x41BB30, AircraftClass_OverrideMission_SyncLog, 0x6)
+{
+	GET(AircraftClass*, pThis, ECX);
+	GET_STACK(int, mission, 0x4);
+	GET_STACK(unsigned int, callerAddress, 0x0);
+
+	SyncLogger::AddMissionOverrideSyncLogEvent(pThis, mission, callerAddress);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4D8F40, FootClass_OverrideMission_SyncLog, 0x5)
+{
+	GET(FootClass*, pThis, ECX);
+	GET_STACK(int, mission, 0x4);
+	GET_STACK(unsigned int, callerAddress, 0x0);
+
+	SyncLogger::AddMissionOverrideSyncLogEvent(pThis, mission, callerAddress);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(int, mission, 0x4);
+	GET_STACK(unsigned int, callerAddress, 0x0);
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+		SyncLogger::AddMissionOverrideSyncLogEvent(pThis, mission, callerAddress);
+
+	return 0;
+}
+
 // Disable sync logging hooks in non-MP games
 DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 {
@@ -352,36 +415,48 @@ DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 	{ 0xC2, 0x08, 0x00, 0x90, 0x90, 0x90 }
 	);
 
-	Patch::Apply_RAW(0x65C88A, // Disable FacingClass_Set_SyncLog
+	Patch::Apply_RAW(0x4C9300, // Disable FacingClass_Set_SyncLog
 	{ 0x83, 0xEC, 0x10, 0x53, 0x56 }
 	);
 
-	Patch::Apply_RAW(0x65C88A, // Disable InfantryClass_AssignTarget_SyncLog
+	Patch::Apply_RAW(0x51B1F0, // Disable InfantryClass_AssignTarget_SyncLog
 	{ 0x53, 0x56, 0x8B, 0xF1, 0x57 }
 	);
 
-	Patch::Apply_RAW(0x65C88A, // Disable BuildingClass_AssignTarget_SyncLog
+	Patch::Apply_RAW(0x443B90, // Disable BuildingClass_AssignTarget_SyncLog
 	{ 0x56, 0x8B, 0xF1, 0x57, 0x83, 0xBE, 0xAC, 0x0, 0x0, 0x0, 0x13 }
 	);
 
-	Patch::Apply_RAW(0x65C88A, // Disable TechnoClass_AssignTarget_SyncLog
+	Patch::Apply_RAW(0x6FCDB0, // Disable TechnoClass_AssignTarget_SyncLog
 	{ 0x83, 0xEC, 0x0C, 0x53, 0x56 }
 	);
 
-	Patch::Apply_RAW(0x65C88A, // Disable AircraftClass_AssignDestination_SyncLog
+	Patch::Apply_RAW(0x41AA80, // Disable AircraftClass_AssignDestination_SyncLog
 	{ 0x53, 0x56, 0x57, 0x8B, 0x7C, 0x24, 0x10 }
 	);
 
-	Patch::Apply_RAW(0x65C88A, // Disable BuildingClass_AssignDestination_SyncLog
+	Patch::Apply_RAW(0x455D50, // Disable BuildingClass_AssignDestination_SyncLog
 	{ 0x56, 0x8B, 0xF1, 0x83, 0xBE, 0xAC, 0x0, 0x0, 0x0, 0x13 }
 	);
 
-	Patch::Apply_RAW(0x65C88A, // Disable InfantryClass_AssignDestination_SyncLog
-	{ 0x8C, 0xEC, 0x2C, 0x53, 0x55 }
+	Patch::Apply_RAW(0x51AA40, // Disable InfantryClass_AssignDestination_SyncLog
+	{ 0x83, 0xEC, 0x2C, 0x53, 0x55 }
 	);
 
-	Patch::Apply_RAW(0x65C88A, // Disable UnitClass_AssignDestination_SyncLog
+	Patch::Apply_RAW(0x741970, // Disable UnitClass_AssignDestination_SyncLog
 	{ 0x81, 0xEC, 0x80, 0x0, 0x0, 0x0 }
+	);
+
+	Patch::Apply_RAW(0x41BB30, // Disable AircraftClass_OverrideMission_SyncLog
+	{ 0x8B, 0x81, 0xAC, 0x0, 0x0, 0x0 }
+	);
+
+	Patch::Apply_RAW(0x4D8F40, // Disable FootClass_OverrideMission_SyncLog
+	{ 0x8B, 0x54, 0x24, 0x4, 0x56 }
+	);
+
+	Patch::Apply_RAW(0x7013A0, // Disable TechnoClass_OverrideMission_SyncLog
+	{ 0x8B, 0x54, 0x24, 0x4, 0x56 }
 	);
 
 	return 0;
