@@ -100,6 +100,8 @@ private:
 	static void WriteFacingChanges(FILE* const pLogFile, int frameDigits);
 	static void WriteTargetChanges(FILE* const pLogFile, int frameDigits);
 public:
+	static bool HooksDisabled;
+
 	static void AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min = 0, int max = 0);
 	static void AddFacingChangeSyncLogEvent(unsigned short facing, unsigned int callerAddress);
 	static void AddTargetChangeSyncLogEvent(AbstractClass* pObject, AbstractClass* pTarget, unsigned int callerAddress);

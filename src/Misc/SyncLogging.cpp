@@ -7,6 +7,7 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Macro.h>
 
+bool SyncLogger::HooksDisabled = false;
 SyncLogEventTracker<RNGCallSyncLogEvent, RNGCalls_Size> SyncLogger::RNGCalls;
 SyncLogEventTracker<FacingChangeSyncLogEvent, FacingChanges_Size> SyncLogger::FacingChanges;
 SyncLogEventTracker<TargetChangeSyncLogEvent, TargetChanges_Size> SyncLogger::TargetChanges;
@@ -243,8 +244,10 @@ DEFINE_HOOK(0x6FCDB0, TechnoClass_AssignTarget_SyncLog, 0x5)
 // Disable sync logging hooks in non-MP games
 DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 {
-	if (SessionClass::Instance->IsMultiplayer())
+	if (SessionClass::Instance->IsMultiplayer() || SyncLogger::HooksDisabled)
 		return 0;
+
+	SyncLogger::HooksDisabled = true;
 
 	Patch::Apply_RAW(0x65C7D0, // Disable Random2Class_Random_SyncLog
 	{ 0xC3, 0x90, 0x90, 0x90, 0x90, 0x90 }
