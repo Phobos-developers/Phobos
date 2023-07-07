@@ -324,6 +324,7 @@ New:
 - Chrono sparkle animation display customization and improvements (by Starkku)
 - Script action to Chronoshift teams to enemy base (by Starkku)
 - PipScale pip size & ammo pip frame customization (by Starkku)
+- Additional sync logging in case of desync errors occuring (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
