@@ -7,12 +7,18 @@
 #include <Utilities/Macro.h>
 
 SyncLogEventTracker<RNGCallSyncLogEvent, RNGCalls_Size> SyncLogger::RNGCalls;
+SyncLogEventTracker<FacingChangeSyncLogEvent, FacingChanges_Size> SyncLogger::FacingChanges;
 
 void SyncLogger::AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min, int max)
 {
 	// Don't log non-critical RNG calls.
 	if (pRandomizer == &ScenarioClass::Instance->Random)
 		SyncLogger::RNGCalls.Add(RNGCallSyncLogEvent(type, true, pRandomizer->Next1, pRandomizer->Next2, callerAddress, Unsorted::CurrentFrame, min, max));
+}
+
+void SyncLogger::AddFacingChangeSyncLogEvent(unsigned short facing, unsigned int callerAddress)
+{
+	SyncLogger::FacingChanges.Add(FacingChangeSyncLogEvent(facing, callerAddress, Unsorted::CurrentFrame));
 }
 
 void SyncLogger::WriteSyncLog(const char* logFilename)
@@ -35,6 +41,7 @@ void SyncLogger::WriteSyncLog(const char* logFilename)
 		}
 
 		WriteRNGCalls(pLogFile, frameDigits);
+		WriteFacingChanges(pLogFile, frameDigits);
 
 		fclose(pLogFile);
 	}
@@ -52,6 +59,9 @@ void SyncLogger::WriteRNGCalls(FILE* const pLogFile, int frameDigits)
 	{
 		auto const& rngCall = SyncLogger::RNGCalls.Get(i);
 
+		if (!rngCall.Frame)
+			continue;
+
 		if (rngCall.Type == 1)
 		{
 			fprintf(pLogFile, "#%05d: Single | Caller: %08x | Frame: %*d | Index1: %3d | Index2: %3d\n",
@@ -64,7 +74,25 @@ void SyncLogger::WriteRNGCalls(FILE* const pLogFile, int frameDigits)
 		}
 	}
 
-	fprintf(pLogFile, "\n\n");
+	fprintf(pLogFile, "\n");
+}
+
+void SyncLogger::WriteFacingChanges(FILE* const pLogFile, int frameDigits)
+{
+	fprintf(pLogFile, "Facing changes:\n");
+
+	for (size_t i = 0; i < SyncLogger::FacingChanges.Size(); i++)
+	{
+		auto const& facingChange = SyncLogger::FacingChanges.Get(i);
+
+		if (!facingChange.Frame)
+			continue;
+
+		fprintf(pLogFile, "#%05d: Facing: %5d | Caller: %08x | Frame: %*d\n",
+			i, facingChange.Facing, facingChange.Caller, frameDigits, facingChange.Frame);
+	}
+
+	fprintf(pLogFile, "\n");
 }
 
 // Hooks
@@ -135,6 +163,18 @@ DEFINE_HOOK(0x65C88A, Random2Class_RandomRanged_SyncLog, 0x6)
 	return 0;
 }
 
+// Facing change logging
+
+DEFINE_HOOK(0x4C9300, FacingClass_Set_SyncLog, 0x5)
+{
+	GET_STACK(DirStruct*, facing, 0x4);
+	GET_STACK(unsigned int, callerAddress, 0x0);
+
+	SyncLogger::AddFacingChangeSyncLogEvent(facing->Raw, callerAddress);
+
+	return 0;
+}
+
 // Disable sync logging hooks in non-MP games
 DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 {
@@ -147,6 +187,10 @@ DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 
 	Patch::Apply_RAW(0x65C88A, // Disable Random2Class_RandomRanged_SyncLog
 	{ 0xC2, 0x08, 0x00, 0x90, 0x90, 0x90 }
+	);
+
+	Patch::Apply_RAW(0x65C88A, // Disable FacingClass_Set_SyncLog
+	{ 0x83, 0xEC, 0x10, 0x53, 0x56 }
 	);
 
 	return 0;

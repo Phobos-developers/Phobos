@@ -6,6 +6,7 @@
 #include <vector>
 
 static constexpr unsigned int RNGCalls_Size = 4096;
+static constexpr unsigned int FacingChanges_Size = 1024;
 
 template <typename T, unsigned int size>
 class SyncLogEventTracker
@@ -55,13 +56,30 @@ struct RNGCallSyncLogEvent
 	}
 };
 
+struct FacingChangeSyncLogEvent
+{
+	unsigned short Facing;
+	unsigned int Caller;
+	unsigned int Frame;
+
+	FacingChangeSyncLogEvent() = default;
+
+	FacingChangeSyncLogEvent(unsigned short Facing, unsigned int Caller, unsigned int Frame)
+		: Facing(Facing), Caller(Caller), Frame(Frame)
+	{
+	}
+};
+
 class SyncLogger
 {
 private:
 	static SyncLogEventTracker<RNGCallSyncLogEvent, RNGCalls_Size> RNGCalls;
+	static SyncLogEventTracker<FacingChangeSyncLogEvent, FacingChanges_Size> FacingChanges;
 
 	static void WriteRNGCalls(FILE* const pLogFile, int frameDigits);
+	static void WriteFacingChanges(FILE* const pLogFile, int frameDigits);
 public:
 	static void AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min = 0, int max = 0);
+	static void AddFacingChangeSyncLogEvent(unsigned short facing, unsigned int callerAddress);
 	static void WriteSyncLog(const char* logFilename);
 };
