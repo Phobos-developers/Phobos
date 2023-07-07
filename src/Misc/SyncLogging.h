@@ -42,6 +42,7 @@ public:
 
 struct RNGCallSyncLogEvent
 {
+	bool Initialized;
 	int Type; // 0 = Invalid, 1 = Unranged, 2 = Ranged
 	bool IsCritical;
 	unsigned int Seed;
@@ -56,11 +57,13 @@ struct RNGCallSyncLogEvent
 	RNGCallSyncLogEvent(int Type, bool IsCritical, unsigned int Seed, unsigned int Index, unsigned int Caller, unsigned int Frame, int Min, int Max)
 		: Type(Type), IsCritical(IsCritical), Seed(Seed), Index(Index), Caller(Caller), Frame(Frame), Min(Min), Max(Max)
 	{
+		Initialized = true;
 	}
 };
 
 struct FacingChangeSyncLogEvent
 {
+	bool Initialized;
 	unsigned short Facing;
 	unsigned int Caller;
 	unsigned int Frame;
@@ -70,11 +73,13 @@ struct FacingChangeSyncLogEvent
 	FacingChangeSyncLogEvent(unsigned short Facing, unsigned int Caller, unsigned int Frame)
 		: Facing(Facing), Caller(Caller), Frame(Frame)
 	{
+		Initialized = true;
 	}
 };
 
 struct TargetChangeSyncLogEvent
 {
+	bool Initialized;
 	AbstractType Type;
 	DWORD ID;
 	AbstractType TargetType;
@@ -87,6 +92,7 @@ struct TargetChangeSyncLogEvent
 	TargetChangeSyncLogEvent(const AbstractType& Type, const DWORD& ID, const AbstractType& TargetType, const DWORD& TargetID, unsigned int Caller, unsigned int Frame)
 		: Type(Type), ID(ID), TargetType(TargetType), TargetID(TargetID), Caller(Caller), Frame(Frame)
 	{
+		Initialized = true;
 	}
 };
 

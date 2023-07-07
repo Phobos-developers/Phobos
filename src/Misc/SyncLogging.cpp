@@ -100,7 +100,7 @@ void SyncLogger::WriteRNGCalls(FILE* const pLogFile, int frameDigits)
 	{
 		auto const& rngCall = SyncLogger::RNGCalls.Get(i);
 
-		if (!rngCall.Frame)
+		if (!rngCall.Initialized)
 			continue;
 
 		if (rngCall.Type == 1)
@@ -126,7 +126,7 @@ void SyncLogger::WriteFacingChanges(FILE* const pLogFile, int frameDigits)
 	{
 		auto const& facingChange = SyncLogger::FacingChanges.Get(i);
 
-		if (!facingChange.Frame)
+		if (!facingChange.Initialized)
 			continue;
 
 		fprintf(pLogFile, "#%05d: Facing: %5d | Caller: %08x | Frame: %*d\n",
@@ -144,7 +144,7 @@ void SyncLogger::WriteTargetChanges(FILE* const pLogFile, int frameDigits)
 	{
 		auto const& targetChange = SyncLogger::TargetChanges.Get(i);
 
-		if (!targetChange.Frame)
+		if (!targetChange.Initialized)
 			continue;
 
 		fprintf(pLogFile, "#%05d: RTTI: %02d | ID: %08d | TargetRTTI: %02d | TargetID: %08d | Caller: %08x | Frame: %*d\n",
@@ -162,7 +162,7 @@ void SyncLogger::WriteDestinationChanges(FILE* const pLogFile, int frameDigits)
 	{
 		auto const& destChange = SyncLogger::DestinationChanges.Get(i);
 
-		if (!destChange.Frame)
+		if (!destChange.Initialized)
 			continue;
 
 		fprintf(pLogFile, "#%05d: RTTI: %02d | ID: %08d | TargetRTTI: %02d | TargetID: %08d | Caller: %08x | Frame: %*d\n",
