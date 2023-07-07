@@ -9,6 +9,7 @@
 static constexpr unsigned int RNGCalls_Size = 4096;
 static constexpr unsigned int FacingChanges_Size = 1024;
 static constexpr unsigned int TargetChanges_Size = 1024;
+static constexpr unsigned int DestinationChanges_Size = 1024;
 
 template <typename T, unsigned int size>
 class SyncLogEventTracker
@@ -95,15 +96,18 @@ private:
 	static SyncLogEventTracker<RNGCallSyncLogEvent, RNGCalls_Size> RNGCalls;
 	static SyncLogEventTracker<FacingChangeSyncLogEvent, FacingChanges_Size> FacingChanges;
 	static SyncLogEventTracker<TargetChangeSyncLogEvent, TargetChanges_Size> TargetChanges;
+	static SyncLogEventTracker<TargetChangeSyncLogEvent, DestinationChanges_Size> DestinationChanges;
 
 	static void WriteRNGCalls(FILE* const pLogFile, int frameDigits);
 	static void WriteFacingChanges(FILE* const pLogFile, int frameDigits);
 	static void WriteTargetChanges(FILE* const pLogFile, int frameDigits);
+	static void WriteDestinationChanges(FILE* const pLogFile, int frameDigits);
 public:
 	static bool HooksDisabled;
 
 	static void AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min = 0, int max = 0);
 	static void AddFacingChangeSyncLogEvent(unsigned short facing, unsigned int callerAddress);
 	static void AddTargetChangeSyncLogEvent(AbstractClass* pObject, AbstractClass* pTarget, unsigned int callerAddress);
+	static void AddDestinationChangeSyncLogEvent(AbstractClass* pObject, AbstractClass* pTarget, unsigned int callerAddress);
 	static void WriteSyncLog(const char* logFilename);
 };
