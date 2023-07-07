@@ -694,26 +694,3 @@ DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
 
 // Stops INI parsing for Anim/BuildingTypeClass on game startup, will only be read on scenario load later like everything else.
 DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);
-
-// Fix initial facing when jumpjet locomotor is being attached
-DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
-{
-	GET(ILocomotion*, iLoco, EBP);
-	auto const pThis = static_cast<JumpjetLocomotionClass*>(iLoco);
-
-	pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
-	pThis->LocomotionFacing.SetDesired(pThis->LinkedTo->PrimaryFacing.Desired());
-
-	return 0;
-}
-
-// WWP for some reason passed nullptr as source to On_Destroyed even though the real source existed
-DEFINE_HOOK(0x738467, UnitClass_TakeDamage_FixOnDestroyedSource, 0x0)
-{
-	enum { Continue = 0x73866E, ForceKill = 0x73847B };
-
-	GET(UnitClass*, pThis, ESI);
-	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0x44, 0x10));
-
-	return pThis->Crash(pSource) ? Continue : ForceKill;
-}

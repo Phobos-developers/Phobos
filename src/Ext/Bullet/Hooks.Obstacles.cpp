@@ -73,7 +73,7 @@ public:
 		bool isCellWater = pCurrentCell->LandType == LandType::Water || pCurrentCell->LandType == LandType::Beach;
 		bool isLevel = pBulletType->Level ? pCurrentCell->IsOnFloor() : false;
 
-		if (isLevel && !pBulletTypeExt->SubjectToLand.isset() && !pBulletTypeExt->SubjectToWater.isset())
+		if (!isTargetingCheck && isLevel && !pBulletTypeExt->SubjectToLand.isset() && !pBulletTypeExt->SubjectToWater.isset())
 			return true;
 		else if (!isCellWater && pBulletTypeExt->SubjectToLand.Get(false))
 			return !isTargetingCheck ? pBulletTypeExt->SubjectToLand_Detonate : true;

@@ -262,7 +262,14 @@ void TechnoExt::ExtData::EatPassengers()
 							pFoot->RemoveGunner(pPassenger);
 
 							if (pThis->Passengers.NumPassengers > 0)
-								pFoot->ReceiveGunner(pThis->Passengers.FirstPassenger);
+							{
+								FootClass* pGunner = nullptr;
+
+								for (auto pNext = pThis->Passengers.FirstPassenger; pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
+									pGunner = pNext;
+
+								pFoot->ReceiveGunner(pGunner);
+							}
 						}
 					}
 
