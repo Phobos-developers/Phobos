@@ -126,23 +126,83 @@ DEFINE_JUMP(VTABLE, 0x7F5D64, GET_OFFSET(UnitClass_ClearOccupyBit_SkipVirtual))
 
 // TODO now children block the parent from moving, should not happen
 
+namespace TechnoAttachmentTemp
+{
+	// no idea what Ares or w/e else is doing with occupation flags,
+	// so just to be safe assume it can be null and store it
+	byte storedVehicleFlag;
+}
+
+// Game assumes cell is occupied by a vehicle by default and if this vehicle
+// turns out to be self, then it un-assumes the occupancy. Because with techno
+// attachment logic it's possible to have multiple vehicles on the same cell,
+// we flip the logic from "passable if special case is found" to "impassable if
+// non-special case is found" - Kerbiter
+
+DEFINE_HOOK(0x73F520, UnitClass_CanEnterCell_AssumeNoVehicleByDefault, 0x0)
+{
+	enum { Check = 0x73F528, Skip = 0x73FA92 };
+
+	REF_STACK(byte, occupyFlags, STACK_OFFSET(0x90, -0x7C));
+	REF_STACK(bool, isVehicleFlagSet, STACK_OFFSET(0x90, -0x7B));
+
+	GET(TechnoClass*, pOccupier, ESI);
+
+	if (!pOccupier)  // stolen code
+		return Skip;
+
+	TechnoAttachmentTemp::storedVehicleFlag = occupyFlags & 0x20;
+
+	occupyFlags &= ~0x20;
+	isVehicleFlagSet = false;
+
+	return Check;
+}
+
 DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
 {
-	enum { ItsMe = 0x73FC10, IgnoreOccupier = 0x73FA87, Continue = 0x73F530 };
+	enum { IgnoreOccupier = 0x73FA87, Continue = 0x73F530 };
 
 	GET(UnitClass*, pThis, EBX);
 	GET(TechnoClass*, pOccupier, ESI);
 
-	if (pThis == pOccupier)
-		return ItsMe;
+	REF_STACK(byte, occupyFlags, STACK_OFFSET(0x90, -0x7C));
+	REF_STACK(bool, isVehicleFlagSet, STACK_OFFSET(0x90, -0x7B));
 
-	if (TechnoExt::DoesntOccupyCellAsChild(pOccupier)
+	if (pThis == pOccupier
+		|| TechnoExt::DoesntOccupyCellAsChild(pOccupier)
 		|| TechnoExt::IsChildOf(pOccupier, pThis))
 	{
 		return IgnoreOccupier;
 	}
 
+	if (abstract_cast<UnitClass*>(pOccupier))
+	{
+		occupyFlags |= TechnoAttachmentTemp::storedVehicleFlag;
+		isVehicleFlagSet = TechnoAttachmentTemp::storedVehicleFlag != 0;
+	}
+
 	return Continue;
+}
+
+DEFINE_HOOK(0x51C249, InfantryClass_CanEnterCell_AssumeNoVehicleByDefault, 0x0)
+{
+	enum { Check = 0x51C251, Skip = 0x51C78F };
+
+	REF_STACK(byte, occupyFlags, STACK_OFFSET(0x34, -0x21));
+	REF_STACK(bool, isVehicleFlagSet, STACK_OFFSET(0x34, -0x22));
+
+	GET(TechnoClass*, pOccupier, ESI);
+
+	if (!pOccupier)  // stolen code
+		return Skip;
+
+	TechnoAttachmentTemp::storedVehicleFlag = occupyFlags & 0x20;
+
+	occupyFlags &= ~0x20;
+	isVehicleFlagSet = false;
+
+	return Check;
 }
 
 DEFINE_HOOK(0x51C251, InfantryClass_CanEnterCell_SkipChildren, 0x0)
@@ -152,11 +212,20 @@ DEFINE_HOOK(0x51C251, InfantryClass_CanEnterCell_SkipChildren, 0x0)
 	GET(InfantryClass*, pThis, EBP);
 	GET(TechnoClass*, pOccupier, ESI);
 
+	REF_STACK(byte, occupyFlags, STACK_OFFSET(0x34, -0x21));
+	REF_STACK(bool, isVehicleFlagSet, STACK_OFFSET(0x34, -0x22));
+
 	if ((TechnoClass*)pThis == pOccupier
 		|| TechnoExt::DoesntOccupyCellAsChild(pOccupier)
 		|| TechnoExt::IsChildOf(pOccupier, (TechnoClass*)pThis))
 	{
 		return IgnoreOccupier;
+	}
+
+	if (abstract_cast<UnitClass*>(pOccupier))
+	{
+		occupyFlags |= TechnoAttachmentTemp::storedVehicleFlag;
+		isVehicleFlagSet = TechnoAttachmentTemp::storedVehicleFlag != 0;
 	}
 
 	return Continue;
