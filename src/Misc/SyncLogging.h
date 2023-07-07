@@ -19,8 +19,8 @@ class SyncLogEventBuffer
 {
 private:
 	std::vector<T> Data;
-	unsigned int LastWritePosition;
-	unsigned int LastReadPosition;
+	int LastWritePosition;
+	int LastReadPosition;
 	bool HasBeenFilled = true;
 public:
 	SyncLogEventBuffer() : Data(size), LastWritePosition(0), LastReadPosition(-1), HasBeenFilled(false) { };
