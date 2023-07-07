@@ -1,5 +1,6 @@
 #include <Misc/SyncLogging.h>
 
+#include <InfantryClass.h>
 #include <HouseClass.h>
 #include <Unsorted.h>
 
@@ -8,6 +9,7 @@
 
 SyncLogEventTracker<RNGCallSyncLogEvent, RNGCalls_Size> SyncLogger::RNGCalls;
 SyncLogEventTracker<FacingChangeSyncLogEvent, FacingChanges_Size> SyncLogger::FacingChanges;
+SyncLogEventTracker<TargetChangeSyncLogEvent, TargetChanges_Size> SyncLogger::TargetChanges;
 
 void SyncLogger::AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min, int max)
 {
@@ -19,6 +21,12 @@ void SyncLogger::AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsig
 void SyncLogger::AddFacingChangeSyncLogEvent(unsigned short facing, unsigned int callerAddress)
 {
 	SyncLogger::FacingChanges.Add(FacingChangeSyncLogEvent(facing, callerAddress, Unsorted::CurrentFrame));
+}
+
+void SyncLogger::AddTargetChangeSyncLogEvent(AbstractClass* pObject, AbstractClass* pTarget, unsigned int callerAddress)
+{
+	if (pObject && pTarget)
+		SyncLogger::TargetChanges.Add(TargetChangeSyncLogEvent(pObject->WhatAmI(), pObject->UniqueID, pTarget->WhatAmI(), pTarget->UniqueID, callerAddress, Unsorted::CurrentFrame));
 }
 
 void SyncLogger::WriteSyncLog(const char* logFilename)
@@ -42,6 +50,7 @@ void SyncLogger::WriteSyncLog(const char* logFilename)
 
 		WriteRNGCalls(pLogFile, frameDigits);
 		WriteFacingChanges(pLogFile, frameDigits);
+		WriteTargetChanges(pLogFile, frameDigits);
 
 		fclose(pLogFile);
 	}
@@ -90,6 +99,24 @@ void SyncLogger::WriteFacingChanges(FILE* const pLogFile, int frameDigits)
 
 		fprintf(pLogFile, "#%05d: Facing: %5d | Caller: %08x | Frame: %*d\n",
 			i, facingChange.Facing, facingChange.Caller, frameDigits, facingChange.Frame);
+	}
+
+	fprintf(pLogFile, "\n");
+}
+
+void SyncLogger::WriteTargetChanges(FILE* const pLogFile, int frameDigits)
+{
+	fprintf(pLogFile, "Target changes:\n");
+
+	for (size_t i = 0; i < SyncLogger::TargetChanges.Size(); i++)
+	{
+		auto const& targetChange = SyncLogger::TargetChanges.Get(i);
+
+		if (!targetChange.Frame)
+			continue;
+
+		fprintf(pLogFile, "#%05d: RTTI: %02d | ID: %08d | TargetRTTI: %02d | TargetID: %08d | Caller: %08x | Frame: %*d\n",
+			i, targetChange.Type, targetChange.ID, targetChange.TargetType, targetChange.ID, targetChange.Caller, frameDigits, targetChange.Frame);
 	}
 
 	fprintf(pLogFile, "\n");
@@ -175,6 +202,44 @@ DEFINE_HOOK(0x4C9300, FacingClass_Set_SyncLog, 0x5)
 	return 0;
 }
 
+// Target change logging
+
+DEFINE_HOOK(0x51B1F0, InfantryClass_AssignTarget_SyncLog, 0x5)
+{
+	GET(InfantryClass*, pThis, ECX);
+	GET_STACK(AbstractClass*, pTarget, 0x4);
+	GET_STACK(unsigned int, callerAddress, 0x0);
+
+	SyncLogger::AddTargetChangeSyncLogEvent(pThis, pTarget, callerAddress);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x443B90, BuildingClass_AssignTarget_SyncLog, 0xB)
+{
+	GET(BuildingClass*, pThis, ECX);
+	GET_STACK(AbstractClass*, pTarget, 0x4);
+	GET_STACK(unsigned int, callerAddress, 0x0);
+
+	SyncLogger::AddTargetChangeSyncLogEvent(pThis, pTarget, callerAddress);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FCDB0, TechnoClass_AssignTarget_SyncLog, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(AbstractClass*, pTarget, 0x4);
+	GET_STACK(unsigned int, callerAddress, 0x0);
+
+	auto const RTTI = pThis->WhatAmI();
+
+	if (RTTI != AbstractType::Building && RTTI != AbstractType::Infantry)
+		SyncLogger::AddTargetChangeSyncLogEvent(pThis, pTarget, callerAddress);
+
+	return 0;
+}
+
 // Disable sync logging hooks in non-MP games
 DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 {
@@ -191,6 +256,18 @@ DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 
 	Patch::Apply_RAW(0x65C88A, // Disable FacingClass_Set_SyncLog
 	{ 0x83, 0xEC, 0x10, 0x53, 0x56 }
+	);
+
+	Patch::Apply_RAW(0x65C88A, // Disable InfantryClass_AssignTarget_SyncLog
+	{ 0x53, 0x56, 0x8B, 0xF1, 0x57 }
+	);
+
+	Patch::Apply_RAW(0x65C88A, // Disable BuildingClass_AssignTarget_SyncLog
+	{ 0x56, 0x8B, 0xF1, 0x57, 0x83, 0xBE, 0xAC, 0x0, 0x0, 0x0, 0x13 }
+	);
+
+	Patch::Apply_RAW(0x65C88A, // Disable TechnoClass_AssignTarget_SyncLog
+	{ 0x83, 0xEC, 0x0C, 0x53, 0x56 }
 	);
 
 	return 0;

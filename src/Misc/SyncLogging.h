@@ -1,5 +1,6 @@
 #pragma once
 
+#include <AbstractClass.h>
 #include <GeneralDefinitions.h>
 #include <Randomizer.h>
 
@@ -7,6 +8,7 @@
 
 static constexpr unsigned int RNGCalls_Size = 4096;
 static constexpr unsigned int FacingChanges_Size = 1024;
+static constexpr unsigned int TargetChanges_Size = 1024;
 
 template <typename T, unsigned int size>
 class SyncLogEventTracker
@@ -70,16 +72,36 @@ struct FacingChangeSyncLogEvent
 	}
 };
 
+struct TargetChangeSyncLogEvent
+{
+	AbstractType Type;
+	DWORD ID;
+	AbstractType TargetType;
+	DWORD TargetID;
+	unsigned int Caller;
+	unsigned int Frame;
+
+	TargetChangeSyncLogEvent() = default;
+
+	TargetChangeSyncLogEvent(const AbstractType& Type, const DWORD& ID, const AbstractType& TargetType, const DWORD& TargetID, unsigned int Caller, unsigned int Frame)
+		: Type(Type), ID(ID), TargetType(TargetType), TargetID(TargetID), Caller(Caller), Frame(Frame)
+	{
+	}
+};
+
 class SyncLogger
 {
 private:
 	static SyncLogEventTracker<RNGCallSyncLogEvent, RNGCalls_Size> RNGCalls;
 	static SyncLogEventTracker<FacingChangeSyncLogEvent, FacingChanges_Size> FacingChanges;
+	static SyncLogEventTracker<TargetChangeSyncLogEvent, TargetChanges_Size> TargetChanges;
 
 	static void WriteRNGCalls(FILE* const pLogFile, int frameDigits);
 	static void WriteFacingChanges(FILE* const pLogFile, int frameDigits);
+	static void WriteTargetChanges(FILE* const pLogFile, int frameDigits);
 public:
 	static void AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min = 0, int max = 0);
 	static void AddFacingChangeSyncLogEvent(unsigned short facing, unsigned int callerAddress);
+	static void AddTargetChangeSyncLogEvent(AbstractClass* pObject, AbstractClass* pTarget, unsigned int callerAddress);
 	static void WriteSyncLog(const char* logFilename);
 };
