@@ -7,13 +7,19 @@
 
 #include <Utilities/Debug.h>
 #include <Utilities/Macro.h>
+#include <Utilities/GeneralUtils.h>
 
 bool SyncLogger::HooksDisabled = false;
-SyncLogEventTracker<RNGCallSyncLogEvent, RNGCalls_Size> SyncLogger::RNGCalls;
-SyncLogEventTracker<FacingChangeSyncLogEvent, FacingChanges_Size> SyncLogger::FacingChanges;
-SyncLogEventTracker<TargetChangeSyncLogEvent, TargetChanges_Size> SyncLogger::TargetChanges;
-SyncLogEventTracker<TargetChangeSyncLogEvent, DestinationChanges_Size> SyncLogger::DestinationChanges;
-SyncLogEventTracker<MissionOverrideSyncLogEvent, MissionOverrides_Size> SyncLogger::MissionOverrides;
+int SyncLogger::AnimCreations_HighestX = 0;
+int SyncLogger::AnimCreations_HighestY = 0;
+int SyncLogger::AnimCreations_HighestZ = 0;
+
+SyncLogEventBuffer<RNGCallSyncLogEvent, RNGCalls_Size> SyncLogger::RNGCalls;
+SyncLogEventBuffer<FacingChangeSyncLogEvent, FacingChanges_Size> SyncLogger::FacingChanges;
+SyncLogEventBuffer<TargetChangeSyncLogEvent, TargetChanges_Size> SyncLogger::TargetChanges;
+SyncLogEventBuffer<TargetChangeSyncLogEvent, DestinationChanges_Size> SyncLogger::DestinationChanges;
+SyncLogEventBuffer<MissionOverrideSyncLogEvent, MissionOverrides_Size> SyncLogger::MissionOverrides;
+SyncLogEventBuffer<AnimCreationSyncLogEvent, AnimCreations_Size> SyncLogger::AnimCreations;
 
 void SyncLogger::AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min, int max)
 {
@@ -69,35 +75,48 @@ void SyncLogger::AddMissionOverrideSyncLogEvent(AbstractClass* pObject, int miss
 	SyncLogger::MissionOverrides.Add(MissionOverrideSyncLogEvent(pObject->WhatAmI(), pObject->UniqueID, mission, callerAddress, Unsorted::CurrentFrame));
 }
 
+void SyncLogger::AddAnimCreationSyncLogEvent(const CoordStruct& coords, unsigned int callerAddress)
+{
+	if (coords.X > SyncLogger::AnimCreations_HighestX)
+		SyncLogger::AnimCreations_HighestX = coords.X;
+
+	if (coords.Y > SyncLogger::AnimCreations_HighestY)
+		SyncLogger::AnimCreations_HighestY = coords.Y;
+
+	if (coords.Z > SyncLogger::AnimCreations_HighestZ)
+		SyncLogger::AnimCreations_HighestZ = coords.Z;
+
+	if (SyncLogger::AnimCreations.Add(AnimCreationSyncLogEvent(coords, callerAddress, Unsorted::CurrentFrame)))
+	{
+		SyncLogger::AnimCreations_HighestX = 0;
+		SyncLogger::AnimCreations_HighestY = 0;
+		SyncLogger::AnimCreations_HighestZ = 0;
+	}
+}
+
 void SyncLogger::WriteSyncLog(const char* logFilename)
 {
 	auto const pLogFile = fopen(logFilename, "at");
 
 	if (pLogFile)
 	{
-		Debug::Log("Writing to sync log file '%s'.", logFilename);
+		Debug::Log("Writing to sync log file '%s'.\n", logFilename);
 
 		fprintf(pLogFile, "\nPhobos synchronization log:\n\n");
 
-		int frameDigits = 0;
-		int frame = Unsorted::CurrentFrame;
-
-		while (frame)
-		{
-			frame /= 10;
-			frameDigits++;
-		}
+		int frameDigits = GeneralUtils::CountDigitsInNumber(Unsorted::CurrentFrame);
 
 		WriteRNGCalls(pLogFile, frameDigits);
 		WriteFacingChanges(pLogFile, frameDigits);
 		WriteTargetChanges(pLogFile, frameDigits);
 		WriteDestinationChanges(pLogFile, frameDigits);
+		WriteAnimCreations(pLogFile, frameDigits);
 
 		fclose(pLogFile);
 	}
 	else
 	{
-		Debug::Log("Failed to open sync log file '%s'.", logFilename);
+		Debug::Log("Failed to open sync log file '%s'.\n", logFilename);
 	}
 }
 
@@ -107,7 +126,7 @@ void SyncLogger::WriteRNGCalls(FILE* const pLogFile, int frameDigits)
 
 	for (size_t i = 0; i < SyncLogger::RNGCalls.Size(); i++)
 	{
-		auto const& rngCall = SyncLogger::RNGCalls.Get(i);
+		auto const& rngCall = SyncLogger::RNGCalls.Get();
 
 		if (!rngCall.Initialized)
 			continue;
@@ -115,12 +134,12 @@ void SyncLogger::WriteRNGCalls(FILE* const pLogFile, int frameDigits)
 		if (rngCall.Type == 1)
 		{
 			fprintf(pLogFile, "#%05d: Single | Caller: %08x | Frame: %*d | Index1: %3d | Index2: %3d\n",
-				i, rngCall.Caller, frameDigits, rngCall.Frame, rngCall.Seed, rngCall.Index);
+				i, rngCall.Caller, frameDigits, rngCall.Frame, rngCall.Index1, rngCall.Index2);
 		}
 		else if (rngCall.Type == 2)
 		{
 			fprintf(pLogFile, "#%05d: Ranged | Caller: %08x | Frame: %*d | Index1: %3d | Index2: %3d | Min: %d | Max: %d\n",
-				i, rngCall.Caller, frameDigits, rngCall.Frame, rngCall.Seed, rngCall.Index, rngCall.Min, rngCall.Max);
+				i, rngCall.Caller, frameDigits, rngCall.Frame, rngCall.Index1, rngCall.Index2, rngCall.Min, rngCall.Max);
 		}
 	}
 
@@ -133,7 +152,7 @@ void SyncLogger::WriteFacingChanges(FILE* const pLogFile, int frameDigits)
 
 	for (size_t i = 0; i < SyncLogger::FacingChanges.Size(); i++)
 	{
-		auto const& facingChange = SyncLogger::FacingChanges.Get(i);
+		auto const& facingChange = SyncLogger::FacingChanges.Get();
 
 		if (!facingChange.Initialized)
 			continue;
@@ -151,7 +170,7 @@ void SyncLogger::WriteTargetChanges(FILE* const pLogFile, int frameDigits)
 
 	for (size_t i = 0; i < SyncLogger::TargetChanges.Size(); i++)
 	{
-		auto const& targetChange = SyncLogger::TargetChanges.Get(i);
+		auto const& targetChange = SyncLogger::TargetChanges.Get();
 
 		if (!targetChange.Initialized)
 			continue;
@@ -169,7 +188,7 @@ void SyncLogger::WriteDestinationChanges(FILE* const pLogFile, int frameDigits)
 
 	for (size_t i = 0; i < SyncLogger::DestinationChanges.Size(); i++)
 	{
-		auto const& destChange = SyncLogger::DestinationChanges.Get(i);
+		auto const& destChange = SyncLogger::DestinationChanges.Get();
 
 		if (!destChange.Initialized)
 			continue;
@@ -187,13 +206,36 @@ void SyncLogger::WriteMissionOverrides(FILE* const pLogFile, int frameDigits)
 
 	for (size_t i = 0; i < SyncLogger::MissionOverrides.Size(); i++)
 	{
-		auto const& missionOverride = SyncLogger::MissionOverrides.Get(i);
+		auto const& missionOverride = SyncLogger::MissionOverrides.Get();
 
 		if (!missionOverride.Initialized)
 			continue;
 
 		fprintf(pLogFile, "#%05d: RTTI: %02d | ID: %08d | Mission: %02d | Caller: %08x | Frame: %*d\n",
 			i, missionOverride.Type, missionOverride.ID, missionOverride.Mission, missionOverride.Caller, frameDigits, missionOverride.Frame);
+	}
+
+	fprintf(pLogFile, "\n");
+}
+
+
+void SyncLogger::WriteAnimCreations(FILE* const pLogFile, int frameDigits)
+{
+	int xDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestX);
+	int yDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestY);
+	int zDigits = GeneralUtils::CountDigitsInNumber(SyncLogger::AnimCreations_HighestZ);
+
+	fprintf(pLogFile, "Animation creations:\n");
+
+	for (size_t i = 0; i < SyncLogger::AnimCreations.Size(); i++)
+	{
+		auto const& animCreation = SyncLogger::AnimCreations.Get();
+
+		if (!animCreation.Initialized)
+			continue;
+
+		fprintf(pLogFile, "#%05d: X: %*d | Y: %*d | Z: %*d | Caller: %08x | Frame: %*d\n",
+			i, xDigits, animCreation.Coords.X, yDigits, animCreation.Coords.Y, zDigits, animCreation.Coords.Z, animCreation.Caller, frameDigits, animCreation.Frame);
 	}
 
 	fprintf(pLogFile, "\n");
@@ -399,9 +441,23 @@ DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
 	return 0;
 }
 
+// Anim creation logging
+
+DEFINE_HOOK(0x421EA9, AnimClass_CTOR_SyncLog, 0x5)
+{
+	GET_BASE(CoordStruct*, coords, 0xC);
+	GET_STACK(unsigned int, callerAddress, STACK_OFFSET(0x58, 0x4));
+
+	SyncLogger::AddAnimCreationSyncLogEvent(*coords, callerAddress);
+
+	return 0;
+}
+
 // Disable sync logging hooks in non-MP games
 DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 {
+	return 0;
+
 	if (SessionClass::Instance->IsMultiplayer() || SyncLogger::HooksDisabled)
 		return 0;
 
@@ -457,6 +513,10 @@ DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 
 	Patch::Apply_RAW(0x7013A0, // Disable TechnoClass_OverrideMission_SyncLog
 	{ 0x8B, 0x54, 0x24, 0x4, 0x56 }
+	);
+
+	Patch::Apply_RAW(0x421EA0, // Disable AnimClass_CTOR_SyncLog
+	{ 0x53, 0x56, 0x57, 0x8B, 0xF1 }
 	);
 
 	return 0;

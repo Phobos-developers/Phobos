@@ -3,42 +3,57 @@
 #include <AbstractClass.h>
 #include <GeneralDefinitions.h>
 #include <Randomizer.h>
-
 #include <vector>
 
+// These determine how many of each type of sync log event are stored in the buffers.
+// Any events added beyond this count overwrite old ones.
 static constexpr unsigned int RNGCalls_Size = 4096;
 static constexpr unsigned int FacingChanges_Size = 1024;
 static constexpr unsigned int TargetChanges_Size = 1024;
 static constexpr unsigned int DestinationChanges_Size = 1024;
 static constexpr unsigned int MissionOverrides_Size = 256;
+static constexpr unsigned int AnimCreations_Size = 512;
 
 template <typename T, unsigned int size>
-class SyncLogEventTracker
+class SyncLogEventBuffer
 {
-	using iterator = typename std::vector<T>::iterator;
-	using const_iterator = typename std::vector<T>::const_iterator;
 private:
 	std::vector<T> Data;
-	unsigned int LastPosition;
+	unsigned int LastWritePosition;
+	unsigned int LastReadPosition;
+	bool HasBeenFilled = true;
 public:
-	SyncLogEventTracker() : Data(size), LastPosition(0) { };
+	SyncLogEventBuffer() : Data(size), LastWritePosition(0), LastReadPosition(-1), HasBeenFilled(false) { };
 
-	void Add(T item)
+	bool Add(T item)
 	{
-		Data[LastPosition] = item;
-		LastPosition++;
+		Data[LastWritePosition] = item;
+		LastWritePosition++;
 
-		if (LastPosition >= Data.size())
-			LastPosition = 0;
+		if (LastWritePosition >= Data.size())
+		{
+			HasBeenFilled = true;
+			LastWritePosition = 0;
+			return true;
+		}
+
+		return false;
 	}
 
-	T Get(int index) { return Data[index]; }
-	size_t Size() { return Data.size(); }
+	T Get()
+	{
+		if (!LastWritePosition && LastReadPosition == -1 && !HasBeenFilled)
+			return T();
 
-	iterator begin() { return Data.begin(); }
-	iterator end() { return Data.end(); }
-	const_iterator begin() const { return Data.begin(); }
-	const_iterator end() const { return Data.end(); }
+		if (LastReadPosition == -1 && HasBeenFilled)
+			LastReadPosition = LastWritePosition ;
+		else if (LastReadPosition == -1 || LastReadPosition >= Data.size())
+			LastReadPosition = 0;
+
+		return Data[LastReadPosition++];
+	}
+
+	size_t Size() { return Data.size(); }
 };
 
 struct SyncLogEvent
@@ -47,7 +62,7 @@ struct SyncLogEvent
 	unsigned int Caller;
 	unsigned int Frame;
 
-	SyncLogEvent() = default;
+	SyncLogEvent() : Initialized(false), Caller(0), Frame(0) { }
 
 	SyncLogEvent(unsigned int Caller, unsigned int Frame)
 		: Caller(Caller), Frame(Frame)
@@ -60,15 +75,15 @@ struct RNGCallSyncLogEvent : SyncLogEvent
 {
 	int Type; // 0 = Invalid, 1 = Unranged, 2 = Ranged
 	bool IsCritical;
-	unsigned int Seed;
-	unsigned int Index;
+	unsigned int Index1;
+	unsigned int Index2;
 	int Min;
 	int Max;
 
-	RNGCallSyncLogEvent() = default;
+	RNGCallSyncLogEvent() : SyncLogEvent() { }
 
-	RNGCallSyncLogEvent(int Type, bool IsCritical, unsigned int Seed, unsigned int Index, unsigned int Caller, unsigned int Frame, int Min, int Max)
-		: Type(Type), IsCritical(IsCritical), Seed(Seed), Index(Index), Min(Min), Max(Max), SyncLogEvent(Caller, Frame)
+	RNGCallSyncLogEvent(int Type, bool IsCritical, unsigned int Index1, unsigned int Index2, unsigned int Caller, unsigned int Frame, int Min, int Max)
+		: Type(Type), IsCritical(IsCritical), Index1(Index1), Index2(Index2), Min(Min), Max(Max), SyncLogEvent(Caller, Frame)
 	{
 	}
 };
@@ -77,7 +92,7 @@ struct FacingChangeSyncLogEvent : SyncLogEvent
 {
 	unsigned short Facing;
 
-	FacingChangeSyncLogEvent() = default;
+	FacingChangeSyncLogEvent() : SyncLogEvent() { }
 
 	FacingChangeSyncLogEvent(unsigned short Facing, unsigned int Caller, unsigned int Frame)
 		: Facing(Facing), SyncLogEvent(Caller, Frame)
@@ -106,7 +121,7 @@ struct MissionOverrideSyncLogEvent : SyncLogEvent
 	DWORD ID;
 	int Mission;
 
-	MissionOverrideSyncLogEvent() = default;
+	MissionOverrideSyncLogEvent() : SyncLogEvent() { }
 
 	MissionOverrideSyncLogEvent(const AbstractType& Type, const DWORD& ID, int Mission, unsigned int Caller, unsigned int Frame)
 		: Type(Type), ID(ID), Mission(Mission), SyncLogEvent(Caller, Frame)
@@ -114,27 +129,45 @@ struct MissionOverrideSyncLogEvent : SyncLogEvent
 	}
 };
 
+struct AnimCreationSyncLogEvent : SyncLogEvent
+{
+	CoordStruct Coords;
+
+	AnimCreationSyncLogEvent() : SyncLogEvent() { }
+
+	AnimCreationSyncLogEvent(const CoordStruct& Coords, unsigned int Caller, unsigned int Frame)
+		: Coords(Coords), SyncLogEvent(Caller, Frame)
+	{
+	}
+};
+
 class SyncLogger
 {
 private:
-	static SyncLogEventTracker<RNGCallSyncLogEvent, RNGCalls_Size> RNGCalls;
-	static SyncLogEventTracker<FacingChangeSyncLogEvent, FacingChanges_Size> FacingChanges;
-	static SyncLogEventTracker<TargetChangeSyncLogEvent, TargetChanges_Size> TargetChanges;
-	static SyncLogEventTracker<TargetChangeSyncLogEvent, DestinationChanges_Size> DestinationChanges;
-	static SyncLogEventTracker<MissionOverrideSyncLogEvent, MissionOverrides_Size> MissionOverrides;
+	static SyncLogEventBuffer<RNGCallSyncLogEvent, RNGCalls_Size> RNGCalls;
+	static SyncLogEventBuffer<FacingChangeSyncLogEvent, FacingChanges_Size> FacingChanges;
+	static SyncLogEventBuffer<TargetChangeSyncLogEvent, TargetChanges_Size> TargetChanges;
+	static SyncLogEventBuffer<TargetChangeSyncLogEvent, DestinationChanges_Size> DestinationChanges;
+	static SyncLogEventBuffer<MissionOverrideSyncLogEvent, MissionOverrides_Size> MissionOverrides;
+	static SyncLogEventBuffer<AnimCreationSyncLogEvent, AnimCreations_Size> AnimCreations;
 
 	static void WriteRNGCalls(FILE* const pLogFile, int frameDigits);
 	static void WriteFacingChanges(FILE* const pLogFile, int frameDigits);
 	static void WriteTargetChanges(FILE* const pLogFile, int frameDigits);
 	static void WriteDestinationChanges(FILE* const pLogFile, int frameDigits);
 	static void WriteMissionOverrides(FILE* const pLogFile, int frameDigits);
+	static void WriteAnimCreations(FILE* const pLogFile, int frameDigits);
 public:
 	static bool HooksDisabled;
+	static int AnimCreations_HighestX;
+	static int AnimCreations_HighestY;
+	static int AnimCreations_HighestZ;
 
 	static void AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min = 0, int max = 0);
 	static void AddFacingChangeSyncLogEvent(unsigned short facing, unsigned int callerAddress);
 	static void AddTargetChangeSyncLogEvent(AbstractClass* pObject, AbstractClass* pTarget, unsigned int callerAddress);
 	static void AddDestinationChangeSyncLogEvent(AbstractClass* pObject, AbstractClass* pTarget, unsigned int callerAddress);
 	static void AddMissionOverrideSyncLogEvent(AbstractClass* pObject, int mission, unsigned int callerAddress);
+	static void AddAnimCreationSyncLogEvent(const CoordStruct& coords, unsigned int callerAddress);
 	static void WriteSyncLog(const char* logFilename);
 };
