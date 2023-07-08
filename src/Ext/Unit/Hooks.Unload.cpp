@@ -14,7 +14,11 @@ DEFINE_HOOK(0x739AC6, UnitClass_ToggleDeployState_IgnoreDeploying, 0x6)
 	R->EAX(pThis->GetTechnoType());
 	auto const pThisTechno = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if(pThisTechno->OnAmmoDepletion_DeployUnlockAmount != 0 && pThis->Ammo < pThisTechno->OnAmmoDepletion_DeployUnlockAmount)
+	{
+		if(pThisTechno->VoiceCantDeploy)
+			VocClass::PlayIndexAtPos(pThisTechno->VoiceCantDeploy, pThis->Location);
 		return Ignore;
+	}
 
 	return Continue;
 }
@@ -29,7 +33,11 @@ DEFINE_HOOK(0x739CD7, UnitClass_ToggleSimpleDeploy_IgnoreDeploying, 0x6)
 	R->AL(pThis->Deployed);
 	auto const pThisTechno = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if(pThisTechno->OnAmmoDepletion_DeployUnlockAmount != 0 && pThis->Ammo < pThisTechno->OnAmmoDepletion_DeployUnlockAmount)
+	{
+		if(pThisTechno->VoiceCantDeploy)
+			VocClass::PlayIndexAtPos(pThisTechno->VoiceCantDeploy, pThis->Location);
 		return Ignore;
+	}
 
 	return Continue;
 }

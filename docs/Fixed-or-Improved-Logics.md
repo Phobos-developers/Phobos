@@ -686,12 +686,14 @@ TurretShadow=   ; boolean
 
 - `OnAmmoDepletion.AutoDeploy` if set, converts/deploys vehicle when ammo is depleted.
 - `OnAmmoDepletion.DeployUnlockAmount` determines amount of ammo, that allows vehicle converting/deploying command.
+- `VoiceCantDeploy` plays voice when converting/deploying command not allowed.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                          ; VehicleType
 OnAmmoDepletion.DeployUnlockAmount=0   ; integer, unit will be allowed to undeploy only if it has at least this much ammo
 OnAmmoDepletion.AutoDeploy=true        ; boolean, whether this unit should automatically deploy after running out of ammo
+VoiceCantDeploy=SOMEVOICE              ; sound entry, that plays when converting/deploying command not allowed
 ```
 
 ```{warning}

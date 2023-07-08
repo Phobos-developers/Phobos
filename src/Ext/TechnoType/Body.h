@@ -50,6 +50,7 @@ public:
 
 		Valueable<bool> OnAmmoDepletion_AutoDeploy;
 		Valueable<int> OnAmmoDepletion_DeployUnlockAmount;
+		NullableIdx<VocClass> VoiceCantDeploy;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
