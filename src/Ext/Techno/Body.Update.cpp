@@ -77,7 +77,7 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 	auto const pUnit = abstract_cast<UnitClass*>(pThis);
 
 	if (!pUnit->Type->IsSimpleDeployer)
-	    return;
+		return;
 	if ((pThis->Ammo <= 0) && pTypeExt->OnAmmoDepletion_AutoDeploy)
 		pThis->QueueMission(Mission::Unload, true);
 	return;
