@@ -1195,6 +1195,18 @@ Burst.Delays=-1                 ; integer - burst delays (comma-separated) for s
 Burst.FireWithinSequence=false  ; boolean
 ```
 
+### Extra warhead detonations
+
+- It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
+  - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found. If not, weapon `Damage` is used.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                    ; WeaponType
+ExtraWarheads=                  ; list of WarheadTypes
+ExtraWarheads.DamageOverrides=  ; list of integers
+```
+
 ### Feedback weapon
 
 ![image](_static/images/feedbackweapon.gif)
