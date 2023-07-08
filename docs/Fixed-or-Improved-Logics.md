@@ -486,6 +486,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]    ; TechnoType
 JumpjetRotateOnCrash=true  ; boolean
 ```
+
 ```{warning}
 This may subject to further changes.
 ```
@@ -674,6 +675,10 @@ In `rulesmd.ini`:
 [SOMEVEHICLE]                          ; VehicleType
 OnAmmoDepletion_DeployUnlockAmount=0   ; integer, unit will be allowed to undeploy only if it has at least this much ammo
 OnAmmoDepletion_AutoDeploy=true        ; boolean, whether this unit should automatically deploy after running out of ammo
+```
+
+```{warning}
+This feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html).
 ```
 
 ## VoxelAnims
