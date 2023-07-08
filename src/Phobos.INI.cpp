@@ -43,36 +43,6 @@ int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
 int Phobos::Misc::CustomGS_ChangeDelay[7] = { 0, 1, 2, 3, 4, 5, 6 };
 int Phobos::Misc::CustomGS_DefaultDelay[7] = { 0, 1, 2, 3, 4, 5, 6 };
 
-CCINIClass* Phobos::OpenConfig(const char* file)
-{
-	CCINIClass* pINI = GameCreate<CCINIClass>();
-
-	if (pINI)
-	{
-		CCFileClass* cfg = GameCreate<CCFileClass>(file);
-
-		if (cfg)
-		{
-			if (cfg->Exists())
-			{
-				pINI->ReadCCFile(cfg);
-			}
-			GameDelete(cfg);
-		}
-	}
-
-	return pINI;
-}
-
-void Phobos::CloseConfig(CCINIClass*& pINI)
-{
-	if (pINI)
-	{
-		GameDelete(pINI);
-		pINI = nullptr;
-	}
-}
-
 DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
@@ -82,7 +52,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::RealTimeTimers = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers", false);
 	Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers.Adaptive", false);
 
-	CCINIClass* pINI_UIMD = Phobos::OpenConfig(GameStrings::UIMD_INI);
+	CCINIClass* pINI_UIMD = CCINIClass::LoadINIFile(GameStrings::UIMD_INI);
 
 	// LoadingScreen
 	{
@@ -141,9 +111,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "CenterPauseMenuBackground", Phobos::UI::CenterPauseMenuBackground);
 	}
 
-	Phobos::CloseConfig(pINI_UIMD);
+	CCINIClass::UnloadINIFile(pINI_UIMD);
 
-	CCINIClass* pINI_RULESMD = Phobos::OpenConfig(GameStrings::RULESMD_INI);
+	CCINIClass* pINI_RULESMD = CCINIClass::LoadINIFile(GameStrings::RULESMD_INI);
 
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
 
@@ -155,11 +125,10 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	}
 
 	{
-		unsigned char temp = (unsigned char)Phobos::Config::CampaignDefaultGameSpeed;
-		Patch patch1 { 0x55D77A , 1, &temp }; // We overwrite the instructions that force GameSpeed to 2 (GS4)
-		Patch patch2 { 0x55D78D , 1, &temp }; // when speed control is off. Doesn't need a hook.
-		patch1.Apply();
-		patch2.Apply();
+		const byte temp = (byte)Phobos::Config::CampaignDefaultGameSpeed;
+
+		Patch::Apply_RAW(0x55D77A, { temp }); // We overwrite the instructions that force GameSpeed to 2 (GS4)
+		Patch::Apply_RAW(0x55D78D, { temp }); // when speed control is off. Doesn't need a hook.
 	}
 
 	Phobos::Misc::CustomGS = pINI_RULESMD->ReadBool(GameStrings::General, "CustomGS", false);
@@ -193,17 +162,17 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		// Game_GetLinkedColor converts vanilla dropdown color index into color scheme index ([Colors] from rules)
 		// What we want to do is to restore vanilla from Ares hook, and immediately return arg
 		// So if spawner feeds us a number, it will be used to look up color scheme directly
-		// Patch translates to:
-		// mov eax, [esp+a1]
-		// shl eax, 1
-		// inc eax
-		// retn 4
-		byte temp[] = { 0x8B, 0x44, 0x24, 0x04, 0xD1, 0xE0, 0x40, 0xC2, 0x04, 0x00 };
-		Patch patch { 0x69A310, 10, temp };
-		patch.Apply();
+		Patch::Apply_RAW(0x69A310,
+			{
+				0x8B, 0x44, 0x24, 0x04, // mov eax, [esp+4]
+				0xD1, 0xE0,             // shl eax, 1
+				0x40,                   // inc eax
+				0xC2, 0x04, 0x00        // retn 4
+			}
+		);
 	}
 
-	Phobos::CloseConfig(pINI_RULESMD);
+	CCINIClass::UnloadINIFile(pINI_RULESMD);
 
 	return 0;
 }

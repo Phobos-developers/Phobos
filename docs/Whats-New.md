@@ -21,6 +21,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From post-0.3 devbuilds
 
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
+- `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
 
 #### From 0.3
 
@@ -316,6 +317,7 @@ New:
 - Example custom locomotor that circles around the target (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
 - Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar)
 - Crushing tilt and slowdown customization (by Starkku)
+- Extra warhead detonations on weapon (by Starkku)
 - Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
 
 Vanilla fixes:
@@ -353,6 +355,7 @@ Vanilla fixes:
 - Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
+- Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (by Kerbiter)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -376,6 +379,7 @@ Phobos fixes:
 - Fixed shield health bar showing empty bar when shield is still on very low health instead of depleted (by Starkku)
 - Fixed `CanTarget` not considering objects on bridges when checking if cell is empty (by Starkku)
 - Fixed new Phobos script actions not picking team leader correctly based on `LeadershipRating` (by Starkku)
+- Fixed an issue with `Gunner=true` vehicles not correctly using the first passenger's mode with multiple passengers inside (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)

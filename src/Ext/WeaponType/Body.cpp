@@ -58,6 +58,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
 	this->OmniFire_TurnToTarget.Read(exINI, pSection, "OmniFire.TurnToTarget");
+	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
+	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 }
 
 template <typename T>
@@ -81,6 +83,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Laser_IsSingleColor)
 		.Process(this->ROF_RandomDelay)
 		.Process(this->OmniFire_TurnToTarget)
+		.Process(this->ExtraWarheads)
+		.Process(this->ExtraWarheads_DamageOverrides)
 		;
 };
 

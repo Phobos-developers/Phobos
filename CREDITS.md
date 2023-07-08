@@ -35,6 +35,7 @@ This page lists all the individual contributions to the project by their author.
   - Laser graphics fixes
   - Recursive transport killer fix
   - Custom locomotors example implementation and piggybacking test warheads
+  - Jumpjet initial facing fix
   - Migration utility
   - GitHub Actions setup
   - Official docs
@@ -196,6 +197,7 @@ This page lists all the individual contributions to the project by their author.
   - `UndeploysInto` building selling buildup sequence length customization
   - AI naval vehicle production fix
   - Crushing tilt and slowdown customization
+  - Extra warhead detonations on weapons
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

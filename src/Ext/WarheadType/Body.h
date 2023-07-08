@@ -107,9 +107,11 @@ public:
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 
-		double RandomBuffer;
+		double Crit_RandomBuffer;
 		bool HasCrit;
 		bool WasDetonatedOnAllMapObjects;
+
+		bool PossibleCellSpreadDetonate;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -205,9 +207,11 @@ public:
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 
-			, RandomBuffer { 0.0 }
+			, Crit_RandomBuffer { 0.0 }
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
+
+			, PossibleCellSpreadDetonate {false}
 		{ }
 
 	private:

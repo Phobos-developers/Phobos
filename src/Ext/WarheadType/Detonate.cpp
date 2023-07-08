@@ -37,7 +37,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			for (auto pOtherHouse : *HouseClass::Array)
 			{
-				if (pOtherHouse->IsControlledByHuman() &&   // Not AI
+				if (pOtherHouse->IsControlledByHuman() && // Not AI
 					!pOtherHouse->IsObserver() &&         // Not Observer
 					!pOtherHouse->Defeated &&             // Not Defeated
 					pOtherHouse != pHouse &&              // Not pThisHouse
@@ -97,35 +97,25 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 	}
 
-	this->HasCrit = false;
-	this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
-
-	// List all Warheads here that respect CellSpread
-	const bool isCellSpreadWarhead =
-		this->RemoveDisguise ||
-		this->RemoveMindControl ||
-		this->Crit_Chance ||
-		this->Shield_Break ||
-		this->Shield_Respawn_Duration > 0 ||
-		this->Shield_SelfHealing_Duration > 0 ||
-		this->Shield_AttachTypes.size() > 0 ||
-		this->Shield_RemoveTypes.size() > 0 ||
-		this->Convert_Pairs.size() > 0 ||
-		this->InflictLocomotor ||
-		this->RemoveInflictedLocomotor;
-
-	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
-
-	const float cellSpread = this->OwnerObject()->CellSpread;
-	if (cellSpread && isCellSpreadWarhead)
+	if (this->PossibleCellSpreadDetonate)
 	{
-		for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
-			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
-	}
-	else if (pBullet && isCellSpreadWarhead)
-	{
-		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
-			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+		this->HasCrit = false;
+		if (!this->Crit_ApplyChancePerTarget)
+			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
+
+		bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
+		const float cellSpread = this->OwnerObject()->CellSpread;
+
+		if (cellSpread)
+		{
+			for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
+				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+		}
+		else if (pBullet)
+		{
+			if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+		}
 	}
 }
 
@@ -264,7 +254,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (this->Crit_ApplyChancePerTarget)
 		dice = ScenarioClass::Instance->Random.RandomDouble();
 	else
-		dice = this->RandomBuffer;
+		dice = this->Crit_RandomBuffer;
 
 	if (this->Crit_Chance < dice)
 		return;
