@@ -318,6 +318,7 @@ New:
 - Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar)
 - Crushing tilt and slowdown customization (by Starkku)
 - Extra warhead detonations on weapon (by Starkku)
+- Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
