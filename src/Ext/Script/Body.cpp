@@ -413,7 +413,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 		// Find the Leader
 		pLeaderUnit = pExt->TeamLeader;
 
-		if (!IsUnitAvailable(pLeaderUnit, true, true))
+		if (!IsUnitAvailable(pLeaderUnit, true))
 		{
 			pLeaderUnit = FindTheTeamLeader(pTeam);
 			pExt->TeamLeader = pLeaderUnit;
@@ -448,7 +448,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 		// Check if units are around the leader
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			if (!IsUnitAvailable(pUnit, true, true))
+			if (!IsUnitAvailable(pUnit, true))
 			{
 				auto pTypeUnit = pUnit->GetTechnoType();
 
@@ -746,7 +746,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	// Team already have a focused target
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (IsUnitAvailable(pUnit, true, true)
+		if (IsUnitAvailable(pUnit, true)
 			&& !pUnit->TemporalTargetingMe
 			&& !pUnit->BeingWarpedOut)
 		{
@@ -810,7 +810,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 						}
 						else
 						{
-							if (pUnit->IsTeamLeader)
+							if (pUnit->IsInitiated)
 								bForceNextAction = true;
 
 							if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo <= 0)
@@ -1071,7 +1071,6 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 {
 	FootClass* pLeaderUnit = nullptr;
 	int bestUnitLeadershipValue = -1;
-	bool teamLeaderFound = false;
 
 	if (!pTeam)
 		return pLeaderUnit;
@@ -1079,25 +1078,8 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 	// Find the Leader or promote a new one
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (!pUnit)
+		if (!IsUnitAvailable(pUnit, true) || !(pUnit->IsInitiated || pUnit->WhatAmI() == AbstractType::Aircraft))
 			continue;
-
-		bool isValidUnit = IsUnitAvailable(pUnit, true, true);
-
-		// Preventing >1 leaders in teams
-		if (teamLeaderFound || !isValidUnit)
-		{
-			pUnit->IsTeamLeader = false;
-			continue;
-		}
-
-		if (pUnit->IsTeamLeader)
-		{
-			pLeaderUnit = pUnit;
-			teamLeaderFound = true;
-
-			continue;
-		}
 
 		// The team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
 		int unitLeadershipRating = pUnit->GetTechnoType()->LeadershipRating;
@@ -1108,9 +1090,6 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 			bestUnitLeadershipValue = unitLeadershipRating;
 		}
 	}
-
-	if (pLeaderUnit)
-		pLeaderUnit->IsTeamLeader = true;
 
 	return pLeaderUnit;
 }
@@ -1177,16 +1156,12 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
 	ScriptExt::Log("AI Scripts - StopForceJumpCountdown: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
 }
 
-bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed, bool allowSubterranean)
+bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed)
 {
 	if (!pTechno)
 		return false;
 
-	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0
-		&& !pTechno->InLimbo && !pTechno->Transporter && !pTechno->Absorbed;
-
-	bool isSubterranean = allowSubterranean && pTechno->InWhichLayer() == Layer::Underground;
-	isAvailable &= pTechno->IsOnMap || isSubterranean;
+	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && pTechno->IsOnMap;
 
 	if (checkIfInTransportOrAbsorbed)
 		isAvailable &= !pTechno->Absorbed && !pTechno->Transporter;

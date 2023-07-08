@@ -79,6 +79,7 @@ public:
 
 		Valueable<bool> CrateOnlyOnLand;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
+		Valueable<bool> DrawTurretShadow;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -124,6 +125,7 @@ public:
 			, DisplayIncome_Houses { AffectedHouse::All }
 			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
+			, DrawTurretShadow { false }
 		{ }
 
 		virtual ~ExtData() = default;

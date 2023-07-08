@@ -308,3 +308,59 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 
 	return 0x6B0C65;
 }
+
+DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
+{
+	GET(FootClass*, pThis, ESI);
+	GET_STACK(Point2D, pos, STACK_OFFSET(0x18, 0x28));
+	GET_STACK(Surface*, pSurface, STACK_OFFSET(0x18, 0x24));
+	GET_STACK(bool, a9, STACK_OFFSET(0x18, 0x20)); // unknown usage
+	GET_STACK(Matrix3D*, pMatrix, STACK_OFFSET(0x18, 0x1C));
+	GET_STACK(Point2D*, a4, STACK_OFFSET(0x18, 0x14)); // unknown usage
+	GET_STACK(Point2D, a3, STACK_OFFSET(0x18, -0x10)); // unknown usage
+	GET_STACK(int*, a5, STACK_OFFSET(0x18, 0x10)); // unknown usage
+	GET_STACK(int, angle, STACK_OFFSET(0x18, 0xC));
+	GET_STACK(int, idx, STACK_OFFSET(0x18, 0x8));
+	GET_STACK(VoxelStruct*, pVXL, STACK_OFFSET(0x18, 0x4));
+
+	auto pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto tur = pType->Gunner || pType->IsChargeTurret
+		? &pType->ChargerTurrets[pThis->CurrentTurretNumber]
+		: &pType->TurretVoxel;
+
+	if (pTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow) && tur->VXL && tur->HVA)
+	{
+		auto mtx = pThis->Locomotor->Shadow_Matrix(0);
+		mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
+		float x = static_cast<float>(pTypeExt->TurretOffset.GetEx()->X / 8);
+		float y = static_cast<float>(pTypeExt->TurretOffset.GetEx()->Y / 8);
+		float z = -tur->VXL->TailerData->MinBounds.Z;
+		mtx.Translate(x, y, z);
+		Matrix3D::MatrixMultiply(&mtx, &Matrix3D::VoxelDefaultMatrix, &mtx);
+
+		pThis->DrawVoxelShadow(tur, 0, angle, 0, a4, &a3, &mtx, a9, pSurface, pos);
+		auto bar = &pType->BarrelVoxel;
+
+		if (bar->VXL && bar->HVA)
+			pThis->DrawVoxelShadow(bar, 0, angle, 0, a4, &a3, &mtx, a9, pSurface, pos);
+	}
+
+	if (!pTypeExt->ShadowIndices.size())
+	{
+		pThis->DrawVoxelShadow(pVXL, idx, angle, a5, a4, &a3, pMatrix, a9, pSurface, pos);
+	}
+	else
+	{
+		for (auto index : pTypeExt->ShadowIndices)
+		{
+			auto hva = pVXL->HVA;
+			Matrix3D idxmtx = *pMatrix;
+			idxmtx.TranslateZ(-hva->Matrixes[index].GetZVal());
+			Matrix3D::MatrixMultiply(&idxmtx, &Matrix3D::VoxelDefaultMatrix, &idxmtx);
+			pThis->DrawVoxelShadow(pVXL, index, angle, a5, a4, &a3, pMatrix, a9, pSurface, pos);
+		}
+	}
+
+	return 0x4DB195;
+}

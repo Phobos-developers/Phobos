@@ -14,6 +14,7 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 
 	if (auto pTypeExt = this->TypeExtData)
 	{
+		this->LaserTrails.clear();
 		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
@@ -392,3 +393,19 @@ void TechnoExt::ChangeOwnerMissionFix(FootClass* pThis)
 	pThis->QueueMission(pThis->GetTechnoType()->DefaultToGuardArea ? Mission::Area_Guard : Mission::Guard, true);
 }
 
+// Updates layers of all animations attached to the given techno.
+void TechnoExt::UpdateAttachedAnimLayers(TechnoClass* pThis)
+{
+	// Skip if has no attached animations.
+	if (!pThis || !pThis->HasParachute)
+		return;
+
+	// Could possibly be faster to track the attached anims in TechnoExt but the profiler doesn't show this as a performance hog so whatever.
+	for (auto pAnim : *AnimClass::Array)
+	{
+		if (pAnim->OwnerObject != pThis)
+			continue;
+
+		DisplayClass::Instance->Submit(pAnim);
+	}
+}

@@ -454,6 +454,25 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x54B188, JumpjetLocomotionClass_Process_LayerUpdate, 0x6)
+{
+	GET(TechnoClass*, pLinkedTo, EAX);
+
+	TechnoExt::UpdateAttachedAnimLayers(pLinkedTo);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4CD4E1, FlyLocomotionClass_Update_LayerUpdate, 0x6)
+{
+	GET(TechnoClass*, pLinkedTo, ECX);
+
+	if (pLinkedTo->LastLayer != pLinkedTo->InWhichLayer())
+		TechnoExt::UpdateAttachedAnimLayers(pLinkedTo);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6F6CA0, TechnoClass_Put_GiftBox, 0x7)
 {
 	GET(TechnoClass* const, pThis, ECX);

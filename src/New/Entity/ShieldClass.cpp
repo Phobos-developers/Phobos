@@ -60,7 +60,7 @@ void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 		for (auto pShield : ShieldClass::Array)
 		{
 			if (pAnim == pShield->IdleAnim)
-				pShield->KillAnim();
+				pShield->IdleAnim = nullptr;
 		}
 	}
 }
@@ -281,7 +281,9 @@ bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead) const
 
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
-	if (pWHExt->Shield_AffectTypes.size() > 0 && !pWHExt->Shield_AffectTypes.Contains(this->Type))
+	const auto affectedTypes = pWHExt->Shield_Penetrate_Types.GetElements(pWHExt->Shield_AffectTypes);
+
+	if (affectedTypes.size() > 0 && !affectedTypes.contains(this->Type))
 		return false;
 
 	if (pWarhead->Psychedelic)
@@ -696,7 +698,7 @@ void ShieldClass::KillAnim()
 {
 	if (this->IdleAnim)
 	{
-		this->IdleAnim->DetachFromObject(this->Techno, false);
+		this->IdleAnim->UnInit();
 		this->IdleAnim = nullptr;
 	}
 }
@@ -852,7 +854,7 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 int ShieldClass::DrawShieldBar_PipAmount(int iLength) const
 {
 	return this->IsActive()
-		? Math::clamp((int)round(this->GetHealthRatio() * iLength), 0, iLength)
+		? Math::clamp((int)round(this->GetHealthRatio() * iLength), 1, iLength)
 		: 0;
 }
 

@@ -100,21 +100,21 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4668BD, BulletClass_AI_TrailerInheritOwner, 0x6)
+DEFINE_HOOK(0x466897, BulletClass_AI_Trailer, 0x6)
 {
-	GET(BulletClass*, pThis, EBP);
-	GET(AnimClass*, pAnim, EAX);
+	enum { SkipGameCode = 0x4668BD };
 
-	if (auto const pExt = BulletAITemp::ExtData)
+	GET(BulletClass*, pThis, EBP);
+	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x1A8, -0x184));
+
+	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1))
 	{
-		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
-		{
-			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
-			pAnimExt->SetInvoker(pThis->Owner);
-		}
+		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+		pTrailerAnim->Owner = pThis->Owner ? pThis->Owner->Owner : BulletAITemp::ExtData->FirerHouse;
+		pTrailerAnimExt->SetInvoker(pThis->Owner);
 	}
 
-	return 0;
+	return SkipGameCode;
 }
 
 // Inviso bullets behave differently in BulletClass::AI when their target is bullet and
@@ -486,3 +486,29 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 
 // Skip a forced detonation check for Level=true projectiles that is now handled in Hooks.Obstacles.cpp.
 DEFINE_JUMP(LJMP, 0x468D08, 0x468D2F);
+
+DEFINE_HOOK(0x46A290, BulletClass_Logics_ExtraWarheads, 0x5)
+{
+	GET(BulletClass*, pThis, ESI);
+	GET_BASE(CoordStruct*, coords, 0x8);
+
+	if (pThis->WeaponType)
+	{
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
+		int defaultDamage = pThis->WeaponType->Damage;
+
+		for (size_t i = 0; i < pWeaponExt->ExtraWarheads.size(); i++)
+		{
+			auto const pWH = pWeaponExt->ExtraWarheads[i];
+			auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+			int damage = defaultDamage;
+
+			if (pWeaponExt->ExtraWarheads_DamageOverrides.size() > i)
+				damage = pWeaponExt->ExtraWarheads_DamageOverrides[i];
+
+			WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner);
+		}
+	}
+
+	return 0;
+}

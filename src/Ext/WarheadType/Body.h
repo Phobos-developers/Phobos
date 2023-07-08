@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <Ext/Bullet/Body.h>
+#include <Misc/TypeConvertHelper.h>
 
 class WarheadTypeExt
 {
@@ -71,6 +72,10 @@ public:
 		Valueable<bool> Shield_InheritStateOnReplace;
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
+		NullableVector<ShieldTypeClass*> Shield_Penetrate_Types;
+		NullableVector<ShieldTypeClass*> Shield_Break_Types;
+		NullableVector<ShieldTypeClass*> Shield_Respawn_Types;
+		NullableVector<ShieldTypeClass*> Shield_SelfHealing_Types;
 
 		Valueable<int> NotHuman_DeathSequence;
 		ValueableIdxVector<SuperWeaponTypeClass> LaunchSW;
@@ -92,14 +97,21 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
+		TypeConvertHelper::ConvertPairs Convert_Pairs;
+
+		Valueable<bool> InflictLocomotor;
+		Valueable<bool> RemoveInflictedLocomotor;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 
-		double RandomBuffer;
+		double Crit_RandomBuffer;
 		bool HasCrit;
 		bool WasDetonatedOnAllMapObjects;
+
+		bool PossibleCellSpreadDetonate;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -162,6 +174,10 @@ public:
 			, Shield_InheritStateOnReplace { false }
 			, Shield_MinimumReplaceDelay { 0 }
 			, Shield_AffectTypes {}
+			, Shield_Penetrate_Types {}
+			, Shield_Break_Types {}
+			, Shield_Respawn_Types {}
+			, Shield_SelfHealing_Types {}
 
 			, NotHuman_DeathSequence { -1 }
 			, LaunchSW {}
@@ -183,12 +199,19 @@ public:
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
+			, Convert_Pairs {}
+
+			, InflictLocomotor { false }
+			, RemoveInflictedLocomotor { false }
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 
-			, RandomBuffer { 0.0 }
+			, Crit_RandomBuffer { 0.0 }
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
+
+			, PossibleCellSpreadDetonate {false}
 		{ }
 
 	private:
@@ -198,6 +221,9 @@ public:
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
+		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyLocomotorInfliction(TechnoClass* pTarget);
+		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
