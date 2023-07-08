@@ -29,7 +29,7 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->AnchorType_Building.Read(exINI, section, "Anchor.Building");
 	this->Shape.Read(exINI, section, "Shape");
 	this->Palette.LoadFromINI(pINI, section, "Palette");
-	this->Shape_Interval.Read(exINI, section, "Shape.Interval");
+	this->Shape_Spacing.Read(exINI, section, "Shape.Spacing");
 	this->Percentage.Read(exINI, section, "Percentage");
 	this->HideMaxValue.Read(exINI, section, "HideMaxValue");
 	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
@@ -117,8 +117,8 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 		""
 	);
 	Vector2D<int> vInterval = (
-		Shape_Interval.isset() ?
-		Shape_Interval.Get() :
+		Shape_Spacing.isset() ?
+		Shape_Spacing.Get() :
 		(isBuilding ? Vector2D<int> { 4, -2 } : Vector2D<int> { 4, 0 }) // default
 	);
 	std::string text = sCur;
@@ -217,7 +217,7 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->AnchorType_Building)
 		.Process(this->Shape)
 		.Process(this->Palette)
-		.Process(this->Shape_Interval)
+		.Process(this->Shape_Spacing)
 		.Process(this->Percentage)
 		.Process(this->HideMaxValue)
 		.Process(this->VisibleToHouses_Observer)

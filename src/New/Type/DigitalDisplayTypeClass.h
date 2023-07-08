@@ -17,7 +17,7 @@ public:
 	Valueable<BuildingSelectBracketPosition> AnchorType_Building;
 	Valueable<SHPStruct*> Shape;
 	CustomPalette Palette;
-	Nullable<Vector2D<int>> Shape_Interval;
+	Nullable<Vector2D<int>> Shape_Spacing;
 	Valueable<bool> Percentage;
 	Valueable<bool> HideMaxValue;
 	Valueable<bool> VisibleToHouses_Observer;
@@ -34,7 +34,7 @@ public:
 		, AnchorType_Building(BuildingSelectBracketPosition::LeftTop)
 		, Shape(nullptr)
 		, Palette()
-		, Shape_Interval()
+		, Shape_Spacing()
 		, Percentage(false)
 		, HideMaxValue(false)
 		, VisibleToHouses_Observer(true)

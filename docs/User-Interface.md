@@ -44,7 +44,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - Default `Align` for texts is `right` for BuildingTypes, `center` for others.
   - Default `Align` for shapes is `left` for BuildingTypes, `center` for others.
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
-  - Default `Shape.Interval` for buildings is `8,-4`, `8,0` for others.
+  - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
 
 In `rulesmd.ini`:
 ```ini
@@ -60,8 +60,8 @@ Aircraft.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
 [SOMEDIGITALDISPLAYTYPE]                ; DigitalDisplayType
 ; Generic
 InfoType=Health                         ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage)
-Offset=0,0                              ; integer - horizontal, vertical
-Offset.ShieldDelta=                     ; integer - horizontal, vertical
+Offset=0,0                              ; integers - horizontal, vertical
+Offset.ShieldDelta=                     ; integers - horizontal, vertical
 Align=                                  ; Text alignment enumeration (left|right|center/centre)
 Anchor.Horizontal=Left                  ; Horizontal position enumeration (left|center/centre|right)
 Anchor.Vertical=top                     ; Vertical position enumeration (top|center/centre|bottom)
@@ -71,14 +71,14 @@ HideMaxValue=false                      ; boolean
 VisibleToHouses=owner                   ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true           ; boolean
 ; Text
-Text.Color=0,255,0                      ; integer - Red,Green,Blue
-Text.Color.ConditionYellow=255,255,0    ; integer - Red,Green,Blue
-Text.Color.ConditionRed=255,0,0         ; integer - Red,Green,Blue
+Text.Color=0,255,0                      ; integers - Red, Green, Blue
+Text.Color.ConditionYellow=255,255,0    ; integers - Red, Green, Blue
+Text.Color.ConditionRed=255,0,0         ; integers - Red, Green, Blue
 Text.Background=false                   ; boolean
 ; Shape
 Shape=                                  ; filename with .shp extension, if not present, game-drawn text will be used instead
 Palette=palette.pal                     ; filename with .pal extension
-Shape.Interval=                         ; integer - horizontal and vertical spacing between digits
+Shape.Spacing=                          ; integers - horizontal, vertical spacing between digits
 
 [SOMETECHNOTYPE]
 DigitalDisplay.Disable=false            ; boolean
