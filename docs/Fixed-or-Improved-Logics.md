@@ -796,8 +796,8 @@ Bolt.Disable3=false    ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPONTYPE]       ; WeaponType
-IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
-Bolt.Arcs=32
+IsElectricBolt=true    ; boolean, vanilla tag
+Bolt.Arcs=8            ; integer, number of arcs in a bolt
 ```
 
 ## RadialIndicator visibility
