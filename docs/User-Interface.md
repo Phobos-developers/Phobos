@@ -28,9 +28,8 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ### Digital display
 
-![image](_static/images/DigitalDisplay1.png)
-
-![image](_static/images/DigitalDisplay2.png)
+![image](_static/images/digital_display_shapes.png)
+*Default configuration of digital display using example shapes from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries).*
 
 - You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points.
  - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
@@ -89,6 +88,10 @@ In `Ra2MD.ini`:
 ```ini
 [Phobos]
 DigitalDisplay.Enable=false             ; boolean
+```
+
+```{note}
+An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)).
 ```
 
 ### Hide health bars
