@@ -33,24 +33,7 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 
 void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
-	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
-
-	if (BulletClass* pBullet = pType->CreateBullet(pTarget, pOwner,
-		damage, pThis, 0, pThis->Bright))
-	{
-		const CoordStruct& coords = pTarget->GetCoords();
-
-		if (pFiringHouse)
-		{
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			pBulletExt->FirerHouse = pFiringHouse;
-		}
-
-		pBullet->Limbo();
-		pBullet->SetLocation(coords);
-		pBullet->Explode(true);
-		pBullet->UnInit();
-	}
+	WarheadTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse);
 }
 
 void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
@@ -264,6 +247,22 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
+
+	// List all Warheads here that respect CellSpread
+	// Used in WarheadTypeExt::ExtData::Detonate
+	this->PossibleCellSpreadDetonate = (
+		this->RemoveDisguise
+		|| this->RemoveMindControl
+		|| this->Crit_Chance
+		|| this->Shield_Break
+		|| this->Shield_Respawn_Duration > 0
+		|| this->Shield_SelfHealing_Duration > 0
+		|| this->Shield_AttachTypes.size() > 0
+		|| this->Shield_RemoveTypes.size() > 0
+		|| this->Convert_Pairs.size() > 0
+		|| this->InflictLocomotor
+		|| this->RemoveInflictedLocomotor
+	);
 }
 
 template <typename T>
@@ -358,6 +357,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsOwner)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
+		.Process(this->PossibleCellSpreadDetonate)
 		;
 }
 
