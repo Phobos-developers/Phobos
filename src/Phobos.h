@@ -17,9 +17,6 @@ class Phobos
 public:
 	static void CmdLineParse(char**, int);
 
-	static CCINIClass* OpenConfig(const char*);
-	static void CloseConfig(CCINIClass*&);
-
 	static void ExeRun();
 	static void ExeTerminate();
 
