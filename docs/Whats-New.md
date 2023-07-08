@@ -172,8 +172,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
   [ScriptsRA2]
   10100=Timed Area Guard,20,0,1,[LONG DESC]
-  10103=Load Onto Transports,0,0,1,[LONG DESC]
   10101=Wait until ammo is full,0,0,1,[LONG DESC]
+  10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]
+  10103=Load Onto Transports,0,0,1,[LONG DESC]
+  10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
   18002=Local variable minus,22,0,1,[LONG DESC]
@@ -318,6 +320,8 @@ New:
 - Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar)
 - Crushing tilt and slowdown customization (by Starkku)
 - Extra warhead detonations on weapon (by Starkku)
+- Chrono sparkle animation display customization and improvements (by Starkku)
+- Script action to Chronoshift teams to enemy base (by Starkku)
 - Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
 - Auto-deploy/DeployBlock on ammo depletion (by Fryone)
 

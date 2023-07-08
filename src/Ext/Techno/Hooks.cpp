@@ -472,3 +472,17 @@ DEFINE_HOOK(0x4CD4E1, FlyLocomotionClass_Update_LayerUpdate, 0x6)
 
 	return 0;
 }
+
+// Move to UnitClass hooks file if it is ever created.
+DEFINE_HOOK(0x736234, UnitClass_ChronoSparkleDelay, 0x5)
+{
+	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
+	return 0x736239;
+}
+
+// Move to InfantryClass hooks file if it is ever created.
+DEFINE_HOOK(0x51BAFB, InfantryClass_ChronoSparkleDelay, 0x5)
+{
+	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
+	return 0x51BB00;
+}

@@ -183,6 +183,16 @@ In `aimd.ini`:
 x=10103,0
 ```
 
+##### `10104` Chronoshift to Enemy Base
+
+- Chronoshifts the members of the TeamType using first available `Type=Chronosphere` superweapon to a location within `[General]` -> `AISafeDistance` (plus the additional distance defined in parameter, can be negative) cells from enemy house's base. The superweapon must be charged up to atleast `[General]` -> `AIMinorSuperReadyPercent` percentage of its recharge time to be available for use by this action.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=10104,n         ; integer, additional distance in cells
+```
+
 ### `12000-12999` Suplementary/Setup Pre-actions
 
 #### `12000` Wait if No Target Found
