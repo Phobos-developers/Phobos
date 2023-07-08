@@ -66,6 +66,7 @@ void ShapeTextPrinter::PrintShape
 			0
 		);
 
-		posDraw += data.Interval;
+		posDraw.X += data.Interval.X;
+		posDraw.Y -= data.Interval.Y;
 	}
 }

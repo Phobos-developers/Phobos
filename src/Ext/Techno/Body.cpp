@@ -139,7 +139,7 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 		extraDistanceX += 1;
 		extraDistanceY += 1;
 	}
-	while (extraDistanceX < maxAttempts && (pThis->IsCellOccupied(pCell, FacingType::None, -1, nullptr, false) != Move::OK) && pCell->MapCoords != CellStruct::Empty);
+	while (extraDistanceX < maxAttempts && (pThis->IsCellOccupied(pCell, (int)FacingType::None, -1, nullptr, false) != Move::OK) && pCell->MapCoords != CellStruct::Empty);
 
 	pCell = MapClass::Instance->TryGetCellAt(placeCoords);
 	if (pCell)

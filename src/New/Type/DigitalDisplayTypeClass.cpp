@@ -39,14 +39,20 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 
 void DigitalDisplayTypeClass::Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield)
 {
-	posDraw += Offset;
+	posDraw.X += Offset.Get().X;
+	posDraw.Y -= Offset.Get().Y;
 
 	if (hasShield)
 	{
 		if (Offset_ShieldDelta.isset())
-			posDraw += Offset_ShieldDelta;
+		{
+			posDraw.X += Offset_ShieldDelta.Get().X;
+			posDraw.Y -= Offset_ShieldDelta.Get().Y;
+		}
 		else if (InfoType == DisplayInfoType::Shield)
+		{
 			posDraw.Y -= 10;	//default
+		}
 	}
 
 	if (isBuilding)
@@ -113,7 +119,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	Vector2D<int> vInterval = (
 		Shape_Interval.isset() ?
 		Shape_Interval.Get() :
-		(isBuilding ? Vector2D<int> { 8, -4 } : Vector2D<int> { 8, 0 }) // default
+		(isBuilding ? Vector2D<int> { 4, -2 } : Vector2D<int> { 4, 0 }) // default
 	);
 	std::string text = sCur;
 	const int iPipHeight = 4;
@@ -136,7 +142,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	case TextAlign::Center:
 	{
 		posDraw.X -= text.length() * vInterval.X / 2;
-		posDraw.Y -= text.length() * vInterval.Y / 2;
+		posDraw.Y += text.length() * vInterval.Y / 2;
 		break;
 	}
 	case TextAlign::Right:
@@ -149,7 +155,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 		if (!isBuilding)
 		{
 			posDraw.X -= text.length() * vInterval.X / 2;
-			posDraw.Y -= text.length() * vInterval.Y / 2;
+			posDraw.Y += text.length() * vInterval.Y / 2;
 		}
 		break;
 	}

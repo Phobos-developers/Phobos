@@ -550,7 +550,7 @@ namespace detail
 
 		if (parser.ReadInteger(pSection, pKey, &buffer))
 		{
-			if (buffer <= (int)DirType::Max && buffer >= (int)DirType::North)
+			if (buffer <= (int)DirType::NorthWest && buffer >= (int)DirType::North)
 			{
 				value = static_cast<DirType>(buffer);
 				return true;
