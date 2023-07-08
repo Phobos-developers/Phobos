@@ -667,14 +667,14 @@ TurretShadow=   ; boolean
 
 ### IsSimpleDeployer vehicle auto-deploy / deploy block on depleted ammo
 
-- `OnAmmoDepletion_AutoDeploy` if set, converts/deploys vehicle when ammo is depleted.
-- `OnAmmoDepletion_DeployUnlockAmount` determines amount of ammo, that allows vehicle converting/deploying command.
+- `OnAmmoDepletion.AutoDeploy` if set, converts/deploys vehicle when ammo is depleted.
+- `OnAmmoDepletion.DeployUnlockAmount` determines amount of ammo, that allows vehicle converting/deploying command.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                          ; VehicleType
-OnAmmoDepletion_DeployUnlockAmount=0   ; integer, unit will be allowed to undeploy only if it has at least this much ammo
-OnAmmoDepletion_AutoDeploy=true        ; boolean, whether this unit should automatically deploy after running out of ammo
+OnAmmoDepletion.DeployUnlockAmount=0   ; integer, unit will be allowed to undeploy only if it has at least this much ammo
+OnAmmoDepletion.AutoDeploy=true        ; boolean, whether this unit should automatically deploy after running out of ammo
 ```
 
 ```{warning}
