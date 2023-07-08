@@ -34,6 +34,8 @@ public:
 		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<bool> EnemyInsignia;
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
+		Valueable<int> ChronoSparkleDisplayDelay;
+		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<bool> RadWarhead_Detonate;
@@ -79,6 +81,7 @@ public:
 
 		Valueable<bool> CrateOnlyOnLand;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
+		Valueable<bool> DrawTurretShadow;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -86,6 +89,8 @@ public:
 			, UnitsGainSelfHealCap {}
 			, EnemyInsignia { true }
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
+			, ChronoSparkleDisplayDelay { 24 }
+			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadWarhead_Detonate { false }
@@ -124,6 +129,7 @@ public:
 			, DisplayIncome_Houses { AffectedHouse::All }
 			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
+			, DrawTurretShadow { false }
 		{ }
 
 		virtual ~ExtData() = default;

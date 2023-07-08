@@ -43,6 +43,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
 
+	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
+
 	this->RadType.Read(exINI, pSection, "RadType", true);
 
 	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
@@ -56,6 +58,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
 	this->OmniFire_TurnToTarget.Read(exINI, pSection, "OmniFire.TurnToTarget");
+	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
+	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 }
 
 template <typename T>
@@ -66,6 +70,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Bolt_Disable1)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)
+		.Process(this->Bolt_Arcs)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
 		.Process(this->CanTarget)
@@ -78,6 +83,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Laser_IsSingleColor)
 		.Process(this->ROF_RandomDelay)
 		.Process(this->OmniFire_TurnToTarget)
+		.Process(this->ExtraWarheads)
+		.Process(this->ExtraWarheads_DamageOverrides)
 		;
 };
 

@@ -52,6 +52,8 @@
 #include <CRT.h>
 #include <LocomotionClass.h>
 
+#include <Locomotion/TestLocomotionClass.h>
+
 namespace detail
 {
 	template <typename T>
@@ -542,6 +544,48 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<DirType>(DirType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		int buffer;
+
+		if (parser.ReadInteger(pSection, pKey, &buffer))
+		{
+			if (buffer <= (int)DirType::Max && buffer >= (int)DirType::North)
+			{
+				value = static_cast<DirType>(buffer);
+				return true;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid DirType (0-255).");
+			}
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<FacingType>(FacingType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		int buffer;
+
+		if (parser.ReadInteger(pSection, pKey, &buffer))
+		{
+			if (buffer < (int)FacingType::Count && buffer >= (int)FacingType::None)
+			{
+				value = static_cast<FacingType>(buffer);
+				return true;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid FacingType (0-7 or -1).");
+			}
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<SuperWeaponAITargetingMode>(SuperWeaponAITargetingMode& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -932,6 +976,47 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<ChronoSparkleDisplayPosition>(ChronoSparkleDisplayPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = ChronoSparkleDisplayPosition::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "building"))
+				{
+					parsed |= ChronoSparkleDisplayPosition::Building;
+				}
+				else if (!_strcmpi(cur, "occupants"))
+				{
+					parsed |= ChronoSparkleDisplayPosition::Occupants;
+				}
+				else if (!_strcmpi(cur, "occupantslots"))
+				{
+					parsed |= ChronoSparkleDisplayPosition::OccupantSlots;
+				}
+				else if (!_strcmpi(cur, "all") )
+				{
+					parsed |= ChronoSparkleDisplayPosition::All;
+				}
+				else if (_strcmpi(cur, "none"))
+				{
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a chrono sparkle position type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<CLSID>(CLSID& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (!parser.ReadString(pSection, pKey))
@@ -956,6 +1041,16 @@ if(_strcmpi(parser.value(), #name) == 0){ value = LocomotionClass::CLSIDs::name;
 			PARSE_IF_IS_LOCO(Droppod);
 
 #undef PARSE_IF_IS_LOCO
+
+#define PARSE_IF_IS_PHOBOS_LOCO(name)\
+if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionClass); return true; }
+
+		// Add your locomotor parsing here
+#ifdef CUSTOM_LOCO_EXAMPLE_ENABLED // Add semantic parsing for loco
+			PARSE_IF_IS_PHOBOS_LOCO(Test);
+#endif
+
+#undef PARSE_IF_IS_PHOBOS_LOCO
 
 			return false;
 		}
