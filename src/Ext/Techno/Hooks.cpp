@@ -477,23 +477,29 @@ DEFINE_HOOK(0x7037F7, TechnoClass_Cloak_CloakAnim, 0x5)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	if (const auto pAnimType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->CloakAnim.Get(RulesExt::Global()->CloakAnim))
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		if (const auto pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false);
+		if (const auto pAnimType = pTypeExt->CloakAnim.Get(RulesExt::Global()->CloakAnim))
+		{
+			if (const auto pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false);
+		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x70374F, TechnoClass_Uncloak_DecloakAnim, 0x5)
+DEFINE_HOOK(0x703736, TechnoClass_Uncloak_DecloakAnim, 0x6)
 {
-	TechnoClass* const pThis = reinterpret_cast<TechnoClass*>(R->ESI<int>() - 0x9C);
+	GET(TechnoClass* const, pThis, ESI);
 
-	if (const auto pAnimType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DecloakAnim.Get(RulesExt::Global()->DecloakAnim))
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		if (const auto pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false);
+		if (const auto pAnimType = pTypeExt->DecloakAnim.Get(RulesExt::Global()->DecloakAnim))
+		{
+			if (const auto pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false);
+		}
 	}
 
 	return 0;
@@ -506,7 +512,7 @@ DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
 	GET(FootClass*, pThis, ESI);
 	GET(AbstractClass*, pAbstract, EDI);
 	GET(FootClass*, pParasiteOwner, EAX);
-	GET(bool, bRemoved, EBX);
+	GET(bool, removed, EBX);
 
 	if (pParasiteOwner == pAbstract && (!pParasiteOwner->Health || !Make_Global<char>(0xA8ED5C)))
 	{
@@ -514,16 +520,16 @@ DEFINE_HOOK(0x4D9992, FootClass_PointerGotInvalid_Parasite, 0x7)
 		return SkipGameCode;
 	}
 
-	if (!bRemoved)
+	if (!removed)
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		bRemoved = pTypeExt->Cloak_KickOutParasite.Get(RulesExt::Global()->Cloak_KickOutParasite);
+		removed = pTypeExt->Cloak_KickOutParasite.Get(RulesExt::Global()->Cloak_KickOutParasite);
 	}
 
 	if (pParasiteOwner && pParasiteOwner->Health > 0)
-		pParasiteOwner->ParasiteImUsing->PointerExpired(pAbstract, bRemoved);
+		pParasiteOwner->ParasiteImUsing->PointerExpired(pAbstract, removed);
 
-	if (pThis == pAbstract && bRemoved)
+	if (pThis == pAbstract && removed)
 		pThis->ParasiteEatingMe = nullptr;
 
 	return SkipGameCode;
