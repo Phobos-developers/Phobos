@@ -172,8 +172,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
   [ScriptsRA2]
   10100=Timed Area Guard,20,0,1,[LONG DESC]
-  10103=Load Onto Transports,0,0,1,[LONG DESC]
   10101=Wait until ammo is full,0,0,1,[LONG DESC]
+  10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]
+  10103=Load Onto Transports,0,0,1,[LONG DESC]
+  10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
   18002=Local variable minus,22,0,1,[LONG DESC]
@@ -319,6 +321,8 @@ New:
 - Crushing tilt and slowdown customization (by Starkku)
 - Extra warhead detonations on weapon (by Starkku)
 - Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
+- Chrono sparkle animation display customization and improvements (by Starkku)
+- Script action to Chronoshift teams to enemy base (by Starkku)
 - Added sound entry on unit's creation (by Fryone)
 
 Vanilla fixes:
@@ -357,6 +361,7 @@ Vanilla fixes:
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
 - Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (by Kerbiter)
+- Suppressed the BuildingCaptured EVA events when capturing a building considered as a vehicle (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -381,6 +386,7 @@ Phobos fixes:
 - Fixed `CanTarget` not considering objects on bridges when checking if cell is empty (by Starkku)
 - Fixed new Phobos script actions not picking team leader correctly based on `LeadershipRating` (by Starkku)
 - Fixed an issue with `Gunner=true` vehicles not correctly using the first passenger's mode with multiple passengers inside (by Starkku)
+- Used `MindControl.Anim` for buildings deployed from mind-controlled vehicles (by Trsdy)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
