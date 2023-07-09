@@ -106,6 +106,18 @@ DEFINE_HOOK(0x4DBF13, FootClass_SetOwningHouse, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x4483C0, BuildingClass_SetOwningHouse_MuteSound, 0x6)
+{
+	GET(BuildingClass* const, pThis, ESI);
+	REF_STACK(bool, announce, STACK_OFFSET(0x60, 0x8));
+
+	pThis->NextMission();
+
+	announce = announce && !pThis->Type->IsVehicle();
+
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x7355C0, TechnoClass_Init_InitialStrength, 0x6) // UnitClass_Init
 DEFINE_HOOK_AGAIN(0x517D69, TechnoClass_Init_InitialStrength, 0x6) // InfantryClass_Init
 DEFINE_HOOK_AGAIN(0x442C7B, TechnoClass_Init_InitialStrength, 0x6) // BuildingClass_Init
@@ -472,4 +484,18 @@ DEFINE_HOOK(0x4CD4E1, FlyLocomotionClass_Update_LayerUpdate, 0x6)
 		TechnoExt::UpdateAttachedAnimLayers(pLinkedTo);
 
 	return 0;
+}
+
+// Move to UnitClass hooks file if it is ever created.
+DEFINE_HOOK(0x736234, UnitClass_ChronoSparkleDelay, 0x5)
+{
+	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
+	return 0x736239;
+}
+
+// Move to InfantryClass hooks file if it is ever created.
+DEFINE_HOOK(0x51BAFB, InfantryClass_ChronoSparkleDelay, 0x5)
+{
+	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
+	return 0x51BB00;
 }

@@ -980,6 +980,47 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<ChronoSparkleDisplayPosition>(ChronoSparkleDisplayPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = ChronoSparkleDisplayPosition::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "building"))
+				{
+					parsed |= ChronoSparkleDisplayPosition::Building;
+				}
+				else if (!_strcmpi(cur, "occupants"))
+				{
+					parsed |= ChronoSparkleDisplayPosition::Occupants;
+				}
+				else if (!_strcmpi(cur, "occupantslots"))
+				{
+					parsed |= ChronoSparkleDisplayPosition::OccupantSlots;
+				}
+				else if (!_strcmpi(cur, "all") )
+				{
+					parsed |= ChronoSparkleDisplayPosition::All;
+				}
+				else if (_strcmpi(cur, "none"))
+				{
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a chrono sparkle position type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<CLSID>(CLSID& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (!parser.ReadString(pSection, pKey))
