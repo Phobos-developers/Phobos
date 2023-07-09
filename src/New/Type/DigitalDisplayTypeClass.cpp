@@ -108,7 +108,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 {
 	std::string valueString(std::move(Percentage ?
 		GeneralUtils::IntToDigits(static_cast<int>(static_cast<double>(value) / maxValue * 100)) :
-		GeneralUtils::IntToDigits(maxValue)
+		GeneralUtils::IntToDigits(value)
 	));
 	std::string maxValueString(!Percentage && !HideMaxValue.Get(isInfantry) ?
 		std::move(GeneralUtils::IntToDigits(maxValue)) :
