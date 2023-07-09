@@ -319,6 +319,7 @@ New:
 - Crushing tilt and slowdown customization (by Starkku)
 - Extra warhead detonations on weapon (by Starkku)
 - Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
+- Added sound entry on unit's creation (by Fryone)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

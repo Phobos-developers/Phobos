@@ -928,6 +928,16 @@ EVA.Sold=       ; EVA entry
 SellSound=      ; sound entry
 ```
 
+### Sound entry on unit's creation
+
+- When unit is created, at it's position `VoiceCreated` will be played.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]    ; UnitType
+VoiceCreated=   ; sound entry
+```
+
 ## Terrain
 
 ### Destroy animation & sound
