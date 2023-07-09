@@ -41,6 +41,7 @@ This page lists all the individual contributions to the project by their author.
   - Official docs
   - VSCode configs
   - Code style
+  - Customizable ElectricBolt Arcs
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -127,6 +128,8 @@ This page lists all the individual contributions to the project by their author.
   - Initial strength for cloned infantry
 - **Starkku**:
   - Misc. minor bugfixes & improvements
+  - AI script actions:
+    - Chronoshift to Enemy Base
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
@@ -196,6 +199,8 @@ This page lists all the individual contributions to the project by their author.
   - `UndeploysInto` building selling buildup sequence length customization
   - AI naval vehicle production fix
   - Crushing tilt and slowdown customization
+  - Extra warhead detonations on weapons
+  - Chrono sparkle animation display customization and improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -274,6 +279,8 @@ This page lists all the individual contributions to the project by their author.
   - Custom slaves free sound
   - Jumpjet crash rotation control
   - Vehicle voxel turret shadows & body multi-section shadows
+- **Fryone**
+  - Customizable ElectricBolt Arcs
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

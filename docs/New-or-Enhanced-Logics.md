@@ -560,7 +560,7 @@ Convert.AffectedHouses=owner    ; list of Affected House Enumeration (none|owner
   - `LimboDelivery.IDs` is the list of numeric IDs that will be assigned to buildings. Necessary for LimboKill to work.
 
 - Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Superweapon with `LimboKill.IDs` set.
-  - `LimboKill.Affects` sets which houses are affected by this feature.
+  - `LimboKill.Affected` sets which houses are affected by this feature.
   - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
 
 - Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
@@ -587,7 +587,7 @@ LimboDelivery.Types=            ; List of BuildingTypes
 LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
 LimboDelivery.RollChances=      ; List of percentages.
 LimboDelivery.RandomWeightsN=   ; List of integers.
-LimboKill.Affects=self          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+LimboKill.Affected=self         ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LimboKill.IDs=                  ; List of numeric IDs.
 ```
 
@@ -1213,6 +1213,18 @@ In `rulesmd.ini`:
 [SOMEWEAPON]                    ; WeaponType
 Burst.Delays=-1                 ; integer - burst delays (comma-separated) for shots in order from first to last.
 Burst.FireWithinSequence=false  ; boolean
+```
+
+### Extra warhead detonations
+
+- It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
+  - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found. If not, weapon `Damage` is used.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                    ; WeaponType
+ExtraWarheads=                  ; list of WarheadTypes
+ExtraWarheads.DamageOverrides=  ; list of integers
 ```
 
 ### Feedback weapon
