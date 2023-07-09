@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/House/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Scenario/Body.h>
 
@@ -208,6 +209,10 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::SameLineForceJumpCountdown:
 		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
 		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
+		break;
+	case PhobosScripts::ChronoshiftToEnemyBase:
+		// Chronoshift to enemy base, argument is additional distance modifier
+		ScriptExt::ChronoshiftToEnemyBase(pTeam, argument);
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
@@ -1154,6 +1159,122 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
 	// This action finished
 	pTeam->StepCompleted = true;
 	ScriptExt::Log("AI Scripts - StopForceJumpCountdown: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
+}
+
+void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
+{
+	if (!pTeam)
+		return;
+
+	auto pScript = pTeam->CurrentScript;
+	auto const pLeader = ScriptExt::FindTheTeamLeader(pTeam);
+
+	char logText[1024];
+	sprintf_s(logText, "AI Scripts - ChronoshiftToEnemyBase: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: %s)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument, "%s");
+
+	if (!pLeader)
+	{
+		ScriptExt::Log(logText, "No team leader found");
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	int houseIndex = pLeader->Owner->EnemyHouseIndex;
+	HouseClass* pEnemy = houseIndex != -1 ? HouseClass::Array->GetItem(houseIndex) : nullptr;
+
+	if (!pEnemy)
+	{
+		ScriptExt::Log(logText, "No enemy house found");
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	auto const pTargetCell = HouseExt::GetEnemyBaseGatherCell(pEnemy, pLeader->Owner, pLeader->GetCoords(), pLeader->GetTechnoType()->SpeedType, extraDistance);
+
+	if (!pTargetCell)
+	{
+		ScriptExt::Log(logText, "No target cell found");
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	ScriptExt::ChronoshiftTeamToTarget(pTeam, pLeader, pTargetCell);
+}
+
+void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLeader, AbstractClass* pTarget)
+{
+	if (!pTeam || !pTeamLeader || !pTarget)
+		return;
+
+	auto pScript = pTeam->CurrentScript;
+	HouseClass* pOwner = pTeamLeader->Owner;
+	SuperClass* pSuperChronosphere = nullptr;
+	SuperClass* pSuperChronowarp = nullptr;
+
+	for (auto const pSuper : pOwner->Supers)
+	{
+		if (!pSuperChronosphere && pSuper->Type->Type == SuperWeaponType::ChronoSphere)
+			pSuperChronosphere = pSuper;
+
+		if (!pSuperChronowarp && pSuper->Type->Type == SuperWeaponType::ChronoWarp)
+			pSuperChronowarp = pSuper;
+
+		if (pSuperChronosphere && pSuperChronowarp)
+			break;
+	}
+
+	char logTextBase[1024];
+	char logTextJump[1024];
+	char jump[256];
+
+	sprintf_s(jump, "Jump to next line: %d = %d,%d -> (Reason: %s)", pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument, "%s");
+	sprintf_s(logTextBase, "AI Scripts - ChronoshiftTeamToTarget: [%s] [%s] (line: %d = %d,%d) %s\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, "%s");
+	sprintf_s(logTextJump, logTextBase, jump);
+
+	if (!pSuperChronosphere || !pSuperChronowarp)
+	{
+		ScriptExt::Log(logTextJump, "No Chronosphere or ChronoWarp superweapon found");
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	if (!pSuperChronosphere->IsCharged || (pSuperChronosphere->IsPowered() && !pOwner->Is_Powered()))
+	{
+		if (pSuperChronosphere->Granted)
+		{
+			int rechargeTime = pSuperChronosphere->GetRechargeTime();
+			int timeLeft = pSuperChronosphere->RechargeTimer.GetTimeLeft();
+
+			if (1.0 - RulesClass::Instance->AIMinorSuperReadyPercent < timeLeft / rechargeTime)
+			{
+				ScriptExt::Log(logTextBase, "Chronosphere superweapon charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet");
+				return;
+			}
+		}
+		else
+		{
+			ScriptExt::Log(logTextJump, "Chronosphere superweapon is not available");
+			pTeam->StepCompleted = true;
+			return;
+		}
+	}
+
+	auto pTargetCell = MapClass::Instance->TryGetCellAt(pTarget->GetCoords());
+
+	if (pTargetCell)
+	{
+		pOwner->Fire_SW(pSuperChronosphere->Type->ArrayIndex, pTeam->SpawnCell->MapCoords);
+		pOwner->Fire_SW(pSuperChronowarp->Type->ArrayIndex, pTargetCell->MapCoords);
+		pTeam->AssignMissionTarget(pTargetCell);
+		ScriptExt::Log(logTextJump, "Finished successfully");
+	}
+	else
+	{
+		ScriptExt::Log(logTextJump, "No target cell found");
+	}
+
+	pTeam->StepCompleted = true;
+	return;
 }
 
 bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed)

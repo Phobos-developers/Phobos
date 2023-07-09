@@ -51,7 +51,7 @@ void Patch::Apply()
 
 void Patch::Apply_RAW(DWORD offset, std::initializer_list<byte> data)
 {
-	Patch patch = { offset, data.size(), data.begin() };
+	Patch patch = { offset, data.size(), const_cast<byte*>(data.begin()) };
 	patch.Apply();
 }
 
