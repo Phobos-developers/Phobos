@@ -129,6 +129,8 @@ This page lists all the individual contributions to the project by their author.
    - `Convert.Anim` animation for converted technos
 - **Starkku**:
   - Misc. minor bugfixes & improvements
+  - AI script actions:
+    - Chronoshift to Enemy Base
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
@@ -199,6 +201,7 @@ This page lists all the individual contributions to the project by their author.
   - AI naval vehicle production fix
   - Crushing tilt and slowdown customization
   - Extra warhead detonations on weapons
+  - Chrono sparkle animation display customization and improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -257,6 +260,7 @@ This page lists all the individual contributions to the project by their author.
    - The option to allow DieSound/VoiceDie being played when grinding
    - Allow iron-curtain effects on infantries
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
+   - Remove sound events when mind-controlled vehicles deploy into buildings or when buildings considered as vehicles get captured
    - Building LightSource tint S/L fix
    - Permanent healthbar display on units targeted by temporal weapons fix
    - TechnoType conversion placeholder
