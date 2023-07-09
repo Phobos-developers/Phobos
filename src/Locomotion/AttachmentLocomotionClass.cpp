@@ -120,7 +120,6 @@ ZGradient AttachmentLocomotionClass::Z_Gradient()
 		: LocomotionClass::Z_Gradient();
 }
 
-
 bool AttachmentLocomotionClass::Process()
 {
 	if (this->LinkedTo->IsAlive)
@@ -157,6 +156,17 @@ bool AttachmentLocomotionClass::Process()
 		this->PreviousCell = newPos;
 	}
 
+	AttachmentClass* pAttachment = this->GetAttachment();
+	if (pAttachment && pAttachment->GetType()->InheritHeightStatus)
+	{
+		this->LinkedTo->OnBridge = pAttachment->Parent->OnBridge;
+	}
+	else
+	{
+		this->LinkedTo->OnBridge = false;  // GetHeight returns different height depending on this
+		this->LinkedTo->OnBridge = this->ShouldBeOnBridge();
+	}
+
 	return LocomotionClass::Process();
 }
 
@@ -177,10 +187,14 @@ bool AttachmentLocomotionClass::Is_Ion_Sensitive()
 
 Layer AttachmentLocomotionClass::In_Which_Layer()
 {
-	ILocomotionPtr pParentLoco = this->GetAttachmentParentLoco();
-	return pParentLoco
-		? pParentLoco->In_Which_Layer()
-		: Layer::Ground;
+	AttachmentClass* pAttachment = this->GetAttachment();
+	if (!pAttachment || !pAttachment->GetType()->InheritHeightStatus)
+		return this->CalculateLayer();
+
+	auto const pParentAsFoot = abstract_cast<FootClass*>(pAttachment->Parent);
+	return pParentAsFoot && pParentAsFoot->Locomotor
+		? pParentAsFoot->Locomotor->In_Which_Layer()
+		: this->CalculateLayer();
 }
 
 bool AttachmentLocomotionClass::Is_Moving_Now()
@@ -225,6 +239,13 @@ bool AttachmentLocomotionClass::Is_Really_Moving_Now()
 {
 	ILocomotionPtr pParentLoco = this->GetAttachmentParentLoco();
 	return pParentLoco && pParentLoco->Is_Really_Moving_Now();
+}
+
+void AttachmentLocomotionClass::Limbo()
+{
+	this->PreviousLayer = Layer::None;
+	this->PreviousCell = CellStruct::Empty;
+	// AircraftTracker is handled by FootClass::Limbo
 }
 
 HRESULT AttachmentLocomotionClass::Begin_Piggyback(ILocomotion* pointer)
@@ -336,4 +357,32 @@ ILocomotionPtr AttachmentLocomotionClass::GetAttachmentParentLoco()
 	}
 
 	return result;
+}
+
+Layer AttachmentLocomotionClass::CalculateLayer()
+{
+	auto const pExt = TechnoTypeExt::ExtMap.Find(this->LinkedTo->GetTechnoType());
+	int height = this->LinkedTo->GetHeight();
+
+	if (this->LinkedTo->IsInAir())
+	{
+		if (!this->LinkedTo->OnBridge && this->ShouldBeOnBridge())
+			height -= CellClass::BridgeHeight;
+
+		return height >= pExt->AttachmentTopLayerMinHeight
+			? Layer::Top : Layer::Air;
+	}
+	else if (this->LinkedTo->IsOnFloor())
+	{
+		return height <= pExt->AttachmentUndergroundLayerMaxHeight
+			? Layer::Underground : Layer::Ground;
+	}
+
+	return Layer::None;
+}
+
+bool AttachmentLocomotionClass::ShouldBeOnBridge()
+{
+	return MapClass::Instance->GetCellAt(this->LinkedTo->Location)->ContainsBridge()
+		&& this->LinkedTo->GetHeight() >= CellClass::BridgeHeight && !this->LinkedTo->IsFallingDown;
 }

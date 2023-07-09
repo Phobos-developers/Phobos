@@ -14,6 +14,7 @@ public:
 	Valueable<bool> InheritOwner; // aka mind control inheritance
 	Valueable<bool> InheritStateEffects; // phasing out, stealth etc.
 	Valueable<bool> InheritDestruction;
+	Valueable<bool> InheritHeightStatus;
 	Valueable<bool> OccupiesCell;
 	Valueable<bool> LowSelectionPriority;
 	Valueable<AttachmentYSortPosition> YSortPosition;
@@ -32,6 +33,7 @@ public:
 		, InheritStateEffects { true }
 		, OccupiesCell { true }
 		, InheritDestruction { true }
+		, InheritHeightStatus { true }
 		, LowSelectionPriority { true }
 		, YSortPosition { AttachmentYSortPosition::Default }
 		// , CanBeForceDetached { false }

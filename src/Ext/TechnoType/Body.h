@@ -151,6 +151,9 @@ public:
 		Valueable<double> CrushOverlayExtraForwardTilt;
 		Valueable<double> CrushSlowdownMultiplier;
 
+		Valueable<bool> AttachmentTopLayerMinHeight;
+		Valueable<bool> AttachmentUndergroundLayerMaxHeight;
+
 		struct AttachmentDataEntry
 		{
 			ValueableIdx<AttachmentTypeClass> Type;
@@ -322,6 +325,8 @@ public:
 			, CrushForwardTiltPerFrame {}
 			, CrushOverlayExtraForwardTilt { 0.02 }
 
+			, AttachmentTopLayerMinHeight { RulesExt::Global()->AttachmentTopLayerMinHeight }
+			, AttachmentUndergroundLayerMaxHeight { RulesExt::Global()->AttachmentUndergroundLayerMaxHeight }
 			, AttachmentData {}
 		{ }
 

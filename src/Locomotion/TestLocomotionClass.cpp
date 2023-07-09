@@ -140,7 +140,7 @@ bool TestLocomotionClass::Is_Really_Moving_Now()
 	return IsMoving;
 }
 
-void TestLocomotionClass::Clear_Coords()
+void TestLocomotionClass::Limbo()
 {
 	this->Stop_Moving();
 }

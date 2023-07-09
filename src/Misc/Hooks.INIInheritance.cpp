@@ -297,7 +297,7 @@ DEFINE_HOOK(0x527920, INIClass_ReadGUID_Overwrite, 0x5) // locomotor
 }
 
 // Fix issue with TilesInSet caused by incorrect vanilla INIs and the fixed parser returning correct default value (-1) instead of 0 for existing non-integer values
-int __fastcall IsometricTileTypeClass_ReadINI_TilesInSet_Wrapper(INIClass* pThis, void* _, const char* pSection, const char* pKey, int defaultValue)
+int __fastcall IsometricTileTypeClass_ReadINI_TilesInSet_Wrapper(INIClass* pThis, discard_t _, const char* pSection, const char* pKey, int defaultValue)
 {
 	if (pThis->Exists(pSection, pKey))
 		return pThis->ReadInteger(pSection, pKey, 0);

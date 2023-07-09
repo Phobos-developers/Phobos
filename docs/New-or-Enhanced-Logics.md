@@ -29,6 +29,7 @@ InheritCommands=true                  ; boolean
 LowSelectionPriority=true             ; boolean, whether the child is low priority while attached
 YSortPosition=default                 ; Attachment YSort position enumeration - default|underparent|overparent
 InheritDestruction=true               ; boolean
+InheritHeightStatus=true              ; boolean, whether the layer and InAir/OnGround/IsSurfaced inherited from parent
 OccupiesCell=true                     ; boolean
 DestructionWeapon.Child=              ; WeaponType, detonated on child when parent is destroyed
 DestructionWeapon.Parent=             ; WeaponType, detonated on parent when child is destroyed
@@ -36,11 +37,17 @@ ParentDestructionMission=             ; MissionType, queued to child when parent
 ParentDetachmentMission=              ; MissionType, queued to child when it's detached from parent
 
 [SOMETECHNO]                          ; TechnoTypeClass
+AttachmentTopLayerMinHeight=          ; integer
+AttachmentUndergroundLayerMaxHeight=  ; integer
 AttachmentX.Type=MNT                  ; AttachmentType (example)
 AttachmentX.TechnoType=               ; TechnoType that can be attached, currently only units are supported
 AttachmentX.FLH=0,0,0                 ; integer - Forward, Lateral, Height
 AttachmentX.IsOnTurret=false          ; boolean
 AttachmentX.RotationAdjust=0          ; rotation in DirType, from -255 to 255
+
+[General]
+AttachmentTopLayerMinHeight=500           ; integer
+AttachmentUndergroundLayerMaxHeight=-256  ; integer
 ```
 
 ### Custom Radiation Types

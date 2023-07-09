@@ -207,6 +207,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AutoFire.Read(exINI, pSection, "AutoFire");
 	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
+
+	this->AttachmentTopLayerMinHeight.Read(exINI, pSection, "AttachmentTopLayerMinHeight");
+	this->AttachmentUndergroundLayerMaxHeight.Read(exINI, pSection, "AttachmentUndergroundLayerMaxHeight");
+
 	// The following loop iterates over size + 1 INI entries so that the
 	// vector contents can be properly overriden via scenario rules - Kerbiter
 	for (size_t i = 0; i <= this->AttachmentData.size(); ++i)
@@ -546,6 +550,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrushOverlayExtraForwardTilt)
 		.Process(this->CrushSlowdownMultiplier)
 
+		.Process(this->AttachmentTopLayerMinHeight)
+		.Process(this->AttachmentUndergroundLayerMaxHeight)
 		.Process(this->AttachmentData)
 		;
 }

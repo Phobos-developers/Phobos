@@ -3,6 +3,14 @@
 #include <ASMMacros.h>
 #include "Patch.h"
 
+// Use when some function argument is unneeded.
+// Currently that happens when faking __thiscall functions
+// via __fastcall ones (fastcall function accepts args via
+// ECX, EDX, then stack, thiscall via ECX for this and stack
+// for rest, so second arg in fastcall-faked function would
+// need to be discarded).
+typedef size_t discard_t;
+
 #define GET_REGISTER_STATIC_TYPE(type, dst, reg) static type dst; _asm { mov dst, reg }
 
 template<typename T>

@@ -8,18 +8,6 @@
 
 #include <Utilities/Macro.h>
 
-typedef size_t nothing_t;
-
-// DEFINE_HOOK(0x4DA86E, FootClass_AI_UpdateAttachedLocomotion, 0x0)
-// {
-// 	GET(FootClass* const, pThis, ESI);
-// 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-// 	if (!pExt->ParentAttachment)
-// 		pThis->Locomotor->Process();
-
-// 	return 0x4DA87A;
-// }
 
 DEFINE_HOOK(0x707CB3, TechnoClass_KillCargo_HandleAttachments, 0x6)
 {
@@ -97,26 +85,16 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo_LimboAttachments, 0x6)
 
 // screw Ares
 
-void __fastcall UnitClass_SetOccupyBit(UnitClass* pThis, nothing_t, const CoordStruct& coords)
-{
-	JMP_THIS(0x7441B0);
-}
-
-void __fastcall UnitClass_SetOccupyBit_SkipVirtual(UnitClass* pThis, nothing_t _, const CoordStruct& coords)
+void __fastcall UnitClass_SetOccupyBit_SkipVirtual(UnitClass* pThis, discard_t, const CoordStruct& coords)
 {
 	if (!TechnoExt::DoesntOccupyCellAsChild(pThis))
-		UnitClass_SetOccupyBit(pThis, _, coords);
+		pThis->UnitClass::MarkAllOccupationBits(coords);
 }
 
-void __fastcall UnitClass_ClearOccupyBit(UnitClass* pThis, nothing_t, const CoordStruct& coords)
-{
-	JMP_THIS(0x744210);
-}
-
-void __fastcall UnitClass_ClearOccupyBit_SkipVirtual(UnitClass* pThis, nothing_t _, const CoordStruct& coords)
+void __fastcall UnitClass_ClearOccupyBit_SkipVirtual(UnitClass* pThis, discard_t, const CoordStruct& coords)
 {
 	if (!TechnoExt::DoesntOccupyCellAsChild(pThis))
-		UnitClass_ClearOccupyBit(pThis, _, coords);
+		pThis->UnitClass::UnmarkAllOccupationBits(coords);
 }
 
 DEFINE_JUMP(VTABLE, 0x7F5D60, GET_OFFSET(UnitClass_SetOccupyBit_SkipVirtual))
@@ -248,7 +226,7 @@ namespace TechnoAttachmentTemp
 }
 
 #define DEFINE_CELLTECHNO_WRAPPER(mode) \
-TechnoClass* __fastcall CellTechno_##mode(CellClass* pThis, nothing_t, Point2D *a2, bool check_alt, TechnoClass* techno) \
+TechnoClass* __fastcall CellTechno_##mode(CellClass* pThis, discard_t, Point2D *a2, bool check_alt, TechnoClass* techno) \
 { \
 	TechnoAttachmentTemp::currentMode = CellTechnoMode::mode; \
 	auto const retval = pThis->FindTechnoNearestTo(*a2, check_alt, techno); \
@@ -320,6 +298,63 @@ DEFINE_HOOK(0x4495F7, BuildingClass_ClearFactoryBib_SkipCreatedUnitAttachments, 
 
 #pragma endregion
 
+#pragma region InAir/OnGround
+
+bool __fastcall TechnoClass_OnGround(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritHeightStatus
+		? pExt->ParentAttachment->Parent->IsOnFloor()
+		: pThis->ObjectClass::IsOnFloor();
+}
+
+bool __fastcall TechnoClass_InAir(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritHeightStatus
+		? pExt->ParentAttachment->Parent->IsInAir()
+		: pThis->ObjectClass::IsInAir();
+}
+
+bool __fastcall TechnoClass_IsSurfaced(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritHeightStatus
+		? pExt->ParentAttachment->Parent->IsSurfaced()
+		: pThis->ObjectClass::IsSurfaced();
+}
+
+// TechnoClass
+DEFINE_JUMP(VTABLE, 0x7F49B0, GET_OFFSET(TechnoClass_OnGround));
+DEFINE_JUMP(VTABLE, 0x7F49B4, GET_OFFSET(TechnoClass_InAir));
+DEFINE_JUMP(VTABLE, 0x7F49DC, GET_OFFSET(TechnoClass_IsSurfaced));
+
+// BuildingClass
+DEFINE_JUMP(VTABLE, 0x7E3F0C, GET_OFFSET(TechnoClass_OnGround));
+DEFINE_JUMP(VTABLE, 0x7E3F10, GET_OFFSET(TechnoClass_InAir));
+DEFINE_JUMP(VTABLE, 0x7E3F38, GET_OFFSET(TechnoClass_IsSurfaced));
+
+// FootClass
+DEFINE_JUMP(VTABLE, 0x7E8CE4, GET_OFFSET(TechnoClass_OnGround));
+DEFINE_JUMP(VTABLE, 0x7E8CE8, GET_OFFSET(TechnoClass_InAir));
+DEFINE_JUMP(VTABLE, 0x7E8D10, GET_OFFSET(TechnoClass_IsSurfaced));
+
+// UnitClass
+DEFINE_JUMP(VTABLE, 0x7F5CC0, GET_OFFSET(TechnoClass_OnGround));
+DEFINE_JUMP(VTABLE, 0x7F5CC4, GET_OFFSET(TechnoClass_InAir));
+DEFINE_JUMP(VTABLE, 0x7F5CEC, GET_OFFSET(TechnoClass_IsSurfaced));
+
+// InfantryClass
+DEFINE_JUMP(VTABLE, 0x7EB0A8, GET_OFFSET(TechnoClass_OnGround));
+DEFINE_JUMP(VTABLE, 0x7EB0AC, GET_OFFSET(TechnoClass_InAir));
+DEFINE_JUMP(VTABLE, 0x7EB0D4, GET_OFFSET(TechnoClass_IsSurfaced));
+
+// AircraftClass has it's own logic, who would want to attach aircrafts anyways
+
+#pragma endregion
 
 DEFINE_HOOK(0x6CC763, SuperClass_Place_ChronoWarp_SkipChildren, 0x6)
 {
@@ -595,14 +630,9 @@ DEFINE_HOOK(0x736A2F, UnitClass_RotationAI_ForbidAttachmentRotation, 0x7)
 		: ContinueCheck;
 }
 
-Action __fastcall UnitClass_MouseOverCell(UnitClass* pThis, nothing_t _, CellStruct const* pCell, bool checkFog, bool ignoreForce)
+Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, discard_t, CellStruct const* pCell, bool checkFog, bool ignoreForce)
 {
-	JMP_THIS(0x7404B0);
-}
-
-Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, nothing_t _, CellStruct const* pCell, bool checkFog, bool ignoreForce)
-{
-	Action result = UnitClass_MouseOverCell(pThis, _, pCell, checkFog, ignoreForce);
+	Action result = pThis->UnitClass::MouseOverCell(pCell, checkFog, ignoreForce);
 
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 	if (!pExt->ParentAttachment)
@@ -624,6 +654,8 @@ Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, nothing_t _,
 
 	return result;
 }
+
+// TODO MouseOverObject for entering bunkers, grinder, buildings etc
 
 DEFINE_JUMP(VTABLE, 0x7F5CE0, GET_OFFSET(UnitClass_MouseOverCell_Wrapper))
 
@@ -705,17 +737,7 @@ DEFINE_HOOK(0x4D7D58, FootClass_CellClickedAction_HandleAttachment, 0x6)
 // 	return Continue;
 // }
 
-CoordStruct __fastcall ObjectClass_GetRenderCoords(ObjectClass* pThis, nothing_t _)
-{
-	JMP_THIS(0x41BE00);
-}
-
-CoordStruct __fastcall BuildingClass_GetRenderCoords(BuildingClass* pThis, nothing_t _)
-{
-	JMP_THIS(0x459EF0);
-}
-
-CoordStruct __fastcall TechnoClass_GetRenderCoords(TechnoClass* pThis, nothing_t _)
+CoordStruct __fastcall TechnoClass_GetRenderCoords(TechnoClass* pThis)
 {
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 	if (pExt && pExt->ParentAttachment)
@@ -724,7 +746,7 @@ CoordStruct __fastcall TechnoClass_GetRenderCoords(TechnoClass* pThis, nothing_t
 		return pExt->ParentAttachment->Cache.TopLevelParent->GetRenderCoords();
 	}
 
-	return ObjectClass_GetRenderCoords(pThis, _);
+	return pThis->ObjectClass::GetRenderCoords();
 }
 
 // TODO hook matrix
@@ -932,7 +954,7 @@ int __fastcall TechnoClass_SortY_Wrapper(ObjectClass* pThis)
 		}
 	}
 
-	return pThis->Get_YSort();
+	return pThis->ObjectClass::GetYSort();
 }
 
 DEFINE_JUMP(CALL, 0x449413, GET_OFFSET(TechnoClass_SortY_Wrapper))   // BuildingClass
