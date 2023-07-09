@@ -171,6 +171,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
+	this->VoiceCreated.Read(exINI, pSection, "VoiceCreated");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
@@ -426,6 +427,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SlavesFreeSound)
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
+
+		.Process(this->VoiceCreated)
 
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
