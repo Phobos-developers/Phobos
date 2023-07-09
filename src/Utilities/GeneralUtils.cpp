@@ -130,21 +130,21 @@ bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 
 std::string GeneralUtils::IntToDigits(int num)
 {
-	std::string sDigits;
+	std::string digits;
 
 	if (num == 0)
 	{
-		sDigits.push_back('0');
-		return sDigits;
+		digits.push_back('0');
+		return digits;
 	}
 
 	while (num)
 	{
-		sDigits.push_back(static_cast<char>(num % 10) + '0');
+		digits.push_back(static_cast<char>(num % 10) + '0');
 		num /= 10;
 	}
 
-	std::reverse(sDigits.begin(), sDigits.end());
+	std::reverse(digits.begin(), digits.end());
 
-	return sDigits;
+	return digits;
 }

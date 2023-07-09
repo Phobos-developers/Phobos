@@ -37,99 +37,97 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InfoType.Read(exINI, section, "InfoType");
 }
 
-void DigitalDisplayTypeClass::Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield)
+void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
-	posDraw.X += Offset.Get().X;
-	posDraw.Y -= Offset.Get().Y;
+	position.X += Offset.Get().X;
+	position.Y -= Offset.Get().Y;
 
 	if (hasShield)
 	{
 		if (Offset_ShieldDelta.isset())
 		{
-			posDraw.X += Offset_ShieldDelta.Get().X;
-			posDraw.Y -= Offset_ShieldDelta.Get().Y;
+			position.X += Offset_ShieldDelta.Get().X;
+			position.Y -= Offset_ShieldDelta.Get().Y;
 		}
 		else if (InfoType == DisplayInfoType::Shield)
 		{
-			posDraw.Y -= 10;	//default
+			position.Y -= 10;	//default
 		}
 	}
 
 	if (isBuilding)
 	{
 		if (AnchorType_Building == BuildingSelectBracketPosition::Top)
-			posDraw.Y -= 4; //Building's pips height
+			position.Y -= 4; //Building's pips height
 		else if (AnchorType_Building == BuildingSelectBracketPosition::LeftTop || AnchorType_Building == BuildingSelectBracketPosition::LeftBottom)
-			posDraw.X -= 8; //anchor to the left border of pips
+			position.X -= 8; //anchor to the left border of pips
 	}
 
 	if (Shape != nullptr)
-		DisplayShape(posDraw, iLength, iCur, iMax, isBuilding, isInfantry, hasShield);
+		DisplayShape(position, length, value, maxValue, isBuilding, isInfantry, hasShield);
 	else
-		DisplayText(posDraw, iLength, iCur, iMax, isBuilding, isInfantry, hasShield);
+		DisplayText(position, length, value, maxValue, isBuilding, isInfantry, hasShield);
 }
 
-void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield)
+void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
 	wchar_t text[0x20];
 
 	if (Percentage.Get())
 	{
-		swprintf_s(text, L"%d", static_cast<int>((static_cast<double>(iCur) / iMax) * 100));
+		swprintf_s(text, L"%d", static_cast<int>((static_cast<double>(value) / maxValue) * 100));
 		wcscat_s(text, L"%%");
 	}
 	else if (HideMaxValue.Get(isInfantry))
 	{
-		swprintf_s(text, L"%d", iCur);
+		swprintf_s(text, L"%d", value);
 	}
 	else
 	{
-		swprintf_s(text, L"%d/%d", iCur, iMax);
+		swprintf_s(text, L"%d/%d", value, maxValue);
 	}
 
-	double ratio = static_cast<double>(iCur) / iMax;
+	double ratio = static_cast<double>(value) / maxValue;
 	COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
 	RectangleStruct rect = { 0, 0, 0, 0 };
 	DSurface::Composite->GetRect(&rect);
-	TextPrintType ePrintType;
-	const int iTextHeight = 12;
-	const int iPipHeight = hasShield ? 4 : 0;
+	const int textHeight = 12;
+	const int pipsHeight = hasShield ? 4 : 0;
 
 	if (AnchorType.Vertical == VerticalPosition::Top)
-		posDraw.Y -= iTextHeight + iPipHeight; // upper of healthbar and shieldbar
+		position.Y -= textHeight + pipsHeight; // upper of healthbar and shieldbar
 
-	ePrintType = static_cast<TextPrintType>(Align.Get())
+	TextPrintType printType = static_cast<TextPrintType>(Align.Get())
 		| TextPrintType::FullShadow
 		| (Text_Background ? TextPrintType::Background : TextPrintType::LASTPOINT);
 
-	DSurface::Composite->DrawTextA(text, &rect, &posDraw, color, 0, ePrintType);
+	DSurface::Composite->DrawTextA(text, &rect, &position, color, 0, printType);
 }
 
-void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield)
+void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
-	std::string sCur(std::move(Percentage ?
-		GeneralUtils::IntToDigits(static_cast<int>(static_cast<double>(iCur) / iMax * 100)) :
-		GeneralUtils::IntToDigits(iCur)
+	std::string valueString(std::move(Percentage ?
+		GeneralUtils::IntToDigits(static_cast<int>(static_cast<double>(value) / maxValue * 100)) :
+		GeneralUtils::IntToDigits(maxValue)
 	));
-	std::string sMax(!Percentage && !HideMaxValue.Get(isInfantry) ?
-		std::move(GeneralUtils::IntToDigits(iMax)) :
+	std::string maxValueString(!Percentage && !HideMaxValue.Get(isInfantry) ?
+		std::move(GeneralUtils::IntToDigits(maxValue)) :
 		""
 	);
-	Vector2D<int> vInterval = (
+	Vector2D<int> spacing = (
 		Shape_Spacing.isset() ?
 		Shape_Spacing.Get() :
 		(isBuilding ? Vector2D<int> { 4, -2 } : Vector2D<int> { 4, 0 }) // default
 	);
-	std::string text = sCur;
-	const int iPipHeight = hasShield ? 4 : 0;
+	const int pipsHeight = hasShield ? 4 : 0;
 
 	if (Percentage)
-		text.push_back('%');
+		valueString.push_back('%');
 	else if (!HideMaxValue.Get(isInfantry))
-		text += '/' + sMax;
+		valueString += '/' + maxValueString;
 
 	if (AnchorType.Vertical == VerticalPosition::Top)
-		posDraw.Y -= Shape->Height + iPipHeight; // upper of healthbar and shieldbar
+		position.Y -= Shape->Height + pipsHeight; // upper of healthbar and shieldbar
 
 	switch (Align)
 	{
@@ -139,57 +137,56 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	}
 	case TextAlign::Center:
 	{
-		posDraw.X -= text.length() * vInterval.X / 2;
-		posDraw.Y += text.length() * vInterval.Y / 2;
+		position.X -= valueString.length() * spacing.X / 2;
+		position.Y += valueString.length() * spacing.Y / 2;
 		break;
 	}
 	case TextAlign::Right:
 	{
-		posDraw.X -= vInterval.X;
+		position.X -= spacing.X;
 		break;
 	}
 	}
 
-	bool bLeftToRight = Align != TextAlign::Right;
-	const int iGreenNumberBaseFrame = 0;
-	const int iYellowNumberBaseFrame = 10;
-	const int iRedNumberBaseFrame = 20;
-	const int iGreenSignBaseFrame = 30;
-	const int iYellowSignBaseFrame = 32;
-	const int iRedSignBaseFrame = 34;
-	int iNumberBaseFrame = iGreenNumberBaseFrame;
-	int iSignBaseFrame = iGreenSignBaseFrame;
-	double ratio = static_cast<double>(iCur) / iMax;
+	const int greenBaseFrame = 0;
+	const int yellowBaseFrame = 10;
+	const int redBaseFrame = 20;
+	const int greenExtraFrame = 30;
+	const int yellowExtraFrame = 32;
+	const int redExtraFrame = 34;
+	int numberBaseFrame = greenBaseFrame;
+	int extraBaseFrame = greenExtraFrame;
+	double ratio = static_cast<double>(value) / maxValue;
 
 	if (ratio > RulesClass::Instance->ConditionYellow)
-		iNumberBaseFrame = iGreenNumberBaseFrame;
+		numberBaseFrame = greenBaseFrame;
 	else if (ratio > RulesClass::Instance->ConditionRed)
-		iNumberBaseFrame = iYellowNumberBaseFrame;
+		numberBaseFrame = yellowBaseFrame;
 	else
-		iNumberBaseFrame = iRedNumberBaseFrame;
+		numberBaseFrame = redBaseFrame;
 
-	if (iNumberBaseFrame == iYellowNumberBaseFrame)
-		iSignBaseFrame = iYellowSignBaseFrame;
-	else if (iNumberBaseFrame == iRedNumberBaseFrame)
-		iSignBaseFrame = iRedSignBaseFrame;
+	if (numberBaseFrame == yellowBaseFrame)
+		extraBaseFrame = yellowExtraFrame;
+	else if (numberBaseFrame == redBaseFrame)
+		extraBaseFrame = redExtraFrame;
 
-	if (!bLeftToRight)
+	if (Align == TextAlign::Right)
 	{
-		std::reverse(text.begin(), text.end());
-		vInterval.X = -vInterval.X;
+		std::reverse(valueString.begin(), valueString.end());
+		spacing.X = -spacing.X;
 	}
 
 	ShapeTextPrintData shapeTextPrintData
 	(
 		Shape.Get(),
 		Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
-		iNumberBaseFrame,
-		iSignBaseFrame,
-		vInterval
+		numberBaseFrame,
+		extraBaseFrame,
+		spacing
 	);
 
 	RectangleStruct rect = DSurface::Composite->GetRect();
-	ShapeTextPrinter::PrintShape(text.c_str(), shapeTextPrintData, posDraw, rect, DSurface::Composite);
+	ShapeTextPrinter::PrintShape(valueString.c_str(), shapeTextPrintData, position, rect, DSurface::Composite);
 }
 
 

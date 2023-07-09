@@ -312,78 +312,79 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
 {
-	CoordStruct crdAbsolute = pThis->GetCoords();
-	Point2D  posScreen = { 0,0 };
-	TacticalClass::Instance->CoordsToScreen(&posScreen, &crdAbsolute);
-	posScreen -= TacticalClass::Instance->TacticalPos;
+	CoordStruct absolute = pThis->GetCoords();
+	Point2D  position = { 0,0 };
+	TacticalClass::Instance->CoordsToScreen(&position, &absolute);
+	position -= TacticalClass::Instance->TacticalPos;
 
-	return posScreen;
+	return position;
 }
 
 Point2D TechnoExt::GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor)
 {
-	int iLength = 17;
-	Point2D posScreen = GetScreenLocation(pThis);
+	int length = 17;
+	Point2D position = GetScreenLocation(pThis);
 
 	if (pThis->WhatAmI() == AbstractType::Infantry)
-		iLength = 8;
+		length = 8;
 
-	RectangleStruct rBracket =
+	RectangleStruct bracketRect =
 	{
-		posScreen.X - iLength + (iLength == 8) + 1,
-		posScreen.Y - 28 + (iLength == 8),
-		iLength * 2,
-		iLength * 3
+		position.X - length + (length == 8) + 1,
+		position.Y - 28 + (length == 8),
+		length * 2,
+		length * 3
 	};
-	Point2D posRes = anchor.OffsetPosition(rBracket);
 
-	return posRes;
+	return anchor.OffsetPosition(bracketRect);
 }
 
-Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition ePos)
+Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition)
 {
-	BuildingTypeClass* pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
-	Point2D posRes = GetScreenLocation(pThis);
-	CoordStruct crdDim2 = CoordStruct::Empty;
-	pBuildingType->Dimension2(&crdDim2);
-	Point2D posFix = Point2D::Empty;
-	CoordStruct crdTmp = { -crdDim2.X / 2, crdDim2.Y / 2, crdDim2.Z };
-	TacticalClass::Instance->CoordsToScreen(&posFix, &crdTmp);
-	int iFoundationHeight = pBuildingType->GetFoundationHeight(false);
-	int iFoundationWidth = pBuildingType->GetFoundationWidth();
-	int iHeight = pBuildingType->Height * 12;
-	int iLengthH = iFoundationHeight * 7 + iFoundationHeight / 2;
-	int iLengthW = iFoundationWidth * 7 + iFoundationWidth / 2;
-	posRes.X += posFix.X + 3 + iLengthH * 4;
-	posRes.Y += posFix.Y + 4 - iLengthH * 2;
+	const auto pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+	Point2D position = GetScreenLocation(pThis);
+	CoordStruct dim2 = CoordStruct::Empty;
+	pBuildingType->Dimension2(&dim2);
+	Point2D positionFix = Point2D::Empty;
+	dim2 = { -dim2.X / 2, dim2.Y / 2, dim2.Z };
+	TacticalClass::Instance->CoordsToScreen(&positionFix, &dim2);
 
-	switch (ePos)
+	const int foundationWidth = pBuildingType->GetFoundationWidth();
+	const int foundationHeight = pBuildingType->GetFoundationHeight(false);
+	const int height = pBuildingType->Height * 12;
+	const int lengthW = foundationWidth * 7 + foundationWidth / 2;
+	const int lengthH = foundationHeight * 7 + foundationHeight / 2;
+
+	position.X += positionFix.X + 3 + lengthH * 4;
+	position.Y += positionFix.Y + 4 - lengthH * 2;
+
+	switch (bracketPosition)
 	{
 	case BuildingSelectBracketPosition::Top:
 		break;
 	case BuildingSelectBracketPosition::LeftTop:
-		posRes.X -= iLengthH * 4;
-		posRes.Y += iLengthH * 2;
+		position.X -= lengthH * 4;
+		position.Y += lengthH * 2;
 		break;
 	case BuildingSelectBracketPosition::LeftBottom:
-		posRes.X -= iLengthH * 4;
-		posRes.Y += iLengthH * 2 + iHeight;
+		position.X -= lengthH * 4;
+		position.Y += lengthH * 2 + height;
 		break;
 	case BuildingSelectBracketPosition::Bottom:
-		posRes.Y += iLengthW * 2 + iLengthH * 2 + iHeight;
+		position.Y += lengthW * 2 + lengthH * 2 + height;
 		break;
 	case BuildingSelectBracketPosition::RightBottom:
-		posRes.X += iLengthW * 4;
-		posRes.Y += iLengthW * 2 + iHeight;
+		position.X += lengthW * 4;
+		position.Y += lengthW * 2 + height;
 		break;
 	case BuildingSelectBracketPosition::RightTop:
-		posRes.X += iLengthW * 4;
-		posRes.Y += iLengthW * 2;
+		position.X += lengthW * 4;
+		position.Y += lengthW * 2;
 	default:
 		break;
 	}
 
-	return posRes;
+	return position;
 }
 
 void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
@@ -391,14 +392,14 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	if (!Phobos::Config::DigitalDisplay_Enable)
 		return;
 
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->DigitalDisplay_Disable)
 		return;
 
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-	int iLength = 17;
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	int length = 17;
 	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = nullptr;
 
 	if (!pTypeExt->DigitalDisplayTypes.empty())
@@ -412,15 +413,15 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		case AbstractType::Building:
 		{
 			pDisplayTypes = &RulesExt::Global()->Buildings_DefaultDigitalDisplayTypes;
-			BuildingTypeClass* pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
-			int iFoundationHeight = pBuildingType->GetFoundationHeight(false);
-			iLength = iFoundationHeight * 7 + iFoundationHeight / 2;
+			const auto pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+			const int height = pBuildingType->GetFoundationHeight(false);
+			length = height * 7 + height / 2;
 			break;
 		}
 		case AbstractType::Infantry:
 		{
 			pDisplayTypes = &RulesExt::Global()->Infantry_DefaultDigitalDisplayTypes;
-			iLength = 8;
+			length = 8;
 			break;
 		}
 		case AbstractType::Unit:
@@ -446,40 +447,40 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
 			continue;
 
-		int iCur = -1;
-		int iMax = -1;
+		int value = -1;
+		int maxValue = -1;
 
-		GetValuesForDisplay(pThis, pDisplayType->InfoType, iCur, iMax);
+		GetValuesForDisplay(pThis, pDisplayType->InfoType, value, maxValue);
 
-		if (iCur == -1 || iMax == -1)
+		if (value == -1 || maxValue == -1)
 			continue;
 
-		bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
-		bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
-		bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
-		Point2D posDraw = pThis->WhatAmI() == AbstractType::Building ?
+		const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+		const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
+		const bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
+		Point2D position = pThis->WhatAmI() == AbstractType::Building ?
 			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
 			: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
-		posDraw.Y += pType->PixelSelectionBracketDelta;
+		position.Y += pType->PixelSelectionBracketDelta;
 
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)
-			posDraw.Y += pExt->Shield->GetType()->BracketDelta;
+			position.Y += pExt->Shield->GetType()->BracketDelta;
 
-		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, isInfantry, hasShield);
+		pDisplayType->Draw(position, length, value, maxValue, isBuilding, isInfantry, hasShield);
 	}
 }
 
-void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& iCur, int& iMax)
+void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue)
 {
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pType = pThis->GetTechnoType();
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	switch (infoType)
 	{
 	case DisplayInfoType::Health:
 	{
-		iCur = pThis->Health;
-		iMax = pType->Strength;
+		value = pThis->Health;
+		maxValue = pType->Strength;
 		break;
 	}
 	case DisplayInfoType::Shield:
@@ -487,8 +488,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning())
 			return;
 
-		iCur = pExt->Shield->GetHP();
-		iMax = pExt->Shield->GetType()->Strength.Get();
+		value = pExt->Shield->GetHP();
+		maxValue = pExt->Shield->GetType()->Strength.Get();
 		break;
 	}
 	case DisplayInfoType::Ammo:
@@ -496,8 +497,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pType->Ammo <= 0)
 			return;
 
-		iCur = pThis->Ammo;
-		iMax = pType->Ammo;
+		value = pThis->Ammo;
+		maxValue = pType->Ammo;
 		break;
 	}
 	case DisplayInfoType::MindControl:
@@ -505,8 +506,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pThis->CaptureManager == nullptr)
 			return;
 
-		iCur = pThis->CaptureManager->ControlNodes.Count;
-		iMax = pThis->CaptureManager->MaxControlNodes;
+		value = pThis->CaptureManager->ControlNodes.Count;
+		maxValue = pThis->CaptureManager->MaxControlNodes;
 		break;
 	}
 	case DisplayInfoType::Spawns:
@@ -514,8 +515,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pThis->SpawnManager == nullptr || pType->Spawns == nullptr || pType->SpawnsNumber <= 0)
 			return;
 
-		iCur = pThis->SpawnManager->CountAliveSpawns();
-		iMax = pType->SpawnsNumber;
+		value = pThis->SpawnManager->CountAliveSpawns();
+		maxValue = pType->SpawnsNumber;
 		break;
 	}
 	case DisplayInfoType::Passengers:
@@ -523,8 +524,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pType->Passengers <= 0)
 			return;
 
-		iCur = pThis->Passengers.NumPassengers;
-		iMax = pType->Passengers;
+		value = pThis->Passengers.NumPassengers;
+		maxValue = pType->Passengers;
 		break;
 	}
 	case DisplayInfoType::Tiberium:
@@ -532,14 +533,14 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pType->Storage <= 0)
 			return;
 
-		iCur = static_cast<int>(pThis->Tiberium.GetTotalAmount());
-		iMax = pType->Storage;
+		value = static_cast<int>(pThis->Tiberium.GetTotalAmount());
+		maxValue = pType->Storage;
 		break;
 	}
 	case DisplayInfoType::Experience:
 	{
-		iCur = static_cast<int>(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetCost());
-		iMax = static_cast<int>(2.0 * RulesClass::Instance->VeteranRatio * pType->GetCost());
+		value = static_cast<int>(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetCost());
+		maxValue = static_cast<int>(2.0 * RulesClass::Instance->VeteranRatio * pType->GetCost());
 		break;
 	}
 	case DisplayInfoType::Occupants:
@@ -547,14 +548,14 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pThis->WhatAmI() != AbstractType::Building)
 			return;
 
-		BuildingTypeClass* pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
-		BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pThis);
+		const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+		const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
 
 		if (!pBuildingType->CanBeOccupied)
 			return;
 
-		iCur = pBuilding->Occupants.Count;
-		iMax = pBuildingType->MaxNumberOccupants;
+		value = pBuilding->Occupants.Count;
+		maxValue = pBuildingType->MaxNumberOccupants;
 		break;
 	}
 	case DisplayInfoType::GattlingStage:
@@ -562,14 +563,14 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (!pType->IsGattling)
 			return;
 
-		iCur = pThis->CurrentGattlingStage;
-		iMax = pType->WeaponStages;
+		value = pThis->CurrentGattlingStage;
+		maxValue = pType->WeaponStages;
 		break;
 	}
 	default:
 	{
-		iCur = pThis->Health;
-		iMax = pType->Strength;
+		value = pThis->Health;
+		maxValue = pType->Strength;
 		break;
 	}
 	}

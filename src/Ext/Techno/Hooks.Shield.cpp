@@ -131,7 +131,7 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(int, iLength, EBX);
+	GET(int, length, EBX);
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
@@ -140,7 +140,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable())
-			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
+			pShieldData->DrawShieldBar(length, pLocation, pBound);
 	}
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
@@ -160,8 +160,8 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	{
 		if (pShieldData->IsAvailable())
 		{
-			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
+			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+			pShieldData->DrawShieldBar(length, pLocation, pBound);
 		}
 	}
 

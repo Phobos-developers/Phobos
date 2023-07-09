@@ -9,11 +9,15 @@ public:
 	const SHPStruct* const Shape;
 	const ConvertClass* const Palette;
 	int BaseNumberFrame;	// frame index of 0
-	int BaseSignFrame;		// as sequence ShapeTextPrinter::SignSequence
-	Vector2D<int> Interval;
+	int BaseExtraFrame;		// as sequence ShapeTextPrinter::SignSequence
+	Vector2D<int> Spacing;
 
-	ShapeTextPrintData(const SHPStruct* const shape, const ConvertClass* const palette, int iBaseNumberFrame, int iBaseSignFrame, const Vector2D<int>& vInterval)
-		: Shape(shape), Palette(palette), BaseNumberFrame(iBaseNumberFrame), BaseSignFrame(iBaseSignFrame), Interval(vInterval)
+	ShapeTextPrintData(const SHPStruct* const shape, const ConvertClass* const palette, int baseNumberFrame, int baseExtraFrame, const Vector2D<int>& spacing):
+		Shape(shape),
+		Palette(palette),
+		BaseNumberFrame(baseNumberFrame),
+		BaseExtraFrame(baseExtraFrame),
+		Spacing(spacing)
 	{ }
 };
 
@@ -32,12 +36,12 @@ public:
 	(
 		const char* text,
 		ShapeTextPrintData& data,
-		Point2D posDraw,
-		RectangleStruct& rBound,
+		Point2D position,
+		RectangleStruct& bounds,
 		DSurface* pSurface,
 		Point2D offset = Point2D::Empty,
-		BlitterFlags eBlitterFlags = BlitterFlags::None,
-		int iBright = 1000,
-		int iTintColor = 0
+		BlitterFlags blitterFlags = BlitterFlags::None,
+		int brightness = 1000,
+		int tintColor = 0
 	);
 };

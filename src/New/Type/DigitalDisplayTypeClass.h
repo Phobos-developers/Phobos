@@ -48,12 +48,12 @@ public:
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
 
-	void Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield);
+	void Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield);
 
 private:
 
-	void DisplayText(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield);
-	void DisplayShape(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield);
+	void DisplayText(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield);
+	void DisplayShape(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield);
 
 	template <typename T>
 	void Serialize(T& Stm);

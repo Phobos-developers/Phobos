@@ -12,19 +12,19 @@ void ShapeTextPrinter::PrintShape
 (
 	const char* text,
 	ShapeTextPrintData& data,
-	Point2D posDraw,
-	RectangleStruct& rBound,
+	Point2D position,
+	RectangleStruct& bounds,
 	DSurface* pSurface,
 	Point2D offset,
-	BlitterFlags eBlitterFlags,
-	int iBright,
-	int iTintColor
+	BlitterFlags blitterFlags,
+	int brightness,
+	int tintColor
 )
 {
-	int iLength = strlen(text);
-	std::vector<int> vFrames;
+	const int length = strlen(text);
+	std::vector<int> frames;
 
-	for (int i = 0; i < iLength; i++)
+	for (int i = 0; i < length; i++)
 	{
 		int frame = 0;
 
@@ -37,36 +37,36 @@ void ShapeTextPrinter::PrintShape
 			int signIndex = GetSignIndex(text[i]);
 
 			if (signIndex < SignSequenceLength)
-				frame = data.BaseSignFrame + signIndex;
+				frame = data.BaseExtraFrame + signIndex;
 			else
 				return;
 		}
 
-		vFrames.emplace_back(frame);
+		frames.emplace_back(frame);
 	}
 
-	for (int frame : vFrames)
+	for (int frame : frames)
 	{
 		pSurface->DrawSHP
 		(
 			const_cast<ConvertClass*>(data.Palette),
 			const_cast<SHPStruct*>(data.Shape),
 			frame,
-			&posDraw,
-			&rBound,
+			&position,
+			&bounds,
 			BlitterFlags::None,
 			0,
 			0,
 			ZGradient::Ground,
-			1000,
-			0,
+			brightness,
+			tintColor,
 			nullptr,
 			0,
 			0,
 			0
 		);
 
-		posDraw.X += data.Interval.X;
-		posDraw.Y -= data.Interval.Y;
+		position.X += data.Spacing.X;
+		position.Y -= data.Spacing.Y;
 	}
 }
