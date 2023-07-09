@@ -936,16 +936,16 @@ SellSound=      ; sound entry
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]
-CloakAnim=                       ; Animation
-DecloakAnim=                   ; Animation
+CloakAnim=                   ; Animation
+DecloakAnim=                 ; Animation
 Cloak.KickOutParasite=       ; boolean
 
 [AudioVisual]
-CloakAnim=                       ; Animation
-DecloakAnim=                   ; Animation
+CloakAnim=                   ; Animation
+DecloakAnim=                 ; Animation
 
 [CombatDamage]
-Cloak.KickOutParasite=true  ; boolean
+Cloak.KickOutParasite=true   ; boolean
 ```
 
 ## Terrain
