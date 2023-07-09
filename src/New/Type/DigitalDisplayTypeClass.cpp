@@ -37,7 +37,7 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InfoType.Read(exINI, section, "InfoType");
 }
 
-void DigitalDisplayTypeClass::Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield)
+void DigitalDisplayTypeClass::Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield)
 {
 	posDraw.X += Offset.Get().X;
 	posDraw.Y -= Offset.Get().Y;
@@ -64,12 +64,12 @@ void DigitalDisplayTypeClass::Draw(Point2D posDraw, int iLength, int iCur, int i
 	}
 
 	if (Shape != nullptr)
-		DisplayShape(posDraw, iLength, iCur, iMax, isBuilding);
+		DisplayShape(posDraw, iLength, iCur, iMax, isBuilding, isInfantry, hasShield);
 	else
-		DisplayText(posDraw, iLength, iCur, iMax, isBuilding);
+		DisplayText(posDraw, iLength, iCur, iMax, isBuilding, isInfantry, hasShield);
 }
 
-void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding)
+void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield)
 {
 	wchar_t text[0x20];
 
@@ -78,7 +78,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCu
 		swprintf_s(text, L"%d", static_cast<int>((static_cast<double>(iCur) / iMax) * 100));
 		wcscat_s(text, L"%%");
 	}
-	else if (HideMaxValue.Get())
+	else if (HideMaxValue.Get(isInfantry))
 	{
 		swprintf_s(text, L"%d", iCur);
 	}
@@ -93,26 +93,25 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCu
 	DSurface::Composite->GetRect(&rect);
 	TextPrintType ePrintType;
 	const int iTextHeight = 12;
-	const int iPipHeight = 4;
-	const int iBuildingPipHeight = 8;
+	const int iPipHeight = hasShield ? 4 : 0;
 
 	if (AnchorType.Vertical == VerticalPosition::Top)
-		posDraw.Y -= iTextHeight + iPipHeight * 2; // upper of healthbar and shieldbar
+		posDraw.Y -= iTextHeight + iPipHeight; // upper of healthbar and shieldbar
 
-	ePrintType = (Align == TextAlign::None ? (isBuilding ? TextPrintType::Right : TextPrintType::Center) : static_cast<TextPrintType>(Align.Get()))
+	ePrintType = static_cast<TextPrintType>(Align.Get())
 		| TextPrintType::FullShadow
 		| (Text_Background ? TextPrintType::Background : TextPrintType::LASTPOINT);
 
 	DSurface::Composite->DrawTextA(text, &rect, &posDraw, color, 0, ePrintType);
 }
 
-void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding)
+void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield)
 {
 	std::string sCur(std::move(Percentage ?
 		GeneralUtils::IntToDigits(static_cast<int>(static_cast<double>(iCur) / iMax * 100)) :
 		GeneralUtils::IntToDigits(iCur)
 	));
-	std::string sMax(!Percentage && !HideMaxValue ?
+	std::string sMax(!Percentage && !HideMaxValue.Get(isInfantry) ?
 		std::move(GeneralUtils::IntToDigits(iMax)) :
 		""
 	);
@@ -122,16 +121,15 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 		(isBuilding ? Vector2D<int> { 4, -2 } : Vector2D<int> { 4, 0 }) // default
 	);
 	std::string text = sCur;
-	const int iPipHeight = 4;
-	const int iBuildingPipHeight = 8;
+	const int iPipHeight = hasShield ? 4 : 0;
 
 	if (Percentage)
 		text.push_back('%');
-	else if (!HideMaxValue)
+	else if (!HideMaxValue.Get(isInfantry))
 		text += '/' + sMax;
 
 	if (AnchorType.Vertical == VerticalPosition::Top)
-		posDraw.Y -= Shape->Height + iPipHeight * 2; // upper of healthbar and shieldbar
+		posDraw.Y -= Shape->Height + iPipHeight; // upper of healthbar and shieldbar
 
 	switch (Align)
 	{
@@ -148,15 +146,6 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	case TextAlign::Right:
 	{
 		posDraw.X -= vInterval.X;
-		break;
-	}
-	default:
-	{
-		if (!isBuilding)
-		{
-			posDraw.X -= text.length() * vInterval.X / 2;
-			posDraw.Y += text.length() * vInterval.Y / 2;
-		}
 		break;
 	}
 	}

@@ -40,8 +40,6 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
     - `Text.Color`, `Text.Color.ConditionYellow` and `Text.Color.ConditionRed` allow customization of the font color. `Text.Background=yes` will additionally draw a black rectangle background.
     - When using shapes, a custom palette can be specified with `Palette`. `Shape.Spacing` controls pixel buffer between characters.
     - Frames 0-9 will be used as digits when the owner's health bar is green, 10-19 when yellow, 20-29 when red. For `/` and `%` characters, frame numbers are 30-31, 32-33, 34-35, respectively.
-  - Default `Align` for texts is `right` for BuildingTypes, `center` for others.
-  - Default `Align` for shapes is `left` for BuildingTypes, `center` for others.
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
 
@@ -61,10 +59,10 @@ Aircraft.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
 InfoType=Health                         ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage)
 Offset=0,0                              ; integers - horizontal, vertical
 Offset.ShieldDelta=                     ; integers - horizontal, vertical
-Align=                                  ; Text alignment enumeration (left|right|center/centre)
-Anchor.Horizontal=Left                  ; Horizontal position enumeration (left|center/centre|right)
+Align=right                             ; Text alignment enumeration (left|right|center/centre)
+Anchor.Horizontal=right                 ; Horizontal position enumeration (left|center/centre|right)
 Anchor.Vertical=top                     ; Vertical position enumeration (top|center/centre|bottom)
-Anchor.Building=lefttop                 ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+Anchor.Building=top                     ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
 Percentage=false                        ; boolean
 HideMaxValue=false                      ; boolean
 VisibleToHouses=owner                   ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)

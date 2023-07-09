@@ -330,7 +330,7 @@ Point2D TechnoExt::GetFootSelectBracketPosition(TechnoClass* pThis, Anchor ancho
 
 	RectangleStruct rBracket =
 	{
-		posScreen.X - iLength + (iLength == 8),
+		posScreen.X - iLength + (iLength == 8) + 1,
 		posScreen.Y - 28 + (iLength == 8),
 		iLength * 2,
 		iLength * 3
@@ -455,6 +455,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 			continue;
 
 		bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+		bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
 		bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
 		Point2D posDraw = pThis->WhatAmI() == AbstractType::Building ?
 			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
@@ -464,7 +465,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)
 			posDraw.Y += pExt->Shield->GetType()->BracketDelta;
 
-		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, hasShield);
+		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, isInfantry, hasShield);
 	}
 }
 

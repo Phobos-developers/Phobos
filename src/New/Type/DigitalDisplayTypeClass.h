@@ -19,7 +19,7 @@ public:
 	CustomPalette Palette;
 	Nullable<Vector2D<int>> Shape_Spacing;
 	Valueable<bool> Percentage;
-	Valueable<bool> HideMaxValue;
+	Nullable<bool> HideMaxValue;
 	Valueable<bool> VisibleToHouses_Observer;
 	Valueable<AffectedHouse> VisibleToHouses;
 	Valueable<DisplayInfoType> InfoType;
@@ -29,14 +29,14 @@ public:
 		, Text_Background(false)
 		, Offset({ 0, 0 })
 		, Offset_ShieldDelta()
-		, Align(TextAlign::None)
-		, AnchorType(HorizontalPosition::Center, VerticalPosition::Top)
-		, AnchorType_Building(BuildingSelectBracketPosition::LeftTop)
+		, Align(TextAlign::Right)
+		, AnchorType(HorizontalPosition::Right, VerticalPosition::Top)
+		, AnchorType_Building(BuildingSelectBracketPosition::Top)
 		, Shape(nullptr)
 		, Palette()
 		, Shape_Spacing()
 		, Percentage(false)
-		, HideMaxValue(false)
+		, HideMaxValue()
 		, VisibleToHouses_Observer(true)
 		, VisibleToHouses(AffectedHouse::All)
 		, InfoType(DisplayInfoType::Health)
@@ -48,12 +48,12 @@ public:
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
 
-	void Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield);
+	void Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield);
 
 private:
 
-	void DisplayText(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding);
-	void DisplayShape(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding);
+	void DisplayText(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield);
+	void DisplayShape(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool isInfantry, bool hasShield);
 
 	template <typename T>
 	void Serialize(T& Stm);
