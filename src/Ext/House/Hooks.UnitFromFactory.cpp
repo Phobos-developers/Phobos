@@ -1,9 +1,17 @@
+#include <GameStrings.h>
 #include <FactoryClass.h>
 
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Macro.h>
+
+DEFINE_HOOK(0x4FB63A, HouseClass_UnitFromFactory_DisablingEVAUnitReady, 0xF)
+{
+	if(!RulesExt::Global()->IsVoiceCreatedGlobal.Get())
+		VoxClass::Play(GameStrings::EVA_UnitReady);
+	return 0x4FB649;
+}
 
 DEFINE_HOOK(0x4FB64B, HouseClass_UnitFromFactory_VoiceCreated, 0x5)
 {
@@ -12,7 +20,10 @@ DEFINE_HOOK(0x4FB64B, HouseClass_UnitFromFactory_VoiceCreated, 0x5)
 
 	auto const pThisTechnoType = TechnoTypeExt::ExtMap.Find(pThisTechno->GetTechnoType());
 	if(pThisTechno->Owner->IsControlledByCurrentPlayer() && pThisTechnoType->VoiceCreated.isset())
-		VocClass::PlayAt(pThisTechnoType->VoiceCreated, pThisTechno->Location);
+		if(RulesExt::Global()->IsVoiceCreatedGlobal.Get())
+			VocClass::PlayGlobal(pThisTechnoType->VoiceCreated, 0x2000, 1.0f);
+		else
+			VocClass::PlayAt(pThisTechnoType->VoiceCreated, pThisTechno->Location);
 
 	pThisFactory->CompletedProduction();
 	return 0x4FB650;

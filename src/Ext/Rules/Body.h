@@ -83,6 +83,8 @@ public:
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
 
+		Valueable<bool> IsVoiceCreatedGlobal;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -130,6 +132,7 @@ public:
 			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
+			, IsVoiceCreatedGlobal { false }
 		{ }
 
 		virtual ~ExtData() = default;

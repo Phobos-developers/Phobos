@@ -930,12 +930,16 @@ SellSound=      ; sound entry
 
 ### Sound entry on unit's creation
 
-- When unit is created, at it's position `VoiceCreated` will be played.
+- When a unit is created, sound specified in `VoiceCreated` will be played for the unit owner.
+- If `IsVoiceCreatedGlobal` is set to true, `VoiceCreated` will be played globally instead of `EVA_UnitReady`.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]    ; UnitType
-VoiceCreated=   ; sound entry
+[AudioVisual]
+IsVoiceCreatedGlobal=false   ; boolean
+
+[SOMETECHNO]                 ; UnitType
+VoiceCreated=SOMEVOICEENTRY  ; sound entry
 ```
 
 ## Terrain
