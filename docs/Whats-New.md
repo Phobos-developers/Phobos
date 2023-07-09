@@ -360,6 +360,7 @@ Vanilla fixes:
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
 - Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (by Kerbiter)
+- Suppressed the BuildingCaptured EVA events when capturing a building considered as a vehicle (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -384,6 +385,7 @@ Phobos fixes:
 - Fixed `CanTarget` not considering objects on bridges when checking if cell is empty (by Starkku)
 - Fixed new Phobos script actions not picking team leader correctly based on `LeadershipRating` (by Starkku)
 - Fixed an issue with `Gunner=true` vehicles not correctly using the first passenger's mode with multiple passengers inside (by Starkku)
+- Used `MindControl.Anim` for buildings deployed from mind-controlled vehicles (by Trsdy)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)

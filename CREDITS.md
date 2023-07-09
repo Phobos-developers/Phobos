@@ -259,6 +259,7 @@ This page lists all the individual contributions to the project by their author.
    - The option to allow DieSound/VoiceDie being played when grinding
    - Allow iron-curtain effects on infantries
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
+   - Remove sound events when mind-controlled vehicles deploy into buildings or when buildings considered as vehicles get captured
    - Building LightSource tint S/L fix
    - Permanent healthbar display on units targeted by temporal weapons fix
    - TechnoType conversion placeholder

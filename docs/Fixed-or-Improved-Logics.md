@@ -10,6 +10,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when retinting map lighting with a map action corrupted light sources.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
 - Fixed the bug when capturing a mind-controlled building with an engineer fail to break the mind-control link.
+- Removed the EVA_BuildingCaptured event when capturing a building considered as a vehicle.
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again.
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon.
 - Fixed the bug that temporaryed unit cannot be erased correctly and no longer raise an error.
@@ -226,6 +227,7 @@ ZShapePointMove.OnBuildup=false  ; boolean
 ### Buildings considered as vehicles
 
 - By default game considers buildings with both `UndeploysInto` set and `Foundation` equaling `1x1` as vehicles, in a manner of speaking. This behaviour can now be toggled individually of these conditions by setting `ConsideredVehicle`. These buildings are counted as vehicles for unit count tracking, are not considered as base under attack when damaged and can be mass selected by default, for an example.
+- When capturing such "buildings", the player won't be notified by EVA capture event.
 
 In `rulesmd.ini`:
 ```ini
