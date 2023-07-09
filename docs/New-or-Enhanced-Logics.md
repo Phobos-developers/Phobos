@@ -946,6 +946,7 @@ DecloakAnim=                   ; Animation
 
 [CombatDamage]
 Cloak.KickOutParasite=true  ; boolean
+```
 
 ## Terrain
 
