@@ -305,6 +305,9 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 	if (this->Convert_Pairs.size() == 0)
 		return;
 
+	const auto pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
+	AnimTypeClass* pAnim = pTypeExt->Convert_Anim.isset() ? pTypeExt->Convert_Anim.Get() : nullptr;
+
 	for (const auto pTargetFoot : *FootClass::Array)
-		TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
+		TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner, pAnim);
 }

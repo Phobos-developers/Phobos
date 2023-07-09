@@ -208,6 +208,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	Nullable<AffectedHouse> convertAffectedHouses;
 	convertFrom.Read(exINI, pSection, "Convert.From");
 	convertTo.Read(exINI, pSection, "Convert.To");
+	Convert_Anim.Read(exINI, pSection, "Convert.Anim");
 	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
 	if (convertTo.isset())
 	{
@@ -348,6 +349,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
 		.Process(this->Convert_Pairs)
+		.Process(this->Convert_Anim)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)

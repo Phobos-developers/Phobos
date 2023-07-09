@@ -98,6 +98,7 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
 		TypeConvertHelper::ConvertPairs Convert_Pairs;
+		Nullable<AnimTypeClass*> Convert_Anim;
 
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
@@ -200,6 +201,7 @@ public:
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
 			, Convert_Pairs {}
+			, Convert_Anim {}
 
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }

@@ -58,6 +58,7 @@ public:
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
 		TypeConvertHelper::ConvertPairs Convert_Pairs;
+		Nullable<AnimTypeClass*> Convert_Anim;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
@@ -93,6 +94,7 @@ public:
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
+			, Convert_Anim {}
 		{ }
 
 		// Ares 0.A functions

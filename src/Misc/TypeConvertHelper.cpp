@@ -1,6 +1,6 @@
 #include "Misc/TypeConvertHelper.h"
 
-void TypeConvertHelper::Convert(FootClass* pTargetFoot, ConvertPairs& convertPairs, HouseClass* pOwner)
+void TypeConvertHelper::Convert(FootClass* pTargetFoot, ConvertPairs& convertPairs, HouseClass* pOwner, AnimTypeClass* pTypeAnim = nullptr)
 {
 	for (const auto& [fromTypes, toTypeIdx, affectedHouses] : convertPairs)
 	{
@@ -15,7 +15,14 @@ void TypeConvertHelper::Convert(FootClass* pTargetFoot, ConvertPairs& convertPai
 				// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
 				if (from == pTargetFoot->GetTechnoType())
 				{
-					TechnoExt::ConvertToType(pTargetFoot, toType);
+					bool converted = TechnoExt::ConvertToType(pTargetFoot, toType);
+
+					if (converted && pTypeAnim)
+					{
+						if (auto pAnim = GameCreate<AnimClass>(pTypeAnim, pTargetFoot->Location))
+							pAnim->SetOwnerObject(pTargetFoot);
+					}
+
 					break;
 				}
 			}
