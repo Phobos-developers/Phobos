@@ -153,14 +153,14 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 		return true;
 
 	MovementZone mZone = pThis->GetTechnoType()->MovementZone;
-	int currentZone = useZone ? zone : MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->IsOnBridge());
+	int currentZone = useZone ? zone : MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
 
 	if (currentZone != -1)
 	{
 		if (zoneScanType == TargetZoneScanType::Any)
 			return true;
 
-		int targetZone = MapClass::Instance->GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->IsOnBridge());
+		int targetZone = MapClass::Instance->GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->OnBridge);
 
 		if (zoneScanType == TargetZoneScanType::Same)
 		{
