@@ -9,6 +9,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
+#include <New/Type/DigitalDisplayTypeClass.h>
 
 class Matrix3D;
 
@@ -149,6 +150,9 @@ public:
 		Nullable<double> CrushForwardTiltPerFrame;
 		Valueable<double> CrushOverlayExtraForwardTilt;
 		Valueable<double> CrushSlowdownMultiplier;
+
+		Valueable<bool> DigitalDisplay_Disable;
+		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
 		struct LaserTrailDataEntry
 		{
@@ -302,6 +306,9 @@ public:
 			, CrushSlowdownMultiplier { 0.2 }
 			, CrushForwardTiltPerFrame {}
 			, CrushOverlayExtraForwardTilt { 0.02 }
+
+			, DigitalDisplay_Disable { false }
+			, DigitalDisplayTypes {}
 		{ }
 
 		virtual ~ExtData() = default;
