@@ -57,6 +57,35 @@ DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 	return SkipGameSelfHeal;
 }
 
+DEFINE_HOOK(0x709B2E, TechnoClass_DrawPips_Sizes, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+	REF_STACK(int, pipWidth, STACK_OFFSET(0x74, -0x1C));
+
+	Point2D size;
+	bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+
+	if (pThis->GetTechnoType()->PipScale == PipScale::Ammo)
+	{
+		if (isBuilding)
+			size = RulesExt::Global()->Pips_Ammo_Buildings_Size;
+		else
+			size = RulesExt::Global()->Pips_Ammo_Size;
+	}
+	else
+	{
+		if (isBuilding)
+			size = RulesExt::Global()->Pips_Generic_Buildings_Size;
+		else
+			size = RulesExt::Global()->Pips_Generic_Size;
+	}
+
+	pipWidth = size.X;
+	R->ESI(size.Y);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 {
 	enum { SkipGameDrawing = 0x70A6C0 };

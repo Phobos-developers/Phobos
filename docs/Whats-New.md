@@ -323,6 +323,7 @@ New:
 - Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
 - Chrono sparkle animation display customization and improvements (by Starkku)
 - Script action to Chronoshift teams to enemy base (by Starkku)
+- PipScale pip size customization (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

@@ -201,6 +201,7 @@ This page lists all the individual contributions to the project by their author.
   - Crushing tilt and slowdown customization
   - Extra warhead detonations on weapons
   - Chrono sparkle animation display customization and improvements
+  - PipScale pip size customization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

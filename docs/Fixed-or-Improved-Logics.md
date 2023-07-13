@@ -518,6 +518,20 @@ In `rulesmd.ini`:
 Powered.KillSpawns=false ; boolean
 ```
 
+### PipScale pip size customization
+
+- It is now possible to change the size of pips (or more accurately the pixel increment to the next pip drawn) displayed on `PipScale`.
+  - `Pips.Generic.(Buildings.)Size` is for non-ammo pips on non-building TechnoTypes / buildings, accordingly, and `Pips.Ammo.(Buildings.)Size` is in turn for ammo pips, split similarly between non-building technos and buildings.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+Pips.Generic.Size=4,0            ; X,Y, increment in pixels to next pip
+Pips.Generic.Buildings.Size=4,2  ; X,Y, increment in pixels to next pip
+Pips.Ammo.Size=4,0               ; X,Y, increment in pixels to next pip
+Pips.Ammo.Buildings.Size=4,2     ; X,Y, increment in pixels to next pip
+```
+
 ### Re-enable obsolete [JumpjetControls]
 
 - Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
