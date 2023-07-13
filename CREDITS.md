@@ -246,6 +246,7 @@ This page lists all the individual contributions to the project by their author.
   - Reimplemented `Airburst` & `Splits` logic with more customization options
   - Buildings considered as destroyable pathfinding obstacles
   - Animation visibility customization settings
+  - Light effect customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

@@ -254,6 +254,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
+	this->CombatLightDetailLevel.Read(exINI, pSection, "CombatLightDetailLevel");
+	this->CombatLightChance.Read(exINI, pSection, "CombatLightChance");
+	this->Particle_AlphaImageIsLightFlash.Read(exINI, pSection, "Particle.AlphaImageIsLightFlash");
+
 	this->SuppressRevengeWeapons.Read(exINI, pSection, "SuppressRevengeWeapons");
 	this->SuppressRevengeWeapons_Types.Read(exINI, pSection, "SuppressRevengeWeapons.Types");
 	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
@@ -474,6 +478,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RemoveInflictedLocomotor)
 
 		.Process(this->Nonprovocative)
+
+		.Process(this->CombatLightDetailLevel)
+		.Process(this->CombatLightChance)
+		.Process(this->Particle_AlphaImageIsLightFlash)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

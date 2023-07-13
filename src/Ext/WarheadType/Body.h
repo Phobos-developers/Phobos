@@ -138,6 +138,10 @@ public:
 
 		Valueable<bool> Nonprovocative;
 
+		Nullable<int> CombatLightDetailLevel;
+		Valueable<double> CombatLightChance;
+		Nullable<bool> Particle_AlphaImageIsLightFlash;
+
 		Valueable<bool> SuppressRevengeWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
 		Valueable<bool> SuppressReflectDamage;
@@ -282,6 +286,10 @@ public:
 			, RemoveInflictedLocomotor { false }
 
 			, Nonprovocative { false }
+
+			, CombatLightDetailLevel {}
+			, CombatLightChance { 1.0 }
+			, Particle_AlphaImageIsLightFlash {}
 
 			, SuppressRevengeWeapons { false }
 			, SuppressRevengeWeapons_Types {}
