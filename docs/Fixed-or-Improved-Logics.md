@@ -794,27 +794,32 @@ IsSingleColor=false  ; boolean
 ![image](_static/images/ebolt.gif)
 *EBolt customization utilized for different Tesla bolt weapon usage* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
 
-
-- You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
+- You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPONTYPE]       ; WeaponType
-IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
 Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
 ```
 
+```{note}
+Due to technical constraints, this does not work with electric bolts created from support weapon of Ares' Prism Forwarding.
+```
+
 ### Customizable ElectricBolt Arcs
 
-- By default, Electric Bolt has 8 Arcs. Now it can be customized per weapon with `IsElectricBolt=yes`. Zero value draws straight line.
+- By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPONTYPE]       ; WeaponType
-IsElectricBolt=true    ; boolean, vanilla tag
 Bolt.Arcs=8            ; integer, number of arcs in a bolt
+```
+
+```{note}
+Due to technical constraints, this does not work with electric bolts created from support weapon of Ares' Prism Forwarding.
 ```
 
 ## RadialIndicator visibility

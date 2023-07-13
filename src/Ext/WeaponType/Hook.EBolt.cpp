@@ -36,10 +36,11 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 	GET_STACK(EBolt*, pBolt, 0x40);
 	BoltTemp::pType = BoltTemp::boltWeaponTypeExt.get_or_default(pBolt);
 
-	GET_STACK(int, plotIndex, STACK_OFFSET(0x408, -0x3E0))
+	GET_STACK(int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
 
-	return plotIndex < BoltTemp::pType->Bolt_Arcs
-		? DoLoop : Break;
+	int arcCount = BoltTemp::pType ? BoltTemp::pType->Bolt_Arcs : 8;
+
+	return plotIndex < arcCount ? DoLoop : Break;
 }
 
 DEFINE_HOOK(0x4C24E4, Ebolt_DrawFist_Disable, 0x8)
