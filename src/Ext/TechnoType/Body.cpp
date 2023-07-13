@@ -249,6 +249,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
+	this->AmmoPip.Read(exINI, pSection, "AmmoPip");
+	this->EmptyAmmoPip.Read(exINI, pSection, "EmptyAmmoPip");
+	this->PipWrapAmmoPip.Read(exINI, pSection, "PipWrapAmmoPip");
+	this->AmmoPipSize.Read(exINI, pSection, "AmmoPipSize");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -520,6 +525,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
+
+		.Process(this->AmmoPip)
+		.Process(this->EmptyAmmoPip)
+		.Process(this->PipWrapAmmoPip)
+		.Process(this->AmmoPipSize)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

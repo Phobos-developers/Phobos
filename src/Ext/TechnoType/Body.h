@@ -154,6 +154,11 @@ public:
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
+		Valueable<int> AmmoPip;
+		Valueable<int> EmptyAmmoPip;
+		Valueable<int> PipWrapAmmoPip;
+		Nullable<Point2D> AmmoPipSize;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -309,6 +314,11 @@ public:
 
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
+
+			, AmmoPip { 13 }
+			, EmptyAmmoPip { -1 }
+			, PipWrapAmmoPip { 14 }
+			, AmmoPipSize {}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -518,10 +518,14 @@ In `rulesmd.ini`:
 Powered.KillSpawns=false ; boolean
 ```
 
-### PipScale pip size customization
+### PipScale pip customizations
 
 - It is now possible to change the size of pips (or more accurately the pixel increment to the next pip drawn) displayed on `PipScale`.
   - `Pips.Generic.(Buildings.)Size` is for non-ammo pips on non-building TechnoTypes / buildings, accordingly, and `Pips.Ammo.(Buildings.)Size` is in turn for ammo pips, split similarly between non-building technos and buildings.
+  - Ammo pip size can also be overridden on per TechnoType-basis using `AmmoPipSize`.
+- Ammo pip frames can now also be customized.
+  - `AmmoPip` and `EmptyAmmoPip` are frames (zero-based) of `pips2.shp` used for ammo pip and empty ammo pip (this is not set by default) for when `PipWrap=0` (this is the default).
+  - `PipWrapAmmoPip` is used as start frame (zero-based, from `pips2.shp`) for when `PipWrap` is above 0. The start frame is the empty frame and up to `Ammo` divided by `PipWrap` frames after it are used for the different reload stages.
 
 In `rulesmd.ini`:
 ```ini
@@ -530,6 +534,12 @@ Pips.Generic.Size=4,0            ; X,Y, increment in pixels to next pip
 Pips.Generic.Buildings.Size=4,2  ; X,Y, increment in pixels to next pip
 Pips.Ammo.Size=4,0               ; X,Y, increment in pixels to next pip
 Pips.Ammo.Buildings.Size=4,2     ; X,Y, increment in pixels to next pip
+
+[SOMETECHNO]                     ; TechnoType
+AmmoPip=13                       ; integer, frame of pips2.shp (zero-based)
+EmptyAmmoPip=-1                  ; integer, frame of pips2.shp (zero-based)
+PipWrapAmmoPip=14                ; integer, frame of pips2.shp (zero-based)
+AmmoPipSize=                     ; X,Y, increment in pixels to next pip
 ```
 
 ### Re-enable obsolete [JumpjetControls]
