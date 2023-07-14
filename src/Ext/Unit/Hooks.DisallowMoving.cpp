@@ -11,13 +11,29 @@
 
 DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 {
-	enum { QueueGuardInstead = 0x740AEF, ContinueCheck = 0x0 };
+	enum { QueueGuardInstead = 0x740AEF, ReturnTrue = 0x740AFD, ContinueCheck = 0x0 };
 
 	GET(UnitClass*, pThis, ESI);
-	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (TechnoExt::HasAttachmentLoco(pThis))
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		if (pExt && pExt->ParentAttachment)
+		{
+			auto const& pParent = pExt->ParentAttachment->Parent;
+			if (pThis->PlanningToken && pThis->PlanningToken->PlanningNodes.Count
+				&& pParent->PlanningToken && pParent->PlanningToken->PlanningNodes.Count
+				&& pThis->PlanningToken->PlanningNodes[0] == pParent->PlanningToken->PlanningNodes[0])
+			{
+				return ReturnTrue;
+			}
+		}
+		pThis->EnterIdleMode(false, true);
+		return ReturnTrue;
+	}
 
 	// skips this->IsHarvesting = 0, may backfire somewhere - Kerbiter
-	return pThis->Type->Speed == 0 || pExt->ParentAttachment
+	return pThis->Type->Speed == 0
 		? QueueGuardInstead
 		: ContinueCheck;
 }
@@ -27,9 +43,8 @@ DEFINE_HOOK(0x741AA7, UnitClass_Assign_Destination_DisallowMoving, 0x6)
 	enum { ClearNavComsAndReturn = 0x743173, ContinueCheck = 0x0 };
 
 	GET(UnitClass*, pThis, EBP);
-	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pThis->Type->Speed == 0 || pExt->ParentAttachment
+	return pThis->Type->Speed == 0 || TechnoExt::HasAttachmentLoco(pThis)
 		? ClearNavComsAndReturn
 		: ContinueCheck;
 }
@@ -40,7 +55,8 @@ DEFINE_HOOK(0x743B4B, UnitClass_Scatter_DisallowMoving, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	return pThis->Type->Speed == 0 ? ReleaseReturn : ContinueCheck;
+	return pThis->Type->Speed == 0 || TechnoExt::HasAttachmentLoco(pThis)
+		? ReleaseReturn : ContinueCheck;
 }
 
 DEFINE_HOOK(0x74038F, UnitClass_What_Action_ObjectClass_DisallowMoving_1, 0x6)
@@ -84,11 +100,13 @@ DEFINE_HOOK(0x740744, UnitClass_What_Action_DisallowMoving_2, 0x6)
 	return 0;
 }
 
+// Makes the vehicle keep it's current turret heading without snapping back to neutral position
 DEFINE_HOOK(0x736B60, UnitClass_Rotation_AI_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	return pThis->Type->Speed == 0 ? 0x736AFB : 0;
+	return pThis->Type->Speed == 0
+		? 0x736AFB : 0;
 }
 
 DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)

@@ -132,6 +132,7 @@ public:
 	static void LimboAttachments(TechnoClass* pThis);
 
 	static bool IsAttached(TechnoClass* pThis);
+	static bool HasAttachmentLoco(FootClass* pThis); // FIXME shouldn't be here
 	static bool DoesntOccupyCellAsChild(TechnoClass* pThis);
 	static bool IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep = true);
 	static TechnoClass* GetTopLevelParent(TechnoClass* pThis);

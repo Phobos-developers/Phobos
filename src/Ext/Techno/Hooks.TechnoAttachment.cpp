@@ -414,8 +414,8 @@ void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* p
 
 DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 {
-	GET_STACK(int, idxPath, STACK_OFFSET(0x18, -0x8));
-	GET_STACK(unsigned char, idxWP, STACK_OFFSET(0x18, -0xC));
+	REF_STACK(int, idxPath, STACK_OFFSET(0x18, -0x8));
+	REF_STACK(unsigned char, idxWP, STACK_OFFSET(0x18, -0xC));
 
 	for (auto const& pObject : ObjectClass::CurrentObjects.get())
 	{
@@ -629,7 +629,7 @@ DEFINE_HOOK(0x736A2F, UnitClass_RotationAI_ForbidAttachmentRotation, 0x7)
 		? SkipBodyRotation
 		: ContinueCheck;
 }
-
+/*
 Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, discard_t, CellStruct const* pCell, bool checkFog, bool ignoreForce)
 {
 	Action result = pThis->UnitClass::MouseOverCell(pCell, checkFog, ignoreForce);
@@ -658,7 +658,8 @@ Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, discard_t, C
 // TODO MouseOverObject for entering bunkers, grinder, buildings etc
 
 DEFINE_JUMP(VTABLE, 0x7F5CE0, GET_OFFSET(UnitClass_MouseOverCell_Wrapper))
-
+*/
+/*
 DEFINE_HOOK(0x4D74EC, FootClass_ObjectClickedAction_HandleAttachment, 0x6)
 {
 	enum { ReturnFalse = 0x4D77EC, Continue = 0x0 };
@@ -717,6 +718,7 @@ DEFINE_HOOK(0x4D7D58, FootClass_CellClickedAction_HandleAttachment, 0x6)
 			return Continue;
 	}
 }
+*/
 
 // DEFINE_HOOK(0x41BE02, AbstractClass_RenderCoord_AttachedCoord, 0x7)
 // {
@@ -964,7 +966,7 @@ DEFINE_JUMP(VTABLE, 0x7F5D28, GET_OFFSET(TechnoClass_SortY_Wrapper)) // UnitClas
 
 DEFINE_JUMP(LJMP, 0x568831, 0x568841); // Skip locomotion layer check in MapClass::PickUp
 DEFINE_JUMP(LJMP, 0x4D37A2, 0x4D37AE); // Skip locomotion layer check in FootClass::Mark
-
+/*
 // Handle waypoint mode command inheritance
 DEFINE_HOOK(0x4C73D1, EventClass_Execute_MegaMission_HandleChildren, 0x6)
 {
@@ -1012,3 +1014,4 @@ DEFINE_HOOK(0x4C73D1, EventClass_Execute_MegaMission_HandleChildren, 0x6)
 
 	return 0;
 }
+*/

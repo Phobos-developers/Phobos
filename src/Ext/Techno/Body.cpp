@@ -393,6 +393,14 @@ bool TechnoExt::IsAttached(TechnoClass* pThis)
 	return pExt && pExt->ParentAttachment;
 }
 
+bool TechnoExt::HasAttachmentLoco(FootClass* pThis)
+{
+	IPersistPtr pPersist = pThis->Locomotor;
+	CLSID locoCLSID {};
+	return pPersist && SUCCEEDED(pPersist->GetClassID(&locoCLSID))
+		&& locoCLSID == __uuidof(AttachmentLocomotionClass);
+}
+
 bool TechnoExt::DoesntOccupyCellAsChild(TechnoClass* pThis)
 {
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
