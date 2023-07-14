@@ -1,42 +1,23 @@
 #include <UnitClass.h>
+#include <TechnoClass.h>
 
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Macro.h>
 
-DEFINE_HOOK(0x739AC6, UnitClass_ToggleDeployState_IgnoreDeploying, 0x6)
+DEFINE_HOOK(0x73FFE6, UnitClass_WhatAction_RemoveDeploying, 0xA)
 {
-	enum {Continue = 0x739ACC, Ignore = 0x739CBF};
+	enum { Continue = 0x73FFF0 };
 
-	GET(UnitClass* const, pThis, ECX);
+	GET(UnitClass*, pThis, ESI);
+	auto const pThisType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	R->EAX(pThis->GetTechnoType());
-	auto const pThisTechno = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if(pThisTechno->OnAmmoDepletion_DeployUnlockAmount != 0 && pThis->Ammo < pThisTechno->OnAmmoDepletion_DeployUnlockAmount)
+	R->AL(pThis->CanDeploySlashUnload());
+	if(pThis->CanDeploySlashUnload())
 	{
-		if(pThisTechno->VoiceCantDeploy)
-			VocClass::PlayIndexAtPos(pThisTechno->VoiceCantDeploy, pThis->Location);
-		return Ignore;
-	}
-
-	return Continue;
-}
-
-//blockForDeployed
-DEFINE_HOOK(0x739CD7, UnitClass_ToggleSimpleDeploy_IgnoreDeploying, 0x6)
-{
-	enum {Continue = 0x739CDD, Ignore = 0x739EB8};
-
-	GET(UnitClass* const, pThis, ECX);
-
-	R->AL(pThis->Deployed);
-	auto const pThisTechno = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if(pThisTechno->OnAmmoDepletion_DeployUnlockAmount != 0 && pThis->Ammo < pThisTechno->OnAmmoDepletion_DeployUnlockAmount)
-	{
-		if(pThisTechno->VoiceCantDeploy)
-			VocClass::PlayIndexAtPos(pThisTechno->VoiceCantDeploy, pThis->Location);
-		return Ignore;
+		if(pThisType->OnAmmoDepletion_DeployUnlockAmount != 0 && pThis->Ammo < pThisType->OnAmmoDepletion_DeployUnlockAmount)
+			R->AL(false);
 	}
 
 	return Continue;
