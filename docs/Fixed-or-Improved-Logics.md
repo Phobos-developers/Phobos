@@ -723,20 +723,20 @@ In `artmd.ini`:
 TurretShadow=   ; boolean
 ```
 
-### IsSimpleDeployer vehicle auto-deploy / deploy block on depleted ammo
+### IsSimpleDeployer vehicle auto-deploy / deploy block on ammo change
 
-- `OnAmmoDepletion.AutoDeploy` if set, converts/deploys vehicle when ammo is depleted.
-- `OnAmmoDepletion.DeployUnlockAmount` determines amount of ammo, that allows vehicle converting/deploying command.
+- `Ammo.AutoDeployAmount` determines amount of ammo, that converts/deploys vehicle automatically.
+- `Ammo.DeployUnlockAmount` determines amount of ammo, that allows vehicle converting/deploying command.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                          ; VehicleType
-OnAmmoDepletion.DeployUnlockAmount=0   ; integer, unit will be allowed to undeploy only if it has at least this much ammo
-OnAmmoDepletion.AutoDeploy=true        ; boolean, whether this unit should automatically deploy after running out of ammo
+Ammo.DeployUnlockAmount=-1      ; integer, unit will be allowed to undeploy only if it has at least this much ammo
+Ammo.AutoDeployAmount=-1        ; integer, unit will automatically deploy after running out of ammo
 ```
 
 ```{warning}
-`OnAmmoDepletion.AutoDeploy` feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is restored.
+`Ammo.AutoDeployAmount` feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
 ```
 
 ## VoxelAnims

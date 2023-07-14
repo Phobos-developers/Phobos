@@ -324,7 +324,7 @@ New:
 - Script action to Chronoshift teams to enemy base (by Starkku)
 - Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
 - PipScale pip size & ammo pip frame customization (by Starkku)
-- Auto-deploy/DeployBlock on ammo depletion (by Fryone)
+- Auto-deploy/DeployBlock on ammo change (by Fryone)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

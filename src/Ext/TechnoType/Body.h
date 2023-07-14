@@ -49,8 +49,8 @@ public:
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 
-		Valueable<bool> OnAmmoDepletion_AutoDeploy;
-		Valueable<int> OnAmmoDepletion_DeployUnlockAmount;
+		Valueable<int> Ammo_AutoDeployAmount;
+		Valueable<int> Ammo_DeployUnlockAmount;
 		NullableIdx<VocClass> VoiceCantDeploy;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
@@ -259,8 +259,8 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 
-			, OnAmmoDepletion_AutoDeploy { false }
-			, OnAmmoDepletion_DeployUnlockAmount { 0 }
+			, Ammo_AutoDeployAmount { -1 }
+			, Ammo_DeployUnlockAmount { -1 }
 
 			, AutoDeath_Behavior { }
 			, AutoDeath_VanishAnimation {}

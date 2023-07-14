@@ -16,7 +16,7 @@ DEFINE_HOOK(0x73FFE6, UnitClass_WhatAction_RemoveDeploying, 0xA)
 	R->AL(pThis->CanDeploySlashUnload());
 	if(pThis->CanDeploySlashUnload())
 	{
-		if(pThisType->OnAmmoDepletion_DeployUnlockAmount != 0 && pThis->Ammo < pThisType->OnAmmoDepletion_DeployUnlockAmount)
+		if(pThisType->Ammo_DeployUnlockAmount != 0 && pThis->Ammo < pThisType->Ammo_DeployUnlockAmount)
 			R->AL(false);
 	}
 
@@ -33,7 +33,7 @@ DEFINE_HOOK(0x730C70, DeployClass_Execute_RemoveDeploying, 0xA)
 	R->AL(pThis->CanDeploySlashUnload());
 	if(pThis->CanDeploySlashUnload())
 	{
-		if(pThisType->OnAmmoDepletion_DeployUnlockAmount != 0 && pThis->Ammo < pThisType->OnAmmoDepletion_DeployUnlockAmount)
+		if(pThisType->Ammo_DeployUnlockAmount != 0 && pThis->Ammo < pThisType->Ammo_DeployUnlockAmount)
 			R->AL(false);
 	}
 
