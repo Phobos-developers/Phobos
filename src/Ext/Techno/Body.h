@@ -165,4 +165,9 @@ public:
 	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
+	static Point2D GetScreenLocation(TechnoClass* pThis);
+	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
+	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
+	static void ProcessDigitalDisplays(TechnoClass* pThis);
+	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
 };

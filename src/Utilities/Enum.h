@@ -34,6 +34,7 @@
 
 #include <GeneralDefinitions.h>
 #include <Phobos.h>
+#include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
 {
@@ -214,6 +215,45 @@ enum class ChronoSparkleDisplayPosition : unsigned char
 };
 
 MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
+
+enum class HorizontalPosition : BYTE
+{
+	Left = 0,
+	Center = 1,
+	Right = 2
+};
+
+enum class VerticalPosition : BYTE
+{
+	Top = 0,
+	Center = 1,
+	Bottom = 2
+};
+
+//hexagon
+enum class BuildingSelectBracketPosition :BYTE
+{
+	Top = 0,
+	LeftTop = 1,
+	LeftBottom = 2,
+	Bottom = 3,
+	RightBottom = 4,
+	RightTop = 5
+};
+
+enum class DisplayInfoType : BYTE
+{
+	Health = 0,
+	Shield = 1,
+	Ammo = 2,
+	MindControl = 3,
+	Spawns = 4,
+	Passengers = 5,
+	Tiberium = 6,
+	Experience = 7,
+	Occupants = 8,
+	GattlingStage = 9
+};
 
 class MouseCursorHotSpotX
 {

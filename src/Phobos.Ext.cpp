@@ -29,6 +29,7 @@
 
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/DigitalDisplayTypeClass.h>
 
 #include <utility>
 
@@ -217,6 +218,7 @@ using PhobosTypeRegistry = TypeRegistry<
 	LaserTrailTypeClass,
 	RadTypeClass,
 	ShieldClass,
+	DigitalDisplayTypeClass
 	AttachmentClass,
 	AttachmentTypeClass
 	// other classes

@@ -9,6 +9,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
+#include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/AttachmentTypeClass.h>
 
 class Matrix3D;
@@ -150,6 +151,14 @@ public:
 		Nullable<double> CrushForwardTiltPerFrame;
 		Valueable<double> CrushOverlayExtraForwardTilt;
 		Valueable<double> CrushSlowdownMultiplier;
+
+		Valueable<bool> DigitalDisplay_Disable;
+		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
+
+		Valueable<int> AmmoPip;
+		Valueable<int> EmptyAmmoPip;
+		Valueable<int> PipWrapAmmoPip;
+		Nullable<Point2D> AmmoPipSize;
 
 		Valueable<bool> AttachmentTopLayerMinHeight;
 		Valueable<bool> AttachmentUndergroundLayerMaxHeight;
@@ -324,6 +333,14 @@ public:
 			, CrushSlowdownMultiplier { 0.2 }
 			, CrushForwardTiltPerFrame {}
 			, CrushOverlayExtraForwardTilt { 0.02 }
+
+			, DigitalDisplay_Disable { false }
+			, DigitalDisplayTypes {}
+
+			, AmmoPip { 13 }
+			, EmptyAmmoPip { -1 }
+			, PipWrapAmmoPip { 14 }
+			, AmmoPipSize {}
 
 			, AttachmentTopLayerMinHeight { RulesExt::Global()->AttachmentTopLayerMinHeight }
 			, AttachmentUndergroundLayerMaxHeight { RulesExt::Global()->AttachmentUndergroundLayerMaxHeight }

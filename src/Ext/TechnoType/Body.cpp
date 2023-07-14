@@ -284,6 +284,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CrushOverlayExtraForwardTilt.Read(exINI, pSection, "CrushOverlayExtraForwardTilt");
 	this->CrushSlowdownMultiplier.Read(exINI, pSection, "CrushSlowdownMultiplier");
 
+	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
+	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
+
+	this->AmmoPip.Read(exINI, pSection, "AmmoPip");
+	this->EmptyAmmoPip.Read(exINI, pSection, "EmptyAmmoPip");
+	this->PipWrapAmmoPip.Read(exINI, pSection, "PipWrapAmmoPip");
+	this->AmmoPipSize.Read(exINI, pSection, "AmmoPipSize");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -356,6 +364,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->WeaponBurstFLHs, this->EliteWeaponBurstFLHs, "");
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->DeployedWeaponBurstFLHs, this->EliteDeployedWeaponBurstFLHs, "Deployed");
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->CrouchedWeaponBurstFLHs, this->EliteCrouchedWeaponBurstFLHs, "Prone");
+
 
 	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
@@ -549,6 +558,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrushForwardTiltPerFrame)
 		.Process(this->CrushOverlayExtraForwardTilt)
 		.Process(this->CrushSlowdownMultiplier)
+
+		.Process(this->DigitalDisplay_Disable)
+		.Process(this->DigitalDisplayTypes)
+
+		.Process(this->AmmoPip)
+		.Process(this->EmptyAmmoPip)
+		.Process(this->PipWrapAmmoPip)
+		.Process(this->AmmoPipSize)
 
 		.Process(this->AttachmentTopLayerMinHeight)
 		.Process(this->AttachmentUndergroundLayerMaxHeight)

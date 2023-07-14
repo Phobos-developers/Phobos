@@ -7,6 +7,7 @@
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/AttachmentTypeClass.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
@@ -29,6 +30,7 @@ void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
+	DigitalDisplayTypeClass::LoadFromINIList(pINI);
 	RadTypeClass::LoadFromINIList(pINI);
 	ShieldTypeClass::LoadFromINIList(pINI);
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
@@ -95,6 +97,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, GameStrings::AudioVisual, "Pips.SelfHeal.Infantry.Offset");
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, GameStrings::AudioVisual, "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, GameStrings::AudioVisual, "Pips.SelfHeal.Buildings.Offset");
+	this->Pips_Generic_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Generic.Size");
+	this->Pips_Generic_Buildings_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Generic.Buildings.Size");
+	this->Pips_Ammo_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Ammo.Size");
+	this->Pips_Ammo_Buildings_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Ammo.Buildings.Size");
 	this->ToolTip_Background_Color.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.BlurSize");
@@ -119,6 +125,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisplayIncome.Read(exINI, GameStrings::AudioVisual, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Houses");
 	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
+
+	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
+	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
+	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
+	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
 	this->AttachmentTopLayerMinHeight.Read(exINI, GameStrings::General, "AttachmentTopLayerMinHeight");
 	this->AttachmentUndergroundLayerMaxHeight.Read(exINI, GameStrings::General, "AttachmentUndergroundLayerMaxHeight");
@@ -219,6 +230,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Infantry_Offset)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
+		.Process(this->Pips_Generic_Size)
+		.Process(this->Pips_Generic_Buildings_Size)
+		.Process(this->Pips_Ammo_Size)
+		.Process(this->Pips_Ammo_Buildings_Size)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)
@@ -238,6 +253,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrateOnlyOnLand)
 		.Process(this->RadialIndicatorVisibility)
 		.Process(this->DrawTurretShadow)
+		.Process(this->Buildings_DefaultDigitalDisplayTypes)
+		.Process(this->Infantry_DefaultDigitalDisplayTypes)
+		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
+		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
 		.Process(this->AttachmentTopLayerMinHeight)
 		.Process(this->AttachmentUndergroundLayerMaxHeight)
 		;
