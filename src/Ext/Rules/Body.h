@@ -10,12 +10,12 @@
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Debug.h>
 
-
 class AnimTypeClass;
 class MouseCursor;
 class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
+class DigitalDisplayTypeClass;
 
 class RulesExt
 {
@@ -36,6 +36,8 @@ public:
 		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<bool> EnemyInsignia;
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
+		Valueable<int> ChronoSparkleDisplayDelay;
+		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<bool> RadWarhead_Detonate;
@@ -58,6 +60,10 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
+		Valueable<Point2D> Pips_Generic_Size;
+		Valueable<Point2D> Pips_Generic_Buildings_Size;
+		Valueable<Point2D> Pips_Ammo_Size;
+		Valueable<Point2D> Pips_Ammo_Buildings_Size;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -83,12 +89,19 @@ public:
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
 
+		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
 			, EnemyInsignia { true }
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
+			, ChronoSparkleDisplayDelay { 24 }
+			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadWarhead_Detonate { false }
@@ -109,6 +122,10 @@ public:
 			, Pips_SelfHeal_Infantry_Offset { { 25, -35 } }
 			, Pips_SelfHeal_Units_Offset { { 33, -32 } }
 			, Pips_SelfHeal_Buildings_Offset { { 15, 10 } }
+			, Pips_Generic_Size { { 4, 0 } }
+			, Pips_Generic_Buildings_Size { { 4, 2 } }
+			, Pips_Ammo_Size { { 4, 0 } }
+			, Pips_Ammo_Buildings_Size { { 4, 2 } }
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
@@ -128,6 +145,10 @@ public:
 			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
+			, Buildings_DefaultDigitalDisplayTypes {}
+			, Infantry_DefaultDigitalDisplayTypes {}
+			, Vehicles_DefaultDigitalDisplayTypes {}
+			, Aircraft_DefaultDigitalDisplayTypes {}
 		{ }
 
 		virtual ~ExtData() = default;

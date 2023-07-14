@@ -102,3 +102,8 @@ DEFINE_HOOK(0x414F10, AircraftClass_AI_Trailer, 0x5)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x414C0B, AircraftClass_ChronoSparkleDelay, 0x5)
+{
+	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
+	return 0x414C10;
+}

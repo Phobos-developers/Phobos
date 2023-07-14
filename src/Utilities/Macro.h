@@ -24,11 +24,10 @@ __forceinline T* Make_Pointer(const uintptr_t address)
 #pragma region Patch Structs
 #pragma pack(push, 1)
 #pragma warning(push)
-#pragma warning( disable : 4324)
 
-#define LJMP_LETTER 0xE9
-#define CALL_LETTER 0xE8
-#define NOP_LETTER  0x90
+#define LJMP_OPCODE 0xE9
+#define CALL_OPCODE 0xE8
+#define NOP_OPCODE  0x90
 
 typedef void JumpType;
 
@@ -40,7 +39,7 @@ struct _LJMP
 
 	constexpr
 		_LJMP(DWORD offset, DWORD pointer) :
-		opcode(LJMP_LETTER),
+		opcode(LJMP_OPCODE),
 		pointer(pointer - offset - 5)
 	{ };
 };
@@ -53,7 +52,7 @@ struct _CALL
 
 	constexpr
 		_CALL(DWORD offset, DWORD pointer) :
-		opcode(CALL_LETTER),
+		opcode(CALL_OPCODE),
 		pointer(pointer - offset - 5)
 	{ };
 };
@@ -67,9 +66,9 @@ struct _CALL6
 
 	constexpr
 		_CALL6(DWORD offset, DWORD pointer) :
-		opcode(CALL_LETTER),
+		opcode(CALL_OPCODE),
 		pointer(pointer - offset - 5),
-		nop(NOP_LETTER)
+		nop(NOP_OPCODE)
 	{ };
 };
 
@@ -84,7 +83,6 @@ struct _VTABLE
 	{ };
 };
 
-#pragma warning(pop)
 #pragma pack(pop)
 #pragma endregion Patch Structs
 
