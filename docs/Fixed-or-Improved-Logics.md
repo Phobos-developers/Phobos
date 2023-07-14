@@ -10,6 +10,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when retinting map lighting with a map action corrupted light sources.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
 - Fixed the bug when capturing a mind-controlled building with an engineer fail to break the mind-control link.
+- Removed the EVA_BuildingCaptured event when capturing a building considered as a vehicle.
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again.
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon.
 - Fixed the bug that temporaryed unit cannot be erased correctly and no longer raise an error.
@@ -226,6 +227,7 @@ ZShapePointMove.OnBuildup=false  ; boolean
 ### Buildings considered as vehicles
 
 - By default game considers buildings with both `UndeploysInto` set and `Foundation` equaling `1x1` as vehicles, in a manner of speaking. This behaviour can now be toggled individually of these conditions by setting `ConsideredVehicle`. These buildings are counted as vehicles for unit count tracking, are not considered as base under attack when damaged and can be mass selected by default, for an example.
+- When capturing such "buildings", the player won't be notified by EVA capture event.
 
 In `rulesmd.ini`:
 ```ini
@@ -515,6 +517,30 @@ In `rulesmd.ini`:
 ```ini
 [SOMESTRUCTURE]          ; BuildingType
 Powered.KillSpawns=false ; boolean
+```
+
+### PipScale pip customizations
+
+- It is now possible to change the size of pips (or more accurately the pixel increment to the next pip drawn) displayed on `PipScale`.
+  - `Pips.Generic.(Buildings.)Size` is for non-ammo pips on non-building TechnoTypes / buildings, accordingly, and `Pips.Ammo.(Buildings.)Size` is in turn for ammo pips, split similarly between non-building technos and buildings.
+  - Ammo pip size can also be overridden on per TechnoType-basis using `AmmoPipSize`.
+- Ammo pip frames can now also be customized.
+  - `AmmoPip` and `EmptyAmmoPip` are frames (zero-based) of `pips2.shp` used for ammo pip and empty ammo pip (this is not set by default) for when `PipWrap=0` (this is the default).
+  - `PipWrapAmmoPip` is used as start frame (zero-based, from `pips2.shp`) for when `PipWrap` is above 0. The start frame is the empty frame and up to `Ammo` divided by `PipWrap` frames after it are used for the different reload stages.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+Pips.Generic.Size=4,0            ; X,Y, increment in pixels to next pip
+Pips.Generic.Buildings.Size=4,2  ; X,Y, increment in pixels to next pip
+Pips.Ammo.Size=4,0               ; X,Y, increment in pixels to next pip
+Pips.Ammo.Buildings.Size=4,2     ; X,Y, increment in pixels to next pip
+
+[SOMETECHNO]                     ; TechnoType
+AmmoPip=13                       ; integer, frame of pips2.shp (zero-based)
+EmptyAmmoPip=-1                  ; integer, frame of pips2.shp (zero-based)
+PipWrapAmmoPip=14                ; integer, frame of pips2.shp (zero-based)
+AmmoPipSize=                     ; X,Y, increment in pixels to next pip
 ```
 
 ### Re-enable obsolete [JumpjetControls]
@@ -809,27 +835,32 @@ IsSingleColor=false  ; boolean
 ![image](_static/images/ebolt.gif)
 *EBolt customization utilized for different Tesla bolt weapon usage* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
 
-
-- You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
+- You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPONTYPE]       ; WeaponType
-IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
 Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
 ```
 
+```{note}
+Due to technical constraints, this does not work with electric bolts created from support weapon of Ares' Prism Forwarding.
+```
+
 ### Customizable ElectricBolt Arcs
 
-- By default, Electric Bolt has 8 Arcs. Now it can be customized per weapon with `IsElectricBolt=yes`. Zero value draws straight line.
+- By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPONTYPE]       ; WeaponType
-IsElectricBolt=true    ; boolean, vanilla tag
 Bolt.Arcs=8            ; integer, number of arcs in a bolt
+```
+
+```{note}
+Due to technical constraints, this does not work with electric bolts created from support weapon of Ares' Prism Forwarding.
 ```
 
 ## RadialIndicator visibility
