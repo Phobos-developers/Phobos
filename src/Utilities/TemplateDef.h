@@ -550,7 +550,7 @@ namespace detail
 
 		if (parser.ReadInteger(pSection, pKey, &buffer))
 		{
-			if (buffer <= (int)DirType::Max && buffer >= (int)DirType::North)
+			if (buffer <= (int)DirType::NorthWest && buffer >= (int)DirType::North)
 			{
 				value = static_cast<DirType>(buffer);
 				return true;
@@ -1069,6 +1069,159 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			return false;
 
 		return true;
+	}
+
+	template <>
+	inline bool read<HorizontalPosition>(HorizontalPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "left") == 0)
+			{
+				value = HorizontalPosition::Left;
+			}
+			else if (_strcmpi(str, "center") == 0 || _strcmpi(str, "centre") == 0)
+			{
+				value = HorizontalPosition::Center;
+			}
+			else if (_strcmpi(str, "right") == 0)
+			{
+				value = HorizontalPosition::Right;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Horizontal Position can be either Left, Center/Centre or Right");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<VerticalPosition>(VerticalPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "top") == 0)
+			{
+				value = VerticalPosition::Top;
+			}
+			else if (_strcmpi(str, "center") == 0 || _strcmpi(str, "centre") == 0)
+			{
+				value = VerticalPosition::Center;
+			}
+			else if (_strcmpi(str, "bottom") == 0)
+			{
+				value = VerticalPosition::Bottom;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Vertical Position can be either Top, Center/Centre or Bottom");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<BuildingSelectBracketPosition>(BuildingSelectBracketPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "top") == 0)
+			{
+				value = BuildingSelectBracketPosition::Top;
+			}
+			else if (_strcmpi(str, "lefttop") == 0)
+			{
+				value = BuildingSelectBracketPosition::LeftTop;
+			}
+			else if (_strcmpi(str, "leftbottom") == 0)
+			{
+				value = BuildingSelectBracketPosition::LeftBottom;
+			}
+			else if (_strcmpi(str, "bottom") == 0)
+			{
+				value = BuildingSelectBracketPosition::Bottom;
+			}
+			else if (_strcmpi(str, "rightbottom") == 0)
+			{
+				value = BuildingSelectBracketPosition::RightBottom;
+			}
+			else if (_strcmpi(str, "righttop") == 0)
+			{
+				value = BuildingSelectBracketPosition::RightTop;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "BuildingPosition is invalid");
+				return false;
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<DisplayInfoType>(DisplayInfoType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "health") == 0)
+			{
+				value = DisplayInfoType::Health;
+			}
+			else if (_strcmpi(str, "shield") == 0)
+			{
+				value = DisplayInfoType::Shield;
+			}
+			else if (_strcmpi(str, "ammo") == 0)
+			{
+				value = DisplayInfoType::Ammo;
+			}
+			else if (_strcmpi(str, "mindcontrol") == 0)
+			{
+				value = DisplayInfoType::MindControl;
+			}
+			else if (_strcmpi(str, "spawns") == 0)
+			{
+				value = DisplayInfoType::Spawns;
+			}
+			else if (_strcmpi(str, "passengers") == 0)
+			{
+				value = DisplayInfoType::Passengers;
+			}
+			else if (_strcmpi(str, "tiberium") == 0)
+			{
+				value = DisplayInfoType::Tiberium;
+			}
+			else if (_strcmpi(str, "experience") == 0)
+			{
+				value = DisplayInfoType::Experience;
+			}
+			else if (_strcmpi(str, "occupants") == 0)
+			{
+				value = DisplayInfoType::Occupants;
+			}
+			else if (_strcmpi(str, "gattlingstage") == 0)
+			{
+				value = DisplayInfoType::GattlingStage;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Display info type is invalid");
+				return false;
+			}
+			return true;
+		}
+		return false;
 	}
 
 	template <typename T>
