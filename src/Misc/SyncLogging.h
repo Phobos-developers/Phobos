@@ -30,7 +30,7 @@ public:
 		Data[LastWritePosition] = item;
 		LastWritePosition++;
 
-		if (LastWritePosition >= Data.size())
+		if (static_cast<size_t>(LastWritePosition) >= Data.size())
 		{
 			HasBeenFilled = true;
 			LastWritePosition = 0;
@@ -47,7 +47,7 @@ public:
 
 		if (LastReadPosition == -1 && HasBeenFilled)
 			LastReadPosition = LastWritePosition ;
-		else if (LastReadPosition == -1 || LastReadPosition >= Data.size())
+		else if (LastReadPosition == -1 || static_cast<size_t>(LastReadPosition) >= Data.size())
 			LastReadPosition = 0;
 
 		return Data[LastReadPosition++];
