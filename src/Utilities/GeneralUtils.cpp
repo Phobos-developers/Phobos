@@ -148,3 +148,16 @@ std::string GeneralUtils::IntToDigits(int num)
 
 	return digits;
 }
+
+int GeneralUtils::CountDigitsInNumber(int number)
+{
+	int digits = 0;
+
+	while (number)
+	{
+		number /= 10;
+		digits++;
+	}
+
+	return digits;
+}

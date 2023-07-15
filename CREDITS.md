@@ -204,6 +204,7 @@ This page lists all the individual contributions to the project by their author.
   - Chrono sparkle animation display customization and improvements
   - PipScale pip size & ammo pip frame customization
   - Extension class optimization
+  - Additional sync logging
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
