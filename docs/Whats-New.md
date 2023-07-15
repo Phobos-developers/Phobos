@@ -387,6 +387,7 @@ Phobos fixes:
 - Fixed new Phobos script actions not picking team leader correctly based on `LeadershipRating` (by Starkku)
 - Fixed an issue with `Gunner=true` vehicles not correctly using the first passenger's mode with multiple passengers inside (by Starkku)
 - Used `MindControl.Anim` for buildings deployed from mind-controlled vehicles (by Trsdy)
+- Optimized extension class implementation, should improve performance all around (by Otamaa & Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)

@@ -110,6 +110,7 @@ This page lists all the individual contributions to the project by their author.
   - Upgrade logic to allow altering of SpySat status
   - Ares detection and integration
   - Help with custom locomotors
+  - Extension class optimization
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -202,6 +203,7 @@ This page lists all the individual contributions to the project by their author.
   - Extra warhead detonations on weapons
   - Chrono sparkle animation display customization and improvements
   - PipScale pip size & ammo pip frame customization
+  - Extension class optimization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

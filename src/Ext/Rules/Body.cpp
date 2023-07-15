@@ -9,7 +9,6 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 
-template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
 void RulesExt::Allocate(RulesClass* pThis)
@@ -320,7 +319,7 @@ DEFINE_HOOK(0x678841, RulesClass_Load_Suffix, 0x7)
 	{
 		PhobosStreamReader Reader(Stm);
 
-		if (Reader.Expect(RulesExt::ExtData::Canary) && Reader.RegisterChange(buffer))
+		if (Reader.Expect(RulesExt::Canary) && Reader.RegisterChange(buffer))
 			buffer->LoadFromStream(Reader);
 	}
 
@@ -333,7 +332,7 @@ DEFINE_HOOK(0x675205, RulesClass_Save_Suffix, 0x8)
 	PhobosByteStream saver(sizeof(*buffer));
 	PhobosStreamWriter writer(saver);
 
-	writer.Expect(RulesExt::ExtData::Canary);
+	writer.Expect(RulesExt::Canary);
 	writer.RegisterChange(buffer);
 
 	buffer->SaveToStream(writer);
