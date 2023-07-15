@@ -17,6 +17,9 @@ class TechnoExt
 public:
 	using base_type = TechnoClass;
 
+	static constexpr DWORD Canary = 0x55555555;
+	static constexpr size_t ExtPointerOffset = 0x34C;
+
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
@@ -79,6 +82,7 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
+			AnnounceInvalidPointer(OriginalPassengerOwner, ptr);
 			for (auto const& pAttachment : ChildAttachments)
 				pAttachment->InvalidatePointer(ptr);
 		}
@@ -97,7 +101,18 @@ public:
 		ExtContainer();
 		~ExtContainer();
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
+			switch (abs)
+			{
+			case AbstractType::House:
+				return false;
+			}
+
+			return true;
+		}
 	};
 
 	static ExtContainer ExtMap;

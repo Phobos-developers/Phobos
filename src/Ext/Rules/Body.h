@@ -22,6 +22,8 @@ class RulesExt
 public:
 	using base_type = RulesClass;
 
+	static constexpr DWORD Canary = 0x12341234;
+
 	class ExtData final : public Extension<RulesClass>
 	{
 	public:

@@ -73,13 +73,13 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 	else
 		pWeapon = R->EBX<WeaponTypeClass*>();
 
-	TechnoClass* pTarget = nullptr;
+	ObjectClass* pTarget = nullptr;
 	if (R->Origin() == 0x6F7D31 || R->Origin() == 0x70CF39)
-		pTarget = R->ESI<TechnoClass*>();
+		pTarget = R->ESI<ObjectClass*>();
 	else
-		pTarget = R->EBP<TechnoClass*>();
+		pTarget = R->EBP<ObjectClass*>();
 
-	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
+	if (const auto pExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget)))
 	{
 		if (const auto pShieldData = pExt->Shield.get())
 		{
@@ -122,6 +122,7 @@ DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
 DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
+
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->Shield)

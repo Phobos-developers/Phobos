@@ -160,6 +160,7 @@
     <ClCompile Include="src\Utilities\Patch.cpp" />
     <ClCompile Include="src\Utilities\AresHelper.cpp" />
     <ClCompile Include="src\Utilities\AresAddressTable.cpp" />
+    <ClCompile Include="src\Misc\SyncLogging.cpp" />
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -187,6 +188,7 @@
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
+    <ClInclude Include="src\Misc\SyncLogging.h" />
     <ClInclude Include="src\Misc\TypeConvertHelper.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />

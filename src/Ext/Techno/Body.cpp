@@ -13,12 +13,13 @@
 
 #include <math.h>
 
-template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
 TechnoExt::ExtData::~ExtData()
 {
-	if (this->TypeExtData->AutoDeath_Behavior.isset())
+	auto const pTypeExt = this->TypeExtData;
+
+	if (pTypeExt && pTypeExt->AutoDeath_Behavior.isset())
 	{
 		auto pThis = this->OwnerObject();
 		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
@@ -764,7 +765,6 @@ TechnoExt::ExtContainer::ExtContainer() : Container("TechnoClass") { }
 
 TechnoExt::ExtContainer::~ExtContainer() = default;
 
-void TechnoExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) { }
 
 // =============================
 // container hooks
@@ -773,7 +773,7 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ESI);
 
-	TechnoExt::ExtMap.FindOrAllocate(pItem);
+	TechnoExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }
@@ -811,3 +811,4 @@ DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 
 	return 0;
 }
+

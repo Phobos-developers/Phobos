@@ -48,6 +48,7 @@ public:
 	bool IsRedSP();
 
 	static void PointerGotInvalid(void* ptr, bool removed);
+
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 
