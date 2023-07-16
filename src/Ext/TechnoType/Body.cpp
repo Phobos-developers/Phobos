@@ -9,7 +9,6 @@
 
 #include <Utilities/GeneralUtils.h>
 
-template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 
 void TechnoTypeExt::ExtData::Initialize()
@@ -586,7 +585,7 @@ DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, ESI);
 
-	TechnoTypeExt::ExtMap.FindOrAllocate(pItem);
+	TechnoTypeExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }
@@ -635,6 +634,7 @@ DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
 
 	return 0;
 }
+
 #if ANYONE_ACTUALLY_USE_THIS
 DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 {
@@ -648,6 +648,7 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 	return 0;
 }
 #endif
+
 DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 {
 	GET(UnitTypeClass*, pItem, ESI);

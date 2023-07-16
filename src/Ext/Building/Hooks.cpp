@@ -23,9 +23,9 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
 	*/
+
 	if (RulesExt::Global()->DisplayIncome_AllowAI || pThis->Owner->IsControlledByHuman())
 		pExt->DisplayIncomeString();
-
 	pExt->ApplyPoweredKillSpawns();
 
 	return 0;

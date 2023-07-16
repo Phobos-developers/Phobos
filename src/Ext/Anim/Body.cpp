@@ -4,7 +4,6 @@
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 
-template<> const DWORD Extension<AnimClass>::Canary = 0xAAAAAAAA;
 AnimExt::ExtContainer AnimExt::ExtMap;
 
 void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
@@ -13,14 +12,14 @@ void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
 	this->InvokerHouse = pInvoker ? pInvoker->Owner : nullptr;
 }
 
-void AnimExt::ExtData::CreateAttachedSystem(ParticleSystemTypeClass* pSystemType)
+void AnimExt::ExtData::CreateAttachedSystem()
 {
 	const auto pThis = this->OwnerObject();
-	const auto pType = this->OwnerObject()->Type;
+	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pType && pSystemType && !this->AttachedSystem)
+	if (pTypeExt && pTypeExt->AttachedSystem && !this->AttachedSystem)
 	{
-		if (auto const pSystem = GameCreate<ParticleSystemClass>(pSystemType, pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr))
+		if (auto const pSystem = GameCreate<ParticleSystemClass>(pTypeExt->AttachedSystem.Get(), pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr))
 			this->AttachedSystem = pSystem;
 	}
 }
@@ -33,7 +32,6 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 		this->AttachedSystem->UnInit();
 		this->AttachedSystem = nullptr;
 	}
-
 }
 
 //Modified from Ares
@@ -156,6 +154,11 @@ void AnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
+void AnimExt::ExtData::InitializeConstants()
+{
+	CreateAttachedSystem();
+}
+
 // =============================
 // container
 
@@ -171,12 +174,7 @@ DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
 	GET(AnimClass*, pItem, ESI);
 
-	if (pItem->Type)
-	{
-		auto const pExt = AnimExt::ExtMap.FindOrAllocate(pItem);
-		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pItem->Type);
-		pExt->CreateAttachedSystem(pTypeExt->AttachedSystem);
-	}
+	AnimExt::ExtMap.TryAllocate(pItem, pItem->Fetch_ID() != -2, "Creating an animation with null Type!");
 
 	return 0;
 }
@@ -225,4 +223,15 @@ DEFINE_HOOK(0x4253FF, AnimClass_Save_Suffix, 0x5)
 {
 	AnimExt::ExtMap.SaveStatic();
 	return 0;
+}
+
+// Field D0 in AnimClass is mostly unused so by removing the few uses it has it can be used to store AnimExt pointer.
+DEFINE_JUMP(LJMP, 0x42543A, 0x425448)
+
+DEFINE_HOOK_AGAIN(0x421EF4, AnimClass_CTOR_ClearD0, 0x6)
+DEFINE_HOOK(0x42276D, AnimClass_CTOR_ClearD0, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+	pThis->unknown_D0 = 0;
+	return R->Origin() + 0x6;
 }

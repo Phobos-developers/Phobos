@@ -10,7 +10,6 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>
 
-template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEEEEEEEE;
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
 const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
@@ -164,7 +163,7 @@ DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
 {
 	GET(AnimTypeClass*, pItem, EAX);
 
-	AnimTypeExt::ExtMap.FindOrAllocate(pItem);
+	AnimTypeExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 

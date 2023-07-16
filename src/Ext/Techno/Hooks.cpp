@@ -135,7 +135,7 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 			}
 
 			position.X += offset->Width;
-			position.Y += i * yOffset;
+			position.Y += yOffset;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS2_SHP,
 				frame, &position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -153,7 +153,7 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 
 			int frame = i >= pipCount ? emptyFrame : ammoFrame;
 			position.X += offset->Width;
-			position.Y += i * yOffset;
+			position.Y += yOffset;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS2_SHP,
 				frame, &position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -180,14 +180,15 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
+	auto const pType = pThis->GetTechnoType();
+
+	if (!pType)
+		return 0;
+
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (!pExt->TypeExtData && pThis->GetType())
-		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pExt->TypeExtData)
-		pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
-
+	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeLaserTrails();
 
 	return 0;
@@ -425,6 +426,7 @@ DEFINE_HOOK_AGAIN(0x703789, TechnoClass_CloakUpdateMCAnim, 0x6) // TechnoClass_D
 DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_Cloaking_AI
 {
 	GET(TechnoClass*, pThis, ESI);
+
 	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 		pExt->UpdateMindControlAnim();
 
