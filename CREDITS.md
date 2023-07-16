@@ -284,6 +284,7 @@ This page lists all the individual contributions to the project by their author.
   - Vehicle voxel turret shadows & body multi-section shadows
 - **Fryone**
   - Customizable ElectricBolt Arcs
+  - Offline power plant indicator
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
