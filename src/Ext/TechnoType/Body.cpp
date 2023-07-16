@@ -152,6 +152,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 
+	this->Ammo_AddOnDeploy.Read(exINI, pSection, "Ammo.AddOnDeploy");
 	this->Ammo_AutoDeployAmount.Read(exINI, pSection, "Ammo.AutoDeployAmount");
 	this->Ammo_DeployUnlockAmount.Read(exINI, pSection, "Ammo.DeployUnlockAmount");
 
@@ -422,6 +423,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShieldType)
 		.Process(this->PassengerDeletionType)
 
+		.Process(this->Ammo_AddOnDeploy)
 		.Process(this->Ammo_AutoDeployAmount)
 		.Process(this->Ammo_DeployUnlockAmount)
 		.Process(this->VoiceCantDeploy)

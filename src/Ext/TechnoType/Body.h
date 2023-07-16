@@ -52,6 +52,7 @@ public:
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 
+		Nullable<int> Ammo_AddOnDeploy;
 		Valueable<int> Ammo_AutoDeployAmount;
 		Valueable<int> Ammo_DeployUnlockAmount;
 		NullableIdx<VocClass> VoiceCantDeploy;
@@ -262,6 +263,7 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 
+			, Ammo_AddOnDeploy { 0 }
 			, Ammo_AutoDeployAmount { -1 }
 			, Ammo_DeployUnlockAmount { -1 }
 

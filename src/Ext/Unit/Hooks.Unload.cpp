@@ -39,3 +39,34 @@ DEFINE_HOOK(0x730C70, DeployClass_Execute_RemoveDeploying, 0xA)
 
 	return Continue;
 }
+
+DEFINE_HOOK(0x73D63B, UnitClass_Unload_ChangeAmmo, 0x6)
+{
+	enum { Continue = 0x73D647, SkipBunker = 0x73D6E6 };
+
+	GET(TechnoClass*, pThis, ECX);
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if ((pTypeExt->Ammo_AddOnDeploy != 0) && (pThis->WhatAmI() == AbstractType::Unit))
+		pThis->Ammo += pTypeExt->Ammo_AddOnDeploy;
+
+	auto const pUnit = abstract_cast<UnitClass*>(pThis);
+	if(!pUnit->BunkerLinkedItem)
+		return SkipBunker;
+	return Continue;
+}
+
+/*DEFINE_HOOK(0x73DE78, UnitClass_Unload_ChangeAmmo, 0x6)
+{
+	enum { Continue = 0x73DE7E };
+
+	GET(TechnoClass*, pThis, ESI);
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->Ammo_AddOnDeploy != 0)
+		pThis->Ammo += pTypeExt->Ammo_AddOnDeploy;
+
+	auto const pUnit = abstract_cast<UnitClass*>(pThis);
+	R->AL(pUnit->Deployed);
+	return Continue;
+}*/

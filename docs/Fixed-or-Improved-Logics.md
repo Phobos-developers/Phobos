@@ -739,6 +739,17 @@ Ammo.AutoDeployAmount=-1        ; integer, unit will automatically deploy after 
 `Ammo.AutoDeployAmount` feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
 ```
 
+### IsSimpleDeployer vehicle ammo change on deploy
+
+- `Ammo.AddOnDeploy` determines amount of ammo, added or extracted if negative on deploy.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                          ; VehicleType
+Ammo.AddOnDeploy=0      ; integer, unit will receive or lose this amount of ammo on deploy
+```
+
+
 ## VoxelAnims
 
 ### Customizable debris & meteor impact and warhead detonation behaviour

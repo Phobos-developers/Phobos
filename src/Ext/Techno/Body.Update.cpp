@@ -85,7 +85,6 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 	return;
 }
 
-
 // TODO : Merge into new AttachEffects
 bool TechnoExt::ExtData::CheckDeathConditions()
 {
