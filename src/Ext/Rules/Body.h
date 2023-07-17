@@ -10,17 +10,19 @@
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Debug.h>
 
-
 class AnimTypeClass;
 class MouseCursor;
 class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
+class DigitalDisplayTypeClass;
 
 class RulesExt
 {
 public:
 	using base_type = RulesClass;
+
+	static constexpr DWORD Canary = 0x12341234;
 
 	class ExtData final : public Extension<RulesClass>
 	{
@@ -58,6 +60,10 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
+		Valueable<Point2D> Pips_Generic_Size;
+		Valueable<Point2D> Pips_Generic_Buildings_Size;
+		Valueable<Point2D> Pips_Ammo_Size;
+		Valueable<Point2D> Pips_Ammo_Buildings_Size;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -83,7 +89,12 @@ public:
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
 
-		Valueable<AnimTypeClass*> CloakAnim;
+		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
+    
+    Valueable<AnimTypeClass*> CloakAnim;
 		Valueable<AnimTypeClass*> DecloakAnim;
 		Valueable<bool> Cloak_KickOutParasite;
 
@@ -115,6 +126,10 @@ public:
 			, Pips_SelfHeal_Infantry_Offset { { 25, -35 } }
 			, Pips_SelfHeal_Units_Offset { { 33, -32 } }
 			, Pips_SelfHeal_Buildings_Offset { { 15, 10 } }
+			, Pips_Generic_Size { { 4, 0 } }
+			, Pips_Generic_Buildings_Size { { 4, 2 } }
+			, Pips_Ammo_Size { { 4, 0 } }
+			, Pips_Ammo_Buildings_Size { { 4, 2 } }
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
@@ -134,7 +149,11 @@ public:
 			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
-			, CloakAnim { nullptr }
+			, Buildings_DefaultDigitalDisplayTypes {}
+			, Infantry_DefaultDigitalDisplayTypes {}
+			, Vehicles_DefaultDigitalDisplayTypes {}
+			, Aircraft_DefaultDigitalDisplayTypes {}
+      , CloakAnim { nullptr }
 			, DecloakAnim { nullptr }
 			, Cloak_KickOutParasite { true }
 		{ }

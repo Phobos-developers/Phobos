@@ -159,6 +159,8 @@ class ScriptExt
 public:
 	using base_type = ScriptClass;
 
+	static constexpr DWORD Canary = 0x3B3B3B3B;
+
 	class ExtData final : public Extension<ScriptClass>
 	{
 	public:

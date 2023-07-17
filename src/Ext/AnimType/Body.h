@@ -11,6 +11,9 @@ class AnimTypeExt
 public:
 	using base_type = AnimTypeClass;
 
+	static constexpr DWORD Canary = 0xEEEEEEEE;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<AnimTypeClass>
 	{
 	public:

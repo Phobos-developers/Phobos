@@ -110,6 +110,7 @@ This page lists all the individual contributions to the project by their author.
   - Upgrade logic to allow altering of SpySat status
   - Ares detection and integration
   - Help with custom locomotors
+  - Extension class optimization
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -201,6 +202,9 @@ This page lists all the individual contributions to the project by their author.
   - Crushing tilt and slowdown customization
   - Extra warhead detonations on weapons
   - Chrono sparkle animation display customization and improvements
+  - PipScale pip size & ammo pip frame customization
+  - Extension class optimization
+  - Additional sync logging
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -259,6 +263,7 @@ This page lists all the individual contributions to the project by their author.
    - The option to allow DieSound/VoiceDie being played when grinding
    - Allow iron-curtain effects on infantries
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
+   - Remove sound events when mind-controlled vehicles deploy into buildings or when buildings considered as vehicles get captured
    - Building LightSource tint S/L fix
    - Permanent healthbar display on units targeted by temporal weapons fix
    - TechnoType conversion placeholder
@@ -288,6 +293,7 @@ This page lists all the individual contributions to the project by their author.
   - Superweapon launch site & availability code
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
+- **ststl, FlyStar, Saigyouji, JunJacobYoung** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
