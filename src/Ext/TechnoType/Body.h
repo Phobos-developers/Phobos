@@ -326,7 +326,7 @@ public:
 			, EmptyAmmoPip { -1 }
 			, PipWrapAmmoPip { 14 }
 			, AmmoPipSize {}
-			
+
 			, CloakAnim {}
 			, DecloakAnim {}
 			, Cloak_KickOutParasite {}

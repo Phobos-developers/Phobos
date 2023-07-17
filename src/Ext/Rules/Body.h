@@ -93,7 +93,7 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
-		
+
 		Valueable<AnimTypeClass*> CloakAnim;
 		Valueable<AnimTypeClass*> DecloakAnim;
 		Valueable<bool> Cloak_KickOutParasite;
