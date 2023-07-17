@@ -252,8 +252,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->EmptyAmmoPip.Read(exINI, pSection, "EmptyAmmoPip");
 	this->PipWrapAmmoPip.Read(exINI, pSection, "PipWrapAmmoPip");
 	this->AmmoPipSize.Read(exINI, pSection, "AmmoPipSize");
-  
-  this->CloakAnim.Read(exINI, pSection, "CloakAnim");
+	
+	this->CloakAnim.Read(exINI, pSection, "CloakAnim");
 	this->DecloakAnim.Read(exINI, pSection, "DecloakAnim");
 	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
 
@@ -533,8 +533,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EmptyAmmoPip)
 		.Process(this->PipWrapAmmoPip)
 		.Process(this->AmmoPipSize)
-    
-    .Process(this->CloakAnim)
+		
+		.Process(this->CloakAnim)
 		.Process(this->DecloakAnim)
 		.Process(this->Cloak_KickOutParasite)
 		;

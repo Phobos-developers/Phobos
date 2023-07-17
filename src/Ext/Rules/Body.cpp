@@ -255,7 +255,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
-    .Process(this->CloakAnim)
+	    .Process(this->CloakAnim)
 		.Process(this->DecloakAnim)
 		.Process(this->Cloak_KickOutParasite)
 		;
