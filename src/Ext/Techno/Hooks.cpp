@@ -629,6 +629,8 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 			&& (pBld->IsPowerOnline() == false || pBld->IsBeingDrained())
 			&& (pBld->IsBeingWarpedOut() == false)
 			&& (pBld->WarpingOut == false)
+			&& (pBld->Type->NeedsEngineer == false)
+			&& ((pBld->GetCurrentMission() != Mission::Selling) && (pBld->GetCurrentMission() != Mission::Construction))
 			&& (pBld->CloakState == CloakState::Uncloaked);
 
 		if(showLowPower) {
