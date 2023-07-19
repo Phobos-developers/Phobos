@@ -456,9 +456,7 @@ DEFINE_HOOK(0x421EA9, AnimClass_CTOR_SyncLog, 0x5)
 // Disable sync logging hooks in non-MP games
 DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 {
-	return 0;
-
-	if (SessionClass::Instance->IsMultiplayer() || SyncLogger::HooksDisabled)
+	if (!SessionClass::Instance->IsMultiplayer() || SyncLogger::HooksDisabled)
 		return 0;
 
 	SyncLogger::HooksDisabled = true;
