@@ -108,7 +108,7 @@ void AttachmentClass::Initialize()
 	if (this->Child)
 		return;
 
-	if (this->GetType()->RestoreAtCreation)
+	if (this->GetType()->RespawnAtCreation)
 		this->CreateChild();
 }
 
@@ -137,6 +137,26 @@ void AttachmentClass::AI()
 {
 	AttachmentTypeClass* pType = this->GetType();
 
+	if (!this->Child)
+	{
+		if (pType->RespawnDelay == 0)
+		{
+			this->CreateChild();
+		}
+		else if (pType->RespawnDelay > 0)
+		{
+			if (!this->RespawnTimer.HasStarted())
+			{
+				this->RespawnTimer.Start(pType->RespawnDelay);
+			}
+			else if (this->RespawnTimer.Completed())
+			{
+				this->CreateChild();
+				this->RespawnTimer.Stop();
+			}
+		}
+	}
+
 	if (this->Child)
 	{
 		if (this->Child->InLimbo && !this->Parent->InLimbo)
@@ -145,8 +165,6 @@ void AttachmentClass::AI()
 			this->Limbo();
 
 		this->Child->SetLocation(this->GetChildLocation());
-
-		this->Child->OnBridge = this->Parent->OnBridge;
 
 		DirStruct childDir = this->Data->IsOnTurret
 			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
@@ -346,6 +364,7 @@ bool AttachmentClass::Serialize(T& stm)
 		.Process(this->Data)
 		.Process(this->Parent)
 		.Process(this->Child)
+		.Process(this->RespawnTimer)
 		.Success();
 }
 

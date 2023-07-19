@@ -15,7 +15,8 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	// this->RestoreAtCreation.Read(exINI, section, "RestoreAtCreation");
+	this->RespawnAtCreation.Read(exINI, section, "RespawnAtCreation");
+	this->RespawnDelay.Read(exINI, section, "RespawnDelay");
 	this->InheritCommands.Read(exINI, section, "InheritCommands");
 	this->InheritOwner.Read(exINI, section, "InheritOwner");
 	this->InheritStateEffects.Read(exINI, section, "InheritStateEffects");
@@ -23,6 +24,7 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InheritHeightStatus.Read(exINI, section, "InheritHeightStatus");
 	this->OccupiesCell.Read(exINI, section, "OccupiesCell");
 	this->LowSelectionPriority.Read(exINI, section, "LowSelectionPriority");
+	this->TransparentToMouse.Read(exINI, section, "TransparentToMouse");
 	this->YSortPosition.Read(exINI, section, "YSortPosition");
 
 	// this->CanBeForceDetached.Read(exINI, section, "CanBeForceDetached");
@@ -40,7 +42,8 @@ template <typename T>
 void AttachmentTypeClass::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->RestoreAtCreation)
+		.Process(this->RespawnAtCreation)
+		.Process(this->RespawnDelay)
 		.Process(this->InheritCommands)
 		.Process(this->InheritOwner)
 		.Process(this->InheritStateEffects)
@@ -48,6 +51,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->InheritHeightStatus)
 		.Process(this->OccupiesCell)
 		.Process(this->LowSelectionPriority)
+		.Process(this->TransparentToMouse)
 		.Process(this->YSortPosition)
 		// .Process(this->CanBeForceDetached)
 		// .Process(this->ForceDetachWeapon_Child)

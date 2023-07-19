@@ -9,7 +9,8 @@
 class AttachmentTypeClass final : public Enumerable<AttachmentTypeClass>
 {
 public:
-	Valueable<bool> RestoreAtCreation; // whether to spawn the attachment initially
+	Valueable<bool> RespawnAtCreation; // whether to spawn the attachment initially
+	Valueable<int> RespawnDelay;
 	Valueable<bool> InheritCommands;
 	Valueable<bool> InheritOwner; // aka mind control inheritance
 	Valueable<bool> InheritStateEffects; // phasing out, stealth etc.
@@ -17,6 +18,7 @@ public:
 	Valueable<bool> InheritHeightStatus;
 	Valueable<bool> OccupiesCell;
 	Valueable<bool> LowSelectionPriority;
+	Valueable<bool> TransparentToMouse;
 	Valueable<AttachmentYSortPosition> YSortPosition;
 	// Valueable<bool> CanBeForceDetached;
 	// Nullable<WeaponTypeClass*> ForceDetachWeapon_Child;
@@ -27,7 +29,8 @@ public:
 	Nullable<Mission> ParentDetachmentMission;
 
 	AttachmentTypeClass(const char* pTitle = NONE_STR) : Enumerable<AttachmentTypeClass>(pTitle)
-		, RestoreAtCreation { true }
+		, RespawnAtCreation { true }
+		, RespawnDelay { -1 }
 		, InheritCommands { true }
 		, InheritOwner { true }
 		, InheritStateEffects { true }
@@ -35,6 +38,7 @@ public:
 		, InheritDestruction { true }
 		, InheritHeightStatus { true }
 		, LowSelectionPriority { true }
+		, TransparentToMouse { false }
 		, YSortPosition { AttachmentYSortPosition::Default }
 		// , CanBeForceDetached { false }
 		// , ForceDetachWeapon_Child { }

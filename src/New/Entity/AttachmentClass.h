@@ -17,6 +17,7 @@ public:
 	TechnoTypeExt::ExtData::AttachmentDataEntry* Data;
 	TechnoClass* Parent;
 	TechnoClass* Child;
+	CDTimerClass RespawnTimer;
 
 	// volatile, don't serialize
 	// if you ever change the tree structure, you need to call CacheTreeData()
@@ -32,18 +33,20 @@ public:
 
 	AttachmentClass(TechnoTypeExt::ExtData::AttachmentDataEntry* data,
 		TechnoClass* pParent, TechnoClass* pChild = nullptr) :
-		Data(data),
-		Parent(pParent),
-		Child(pChild)
+		Data { data },
+		Parent { pParent },
+		Child { pChild },
+		RespawnTimer { }
 	{
 		this->InitCacheData();
 		Array.push_back(this);
 	}
 
 	AttachmentClass() :
-		Data(),
-		Parent(),
-		Child()
+		Data { },
+		Parent { },
+		Child { },
+		RespawnTimer { }
 	{
 		Array.push_back(this);
 	}

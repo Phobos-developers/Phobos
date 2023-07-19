@@ -1015,3 +1015,32 @@ DEFINE_HOOK(0x4C73D1, EventClass_Execute_MegaMission_HandleChildren, 0x6)
 	return 0;
 }
 */
+
+// TODO review following 2 hooks from Kratos
+
+DEFINE_HOOK(0x69251A, ScrollClass_ProcessClickCoords_TransparentToMouse, 0x6)
+{
+	GET(TechnoClass*, pTechno, EAX);
+
+	if (!pTechno)
+		return 0x0;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+	if (pExt && pExt->ParentAttachment && pExt->ParentAttachment->GetType()->TransparentToMouse)
+		R->EAX<TechnoClass*>(nullptr);
+
+	return 0x0;
+}
+
+DEFINE_HOOK(0x6DA3FF, TacticalClass_SelectAt_TransparentToMouse, 0x6)
+{
+	enum { SkipTechno = 0x6DA440, ContinueCheck = 0x0 };
+
+	GET(TechnoClass*, pTechno, EAX);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+	if (pExt && pExt->ParentAttachment && pExt->ParentAttachment->GetType()->TransparentToMouse)
+		return SkipTechno;
+
+	return ContinueCheck;
+}

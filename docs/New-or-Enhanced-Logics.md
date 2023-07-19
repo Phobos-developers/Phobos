@@ -23,6 +23,8 @@ In `rulesmd.ini`:
 0=MNT                                 ; (example)
 
 [MNT]
+RespawnAtCreation=true                ; boolean
+RespawnDelay=-1                       ; integer, non-negative values enable the respawn timer
 InheritOwner=true                     ; boolean, whether the child inherits owner of the parent while it's attached
 InheritStateEffects=true              ; boolean (state effects = chaos, iron curtain etc.)
 InheritCommands=true                  ; boolean
@@ -37,8 +39,10 @@ ParentDestructionMission=             ; MissionType, queued to child when parent
 ParentDetachmentMission=              ; MissionType, queued to child when it's detached from parent
 
 [SOMETECHNO]                          ; TechnoTypeClass
+; used when this techno is attached
 AttachmentTopLayerMinHeight=          ; integer
 AttachmentUndergroundLayerMaxHeight=  ; integer
+; used for attaching other technos
 AttachmentX.Type=MNT                  ; AttachmentType (example)
 AttachmentX.TechnoType=               ; TechnoType that can be attached, currently only units are supported
 AttachmentX.FLH=0,0,0                 ; integer - Forward, Lateral, Height
@@ -46,7 +50,7 @@ AttachmentX.IsOnTurret=false          ; boolean
 AttachmentX.RotationAdjust=0          ; rotation in DirType, from -255 to 255
 
 [General]
-AttachmentTopLayerMinHeight=500           ; integer
+AttachmentTopLayerMinHeight=500           ; integer,
 AttachmentUndergroundLayerMaxHeight=-256  ; integer
 ```
 
