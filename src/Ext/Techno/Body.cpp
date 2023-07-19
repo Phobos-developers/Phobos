@@ -634,6 +634,12 @@ void TechnoExt::DestroyAttachments(TechnoClass* pThis, TechnoClass* pSource)
 
 	for (auto const& pAttachment : pExt->ChildAttachments)
 		pAttachment->Destroy(pSource);
+
+	// TODO I am not sure, without clearing the attachments it sometimes crashes under
+	// weird circumstances, like if the techno exists but the parent attachment isn't,
+	// in particular in can enter cell hook, this may be a bandaid fix for something
+	// way worse like improper occupation clearance or whatever - Kerbiter
+	pExt->ChildAttachments.clear();
 }
 
 void TechnoExt::HandleDestructionAsChild(TechnoClass* pThis)
