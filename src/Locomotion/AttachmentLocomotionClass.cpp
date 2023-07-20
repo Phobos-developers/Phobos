@@ -256,6 +256,10 @@ HRESULT AttachmentLocomotionClass::Begin_Piggyback(ILocomotion* pointer)
 	if (this->Piggybacker)
 		return E_FAIL;
 
+	// since LinkedTo may've been managed by AircraftTracker before we need to remove the AircraftTracker entry
+	if (this->LinkedTo && this->LinkedTo->GetLastFlightMapCoords() != CellStruct::Empty)
+		AircraftTrackerClass::Instance->Remove(this->LinkedTo);
+
 	this->Piggybacker = pointer;
 
 	return S_OK;
@@ -268,6 +272,10 @@ HRESULT AttachmentLocomotionClass::End_Piggyback(ILocomotion** pointer)
 
 	if (!this->Piggybacker)
 		return S_FALSE;
+
+	// since LinkedTo may no longer be considered airborne we need to remove the AircraftTracker entry
+	if (this->LinkedTo && this->LinkedTo->GetLastFlightMapCoords() != CellStruct::Empty)
+		AircraftTrackerClass::Instance->Remove(this->LinkedTo);
 
 	// since pointer is a dumb pointer, we don't need to call Release,
 	// hence we use Detach, otherwise the locomotor gets trashed
