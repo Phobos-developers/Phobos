@@ -29,6 +29,7 @@ InheritOwner=true                     ; boolean, whether the child inherits owne
 InheritStateEffects=true              ; boolean (state effects = chaos, iron curtain etc.)
 InheritCommands=true                  ; boolean
 LowSelectionPriority=true             ; boolean, whether the child is low priority while attached
+TransparentToMouse=false              ; boolean, can't click on attached techno if set
 YSortPosition=default                 ; Attachment YSort position enumeration - default|underparent|overparent
 InheritDestruction=true               ; boolean
 InheritHeightStatus=true              ; boolean, whether the layer and InAir/OnGround/IsSurfaced inherited from parent
