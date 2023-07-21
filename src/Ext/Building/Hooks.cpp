@@ -430,3 +430,58 @@ DEFINE_HOOK(0x4511D6, BuildingClass_AnimationAI_SellBuildup, 0x7)
 
 	return pTypeExt->SellBuildupLength == pThis->Animation.Value ? Continue : Skip;
 }
+
+//Addition to Ares' Extras
+DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
+{
+	GET(TechnoClass*, pThis, EBP);
+	GET_STACK(RectangleStruct*, pRect, 0xA0);
+
+	if(auto pBld = abstract_cast<BuildingClass*>(pThis))
+	{
+		bool drawPowOffline = RulesExt::Global()->DrawPowerOffline;
+		if(!drawPowOffline)
+		{
+			R->ESI(pRect);
+			return 0x6F534E;
+		}
+
+		const auto pBldExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
+		bool showLowPower = FileSystem::POWEROFF_SHP
+			&& (pBld->Type->PowerBonus > 0)
+			&& (pBld->Factory == nullptr)
+			&& (pBld->IsPowerOnline() == false || pBld->IsBeingDrained())
+			&& (pBld->IsBeingWarpedOut() == false)
+			&& (pBld->WarpingOut == false)
+			&& (pBldExt->DisablePowerOfflineIcon == false)
+			&& ((pBld->GetCurrentMission() != Mission::Selling) && (pBld->GetCurrentMission() != Mission::Construction))
+			&& (pBld->CloakState == CloakState::Uncloaked);
+
+		if(showLowPower) {
+			auto cell = pBld->GetMapCoords();
+
+			if(!MapClass::Instance->GetCellAt(cell)->IsShrouded()) {
+				auto crd = pBld->GetRenderCoords();
+
+				Point2D nPoint;
+				TacticalClass::Instance->CoordsToClient(crd, &nPoint);
+
+				Point2D ptPower = nPoint;
+
+				ptPower.Y += 22; //wrench offset
+				ptPower.Y -= RulesExt::Global()->DrawPowerOffline_Offset;
+
+				int speed = GameOptionsClass::Instance->GetAnimSpeed(14) / 4;
+				if(speed < 2) {
+					speed = 2;
+				}
+
+				int frame = (FileSystem::POWEROFF_SHP->Frames * (Unsorted::CurrentFrame % speed)) / speed;
+				DSurface::Temp->DrawSHP(FileSystem::MOUSE_PAL, FileSystem::POWEROFF_SHP, frame, &ptPower, pRect, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+
+			}
+		}
+	}
+	R->ESI(pRect);
+	return 0x6F534E;
+}
