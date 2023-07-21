@@ -1,6 +1,5 @@
 #include "Body.h"
 
-template<> const DWORD Extension<SidebarClass>::Canary = 0x51DEBA12;
 std::unique_ptr<SidebarExt::ExtData> SidebarExt::Data = nullptr;
 
 SHPStruct* SidebarExt::TabProducingProgress[4];
@@ -89,7 +88,7 @@ DEFINE_HOOK(0x6AC5DA, SidebarClass_Load_Suffix, 0x6)
 	{
 		PhobosStreamReader Reader(Stm);
 
-		if (Reader.Expect(SidebarExt::ExtData::Canary) && Reader.RegisterChange(buffer))
+		if (Reader.Expect(SidebarExt::Canary) && Reader.RegisterChange(buffer))
 			buffer->LoadFromStream(Reader);
 	}
 
@@ -102,7 +101,7 @@ DEFINE_HOOK(0x6AC5EA, SidebarClass_Save_Suffix, 0x6)
 	PhobosByteStream saver(sizeof(*buffer));
 	PhobosStreamWriter writer(saver);
 
-	writer.Expect(SidebarExt::ExtData::Canary);
+	writer.Expect(SidebarExt::Canary);
 	writer.RegisterChange(buffer);
 
 	buffer->SaveToStream(writer);

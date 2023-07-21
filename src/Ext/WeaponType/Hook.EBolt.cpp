@@ -1,5 +1,7 @@
 #include "Body.h"
 #include <EBolt.h>
+#include <Utilities/Macro.h>
+#include <Helpers/Macro.h>
 
 namespace BoltTemp
 {
@@ -25,6 +27,20 @@ DEFINE_HOOK(0x4C2951, EBolt_DTOR, 0x5)
 	BoltTemp::boltWeaponTypeExt.erase(pBolt);
 
 	return 0;
+}
+
+DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
+{
+	enum { DoLoop = 0x4C20C7, Break = 0x4C2400 };
+
+	GET_STACK(EBolt*, pBolt, 0x40);
+	BoltTemp::pType = BoltTemp::boltWeaponTypeExt.get_or_default(pBolt);
+
+	GET_STACK(int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
+
+	int arcCount = BoltTemp::pType ? BoltTemp::pType->Bolt_Arcs : 8;
+
+	return plotIndex < arcCount ? DoLoop : Break;
 }
 
 DEFINE_HOOK(0x4C24E4, Ebolt_DrawFist_Disable, 0x8)

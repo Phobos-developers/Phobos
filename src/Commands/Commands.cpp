@@ -6,6 +6,7 @@
 #include "DamageDisplay.h"
 #include "FrameByFrame.h"
 #include "FrameStep.h"
+#include "ToggleDigitalDisplay.h"
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -15,6 +16,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<NextIdleHarvesterCommandClass>();
 	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<DamageDisplayCommandClass>();
+	MakeCommand<ToggleDigitalDisplayCommandClass>();
 
 	MakeCommand<FrameByFrameCommandClass>();
 	MakeCommand<FrameStepCommandClass<1>>(); // Single step in

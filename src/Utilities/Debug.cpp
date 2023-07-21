@@ -7,6 +7,8 @@
 
 char Debug::StringBuffer[0x1000];
 char Debug::FinalStringBuffer[0x1000];
+char Debug::DeferredStringBuffer[0x1000];
+int Debug::CurrentBufferSize = 0;
 
 void Debug::Log(const char* pFormat, ...)
 {
@@ -20,6 +22,20 @@ void Debug::Log(const char* pFormat, ...)
 void Debug::LogGame(const char* pFormat, ...)
 {
 	JMP_STD(0x4068E0);
+}
+
+void Debug::LogDeferred(const char* pFormat, ...)
+{
+	va_list args;
+	va_start(args, pFormat);
+	CurrentBufferSize += vsprintf_s(DeferredStringBuffer + CurrentBufferSize, 4096 - CurrentBufferSize, pFormat, args);
+	va_end(args);
+}
+
+void Debug::LogDeferredFinalize()
+{
+	Log("%s", DeferredStringBuffer);
+	CurrentBufferSize = 0;
 }
 
 void Debug::LogAndMessage(const char* pFormat, ...)
