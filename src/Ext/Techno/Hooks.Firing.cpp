@@ -823,7 +823,7 @@ DEFINE_HOOK(0x6FDD93, TechnoClass_FireAt_DelayedFire, 0x6) // or 0x6FDD99  , 0x6
 		pExt->DelayedFire_Duration = pWeaponTypeExt->DelayedFire_Duration.Get();
 
 	AnimTypeClass* pDelayedFireAnimType = pWeaponTypeExt->DelayedFire_Anim.isset() ? pWeaponTypeExt->DelayedFire_Anim.Get() : nullptr;
-	
+
 	if (!pDelayedFireAnimType)
 	{
 		pExt->DelayedFire_Anim = nullptr;
