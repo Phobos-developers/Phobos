@@ -1216,6 +1216,7 @@ ExtraWarheads.DamageOverrides=  ; list of integers
 - By default the animation will be placed in the weapon FLH location but the animation can be moved to the center of the object with `DelayedFire.Anim.UseFLH=no`.
 - `DelayedFire.Anim.LoopCount` > 0 specifies how many times the animation will be played before the weapon activation.
 - `DelayedFire.DurationTimer` > 0 will interrupt the animation (and allow weapon fire) when the countdown ends.
+- `DelayedFire.Suicide` will provoke the same effect of the original tag `Suicide` without the side effect explosion when the unit is killed by someone.
 ```warning
 The combination of `DelayedFire.Anim.LoopCount=-1` and `DelayedFire.Duration=0` will produce an infinite loop and the weapon won't fire!
 ```
@@ -1226,7 +1227,8 @@ In `rulesmd.ini`:
 DelayedFire.Anim=            ; Animation
 DelayedFire.Anim.LoopCount=1 ; integer - number of times the animation is played (-1 for infinite loop)
 DelayedFire.Anim.UseFLH=true ; boolean - disabling this will create the animation at the center of the unit instead of its FLH coordinates
-DelayedFire.Duration=0  ; integer - in-game frames.
+DelayedFire.Duration=0       ; integer - in-game frames.
+DelayedFire.Suicide=false    ; boolean
 ```
 
 ### Feedback weapon
