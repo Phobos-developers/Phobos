@@ -185,7 +185,7 @@ bool TEventExt::HousesAreDestroyedTEvent(TEventClass* pThis)
 
 	for (auto pTechno : *TechnoClass::Array)
 	{
-		if (ScriptExt::IsUnitAvailable(pTechno, false, true))
+		if (ScriptExt::IsUnitAvailable(pTechno, false))
 		{
 			for (auto pHouse : housesList)
 			{
