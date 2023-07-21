@@ -261,7 +261,9 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 
 	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		if (pExt->TypeExtData->ImmuneToCrit)
+		auto const pTypeExt = pExt->TypeExtData;
+
+		if (pTypeExt->ImmuneToCrit)
 			return;
 
 		auto pSld = pExt->Shield.get();
@@ -320,13 +322,16 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 	else
 	{
-		for (auto const& [pBullet,pExt] : BulletExt::ExtMap)
+		for (auto& [pBullet, pBulletExt] : BulletExt::ExtMap)
 		{
-			auto const pTypeExt = pExt->TypeExtData;
+			if (pBullet->Location.DistanceFrom(coords) > cellSpread * Unsorted::LeptonsPerCell)
+				continue;
+
+			auto const pBulletTypeExt = pBulletExt->TypeExtData;
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
-			if (pTypeExt && pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
-				pExt->InterceptBullet(pOwner, pWeapon);
+			if (pBulletTypeExt && pBulletTypeExt->Interceptable)
+				pBulletExt->InterceptBullet(pOwner, pWeapon);
 		}
 	}
 }

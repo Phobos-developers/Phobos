@@ -11,6 +11,9 @@ class TerrainTypeExt
 public:
 	using base_type = TerrainTypeClass;
 
+	static constexpr DWORD Canary = 0xBEE78007;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<TerrainTypeClass>
 	{
 	public:
@@ -40,7 +43,7 @@ public:
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
