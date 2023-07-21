@@ -8,10 +8,23 @@ jobs:
     if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v6
+      - name: Get the PR number
+        run: |
+          # Query the issue search API to get the PR associated with it
+          PR_RAW=$(curl 'https://api.github.com/search/issues?q=${{ github.event.workflow_run.head_commit.id }}')
+          # Get the event number from the search results, which will
+          # be the PR number
+          # Filter by PRs only in this repository, as a PR with an identical head commit may be made in another repository (e.g. a fork)
+          # Assume the 0th index in the array of found PRs is the correct one (it seems to usually be the latest one)
+          PR_NUM=$(echo $PR_RAW | jq '.items | map(select(.repository_url=="https://api.github.com/repos/${{ github.repository }}")) | .[0].number')
+          echo "PR_NUM=${PR_NUM}" >> ${GITHUB_ENV}
+
+      - name: Comment on PR
+        uses: actions/github-script@v6
         with:
           # This snippet is public-domain, taken from
           # https://github.com/oprypin/nightly.link/blob/master/.github/workflows/pr-comment.yml
+          # and modified to allow comments on external PRs
           script: |
             async function upsertComment(owner, repo, issue_number, purpose, body) {
               const {data: comments} = await github.rest.issues.listComments(
@@ -38,11 +51,6 @@ jobs:
             const {owner, repo} = context.repo;
             const run_id = ${{github.event.workflow_run.id}};
 
-            const pull_requests = ${{ toJSON(github.event.workflow_run.pull_requests) }};
-            if (!pull_requests.length) {
-              return core.error("This workflow doesn't match any pull requests!");
-            }
-
             const artifacts = await github.paginate(
               github.rest.actions.listWorkflowRunArtifacts, {owner, repo, run_id});
             if (!artifacts.length) {
@@ -52,12 +60,9 @@ jobs:
             for (const art of artifacts) {
               body += `\n* [${art.name}.zip](https://nightly.link/${owner}/${repo}/actions/artifacts/${art.id}.zip)`;
             }
-            
-            body += `\nThis comment is automatic and is meant to allow guests to get latest nightly builds for this pull request without registering. It is updated on every successful build.`;
-            
-            core.info("Review thread message body:", body);
 
-            for (const pr of pull_requests) {
-              await upsertComment(owner, repo, pr.number,
-                "nightly-link", body);
-            }
+            body += `\nThese artifacts will expire in 90 days and will not be available for download after that time.`;
+            body += `\n\n_This comment is automatic and is meant to allow guests to get latest nightly builds for this pull request without registering. It is updated on every successful build._`;
+
+            core.info("Review thread message body:", body);
+            await upsertComment(owner, repo, ${{ env.PR_NUM }}, "nightly-link", body);

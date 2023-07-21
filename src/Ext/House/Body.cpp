@@ -7,7 +7,6 @@
 
 //Static init
 
-template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
 HouseExt::ExtContainer HouseExt::ExtMap;
 
 std::vector<int> HouseExt::AIProduction_CreationFrames;
@@ -300,6 +299,38 @@ int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 	return result;
 }
 
+// This basically gets same cell that AI script action 53 Gather at Enemy Base uses, and code for that (0x6EF700) was used as reference here.
+CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance)
+{
+	if (!pTargetHouse || !pCurrentHouse)
+		return nullptr;
+
+	auto targetBaseCoords = CellClass::Cell2Coord(pTargetHouse->GetBaseCenter());
+
+	if (targetBaseCoords == CoordStruct::Empty)
+		return nullptr;
+
+	auto currentCoords = CellClass::Cell2Coord(pCurrentHouse->GetBaseCenter());
+
+	if (currentCoords == CoordStruct::Empty)
+		currentCoords = defaultCurrentCoords;
+
+	int deltaX = currentCoords.X - targetBaseCoords.X;
+	int deltaY = targetBaseCoords.Y - currentCoords.Y;
+	int distance = (RulesClass::Instance->AISafeDistance + extraDistance) * Unsorted::LeptonsPerCell;
+
+	double atan = Math::atan2(deltaY, deltaX);
+	double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
+	int x = static_cast<int>(targetBaseCoords.X + Math::cos(radians) * distance);
+	int y = static_cast<int>(targetBaseCoords.Y - Math::sin(radians) * distance);
+
+	auto newCoords = CoordStruct {x, y, targetBaseCoords.Z};
+	auto cellStruct = CellClass::Coord2Cell(newCoords);
+	cellStruct = MapClass::Instance->NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
+
+	return MapClass::Instance->TryGetCellAt(cellStruct);
+}
+
 // Ares
 HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRandom, HouseClass* const pDefault, HouseClass* const pInvoker, HouseClass* const pVictim)
 {
@@ -416,6 +447,31 @@ bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
+void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	AnnounceInvalidPointer(Factory_BuildingType, ptr);
+	AnnounceInvalidPointer(Factory_InfantryType, ptr);
+	AnnounceInvalidPointer(Factory_VehicleType, ptr);
+	AnnounceInvalidPointer(Factory_NavyType, ptr);
+	AnnounceInvalidPointer(Factory_AircraftType, ptr);
+
+	if (!OwnedTimedAutoDeathObjects.empty() && ptr != nullptr)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(reinterpret_cast<TechnoClass*>(ptr));
+
+		if (pExt)
+			OwnedTimedAutoDeathObjects.erase(std::remove(OwnedTimedAutoDeathObjects.begin(), OwnedTimedAutoDeathObjects.end(), pExt), OwnedTimedAutoDeathObjects.end());
+	}
+
+	if (!OwnedLimboDeliveredBuildings.empty() && ptr != nullptr)
+	{
+		auto const abstract = reinterpret_cast<AbstractClass*>(ptr);
+
+		if (abstract->WhatAmI() == AbstractType::Building)
+			OwnedLimboDeliveredBuildings.erase(reinterpret_cast<BuildingClass*>(ptr));
+	}
+}
+
 // =============================
 // container
 
@@ -432,7 +488,7 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 {
 	GET(HouseClass*, pItem, EAX);
 
-	HouseExt::ExtMap.FindOrAllocate(pItem);
+	HouseExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 
