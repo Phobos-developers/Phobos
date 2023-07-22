@@ -11,12 +11,15 @@ class AnimTypeExt
 public:
 	using base_type = AnimTypeClass;
 
+	static constexpr DWORD Canary = 0xEEEEEEEE;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<AnimTypeClass>
 	{
 	public:
 		CustomPalette Palette;
 		Valueable<UnitTypeClass*> CreateUnit;
-		Valueable<unsigned short> CreateUnit_Facing;
+		Valueable<DirType> CreateUnit_Facing;
 		Valueable<bool> CreateUnit_InheritDeathFacings;
 		Valueable<bool> CreateUnit_InheritTurretFacings;
 		Valueable<bool> CreateUnit_RemapAnim;
@@ -43,7 +46,7 @@ public:
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
-			, CreateUnit_Facing { 0 }
+			, CreateUnit_Facing { DirType::North }
 			, CreateUnit_RandomFacing { true }
 			, CreateUnit_InheritDeathFacings { false }
 			, CreateUnit_InheritTurretFacings { false }

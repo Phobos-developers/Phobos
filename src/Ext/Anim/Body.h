@@ -12,10 +12,13 @@ class AnimExt
 public:
 	using base_type = AnimClass;
 
+	static constexpr DWORD Canary = 0xAAAAAAAA;
+	static constexpr size_t ExtPointerOffset = 0xD0;
+
 	class ExtData final : public Extension<AnimClass>
 	{
 	public:
-		short DeathUnitFacing;
+		DirType DeathUnitFacing;
 		DirStruct DeathUnitTurretFacing;
 		bool FromDeathUnit;
 		bool DeathUnitHasTurret;
@@ -34,20 +37,22 @@ public:
 		{ }
 
 		void SetInvoker(TechnoClass* pInvoker);
-		void CreateAttachedSystem(ParticleSystemTypeClass* pSystemType);
+		void CreateAttachedSystem();
 		void DeleteAttachedSystem();
 
 		virtual ~ExtData()
 		{
-			DeleteAttachedSystem();
+			this->DeleteAttachedSystem();
 		}
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		virtual void InvalidatePointer(void* const ptr, bool bRemoved) override
 		{
-			AnnounceInvalidPointer(Invoker, ptr);
-			AnnounceInvalidPointer(InvokerHouse, ptr);
-			AnnounceInvalidPointer(AttachedSystem, ptr);
+			AnnounceInvalidPointer(this->Invoker, ptr);
+			AnnounceInvalidPointer(this->InvokerHouse, ptr);
+			AnnounceInvalidPointer(this->AttachedSystem, ptr);
 		}
+
+		virtual void InitializeConstants() override;
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -66,18 +71,19 @@ public:
 		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
 		{
 			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
 			switch (abs)
 			{
-			case AbstractType::Aircraft:
 			case AbstractType::Building:
 			case AbstractType::Infantry:
 			case AbstractType::Unit:
+			case AbstractType::Aircraft:
 			case AbstractType::ParticleSystem:
 			case AbstractType::House:
 				return false;
-			default:
-				return true;
 			}
+
+			return true;
 		}
 	};
 
