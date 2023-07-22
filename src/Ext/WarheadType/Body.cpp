@@ -30,16 +30,23 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+namespace DetonateTemp
 {
+	AbstractClass* pTarget = nullptr;
+}
+
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+{
+	DetonateTemp::pTarget = pTarget;
 	WarheadTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse);
+	DetonateTemp::pTarget = nullptr;
 }
 
 void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
-	if (BulletClass* pBullet = pType->CreateBullet(nullptr, pOwner,
+	if (BulletClass* pBullet = pType->CreateBullet(DetonateTemp::pTarget, pOwner,
 		damage, pThis, 0, pThis->Bright))
 	{
 		if (pFiringHouse)
