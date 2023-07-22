@@ -2,6 +2,30 @@
 
 This page describes every change in Phobos that wasn't categorized into a proper category yet.
 
+## Player colors
+
+### Unlimited skirmish colors
+
+- It is now possible to have an unlimited number of skirmish/multiplayer player colors, as opposed to 8 in Yuri's Revenge and 16 with Ares.
+- This feature must be enabled with `SkirmishUnlimitedColors=true` in `[General]` section of game rules.
+- When enabled, the game will treat color indices passed from spawner as indices for `[Colors]` section entries.
+  - In example, with original rules, index 6 will correspond to color `Orange=25,230,255`.
+- Phobos writes additional information to the `SYNC#.txt` log files when a desynchronization occurs such as calls to random number generator functions, facing / target / destination changes etc.
+
+```{note}
+This feature should only be used if you use a spawner/outside client (i.e. CNCNet client). Using it in the original YR launcher will produce undesireable effects.
+```
+
+```{warning}
+Due to technical incompatibilities, enabling this feature disables [Ares' Customizable Dropdown Colors](https://ares-developers.github.io/Ares-docs/ui-features/customizabledropdowncolors.html).
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+SkirmishUnlimitedColors=false	; boolean
+```
+
 ## Developer tools
 
 ### Dump Object Info
@@ -124,6 +148,11 @@ function onInput() {
 ## INI
 
 ### Include files
+
+```{note}
+This feature must be enabled via a command line argument `-Include`.
+```
+
 - INI files can now include other files (merge them into self) using `[$Include]` section.
   - `[$Include]` section contains a list of files to read and include. Files can be directly in the Red Alert 2 directory or in a loaded MIX file.
   - Files will be added in the same order they are defined. Index of each file **must be unique among all included files**.
@@ -136,7 +165,7 @@ Due to a technical issue, there is a chance that ***the first line of a included
 ```
 
 ```{warning}
-When Phobos is present, the [Ares equivalent of $Include](https://ares-developers.github.io/Ares-docs/new/misc/include.html) is disabled!
+When this feature is enabled, the [Ares equivalent of `[$Include]`](https://ares-developers.github.io/Ares-docs/new/misc/include.html) is disabled!
 ```
 
 In any file:
@@ -146,14 +175,23 @@ In any file:
 ```
 
 ### Section inheritance
-- You can now make sections (children) inherit entries from other sections (parents) with `$Inherits`.
+
+```{note}
+This feature must be enabled via a command line argument `-Inheritance`.
+```
+
+- You can now make sections (children) inherit entries from other sections (parents) with `$Inherits` entry.
   - When a section has no value set for an entry (or an entry is missing), the game will attempt to use parent's value. If no value is found, only then the default will be used.
   - When multiple parents are specified, the order of inheritance is "first come, first served", looking up comma separated parents from left to right.
   - Inheritance can be nested recursively (parent sections can have their own parents). Recursion is depth-first (before inheriting from the next parent, check if the current parent has parents).
   - This feature can be used in *any* INI file, be it `rulesmd.ini`, `artmd.ini`, `soundmd.ini`, map file or anything else.
 
 ```{warning}
-When Phobos is present, the Ares equivalent of $Inherits (undocumented) is disabled!
+When this feature is enabled, the Ares equivalent of `$Inherits` (undocumented) is disabled!
+```
+
+```{warning}
+This feature may noticeably increase game loading time, depending on the size of game rules and used hardware.
 ```
 
 In any file:

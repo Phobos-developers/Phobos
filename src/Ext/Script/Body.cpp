@@ -1,9 +1,9 @@
 #include "Body.h"
 
+#include <Ext/House/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Scenario/Body.h>
 
-template<> const DWORD Extension<ScriptClass>::Canary = 0x3B3B3B3B;
 ScriptExt::ExtContainer ScriptExt::ExtMap;
 
 // =============================
@@ -208,6 +208,10 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 	case PhobosScripts::SameLineForceJumpCountdown:
 		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
 		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
+		break;
+	case PhobosScripts::ChronoshiftToEnemyBase:
+		// Chronoshift to enemy base, argument is additional distance modifier
+		ScriptExt::ChronoshiftToEnemyBase(pTeam, argument);
 		break;
 	case PhobosScripts::SetSideIdxForManagingTriggers:
 		ScriptExt::SetSideIdxForManagingTriggers(pTeam, -1);
@@ -434,7 +438,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 		// Find the Leader
 		pLeaderUnit = pExt->TeamLeader;
 
-		if (!IsUnitAvailable(pLeaderUnit, true, true))
+		if (!IsUnitAvailable(pLeaderUnit, true))
 		{
 			pLeaderUnit = FindTheTeamLeader(pTeam);
 			pExt->TeamLeader = pLeaderUnit;
@@ -469,7 +473,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 		// Check if units are around the leader
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			if (!IsUnitAvailable(pUnit, true, true))
+			if (!IsUnitAvailable(pUnit, true))
 			{
 				auto pTypeUnit = pUnit->GetTechnoType();
 
@@ -767,7 +771,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	// Team already have a focused target
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (IsUnitAvailable(pUnit, true, true)
+		if (IsUnitAvailable(pUnit, true)
 			&& !pUnit->TemporalTargetingMe
 			&& !pUnit->BeingWarpedOut)
 		{
@@ -831,7 +835,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 						}
 						else
 						{
-							if (pUnit->IsTeamLeader)
+							if (pUnit->IsInitiated)
 								bForceNextAction = true;
 
 							if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo <= 0)
@@ -1092,7 +1096,6 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 {
 	FootClass* pLeaderUnit = nullptr;
 	int bestUnitLeadershipValue = -1;
-	bool teamLeaderFound = false;
 
 	if (!pTeam)
 		return pLeaderUnit;
@@ -1100,25 +1103,8 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 	// Find the Leader or promote a new one
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (!pUnit)
+		if (!IsUnitAvailable(pUnit, true) || !(pUnit->IsInitiated || pUnit->WhatAmI() == AbstractType::Aircraft))
 			continue;
-
-		bool isValidUnit = IsUnitAvailable(pUnit, true, true);
-
-		// Preventing >1 leaders in teams
-		if (teamLeaderFound || !isValidUnit)
-		{
-			pUnit->IsTeamLeader = false;
-			continue;
-		}
-
-		if (pUnit->IsTeamLeader)
-		{
-			pLeaderUnit = pUnit;
-			teamLeaderFound = true;
-
-			continue;
-		}
 
 		// The team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
 		int unitLeadershipRating = pUnit->GetTechnoType()->LeadershipRating;
@@ -1129,9 +1115,6 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 			bestUnitLeadershipValue = unitLeadershipRating;
 		}
 	}
-
-	if (pLeaderUnit)
-		pLeaderUnit->IsTeamLeader = true;
 
 	return pLeaderUnit;
 }
@@ -1198,16 +1181,128 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
 	ScriptExt::Log("AI Scripts - StopForceJumpCountdown: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
 }
 
-bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed, bool allowSubterranean)
+void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
+{
+	if (!pTeam)
+		return;
+
+	auto pScript = pTeam->CurrentScript;
+	auto const pLeader = ScriptExt::FindTheTeamLeader(pTeam);
+
+	char logText[1024];
+	sprintf_s(logText, "AI Scripts - ChronoshiftToEnemyBase: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: %s)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument, "%s");
+
+	if (!pLeader)
+	{
+		ScriptExt::Log(logText, "No team leader found");
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	int houseIndex = pLeader->Owner->EnemyHouseIndex;
+	HouseClass* pEnemy = houseIndex != -1 ? HouseClass::Array->GetItem(houseIndex) : nullptr;
+
+	if (!pEnemy)
+	{
+		ScriptExt::Log(logText, "No enemy house found");
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	auto const pTargetCell = HouseExt::GetEnemyBaseGatherCell(pEnemy, pLeader->Owner, pLeader->GetCoords(), pLeader->GetTechnoType()->SpeedType, extraDistance);
+
+	if (!pTargetCell)
+	{
+		ScriptExt::Log(logText, "No target cell found");
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	ScriptExt::ChronoshiftTeamToTarget(pTeam, pLeader, pTargetCell);
+}
+
+void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLeader, AbstractClass* pTarget)
+{
+	if (!pTeam || !pTeamLeader || !pTarget)
+		return;
+
+	auto pScript = pTeam->CurrentScript;
+	HouseClass* pOwner = pTeamLeader->Owner;
+	SuperClass* pSuperChronosphere = nullptr;
+	SuperClass* pSuperChronowarp = nullptr;
+
+	for (auto const pSuper : pOwner->Supers)
+	{
+		if (!pSuperChronosphere && pSuper->Type->Type == SuperWeaponType::ChronoSphere)
+			pSuperChronosphere = pSuper;
+
+		if (!pSuperChronowarp && pSuper->Type->Type == SuperWeaponType::ChronoWarp)
+			pSuperChronowarp = pSuper;
+
+		if (pSuperChronosphere && pSuperChronowarp)
+			break;
+	}
+
+	char logTextBase[1024];
+	char logTextJump[1024];
+	char jump[256];
+
+	sprintf_s(jump, "Jump to next line: %d = %d,%d -> (Reason: %s)", pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument, "%s");
+	sprintf_s(logTextBase, "AI Scripts - ChronoshiftTeamToTarget: [%s] [%s] (line: %d = %d,%d) %s\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, "%s");
+	sprintf_s(logTextJump, logTextBase, jump);
+
+	if (!pSuperChronosphere || !pSuperChronowarp)
+	{
+		ScriptExt::Log(logTextJump, "No Chronosphere or ChronoWarp superweapon found");
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	if (!pSuperChronosphere->IsCharged || (pSuperChronosphere->IsPowered() && !pOwner->Is_Powered()))
+	{
+		if (pSuperChronosphere->Granted)
+		{
+			int rechargeTime = pSuperChronosphere->GetRechargeTime();
+			int timeLeft = pSuperChronosphere->RechargeTimer.GetTimeLeft();
+
+			if (1.0 - RulesClass::Instance->AIMinorSuperReadyPercent < timeLeft / rechargeTime)
+			{
+				ScriptExt::Log(logTextBase, "Chronosphere superweapon charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet");
+				return;
+			}
+		}
+		else
+		{
+			ScriptExt::Log(logTextJump, "Chronosphere superweapon is not available");
+			pTeam->StepCompleted = true;
+			return;
+		}
+	}
+
+	auto pTargetCell = MapClass::Instance->TryGetCellAt(pTarget->GetCoords());
+
+	if (pTargetCell)
+	{
+		pOwner->Fire_SW(pSuperChronosphere->Type->ArrayIndex, pTeam->SpawnCell->MapCoords);
+		pOwner->Fire_SW(pSuperChronowarp->Type->ArrayIndex, pTargetCell->MapCoords);
+		pTeam->AssignMissionTarget(pTargetCell);
+		ScriptExt::Log(logTextJump, "Finished successfully");
+	}
+	else
+	{
+		ScriptExt::Log(logTextJump, "No target cell found");
+	}
+
+	pTeam->StepCompleted = true;
+	return;
+}
+
+bool ScriptExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed)
 {
 	if (!pTechno)
 		return false;
 
-	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0
-		&& !pTechno->InLimbo && !pTechno->Transporter && !pTechno->Absorbed;
-
-	bool isSubterranean = allowSubterranean && pTechno->InWhichLayer() == Layer::Underground;
-	isAvailable &= pTechno->IsOnMap || isSubterranean;
+	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && pTechno->IsOnMap;
 
 	if (checkIfInTransportOrAbsorbed)
 		isAvailable &= !pTechno->Absorbed && !pTechno->Transporter;

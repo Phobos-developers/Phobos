@@ -14,6 +14,10 @@ class HouseExt
 {
 public:
 	using base_type = HouseClass;
+
+	static constexpr DWORD Canary = 0x11111111;
+	static constexpr size_t ExtPointerOffset = 0x16098;
+
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
@@ -54,14 +58,7 @@ public:
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		//virtual void Initialize() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			AnnounceInvalidPointer(Factory_AircraftType, ptr);
-			AnnounceInvalidPointer(Factory_NavyType, ptr);
-			AnnounceInvalidPointer(Factory_InfantryType, ptr);
-			AnnounceInvalidPointer(Factory_VehicleType, ptr);
-			AnnounceInvalidPointer(Factory_BuildingType, ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 
 		void UpdateVehicleProduction();
 
@@ -78,6 +75,22 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
+			switch (abs)
+			{
+			case AbstractType::Building:
+			case AbstractType::Infantry:
+			case AbstractType::Unit:
+			case AbstractType::Aircraft:
+				return false;
+			}
+
+			return true;
+		}
 	};
 
 	static ExtContainer ExtMap;
@@ -89,6 +102,7 @@ public:
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 	static int GetHouseIndex(int param, TeamClass* pTeam, TActionClass* pTAction);
+	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
 
 	static bool IsDisabledFromShell(
 	HouseClass const* pHouse, BuildingTypeClass const* pItem);
