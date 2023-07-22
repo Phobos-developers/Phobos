@@ -48,10 +48,10 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 
 	auto const pFootKiller = static_cast<FootClass*>(pRealKiller);
 	auto const pFocus = static_cast<TechnoClass*>(pFootKiller->Team->Focus);
-	
+
 	/*Debug::Log("DEBUG: pRealKiller -> [%s] [%s] registered a kill of the type [%s]\n",
 		pFootKiller->Team->Type->ID, pRealKiller->get_ID(), pVictim->get_ID());*/
-	
+
 	pKillerExt->LastKillWasTeamTarget = false;
 
 	if (pFocus && pFocus->GetTechnoType() == pVictim->GetTechnoType())
