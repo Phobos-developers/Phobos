@@ -58,6 +58,8 @@ class TEventExt
 public:
 	using base_type = TEventClass;
 
+	static constexpr DWORD Canary = 0x91919191;
+
 	class ExtData final : public Extension<TEventClass>
 	{
 	public:

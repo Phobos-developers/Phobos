@@ -1,25 +1,28 @@
 #include "Body.h"
 
 #include <Ext/CaptureManager/Body.h>
-
-namespace MindControlFixTemp
-{
-	bool isMindControlBeingTransferred = false;
-}
+#include <Ext/WarheadType/Body.h>
 
 void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
+	auto const pAnimType = pTechnoFrom->MindControlRingAnim ?
+		pTechnoFrom->MindControlRingAnim->Type : TechnoExt::ExtMap.Find(pTechnoFrom)->MindControlRingAnimType;
+
 	if (auto Controller = pTechnoFrom->MindControlledBy)
 	{
 		if (auto Manager = Controller->CaptureManager)
 		{
-			MindControlFixTemp::isMindControlBeingTransferred = true;
-
 			CaptureManagerExt::FreeUnit(Manager, pTechnoFrom, true);
-			if (CaptureManagerExt::CaptureUnit(Manager, pTechnoTo, false)) // why true?
+
+			if (CaptureManagerExt::CaptureUnit(Manager, pTechnoTo, false, pAnimType, true))
 			{
 				if (auto pBld = abstract_cast<BuildingClass*>(pTechnoTo))
 				{
+					// Capturing the building after unlimbo before buildup has finished or even started appears to throw certain things off,
+					// Hopefully this is enough to fix most of it like anims playing prematurely etc.
+					pBld->ActuallyPlacedOnMap = false;
+					pBld->DestroyNthAnim(BuildingAnimSlot::All);
+
 					pBld->BeginMode(BStateType::Construction);
 					pBld->QueueMission(Mission::Construction, false);
 				}
@@ -33,7 +36,6 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 					VocClass::PlayIndexAtPos(nSound, pTechnoTo->Location);
 			}
 
-			MindControlFixTemp::isMindControlBeingTransferred = false;
 		}
 	}
 	else if (auto MCHouse = pTechnoFrom->MindControlledByHouse)
@@ -41,16 +43,28 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 		pTechnoTo->MindControlledByHouse = MCHouse;
 		pTechnoFrom->MindControlledByHouse = nullptr;
 	}
-
-	if (auto fromAnim = pTechnoFrom->MindControlRingAnim)
+	else if (pTechnoFrom->MindControlledByAUnit) // Perma MC
 	{
-		auto& toAnim = pTechnoTo->MindControlRingAnim;
+		pTechnoTo->MindControlledByAUnit = true;
 
-		if (toAnim)
-			toAnim->TimeToDie = 1;
+		auto const pBuilding = abstract_cast<BuildingClass*>(pTechnoTo);
+		CoordStruct location = pTechnoTo->GetCoords();
 
-		toAnim = fromAnim;
-		fromAnim->SetOwnerObject(pTechnoTo);
+		if (pBuilding)
+			location.Z += pBuilding->Type->Height * Unsorted::LevelHeight;
+		else
+			location.Z += pTechnoTo->GetTechnoType()->MindControlRingOffset;
+
+		if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location, 0, 1))
+		{
+			pTechnoTo->MindControlRingAnim = pAnim;
+
+			if (pBuilding)
+				pAnim->ZAdjust = -1024;
+
+			pAnim->SetOwnerObject(pTechnoTo);
+		}
+
 	}
 }
 
@@ -85,6 +99,13 @@ DEFINE_HOOK(0x449E2E, BuildingClass_Mi_Selling_CreateUnit, 0x6)
 	GET(BuildingClass*, pStructure, EBP);
 	R->ECX<HouseClass*>(pStructure->GetOriginalOwner());
 
+	// Remember MC ring animation.
+	if (pStructure->IsMindControlled())
+	{
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pStructure);
+		pTechnoExt->UpdateMindControlAnim();
+	}
+
 	return 0x449E34;
 }
 
@@ -94,10 +115,4 @@ DEFINE_HOOK(0x7396AD, UnitClass_Deploy_CreateBuilding, 0x6)
 	R->EDX<HouseClass*>(pUnit->GetOriginalOwner());
 
 	return 0x7396B3;
-}
-
-DEFINE_HOOK(0x448460, BuildingClass_Captured_MuteSound, 0x6)
-{
-	return MindControlFixTemp::isMindControlBeingTransferred ?
-		0x44848F : 0;
 }

@@ -11,7 +11,11 @@ DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x4)
 	GET_STACK(CellStruct const* const, pCell, 0x4);
 	// GET_STACK(bool const, isPlayer, 0x8);
 
-	SWTypeExt::FireSuperWeaponExt(pSuper, *pCell);
+	// Check if the SuperClass pointer is valid and not corrupted.
+	if (pSuper && VTable::Get(pSuper) == SuperClass::AbsVTable)
+		SWTypeExt::FireSuperWeaponExt(pSuper, *pCell);
+	else
+		Debug::Log("SuperClass_Place_FireExt: Hook entered with an invalid or corrupt SuperClass pointer.");
 
 	return 0;
 }
