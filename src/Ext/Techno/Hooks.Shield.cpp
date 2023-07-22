@@ -161,9 +161,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	{
 		if (pShieldData->IsAvailable())
 		{
-			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-			if(pExt->TypeExtData->HealthBar_Sections > 0)
-				length = pExt->TypeExtData->HealthBar_Sections;
+			const int length = (pExt->TypeExtData->HealthBar_Sections > 0) ? pExt->TypeExtData->HealthBar_Sections : (pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17);
 			pShieldData->DrawShieldBar(length, pLocation, pBound);
 		}
 	}
