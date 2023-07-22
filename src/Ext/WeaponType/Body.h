@@ -13,6 +13,9 @@ class WeaponTypeExt
 public:
 	using base_type = WeaponTypeClass;
 
+	static constexpr DWORD Canary = 0x22222222;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<WeaponTypeClass>
 	{
 	public:
@@ -22,6 +25,7 @@ public:
 		Valueable<bool> Bolt_Disable1;
 		Valueable<bool> Bolt_Disable2;
 		Valueable<bool> Bolt_Disable3;
+		Valueable<int> Bolt_Arcs;
 		Valueable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
 		Valueable<AffectedTarget> CanTarget;
@@ -33,6 +37,8 @@ public:
 		Valueable<bool> Laser_IsSingleColor;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<bool> OmniFire_TurnToTarget;
+		ValueableVector<WarheadTypeClass*> ExtraWarheads;
+		ValueableVector<int> ExtraWarheads_DamageOverrides;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -40,6 +46,7 @@ public:
 			, Bolt_Disable1 { false }
 			, Bolt_Disable2 { false }
 			, Bolt_Disable3 { false }
+			, Bolt_Arcs { 8 }
 			, Strafing_Shots { 5 }
 			, Strafing_SimulateBurst { false }
 			, CanTarget { AffectedTarget::All }
@@ -51,6 +58,8 @@ public:
 			, Laser_IsSingleColor { false }
 			, ROF_RandomDelay {}
 			, OmniFire_TurnToTarget { false }
+			, ExtraWarheads {}
+			, ExtraWarheads_DamageOverrides {}
 		{ }
 
 		int GetBurstDelay(int burstIndex);
@@ -85,8 +94,8 @@ public:
 
 	static double OldRadius;
 
-	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
-	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
+	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
+	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 };

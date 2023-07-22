@@ -14,6 +14,7 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 
 	if (auto pTypeExt = this->TypeExtData)
 	{
+		this->LaserTrails.clear();
 		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
