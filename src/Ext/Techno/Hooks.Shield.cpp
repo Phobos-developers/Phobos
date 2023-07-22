@@ -162,6 +162,8 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		if (pShieldData->IsAvailable())
 		{
 			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+			if(pExt->TypeExtData->HealthBar_Sections > 0)
+				length = pExt->TypeExtData->HealthBar_Sections;
 			pShieldData->DrawShieldBar(length, pLocation, pBound);
 		}
 	}
@@ -169,6 +171,50 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	return 0;
+}
+
+DEFINE_HOOK(0x6F6846, TechnoClass_DrawHealthBar_CustomHealthBar, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+	REF_STACK(int, p48, STACK_OFFSET(0x4C, -0x30)); //v48
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	bool pThisIsInf = pThis->WhatAmI() == AbstractType::Infantry;
+	int sections = pThisIsInf ? 8 : 17;
+	int frame = pThisIsInf ? 1 : 0;
+	int left_adjust = pThisIsInf ? 10 : 0;
+	int top_adjust = pThisIsInf ? -25 : -26;
+	int border_adjust = left_adjust;
+	SHPStruct* pImage = FileSystem::PIPBRD_SHP;
+	if(pTypeExt->HealthBar_Border)
+	{
+		pImage = pTypeExt->HealthBar_Border.Get();
+		border_adjust = (pTypeExt->HealthBar_BorderAdjust != 0) ? pTypeExt->HealthBar_BorderAdjust : 0;
+	}
+	frame = (pTypeExt->HealthBar_BorderFrame > 0) ? pTypeExt->HealthBar_BorderFrame : frame;
+
+	if(pTypeExt->HealthBar_Sections > 0)
+	{
+		sections = pTypeExt->HealthBar_Sections;
+		left_adjust = (sections % 2 == 0) ? (18 - sections) : (17 - sections);
+		border_adjust = (sections % 2 == 0) ? border_adjust + 1 : border_adjust;
+	}
+
+	if(pThis->IsSelected)
+	{
+		Point2D position;
+		position.X = pLocation->X + 1 + border_adjust;
+		position.Y = pThis->GetTechnoType()->PixelSelectionBracketDelta + pLocation->Y + top_adjust;
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pImage,
+				frame, &position, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+	R->EDI(pLocation); //v32
+	p48 = -15 + left_adjust; //v48
+	R->EBX(sections); //v34
+	R->EBP(pThis->GetTechnoType()->PixelSelectionBracketDelta + top_adjust + 1); //v35
+	return 0x6F6976;
 }
 
 DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)

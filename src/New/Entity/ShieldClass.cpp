@@ -806,10 +806,10 @@ void ShieldClass::DrawShieldBar_Other(const int length, Point2D* pLocation, Rect
 
 	if (this->Techno->IsSelected)
 	{
-		position.X += length + 1 + (length == 8 ? length + 1 : 0);
+		position.X += length + 1 + (length % 2 == 0 ? length + 1 : 0);
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipBoard,
 			frame, &position, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-		position.X -= length + 1 + (length == 8 ? length + 1 : 0);
+		position.X -= length + 1 + (length % 2 == 0 ? length + 1 : 0);
 	}
 
 	frame = this->DrawShieldBar_Pip(false);
