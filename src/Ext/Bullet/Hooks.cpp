@@ -566,3 +566,29 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 
 // Skip a forced detonation check for Level=true projectiles that is now handled in Hooks.Obstacles.cpp.
 DEFINE_JUMP(LJMP, 0x468D08, 0x468D2F);
+
+DEFINE_HOOK(0x46A290, BulletClass_Logics_ExtraWarheads, 0x5)
+{
+	GET(BulletClass*, pThis, ESI);
+	GET_BASE(CoordStruct*, coords, 0x8);
+
+	if (pThis->WeaponType)
+	{
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
+		int defaultDamage = pThis->WeaponType->Damage;
+
+		for (size_t i = 0; i < pWeaponExt->ExtraWarheads.size(); i++)
+		{
+			auto const pWH = pWeaponExt->ExtraWarheads[i];
+			auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+			int damage = defaultDamage;
+
+			if (pWeaponExt->ExtraWarheads_DamageOverrides.size() > i)
+				damage = pWeaponExt->ExtraWarheads_DamageOverrides[i];
+
+			WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner);
+		}
+	}
+
+	return 0;
+}
