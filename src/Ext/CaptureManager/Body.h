@@ -13,9 +13,9 @@ class CaptureManagerExt
 {
 public:
 	static bool CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget);
-	static bool FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, bool bSilent = false);
+	static bool FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, bool silent = false);
 	static bool CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTarget,
-		bool bRemoveFirst, AnimTypeClass* pControlledAnimType = RulesClass::Instance->ControlledAnimationType);
+		bool bRemoveFirst, AnimTypeClass* pControlledAnimType = RulesClass::Instance->ControlledAnimationType, bool silent = false);
 	static bool CaptureUnit(CaptureManagerClass* pManager, AbstractClass *pTechno,
 		AnimTypeClass* pControlledAnimType = RulesClass::Instance->ControlledAnimationType);
 	static void DecideUnitFate(CaptureManagerClass* pManager, FootClass* pFoot);

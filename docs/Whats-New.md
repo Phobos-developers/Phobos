@@ -14,12 +14,14 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 - The obsolete `[General] WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
-
-### From Ares
-
-- `[#include]` section and `[CHILD]:[PARENT]` section inheritance notation are disabled, replaced by Phobos `[$Include]` and `$Inherits`.
+- Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
 
 ### From older Phobos versions
+
+#### From post-0.3 devbuilds
+
+- INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
+- `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
 
 #### From 0.3
 
@@ -170,8 +172,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
   [ScriptsRA2]
   10100=Timed Area Guard,20,0,1,[LONG DESC]
-  10103=Load Onto Transports,0,0,1,[LONG DESC]
   10101=Wait until ammo is full,0,0,1,[LONG DESC]
+  10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]
+  10103=Load Onto Transports,0,0,1,[LONG DESC]
+  10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
   18002=Local variable minus,22,0,1,[LONG DESC]
@@ -310,6 +314,19 @@ New:
 - Upgrade logic to allow altering of SpySat status (by Otamaa)
 - Allow `ZShapePointMove` to apply during buildup via `ZShapePointMove.OnBuildup` (by Starkku)
 - `UndeploysInto` building selling buildup sequence length customization (by Starkku)
+- Allow overriding `Shield.AffectTypes` for each Warhead shield interaction (by Starkku)
+- TechnoType conversion warhead & superweapon (by Morton)
+- Unlimited skirmish colors (by Morton)
+- Example custom locomotor that circles around the target (*NOTE: For developer use only*) (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
+- Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar)
+- Crushing tilt and slowdown customization (by Starkku)
+- Extra warhead detonations on weapon (by Starkku)
+- Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
+- Chrono sparkle animation display customization and improvements (by Starkku)
+- Script action to Chronoshift teams to enemy base (by Starkku)
+- Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
+- PipScale pip size & ammo pip frame customization (by Starkku)
+- Additional sync logging in case of desync errors occuring (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -346,6 +363,8 @@ Vanilla fixes:
 - Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
+- Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (by Kerbiter)
+- Suppressed the BuildingCaptured EVA events when capturing a building considered as a vehicle (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -365,12 +384,17 @@ Phobos fixes:
 - Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where object changes layer (by Starkku)
 - Fixed floating point value parsing precision to match the game (by Starkku)
 - Fixed `DetonateOnAllMapObjects.RequireVerses` not considering shield armor types (by Starkku)
-</details>
-
-### 0.3.0.1
+- Power output / drain should now correctly be applied for buildings created via `LimboDelivery` in campaigns (by Starkku)
+- Fixed shield health bar showing empty bar when shield is still on very low health instead of depleted (by Starkku)
+- Fixed `CanTarget` not considering objects on bridges when checking if cell is empty (by Starkku)
+- Fixed new Phobos script actions not picking team leader correctly based on `LeadershipRating` (by Starkku)
+- Fixed an issue with `Gunner=true` vehicles not correctly using the first passenger's mode with multiple passengers inside (by Starkku)
+- Used `MindControl.Anim` for buildings deployed from mind-controlled vehicles (by Trsdy)
+- Optimized extension class implementation, should improve performance all around (by Otamaa & Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
+</details>
 
 ### 0.3
 

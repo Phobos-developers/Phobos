@@ -6,6 +6,7 @@
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
 
+#include "Utilities/AresHelper.h"
 
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
@@ -32,6 +33,9 @@ const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(B
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
+	bool foundInheritance = false;
+	bool foundInclude = false;
+
 	// > 1 because the exe path itself counts as an argument, too!
 	for (int i = 1; i < nNumArgs; i++)
 	{
@@ -47,6 +51,48 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			HideWarning = true;
 		}
 #endif
+		if (_stricmp(pArg, "-Inheritance") == 0)
+		{
+			foundInheritance = true;
+		}
+		if (_stricmp(pArg, "-Include") == 0)
+		{
+			foundInclude = true;
+		}
+	}
+
+	if (foundInclude)
+	{
+		Patch::Apply_RAW(0x474200, // Apply CCINIClass_ReadCCFile1_DisableAres
+			{ 0x8B, 0xF1, 0x8D, 0x54, 0x24, 0x0C }
+		);
+
+		Patch::Apply_RAW(0x474314, // Apply CCINIClass_ReadCCFile2_DisableAres
+			{ 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00 }
+		);
+	}
+	else
+	{
+		Patch::Apply_RAW(0x474230, // Revert CCINIClass_Load_Inheritance
+			{ 0x8B, 0xE8, 0x88, 0x5E, 0x40 }
+		);
+	}
+
+	if (foundInheritance)
+	{
+		Patch::Apply_RAW(0x528A10, // Apply INIClass_GetString_DisableAres
+			{ 0x83, 0xEC, 0x0C, 0x33, 0xC0 }
+		);
+
+		Patch::Apply_RAW(0x526CC0, // Apply INIClass_GetKeyName_DisableAres
+			{ 0x8B, 0x54, 0x24, 0x04, 0x83, 0xEC, 0x0C }
+		);
+	}
+	else
+	{
+		Patch::Apply_RAW(0x528BAC, // Revert INIClass_GetString_Inheritance_NoEntry
+			{ 0x8B, 0x7C, 0x24, 0x2C, 0x33, 0xC0, 0x8B, 0x4C, 0x24, 0x28 }
+		);
 	}
 
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
@@ -110,6 +156,7 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
 	Phobos::ExeRun();
+	AresHelper::Init();
 
 	return 0;
 }
@@ -136,6 +183,7 @@ DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 	GET(int, nNumArgs, EDI);
 
 	Phobos::CmdLineParse(ppArgs, nNumArgs);
+	Debug::LogDeferredFinalize();
 	return 0;
 }
 
