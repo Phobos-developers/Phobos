@@ -15,6 +15,9 @@ class VoxelAnimTypeExt
 public:
 	using base_type = VoxelAnimTypeClass;
 
+	static constexpr DWORD Canary = 0xAAAEEEEE;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<VoxelAnimTypeClass>
 	{
 	public:
@@ -39,7 +42,8 @@ public:
 		virtual size_t Size() const { return sizeof(*this); }
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
-		virtual void InvalidatePointer(void *ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+
 		virtual void Initialize() override;
 		virtual void LoadFromStream(PhobosStreamReader& Stm)override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm)override;
@@ -54,7 +58,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
 
 	static ExtContainer ExtMap;

@@ -127,3 +127,37 @@ bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 
 	return false;
 }
+
+std::string GeneralUtils::IntToDigits(int num)
+{
+	std::string digits;
+
+	if (num == 0)
+	{
+		digits.push_back('0');
+		return digits;
+	}
+
+	while (num)
+	{
+		digits.push_back(static_cast<char>(num % 10) + '0');
+		num /= 10;
+	}
+
+	std::reverse(digits.begin(), digits.end());
+
+	return digits;
+}
+
+int GeneralUtils::CountDigitsInNumber(int number)
+{
+	int digits = 0;
+
+	while (number)
+	{
+		number /= 10;
+		digits++;
+	}
+
+	return digits;
+}

@@ -7,6 +7,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/AresFunctions.h>
 
 // methods used in TechnoClass_AI hooks or anything similar
 
@@ -261,7 +262,14 @@ void TechnoExt::ExtData::EatPassengers()
 							pFoot->RemoveGunner(pPassenger);
 
 							if (pThis->Passengers.NumPassengers > 0)
-								pFoot->ReceiveGunner(pThis->Passengers.FirstPassenger);
+							{
+								FootClass* pGunner = nullptr;
+
+								for (auto pNext = pThis->Passengers.FirstPassenger; pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
+									pGunner = pNext;
+
+								pFoot->ReceiveGunner(pGunner);
+							}
 						}
 					}
 
@@ -503,7 +511,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 				{
 					if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
 					{
-						pBuilding->UpdatePlacement(PlacementType::Redraw);
+						pBuilding->Mark(MarkType::Change);
 						pBuilding->ToggleDamagedAnims(false);
 					}
 
@@ -581,8 +589,17 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
-		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
+		if (IS_ARES_FUN_AVAILABLE(SpawnSurvivors))
+		{
+			switch (pThis->WhatAmI())
+			{
+			case AbstractType::Unit:
+			case AbstractType::Aircraft:
+				AresFunctions::SpawnSurvivors(static_cast<FootClass*>(pThis), nullptr, false, false);
+			default:break;
+			}
+		}
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pThis->Owner);
 		return;
 	}
 }

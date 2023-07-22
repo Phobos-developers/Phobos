@@ -18,6 +18,8 @@
         "${workspaceFolder}/src/**",
         "${workspaceFolder}/YRpp",
         "${workspaceFolder}/YRpp/**",
+        "${workspaceFolder}/lib",
+        "${workspaceFolder}/lib/**",
     ],
       "defines": [
         "SYR_VER=2",
@@ -36,5 +38,5 @@
       }
     }
   ],
-  "version": 4
+  "version": 5
 }

@@ -160,6 +160,10 @@ Shield.SelfHealing.Amount=0.0        ; floating point value, percents or absolut
 Shield.SelfHealing.Rate=-1.0         ; floating point value, ingame minutes
 Shield.SelfHealing.ResetTimer=false  ; boolean
 Shield.AffectTypes=                  ; List of ShieldType names
+Shield.Penetrate.Types=              ; List of ShieldType names
+Shield.Break.Types=                  ; List of ShieldType names
+Shield.Respawn.Types=                ; List of ShieldType names
+Shield.SelfHealing.Types=            ; List of ShieldType names
 Shield.AttachTypes=                  ; List of ShieldType names
 Shield.RemoveTypes=                  ; List of ShieldType names
 Shield.ReplaceOnly=false             ; boolean
@@ -211,7 +215,8 @@ Shield.InheritStateOnReplace=false   ; boolean
   - `Shield.PassPercent` overrides the `PassPercent` value set in the ShieldType that is being damaged.
   - `Shield.Respawn.Rate` & `Shield.Respawn.Amount` override ShieldType `Respawn.Rate` and `Respawn.Amount` for duration of `Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.Respawn.ResetTimer` is set, currently running shield respawn timer is reset, otherwise the timer's duration is adjusted to match `Shield.Respawn.Rate` without restarting the timer.  If the effect expires while respawn timer is running, remaining time is adjusted to match ShieldType `Respawn.Rate`. Re-applying the effect resets the duration to `Shield.Respawn.Duration`
   - `Shield.SelfHealing.Rate` & `Shield.SelfHealing.Amount` override ShieldType `SelfHealing.Rate` and `SelfHealing.Amount` for duration of `Shield.SelfHealing.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.SelfHealing.ResetTimer` is set, currently running self-healing timer is restarted, otherwise timer's duration 'is adjusted to match `Shield.SelfHealing.Rate` without restarting the timer. If the effect expires while self-healing timer is running, remaining time is adjusted to match ShieldType `SelfHealing.Rate`. Re-applying the effect resets the duration to `Shield.SelfHealing.Duration`.
-  - `Shield.AffectsTypes` allows listing which ShieldTypes can be affected by any of the effects listed above. If none are listed, all ShieldTypes are affected.
+  - `Shield.AffectTypes` allows listing which ShieldTypes can be affected by any of the effects listed above. If none are listed, all ShieldTypes are affected.
+    -  `Shield.AffectTypes` can be overriden for specific shield interactions by using keys `Shield.Penetrate.Types`, `Shield.Break.Types`, `Shield.Respawn.Types` and `Shield.SelfHealing.Types` respectively.
   - `Shield.AttachTypes` & `Shield.RemoveTypes` allows listing ShieldTypes that are attached or removed, respectively from any targets affected by the warhead (positive `Verses` values). Normally only first listed ShieldType in `Shield.AttachTypes` is applied.
     - If `Shield.ReplaceOnly` is set, shields from `Shield.AttachTypes` are only applied to affected targets from which shields were simultaneously removed, matching the order listed in `Shield.RemoveTypes`. If `Shield.AttachTypes` contains less items than `Shield.RemoveTypes`, last item from the former is used for any remaining removed shields.
     - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
@@ -497,7 +502,7 @@ Shrapnel.AffectsBuildings=false  ; boolean
 ### Projectiles blocked by land or water
 
 - It is now possible to make projectiles consider either land or water as obstacles that block their path by setting `SubjectToLand/Water` to true, respectively. Weapons firing such projectiles will consider targets blocked by such obstacles as out of range and will attempt to reposition themselves so they can fire without being blocked by the said obstacles before firing and if `SubjectToLand/Water.Detonate` is set to true, the projectiles will detonate if they somehow manage to collide with the said obstacles.
-  - In a special case, `Level=true` projectiles by default, if neither `SubjectToLand` or `SubjectToWater` are set, consider tiles belonging to non-water tilesets as obstacles, but this behaviour can be overridden by setting these keys.
+  - `Level=true` projectiles detonate on tiles belonging to non-water tilesets by default, but will not consider such tiles as true obstacles. This behaviour can be overridden by setting these keys.
 
 In `rulesmd.ini`:
 ```ini
@@ -510,6 +515,44 @@ SubjectToWater.Detonate=true  ; boolean
 
 ## Super Weapons
 
+### Convert TechnoType
+
+- Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
+  - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
+  - `ConvertN.To` specifies the TechnoType which is the result of conversion.
+  - `ConvertN.AffectedHouses` specifies whose units can be converted.
+  - `Convert.From`, `Convert.To` and `Convert.AffectedHouses` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectedHouses` if only one pair is specified.
+  - Conversion affects *all* existing units of set TechnoTypes, this includes units in: transports, occupied buildings, buildings with `InfantryAbsorb=yes` or `UnitAbsorb=yes`, buildings with `Bunker=yes`.
+
+In example, this superweapon would convert all owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
+```ini
+[SOMESW]
+Convert.From=SOLDIERA,SOLDIERB
+Convert.To=NEWSOLDIER
+Convert.AffectedHouses=team
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                        ; SuperWeapon
+ConvertN.From=                  ; list of TechnoTypes
+ConvertN.To=                    ; TechnoType
+ConvertN.AffectedHouses=owner   ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+; where N = 0, 1, 2, ...
+; or
+Convert.From=                   ; list of TechnoTypes
+Convert.To=                     ; TechnoType
+Convert.AffectedHouses=owner    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ### LimboDelivery
 
 - Superweapons can now deliver off-map buildings that act as if they were on the field.
@@ -517,7 +560,7 @@ SubjectToWater.Detonate=true  ; boolean
   - `LimboDelivery.IDs` is the list of numeric IDs that will be assigned to buildings. Necessary for LimboKill to work.
 
 - Created buildings are not affected by any on-map threats. The only way to remove them from the game is by using a Superweapon with `LimboKill.IDs` set.
-  - `LimboKill.Affects` sets which houses are affected by this feature.
+  - `LimboKill.Affected` sets which houses are affected by this feature.
   - `LimboKill.IDs` lists IDs that will be targeted. Buildings with these IDs will be removed from the game instantly.
 
 - Delivery can be made random with these optional tags. The game will randomly choose only a single building from the list for each roll chance provided.
@@ -544,7 +587,7 @@ LimboDelivery.Types=            ; List of BuildingTypes
 LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
 LimboDelivery.RollChances=      ; List of percentages.
 LimboDelivery.RandomWeightsN=   ; List of integers.
-LimboKill.Affects=self          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+LimboKill.Affected=self         ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LimboKill.IDs=                  ; List of numeric IDs.
 ```
 
@@ -774,7 +817,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 
 If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen.
 ```{note}
-Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option. This might change in the future if necessary.
+Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
 ```
 
 This logic also supports buildings delivered by [LimboDelivery](#LimboDelivery)
@@ -884,7 +927,6 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
-
 ### Customize EVA voice and `SellSound` when selling units
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
@@ -898,7 +940,6 @@ In `rulesmd.ini`:
 EVA.Sold=       ; EVA entry
 SellSound=      ; sound entry
 ```
-
 
 ## Terrain
 
@@ -968,6 +1009,43 @@ ImmuneToCrit=no                     ; boolean
 
 ```{warning}
 If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chain of Warheads with it that loops back to the first one there is a possibility for the game to get stuck in a loop and freeze or crash afterwards.
+```
+
+### Convert TechnoType on impact
+
+- Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
+  - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
+  - `ConvertN.To` specifies the TechnoType which is the result of conversion.
+  - `ConvertN.AffectedHouses` specifies whose units can be converted.
+  - `Convert.From`, `Convert.To` and `Convert.AffectedHouses` (without numbers) are a valid alternative to `Convert0.From`, `Convert0.To` and `Convert0.AffectedHouses` if only one pair is specified.
+
+In example, this warhead would convert all affected owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
+```ini
+[SOMEWARHEAD]
+Convert.From=SOLDIERA,SOLDIERB
+Convert.To=NEWSOLDIER
+Convert.AffectedHouses=team
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; Warhead
+ConvertN.From=                  ; list of TechnoTypes
+ConvertN.To=                    ; TechnoType
+ConvertN.AffectedHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+; where N = 0, 1, 2, ...
+; or
+Convert.From=                   ; list of TechnoTypes
+Convert.To=                     ; TechnoType
+Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ### Custom 'SplashList' on Warheads
@@ -1128,6 +1206,18 @@ In `rulesmd.ini`:
 [SOMEWEAPON]                    ; WeaponType
 Burst.Delays=-1                 ; integer - burst delays (comma-separated) for shots in order from first to last.
 Burst.FireWithinSequence=false  ; boolean
+```
+
+### Extra warhead detonations
+
+- It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
+  - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found. If not, weapon `Damage` is used.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                    ; WeaponType
+ExtraWarheads=                  ; list of WarheadTypes
+ExtraWarheads.DamageOverrides=  ; list of integers
 ```
 
 ### Feedback weapon
