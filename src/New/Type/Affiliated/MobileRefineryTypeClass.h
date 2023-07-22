@@ -1,0 +1,35 @@
+#pragma once
+
+#include <Utilities/Constructs.h>
+#include <Utilities/Enum.h>
+#include <Utilities/Template.h>
+
+class MobileRefineryTypeClass
+{
+public:
+
+	MobileRefineryTypeClass() = default;
+
+	MobileRefineryTypeClass(TechnoTypeClass* OwnedBy);
+
+	TechnoTypeClass* OwnerType;
+
+	Valueable<int> TransDelay;
+	Valueable<float>  CashMultiplier;
+	Valueable<int> AmountPerCell;
+	ValueableVector<double> FrontOffset;
+	ValueableVector<double> LeftOffset;
+	Valueable<bool> Display;
+	Valueable<AffectedHouse> Display_Houses;
+	ValueableVector<AnimTypeClass*> Anims;
+	Valueable<bool> AnimMove;
+
+	void LoadFromINI(CCINIClass* pINI, const char* pSection);
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+private:
+
+	template <typename T>
+	bool Serialize(T& stm);
+};

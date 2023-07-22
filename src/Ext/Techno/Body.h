@@ -37,6 +37,7 @@ public:
 		bool IsInTunnel;
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
+		CDTimerClass MobileRefineryTimer;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -59,6 +60,7 @@ public:
 			, IsInTunnel { false }
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
+			, MobileRefineryTimer {}
 		{ }
 
 		void ApplyInterceptor();
@@ -71,6 +73,7 @@ public:
 		void UpdateLaserTrails();
 		void InitializeLaserTrails();
 		void UpdateMindControlAnim();
+		void ApplyMobileRefinery();
 
 		virtual ~ExtData() override;
 
