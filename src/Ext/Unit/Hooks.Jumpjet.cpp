@@ -104,7 +104,7 @@ DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
 	// Copied from FootClass::UpdatePosition
 	if (pLinkedTo->GetTechnoType()->SensorsSight)
 	{
-		CellStruct const lastCell = pLinkedTo->LastJumpjetMapCoords;
+		CellStruct const lastCell = pLinkedTo->LastFlightMapCoords;
 		if (lastCell != currentCell)
 		{
 			pLinkedTo->RemoveSensorsAt(lastCell);
