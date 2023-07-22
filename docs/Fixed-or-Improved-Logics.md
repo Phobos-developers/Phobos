@@ -306,6 +306,18 @@ In `rulesmd.ini`:
 SellBuildupLength=23  ; integer, number of buildup frames to play
 ```
 
+## Particle systems
+
+### Fire particle target coordinate adjustment when firer rotates
+
+- By default particle systems with `BehavesLike=Fire` shift their target coordinates if the object that created the particle system (e.g firer of a weapon) is rotating. This behavior can now be disabled per particle system type.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPARTICLESYSTEM]               ; ParticleSystemType
+AdjustTargetCoordsOnRotation=true  ; boolean
+```
+
 ## Projectiles
 
 ### Cluster scatter distance customization

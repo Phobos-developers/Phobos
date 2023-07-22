@@ -217,6 +217,7 @@ This page lists all the individual contributions to the project by their author.
   - Negative damage `Verses/PercentAtMax` toggle
   - Misc. singleplayer mission improvements
   - Weapon effect obstacle interaction fix
+  - Fire particle rotation coordinate adjust toggle
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

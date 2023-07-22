@@ -4,6 +4,7 @@
 #include <ParticleSystemClass.h>
 #include <FootClass.h>
 
+#include <Ext/ParticleSystemType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
@@ -60,6 +61,11 @@ DEFINE_HOOK(0x62FA20, ParticleSystemClass_FireAI_TargetCoords, 0x6)
 
 	if (pOwner->PrimaryFacing.IsRotating())
 	{
+		auto const pTypeExt = ParticleSystemTypeExt::ExtMap.Find(pThis->Type);
+
+		if (!pTypeExt->AdjustTargetCoordsOnRotation)
+			return Continue;
+
 		auto coords = pThis->TargetCoords;
 		R->EAX(&coords);
 		return SkipGameCode;
