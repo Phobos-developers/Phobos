@@ -479,28 +479,28 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 	{
 		flh.X = static_cast<int>(frontSize > i ? pMobileRefineryType->FrontOffset[i] * Unsorted::LeptonsPerCell : 0);
 		flh.Y = static_cast<int>(leftSize > i ? pMobileRefineryType->LeftOffset[i] * Unsorted::LeptonsPerCell : 0);
-		CoordStruct pos = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false);
+		CoordStruct pos = flh != CoordStruct::Empty ? TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false) : pThis->GetCoords();
 		CellClass* pCell = MapClass::Instance->TryGetCellAt(pos);
 
 		if (!pCell)
 			continue;
 
-		auto loc = pCell->GetCoords();
-		loc.Z = pThis->Location.Z;
-		int tValue = pCell->GetContainedTiberiumValue();
+		auto cellCoords = pCell->GetCoords();
+		cellCoords.Z = pThis->Location.Z;
+		int tiberiumValue = pCell->GetContainedTiberiumValue();
 
-		if (tValue)
+		if (tiberiumValue)
 		{
-			int tibValue = TiberiumClass::Array->GetItem(pCell->GetContainedTiberiumIndex())->Value;
-			int tAmount = static_cast<int>(tValue * 1.0 / tibValue);
-			int amount = pMobileRefineryType->AmountPerCell ? Math::min(pMobileRefineryType->AmountPerCell, tAmount) : tAmount;
+			int tiberiumValue = TiberiumClass::Array->GetItem(pCell->GetContainedTiberiumIndex())->Value;
+			int tiberiumAmount = static_cast<int>(tiberiumValue * 1.0 / tiberiumValue);
+			int amount = pMobileRefineryType->AmountPerCell ? Math::min(pMobileRefineryType->AmountPerCell, tiberiumAmount) : tiberiumAmount;
 			pCell->ReduceTiberium(amount);
-			int value = static_cast<int>(amount * tibValue * pMobileRefineryType->CashMultiplier);
+			int value = static_cast<int>(amount * tiberiumValue * pMobileRefineryType->CashMultiplier);
 			pThis->Owner->TransactMoney(value);
 			active = true;
 
 			if (pMobileRefineryType->Display)
-				FlyingStrings::AddMoneyString(value, pThis->Owner, pMobileRefineryType->Display_Houses, loc);
+				FlyingStrings::AddMoneyString(value, pThis->Owner, pMobileRefineryType->Display_Houses, cellCoords);
 
 			if (!pMobileRefineryType->Anims.empty())
 			{
