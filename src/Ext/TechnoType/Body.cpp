@@ -253,6 +253,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PipWrapAmmoPip.Read(exINI, pSection, "PipWrapAmmoPip");
 	this->AmmoPipSize.Read(exINI, pSection, "AmmoPipSize");
 
+	this->CloakAnim.Read(exINI, pSection, "CloakAnim");
+	this->DecloakAnim.Read(exINI, pSection, "DecloakAnim");
+	this->Cloak_KickOutParasite.Read(exINI, pSection, "Cloak.KickOutParasite");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -529,6 +533,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EmptyAmmoPip)
 		.Process(this->PipWrapAmmoPip)
 		.Process(this->AmmoPipSize)
+
+		.Process(this->CloakAnim)
+		.Process(this->DecloakAnim)
+		.Process(this->Cloak_KickOutParasite)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -94,6 +94,10 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
 
+		Valueable<AnimTypeClass*> CloakAnim;
+		Valueable<AnimTypeClass*> DecloakAnim;
+		Valueable<bool> Cloak_KickOutParasite;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -149,6 +153,9 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, CloakAnim { nullptr }
+			, DecloakAnim { nullptr }
+			, Cloak_KickOutParasite { true }
 		{ }
 
 		virtual ~ExtData() = default;
