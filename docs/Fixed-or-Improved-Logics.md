@@ -741,7 +741,7 @@ Ammo.AutoDeployAmount=-1        ; integer, unit will automatically deploy after 
 
 ### IsSimpleDeployer vehicle ammo change on deploy
 
-- `Ammo.AddOnDeploy` determines amount of ammo, added or extracted if negative on deploy.
+- `Ammo.AddOnDeploy` determines amount of ammo, added or extracted, if negative, on deploy.
 
 In `rulesmd.ini`:
 ```ini

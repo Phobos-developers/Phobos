@@ -263,7 +263,7 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 
-			, Ammo_AddOnDeploy { 0 }
+			, Ammo_AddOnDeploy { }
 			, Ammo_AutoDeployAmount { -1 }
 			, Ammo_DeployUnlockAmount { -1 }
 

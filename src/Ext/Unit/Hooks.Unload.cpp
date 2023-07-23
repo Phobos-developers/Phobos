@@ -40,18 +40,54 @@ DEFINE_HOOK(0x730C70, DeployClass_Execute_RemoveDeploying, 0xA)
 	return Continue;
 }
 
-DEFINE_HOOK(0x73D63B, UnitClass_Unload_ChangeAmmo, 0x6)
+DEFINE_HOOK(0x739C74, UnitClass_ToggleDeployState_ChangeAmmo, 0x6) //deploying
 {
-	enum { Continue = 0x73D647, SkipBunker = 0x73D6E6 };
+	enum { Continue = 0x739C7A };
 
-	GET(TechnoClass*, pThis, ECX);
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	GET(UnitClass*, pThis, ECX);
+	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if ((pTypeExt->Ammo_AddOnDeploy != 0) && (pThis->WhatAmI() == AbstractType::Unit))
-		pThis->Ammo += pTypeExt->Ammo_AddOnDeploy;
+	if (pThis->Deployed && !pThis->Deploying && pThisExt->Ammo_AddOnDeploy)
+	{
+		int ammoCalc = (pThis->Ammo + pThisExt->Ammo_AddOnDeploy) < 0 ? 0 : (pThis->Ammo + pThisExt->Ammo_AddOnDeploy);
+		pThis->Ammo = ammoCalc > pThis->Type->Ammo ? pThis->Type->Ammo : ammoCalc;
+	}
 
-	auto const pUnit = abstract_cast<UnitClass*>(pThis);
-	if(!pUnit->BunkerLinkedItem)
-		return SkipBunker;
+	R->EAX(pThis->GetTechnoType());
+	return Continue;
+}
+
+DEFINE_HOOK(0x739E5A, UnitClass_ToggleSimpleDeploy_ChangeAmmo, 0x6) //undeploying
+{
+	enum { Continue = 0x739E60 };
+
+	GET(UnitClass*, pThis, ECX);
+	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (!pThis->Deployed && !pThis->Undeploying && pThisExt->Ammo_AddOnDeploy)
+	{
+		int ammoCalc = (pThis->Ammo + pThisExt->Ammo_AddOnDeploy) < 0 ? 0 : (pThis->Ammo + pThisExt->Ammo_AddOnDeploy);
+		pThis->Ammo = ammoCalc > pThis->Type->Ammo ? pThis->Type->Ammo : ammoCalc;
+	}
+
+	R->AL(pThis->IsDisguised());
+	return Continue;
+}
+
+DEFINE_HOOK(0x73DE78, UnitClass_Unload_ChangeAmmo, 0x6) //converters
+{
+	enum { Continue = 0x73DE7E };
+
+	GET(TechnoClass*, pThis, ESI);
+	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto pUnit = abstract_cast<UnitClass*>(pThis);
+
+	if (pUnit->Type->IsSimpleDeployer && pThisExt->Ammo_AddOnDeploy && (pUnit->Type->UnloadingClass == nullptr))
+	{
+		int ammoCalc = (pUnit->Ammo + pThisExt->Ammo_AddOnDeploy) < 0 ? 0 : (pUnit->Ammo + pThisExt->Ammo_AddOnDeploy);
+		pUnit->Ammo = ammoCalc > pUnit->Type->Ammo ? pUnit->Type->Ammo : ammoCalc;
+	}
+
+	R->AL(pUnit->Deployed);
 	return Continue;
 }
