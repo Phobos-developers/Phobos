@@ -10,7 +10,7 @@ MobileRefineryTypeClass::MobileRefineryTypeClass(TechnoTypeClass* OwnedBy) : Own
 , FrontOffset {}
 , LeftOffset {}
 , Display { true }
-, Display_Houses { AffectedHouse::All }
+, Display_House { AffectedHouse::All }
 , Anims {}
 , AnimMove { true }
 { }
@@ -25,7 +25,7 @@ void MobileRefineryTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection
 	this->FrontOffset.Read(exINI, pSection, "MobileRefinery.FrontOffset");
 	this->LeftOffset.Read(exINI, pSection, "MobileRefinery.LeftOffset");
 	this->Display.Read(exINI, pSection, "MobileRefinery.Display");
-	this->Display_Houses.Read(exINI, pSection, "MobileRefinery.Display.Houses");
+	this->Display_House.Read(exINI, pSection, "MobileRefinery.Display.House");
 	this->Anims.Read(exINI, pSection, "MobileRefinery.Anims");
 	this->AnimMove.Read(exINI, pSection, "MobileRefinery.AnimMove");
 }
@@ -43,7 +43,7 @@ bool MobileRefineryTypeClass::Serialize(T& stm)
 		.Process(this->FrontOffset)
 		.Process(this->LeftOffset)
 		.Process(this->Display)
-		.Process(this->Display_Houses)
+		.Process(this->Display_House)
 		.Process(this->Anims)
 		.Process(this->AnimMove)
 		.Success();

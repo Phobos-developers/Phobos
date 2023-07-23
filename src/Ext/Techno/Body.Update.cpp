@@ -499,7 +499,7 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 			active = true;
 
 			if (pMobileRefineryType->Display)
-				FlyingStrings::AddMoneyString(value, pThis->Owner, pMobileRefineryType->Display_Houses, cellCoords);
+				FlyingStrings::AddMoneyString(value, pThis->Owner, pMobileRefineryType->Display_House, cellCoords);
 
 			if (!pMobileRefineryType->Anims.empty())
 			{

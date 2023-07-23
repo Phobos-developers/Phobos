@@ -20,7 +20,7 @@ public:
 	ValueableVector<double> FrontOffset;
 	ValueableVector<double> LeftOffset;
 	Valueable<bool> Display;
-	Valueable<AffectedHouse> Display_Houses;
+	Valueable<AffectedHouse> Display_House;
 	ValueableVector<AnimTypeClass*> Anims;
 	Valueable<bool> AnimMove;
 
