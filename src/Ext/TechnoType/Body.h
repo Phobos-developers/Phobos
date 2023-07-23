@@ -162,6 +162,11 @@ public:
 		Valueable<int> PipWrapAmmoPip;
 		Nullable<Point2D> AmmoPipSize;
 
+		Valueable<int> HealthBar_Sections;
+		Nullable<SHPStruct*> HealthBar_Border;
+		Valueable<int> HealthBar_BorderFrame;
+		Valueable<int> HealthBar_BorderAdjust;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -322,6 +327,11 @@ public:
 			, EmptyAmmoPip { -1 }
 			, PipWrapAmmoPip { 14 }
 			, AmmoPipSize {}
+
+			, HealthBar_Sections { 0 }
+			, HealthBar_Border { }
+			, HealthBar_BorderFrame { 0 }
+			, HealthBar_BorderAdjust { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

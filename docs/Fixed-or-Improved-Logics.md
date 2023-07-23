@@ -542,6 +542,28 @@ PipWrapAmmoPip=14                ; integer, frame of pips2.shp (zero-based)
 AmmoPipSize=                     ; X,Y, increment in pixels to next pip
 ```
 
+### Infantry and Units health bar customizations
+
+- The length of health bar can be changed per techno type using `HealthBar.Sections`.
+  - `HealthBar.Sections`, amount of sections in health bar. Defaults to 8 for Infantry and 17 for Units.
+- Health bar border can be customized per techno type.
+  - `HealthBar.Border`, used to set a custom border file for health bar, can be used without `HealthBar.Sections`.
+  - `HealthBar.BorderFrame`, frame index of `HealthBar.Border` file.
+  - `HealthBar.BorderAdjust`, adjusts vertical position of health bar border.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; TechnoType
+HealthBar.Sections=17             ; integer, sections in health bar
+HealthBar.Border=PIPBRD           ; filename in .shp format without `.shp` extension
+HealthBar.BorderFrame=0           ; integer, frame of `HealthBar.Border` (zero-based)
+HealthBar.BorderAdjust=0          ; integer, horizontal position adjustment
+```
+
+```{note}
+Vertical position of health bar can be adjusted using tag `PixelSelectionBracketDelta`.
+```
+
 ### Re-enable obsolete [JumpjetControls]
 
 - Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.

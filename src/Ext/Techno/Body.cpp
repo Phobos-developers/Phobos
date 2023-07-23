@@ -323,16 +323,17 @@ Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
 
 Point2D TechnoExt::GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor)
 {
-	int length = 17;
 	Point2D position = GetScreenLocation(pThis);
+	int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (pThis->WhatAmI() == AbstractType::Infantry)
-		length = 8;
+	if(pTypeExt->HealthBar_Sections > 0)
+		length = pTypeExt->HealthBar_Sections;
 
 	RectangleStruct bracketRect =
 	{
-		position.X - length + (length == 8) + 1,
-		position.Y - 28 + (length == 8),
+		position.X - length + (length % 2 == 0) + 1,
+		position.Y - 28 + (length % 2 == 0),
 		length * 2,
 		length * 3
 	};

@@ -253,6 +253,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PipWrapAmmoPip.Read(exINI, pSection, "PipWrapAmmoPip");
 	this->AmmoPipSize.Read(exINI, pSection, "AmmoPipSize");
 
+	this->HealthBar_Sections.Read(exINI, pSection, "HealthBar.Sections");
+	this->HealthBar_Border.Read(exINI, pSection, "HealthBar.Border");
+	this->HealthBar_BorderFrame.Read(exINI, pSection, "HealthBar.BorderFrame");
+	this->HealthBar_BorderAdjust.Read(exINI, pSection, "HealthBar.BorderAdjust");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -529,6 +534,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EmptyAmmoPip)
 		.Process(this->PipWrapAmmoPip)
 		.Process(this->AmmoPipSize)
+
+		.Process(this->HealthBar_Sections)
+		.Process(this->HealthBar_Border)
+		.Process(this->HealthBar_BorderFrame)
+		.Process(this->HealthBar_BorderAdjust)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
