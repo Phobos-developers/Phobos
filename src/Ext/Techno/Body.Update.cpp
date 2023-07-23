@@ -487,9 +487,8 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 
 		auto cellCoords = pCell->GetCoords();
 		cellCoords.Z = pThis->Location.Z;
-		int tiberiumValue = pCell->GetContainedTiberiumValue();
 
-		if (tiberiumValue)
+		if (pCell->GetContainedTiberiumValue())
 		{
 			int tiberiumValue = TiberiumClass::Array->GetItem(pCell->GetContainedTiberiumIndex())->Value;
 			int tiberiumAmount = static_cast<int>(tiberiumValue * 1.0 / tiberiumValue);
