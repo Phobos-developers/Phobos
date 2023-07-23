@@ -43,6 +43,7 @@ public:
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
+		Valueable<bool> AltPalette_ApplyLighting;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -70,6 +71,7 @@ public:
 			, SplashAnims {}
 			, SplashAnims_PickRandom { false }
 			, AttachedSystem {}
+			, AltPalette_ApplyLighting { false }
 		{ }
 
 		virtual ~ExtData() = default;

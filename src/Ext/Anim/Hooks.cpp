@@ -246,3 +246,49 @@ DEFINE_HOOK(0x4236F0, AnimClass_DrawIt_Tiled_Palette, 0x6)
 
 	return 0x4236F6;
 }
+
+#pragma region AltPalette
+
+// Fix AltPalette anims not using owner color scheme and drawing over shroud.
+DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
+{
+	enum { SkipGameCode = 0x4232EA };
+
+	GET(AnimClass*, pThis, ESI);
+
+	int schemeIndex = pThis->Owner ? pThis->Owner->ColorSchemeIndex - 1 : RulesExt::Global()->AnimRemapDefaultColorScheme;
+	schemeIndex += AnimTypeExt::ExtMap.Find(pThis->Type)->AltPalette_ApplyLighting ? 1 : 0;
+	auto const scheme = ColorScheme::Array->Items[schemeIndex];
+
+	R->ECX(scheme);
+	return SkipGameCode;
+}
+
+namespace ConvertTemp
+{
+	int shadeCount = -1;
+}
+
+// Set ShadeCount to 53 to initialize the palette fully shaded - this is required to make it not draw over shroud for some reason.
+DEFINE_HOOK(0x555DA0, LightConvertClass_CTOR_ShadeCountSet, 0x5)
+{
+	REF_STACK(int, shadeCount, STACK_OFFSET(0x0, 0x24));
+
+	ConvertTemp::shadeCount = shadeCount;
+	shadeCount = 53;
+
+	return 0;
+}
+
+// Restore original ShadeCount.
+DEFINE_HOOK(0x55607B, LightConvertClass_CTOR_ShadeCountUnset, 0x5)
+{
+	GET(LightConvertClass*, pThis, ESI);
+
+	pThis->ShadeCount = ConvertTemp::shadeCount;
+	ConvertTemp::shadeCount = -1;
+
+	return 0;
+}
+
+#pragma endregion
