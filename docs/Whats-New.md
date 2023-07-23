@@ -364,6 +364,7 @@ Vanilla fixes:
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
 - Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (by Kerbiter)
 - Suppressed the BuildingCaptured EVA events when capturing a building considered as a vehicle (by Trsdy)
+- Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

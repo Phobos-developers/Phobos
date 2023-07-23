@@ -127,6 +127,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `SpySat=yes` can now be applied using building upgrades.
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do.
 - Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (observable when the starting unit is a jumpjet and is ordered to move).
+- Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list.
 
 ## Fixes / interactions with other extensions
 
