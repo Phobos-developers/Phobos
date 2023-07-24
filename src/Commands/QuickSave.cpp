@@ -1,5 +1,5 @@
 #include "QuickSave.h"
-
+#include <GameStrings.h>
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 #include <SessionClass.h>
@@ -47,7 +47,7 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 		_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
 			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
 
-		PrintMessage(StringTable::LoadString("TXT_SAVING_GAME"));
+		PrintMessage(StringTable::LoadString(GameStrings::TXT_SAVING_GAME));
 
 		wchar_t fDescription[0x80] = { 0 };
 		if (SessionClass::Instance->GameMode == GameMode::Campaign)
@@ -58,9 +58,9 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 		wcscat_s(fDescription, GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved"));
 
 		if (ScenarioClass::SaveGame(fName, fDescription))
-			PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
+			PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
 		else
-			PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
+			PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
 	}
 	else
 	{

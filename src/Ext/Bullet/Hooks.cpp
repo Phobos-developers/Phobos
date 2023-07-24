@@ -110,7 +110,7 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_TrailerInheritOwner, 0x6)
 		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
 		{
 			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
-			pAnimExt->Invoker = pThis->Owner;
+			pAnimExt->SetInvoker(pThis->Owner);
 		}
 	}
 

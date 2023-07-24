@@ -56,11 +56,8 @@ DEFINE_HOOK(0x5535D0, LoadProgressMgr_Draw_PCXLoadingScreen, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x552F81, LoadProgressMgr_Draw_PCXLoadingScreen_Campaign, 0x5)
+DEFINE_HOOK(0x552FCB, LoadProgressMgr_Draw_PCXLoadingScreen_Campaign, 0x6)
 {
-	GET(LoadProgressManager*, pThis, EBP);
-
-	DSurface* pSurface = static_cast<DSurface*>(pThis->ProgressSurface);
 	char filename[0x40];
 	strcpy_s(filename, ScenarioClass::Instance->LS800BkgdName);
 	_strlwr_s(filename);
@@ -71,6 +68,8 @@ DEFINE_HOOK(0x552F81, LoadProgressMgr_Draw_PCXLoadingScreen_Campaign, 0x5)
 
 		if (auto const pPCX = PCX::Instance->GetSurface(filename))
 		{
+			GET_BASE(DSurface*, pSurface, 0x60);
+
 			RectangleStruct pSurfBounds = { 0, 0, pSurface->Width, pSurface->Height };
 			RectangleStruct pcxBounds = { 0, 0, pPCX->Width, pPCX->Height };
 			RectangleStruct destClip = { (pSurface->Width - pPCX->Width) / 2, (pSurface->Height - pPCX->Height) / 2, pPCX->Width, pPCX->Height };
@@ -78,8 +77,7 @@ DEFINE_HOOK(0x552F81, LoadProgressMgr_Draw_PCXLoadingScreen_Campaign, 0x5)
 			pSurface->CopyFrom(&pSurfBounds, &destClip, pPCX, &pcxBounds, &pcxBounds, true, true);
 		}
 
-		R->EBX(R->EDI());
-		return 0x552FC6;
+		return 0x552FFF;
 	}
 
 	return 0;

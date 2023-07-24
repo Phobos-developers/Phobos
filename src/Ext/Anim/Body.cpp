@@ -2,9 +2,16 @@
 
 #include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
+#include <Misc/SyncLogging.h>
 
 template<> const DWORD Extension<AnimClass>::Canary = 0xAAAAAAAA;
 AnimExt::ExtContainer AnimExt::ExtMap;
+
+void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
+{
+	this->Invoker = pInvoker;
+	this->InvokerHouse = pInvoker ? pInvoker->Owner : nullptr;
+}
 
 //Modified from Ares
 const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner)
@@ -35,6 +42,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeathUnitTurretFacing)
 		.Process(this->DeathUnitHasTurret)
 		.Process(this->Invoker)
+		.Process(this->InvokerHouse)
 		;
 }
 
@@ -59,11 +67,38 @@ AnimExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
+namespace CTORTemp
+{
+	CoordStruct coords;
+	unsigned int callerAddress;
+}
+
+DEFINE_HOOK(0x421EA0, AnimClass_CTOR_SetContext, 0x6)
+{
+	GET_STACK(CoordStruct*, coords, 0x8);
+	GET_STACK(unsigned int, callerAddress, 0x0);
+
+	CTORTemp::coords = *coords;
+	CTORTemp::callerAddress = callerAddress;
+
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x422126, AnimClass_CTOR, 0x5)
 DEFINE_HOOK_AGAIN(0x422707, AnimClass_CTOR, 0x5)
 DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
 	GET(AnimClass*, pItem, ESI);
+
+	// Do this here instead of using a duplicate hook in SyncLogger.cpp
+	if (!SyncLogger::HooksDisabled && pItem->UniqueID != -2)
+		SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, CTORTemp::callerAddress);
+
+	if (pItem && !pItem->Type)
+	{
+		Debug::Log("Attempting to create animation with null Type (Caller: %08x)!", CTORTemp::callerAddress);
+		return 0;
+	}
 
 	AnimExt::ExtMap.FindOrAllocate(pItem);
 

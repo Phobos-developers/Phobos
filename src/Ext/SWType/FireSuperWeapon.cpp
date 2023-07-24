@@ -12,8 +12,6 @@
 
 inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 {
-	auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
-
 	// BuildLimit check goes before creation
 	if (pType->BuildLimit > 0)
 	{
@@ -33,6 +31,16 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuilding->InLimbo = false;
 		pBuilding->IsAlive = true;
 		pBuilding->IsOnMap = true;
+
+		// For reasons beyond my comprehension, the discovery logic is checked for certain logics like power drain/output in campaign only.
+		// Normally on unlimbo the buildings are revealed to current player if unshrouded or if game is a campaign and to non-player houses always.
+		// Because of the unique nature of LimboDelivered buildings, this has been adjusted to always reveal to the current player in singleplayer
+		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist - Starkku
+		if (SessionClass::Instance->GameMode == GameMode::Campaign)
+			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
+
+		pBuilding->DiscoveredBy(pOwner);
+
 		pOwner->RegisterGain(pBuilding, false);
 		pOwner->UpdatePower();
 		pOwner->RecheckTechTree = true;
@@ -68,9 +76,19 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 			// LimboKill ID
 			pBuildingExt->LimboID = ID;
 
-			// Add building to list of owned limbo buildings
-			if (pOwnerExt)
-				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding->UniqueID, pBuildingExt });
+			if (auto pOwnerExt = HouseExt::ExtMap.Find(pOwner))
+			{
+				// Add building to list of owned limbo buildings
+				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding, pBuildingExt });
+
+				auto pTechExt = TechnoExt::ExtMap.Find(pBuilding);
+
+				if (pTechExt->TypeExtData->AutoDeath_Behavior.isset() && pTechExt->TypeExtData->AutoDeath_AfterDelay > 0)
+				{
+					pTechExt->AutoDeathTimer.Start(pTechExt->TypeExtData->AutoDeath_AfterDelay);
+					pOwnerExt->OwnedTimedAutoDeathObjects.push_back(pTechExt);
+				}
+			}
 		}
 	}
 }
@@ -83,7 +101,7 @@ inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
 
 	// Remove building from list of owned limbo buildings
 	if (pOwnerExt)
-		pOwnerExt->OwnedLimboDeliveredBuildings.erase(pBuilding->UniqueID);
+		pOwnerExt->OwnedLimboDeliveredBuildings.erase(pBuilding);
 
 	// Mandatory
 	pBuilding->InLimbo = true;
@@ -194,7 +212,7 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 			{
 				if (auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse))
 				{
-					for (const auto& [buildingUniqueID, pBuildingExt] : pHouseExt->OwnedLimboDeliveredBuildings)
+					for (const auto& [pBuilding, pBuildingExt] : pHouseExt->OwnedLimboDeliveredBuildings)
 					{
 						if (pBuildingExt->LimboID == limboKillID)
 							LimboDelete(pBuildingExt->OwnerObject(), pTargetHouse);

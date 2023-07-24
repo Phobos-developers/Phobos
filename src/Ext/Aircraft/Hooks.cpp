@@ -95,7 +95,7 @@ DEFINE_HOOK(0x414F47, AircraftClass_AI_TrailerInheritOwner, 0x6)
 		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
 		{
 			pAnim->Owner = pThis->Owner;
-			pAnimExt->Invoker = pThis;
+			pAnimExt->SetInvoker(pThis);
 		}
 	}
 

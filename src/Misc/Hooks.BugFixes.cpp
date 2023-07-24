@@ -578,3 +578,22 @@ DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
 
 	return 0;
 }
+
+// Fixes a literal edge-case in passability checks to cover cells with bridges that are not accessible when moving on the bridge and
+// normally not even attempted to enter but things like MapClass::NearByLocation() can still end up trying to pick.
+DEFINE_HOOK(0x4834E5, CellClass_IsClearToMove_BridgeEdges, 0x5)
+{
+	enum { IsNotClear = 0x48351E };
+
+	GET(CellClass*, pThis, ESI);
+	GET(int, level, EAX);
+	GET(bool, isBridge, EBX);
+
+	if (isBridge && pThis->ContainsBridge() && (level == -1 || level == pThis->Level + CellClass::BridgeLevels)
+		&& !(pThis->Flags & CellFlags::Unknown_200))
+	{
+		return IsNotClear;
+	}
+
+	return 0;
+}

@@ -188,12 +188,17 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 
 DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 {
+	enum { KeepUnitVisible = 0x73CF62 };
+
 	GET(UnitClass*, pThis, ESI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (pThis->Deploying || pThis->Undeploying)
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (pTypeExt->DeployingAnim_KeepUnitVisible && (pThis->Deploying || pThis->Undeploying))
-		return 0x73CF62;
+		if (pTypeExt->DeployingAnim_KeepUnitVisible)
+			return KeepUnitVisible;
+	}
 
 	return 0;
 }

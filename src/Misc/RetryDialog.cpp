@@ -1,4 +1,5 @@
 #include <Helpers/Macro.h>
+#include <GameStrings.h>
 #include <WWMessageBox.h>
 #include <LoadOptionsClass.h>
 #include <ThemeClass.h>
@@ -23,20 +24,21 @@ DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 		// Button3
 		// Button2
 		// I prefer to put the loadgame to the center of them - secsome
-		switch (WWMessageBox::Instance().Process(
-			StringTable::LoadString("TXT_TO_REPLAY"),
-			StringTable::LoadString("TXT_OK"),
-			StringTable::LoadString("GUI:LOADGAME"),
-			StringTable::LoadString("TXT_CANCEL")))
+		// Did you??? NO, YOU DIDN'T. Bruhhhh
+		switch (WWMessageBox::Instance->Process(
+			GameStrings::TXT_TO_REPLAY,
+			"GUI:LOADGAME",
+			GameStrings::TXT_CANCEL,
+			GameStrings::TXT_OK))
 		{
-		case WWMessageBox::Result::Button1:
+		case WWMessageBox::Result::Button3:
 			return OK;
 
 		default:
-		case WWMessageBox::Result::Button3:
+		case WWMessageBox::Result::Button2:
 			return Cancel;
 
-		case WWMessageBox::Result::Button2:
+		case WWMessageBox::Result::Button1:
 			auto pDialog = GameCreate<LoadOptionsClass>();
 			RetryDialogFlag::IsCalledFromRetryDialog = true;
 			const bool bIsAboutToLoad = pDialog->LoadDialog();

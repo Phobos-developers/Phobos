@@ -237,6 +237,33 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ## Changelog
 
+### 0.3.0.1
+
+New:
+- Additional sync logging in case of desync errors occuring (by Starkku)
+
+Phobos fixes:
+- `AutoDeath` support for objects in limbo (by Trsdy)
+- Buildings sold by `AutoDeath` no longer play a click sound effect (by Trsdy)
+- Fixed shield animation being hidden while underground or in tunnels fix not working correctly (by Starkku)
+- Restore the `MindClearedSound` when deploying a mind-controlled unit into a building loses the mind-control (by Trsdy)
+- Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected object (thus requiring `CellSpread`) (by Starkku)
+- Fixed script action 10103 'Load Into Transports' unintentionally skipping next action (by FS-21)
+- Changed mission retry dialog button order to better match old order people are used to (by Trsdy)
+- Allow PowerPlant Enhancer to be affected by EMP (by Trsdy)
+- Animation `Weapon` with `Damage.DealtByInvoker=true` now uses the invoker's house to deal damage and apply Phobos warhead effects even if invoker is dead when weapon is fired (by Starkku)
+- Fixed a crash when trying to create radiation outside map bounds (by Otamaa)
+- Fixed new AI attack scripts not allowing zero damage weapons to pick targets (by Starkku)
+- Fixed floating point value parsing precision to match the game (by Starkku)
+- Power output / drain should now correctly be applied for buildings created via `LimboDelivery` in campaigns (by Starkku)
+- Fixed shield health bar showing empty bar when shield is still on very low health instead of depleted (by Starkku)
+- Fixed `CanTarget` not considering objects on bridges when checking if cell is empty (by Starkku)
+- Fixed vehicle deploy weapons not working if the unit is cloaked and weapon has `DecloakToFire=true` (by NetsuNegi & Starkku)
+- Fixed `IsAnimated` terrain not updating correctly in all circumstances (by Starkku)
+- Fixed `CreateUnit` interaction with bridges (spawning under when shouldn't etc) (by Starkku)
+- `CanTarget` now considers bridges as land like game's normal weapon selection does (by Starkku)
+- `AreaFire.Target` now takes cells with bridges into consideration depending on firer's elevation (by Starkku)
+
 ### 0.3
 
 <details>

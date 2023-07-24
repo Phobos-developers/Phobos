@@ -1,10 +1,11 @@
 // Anim-to--Unit
-// Author: Otamaa
+// Author: Otamaa, revisions by Starkku
 
 #include "Body.h"
 
 #include <BulletClass.h>
 #include <HouseClass.h>
+#include <JumpjetLocomotionClass.h>
 #include <ScenarioClass.h>
 
 #include <Ext/Bullet/Body.h>
@@ -74,74 +75,69 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 		auto pCell = pThis->GetCell();
 		CoordStruct location = pThis->GetCoords();
 
-		if (pCell)
-			location = pCell->GetCoordsWithBridge();
-		else
-			location.Z = MapClass::Instance->GetCellFloorHeight(location);
-
 		pThis->UnmarkAllOccupationBits(location);
 
-		if (pTypeExt->CreateUnit_ConsiderPathfinding)
-		{
-			bool allowBridges = unit->SpeedType != SpeedType::Float;
+		bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(unit->SpeedType)] > 0.0;
+		bool isBridge = allowBridges && pCell->ContainsBridge();
 
+		if (pTypeExt->CreateUnit_ConsiderPathfinding && (!pCell || !pCell->IsClearToMove(unit->SpeedType, false, false, -1, unit->MovementZone, -1, isBridge)))
+		{
 			auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
-				unit->SpeedType, -1, unit->MovementZone, false, 1, 1, true,
-				false, false, allowBridges, CellStruct::Empty, false, false);
+				unit->SpeedType, -1, unit->MovementZone, isBridge, 1, 1, true,
+				false, false, isBridge, CellStruct::Empty, false, false);
 
 			pCell = MapClass::Instance->TryGetCellAt(nCell);
-			location = pThis->GetCoords();
-
-			if (pCell)
-				location = pCell->GetCoordsWithBridge();
-			else
-				location.Z = MapClass::Instance->GetCellFloorHeight(location);
+			location = pCell->GetCoords();
 		}
 
-		if (auto pTechno = static_cast<TechnoClass*>(unit->CreateObject(decidedOwner)))
+		if (pCell)
 		{
-			bool success = false;
-			auto const pExt = AnimExt::ExtMap.Find(pThis);
+			isBridge = allowBridges && pCell->ContainsBridge();
+			location.Z = MapClass::Instance->GetCellFloorHeight(location) + isBridge ? CellClass::BridgeHeight : 0;
 
-			auto aFacing = pTypeExt->CreateUnit_RandomFacing.Get()
-				? static_cast<unsigned short>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pTypeExt->CreateUnit_Facing.Get();
-
-			short resultingFacing = (pTypeExt->CreateUnit_InheritDeathFacings.Get() && pExt->FromDeathUnit)
-				? pExt->DeathUnitFacing : aFacing;
-
-			if (pCell)
-				pTechno->OnBridge = pCell->ContainsBridge();
-
-			BuildingClass* pBuilding = pCell ? pCell->GetBuilding() : MapClass::Instance->TryGetCellAt(location)->GetBuilding();
-
-			if (!pBuilding)
+			if (auto pTechno = static_cast<FootClass*>(unit->CreateObject(decidedOwner)))
 			{
-				++Unsorted::IKnowWhatImDoing;
-				success = pTechno->Unlimbo(location, static_cast<DirType>(resultingFacing));
-				--Unsorted::IKnowWhatImDoing;
-			}
-			else
-			{
-				success = pTechno->Unlimbo(location, static_cast<DirType>(resultingFacing));
-			}
+				bool success = false;
+				auto const pExt = AnimExt::ExtMap.Find(pThis);
 
-			if (success)
-			{
-				if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings.Get())
-					pTechno->SecondaryFacing.SetCurrent(pExt->DeathUnitTurretFacing);
+				auto aFacing = pTypeExt->CreateUnit_RandomFacing.Get()
+					? static_cast<unsigned short>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pTypeExt->CreateUnit_Facing.Get();
 
-				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n", pExt->DeathUnitTurretFacing.GetFacing<256>());
+				short resultingFacing = (pTypeExt->CreateUnit_InheritDeathFacings.Get() && pExt->FromDeathUnit)
+					? pExt->DeathUnitFacing : aFacing;
 
-				if (!pTechno->InLimbo)
-					pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);
+				pTechno->OnBridge = isBridge;
 
-				if (!decidedOwner->Type->MultiplayPassive)
-					decidedOwner->RecheckTechTree = true;
-			}
-			else
-			{
-				if (pTechno)
-					pTechno->UnInit();
+				if (!pCell->GetBuilding())
+				{
+					++Unsorted::IKnowWhatImDoing;
+					success = pTechno->Unlimbo(location, static_cast<DirType>(resultingFacing));
+					--Unsorted::IKnowWhatImDoing;
+				}
+				else
+				{
+					success = pTechno->Unlimbo(location, static_cast<DirType>(resultingFacing));
+				}
+
+				if (success)
+				{
+					if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings.Get())
+					{
+						pTechno->SecondaryFacing.SetCurrent(pExt->DeathUnitTurretFacing);
+						Debug::Log("CreateUnit: Stored Turret Facing %d \n", pExt->DeathUnitTurretFacing.GetFacing<256>());
+					}
+
+					if (!pTechno->InLimbo)
+						pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);
+
+					if (!decidedOwner->Type->MultiplayPassive)
+						decidedOwner->RecheckTechTree = true;
+				}
+				else
+				{
+					if (pTechno)
+						pTechno->UnInit();
+				}
 			}
 		}
 	}
@@ -179,7 +175,7 @@ DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
 		if (pThis->Owner)
 		{
 			auto pExt = AnimExt::ExtMap.Find(pAnim);
-			pExt->Invoker = pThis->Owner;
+			pExt->SetInvoker(pThis->Owner);
 		}
 	}
 	else if (pThis->WH == RulesClass::Instance->NukeWarhead)

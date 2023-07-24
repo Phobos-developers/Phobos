@@ -19,6 +19,7 @@ public:
 		bool FromDeathUnit;
 		bool DeathUnitHasTurret;
 		TechnoClass* Invoker;
+		HouseClass* InvokerHouse;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
@@ -26,13 +27,17 @@ public:
 			, FromDeathUnit { false }
 			, DeathUnitHasTurret { false }
 			, Invoker {}
+			, InvokerHouse {}
 		{ }
+
+		void SetInvoker(TechnoClass* pInvoker);
 
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
 			AnnounceInvalidPointer(Invoker, ptr);
+			AnnounceInvalidPointer(InvokerHouse, ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -58,6 +63,7 @@ public:
 			case AbstractType::Building:
 			case AbstractType::Infantry:
 			case AbstractType::Unit:
+			case AbstractType::House:
 				return false;
 			default:
 				return true;

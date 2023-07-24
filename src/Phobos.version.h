@@ -18,7 +18,7 @@
 #define VERSION_REVISION 0
 
 // Indicates Phobos-related bugfixes only
-#define VERSION_PATCH 0
+#define VERSION_PATCH 1
 
 #pragma endregion
 

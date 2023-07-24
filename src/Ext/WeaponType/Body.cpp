@@ -1,5 +1,6 @@
 #include "Body.h"
 #include <GameStrings.h>
+#include <Ext/Bullet/Body.h>
 
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
@@ -87,17 +88,23 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner)
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)
 {
-	WeaponTypeExt::DetonateAt(pThis, pTarget, pOwner, pThis->Damage);
+	WeaponTypeExt::DetonateAt(pThis, pTarget, pOwner, pThis->Damage, pFiringHouse);
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage)
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
 		damage, pThis->Warhead, 0, pThis->Bright))
 	{
 		const CoordStruct& coords = pTarget->GetCoords();
+
+		if (pFiringHouse)
+		{
+			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			pBulletExt->FirerHouse = pFiringHouse;
+		}
 
 		pBullet->SetWeaponType(pThis);
 		pBullet->Limbo();
@@ -107,16 +114,22 @@ void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, Tec
 	}
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner)
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse)
 {
-	WeaponTypeExt::DetonateAt(pThis, coords, pOwner, pThis->Damage);
+	WeaponTypeExt::DetonateAt(pThis, coords, pOwner, pThis->Damage, pFiringHouse);
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage)
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(nullptr, pOwner,
 		damage, pThis->Warhead, 0, pThis->Bright))
 	{
+		if (pFiringHouse)
+		{
+			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			pBulletExt->FirerHouse = pFiringHouse;
+		}
+
 		pBullet->SetWeaponType(pThis);
 		pBullet->Limbo();
 		pBullet->SetLocation(coords);

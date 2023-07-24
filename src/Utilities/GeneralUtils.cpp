@@ -134,3 +134,17 @@ bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 
 	return false;
 }
+
+
+int GeneralUtils::CountDigitsInNumber(int number)
+{
+	int digits = 0;
+
+	while (number)
+	{
+		number /= 10;
+		digits++;
+	}
+
+	return digits;
+}

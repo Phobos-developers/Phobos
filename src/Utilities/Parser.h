@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include <CRT.h>
+
 //! Parses strings into one or more elements of another type.
 /*!
 	\tparam T The type to convert to.
@@ -228,10 +230,14 @@ static bool Parser<int>::TryParse(const char* pValue, OutType* outValue) {
 
 template<>
 static bool Parser<double>::TryParse(const char* pValue, OutType* outValue) {
-	double buffer = 0.0;
-	if (sscanf_s(pValue, "%lf", &buffer) == 1) {
+
+	// Game doesn't use double precision when parsing, using double here would create inconsistency.
+	float buffer = 0.0;
+
+	// Use game's sscanf function, the C library one has different precision/rounding.
+	if (CRT::sscanf(pValue, "%f", &buffer) == 1) {
 		if (strchr(pValue, '%')) {
-			buffer *= 0.01;
+			buffer *= 0.01f;
 		}
 		if (outValue) {
 			*outValue = buffer;

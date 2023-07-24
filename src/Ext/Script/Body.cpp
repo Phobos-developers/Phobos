@@ -260,6 +260,13 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 					transports.AddItem(pUnit);
 	}
 
+	if (transports.Count == 0)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
+	}
+
 	// Now load units into transports
 	for (auto pTransport : transports)
 	{
@@ -309,9 +316,6 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	}
 
 	// This action finished
-	if (pTeam->CurrentScript->HasNextMission())
-		++pTeam->CurrentScript->CurrentMission;
-
 	pTeam->StepCompleted = true;
 }
 
@@ -1092,6 +1096,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 		if ((weaponType && weaponType->Projectile->AG) || agentMode)
 			unitWeaponsHaveAG = true;
 
+		/*
 		int weaponDamage = 0;
 
 		if (weaponType)
@@ -1105,9 +1110,13 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 		// If the target can't be damaged then isn't a valid target
 		if (weaponType && weaponDamage <= 0 && !agentMode)
 			continue;
+		*/
 
 		if (!agentMode)
 		{
+			if (weaponType && GeneralUtils::GetWarheadVersusArmor(weaponType->Warhead, objectType->Armor) == 0.0)
+				continue;
+
 			if (object->IsInAir() && !unitWeaponsHaveAA)
 				continue;
 

@@ -134,8 +134,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (pThis->MaxNumberOccupants > 10)
 	{
 		char tempBuffer[32];
-		this->OccupierMuzzleFlashes.Clear();
-		this->OccupierMuzzleFlashes.Reserve(pThis->MaxNumberOccupants);
+		this->OccupierMuzzleFlashes.clear();
+		this->OccupierMuzzleFlashes.resize(pThis->MaxNumberOccupants);
 
 		for (int i = 0; i < pThis->MaxNumberOccupants; ++i)
 		{

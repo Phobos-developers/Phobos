@@ -28,4 +28,5 @@ public:
 	static double FastPow(double x, double n);
 	static bool HasHealthRatioThresholdChanged(double oldRatio, double newRatio);
 	static bool ApplyTheaterSuffixToString(char* str);
+	static int CountDigitsInNumber(int number);
 };

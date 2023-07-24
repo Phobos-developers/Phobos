@@ -852,7 +852,7 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 int ShieldClass::DrawShieldBar_PipAmount(int iLength)
 {
 	return this->IsActive()
-		? Math::clamp((int)round(this->GetHealthRatio() * iLength), 0, iLength)
+		? Math::clamp((int)round(this->GetHealthRatio() * iLength), 1, iLength)
 		: 0;
 }
 
@@ -906,5 +906,5 @@ void ShieldClass::SetAnimationVisibility(bool visible)
 	if (!this->AreAnimsHidden && !visible)
 		this->KillAnim();
 
-	this->AreAnimsHidden = visible;
+	this->AreAnimsHidden = !visible;
 }

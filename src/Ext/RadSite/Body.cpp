@@ -25,9 +25,7 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 	}
 	else
 	{
-		auto coords = CoordStruct::Empty;
-		coords = *pTarget->GetCoords(&coords);
-		WarheadTypeExt::DetonateAt(pWarhead, coords, this->RadInvoker, damage);
+		WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage);
 
 		if (!pTarget->IsAlive)
 			return false;

@@ -22,7 +22,7 @@ public:
 		Nullable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 
-		DynamicVectorClass<Point2D> OccupierMuzzleFlashes;
+		std::vector<Point2D> OccupierMuzzleFlashes;
 		Valueable<bool> Powered_KillSpawns;
 		Valueable<bool> Refinery_UseStorage;
 		Valueable<Vector2D<double>> InitialStrength_Cloning;

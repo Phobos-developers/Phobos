@@ -2,6 +2,8 @@
 
 This page describes every change in Phobos that wasn't categorized into a proper category yet.
 
+- Phobos writes additional information to the `SYNC#.txt` log files when a desynchronization occurs such as calls to random number generator functions, facing / target / destination changes etc.
+
 ## Developer tools
 
 ### Dump Object Info

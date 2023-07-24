@@ -17,7 +17,8 @@ public:
 	{
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
-		std::map<DWORD, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
+		std::map<BuildingClass*, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
+		std::vector<TechnoExt::ExtData*> OwnedTimedAutoDeathObjects;
 
 		BuildingClass* Factory_BuildingType;
 		BuildingClass* Factory_InfantryType;
@@ -28,6 +29,7 @@ public:
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, BuildingCounter {}
 			, OwnedLimboDeliveredBuildings {}
+			, OwnedTimedAutoDeathObjects {}
 			, Factory_BuildingType { nullptr }
 			, Factory_InfantryType { nullptr }
 			, Factory_VehicleType { nullptr }
@@ -35,7 +37,8 @@ public:
 			, Factory_AircraftType { nullptr }
 		{ }
 
-		bool OwnsLimboDeliveredBuilding(BuildingClass const* pBuilding);
+		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
+		void UpdateAutoDeathObjectsInLimbo();
 
 		virtual ~ExtData() = default;
 
