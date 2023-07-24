@@ -326,6 +326,7 @@ New:
 - Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
 - PipScale pip size & ammo pip frame customization (by Starkku)
 - Additional sync logging in case of desync errors occuring (by Starkku)
+- `AltPalette` lighting toggle (by Starkku)
 - Mobile Refinery Logic (by NetsuNegi)
 
 Vanilla fixes:
@@ -365,6 +366,8 @@ Vanilla fixes:
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
 - Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (by Kerbiter)
 - Suppressed the BuildingCaptured EVA events when capturing a building considered as a vehicle (by Trsdy)
+- Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list (by Starkku)
+- Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -392,6 +395,7 @@ Phobos fixes:
 - Used `MindControl.Anim` for buildings deployed from mind-controlled vehicles (by Trsdy)
 - Optimized extension class implementation, should improve performance all around (by Otamaa & Starkku)
 - Fixed vehicle deploy weapons not working if the unit is cloaked and weapon has `DecloakToFire=true` (by NetsuNegi & Starkku)
+- Fixed `IsAnimated` terrain not updating correctly in all circumstances (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)

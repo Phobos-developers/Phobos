@@ -694,3 +694,13 @@ DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
 
 // Stops INI parsing for Anim/BuildingTypeClass on game startup, will only be read on scenario load later like everything else.
 DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);
+
+// Only first half of the colorschemes array gets adjusted thanks to the count being wrong, quick and dirty fix.
+DEFINE_HOOK(0x53AD97, IonStormClass_AdjustLighting_ColorCount, 0x6)
+{
+	GET(int, colorSchemesCount, EAX);
+
+	R->EAX(colorSchemesCount * 2);
+
+	return 0;
+}
