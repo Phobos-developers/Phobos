@@ -940,7 +940,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                       ; InfantryType, UnitType or AircraftType
 MobileRefinery=no                  ; boolean
-MobileRefinery.TransRate=30        ; unsigned int, how many frames are there between two conversions
+MobileRefinery.TransDelay=30       ; unsigned int, how many frames are there between two conversions
 MobileRefinery.CashMultiplier=1.0  ; float, it's multiplier of the final cash.
 MobileRefinery.AmountPerCell=0     ; unsigned int, how many ore can be convert at one time in each cell
 MobileRefinery.FrontOffset=        ; list of double, use cell as unit, multiple values mean that they are effective in multiple cells at the same time
