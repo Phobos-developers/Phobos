@@ -3,6 +3,7 @@
 #include <ScenarioClass.h>
 #include <TerrainClass.h>
 
+#include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -495,7 +496,7 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 
 	if (pThis->WhatAmI() == AbstractType::Building && pWeapon->IsLaser)
 	{
-		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*>(pThis)))
 		{
 			if (pExt->CurrentLaserWeaponIndex.empty())
 				pExt->CurrentLaserWeaponIndex = weaponIndex;
@@ -636,15 +637,15 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 }
 
 // Basically a hack to make game and Ares pick laser properties from non-Primary weapons.
-DEFINE_HOOK(0x70E1A5, TechnoClass_GetTurretWeapon_LaserWeapon, 0x6)
+DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
 {
-	enum { ReturnResult = 0x70E1C7, Continue = 0x70E1AB };
+	enum { ReturnResult = 0x70E1C8 };
 
-	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pThis, ECX);
 
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
-		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*>(pThis)))
 		{
 			if (!pExt->CurrentLaserWeaponIndex.empty())
 			{
@@ -655,9 +656,7 @@ DEFINE_HOOK(0x70E1A5, TechnoClass_GetTurretWeapon_LaserWeapon, 0x6)
 		}
 	}
 
-	// Restore overridden instructions.
-	R->EAX(pThis->GetTechnoType());
-	return Continue;
+	return 0;
 }
 
 DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_RandomDelay, 0x6)

@@ -33,7 +33,6 @@ public:
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
 		OptionalStruct<int, false> DamageNumberOffset;
-		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 		bool IsInTunnel;
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
@@ -55,7 +54,6 @@ public:
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
-			, CurrentLaserWeaponIndex {}
 			, IsInTunnel { false }
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
