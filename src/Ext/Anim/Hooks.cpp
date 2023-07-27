@@ -266,16 +266,27 @@ DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
 
 namespace ConvertTemp
 {
+	bool isColorScheme = false;
 	int shadeCount = -1;
+}
+
+DEFINE_HOOK(0x68C4AD, GenerateColorSpread_SetContext, 0x5)
+{
+	ConvertTemp::isColorScheme = true;
+
+	return 0;
 }
 
 // Set ShadeCount to 53 to initialize the palette fully shaded - this is required to make it not draw over shroud for some reason.
 DEFINE_HOOK(0x555DA0, LightConvertClass_CTOR_ShadeCountSet, 0x5)
 {
-	REF_STACK(int, shadeCount, STACK_OFFSET(0x0, 0x24));
+	if (ConvertTemp::isColorScheme)
+	{
+		REF_STACK(int, shadeCount, STACK_OFFSET(0x0, 0x24));
 
-	ConvertTemp::shadeCount = shadeCount;
-	shadeCount = 53;
+		ConvertTemp::shadeCount = shadeCount;
+		shadeCount = 53;
+	}
 
 	return 0;
 }
@@ -283,10 +294,14 @@ DEFINE_HOOK(0x555DA0, LightConvertClass_CTOR_ShadeCountSet, 0x5)
 // Restore original ShadeCount.
 DEFINE_HOOK(0x55607B, LightConvertClass_CTOR_ShadeCountUnset, 0x5)
 {
-	GET(LightConvertClass*, pThis, ESI);
+	if (ConvertTemp::isColorScheme)
+	{
+		GET(LightConvertClass*, pThis, ESI);
 
-	pThis->ShadeCount = ConvertTemp::shadeCount;
-	ConvertTemp::shadeCount = -1;
+		pThis->ShadeCount = ConvertTemp::shadeCount;
+		ConvertTemp::shadeCount = -1;
+		ConvertTemp::isColorScheme = false;
+	}
 
 	return 0;
 }
