@@ -71,3 +71,19 @@ DEFINE_HOOK(0x6B73AD, SpawnManagerClass_AI_SpawnTimer, 0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x730D1F, DeployCommandClass_Execute_VoiceDeploy, 0x5)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET_STACK(int, unitsToDeploy, STACK_OFFSET(0x18, -0x4));
+	REF_STACK(char, endDeploy, STACK_OFFSET(0x18, -0x5));
+	auto pUnit = abstract_cast<UnitClass*>(pThis);
+
+	if(unitsToDeploy == 1)
+		if(pUnit->GetTechnoType()->VoiceDeploy && pUnit->IsOwnedByCurrentPlayer && pUnit->TryToDeploy())
+		{
+			pUnit->QueueVoice(pUnit->GetTechnoType()->VoiceDeploy);
+		}
+	endDeploy = 1;
+	return 0x730D24;
+}
