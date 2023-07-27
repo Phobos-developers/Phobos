@@ -130,6 +130,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list.
 - Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud. Color scheme from `[AudioVisual]` -> `AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still.
   - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
+- Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
 
 ## Fixes / interactions with other extensions
 
