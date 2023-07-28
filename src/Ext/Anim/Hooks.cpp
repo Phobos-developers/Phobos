@@ -249,7 +249,7 @@ DEFINE_HOOK(0x4236F0, AnimClass_DrawIt_Tiled_Palette, 0x6)
 
 #pragma region AltPalette
 
-// Fix AltPalette anims not using owner color scheme and drawing over shroud.
+// Fix AltPalette anims not using owner color scheme.
 DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
 {
 	enum { SkipGameCode = 0x4232EA };
@@ -266,41 +266,29 @@ DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
 
 namespace ConvertTemp
 {
-	bool isColorScheme = false;
 	int shadeCount = -1;
 }
 
-DEFINE_HOOK(0x68C4AD, GenerateColorSpread_SetContext, 0x5)
-{
-	ConvertTemp::isColorScheme = true;
-
-	return 0;
-}
-
 // Set ShadeCount to 53 to initialize the palette fully shaded - this is required to make it not draw over shroud for some reason.
-DEFINE_HOOK(0x555DA0, LightConvertClass_CTOR_ShadeCountSet, 0x5)
+DEFINE_HOOK(0x68C4C4, GenerateColorSpread_ShadeCountSet, 0x5)
 {
-	if (ConvertTemp::isColorScheme)
-	{
-		REF_STACK(int, shadeCount, STACK_OFFSET(0x0, 0x24));
+	GET(int, shadeCount, EDX);
 
-		ConvertTemp::shadeCount = shadeCount;
-		shadeCount = 53;
-	}
+	ConvertTemp::shadeCount = shadeCount;
+	R->EDX(53);
 
 	return 0;
 }
 
 // Restore original ShadeCount.
-DEFINE_HOOK(0x55607B, LightConvertClass_CTOR_ShadeCountUnset, 0x5)
+DEFINE_HOOK(0x68C4E7, GenerateColorSpread_ShadeCountUnset, 0x5)
 {
-	if (ConvertTemp::isColorScheme)
-	{
-		GET(LightConvertClass*, pThis, ESI);
+	GET(LightConvertClass*, pConvert, EAX);
 
-		pThis->ShadeCount = ConvertTemp::shadeCount;
+	if (pConvert && ConvertTemp::shadeCount != -1)
+	{
+		pConvert->ShadeCount = ConvertTemp::shadeCount;
 		ConvertTemp::shadeCount = -1;
-		ConvertTemp::isColorScheme = false;
 	}
 
 	return 0;
