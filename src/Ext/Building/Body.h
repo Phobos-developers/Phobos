@@ -27,6 +27,7 @@ public:
 		int GrindingWeapon_LastFiredFrame;
 		BuildingClass* CurrentAirFactory;
 		int AccumulatedGrindingRefund;
+		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -35,6 +36,7 @@ public:
 			, GrindingWeapon_LastFiredFrame { 0 }
 			, CurrentAirFactory { nullptr }
 			, AccumulatedGrindingRefund { 0 }
+			, CurrentLaserWeaponIndex {}
 		{ }
 
 		void DisplayGrinderRefund();

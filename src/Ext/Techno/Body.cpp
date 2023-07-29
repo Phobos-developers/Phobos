@@ -1025,7 +1025,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
-		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->IsInTunnel)
 		.Process(this->DeployFireTimer)
 		;
