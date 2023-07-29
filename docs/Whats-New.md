@@ -263,7 +263,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### Version TBD (develop branch nightly builds)
 
-<details>
+<details open>
   <summary>Click to show</summary>
 
 New:
@@ -392,6 +392,7 @@ Fixes / interactions with other extensions:
 
 <details>
   <summary>Click to show</summary>
+
 New:
 - Additional sync logging in case of desync errors occuring (by Starkku)
 
