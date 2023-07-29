@@ -237,7 +237,19 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ## Changelog
 
+### 0.3.0.2
+
+<details open>
+  <summary>Click to show</summary>
+
+Phobos fixes:
+- Fixed `Interceptor` not resetting target if the intercepted projectile changes type to non-interceptable one afterwards (by Starkku)
+</details>
+
 ### 0.3.0.1
+
+<details>
+  <summary>Click to show</summary>
 
 New:
 - Additional sync logging in case of desync errors occuring (by Starkku)
@@ -263,6 +275,7 @@ Phobos fixes:
 - Fixed `CreateUnit` interaction with bridges (spawning under when shouldn't etc) (by Starkku)
 - `CanTarget` now considers bridges as land like game's normal weapon selection does (by Starkku)
 - `AreaFire.Target` now takes cells with bridges into consideration depending on firer's elevation (by Starkku)
+</details>
 
 ### 0.3
 

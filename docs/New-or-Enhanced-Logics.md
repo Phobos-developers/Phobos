@@ -398,6 +398,10 @@ Strength=0                             ; integer
 Armor=                                 ; ArmorType
 ```
 
+```{note}
+Currently interceptor weapons with projectiles that do not have `Inviso=true` will be unable to intercept projectiles if the firer of the interceptor weapon dies before the interceptor weapon projectile reaches its target. This may change in future.
+```
+
 ### Projectile trajectories
 
 - Projectiles can now have customizable trajectories.
