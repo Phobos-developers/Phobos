@@ -21,7 +21,7 @@ DEFINE_HOOK(0x4FB64B, HouseClass_UnitFromFactory_VoiceCreated, 0x5)
 	auto const pThisTechnoType = TechnoTypeExt::ExtMap.Find(pThisTechno->GetTechnoType());
 	if(pThisTechno->Owner->IsControlledByCurrentPlayer() && pThisTechnoType->VoiceCreated.isset())
 		if(RulesExt::Global()->IsVoiceCreatedGlobal.Get())
-			VocClass::PlayGlobal(pThisTechnoType->VoiceCreated, 0x2000, 1.0f);
+			pThisTechno->QueueVoice(pThisTechnoType->VoiceCreated);
 		else
 			VocClass::PlayAt(pThisTechnoType->VoiceCreated, pThisTechno->Location);
 
