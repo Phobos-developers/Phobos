@@ -51,6 +51,12 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		if (this->SpySat)
 			MapClass::Instance->Reveal(pHouse);
 
+		//if (this->ChangeOwner)
+		//{
+		//	const auto cell = CellClass::Coord2Cell(coords);
+		//
+		//}
+
 		if (this->TransactMoney)
 		{
 			pHouse->TransactMoney(this->TransactMoney);
@@ -134,6 +140,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pHouse, pTarget);
+
+	if (this->ChangeOwner)
+		this->ApplyOwnerChange(pHouse, pTarget);
 
 	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
@@ -245,6 +254,18 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 		if (pInf->IsDisguised())
 			pInf->Disguised = false;
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pTarget);
+	auto armorType = pTarget->GetTechnoType()->Armor;
+
+	if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(this->OwnerObject()))
+		armorType = pExt->Shield->GetArmorType();
+
+	if ((GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0) && (!pTarget->IsMindControlled()))
+		pTarget->SetOwningHouse(pHouse, true);
 }
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
