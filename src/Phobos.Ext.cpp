@@ -31,6 +31,7 @@
 #include <New/Type/Affiliated/GiftBoxTypeClass.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/DigitalDisplayTypeClass.h>
 
 #include <utility>
 
@@ -219,7 +220,8 @@ using PhobosTypeRegistry = TypeRegistry<
 	ShieldTypeClass,
 	LaserTrailTypeClass,
 	RadTypeClass,
-	ShieldClass
+	ShieldClass,
+	DigitalDisplayTypeClass
 	// other classes
 >;
 

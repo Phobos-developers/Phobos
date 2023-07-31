@@ -41,6 +41,7 @@ This page lists all the individual contributions to the project by their author.
   - Official docs
   - VSCode configs
   - Code style
+  - Customizable ElectricBolt Arcs
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -109,6 +110,7 @@ This page lists all the individual contributions to the project by their author.
   - Upgrade logic to allow altering of SpySat status
   - Ares detection and integration
   - Help with custom locomotors
+  - Extension class optimization
   - GiftBox port from DP-Kratos
 - **FS-21**:
   - Dump Object Info enhancements
@@ -128,6 +130,8 @@ This page lists all the individual contributions to the project by their author.
   - Initial strength for cloned infantry
 - **Starkku**:
   - Misc. minor bugfixes & improvements
+  - AI script actions:
+    - Chronoshift to Enemy Base
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
   - Vehicle `DeployFire` fixes/improvements
@@ -198,6 +202,10 @@ This page lists all the individual contributions to the project by their author.
   - AI naval vehicle production fix
   - Crushing tilt and slowdown customization
   - Extra warhead detonations on weapons
+  - Chrono sparkle animation display customization and improvements
+  - PipScale pip size & ammo pip frame customization
+  - Extension class optimization
+  - Additional sync logging
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -256,6 +264,7 @@ This page lists all the individual contributions to the project by their author.
    - The option to allow DieSound/VoiceDie being played when grinding
    - Allow iron-curtain effects on infantries
    - Break the mindcontrol link when capturing a mind-controlled building with engineer
+   - Remove sound events when mind-controlled vehicles deploy into buildings or when buildings considered as vehicles get captured
    - Building LightSource tint S/L fix
    - Permanent healthbar display on units targeted by temporal weapons fix
    - TechnoType conversion placeholder
@@ -274,6 +283,8 @@ This page lists all the individual contributions to the project by their author.
   - Custom slaves free sound
   - Jumpjet crash rotation control
   - Vehicle voxel turret shadows & body multi-section shadows
+- **Fryone**
+  - Customizable ElectricBolt Arcs
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
@@ -281,6 +292,7 @@ This page lists all the individual contributions to the project by their author.
   - Superweapon launch site & availability code
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
+- **ststl, FlyStar, Saigyouji, JunJacobYoung** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic

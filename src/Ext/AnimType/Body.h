@@ -11,6 +11,9 @@ class AnimTypeExt
 public:
 	using base_type = AnimTypeClass;
 
+	static constexpr DWORD Canary = 0xEEEEEEEE;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<AnimTypeClass>
 	{
 	public:
@@ -40,6 +43,7 @@ public:
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
+		Valueable<bool> AltPalette_ApplyLighting;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -67,6 +71,7 @@ public:
 			, SplashAnims {}
 			, SplashAnims_PickRandom { false }
 			, AttachedSystem {}
+			, AltPalette_ApplyLighting { false }
 		{ }
 
 		virtual ~ExtData() = default;

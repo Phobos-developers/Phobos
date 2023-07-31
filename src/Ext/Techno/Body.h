@@ -17,6 +17,9 @@ class TechnoExt
 public:
 	using base_type = TechnoClass;
 
+	static constexpr DWORD Canary = 0x55555555;
+	static constexpr size_t ExtPointerOffset = 0x34C;
+
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
@@ -31,7 +34,6 @@ public:
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
 		OptionalStruct<int, false> DamageNumberOffset;
-		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 		bool IsInTunnel;
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
@@ -55,7 +57,6 @@ public:
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
-			, CurrentLaserWeaponIndex {}
 			, IsInTunnel { false }
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
@@ -76,7 +77,10 @@ public:
 
 		virtual ~ExtData() override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+			AnnounceInvalidPointer(OriginalPassengerOwner, ptr);
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -92,7 +96,18 @@ public:
 		ExtContainer();
 		~ExtContainer();
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
+			switch (abs)
+			{
+			case AbstractType::House:
+				return false;
+			}
+
+			return true;
+		}
 	};
 
 	static ExtContainer ExtMap;
@@ -135,4 +150,9 @@ public:
 	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
+	static Point2D GetScreenLocation(TechnoClass* pThis);
+	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
+	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
+	static void ProcessDigitalDisplays(TechnoClass* pThis);
+	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
 };

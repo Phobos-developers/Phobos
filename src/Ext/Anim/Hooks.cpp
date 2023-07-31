@@ -173,11 +173,11 @@ DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
 	const auto pExt = AnimExt::ExtMap.Find(pThis);
 	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pExt->AttachedSystem && pExt->AttachedSystem->Type != pTypeExt->AttachedSystem)
+	if (pExt->AttachedSystem && pExt->AttachedSystem->Type != pTypeExt->AttachedSystem.Get())
 		pExt->DeleteAttachedSystem();
 
 	if (!pExt->AttachedSystem && pTypeExt->AttachedSystem)
-		pExt->CreateAttachedSystem(pTypeExt->AttachedSystem);
+		pExt->CreateAttachedSystem();
 
 	return 0;
 }
@@ -246,3 +246,52 @@ DEFINE_HOOK(0x4236F0, AnimClass_DrawIt_Tiled_Palette, 0x6)
 
 	return 0x4236F6;
 }
+
+#pragma region AltPalette
+
+// Fix AltPalette anims not using owner color scheme.
+DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
+{
+	enum { SkipGameCode = 0x4232EA };
+
+	GET(AnimClass*, pThis, ESI);
+
+	int schemeIndex = pThis->Owner ? pThis->Owner->ColorSchemeIndex - 1 : RulesExt::Global()->AnimRemapDefaultColorScheme;
+	schemeIndex += AnimTypeExt::ExtMap.Find(pThis->Type)->AltPalette_ApplyLighting ? 1 : 0;
+	auto const scheme = ColorScheme::Array->Items[schemeIndex];
+
+	R->ECX(scheme);
+	return SkipGameCode;
+}
+
+namespace ConvertTemp
+{
+	int shadeCount = -1;
+}
+
+// Set ShadeCount to 53 to initialize the palette fully shaded - this is required to make it not draw over shroud for some reason.
+DEFINE_HOOK(0x68C4C4, GenerateColorSpread_ShadeCountSet, 0x5)
+{
+	GET(int, shadeCount, EDX);
+
+	ConvertTemp::shadeCount = shadeCount;
+	R->EDX(53);
+
+	return 0;
+}
+
+// Restore original ShadeCount.
+DEFINE_HOOK(0x68C4E7, GenerateColorSpread_ShadeCountUnset, 0x5)
+{
+	GET(LightConvertClass*, pConvert, EAX);
+
+	if (pConvert && ConvertTemp::shadeCount != -1)
+	{
+		pConvert->ShadeCount = ConvertTemp::shadeCount;
+		ConvertTemp::shadeCount = -1;
+	}
+
+	return 0;
+}
+
+#pragma endregion

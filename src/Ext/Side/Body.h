@@ -10,6 +10,9 @@ class SideExt
 public:
 	using base_type = SideClass;
 
+	static constexpr DWORD Canary = 0x05B10501;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<SideClass>
 	{
 	public:

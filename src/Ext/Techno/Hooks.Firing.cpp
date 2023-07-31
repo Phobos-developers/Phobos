@@ -3,6 +3,7 @@
 #include <ScenarioClass.h>
 #include <TerrainClass.h>
 
+#include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -44,7 +45,7 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 	{
 		if (const auto pPrimaryExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType))
 		{
-			if (pThis->GetWeapon(1)->WeaponType && !EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true))
+			if (pThis->GetWeapon(1)->WeaponType && !EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true))
 				return Secondary;
 		}
 	}
@@ -282,7 +283,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (pTargetCell)
 		{
-			if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true))
+			if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
 				return CannotFire;
 		}
 
@@ -408,8 +409,9 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 				unsigned int cellIndex = (i + rand) % size;
 				CellStruct tgtPos = pCell->MapCoords + adjacentCells[cellIndex];
 				CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
+				bool allowBridges = tgtCell && tgtCell->ContainsBridge() && (pThis->OnBridge || tgtCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
 
-				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true))
+				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true, false, allowBridges))
 				{
 					R->EAX(tgtCell);
 					return 0;
@@ -420,14 +422,16 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 		}
 		else if (pExt->AreaFire_Target == AreaFireTarget::Self)
 		{
-			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
+			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget, pExt->CanTargetHouses, nullptr, false, false, pThis->OnBridge))
 				return DoNotFire;
 
 			R->EAX(pThis);
 			return SkipSetTarget;
 		}
 
-		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
+		bool allowBridges = pCell && pCell->ContainsBridge() && (pThis->OnBridge || pCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
+
+		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false, false, allowBridges))
 			return DoNotFire;
 	}
 
@@ -495,7 +499,7 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 
 	if (pThis->WhatAmI() == AbstractType::Building && pWeapon->IsLaser)
 	{
-		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*>(pThis)))
 		{
 			if (pExt->CurrentLaserWeaponIndex.empty())
 				pExt->CurrentLaserWeaponIndex = weaponIndex;
@@ -636,15 +640,15 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 }
 
 // Basically a hack to make game and Ares pick laser properties from non-Primary weapons.
-DEFINE_HOOK(0x70E1A5, TechnoClass_GetTurretWeapon_LaserWeapon, 0x6)
+DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
 {
-	enum { ReturnResult = 0x70E1C7, Continue = 0x70E1AB };
+	enum { ReturnResult = 0x70E1C8 };
 
-	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pThis, ECX);
 
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
-		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*>(pThis)))
 		{
 			if (!pExt->CurrentLaserWeaponIndex.empty())
 			{
@@ -655,9 +659,7 @@ DEFINE_HOOK(0x70E1A5, TechnoClass_GetTurretWeapon_LaserWeapon, 0x6)
 		}
 	}
 
-	// Restore overridden instructions.
-	R->EAX(pThis->GetTechnoType());
-	return Continue;
+	return 0;
 }
 
 DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_RandomDelay, 0x6)

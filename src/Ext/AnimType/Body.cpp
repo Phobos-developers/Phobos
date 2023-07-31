@@ -10,7 +10,6 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>
 
-template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEEEEEEEE;
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
 const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
@@ -110,6 +109,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->SplashAnims.Read(exINI, pID, "SplashAnims");
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
 	this->AttachedSystem.Read(exINI, pID, "AttachedSystem", true);
+	this->AltPalette_ApplyLighting.Read(exINI, pID, "AltPalette.ApplyLighting");
 }
 
 template <typename T>
@@ -142,6 +142,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SplashAnims)
 		.Process(this->SplashAnims_PickRandom)
 		.Process(this->AttachedSystem)
+		.Process(this->AltPalette_ApplyLighting)
 		;
 }
 
@@ -164,7 +165,7 @@ DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
 {
 	GET(AnimTypeClass*, pItem, EAX);
 
-	AnimTypeExt::ExtMap.FindOrAllocate(pItem);
+	AnimTypeExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 
