@@ -51,12 +51,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		if (this->SpySat)
 			MapClass::Instance->Reveal(pHouse);
 
-		//if (this->ChangeOwner)
-		//{
-		//	const auto cell = CellClass::Coord2Cell(coords);
-		//
-		//}
-
 		if (this->TransactMoney)
 		{
 			pHouse->TransactMoney(this->TransactMoney);
@@ -258,56 +252,55 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 
 void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pTarget);
-	auto const pExtType = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
+	const auto pExt = TechnoExt::ExtMap.Find(pTarget);
 	auto armorType = pTarget->GetTechnoType()->Armor;
 
 	if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(this->OwnerObject()))
 		armorType = pExt->Shield->GetArmorType();
 
 	const auto pOwnerAnimType = this->ChangeOwner_Anim.Get(nullptr);
-	const int pOwnerControlType = this->ChangeOwner_Type;
-	NullableVector<int> targetImmunities = pExtType->ChangeOwnerImmunities;
+	const double ownerChangeHealthThreshold = this->ChangeOwner_Threshold;
 	const bool isMindControl = this->ChangeOwner_MindControl;
+	const bool doesAffectElites = this->ChangeOwner_AffectElites;
 	const bool targetImmuneToPsionics = pTarget->GetTechnoType()->ImmuneToPsionics;
-	bool pImmune = (isMindControl && targetImmuneToPsionics);
 
-	if(targetImmunities.size() > 0)
-		for(int i = 0; i < targetImmunities.size(); i++)
-		{
-			if(targetImmunities[i] == pOwnerControlType)
-				pImmune = true;
-		}
+	bool pImmune = (isMindControl && targetImmuneToPsionics);
+	if(pTarget->GetHealthPercentage() > ownerChangeHealthThreshold)
+		pImmune = true;
+
+	if(!doesAffectElites && (pTarget->Veterancy.IsElite()))
+		pImmune = true;
 
 	if (!pImmune)
 	{
 		if ((GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0) && (!pTarget->IsMindControlled()))
-			pTarget->SetOwningHouse(pHouse, true);
-
-		if (pOwnerAnimType)
 		{
-			CoordStruct OwningAnimLocation = pTarget->Location;
-			if (isMindControl)
-				OwningAnimLocation.Z += pTarget->GetTechnoType()->MindControlRingOffset;
-			if (auto const pOwnerAnim = GameCreate<AnimClass>(pOwnerAnimType, OwningAnimLocation))
+			pTarget->SetOwningHouse(pHouse, true);
+			if (pOwnerAnimType)
 			{
-				pOwnerAnim->Owner = pHouse;
+				CoordStruct OwningAnimLocation = pTarget->Location;
 				if (isMindControl)
+					OwningAnimLocation.Z += pTarget->GetTechnoType()->MindControlRingOffset;
+				if (auto const pOwnerAnim = GameCreate<AnimClass>(pOwnerAnimType, OwningAnimLocation))
 				{
-					pTarget->MindControlRingAnim = pOwnerAnim;
-					pTarget->MindControlledByAUnit = true;
-				}
-				else
-				{
-					pOwnerAnim->SetOwnerObject(pTarget);
 					pOwnerAnim->Owner = pHouse;
+					if (isMindControl)
+					{
+						pTarget->MindControlRingAnim = pOwnerAnim;
+						pTarget->MindControlledByAUnit = true;
+					}
+					else
+					{
+						pOwnerAnim->SetOwnerObject(pTarget);
+						pOwnerAnim->Owner = pHouse;
+					}
 				}
 			}
-		}
-		else
-		{
-			if (isMindControl)
-				pTarget->MindControlledByAUnit = true;
+			else
+			{
+				if (isMindControl)
+					pTarget->MindControlledByAUnit = true;
+			}
 		}
 	}
 }

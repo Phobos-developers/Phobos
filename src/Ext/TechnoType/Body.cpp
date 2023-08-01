@@ -253,8 +253,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PipWrapAmmoPip.Read(exINI, pSection, "PipWrapAmmoPip");
 	this->AmmoPipSize.Read(exINI, pSection, "AmmoPipSize");
 
-	this->ChangeOwnerImmunities.Read(exINI, pSection, "OwnerChangerImmunities");
-
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -531,7 +529,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EmptyAmmoPip)
 		.Process(this->PipWrapAmmoPip)
 		.Process(this->AmmoPipSize)
-		.Process(this->ChangeOwnerImmunities)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

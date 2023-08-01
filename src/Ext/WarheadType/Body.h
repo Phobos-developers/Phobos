@@ -38,7 +38,8 @@ public:
 		Valueable<bool> ChangeOwner;
 		Valueable<bool> ChangeOwner_MindControl;
 		Nullable<AnimTypeClass*> ChangeOwner_Anim;
-		Valueable<int> ChangeOwner_Type;
+		Valueable<double> ChangeOwner_Threshold;
+		Valueable<bool> ChangeOwner_AffectElites;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -144,7 +145,8 @@ public:
 			, ChangeOwner { false }
 			, ChangeOwner_MindControl { false }
 			, ChangeOwner_Anim {}
-			, ChangeOwner_Type { 0 }
+			, ChangeOwner_Threshold { 1.0 }
+			, ChangeOwner_AffectElites { true }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
