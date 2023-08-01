@@ -122,6 +122,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 	this->ChangeOwner.Read(exINI, pSection, "IsOwnerChanger");
+	this->ChangeOwner_MindControl.Read(exINI, pSection, "IsOwnerChanger.SetAsMindControl");
+	this->ChangeOwner_Anim.Read(exINI, pSection, "IsOwnerChanger.ControlAnim");
+	this->ChangeOwner_Type.Read(exINI, pSection, "IsOwnerChanger.ControlType");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -293,6 +296,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
 		.Process(this->ChangeOwner)
+		.Process(this->ChangeOwner_MindControl)
+		.Process(this->ChangeOwner_Anim)
+		.Process(this->ChangeOwner_Type)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)

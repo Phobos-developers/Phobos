@@ -36,6 +36,9 @@ public:
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ChangeOwner;
+		Valueable<bool> ChangeOwner_MindControl;
+		Nullable<AnimTypeClass*> ChangeOwner_Anim;
+		Valueable<int> ChangeOwner_Type;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -139,6 +142,9 @@ public:
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ChangeOwner { false }
+			, ChangeOwner_MindControl { false }
+			, ChangeOwner_Anim {}
+			, ChangeOwner_Type { 0 }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
