@@ -263,7 +263,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### Version TBD (develop branch nightly builds)
 
-<details>
+<details open>
   <summary>Click to show</summary>
 
 New:
@@ -367,6 +367,8 @@ Vanilla fixes:
 - Suppressed the BuildingCaptured EVA events when capturing a building considered as a vehicle (by Trsdy)
 - Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list (by Starkku)
 - Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud (by Starkku)
+- Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings (by Starkku)
+- Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -383,6 +385,7 @@ Phobos fixes:
 - Fixed an issue with `Gunner=true` vehicles not correctly using the first passenger's mode with multiple passengers inside (by Starkku)
 - Used `MindControl.Anim` for buildings deployed from mind-controlled vehicles (by Trsdy)
 - Optimized extension class implementation, should improve performance all around (by Otamaa & Starkku)
+- Fixed `Interceptor` not resetting target if the intercepted projectile changes type to non-interceptable one afterwards (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
@@ -392,6 +395,7 @@ Fixes / interactions with other extensions:
 
 <details>
   <summary>Click to show</summary>
+
 New:
 - Additional sync logging in case of desync errors occuring (by Starkku)
 
