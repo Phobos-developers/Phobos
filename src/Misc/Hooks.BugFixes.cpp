@@ -723,3 +723,27 @@ DEFINE_HOOK(0x4834E5, CellClass_IsClearToMove_BridgeEdges, 0x5)
 
 	return 0;
 }
+
+// Fix DeployToFire not working properly for WaterBound DeploysInto buildings and not recalculating position on land if can't deploy.
+DEFINE_HOOK(0x4D580B, FootClass_ApproachTarget_DeployToFire, 0x6)
+{
+	enum { SkipGameCode = 0x4D583F };
+
+	GET(UnitClass*, pThis, EBX);
+
+	R->EAX(TechnoExt::CanDeployIntoBuilding(pThis, true));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
+{
+	enum { SkipGameCode = 0x741086, MustDeploy = 0x7410A8 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->Type->DeployToFire && pThis->CanDeployNow() && !TechnoExt::CanDeployIntoBuilding(pThis, true))
+		return MustDeploy;
+
+	return SkipGameCode;
+}
