@@ -77,13 +77,23 @@ DEFINE_HOOK(0x730D1F, DeployCommandClass_Execute_VoiceDeploy, 0x5)
 	GET(TechnoClass* const, pThis, ESI);
 	GET_STACK(int, unitsToDeploy, STACK_OFFSET(0x18, -0x4));
 	REF_STACK(char, endDeploy, STACK_OFFSET(0x18, -0x5));
-	auto pUnit = abstract_cast<UnitClass*>(pThis);
 
-	if(unitsToDeploy == 1)
-		if(pUnit->GetTechnoType()->VoiceDeploy && pUnit->IsOwnedByCurrentPlayer && pUnit->TryToDeploy())
+	if ((pThis->WhatAmI() == AbstractType::Infantry) && unitsToDeploy == 1)
+	{
+		auto pInfantry = abstract_cast<InfantryClass*>(pThis);
+		if(pInfantry->GetTechnoType()->VoiceDeploy && pInfantry->IsOwnedByCurrentPlayer && pInfantry->CanDeployNow())
+		{
+			pInfantry->QueueVoice(pInfantry->GetTechnoType()->VoiceDeploy);
+		}
+	}
+	else if ((pThis->WhatAmI() == AbstractType::Unit) && unitsToDeploy == 1)
+	{
+		auto pUnit = abstract_cast<UnitClass*>(pThis);
+		if(pUnit->GetTechnoType()->VoiceDeploy && pUnit->IsOwnedByCurrentPlayer && (pUnit->TryToDeploy() || pUnit->Type->IsSimpleDeployer))
 		{
 			pUnit->QueueVoice(pUnit->GetTechnoType()->VoiceDeploy);
 		}
+	}
 	endDeploy = 1;
 	return 0x730D24;
 }
