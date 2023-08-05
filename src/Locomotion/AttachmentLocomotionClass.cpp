@@ -57,28 +57,6 @@ Matrix3D AttachmentLocomotionClass::Draw_Matrix(VoxelIndexKey* key)
 // If you want to work on this - Shadow_Matrix should be fine as is,
 // Shadow_Point would need calculated height from the ramp extension plane - Kerbiter
 
-// Matrix3D AttachmentLocomotionClass::Shadow_Matrix(VoxelIndexKey* key)
-// {
-// 	if (auto const pParentFoot = abstract_cast<FootClass*>(this->GetAttachmentParent()))
-// 	{
-// 		Matrix3D mtx = pParentFoot->Locomotor->Shadow_Matrix(key);
-
-// 		// adjust for the real facing which is the source of truth for hor. rotation
-// 		double childRotation = this->LinkedTo->PrimaryFacing.Current().GetRadian<32>();
-// 		double parentRotation = pParentFoot->PrimaryFacing.Current().GetRadian<32>();
-// 		float adjustmentAngle = (float)(childRotation - parentRotation);
-
-// 		mtx.RotateZ(adjustmentAngle);
-
-// 		// should be shadow key in fact but I kerbo is lazy to properly define shadow key
-// 		if (key && key->Is_Valid_Key())
-// 			key->MainVoxel.FrameIndex = this->LinkedTo->PrimaryFacing.Current().GetFacing<32>();
-
-// 		return mtx;
-// 	}
-
-// 	return LocomotionClass::Shadow_Matrix(key);
-// }
 
 Point2D AttachmentLocomotionClass::Draw_Point()
 {
@@ -87,14 +65,6 @@ Point2D AttachmentLocomotionClass::Draw_Point()
 		? pParentLoco->Draw_Point()
 		: LocomotionClass::Draw_Point();
 }
-
-// Point2D AttachmentLocomotionClass::Shadow_Point()
-// {
-// 	ILocomotionPtr pParentLoco = this->GetAttachmentParentLoco();
-// 	return pParentLoco
-// 		? pParentLoco->Shadow_Point()
-// 		: LocomotionClass::Shadow_Point();
-// }
 
 VisualType AttachmentLocomotionClass::Visual_Character(bool raw)
 {

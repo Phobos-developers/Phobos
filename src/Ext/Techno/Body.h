@@ -136,9 +136,8 @@ public:
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
-	static bool AttachmentAI(TechnoClass* pThis);
 	static bool AttachTo(TechnoClass* pThis, TechnoClass* pParent);
-	static bool DetachFromParent(TechnoClass* pThis, bool force = false);
+	static bool DetachFromParent(TechnoClass* pThis);
 
 	static void InitializeAttachments(TechnoClass* pThis);
 	static void DestroyAttachments(TechnoClass* pThis, TechnoClass* pSource);
@@ -151,7 +150,6 @@ public:
 	static bool DoesntOccupyCellAsChild(TechnoClass* pThis);
 	static bool IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep = true);
 	static TechnoClass* GetTopLevelParent(TechnoClass* pThis);
-	static Matrix3D GetAttachmentTransform(TechnoClass* pThis, VoxelIndexKey* pKey = nullptr, bool isShadow = false);
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation);

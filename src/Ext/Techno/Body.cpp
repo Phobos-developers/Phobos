@@ -579,21 +579,6 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 }
 
-
-bool TechnoExt::AttachmentAI(TechnoClass* pThis)
-{
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	// auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pExt && pExt->ParentAttachment)
-	{
-		pExt->ParentAttachment->AI();
-		return true;
-	}
-
-	return false;
-}
-
 // Attaches this techno in a first available attachment "slot".
 // Returns true if the attachment is successful.
 bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
@@ -609,10 +594,10 @@ bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
 	return false;
 }
 
-bool TechnoExt::DetachFromParent(TechnoClass* pThis, bool isForceDetachment)
+bool TechnoExt::DetachFromParent(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	return pExt->ParentAttachment->DetachChild(isForceDetachment);
+	return pExt->ParentAttachment->DetachChild();
 }
 
 void TechnoExt::InitializeAttachments(TechnoClass* pThis)
@@ -704,16 +689,6 @@ TechnoClass* TechnoExt::GetTopLevelParent(TechnoClass* pThis)
 		&& pThisExt->ParentAttachment
 		? TechnoExt::GetTopLevelParent(pThisExt->ParentAttachment->Parent)
 		: pThis;
-}
-
-Matrix3D TechnoExt::GetAttachmentTransform(TechnoClass* pThis, VoxelIndexKey* pKey, bool isShadow)
-{
-	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pThis && pThisExt && pThisExt->ParentAttachment)
-		return pThisExt->ParentAttachment->GetUpdatedTransform(pKey, isShadow);
-
-	return TechnoExt::GetTransform(pThis, pKey, isShadow);
 }
 
 // =============================

@@ -12,33 +12,6 @@
 
 std::vector<AttachmentClass*> AttachmentClass::Array;
 
-void AttachmentClass::InitCacheData()
-{
-	this->Cache.TopLevelParent = TechnoExt::GetTopLevelParent(this->Parent);
-}
-
-Matrix3D AttachmentClass::GetUpdatedTransform(VoxelIndexKey* pKey, bool isShadow)
-{
-	Matrix3D& transform = isShadow ? this->Cache.ChildShadowTransform : this->Cache.ChildTransform;
-	int& lastUpdateFrame = isShadow ? this->Cache.ShadowLastUpdateFrame : this->Cache.LastUpdateFrame;
-
-	if (Unsorted::CurrentFrame != lastUpdateFrame)
-	{
-		double& factor = *reinterpret_cast<double*>(0xB1D008);
-		auto const flh = this->Data->FLH.Get() * factor;
-
-		Matrix3D mtx = TechnoExt::GetAttachmentTransform(this->Parent, pKey, isShadow);
-		mtx = TechnoExt::TransformFLHForTurret(this->Parent, mtx, this->Data->IsOnTurret, factor);
-		mtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
-
-		transform = mtx;
-
-		lastUpdateFrame = Unsorted::CurrentFrame;
-	}
-
-	return transform;
-}
-
 AttachmentTypeClass* AttachmentClass::GetType()
 {
 	return AttachmentTypeClass::Array[this->Data->Type].get();
@@ -51,42 +24,10 @@ TechnoTypeClass* AttachmentClass::GetChildType()
 		: nullptr;
 }
 
-Matrix3D AttachmentClass::GetChildTransformForLocation()
-{
-	auto const flh = this->Data->FLH.Get();
-
-	auto const pParentExt = TechnoExt::ExtMap.Find(this->Parent);
-
-	Matrix3D mtx;
-	if (pParentExt && pParentExt->ParentAttachment)
-		mtx = pParentExt->ParentAttachment->GetChildTransformForLocation();
-	else
-		mtx = TechnoExt::GetTransform(this->Parent);
-
-	mtx = TechnoExt::TransformFLHForTurret(this->Parent, mtx, this->Data->IsOnTurret);
-	mtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
-
-	return mtx;
-}
-
 CoordStruct AttachmentClass::GetChildLocation()
 {
 	auto& flh = this->Data->FLH.Get();
 	return TechnoExt::GetFLHAbsoluteCoords(this->Parent, flh, this->Data->IsOnTurret);
-
-	/*
-	// TODO it doesn't work correctly for some unexplicable reason
-	auto result = this->GetChildTransformForLocation() * Vector3D<float>::Empty;
-
-	// Resulting coords are mirrored along X axis, so we mirror it back
-	result.Y *= -1;
-
-	// apply as an offset to global object coords
-	CoordStruct location = this->Cache.TopLevelParent->GetCoords();
-	location += { std::lround(result.X), std::lround(result.Y), std::lround(result.Z) };
-
-	return location;
-	*/
 }
 
 AttachmentClass::~AttachmentClass()
@@ -130,8 +71,6 @@ void AttachmentClass::CreateChild()
 		}
 	}
 }
-
-#define SYNC_CHILD(property) this->Child->property = this->Parent->property
 
 void AttachmentClass::AI()
 {
@@ -208,8 +147,6 @@ void AttachmentClass::AI()
 			this->Child->SetOwningHouse(this->Parent->GetOwningHouse(), false);
 	}
 }
-
-#undef SYNC_CHILD
 
 // Called in Kill_Cargo, handles logics for parent destruction on children
 void AttachmentClass::Destroy(TechnoClass* pSource)
@@ -311,20 +248,11 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 	return true;
 }
 
-bool AttachmentClass::DetachChild(bool isForceDetachment)
+bool AttachmentClass::DetachChild()
 {
 	if (this->Child)
 	{
 		AttachmentTypeClass* pType = this->GetType();
-
-		if (isForceDetachment)
-		{
-			// if (pType->ForceDetachWeapon_Parent.isset())
-			// 	TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
-
-			// if (pType->ForceDetachWeapon_Child.isset())
-			// 	TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
-		}
 
 		if (!this->Child->InLimbo && pType->ParentDetachmentMission.isset())
 			this->Child->QueueMission(pType->ParentDetachmentMission.Get(), false);
@@ -352,7 +280,6 @@ void AttachmentClass::InvalidatePointer(void* ptr)
 {
 	AnnounceInvalidPointer(this->Parent, ptr);
 	AnnounceInvalidPointer(this->Child, ptr);
-	AnnounceInvalidPointer(this->Cache.TopLevelParent, ptr);
 }
 
 #pragma region Save/Load

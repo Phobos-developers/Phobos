@@ -19,17 +19,6 @@ public:
 	TechnoClass* Child;
 	CDTimerClass RespawnTimer;
 
-	// volatile, don't serialize
-	// if you ever change the tree structure, you need to call CacheTreeData()
-	struct Cache
-	{
-		TechnoClass* TopLevelParent;
-
-		int LastUpdateFrame;
-		Matrix3D ChildTransform;
-		int ShadowLastUpdateFrame;
-		Matrix3D ChildShadowTransform;
-	} Cache;
 
 	AttachmentClass(TechnoTypeExt::ExtData::AttachmentDataEntry* data,
 		TechnoClass* pParent, TechnoClass* pChild = nullptr) :
@@ -38,7 +27,6 @@ public:
 		Child { pChild },
 		RespawnTimer { }
 	{
-		this->InitCacheData();
 		Array.push_back(this);
 	}
 
@@ -53,12 +41,8 @@ public:
 
 	~AttachmentClass();
 
-	void InitCacheData();
-	Matrix3D GetUpdatedTransform(VoxelIndexKey* pKey = nullptr, bool shadow = false);
-
 	AttachmentTypeClass* GetType();
 	TechnoTypeClass* GetChildType();
-	Matrix3D GetChildTransformForLocation();
 	CoordStruct GetChildLocation();
 
 	void Initialize();
@@ -71,7 +55,7 @@ public:
 	void Limbo();
 
 	bool AttachChild(TechnoClass* pChild);
-	bool DetachChild(bool force = false);
+	bool DetachChild();
 
 	void InvalidatePointer(void* ptr);
 

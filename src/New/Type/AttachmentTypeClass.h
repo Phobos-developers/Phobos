@@ -20,9 +20,6 @@ public:
 	Valueable<bool> LowSelectionPriority;
 	Valueable<bool> TransparentToMouse;
 	Valueable<AttachmentYSortPosition> YSortPosition;
-	// Valueable<bool> CanBeForceDetached;
-	// Nullable<WeaponTypeClass*> ForceDetachWeapon_Child;
-	// Nullable<WeaponTypeClass*> ForceDetachWeapon_Parent;
 	Nullable<WeaponTypeClass*> DestructionWeapon_Child;
 	Nullable<WeaponTypeClass*> DestructionWeapon_Parent;
 	Nullable<Mission> ParentDestructionMission;
@@ -40,9 +37,6 @@ public:
 		, LowSelectionPriority { true }
 		, TransparentToMouse { false }
 		, YSortPosition { AttachmentYSortPosition::Default }
-		// , CanBeForceDetached { false }
-		// , ForceDetachWeapon_Child { }
-		// , ForceDetachWeapon_Parent { }
 		, DestructionWeapon_Child { }
 		, DestructionWeapon_Parent { }
 		, ParentDestructionMission { }
