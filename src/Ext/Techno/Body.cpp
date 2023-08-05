@@ -680,6 +680,12 @@ bool TechnoExt::IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep)
 			|| (deep && TechnoExt::IsChildOf(pThisExt->ParentAttachment->Parent, pParent)));
 }
 
+bool TechnoExt::AreRelatives(TechnoClass* pThis, TechnoClass* pThat)
+{
+	return TechnoExt::IsChildOf(pThis, pThat)
+		|| TechnoExt::IsChildOf(pThat, pThis);
+}
+
 // Returns this if no parent.
 TechnoClass* TechnoExt::GetTopLevelParent(TechnoClass* pThis)
 {

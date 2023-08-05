@@ -59,6 +59,7 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo_LimboAttachments, 0x6)
 
 #pragma region Cell occupation handling
 
+// because Ares hooks in the single usable position we need to do a detour instead
 // screw Ares
 
 void __fastcall UnitClass_SetOccupyBit_SkipVirtual(UnitClass* pThis, discard_t, const CoordStruct& coords)
@@ -76,14 +77,12 @@ void __fastcall UnitClass_ClearOccupyBit_SkipVirtual(UnitClass* pThis, discard_t
 DEFINE_JUMP(VTABLE, 0x7F5D60, GET_OFFSET(UnitClass_SetOccupyBit_SkipVirtual))
 DEFINE_JUMP(VTABLE, 0x7F5D64, GET_OFFSET(UnitClass_ClearOccupyBit_SkipVirtual))
 
-// TODO ^ same for non-UnitClass, cba for now
-
-// TODO now children block the parent from moving, should not happen
+// TODO ^ same for non-UnitClass, not needed so cba for now
 
 namespace TechnoAttachmentTemp
 {
 	// no idea what Ares or w/e else is doing with occupation flags,
-	// so just to be safe assume it can be null and store it
+	// so just to be safe assume it can be nothing and store it
 	byte storedVehicleFlag;
 }
 
@@ -256,7 +255,7 @@ enum CellTechnoMode
 	NoAttachments,
 	NoVirtualOrRelatives,
 	NoVirtual,
-	NoRelatives,
+	NoRelatives, // misleading name but I think doesn't matter for the use case for now
 	All,
 
 	DefaultBehavior = All,
@@ -403,10 +402,11 @@ DEFINE_HOOK(0x6CC763, SuperClass_Place_ChronoWarp_SkipChildren, 0x6)
 	enum { Skip = 0x6CCCCA, Continue = 0 };
 
 	GET(FootClass* const, pFoot, ESI);
-	auto const pExt = TechnoExt::ExtMap.Find(pFoot);
 
-	return pExt->ParentAttachment ? Skip : Continue;
+	return TechnoExt::IsAttached(pFoot) ? Skip : Continue;
 }
+
+#pragma region Command inheritance
 
 void ParentClickedWaypoint(TechnoClass* pThis, int idxPath, signed char idxWP)
 {
@@ -532,6 +532,7 @@ DEFINE_HOOK(0x730F1C, StopCommand_Context_Unset, 0x5)
 	return 0;
 }
 
+#pragma endregion
 
 DEFINE_HOOK(0x469672, BulletClass_Logics_Locomotor_CheckIfAttached, 0x6)
 {
@@ -630,7 +631,8 @@ Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, discard_t, C
 	return result;
 }
 
-// TODO MouseOverObject for entering bunkers, grinder, buildings etc
+// MouseOverObject for entering bunkers, grinder, buildings etc
+// is handled along with the shield logics in another file
 
 DEFINE_JUMP(VTABLE, 0x7F5CE0, GET_OFFSET(UnitClass_MouseOverCell_Wrapper))
 

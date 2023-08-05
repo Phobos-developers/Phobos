@@ -149,6 +149,7 @@ public:
 	static bool HasAttachmentLoco(FootClass* pThis); // FIXME shouldn't be here
 	static bool DoesntOccupyCellAsChild(TechnoClass* pThis);
 	static bool IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep = true);
+	static bool AreRelatives(TechnoClass* pThis, TechnoClass* pThat);
 	static TechnoClass* GetTopLevelParent(TechnoClass* pThis);
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);

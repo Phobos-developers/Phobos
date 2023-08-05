@@ -214,6 +214,9 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 	if (this->Child)
 		return false;
 
+	if (pChild->WhatAmI() != AbstractType::Unit)
+		return false;
+
 	if (auto const pChildAsFoot = abstract_cast<FootClass*>(pChild))
 	{
 		if (IPersistPtr pLocoPersist = pChildAsFoot->Locomotor)

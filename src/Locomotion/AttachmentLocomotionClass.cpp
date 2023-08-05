@@ -54,9 +54,9 @@ Matrix3D AttachmentLocomotionClass::Draw_Matrix(VoxelIndexKey* key)
 // of the parent slope plane to calculate the correct offset for Shadow_Point,
 // complicated trigonometry that would be a waste of time at this point.
 
-// If you want to work on this - Shadow_Matrix should be fine as is,
-// Shadow_Point would need calculated height from the ramp extension plane - Kerbiter
-
+// If you want to work on this - Shadow_Matrix should be fine to copy from Draw_Matrix,
+// (even the key shenanigans can be left the same), butShadow_Point would need to be
+// calculated using height from the ramp extension plane - Kerbiter
 
 Point2D AttachmentLocomotionClass::Draw_Point()
 {
@@ -126,6 +126,8 @@ bool AttachmentLocomotionClass::Process()
 		this->PreviousCell = newPos;
 	}
 
+	// TODO sensors and sight
+
 	AttachmentClass* pAttachment = this->GetAttachment();
 	if (pAttachment && pAttachment->GetType()->InheritHeightStatus)
 	{
@@ -140,6 +142,7 @@ bool AttachmentLocomotionClass::Process()
 	return LocomotionClass::Process();
 }
 
+// I am not sure this does anything and could probably be removed
 bool AttachmentLocomotionClass::Is_Powered()
 {
 	ILocomotionPtr pParentLoco = this->GetAttachmentParentLoco();
