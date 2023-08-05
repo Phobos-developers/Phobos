@@ -28,6 +28,10 @@ SkirmishUnlimitedColors=false	; boolean
 
 ## Developer tools
 
+### Additional sync logging
+
+- Phobos writes additional information to the `SYNC#.txt` log files when a desynchronization occurs such as calls to random number generator functions, facing / target / destination changes etc.
+
 ### Dump Object Info
 
 ![image](_static/images/objectinfo-01.png)

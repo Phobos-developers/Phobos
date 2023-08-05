@@ -272,7 +272,7 @@ New:
 
 ### Version TBD (develop branch nightly builds)
 
-<details>
+<details open>
   <summary>Click to show</summary>
 
 New:
@@ -334,7 +334,8 @@ New:
 - Script action to Chronoshift teams to enemy base (by Starkku)
 - Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
 - PipScale pip size & ammo pip frame customization (by Starkku)
-- Additional sync logging in case of desync errors occuring (by Starkku)
+- `AltPalette` lighting toggle (by Starkku)
+- Unhardcoded timer blinking color scheme (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -373,35 +374,61 @@ Vanilla fixes:
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
 - Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (by Kerbiter)
 - Suppressed the BuildingCaptured EVA events when capturing a building considered as a vehicle (by Trsdy)
+- Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list (by Starkku)
+- Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud (by Starkku)
+- Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings (by Starkku)
+- Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
-- `AutoDeath` support for objects in limbo (by Trsdy)
-- Fixed shield animation being hidden while underground or in tunnels fix not working correctly (by Starkku)
-- Restore the `MindClearedSound` when deploying a mind-controlled unit into a building loses the mind-control (by Trsdy)
 - Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
-- Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected object (thus requiring `CellSpread`) (by Starkku)
-- Allow PowerPlant Enhancer to be affected by EMP (by Trsdy)
 - `Gunner=true` transports now correctly change turret if a passenger is removed by `PassengerDeletion` (by Starkku)
 - `PassengerDeletion.Soylent` now correctly calculates refund value if removed passenger has no explicitly set `Soylent` value (by Starkku)
-- Animation `Weapon` with `Damage.DealtByInvoker=true` now uses the invoker's house to deal damage and apply Phobos warhead effects even if invoker is dead when weapon is fired (by Starkku)
 - Superweapon `Detonate.Weapon` & `Detonate.Warhead` now use the firing house to deal damage and apply Phobos warhead effects even if no firing building is found (by Starkku)
 - `CreateUnit` now uses civilian house as owner instead if the intended owner house has been defeated (this is in-line with how `MakeInfantry` works) (by Starkku)
 - `IsHouseColor` laser trails on techno now correctly change color when it changes owner (by Trsdy)
 - Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where object changes layer (by Starkku)
-- Fixed floating point value parsing precision to match the game (by Starkku)
 - Fixed `DetonateOnAllMapObjects.RequireVerses` not considering shield armor types (by Starkku)
-- Power output / drain should now correctly be applied for buildings created via `LimboDelivery` in campaigns (by Starkku)
-- Fixed shield health bar showing empty bar when shield is still on very low health instead of depleted (by Starkku)
-- Fixed `CanTarget` not considering objects on bridges when checking if cell is empty (by Starkku)
 - Fixed new Phobos script actions not picking team leader correctly based on `LeadershipRating` (by Starkku)
 - Fixed an issue with `Gunner=true` vehicles not correctly using the first passenger's mode with multiple passengers inside (by Starkku)
 - Used `MindControl.Anim` for buildings deployed from mind-controlled vehicles (by Trsdy)
 - Optimized extension class implementation, should improve performance all around (by Otamaa & Starkku)
+- Fixed `Interceptor` not resetting target if the intercepted projectile changes type to non-interceptable one afterwards (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
+</details>
+
+### 0.3.0.1
+
+<details>
+  <summary>Click to show</summary>
+
+New:
+- Additional sync logging in case of desync errors occuring (by Starkku)
+
+Phobos fixes:
+- `AutoDeath` support for objects in limbo (by Trsdy)
+- Buildings sold by `AutoDeath` no longer play a click sound effect (by Trsdy)
+- Fixed shield animation being hidden while underground or in tunnels fix not working correctly (by Starkku)
+- Restore the `MindClearedSound` when deploying a mind-controlled unit into a building loses the mind-control (by Trsdy)
+- Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected object (thus requiring `CellSpread`) (by Starkku)
+- Fixed script action 10103 'Load Into Transports' unintentionally skipping next action (by FS-21)
+- Changed mission retry dialog button order to better match old order people are used to (by Trsdy)
+- Allow PowerPlant Enhancer to be affected by EMP (by Trsdy)
+- Animation `Weapon` with `Damage.DealtByInvoker=true` now uses the invoker's house to deal damage and apply Phobos warhead effects even if invoker is dead when weapon is fired (by Starkku)
+- Fixed a crash when trying to create radiation outside map bounds (by Otamaa)
+- Fixed new AI attack scripts not allowing zero damage weapons to pick targets (by Starkku)
+- Fixed floating point value parsing precision to match the game (by Starkku)
+- Power output / drain should now correctly be applied for buildings created via `LimboDelivery` in campaigns (by Starkku)
+- Fixed shield health bar showing empty bar when shield is still on very low health instead of depleted (by Starkku)
+- Fixed `CanTarget` not considering objects on bridges when checking if cell is empty (by Starkku)
+- Fixed vehicle deploy weapons not working if the unit is cloaked and weapon has `DecloakToFire=true` (by NetsuNegi & Starkku)
+- Fixed `IsAnimated` terrain not updating correctly in all circumstances (by Starkku)
+- Fixed `CreateUnit` interaction with bridges (spawning under when shouldn't etc) (by Starkku)
+- `CanTarget` now considers bridges as land like game's normal weapon selection does (by Starkku)
+- `AreaFire.Target` now takes cells with bridges into consideration depending on firer's elevation (by Starkku)
 </details>
 
 ### 0.3
