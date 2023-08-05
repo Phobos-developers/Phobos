@@ -326,6 +326,7 @@ New:
 - Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
 - PipScale pip size & ammo pip frame customization (by Starkku)
 - `AltPalette` lighting toggle (by Starkku)
+- Unhardcoded timer blinking color scheme (by Starkku)
 - Added sound entry on unit's creation (by Fryone)
 
 Vanilla fixes:
