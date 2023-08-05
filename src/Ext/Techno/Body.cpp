@@ -633,6 +633,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsInTunnel)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
+		.Process(this->MobileRefineryTimer)
 		;
 }
 

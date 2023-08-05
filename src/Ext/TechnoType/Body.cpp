@@ -269,9 +269,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	char tempBuffer[32];
 
-	if (this->OwnerObject()->Gunner && this->Insignia_Weapon.empty())
+	if (pThis->Gunner && this->Insignia_Weapon.empty())
 	{
-		int weaponCount = this->OwnerObject()->WeaponCount;
+		int weaponCount = pThis->WeaponCount;
 		this->Insignia_Weapon.resize(weaponCount);
 		this->InsigniaFrame_Weapon.resize(weaponCount);
 		this->InsigniaFrames_Weapon.resize(weaponCount);
@@ -344,7 +344,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (i >= 5U && !alternateFLH.isset())
 			break;
 		else if (!alternateFLH.isset())
-			alternateFLH = this->OwnerObject()->Weapon[0].FLH; // Game defaults to this for AlternateFLH, not 0,0,0
+			alternateFLH = pThis->Weapon[0].FLH; // Game defaults to this for AlternateFLH, not 0,0,0
 
 		if (this->AlternateFLHs.size() < i)
 			this->AlternateFLHs[i] = alternateFLH;
@@ -360,7 +360,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (canParse)
 	{
 		if (this->PassengerDeletionType == nullptr)
-			this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
+			this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(pThis);
 
 		this->PassengerDeletionType->LoadFromINI(pINI, pSection);
 	}
@@ -376,13 +376,28 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (isInterceptor)
 	{
 		if (this->InterceptorType == nullptr)
-			this->InterceptorType = std::make_unique<InterceptorTypeClass>(this->OwnerObject());
+			this->InterceptorType = std::make_unique<InterceptorTypeClass>(pThis);
 
 		this->InterceptorType->LoadFromINI(pINI, pSection);
 	}
 	else if (isInterceptor.isset())
 	{
 		this->InterceptorType.reset();
+	}
+
+	Nullable<bool> isMobileRefinery;
+	isMobileRefinery.Read(exINI, pSection, "MobileRefinery");
+
+	if (isMobileRefinery)
+	{
+		if (this->MobileRefineryType == nullptr)
+			this->MobileRefineryType = std::make_unique<MobileRefineryTypeClass>(pThis);
+
+		this->MobileRefineryType->LoadFromINI(pINI, pSection);
+	}
+	else if (isMobileRefinery.isset())
+	{
+		this->MobileRefineryType.reset();
 	}
 }
 
@@ -396,6 +411,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRangeLimit)
 
 		.Process(this->InterceptorType)
+
+		.Process(this->MobileRefineryType)
 
 		.Process(this->GroupAs)
 		.Process(this->RadarJamRadius)

@@ -271,7 +271,9 @@ This page lists all the individual contributions to the project by their author.
 - **FlyStar**
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
-- **NetsuNegi** - Forbidding parallel AI queues by type
+- **NetsuNegi**
+   - Forbidding parallel AI queues by type
+   - Mobile Refinery Logic
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons
