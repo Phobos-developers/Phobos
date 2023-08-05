@@ -117,6 +117,14 @@ namespace TechnoAttachmentTemp
 // we flip the logic from "passable if special case is found" to "impassable if
 // non-special case is found" - Kerbiter
 
+void AssumeNoVehicleByDefault(byte& occupyFlags, bool& isVehicleFlagSet)
+{
+	TechnoAttachmentTemp::storedVehicleFlag = occupyFlags & 0x20;
+
+	occupyFlags &= ~0x20;
+	isVehicleFlagSet = false;
+}
+
 DEFINE_HOOK(0x73F520, UnitClass_CanEnterCell_AssumeNoVehicleByDefault, 0x0)
 {
 	enum { Check = 0x73F528, Skip = 0x73FA92 };
@@ -129,29 +137,21 @@ DEFINE_HOOK(0x73F520, UnitClass_CanEnterCell_AssumeNoVehicleByDefault, 0x0)
 	if (!pOccupier)  // stolen code
 		return Skip;
 
-	TechnoAttachmentTemp::storedVehicleFlag = occupyFlags & 0x20;
-
-	occupyFlags &= ~0x20;
-	isVehicleFlagSet = false;
+	AssumeNoVehicleByDefault(occupyFlags, isVehicleFlagSet);
 
 	return Check;
 }
 
-DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
+bool IsOccupierIgnorable(TechnoClass* pThis, ObjectClass* pOccupier, byte& occupyFlags, bool& isVehicleFlagSet)
 {
-	enum { IgnoreOccupier = 0x73FA87, Continue = 0x73F530 };
+	if (pThis == pOccupier)
+		return true;
 
-	GET(UnitClass*, pThis, EBX);
-	GET(TechnoClass*, pOccupier, ESI);
-
-	REF_STACK(byte, occupyFlags, STACK_OFFSET(0x90, -0x7C));
-	REF_STACK(bool, isVehicleFlagSet, STACK_OFFSET(0x90, -0x7B));
-
-	if (pThis == pOccupier
-		|| TechnoExt::DoesntOccupyCellAsChild(pOccupier)
-		|| TechnoExt::IsChildOf(pOccupier, pThis))
+	auto const pTechno = abstract_cast<TechnoClass*>(pOccupier);
+	if (pTechno &&
+		(TechnoExt::DoesntOccupyCellAsChild(pTechno) || TechnoExt::IsChildOf(pTechno, pThis)))
 	{
-		return IgnoreOccupier;
+		return true;
 	}
 
 	if (abstract_cast<UnitClass*>(pOccupier))
@@ -160,7 +160,74 @@ DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
 		isVehicleFlagSet = TechnoAttachmentTemp::storedVehicleFlag != 0;
 	}
 
-	return Continue;
+	return false;
+}
+
+DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
+{
+	enum { IgnoreOccupier = 0x73FA87, Continue = 0x73F530 };
+
+	GET(UnitClass*, pThis, EBX);
+	GET(ObjectClass*, pOccupier, ESI);
+
+	REF_STACK(byte, occupyFlags, STACK_OFFSET(0x90, -0x7C));
+	REF_STACK(bool, isVehicleFlagSet, STACK_OFFSET(0x90, -0x7B));
+
+	return IsOccupierIgnorable(pThis, pOccupier, occupyFlags, isVehicleFlagSet)
+		? IgnoreOccupier : Continue;
+}
+
+// Also because the occupancy can be marked by something moving into the spot
+// we also check the nearby (yes this is an assumption, if you are reviewing
+// this voice your opinion in the review) cells for the presence of technos
+// that are moving into this spot right now - Kerbiter
+
+void AccountForMovingInto(CellClass* into, bool isAlt, TechnoClass* pThis, byte& occupyFlags, bool& isVehicleFlagSet)
+{
+	// see 42B080, A* checks 2 cells around, this is approx. it
+	CellStruct center = into->MapCoords;
+	CoordStruct intoCoords = into->GetCellCoords();
+	if (isAlt)
+		intoCoords.Z += CellClass::BridgeHeight;
+
+	for (CellRectEnumerator cell({ center.X - 2, center.Y - 2, center.X + 2, center.Y + 2}); cell; ++cell)
+	{
+		if (auto const pCell = MapClass::Instance->TryGetCellAt(*cell))
+		{
+			for (NextObject object(isAlt ? pCell->AltObject : pCell->FirstObject); object; ++object)
+			{
+				if (*object == pThis)
+					continue;
+
+				auto const pUnit = abstract_cast<UnitClass*>(*object);
+				if (pUnit && pUnit->Locomotor->Is_Moving_Here(intoCoords)
+					&& !TechnoExt::DoesntOccupyCellAsChild(pUnit)
+					&& !TechnoExt::IsChildOf(pUnit, pThis))
+				{
+					occupyFlags |= TechnoAttachmentTemp::storedVehicleFlag;
+					isVehicleFlagSet = TechnoAttachmentTemp::storedVehicleFlag != 0;
+				}
+			}
+		}
+	}
+}
+
+DEFINE_HOOK(0x73FA92, UnitClass_CanEnterCell_CheckMovingInto, 0x0)
+{
+	GET_STACK(CellClass*, into, STACK_OFFSET(0x90, 0x4));
+	GET_STACK(bool const, isAlt, STACK_OFFSET(0x90, -0x7D));
+	GET(UnitClass*, pThis, EBX);
+
+	REF_STACK(byte, occupyFlags, STACK_OFFSET(0x90, -0x7C));
+	REF_STACK(bool, isVehicleFlagSet, STACK_OFFSET(0x90, -0x7B));
+
+	AccountForMovingInto(into, isAlt, pThis, occupyFlags, isVehicleFlagSet);
+
+	// stolen code ahead
+	if (!isAlt)
+		return 0x73FA9E;
+
+	return 0x73FC24;
 }
 
 DEFINE_HOOK(0x51C249, InfantryClass_CanEnterCell_AssumeNoVehicleByDefault, 0x0)
@@ -175,10 +242,7 @@ DEFINE_HOOK(0x51C249, InfantryClass_CanEnterCell_AssumeNoVehicleByDefault, 0x0)
 	if (!pOccupier)  // stolen code
 		return Skip;
 
-	TechnoAttachmentTemp::storedVehicleFlag = occupyFlags & 0x20;
-
-	occupyFlags &= ~0x20;
-	isVehicleFlagSet = false;
+	AssumeNoVehicleByDefault(occupyFlags, isVehicleFlagSet);
 
 	return Check;
 }
@@ -188,25 +252,27 @@ DEFINE_HOOK(0x51C251, InfantryClass_CanEnterCell_SkipChildren, 0x0)
 	enum { IgnoreOccupier = 0x51C70F, Continue = 0x51C259 };
 
 	GET(InfantryClass*, pThis, EBP);
-	GET(TechnoClass*, pOccupier, ESI);
+	GET(ObjectClass*, pOccupier, ESI);
 
 	REF_STACK(byte, occupyFlags, STACK_OFFSET(0x34, -0x21));
 	REF_STACK(bool, isVehicleFlagSet, STACK_OFFSET(0x34, -0x22));
 
-	if ((TechnoClass*)pThis == pOccupier
-		|| TechnoExt::DoesntOccupyCellAsChild(pOccupier)
-		|| TechnoExt::IsChildOf(pOccupier, (TechnoClass*)pThis))
-	{
-		return IgnoreOccupier;
-	}
+	return IsOccupierIgnorable(pThis, pOccupier, occupyFlags, isVehicleFlagSet)
+		? IgnoreOccupier : Continue;
+}
 
-	if (abstract_cast<UnitClass*>(pOccupier))
-	{
-		occupyFlags |= TechnoAttachmentTemp::storedVehicleFlag;
-		isVehicleFlagSet = TechnoAttachmentTemp::storedVehicleFlag != 0;
-	}
+DEFINE_HOOK(0x51C78F, InfantryClass_CanEnterCell_CheckMovingInto, 0x6)
+{
+	GET_STACK(CellClass*, into, STACK_OFFSET(0x34, 0x4));
+	GET_STACK(bool const, isAlt, STACK_OFFSET(0x34, -0x23));
+	GET(InfantryClass*, pThis, EBP);
 
-	return Continue;
+	REF_STACK(byte, occupyFlags, STACK_OFFSET(0x34, -0x21));
+	REF_STACK(bool, isVehicleFlagSet, STACK_OFFSET(0x34, -0x22));
+
+	AccountForMovingInto(into, isAlt, pThis, occupyFlags, isVehicleFlagSet);
+
+	return 0;
 }
 
 enum CellTechnoMode
@@ -629,7 +695,7 @@ DEFINE_HOOK(0x736A2F, UnitClass_RotationAI_ForbidAttachmentRotation, 0x7)
 		? SkipBodyRotation
 		: ContinueCheck;
 }
-/*
+
 Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, discard_t, CellStruct const* pCell, bool checkFog, bool ignoreForce)
 {
 	Action result = pThis->UnitClass::MouseOverCell(pCell, checkFog, ignoreForce);
@@ -658,7 +724,7 @@ Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, discard_t, C
 // TODO MouseOverObject for entering bunkers, grinder, buildings etc
 
 DEFINE_JUMP(VTABLE, 0x7F5CE0, GET_OFFSET(UnitClass_MouseOverCell_Wrapper))
-*/
+
 /*
 DEFINE_HOOK(0x4D74EC, FootClass_ObjectClickedAction_HandleAttachment, 0x6)
 {
