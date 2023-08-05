@@ -326,6 +326,7 @@ New:
 - Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
 - PipScale pip size & ammo pip frame customization (by Starkku)
 - `AltPalette` lighting toggle (by Starkku)
+- Unhardcoded timer blinking color scheme (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
