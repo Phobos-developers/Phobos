@@ -2,7 +2,6 @@
 #include <GameStrings.h>
 #include <Ext/Bullet/Body.h>
 
-template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 void WeaponTypeExt::ExtData::Initialize()
@@ -115,12 +114,12 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)
 {
 	WeaponTypeExt::DetonateAt(pThis, pTarget, pOwner, pThis->Damage, pFiringHouse);
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
 		damage, pThis->Warhead, 0, pThis->Bright))
@@ -179,7 +178,7 @@ DEFINE_HOOK(0x771EE9, WeaponTypeClass_CTOR, 0x5)
 {
 	GET(WeaponTypeClass*, pItem, ESI);
 
-	WeaponTypeExt::ExtMap.FindOrAllocate(pItem);
+	WeaponTypeExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

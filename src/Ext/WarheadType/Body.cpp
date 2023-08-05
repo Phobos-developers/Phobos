@@ -7,7 +7,6 @@
 #include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
 
-template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 
 bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget)
@@ -31,16 +30,23 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+namespace DetonateTemp
 {
+	AbstractClass* pTarget = nullptr;
+}
+
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+{
+	DetonateTemp::pTarget = pTarget;
 	WarheadTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse);
+	DetonateTemp::pTarget = nullptr;
 }
 
 void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
-	if (BulletClass* pBullet = pType->CreateBullet(nullptr, pOwner,
+	if (BulletClass* pBullet = pType->CreateBullet(DetonateTemp::pTarget, pOwner,
 		damage, pThis, 0, pThis->Bright))
 	{
 		if (pFiringHouse)
@@ -390,11 +396,6 @@ WarheadTypeExt::ExtContainer::ExtContainer() : Container("WarheadTypeClass") { }
 
 WarheadTypeExt::ExtContainer::~ExtContainer() = default;
 
-void WarheadTypeExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved)
-{
-
-}
-
 // =============================
 // container hooks
 
@@ -402,7 +403,7 @@ DEFINE_HOOK(0x75D1A9, WarheadTypeClass_CTOR, 0x7)
 {
 	GET(WarheadTypeClass*, pItem, EBP);
 
-	WarheadTypeExt::ExtMap.FindOrAllocate(pItem);
+	WarheadTypeExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

@@ -7,7 +7,6 @@
 
 //Static init
 
-template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
 HouseExt::ExtContainer HouseExt::ExtMap;
 
 std::vector<int> HouseExt::AIProduction_CreationFrames;
@@ -448,6 +447,31 @@ bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
+void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	AnnounceInvalidPointer(Factory_BuildingType, ptr);
+	AnnounceInvalidPointer(Factory_InfantryType, ptr);
+	AnnounceInvalidPointer(Factory_VehicleType, ptr);
+	AnnounceInvalidPointer(Factory_NavyType, ptr);
+	AnnounceInvalidPointer(Factory_AircraftType, ptr);
+
+	if (!OwnedTimedAutoDeathObjects.empty() && ptr != nullptr)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(reinterpret_cast<TechnoClass*>(ptr));
+
+		if (pExt)
+			OwnedTimedAutoDeathObjects.erase(std::remove(OwnedTimedAutoDeathObjects.begin(), OwnedTimedAutoDeathObjects.end(), pExt), OwnedTimedAutoDeathObjects.end());
+	}
+
+	if (!OwnedLimboDeliveredBuildings.empty() && ptr != nullptr)
+	{
+		auto const abstract = reinterpret_cast<AbstractClass*>(ptr);
+
+		if (abstract->WhatAmI() == AbstractType::Building)
+			OwnedLimboDeliveredBuildings.erase(reinterpret_cast<BuildingClass*>(ptr));
+	}
+}
+
 // =============================
 // container
 
@@ -464,7 +488,7 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 {
 	GET(HouseClass*, pItem, EAX);
 
-	HouseExt::ExtMap.FindOrAllocate(pItem);
+	HouseExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 

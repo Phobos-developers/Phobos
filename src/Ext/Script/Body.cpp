@@ -4,7 +4,6 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/Scenario/Body.h>
 
-template<> const DWORD Extension<ScriptClass>::Canary = 0x3B3B3B3B;
 ScriptExt::ExtContainer ScriptExt::ExtMap;
 
 // =============================
