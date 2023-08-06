@@ -143,7 +143,7 @@ ReceivedDamage.Maximum=2147483647           ; integer
 AllowTransfer=                              ; boolean
 ImmuneToBerserk=no                          ; boolean
 ImmuneToCrit=no                             ; boolean
-                                            
+
 [SOMETECHNO]                                ; TechnoType
 ShieldType=SOMESHIELDTYPE                   ; ShieldType; none by default
 
