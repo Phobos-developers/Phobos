@@ -53,6 +53,7 @@ public:
 		void InterceptBullet(TechnoClass* pSource, WeaponTypeClass* pWeapon);
 		void ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel);
 		void InitializeLaserTrails();
+		void ApplyArcingFix();
 
 	private:
 		template <typename T>
