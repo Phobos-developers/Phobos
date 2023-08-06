@@ -68,7 +68,7 @@ public:
 			, SubjectToWater {}
 			, SubjectToWater_Detonate { true }
 			, AAOnly { false }
-			, Arcing_AllowElevationInaccuracy { false }
+			, Arcing_AllowElevationInaccuracy { true }
 		{ }
 
 		virtual ~ExtData() = default;

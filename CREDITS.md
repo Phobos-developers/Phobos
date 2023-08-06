@@ -206,6 +206,7 @@ This page lists all the individual contributions to the project by their author.
   - Extension class optimization
   - Additional sync logging
   - `Arcing` elevation inaccuracy fix
+  - `EMPulseCannon` projectile gravity fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

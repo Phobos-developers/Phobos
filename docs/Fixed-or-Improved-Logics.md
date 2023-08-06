@@ -132,8 +132,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
 - Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
-- `Arcing=true` projectiles no longer massively overshoot targets at higher elevation. Old behaviour can be enabled by setting `Arcing.AllowElevationInaccuracy=true` on the projectile.
-- `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity`setting
+- `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
+- `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting.
 
 ## Fixes / interactions with other extensions
 
