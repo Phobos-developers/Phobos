@@ -145,6 +145,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_BreakWeapon.Read(exINI, pSection, "Shield.BreakWeapon", true);
 	this->Shield_AbsorbPercent.Read(exINI, pSection, "Shield.AbsorbPercent");
 	this->Shield_PassPercent.Read(exINI, pSection, "Shield.PassPercent");
+	this->Shield_ReceivedDamage_Minimum.Read(exINI, pSection, "Shield.ReceivedDamage.Minimum");
+	this->Shield_ReceivedDamage_Maximum.Read(exINI, pSection, "Shield.ReceivedDamage.Maximum");
 	this->Shield_Respawn_Duration.Read(exINI, pSection, "Shield.Respawn.Duration");
 	this->Shield_Respawn_Amount.Read(exINI, pSection, "Shield.Respawn.Amount");
 	this->Shield_Respawn_Rate_InMinutes.Read(exINI, pSection, "Shield.Respawn.Rate");
@@ -314,7 +316,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_BreakWeapon)
 		.Process(this->Shield_AbsorbPercent)
 		.Process(this->Shield_PassPercent)
-
+		.Process(this->Shield_ReceivedDamage_Minimum)
+		.Process(this->Shield_ReceivedDamage_Maximum)
 		.Process(this->Shield_Respawn_Duration)
 		.Process(this->Shield_Respawn_Amount)
 		.Process(this->Shield_Respawn_Rate)

@@ -328,6 +328,7 @@ New:
 - `AltPalette` lighting toggle (by Starkku)
 - Unhardcoded timer blinking color scheme (by Starkku)
 - Customizing shield self-healing timer restart when shield is damaged (by Starkku)
+- Customizing minimum & maximum amount of damage shield can take from a single hit (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

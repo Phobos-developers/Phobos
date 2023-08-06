@@ -58,6 +58,8 @@ public:
 
 		Nullable<double> Shield_AbsorbPercent;
 		Nullable<double> Shield_PassPercent;
+		Nullable<int> Shield_ReceivedDamage_Minimum;
+		Nullable<int> Shield_ReceivedDamage_Maximum;
 
 		Valueable<int> Shield_Respawn_Duration;
 		Valueable<double> Shield_Respawn_Amount;
@@ -161,6 +163,8 @@ public:
 			, Shield_BreakWeapon {}
 			, Shield_AbsorbPercent {}
 			, Shield_PassPercent {}
+			, Shield_ReceivedDamage_Minimum {}
+			, Shield_ReceivedDamage_Maximum {}
 
 			, Shield_Respawn_Duration { 0 }
 			, Shield_Respawn_Amount { 0.0 }

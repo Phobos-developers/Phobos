@@ -173,6 +173,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		healthDamage = (int)((double)*args->Damage * passPercent);
 	}
 
+	int originalShieldDamage = shieldDamage;
+
+	shieldDamage = Math::clamp(shieldDamage, pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum),
+		pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum));
+
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
 		TechnoExt::DisplayDamageNumberString(this->Techno, shieldDamage, true);
 
@@ -203,14 +208,15 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			this->Techno->Uncloak(false);
 
 		int residueDamage = shieldDamage - this->HP;
+
 		if (residueDamage >= 0)
 		{
-			residueDamage = int((double)(residueDamage) /
-				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetArmorType())); //only absord percentage damage
+			int actualResidueDamage = Math::max(0, int((double)(originalShieldDamage - this->HP) /
+				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetArmorType()))); //only absord percentage damage
 
 			this->BreakShield(pWHExt->Shield_BreakAnim.Get(nullptr), pWHExt->Shield_BreakWeapon.Get(nullptr));
 
-			return this->Type->AbsorbOverDamage ? healthDamage : residueDamage + healthDamage;
+			return this->Type->AbsorbOverDamage ? healthDamage : actualResidueDamage + healthDamage;
 		}
 		else
 		{
@@ -225,9 +231,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	else if (shieldDamage < 0)
 	{
 		const int nLostHP = this->Type->Strength - this->HP;
+
 		if (!nLostHP)
 		{
 			int result = *args->Damage;
+
 			if (result * GeneralUtils::GetWarheadVersusArmor(args->WH, this->Techno->GetTechnoType()->Armor) > 0)
 				result = 0;
 

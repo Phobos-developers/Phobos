@@ -48,6 +48,8 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->AbsorbOverDamage.Read(exINI, pSection, "AbsorbOverDamage");
 	this->BracketDelta.Read(exINI, pSection, "BracketDelta");
+	this->ReceivedDamage_Minimum.Read(exINI, pSection, "ReceivedDamage.Minimum");
+	this->ReceivedDamage_Maximum.Read(exINI, pSection, "ReceivedDamage.Maximum");
 
 	this->IdleAnim_OfflineAction.Read(exINI, pSection, "IdleAnim.OfflineAction");
 	this->IdleAnim_TemporalAction.Read(exINI, pSection, "IdleAnim.TemporalAction");
@@ -90,6 +92,8 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->SelfHealing_RestartInCombatDelay)
 		.Process(this->AbsorbOverDamage)
 		.Process(this->BracketDelta)
+		.Process(this->ReceivedDamage_Minimum)
+		.Process(this->ReceivedDamage_Maximum)
 		.Process(this->IdleAnim_OfflineAction)
 		.Process(this->IdleAnim_TemporalAction)
 		.Process(this->IdleAnim)

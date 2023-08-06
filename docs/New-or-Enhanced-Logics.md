@@ -138,6 +138,8 @@ HitAnim=                                    ; Animation
 BreakWeapon=                                ; WeaponType
 AbsorbPercent=1.0                           ; floating point value
 PassPercent=0.0                             ; floating point value
+ReceivedDamage.Minimum=-2147483648          ; integer
+ReceivedDamage.Maximum=2147483647           ; integer
 AllowTransfer=                              ; boolean
 ImmuneToBerserk=no                          ; boolean
 ImmuneToCrit=no                             ; boolean
@@ -153,6 +155,8 @@ Shield.HitAnim=                             ; Animation
 Shield.BreakWeapon=                         ; WeaponType
 Shield.AbsorbPercent=                       ; floating point value
 Shield.PassPercent=                         ; floating point value
+Shield.ReceivedDamage.Minimum=              ; integer
+Shield.ReceivedDamage.Maximum=              ; integer
 Shield.Respawn.Duration=0                   ; integer, game frames
 Shield.Respawn.Amount=0.0                   ; floating point value, percents or absolute
 Shield.Respawn.Rate=-1.0                    ; floating point value, ingame minutes
@@ -201,6 +205,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 - `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
+- `ReceivedDamage.Minimum` & `ReceivedDamage.Maximum` control the minimum and maximum amount of damage that can be dealt to shield in a single hit. This is applied after armor type and `AbsorbPercent` adjustments. If `AbsorbOverDamage=false`, the residual damage dealt to the TechnoType is still based on the original damage before the clamping to the range.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
 - `ImmuneToBerserk` gives the immunity against `Psychedelic=yes` warhead. Otherwise the berserk effect penetrates shields by default. Note that this shouldn't prevent the unit from targeting at the shielded object. `Versus.shieldArmor=0%` is still required in this case.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable. Several customizations are available for the shield strength pips.
@@ -218,6 +223,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Shield.BreakWeapon` will be fired instead of ShieldType `BreakWeapon` if the shield is broken by the Warhead, either through damage or `Shield.Break`.
   - `Shield.AbsorbPercent` overrides the `AbsorbPercent` value set in the ShieldType that is being damaged.
   - `Shield.PassPercent` overrides the `PassPercent` value set in the ShieldType that is being damaged.
+  - `Shield.ReceivedDamage.Minimum` & `Shield.ReceivedDamage.Maximum` override the values set in in the ShieldType that is being damaged.
   - `Shield.Respawn.Rate` & `Shield.Respawn.Amount` override ShieldType `Respawn.Rate` and `Respawn.Amount` for duration of `Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.Respawn.RestartTimer` is set, currently running shield respawn timer is reset, otherwise the timer's duration is adjusted to match `Shield.Respawn.Rate` without restarting the timer.  If the effect expires while respawn timer is running, remaining time is adjusted to match ShieldType `Respawn.Rate`. Re-applying the effect resets the duration to `Shield.Respawn.Duration`
   - `Shield.SelfHealing.Rate` & `Shield.SelfHealing.Amount` override ShieldType `SelfHealing.Rate` and `SelfHealing.Amount` for duration of `Shield.SelfHealing.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.SelfHealing.RestarTimer` is set, currently running self-healing timer is restarted, otherwise timer's duration 'is adjusted to match `Shield.SelfHealing.Rate` without restarting the timer. If the effect expires while self-healing timer is running, remaining time is adjusted to match ShieldType `SelfHealing.Rate`. Re-applying the effect resets the duration to `Shield.SelfHealing.Duration`.
     - Additionally `Shield.SelfHealing.RestartInCombat` & `Shield.SelfHealing.RestartInCombatDelay` can be used to override ShieldType settings.

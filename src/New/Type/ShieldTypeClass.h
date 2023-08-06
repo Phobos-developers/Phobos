@@ -32,6 +32,8 @@ public:
 	Nullable<WeaponTypeClass*> BreakWeapon;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
+	Valueable<int> ReceivedDamage_Minimum;
+	Valueable<int> ReceivedDamage_Maximum;
 
 	Nullable<bool> AllowTransfer;
 
@@ -66,6 +68,8 @@ public:
 		, BreakWeapon { }
 		, AbsorbPercent { 1.0 }
 		, PassPercent { 0.0 }
+		, ReceivedDamage_Minimum { INT32_MIN }
+		, ReceivedDamage_Maximum { INT32_MAX }
 		, AllowTransfer { }
 		, Pips { { -1,-1,-1 } }
 		, Pips_Background { }
