@@ -43,6 +43,9 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	if (SelfHealing_Rate__InMinutes.isset())
 		this->SelfHealing_Rate = (int)(SelfHealing_Rate__InMinutes.Get() * 900);
 
+	this->SelfHealing_RestartInCombat.Read(exINI, pSection, "SelfHealing.RestartInCombat");
+	this->SelfHealing_RestartInCombatDelay.Read(exINI, pSection, "SelfHealing.RestartInCombatDelay");
+
 	this->AbsorbOverDamage.Read(exINI, pSection, "AbsorbOverDamage");
 	this->BracketDelta.Read(exINI, pSection, "BracketDelta");
 
@@ -83,6 +86,8 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Respawn_Rate)
 		.Process(this->SelfHealing)
 		.Process(this->SelfHealing_Rate)
+		.Process(this->SelfHealing_RestartInCombat)
+		.Process(this->SelfHealing_RestartInCombatDelay)
 		.Process(this->AbsorbOverDamage)
 		.Process(this->BracketDelta)
 		.Process(this->IdleAnim_OfflineAction)

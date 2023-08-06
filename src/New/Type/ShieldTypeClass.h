@@ -18,6 +18,8 @@ public:
 	Valueable<int> Respawn_Rate;
 	Valueable<double> SelfHealing;
 	Valueable<int> SelfHealing_Rate;
+	Valueable<bool> SelfHealing_RestartInCombat;
+	Valueable<int> SelfHealing_RestartInCombatDelay;
 
 	Valueable<bool> AbsorbOverDamage;
 	Valueable<int> BracketDelta;
@@ -51,6 +53,8 @@ public:
 		, Respawn_Rate { 0 }
 		, SelfHealing { 0.0 }
 		, SelfHealing_Rate { 0 }
+		, SelfHealing_RestartInCombat { true }
+		, SelfHealing_RestartInCombatDelay { 0 }
 		, AbsorbOverDamage { false }
 		, BracketDelta { 0 }
 		, IdleAnim_OfflineAction { AttachedAnimFlag::Hides }
