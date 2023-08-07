@@ -205,6 +205,8 @@ This page lists all the individual contributions to the project by their author.
   - PipScale pip size & ammo pip frame customization
   - Extension class optimization
   - Additional sync logging
+  - `Arcing` elevation inaccuracy fix
+  - `EMPulseCannon` projectile gravity fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

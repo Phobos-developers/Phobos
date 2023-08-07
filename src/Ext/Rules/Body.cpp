@@ -103,6 +103,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ToolTip_Background_BlurSize.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.BlurSize");
 	this->RadialIndicatorVisibility.Read(exINI, GameStrings::AudioVisual, "RadialIndicatorVisibility");
 	this->DrawTurretShadow.Read(exINI, GameStrings::AudioVisual, "DrawTurretShadow");
+	this->AnimRemapDefaultColorScheme.Read(exINI, GameStrings::AudioVisual, "AnimRemapDefaultColorScheme");
+	this->TimerBlinkColorScheme.Read(exINI, GameStrings::AudioVisual, "TimerBlinkColorScheme");
 
 	this->DrawPowerOffline.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline");
 	this->DrawPowerOffline_Offset.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline.Offset");
@@ -252,6 +254,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DrawTurretShadow)
 		.Process(this->DrawPowerOffline)
 		.Process(this->DrawPowerOffline_Offset)
+		.Process(this->AnimRemapDefaultColorScheme)
+		.Process(this->TimerBlinkColorScheme)
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)

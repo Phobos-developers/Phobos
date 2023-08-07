@@ -3,6 +3,7 @@
 #include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Misc/SyncLogging.h>
 
 AnimExt::ExtContainer AnimExt::ExtMap;
 
@@ -168,13 +169,42 @@ AnimExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
+namespace CTORTemp
+{
+	CoordStruct coords;
+	unsigned int callerAddress;
+}
+
+DEFINE_HOOK(0x421EA0, AnimClass_CTOR_SetContext, 0x6)
+{
+	GET_STACK(CoordStruct*, coords, 0x8);
+	GET_STACK(unsigned int, callerAddress, 0x0);
+
+	CTORTemp::coords = *coords;
+	CTORTemp::callerAddress = callerAddress;
+
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x422126, AnimClass_CTOR, 0x5)
 DEFINE_HOOK_AGAIN(0x422707, AnimClass_CTOR, 0x5)
 DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
 	GET(AnimClass*, pItem, ESI);
 
-	AnimExt::ExtMap.TryAllocate(pItem, pItem->Fetch_ID() != -2, "Creating an animation with null Type!");
+	auto const callerAddress = CTORTemp::callerAddress;
+
+	// Do this here instead of using a duplicate hook in SyncLogger.cpp
+	if (!SyncLogger::HooksDisabled && pItem->UniqueID != -2)
+		SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, callerAddress);
+
+	if (pItem && !pItem->Type)
+	{
+		Debug::Log("Attempting to create animation with null Type (Caller: %08x)!", callerAddress);
+		return 0;
+	}
+
+	AnimExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

@@ -88,6 +88,8 @@ public:
 		Valueable<bool> CrateOnlyOnLand;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
+		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
+		ValueableIdx<ColorScheme> TimerBlinkColorScheme;
 
 		Valueable<bool> DrawPowerOffline;
 		Valueable<int> DrawPowerOffline_Offset;
@@ -150,6 +152,8 @@ public:
 			, DrawTurretShadow { false }
 			, DrawPowerOffline { false }
 			, DrawPowerOffline_Offset { 0 }
+			, AnimRemapDefaultColorScheme { 0 }
+			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
