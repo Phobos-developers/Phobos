@@ -42,6 +42,7 @@ public:
 		Nullable<Leptons> ClusterScatter_Max;
 
 		Valueable<bool> AAOnly;
+		Valueable<bool> Arcing_AllowElevationInaccuracy;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -67,6 +68,7 @@ public:
 			, SubjectToWater {}
 			, SubjectToWater_Detonate { true }
 			, AAOnly { false }
+			, Arcing_AllowElevationInaccuracy { true }
 		{ }
 
 		virtual ~ExtData() = default;
