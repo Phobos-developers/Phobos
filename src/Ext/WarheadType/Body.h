@@ -63,15 +63,19 @@ public:
 
 		Nullable<double> Shield_AbsorbPercent;
 		Nullable<double> Shield_PassPercent;
+		Nullable<int> Shield_ReceivedDamage_Minimum;
+		Nullable<int> Shield_ReceivedDamage_Maximum;
 
 		Valueable<int> Shield_Respawn_Duration;
 		Valueable<double> Shield_Respawn_Amount;
 		Valueable<int> Shield_Respawn_Rate;
-		Valueable<bool> Shield_Respawn_ResetTimer;
+		Valueable<bool> Shield_Respawn_RestartTimer;
 		Valueable<int> Shield_SelfHealing_Duration;
 		Nullable<double> Shield_SelfHealing_Amount;
 		Valueable<int> Shield_SelfHealing_Rate;
-		Valueable<bool> Shield_SelfHealing_ResetTimer;
+		Nullable<bool> Shield_SelfHealing_RestartInCombat;
+		Valueable<int> Shield_SelfHealing_RestartInCombatDelay;
+		Valueable<bool> Shield_SelfHealing_RestartTimer;
 
 		ValueableVector<ShieldTypeClass*> Shield_AttachTypes;
 		ValueableVector<ShieldTypeClass*> Shield_RemoveTypes;
@@ -169,17 +173,21 @@ public:
 			, Shield_BreakWeapon {}
 			, Shield_AbsorbPercent {}
 			, Shield_PassPercent {}
+			, Shield_ReceivedDamage_Minimum {}
+			, Shield_ReceivedDamage_Maximum {}
 
 			, Shield_Respawn_Duration { 0 }
 			, Shield_Respawn_Amount { 0.0 }
 			, Shield_Respawn_Rate { -1 }
 			, Shield_Respawn_Rate_InMinutes { -1.0 }
-			, Shield_Respawn_ResetTimer { false }
+			, Shield_Respawn_RestartTimer { false }
 			, Shield_SelfHealing_Duration { 0 }
 			, Shield_SelfHealing_Amount { }
 			, Shield_SelfHealing_Rate { -1 }
 			, Shield_SelfHealing_Rate_InMinutes { -1.0 }
-			, Shield_SelfHealing_ResetTimer { false }
+			, Shield_SelfHealing_RestartInCombat {}
+			, Shield_SelfHealing_RestartInCombatDelay { -1 }
+			, Shield_SelfHealing_RestartTimer { false }
 			, Shield_AttachTypes {}
 			, Shield_RemoveTypes {}
 			, Shield_ReplaceOnly { false }
