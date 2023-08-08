@@ -446,13 +446,13 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 		}
 
 		const auto pBldExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
-		bool showLowPower = FileSystem::POWEROFF_SHP
+		bool showLowPower = (pBldExt->DisablePowerOfflineIcon == false)
+			&& FileSystem::POWEROFF_SHP
 			&& (pBld->Type->PowerBonus > 0)
 			&& (pBld->Factory == nullptr)
 			&& (pBld->IsPowerOnline() == false || pBld->IsBeingDrained())
 			&& (pBld->IsBeingWarpedOut() == false)
 			&& (pBld->WarpingOut == false)
-			&& (pBldExt->DisablePowerOfflineIcon == false)
 			&& ((pBld->GetCurrentMission() != Mission::Selling) && (pBld->GetCurrentMission() != Mission::Construction))
 			&& (pBld->CloakState == CloakState::Uncloaked);
 
