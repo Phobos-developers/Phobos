@@ -148,12 +148,17 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 	return 0x4692D5;
 }
 
+#pragma region Gravity
+
+#define APPLYGRAVITY(pType)\
+auto const nGravity = BulletTypeExt::GetAdjustedGravity(pType);\
+__asm { fld nGravity };\
+
 DEFINE_HOOK(0x4671B9, BulletClass_AI_ApplyGravity, 0x6)
 {
 	GET(BulletTypeClass* const, pType, EAX);
 
-	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pType);
-	__asm { fld nGravity };
+	APPLYGRAVITY(pType);
 
 	return 0x4671BF;
 }
@@ -162,8 +167,7 @@ DEFINE_HOOK(0x6F7481, TechnoClass_Targeting_ApplyGravity, 0x6)
 {
 	GET(WeaponTypeClass* const, pWeaponType, EDX);
 
-	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pWeaponType->Projectile);
-	__asm { fld nGravity };
+	APPLYGRAVITY(pWeaponType->Projectile);
 
 	return 0x6F74A4;
 }
@@ -172,8 +176,7 @@ DEFINE_HOOK(0x6FDAA6, TechnoClass_FireAngle_6FDA00_ApplyGravity, 0x5)
 {
 	GET(WeaponTypeClass* const, pWeaponType, EDI);
 
-	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pWeaponType->Projectile);
-	__asm { fld nGravity };
+	APPLYGRAVITY(pWeaponType->Projectile);
 
 	return 0x6FDACE;
 }
@@ -182,11 +185,34 @@ DEFINE_HOOK(0x6FECB2, TechnoClass_FireAt_ApplyGravity, 0x6)
 {
 	GET(BulletTypeClass* const, pType, EAX);
 
-	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pType);
-	__asm { fld nGravity };
+	APPLYGRAVITY(pType);
 
 	return 0x6FECD1;
 }
+
+DEFINE_HOOK_AGAIN(0x44D2AE, BuildingClass_Mission_Missile_ApplyGravity, 0x6)
+DEFINE_HOOK_AGAIN(0x44D264, BuildingClass_Mission_Missile_ApplyGravity, 0x6)
+DEFINE_HOOK(0x44D074, BuildingClass_Mission_Missile_ApplyGravity, 0x6)
+{
+	GET(WeaponTypeClass* const, pWeaponType, EBP);
+
+	APPLYGRAVITY(pWeaponType->Projectile);
+
+	switch (R->Origin())
+	{
+	case 0x44D074:
+		return 0x44D07A;
+		break;
+	case 0x44D264:
+		return 0x44D26A;
+		break;
+	case 0x44D2AE:
+		return 0x44D2B4;
+		break;
+	}
+}
+
+#pragma endregion
 
 DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 {
@@ -440,7 +466,7 @@ DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 
 DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris_Checks, 0x6)
 {
-	enum { SkipGameCode = 0x469EBA, SetDebrisCount=0x469D36 };
+	enum { SkipGameCode = 0x469EBA, SetDebrisCount = 0x469D36 };
 
 	GET(BulletClass*, pThis, ESI);
 
@@ -508,6 +534,42 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_ExtraWarheads, 0x5)
 
 			WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner);
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FE657, TechnoClass_FireAt_ArcingFix, 0x6)
+{
+	GET_STACK(BulletTypeClass*, pBulletType, STACK_OFFSET(0xB0, -0x48));
+	GET(int, targetHeight, EDI);
+	GET(int, fireHeight, EAX);
+
+	if (pBulletType->Arcing && targetHeight > fireHeight)
+	{
+		auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+
+		if (!pBulletTypeExt->Arcing_AllowElevationInaccuracy)
+			R->EAX(targetHeight);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44D23C, BuildingClass_Mission_Missile_ArcingFix, 0x7)
+{
+	GET(WeaponTypeClass*, pWeapon, EBP);
+	GET(int, targetHeight, EBX);
+	GET(int, fireHeight, EAX);
+
+	auto const pBulletType = pWeapon->Projectile;
+
+	if (pBulletType->Arcing && targetHeight > fireHeight)
+	{
+		auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+
+		if (!pBulletTypeExt->Arcing_AllowElevationInaccuracy)
+			R->EAX(targetHeight);
 	}
 
 	return 0;
