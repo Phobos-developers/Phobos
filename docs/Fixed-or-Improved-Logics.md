@@ -281,7 +281,7 @@ SellBuildupLength=23  ; integer, number of buildup frames to play
 
 ### Offline power plant indicator
 
-- If `DrawPowerOffline` is set, `POWEROFF.SHP` indicator will appear on power plants when being infiltrated or drained.
+- If `DrawPowerOffline` is set, `POWEROFF.SHP` indicator will appear on power plants when being offline, for example, drained by floating disk, infiltrated or disabled when using ForceShield.
 - `DrawPowerOffline.Offset` is used to vertically adjust position of indicator.
 - `DisablePowerOfflineIcon` is used to disable indicator per building type.
 
