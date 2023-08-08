@@ -456,30 +456,21 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 			&& ((pBld->GetCurrentMission() != Mission::Selling) && (pBld->GetCurrentMission() != Mission::Construction))
 			&& (pBld->CloakState == CloakState::Uncloaked);
 
-		if(showLowPower) {
-			auto cell = pBld->GetMapCoords();
-
-			if(!MapClass::Instance->GetCellAt(cell)->IsShrouded()) {
-				auto crd = pBld->GetRenderCoords();
-
-				Point2D nPoint;
-				TacticalClass::Instance->CoordsToClient(crd, &nPoint);
-
-				Point2D ptPower = nPoint;
-
-				ptPower.Y += 22; //wrench offset
-				ptPower.Y -= RulesExt::Global()->DrawPowerOffline_Offset;
-
-				int speed = GameOptionsClass::Instance->GetAnimSpeed(14) / 4;
-				if(speed < 2) {
-					speed = 2;
-				}
-
-				int frame = (FileSystem::POWEROFF_SHP->Frames * (Unsorted::CurrentFrame % speed)) / speed;
-				DSurface::Temp->DrawSHP(FileSystem::MOUSE_PAL, FileSystem::POWEROFF_SHP, frame, &ptPower, pRect, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-
-			}
+		if (!showLowPower || MapClass::Instance->GetCellAt(pBld->GetMapCoords())->IsShrouded())
+		{
+			R->ESI(pRect);
+			return 0x6F534E;
 		}
+
+		Point2D nPoint;
+		TacticalClass::Instance->CoordsToClient(pBld->GetRenderCoords(), &nPoint);
+
+		nPoint.Y += 22; // wrench offset
+		nPoint.Y -= RulesExt::Global()->DrawPowerOffline_Offset;
+
+		const int speed = max(GameOptionsClass::Instance->GetAnimSpeed(14) / 4, 2);
+		const int frame = (FileSystem::POWEROFF_SHP->Frames * (Unsorted::CurrentFrame % speed)) / speed;
+		DSurface::Temp->DrawSHP(FileSystem::MOUSE_PAL, FileSystem::POWEROFF_SHP, frame, &nPoint, pRect, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 	R->ESI(pRect);
 	return 0x6F534E;
