@@ -94,6 +94,18 @@ DigitalDisplay.Enable=false             ; boolean
 An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)).
 ```
 
+### Show designator & inhibitor range
+
+* It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon]->SW.Designators` will display a circle with radius set in `[TechnoType]->DesignatorRange` or `Sight`.
+  * In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon]->SW.Inhibitors` will display a circle with radius set in `[TechnoType]->InhibitorRange` or `Sight`.
+* This feature can be enabled with `ShowDesignatorRange=true` in `Ra2MD.ini` or with "Toggle Designator Range" hotkey in "Interface" category.
+
+In `Ra2MD.ini`:
+```ini
+[Phobos]
+ShowDesignatorRange=false             ; boolean
+```
+
 ### Hide health bars
 
 ![image](_static/images/healthbar.hide-01.png)

@@ -34,3 +34,40 @@ DEFINE_HOOK(0x6CB5EB, SuperClass_Grant_ShowTimer, 0x5)
 
 	return 0x6CB63E;
 }
+
+DEFINE_HOOK(0x6DC2C5, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x5)
+{
+	GET(const SuperWeaponTypeClass*, pSuperType, EDI);
+
+	if (!Phobos::Config::ShowDesignatorRange)
+		return 0;
+
+	const auto pExt = SWTypeExt::ExtMap.Find(pSuperType);
+	if (!pExt)
+		return 0;
+
+	for (const auto pType : pExt->SW_Designators)
+	{
+		for (const auto pCurrentTechno : *TechnoClass::Array)
+		{
+			const auto pCurrentTechnoType = pCurrentTechno->GetTechnoType();
+			const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
+
+			if (!pTechnoTypeExt
+				|| !pCurrentTechno->IsAlive
+				|| pCurrentTechno->InLimbo
+				|| !pExt->SW_Designators.Contains(pCurrentTechnoType)
+				|| (pCurrentTechno->Owner != HouseClass::CurrentPlayer))
+			{
+				continue;
+			}
+
+			const CoordStruct coords = pCurrentTechno->GetCenterCoords();
+			const auto color = pCurrentTechno->Owner->Color;
+			const float radius = (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight));
+			Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
+		}
+	}
+
+	return 0;
+}
