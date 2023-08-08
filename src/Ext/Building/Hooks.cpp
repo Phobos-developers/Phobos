@@ -439,8 +439,7 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 
 	if(auto pBld = abstract_cast<BuildingClass*>(pThis))
 	{
-		bool drawPowOffline = RulesExt::Global()->DrawPowerOffline;
-		if(!drawPowOffline)
+		if (!RulesExt::Global()->DrawPowerOffline)
 		{
 			R->ESI(pRect);
 			return 0x6F534E;
