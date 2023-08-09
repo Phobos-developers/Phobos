@@ -46,27 +46,24 @@ DEFINE_HOOK(0x6DC2C5, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x5)
 	if (!pExt)
 		return 0;
 
-	for (const auto pType : pExt->SW_Designators)
+	for (const auto pCurrentTechno : *TechnoClass::Array)
 	{
-		for (const auto pCurrentTechno : *TechnoClass::Array)
+		const auto pCurrentTechnoType = pCurrentTechno->GetTechnoType();
+		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
+
+		if (!pTechnoTypeExt
+			|| !pCurrentTechno->IsAlive
+			|| pCurrentTechno->InLimbo
+			|| !pExt->SW_Designators.Contains(pCurrentTechnoType)
+			|| (pCurrentTechno->Owner != HouseClass::CurrentPlayer))
 		{
-			const auto pCurrentTechnoType = pCurrentTechno->GetTechnoType();
-			const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
-
-			if (!pTechnoTypeExt
-				|| !pCurrentTechno->IsAlive
-				|| pCurrentTechno->InLimbo
-				|| !pExt->SW_Designators.Contains(pCurrentTechnoType)
-				|| (pCurrentTechno->Owner != HouseClass::CurrentPlayer))
-			{
-				continue;
-			}
-
-			const CoordStruct coords = pCurrentTechno->GetCenterCoords();
-			const auto color = pCurrentTechno->Owner->Color;
-			const float radius = (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight));
-			Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
+			continue;
 		}
+
+		const CoordStruct coords = pCurrentTechno->GetCenterCoords();
+		const auto color = pCurrentTechno->Owner->Color;
+		const float radius = (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight));
+		Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
 	}
 
 	return 0;
