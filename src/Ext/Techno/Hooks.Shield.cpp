@@ -41,7 +41,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				RD::SkipLowDamageCheck = true;
 		}
 	}
-
+	//WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget)
 	if (ScriptExt::IsUnitAvailable(pThis, false))
 	{
 		if (const auto pFoot = abstract_cast<FootClass*>(pThis))
@@ -52,14 +52,13 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				&& pThis->WhatAmI() != AbstractType::Building)
 			{
 				const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+				auto parasyte = pFoot->ParasiteEatingMe;
 
-				if (!pWHExt || !pWHExt->CanRemoveParasytes.isset())
+				if (!pWHExt || !pWHExt->CanRemoveParasytes.isset() || !pWHExt->CanTargetHouse(parasyte->Owner, pThis))
 					return 0;
 
 				if (pWHExt->CanRemoveParasytes.Get())
 				{
-					auto parasyte = pFoot->ParasiteEatingMe;
-
 					if (pWHExt->CanRemoveParasytes_ReportSound.isset() && pWHExt->CanRemoveParasytes_ReportSound.Get() >= 0)
 						VocClass::PlayAt(pWHExt->CanRemoveParasytes_ReportSound.Get(), parasyte->GetCoords());
 
