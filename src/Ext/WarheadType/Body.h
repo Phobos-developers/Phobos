@@ -120,6 +120,12 @@ public:
 
 		bool PossibleCellSpreadDetonate;
 
+		Nullable<bool> CanRemoveParasytes;
+		Valueable<bool> CanRemoveParasytes_KickOut;
+		Valueable<int> CanRemoveParasytes_KickOut_Paralysis;
+		NullableIdx<VocClass> CanRemoveParasytes_ReportSound;
+		Nullable<AnimTypeClass*> CanRemoveParasytes_KickOut_Anim;
+
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
@@ -223,6 +229,12 @@ public:
 			, WasDetonatedOnAllMapObjects { false }
 
 			, PossibleCellSpreadDetonate {false}
+
+			, CanRemoveParasytes { }
+			, CanRemoveParasytes_KickOut { false }
+			, CanRemoveParasytes_KickOut_Paralysis { -1 }
+			, CanRemoveParasytes_ReportSound { }
+			, CanRemoveParasytes_KickOut_Anim { nullptr }
 		{ }
 
 	private:

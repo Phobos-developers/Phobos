@@ -191,6 +191,12 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
+	this->CanRemoveParasytes.Read(exINI, pSection, "CanRemoveParasytes");
+	this->CanRemoveParasytes_KickOut.Read(exINI, pSection, "CanRemoveParasytes.KickOut");
+	this->CanRemoveParasytes_KickOut_Paralysis.Read(exINI, pSection, "CanRemoveParasytes.KickOut.Paralysis");
+	this->CanRemoveParasytes_ReportSound.Read(exINI, pSection, "CanRemoveParasytes.ReportSound");
+	this->CanRemoveParasytes_KickOut_Anim.Read(exINI, pSection, "CanRemoveParasytes.KickOut.Anim");
+
 	char tempBuffer[32];
 	// Convert.From & Convert.To
 	for (size_t i = 0; ; ++i)
@@ -371,6 +377,12 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
 		.Process(this->PossibleCellSpreadDetonate)
+
+		.Process(this->CanRemoveParasytes)
+		.Process(this->CanRemoveParasytes_KickOut)
+		.Process(this->CanRemoveParasytes_KickOut_Paralysis)
+		.Process(this->CanRemoveParasytes_ReportSound)
+		.Process(this->CanRemoveParasytes_KickOut_Anim)
 		;
 }
 
