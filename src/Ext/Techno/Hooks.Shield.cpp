@@ -41,7 +41,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				RD::SkipLowDamageCheck = true;
 		}
 	}
-	//WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget)
+
 	if (ScriptExt::IsUnitAvailable(pThis, false))
 	{
 		if (const auto pFoot = abstract_cast<FootClass*>(pThis))
