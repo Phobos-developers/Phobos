@@ -1180,18 +1180,18 @@ In `rulesmd.ini`:
 NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
-### Remove parasytes
-- Warheads are now able to use this logic for removing parasytes or kick them out into the battlefield.
-- If `CanRemoveParasytes.KickOut.Paralysis` is negative it will work as `CanRemoveParasytes.KickOut.Paralysis=15`.
+### Remove parasites
+- Warheads are now able to use this logic for removing parasites or kick them out into the battlefield.
+- If `CanRemoveParasites.KickOut.Paralysis` is negative it will work as `CanRemoveParasites.KickOut.Paralysis=15`.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]            ; Warhead
-CanRemoveParasytes=no                   ; boolean
-CanRemoveParasytes.ReportSound=         ; Sound
-CanRemoveParasytes.KickOut=no           ; boolean
-CanRemoveParasytes.KickOut.Paralysis=-1 ; integer, game frames
-CanRemoveParasytes.KickOut.Anim=        ; Animation
+CanRemoveParasites=no                   ; boolean
+CanRemoveParasites.ReportSound=         ; Sound
+CanRemoveParasites.KickOut=no           ; boolean
+CanRemoveParasites.KickOut.Paralysis=-1 ; integer, game frames
+CanRemoveParasites.KickOut.Anim=        ; Animation
 ```
 
 ## Weapons

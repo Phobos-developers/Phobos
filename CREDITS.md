@@ -127,7 +127,7 @@ This page lists all the individual contributions to the project by their author.
   - Shared ammo logic
   - Customizable FLH when infantry is prone or deployed
   - Initial strength for cloned infantry
-  - Remove parasytes in any warhead
+  - Remove parasites in any warhead
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:

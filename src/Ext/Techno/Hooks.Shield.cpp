@@ -52,65 +52,65 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				&& pThis->WhatAmI() != AbstractType::Building)
 			{
 				const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-				auto parasyte = pFoot->ParasiteEatingMe;
+				auto parasite = pFoot->ParasiteEatingMe;
 
-				if (!pWHExt || !pWHExt->CanRemoveParasytes.isset() || !pWHExt->CanTargetHouse(parasyte->Owner, pThis))
+				if (!pWHExt || !pWHExt->CanRemoveParasites.isset() || !pWHExt->CanTargetHouse(parasite->Owner, pThis))
 					return 0;
 
-				if (pWHExt->CanRemoveParasytes.Get())
+				if (pWHExt->CanRemoveParasites.Get())
 				{
-					if (pWHExt->CanRemoveParasytes_ReportSound.isset() && pWHExt->CanRemoveParasytes_ReportSound.Get() >= 0)
-						VocClass::PlayAt(pWHExt->CanRemoveParasytes_ReportSound.Get(), parasyte->GetCoords());
+					if (pWHExt->CanRemoveParasites_ReportSound.isset() && pWHExt->CanRemoveParasites_ReportSound.Get() >= 0)
+						VocClass::PlayAt(pWHExt->CanRemoveParasites_ReportSound.Get(), parasite->GetCoords());
 
-					// Kill the parasyte
-					CoordStruct coord = TechnoExt::PassengerKickOutLocation(pThis, parasyte, 10);
+					// Kill the parasite
+					CoordStruct coord = TechnoExt::PassengerKickOutLocation(pThis, parasite, 10);
 
-					if (!pWHExt->CanRemoveParasytes_KickOut.Get() || coord == CoordStruct::Empty)
+					if (!pWHExt->CanRemoveParasites_KickOut.Get() || coord == CoordStruct::Empty)
 					{
-						auto parasyteOwner = parasyte->Owner;
-						parasyte->IsAlive = false;
-						parasyte->IsOnMap = false;
-						parasyte->Health = 0;
+						auto parasiteOwner = parasite->Owner;
+						parasite->IsAlive = false;
+						parasite->IsOnMap = false;
+						parasite->Health = 0;
 
-						parasyteOwner->RegisterLoss(parasyte, false);
-						parasyteOwner->RemoveTracking(parasyte);
-						parasyte->UnInit();
+						parasiteOwner->RegisterLoss(parasite, false);
+						parasiteOwner->RemoveTracking(parasite);
+						parasite->UnInit();
 					}
 					else
 					{
-						// Kick the parasyte outside
+						// Kick the parasite outside
 						pFoot->ParasiteEatingMe = nullptr;
 
-						if (!parasyte->Unlimbo(coord, parasyte->PrimaryFacing.Current().GetDir()))
+						if (!parasite->Unlimbo(coord, parasite->PrimaryFacing.Current().GetDir()))
 						{
-							// Failed to kick out the parasyte, remove it instead
-							auto parasyteOwner = parasyte->Owner;
-							parasyte->IsAlive = false;
-							parasyte->IsOnMap = false;
-							parasyte->Health = 0;
+							// Failed to kick out the parasite, remove it instead
+							auto parasiteOwner = parasite->Owner;
+							parasite->IsAlive = false;
+							parasite->IsOnMap = false;
+							parasite->Health = 0;
 
-							parasyteOwner->RegisterLoss(parasyte, false);
-							parasyteOwner->RemoveTracking(parasyte);
-							parasyte->UnInit();
+							parasiteOwner->RegisterLoss(parasite, false);
+							parasiteOwner->RemoveTracking(parasite);
+							parasite->UnInit();
 
 							return 0;
 						}
 
-						parasyte->Target = nullptr;
-						int paralysisCountdown = pWHExt->CanRemoveParasytes_KickOut_Paralysis.Get() < 0 ? 15 : pWHExt->CanRemoveParasytes_KickOut_Paralysis.Get();
+						parasite->Target = nullptr;
+						int paralysisCountdown = pWHExt->CanRemoveParasites_KickOut_Paralysis.Get() < 0 ? 15 : pWHExt->CanRemoveParasites_KickOut_Paralysis.Get();
 
 						if (paralysisCountdown > 0)
 						{
-							parasyte->ParalysisTimer.Start(paralysisCountdown);
-							parasyte->DiskLaserTimer.Start(paralysisCountdown);
+							parasite->ParalysisTimer.Start(paralysisCountdown);
+							parasite->DiskLaserTimer.Start(paralysisCountdown);
 						}
 
-						if (pWHExt->CanRemoveParasytes_KickOut_Anim.isset())
+						if (pWHExt->CanRemoveParasites_KickOut_Anim.isset())
 						{
-							if (auto const pAnim = GameCreate<AnimClass>(pWHExt->CanRemoveParasytes_KickOut_Anim.Get(), parasyte->GetCoords()))
+							if (auto const pAnim = GameCreate<AnimClass>(pWHExt->CanRemoveParasites_KickOut_Anim.Get(), parasite->GetCoords()))
 							{
-								pAnim->Owner = args->SourceHouse ? args->SourceHouse : parasyte->Owner;
-								pAnim->SetOwnerObject(parasyte);
+								pAnim->Owner = args->SourceHouse ? args->SourceHouse : parasite->Owner;
+								pAnim->SetOwnerObject(parasite);
 							}
 						}
 					}
@@ -118,7 +118,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			}
 		}
 	}
-	
+
 	return 0;
 }
 
