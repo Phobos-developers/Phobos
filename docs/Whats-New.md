@@ -250,6 +250,9 @@ Phobos fixes:
 - Fixed owned `LimboDelivery` buildings not being saved correctly in savegames (by Starkku)
 - Fixed a typo in weapon selector code causing issues with `NoAmmoWeapon` and related checks (by Starkku)
 
+Vanilla fixes:
+- Fixed position and layer of info tip and reveal production cameo on selected building (by Belonit)
+
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
 </details>
