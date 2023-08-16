@@ -373,6 +373,7 @@ Vanilla fixes:
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy (by Starkku)
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false` (by Starkku)
 - `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting (by Starkku)
+- Fixed position and layer of info tip and reveal production cameo on selected building (by Belonit)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

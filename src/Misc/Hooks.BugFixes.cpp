@@ -747,3 +747,30 @@ DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
 
 	return SkipGameCode;
 }
+
+// Fixed position and layer of info tip and reveal production cameo on selected building
+// Author: Belonit
+#pragma region DrawInfoTipAndSpiedSelection
+
+// skip call DrawInfoTipAndSpiedSelection
+DEFINE_JUMP(LJMP, 0x6D9427, 0x6D95A1); // Tactical_RenderLayers
+
+// Call DrawInfoTipAndSpiedSelection in new location
+DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
+{
+	GET(BuildingClass*, pBuilding, EBX);
+	GET(Point2D*, pLocation, EAX);
+
+	if (pBuilding->IsSelected && pBuilding->IsOnMap && pBuilding->WhatAmI() == AbstractType::Building)
+	{
+		const int foundationHeight = pBuilding->Type->GetFoundationHeight(0);
+		const int typeHeight = pBuilding->Type->Height;
+		const int yOffest = (Unsorted::CellHeightInPixels * (foundationHeight + typeHeight)) >> 2;
+
+		Point2D centeredPoint = { pLocation->X, pLocation->Y - yOffest };
+		pBuilding->DrawInfoTipAndSpiedSelection(&centeredPoint, &DSurface::ViewBounds);
+	}
+
+	return 0;
+}
+#pragma endregion DrawInfoTipAndSpiedSelection
