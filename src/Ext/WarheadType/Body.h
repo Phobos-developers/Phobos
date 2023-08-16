@@ -104,7 +104,7 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
-		TypeConvertHelper::ConvertPairs Convert_Pairs;
+		std::vector<TypeConvertGroup> Convert_Pairs;
 
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;

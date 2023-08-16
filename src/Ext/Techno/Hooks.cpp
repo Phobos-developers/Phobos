@@ -215,8 +215,6 @@ DEFINE_HOOK(0x4483C0, BuildingClass_SetOwningHouse_MuteSound, 0x6)
 	GET(BuildingClass* const, pThis, ESI);
 	REF_STACK(bool, announce, STACK_OFFSET(0x60, 0x8));
 
-	pThis->NextMission();
-
 	announce = announce && !pThis->Type->IsVehicle();
 
 	return 0;
