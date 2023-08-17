@@ -245,6 +245,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 Phobos fixes:
 - Fixed `Interceptor` not resetting target if the intercepted projectile changes type to non-interceptable one afterwards (by Starkku)
 - Fixed a potential crash caused by a faulty hook in weapon selection code (by Starkku)
+- Fixed `PlacementPreview` setting for BuildingTypes not being parsed from INI (by Starkku)
 </details>
 
 ### 0.3.0.1
