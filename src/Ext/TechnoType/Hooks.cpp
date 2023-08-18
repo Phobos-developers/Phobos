@@ -98,8 +98,8 @@ DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
 	auto mtx = pThis->Locomotor->Draw_Matrix(nullptr);
 	TechnoTypeExt::ApplyTurretOffset(pThis->Type, &mtx);
 
-	double turretRad = (pThis->TurretFacing().GetValue<5>() - 8) * -(Math::Pi / 16);
-	double bodyRad = (pThis->PrimaryFacing.Current().GetValue<5>() - 8) * -(Math::Pi / 16);
+	double turretRad = pThis->TurretFacing().GetRadian<32>();
+	double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
 	float angle = (float)(turretRad - bodyRad);
 	mtx.RotateZ(angle);
 	auto res = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
