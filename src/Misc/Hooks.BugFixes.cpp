@@ -490,12 +490,10 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	{
 		if (auto pAnim = GameCreate<AnimClass>(pAnimType, nCoord, 0, 1, 0x2600, -15, false))
 		{
-			if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
-			{
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
-					pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
-			}
-			else
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
+				pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+
+			if (!pAnim->Owner)
 			{
 				pAnim->Owner = pThisBomb->OwnerHouse;
 			}

@@ -392,6 +392,7 @@ Phobos fixes:
 - Optimized extension class implementation, should improve performance all around (by Otamaa & Starkku)
 - Fixed `Interceptor` not resetting target if the intercepted projectile changes type to non-interceptable one afterwards (by Starkku)
 - Fixed `PlacementPreview` setting for BuildingTypes not being parsed from INI (by Starkku)
+- Fixed Phobos animation additions that support `CreateUnit.Owner` not also checking `MakeInfantryOwner` (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
