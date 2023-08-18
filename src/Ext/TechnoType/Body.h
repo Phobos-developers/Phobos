@@ -161,6 +161,13 @@ public:
 		Valueable<int> EmptyAmmoPip;
 		Valueable<int> PipWrapAmmoPip;
 		Nullable<Point2D> AmmoPipSize;
+		Valueable<Point2D> AmmoPipOffset;
+
+		Valueable<bool> ShowSpawnsPips;
+		Valueable<int> SpawnsPip;
+		Valueable<int> EmptySpawnsPip;
+		Nullable<Point2D> SpawnsPipSize;
+		Valueable<Point2D> SpawnsPipOffset;
 
 		struct LaserTrailDataEntry
 		{
@@ -213,7 +220,7 @@ public:
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ShieldType {}
-			, PassengerDeletionType { nullptr}
+			, PassengerDeletionType { nullptr }
 
 			, WarpOut {}
 			, WarpIn {}
@@ -322,6 +329,13 @@ public:
 			, EmptyAmmoPip { -1 }
 			, PipWrapAmmoPip { 14 }
 			, AmmoPipSize {}
+			, AmmoPipOffset {{ 0,0 }}
+
+			, ShowSpawnsPips { true }
+			, SpawnsPip { 1 }
+			, EmptySpawnsPip { 0 }
+			, SpawnsPipSize {}
+			, SpawnsPipOffset {{ 0,0 }}
 		{ }
 
 		virtual ~ExtData() = default;

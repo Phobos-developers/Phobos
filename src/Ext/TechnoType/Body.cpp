@@ -252,6 +252,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->EmptyAmmoPip.Read(exINI, pSection, "EmptyAmmoPip");
 	this->PipWrapAmmoPip.Read(exINI, pSection, "PipWrapAmmoPip");
 	this->AmmoPipSize.Read(exINI, pSection, "AmmoPipSize");
+	this->AmmoPipOffset.Read(exINI, pSection, "AmmoPipOffset");
+
+	this->ShowSpawnsPips.Read(exINI, pSection, "ShowSpawnsPips");
+	this->SpawnsPip.Read(exINI, pSection, "SpawnsPip");
+	this->EmptySpawnsPip.Read(exINI, pSection, "EmptySpawnsPip");
+	this->SpawnsPipSize.Read(exINI, pSection, "SpawnsPipSize");
+	this->SpawnsPipOffset.Read(exINI, pSection, "SpawnsPipOffset");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -529,6 +536,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EmptyAmmoPip)
 		.Process(this->PipWrapAmmoPip)
 		.Process(this->AmmoPipSize)
+		.Process(this->AmmoPipOffset)
+
+		.Process(this->ShowSpawnsPips)
+		.Process(this->SpawnsPip)
+		.Process(this->EmptySpawnsPip)
+		.Process(this->SpawnsPipSize)
+		.Process(this->SpawnsPipOffset)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
