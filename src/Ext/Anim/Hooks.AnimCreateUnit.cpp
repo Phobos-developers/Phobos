@@ -203,8 +203,6 @@ DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
 
 	if (pAnim)
 	{
-		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-
 		HouseClass* pInvoker = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 		HouseClass* pVictim = nullptr;
 
