@@ -1,5 +1,6 @@
 #include "ShieldClass.h"
 
+#include <Ext/Anim/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
@@ -726,7 +727,7 @@ void ShieldClass::CreateAnim()
 		if (auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location))
 		{
 			pAnim->SetOwnerObject(this->Techno);
-			pAnim->Owner = this->Techno->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
 			pAnim->RemainingIterations = 0xFFu;
 			this->IdleAnim = pAnim;
 		}

@@ -374,6 +374,7 @@ Vanilla fixes:
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy (by Starkku)
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false` (by Starkku)
 - `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting (by Starkku)
+- Fixed position and layer of info tip and reveal production cameo on selected building (by Belonit)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -391,6 +392,8 @@ Phobos fixes:
 - Used `MindControl.Anim` for buildings deployed from mind-controlled vehicles (by Trsdy)
 - Optimized extension class implementation, should improve performance all around (by Otamaa & Starkku)
 - Fixed `Interceptor` not resetting target if the intercepted projectile changes type to non-interceptable one afterwards (by Starkku)
+- Fixed `PlacementPreview` setting for BuildingTypes not being parsed from INI (by Starkku)
+- Fixed Phobos animation additions that support `CreateUnit.Owner` not also checking `MakeInfantryOwner` (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)

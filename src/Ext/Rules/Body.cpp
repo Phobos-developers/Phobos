@@ -150,7 +150,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 				Debug::Log("[Developer warning] AITargetTypes (Count: %d): Error parsing [%s]\n", this->AITargetTypesLists.size(), cur);
 		}
 
-		this->AITargetTypesLists.emplace_back(objectsList);
+		this->AITargetTypesLists.emplace_back(std::move(objectsList));
 	}
 
 	// Section AIScriptsList
@@ -168,7 +168,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 			objectsList.emplace_back(pNewScript);
 		}
 
-		this->AIScriptsLists.emplace_back(objectsList);
+		this->AIScriptsLists.emplace_back(std::move(objectsList));
 	}
 }
 

@@ -203,23 +203,16 @@ DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
 
 	if (pAnim)
 	{
-		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-
-		HouseClass* pInvoker = (pThis->Owner) ? pThis->Owner->Owner : nullptr;
+		HouseClass* pInvoker = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 		HouseClass* pVictim = nullptr;
 
 		if (TechnoClass* Target = generic_cast<TechnoClass*>(pThis->Target))
 			pVictim = Target->Owner;
 
-		if (auto unit = pTypeExt->CreateUnit.Get())
-		{
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
-		}
-		else if (!pAnim->Owner)
-		{
-			auto const pExt = BulletExt::ExtMap.Find(pThis);
-			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
-		}
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+
+		if (!pAnim->Owner)
+			pAnim->Owner = pInvoker;
 
 		if (pThis->Owner)
 		{
@@ -241,14 +234,7 @@ DEFINE_HOOK(0x6E2368, ActionClass_PlayAnimAt, 0x7)
 	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x18, 0x4));
 
 	if (pAnim)
-	{
-		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-
-		if (auto unit = pTypeExt->CreateUnit.Get())
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, pHouse, pHouse);
-		else if (!pAnim->Owner && pHouse)
-			pAnim->Owner = pHouse;
-	}
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
 
 	return 0;
 }

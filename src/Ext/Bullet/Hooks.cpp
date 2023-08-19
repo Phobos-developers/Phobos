@@ -110,7 +110,8 @@ DEFINE_HOOK(0x466897, BulletClass_AI_Trailer, 0x6)
 	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1))
 	{
 		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
-		pTrailerAnim->Owner = pThis->Owner ? pThis->Owner->Owner : BulletAITemp::ExtData->FirerHouse;
+		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletAITemp::ExtData->FirerHouse;
+		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pOwner, nullptr, false, true);
 		pTrailerAnimExt->SetInvoker(pThis->Owner);
 	}
 

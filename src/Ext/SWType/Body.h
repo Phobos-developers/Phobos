@@ -60,7 +60,7 @@ public:
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
-		TypeConvertHelper::ConvertPairs Convert_Pairs;
+		std::vector<TypeConvertGroup> Convert_Pairs;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
