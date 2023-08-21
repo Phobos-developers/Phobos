@@ -1,12 +1,9 @@
 #include <Utilities/Macro.h>
-#include <Utilities/Debug.h>
 #include <HouseClass.h>
 #include <Ext/House/Body.h>
 
 DEFINE_HOOK(0x68804A, AssignHouses_PlayerHouses, 0x5)
 {
-	Debug::Log("Assinging player houses' names\n");
-
 	GET(HouseClass*, pPlayerHouse, EBP);
 
 	HouseExt::SetSkirmishHouseName(pPlayerHouse);
@@ -16,8 +13,6 @@ DEFINE_HOOK(0x68804A, AssignHouses_PlayerHouses, 0x5)
 
 DEFINE_HOOK(0x688210, AssignHouses_ComputerHouses, 0x5)
 {
-	Debug::Log("Assinging computer houses' names\n");
-
 	GET(HouseClass*, pAiHouse, EBP);
 
 	HouseExt::SetSkirmishHouseName(pAiHouse);
