@@ -102,6 +102,7 @@ DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
 	double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
 	float angle = (float)(turretRad - bodyRad);
 	mtx.RotateZ(angle);
+
 	auto res = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
 	auto location = CoordStruct { static_cast<int>(res.X), static_cast<int>(-res.Y), static_cast<int>(res.Z) };
 	Point2D temp;

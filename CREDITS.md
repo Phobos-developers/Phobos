@@ -285,6 +285,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom slaves free sound
   - Jumpjet crash rotation control
   - Vehicle voxel turret shadows & body multi-section shadows
+  - `TurretOffset` support for SHP vehicles
 - **Fryone**
   - Customizable ElectricBolt Arcs
 - **Ares developers**
