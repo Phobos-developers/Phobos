@@ -401,7 +401,9 @@ void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
 				this->RemoveFromLimboTracking(pBuilding->Type);
 			}
 			else
+			{
 				it++;
+			}
 		}
 	}
 }
