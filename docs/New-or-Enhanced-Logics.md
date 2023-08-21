@@ -1271,13 +1271,3 @@ In `rulesmd.ini`:
 CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
-
-### Player houses' ownership of TechnoTypes in Skirmish and Multiplayer maps
-
-- You can now specify houses named <Player @ A> through <Player @ H> as the owner of TechnoTypes preplaced on the map in the editor, and they will be correctly given to players starting on points 1-8. Originally, it was only possible to use these house names in events, actions and teams.
-
-In maps:
-```ini
-[TechnoTypes]       ; Structures, Units, Infantry or Aircraft
-index=<Player @ A>,SOMETECHNO,…     ; Owning player's house
-```
