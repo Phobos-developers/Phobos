@@ -95,15 +95,17 @@ DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
 	GET(UnitClass*, pThis, EBP);
 	REF_STACK(Point2D, pos, STACK_OFFSET(0x15C, -0xE8));
 
-	auto mtx = pThis->Locomotor->Draw_Matrix(nullptr);
+	Matrix3D mtx;
+	mtx.MakeIdentity();
+	mtx.RotateZ(static_cast<float>(pThis->PrimaryFacing.Current().GetRadian<32>()));
 	TechnoTypeExt::ApplyTurretOffset(pThis->Type, &mtx);
 
-	double turretRad = (pThis->TurretFacing().GetValue<5>() - 8) * -(Math::Pi / 16);
-	double bodyRad = (pThis->PrimaryFacing.Current().GetValue<5>() - 8) * -(Math::Pi / 16);
-	float angle = (float)(turretRad - bodyRad);
+	double turretRad = pThis->TurretFacing().GetRadian<32>();
+	double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
+	float angle = static_cast<float>(turretRad - bodyRad);
 	mtx.RotateZ(angle);
 	auto res = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
-	auto location = CoordStruct { static_cast<int>(res.X),static_cast<int>(-res.Y),static_cast<int>(res.Z) };
+	auto location = CoordStruct { static_cast<int>(res.X), static_cast<int>(-res.Y), static_cast<int>(res.Z) };
 	Point2D temp;
 	pos += *TacticalClass::Instance()->CoordsToScreen(&temp, &location);
 
