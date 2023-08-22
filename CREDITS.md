@@ -21,6 +21,7 @@ This page lists all the individual contributions to the project by their author.
   - Non-ASCII input fix
   - Building Placement Preview Adjustment
   - Check for Changelog/Documentation/Credits in Pull Requests
+  - Fix position and layer of info tip and reveal production cameo on selected building
 - **Kerbiter (Metadorius)**:
   - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
@@ -205,6 +206,8 @@ This page lists all the individual contributions to the project by their author.
   - PipScale pip size & ammo pip frame customization
   - Extension class optimization
   - Additional sync logging
+  - `Arcing` elevation inaccuracy fix
+  - `EMPulseCannon` projectile gravity fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -285,6 +288,8 @@ This page lists all the individual contributions to the project by their author.
 - **Fryone**
   - Customizable ElectricBolt Arcs
   - Auto-deploy/DeployBlock on ammo change
+- **ZivDero**
+  - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

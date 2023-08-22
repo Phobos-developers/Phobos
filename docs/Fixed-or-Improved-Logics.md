@@ -85,7 +85,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 ![Waving trees](_static/images/tree-shake.gif)
 *Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
 
-- `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true.
+- `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true. Note that this might impact performance.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
 ![image](_static/images/translucency-fix.png)
@@ -127,6 +127,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `SpySat=yes` can now be applied using building upgrades.
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do.
 - Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (observable when the starting unit is a jumpjet and is ordered to move).
+- Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list.
+- Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud. Color scheme from `[AudioVisual]` -> `AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still.
+  - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
+- Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
+- Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
+- `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
+- `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting.
+- You can now specify houses named `<Player @ A>` through `<Player @ H>` as the owner of TechnoTypes preplaced on the map in the editor, and they will be correctly given to players starting on points 1-8. Originally, it was only possible to use these house names in events, actions and teams.
+
 
 ## Fixes / interactions with other extensions
 

@@ -241,7 +241,7 @@ void SyncLogger::WriteAnimCreations(FILE* const pLogFile, int frameDigits)
 	fprintf(pLogFile, "\n");
 }
 
-// Hooks
+// Hooks. Anim contructor logging is in Ext/Anim/Body.cpp to reduce duplicate hooks
 
 // Sync file writing
 
@@ -441,22 +441,10 @@ DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
 	return 0;
 }
 
-// Anim creation logging
-
-DEFINE_HOOK(0x421EA9, AnimClass_CTOR_SyncLog, 0x5)
-{
-	GET_BASE(CoordStruct*, coords, 0xC);
-	GET_STACK(unsigned int, callerAddress, STACK_OFFSET(0x58, 0x4));
-
-	SyncLogger::AddAnimCreationSyncLogEvent(*coords, callerAddress);
-
-	return 0;
-}
-
 // Disable sync logging hooks in non-MP games
 DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 {
-	if (!SessionClass::Instance->IsMultiplayer() || SyncLogger::HooksDisabled)
+	if (SessionClass::Instance->IsMultiplayer() || SyncLogger::HooksDisabled)
 		return 0;
 
 	SyncLogger::HooksDisabled = true;
@@ -511,10 +499,6 @@ DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 
 	Patch::Apply_RAW(0x7013A0, // Disable TechnoClass_OverrideMission_SyncLog
 	{ 0x8B, 0x54, 0x24, 0x4, 0x56 }
-	);
-
-	Patch::Apply_RAW(0x421EA0, // Disable AnimClass_CTOR_SyncLog
-	{ 0x53, 0x56, 0x57, 0x8B, 0xF1 }
 	);
 
 	return 0;
