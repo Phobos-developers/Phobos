@@ -19,7 +19,7 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 	GET(HouseClass*, pThis, ECX);
 	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
 
-	pHouseExt->BuildingCounter.clear();
+	pHouseExt->PowerPlantEnhancers.clear();
 
 	// This pre-iterating ensure our process to be done in O(NM) instead of O(N^2),
 	// as M should be much less than N, this will be a great improvement. - secsome
@@ -28,10 +28,11 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 		if (TechnoExt::IsActive(pBld) && pBld->IsOnMap && pBld->HasPower)
 		{
 			const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
+
 			if (pExt->PowerPlantEnhancer_Buildings.size() &&
 				(pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f))
 			{
-				++pHouseExt->BuildingCounter[pExt];
+				++pHouseExt->PowerPlantEnhancers[pExt];
 			}
 		}
 	}
@@ -102,3 +103,95 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	return 0;
 }
+
+#pragma region LimboTracking
+
+namespace LimboTrackingTemp
+{
+	bool IsBeingDeleted = false;
+}
+
+void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
+{
+	auto const pType = pThis->GetTechnoType();
+
+	if (pThis->InLimbo && !pType->Insignificant && !pType->DontScore)
+	{
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		pOwnerExt->RemoveFromLimboTracking(pType);
+	}
+
+	LimboTrackingTemp::IsBeingDeleted = true;
+	pThis->ObjectClass::UnInit();
+	LimboTrackingTemp::IsBeingDeleted = false;
+}
+
+DEFINE_JUMP(CALL, 0x4DE60B, GET_OFFSET(TechnoClass_UnInit_Wrapper));   // FootClass
+DEFINE_JUMP(VTABLE, 0x7E3FB4, GET_OFFSET(TechnoClass_UnInit_Wrapper)); // BuildingClass
+
+DEFINE_HOOK(0x4FF754, HouseClass_TrackingAdd_AddTracking, 0x6)
+{
+	GET(HouseClass* const, pThis, EDI);
+	GET(TechnoClass* const, pTechno, ESI);
+	GET_STACK(unsigned int, callerAddress, STACK_OFFSET(0xC, 0x0));
+
+	auto const pType = pTechno->GetTechnoType();
+
+	if (callerAddress != 0x7015EB)
+	{
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis);
+		pOwnerExt->AddToLimboTracking(pType);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F6BC9, TechnoClass_Limbo_AddTracking, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pType = pThis->GetTechnoType();
+
+	if (!LimboTrackingTemp::IsBeingDeleted && !pType->Insignificant && !pType->DontScore)
+	{
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		pOwnerExt->AddToLimboTracking(pType);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F6D85, TechnoClass_Unlimbo_RemoveTracking, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pType = pThis->GetTechnoType();
+
+	if (!pType->Insignificant && !pType->DontScore)
+	{
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		pOwnerExt->RemoveFromLimboTracking(pType);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(HouseClass* const, pNewOwner, EBP);
+
+	auto const pType = pThis->GetTechnoType();
+
+	if (!pType->Insignificant && !pType->DontScore)
+	{
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		pOwnerExt->RemoveFromLimboTracking(pType);
+		auto const pNewOwnerExt = HouseExt::ExtMap.Find(pNewOwner);
+		pNewOwnerExt->AddToLimboTracking(pType);
+	}
+
+	return 0;
+}
+
+#pragma endregion
