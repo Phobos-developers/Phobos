@@ -955,7 +955,7 @@ In `rulesmd.ini`:
 IsVoiceCreatedGlobal=false   ; boolean
 
 [SOMETECHNO]                 ; UnitType
-VoiceCreated=SOMEVOICEENTRY  ; sound entry
+VoiceCreated=                ; sound entry
 ```
 
 ## Terrain
