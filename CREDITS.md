@@ -393,6 +393,7 @@ This page lists all the individual contributions to the project by their author.
   - `Arcing` elevation inaccuracy fix
   - `EMPulseCannon` projectile gravity fix
   - Custom palette support for wall overlays
+  - Warhead animation improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
