@@ -613,6 +613,22 @@ bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaul
 	return canDeploy;
 }
 
+bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
+{
+	if (!pThis || !pSource)
+		return false;
+
+	auto const pType = pThis->GetTechnoType();
+
+	if (!pType->TypeImmune)
+		return false;
+
+	if (pType == pSource->GetTechnoType() && pThis->Owner == pSource->Owner)
+		return true;
+
+	return false;
+}
+
 // =============================
 // load / save
 
