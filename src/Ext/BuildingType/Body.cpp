@@ -48,7 +48,7 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto& [pExt, nCount] : pHouseExt->BuildingCounter)
+	for (const auto& [pExt, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
 		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{

@@ -26,6 +26,7 @@ public:
 	{
 	public:
 		BuildingTypeExt::ExtData* TypeExtData;
+		TechnoExt::ExtData* TechnoExtData;
 		bool DeployedTechno;
 		bool IsCreatedFromMapFile;
 		int LimboID;
@@ -36,6 +37,7 @@ public:
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
+			, TechnoExtData { nullptr }
 			, DeployedTechno { false }
 			, IsCreatedFromMapFile { false }
 			, LimboID { -1 }

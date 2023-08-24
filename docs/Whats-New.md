@@ -20,6 +20,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 - `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
 
@@ -324,11 +325,14 @@ New:
 - Chrono sparkle animation display customization and improvements (by Starkku)
 - Script action to Chronoshift teams to enemy base (by Starkku)
 - Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
-- PipScale pip size & ammo pip frame customization (by Starkku)
+- PipScale pip customizations (size, ammo / spawn / tiberium frames or offsets) (by Starkku)
 - `AltPalette` lighting toggle (by Starkku)
 - Unhardcoded timer blinking color scheme (by Starkku)
 - Customizing shield self-healing timer restart when shield is damaged (by Starkku)
 - Customizing minimum & maximum amount of damage shield can take from a single hit (by Starkku)
+- Players can now be given ownership of preplaced buildings in Skirmish and Multiplayer in maps using houses of the format <Player @ X> where X goes from A to H for spawn positions 1-8 (by ZivDero)
+- `AutoDeath.Technos(Dont)Exist` can optionally track limboed (not physically on map, e.g transports etc) technos (by Starkku)
+- Wall overlay `Palette` support (by Starkku)
 - Offline power plant indicator (by Fryone)
 
 Vanilla fixes:
@@ -394,6 +398,8 @@ Phobos fixes:
 - Fixed `Interceptor` not resetting target if the intercepted projectile changes type to non-interceptable one afterwards (by Starkku)
 - Fixed `PlacementPreview` setting for BuildingTypes not being parsed from INI (by Starkku)
 - Fixed Phobos animation additions that support `CreateUnit.Owner` not also checking `MakeInfantryOwner` (by Starkku)
+- Fixed `AutoDeath` to consider all conditions for objects in limbo (by Starkku)
+- Shields will no longer take damage if the parent techno has `Immune=true` or has `TypeImmune=true` and the damage comes from instance of same TechnoType owned by same house (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)

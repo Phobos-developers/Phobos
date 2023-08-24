@@ -180,6 +180,7 @@ Shield.MinimumReplaceDelay=0                ; integer, game frames
 Shield.InheritStateOnReplace=false          ; boolean
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
+  - Shield will not take damage if the TechnoType is under effects of `Temporal` warhead, is Iron Curtained / Force Shielded, has `Immune=true` or if it has `TypeImmune=true` and the damage source is another instance of same TechnoType belonging to same house.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
     - Negative damage weapons will consider targets with active, but not at full health shields in need of healing / repairing unless the Warhead has `Shield.Penetrate=true`, in which case only object health is considered.
   - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for targeting and damage calculation purposes.
@@ -823,7 +824,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
   - `TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes exist or do not exist, respectively.
     - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
-    - `Technos(Dont)Exist.AllowLimboed` controls whether or not limboed TechnoTypes (f.ex those in transports) are counted. Note that this may count TechnoTypes that are still being built.
+    - `Technos(Dont)Exist.AllowLimboed` controls whether or not limboed TechnoTypes (f.ex those in transports) are counted.
     - `Technos(Dont)Exist.Houses` controls which houses are checked.
 
 - The auto-death behavior can be chosen from the following:
@@ -832,11 +833,12 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
 
 If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen.
+
 ```{note}
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
 ```
 
-This logic also supports buildings delivered by [LimboDelivery](#LimboDelivery)
+This logic also supports buildings delivered by [LimboDelivery](#LimboDelivery). However in this case, all `AutoDeath.Behavior` values produce identical result where the building is simply deleted.
 
 In `rulesmd.ini`:
 ```ini
