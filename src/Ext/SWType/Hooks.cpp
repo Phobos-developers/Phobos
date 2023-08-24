@@ -35,7 +35,7 @@ DEFINE_HOOK(0x6CB5EB, SuperClass_Grant_ShowTimer, 0x5)
 	return 0x6CB63E;
 }
 
-DEFINE_HOOK(0x6DC2C5, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x5)
+DEFINE_HOOK(0x6DC2AC, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x6)
 {
 	GET(const SuperWeaponTypeClass*, pSuperType, EDI);
 
@@ -66,7 +66,8 @@ DEFINE_HOOK(0x6DC2C5, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x5)
 			(float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight)) :
 			(float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
 
-		const CoordStruct coords = pCurrentTechno->GetCenterCoords();
+		CoordStruct coords = pCurrentTechno->GetCenterCoords();
+		coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
 		const auto color = pOwner->Color;
 		Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
 	}
