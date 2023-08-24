@@ -50,19 +50,24 @@ DEFINE_HOOK(0x6DC2C5, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x5)
 	{
 		const auto pCurrentTechnoType = pCurrentTechno->GetTechnoType();
 		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
+		const auto pOwner = pCurrentTechno->Owner;
 
 		if (!pTechnoTypeExt
 			|| !pCurrentTechno->IsAlive
 			|| pCurrentTechno->InLimbo
 			|| !pExt->SW_Designators.Contains(pCurrentTechnoType)
-			|| (pCurrentTechno->Owner != HouseClass::CurrentPlayer))
+			|| !((pOwner == HouseClass::CurrentPlayer)
+				|| EnumFunctions::CanTargetHouse(AffectedHouse::Enemies, HouseClass::CurrentPlayer, pOwner)))
 		{
 			continue;
 		}
 
+		const float radius = pOwner == HouseClass::CurrentPlayer ?
+			(float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight)) :
+			(float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
+
 		const CoordStruct coords = pCurrentTechno->GetCenterCoords();
-		const auto color = pCurrentTechno->Owner->Color;
-		const float radius = (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight));
+		const auto color = pOwner->Color;
 		Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
 	}
 
