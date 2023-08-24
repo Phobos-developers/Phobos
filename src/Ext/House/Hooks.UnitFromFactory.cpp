@@ -8,8 +8,9 @@
 
 DEFINE_HOOK(0x4FB63A, HouseClass_UnitFromFactory_DisablingEVAUnitReady, 0xF)
 {
-	if(!RulesExt::Global()->IsVoiceCreatedGlobal.Get())
+	if (!RulesExt::Global()->IsVoiceCreatedGlobal.Get())
 		VoxClass::Play(GameStrings::EVA_UnitReady);
+
 	return 0x4FB649;
 }
 
