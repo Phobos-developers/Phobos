@@ -62,7 +62,7 @@ DEFINE_HOOK(0x709B8B, TechnoClass_DrawPips_Spawns, 0x5)
 
 	for (int i = 0; i < maxSpawnsCount; i++)
 	{
-		int frame = i < currentSpawnsCount ? pTypeExt->SpawnsPip : pTypeExt->EmptySpawnsPip;
+		int frame = i < currentSpawnsCount ? pTypeExt->SpawnsPipFrame : pTypeExt->EmptySpawnsPipFrame;
 
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, frame,
 			&position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -96,7 +96,7 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 
 		for (int i = 0; i < pipWrap; i++)
 		{
-			int frame = pTypeExt->PipWrapAmmoPip;
+			int frame = pTypeExt->AmmoPipWrapStartFrame;
 
 			if (levels >= 0)
 			{
@@ -129,8 +129,8 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 	}
 	else
 	{
-		int ammoFrame = pTypeExt->AmmoPip;
-		int emptyFrame = pTypeExt->EmptyAmmoPip;
+		int ammoFrame = pTypeExt->AmmoPipFrame;
+		int emptyFrame = pTypeExt->EmptyAmmoPipFrame;
 
 		for (int i = 0; i < maxPips; i++)
 		{
@@ -172,7 +172,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	}
 
 	auto const orders = RulesExt::Global()->Pips_Tiberiums_DisplayOrder.GetElements(std::vector<int>{0, 2, 3, 1});
-	auto const& tibFrames = RulesExt::Global()->Pips_Tiberiums;
+	auto const& tibFrames = RulesExt::Global()->Pips_Tiberiums_Frames;
 
 	for (int i = 0; i < maxPips; i++)
 	{

@@ -64,7 +64,7 @@ public:
 		Valueable<Point2D> Pips_Generic_Buildings_Size;
 		Valueable<Point2D> Pips_Ammo_Size;
 		Valueable<Point2D> Pips_Ammo_Buildings_Size;
-		ValueableVector<int> Pips_Tiberiums;
+		ValueableVector<int> Pips_Tiberiums_Frames;
 		NullableVector<int> Pips_Tiberiums_DisplayOrder;
 
 		Valueable<bool> AllowParallelAIQueues;
@@ -130,7 +130,7 @@ public:
 			, Pips_Generic_Buildings_Size { { 4, 2 } }
 			, Pips_Ammo_Size { { 4, 0 } }
 			, Pips_Ammo_Buildings_Size { { 4, 2 } }
-			, Pips_Tiberiums {}
+			, Pips_Tiberiums_Frames {}
 			, Pips_Tiberiums_DisplayOrder {}
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
