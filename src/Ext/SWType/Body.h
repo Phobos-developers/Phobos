@@ -56,6 +56,7 @@ public:
 		Nullable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
 		Valueable<bool> Detonate_AtFirer;
+		Valueable<bool> ShowDesignatorRange;
 
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
@@ -96,6 +97,7 @@ public:
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
+			, ShowDesignatorRange { true }
 		{ }
 
 		// Ares 0.A functions

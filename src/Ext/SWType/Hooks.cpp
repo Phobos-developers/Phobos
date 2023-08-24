@@ -39,11 +39,11 @@ DEFINE_HOOK(0x6DC2C5, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x5)
 {
 	GET(const SuperWeaponTypeClass*, pSuperType, EDI);
 
-	if (!Phobos::Config::ShowDesignatorRange)
+	if (!Phobos::Config::ShowDesignatorRange || !(RulesExt::Global()->ShowDesignatorRange))
 		return 0;
 
 	const auto pExt = SWTypeExt::ExtMap.Find(pSuperType);
-	if (!pExt)
+	if (!pExt || !pExt->ShowDesignatorRange)
 		return 0;
 
 	for (const auto pCurrentTechno : *TechnoClass::Array)
