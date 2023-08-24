@@ -533,22 +533,39 @@ Powered.KillSpawns=false ; boolean
   - `Pips.Generic.(Buildings.)Size` is for non-ammo pips on non-building TechnoTypes / buildings, accordingly, and `Pips.Ammo.(Buildings.)Size` is in turn for ammo pips, split similarly between non-building technos and buildings.
   - Ammo pip size can also be overridden on per TechnoType-basis using `AmmoPipSize`.
 - Ammo pip frames can now also be customized.
-  - `AmmoPip` and `EmptyAmmoPip` are frames (zero-based) of `pips2.shp` used for ammo pip and empty ammo pip (this is not set by default) for when `PipWrap=0` (this is the default).
-  - `PipWrapAmmoPip` is used as start frame (zero-based, from `pips2.shp`) for when `PipWrap` is above 0. The start frame is the empty frame and up to `Ammo` divided by `PipWrap` frames after it are used for the different reload stages.
+  - `AmmoPipFrame` and `AmmoPipFrame` are frames (zero-based) of `pips2.shp` used for ammo pip and empty ammo pip (this is not set by default) for when `PipWrap=0` (this is the default).
+  - `AmmoPipWrapStartFrame` is used as start frame (zero-based, from `pips2.shp`) for when `PipWrap` is above 0. The start frame is the empty frame and up to `Ammo` divided by `PipWrap` frames after it are used for the different reload stages.
+  - `AmmoPipOffset` can be used to shift the starting position of ammo pips.
+- Pips for TechnoTypes with `Spawns` can now also be customized.
+  - `ShowSpawnsPips` determines whether or not these pips are shown at all, as they are independent from `PipScale` setting.
+  - `SpawnsPipFrame` and `EmptySpawnsPipFrame` are frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for a spawnee pip and empty spawnee pip, respectively.
+  - `SpawnsPipSize` determines the pixel increment to the next pip drawn. Defaults to `[AudioVisual]` -> `Pips.Generic.(Buildings.)Size` if not set.
+  - `SpawnsPipoffset` can be used to shift the starting position of spawnee pips.
+- Pips for `Storage` can now also be customized via new keys in `[AudioVisual]`.
+  - `Pips.Tiberiums.Frames` can be used to list frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for tiberium types, in the listed order corresponding to tiberium type index. Defaults to 5 for tiberium type index 1, otherwise 2.
+  - `Pips.Tiberiums.DisplayOrder` controls in which order the tiberium type pips are displayed, takes a list of tiberium type indices. Any tiberium type not listed will be displayed in sequential order after the listed ones.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Pips.Generic.Size=4,0            ; X,Y, increment in pixels to next pip
-Pips.Generic.Buildings.Size=4,2  ; X,Y, increment in pixels to next pip
-Pips.Ammo.Size=4,0               ; X,Y, increment in pixels to next pip
-Pips.Ammo.Buildings.Size=4,2     ; X,Y, increment in pixels to next pip
+Pips.Generic.Size=4,0                ; X,Y, increment in pixels to next pip
+Pips.Generic.Buildings.Size=4,2      ; X,Y, increment in pixels to next pip
+Pips.Ammo.Size=4,0                   ; X,Y, increment in pixels to next pip
+Pips.Ammo.Buildings.Size=4,2         ; X,Y, increment in pixels to next pip
+Pips.Tiberiums.Frames=2,5,2,2        ; list of integers, frames of pips.shp (buildings) or pips2.shp (others) (zero-based)
+Pips.Tiberiums.DisplayOrder=0,2,3,1  ; list of integers, tiberium type indices
 
-[SOMETECHNO]                     ; TechnoType
-AmmoPip=13                       ; integer, frame of pips2.shp (zero-based)
-EmptyAmmoPip=-1                  ; integer, frame of pips2.shp (zero-based)
-PipWrapAmmoPip=14                ; integer, frame of pips2.shp (zero-based)
-AmmoPipSize=                     ; X,Y, increment in pixels to next pip
+[SOMETECHNO]                         ; TechnoType
+AmmoPipFrame=13                      ; integer, frame of pips2.shp (zero-based)
+EmptyAmmoPipFrame=-1                 ; integer, frame of pips2.shp (zero-based)
+AmmoPipWrapStartFrame=14             ; integer, frame of pips2.shp (zero-based)
+AmmoPipSize=                         ; X,Y, increment in pixels to next pip
+AmmoPipOffset=0,0                    ; X,Y, position offset from default
+ShowSpawnsPips=true                  ; boolean
+SpawnsPipFrame=1                     ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
+EmptySpawnsPipFrame=0                ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
+SpawnsPipSize=                       ; X,Y, increment in pixels to next pip
+SpawnsPipOffset=0,0                  ; X,Y, position offset from default
 ```
 
 ### Re-enable obsolete [JumpjetControls]

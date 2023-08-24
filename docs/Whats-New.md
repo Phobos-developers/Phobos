@@ -324,7 +324,7 @@ New:
 - Chrono sparkle animation display customization and improvements (by Starkku)
 - Script action to Chronoshift teams to enemy base (by Starkku)
 - Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
-- PipScale pip size & ammo pip frame customization (by Starkku)
+- PipScale pip customizations (size, ammo / spawn / tiberium frames or offsets) (by Starkku)
 - `AltPalette` lighting toggle (by Starkku)
 - Unhardcoded timer blinking color scheme (by Starkku)
 - Customizing shield self-healing timer restart when shield is damaged (by Starkku)
