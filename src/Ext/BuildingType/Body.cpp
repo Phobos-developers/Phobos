@@ -48,7 +48,7 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto& [pExt, nCount] : pHouseExt->BuildingCounter)
+	for (const auto& [pExt, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
 		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
@@ -176,6 +176,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// PlacementPreview
 	{
+		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
 		this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
 		this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
 		this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");

@@ -142,7 +142,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	for (size_t i = 0; ; ++i)
 	{
 		ValueableVector<TechnoTypeClass*> convertFrom;
-		NullableIdx<TechnoTypeClass> convertTo;
+		Nullable<TechnoTypeClass*> convertTo;
 		Nullable<AffectedHouse> convertAffectedHouses;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
 		convertFrom.Read(exINI, pSection, tempBuffer);
@@ -160,7 +160,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
 	}
 	ValueableVector<TechnoTypeClass*> convertFrom;
-	NullableIdx<TechnoTypeClass> convertTo;
+	Nullable<TechnoTypeClass*> convertTo;
 	Nullable<AffectedHouse> convertAffectedHouses;
 	convertFrom.Read(exINI, pSection, "Convert.From");
 	convertTo.Read(exINI, pSection, "Convert.To");

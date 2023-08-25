@@ -66,7 +66,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 }
 
 // TODO : Merge into new AttachEffects
-bool TechnoExt::ExtData::CheckDeathConditions()
+bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 {
 	auto const pTypeExt = this->TypeExtData;
 
@@ -83,7 +83,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	// Death if no ammo
 	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 	{
-		TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
+		TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 		return true;
 	}
 
@@ -97,20 +97,20 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 		}
 		else if (this->AutoDeathTimer.Completed())
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
+			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 			return true;
 		}
 
 	}
-	// TODO : Not working correctly, FIX THIS
+
 	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
 	{
-		auto existSingleType = [pThis, affectedHouse, allowLimbo](const TechnoTypeClass* pType)
+		auto existSingleType = [pThis, affectedHouse, allowLimbo](TechnoTypeClass* pType)
 		{
 			for (HouseClass* pHouse : *HouseClass::Array)
 			{
 				if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
-					&& (allowLimbo ? pHouse->CountOwnedNow(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
+					&& (allowLimbo ? HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
 					return true;
 			}
 
@@ -127,7 +127,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	{
 		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
+			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 
 			return true;
 		}
@@ -138,7 +138,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	{
 		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
+			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 
 			return true;
 		}
@@ -543,8 +543,15 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation)
+void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo)
 {
+	if (isInLimbo)
+	{
+		pThis->RegisterKill(pThis->Owner);
+		pThis->UnInit();
+		return;
+	}
+
 	switch (deathOption)
 	{
 
