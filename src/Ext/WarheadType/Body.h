@@ -123,7 +123,7 @@ public:
 		bool Splashed;
 		bool PossibleCellSpreadDetonate;
 
-		Nullable<bool> CanRemoveParasites;
+		Valueable<bool> CanRemoveParasites;
 		Valueable<bool> CanRemoveParasites_KickOut;
 		Valueable<int> CanRemoveParasites_KickOut_Paralysis;
 		NullableIdx<VocClass> CanRemoveParasites_ReportSound;
@@ -236,7 +236,7 @@ public:
 			, Splashed { false }
 			, PossibleCellSpreadDetonate {false}
 
-			, CanRemoveParasites { }
+			, CanRemoveParasites { false }
 			, CanRemoveParasites_KickOut { false }
 			, CanRemoveParasites_KickOut_Paralysis { 15 }
 			, CanRemoveParasites_ReportSound { }

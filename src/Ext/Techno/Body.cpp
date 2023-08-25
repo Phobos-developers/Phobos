@@ -648,7 +648,7 @@ void TechnoExt::RemoveParasyte(TechnoClass* pThis, HouseClass* sourceHouse, Warh
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(wh);
 	auto parasite = pFoot->ParasiteEatingMe;
 
-	if (!pWHExt || !pWHExt->CanRemoveParasites.isset() || !pWHExt->CanRemoveParasites.Get() || !pWHExt->CanTargetHouse(parasite->Owner, pThis))
+	if (!pWHExt || !pWHExt->CanRemoveParasites.Get() || !pWHExt->CanTargetHouse(parasite->Owner, pThis))
 		return;
 
 	if (pWHExt->CanRemoveParasites_ReportSound.isset() && pWHExt->CanRemoveParasites_ReportSound.Get() >= 0)
