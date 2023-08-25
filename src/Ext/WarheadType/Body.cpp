@@ -115,10 +115,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TransactMoney_Display_Offset.Read(exINI, pSection, "TransactMoney.Display.Offset");
 	this->SplashList.Read(exINI, pSection, "SplashList");
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
+	this->SplashList_CreateAll.Read(exINI, pSection, "SplashList.CreateAll");
+	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
+	this->AnimList_CreateAll.Read(exINI, pSection, "AnimList.CreateAll");
+	this->CreateAnimsOnZeroDamage.Read(exINI, pSection, "CreateAnimsOnZeroDamage");
+	this->Conventional_IgnoreUnits.Read(exINI, pSection, "Conventional.IgnoreUnits");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
-	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
-	this->AnimList_ShowOnZeroDamage.Read(exINI, pSection, "AnimList.ShowOnZeroDamage");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 
@@ -196,7 +199,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	for (size_t i = 0; ; ++i)
 	{
 		ValueableVector<TechnoTypeClass*> convertFrom;
-		NullableIdx<TechnoTypeClass> convertTo;
+		Nullable<TechnoTypeClass*> convertTo;
 		Nullable<AffectedHouse> convertAffectedHouses;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
 		convertFrom.Read(exINI, pSection, tempBuffer);
@@ -214,7 +217,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
 	}
 	ValueableVector<TechnoTypeClass*> convertFrom;
-	NullableIdx<TechnoTypeClass> convertTo;
+	Nullable<TechnoTypeClass*> convertTo;
 	Nullable<AffectedHouse> convertAffectedHouses;
 	convertFrom.Read(exINI, pSection, "Convert.From");
 	convertTo.Read(exINI, pSection, "Convert.To");
@@ -289,10 +292,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TransactMoney_Display_Offset)
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
+		.Process(this->SplashList_CreateAll)
+		.Process(this->AnimList_PickRandom)
+		.Process(this->AnimList_CreateAll)
+		.Process(this->CreateAnimsOnZeroDamage)
+		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
-		.Process(this->AnimList_PickRandom)
-		.Process(this->AnimList_ShowOnZeroDamage)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
 

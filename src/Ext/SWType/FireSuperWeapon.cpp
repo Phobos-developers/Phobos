@@ -105,8 +105,12 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 			pBuildingExt->LimboID = ID;
 
 			if (auto pOwnerExt = HouseExt::ExtMap.Find(pOwner))
-			{	// Add building to list of owned limbo buildings
+			{
+				// Add building to list of owned limbo buildings
 				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding, pBuildingExt });
+
+				if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+					pOwnerExt->AddToLimboTracking(pBuilding->Type);
 
 				auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
 				auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
@@ -129,7 +133,10 @@ inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
 
 	// Remove building from list of owned limbo buildings
 	if (pOwnerExt)
+	{
 		pOwnerExt->OwnedLimboDeliveredBuildings.erase(pBuilding);
+		pOwnerExt->RemoveFromLimboTracking(pBuilding->Type);
+	}
 
 	// Mandatory
 	pBuilding->InLimbo = true;

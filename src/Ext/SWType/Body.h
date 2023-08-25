@@ -60,7 +60,7 @@ public:
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
-		TypeConvertHelper::ConvertPairs Convert_Pairs;
+		std::vector<TypeConvertGroup> Convert_Pairs;
 		Nullable<AnimTypeClass*> Convert_Anim;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)

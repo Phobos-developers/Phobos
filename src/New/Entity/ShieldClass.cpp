@@ -1,5 +1,6 @@
 #include "ShieldClass.h"
 
+#include <Ext/Anim/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
@@ -148,7 +149,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	if (!this->HP || this->Temporal || *args->Damage == 0 ||
-		this->Techno->IsIronCurtained() || CanBePenetrated(pWHExt->OwnerObject()))
+		this->Techno->IsIronCurtained() || CanBePenetrated(pWHExt->OwnerObject()) ||
+		this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
 	{
 		return *args->Damage;
 	}
@@ -726,7 +728,7 @@ void ShieldClass::CreateAnim()
 		if (auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location))
 		{
 			pAnim->SetOwnerObject(this->Techno);
-			pAnim->Owner = this->Techno->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
 			pAnim->RemainingIterations = 0xFFu;
 			this->IdleAnim = pAnim;
 		}

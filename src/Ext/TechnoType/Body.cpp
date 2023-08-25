@@ -248,10 +248,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
-	this->AmmoPip.Read(exINI, pSection, "AmmoPip");
-	this->EmptyAmmoPip.Read(exINI, pSection, "EmptyAmmoPip");
-	this->PipWrapAmmoPip.Read(exINI, pSection, "PipWrapAmmoPip");
+	this->AmmoPipFrame.Read(exINI, pSection, "AmmoPipFrame");
+	this->EmptyAmmoPipFrame.Read(exINI, pSection, "EmptyAmmoPipFrame");
+	this->AmmoPipWrapStartFrame.Read(exINI, pSection, "AmmoPipWrapStartFrame");
 	this->AmmoPipSize.Read(exINI, pSection, "AmmoPipSize");
+	this->AmmoPipOffset.Read(exINI, pSection, "AmmoPipOffset");
+
+	this->ShowSpawnsPips.Read(exINI, pSection, "ShowSpawnsPips");
+	this->SpawnsPipFrame.Read(exINI, pSection, "SpawnsPipFrame");
+	this->EmptySpawnsPipFrame.Read(exINI, pSection, "EmptySpawnsPipFrame");
+	this->SpawnsPipSize.Read(exINI, pSection, "SpawnsPipSize");
+	this->SpawnsPipOffset.Read(exINI, pSection, "SpawnsPipOffset");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -525,10 +532,17 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
 
-		.Process(this->AmmoPip)
-		.Process(this->EmptyAmmoPip)
-		.Process(this->PipWrapAmmoPip)
+		.Process(this->AmmoPipFrame)
+		.Process(this->EmptyAmmoPipFrame)
+		.Process(this->AmmoPipWrapStartFrame)
 		.Process(this->AmmoPipSize)
+		.Process(this->AmmoPipOffset)
+
+		.Process(this->ShowSpawnsPips)
+		.Process(this->SpawnsPipFrame)
+		.Process(this->EmptySpawnsPipFrame)
+		.Process(this->SpawnsPipSize)
+		.Process(this->SpawnsPipOffset)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
