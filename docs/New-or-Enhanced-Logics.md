@@ -1182,7 +1182,7 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 
 ### Remove parasites
 - Warheads are now able to use this logic for removing parasites or kick them out into the battlefield.
-- If `CanRemoveParasites.KickOut.Paralysis` is negative it will work as `CanRemoveParasites.KickOut.Paralysis=15`.
+- If `CanRemoveParasites.KickOut.Paralysis` is a negative value it will work as `CanRemoveParasites.KickOut.Paralysis=15`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1190,7 +1190,7 @@ In `rulesmd.ini`:
 CanRemoveParasites=no                   ; boolean
 CanRemoveParasites.ReportSound=         ; Sound
 CanRemoveParasites.KickOut=no           ; boolean
-CanRemoveParasites.KickOut.Paralysis=-1 ; integer, game frames
+CanRemoveParasites.KickOut.Paralysis=15 ; integer, game frames
 CanRemoveParasites.KickOut.Anim=        ; Animation
 ```
 

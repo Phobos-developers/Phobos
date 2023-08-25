@@ -232,7 +232,7 @@ public:
 
 			, CanRemoveParasites { }
 			, CanRemoveParasites_KickOut { false }
-			, CanRemoveParasites_KickOut_Paralysis { -1 }
+			, CanRemoveParasites_KickOut_Paralysis { 15 }
 			, CanRemoveParasites_ReportSound { }
 			, CanRemoveParasites_KickOut_Anim { nullptr }
 		{ }
