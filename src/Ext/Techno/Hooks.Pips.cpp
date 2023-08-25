@@ -176,7 +176,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 
 	for (int i = 0; i < maxPips; i++)
 	{
-		int frame = 0;
+		int frame = tibFrames.at(0) ? tibFrames.at(0) : 0;
 
 		for (size_t c = 0; c < tiberiumCounts.size(); c++)
 		{
@@ -189,10 +189,10 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 			{
 				tiberiumCounts[index]--;
 
-				if (index >= tibFrames.size())
+				if (index >= (tibFrames.size()-1))
 					frame = index == 1 ? 5 : 2;
 				else
-					frame = tibFrames.at(index);
+					frame = tibFrames.at(index+1);
 
 				break;
 			}

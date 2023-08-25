@@ -540,7 +540,7 @@ Powered.KillSpawns=false ; boolean
   - `SpawnsPipSize` determines the pixel increment to the next pip drawn. Defaults to `[AudioVisual]` -> `Pips.Generic.(Buildings.)Size` if not set.
   - `SpawnsPipoffset` can be used to shift the starting position of spawnee pips.
 - Pips for `Storage` can now also be customized via new keys in `[AudioVisual]`.
-  - `Pips.Tiberiums.Frames` can be used to list frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for tiberium types, in the listed order corresponding to tiberium type index. Defaults to 5 for tiberium type index 1, otherwise 2.
+  - `Pips.Tiberiums.Frames` can be used to list frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for tiberium types, with empty frame first and in the listed order corresponding to tiberium type index after. Defaults to 0 for empty, 5 for tiberium type index 1, otherwise 2.
   - `Pips.Tiberiums.DisplayOrder` controls in which order the tiberium type pips are displayed, takes a list of tiberium type indices. Any tiberium type not listed will be displayed in sequential order after the listed ones.
 
 In `rulesmd.ini`:
@@ -550,7 +550,7 @@ Pips.Generic.Size=4,0                ; X,Y, increment in pixels to next pip
 Pips.Generic.Buildings.Size=4,2      ; X,Y, increment in pixels to next pip
 Pips.Ammo.Size=4,0                   ; X,Y, increment in pixels to next pip
 Pips.Ammo.Buildings.Size=4,2         ; X,Y, increment in pixels to next pip
-Pips.Tiberiums.Frames=2,5,2,2        ; list of integers, frames of pips.shp (buildings) or pips2.shp (others) (zero-based)
+Pips.Tiberiums.Frames=0,2,5,2,2      ; list of integers, frames of pips.shp (buildings) or pips2.shp (others) (zero-based)
 Pips.Tiberiums.DisplayOrder=0,2,3,1  ; list of integers, tiberium type indices
 
 [SOMETECHNO]                         ; TechnoType
