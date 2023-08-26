@@ -447,10 +447,7 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 	if (!pBld)
 		return exit();
 		if (!RulesExt::Global()->DrawPowerOffline)
-		{
-			R->ESI(pRect);
-			return 0x6F534E;
-		}
+			return exit();
 
 		const auto pBldExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
 		bool showLowPower = (pBldExt->DisablePowerOfflineIcon == false)
