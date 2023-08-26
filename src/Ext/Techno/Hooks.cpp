@@ -1,4 +1,3 @@
-
 #include <GameOptionsClass.h>
 #include <TacticalClass.h>
 #include "Body.h"
