@@ -472,7 +472,6 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 		const int speed = Math::max(GameOptionsClass::Instance->GetAnimSpeed(14) / 4, 2);
 		const int frame = (FileSystem::POWEROFF_SHP->Frames * (Unsorted::CurrentFrame % speed)) / speed;
 		DSurface::Temp->DrawSHP(FileSystem::MOUSE_PAL, FileSystem::POWEROFF_SHP, frame, &nPoint, pRect, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-	}
-	R->ESI(pRect);
-	return 0x6F534E;
+
+	return exit();
 }
