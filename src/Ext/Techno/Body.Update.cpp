@@ -152,7 +152,7 @@ void TechnoExt::ExtData::EatPassengers()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (!TechnoExt::IsActive(pThis) || !pTypeExt->PassengerDeletionType)
+	if (!pTypeExt->PassengerDeletionType || !TechnoExt::IsActive(pThis))
 		return;
 
 	auto pDelType = pTypeExt->PassengerDeletionType.get();
