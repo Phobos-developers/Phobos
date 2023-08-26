@@ -461,10 +461,7 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 			&& (pBld->CloakState == CloakState::Uncloaked);
 
 		if (!showLowPower || MapClass::Instance->GetCellAt(pBld->GetMapCoords())->IsShrouded())
-		{
-			R->ESI(pRect);
-			return 0x6F534E;
-		}
+			return exit();
 
 		Point2D nPoint;
 		TacticalClass::Instance->CoordsToClient(pBld->GetRenderCoords(), &nPoint);
