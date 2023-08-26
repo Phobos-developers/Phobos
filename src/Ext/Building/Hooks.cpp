@@ -431,7 +431,7 @@ DEFINE_HOOK(0x4511D6, BuildingClass_AnimationAI_SellBuildup, 0x7)
 	return pTypeExt->SellBuildupLength == pThis->Animation.Value ? Continue : Skip;
 }
 
-//Addition to Ares' Extras
+// Addition to Ares' Extras
 DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 {
 	GET(TechnoClass*, pThis, EBP);
