@@ -437,8 +437,15 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 	GET(TechnoClass*, pThis, EBP);
 	GET_STACK(RectangleStruct*, pRect, 0xA0);
 
-	if(auto pBld = abstract_cast<BuildingClass*>(pThis))
+	auto exit = [pRect]()
 	{
+		R->ESI(pRect);
+		return 0x6F534E
+	};
+	
+	const auto pBld = abstract_cast<BuildingClass*>(pThis)
+	if (!pBld)
+		return exit();
 		if (!RulesExt::Global()->DrawPowerOffline)
 		{
 			R->ESI(pRect);
