@@ -43,7 +43,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	}
 
 	if (ScriptExt::IsUnitAvailable(pThis, false))
-		TechnoExt::RemoveParasyte(pThis, args->SourceHouse, args->WH);
+		TechnoExt::RemoveParasite(pThis, args->SourceHouse, args->WH);
 
 	return 0;
 }

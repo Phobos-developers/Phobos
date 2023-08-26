@@ -630,7 +630,7 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 	return false;
 }
 
-void TechnoExt::RemoveParasyte(TechnoClass* pThis, HouseClass* sourceHouse, WarheadTypeClass* wh)
+void TechnoExt::RemoveParasite(TechnoClass* pThis, HouseClass* sourceHouse, WarheadTypeClass* wh)
 {
 	if (!pThis || !wh)
 		return;
