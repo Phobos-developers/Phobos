@@ -101,10 +101,6 @@ An example shape file for digits can be found on [Phobos supplementaries repo](h
 * This feature can be disabled globally with `[AudioVisual]->ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon]->ShowDesignatorRange=false`.
 * This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `Ra2MD.ini` or with "Toggle Designator Range" hotkey in "Interface" category.
 
-```{note}
-Due to technical reasons, this feature only works for super weapons with `Range` >= 1.
-```
-
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]

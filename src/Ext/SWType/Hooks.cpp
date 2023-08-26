@@ -35,25 +35,23 @@ DEFINE_HOOK(0x6CB5EB, SuperClass_Grant_ShowTimer, 0x5)
 	return 0x6CB63E;
 }
 
-DEFINE_HOOK(0x6DC2AC, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x6)
+DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 {
-	GET(const SuperWeaponTypeClass*, pSuperType, EDI);
-
-	if (!Phobos::Config::ShowDesignatorRange || !(RulesExt::Global()->ShowDesignatorRange))
+	if (!Phobos::Config::ShowDesignatorRange || !(RulesExt::Global()->ShowDesignatorRange) || Unsorted::CurrentSWType == -1)
 		return 0;
 
+	const auto pSuperType = SuperWeaponTypeClass::Array()->GetItem(Unsorted::CurrentSWType);
 	const auto pExt = SWTypeExt::ExtMap.Find(pSuperType);
-	if (!pExt || !pExt->ShowDesignatorRange)
+
+	if (!pExt->ShowDesignatorRange)
 		return 0;
 
 	for (const auto pCurrentTechno : *TechnoClass::Array)
 	{
 		const auto pCurrentTechnoType = pCurrentTechno->GetTechnoType();
-		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
 		const auto pOwner = pCurrentTechno->Owner;
 
-		if (!pTechnoTypeExt
-			|| !pCurrentTechno->IsAlive
+		if (!pCurrentTechno->IsAlive
 			|| pCurrentTechno->InLimbo
 			|| !pExt->SW_Designators.Contains(pCurrentTechnoType)
 			|| !((pOwner == HouseClass::CurrentPlayer)
@@ -61,6 +59,8 @@ DEFINE_HOOK(0x6DC2AC, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x6)
 		{
 			continue;
 		}
+
+		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
 
 		const float radius = pOwner == HouseClass::CurrentPlayer ?
 			(float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight)) :
