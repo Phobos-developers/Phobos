@@ -289,7 +289,7 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 DrawPowerOffline=false          ; boolean
-DrawPowerOffline.Offset=0       ; integer, vertical offset,
+DrawPowerOffline.Offset=0       ; integer, vertical offset
 
 [SOMEBUILDING]
 DisablePowerOfflineIcon=false   ; boolean
