@@ -110,6 +110,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->DrawPowerOffline.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline");
 	this->DrawPowerOffline_Offset.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline.Offset");
+	this->DrawPowerOffline_Shape.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline.Shape");
 
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
 	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
@@ -258,6 +259,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DrawTurretShadow)
 		.Process(this->DrawPowerOffline)
 		.Process(this->DrawPowerOffline_Offset)
+		.Process(this->DrawPowerOffline_Shape)
 		.Process(this->AnimRemapDefaultColorScheme)
 		.Process(this->TimerBlinkColorScheme)
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)

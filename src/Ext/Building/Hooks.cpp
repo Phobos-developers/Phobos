@@ -436,22 +436,26 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 {
 	GET(TechnoClass*, pThis, EBP);
 	GET_STACK(RectangleStruct*, pRect, 0xA0);
+	Point2D pict_offset = RulesExt::Global()->DrawPowerOffline_Offset;
 
-	auto exit = [pRect]()
+	ConvertClass* pPalette = FileSystem::MOUSE_PAL;
+	SHPStruct* pSHP = RulesExt::Global()->DrawPowerOffline_Shape ? RulesExt::Global()->DrawPowerOffline_Shape : FileSystem::POWEROFF_SHP;
+
+	const auto pBld = abstract_cast<BuildingClass*>(pThis);
+	if (!pBld)
 	{
 		R->ESI(pRect);
-		return 0x6F534E
-	};
-	
-	const auto pBld = abstract_cast<BuildingClass*>(pThis)
-	if (!pBld)
-		return exit();
-		if (!RulesExt::Global()->DrawPowerOffline)
-			return exit();
+		return 0x6F534E;
+	}
 
+		if (!RulesExt::Global()->DrawPowerOffline)
+		{
+			R->ESI(pRect);
+			return 0x6F534E;
+		}
 		const auto pBldExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
 		bool showLowPower = (pBldExt->DisablePowerOfflineIcon == false)
-			&& FileSystem::POWEROFF_SHP
+			&& pSHP
 			&& (pBld->Type->PowerBonus > 0)
 			&& (pBld->Factory == nullptr)
 			&& (pBld->IsPowerOnline() == false || pBld->IsBeingDrained())
@@ -461,17 +465,21 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 			&& (pBld->CloakState == CloakState::Uncloaked);
 
 		if (!showLowPower || MapClass::Instance->GetCellAt(pBld->GetMapCoords())->IsShrouded())
-			return exit();
+		{
+			R->ESI(pRect);
+			return 0x6F534E;
+		}
 
 		Point2D nPoint;
 		TacticalClass::Instance->CoordsToClient(pBld->GetRenderCoords(), &nPoint);
 
-		nPoint.Y += 22; // wrench offset
-		nPoint.Y -= RulesExt::Global()->DrawPowerOffline_Offset;
+		nPoint.Y += 22 + pict_offset.X; // wrench offset
+		nPoint.Y -= pict_offset.Y;
 
 		const int speed = Math::max(GameOptionsClass::Instance->GetAnimSpeed(14) / 4, 2);
-		const int frame = (FileSystem::POWEROFF_SHP->Frames * (Unsorted::CurrentFrame % speed)) / speed;
-		DSurface::Temp->DrawSHP(FileSystem::MOUSE_PAL, FileSystem::POWEROFF_SHP, frame, &nPoint, pRect, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		const int frame = (pSHP->Frames * (Unsorted::CurrentFrame % speed)) / speed;
+		DSurface::Temp->DrawSHP(pPalette, pSHP, frame, &nPoint, pRect, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 
-	return exit();
+	R->ESI(pRect);
+	return 0x6F534E;
 }

@@ -281,15 +281,17 @@ SellBuildupLength=23  ; integer, number of buildup frames to play
 
 ### Offline power plant indicator
 
-- If `DrawPowerOffline` is set, `POWEROFF.SHP` indicator will appear on power plants when being offline, for example, drained by floating disk, infiltrated or disabled when using ForceShield.
-- `DrawPowerOffline.Offset` is used to vertically adjust position of indicator.
+- If `DrawPowerOffline` is set, indicator will appear on power plants when being offline, for example, drained by floating disk, infiltrated or disabled when using ForceShield.
+- `DrawPowerOffline.Offset` is used to adjust position of indicator.
+- `DrawPowerOffline.Shape` is name of shape used to draw indicator in `MOUSE.PAL` palette. `POWEROFF.SHP` is used by default if not set.
 - `DisablePowerOfflineIcon` is used to disable indicator per building type.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 DrawPowerOffline=false          ; boolean
-DrawPowerOffline.Offset=0       ; integer, vertical offset
+DrawPowerOffline.Shape=         ; shape name without .shp extension
+DrawPowerOffline.Offset=0,0     ; integer, offset
 
 [SOMEBUILDING]
 DisablePowerOfflineIcon=false   ; boolean
