@@ -436,7 +436,7 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 {
 	GET(TechnoClass*, pThis, EBP);
 	GET_STACK(RectangleStruct*, pRect, 0xA0);
-	Point2D pict_offset = RulesExt::Global()->DrawPowerOffline_Offset;
+	Point2D pictOffset = RulesExt::Global()->DrawPowerOffline_Offset;
 
 	ConvertClass* pPalette = FileSystem::MOUSE_PAL;
 	SHPStruct* pSHP = RulesExt::Global()->DrawPowerOffline_Shape ? RulesExt::Global()->DrawPowerOffline_Shape : FileSystem::POWEROFF_SHP;
@@ -448,37 +448,37 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 		return 0x6F534E;
 	}
 
-		if (!RulesExt::Global()->DrawPowerOffline)
-		{
-			R->ESI(pRect);
-			return 0x6F534E;
-		}
-		const auto pBldExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
-		bool showLowPower = (pBldExt->DisablePowerOfflineIcon == false)
-			&& pSHP
-			&& (pBld->Type->PowerBonus > 0)
-			&& (pBld->Factory == nullptr)
-			&& (pBld->IsPowerOnline() == false || pBld->IsBeingDrained())
-			&& (pBld->IsBeingWarpedOut() == false)
-			&& (pBld->WarpingOut == false)
-			&& ((pBld->GetCurrentMission() != Mission::Selling) && (pBld->GetCurrentMission() != Mission::Construction))
-			&& (pBld->CloakState == CloakState::Uncloaked);
+	if (!RulesExt::Global()->DrawPowerOffline)
+	{
+		R->ESI(pRect);
+		return 0x6F534E;
+	}
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
+	bool showLowPower = (pTypeExt->DisablePowerOfflineIcon == false)
+		&& pSHP
+		&& (pBld->Type->PowerBonus > 0)
+		&& (pBld->Factory == nullptr)
+		&& (pBld->IsPowerOnline() == false || pBld->IsBeingDrained())
+		&& (pBld->IsBeingWarpedOut() == false)
+		&& (pBld->WarpingOut == false)
+		&& ((pBld->GetCurrentMission() != Mission::Selling) && (pBld->GetCurrentMission() != Mission::Construction))
+		&& (pBld->CloakState == CloakState::Uncloaked);
 
-		if (!showLowPower || MapClass::Instance->GetCellAt(pBld->GetMapCoords())->IsShrouded())
-		{
-			R->ESI(pRect);
-			return 0x6F534E;
-		}
+	if (!showLowPower || MapClass::Instance->GetCellAt(pBld->GetMapCoords())->IsShrouded())
+	{
+		R->ESI(pRect);
+		return 0x6F534E;
+	}
 
-		Point2D nPoint;
-		TacticalClass::Instance->CoordsToClient(pBld->GetRenderCoords(), &nPoint);
+	Point2D nPoint;
+	TacticalClass::Instance->CoordsToClient(pBld->GetRenderCoords(), &nPoint);
 
-		nPoint.Y += 22 + pict_offset.X; // wrench offset
-		nPoint.Y -= pict_offset.Y;
+	nPoint.Y += 22 + pictOffset.X; // wrench offset
+	nPoint.Y -= pictOffset.Y;
 
-		const int speed = Math::max(GameOptionsClass::Instance->GetAnimSpeed(14) / 4, 2);
-		const int frame = (pSHP->Frames * (Unsorted::CurrentFrame % speed)) / speed;
-		DSurface::Temp->DrawSHP(pPalette, pSHP, frame, &nPoint, pRect, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	const int speed = Math::max(GameOptionsClass::Instance->GetAnimSpeed(14) / 4, 2);
+	const int frame = (pSHP->Frames * (Unsorted::CurrentFrame % speed)) / speed;
+	DSurface::Temp->DrawSHP(pPalette, pSHP, frame, &nPoint, pRect, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 
 	R->ESI(pRect);
 	return 0x6F534E;
