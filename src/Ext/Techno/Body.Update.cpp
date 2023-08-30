@@ -93,14 +93,12 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 		if (!this->AutoDeathTimer.HasStarted())
 		{
 			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
-			HouseExt::ExtMap.Find(pThis->Owner)->OwnedTimedAutoDeathObjects.push_back(this);
 		}
 		else if (this->AutoDeathTimer.Completed())
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 			return true;
 		}
-
 	}
 
 	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
@@ -379,14 +377,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 
 	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
-	{
 		this->AutoDeathTimer.Stop();
-
-		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
-		if (it != hExt->OwnedTimedAutoDeathObjects.end())
-			hExt->OwnedTimedAutoDeathObjects.erase(it);
-	}
 
 	// Reset PassengerDeletion Timer - TODO : unchecked
 	if (this->PassengerDeletionTimer.IsTicking() && this->TypeExtData->PassengerDeletionType && this->TypeExtData->PassengerDeletionType->Rate <= 0)

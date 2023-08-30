@@ -324,7 +324,7 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	int x = static_cast<int>(targetBaseCoords.X + Math::cos(radians) * distance);
 	int y = static_cast<int>(targetBaseCoords.Y - Math::sin(radians) * distance);
 
-	auto newCoords = CoordStruct {x, y, targetBaseCoords.Z};
+	auto newCoords = CoordStruct { x, y, targetBaseCoords.Z };
 	auto cellStruct = CellClass::Coord2Cell(newCoords);
 	cellStruct = MapClass::Instance->NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
 
@@ -388,23 +388,12 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 
 void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
 {
-	for (auto it = this->OwnedLimboDeliveredBuildings.begin(); it != this->OwnedLimboDeliveredBuildings.end(); )
+	for (auto const pExt : this->OwnedAutoDeathObjects)
 	{
-		auto const pBuilding = it->first;
-		auto const pExt = it->second;
+		auto const pTechno = pExt->OwnerObject();
 
-		if (!pBuilding->IsInLogic && pBuilding->IsAlive)
-		{
-			if (pExt->TechnoExtData->CheckDeathConditions(true))
-			{
-				this->OwnedLimboDeliveredBuildings.erase(it++);
-				this->RemoveFromLimboTracking(pBuilding->Type);
-			}
-			else
-			{
-				it++;
-			}
-		}
+		if (!pTechno->IsInLogic && pTechno->IsAlive)
+			pExt->CheckDeathConditions(true);
 	}
 }
 
@@ -512,7 +501,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->PowerPlantEnhancers)
 		.Process(this->OwnedLimboDeliveredBuildings)
-		.Process(this->OwnedTimedAutoDeathObjects)
+		.Process(this->OwnedAutoDeathObjects)
 		.Process(this->LimboAircraft)
 		.Process(this->LimboBuildings)
 		.Process(this->LimboInfantry)
@@ -560,21 +549,8 @@ void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 	AnnounceInvalidPointer(Factory_NavyType, ptr);
 	AnnounceInvalidPointer(Factory_AircraftType, ptr);
 
-	if (!OwnedTimedAutoDeathObjects.empty() && ptr != nullptr)
-	{
-		auto const pExt = TechnoExt::ExtMap.Find(reinterpret_cast<TechnoClass*>(ptr));
-
-		if (pExt)
-			OwnedTimedAutoDeathObjects.erase(std::remove(OwnedTimedAutoDeathObjects.begin(), OwnedTimedAutoDeathObjects.end(), pExt), OwnedTimedAutoDeathObjects.end());
-	}
-
 	if (!OwnedLimboDeliveredBuildings.empty() && ptr != nullptr)
-	{
-		auto const abstract = reinterpret_cast<AbstractClass*>(ptr);
-
-		if (abstract->WhatAmI() == AbstractType::Building)
-			OwnedLimboDeliveredBuildings.erase(reinterpret_cast<BuildingClass*>(ptr));
-	}
+		OwnedLimboDeliveredBuildings.erase(reinterpret_cast<BuildingClass*>(ptr));
 }
 
 // =============================
