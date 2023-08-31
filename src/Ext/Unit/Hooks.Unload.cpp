@@ -82,7 +82,7 @@ DEFINE_HOOK(0x730C70, DeployClass_Execute_RemoveDeploying, 0xA)
 		UnitDeployConvertHelpers::RemoveDeploying(R);
 	else
 		R->AL(pThis->CanDeploySlashUnload());
-	
+
 	return Continue;
 }
 
