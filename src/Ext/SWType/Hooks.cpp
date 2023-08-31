@@ -62,9 +62,9 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 
 		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
 
-		const float radius = pOwner == HouseClass::CurrentPlayer ?
-			(float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight)) :
-			(float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
+		const float radius = pOwner == HouseClass::CurrentPlayer
+			? (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight))
+			: (float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
 
 		CoordStruct coords = pCurrentTechno->GetCenterCoords();
 		coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
