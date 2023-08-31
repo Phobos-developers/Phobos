@@ -37,6 +37,7 @@ public:
 		{ }
 
 		void SetInvoker(TechnoClass* pInvoker);
+		void SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse);
 		void CreateAttachedSystem();
 		void DeleteAttachedSystem();
 
