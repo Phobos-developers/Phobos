@@ -333,6 +333,8 @@ New:
 - Players can now be given ownership of preplaced buildings in Skirmish and Multiplayer in maps using houses of the format <Player @ X> where X goes from A to H for spawn positions 1-8 (by ZivDero)
 - `AutoDeath.Technos(Dont)Exist` can optionally track limboed (not physically on map, e.g transports etc) technos (by Starkku)
 - Wall overlay `Palette` support (by Starkku)
+- Show designator & inhibitor range (by Morton)
+- Owner-only sound on unit creation (by Fryone)
 - Offline power plant indicator (by Fryone)
 
 Vanilla fixes:
@@ -379,6 +381,7 @@ Vanilla fixes:
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false` (by Starkku)
 - `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting (by Starkku)
 - Fixed position and layer of info tip and reveal production cameo on selected building (by Belonit)
+- Fixed `TurretOffset` to be supported for SHP vehicles (by TwinkleStar)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

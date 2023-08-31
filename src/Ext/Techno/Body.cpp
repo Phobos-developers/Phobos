@@ -20,10 +20,9 @@ TechnoExt::ExtData::~ExtData()
 	if (pTypeExt && pTypeExt->AutoDeath_Behavior.isset())
 	{
 		auto pThis = this->OwnerObject();
-		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
-		if (it != hExt->OwnedTimedAutoDeathObjects.end())
-			hExt->OwnedTimedAutoDeathObjects.erase(it);
+		auto pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto& vec = pOwnerExt->OwnedAutoDeathObjects;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 }
 
@@ -649,6 +648,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsInTunnel)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
+		.Process(this->WHAnimRemainingCreationInterval)
 		;
 }
 

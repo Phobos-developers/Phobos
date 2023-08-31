@@ -102,6 +102,9 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
 
+		Valueable<bool> ShowDesignatorRange;
+		Valueable<bool> IsVoiceCreatedGlobal;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -155,6 +158,7 @@ public:
 			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
+			, IsVoiceCreatedGlobal { false }
 			, DrawPowerOffline { false }
 			, DrawPowerOffline_Offset { { 0, 0 } }
 			, DrawPowerOffline_Shape { }
@@ -164,6 +168,7 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, ShowDesignatorRange { true }
 		{ }
 
 		virtual ~ExtData() = default;

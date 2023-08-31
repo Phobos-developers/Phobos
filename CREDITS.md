@@ -408,6 +408,7 @@ This page lists all the individual contributions to the project by their author.
   - Ares detection and integration
   - TechnoType conversion warhead & superweapon
   - Unlimited skirmish colors
+  - Show designator & inhibitor range
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
@@ -471,8 +472,10 @@ This page lists all the individual contributions to the project by their author.
   - Custom slaves free sound
   - Jumpjet crash rotation control
   - Vehicle voxel turret shadows & body multi-section shadows
+  - `TurretOffset` support for SHP vehicles
 - **Fryone**
   - Customizable ElectricBolt Arcs
+  - Sound entry on unit's creation
   - Offline power plant indicator
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>

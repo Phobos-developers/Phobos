@@ -2,9 +2,10 @@
 #include <TacticalClass.h>
 #include "Body.h"
 
+#include <Ext/BuildingType/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/BuildingType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -72,6 +73,12 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeLaserTrails();
+
+	if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+	{
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		pOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+	}
 
 	return 0;
 }
