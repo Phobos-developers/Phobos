@@ -131,15 +131,7 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* 
 	}
 	else
 	{
-		/*
-		auto const bulletCell = CellClass::Coord2Cell(pBullet->Location);
-		auto const targetCell = CellClass::Coord2Cell(pBullet->TargetCoords);
-
-		if (bulletCell == targetCell && pBullet->GetHeight() < 2 * Unsorted::LevelHeight)
-			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
-		*/
-
-		bool sourceObjectAboveTarget = this->FirerZPosition >= this->TargetZPosition;
+		bool sourceObjectAboveTarget = this->FirerZPosition > this->TargetZPosition;
 		bool sourceCoordAboveTarget = pBullet->SourceCoords.Z > pBullet->TargetCoords.Z;
 
 		if (sourceObjectAboveTarget && sourceCoordAboveTarget && pBullet->Location.Z < pBullet->TargetCoords.Z)
