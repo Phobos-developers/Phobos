@@ -70,6 +70,8 @@ public:
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
 
+		NullableIdx<VocClass> VoiceCreated;
+
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
 		Nullable<AnimTypeClass*> WarpAway;

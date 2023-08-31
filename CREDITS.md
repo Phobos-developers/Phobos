@@ -475,6 +475,7 @@ This page lists all the individual contributions to the project by their author.
   - `TurretOffset` support for SHP vehicles
 - **Fryone**
   - Customizable ElectricBolt Arcs
+  - Sound entry on unit's creation
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
 - **Ares developers**
