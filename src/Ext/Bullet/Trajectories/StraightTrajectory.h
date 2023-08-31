@@ -60,4 +60,5 @@ private:
 	int GetVelocityZ(BulletClass* pBullet);
 	int GetFirerZPosition(BulletClass* pBullet);
 	int GetTargetZPosition(BulletClass* pBullet);
+	bool ElevationDetonationCheck(BulletClass* pBullet);
 };

@@ -129,13 +129,9 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* 
 		if (this->FirerZPosition > this->TargetZPosition && pBullet->Location.Z <= pBullet->TargetCoords.Z)
 			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
 	}
-	else
+	else if (ElevationDetonationCheck(pBullet))
 	{
-		bool sourceObjectAboveTarget = this->FirerZPosition > this->TargetZPosition;
-		bool sourceCoordAboveTarget = pBullet->SourceCoords.Z > pBullet->TargetCoords.Z;
-
-		if (sourceObjectAboveTarget && sourceCoordAboveTarget && pBullet->Location.Z < pBullet->TargetCoords.Z)
-			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
+		return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
 	}
 
 	return TrajectoryCheckReturnType::SkipGameCheck; // Bypass game checks entirely.
@@ -193,4 +189,35 @@ int StraightTrajectory::GetTargetZPosition(BulletClass* pBullet)
 	}
 
 	return coords.Z;
+}
+
+// Should bullet detonate based on elevation conditions.
+bool StraightTrajectory::ElevationDetonationCheck(BulletClass* pBullet)
+{
+	if (!pBullet)
+		return false;
+
+	auto const location = pBullet->Location;
+	auto const target = pBullet->TargetCoords;
+
+	// Special case - detonate if it is on same cell as target and lower or at same level as it and beneath the cell floor.
+	if (pBullet->GetCell() == MapClass::Instance->TryGetCellAt(pBullet->TargetCoords)
+		&& pBullet->Location.Z <= pBullet->TargetCoords.Z
+		&& pBullet->Location.Z < MapClass::Instance->GetCellFloorHeight(pBullet->TargetCoords))
+	{
+		return true;
+	}
+
+	bool sourceObjectAboveTarget = this->FirerZPosition > this->TargetZPosition;
+	bool sourceCoordAboveTarget = pBullet->SourceCoords.Z > pBullet->TargetCoords.Z;
+
+	// If it is not coming from above then no.
+	if (!sourceObjectAboveTarget || !sourceCoordAboveTarget)
+		return false;
+
+	// If it is not currently above or at target then no.
+	if (pBullet->Location.Z >= pBullet->TargetCoords.Z)
+		return false;
+
+	return true;
 }
