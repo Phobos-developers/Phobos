@@ -45,9 +45,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 *Side offset voxel turret in Breaking Blue project*
 
 - `TurretOffset` tag for voxel turreted TechnoTypes now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
+- `TurretOffset` is now supported for SHP vehicles.
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 - Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
-- `EMEffect` used for random AnimList pick is now replaced by a new tag `AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso projectile deals no damage to units in movement)
 - Vehicles using `DeployFire` will now use `DeployFireWeapon` for firing the deploy weapon if explicitly set, if not it behaves like previously (`Primary` if can fire, `Secondary` if not) and respect `FireOnce` setting on weapon and any stop commands issued during firing. If `FireOnce` is set to true the unit won't accept further deploy commands for number of frames that is equal to whichever is smaller between weapon `ROF` and `[Unload]` -> `Rate` times 900.
 - Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
@@ -113,7 +113,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon.
 - Fixed an issue that causes objects in layers outside ground layer to not be sorted correctly (caused issues with animation and jumpjet layering for an instance)
 - Fixed infantry without `C4=true` being killed in water if paradropped, chronoshifted etc. even if they can normally enter water.
-- `AnimList` can now be made to create animations on Warheads dealing zero damage by setting `AnimList.ShowOnZeroDamage` to true.
 - Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings]->MCVRedeploys`.
 - Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
 - Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed.
@@ -134,6 +133,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
 - `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting.
+- You can now specify houses named `<Player @ A>` through `<Player @ H>` as the owner of TechnoTypes preplaced on the map in the editor, and they will be correctly given to players starting on points 1-8. Originally, it was only possible to use these house names in events, actions and teams.
+- Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
 
 ## Fixes / interactions with other extensions
 
@@ -531,22 +532,39 @@ Powered.KillSpawns=false ; boolean
   - `Pips.Generic.(Buildings.)Size` is for non-ammo pips on non-building TechnoTypes / buildings, accordingly, and `Pips.Ammo.(Buildings.)Size` is in turn for ammo pips, split similarly between non-building technos and buildings.
   - Ammo pip size can also be overridden on per TechnoType-basis using `AmmoPipSize`.
 - Ammo pip frames can now also be customized.
-  - `AmmoPip` and `EmptyAmmoPip` are frames (zero-based) of `pips2.shp` used for ammo pip and empty ammo pip (this is not set by default) for when `PipWrap=0` (this is the default).
-  - `PipWrapAmmoPip` is used as start frame (zero-based, from `pips2.shp`) for when `PipWrap` is above 0. The start frame is the empty frame and up to `Ammo` divided by `PipWrap` frames after it are used for the different reload stages.
+  - `AmmoPipFrame` and `AmmoPipFrame` are frames (zero-based) of `pips2.shp` used for ammo pip and empty ammo pip (this is not set by default) for when `PipWrap=0` (this is the default).
+  - `AmmoPipWrapStartFrame` is used as start frame (zero-based, from `pips2.shp`) for when `PipWrap` is above 0. The start frame is the empty frame and up to `Ammo` divided by `PipWrap` frames after it are used for the different reload stages.
+  - `AmmoPipOffset` can be used to shift the starting position of ammo pips.
+- Pips for TechnoTypes with `Spawns` can now also be customized.
+  - `ShowSpawnsPips` determines whether or not these pips are shown at all, as they are independent from `PipScale` setting.
+  - `SpawnsPipFrame` and `EmptySpawnsPipFrame` are frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for a spawnee pip and empty spawnee pip, respectively.
+  - `SpawnsPipSize` determines the pixel increment to the next pip drawn. Defaults to `[AudioVisual]` -> `Pips.Generic.(Buildings.)Size` if not set.
+  - `SpawnsPipoffset` can be used to shift the starting position of spawnee pips.
+- Pips for `Storage` can now also be customized via new keys in `[AudioVisual]`.
+  - `Pips.Tiberiums.Frames` can be used to list frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for tiberium types, in the listed order corresponding to tiberium type index. Defaults to 5 for tiberium type index 1, otherwise 2.
+  - `Pips.Tiberiums.DisplayOrder` controls in which order the tiberium type pips are displayed, takes a list of tiberium type indices. Any tiberium type not listed will be displayed in sequential order after the listed ones.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Pips.Generic.Size=4,0            ; X,Y, increment in pixels to next pip
-Pips.Generic.Buildings.Size=4,2  ; X,Y, increment in pixels to next pip
-Pips.Ammo.Size=4,0               ; X,Y, increment in pixels to next pip
-Pips.Ammo.Buildings.Size=4,2     ; X,Y, increment in pixels to next pip
+Pips.Generic.Size=4,0                ; X,Y, increment in pixels to next pip
+Pips.Generic.Buildings.Size=4,2      ; X,Y, increment in pixels to next pip
+Pips.Ammo.Size=4,0                   ; X,Y, increment in pixels to next pip
+Pips.Ammo.Buildings.Size=4,2         ; X,Y, increment in pixels to next pip
+Pips.Tiberiums.Frames=2,5,2,2        ; list of integers, frames of pips.shp (buildings) or pips2.shp (others) (zero-based)
+Pips.Tiberiums.DisplayOrder=0,2,3,1  ; list of integers, tiberium type indices
 
-[SOMETECHNO]                     ; TechnoType
-AmmoPip=13                       ; integer, frame of pips2.shp (zero-based)
-EmptyAmmoPip=-1                  ; integer, frame of pips2.shp (zero-based)
-PipWrapAmmoPip=14                ; integer, frame of pips2.shp (zero-based)
-AmmoPipSize=                     ; X,Y, increment in pixels to next pip
+[SOMETECHNO]                         ; TechnoType
+AmmoPipFrame=13                      ; integer, frame of pips2.shp (zero-based)
+EmptyAmmoPipFrame=-1                 ; integer, frame of pips2.shp (zero-based)
+AmmoPipWrapStartFrame=14             ; integer, frame of pips2.shp (zero-based)
+AmmoPipSize=                         ; X,Y, increment in pixels to next pip
+AmmoPipOffset=0,0                    ; X,Y, position offset from default
+ShowSpawnsPips=true                  ; boolean
+SpawnsPipFrame=1                     ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
+EmptySpawnsPipFrame=0                ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
+SpawnsPipSize=                       ; X,Y, increment in pixels to next pip
+SpawnsPipOffset=0,0                  ; X,Y, position offset from default
 ```
 
 ### Re-enable obsolete [JumpjetControls]
@@ -736,6 +754,27 @@ TurretShadow=   ; boolean
 - The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris-%26-meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
 
 ## Warheads
+
+### Customizable Warhead animation behaviour
+
+- It is possible to make game play random animation from `AnimList` by setting `AnimList.PickRandom` to true. The result is similar to what `EMEffect=true` produces, however it comes with no side-effects (`EMEffect=true` prevents `Inviso=true` projectiles from snapping on targets, making them miss moving targets).
+- If `AnimList.CreateAll` is set to true, all animations from `AnimList` are created, instead of a single anim based on damage or random if  `AnimList.PickRandom` is set to true.
+- `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage]` -> `SplashList` are used.
+  - `SplashList.PickRandom` and `SplashList.CreateAll` apply to these animations in same manner as the `AnimList` equivalents.
+- `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
+- Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; WarheadType
+AnimList.PickRandom=false       ; boolean
+AnimList.CreateAll=false        ; boolean
+SplashList=                     ; List of animations
+SplashList.PickRandom=false     ; boolean
+SplashList.CreateAll=false      ; boolean
+CreateAnimsOnZeroDamage=false   ; boolean
+Conventional.IgnoreUnits=false  ; boolean
+```
 
 ### Custom debris animations and additional debris spawn settings
 

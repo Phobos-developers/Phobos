@@ -64,6 +64,8 @@ public:
 		Valueable<Point2D> Pips_Generic_Buildings_Size;
 		Valueable<Point2D> Pips_Ammo_Size;
 		Valueable<Point2D> Pips_Ammo_Buildings_Size;
+		ValueableVector<int> Pips_Tiberiums_Frames;
+		NullableVector<int> Pips_Tiberiums_DisplayOrder;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -96,6 +98,7 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
 
+		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -130,6 +133,8 @@ public:
 			, Pips_Generic_Buildings_Size { { 4, 2 } }
 			, Pips_Ammo_Size { { 4, 0 } }
 			, Pips_Ammo_Buildings_Size { { 4, 2 } }
+			, Pips_Tiberiums_Frames {}
+			, Pips_Tiberiums_DisplayOrder {}
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
@@ -156,6 +161,7 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, ShowDesignatorRange { true }
 		{ }
 
 		virtual ~ExtData() = default;

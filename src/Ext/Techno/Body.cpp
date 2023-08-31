@@ -20,10 +20,9 @@ TechnoExt::ExtData::~ExtData()
 	if (pTypeExt && pTypeExt->AutoDeath_Behavior.isset())
 	{
 		auto pThis = this->OwnerObject();
-		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
-		if (it != hExt->OwnedTimedAutoDeathObjects.end())
-			hExt->OwnedTimedAutoDeathObjects.erase(it);
+		auto pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto& vec = pOwnerExt->OwnedAutoDeathObjects;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 }
 
@@ -611,6 +610,22 @@ bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaul
 	pThis->Mark(MarkType::Down);
 
 	return canDeploy;
+}
+
+bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
+{
+	if (!pThis || !pSource)
+		return false;
+
+	auto const pType = pThis->GetTechnoType();
+
+	if (!pType->TypeImmune)
+		return false;
+
+	if (pType == pSource->GetTechnoType() && pThis->Owner == pSource->Owner)
+		return true;
+
+	return false;
 }
 
 // =============================

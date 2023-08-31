@@ -324,11 +324,33 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	int x = static_cast<int>(targetBaseCoords.X + Math::cos(radians) * distance);
 	int y = static_cast<int>(targetBaseCoords.Y - Math::sin(radians) * distance);
 
-	auto newCoords = CoordStruct {x, y, targetBaseCoords.Z};
+	auto newCoords = CoordStruct { x, y, targetBaseCoords.Z };
 	auto cellStruct = CellClass::Coord2Cell(newCoords);
 	cellStruct = MapClass::Instance->NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
 
 	return MapClass::Instance->TryGetCellAt(cellStruct);
+}
+
+// Gives player houses names based on their spawning spot
+void HouseExt::SetSkirmishHouseName(HouseClass* pHouse)
+{
+	int spawn_position = pHouse->GetSpawnPosition();
+
+	// Default behaviour if something went wrong
+	if (spawn_position < 0 || spawn_position > 7)
+	{
+		if (pHouse->IsHumanPlayer)
+			sprintf(pHouse->PlainName, "<human player>");
+		else
+			sprintf(pHouse->PlainName, "Computer");
+	}
+	else
+	{
+		const char letters[9] = "ABCDEFGH";
+		sprintf(pHouse->PlainName, "<Player @ %c>", letters[spawn_position]);
+	}
+
+	Debug::Log("%s, %ls, position %d\n", pHouse->PlainName, pHouse->UIName, spawn_position);
 }
 
 // Ares
@@ -366,22 +388,91 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 
 void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
 {
-	for (auto pExt : this->OwnedTimedAutoDeathObjects)
+	for (auto const pExt : this->OwnedAutoDeathObjects)
 	{
-		auto pItem = pExt->OwnerObject();
+		auto const pTechno = pExt->OwnerObject();
 
-		if (!pItem->IsInLogic && pItem->IsAlive && pExt->TypeExtData->AutoDeath_Behavior.isset() && pExt->AutoDeathTimer.Completed())
+		if (!pTechno->IsInLogic && pTechno->IsAlive)
+			pExt->CheckDeathConditions(true);
+	}
+}
+
+void HouseExt::ExtData::AddToLimboTracking(TechnoTypeClass* pTechnoType)
+{
+	if (pTechnoType)
+	{
+		int arrayIndex = pTechnoType->GetArrayIndex();
+
+		switch (pTechnoType->WhatAmI())
 		{
-			auto const pBuilding = abstract_cast<BuildingClass*>(pItem);
-
-			if (this->OwnedLimboDeliveredBuildings.contains(pBuilding))
-				this->OwnedLimboDeliveredBuildings.erase(pBuilding);
-
-			pItem->RegisterDestruction(nullptr);
-			// I doubt those in LimboDelete being really necessary, they're gonna be updated either next frame or after uninit anyway
-			pItem->UnInit();
+		case AbstractType::AircraftType:
+			this->LimboAircraft.Increment(arrayIndex);
+			break;
+		case AbstractType::BuildingType:
+			this->LimboBuildings.Increment(arrayIndex);
+			break;
+		case AbstractType::InfantryType:
+			this->LimboInfantry.Increment(arrayIndex);
+			break;
+		case AbstractType::UnitType:
+			this->LimboVehicles.Increment(arrayIndex);
+			break;
+		default:
+			break;
 		}
 	}
+}
+
+void HouseExt::ExtData::RemoveFromLimboTracking(TechnoTypeClass* pTechnoType)
+{
+	if (pTechnoType)
+	{
+		int arrayIndex = pTechnoType->GetArrayIndex();
+
+		switch (pTechnoType->WhatAmI())
+		{
+		case AbstractType::AircraftType:
+			this->LimboAircraft.Decrement(arrayIndex);
+			break;
+		case AbstractType::BuildingType:
+			this->LimboBuildings.Decrement(arrayIndex);
+			break;
+		case AbstractType::InfantryType:
+			this->LimboInfantry.Decrement(arrayIndex);
+			break;
+		case AbstractType::UnitType:
+			this->LimboVehicles.Decrement(arrayIndex);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+int HouseExt::ExtData::CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType)
+{
+	int count = this->OwnerObject()->CountOwnedAndPresent(pTechnoType);
+	int arrayIndex = pTechnoType->GetArrayIndex();
+
+	switch (pTechnoType->WhatAmI())
+	{
+	case AbstractType::AircraftType:
+		count += this->LimboAircraft.GetItemCount(arrayIndex);
+		break;
+	case AbstractType::BuildingType:
+		count += this->LimboBuildings.GetItemCount(arrayIndex);
+		break;
+	case AbstractType::InfantryType:
+		count += this->LimboInfantry.GetItemCount(arrayIndex);
+		break;
+	case AbstractType::UnitType:
+		count += this->LimboVehicles.GetItemCount(arrayIndex);
+		break;
+	default:
+		break;
+	}
+
+	return count;
 }
 
 void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
@@ -401,7 +492,6 @@ void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 }
 
-
 // =============================
 // load / save
 
@@ -409,9 +499,13 @@ template <typename T>
 void HouseExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->BuildingCounter)
+		.Process(this->PowerPlantEnhancers)
 		.Process(this->OwnedLimboDeliveredBuildings)
-		.Process(this->OwnedTimedAutoDeathObjects)
+		.Process(this->OwnedAutoDeathObjects)
+		.Process(this->LimboAircraft)
+		.Process(this->LimboBuildings)
+		.Process(this->LimboInfantry)
+		.Process(this->LimboVehicles)
 		.Process(this->Factory_BuildingType)
 		.Process(this->Factory_InfantryType)
 		.Process(this->Factory_VehicleType)
@@ -455,21 +549,8 @@ void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 	AnnounceInvalidPointer(Factory_NavyType, ptr);
 	AnnounceInvalidPointer(Factory_AircraftType, ptr);
 
-	if (!OwnedTimedAutoDeathObjects.empty() && ptr != nullptr)
-	{
-		auto const pExt = TechnoExt::ExtMap.Find(reinterpret_cast<TechnoClass*>(ptr));
-
-		if (pExt)
-			OwnedTimedAutoDeathObjects.erase(std::remove(OwnedTimedAutoDeathObjects.begin(), OwnedTimedAutoDeathObjects.end(), pExt), OwnedTimedAutoDeathObjects.end());
-	}
-
 	if (!OwnedLimboDeliveredBuildings.empty() && ptr != nullptr)
-	{
-		auto const abstract = reinterpret_cast<AbstractClass*>(ptr);
-
-		if (abstract->WhatAmI() == AbstractType::Building)
-			OwnedLimboDeliveredBuildings.erase(reinterpret_cast<BuildingClass*>(ptr));
-	}
+		OwnedLimboDeliveredBuildings.erase(reinterpret_cast<BuildingClass*>(ptr));
 }
 
 // =============================

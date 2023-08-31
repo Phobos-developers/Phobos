@@ -131,13 +131,10 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 						if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
 						{
-							pAnim->Owner = pThis->Owner;
+							AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
 
 							if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
-							{
-								pAnimExt->Invoker = pInvoker;
-								pAnimExt->InvokerHouse = pInvokerHouse;
-							}
+								pAnimExt->SetInvoker(pInvoker, pInvokerHouse);
 						}
 					}
 
@@ -192,63 +189,4 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 	}
 
 	return (pThis->Type->MakeInfantry != -1) ? 0x42493E : 0x424B31;
-}
-
-DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
-{
-	enum { Continue = 0x469D06, NukeWarheadExtras = 0x469CAF };
-
-	GET(BulletClass*, pThis, ESI);
-	GET(AnimClass*, pAnim, EAX);
-
-	if (pAnim)
-	{
-		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-
-		HouseClass* pInvoker = (pThis->Owner) ? pThis->Owner->Owner : nullptr;
-		HouseClass* pVictim = nullptr;
-
-		if (TechnoClass* Target = generic_cast<TechnoClass*>(pThis->Target))
-			pVictim = Target->Owner;
-
-		if (auto unit = pTypeExt->CreateUnit.Get())
-		{
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
-		}
-		else if (!pAnim->Owner)
-		{
-			auto const pExt = BulletExt::ExtMap.Find(pThis);
-			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
-		}
-
-		if (pThis->Owner)
-		{
-			auto pExt = AnimExt::ExtMap.Find(pAnim);
-			pExt->SetInvoker(pThis->Owner);
-		}
-	}
-	else if (pThis->WH == RulesClass::Instance->NukeWarhead)
-	{
-		return NukeWarheadExtras;
-	}
-
-	return Continue;
-}
-
-DEFINE_HOOK(0x6E2368, ActionClass_PlayAnimAt, 0x7)
-{
-	GET(AnimClass*, pAnim, EAX);
-	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x18, 0x4));
-
-	if (pAnim)
-	{
-		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-
-		if (auto unit = pTypeExt->CreateUnit.Get())
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, pHouse, pHouse);
-		else if (!pAnim->Owner && pHouse)
-			pAnim->Owner = pHouse;
-	}
-
-	return 0;
 }
