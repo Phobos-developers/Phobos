@@ -73,16 +73,18 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 		return;
 
 	auto const pTypeExt = this->TypeExtData;
-	if (!(pTypeExt->Ammo_AutoDeployAmount < 0))
-		return;
-
 	auto const pUnit = abstract_cast<UnitClass*>(pThis);
 
 	if (!pUnit->Type->IsSimpleDeployer)
 		return;
-	if (pThis->Ammo == pTypeExt->Ammo_AutoDeployAmount)
+
+	if (((pThis->Ammo >= pTypeExt->Ammo_AutoDeployMinimumAmount)
+			|| (pTypeExt->Ammo_AutoDeployMinimumAmount < 0))
+		&& ((pThis->Ammo <= pTypeExt->Ammo_AutoDeployMaximumAmount)
+			|| (pTypeExt->Ammo_AutoDeployMaximumAmount < 0)))
+	{
 		pThis->QueueMission(Mission::Unload, true);
-	return;
+	}
 }
 
 // TODO : Merge into new AttachEffects

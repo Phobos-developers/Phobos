@@ -53,8 +53,10 @@ public:
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 
 		Nullable<int> Ammo_AddOnDeploy;
-		Valueable<int> Ammo_AutoDeployAmount;
-		Valueable<int> Ammo_DeployUnlockAmount;
+		Valueable<int> Ammo_AutoDeployMinimumAmount;
+		Valueable<int> Ammo_AutoDeployMaximumAmount;
+		Valueable<int> Ammo_DeployUnlockMinimumAmount;
+		Valueable<int> Ammo_DeployUnlockMaximumAmount;
 		NullableIdx<VocClass> VoiceCantDeploy;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
@@ -271,8 +273,10 @@ public:
 			, DeployingAnim_UseUnitDrawer { true }
 
 			, Ammo_AddOnDeploy { }
-			, Ammo_AutoDeployAmount { -1 }
-			, Ammo_DeployUnlockAmount { -1 }
+			, Ammo_AutoDeployMinimumAmount { -1 }
+			, Ammo_AutoDeployMaximumAmount { -1 }
+			, Ammo_DeployUnlockMinimumAmount { -1 }
+			, Ammo_DeployUnlockMaximumAmount { -1 }
 
 			, AutoDeath_Behavior { }
 			, AutoDeath_VanishAnimation {}

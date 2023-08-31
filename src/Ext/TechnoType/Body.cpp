@@ -153,8 +153,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 
 	this->Ammo_AddOnDeploy.Read(exINI, pSection, "Ammo.AddOnDeploy");
-	this->Ammo_AutoDeployAmount.Read(exINI, pSection, "Ammo.AutoDeployAmount");
-	this->Ammo_DeployUnlockAmount.Read(exINI, pSection, "Ammo.DeployUnlockAmount");
+	this->Ammo_AutoDeployMinimumAmount.Read(exINI, pSection, "Ammo.AutoDeployMinimumAmount");
+	this->Ammo_AutoDeployMaximumAmount.Read(exINI, pSection, "Ammo.AutoDeployMaximumAmount");
+	this->Ammo_DeployUnlockMinimumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMinimumAmount");
+	this->Ammo_DeployUnlockMaximumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMaximumAmount");
 
 	this->VoiceCantDeploy.Read(exINI, pSection, "VoiceCantDeploy");
 
@@ -431,8 +433,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionType)
 
 		.Process(this->Ammo_AddOnDeploy)
-		.Process(this->Ammo_AutoDeployAmount)
-		.Process(this->Ammo_DeployUnlockAmount)
+		.Process(this->Ammo_AutoDeployMinimumAmount)
+		.Process(this->Ammo_AutoDeployMaximumAmount)
+		.Process(this->Ammo_DeployUnlockMinimumAmount)
+		.Process(this->Ammo_DeployUnlockMaximumAmount)
 		.Process(this->VoiceCantDeploy)
 
 		.Process(this->AutoDeath_Behavior)

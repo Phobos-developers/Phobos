@@ -751,18 +751,22 @@ TurretShadow=   ; boolean
 ### `IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change
 
 - Vehicle deployment can now be affected by ammo count.
-  - `Ammo.AutoDeployAmount` determines the minimal number of ammo at which a vehicle converts/deploys automatically.
-  - `Ammo.DeployUnlockAmount` determines the minimal number of ammo that unlocks issuing vehicle converting/deploying command.
+  - `Ammo.AutoDeployMinimumAmount` determines the minimal number of ammo at which a vehicle converts/deploys automatically.
+  - `Ammo.DeployUnlockMinimumAmount` determines the minimal number of ammo that unlocks issuing vehicle converting/deploying command.
+    - `Ammo.AutoDeployMaximumAmount` and `Ammo.DeployUnlockMaximumAmount` behave analogically.
+    - Setting a negative number will disable ammo count check.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                   ; VehicleType
-Ammo.DeployUnlockAmount=-1      ; integer
-Ammo.AutoDeployAmount=-1        ; integer
+[SOMEVEHICLE]                        ; VehicleType
+Ammo.AutoDeployMinimumAmount=-1      ; integer
+Ammo.AutoDeployMaximumAmount=-1      ; integer
+Ammo.DeployUnlockMinimumAmount=-1    ; integer
+Ammo.DeployUnlockMaximumAmount=-1    ; integer
 ```
 
 ```{warning}
-`Ammo.AutoDeployAmount` feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
+Auto-deploy feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
 ```
 
 ### `IsSimpleDeployer` vehicle ammo change on deploy
