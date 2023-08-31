@@ -325,7 +325,7 @@ New:
 - Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
 - Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
 - PipScale pip size & ammo pip frame customization (by Starkku)
-- Auto-deploy/DeployBlock on ammo change (by Fryone)
+- Auto-deploy/Deploy block on ammo change (by Fryone)
 - `AltPalette` lighting toggle (by Starkku)
 - Unhardcoded timer blinking color scheme (by Starkku)
 - Customizing shield self-healing timer restart when shield is damaged (by Starkku)

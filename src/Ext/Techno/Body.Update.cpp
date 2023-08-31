@@ -73,7 +73,7 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 		return;
 
 	auto const pTypeExt = this->TypeExtData;
-	if (!pTypeExt->Ammo_AutoDeployAmount < 0)
+	if (!(pTypeExt->Ammo_AutoDeployAmount < 0))
 		return;
 
 	auto const pUnit = abstract_cast<UnitClass*>(pThis);

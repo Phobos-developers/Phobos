@@ -287,7 +287,7 @@ This page lists all the individual contributions to the project by their author.
   - Vehicle voxel turret shadows & body multi-section shadows
 - **Fryone**
   - Customizable ElectricBolt Arcs
-  - Auto-deploy/DeployBlock on ammo change
+  - Auto-deploy/Deploy block on ammo change
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
 - **Ares developers**
