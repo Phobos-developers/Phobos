@@ -693,6 +693,7 @@ DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
 }
 
 // Stops INI parsing for Anim/BuildingTypeClass on game startup, will only be read on scenario load later like everything else.
+DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);
 
 // Fix the bug that computer's record may cannot log normally.
 DEFINE_HOOK_AGAIN(0x46DAFA, SomeClass_AIPlayerLogFix, 0x5)
