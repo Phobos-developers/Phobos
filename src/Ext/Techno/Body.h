@@ -36,6 +36,7 @@ public:
 		bool IsInTunnel;
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
+		int WHAnimRemainingCreationInterval;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -57,6 +58,7 @@ public:
 			, IsInTunnel { false }
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
+			, WHAnimRemainingCreationInterval { 0 }
 		{ }
 
 		void ApplyInterceptor();
