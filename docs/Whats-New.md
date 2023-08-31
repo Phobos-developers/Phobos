@@ -364,7 +364,7 @@ Vanilla fixes:
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
 - Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (by Kerbiter)
 - Suppressed the BuildingCaptured EVA events when capturing a building considered as a vehicle (by Trsdy)
-- Fixed a bug that computer player record cannot be log normally in non English mode (by NetsuNegi)
+- Fixed the bug that computer player record cannot be log normally in non English mode (by NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
