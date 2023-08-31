@@ -6,6 +6,7 @@
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 #include <SpawnManagerClass.h>
+#include <TacticalClass.h>
 #include <BulletClass.h>
 
 #include "Body.h"
@@ -87,6 +88,29 @@ DEFINE_HOOK(0x43E0C4, BuildingClass_Draw_43DA80_TurretMultiOffset, 0x0)
 	TechnoTypeExt::ApplyTurretOffset(technoType, mtx, 1 / 8);
 
 	return 0x43E0E8;
+}
+
+DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
+{
+	GET(UnitClass*, pThis, EBP);
+	REF_STACK(Point2D, pos, STACK_OFFSET(0x15C, -0xE8));
+
+	Matrix3D mtx;
+	mtx.MakeIdentity();
+	mtx.RotateZ(static_cast<float>(pThis->PrimaryFacing.Current().GetRadian<32>()));
+	TechnoTypeExt::ApplyTurretOffset(pThis->Type, &mtx);
+
+	double turretRad = pThis->TurretFacing().GetRadian<32>();
+	double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
+	float angle = static_cast<float>(turretRad - bodyRad);
+	mtx.RotateZ(angle);
+
+	auto res = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
+	auto location = CoordStruct { static_cast<int>(res.X), static_cast<int>(-res.Y), static_cast<int>(res.Z) };
+	Point2D temp;
+	pos += *TacticalClass::Instance()->CoordsToScreen(&temp, &location);
+
+	return 0;
 }
 
 DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)

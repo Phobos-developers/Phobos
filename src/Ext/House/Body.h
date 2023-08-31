@@ -20,9 +20,14 @@ public:
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
-		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
+		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
 		std::map<BuildingClass*, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
-		std::vector<TechnoExt::ExtData*> OwnedTimedAutoDeathObjects;
+		std::vector<TechnoExt::ExtData*> OwnedAutoDeathObjects;
+
+		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
+		CounterClass LimboBuildings; // Currently owned buildings in limbo
+		CounterClass LimboInfantry;  // Currently owned infantry in limbo
+		CounterClass LimboVehicles;  // Currently owned vehicles in limbo
 
 		BuildingClass* Factory_BuildingType;
 		BuildingClass* Factory_InfantryType;
@@ -37,9 +42,13 @@ public:
 		int ProducingNavalUnitTypeIndex;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
-			, BuildingCounter {}
+			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
-			, OwnedTimedAutoDeathObjects {}
+			, OwnedAutoDeathObjects {}
+			, LimboAircraft {}
+			, LimboBuildings {}
+			, LimboInfantry {}
+			, LimboVehicles {}
 			, Factory_BuildingType { nullptr }
 			, Factory_InfantryType { nullptr }
 			, Factory_VehicleType { nullptr }
@@ -52,6 +61,9 @@ public:
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
 		void UpdateAutoDeathObjectsInLimbo();
+		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
+		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
+		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);
 
 		virtual ~ExtData() = default;
 
@@ -82,9 +94,6 @@ public:
 			switch (abs)
 			{
 			case AbstractType::Building:
-			case AbstractType::Infantry:
-			case AbstractType::Unit:
-			case AbstractType::Aircraft:
 				return false;
 			}
 

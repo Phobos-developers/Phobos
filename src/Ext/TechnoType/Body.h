@@ -162,10 +162,17 @@ public:
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
-		Valueable<int> AmmoPip;
-		Valueable<int> EmptyAmmoPip;
-		Valueable<int> PipWrapAmmoPip;
+		Valueable<int> AmmoPipFrame;
+		Valueable<int> EmptyAmmoPipFrame;
+		Valueable<int> AmmoPipWrapStartFrame;
 		Nullable<Point2D> AmmoPipSize;
+		Valueable<Point2D> AmmoPipOffset;
+
+		Valueable<bool> ShowSpawnsPips;
+		Valueable<int> SpawnsPipFrame;
+		Valueable<int> EmptySpawnsPipFrame;
+		Nullable<Point2D> SpawnsPipSize;
+		Valueable<Point2D> SpawnsPipOffset;
 
 		struct LaserTrailDataEntry
 		{
@@ -218,7 +225,7 @@ public:
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ShieldType {}
-			, PassengerDeletionType { nullptr}
+			, PassengerDeletionType { nullptr }
 
 			, WarpOut {}
 			, WarpIn {}
@@ -327,10 +334,17 @@ public:
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
 
-			, AmmoPip { 13 }
-			, EmptyAmmoPip { -1 }
-			, PipWrapAmmoPip { 14 }
+			, AmmoPipFrame { 13 }
+			, EmptyAmmoPipFrame { -1 }
+			, AmmoPipWrapStartFrame { 14 }
 			, AmmoPipSize {}
+			, AmmoPipOffset {{ 0,0 }}
+
+			, ShowSpawnsPips { true }
+			, SpawnsPipFrame { 1 }
+			, EmptySpawnsPipFrame { 0 }
+			, SpawnsPipSize {}
+			, SpawnsPipOffset {{ 0,0 }}
 		{ }
 
 		virtual ~ExtData() = default;

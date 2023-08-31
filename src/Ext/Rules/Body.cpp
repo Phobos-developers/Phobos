@@ -98,6 +98,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Generic_Buildings_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Generic.Buildings.Size");
 	this->Pips_Ammo_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Ammo.Size");
 	this->Pips_Ammo_Buildings_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Ammo.Buildings.Size");
+	this->Pips_Tiberiums_Frames.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.Frames");
+	this->Pips_Tiberiums_DisplayOrder.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.DisplayOrder");
 	this->ToolTip_Background_Color.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.BlurSize");
@@ -105,6 +107,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DrawTurretShadow.Read(exINI, GameStrings::AudioVisual, "DrawTurretShadow");
 	this->AnimRemapDefaultColorScheme.Read(exINI, GameStrings::AudioVisual, "AnimRemapDefaultColorScheme");
 	this->TimerBlinkColorScheme.Read(exINI, GameStrings::AudioVisual, "TimerBlinkColorScheme");
+	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
 
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
 	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
@@ -230,6 +233,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Generic_Buildings_Size)
 		.Process(this->Pips_Ammo_Size)
 		.Process(this->Pips_Ammo_Buildings_Size)
+		.Process(this->Pips_Tiberiums_Frames)
+		.Process(this->Pips_Tiberiums_DisplayOrder)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)
@@ -255,6 +260,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
+		.Process(this->ShowDesignatorRange)
 		;
 }
 

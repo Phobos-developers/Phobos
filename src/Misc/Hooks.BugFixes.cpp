@@ -751,7 +751,8 @@ DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
 #pragma region DrawInfoTipAndSpiedSelection
 
 // skip call DrawInfoTipAndSpiedSelection
-DEFINE_JUMP(LJMP, 0x6D9427, 0x6D95A1); // Tactical_RenderLayers
+// Note that Ares have the TacticalClass_DrawUnits_ParticleSystems hook at 0x6D9427
+DEFINE_JUMP(LJMP, 0x6D9430, 0x6D95A1); // Tactical_RenderLayers
 
 // Call DrawInfoTipAndSpiedSelection in new location
 DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
