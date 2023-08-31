@@ -22,13 +22,19 @@ void UnitDeployConvertHelpers::RemoveDeploying(REGISTERS* R)
 	if (!pThis->CanDeploySlashUnload())
 		return;
 
-	if (((pThisType->Ammo_DeployUnlockMinimumAmount >= 0)
-			|| (pThis->Ammo < pThisType->Ammo_DeployUnlockMinimumAmount))
-		&& ((pThisType->Ammo_DeployUnlockMaximumAmount >= 0)
-			|| (pThis->Ammo > pThisType->Ammo_DeployUnlockMaximumAmount)))
-	{
-		R->AL(false);
-	}
+	const bool skipMinimum = pThisType->Ammo_DeployUnlockMinimumAmount < 0;
+	const bool skipMaximum = pThisType->Ammo_DeployUnlockMaximumAmount < 0;
+
+	if (skipMinimum && skipMaximum)
+		return;
+
+	const bool moreThanMinimum = pThis->Ammo >= pThisType->Ammo_DeployUnlockMinimumAmount;
+	const bool lessThanMaximum = pThis->Ammo <= pThisType->Ammo_DeployUnlockMaximumAmount;
+
+	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
+		return;
+
+	R->AL(false);
 }
 
 void UnitDeployConvertHelpers::ChangeAmmo(REGISTERS* R)

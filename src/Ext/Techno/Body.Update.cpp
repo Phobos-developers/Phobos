@@ -78,13 +78,17 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 	if (!pUnit->Type->IsSimpleDeployer)
 		return;
 
-	if (((pThis->Ammo >= pTypeExt->Ammo_AutoDeployMinimumAmount)
-			|| (pTypeExt->Ammo_AutoDeployMinimumAmount < 0))
-		&& ((pThis->Ammo <= pTypeExt->Ammo_AutoDeployMaximumAmount)
-			|| (pTypeExt->Ammo_AutoDeployMaximumAmount < 0)))
-	{
+	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
+	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
+
+	if (skipMinimum && skipMaximum)
+		return;
+
+	const bool moreThanMinimum = pThis->Ammo >= pTypeExt->Ammo_AutoDeployMinimumAmount;
+	const bool lessThanMaximum = pThis->Ammo <= pTypeExt->Ammo_AutoDeployMaximumAmount;
+
+	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
 		pThis->QueueMission(Mission::Unload, true);
-	}
 }
 
 // TODO : Merge into new AttachEffects
