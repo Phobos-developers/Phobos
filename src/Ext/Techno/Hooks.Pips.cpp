@@ -189,10 +189,10 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 			{
 				tiberiumCounts[index]--;
 
-				if (index >= (tibFrames.size()-1))
+				if (index >= (tibFrames.size() - 1))
 					frame = index == 1 ? 5 : 2;
 				else
-					frame = tibFrames.at(index+1);
+					frame = tibFrames.at(index + 1);
 
 				break;
 			}
