@@ -335,6 +335,7 @@ New:
 - `AutoDeath.Technos(Dont)Exist` can optionally track limboed (not physically on map, e.g transports etc) technos (by Starkku)
 - Wall overlay `Palette` support (by Starkku)
 - Show designator & inhibitor range (by Morton)
+- Owner-only sound on unit creation (by Fryone)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
