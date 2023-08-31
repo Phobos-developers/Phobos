@@ -15,11 +15,12 @@ namespace UnitDeployConvertHelpers
 
 void UnitDeployConvertHelpers::RemoveDeploying(REGISTERS* R)
 {
-	GET(UnitClass*, pThis, ESI);
+	GET(TechnoClass*, pThis, ESI);
 	auto const pThisType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	R->AL(pThis->CanDeploySlashUnload());
-	if (!pThis->CanDeploySlashUnload())
+	const bool canDeploy = pThis->CanDeploySlashUnload();
+	R->AL(canDeploy);
+	if (!canDeploy)
 		return;
 
 	const bool skipMinimum = pThisType->Ammo_DeployUnlockMinimumAmount < 0;
@@ -40,7 +41,7 @@ void UnitDeployConvertHelpers::RemoveDeploying(REGISTERS* R)
 void UnitDeployConvertHelpers::ChangeAmmo(REGISTERS* R)
 {
 	GET(UnitClass*, pThis, ECX);
-	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 	if (pThis->Deployed && !pThis->Deploying && pThisExt->Ammo_AddOnDeploy)
 	{
@@ -48,22 +49,21 @@ void UnitDeployConvertHelpers::ChangeAmmo(REGISTERS* R)
 		pThis->Ammo = std::min(pThis->Type->Ammo, ammoCalc);
 	}
 
-	R->EAX(pThis->GetTechnoType());
+	R->EAX(pThis->Type);
 }
 
 void UnitDeployConvertHelpers::ChangeAmmoOnUnloading(REGISTERS* R)
 {
-	GET(TechnoClass*, pThis, ESI);
-	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	auto pUnit = abstract_cast<UnitClass*>(pThis);
+	GET(UnitClass*, pThis, ESI);
+	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pUnit->Type->IsSimpleDeployer && pThisExt->Ammo_AddOnDeploy && (pUnit->Type->UnloadingClass == nullptr))
+	if (pThis->Type->IsSimpleDeployer && pThisExt->Ammo_AddOnDeploy && (pThis->Type->UnloadingClass == nullptr))
 	{
-		const int ammoCalc = std::max(pUnit->Ammo + pThisExt->Ammo_AddOnDeploy, 0);
-		pUnit->Ammo = std::min(pUnit->Type->Ammo, ammoCalc);
+		const int ammoCalc = std::max(pThis->Ammo + pThisExt->Ammo_AddOnDeploy, 0);
+		pThis->Ammo = std::min(pThis->Type->Ammo, ammoCalc);
 	}
 
-	R->AL(pUnit->Deployed);
+	R->AL(pThis->Deployed);
 }
 
 DEFINE_HOOK(0x73FFE6, UnitClass_WhatAction_RemoveDeploying, 0xA)
@@ -76,7 +76,13 @@ DEFINE_HOOK(0x73FFE6, UnitClass_WhatAction_RemoveDeploying, 0xA)
 DEFINE_HOOK(0x730C70, DeployClass_Execute_RemoveDeploying, 0xA)
 {
 	enum { Continue = 0x730C7A };
-	UnitDeployConvertHelpers::RemoveDeploying(R);
+	GET(TechnoClass*, pThis, ESI);
+
+	if (abstract_cast<UnitClass*>(pThis))
+		UnitDeployConvertHelpers::RemoveDeploying(R);
+	else
+		R->AL(pThis->CanDeploySlashUnload());
+	
 	return Continue;
 }
 
