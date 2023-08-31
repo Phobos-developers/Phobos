@@ -106,6 +106,10 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 #pragma region LimboTracking
 
+// These hooks handle tracking objects that are limboed e.g not physically on the map or engaged in game logic updates.
+// The objects are manually updated once after pre-placed objects have been parsed, buildings are ignored as the limboed pre-placed buildings
+// are not relevant (walls that will be converted into overlays etc), after which automatic update on limbo/unlimbo and uninit is enabled.
+
 namespace LimboTrackingTemp
 {
 	bool Enabled = false;
