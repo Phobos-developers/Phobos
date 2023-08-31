@@ -66,6 +66,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::RunSuperWeaponAtLocation(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtWaypoint:
 		return TActionExt::RunSuperWeaponAtWaypoint(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::DumpVariables:
+		return TActionExt::DumpVariables(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::ToggleMCVRedeploy:
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
@@ -430,6 +432,27 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			}
 		}
 	}
+
+	return true;
+}
+
+bool TActionExt::DumpVariables(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	const auto fileName = (pThis->Param3 != 0) ? "globals.ini" : "locals.ini";
+	auto pINI = GameCreate<CCINIClass>();
+	auto pFile = GameCreate<CCFileClass>(fileName);
+
+	if (pFile->Exists())
+		pINI->ReadCCFile(pFile);
+	else
+		pFile->CreateFileA();
+
+	const auto& variables = ScenarioExt::Global()->Variables[pThis->Param3 != 0];
+	for (const auto& variable: variables)
+		pINI->WriteInteger(ScenarioClass::Instance()->FileName, variable.second.Name, variable.second.Value, false);
+
+	pINI->WriteCCFile(pFile);
+	pFile->Close();
 
 	return true;
 }

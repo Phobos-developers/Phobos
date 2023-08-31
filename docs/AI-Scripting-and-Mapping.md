@@ -491,6 +491,23 @@ ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointI
 ...
 ```
 
+### `507` Dump variables
+
+- Write all local or global variables to an INI file, depending on `IsGlobalVariable` action parameter:
+  - If 0, file will be called `locals.ini` and only local variables will be written.
+  - If 1, file will be called `globals.ini` and only global variables will be written.
+- Variable section will use the same name as the mission file name in capital letters, i.e. `[MYCAMPAIGN.MAP]`.
+  - Variables will be written as key-value pairs, i.e. `MyVariable=1`
+- If an INI file with the same name (`locals.ini`/`globals.ini`) doesn't exist, it will be created. If it exists, all sections will be preserved.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],507,0,0,[IsGlobalVariable],0,0,0,A,[ActionX]
+...
+```
+
 ### `510` Toggle MCV redeployablility
 
 - Force MCV's redeployablility by setting the third parameter.
