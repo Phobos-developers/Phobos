@@ -824,7 +824,7 @@ DEFINE_HOOK(0x44AFF8, TechnoClass_FireAt_BurstRandomTarget_Setup, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6B770D, SpawnerManagerClassAI_0, 0xB)
+DEFINE_HOOK(0x6B770D, SpawnerManagerClassAI_SwitchCase3, 0xB)
 {
 	GET(SpawnManagerClass *, pThis, ESI);
 
@@ -853,7 +853,7 @@ DEFINE_HOOK(0x6B770D, SpawnerManagerClassAI_0, 0xB)
 	return 0;
 }
 
-DEFINE_HOOK(0x6B776E, SpawnerManagerClassAI_1, 0x6) // Note: Not sure in which cases the game enters in this hook, maybe not necessary :-/
+DEFINE_HOOK(0x6B776E, SpawnerManagerClassAI_SwitchCase4, 0x6) // Note: Not sure in which cases the game enters in this hook, maybe not necessary :-/
 {
 	GET(AircraftClass*, pThis, ECX);
 
@@ -874,7 +874,7 @@ DEFINE_HOOK(0x6B776E, SpawnerManagerClassAI_1, 0x6) // Note: Not sure in which c
 	return 0;
 }
 
-DEFINE_HOOK(0x6B7AE3, SpawnerManagerClassAI_2, 0x6)
+DEFINE_HOOK(0x6B7AE3, SpawnerManagerClassAI_SpawnControlStatus3, 0x6)
 {
 	GET(AircraftClass*, pThis, ECX);
 
@@ -897,6 +897,7 @@ DEFINE_HOOK(0x6B7AE3, SpawnerManagerClassAI_2, 0x6)
 
 DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected, 0x5)
 {
+	// Makes technos with random targets stop targeting
 	for (auto pObj : ObjectClass::CurrentObjects())
 	{
 		auto pTechno = abstract_cast<TechnoClass*>(pObj);

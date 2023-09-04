@@ -73,6 +73,7 @@ public:
 		void UpdateLaserTrails();
 		void InitializeLaserTrails();
 		void UpdateMindControlAnim();
+		void RefreshRandomTargets();
 
 		virtual ~ExtData() override;
 
