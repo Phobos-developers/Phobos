@@ -832,8 +832,8 @@ WeaponStruct* __fastcall TechnoClass_GetWeaponAgainstWallWrapper(TechnoClass* pT
 }
 
 
-DEFINE_JUMP(CALL, 0x51C1F8, GET_OFFSET(TechnoClass_GetWeaponAgainstWallWrapper));  // InfantryClass_CanEnterCell
-DEFINE_JUMP(CALL, 0x73F49B, GET_OFFSET(TechnoClass_GetWeaponAgainstWallWrapper));  // UnitClass_CanEnterCell
+DEFINE_JUMP(CALL6, 0x51C1F8, GET_OFFSET(TechnoClass_GetWeaponAgainstWallWrapper));  // InfantryClass_CanEnterCell
+DEFINE_JUMP(CALL6, 0x73F49B, GET_OFFSET(TechnoClass_GetWeaponAgainstWallWrapper));  // UnitClass_CanEnterCell
 
 DEFINE_HOOK(0x70095A, TechnoClass_WhatAction_WallWeapon, 0x6)
 {
@@ -868,7 +868,7 @@ int __fastcall TechnoClass_EvaluateCellGetWeaponRangeWrapper(TechnoClass* pThis,
 	return pThis->GetWeaponRange(CellEvalTemp::weaponIndex);
 }
 
-DEFINE_JUMP(CALL, 0x6F8CE3, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponWrapper));
-DEFINE_JUMP(CALL, 0x6F8DD2, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponRangeWrapper));
+DEFINE_JUMP(CALL6, 0x6F8CE3, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponWrapper));
+DEFINE_JUMP(CALL6, 0x6F8DD2, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponRangeWrapper));
 
 #pragma endregion
