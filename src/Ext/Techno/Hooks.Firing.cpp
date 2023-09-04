@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
 #include <TerrainClass.h>
 
@@ -36,17 +37,29 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 
 DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 {
-	enum { Secondary = 0x6F3745, UseWeaponIndex = 0x6F37AF };
+	enum { Secondary = 0x6F3745 };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (const auto pCell = abstract_cast<CellClass*>(pTarget))
 	{
-		if (const auto pPrimaryExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType))
+		auto const pWeaponPrimary = pThis->GetWeapon(0)->WeaponType;
+		const auto pPrimaryExt = WeaponTypeExt::ExtMap.Find(pWeaponPrimary);
+
+		if (pThis->GetWeapon(1)->WeaponType && !EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true))
 		{
-			if (pThis->GetWeapon(1)->WeaponType && !EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true))
+			return Secondary;
+		}
+		else if (pCell->OverlayTypeIndex != -1)
+		{
+			auto const pOverlayType = OverlayTypeClass::Array()->GetItem(pCell->OverlayTypeIndex);
+
+			if (pOverlayType->Wall && pCell->OverlayData >> 4 != pOverlayType->DamageLevels && !pWeaponPrimary->Warhead->Wall &&
+				!TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoSecondaryWeaponFallback)
+			{
 				return Secondary;
+			}
 		}
 	}
 
@@ -796,3 +809,62 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
 	return 0x5223B9;
 }
+
+#pragma region WallWeaponStuff
+
+WeaponStruct* __fastcall TechnoClass_GetWeaponAgainstWallWrapper(TechnoClass* pThis, void* _, int weaponIndex)
+{
+	auto const weaponPrimary = pThis->GetWeapon(0);
+
+	if (!weaponPrimary->WeaponType->Warhead->Wall)
+	{
+		auto const weaponSecondary = pThis->GetWeapon(1);
+
+		if (weaponSecondary && weaponSecondary->WeaponType && !TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoSecondaryWeaponFallback)
+			return weaponSecondary;
+	}
+
+	return weaponPrimary;
+}
+
+
+DEFINE_JUMP(CALL, 0x51C1F8, GET_OFFSET(TechnoClass_GetWeaponAgainstWallWrapper));  // InfantryClass_CanEnterCell
+DEFINE_JUMP(CALL, 0x73F49B, GET_OFFSET(TechnoClass_GetWeaponAgainstWallWrapper));  // UnitClass_CanEnterCell
+
+DEFINE_HOOK(0x70095A, TechnoClass_WhatAction_WallWeapon, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	R->EAX(TechnoClass_GetWeaponAgainstWallWrapper(pThis, nullptr, 0));
+
+	return 0;
+}
+
+namespace CellEvalTemp
+{
+	int weaponIndex;
+}
+
+DEFINE_HOOK(0x6F8C9D, TechnoClass_EvaluateCell_SetContext, 0x7)
+{
+	GET(int, weaponIndex, EAX);
+
+	CellEvalTemp::weaponIndex = weaponIndex;
+
+	return 0;
+}
+
+WeaponStruct* __fastcall TechnoClass_EvaluateCellGetWeaponWrapper(TechnoClass* pThis)
+{
+	return pThis->GetWeapon(CellEvalTemp::weaponIndex);
+}
+
+int __fastcall TechnoClass_EvaluateCellGetWeaponRangeWrapper(TechnoClass* pThis, void* _, int weaponIndex)
+{
+	return pThis->GetWeaponRange(CellEvalTemp::weaponIndex);
+}
+
+DEFINE_JUMP(CALL, 0x6F8CE3, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponWrapper));
+DEFINE_JUMP(CALL, 0x6F8DD2, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponRangeWrapper));
+
+#pragma endregion
