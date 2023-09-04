@@ -4,6 +4,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BuildingType/Body.h>
+#include <Ext/Script/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -23,6 +24,41 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	if (pExt->CheckDeathConditions())
 		return 0;
+
+	if (pThis->Target && pThis->SpawnManager && pExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(static_cast<TechnoClass*>(pExt->CurrentRandomTarget), true))
+	{
+		if (pThis->SpawnManager)
+		{
+			for (auto pSpawn : pThis->SpawnManager->SpawnedNodes)
+			{
+				if (!pSpawn->Unit)
+					continue;
+
+				auto pSpawnExt = TechnoExt::ExtMap.Find(pSpawn->Unit);
+				if (!pSpawnExt)
+					continue;
+
+				if (!pSpawnExt->CurrentRandomTarget)
+				{
+					pSpawnExt->CurrentRandomTarget = TechnoExt::GetRandomTarget(pThis);
+					pSpawn->Unit->Target = pSpawnExt->CurrentRandomTarget;
+				}
+				else if (pSpawn->Status == SpawnNodeStatus::Preparing && pSpawn->Unit->IsInAir())
+				{
+					if (!pSpawn->Unit->Target && pSpawnExt->CurrentRandomTarget)
+						pSpawn->Unit->Target = pSpawnExt->CurrentRandomTarget;
+				}
+			}
+		}
+	}
+
+	if (pExt->OriginalTarget && !pThis->Target && ScriptExt::IsUnitAvailable(static_cast<TechnoClass*>(pExt->OriginalTarget), true) && !pThis->IsInAir())
+	{
+		if (pExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(pExt->CurrentRandomTarget, true))
+			pThis->SetTarget(pExt->CurrentRandomTarget);
+		else
+			pThis->SetTarget(pExt->OriginalTarget);
+	}
 
 	pExt->ApplyInterceptor();
 	pExt->EatPassengers();

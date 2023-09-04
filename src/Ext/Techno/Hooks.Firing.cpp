@@ -796,87 +796,124 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 	return 0x5223B9;
 }
 
-DEFINE_HOOK(0x6FE562, TechnoClass_FireAt_BurstRandomTarget, 0x6)
+
+DEFINE_HOOK(0x736F61, UnitClass_FiringAI_BurstRandomTarget_Setup, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(WeaponTypeClass*, pWeapon, EBX);
-	GET(BulletClass*, pBullet, EAX);
 
-	if (!pBullet || pWeapon->Burst < 2)
-		return 0;
+	TechnoExt::UpdateRandomTarget(pThis);
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	if (!pWeaponExt || pWeaponExt->Burst_Retarget <= 0.0)
-		return 0;
+	return 0;
+}
 
-	int retargetProbability = pWeaponExt->Burst_Retarget > 1.0 ? 100 : (int)round(pWeaponExt->Burst_Retarget * 100);
-	int dice = ScenarioClass::Instance->Random.RandomRanged(1,100);
+DEFINE_HOOK(0x4D4E8A, FootClass_FiringAI_BurstRandomTarget_Setup, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
 
-	if (retargetProbability < dice)
-		return 0;
+	TechnoExt::UpdateRandomTarget(pThis);
 
-	auto pThisType = pThis->GetTechnoType();
-	int minimumRange = pWeapon->MinimumRange;
-	int range = pWeapon->Range;
-	int airRange = pWeapon->Range + pThisType->AirRangeBonus;
-	bool omniFire = pWeapon->OmniFire;
-	std::vector<TechnoClass*> candidates;
-	auto originalTarget = pThis->Target;
-	bool friendlyFire = pThis->Owner->IsAlliedWith(originalTarget);
+	return 0;
+}
 
-	for (auto pTarget : *TechnoClass::Array)
+DEFINE_HOOK(0x44AFF8, TechnoClass_FireAt_BurstRandomTarget_Setup, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	TechnoExt::UpdateRandomTarget(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6B770D, SpawnerManagerClassAI_0, 0xB)
+{
+	GET(SpawnManagerClass *, pThis, ESI);
+
+	bool skip = false;
+
+	for (auto pItem : pThis->SpawnedNodes)
 	{
-		if (pTarget == pThis
-			|| pThisType->Immune
-			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget, true)
-			|| (!pWeapon->Projectile->AA && pTarget->IsInAir())
-			|| (!pWeapon->Projectile->AG && !pTarget->IsInAir())
-			|| (!friendlyFire && (pThis->Owner->IsAlliedWith(pTarget) || ScriptExt:: IsUnitMindControlledFriendly(pThis->Owner, pTarget)))
-			|| pTarget->GetTechnoType()->Underwater && pTarget->GetTechnoType()->NavalTargeting == NavalTargetingType::Underwater_Never
-			|| pTarget->GetTechnoType()->Naval && pTarget->GetTechnoType()->NavalTargeting == NavalTargetingType::Naval_None)
-		{
-			continue;
-		}
-
-		int distanceFromAttacker = pThis->DistanceFrom(pTarget);
-		if (distanceFromAttacker < minimumRange)
+		const auto pSpawnExt = TechnoExt::ExtMap.Find(pItem->Unit);
+		if (!pSpawnExt)
 			continue;
 
-		if (omniFire)
+		if (pSpawnExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
 		{
-			if (pTarget->IsInAir())
-			{
-				if (distanceFromAttacker <= airRange)
-					candidates.push_back(pTarget);
-			}
-			else
-			{
-				if (distanceFromAttacker <= range)
-					candidates.push_back(pTarget);
-			}
+			skip = true;
+			pItem->Unit->Target = pSpawnExt->CurrentRandomTarget;
 		}
 		else
 		{
-			int distanceFromOriginalTarget = pTarget->DistanceFrom(originalTarget);
-
-			if (pTarget->IsInAir())
-			{
-				if (distanceFromAttacker <= airRange && distanceFromOriginalTarget <= airRange)
-					candidates.push_back(pTarget);
-			}
-			else
-			{
-				if (distanceFromAttacker <= range && distanceFromOriginalTarget <= range)
-					candidates.push_back(pTarget);
-			}
+			pSpawnExt->CurrentRandomTarget = nullptr;
 		}
 	}
 
-	if (candidates.size() > 0)
+	if (skip)
+		return 0x6B771E;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6B776E, SpawnerManagerClassAI_1, 0x6) // Note: Not sure in which cases the game enters in this hook, maybe not necessary :-/
+{
+	GET(AircraftClass*, pThis, ECX);
+
+	const auto pSpawnExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pSpawnExt)
+		return 0;
+
+	if (pSpawnExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
 	{
-		// Pick one new target from the list of targets inside the weapon range
-		dice = ScenarioClass::Instance->Random.RandomRanged(0, candidates.size() - 1);
-		pBullet->Target = candidates.at(dice);
+		pThis->Target = pSpawnExt->CurrentRandomTarget;
+		return 0x6B777A;
+	}
+	else
+	{
+		pSpawnExt->CurrentRandomTarget = nullptr;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6B7AE3, SpawnerManagerClassAI_2, 0x6)
+{
+	GET(AircraftClass*, pThis, ECX);
+
+	const auto pSpawnExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pSpawnExt)
+		return 0;
+
+	if (pSpawnExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
+	{
+		pThis->Target = pSpawnExt->CurrentRandomTarget;
+		return 0x6B7AEF;
+	}
+	else
+	{
+		pSpawnExt->CurrentRandomTarget = nullptr;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected, 0x5)
+{
+	for (auto pObj : ObjectClass::CurrentObjects())
+	{
+		auto pTechno = abstract_cast<TechnoClass*>(pObj);
+		if (!pTechno)
+			continue;
+
+		auto pExt = TechnoExt::ExtMap.Find(pTechno);
+		if (!pExt)
+			continue;
+
+		if (pExt->CurrentRandomTarget && pTechno->CurrentMission == Mission::Attack)
+		{
+			pExt->CurrentRandomTarget = nullptr;
+			pExt->OriginalTarget = nullptr;
+			pTechno->Target = nullptr;
+			pTechno->QueueMission(Mission::Guard, 0);
+		}
 	}
 
 	return 0;

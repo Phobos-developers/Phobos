@@ -4,6 +4,8 @@
 #include <ScenarioClass.h>
 
 #include <Ext/House/Body.h>
+#include <Ext/WeaponType/Body.h>
+#include <Ext/Script/Body.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -200,6 +202,197 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 	return true;
 }
 
+bool TechnoExt::UpdateRandomTarget(TechnoClass* pThis)
+{
+	if (!pThis)
+		return false;
+
+	int weaponIndex = pThis->SelectWeapon(pThis->Target);
+	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	if (!pWeapon)
+		return false;
+	
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	if (!pWeaponExt || pWeaponExt->RandomTarget <= 0.0)
+		return false;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return false;
+
+	if (pExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(pExt->CurrentRandomTarget, false) && pThis->SpawnManager)
+		return false;
+
+	if (!pThis->Target && !ScriptExt::IsUnitAvailable(abstract_cast<TechnoClass*>(pExt->OriginalTarget), false))
+	{
+		pExt->OriginalTarget = nullptr;
+		return false;
+	}
+
+	if (pThis->GetCurrentMission() != Mission::Attack)
+	{
+		pExt->OriginalTarget = nullptr;
+		return false;
+	}
+
+	if (!pThis->Target)
+		return false;
+
+	if (pThis->DistanceFrom(pExt->OriginalTarget) > pWeapon->Range)
+		pThis->SetTarget(pExt->OriginalTarget);
+
+	if (pThis->DistanceFrom(pThis->Target) > pWeapon->Range)
+	{
+		pThis->SetTarget(pExt->OriginalTarget);
+		return false;
+	}
+
+	auto pRandomTarget = GetRandomTarget(pThis);
+
+	if (!pRandomTarget)
+		return false;
+
+	pExt->OriginalTarget = !pExt->OriginalTarget ? pThis->Target : pExt->OriginalTarget;
+	pExt->CurrentRandomTarget = pRandomTarget;
+	pThis->Target = pRandomTarget;
+
+	if (pThis->SpawnManager)
+	{
+		bool isFirstSpawn = true;
+
+		for (auto pSpawn : pThis->SpawnManager->SpawnedNodes)
+		{
+			if (!pSpawn->Unit)
+				continue;
+
+			TechnoClass* pSpawnTarget = nullptr;
+
+			auto pSpawnExt = TechnoExt::ExtMap.Find(pSpawn->Unit);
+			if (!pSpawnExt)
+				continue;
+
+			if (isFirstSpawn)
+			{
+				pSpawnTarget = pExt->CurrentRandomTarget;
+
+				if (pWeaponExt->RandomTarget_Spawners_MultipleTargets)
+					isFirstSpawn = false;
+			}
+			else
+			{
+				pSpawnTarget = GetRandomTarget(pThis);
+
+				if (!pSpawnTarget)
+					pSpawnTarget = abstract_cast<TechnoClass*>(pExt->OriginalTarget);
+			}
+
+			pSpawnExt->CurrentRandomTarget = pSpawnTarget;
+			pSpawnExt->OriginalTarget = pExt->OriginalTarget;
+		}
+	}
+
+	return true;
+}
+
+TechnoClass* TechnoExt::GetRandomTarget(TechnoClass* pThis)
+{
+	TechnoClass* selection = nullptr;
+
+	if (!pThis && !pThis->Target)
+		return selection;
+
+	int weaponIndex = pThis->SelectWeapon(pThis->Target);
+	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	if (!pWeapon)
+		return selection;
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	if (!pWeaponExt || pWeaponExt->RandomTarget <= 0.0)
+		return selection;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return selection;
+	
+	int retargetProbability = std::min((int)round(pWeaponExt->RandomTarget * 100), 100);
+	int dice = ScenarioClass::Instance->Random.RandomRanged(1, 100);
+
+	if (retargetProbability < dice)
+		return selection;
+
+	auto pThisType = pThis->GetTechnoType();
+	int minimumRange = pWeapon->MinimumRange;
+	int range = pWeapon->Range;
+	int airRange = pWeapon->Range + pThisType->AirRangeBonus;
+	bool omniFire = pWeapon->OmniFire;
+	std::vector<TechnoClass*> candidates;
+	auto originalTarget = abstract_cast<TechnoClass*>(!pExt->OriginalTarget ? pThis->Target : pExt->OriginalTarget);
+	bool friendlyFire = pThis->Owner->IsAlliedWith(originalTarget);
+
+	// Looking for all valid targeting candidates
+	for (auto pTarget : *TechnoClass::Array)
+	{
+		if (pTarget == pThis
+			|| !ScriptExt::IsUnitAvailable(pTarget, true)
+			|| pThisType->Immune
+			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget, true)
+			|| (!pWeapon->Projectile->AA && pTarget->IsInAir())
+			|| (!pWeapon->Projectile->AG && !pTarget->IsInAir())
+			|| (!friendlyFire && (pThis->Owner->IsAlliedWith(pTarget) || ScriptExt::IsUnitMindControlledFriendly(pThis->Owner, pTarget)))
+			|| pTarget->TemporalTargetingMe
+			|| pTarget->BeingWarpedOut
+			|| (pTarget->GetTechnoType()->Underwater && pTarget->GetTechnoType()->NavalTargeting == NavalTargetingType::Underwater_Never)
+			|| (pTarget->GetTechnoType()->Naval && pTarget->GetTechnoType()->NavalTargeting == NavalTargetingType::Naval_None)
+			|| (pTarget->CloakState == CloakState::Cloaked && !pThisType->Naval)
+			|| (pTarget->InWhichLayer() == Layer::Underground))
+		{
+			continue;
+		}
+
+		int distanceFromAttacker = pThis->DistanceFrom(pTarget);
+		if (distanceFromAttacker < minimumRange)
+			continue;
+
+		if (omniFire)
+		{
+			if (pTarget->IsInAir())
+			{
+				if (distanceFromAttacker <= airRange)
+					candidates.push_back(pTarget);
+			}
+			else
+			{
+				if (distanceFromAttacker <= range)
+					candidates.push_back(pTarget);
+			}
+		}
+		else
+		{
+			int distanceFromOriginalTarget = pTarget->DistanceFrom(originalTarget);
+
+			if (pTarget->IsInAir())
+			{
+				if (distanceFromAttacker <= airRange && distanceFromOriginalTarget <= airRange)
+					candidates.push_back(pTarget);
+			}
+			else
+			{
+				if (distanceFromAttacker <= range && distanceFromOriginalTarget <= range)
+					candidates.push_back(pTarget);
+			}
+		}
+	}
+
+	if (candidates.size() == 0)
+		return selection;
+
+	// Pick one new target from the list of targets inside the weapon range
+	dice = ScenarioClass::Instance->Random.RandomRanged(0, candidates.size() - 1);
+	selection = candidates.at(dice);
+	
+	return selection;
+}
+
 // =============================
 // load / save
 
@@ -221,6 +414,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsInTunnel)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
+		.Process(this->OriginalTarget)
+		.Process(this->CurrentRandomTarget)
 		;
 }
 

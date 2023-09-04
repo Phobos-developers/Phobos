@@ -6,6 +6,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Macro.h>
+#include <Utilities/EnumFunctions.h>
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 
@@ -34,6 +35,8 @@ public:
 		bool IsInTunnel;
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
+		AbstractClass* OriginalTarget;
+		TechnoClass* CurrentRandomTarget;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -56,6 +59,8 @@ public:
 			, IsInTunnel { false }
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
+			, OriginalTarget { nullptr }
+			, CurrentRandomTarget { nullptr }
 		{ }
 
 		void ApplyInterceptor();
@@ -120,6 +125,8 @@ public:
 	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts);
 	static bool AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon = nullptr, bool useZone = false, int zone = -1);
 	static void UpdateAttachedAnimLayers(TechnoClass* pThis);
+	static bool UpdateRandomTarget(TechnoClass* pThis = nullptr);
+	static TechnoClass* GetRandomTarget(TechnoClass* pThis = nullptr);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

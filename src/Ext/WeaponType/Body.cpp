@@ -56,7 +56,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
 	this->OmniFire_TurnToTarget.Read(exINI, pSection, "OmniFire.TurnToTarget");
-	this->Burst_Retarget.Read(exINI, pSection, "Burst.Retarget");
+	this->RandomTarget.Read(exINI, pSection, "RandomTarget");
+	this->RandomTarget_Spawners_MultipleTargets.Read(exINI, pSection, "RandomTarget.Spawners.MultipleTargets");
 }
 
 template <typename T>
@@ -79,7 +80,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Laser_IsSingleColor)
 		.Process(this->ROF_RandomDelay)
 		.Process(this->OmniFire_TurnToTarget)
-		.Process(this->Burst_Retarget)
+		.Process(this->RandomTarget)
+		.Process(this->RandomTarget_Spawners_MultipleTargets)
 		;
 };
 
