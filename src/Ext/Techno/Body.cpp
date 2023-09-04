@@ -110,7 +110,9 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 	else
 		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
 
-	return pThis->SpeedMultiplier * houseMultiplier *
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pThis->SpeedMultiplier * houseMultiplier * pExt->AE_SpeedMultiplier *
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
