@@ -135,7 +135,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting.
 - You can now specify houses named `<Player @ A>` through `<Player @ H>` as the owner of TechnoTypes preplaced on the map in the editor, and they will be correctly given to players starting on points 1-8. Originally, it was only possible to use these house names in events, actions and teams.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
-- `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`
+- `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
 
 ## Fixes / interactions with other extensions
 
