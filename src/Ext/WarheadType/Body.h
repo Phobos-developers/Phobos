@@ -114,6 +114,11 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		Valueable<bool> Webby;
+		ValueableVector<AnimTypeClass*> Webby_Anims;
+		Valueable<int> Webby_Duration;
+		Valueable<int> Webby_DurationVariation;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -235,6 +240,11 @@ public:
 			, Splashed { false }
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate {false}
+
+			, Webby { false }
+			, Webby_Anims {}
+			, Webby_Duration { 0 }
+			, Webby_DurationVariation { 0 }
 		{ }
 
 	private:

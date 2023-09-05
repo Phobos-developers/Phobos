@@ -65,6 +65,39 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	}
 }
 
+void TechnoExt::ExtData::WebbyUpdate()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (!TechnoExt::IsActive(pThis) || pThis->WhatAmI() != AbstractType::Infantry)
+		return;
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return;
+	int aaa = pExt->WebbyDurationCountDown;
+	if (pExt->WebbyDurationCountDown < 0)
+	{
+		if (pExt->WebbyAnim)
+			pExt->WebbyAnim->Limbo();
+
+		pExt->WebbyAnim = nullptr;
+
+		return;
+	}
+
+	if (pExt->WebbyDurationTimer.Completed())
+	{
+		pExt->WebbyDurationCountDown = -1;
+		pExt->WebbyDurationTimer.Stop();
+		
+		if (pExt->WebbyAnim)
+			pExt->WebbyAnim->Limbo();
+
+		pExt->WebbyAnim = nullptr;
+	}
+}
+
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
 	auto const pThis = this->OwnerObject();

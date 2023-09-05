@@ -178,6 +178,11 @@ public:
 		Nullable<Point2D> SpawnsPipSize;
 		Valueable<Point2D> SpawnsPipOffset;
 
+		ValueableVector<AnimTypeClass*> Webby_Anims;
+		Valueable<bool> ImmuneToWeb;
+		Valueable<int> Webby_Duration;
+		Valueable<int> Webby_DurationVariation;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -351,6 +356,11 @@ public:
 			, EmptySpawnsPipFrame { 0 }
 			, SpawnsPipSize {}
 			, SpawnsPipOffset {{ 0,0 }}
+
+			, Webby_Anims {}
+			, ImmuneToWeb { false }
+			, Webby_Duration { 0 }
+			, Webby_DurationVariation { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
