@@ -136,7 +136,7 @@ HugeBar.Pips.Offset=0,0                        ; integers - horizontal, vertical
 HugeBar.Pips.Num=100                           ; integer
 
 ; Text Value
-Value.Text.Color=0,255,0                       ; integers - Red, Green, Blue 
+Value.Text.Color=0,255,0                       ; integers - Red, Green, Blue
 Value.Text.Color.ConditionYellow=255,180,0     ; integers - Red, Green, Blue
 Value.Text.Color.ConditionRed=255,0,0          ; integers - Red, Green, Blue
 
@@ -188,7 +188,7 @@ HugeBar.Pips.Offset=0,0                        ; integers - horizontal, vertical
 HugeBar.Pips.Num=100                           ; integer
 
 ; Text Value
-Value.Text.Color=0,0,216                       ; integers - Red, Green, Blue 
+Value.Text.Color=0,0,216                       ; integers - Red, Green, Blue
 Value.Text.Color.ConditionYellow=              ; integers - Red, Green, Blue
 Value.Text.Color.ConditionRed=                 ; integers - Red, Green, Blue
 
