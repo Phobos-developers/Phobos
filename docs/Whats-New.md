@@ -337,6 +337,7 @@ New:
 - Show designator & inhibitor range (by Morton)
 - Owner-only sound on unit creation (by Fryone)
 - Allow using `Secondary` weapon against walls if `Primary` cannot target them (by Starkku)
+- Display huge bar on screen (by ststl)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
