@@ -94,6 +94,127 @@ DigitalDisplay.Enable=false             ; boolean
 An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)).
 ```
 
+### Huge Bar
+
+![image](_static/images/HugeBar.jpg)
+
+- Now you can configure a huge bar on screen to display the health and shield of critical units. Huge bar will be diplayed on battle screen until this unit disappear or be destroyed.
+ - If one of `HugeBar.Shape`, `HugeBar.Pips.Shape`, `HugeBar.Frame`, `HugeBar.Pips.Frame` not present, game-drawn rectangles will be used instead.
+ - `HugeBar.RectWidthPercentage` just used when `HugeBar.RectWH` set `-1` as width.
+ - Frames 0-9 will be used as digits when the owner's health bar is green, 10-19 when yellow, 20-29 when red. For `/` and `%` characters, frame numbers are 30-31, 32-33, 34-35, respectively.
+ - `Anchor` set the reference position on the screen.
+
+In `rulesmd.ini`:
+```ini
+[HugeBar_Health]
+; Rectangles Bar
+HugeBar.RectWidthPercentage=82%                ; percentage
+HugeBar.RectWH=-1,30                           ; integers - width, height
+HugeBar.Pips.Color1=0,255,0                    ; integers - Red, Green, Blue
+HugeBar.Pips.Color1.ConditionYellow=255,255,0  ; integers - Red, Green, Blue
+HugeBar.Pips.Color1.ConditionRed=255,0,0       ; integers - Red, Green, Blue
+HugeBar.Pips.Color2=0,216,0                    ; integers - Red, Green, Blue
+HugeBar.Pips.Color2.ConditionYellow=255,180,0  ; integers - Red, Green, Blue
+HugeBar.Pips.Color2.ConditionRed=216,0,0       ; integers - Red, Green, Blue
+
+; Shape Bar
+HugeBar.Shape=                                 ; filename with .shp extension
+HugeBar.Palette=palette.pal                    ; filename with .pal extension
+HugeBar.Frame=                                 ; integer
+HugeBar.Frame.ConditionYellow=                 ; integer
+HugeBar.Frame.ConditionRed=                    ; integer
+HugeBar.Pips.Shape=                            ; filename with .shp extension
+HugeBar.Pips.Palette=palette.pal               ; filename with .pal extension
+HugeBar.Pips.Frame=                            ; integer
+HugeBar.Pips.Frame.ConditionYellow=            ; integer
+HugeBar.Pips.Frame.ConditionRed=               ; integer
+HugeBar.Pips.Spacing=0                         ; integer
+
+; Generic Bar
+HugeBar.Offset=0,0                             ; integers - horizontal, vertical
+HugeBar.Pips.Offset=0,0                        ; integers - horizontal, vertical
+HugeBar.Pips.Num=100                           ; integer
+
+; Text Value
+Value.Text.Color=0,255,0                       ; integers - Red, Green, Blue 
+Value.Text.Color.ConditionYellow=255,180,0     ; integers - Red, Green, Blue
+Value.Text.Color.ConditionRed=255,0,0          ; integers - Red, Green, Blue
+
+; Shape Value
+Value.Shape=                                   ; filename with .shp extension, if not present, game-drawn text will be used instead
+Value.Palette=palette.pal                      ; filename with .pal extension
+Value.Num.BaseFrame=0                          ; integer
+Value.Sign.BaseFrame=30                        ; integer
+Value.Shape.Spacing=8                          ; integer
+
+; Generic Value
+DisplayValue=true                              ; boolean
+Value.Offset=0,0                               ; integers - horizontal, vertical
+Value.Percentage=false                         ; boolean
+Anchor.Horizontal=Center                       ; Horizontal position enumeration (left|center/centre|right)
+Anchor.Vertical=Top                            ; Vertical position enumeration (top|center/centre|bottom)
+
+; Generic
+VisibleToHouses=all                            ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses.Observer=true                  ; boolean
+
+[HugeBar_Shield]
+; Rectangles Bar
+HugeBar.RectWidthPercentage=82%                ; percentage
+HugeBar.RectWH=-1,30                           ; integers - width, height
+HugeBar.Pips.Color1=0,0,255                    ; integers - Red, Green, Blue
+HugeBar.Pips.Color1.ConditionYellow=           ; integers - Red, Green, Blue
+HugeBar.Pips.Color1.ConditionRed=              ; integers - Red, Green, Blue
+HugeBar.Pips.Color2=0,0,216                    ; integers - Red, Green, Blue
+HugeBar.Pips.Color2.ConditionYellow=           ; integers - Red, Green, Blue
+HugeBar.Pips.Color2.ConditionRed=              ; integers - Red, Green, Blue
+
+; Shape Bar
+HugeBar.Shape=                                 ; filename with .shp extension
+HugeBar.Palette=palette.pal                    ; filename with .pal extension
+HugeBar.Frame=                                 ; integer
+HugeBar.Frame.ConditionYellow=                 ; integer
+HugeBar.Frame.ConditionRed=                    ; integer
+HugeBar.Pips.Shape=                            ; filename with .shp extension
+HugeBar.Pips.Palette=palette.pal               ; filename with .pal extension
+HugeBar.Pips.Frame=                            ; integer
+HugeBar.Pips.Frame.ConditionYellow=            ; integer
+HugeBar.Pips.Frame.ConditionRed=               ; integer
+HugeBar.Pips.Spacing=0                         ; integer
+
+; Generic Bar
+HugeBar.Offset=0,0                             ; integers - horizontal, vertical
+HugeBar.Pips.Offset=0,0                        ; integers - horizontal, vertical
+HugeBar.Pips.Num=100                           ; integer
+
+; Text Value
+Value.Text.Color=0,0,216                       ; integers - Red, Green, Blue 
+Value.Text.Color.ConditionYellow=              ; integers - Red, Green, Blue
+Value.Text.Color.ConditionRed=                 ; integers - Red, Green, Blue
+
+; Shape Value
+Value.Shape=                                   ; filename with .shp extension, if not present, game-drawn text will be used instead
+Value.Palette=palette.pal                      ; filename with .pal extension
+Value.Num.BaseFrame=0                          ; integer
+Value.Sign.BaseFrame=30                        ; integer
+Value.Shape.Spacing=8                          ; integer
+
+; Generic Value
+DisplayValue=true                              ; boolean
+Value.Offset=0,0                               ; integers - horizontal, vertical
+Value.Percentage=false                         ; boolean
+Anchor.Horizontal=Center                       ; Horizontal position enumeration (left|center/centre|right)
+Anchor.Vertical=Top                            ; Vertical position enumeration (top|center/centre|bottom)
+
+; Generic
+VisibleToHouses=all                            ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses.Observer=true                  ; boolean
+
+[SOMETECHNOTYPE]
+HugeBar=false                                  ; boolean
+HugeBar.Priority=-1                            ; integer, high priority display first
+```
+
 ### Show designator & inhibitor range
 
 - It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon]->SW.Designators` will display a circle with radius set in `[TechnoType]->DesignatorRange` or `Sight`.

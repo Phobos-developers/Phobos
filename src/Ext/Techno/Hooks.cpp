@@ -74,11 +74,29 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeLaserTrails();
 
+	TechnoExt::InitializeHugeBar(pThis);
+
 	if (pExt->TypeExtData->AutoDeath_Behavior.isset())
 	{
 		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
 		pOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	TechnoExt::InitializeHugeBar(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4F4583, TechnoClass_ProcessHugeBar, 0x6)
+{
+	TechnoExt::ProcessHugeBar();
 
 	return 0;
 }

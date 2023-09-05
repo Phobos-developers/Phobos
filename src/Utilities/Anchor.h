@@ -11,6 +11,7 @@ public:
 	Valueable<HorizontalPosition> Horizontal { HorizontalPosition::Left };
 	Valueable<VerticalPosition>   Vertical { VerticalPosition::Top };
 
+	Anchor() = default;
 	Anchor(HorizontalPosition hPos, VerticalPosition vPos)
 		: Horizontal { hPos }, Vertical { vPos }
 	{ }

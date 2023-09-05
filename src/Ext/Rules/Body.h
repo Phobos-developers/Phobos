@@ -3,6 +3,7 @@
 #include <CCINIClass.h>
 #include <RulesClass.h>
 #include <GameStrings.h>
+#include <Utilities/Anchor.h>
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
@@ -101,6 +102,60 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 
+		class HugeBarData
+		{
+		public:
+
+			Valueable<double> HugeBar_RectWidthPercentage;
+			Valueable<Point2D> HugeBar_RectWH;
+			Damageable<ColorStruct> HugeBar_Pips_Color1;
+			Damageable<ColorStruct> HugeBar_Pips_Color2;
+
+			Valueable<SHPStruct*> HugeBar_Shape;
+			Valueable<SHPStruct*> HugeBar_Pips_Shape;
+			CustomPalette HugeBar_Palette;
+			CustomPalette HugeBar_Pips_Palette;
+			Damageable<int> HugeBar_Frame;
+			Damageable<int> HugeBar_Pips_Frame;
+			Valueable<int> HugeBar_Pips_Spacing;
+
+			Valueable<Point2D> HugeBar_Offset;
+			Nullable<Point2D> HugeBar_Pips_Offset;
+			Valueable<int> HugeBar_Pips_Num;
+
+			Damageable<ColorStruct> Value_Text_Color;
+
+			Valueable<SHPStruct*> Value_Shape;
+			CustomPalette Value_Palette;
+			Valueable<int> Value_Num_BaseFrame;
+			Valueable<int> Value_Sign_BaseFrame;
+			Valueable<int> Value_Shape_Spacing;
+
+			Valueable<bool> DisplayValue;
+			Valueable<bool> Value_Percentage;
+			Valueable<Point2D> Value_Offset;
+			Anchor Anchor;
+			DisplayInfoType InfoType;
+
+			Valueable<bool> VisibleToHouses_Observer;
+			Valueable<AffectedHouse> VisibleToHouses;
+
+			HugeBarData() = default;
+			HugeBarData(DisplayInfoType infoType);
+
+			void LoadFromINI(CCINIClass* pINI);
+
+			bool Load(PhobosStreamReader& stm, bool registerForChange);
+			bool Save(PhobosStreamWriter& stm) const;
+
+		private:
+
+			template <typename T>
+			bool Serialize(T& stm);
+		};
+
+		std::vector<std::unique_ptr<HugeBarData>> HugeBar_Config;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -161,6 +216,7 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, HugeBar_Config {}
 			, ShowDesignatorRange { true }
 		{ }
 
