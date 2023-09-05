@@ -137,6 +137,43 @@ DEFINE_HOOK(0x70CA64, TechnoClass_Railgun_Obstacles, 0x5)
 	return Continue;
 }
 
+DEFINE_HOOK(0x70C862, TechnoClass_Railgun_AmbientDamageIgnoreTarget1, 0x5)
+{
+	enum { IgnoreTarget = 0x70CA59 };
+
+	GET_BASE(WeaponTypeClass*, pWeapon, 0x14);
+
+	if (WeaponTypeExt::ExtMap.Find(pWeapon)->AmbientDamage_IgnoreTarget)
+		return IgnoreTarget;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70CA8B, TechnoClass_Railgun_AmbientDamageIgnoreTarget2, 0x6)
+{
+	enum { IgnoreTarget = 0x70CBB0 };
+
+	GET_BASE(WeaponTypeClass*, pWeapon, 0x14);
+	REF_STACK(DynamicVectorClass<ObjectClass*>, objects, STACK_OFFSET(0xC0, -0xAC));
+
+	if (WeaponTypeExt::ExtMap.Find(pWeapon)->AmbientDamage_IgnoreTarget)
+	{
+		R->EAX(objects.Count);
+		return IgnoreTarget;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70CBE0, TechnoClass_Railgun_AmbientDamageWarhead, 0x5)
+{
+	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	R->EDX(WeaponTypeExt::ExtMap.Find(pWeapon)->AmbientDamage_Warhead.Get(pWeapon->Warhead));
+
+	return 0;
+}
+
 // Do not adjust map coordinates for railgun or fire stream particles that are below cell coordinates.
 DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 {

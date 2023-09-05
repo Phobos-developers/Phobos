@@ -218,6 +218,7 @@ This page lists all the individual contributions to the project by their author.
   - Misc. singleplayer mission improvements
   - Weapon effect obstacle interaction fix
   - Fire particle rotation coordinate adjust toggle
+  - `AmbientDamage` warhead & main target ignore customization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

@@ -897,6 +897,17 @@ ShakeIsLocal=false  ; boolean
 
 ## Weapons
 
+### AmbientDamage customizations
+
+- You can now specify separate Warhead used for `AmbientDamage` via `AmbientDamage.Warhead` or make it never apply to weapon's main target by setting `AmbientDamage.IgnoreTarget` to true.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                      ; WeaponType
+AmbientDamage.Warhead=            ; WarheadType
+AmbientDamage.IgnoreTarget=false  ; boolean
+```
+
 ### Customizable disk laser radius
 
 ![image](_static/images/disklaser-radius-values-01.gif)
