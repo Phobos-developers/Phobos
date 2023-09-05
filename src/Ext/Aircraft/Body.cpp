@@ -1,4 +1,8 @@
 #include "Body.h"
+
+#include <BuildingClass.h>
+
+#include <Ext/BuildingType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -50,3 +54,43 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct ed
 
 	return result;
 }
+
+DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
+{
+	auto const poseDir = static_cast<DirType>(RulesClass::Instance->PoseDir);
+
+	if (!pThis)
+		return poseDir;
+
+	bool isAirportBound = true;
+
+	if (pDock || pThis->HasAnyLink())
+	{
+		auto pBuilding = pDock;
+
+		if (!pDock)
+			pBuilding = abstract_cast<BuildingClass*>(pThis->GetNthLink(0));
+
+		if (pBuilding)
+		{
+			auto const pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
+			if (pBuildingTypeExt->AircraftDockingDir.isset())
+				return pBuildingTypeExt->AircraftDockingDir.Get();
+		}
+	}
+	else if (!pThis->Type->AirportBound)
+	{
+		isAirportBound = false;
+	}
+
+	int landingDir = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->LandingDir.Get((int)poseDir);
+
+	if (isAirportBound)
+		return static_cast<DirType>(Math::clamp(landingDir, 0, 255));
+	else if (landingDir < 0)
+		return pThis->PrimaryFacing.Current().GetDir();
+
+	return poseDir;
+}
+
