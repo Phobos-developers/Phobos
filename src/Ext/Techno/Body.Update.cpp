@@ -65,6 +65,32 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	}
 }
 
+void TechnoExt::ExtData::DepletedAmmoActions()
+{
+	auto const pThis = this->OwnerObject();
+	auto const pType = pThis->GetTechnoType();
+	if ((pThis->WhatAmI() != AbstractType::Unit) || (pType->Ammo <= 0))
+		return;
+
+	auto const pTypeExt = this->TypeExtData;
+	auto const pUnit = abstract_cast<UnitClass*>(pThis);
+
+	if (!pUnit->Type->IsSimpleDeployer)
+		return;
+
+	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
+	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
+
+	if (skipMinimum && skipMaximum)
+		return;
+
+	const bool moreThanMinimum = pThis->Ammo >= pTypeExt->Ammo_AutoDeployMinimumAmount;
+	const bool lessThanMaximum = pThis->Ammo <= pTypeExt->Ammo_AutoDeployMaximumAmount;
+
+	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
+		pThis->QueueMission(Mission::Unload, true);
+}
+
 // TODO : Merge into new AttachEffects
 bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 {
