@@ -28,6 +28,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
+#include <New/Type/Affiliated/HugeBar.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
@@ -220,8 +221,9 @@ using PhobosTypeRegistry = TypeRegistry<
 	LaserTrailTypeClass,
 	RadTypeClass,
 	ShieldClass,
-	DigitalDisplayTypeClass
+	DigitalDisplayTypeClass,
 	// other classes
+	HugeBar
 >;
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
