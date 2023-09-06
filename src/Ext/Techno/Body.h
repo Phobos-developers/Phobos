@@ -108,28 +108,7 @@ public:
 		}
 	};
 
-	static void InvalidatePointer(void* ptr, bool removed)
-	{
-		if (removed)
-		{
-			auto removedIterator = Techno_HugeBar.cend();
-
-			for (auto it = Techno_HugeBar.cbegin(); it != Techno_HugeBar.cend(); it++)
-			{
-				if (it->second == ptr)
-				{
-					removedIterator = it;
-					break;
-				}
-			}
-
-			Techno_HugeBar.erase(removedIterator);
-		}
-	}
-
 	static ExtContainer ExtMap;
-
-	static std::vector<std::pair<int, TechnoClass*>> Techno_HugeBar;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
@@ -162,11 +141,6 @@ public:
 	static bool ConvertToType(FootClass* pThis, TechnoTypeClass* toType);
 	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
 	static bool IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource);
-
-	static void InitializeHugeBar(TechnoClass* pThis);
-	static void ProcessHugeBar();
-	static void DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurrent, int iMax);
-	static void HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point2D& posDraw, int iCurrent, int iMax);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

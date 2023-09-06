@@ -1,10 +1,14 @@
-#include <ScenarioClass.h>
 #include "Body.h"
+
+#include <ScenarioClass.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+
+#include <New/Type/Affiliated/HugeBar.h>
+
 #include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -74,7 +78,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeLaserTrails();
 
-	TechnoExt::InitializeHugeBar(pThis);
+	HugeBar::InitializeHugeBar(pThis);
 
 	if (pExt->TypeExtData->AutoDeath_Behavior.isset())
 	{
@@ -89,14 +93,7 @@ DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	TechnoExt::InitializeHugeBar(pThis);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4F4583, TechnoClass_ProcessHugeBar, 0x6)
-{
-	TechnoExt::ProcessHugeBar();
+	HugeBar::InitializeHugeBar(pThis);
 
 	return 0;
 }

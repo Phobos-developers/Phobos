@@ -1,6 +1,6 @@
 #include "Anchor.h"
 
-#include <GeneralDefinitions.h>
+#include <Utilities/TemplateDef.h>
 
 double Anchor::GetRelativeOffsetHorizontal() const
 {

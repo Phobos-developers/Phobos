@@ -62,6 +62,7 @@
     <ClCompile Include="src\Misc\TextInput.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
+    <ClCompile Include="src\New\Type\Affiliated\HugeBar.cpp" />
     <ClCompile Include="src\New\Type\DigitalDisplayTypeClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\Misc\SyncLogging.h" />
     <ClInclude Include="src\Misc\TypeConvertHelper.h" />
+    <ClInclude Include="src\New\Type\Affiliated\HugeBar.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
