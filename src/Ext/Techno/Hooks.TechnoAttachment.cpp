@@ -580,7 +580,44 @@ DEFINE_HOOK(0x6F3283, TechnoClass_CanScatter_CheckIfAttached, 0x8)
 		: ContinueCheck;
 }
 
-// TODO maybe? handle scatter for InfantryClass and possibly AircraftClass
+DEFINE_HOOK(0x4817A8, CellClass_Incoming_CheckIfTechnoOccupies, 0x6)
+{
+	enum { ConditionIsTrue = 0x4817C3, ContinueCheck = 0x0 };
+
+	GET(TechnoClass*, pTechno, ESI);
+	auto const& pExt = TechnoExt::ExtMap.Find(pTechno);
+
+	return pExt->ParentAttachment && pExt->ParentAttachment->GetType()->OccupiesCell
+		? ConditionIsTrue
+		: ContinueCheck;
+}
+
+DEFINE_HOOK(0x4817C3, CellClass_Incoming_HandleScatterWithAttachments, 0x0)
+{
+	GET(TechnoClass*, pTechno, ESI);
+
+	GET(CoordStruct*, pThreatCoord, EBP);
+	GET(bool, isForced, EBX);
+	GET_STACK(bool, isNoKidding, STACK_OFFSET(0x2C, 0xC));  // direct all complaints to tomsons26 for the variable naming
+	CoordStruct const& threatCoord = *pThreatCoord;
+
+	// we already checked that this is something that occupies the cell, see the hook above - Kerbiter
+	TechnoExt::GetTopLevelParent(pTechno)->Scatter(threatCoord, isForced, isNoKidding);
+
+	return 0x4817D9;
+}
+
+DEFINE_HOOK(0x51D0DD, InfantryClass_Scatter_CheckAttachments, 0x6)
+{
+	enum { Bail = 0x51D6E6, Continue = 0x0 };
+
+	GET(InfantryClass*, pThis, ESI);
+
+	return TechnoExt::HasAttachmentLoco(pThis)
+		? Bail
+		: Continue;
+}
+
 
 DEFINE_HOOK(0x736FB6, UnitClass_FiringAI_ForbidAttachmentRotation, 0x6)
 {
