@@ -120,8 +120,17 @@ bool AttachmentLocomotionClass::Process()
 		CellStruct oldPos = this->PreviousCell;
 		CellStruct newPos = this->LinkedTo->GetMapCoords();
 
-		if (Layer::Air <= newLayer && !changedAirborneStatus && oldPos != newPos)
-			AircraftTrackerClass::Instance->Update(this->LinkedTo, oldPos, newPos);
+		if (oldPos != newPos)
+		{
+			if (Layer::Air <= newLayer && !changedAirborneStatus)
+				AircraftTrackerClass::Instance->Update(this->LinkedTo, oldPos, newPos);
+
+			if (this->LinkedTo->GetTechnoType()->SensorsSight)
+			{
+				this->LinkedTo->RemoveSensorsAt(oldPos);
+				this->LinkedTo->AddSensorsAt(newPos);
+			}
+		}
 
 		this->PreviousCell = newPos;
 	}
