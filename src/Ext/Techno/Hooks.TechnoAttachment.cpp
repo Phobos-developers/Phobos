@@ -705,3 +705,17 @@ DEFINE_HOOK(0x6DA4FB, TacticalClass_SelectAt_TransparentToMouse_OccupierPtr, 0x6
 	R->EAX<ObjectClass*>(pFoundObject);
 	return 0x6DA501;
 }
+
+// this is probably not the best way to implement sight since we may be hijacking
+// into some undesirable side effects, cause this is intended for air units that
+// don't run Per Cell Process function, ergo, don't update their sight - Kerbiter
+DEFINE_HOOK(0x4DA6A0, FootClass_AI_CheckLocoForSight, 0x0)
+{
+	enum { ContinueCheck = 0x4DA6AF, NoSightUpdate = 0x4DA7B0 };
+
+	GET(FootClass*, pThis, ESI);
+
+	return pThis->IsInAir() || TechnoExt::HasAttachmentLoco(pThis)
+		? ContinueCheck
+		: NoSightUpdate;
+}
