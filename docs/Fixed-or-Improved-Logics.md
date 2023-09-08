@@ -858,6 +858,17 @@ ShakeIsLocal=false  ; boolean
 
 ## Weapons
 
+### Customizing whether members are kicked out when an aircraft fires
+
+- In yuri's revenge, if aircraft has passengers, aircraft force kick out it's passengers when firing but not fire weapons.
+- Now you can decide aircraft kick out it's passengers or not when firing.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+KickOutPassenger=true  ; boolean 
+```
+
 ### Customizable disk laser radius
 
 ![image](_static/images/disklaser-radius-values-01.gif)
