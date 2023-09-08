@@ -22,10 +22,9 @@ TechnoExt::ExtData::~ExtData()
 	if (pTypeExt && pTypeExt->AutoDeath_Behavior.isset())
 	{
 		auto pThis = this->OwnerObject();
-		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
-		if (it != hExt->OwnedTimedAutoDeathObjects.end())
-			hExt->OwnedTimedAutoDeathObjects.erase(it);
+		auto pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto& vec = pOwnerExt->OwnedAutoDeathObjects;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 }
 
@@ -615,6 +614,22 @@ bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaul
 	return canDeploy;
 }
 
+bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
+{
+	if (!pThis || !pSource)
+		return false;
+
+	auto const pType = pThis->GetTechnoType();
+
+	if (!pType->TypeImmune)
+		return false;
+
+	if (pType == pSource->GetTechnoType() && pThis->Owner == pSource->Owner)
+		return true;
+
+	return false;
+}
+
 // Attaches this techno in a first available attachment "slot".
 // Returns true if the attachment is successful.
 bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
@@ -751,8 +766,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->IsInTunnel)
+		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
+		.Process(this->WHAnimRemainingCreationInterval)
 		;
 }
 

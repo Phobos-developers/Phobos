@@ -21,7 +21,9 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	{
 		BulletClass* pTargetBullet = nullptr;
 
-		for (auto const& [pBullet, pBulletExt] : BulletExt::ExtMap)
+		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
+		// so it can differ across players throwing target management out of sync.
+		for (auto const& pBullet : *BulletClass::Array())
 		{
 			const auto pInterceptorType = pTypeExt->InterceptorType.get();
 			const auto& guardRange = pInterceptorType->GuardRange.Get(pThis);
@@ -32,7 +34,8 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			if (distance > guardRange || distance < minguardRange)
 				continue;
 
-			auto pBulletTypeExt = pBulletExt->TypeExtData;
+			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			auto const pBulletTypeExt = pBulletExt->TypeExtData;
 
 			if (!pBulletTypeExt || !pBulletTypeExt->Interceptable)
 				continue;
@@ -65,8 +68,34 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	}
 }
 
+void TechnoExt::ExtData::DepletedAmmoActions()
+{
+	auto const pThis = this->OwnerObject();
+	auto const pType = pThis->GetTechnoType();
+	if ((pThis->WhatAmI() != AbstractType::Unit) || (pType->Ammo <= 0))
+		return;
+
+	auto const pTypeExt = this->TypeExtData;
+	auto const pUnit = abstract_cast<UnitClass*>(pThis);
+
+	if (!pUnit->Type->IsSimpleDeployer)
+		return;
+
+	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
+	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
+
+	if (skipMinimum && skipMaximum)
+		return;
+
+	const bool moreThanMinimum = pThis->Ammo >= pTypeExt->Ammo_AutoDeployMinimumAmount;
+	const bool lessThanMaximum = pThis->Ammo <= pTypeExt->Ammo_AutoDeployMaximumAmount;
+
+	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
+		pThis->QueueMission(Mission::Unload, true);
+}
+
 // TODO : Merge into new AttachEffects
-bool TechnoExt::ExtData::CheckDeathConditions()
+bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 {
 	auto const pTypeExt = this->TypeExtData;
 
@@ -83,7 +112,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	// Death if no ammo
 	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 	{
-		TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
+		TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 		return true;
 	}
 
@@ -93,24 +122,22 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 		if (!this->AutoDeathTimer.HasStarted())
 		{
 			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
-			HouseExt::ExtMap.Find(pThis->Owner)->OwnedTimedAutoDeathObjects.push_back(this);
 		}
 		else if (this->AutoDeathTimer.Completed())
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
+			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 			return true;
 		}
-
 	}
-	// TODO : Not working correctly, FIX THIS
+
 	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
 	{
-		auto existSingleType = [pThis, affectedHouse, allowLimbo](const TechnoTypeClass* pType)
+		auto existSingleType = [pThis, affectedHouse, allowLimbo](TechnoTypeClass* pType)
 		{
 			for (HouseClass* pHouse : *HouseClass::Array)
 			{
 				if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
-					&& (allowLimbo ? pHouse->CountOwnedNow(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
+					&& (allowLimbo ? HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
 					return true;
 			}
 
@@ -127,7 +154,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	{
 		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
+			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 
 			return true;
 		}
@@ -138,7 +165,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	{
 		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim);
+			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 
 			return true;
 		}
@@ -152,7 +179,7 @@ void TechnoExt::ExtData::EatPassengers()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (!TechnoExt::IsActive(pThis) || !pTypeExt->PassengerDeletionType)
+	if (!pTypeExt->PassengerDeletionType || !TechnoExt::IsActive(pThis))
 		return;
 
 	auto pDelType = pTypeExt->PassengerDeletionType.get();
@@ -379,14 +406,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 
 	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
-	{
 		this->AutoDeathTimer.Stop();
-
-		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
-		if (it != hExt->OwnedTimedAutoDeathObjects.end())
-			hExt->OwnedTimedAutoDeathObjects.erase(it);
-	}
 
 	// Reset PassengerDeletion Timer - TODO : unchecked
 	if (this->PassengerDeletionTimer.IsTicking() && this->TypeExtData->PassengerDeletionType && this->TypeExtData->PassengerDeletionType->Rate <= 0)
@@ -543,8 +563,15 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation)
+void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo)
 {
+	if (isInLimbo)
+	{
+		pThis->RegisterKill(pThis->Owner);
+		pThis->UnInit();
+		return;
+	}
+
 	switch (deathOption)
 	{
 

@@ -34,3 +34,43 @@ DEFINE_HOOK(0x6CB5EB, SuperClass_Grant_ShowTimer, 0x5)
 
 	return 0x6CB63E;
 }
+
+DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
+{
+	if (!Phobos::Config::ShowDesignatorRange || !(RulesExt::Global()->ShowDesignatorRange) || Unsorted::CurrentSWType == -1)
+		return 0;
+
+	const auto pSuperType = SuperWeaponTypeClass::Array()->GetItem(Unsorted::CurrentSWType);
+	const auto pExt = SWTypeExt::ExtMap.Find(pSuperType);
+
+	if (!pExt->ShowDesignatorRange)
+		return 0;
+
+	for (const auto pCurrentTechno : *TechnoClass::Array)
+	{
+		const auto pCurrentTechnoType = pCurrentTechno->GetTechnoType();
+		const auto pOwner = pCurrentTechno->Owner;
+
+		if (!pCurrentTechno->IsAlive
+			|| pCurrentTechno->InLimbo
+			|| !pExt->SW_Designators.Contains(pCurrentTechnoType)
+			|| !((pOwner == HouseClass::CurrentPlayer)
+				|| EnumFunctions::CanTargetHouse(AffectedHouse::Enemies, HouseClass::CurrentPlayer, pOwner)))
+		{
+			continue;
+		}
+
+		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
+
+		const float radius = pOwner == HouseClass::CurrentPlayer
+			? (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight))
+			: (float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
+
+		CoordStruct coords = pCurrentTechno->GetCenterCoords();
+		coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
+		const auto color = pOwner->Color;
+		Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
+	}
+
+	return 0;
+}
