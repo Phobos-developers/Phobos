@@ -172,11 +172,16 @@ DEFINE_HOOK(0x6F6D85, TechnoClass_Unlimbo_RemoveTracking, 0x6)
 	GET(TechnoClass* const, pThis, ESI);
 
 	auto const pType = pThis->GetTechnoType();
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (LimboTrackingTemp::Enabled && !pType->Insignificant && !pType->DontScore)
+	if (LimboTrackingTemp::Enabled && !pType->Insignificant && !pType->DontScore && pExt->HasBeenPlacedOnMap)
 	{
 		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
 		pOwnerExt->RemoveFromLimboTracking(pType);
+	}
+	else if (!pExt->HasBeenPlacedOnMap)
+	{
+		pExt->HasBeenPlacedOnMap = true;
 	}
 
 	return 0;
