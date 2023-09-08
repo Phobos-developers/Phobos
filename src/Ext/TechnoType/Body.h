@@ -179,8 +179,8 @@ public:
 		Nullable<Point2D> SpawnsPipSize;
 		Valueable<Point2D> SpawnsPipOffset;
 
-		Valueable<bool> AttachmentTopLayerMinHeight;
-		Valueable<bool> AttachmentUndergroundLayerMaxHeight;
+		Valueable<int> AttachmentTopLayerMinHeight;
+		Valueable<int> AttachmentUndergroundLayerMaxHeight;
 
 		struct AttachmentDataEntry
 		{
