@@ -75,7 +75,7 @@ void TechnoExt::ExtData::WebbyUpdate()
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	if (!pExt)
 		return;
-	int aaa = pExt->WebbyDurationCountDown;
+
 	if (pExt->WebbyDurationCountDown < 0)
 	{
 		if (pExt->WebbyAnim)
@@ -95,6 +95,13 @@ void TechnoExt::ExtData::WebbyUpdate()
 			pExt->WebbyAnim->Limbo();
 
 		pExt->WebbyAnim = nullptr;
+
+		// Restore previous action
+		pThis->SetDestination(pExt->WebbyLastTarget, false);
+		pThis->SetTarget(pExt->WebbyLastTarget);
+		pThis->QueueMission(pExt->WebbyLastMission, true);
+		pExt->WebbyLastTarget = nullptr;
+		pExt->WebbyLastMission = Mission::Sleep;
 	}
 }
 

@@ -1196,6 +1196,38 @@ In `rulesmd.ini`:
 NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
+### Web logic against infantry
+
+- Infantry will be temporally paralyzed by warheads with `Webby=yes`.
+- `Webby.Duration` specifies the duration, in frames, of the warhead's web effect.
+- `Webby.DurationVariation` allows for random variance to the duration of the warhead's web effect.
+- When `Webby.Anims` contains more than 1 animation then the new animation will be picked randomly.
+- `Webby.Cap` works like in EMP logic developed by Ares.
+  -  `Webby.Cap=-1` case: The target’s web counter is set to this absolute number of frames specified by `Web.Duration`, unless the target’s web counter is already greater than this.
+  -  `Webby.Cap=0` case: Makes this web effect stackable, but uncapped.
+  -  `Webby.Cap >0` case: Makes this web effect stackable, but maximum value capped to `Webby.Cap` value.
+- Infantry can have custom values for the web logic.
+- No damage is done by the weapons warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]              ; Warhead
+Webby=no                   ; boolean
+Webby.Anims=               ; list of animations
+Webby.Duration=0           ; integer, game frames
+Webby.DurationVariation=0  ; integer
+Webby.Cap=-1               ; integer
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]               ; InfantryType
+ImmuneToWeb=no             ; boolean
+Webby.Anims=               ; list of animations
+Webby.Duration=0           ; integer, game frames
+Webby.DurationVariation=0  ; integer
+```
+
 ## Weapons
 
 ### AreaFire target customization

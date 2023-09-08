@@ -527,7 +527,7 @@ DEFINE_HOOK(0x518016, InfantryClass_TakeDamage_Webby, 0x7)
 		return 0;
 
 	auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH);
-	if (!pWarheadExt || !pWarheadExt->Webby || pWarheadExt->Webby_Duration <= 0 || pWarheadExt->Webby_Anims.size() == 0)
+	if (!pWarheadExt || !pWarheadExt->Webby || pWarheadExt->Webby_Duration == 0 || pWarheadExt->Webby_Anims.size() == 0)
 		return 0;
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
@@ -563,14 +563,47 @@ DEFINE_HOOK(0x518016, InfantryClass_TakeDamage_Webby, 0x7)
 	minDuration = minDuration <= 0 ? 0 : minDuration;
 	int maxDuration = duration + durationVariation;
 
-	int paralysisDuration = ScenarioClass::Instance->Random.RandomRanged(minDuration, maxDuration);
-	pExt->WebbyDurationCountDown = paralysisDuration;
-	pExt->WebbyDurationTimer.Start(paralysisDuration);
+	duration = ScenarioClass::Instance->Random.RandomRanged(minDuration, maxDuration);
+
+	int cap = pWarheadExt->Webby_Cap;
+	int webbyCountDown = pExt->WebbyDurationTimer.GetTimeLeft();
+
+	if (cap == 0)
+	{
+		// Makes this Web effect stackable, but uncapped
+		duration += webbyCountDown;
+	}
+	else if (cap > 0)
+	{
+		if (webbyCountDown > cap)
+		{
+			// If current duration effect is greater than the new attempt don't change the values
+			duration = webbyCountDown;
+		}
+		else
+		{
+			// Makes this Web effect stackable, but capped
+			duration += webbyCountDown;
+			duration = duration > cap ? cap : duration;
+		}
+	}
+	else
+	{
+		// Cap=-1 case: The target’s Web counter is set to this absolute number of frames specified by Web.Duration, unless the target’s Web counter is already greater than this
+		if (webbyCountDown > duration)
+			duration = webbyCountDown;
+	}
+
+	pExt->WebbyLastTarget = pThis->Target;
+	pExt->WebbyLastMission = pThis->CurrentMission;
+
+	pExt->WebbyDurationCountDown = duration;
+	pExt->WebbyDurationTimer.Start(duration);
 
 	if (pThis->Locomotor && pThis->Locomotor->Is_Moving())
 		pThis->Locomotor->Stop_Moving();
 
-	pThis->ParalysisTimer.Start(paralysisDuration);
+	pThis->ParalysisTimer.Start(duration);
 
 	return 0x51804E;
 }

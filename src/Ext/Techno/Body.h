@@ -45,6 +45,8 @@ public:
 		int	WebbyDurationCountDown;
 		CDTimerClass WebbyDurationTimer;
 		AnimClass* WebbyAnim;
+		AbstractClass* WebbyLastTarget;
+		Mission WebbyLastMission;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -66,6 +68,8 @@ public:
 			, WebbyDurationCountDown { -1 }
 			, WebbyDurationTimer {}
 			, WebbyAnim { nullptr }
+			, WebbyLastTarget { nullptr }
+			, WebbyLastMission { Mission::Sleep }
 		{ }
 
 		void ApplyInterceptor();
