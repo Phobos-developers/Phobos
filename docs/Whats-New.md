@@ -530,6 +530,7 @@ Fixes / interactions with other extensions:
 
 New:
 - Additional sync logging in case of desync errors occuring (by Starkku)
+- Customizing whether members are kicked out when an aircraft fires (by ststl)
 
 Phobos fixes:
 - `AutoDeath` support for objects in limbo (by Trsdy)
