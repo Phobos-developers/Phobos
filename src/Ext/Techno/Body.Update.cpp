@@ -93,7 +93,7 @@ void TechnoExt::ExtData::WebbyUpdate()
 	{
 		pExt->WebbyDurationCountDown = -1;
 		pExt->WebbyDurationTimer.Stop();
-		
+
 		if (pExt->WebbyAnim)
 			pExt->WebbyAnim->Limbo();
 
