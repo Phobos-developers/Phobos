@@ -34,6 +34,7 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		OptionalStruct<int, false> DamageNumberOffset;
 		bool IsInTunnel;
+		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
 		int WHAnimRemainingCreationInterval;
@@ -62,6 +63,7 @@ public:
 			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
 			, IsInTunnel { false }
+			, HasBeenPlacedOnMap { false }
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
 			, WHAnimRemainingCreationInterval { 0 }
