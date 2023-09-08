@@ -1116,6 +1116,8 @@ ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
 ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
 ```
 
+## Weapons
+
 ### Customizing whether members are kicked out when an aircraft fires
 
 - In yuri's revenge, if aircraft has passengers, aircraft force kick out it's passengers when firing but not fire weapons.
@@ -1124,7 +1126,7 @@ ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
 In `rulesmd.ini`
 ```ini
 [SOMEWEAPON]
-KickOutPassenger=true  ; boolean 
+KickOutPassenger=true  ; boolean
 ```
 
 ### Single-color lasers
