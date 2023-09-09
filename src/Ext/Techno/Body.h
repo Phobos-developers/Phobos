@@ -147,6 +147,7 @@ public:
 	static void HandleDestructionAsChild(TechnoClass* pThis);
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
+	static void TransferAttachments(TechnoClass* pThis, TechnoClass* pThat);
 
 	static bool IsAttached(TechnoClass* pThis);
 	static bool HasAttachmentLoco(FootClass* pThis); // FIXME shouldn't be here

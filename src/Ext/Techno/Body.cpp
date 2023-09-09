@@ -700,6 +700,20 @@ void TechnoExt::LimboAttachments(TechnoClass* pThis)
 		pAttachment->Limbo();
 }
 
+void TechnoExt::TransferAttachments(TechnoClass* pThis, TechnoClass* pThat)
+{
+	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pThatExt = TechnoExt::ExtMap.Find(pThat);
+
+	for (auto& pAttachment : pThisExt->ChildAttachments)
+	{
+		pAttachment->Parent = pThat;
+		pThatExt->ChildAttachments.push_back(std::move(pAttachment));
+	}
+
+	pThisExt->ChildAttachments.clear();
+}
+
 bool TechnoExt::IsAttached(TechnoClass* pThis)
 {
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);

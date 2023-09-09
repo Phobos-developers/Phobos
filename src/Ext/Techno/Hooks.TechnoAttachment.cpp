@@ -756,3 +756,13 @@ DEFINE_HOOK(0x4DA6A0, FootClass_AI_CheckLocoForSight, 0x0)
 		? ContinueCheck
 		: NoSightUpdate;
 }
+
+DEFINE_HOOK(0x440951, BuildingClass_Unlimbo_AttachmentsFromUpgrade, 0x6)
+{
+	GET(BuildingClass*, pBuilding, EDI);
+	GET(BuildingClass*, pUpgrade, ESI);
+
+	TechnoExt::TransferAttachments(pUpgrade, pBuilding);
+
+	return 0;
+}
