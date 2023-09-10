@@ -67,7 +67,7 @@ public:
 		Valueable<bool> SW_FirstClickRestartsTimer;
 		Valueable<int> SW_FirstClickRestartsTimer_Cost;
 		Valueable<bool> SW_FirstClickRestartsTimer_AutoFire;
-		Valueable<bool> SW_FirstClickRestartsTimer_AutoFire_ForceDetonations;
+		Valueable<bool> SW_FirstClickRestartsTimer_ForceDetonations;
 		Valueable<CSFText> Message_InsufficientFunds;
 		Valueable<CSFText> Message_RestartedTimer;
 		NullableIdx<VoxClass> EVA_RestartedTimer;
@@ -110,7 +110,7 @@ public:
 			, SW_FirstClickRestartsTimer { false }
 			, SW_FirstClickRestartsTimer_Cost { 0 }
 			, SW_FirstClickRestartsTimer_AutoFire { false }
-			, SW_FirstClickRestartsTimer_AutoFire_ForceDetonations { false }
+			, SW_FirstClickRestartsTimer_ForceDetonations { false }
 			, Message_RestartedTimer {}
 			, Message_InsufficientFunds {}
 			, EVA_RestartedTimer {}
