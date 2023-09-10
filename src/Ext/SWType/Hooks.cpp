@@ -85,6 +85,10 @@ DEFINE_HOOK(0x6AAEAC, SuperClass_Place_ResetTimer, 0x6)
 	if (!pSuper)
 		return 0;
 
+	SuperExt::ExtData* pExt = SuperExt::ExtMap.Find(pSuper);
+	if (!pExt)
+		return 0;
+
 	SWTypeExt::ExtData* pData = SWTypeExt::ExtMap.Find(pSuper->Type);
 	if (!pData)
 		return 0;
@@ -95,7 +99,7 @@ DEFINE_HOOK(0x6AAEAC, SuperClass_Place_ResetTimer, 0x6)
 	if (!pData->SW_FirstClickRestartsTimer)
 		return 0;
 
-	if (!pData->TimerRestarted)
+	if (!pExt->TimerRestarted)
 	{
 		// In case of require money prevent firing the SW if the player doesn't have sufficient funds
 		int cost = pData->SW_FirstClickRestartsTimer_Cost;
@@ -120,7 +124,7 @@ DEFINE_HOOK(0x6AAEAC, SuperClass_Place_ResetTimer, 0x6)
 
 		MessageListClass::Instance->PrintMessage(pData->Message_RestartedTimer.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 
-		pData->TimerRestarted = true;
+		pExt->TimerRestarted = true;
 		pSuper->Reset();
 
 		return 0x6AB95A;
@@ -143,17 +147,41 @@ DEFINE_HOOK(0x6CBD13, SuperClass_Place_ResetTimer_AutoFire, 0x6)
 	if (!pData->SW_FirstClickRestartsTimer)
 		return 0;
 
-	if (!pData->TimerRestarted)
+	SuperExt::ExtData* pExt = SuperExt::ExtMap.Find(pSuper);
+	if (!pExt)
+		return 0;
+
+	if (!pExt->TimerRestarted)
 		return 0;
 
 	if (pData->SW_FirstClickRestartsTimer_AutoFire)
 	{
 		pSuper->Launch(CellStruct::Empty, HouseClass::CurrentPlayer->IsCurrentPlayer());
-		pSuper->Reset();
 		SWTypeExt::FireSuperWeaponExt(pSuper, CellStruct::Empty);
+		pSuper->Reset();
+		pSuper->SetRechargeTime(pSuper->Type->RechargeTime * 15);
+		pSuper->SetReadiness(false);
 
 		return 0x6CBD2F;
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6CBCD4, SuperClass_AI_ResetTimer_Update, 0x5)
+{
+	GET(SuperClass*, pSuper, ESI);
+
+	SuperExt::ExtData* pExt = SuperExt::ExtMap.Find(pSuper);
+	if (!pExt)
+		return 0;
+
+	SWTypeExt::ExtData* pTypeData = SWTypeExt::ExtMap.Find(pSuper->Type);
+	if (!pTypeData)
+		return 0;
+
+	if (pTypeData->SW_FirstClickRestartsTimer && pExt->TimerRestarted && !pSuper->Granted)
+		pExt->TimerRestarted = false;
 
 	return 0;
 }
