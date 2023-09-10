@@ -648,6 +648,7 @@ Detonate.AtFirer=false  ; boolean
 - When this super weapon is clicked forces a countdown restart.
 - The cost of the super weapon can be substracted in the first click by setting `SW.FirstClickRestartsTimer.Cost` so `Money.Amount` isn't recommended here.
 - `SW.FirstClickRestartsTimer.AutoFire` launchs the super weapon at the end of the first counter restart. Don't use the tag `SW.AutoFire`.
+- `SW.FirstClickRestartsTimer.RefundIfAborted` refunds the paid cost if the SW is no longer available if the restarted countdown haven't finished.
 - Designed with upgrades (or research) in mind, simplifiyng the number of workarounds. Probably some Ares tags are still recommended for this job.
 
 In `rulesmd.ini`:
@@ -656,6 +657,7 @@ In `rulesmd.ini`:
 SW.FirstClickRestartsTimer=no                   ; boolean
 SW.FirstClickRestartsTimer.AutoFire=no          ; boolean
 SW.FirstClickRestartsTimer.Cost=0               ; integer, always substract money
+SW.FirstClickRestartsTimer.RefundIfAborted=no   ; boolean
 Message.InsufficientFunds=                      ; CSF entry key
 Message.RestartedTimer=                         ; CSF entry key
 EVA.RestartedTimer=                             ; EVA entry

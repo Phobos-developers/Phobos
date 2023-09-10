@@ -89,20 +89,20 @@ DEFINE_HOOK(0x6AAEAC, SuperClass_Place_ResetTimer, 0x6)
 	if (!pExt)
 		return 0;
 
-	SWTypeExt::ExtData* pData = SWTypeExt::ExtMap.Find(pSuper->Type);
-	if (!pData)
+	SWTypeExt::ExtData* pTypeData = SWTypeExt::ExtMap.Find(pSuper->Type);
+	if (!pTypeData)
 		return 0;
 
 	if (!pSuper->IsCharged)
 		return 0;
 
-	if (!pData->SW_FirstClickRestartsTimer)
+	if (!pTypeData->SW_FirstClickRestartsTimer)
 		return 0;
 
 	if (!pExt->TimerRestarted)
 	{
 		// In case of require money prevent firing the SW if the player doesn't have sufficient funds
-		int cost = pData->SW_FirstClickRestartsTimer_Cost;
+		int cost = pTypeData->SW_FirstClickRestartsTimer_Cost;
 		if (cost > 0)
 			cost *= -1;
 
@@ -111,7 +111,7 @@ DEFINE_HOOK(0x6AAEAC, SuperClass_Place_ResetTimer, 0x6)
 			if (!HouseClass::CurrentPlayer->CanTransactMoney(cost))
 			{
 				VoxClass::Play(GameStrings::EVA_InsufficientFunds);
-				MessageListClass::Instance->PrintMessage(pData->Message_InsufficientFunds.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+				MessageListClass::Instance->PrintMessage(pTypeData->Message_InsufficientFunds.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 
 				return 0x6AB95A;
 			}
@@ -119,10 +119,10 @@ DEFINE_HOOK(0x6AAEAC, SuperClass_Place_ResetTimer, 0x6)
 			HouseClass::CurrentPlayer->TransactMoney(cost);
 		}
 
-		if (pData->EVA_RestartedTimer.isset())
-			VoxClass::PlayIndex(pData->EVA_RestartedTimer.Get());
+		if (pTypeData->EVA_RestartedTimer.isset())
+			VoxClass::PlayIndex(pTypeData->EVA_RestartedTimer.Get());
 
-		MessageListClass::Instance->PrintMessage(pData->Message_RestartedTimer.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		MessageListClass::Instance->PrintMessage(pTypeData->Message_RestartedTimer.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 
 		pExt->TimerRestarted = true;
 		pSuper->Reset();
@@ -137,14 +137,14 @@ DEFINE_HOOK(0x6CBD13, SuperClass_Place_ResetTimer_AutoFire, 0x6)
 {
 	GET(SuperClass*, pSuper, ESI);
 
-	SWTypeExt::ExtData* pData = SWTypeExt::ExtMap.Find(pSuper->Type);
-	if (!pData)
+	SWTypeExt::ExtData* pTypeData = SWTypeExt::ExtMap.Find(pSuper->Type);
+	if (!pTypeData)
 		return 0;
 
 	if (!pSuper->IsCharged)
 		return 0;
 
-	if (!pData->SW_FirstClickRestartsTimer)
+	if (!pTypeData->SW_FirstClickRestartsTimer)
 		return 0;
 
 	SuperExt::ExtData* pExt = SuperExt::ExtMap.Find(pSuper);
@@ -154,7 +154,7 @@ DEFINE_HOOK(0x6CBD13, SuperClass_Place_ResetTimer_AutoFire, 0x6)
 	if (!pExt->TimerRestarted)
 		return 0;
 
-	if (pData->SW_FirstClickRestartsTimer_AutoFire)
+	if (pTypeData->SW_FirstClickRestartsTimer_AutoFire)
 	{
 		pSuper->Launch(CellStruct::Empty, HouseClass::CurrentPlayer->IsCurrentPlayer());
 		SWTypeExt::FireSuperWeaponExt(pSuper, CellStruct::Empty);
@@ -181,7 +181,12 @@ DEFINE_HOOK(0x6CBCD4, SuperClass_AI_ResetTimer_Update, 0x5)
 		return 0;
 
 	if (pTypeData->SW_FirstClickRestartsTimer && pExt->TimerRestarted && !pSuper->Granted)
+	{
 		pExt->TimerRestarted = false;
+
+		if (pTypeData->SW_FirstClickRestartsTimer_RefundIfAborted)
+			HouseClass::CurrentPlayer->TransactMoney(std::abs(pTypeData->SW_FirstClickRestartsTimer_Cost));
+	}
 
 	return 0;
 }
