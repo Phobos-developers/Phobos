@@ -229,7 +229,7 @@ DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 
 	if (pItem && !pItem->Type)
 	{
-		Debug::Log("Attempting to create animation with null Type (Caller: %08x)!", callerAddress);
+		Debug::Log("Attempting to create animation with null Type (Caller: %08x)!\n", callerAddress);
 		return 0;
 	}
 
