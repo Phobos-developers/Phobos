@@ -1,6 +1,8 @@
 #include "Body.h"
 
 #include <SuperClass.h>
+#include <MessageListClass.h>
+#include <Utilities/AresFunctions.h>
 
 //Ares hooked at 0x6CC390 and jumped to 0x6CDE40
 // If a super is not handled by Ares however, we do it at the original entry point
@@ -70,6 +72,87 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
 		const auto color = pOwner->Color;
 		Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6AAEAC, SuperClass_Place_ResetTimer, 0x6)
+{
+	GET(int, idxSW, EDX);
+
+	SuperClass* pSuper = HouseClass::CurrentPlayer->Supers.GetItem(idxSW);
+	if (!pSuper)
+		return 0;
+
+	SWTypeExt::ExtData* pData = SWTypeExt::ExtMap.Find(pSuper->Type);
+	if (!pData)
+		return 0;
+
+	if (!pSuper->IsCharged)
+		return 0;
+
+	if (!pData->SW_FirstClickRestartsTimer)
+		return 0;
+
+	if (!pData->TimerRestarted)
+	{
+		// In case of require money prevent firing the SW if the player doesn't have sufficient funds
+		int cost = pData->SW_FirstClickRestartsTimer_Cost;
+		if (cost > 0)
+			cost *= -1;
+
+		if (cost != 0)
+		{
+			if (!HouseClass::CurrentPlayer->CanTransactMoney(cost))
+			{
+				VoxClass::Play(GameStrings::EVA_InsufficientFunds);
+				MessageListClass::Instance->PrintMessage(pData->Message_InsufficientFunds.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+
+				return 0x6AB95A;
+			}
+
+			HouseClass::CurrentPlayer->TransactMoney(cost);
+		}
+
+		if (pData->EVA_RestartedTimer.isset())
+			VoxClass::PlayIndex(pData->EVA_RestartedTimer.Get());
+
+		MessageListClass::Instance->PrintMessage(pData->Message_RestartedTimer.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+
+		pData->TimerRestarted = true;
+		pSuper->Reset();
+
+		return 0x6AB95A;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6CBD13, SuperClass_Place_ResetTimer_AutoFire, 0x6)
+{
+	GET(SuperClass*, pSuper, ESI);
+
+	SWTypeExt::ExtData* pData = SWTypeExt::ExtMap.Find(pSuper->Type);
+	if (!pData)
+		return 0;
+
+	if (!pSuper->IsCharged)
+		return 0;
+
+	if (!pData->SW_FirstClickRestartsTimer)
+		return 0;
+
+	if (!pData->TimerRestarted)
+		return 0;
+
+	if (pData->SW_FirstClickRestartsTimer_AutoFire)
+	{
+		pSuper->Launch(CellStruct::Empty, HouseClass::CurrentPlayer->IsCurrentPlayer());
+		pSuper->Reset();
+		SWTypeExt::FireSuperWeaponExt(pSuper, CellStruct::Empty);
+
+		return 0x6CBD2F;
 	}
 
 	return 0;

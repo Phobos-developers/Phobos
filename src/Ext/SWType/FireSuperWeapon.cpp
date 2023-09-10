@@ -240,7 +240,7 @@ void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& c
 	const auto pWeapon = this->Detonate_Weapon.isset() ? this->Detonate_Weapon.Get() : nullptr;
 	auto const mapCoords = CellClass::Coord2Cell(coords);
 
-	if (!MapClass::Instance->CoordinatesLegal(mapCoords))
+	if (!MapClass::Instance->CoordinatesLegal(mapCoords) && !this->SW_FirstClickRestartsTimer_AutoFire_ForceDetonations)
 	{
 		auto const ID = pWeapon ? pWeapon->get_ID() : this->Detonate_Warhead.Get()->get_ID();
 		Debug::Log("ApplyDetonation: Superweapon [%s] failed to detonate [%s] - cell at %d, %d is invalid.\n", this->OwnerObject()->get_ID(), ID, mapCoords.X, mapCoords.Y);

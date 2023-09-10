@@ -45,6 +45,14 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->SW_FirstClickRestartsTimer)
+		.Process(this->SW_FirstClickRestartsTimer_Cost)
+		.Process(this->SW_FirstClickRestartsTimer_AutoFire)
+		.Process(this->SW_FirstClickRestartsTimer_AutoFire_ForceDetonations)
+		.Process(this->Message_InsufficientFunds)
+		.Process(this->Message_RestartedTimer)
+		.Process(this->EVA_RestartedTimer)
+		.Process(this->TimerRestarted)
 		;
 }
 
@@ -178,6 +186,14 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
+
+	this->SW_FirstClickRestartsTimer.Read(exINI, pSection, "SW.FirstClickRestartsTimer");
+	this->SW_FirstClickRestartsTimer_Cost.Read(exINI, pSection, "SW.FirstClickRestartsTimer.Cost");
+	this->Message_InsufficientFunds.Read(exINI, pSection, "Message.InsufficientFunds");
+	this->Message_RestartedTimer.Read(exINI, pSection, "Message.RestartedTimer");
+	this->EVA_RestartedTimer.Read(exINI, pSection, "EVA.RestartedTimer");
+	this->SW_FirstClickRestartsTimer_AutoFire.Read(exINI, pSection, "SW.FirstClickRestartsTimer.AutoFire");
+	this->SW_FirstClickRestartsTimer_AutoFire_ForceDetonations.Read(exINI, pSection, "SW.FirstClickRestartsTimer.AutoFire.ForceDetonations");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -165,6 +165,19 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 		oss << Phobos::UI::CostLabel << nCost;
 		showCost = true;
 	}
+	else if (!pData->TimerRestarted)
+	{
+		if (nCost = std::abs(pData->SW_FirstClickRestartsTimer_Cost))
+		{
+			oss << L"\n";
+
+			if (pData->SW_FirstClickRestartsTimer_Cost > 0)
+				oss << '+';
+
+			oss << Phobos::UI::CostLabel << nCost;
+			showCost = true;
+		}
+	}
 
 	if (pType->RechargeTime > 0)
 	{

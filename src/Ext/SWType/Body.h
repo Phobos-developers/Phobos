@@ -63,6 +63,15 @@ public:
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
+		Valueable<bool> TimerRestarted;
+		Valueable<bool> SW_FirstClickRestartsTimer;
+		Valueable<int> SW_FirstClickRestartsTimer_Cost;
+		Valueable<bool> SW_FirstClickRestartsTimer_AutoFire;
+		Valueable<bool> SW_FirstClickRestartsTimer_AutoFire_ForceDetonations;
+		Valueable<CSFText> Message_InsufficientFunds;
+		Valueable<CSFText> Message_RestartedTimer;
+		NullableIdx<VoxClass> EVA_RestartedTimer;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
 			, SW_Inhibitors {}
@@ -98,6 +107,14 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+			, SW_FirstClickRestartsTimer { false }
+			, SW_FirstClickRestartsTimer_Cost { 0 }
+			, SW_FirstClickRestartsTimer_AutoFire { false }
+			, SW_FirstClickRestartsTimer_AutoFire_ForceDetonations { false }
+			, Message_RestartedTimer {}
+			, Message_InsufficientFunds {}
+			, EVA_RestartedTimer {}
+			, TimerRestarted { false }
 		{ }
 
 		// Ares 0.A functions
@@ -114,7 +131,7 @@ public:
 
 		void ApplyLimboDelivery(HouseClass* pHouse);
 		void ApplyLimboKill(HouseClass* pHouse);
-		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
+		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell, bool forceDetonation = false);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
 		void ApplyTypeConversion(SuperClass* pSW);
 
