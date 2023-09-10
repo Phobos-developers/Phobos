@@ -131,7 +131,7 @@ public:
 
 		void ApplyLimboDelivery(HouseClass* pHouse);
 		void ApplyLimboKill(HouseClass* pHouse);
-		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell, bool forceDetonation = false);
+		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
 		void ApplyTypeConversion(SuperClass* pSW);
 
