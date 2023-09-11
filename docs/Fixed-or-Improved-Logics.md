@@ -858,7 +858,7 @@ ShakeIsLocal=false  ; boolean
 
 ## Weapons
 
-### Customizing whether members are kicked out when an aircraft fires
+### Customizing whether passengers are kicked out when an aircraft fires
 
 - In yuri's revenge, if aircraft has passengers, aircraft force kick out it's passengers when firing but not fire weapons.
 - Now you can decide aircraft kick out it's passengers or not when firing.
