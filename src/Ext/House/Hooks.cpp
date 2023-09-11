@@ -182,6 +182,12 @@ DEFINE_HOOK(0x6F6D85, TechnoClass_Unlimbo_RemoveTracking, 0x6)
 	else if (!pExt->HasBeenPlacedOnMap)
 	{
 		pExt->HasBeenPlacedOnMap = true;
+
+		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+		{
+			auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+			pOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+		}
 	}
 
 	return 0;
