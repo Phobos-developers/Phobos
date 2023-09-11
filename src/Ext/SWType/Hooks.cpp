@@ -53,9 +53,9 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 
 		if (!pCurrentTechno->IsAlive
 			|| pCurrentTechno->InLimbo
-			|| !pExt->SW_Designators.Contains(pCurrentTechnoType)
-			|| !((pOwner == HouseClass::CurrentPlayer)
-				|| EnumFunctions::CanTargetHouse(AffectedHouse::Enemies, HouseClass::CurrentPlayer, pOwner)))
+			|| (pOwner != HouseClass::CurrentPlayer && pOwner->IsAlliedWith(HouseClass::CurrentPlayer))                  // Ally objects are never designators or inhibitors
+			|| (pOwner == HouseClass::CurrentPlayer && !pExt->SW_Designators.Contains(pCurrentTechnoType))               // Only owned objects can be designators
+			|| (!pOwner->IsAlliedWith(HouseClass::CurrentPlayer) && !pExt->SW_Inhibitors.Contains(pCurrentTechnoType)))  // Only enemy objects can be inhibitors
 		{
 			continue;
 		}

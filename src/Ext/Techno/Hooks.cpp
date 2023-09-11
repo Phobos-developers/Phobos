@@ -74,12 +74,6 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeLaserTrails();
 
-	if (pExt->TypeExtData->AutoDeath_Behavior.isset())
-	{
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
-		pOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
-	}
-
 	return 0;
 }
 

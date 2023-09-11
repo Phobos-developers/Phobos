@@ -115,8 +115,14 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 				auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
 				auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
 
-				if (pTechnoTypeExt->AutoDeath_Behavior.isset() && pTechnoTypeExt->AutoDeath_AfterDelay > 0)
-					pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
+				if (pTechnoTypeExt->AutoDeath_Behavior.isset())
+				{
+					pOwnerExt->OwnedAutoDeathObjects.push_back(pTechnoExt);
+
+					if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
+						pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
+				}
+
 			}
 		}
 	}

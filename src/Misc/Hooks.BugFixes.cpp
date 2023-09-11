@@ -693,15 +693,29 @@ DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
 // Stops INI parsing for Anim/BuildingTypeClass on game startup, will only be read on scenario load later like everything else.
 DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);
 
-// Only first half of the colorschemes array gets adjusted thanks to the count being wrong, quick and dirty fix.
-DEFINE_HOOK(0x53AD97, IonStormClass_AdjustLighting_ColorCount, 0x6)
-{
-	GET(int, colorSchemesCount, EAX);
+// Fixes second half of Colors list not getting retinted correctly by map triggers, superweapons etc.
+#pragma region LightingColorSchemesFix
 
-	R->EAX(colorSchemesCount * 2);
+namespace AdjustLightingTemp
+{
+	int colorSchemeCount = 0;
+}
+
+DEFINE_HOOK(0x53AD7D, IonStormClass_AdjustLighting_SetContext, 0x8)
+{
+	AdjustLightingTemp::colorSchemeCount = ColorScheme::GetNumberOfSchemes() * 2;
 
 	return 0;
 }
+
+int __fastcall NumberOfSchemes_Wrapper()
+{
+	return AdjustLightingTemp::colorSchemeCount;
+}
+
+DEFINE_JUMP(CALL, 0x53AD92, GET_OFFSET(NumberOfSchemes_Wrapper));
+
+#pragma endregion
 
 // Fixes a literal edge-case in passability checks to cover cells with bridges that are not accessible when moving on the bridge and
 // normally not even attempted to enter but things like MapClass::NearByLocation() can still end up trying to pick.
