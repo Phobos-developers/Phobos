@@ -384,6 +384,7 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 {
 	auto const pThis = this->OwnerObject();
+	auto const oldType = this->TypeExtData;
 
 	if (this->LaserTrails.size())
 		this->LaserTrails.clear();
@@ -400,17 +401,20 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 		}
 	}
 
-	// Reset Shield
-	// This part should have been done by UpdateShield
-	// But that doesn't work correctly either, FIX THAT
-
 	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
 		this->AutoDeathTimer.Stop();
 
-	// Reset PassengerDeletion Timer - TODO : unchecked
+	// Reset PassengerDeletion Timer
 	if (this->PassengerDeletionTimer.IsTicking() && this->TypeExtData->PassengerDeletionType && this->TypeExtData->PassengerDeletionType->Rate <= 0)
 		this->PassengerDeletionTimer.Stop();
+
+	// Remove from tracked AutoDeath objects if no longer has AutoDeath
+	if (oldType->AutoDeath_Behavior.isset() && !this->TypeExtData->AutoDeath_Behavior.isset())
+	{
+		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedAutoDeathObjects;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
