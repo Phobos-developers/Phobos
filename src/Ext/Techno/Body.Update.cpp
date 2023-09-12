@@ -415,6 +415,16 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedAutoDeathObjects;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
+
+	auto const rtti = oldType->OwnerObject()->WhatAmI();
+
+	// Remove from limbo reloaders if no longer applicable
+	if (rtti != AbstractType::AircraftType && rtti != AbstractType::BuildingType
+		&& oldType->OwnerObject()->Ammo > 0 && oldType->ReloadInTransport && !this->TypeExtData->ReloadInTransport)
+	{
+		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedTransportReloaders;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
