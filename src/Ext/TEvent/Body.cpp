@@ -173,7 +173,7 @@ bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
 	if (!pHouse)
 		return false;
 
-	return pHouse->CountOwnedAndPresent(pType) > 0;
+	return pHouse->CountOwnedNow(pType) > 0;
 }
 
 bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
