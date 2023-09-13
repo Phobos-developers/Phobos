@@ -211,6 +211,7 @@ This page lists all the individual contributions to the project by their author.
   - `EMPulseCannon` projectile gravity fix
   - Custom palette support for wall overlays
   - Warhead animation improvements
+  - Reloading ammo in transports
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -226,6 +227,8 @@ This page lists all the individual contributions to the project by their author.
   - TechnoType conversion warhead & superweapon
   - Unlimited skirmish colors
   - Show designator & inhibitor range
+  - Dump variables to file on scenario end / hotkey
+  - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance

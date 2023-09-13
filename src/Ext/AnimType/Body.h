@@ -99,5 +99,5 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static const void ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller = nullptr);
+	static void ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller = nullptr);
 };
