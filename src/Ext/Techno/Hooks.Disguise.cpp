@@ -42,7 +42,7 @@ DEFINE_HOOK(0x4DEDCB, FootClass_GetImage_DisguiseBlinking, 0x7)
 	return ContinueChecks;
 }
 
-DEFINE_HOOK(0x70EE70, TechnoClass_IsClearlyVisibleTo_DisguiseBlinking, 0x5)
+DEFINE_HOOK(0x70EE6A, TechnoClass_IsClearlyVisibleTo_DisguiseBlinking, 0x6)
 {
 	enum { ContinueChecks = 0x70EE79, DisallowBlinking = 0x70EEB6 };
 

@@ -7,6 +7,8 @@
 #include "FrameByFrame.h"
 #include "FrameStep.h"
 #include "ToggleDigitalDisplay.h"
+#include "ToggleDesignatorRange.h"
+#include "SaveVariablesToFile.h"
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -17,6 +19,8 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<DamageDisplayCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
+	MakeCommand<ToggleDesignatorRangeCommandClass>();
+	MakeCommand<SaveVariablesToFileCommandClass>();
 
 	MakeCommand<FrameByFrameCommandClass>();
 	MakeCommand<FrameStepCommandClass<1>>(); // Single step in

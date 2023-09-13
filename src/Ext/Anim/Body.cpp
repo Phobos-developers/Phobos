@@ -13,6 +13,12 @@ void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
 	this->InvokerHouse = pInvoker ? pInvoker->Owner : nullptr;
 }
 
+void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse)
+{
+	this->Invoker = pInvoker;
+	this->InvokerHouse = pInvokerHouse;
+}
+
 void AnimExt::ExtData::CreateAttachedSystem()
 {
 	const auto pThis = this->OwnerObject();
@@ -36,16 +42,39 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 }
 
 //Modified from Ares
-const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner)
+bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner, bool defaultToInvokerOwner)
 {
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-	auto newOwner = HouseExt::GetHouseKind(pTypeExt->CreateUnit_Owner.Get(), true, defaultToVictimOwner ? pVictim : nullptr, pInvoker, pVictim);
+	bool makeInf = pAnim->Type->MakeInfantry > -1;
+	bool createUnit = pTypeExt->CreateUnit.Get();
+	auto ownerKind = OwnerHouseKind::Default;
+	HouseClass* pDefaultOwner = nullptr;
+
+	if (defaultToVictimOwner)
+		pDefaultOwner = pVictim;
+	else if (defaultToInvokerOwner)
+		pDefaultOwner = pInvoker;
+
+	if (makeInf)
+		ownerKind = pTypeExt->MakeInfantryOwner;
+
+	if (createUnit)
+		ownerKind = pTypeExt->CreateUnit_Owner;
+
+	auto newOwner = HouseExt::GetHouseKind(ownerKind, true, pDefaultOwner, pInvoker, pVictim);
 
 	if (newOwner)
 	{
 		pAnim->Owner = newOwner;
+		bool isRemappable = false;
 
-		if (pTypeExt->CreateUnit_RemapAnim.Get() && !newOwner->Defeated)
+		if (makeInf)
+			isRemappable = true;
+
+		if (createUnit)
+			isRemappable = pTypeExt->CreateUnit_RemapAnim;
+
+		if (isRemappable && !newOwner->Defeated)
 			pAnim->LightConvert = ColorScheme::Array->Items[newOwner->ColorSchemeIndex]->LightConvert;
 	}
 
@@ -92,7 +121,7 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 		if (pExpireAnim)
 		{
 			if (auto pAnim = GameCreate<AnimClass>(pExpireAnim, nLocation, 0, 1, 0x2600u, 0, 0))
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false);
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
 		}
 	}
 	else
@@ -116,13 +145,13 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 	if (pWakeAnimToUse)
 	{
 		if (auto const pWakeAnimCreated = GameCreate<AnimClass>(pWakeAnimToUse, nLocation, 0, 1, 0x600u, false))
-			AnimExt::SetAnimOwnerHouseKind(pWakeAnimCreated, pOwner, nullptr, false);
+			AnimExt::SetAnimOwnerHouseKind(pWakeAnimCreated, pOwner, nullptr, false, true);
 	}
 
 	if (pSplashAnimToUse)
 	{
 		if (auto const pSplashAnimCreated = GameCreate<AnimClass>(pSplashAnimToUse, nLocation, 0, 1, 0x600u, false))
-			AnimExt::SetAnimOwnerHouseKind(pSplashAnimCreated, pOwner, nullptr, false);
+			AnimExt::SetAnimOwnerHouseKind(pSplashAnimCreated, pOwner, nullptr, false, true);
 	}
 }
 
@@ -200,7 +229,7 @@ DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 
 	if (pItem && !pItem->Type)
 	{
-		Debug::Log("Attempting to create animation with null Type (Caller: %08x)!", callerAddress);
+		Debug::Log("Attempting to create animation with null Type (Caller: %08x)!\n", callerAddress);
 		return 0;
 	}
 

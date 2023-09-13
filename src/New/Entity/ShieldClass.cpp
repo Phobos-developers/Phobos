@@ -1,5 +1,6 @@
 #include "ShieldClass.h"
 
+#include <Ext/Anim/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
@@ -89,6 +90,8 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Type)
 		.Process(this->SelfHealing_Warhead)
 		.Process(this->SelfHealing_Rate_Warhead)
+		.Process(this->SelfHealing_RestartInCombat_Warhead)
+		.Process(this->SelfHealing_RestartInCombatDelay_Warhead)
 		.Process(this->Respawn_Warhead)
 		.Process(this->Respawn_Rate_Warhead)
 		.Process(this->LastBreakFrame)
@@ -146,7 +149,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	if (!this->HP || this->Temporal || *args->Damage == 0 ||
-		this->Techno->IsIronCurtained() || CanBePenetrated(pWHExt->OwnerObject()))
+		this->Techno->IsIronCurtained() || CanBePenetrated(pWHExt->OwnerObject()) ||
+		this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
 	{
 		return *args->Damage;
 	}
@@ -171,28 +175,50 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		healthDamage = (int)((double)*args->Damage * passPercent);
 	}
 
+	int originalShieldDamage = shieldDamage;
+
+	shieldDamage = Math::clamp(shieldDamage, pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum),
+		pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum));
+
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
 		TechnoExt::DisplayDamageNumberString(this->Techno, shieldDamage, true);
 
 	if (shieldDamage > 0)
 	{
-		const int rate = this->Timers.SelfHealing_WHModifier.InProgress() ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
+		bool whModifiersApplied = this->Timers.SelfHealing_WHModifier.InProgress();
+		bool restart = whModifiersApplied ? this->SelfHealing_RestartInCombat_Warhead : this->Type->SelfHealing_RestartInCombat;
 
-		this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
+		if (restart)
+		{
+			int delay = whModifiersApplied ? this->SelfHealing_RestartInCombatDelay_Warhead : this->Type->SelfHealing_RestartInCombatDelay;
+
+			if (delay > 0)
+			{
+				this->Timers.SelfHealing_CombatRestart.Start(this->Type->SelfHealing_RestartInCombatDelay);
+				this->Timers.SelfHealing.Stop();
+			}
+			else
+			{
+				const int rate = whModifiersApplied ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
+				this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
+			}
+		}
+
 		this->ResponseAttack();
 
 		if (pWHExt->DecloakDamagedTargets)
 			this->Techno->Uncloak(false);
 
 		int residueDamage = shieldDamage - this->HP;
+
 		if (residueDamage >= 0)
 		{
-			residueDamage = int((double)(residueDamage) /
-				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetArmorType())); //only absord percentage damage
+			int actualResidueDamage = Math::max(0, int((double)(originalShieldDamage - this->HP) /
+				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetArmorType()))); //only absord percentage damage
 
 			this->BreakShield(pWHExt->Shield_BreakAnim.Get(nullptr), pWHExt->Shield_BreakWeapon.Get(nullptr));
 
-			return this->Type->AbsorbOverDamage ? healthDamage : residueDamage + healthDamage;
+			return this->Type->AbsorbOverDamage ? healthDamage : actualResidueDamage + healthDamage;
 		}
 		else
 		{
@@ -207,9 +233,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	else if (shieldDamage < 0)
 	{
 		const int nLostHP = this->Type->Strength - this->HP;
+
 		if (!nLostHP)
 		{
 			int result = *args->Damage;
+
 			if (result * GeneralUtils::GetWarheadVersusArmor(args->WH, this->Techno->GetTechnoType()->Armor) > 0)
 				result = 0;
 
@@ -531,6 +559,17 @@ bool ShieldClass::ConvertCheck()
 
 void ShieldClass::SelfHealing()
 {
+	if (this->Timers.SelfHealing_CombatRestart.InProgress())
+	{
+		return;
+	}
+	else if (this->Timers.SelfHealing_CombatRestart.Completed())
+	{
+		const int rate = this->Timers.SelfHealing_WHModifier.InProgress() ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
+		this->Timers.SelfHealing.Start(rate);
+		this->Timers.SelfHealing_CombatRestart.Stop();
+	}
+
 	const auto pType = this->Type;
 	const auto timer = &this->Timers.SelfHealing;
 	const auto timerWHModifier = &this->Timers.SelfHealing_WHModifier;
@@ -656,13 +695,15 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTi
 	}
 }
 
-void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool resetTimer)
+void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer)
 {
 	auto timer = &this->Timers.SelfHealing;
 	auto timerWHModifier = &this->Timers.SelfHealing_WHModifier;
 
 	this->SelfHealing_Warhead = amount;
 	this->SelfHealing_Rate_Warhead = rate >= 0 ? rate : Type->SelfHealing_Rate;
+	this->SelfHealing_RestartInCombat_Warhead = restartInCombat;
+	this->SelfHealing_RestartInCombatDelay_Warhead = restartInCombatDelay >= 0 ? restartInCombatDelay : Type->SelfHealing_RestartInCombatDelay;
 
 	timerWHModifier->Start(duration);
 
@@ -687,7 +728,7 @@ void ShieldClass::CreateAnim()
 		if (auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location))
 		{
 			pAnim->SetOwnerObject(this->Techno);
-			pAnim->Owner = this->Techno->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
 			pAnim->RemainingIterations = 0xFFu;
 			this->IdleAnim = pAnim;
 		}

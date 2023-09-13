@@ -136,9 +136,8 @@ DEFINE_HOOK(0x4242E1, AnimClass_AI_TrailerAnim, 0x5)
 	{
 		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
 		auto const pExt = AnimExt::ExtMap.Find(pThis);
-		pTrailerAnim->Owner = pThis->Owner;
-		pTrailerAnimExt->Invoker = pExt->Invoker;
-		pTrailerAnimExt->InvokerHouse = pExt->InvokerHouse;
+		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
+		pTrailerAnimExt->SetInvoker(pExt->Invoker, pExt->InvokerHouse);
 	}
 
 	return SkipGameCode;
@@ -264,32 +263,13 @@ DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
 	return SkipGameCode;
 }
 
-namespace ConvertTemp
-{
-	int shadeCount = -1;
-}
-
 // Set ShadeCount to 53 to initialize the palette fully shaded - this is required to make it not draw over shroud for some reason.
 DEFINE_HOOK(0x68C4C4, GenerateColorSpread_ShadeCountSet, 0x5)
 {
 	GET(int, shadeCount, EDX);
 
-	ConvertTemp::shadeCount = shadeCount;
-	R->EDX(53);
-
-	return 0;
-}
-
-// Restore original ShadeCount.
-DEFINE_HOOK(0x68C4E7, GenerateColorSpread_ShadeCountUnset, 0x5)
-{
-	GET(LightConvertClass*, pConvert, EAX);
-
-	if (pConvert && ConvertTemp::shadeCount != -1)
-	{
-		pConvert->ShadeCount = ConvertTemp::shadeCount;
-		ConvertTemp::shadeCount = -1;
-	}
+	if (shadeCount == 1)
+		R->EDX(53);
 
 	return 0;
 }
