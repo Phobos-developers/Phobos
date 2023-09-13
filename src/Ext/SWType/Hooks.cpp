@@ -103,8 +103,6 @@ DEFINE_HOOK(0x6AAEAC, SuperClass_Place_ResetTimer, 0x6)
 	{
 		// In case of require money prevent firing the SW if the player doesn't have sufficient funds
 		int cost = pTypeData->SW_FirstClickRestartsTimer_Cost;
-		if (cost > 0)
-			cost *= -1;
 
 		if (cost != 0)
 		{
@@ -185,7 +183,12 @@ DEFINE_HOOK(0x6CBCD4, SuperClass_AI_ResetTimer_Update, 0x5)
 		pExt->TimerRestarted = false;
 
 		if (pTypeData->SW_FirstClickRestartsTimer_RefundIfAborted)
-			HouseClass::CurrentPlayer->TransactMoney(std::abs(pTypeData->SW_FirstClickRestartsTimer_Cost));
+		{
+			int cost = -1 * pTypeData->SW_FirstClickRestartsTimer_Cost;
+
+			if (HouseClass::CurrentPlayer->CanTransactMoney(cost))
+				HouseClass::CurrentPlayer->TransactMoney(cost);
+		}
 	}
 
 	return 0;
