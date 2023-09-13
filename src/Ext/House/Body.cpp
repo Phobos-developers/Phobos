@@ -397,6 +397,17 @@ void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
 	}
 }
 
+void HouseExt::ExtData::UpdateTransportReloaders()
+{
+	for (auto const pExt : this->OwnedTransportReloaders)
+	{
+		auto const pTechno = pExt->OwnerObject();
+
+		if (pTechno->Transporter)
+			pTechno->Reload();
+	}
+}
+
 void HouseExt::ExtData::AddToLimboTracking(TechnoTypeClass* pTechnoType)
 {
 	if (pTechnoType)
@@ -502,6 +513,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancers)
 		.Process(this->OwnedLimboDeliveredBuildings)
 		.Process(this->OwnedAutoDeathObjects)
+		.Process(this->OwnedTransportReloaders)
 		.Process(this->LimboAircraft)
 		.Process(this->LimboBuildings)
 		.Process(this->LimboInfantry)

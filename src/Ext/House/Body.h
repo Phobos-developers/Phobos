@@ -23,6 +23,7 @@ public:
 		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
 		std::map<BuildingClass*, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
 		std::vector<TechnoExt::ExtData*> OwnedAutoDeathObjects;
+		std::vector<TechnoExt::ExtData*> OwnedTransportReloaders; // Objects that can reload ammo in limbo
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 		CounterClass LimboBuildings; // Currently owned buildings in limbo
@@ -45,6 +46,7 @@ public:
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
 			, OwnedAutoDeathObjects {}
+			, OwnedTransportReloaders {}
 			, LimboAircraft {}
 			, LimboBuildings {}
 			, LimboInfantry {}
@@ -61,6 +63,7 @@ public:
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
 		void UpdateAutoDeathObjectsInLimbo();
+		void UpdateTransportReloaders();
 		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
 		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
 		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);

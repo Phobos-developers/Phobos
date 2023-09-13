@@ -210,6 +210,7 @@ This page lists all the individual contributions to the project by their author.
   - `EMPulseCannon` projectile gravity fix
   - Custom palette support for wall overlays
   - Warhead animation improvements
+  - Reloading ammo in transports
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

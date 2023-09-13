@@ -12,7 +12,7 @@
 
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
-const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
+void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 {
 	if (!pThis)
 		return;

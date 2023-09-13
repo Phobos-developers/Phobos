@@ -43,7 +43,7 @@ public:
 		bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance);
 		void Add(int amount);
 		void SetRadLevel(int amount);
-		const double GetRadLevelAt(CellStruct const& cell);
+		double GetRadLevelAt(CellStruct const& cell) const;
 		void CreateLight();
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
