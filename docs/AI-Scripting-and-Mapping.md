@@ -598,6 +598,10 @@ ID=EventCount,...,600,2,0,0,...
 - 602: Springs when specified house doesn't own a single instance of set TechnoType.
   - Multiplayer houses (indices 4475 through 4482) are supported.
 
+```{note}
+These events, as opposed to [events 81 & 82 from Ares](https://ares-developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-type-81-82), take house as a parameter instead of using the trigger owner.
+```
+
 In `mycampaign.map`:
 ```ini
 [Events]
