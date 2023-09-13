@@ -341,6 +341,7 @@ New:
 - Owner-only sound on unit creation (by Fryone)
 - Allow using `Secondary` weapon against walls if `Primary` cannot target them (by Starkku)
 - Reloading ammo in transports (by Starkku)
+- Dump variables to file on scenario end / hotkey (by Morton)
 - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
 
 Vanilla fixes:

@@ -143,7 +143,7 @@ x=i,n             ; For i values check the next table
 | 10060    | [AITargetType] index# | Friendly       | Farther                |                                              |
 | 10061    | [AITargetType] index# | Friendly       | Farther                | Picks 1 random target from the selected list |
 
-#### `10000-10049` General Purpose
+#### `10100-10999` General Purpose
 
 ##### `10100` Timed Area Guard
 
