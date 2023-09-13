@@ -226,6 +226,7 @@ This page lists all the individual contributions to the project by their author.
   - TechnoType conversion warhead & superweapon
   - Unlimited skirmish colors
   - Show designator & inhibitor range
+  - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
