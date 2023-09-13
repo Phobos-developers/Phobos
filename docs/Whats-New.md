@@ -126,7 +126,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1
   505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
   506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
-  507=Dump variables to file (Phobos),0,0,54,0,0,0,0,0,0,Dump all local (parameter is 0) or global variables (parameter is 1) to "locals.ini" or "globals.ini". Variables are key-value pairs in section with the same name as the map file (capitalized). Previous file contents are preserved when possible.,0,1,507,0
   510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
@@ -339,7 +338,7 @@ New:
 - Owner-only sound on unit creation (by Fryone)
 - Allow using `Secondary` weapon against walls if `Primary` cannot target them (by Starkku)
 - Reloading ammo in transports (by Starkku)
-- Dump variables to file trigger action (by Morton)
+- Dump variables to file on scenario end / hotkey (by Morton)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

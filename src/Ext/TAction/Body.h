@@ -18,7 +18,6 @@ enum class PhobosTriggerAction : unsigned int
 	BinaryOperation = 504,
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
-	DumpVariables = 507,
 	ToggleMCVRedeploy = 510,
 };
 
@@ -63,7 +62,6 @@ public:
 	ACTION_FUNC(BinaryOperation);
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
-	ACTION_FUNC(DumpVariables);
 	ACTION_FUNC(ToggleMCVRedeploy);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
