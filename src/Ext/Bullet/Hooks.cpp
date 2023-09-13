@@ -191,6 +191,8 @@ DEFINE_HOOK(0x44D074, BuildingClass_Mission_Missile_ApplyGravity, 0x6)
 	case 0x44D2AE:
 		return 0x44D2B4;
 		break;
+	default:
+		__assume(0);
 	}
 }
 

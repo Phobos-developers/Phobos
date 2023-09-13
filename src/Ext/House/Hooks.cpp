@@ -10,6 +10,7 @@ DEFINE_HOOK(0x4F8440, HouseClass_Update_Beginning, 0x5)
 	auto pExt = HouseExt::ExtMap.Find(pThis);
 
 	pExt->UpdateAutoDeathObjectsInLimbo();
+	pExt->UpdateTransportReloaders();
 
 	return 0;
 }
@@ -172,11 +173,22 @@ DEFINE_HOOK(0x6F6D85, TechnoClass_Unlimbo_RemoveTracking, 0x6)
 	GET(TechnoClass* const, pThis, ESI);
 
 	auto const pType = pThis->GetTechnoType();
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (LimboTrackingTemp::Enabled && !pType->Insignificant && !pType->DontScore)
+	if (LimboTrackingTemp::Enabled && !pType->Insignificant && !pType->DontScore && pExt->HasBeenPlacedOnMap)
 	{
 		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
 		pOwnerExt->RemoveFromLimboTracking(pType);
+	}
+	else if (!pExt->HasBeenPlacedOnMap)
+	{
+		pExt->HasBeenPlacedOnMap = true;
+
+		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+		{
+			auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+			pOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+		}
 	}
 
 	return 0;
@@ -201,6 +213,14 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	if (pExt->TypeExtData->AutoDeath_Behavior.isset())
 	{
 		auto& vec = pOwnerExt->OwnedAutoDeathObjects;
+		vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
+		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+	}
+
+	if (pThis->Transporter && pThis->WhatAmI() != AbstractType::Aircraft
+		&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
+	{
+		auto& vec = pOwnerExt->OwnedTransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
 		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
 	}

@@ -133,7 +133,7 @@ void RadSiteExt::ExtData::SetRadLevel(int amount)
 }
 
 // helper function provided by AlexB
-const double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell)
+double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) const
 {
 	const auto pThis = this->OwnerObject();
 	const auto base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();

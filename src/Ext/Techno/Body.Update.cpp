@@ -21,7 +21,9 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	{
 		BulletClass* pTargetBullet = nullptr;
 
-		for (auto const& [pBullet, pBulletExt] : BulletExt::ExtMap)
+		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
+		// so it can differ across players throwing target management out of sync.
+		for (auto const& pBullet : *BulletClass::Array())
 		{
 			const auto pInterceptorType = pTypeExt->InterceptorType.get();
 			const auto& guardRange = pInterceptorType->GuardRange.Get(pThis);
@@ -32,7 +34,8 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			if (distance > guardRange || distance < minguardRange)
 				continue;
 
-			auto pBulletTypeExt = pBulletExt->TypeExtData;
+			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			auto const pBulletTypeExt = pBulletExt->TypeExtData;
 
 			if (!pBulletTypeExt || !pBulletTypeExt->Interceptable)
 				continue;
@@ -381,6 +384,7 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 {
 	auto const pThis = this->OwnerObject();
+	auto const oldType = this->TypeExtData;
 
 	if (this->LaserTrails.size())
 		this->LaserTrails.clear();
@@ -397,17 +401,30 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 		}
 	}
 
-	// Reset Shield
-	// This part should have been done by UpdateShield
-	// But that doesn't work correctly either, FIX THAT
-
 	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
 		this->AutoDeathTimer.Stop();
 
-	// Reset PassengerDeletion Timer - TODO : unchecked
+	// Reset PassengerDeletion Timer
 	if (this->PassengerDeletionTimer.IsTicking() && this->TypeExtData->PassengerDeletionType && this->TypeExtData->PassengerDeletionType->Rate <= 0)
 		this->PassengerDeletionTimer.Stop();
+
+	// Remove from tracked AutoDeath objects if no longer has AutoDeath
+	if (oldType->AutoDeath_Behavior.isset() && !this->TypeExtData->AutoDeath_Behavior.isset())
+	{
+		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedAutoDeathObjects;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
+
+	auto const rtti = oldType->OwnerObject()->WhatAmI();
+
+	// Remove from limbo reloaders if no longer applicable
+	if (rtti != AbstractType::AircraftType && rtti != AbstractType::BuildingType
+		&& oldType->OwnerObject()->Ammo > 0 && oldType->ReloadInTransport && !this->TypeExtData->ReloadInTransport)
+	{
+		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedTransportReloaders;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()

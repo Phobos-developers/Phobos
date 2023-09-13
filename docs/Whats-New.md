@@ -337,6 +337,7 @@ New:
 - Show designator & inhibitor range (by Morton)
 - Owner-only sound on unit creation (by Fryone)
 - Allow using `Secondary` weapon against walls if `Primary` cannot target them (by Starkku)
+- Reloading ammo in transports (by Starkku)
 - Offline power plant indicator (by Fryone)
 
 Vanilla fixes:
@@ -405,6 +406,8 @@ Phobos fixes:
 - Fixed Phobos animation additions that support `CreateUnit.Owner` not also checking `MakeInfantryOwner` (by Starkku)
 - Fixed `AutoDeath` to consider all conditions for objects in limbo (by Starkku)
 - Shields will no longer take damage if the parent techno has `Immune=true` or has `TypeImmune=true` and the damage comes from instance of same TechnoType owned by same house (by Starkku)
+- Fixed interceptors causing multiplayer games to desync (by Starkku)
+- Optimized performance for map trigger retint action light source fix (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
