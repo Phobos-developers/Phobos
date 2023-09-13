@@ -84,14 +84,6 @@ DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)
 	return pThis->Type->Speed == 0 ? 0x738927 : 0;
 }
 
-/*DEFINE_HOOK(0x51F663, InfantryClass_Mission_Move_DisallowMoving, 0x6)
-{
-	GET(InfantryClass*, pThis, ESI);
-
-	return pThis->ParalysisTimer.HasTimeLeft() > 0 ? 0x51F68F : 0;
-}*/
-
-
 DEFINE_HOOK(0x51AA49, InfantryClass_Assign_Destination_DisallowMoving, 0x6)
 {
 	GET(InfantryClass*, pThis, ECX);
