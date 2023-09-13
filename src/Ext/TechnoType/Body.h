@@ -48,6 +48,7 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
+		Valueable<bool> ReloadInTransport;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
@@ -233,6 +234,7 @@ public:
 			, CameoPriority { 0 }
 			, NoManualMove { false }
 			, InitialStrength {}
+			, ReloadInTransport { false }
 			, ShieldType {}
 			, PassengerDeletionType { nullptr }
 
