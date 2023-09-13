@@ -141,12 +141,12 @@ double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) const
 	const auto max = static_cast<double>(pThis->SpreadInLeptons);
 	const auto dist = coords.DistanceFrom(base);
 
-	//  will produce `-nan(ind)` result if both dist and max is zero 
+	//  will produce `-nan(ind)` result if both dist and max is zero
 	// and used on formula below this check
 	// ,.. -Otamaa
 	if(!dist && !max)
 		return pThis->RadLevel;
-	
+
 	return (dist > max) ? 0.0 : (max - dist) / max * pThis->RadLevel;
 }
 
