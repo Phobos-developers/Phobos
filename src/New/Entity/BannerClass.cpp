@@ -103,6 +103,9 @@ void BannerClass::RenderSHP(int x, int y)
 		);
 
 		this->ShapeFrameIndex++;
+
+		if (this->ShapeFrameIndex >= shape->Frames)
+			this->ShapeFrameIndex = 0;
 	}
 }
 
