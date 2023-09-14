@@ -37,14 +37,14 @@ TechnoExt::ExtData::~ExtData()
 
 bool TechnoExt::IsActive(TechnoClass* pThis)
 {
-	return
-		pThis &&
-		!pThis->TemporalTargetingMe &&
-		!pThis->BeingWarpedOut &&
-		!pThis->IsUnderEMP() &&
-		pThis->IsAlive &&
-		pThis->Health > 0 &&
-		!pThis->InLimbo;
+	return pThis
+		&& pThis->IsAlive
+		&& pThis->Health > 0
+		&& !pThis->InLimbo
+		&& !pThis->TemporalTargetingMe
+		&& !pThis->BeingWarpedOut
+		&& !pThis->IsUnderEMP()
+		;
 }
 
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)

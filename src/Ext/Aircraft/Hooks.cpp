@@ -310,26 +310,28 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassenger, 0x6)
+DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 {
 	GET(AircraftClass*, pThis, EDI);
 	GET_STACK(int, weaponIdx, STACK_OFFSET(0x7C, 0x8));
 
-	enum { KickOutPassenger = 0x415EF8, Fire = 0x415F08 };
+	enum { KickOutPassengers = 0x415EF8, Fire = 0x415F08 };
 
-	if (pThis->Passengers.GetFirstPassenger() == nullptr)
+	if (!TechnoExt::IsActive(pThis))
+		return 0;
+
+	if (!pThis->Passengers.GetFirstPassenger())
 		return Fire;
 
-	if (TechnoExt::IsActive(pThis) && pThis->GetWeapon(weaponIdx) != nullptr)
-	{
-		const WeaponTypeClass* pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
+	const WeaponStruct* pWeapon = pThis->GetWeapon(weaponIdx);
 
-		if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
-		{
-			if (!pWeaponExt->KickOutPassenger)
-				return Fire;
-		}
-	}
+	if (!pWeapon)
+		return KickOutPassengers;
 
-	return KickOutPassenger;
+	const auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon->WeaponType);
+
+	if (!pWeaponTypeExt)
+		return KickOutPassengers;
+
+	return pWeaponTypeExt->KickOutPassengers ? KickOutPassengers : Fire;
 }
