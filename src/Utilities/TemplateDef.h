@@ -321,6 +321,38 @@ namespace detail
 		return false;
 	}
 
+	template<>
+	inline bool read<BSurface*>(BSurface*& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			std::string filename = parser.value();
+
+			auto lambaTolower = [](char c)
+				{
+					return static_cast<char>(tolower(c));
+				};
+
+			std::transform(filename.begin(), filename.end(), filename.begin(), lambaTolower);
+
+			if (!filename.ends_with(".pcx"))
+				filename += ".pcx";
+
+			if (BSurface* pcx = PCX::Instance->GetSurface(filename.c_str()))
+			{
+				value = pcx;
+
+				return true;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Can't find pcx file\n");
+			}
+		}
+
+		return false;
+	}
+
 	template <>
 	inline bool read<SHPStruct*>(SHPStruct*& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
@@ -1228,6 +1260,42 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 				Debug::INIParseFailed(pSection, pKey, str, "Display info type is invalid");
 				return false;
 			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<BannerNumberType>(BannerNumberType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = BannerNumberType::None;
+			auto str = parser.value();
+			if (_strcmpi(str, "variable") == 0)
+			{
+				parsed = BannerNumberType::Variable;
+			}
+			else if (_strcmpi(str, "prefixed") == 0)
+			{
+				parsed = BannerNumberType::Prefixed;
+			}
+			else if (_strcmpi(str, "suffixed") == 0)
+			{
+				parsed = BannerNumberType::Suffixed;
+			}
+			else if (_strcmpi(str, "fraction") == 0)
+			{
+				parsed = BannerNumberType::Fraction;
+			}
+			else if (_strcmpi(str, "none") == 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(),
+					"Content.VariableFormat can be either none, prefixed, suffixed or fraction");
+				return false;
+			}
+			if (parsed != BannerNumberType::None)
+				value = parsed;
 			return true;
 		}
 		return false;

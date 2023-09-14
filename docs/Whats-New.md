@@ -78,6 +78,10 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   60=Operate var index,0
   65=Campaign AI Repairable,0
   68=House,1,2
+  101=BannerType,0
+  102=Horizontal position,0
+  103=Vertical position,0
+  104=Banner ID,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -119,6 +123,9 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
   601=House owns Techno Type,68,46,0,0,[LONG DESC],0,1,601,1
   602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1
+  8000=Display banner and local variable,104,0,101,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,8000,1
+  8001=Display banner and global variable,104,0,101,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,8001,1
+  8002=Delete banner,104,0,0,0,0,0,0,0,0,Delete banner with ID,0,1,8002,1
 
   [ActionsRA2]
   125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125

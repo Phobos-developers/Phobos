@@ -1,15 +1,15 @@
 #include "Body.h"
 
-#include <SessionClass.h>
 #include <MessageListClass.h>
-#include <HouseClass.h>
-#include <CRT.h>
-#include <SuperWeaponTypeClass.h>
-#include <SuperClass.h>
-#include <Ext/SWType/Body.h>
-#include <Utilities/SavegameDef.h>
 
 #include <Ext/Scenario/Body.h>
+#include <Ext/SWType/Body.h>
+
+#include <New/Entity/BannerClass.h>
+
+#include <New/Type/BannerTypeClass.h>
+
+#include <Utilities/SavegameDef.h>
 
 //Static init
 TActionExt::ExtContainer TActionExt::ExtMap;
@@ -69,6 +69,13 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 
 	case PhobosTriggerAction::ToggleMCVRedeploy:
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::CreateBannerGlobal:
+		return TActionExt::CreateBannerGlobal(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::CreateBannerLocal:
+		return TActionExt::CreateBannerLocal(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::DeleteBanner:
+		return TActionExt::DeleteBanner(pThis, pHouse, pObject, pTrigger, location);
 
 	default:
 		bHandled = false;
@@ -437,6 +444,68 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	GameModeOptionsClass::Instance->MCVRedeploy = pThis->Param3 != 0;
+	return true;
+}
+
+
+void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
+{
+	BannerTypeClass* pBannerType = BannerTypeClass::Array[pTAction->Param3].get();
+	auto& banners = BannerClass::Array;
+
+	const auto it = std::find_if(banners.cbegin(), banners.cend(),
+		[pTAction](const std::unique_ptr<BannerClass>& pBanner)
+		{
+			return pBanner->ID == pTAction->Value;
+		});
+
+	if (it != banners.cend())
+	{
+		const auto& pBanner = *it;
+		pBanner->Type = pBannerType;
+		pBanner->Position = CoordStruct(pTAction->Param4, pTAction->Param5, 0);
+		pBanner->Variable = pTAction->Param6;
+		pBanner->IsGlobalVariable = isGlobal;
+	}
+	else
+	{
+		BannerClass::Array.emplace_back
+		(
+			std::make_unique<BannerClass>
+			(
+				pBannerType,
+				pTAction->Value,
+				CoordStruct(pTAction->Param4, pTAction->Param5, 0),
+				pTAction->Param6,
+				isGlobal
+			)
+		);
+	}
+}
+
+bool TActionExt::CreateBannerGlobal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	CreateOrReplaceBanner(pThis, true);
+	return true;
+}
+
+bool TActionExt::CreateBannerLocal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	CreateOrReplaceBanner(pThis, false);
+	return true;
+}
+
+bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	const auto it = std::find_if(BannerClass::Array.cbegin(), BannerClass::Array.cend(),
+		[pThis](const std::unique_ptr<BannerClass>& pBanner)
+		{
+			return pBanner->ID == pThis->Value;
+		});
+
+	if (it != BannerClass::Array.cend())
+		BannerClass::Array.erase(it);
+
 	return true;
 }
 
