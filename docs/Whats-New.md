@@ -77,6 +77,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   59=Operate var is global,10
   60=Operate var index,0
   65=Campaign AI Repairable,0
+  68=House,1,2
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -116,6 +117,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   534=Global variable is less than or equals to global variable,48,35,0,0,[LONG DESC],0,1,510,1
   535=Global variable and global variable is true,48,35,0,0,[LONG DESC],0,1,511,1
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
+  601=House owns Techno Type,68,46,0,0,[LONG DESC],0,1,601,1
+  602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1
 
   [ActionsRA2]
   125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
@@ -338,6 +341,8 @@ New:
 - Owner-only sound on unit creation (by Fryone)
 - Allow using `Secondary` weapon against walls if `Primary` cannot target them (by Starkku)
 - Reloading ammo in transports (by Starkku)
+- Dump variables to file on scenario end / hotkey (by Morton)
+- "House owns TechnoType" and "House doesn't own TechnoType" trigger events
 - Offline power plant indicator (by Fryone)
 
 Vanilla fixes:
