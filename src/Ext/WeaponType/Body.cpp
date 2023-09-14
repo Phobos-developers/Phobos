@@ -59,7 +59,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OmniFire_TurnToTarget.Read(exINI, pSection, "OmniFire.TurnToTarget");
 	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
 	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
-	this->KickOutPassenger.Read(exINI, pSection, "KickOutPassenger");
+	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
 }
 
 template <typename T>
@@ -85,7 +85,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OmniFire_TurnToTarget)
 		.Process(this->ExtraWarheads)
 		.Process(this->ExtraWarheads_DamageOverrides)
-		.Process(this->KickOutPassenger)
+		.Process(this->KickOutPassengers)
 		;
 };
 
