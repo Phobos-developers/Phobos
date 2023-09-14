@@ -866,7 +866,7 @@ ShakeIsLocal=false  ; boolean
 In `rulesmd.ini`
 ```ini
 [SOMEWEAPON]
-KickOutPassenger=true  ; boolean
+KickOutPassengers=true  ; boolean
 ```
 
 ### Customizable disk laser radius
