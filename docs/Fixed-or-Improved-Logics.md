@@ -861,8 +861,7 @@ ShakeIsLocal=false  ; boolean
 
 ### Customizing whether passengers are kicked out when an aircraft fires
 
-- In yuri's revenge, if aircraft has passengers, aircraft force kick out it's passengers when firing but not fire weapons.
-- Now you can decide aircraft kick out it's passengers or not when firing.
+- You can now customize whether aircraft will forcefully eject passengers (vanilla behavior) or fire its weapon when attempting to fire.
 
 In `rulesmd.ini`
 ```ini
