@@ -1123,7 +1123,7 @@ ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
 In `rulesmd.ini`
 ```ini
 [SOMEWEAPON]
-KickOutPassenger=true  ; boolean
+KickOutPassengers=true  ; boolean
 ```
 
 ### Single-color lasers
