@@ -184,6 +184,9 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
+	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
+		return;
+
 	bool drawPip = false;
 	bool isInfantryHeal = false;
 	int selfHealFrames = 0;
