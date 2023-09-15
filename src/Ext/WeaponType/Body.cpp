@@ -124,12 +124,12 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)
 {
 	WeaponTypeExt::DetonateAt(pThis, pTarget, pOwner, pThis->Damage, pFiringHouse);
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
 		damage, pThis->Warhead, 0, pThis->Bright))

@@ -44,6 +44,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Next_RollChances)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
+		.Process(this->ShowDesignatorRange)
 		;
 }
 
@@ -142,7 +143,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	for (size_t i = 0; ; ++i)
 	{
 		ValueableVector<TechnoTypeClass*> convertFrom;
-		NullableIdx<TechnoTypeClass> convertTo;
+		Nullable<TechnoTypeClass*> convertTo;
 		Nullable<AffectedHouse> convertAffectedHouses;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
 		convertFrom.Read(exINI, pSection, tempBuffer);
@@ -160,7 +161,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
 	}
 	ValueableVector<TechnoTypeClass*> convertFrom;
-	NullableIdx<TechnoTypeClass> convertTo;
+	Nullable<TechnoTypeClass*> convertTo;
 	Nullable<AffectedHouse> convertAffectedHouses;
 	convertFrom.Read(exINI, pSection, "Convert.From");
 	convertTo.Read(exINI, pSection, "Convert.To");
@@ -175,6 +176,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		else
 			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
 	}
+
+	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

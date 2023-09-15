@@ -51,6 +51,27 @@ DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
 	return SkipGameCode;
 }
 
+// Overrides Ares hook at 0x5F4FF9, required for animated terrain cause game & Ares check SpawnsTiberium instead of IsAnimated
+DEFINE_HOOK(0x5F4FEF, ObjectClass_Unlimbo_UpdateTerrain, 0x6)
+{
+	enum { SkipUpdate = 0x5F5045, ContinueChecks = 0x5F501B };
+
+	GET(ObjectTypeClass*, pType, EBX);
+
+	if (!pType->IsLogic)
+		return SkipUpdate;
+
+	if (pType->WhatAmI() != AbstractType::TerrainType)
+		return ContinueChecks;
+
+	auto const pTerrainType = static_cast<TerrainTypeClass*>(pType);
+
+	if (pTerrainType->IsFlammable || pTerrainType->IsAnimated)
+		return ContinueChecks;
+
+	return SkipUpdate;
+}
+
 DEFINE_HOOK(0x483811, CellClass_SpreadTiberium_TiberiumType, 0x8)
 {
 	if (TerrainTypeTemp::pCurrentExt)
