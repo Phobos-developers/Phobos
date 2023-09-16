@@ -334,15 +334,15 @@ In `rulesmd.ini`:
 InfantryGainSelfHealCap=                ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
 UnitsGainSelfHealCap=                   ; integer, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
 GainSelfHealAllowMultiplayPassive=true  ; boolean
-                                        
-[AudioVisual]                           
+
+[AudioVisual]
 Pips.SelfHeal.Infantry=13,20            ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
 Pips.SelfHeal.Units=13,20               ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
 Pips.SelfHeal.Buildings=13,20           ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
 Pips.SelfHeal.Infantry.Offset=25,-35    ; X,Y, pixels relative to default
 Pips.SelfHeal.Units.Offset=33,-32       ; X,Y, pixels relative to default
 Pips.SelfHeal.Buildings.Offset=15,10    ; X,Y, pixels relative to default
-                                        
+
 [SOMETECHNO]                            ; TechnoType
 SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (none|infantry|units)
 ```
