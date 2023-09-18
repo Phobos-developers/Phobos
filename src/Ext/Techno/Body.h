@@ -39,8 +39,11 @@ public:
 		bool ForceFullRearmDelay;
 		int WHAnimRemainingCreationInterval;
 		AnimClass* DelayedFire_Anim;
-		int DelayedFire_Anim_LoopCount;
+		AnimClass* DelayedFire_PostAnim;
 		int DelayedFire_Duration;
+		int DelayedFire_WeaponIndex;
+		CDTimerClass DelayedFire_DurationTimer;
+		bool DelayedFire_Ready;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -65,8 +68,11 @@ public:
 			, ForceFullRearmDelay { false }
 			, WHAnimRemainingCreationInterval { 0 }
 			, DelayedFire_Anim { nullptr }
-			, DelayedFire_Anim_LoopCount { 0 }
+			, DelayedFire_PostAnim { nullptr }
 			, DelayedFire_Duration { -1 }
+			, DelayedFire_WeaponIndex { -1 }
+			, DelayedFire_DurationTimer {}
+			, DelayedFire_Ready { false }
 		{ }
 
 		void ApplyInterceptor();
@@ -80,6 +86,7 @@ public:
 		void UpdateLaserTrails();
 		void InitializeLaserTrails();
 		void UpdateMindControlAnim();
+		void UpdateDelayFire();
 
 		virtual ~ExtData() override;
 

@@ -3,9 +3,12 @@
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
 #include <TerrainClass.h>
+#include <AnimClass.h>
 
 #include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/Anim/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
@@ -887,97 +890,133 @@ DEFINE_HOOK(0x6FDD93, TechnoClass_FireAt_DelayedFire, 0x6) // or 0x6FDD99  , 0x6
 	if (!pWeaponTypeExt)
 		return continueFireAt;
 
-	if (pWeaponTypeExt->DelayedFire_Anim_LoopCount <= 0)
-		return continueFireAt;
-
-	if (!pWeaponTypeExt->DelayedFire_Anim.isset())
-		return continueFireAt;
-
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	if (!pExt)
 		return continueFireAt;
 
-	if (pWeaponTypeExt->DelayedFire_Duration.Get() > 0 && pExt->DelayedFire_Duration < 0)
-		pExt->DelayedFire_Duration = pWeaponTypeExt->DelayedFire_Duration.Get();
+	int weaponIndex = pThis->SelectWeapon(pThis->Target);
 
-	AnimTypeClass* pDelayedFireAnimType = pWeaponTypeExt->DelayedFire_Anim.isset() ? pWeaponTypeExt->DelayedFire_Anim.Get() : nullptr;
-
-	if (!pDelayedFireAnimType)
+	auto clearVariables = [pExt]()
 	{
-		pExt->DelayedFire_Anim = nullptr;
-		pExt->DelayedFire_Anim_LoopCount = 0;
 		pExt->DelayedFire_Duration = -1;
+		pExt->DelayedFire_WeaponIndex = -1;
+		pExt->DelayedFire_Ready = false;
+		pExt->DelayedFire_DurationTimer.Stop();
 
-		return continueFireAt;
+		if (pExt->DelayedFire_Anim)
+		{
+			if (pExt->DelayedFire_Anim->Type) // This anim doesn't have type pointer, just detach it
+			{
+				pExt->DelayedFire_Anim->TimeToDie = true;
+				pExt->DelayedFire_Anim->UnInit();
+			}
+
+			pExt->DelayedFire_Anim = nullptr;
+		}
+	};
+
+	// Check if weapon was changed and reset values if needed
+	if (pExt->DelayedFire_WeaponIndex >= 0 && pExt->DelayedFire_WeaponIndex != weaponIndex)
+	{
+		clearVariables();
+		return skipFireAt;
 	}
 
-	bool hasDeployAnimFinished = pExt->DelayedFire_Anim && (pExt->DelayedFire_Anim->Animation.Value >= pDelayedFireAnimType->End + pDelayedFireAnimType->Start - 1);
+	// Only can continue weapons with DelayFire tags
+	if (!pWeaponTypeExt->DelayedFire_Anim.isset())
+		return continueFireAt;
 
-	if (!pExt->DelayedFire_Anim)
+	auto currentActiveAnim = pExt->DelayedFire_Anim;
+	int delayedFire_Duration = pWeaponTypeExt->DelayedFire_Duration.Get() > 0 ? pWeaponTypeExt->DelayedFire_Duration.Get() : 0;
+
+	// If a duration limit was set it overrides the total duration based on animation duration
+	if (delayedFire_Duration > 0 && currentActiveAnim)
 	{
-		// Create the DelayedFire animation & stop the Fire process
-		TechnoTypeClass* pThisType = pThis->GetTechnoType();
-		int weaponIndex = pThis->CurrentWeaponNumber;
-		//int weaponIndex = pThis->SelectWeapon(pThis->Target);
-		CoordStruct animLocation = pThis->Location;
-
-		if (pWeaponTypeExt->DelayedFire_Anim_UseFLH)
-			animLocation = TechnoExt::GetFLHAbsoluteCoords(pThis, pThisType->Weapon[weaponIndex].FLH, pThis->HasTurret());//pThisType->Weapon[weaponIndex].FLH;
-
-		if (auto pAnim = GameCreate<AnimClass>(pDelayedFireAnimType, animLocation))//pThis->Location))//animLocation))
+		if (!pExt->DelayedFire_DurationTimer.IsTicking())
 		{
-			pExt->DelayedFire_Anim = pAnim;
-			pExt->DelayedFire_Anim->SetOwnerObject(pThis);
-			pExt->DelayedFire_Anim_LoopCount++;
+			// Execute only if timer has been stopped or not started
+			pExt->DelayedFire_DurationTimer.Start(delayedFire_Duration);
+			return skipFireAt;
+		}
+		else if (pExt->DelayedFire_DurationTimer.Completed())
+		{
+			// Execute only if timer has ran out after being started
+			// Delayed suicide
+			if (pWeaponTypeExt->DelayedFire_Suicide.Get())
+				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+			if (pWeaponTypeExt->DelayedFire_PostAnim.isset())
+			{
+				CoordStruct animLocation = pThis->Location;
+
+				if (pWeaponTypeExt->DelayedFire_Anim_UseFLH)
+					animLocation = TechnoExt::GetFLHAbsoluteCoords(pThis, pThis->GetTechnoType()->Weapon[pExt->DelayedFire_WeaponIndex].FLH, pThis->HasTurret());
+
+				if (auto pAnim = GameCreate<AnimClass>(pWeaponTypeExt->DelayedFire_PostAnim.Get(), animLocation))
+				{
+					pExt->DelayedFire_PostAnim = pAnim;
+					pExt->DelayedFire_PostAnim->SetOwnerObject(pThis);
+				}
+			}
+
+			clearVariables();
+
+			return continueFireAt;
 		}
 		else
 		{
-			Debug::Log("ERROR! DelayedFire animation [%s] -> %s can't be created.\n", pThis->GetTechnoType()->ID, pDelayedFireAnimType->ID);
-			pExt->DelayedFire_Anim = nullptr;
-			pExt->DelayedFire_Anim_LoopCount = 0;
-			pExt->DelayedFire_Duration = -1;
-
-			return continueFireAt;
+			// Countdown still runs, can't fire until completion
+			return skipFireAt;
 		}
 	}
 	else
 	{
-		if (pWeaponTypeExt->DelayedFire_Duration.Get() > 0)
-		{
-			pExt->DelayedFire_Duration--;
-
-			if (pExt->DelayedFire_Duration <= 0)
-			{
-				pExt->DelayedFire_Anim = nullptr;
-				pExt->DelayedFire_Anim_LoopCount = 0;
-				pExt->DelayedFire_Duration = -1;
-
-				// Delayed suicide
-				if (pWeaponTypeExt->DelayedFire_Suicide.Get())
-					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
-
-				return continueFireAt;
-			}
-		}
-
-		if (hasDeployAnimFinished)
-		{
-			// DelayedFire animation finished but it can repeat more times, if set
-			pExt->DelayedFire_Anim = nullptr;
-
-			if (pExt->DelayedFire_Anim_LoopCount >= pWeaponTypeExt->DelayedFire_Anim_LoopCount && pWeaponTypeExt->DelayedFire_Anim_LoopCount > 0)
-			{
-				pExt->DelayedFire_Anim_LoopCount = 0;
-				pExt->DelayedFire_Duration = -1;
-
-				// Delayed suicide
-				if (pWeaponTypeExt->DelayedFire_Suicide.Get())
-					pThis->ReceiveDamage(&pThis->Health, 0,	RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
-
-				return continueFireAt;
-			}
-		}
+		//clearVariables();
+		pExt->DelayedFire_DurationTimer.Stop();
 	}
+
+	if (currentActiveAnim)
+	{
+		if (pExt->DelayedFire_Ready)
+		{
+			clearVariables();
+
+			// Delayed suicide
+			if (pWeaponTypeExt->DelayedFire_Suicide.Get())
+				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+			return continueFireAt;
+		}
+
+		return skipFireAt;
+	}
+
+	// Initiate DelayFire
+	TechnoTypeClass* pThisType = pThis->GetTechnoType();
+	AnimTypeClass* pDelayedFireAnimType = pWeaponTypeExt->DelayedFire_Anim.Get();
+	CoordStruct animLocation = pThis->Location;
+
+	if (pWeaponTypeExt->DelayedFire_Anim_UseFLH)
+		animLocation = TechnoExt::GetFLHAbsoluteCoords(pThis, pThisType->Weapon[weaponIndex].FLH, pThis->HasTurret());
+
+	auto pAnim = GameCreate<AnimClass>(pDelayedFireAnimType, animLocation);
+
+	if (!pAnim)
+	{
+		Debug::Log("DelayedFire animation [%s] for [%s] can't be created. Logic disabled.\n", pDelayedFireAnimType->ID, pThis->GetTechnoType()->ID);
+		clearVariables();
+
+		return continueFireAt;
+	}
+
+	pExt->DelayedFire_Anim = pAnim;
+	pExt->DelayedFire_Anim->SetOwnerObject(pThis);
+	pExt->DelayedFire_WeaponIndex = weaponIndex;
+	pExt->DelayedFire_Duration = delayedFire_Duration;
+	pExt->DelayedFire_Ready = false;
+
+	if (delayedFire_Duration > 0)
+		pExt->DelayedFire_DurationTimer.Start(delayedFire_Duration);
 
 	return skipFireAt;
 }

@@ -60,7 +60,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
 	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 	this->DelayedFire_Anim.Read(exINI, pSection, "DelayedFire.Anim");
-	this->DelayedFire_Anim_LoopCount.Read(exINI, pSection, "DelayedFire.Anim.LoopCount");
+	this->DelayedFire_PostAnim.Read(exINI, pSection, "DelayedFire.PostAnim");
 	this->DelayedFire_Anim_UseFLH.Read(exINI, pSection, "DelayedFire.Anim.UseFLH");
 	this->DelayedFire_Duration.Read(exINI, pSection, "DelayedFire.Duration");
 	this->DelayedFire_Suicide.Read(exINI, pSection, "DelayedFire.Suicide");
@@ -90,7 +90,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraWarheads)
 		.Process(this->ExtraWarheads_DamageOverrides)
 		.Process(this->DelayedFire_Anim)
-		.Process(this->DelayedFire_Anim_LoopCount)
+		.Process(this->DelayedFire_PostAnim)
 		.Process(this->DelayedFire_Anim_UseFLH)
 		.Process(this->DelayedFire_Duration)
 		.Process(this->DelayedFire_Suicide)

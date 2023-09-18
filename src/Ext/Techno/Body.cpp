@@ -660,8 +660,11 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->WHAnimRemainingCreationInterval)
 		.Process(this->DelayedFire_Anim)
-		.Process(this->DelayedFire_Anim_LoopCount)
+		.Process(this->DelayedFire_PostAnim)
 		.Process(this->DelayedFire_Duration)
+		.Process(this->DelayedFire_WeaponIndex)
+		.Process(this->DelayedFire_DurationTimer)
+		.Process(this->DelayedFire_Ready)
 		;
 }
 

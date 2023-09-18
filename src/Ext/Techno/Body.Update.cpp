@@ -6,6 +6,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
@@ -686,6 +687,60 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 					while (passenger);
 				}
 			}
+		}
+	}
+}
+
+void TechnoExt::ExtData::UpdateDelayFire()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (this->DelayedFire_WeaponIndex >= 0)
+	{
+		if (this->DelayedFire_Anim)
+		{
+			auto clearVariables = [this]()
+			{
+				this->DelayedFire_Duration = -1;
+				this->DelayedFire_WeaponIndex = -1;
+				this->DelayedFire_Ready = false;
+				this->DelayedFire_DurationTimer.Stop();
+
+				if (this->DelayedFire_Anim)
+				{
+					if (this->DelayedFire_Anim->Type) // This anim doesn't have type pointer, just detach it
+					{
+						this->DelayedFire_Anim->TimeToDie = true;
+						this->DelayedFire_Anim->UnInit();
+					}
+
+					this->DelayedFire_Anim = nullptr;
+				}
+			};
+
+			if (this->DelayedFire_Anim->InLimbo)
+			{
+				this->DelayedFire_Ready = true;
+				const auto pWeaponType = pThis->GetWeapon(this->DelayedFire_WeaponIndex)->WeaponType;
+				auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+
+				if (pWeaponTypeExt && pWeaponTypeExt->DelayedFire_PostAnim.isset())
+				{
+					CoordStruct animLocation = pThis->Location;
+
+					if (pWeaponTypeExt->DelayedFire_Anim_UseFLH)
+						animLocation = TechnoExt::GetFLHAbsoluteCoords(pThis, pThis->GetTechnoType()->Weapon[this->DelayedFire_WeaponIndex].FLH, pThis->HasTurret());
+
+					if (auto pAnim = GameCreate<AnimClass>(pWeaponTypeExt->DelayedFire_PostAnim.Get(), animLocation))
+					{
+						this->DelayedFire_PostAnim = pAnim;
+						this->DelayedFire_PostAnim->SetOwnerObject(pThis);
+					}
+				}
+			}
+
+			if (!pThis->Target || pThis->GetCurrentMission() != Mission::Attack)
+				clearVariables();
 		}
 	}
 }

@@ -40,7 +40,7 @@ public:
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		Nullable<AnimTypeClass*> DelayedFire_Anim;
-		Valueable<int> DelayedFire_Anim_LoopCount;
+		Nullable<AnimTypeClass*> DelayedFire_PostAnim;
 		Valueable<bool> DelayedFire_Anim_UseFLH;
 		Valueable<int> DelayedFire_Duration;
 		Valueable<bool> DelayedFire_Suicide;
@@ -66,7 +66,7 @@ public:
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
 			, DelayedFire_Anim { }
-			, DelayedFire_Anim_LoopCount { 1 }
+			, DelayedFire_PostAnim { }
 			, DelayedFire_Anim_UseFLH { true }
 			, DelayedFire_Duration { 0 }
 			, DelayedFire_Suicide { false }
