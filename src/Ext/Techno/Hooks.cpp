@@ -1,10 +1,14 @@
-#include <ScenarioClass.h>
 #include "Body.h"
+
+#include <ScenarioClass.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+
+#include <New/Type/Affiliated/HugeBar.h>
+
 #include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -73,6 +77,23 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeLaserTrails();
+
+	HugeBar::InitializeHugeBar(pThis);
+
+	if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+	{
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		pOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	HugeBar::InitializeHugeBar(pThis);
 
 	return 0;
 }

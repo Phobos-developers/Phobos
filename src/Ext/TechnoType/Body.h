@@ -167,6 +167,9 @@ public:
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
+		Valueable<bool> HugeBar;
+		Valueable<int> HugeBar_Priority;
+
 		Valueable<int> AmmoPipFrame;
 		Valueable<int> EmptyAmmoPipFrame;
 		Valueable<int> AmmoPipWrapStartFrame;
@@ -341,6 +344,8 @@ public:
 
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
+			, HugeBar { false }
+			, HugeBar_Priority { -1 }
 
 			, AmmoPipFrame { 13 }
 			, EmptyAmmoPipFrame { -1 }

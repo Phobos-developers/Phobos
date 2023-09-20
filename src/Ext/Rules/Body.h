@@ -3,12 +3,13 @@
 #include <CCINIClass.h>
 #include <RulesClass.h>
 #include <GameStrings.h>
+
+#include <New/Type/Affiliated/HugeBar.h>
+
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
-#include <Utilities/Template.h>
-#include <Utilities/Enum.h>
-#include <Utilities/TemplateDef.h>
 #include <Utilities/Debug.h>
+#include <Utilities/Enum.h>
 
 class AnimTypeClass;
 class MouseCursor;
@@ -102,6 +103,8 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 
+		std::vector<std::unique_ptr<HugeBar>> HugeBar_Config;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -163,6 +166,7 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, HugeBar_Config {}
 			, ShowDesignatorRange { true }
 		{ }
 

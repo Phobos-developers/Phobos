@@ -8,8 +8,11 @@
 
 #include <Ext/House/Body.h>
 
+#include <New/Type/Affiliated/HugeBar.h>
+
 #include <Utilities/AresFunctions.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/ShapeTextPrinter.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 

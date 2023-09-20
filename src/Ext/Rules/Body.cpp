@@ -4,6 +4,7 @@
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
 
+#include <New/Type/Affiliated/HugeBar.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -136,6 +137,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
 	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
+	if (HugeBar_Config.empty())
+	{
+		this->HugeBar_Config.emplace_back(new HugeBar(DisplayInfoType::Health));
+		this->HugeBar_Config.emplace_back(new HugeBar(DisplayInfoType::Shield));
+	}
+
+	this->HugeBar_Config[0]->LoadFromINI(pINI);
+	this->HugeBar_Config[1]->LoadFromINI(pINI);
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
 	for (int i = 0; i < itemsCount; ++i)
@@ -265,6 +275,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
+		.Process(this->HugeBar_Config)
 		.Process(this->ShowDesignatorRange)
 		;
 }

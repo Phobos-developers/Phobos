@@ -1,8 +1,7 @@
 #pragma once
-#include <Utilities/Enum.h>
-#include <Utilities/TemplateDef.h>
 
-#include <YRPPCore.h>
+#include <Utilities/Enum.h>
+#include <Utilities/Template.h>
 
 // Helper class to get anchor points on an arbitrary rectangle or a parallelogram
 class Anchor
@@ -11,6 +10,7 @@ public:
 	Valueable<HorizontalPosition> Horizontal { HorizontalPosition::Left };
 	Valueable<VerticalPosition>   Vertical { VerticalPosition::Top };
 
+	Anchor() = default;
 	Anchor(HorizontalPosition hPos, VerticalPosition vPos)
 		: Horizontal { hPos }, Vertical { vPos }
 	{ }
