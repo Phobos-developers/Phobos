@@ -5,6 +5,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/WarheadType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
@@ -818,7 +819,10 @@ void TechnoExt::ExtData::UpdateDelayFire()
 				// Execute only if timer has ran out after being started
 				// Delayed suicide
 				if (pWeaponTypeExt->DelayedFire_Suicide.Get())
+				{
 					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+					WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
+				}
 
 				// Play an optional animation after the end of the main animation
 				if (pWeaponTypeExt->DelayedFire_PostAnim.isset())
@@ -857,8 +861,10 @@ void TechnoExt::ExtData::UpdateDelayFire()
 
 			// Delayed suicide
 			if (pWeaponTypeExt->DelayedFire_Suicide.Get())
+			{
 				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
-
+				WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
+			}
 			return;
 		}
 
