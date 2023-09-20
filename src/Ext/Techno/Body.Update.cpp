@@ -693,44 +693,103 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 
 void TechnoExt::ExtData::UpdateDelayFire()
 {
+	if (!this)
+		return;
+
 	auto const pThis = this->OwnerObject();
+	if (!pThis)
+		return;
+
+	if (!this->DelayedFire_Charging)
+		return;
+
+	auto clearVariables = [this]()
+	{
+		this->DelayedFire_Duration = -1;
+		this->DelayedFire_WeaponIndex = -1;
+		this->DelayedFire_DurationTimer.Stop();
+
+		if (this->DelayedFire_Anim)
+		{
+			if (this->DelayedFire_Anim->Type && !this->DelayedFire_Anim->InLimbo) // This anim doesn't have type pointer, just detach it
+			{
+				this->DelayedFire_Anim->TimeToDie = true;
+				this->DelayedFire_Anim->Limbo();
+			}
+
+			this->DelayedFire_Anim = nullptr;
+		}
+	};
+
+	// Disable the logic if the object isn't attacking
+	if (!pThis->Target || pThis->GetCurrentMission() != Mission::Attack)
+	{
+		clearVariables();
+		this->DelayedFire_Charged = false;
+		this->DelayedFire_Charging = false;
+
+		return;
+	}
+
+	int weaponIndex = pThis->SelectWeapon(pThis->Target);
+
+	// Check if weapon was changed and reset values if needed
+	if (this->DelayedFire_WeaponIndex != weaponIndex)
+	{
+		clearVariables();
+		return;
+	}
+
+	auto pWeaponType = pThis->GetWeapon(weaponIndex)->WeaponType;
+	if (!pWeaponType)
+		return;
+
+	auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+	if (!pWeaponTypeExt)
+		return;
+
+	if (this->DelayedFire_Charged)
+		return;
+
+	if (!pWeaponTypeExt->DelayedFire_Anim.isset())
+	{
+		clearVariables();
+		return;
+	}
+
+	CoordStruct animLocation = pThis->Location;
+
+	if (pWeaponTypeExt->DelayedFire_Anim_UseFLH)
+		animLocation = TechnoExt::GetFLHAbsoluteCoords(pThis, pThis->GetTechnoType()->Weapon[this->DelayedFire_WeaponIndex].FLH, pThis->HasTurret());
+
+	auto currentActiveAnim = this->DelayedFire_Anim;
+	int delayedFire_Duration = pWeaponTypeExt->DelayedFire_Duration.Get() > 0 ? pWeaponTypeExt->DelayedFire_Duration.Get() : 0;
 
 	if (this->DelayedFire_WeaponIndex >= 0)
 	{
-		if (this->DelayedFire_Anim)
+		// Check if weapon was changed and reset values
+		if (this->DelayedFire_WeaponIndex != weaponIndex)
 		{
-			auto clearVariables = [this]()
+			clearVariables();
+			this->DelayedFire_Charging = false;
+			this->DelayedFire_Charged = false;
+
+			return;
+		}
+
+		// Check animation status
+		if (currentActiveAnim)
+		{
+			// If animation finished end these checks
+			if (currentActiveAnim->InLimbo)
 			{
-				this->DelayedFire_Duration = -1;
-				this->DelayedFire_WeaponIndex = -1;
-				this->DelayedFire_Ready = false;
-				this->DelayedFire_DurationTimer.Stop();
+				// Disabling this logic, so the weapon can be fired
+				this->DelayedFire_Charging = false;
+				this->DelayedFire_Charged = true;
+				clearVariables();
 
-				if (this->DelayedFire_Anim)
+				if (pWeaponTypeExt->DelayedFire_PostAnim.isset())
 				{
-					if (this->DelayedFire_Anim->Type) // This anim doesn't have type pointer, just detach it
-					{
-						this->DelayedFire_Anim->TimeToDie = true;
-						this->DelayedFire_Anim->UnInit();
-					}
-
-					this->DelayedFire_Anim = nullptr;
-				}
-			};
-
-			if (this->DelayedFire_Anim->InLimbo)
-			{
-				this->DelayedFire_Ready = true;
-				const auto pWeaponType = pThis->GetWeapon(this->DelayedFire_WeaponIndex)->WeaponType;
-				auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
-
-				if (pWeaponTypeExt && pWeaponTypeExt->DelayedFire_PostAnim.isset())
-				{
-					CoordStruct animLocation = pThis->Location;
-
-					if (pWeaponTypeExt->DelayedFire_Anim_UseFLH)
-						animLocation = TechnoExt::GetFLHAbsoluteCoords(pThis, pThis->GetTechnoType()->Weapon[this->DelayedFire_WeaponIndex].FLH, pThis->HasTurret());
-
 					if (auto pAnim = GameCreate<AnimClass>(pWeaponTypeExt->DelayedFire_PostAnim.Get(), animLocation))
 					{
 						this->DelayedFire_PostAnim = pAnim;
@@ -738,9 +797,96 @@ void TechnoExt::ExtData::UpdateDelayFire()
 					}
 				}
 			}
-
-			if (!pThis->Target || pThis->GetCurrentMission() != Mission::Attack)
-				clearVariables();
 		}
 	}
+
+	if (currentActiveAnim)
+	{
+		// If is set a duration limit then this countdown takes preference over the original animation duration
+		if (delayedFire_Duration > 0)
+		{
+			if (!this->DelayedFire_DurationTimer.IsTicking())
+			{
+				// Execute only if timer has been stopped or not started
+				this->DelayedFire_DurationTimer.Start(delayedFire_Duration);
+				this->DelayedFire_Charging = true;
+				this->DelayedFire_Charged = false;
+				return;
+			}
+			else if (this->DelayedFire_DurationTimer.Completed())
+			{
+				// Execute only if timer has ran out after being started
+				// Delayed suicide
+				if (pWeaponTypeExt->DelayedFire_Suicide.Get())
+					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+				// Play an optional animation after the end of the main animation
+				if (pWeaponTypeExt->DelayedFire_PostAnim.isset())
+				{
+					if (auto pAnim = GameCreate<AnimClass>(pWeaponTypeExt->DelayedFire_PostAnim.Get(), animLocation))
+					{
+						this->DelayedFire_PostAnim = pAnim;
+						this->DelayedFire_PostAnim->SetOwnerObject(pThis);
+					}
+				}
+
+				// Disabling this logic, so the weapon can be fired
+				this->DelayedFire_Charging = false;
+				this->DelayedFire_Charged = true;
+				clearVariables();
+
+				return;
+			}
+			else
+			{
+				// Countdown still runs, can't fire until completion
+				return;
+			}
+		}
+		else
+		{
+			this->DelayedFire_DurationTimer.Stop();
+		}
+
+		if (this->DelayedFire_Charged)
+		{
+			// Disabling this logic, so the weapon can be fired
+			clearVariables();
+			this->DelayedFire_Charging = false;
+			this->DelayedFire_Charged = true;
+
+			// Delayed suicide
+			if (pWeaponTypeExt->DelayedFire_Suicide.Get())
+				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+
+			return;
+		}
+
+		return;
+	}
+
+	// Setting DelayFire from zero
+	clearVariables();
+	const auto pAnimType = pWeaponTypeExt->DelayedFire_Anim.Get();
+
+	auto pAnim = GameCreate<AnimClass>(pAnimType, animLocation);
+	if (!pAnim)
+	{
+		Debug::Log("DelayedFire animation [%s] for [%s] can't be created. Logic disabled.\n", pAnimType->ID, pThis->GetTechnoType()->ID);
+		clearVariables();
+		this->DelayedFire_Charging = false;
+		this->DelayedFire_Charged = true;
+
+		return;
+	}
+
+	this->DelayedFire_Anim = pAnim;
+	this->DelayedFire_Anim->SetOwnerObject(pThis);
+	this->DelayedFire_WeaponIndex = weaponIndex;
+	this->DelayedFire_Duration = delayedFire_Duration;
+	this->DelayedFire_Charging = true;
+	this->DelayedFire_Charged = false;
+
+	if (delayedFire_Duration > 0)
+		this->DelayedFire_DurationTimer.Start(delayedFire_Duration);
 }

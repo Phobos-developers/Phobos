@@ -79,7 +79,11 @@ public:
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+			AnnounceInvalidPointer(DelayedFire_Anim, ptr);
+			AnnounceInvalidPointer(DelayedFire_PostAnim, ptr);
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 
