@@ -350,6 +350,7 @@ New:
 - Reloading ammo in transports (by Starkku)
 - Dump variables to file on scenario end / hotkey (by Morton)
 - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
+- Allow toggling `Infantry/UnitsGainSelfHeal` for `MultiplayPassive=true` houses (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -419,6 +420,7 @@ Phobos fixes:
 - Shields will no longer take damage if the parent techno has `Immune=true` or has `TypeImmune=true` and the damage comes from instance of same TechnoType owned by same house (by Starkku)
 - Fixed interceptors causing multiplayer games to desync (by Starkku)
 - Optimized performance for map trigger retint action light source fix (by Starkku)
+- Fixed a number of issues with Warhead Shield respawn / self heal rate modifiers like timers getting reset unnecessarily, the timer being adjusted wrong after the Warhead effect runs out etc. (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
