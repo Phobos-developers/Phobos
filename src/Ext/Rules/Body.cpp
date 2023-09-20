@@ -70,6 +70,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Storage_TiberiumIndex.Read(exINI, GameStrings::General, "Storage.TiberiumIndex");
 	this->InfantryGainSelfHealCap.Read(exINI, GameStrings::General, "InfantryGainSelfHealCap");
 	this->UnitsGainSelfHealCap.Read(exINI, GameStrings::General, "UnitsGainSelfHealCap");
+	this->GainSelfHealAllowMultiplayPassive.Read(exINI, GameStrings::General, "GainSelfHealAllowMultiplayPassive");
 	this->EnemyInsignia.Read(exINI, GameStrings::General, "EnemyInsignia");
 	this->DisguiseBlinkingVisibility.Read(exINI, GameStrings::General, "DisguiseBlinkingVisibility");
 	this->ChronoSparkleDisplayDelay.Read(exINI, GameStrings::General, "ChronoSparkleDisplayDelay");
@@ -206,6 +207,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Storage_TiberiumIndex)
 		.Process(this->InfantryGainSelfHealCap)
 		.Process(this->UnitsGainSelfHealCap)
+		.Process(this->GainSelfHealAllowMultiplayPassive)
 		.Process(this->EnemyInsignia)
 		.Process(this->DisguiseBlinkingVisibility)
 		.Process(this->ChronoSparkleDisplayDelay)

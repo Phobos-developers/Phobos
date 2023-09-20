@@ -73,3 +73,25 @@ DEFINE_HOOK(0x6876C2, ReadScenarioINI_Inlined_ReadGlobalVariables, 0x6)
 
 	return 0x68773F;
 }
+
+DEFINE_HOOK(0x685670, DoWin_SaveVariables, 0x5)
+{
+	if (Phobos::Config::SaveVariablesOnScenarioEnd)
+	{
+		ScenarioExt::ExtData::SaveVariablesToFile(false);
+		ScenarioExt::ExtData::SaveVariablesToFile(true);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x685DC0, DoLose_SaveVariables, 0x5)
+{
+	if (Phobos::Config::SaveVariablesOnScenarioEnd)
+	{
+		ScenarioExt::ExtData::SaveVariablesToFile(false);
+		ScenarioExt::ExtData::SaveVariablesToFile(true);
+	}
+
+	return 0;
+}

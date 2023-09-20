@@ -74,6 +74,7 @@ public:
 		static int CampaignDefaultGameSpeed;
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;
+		static bool SaveVariablesOnScenarioEnd;
 	};
 
 	class Misc

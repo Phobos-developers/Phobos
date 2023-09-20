@@ -59,6 +59,25 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 	}
 }
 
+void ScenarioExt::ExtData::SaveVariablesToFile(bool isGlobal)
+{
+	const auto fileName = isGlobal ? "globals.ini" : "locals.ini";
+	auto pINI = GameCreate<CCINIClass>();
+	auto pFile = GameCreate<CCFileClass>(fileName);
+
+	if (pFile->Exists())
+		pINI->ReadCCFile(pFile);
+	else
+		pFile->CreateFileA();
+
+	const auto& variables = Global()->Variables[isGlobal];
+	for (const auto& variable : variables)
+		pINI->WriteInteger(ScenarioClass::Instance()->FileName, variable.second.Name, variable.second.Value, false);
+
+	pINI->WriteCCFile(pFile);
+	pFile->Close();
+}
+
 void ScenarioExt::Allocate(ScenarioClass* pThis)
 {
 	Data = std::make_unique<ScenarioExt::ExtData>(pThis);
