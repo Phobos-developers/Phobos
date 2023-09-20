@@ -900,6 +900,17 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DelayedFire, 0x6) //0x6FDD93
 
 	int weaponIndex = pThis->SelectWeapon(pThis->Target);
 
+	auto pWeaponType = pThis->GetWeapon(weaponIndex)->WeaponType;
+	if (!pWeaponType)
+		return continueFireAt;
+
+	auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+	if (!pWeaponTypeExt || !pWeaponTypeExt->DelayedFire_Anim.isset())
+	{
+		pExt->DelayedFire_Charging = false;
+		return continueFireAt;
+	}
+
 	// Check if weapon was changed and reset values if needed
 	if (pExt->DelayedFire_WeaponIndex != weaponIndex)
 	{
