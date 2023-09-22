@@ -14,8 +14,10 @@
 
 namespace INIInheritance
 {
-	int ReadString(REGISTERS* R, int address);
-	int ReadStringUseCRC(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length, bool useCurrentSection);
+	const constexpr int inheritsCRC = -1871638965; // CRCEngine()("$Inherits", 9)
+
+	int ReadString(CCINIClass* ini, int sectionCRC, int entryCRC, const char* defaultValue, char* buffer, int length, bool useCurrentSection, bool skipCheck);
+	int ReadStringUseCRCActual(CCINIClass* ini, int sectionCRC, int entryCRC, const char* defaultValue, char* buffer, int length, bool useCurrentSection);
 
 	template<typename T>
 	T ReadTemplate(REGISTERS* R)
@@ -77,11 +79,11 @@ namespace INIInheritance
 	std::unordered_map<int, std::string, Passthrough> Inherits;
 }
 
-int INIInheritance::ReadStringUseCRC(CCINIClass* ini, int sectionCRC, int entryCRC, char* defaultValue, char* buffer, int length, bool useCurrentSection)
+int INIInheritance::ReadStringUseCRCActual(CCINIClass* ini, int sectionCRC, int entryCRC, const char* defaultValue, char* buffer, int length, bool useCurrentSection)
 {
 	INIClass::INISection* pSection;
 
-	const auto finalize = [buffer, length](char* result)
+	const auto finalize = [buffer, length](const char* result)
 	{
 		if (!result)
 		{
@@ -113,40 +115,48 @@ int INIInheritance::ReadStringUseCRC(CCINIClass* ini, int sectionCRC, int entryC
 	return finalize(pEntry->Value ? pEntry->Value : defaultValue);
 }
 
-int INIInheritance::ReadString(REGISTERS* R, int address)
+int INIInheritance::ReadString(CCINIClass* ini, int sectionCRC, int entryCRC, const char* defaultValue,
+	char* buffer, int length, bool useCurrentSection, bool skipCheck = false)
 {
-	const int stackOffset = 0x1C;
-	GET(CCINIClass*, ini, EBP);
-	GET_STACK(int, length, STACK_OFFSET(stackOffset, 0x14));
-	GET_STACK(char*, buffer, STACK_OFFSET(stackOffset, 0x10));
-	GET_STACK(const char*, defaultValue, STACK_OFFSET(stackOffset, 0xC));
-	GET_STACK(int, entryCRC, STACK_OFFSET(stackOffset, 0x8));
-	GET_STACK(int, sectionCRC, STACK_OFFSET(stackOffset, 0x4));
-
-	const auto finalize = [R, buffer, address](const char* value)
+	const auto finalize = [buffer, length](const char* result)
 	{
-		R->EDI(buffer);
-		R->EAX(0);
-		R->ECX(value);
-		return address;
+		if (!result)
+		{
+			*buffer = NULL;
+			return 0;
+		}
+		strncpy(buffer, result, length);
+		buffer[length - 1] = NULL;
+		CRT::strtrim(buffer);
+
+		return (int)strlen(buffer);
 	};
 
-	const constexpr int inheritsCRC = -1871638965; // CRCEngine()("$Inherits", 9)
+	int resultLen = 0;
+
+	if (!skipCheck)
+	{
+		// check if this section has the actual entry, if yes, then we're done
+		resultLen = INIInheritance::ReadStringUseCRCActual(ini, sectionCRC, entryCRC, NULL, buffer, length, useCurrentSection);
+		if (resultLen != 0)
+			return buffer[0] ? resultLen : 0;
+	}
 
 	// if we were looking for $Inherits and failed, no recursion
 	if (entryCRC == inheritsCRC)
-		return finalize(defaultValue);
+		return 0;
 
 	// read $Inherits entry only once per section
 	const auto it = INIInheritance::Inherits.find(sectionCRC);
 	char* inherits;
 	if (it == INIInheritance::Inherits.end())
 	{
-		// if there's no saved $Inherits entry for this section, read now
 		char stringBuffer[0x100];
-		const int retval = INIInheritance::ReadStringUseCRC(ini, sectionCRC, inheritsCRC, NULL, stringBuffer, 0x100, true);
+		// if there's no saved $Inherits entry for this section, read now
+		resultLen = INIInheritance::ReadStringUseCRCActual(ini, sectionCRC, inheritsCRC, NULL, stringBuffer, 0x100, useCurrentSection);
 		INIInheritance::Inherits.emplace(sectionCRC, std::string(stringBuffer));
-		if (retval == 0)
+		// if we failed to find $Inherits, stop
+		if (resultLen == 0)
 			return finalize(defaultValue);
 		inherits = stringBuffer;
 	}
@@ -166,15 +176,16 @@ int INIInheritance::ReadString(REGISTERS* R, int address)
 	{
 		const int splitsCRC = CRCEngine()(split, strlen(split));
 
-		// if we've found anything new, we're done
-		if (INIInheritance::ReadStringUseCRC(ini, splitsCRC, entryCRC, NULL, buffer, length, false) != 0)
+		// if we've found anything, we're done
+		resultLen = INIInheritance::ReadString(ini, splitsCRC, entryCRC, defaultValue, buffer, length, false);
+		if (resultLen != 0)
 			break;
 		split = strtok_s(NULL, ",", &state);
 	}
 	while (split);
 	free(inherits);
 
-	return finalize(buffer[0] ? buffer : defaultValue);
+	return resultLen != 0 ? (buffer[0] ? resultLen : 0) : finalize(defaultValue);
 }
 
 // INIClass__GetInt__Hack // pop edi, jmp + 6, nop
@@ -182,7 +193,28 @@ DEFINE_PATCH(0x5278C6, 0x5F, 0xEB, 0x06, 0x90);
 
 DEFINE_HOOK(0x528BAC, INIClass_GetString_Inheritance_NoEntry, 0xA)
 {
-	return INIInheritance::ReadString(R, 0x528BB6);
+	const int stackOffset = 0x1C;
+	GET(CCINIClass*, ini, EBP);
+	GET_STACK(int, length, STACK_OFFSET(stackOffset, 0x14));
+	GET_STACK(char*, buffer, STACK_OFFSET(stackOffset, 0x10));
+	GET_STACK(const char*, defaultValue, STACK_OFFSET(stackOffset, 0xC));
+	GET_STACK(int, entryCRC, STACK_OFFSET(stackOffset, 0x8));
+	GET_STACK(int, sectionCRC, STACK_OFFSET(stackOffset, 0x4));
+
+	// if we're in a different CCINIClass now, clear old data
+	if (ini != INIInheritance::LastINIFile)
+	{
+		INIInheritance::LastINIFile = ini;
+		INIInheritance::Inherits.clear();
+	}
+
+	INIInheritance::ReadString(ini, sectionCRC, entryCRC, defaultValue, buffer, length, true, true);
+
+	R->EDI(buffer);
+	R->EAX(0);
+	R->ECX(buffer[0] ? buffer : defaultValue);
+
+	return 0x528BB6;
 }
 
 DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
@@ -194,7 +226,6 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 	{
 		INIInheritance::LastINIFile = ini;
 		INIInheritance::SavedIncludes.clear();
-		INIInheritance::Inherits.clear();
 	}
 
 	const auto section = ini->GetSection("$Include");
@@ -202,7 +233,7 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 		return 0;
 
 	// include path in the list
-	for (const auto node : section->EntryIndex)
+	for (const auto& node : section->EntryIndex)
 	{
 		if (!node.Data || !node.Data->Value || !*node.Data->Value)
 			continue;

@@ -2,7 +2,35 @@
 
 This page describes every change in Phobos that wasn't categorized into a proper category yet.
 
+## Player colors
+
+### Unlimited skirmish colors
+
+- It is now possible to have an unlimited number of skirmish/multiplayer player colors, as opposed to 8 in Yuri's Revenge and 16 with Ares.
+- This feature must be enabled with `SkirmishUnlimitedColors=true` in `[General]` section of game rules.
+- When enabled, the game will treat color indices passed from spawner as indices for `[Colors]` section entries.
+  - In example, with original rules, index 6 will correspond to color `Orange=25,230,255`.
+- Phobos writes additional information to the `SYNC#.txt` log files when a desynchronization occurs such as calls to random number generator functions, facing / target / destination changes etc.
+
+```{note}
+This feature should only be used if you use a spawner/outside client (i.e. CNCNet client). Using it in the original YR launcher will produce undesireable effects.
+```
+
+```{warning}
+Due to technical incompatibilities, enabling this feature disables [Ares' Customizable Dropdown Colors](https://ares-developers.github.io/Ares-docs/ui-features/customizabledropdowncolors.html).
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+SkirmishUnlimitedColors=false	; boolean
+```
+
 ## Developer tools
+
+### Additional sync logging
+
+- Phobos writes additional information to the `SYNC#.txt` log files when a desynchronization occurs such as calls to random number generator functions, facing / target / destination changes etc.
 
 ### Dump Object Info
 
@@ -19,6 +47,20 @@ This page describes every change in Phobos that wasn't categorized into a proper
 
 - There's a new hotkey to execute the game frame by frame for development usage.
 	- You can switch to frame by frame mode and then use frame step in command to forward 1, 5, 10, 15, 30 or 60 frames by one hit.
+
+### Save variables to file
+
+- There's a new hotkey to write all local variables to `locals.ini` and all global variables to `globals.ini`. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
+- Variables will be also automatically saved to file on scenario end if `[General]SaveVariablesOnScenarioEnd=true` is set in `rulesmd.ini`.
+- Variable section will use the same name as the mission file name in capital letters, i.e. `[MYCAMPAIGN.MAP]`.
+  - Variables will be written as key-value pairs, i.e. `MyVariable=1`
+- If an INI file with the same name (`locals.ini`/`globals.ini`) doesn't exist, it will be created. If it exists, all sections will be preserved.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SaveVariablesOnScenarioEnd=false    ; boolean
+```
 
 ### Semantic locomotor aliases
 

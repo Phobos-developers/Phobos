@@ -52,8 +52,15 @@
 #include <CRT.h>
 #include <LocomotionClass.h>
 
+#include <Locomotion/TestLocomotionClass.h>
+
 namespace detail
 {
+	template<typename T>
+	concept HasFindOrAllocate = requires(const char* arg){
+		{ T::FindOrAllocate(arg) }->std::same_as<T*>;
+	};
+
 	template <typename T>
 	inline bool read(T& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate = false)
 	{
@@ -61,7 +68,11 @@ namespace detail
 		{
 			using base_type = std::remove_pointer_t<T>;
 			auto const pValue = parser.value();
-			auto const parsed = (allocate ? base_type::FindOrAllocate : base_type::Find)(pValue);
+			T parsed; //TODO: allocate should be a template param
+			if constexpr (HasFindOrAllocate<base_type>)
+				parsed = (allocate ? base_type::FindOrAllocate : base_type::Find)(pValue);
+			else
+				parsed = base_type::Find(pValue);
 
 			if (parsed || INIClass::IsBlank(pValue))
 			{
@@ -542,6 +553,48 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<DirType>(DirType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		int buffer;
+
+		if (parser.ReadInteger(pSection, pKey, &buffer))
+		{
+			if (buffer <= (int)DirType::NorthWest && buffer >= (int)DirType::North)
+			{
+				value = static_cast<DirType>(buffer);
+				return true;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid DirType (0-255).");
+			}
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<FacingType>(FacingType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		int buffer;
+
+		if (parser.ReadInteger(pSection, pKey, &buffer))
+		{
+			if (buffer < (int)FacingType::Count && buffer >= (int)FacingType::None)
+			{
+				value = static_cast<FacingType>(buffer);
+				return true;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid FacingType (0-7 or -1).");
+			}
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<SuperWeaponAITargetingMode>(SuperWeaponAITargetingMode& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -932,6 +985,47 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<ChronoSparkleDisplayPosition>(ChronoSparkleDisplayPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = ChronoSparkleDisplayPosition::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "building"))
+				{
+					parsed |= ChronoSparkleDisplayPosition::Building;
+				}
+				else if (!_strcmpi(cur, "occupants"))
+				{
+					parsed |= ChronoSparkleDisplayPosition::Occupants;
+				}
+				else if (!_strcmpi(cur, "occupantslots"))
+				{
+					parsed |= ChronoSparkleDisplayPosition::OccupantSlots;
+				}
+				else if (!_strcmpi(cur, "all") )
+				{
+					parsed |= ChronoSparkleDisplayPosition::All;
+				}
+				else if (_strcmpi(cur, "none"))
+				{
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a chrono sparkle position type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<CLSID>(CLSID& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (!parser.ReadString(pSection, pKey))
@@ -957,6 +1051,16 @@ if(_strcmpi(parser.value(), #name) == 0){ value = LocomotionClass::CLSIDs::name;
 
 #undef PARSE_IF_IS_LOCO
 
+#define PARSE_IF_IS_PHOBOS_LOCO(name)\
+if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionClass); return true; }
+
+		// Add your locomotor parsing here
+#ifdef CUSTOM_LOCO_EXAMPLE_ENABLED // Add semantic parsing for loco
+			PARSE_IF_IS_PHOBOS_LOCO(Test);
+#endif
+
+#undef PARSE_IF_IS_PHOBOS_LOCO
+
 			return false;
 		}
 
@@ -974,6 +1078,159 @@ if(_strcmpi(parser.value(), #name) == 0){ value = LocomotionClass::CLSIDs::name;
 			return false;
 
 		return true;
+	}
+
+	template <>
+	inline bool read<HorizontalPosition>(HorizontalPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "left") == 0)
+			{
+				value = HorizontalPosition::Left;
+			}
+			else if (_strcmpi(str, "center") == 0 || _strcmpi(str, "centre") == 0)
+			{
+				value = HorizontalPosition::Center;
+			}
+			else if (_strcmpi(str, "right") == 0)
+			{
+				value = HorizontalPosition::Right;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Horizontal Position can be either Left, Center/Centre or Right");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<VerticalPosition>(VerticalPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "top") == 0)
+			{
+				value = VerticalPosition::Top;
+			}
+			else if (_strcmpi(str, "center") == 0 || _strcmpi(str, "centre") == 0)
+			{
+				value = VerticalPosition::Center;
+			}
+			else if (_strcmpi(str, "bottom") == 0)
+			{
+				value = VerticalPosition::Bottom;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Vertical Position can be either Top, Center/Centre or Bottom");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<BuildingSelectBracketPosition>(BuildingSelectBracketPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "top") == 0)
+			{
+				value = BuildingSelectBracketPosition::Top;
+			}
+			else if (_strcmpi(str, "lefttop") == 0)
+			{
+				value = BuildingSelectBracketPosition::LeftTop;
+			}
+			else if (_strcmpi(str, "leftbottom") == 0)
+			{
+				value = BuildingSelectBracketPosition::LeftBottom;
+			}
+			else if (_strcmpi(str, "bottom") == 0)
+			{
+				value = BuildingSelectBracketPosition::Bottom;
+			}
+			else if (_strcmpi(str, "rightbottom") == 0)
+			{
+				value = BuildingSelectBracketPosition::RightBottom;
+			}
+			else if (_strcmpi(str, "righttop") == 0)
+			{
+				value = BuildingSelectBracketPosition::RightTop;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "BuildingPosition is invalid");
+				return false;
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<DisplayInfoType>(DisplayInfoType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "health") == 0)
+			{
+				value = DisplayInfoType::Health;
+			}
+			else if (_strcmpi(str, "shield") == 0)
+			{
+				value = DisplayInfoType::Shield;
+			}
+			else if (_strcmpi(str, "ammo") == 0)
+			{
+				value = DisplayInfoType::Ammo;
+			}
+			else if (_strcmpi(str, "mindcontrol") == 0)
+			{
+				value = DisplayInfoType::MindControl;
+			}
+			else if (_strcmpi(str, "spawns") == 0)
+			{
+				value = DisplayInfoType::Spawns;
+			}
+			else if (_strcmpi(str, "passengers") == 0)
+			{
+				value = DisplayInfoType::Passengers;
+			}
+			else if (_strcmpi(str, "tiberium") == 0)
+			{
+				value = DisplayInfoType::Tiberium;
+			}
+			else if (_strcmpi(str, "experience") == 0)
+			{
+				value = DisplayInfoType::Experience;
+			}
+			else if (_strcmpi(str, "occupants") == 0)
+			{
+				value = DisplayInfoType::Occupants;
+			}
+			else if (_strcmpi(str, "gattlingstage") == 0)
+			{
+				value = DisplayInfoType::GattlingStage;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Display info type is invalid");
+				return false;
+			}
+			return true;
+		}
+		return false;
 	}
 
 	template <typename T>

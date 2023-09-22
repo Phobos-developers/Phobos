@@ -9,7 +9,6 @@
 
 #include <Utilities/GeneralUtils.h>
 
-template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 
 void TechnoTypeExt::ExtData::Initialize()
@@ -151,7 +150,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->InitialStrength.isset())
 		this->InitialStrength = Math::clamp(this->InitialStrength, 1, pThis->Strength);
 
+	this->ReloadInTransport.Read(exINI, pSection, "ReloadInTransport");
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
+
+	this->Ammo_AddOnDeploy.Read(exINI, pSection, "Ammo.AddOnDeploy");
+	this->Ammo_AutoDeployMinimumAmount.Read(exINI, pSection, "Ammo.AutoDeployMinimumAmount");
+	this->Ammo_AutoDeployMaximumAmount.Read(exINI, pSection, "Ammo.AutoDeployMaximumAmount");
+	this->Ammo_DeployUnlockMinimumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMinimumAmount");
+	this->Ammo_DeployUnlockMaximumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMaximumAmount");
+
+	this->VoiceCantDeploy.Read(exINI, pSection, "VoiceCantDeploy");
 
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
 	this->AutoDeath_VanishAnimation.Read(exINI, pSection, "AutoDeath.VanishAnimation");
@@ -171,6 +179,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
+	this->VoiceCreated.Read(exINI, pSection, "VoiceCreated");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
@@ -240,6 +249,27 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
+	this->TiltsWhenCrushes_Vehicles.Read(exINI, pSection, "TiltsWhenCrushes.Vehicles");
+	this->TiltsWhenCrushes_Overlays.Read(exINI, pSection, "TiltsWhenCrushes.Overlays");
+	this->CrushForwardTiltPerFrame.Read(exINI, pSection, "CrushForwardTiltPerFrame");
+	this->CrushOverlayExtraForwardTilt.Read(exINI, pSection, "CrushOverlayExtraForwardTilt");
+	this->CrushSlowdownMultiplier.Read(exINI, pSection, "CrushSlowdownMultiplier");
+
+	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
+	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
+
+	this->AmmoPipFrame.Read(exINI, pSection, "AmmoPipFrame");
+	this->EmptyAmmoPipFrame.Read(exINI, pSection, "EmptyAmmoPipFrame");
+	this->AmmoPipWrapStartFrame.Read(exINI, pSection, "AmmoPipWrapStartFrame");
+	this->AmmoPipSize.Read(exINI, pSection, "AmmoPipSize");
+	this->AmmoPipOffset.Read(exINI, pSection, "AmmoPipOffset");
+
+	this->ShowSpawnsPips.Read(exINI, pSection, "ShowSpawnsPips");
+	this->SpawnsPipFrame.Read(exINI, pSection, "SpawnsPipFrame");
+	this->EmptySpawnsPipFrame.Read(exINI, pSection, "EmptySpawnsPipFrame");
+	this->SpawnsPipSize.Read(exINI, pSection, "SpawnsPipSize");
+	this->SpawnsPipOffset.Read(exINI, pSection, "SpawnsPipOffset");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -288,6 +318,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	auto pArtSection = pThis->ImageFile;
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
+	this->TurretShadow.Read(exArtINI, pArtSection, "TurretShadow");
+	this->ShadowIndices.Read(exArtINI, pArtSection, "ShadowIndices");
 
 	for (size_t i = 0; ; ++i)
 	{
@@ -312,6 +344,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->WeaponBurstFLHs, this->EliteWeaponBurstFLHs, "");
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->DeployedWeaponBurstFLHs, this->EliteDeployedWeaponBurstFLHs, "Deployed");
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->CrouchedWeaponBurstFLHs, this->EliteCrouchedWeaponBurstFLHs, "Prone");
+
 
 	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
@@ -386,6 +419,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InhibitorRange)
 		.Process(this->DesignatorRange)
 		.Process(this->TurretOffset)
+		.Process(this->TurretShadow)
+		.Process(this->ShadowIndices)
 		.Process(this->Spawner_LimitRange)
 		.Process(this->Spawner_ExtraLimitRange)
 		.Process(this->Spawner_DelayFrames)
@@ -396,8 +431,16 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
+		.Process(this->ReloadInTransport)
 		.Process(this->ShieldType)
 		.Process(this->PassengerDeletionType)
+
+		.Process(this->Ammo_AddOnDeploy)
+		.Process(this->Ammo_AutoDeployMinimumAmount)
+		.Process(this->Ammo_AutoDeployMaximumAmount)
+		.Process(this->Ammo_DeployUnlockMinimumAmount)
+		.Process(this->Ammo_DeployUnlockMaximumAmount)
+		.Process(this->VoiceCantDeploy)
 
 		.Process(this->AutoDeath_Behavior)
 		.Process(this->AutoDeath_VanishAnimation)
@@ -416,6 +459,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SlavesFreeSound)
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
+
+		.Process(this->VoiceCreated)
 
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -497,6 +542,27 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Insignia_Weapon)
 		.Process(this->InsigniaFrame_Weapon)
 		.Process(this->InsigniaFrames_Weapon)
+
+		.Process(this->TiltsWhenCrushes_Vehicles)
+		.Process(this->TiltsWhenCrushes_Overlays)
+		.Process(this->CrushForwardTiltPerFrame)
+		.Process(this->CrushOverlayExtraForwardTilt)
+		.Process(this->CrushSlowdownMultiplier)
+
+		.Process(this->DigitalDisplay_Disable)
+		.Process(this->DigitalDisplayTypes)
+
+		.Process(this->AmmoPipFrame)
+		.Process(this->EmptyAmmoPipFrame)
+		.Process(this->AmmoPipWrapStartFrame)
+		.Process(this->AmmoPipSize)
+		.Process(this->AmmoPipOffset)
+
+		.Process(this->ShowSpawnsPips)
+		.Process(this->SpawnsPipFrame)
+		.Process(this->EmptySpawnsPipFrame)
+		.Process(this->SpawnsPipSize)
+		.Process(this->SpawnsPipOffset)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -544,7 +610,7 @@ DEFINE_HOOK(0x711835, TechnoTypeClass_CTOR, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, ESI);
 
-	TechnoTypeExt::ExtMap.FindOrAllocate(pItem);
+	TechnoTypeExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }
@@ -593,6 +659,7 @@ DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
 
 	return 0;
 }
+
 #if ANYONE_ACTUALLY_USE_THIS
 DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 {
@@ -606,6 +673,7 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 	return 0;
 }
 #endif
+
 DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 {
 	GET(UnitTypeClass*, pItem, ESI);

@@ -25,14 +25,20 @@
     <ClCompile Include="src\Commands\NextIdleHarvester.cpp" />
     <ClCompile Include="src\Commands\ObjectInfo.cpp" />
     <ClCompile Include="src\Commands\QuickSave.cpp" />
+    <ClCompile Include="src\Commands\ToggleDesignatorRange.cpp" />
+    <ClCompile Include="src\Commands\ToggleDigitalDisplay.cpp" />
+    <ClCompile Include="src\Commands\SaveVariablesToFile.cpp" />
     <ClCompile Include="src\Ext\Anim\Body.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.AnimCreateUnit.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Hooks.DetonateLogics.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\BombardTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\StraightTrajectory.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Hooks.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
+    <ClCompile Include="src\Ext\OverlayType\Body.cpp" />
+    <ClCompile Include="src\Ext\OverlayType\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />
@@ -44,15 +50,20 @@
     <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <ClCompile Include="src\Ext\Team\Body.cpp" />
     <ClCompile Include="src\Ext\Team\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Pips.cpp" />
     <ClCompile Include="src\Ext\TEvent\Hooks.cpp" />
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Unit\Hooks.Crushing.cpp" />
+    <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
+    <ClCompile Include="src\Misc\Hooks.AssignHouses.cpp" />
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
     <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
+    <ClCompile Include="src\New\Type\DigitalDisplayTypeClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
     <ClCompile Include="src\New\Type\LaserTrailTypeClass.cpp" />
@@ -74,6 +85,7 @@
     <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.AINavalProduction.cpp" />
+    <ClCompile Include="src\Ext\House\Hooks.UnitFromFactory.cpp" />
     <ClCompile Include="src\Ext\RadSite\Body.cpp" />
     <ClCompile Include="src\Ext\RadSite\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Body.cpp" />
@@ -109,6 +121,7 @@
     <ClCompile Include="src\Ext\Unit\Hooks.DeployFire.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.DisallowMoving.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Jumpjet.cpp" />
+    <ClCompile Include="src\Ext\Unit\Hooks.Unload.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Detonate.cpp" />
     <ClCompile Include="src\Ext\Tiberium\Body.cpp" />
     <ClCompile Include="src\Ext\Tiberium\Hooks.cpp" />
@@ -122,6 +135,7 @@
     <ClCompile Include="src\Misc\BlittersFix.cpp" />
     <ClCompile Include="src\Misc\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
+    <ClCompile Include="src\Utilities\Anchor.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
@@ -134,17 +148,23 @@
     <ClCompile Include="src\Misc\Hooks.LaserDraw.cpp" />
     <ClCompile Include="src\Misc\Hooks.Timers.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
+    <ClCompile Include="src\Misc\TypeConvertHelper.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
+    <ClCompile Include="src\Phobos.COM.cpp" />
     <ClCompile Include="src\Phobos.CRT.cpp" />
     <ClCompile Include="src\Phobos.Ext.cpp" />
     <ClCompile Include="src\Phobos.INI.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
+    <ClCompile Include="src\Utilities\ShapeTextPrinter.cpp" />
     <ClCompile Include="src\Utilities\Stream.cpp" />
     <ClCompile Include="src\Utilities\Swizzle.cpp" />
     <ClCompile Include="src\Utilities\Constructs.cpp" />
     <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
     <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
     <ClCompile Include="src\Utilities\Patch.cpp" />
+    <ClCompile Include="src\Utilities\AresHelper.cpp" />
+    <ClCompile Include="src\Utilities\AresAddressTable.cpp" />
+    <ClCompile Include="src\Misc\SyncLogging.cpp" />
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,19 +176,27 @@
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Commands\DamageDisplay.h" />
     <ClInclude Include="src\Commands\QuickSave.h" />
+    <ClInclude Include="src\Commands\ToggleDesignatorRange.h" />
+    <ClInclude Include="src\Commands\ToggleDigitalDisplay.h" />
+    <ClInclude Include="src\Commands\SaveVariablesToFile.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\StraightTrajectory.h" />
+    <ClInclude Include="src\Ext\OverlayType\Body.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
     <ClInclude Include="src\Ext\Surface\Body.h" />
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Ext\Team\Body.h" />
     <ClInclude Include="src\Ext\TEvent\Body.h" />
+    <ClInclude Include="src\Locomotion\TestLocomotionClass.h" />
     <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
+    <ClInclude Include="src\Misc\SyncLogging.h" />
+    <ClInclude Include="src\Misc\TypeConvertHelper.h" />
+    <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
     <ClInclude Include="src\New\Type\LaserTrailTypeClass.h" />
@@ -176,6 +204,7 @@
     <ClInclude Include="src\New\Type\Affiliated\PassengerDeletionTypeClass.h" />
     <ClInclude Include="src\New\Entity\LaserTrailClass.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
+    <ClInclude Include="src\Utilities\Anchor.h" />
     <ClInclude Include="src\Utilities\Enumerable.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\AnimType\Body.h" />
@@ -198,8 +227,10 @@
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
     <ClInclude Include="src\Utilities\Savegame.h" />
     <ClInclude Include="src\Utilities\SavegameDef.h" />
+    <ClInclude Include="src\Utilities\ShapeTextPrinter.h" />
     <ClInclude Include="src\Utilities\Stream.h" />
     <ClInclude Include="src\Utilities\Swizzle.h" />
+    <ClInclude Include="src\Phobos.COM.h" />
     <ClInclude Include="src\Phobos.CRT.h" />
     <ClInclude Include="src\Phobos.version.h" />
     <ClInclude Include="src\Utilities\Concepts.h" />
@@ -220,6 +251,9 @@
     <ClInclude Include="src\Utilities\Patch.h" />
     <ClInclude Include="src\Utilities\Template.h" />
     <ClInclude Include="src\Utilities\TemplateDef.h" />
+    <ClInclude Include="src\Utilities\AresHelper.h" />
+    <ClInclude Include="src\Utilities\AresFunctions.h" />
+    <ClInclude Include="lib\nameof\nameof.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -271,21 +305,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(VC_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(SolutionDir)lib;$(VC_IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\IntDir\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevBuild|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(VC_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(SolutionDir)lib;$(VC_IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\IntDir\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(VC_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\ExtraHeaders;$(SolutionDir)yrpp;$(SolutionDir)lib;$(VC_IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\IntDir\</IntDir>
@@ -299,7 +333,7 @@
       <ConformanceMode>true</ConformanceMode>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>IS_RELEASE_VER;SYR_VER=2;HAS_EXCEPTIONS=0;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0601;NTDDI_VERSION=0x06010000;%(PreprocessorDefinitions);%(AdditionalDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IS_RELEASE_VER;SYR_VER=2;HAS_EXCEPTIONS=0;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0601;NTDDI_VERSION=0x06010000;%(PreprocessorDefinitions);%(AdditionalDefinitions);PHOBOS_DLL="$(ProjectName).dll"</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -323,7 +357,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;dbghelp.lib;onecore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
-      <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
       <ProfileGuidedDatabase>$(IntDir)$(TargetName).pgd</ProfileGuidedDatabase>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
@@ -343,7 +377,7 @@
       <ConformanceMode>true</ConformanceMode>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>SYR_VER=2;HAS_EXCEPTIONS=0;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0601;NTDDI_VERSION=0x06010000;%(PreprocessorDefinitions);%(AdditionalDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SYR_VER=2;HAS_EXCEPTIONS=0;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0601;NTDDI_VERSION=0x06010000;%(PreprocessorDefinitions);%(AdditionalDefinitions);PHOBOS_DLL="$(ProjectName).dll"</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -368,7 +402,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;dbghelp.lib;onecore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
-      <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
       <ProfileGuidedDatabase>$(IntDir)$(TargetName).pgd</ProfileGuidedDatabase>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
@@ -386,7 +420,7 @@
       <ConformanceMode>true</ConformanceMode>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>DEBUG;SYR_VER=2;HAS_EXCEPTIONS=0;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0601;NTDDI_VERSION=0x06010000;%(PreprocessorDefinitions);%(AdditionalDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;SYR_VER=2;HAS_EXCEPTIONS=0;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WIN32_WINNT=0x0601;NTDDI_VERSION=0x06010000;%(PreprocessorDefinitions);%(AdditionalDefinitions);PHOBOS_DLL="$(ProjectName).dll"</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -411,7 +445,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;dbghelp.lib;onecore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
-      <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
       <ProfileGuidedDatabase>$(IntDir)$(TargetName).pgd</ProfileGuidedDatabase>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>

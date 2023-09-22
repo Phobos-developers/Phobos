@@ -14,6 +14,9 @@ class BulletTypeExt
 public:
 	using base_type = BulletTypeClass;
 
+	static constexpr DWORD Canary = 0xF00DF00D;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<BulletTypeClass>
 	{
 	public:
@@ -39,6 +42,7 @@ public:
 		Nullable<Leptons> ClusterScatter_Max;
 
 		Valueable<bool> AAOnly;
+		Valueable<bool> Arcing_AllowElevationInaccuracy;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -64,6 +68,7 @@ public:
 			, SubjectToWater {}
 			, SubjectToWater_Detonate { true }
 			, AAOnly { false }
+			, Arcing_AllowElevationInaccuracy { true }
 		{ }
 
 		virtual ~ExtData() = default;

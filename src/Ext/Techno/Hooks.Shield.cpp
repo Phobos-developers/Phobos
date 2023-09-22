@@ -73,13 +73,13 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 	else
 		pWeapon = R->EBX<WeaponTypeClass*>();
 
-	TechnoClass* pTarget = nullptr;
+	ObjectClass* pTarget = nullptr;
 	if (R->Origin() == 0x6F7D31 || R->Origin() == 0x70CF39)
-		pTarget = R->ESI<TechnoClass*>();
+		pTarget = R->ESI<ObjectClass*>();
 	else
-		pTarget = R->EBP<TechnoClass*>();
+		pTarget = R->EBP<ObjectClass*>();
 
-	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
+	if (const auto pExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget)))
 	{
 		if (const auto pShieldData = pExt->Shield.get())
 		{
@@ -120,6 +120,7 @@ DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
 DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
+
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->Shield)
@@ -131,7 +132,7 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(int, iLength, EBX);
+	GET(int, length, EBX);
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
@@ -140,8 +141,10 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable())
-			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
+			pShieldData->DrawShieldBar(length, pLocation, pBound);
 	}
+
+	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	return 0;
 }
@@ -158,10 +161,12 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	{
 		if (pShieldData->IsAvailable())
 		{
-			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
+			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+			pShieldData->DrawShieldBar(length, pLocation, pBound);
 		}
 	}
+
+	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	return 0;
 }

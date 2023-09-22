@@ -60,7 +60,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 		{
 			auto const pTechnoType = pFoot->GetTechnoType();
 
-			if (pTechnoType->WhatAmI() == AbstractType::AircraftType
+			if (pFoot->WhatAmI() == AbstractType::Aircraft
 				&& !pFoot->IsInAir()
 				&& static_cast<AircraftTypeClass*>(pTechnoType)->AirportBound
 				&& pFoot->Ammo < pTechnoType->Ammo)
@@ -150,7 +150,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 					pFoot->SetDestination(pCellDestination, true);
 
 					// Aircraft hack. I hate how this game auto-manages the aircraft missions.
-					if (pTechnoType->WhatAmI() == AbstractType::AircraftType && pFoot->Ammo > 0 && pFoot->GetHeight() <= 0)
+					if (pFoot->WhatAmI() == AbstractType::Aircraft && pFoot->Ammo > 0 && !pFoot->IsInAir())
 						pFoot->QueueMission(Mission::Move, false);
 				}
 			}
@@ -240,10 +240,6 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 			continue;
 
 		if (enemyHouse && enemyHouse != object->Owner)
-			continue;
-
-		// Don't pick underground units
-		if (object->InWhichLayer() == Layer::Underground)
 			continue;
 
 		// Stealth ground unit check

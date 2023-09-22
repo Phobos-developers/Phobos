@@ -95,9 +95,15 @@ DEFINE_HOOK(0x414F10, AircraftClass_AI_Trailer, 0x5)
 	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1))
 	{
 		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
-		pTrailerAnim->Owner = pThis->Owner;
+		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
 		pTrailerAnimExt->SetInvoker(pThis);
 	}
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x414C0B, AircraftClass_ChronoSparkleDelay, 0x5)
+{
+	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
+	return 0x414C10;
 }

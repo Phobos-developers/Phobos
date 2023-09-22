@@ -104,7 +104,8 @@ DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
 	// Copied from FootClass::UpdatePosition
 	if (pLinkedTo->GetTechnoType()->SensorsSight)
 	{
-		CellStruct const lastCell = pLinkedTo->LastJumpjetMapCoords;
+		CellStruct const lastCell = pLinkedTo->LastFlightMapCoords;
+
 		if (lastCell != currentCell)
 		{
 			pLinkedTo->RemoveSensorsAt(lastCell);
@@ -157,3 +158,26 @@ FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
 DEFINE_JUMP(VTABLE, 0x7ECDF4, GET_OFFSET(JumpjetLocomotionClass_Can_Fire));
 
 //TODO : Issue #690 #655
+
+// Fix initial facing when jumpjet locomotor is being attached
+DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
+{
+	GET(ILocomotion*, iLoco, EBP);
+	auto const pThis = static_cast<JumpjetLocomotionClass*>(iLoco);
+
+	pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
+	pThis->LocomotionFacing.SetDesired(pThis->LinkedTo->PrimaryFacing.Desired());
+
+	return 0;
+}
+
+// Fix initial facing when jumpjet locomotor on unlimbo
+void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
+{
+	auto const pThisLoco = static_cast<JumpjetLocomotionClass*>(pThis);
+
+	pThisLoco->LocomotionFacing.SetCurrent(pThisLoco->LinkedTo->PrimaryFacing.Current());
+	pThisLoco->LocomotionFacing.SetDesired(pThisLoco->LinkedTo->PrimaryFacing.Desired());
+}
+
+DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))

@@ -7,9 +7,9 @@
 #include <InfantryClass.h>
 #include <UnitClass.h>
 #include <AircraftClass.h>
+#include <HouseClass.h>
 
 //Static init
-template<> const DWORD Extension<TEventClass>::Canary = 0x91919191;
 TEventExt::ExtContainer TEventExt::ExtMap;
 
 // =============================
@@ -119,6 +119,10 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 
 	case PhobosTriggerEvent::ShieldBroken:
 		return ShieldClass::ShieldIsBrokenTEvent(pObject);
+	case PhobosTriggerEvent::HouseOwnsTechnoType:
+		return TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
+	case PhobosTriggerEvent::HouseDoesntOwnTechnoType:
+		return TEventExt::HouseDoesntOwnTechnoTypeTEvent(pThis);
 
 	default:
 		bHandled = false;
@@ -159,6 +163,24 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 	return false;
 }
 
+bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
+{
+	auto pType = TechnoTypeClass::Find(pThis->String);
+	if (!pType)
+		return false;
+
+	auto pHouse = HouseClass::FindByIndex(pThis->Value);
+	if (!pHouse)
+		return false;
+
+	return pHouse->CountOwnedNow(pType) > 0;
+}
+
+bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
+{
+	return !TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
+}
+
 // =============================
 // container
 
@@ -174,7 +196,7 @@ DEFINE_HOOK(0x6DD176, TActionClass_CTOR, 0x5)
 {
 	GET(TActionClass*, pItem, ESI);
 
-	TActionExt::ExtMap.FindOrAllocate(pItem);
+	TActionExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 

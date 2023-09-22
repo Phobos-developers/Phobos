@@ -2,6 +2,8 @@
 #include <Phobos.version.h>
 #include <Windows.h>
 
+#define CAN_USE_ARES 1
+
 class CCINIClass;
 class AbstractClass;
 
@@ -14,9 +16,6 @@ class Phobos
 {
 public:
 	static void CmdLineParse(char**, int);
-
-	static CCINIClass* OpenConfig(const char*);
-	static void CloseConfig(CCINIClass*&);
 
 	static void ExeRun();
 	static void ExeTerminate();
@@ -68,9 +67,14 @@ public:
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
+		static bool EnableBuildingPlacementPreview;
+		static bool DigitalDisplay_Enable;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
 		static int CampaignDefaultGameSpeed;
+		static bool SkirmishUnlimitedColors;
+		static bool ShowDesignatorRange;
+		static bool SaveVariablesOnScenarioEnd;
 	};
 
 	class Misc

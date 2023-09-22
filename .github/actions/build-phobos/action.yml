@@ -31,4 +31,4 @@ runs:
       name: compiled-dll-${{github.sha}}
       path: |
         ${{inputs.sln-path}}/${{inputs.build-config}}/Phobos.dll
-        ${{inputs.sln-path}}/${{inputs.build-config}}/IntDir/Phobos.pdb
+        ${{inputs.sln-path}}/${{inputs.build-config}}/Phobos.pdb

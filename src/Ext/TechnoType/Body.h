@@ -9,6 +9,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
+#include <New/Type/DigitalDisplayTypeClass.h>
 
 class Matrix3D;
 
@@ -16,6 +17,9 @@ class TechnoTypeExt
 {
 public:
 	using base_type = TechnoTypeClass;
+
+	static constexpr DWORD Canary = 0x11111111;
+	static constexpr size_t ExtPointerOffset = 0xDF4;
 
 	class ExtData final : public Extension<TechnoTypeClass>
 	{
@@ -32,6 +36,8 @@ public:
 		std::unique_ptr<InterceptorTypeClass> InterceptorType;
 
 		Valueable<PartialVector3D<int>> TurretOffset;
+		Nullable<bool> TurretShadow;
+		ValueableVector<int> ShadowIndices;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
@@ -42,9 +48,17 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
+		Valueable<bool> ReloadInTransport;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
+
+		Nullable<int> Ammo_AddOnDeploy;
+		Valueable<int> Ammo_AutoDeployMinimumAmount;
+		Valueable<int> Ammo_AutoDeployMaximumAmount;
+		Valueable<int> Ammo_DeployUnlockMinimumAmount;
+		Valueable<int> Ammo_DeployUnlockMaximumAmount;
+		NullableIdx<VocClass> VoiceCantDeploy;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
@@ -63,6 +77,8 @@ public:
 		NullableIdx<VocClass> SlavesFreeSound;
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
+
+		NullableIdx<VocClass> VoiceCreated;
 
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
@@ -142,6 +158,27 @@ public:
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
 		std::vector<Vector3D<int>> InsigniaFrames_Weapon;
 
+		Nullable<bool> TiltsWhenCrushes_Vehicles;
+		Nullable<bool> TiltsWhenCrushes_Overlays;
+		Nullable<double> CrushForwardTiltPerFrame;
+		Valueable<double> CrushOverlayExtraForwardTilt;
+		Valueable<double> CrushSlowdownMultiplier;
+
+		Valueable<bool> DigitalDisplay_Disable;
+		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
+
+		Valueable<int> AmmoPipFrame;
+		Valueable<int> EmptyAmmoPipFrame;
+		Valueable<int> AmmoPipWrapStartFrame;
+		Nullable<Point2D> AmmoPipSize;
+		Valueable<Point2D> AmmoPipOffset;
+
+		Valueable<bool> ShowSpawnsPips;
+		Valueable<int> SpawnsPipFrame;
+		Valueable<int> EmptySpawnsPipFrame;
+		Nullable<Point2D> SpawnsPipSize;
+		Valueable<Point2D> SpawnsPipOffset;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -180,6 +217,8 @@ public:
 			, InterceptorType { nullptr }
 
 			, TurretOffset { { 0, 0, 0 } }
+			, TurretShadow { }
+			, ShadowIndices { }
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}
@@ -190,8 +229,9 @@ public:
 			, CameoPriority { 0 }
 			, NoManualMove { false }
 			, InitialStrength {}
+			, ReloadInTransport { false }
 			, ShieldType {}
-			, PassengerDeletionType { nullptr}
+			, PassengerDeletionType { nullptr }
 
 			, WarpOut {}
 			, WarpIn {}
@@ -235,6 +275,12 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
+
+			, Ammo_AddOnDeploy { }
+			, Ammo_AutoDeployMinimumAmount { -1 }
+			, Ammo_AutoDeployMaximumAmount { -1 }
+			, Ammo_DeployUnlockMinimumAmount { -1 }
+			, Ammo_DeployUnlockMaximumAmount { -1 }
 
 			, AutoDeath_Behavior { }
 			, AutoDeath_VanishAnimation {}
@@ -286,6 +332,27 @@ public:
 			, Insignia_Weapon {}
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
+
+			, TiltsWhenCrushes_Vehicles {}
+			, TiltsWhenCrushes_Overlays {}
+			, CrushSlowdownMultiplier { 0.2 }
+			, CrushForwardTiltPerFrame {}
+			, CrushOverlayExtraForwardTilt { 0.02 }
+
+			, DigitalDisplay_Disable { false }
+			, DigitalDisplayTypes {}
+
+			, AmmoPipFrame { 13 }
+			, EmptyAmmoPipFrame { -1 }
+			, AmmoPipWrapStartFrame { 14 }
+			, AmmoPipSize {}
+			, AmmoPipOffset {{ 0,0 }}
+
+			, ShowSpawnsPips { true }
+			, SpawnsPipFrame { 1 }
+			, EmptySpawnsPipFrame { 0 }
+			, SpawnsPipSize {}
+			, SpawnsPipOffset {{ 0,0 }}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -18,6 +18,8 @@ public:
 	Valueable<int> Respawn_Rate;
 	Valueable<double> SelfHealing;
 	Valueable<int> SelfHealing_Rate;
+	Valueable<bool> SelfHealing_RestartInCombat;
+	Valueable<int> SelfHealing_RestartInCombatDelay;
 
 	Valueable<bool> AbsorbOverDamage;
 	Valueable<int> BracketDelta;
@@ -30,6 +32,8 @@ public:
 	Nullable<WeaponTypeClass*> BreakWeapon;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
+	Valueable<int> ReceivedDamage_Minimum;
+	Valueable<int> ReceivedDamage_Maximum;
 
 	Nullable<bool> AllowTransfer;
 
@@ -51,6 +55,8 @@ public:
 		, Respawn_Rate { 0 }
 		, SelfHealing { 0.0 }
 		, SelfHealing_Rate { 0 }
+		, SelfHealing_RestartInCombat { true }
+		, SelfHealing_RestartInCombatDelay { 0 }
 		, AbsorbOverDamage { false }
 		, BracketDelta { 0 }
 		, IdleAnim_OfflineAction { AttachedAnimFlag::Hides }
@@ -62,6 +68,8 @@ public:
 		, BreakWeapon { }
 		, AbsorbPercent { 1.0 }
 		, PassPercent { 0.0 }
+		, ReceivedDamage_Minimum { INT32_MIN }
+		, ReceivedDamage_Maximum { INT32_MAX }
 		, AllowTransfer { }
 		, Pips { { -1,-1,-1 } }
 		, Pips_Background { }
@@ -74,8 +82,8 @@ public:
 	virtual ~ShieldTypeClass() override = default;
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm);
-	virtual void SaveToStream(PhobosStreamWriter& Stm);
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio);
 

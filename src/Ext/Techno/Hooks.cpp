@@ -1,6 +1,8 @@
 #include <ScenarioClass.h>
 #include "Body.h"
 
+#include <Ext/BuildingType/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -31,6 +33,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->UpdateShield();
 	pExt->ApplySpawnLimitRange();
 	pExt->UpdateLaserTrails();
+	pExt->DepletedAmmoActions();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 
@@ -59,31 +62,19 @@ DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 	return SkipGameSelfHeal;
 }
 
-DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
-{
-	enum { SkipGameDrawing = 0x70A6C0 };
-
-	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x74, 0x4));
-	GET_STACK(RectangleStruct*, pBounds, STACK_OFFSET(0x74, 0xC));
-
-	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
-
-	return SkipGameDrawing;
-}
-
 DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
+	auto const pType = pThis->GetTechnoType();
+
+	if (!pType)
+		return 0;
+
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (!pExt->TypeExtData && pThis->GetType())
-		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pExt->TypeExtData)
-		pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
-
+	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeLaserTrails();
 
 	return 0;
@@ -102,6 +93,16 @@ DEFINE_HOOK(0x4DBF13, FootClass_SetOwningHouse, 0x6)
 
 	if (pThis->Owner->IsHumanPlayer)
 		TechnoExt::ChangeOwnerMissionFix(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4483C0, BuildingClass_SetOwningHouse_MuteSound, 0x6)
+{
+	GET(BuildingClass* const, pThis, ESI);
+	REF_STACK(bool, announce, STACK_OFFSET(0x60, 0x8));
+
+	announce = announce && !pThis->Type->IsVehicle();
 
 	return 0;
 }
@@ -309,6 +310,7 @@ DEFINE_HOOK_AGAIN(0x703789, TechnoClass_CloakUpdateMCAnim, 0x6) // TechnoClass_D
 DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_Cloaking_AI
 {
 	GET(TechnoClass*, pThis, ESI);
+
 	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 		pExt->UpdateMindControlAnim();
 
@@ -472,4 +474,18 @@ DEFINE_HOOK(0x4CD4E1, FlyLocomotionClass_Update_LayerUpdate, 0x6)
 		TechnoExt::UpdateAttachedAnimLayers(pLinkedTo);
 
 	return 0;
+}
+
+// Move to UnitClass hooks file if it is ever created.
+DEFINE_HOOK(0x736234, UnitClass_ChronoSparkleDelay, 0x5)
+{
+	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
+	return 0x736239;
+}
+
+// Move to InfantryClass hooks file if it is ever created.
+DEFINE_HOOK(0x51BAFB, InfantryClass_ChronoSparkleDelay, 0x5)
+{
+	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
+	return 0x51BB00;
 }
