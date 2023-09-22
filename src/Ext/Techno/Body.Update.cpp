@@ -531,6 +531,9 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 
 void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 {
+	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
+		return;
+
 	int healthDeficit = pThis->GetTechnoType()->Strength - pThis->Health;
 
 	if (pThis->Health && healthDeficit > 0)
