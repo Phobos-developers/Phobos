@@ -16,14 +16,22 @@ TechnoExt::ExtContainer TechnoExt::ExtMap;
 TechnoExt::ExtData::~ExtData()
 {
 	auto const pTypeExt = this->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
+	auto pThis = this->OwnerObject();
 
-	if (pTypeExt && pTypeExt->AutoDeath_Behavior.isset())
+	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
-		auto pThis = this->OwnerObject();
-		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
-		if (it != hExt->OwnedTimedAutoDeathObjects.end())
-			hExt->OwnedTimedAutoDeathObjects.erase(it);
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto& vec = pOwnerExt->OwnedAutoDeathObjects;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
+
+	if (pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
+		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
+	{
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto& vec = pOwnerExt->OwnedTransportReloaders;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 }
 
@@ -647,8 +655,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->IsInTunnel)
+		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
+		.Process(this->WHAnimRemainingCreationInterval)
 		;
 }
 

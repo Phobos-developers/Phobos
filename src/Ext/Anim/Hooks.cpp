@@ -137,8 +137,7 @@ DEFINE_HOOK(0x4242E1, AnimClass_AI_TrailerAnim, 0x5)
 		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
 		auto const pExt = AnimExt::ExtMap.Find(pThis);
 		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
-		pTrailerAnimExt->Invoker = pExt->Invoker;
-		pTrailerAnimExt->InvokerHouse = pExt->InvokerHouse;
+		pTrailerAnimExt->SetInvoker(pExt->Invoker, pExt->InvokerHouse);
 	}
 
 	return SkipGameCode;

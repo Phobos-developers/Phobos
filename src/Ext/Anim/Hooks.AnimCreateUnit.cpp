@@ -131,13 +131,10 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 						if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
 						{
-							pAnim->Owner = pThis->Owner;
+							AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
 
 							if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
-							{
-								pAnimExt->Invoker = pInvoker;
-								pAnimExt->InvokerHouse = pInvokerHouse;
-							}
+								pAnimExt->SetInvoker(pInvoker, pInvokerHouse);
 						}
 					}
 
