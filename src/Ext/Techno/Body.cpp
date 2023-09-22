@@ -16,14 +16,22 @@ TechnoExt::ExtContainer TechnoExt::ExtMap;
 TechnoExt::ExtData::~ExtData()
 {
 	auto const pTypeExt = this->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
+	auto pThis = this->OwnerObject();
 
-	if (pTypeExt && pTypeExt->AutoDeath_Behavior.isset())
+	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
-		auto pThis = this->OwnerObject();
-		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
-		if (it != hExt->OwnedTimedAutoDeathObjects.end())
-			hExt->OwnedTimedAutoDeathObjects.erase(it);
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto& vec = pOwnerExt->OwnedAutoDeathObjects;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
+
+	if (pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
+		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
+	{
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto& vec = pOwnerExt->OwnedTransportReloaders;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 }
 
@@ -577,6 +585,58 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 }
 
+// Checks if vehicle can deploy into a building at its current location. If unit has no DeploysInto set returns noDeploysIntoDefaultValue (def = false) instead.
+bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue)
+{
+	if (!pThis)
+		return false;
+
+	auto const pDeployType = pThis->Type->DeploysInto;
+
+	if (!pDeployType)
+		return noDeploysIntoDefaultValue;
+
+	bool canDeploy = true;
+	auto mapCoords = CellClass::Coord2Cell(pThis->GetCoords());
+
+	if (pDeployType->GetFoundationWidth() > 2 || pDeployType->GetFoundationHeight(false) > 2)
+		mapCoords += CellStruct { -1, -1 };
+
+	pThis->Mark(MarkType::Up);
+
+	if (!pThis->Locomotor)
+		Game::RaiseError(E_POINTER);
+
+	pThis->Locomotor->Mark_All_Occupation_Bits(MarkType::Up);
+
+	if (!pDeployType->CanCreateHere(mapCoords, pThis->Owner))
+		canDeploy = false;
+
+	if (!pThis->Locomotor)
+		Game::RaiseError(E_POINTER);
+
+	pThis->Locomotor->Mark_All_Occupation_Bits(MarkType::Down);
+	pThis->Mark(MarkType::Down);
+
+	return canDeploy;
+}
+
+bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
+{
+	if (!pThis || !pSource)
+		return false;
+
+	auto const pType = pThis->GetTechnoType();
+
+	if (!pType->TypeImmune)
+		return false;
+
+	if (pType == pSource->GetTechnoType() && pThis->Owner == pSource->Owner)
+		return true;
+
+	return false;
+}
+
 // =============================
 // load / save
 
@@ -595,10 +655,11 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->IsLeggedCyborg)
-		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->IsInTunnel)
+		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
+		.Process(this->WHAnimRemainingCreationInterval)
 		;
 }
 

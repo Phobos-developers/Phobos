@@ -99,79 +99,88 @@ LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Pips.Shield=-1,-1,-1               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
-Pips.Shield.Building=-1,-1,-1      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
-Pips.Shield.Background=PIPBRD.SHP  ; filename - including the .shp/.pcx extension
-Pips.Shield.Building.Empty=0       ; integer, frame of pips.shp (zero-based) for empty building pip
+Pips.Shield=-1,-1,-1                        ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Shield.Building=-1,-1,-1               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Shield.Background=PIPBRD.SHP           ; filename - including the .shp/.pcx extension
+Pips.Shield.Building.Empty=0                ; integer, frame of pips.shp (zero-based) for empty building pip
 
 [ShieldTypes]
 0=SOMESHIELDTYPE
 
-[SOMESHIELDTYPE]                     ; ShieldType name
-Strength=0                           ; integer
-InitialStrength=0                    ; integer
-Armor=none                           ; ArmorType
-InheritArmorFromTechno=false         ; boolean
-Powered=false                        ; boolean
-AbsorbOverDamage=false               ; boolean
-SelfHealing=0.0                      ; double, percents or absolute
-SelfHealing.Rate=0.0                 ; double, ingame minutes
-Respawn=0.0                          ; double, percents or absolute
-Respawn.Rate=0.0                     ; double, ingame minutes
-BracketDelta=0                       ; integer - pixels
-Pips=-1,-1,-1                        ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
-Pips.Building=-1,-1,-1               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
-Pips.Background=                     ; filename - including the .shp/.pcx extension
-Pips.Building.Empty=                 ; integer, frame of pips.shp (zero-based) for empty building pip
-IdleAnim=                            ; Animation
-IdleAnim.ConditionYellow=            ; Animation
-IdleAnim.ConditionRed=               ; Animation
-IdleAnimDamaged=                     ; Animation
-IdleAnimDamaged.ConditionYellow=     ; Animation
-IdleAnimDamaged.ConditionRed=        ; Animation
-IdleAnim.OfflineAction=Hides         ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-IdleAnim.TemporalAction=Hides        ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-BreakAnim=                           ; Animation
-HitAnim=                             ; Animation
-BreakWeapon=                         ; WeaponType
-AbsorbPercent=1.0                    ; floating point value
-PassPercent=0.0                      ; floating point value
-AllowTransfer=                       ; boolean
-ImmuneToBerserk=no                   ; boolean
-ImmuneToCrit=no                      ; boolean
+[SOMESHIELDTYPE]                            ; ShieldType name
+Strength=0                                  ; integer
+InitialStrength=0                           ; integer
+Armor=none                                  ; ArmorType
+InheritArmorFromTechno=false                ; boolean
+Powered=false                               ; boolean
+AbsorbOverDamage=false                      ; boolean
+SelfHealing=0.0                             ; double, percents or absolute
+SelfHealing.Rate=0.0                        ; double, ingame minutes
+SelfHealing.RestartInCombat=true            ; boolean
+SelfHealing.RestartInCombatDelay=0          ; integer, game frames
+Respawn=0.0                                 ; double, percents or absolute
+Respawn.Rate=0.0                            ; double, ingame minutes
+BracketDelta=0                              ; integer - pixels
+Pips=-1,-1,-1                               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Building=-1,-1,-1                      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Background=                            ; filename - including the .shp/.pcx extension
+Pips.Building.Empty=                        ; integer, frame of pips.shp (zero-based) for empty building pip
+IdleAnim=                                   ; Animation
+IdleAnim.ConditionYellow=                   ; Animation
+IdleAnim.ConditionRed=                      ; Animation
+IdleAnimDamaged=                            ; Animation
+IdleAnimDamaged.ConditionYellow=            ; Animation
+IdleAnimDamaged.ConditionRed=               ; Animation
+IdleAnim.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+IdleAnim.TemporalAction=Hides               ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+BreakAnim=                                  ; Animation
+HitAnim=                                    ; Animation
+BreakWeapon=                                ; WeaponType
+AbsorbPercent=1.0                           ; floating point value
+PassPercent=0.0                             ; floating point value
+ReceivedDamage.Minimum=-2147483648          ; integer
+ReceivedDamage.Maximum=2147483647           ; integer
+AllowTransfer=                              ; boolean
+ImmuneToBerserk=no                          ; boolean
+ImmuneToCrit=no                             ; boolean
 
-[SOMETECHNO]                         ; TechnoType
-ShieldType=SOMESHIELDTYPE            ; ShieldType; none by default
+[SOMETECHNO]                                ; TechnoType
+ShieldType=SOMESHIELDTYPE                   ; ShieldType; none by default
 
-[SOMEWARHEAD]                        ; WarheadType
-Shield.Penetrate=false               ; boolean
-Shield.Break=false                   ; boolean
-Shield.BreakAnim=                    ; Animation
-Shield.HitAnim=                      ; Animation
-Shield.BreakWeapon=                  ; WeaponType
-Shield.AbsorbPercent=                ; floating point value
-Shield.PassPercent=                  ; floating point value
-Shield.Respawn.Duration=0            ; integer, game frames
-Shield.Respawn.Amount=0.0            ; floating point value, percents or absolute
-Shield.Respawn.Rate=-1.0             ; floating point value, ingame minutes
-Shield.Respawn.ResetTimer=false      ; boolean
-Shield.SelfHealing.Duration=0        ; integer, game frames
-Shield.SelfHealing.Amount=0.0        ; floating point value, percents or absolute
-Shield.SelfHealing.Rate=-1.0         ; floating point value, ingame minutes
-Shield.SelfHealing.ResetTimer=false  ; boolean
-Shield.AffectTypes=                  ; List of ShieldType names
-Shield.Penetrate.Types=              ; List of ShieldType names
-Shield.Break.Types=                  ; List of ShieldType names
-Shield.Respawn.Types=                ; List of ShieldType names
-Shield.SelfHealing.Types=            ; List of ShieldType names
-Shield.AttachTypes=                  ; List of ShieldType names
-Shield.RemoveTypes=                  ; List of ShieldType names
-Shield.ReplaceOnly=false             ; boolean
-Shield.ReplaceNonRespawning=false    ; boolean
-Shield.MinimumReplaceDelay=0         ; integer, game frames
-Shield.InheritStateOnReplace=false   ; boolean
+[SOMEWARHEAD]                               ; WarheadType
+Shield.Penetrate=false                      ; boolean
+Shield.Break=false                          ; boolean
+Shield.BreakAnim=                           ; Animation
+Shield.HitAnim=                             ; Animation
+Shield.BreakWeapon=                         ; WeaponType
+Shield.AbsorbPercent=                       ; floating point value
+Shield.PassPercent=                         ; floating point value
+Shield.ReceivedDamage.Minimum=              ; integer
+Shield.ReceivedDamage.Maximum=              ; integer
+Shield.Respawn.Duration=0                   ; integer, game frames
+Shield.Respawn.Amount=0.0                   ; floating point value, percents or absolute
+Shield.Respawn.Rate=-1.0                    ; floating point value, ingame minutes
+Shield.Respawn.RestartTimer=false           ; boolean
+Shield.SelfHealing.Duration=0               ; integer, game frames
+Shield.SelfHealing.Amount=0.0               ; floating point value, percents or absolute
+Shield.SelfHealing.Rate=-1.0                ; floating point value, ingame minutes
+Shield.SelfHealing.RestartInCombat=         ; boolean
+Shield.SelfHealing.RestartInCombatDelay=-1  ; integer, game frames
+Shield.SelfHealing.RestartTimer=false       ; boolean
+Shield.AffectTypes=                         ; List of ShieldType names
+Shield.Penetrate.Types=                     ; List of ShieldType names
+Shield.Break.Types=                         ; List of ShieldType names
+Shield.Respawn.Types=                       ; List of ShieldType names
+Shield.SelfHealing.Types=                   ; List of ShieldType names
+Shield.AttachTypes=                         ; List of ShieldType names
+Shield.RemoveTypes=                         ; List of ShieldType names
+Shield.ReplaceOnly=false                    ; boolean
+Shield.ReplaceNonRespawning=false           ; boolean
+Shield.MinimumReplaceDelay=0                ; integer, game frames
+Shield.InheritStateOnReplace=false          ; boolean
 ```
 - Now you can have a shield for any TechnoType. It serves as a second health pool with independent `Armor` and `Strength` values.
+  - Shield will not take damage if the TechnoType is under effects of `Temporal` warhead, is Iron Curtained / Force Shielded, has `Immune=true` or if it has `TypeImmune=true` and the damage source is another instance of same TechnoType belonging to same house.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
     - Negative damage weapons will consider targets with active, but not at full health shields in need of healing / repairing unless the Warhead has `Shield.Penetrate=true`, in which case only object health is considered.
   - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for targeting and damage calculation purposes.
@@ -184,6 +193,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `AbsorbOverDamage` controls whether or not the shield absorbs damage dealt beyond shield's current strength when the shield breaks.
 - `SelfHealing` and `Respawn` respect the following settings: 0.0 disables the feature, 1%-100% recovers/respawns the shield strength in percentage, other number recovers/respawns the shield strength directly. Specially, `SelfHealing` with a negative number deducts the shield strength.
   - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
+  - If `SelfHealing.RestartInCombat` is set, self-healing timer pauses and then resumes after `SelfHealing.RestartInCombatDelay` frames have passed when the shield gets damaged.
 - `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
 - `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
   - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual]`->`ConditionYellow`/`ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
@@ -196,6 +206,7 @@ Shield.InheritStateOnReplace=false   ; boolean
 - `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
+- `ReceivedDamage.Minimum` & `ReceivedDamage.Maximum` control the minimum and maximum amount of damage that can be dealt to shield in a single hit. This is applied after armor type and `AbsorbPercent` adjustments. If `AbsorbOverDamage=false`, the residual damage dealt to the TechnoType is still based on the original damage before the clamping to the range.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
 - `ImmuneToBerserk` gives the immunity against `Psychedelic=yes` warhead. Otherwise the berserk effect penetrates shields by default. Note that this shouldn't prevent the unit from targeting at the shielded object. `Versus.shieldArmor=0%` is still required in this case.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable. Several customizations are available for the shield strength pips.
@@ -213,14 +224,16 @@ Shield.InheritStateOnReplace=false   ; boolean
   - `Shield.BreakWeapon` will be fired instead of ShieldType `BreakWeapon` if the shield is broken by the Warhead, either through damage or `Shield.Break`.
   - `Shield.AbsorbPercent` overrides the `AbsorbPercent` value set in the ShieldType that is being damaged.
   - `Shield.PassPercent` overrides the `PassPercent` value set in the ShieldType that is being damaged.
-  - `Shield.Respawn.Rate` & `Shield.Respawn.Amount` override ShieldType `Respawn.Rate` and `Respawn.Amount` for duration of `Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.Respawn.ResetTimer` is set, currently running shield respawn timer is reset, otherwise the timer's duration is adjusted to match `Shield.Respawn.Rate` without restarting the timer.  If the effect expires while respawn timer is running, remaining time is adjusted to match ShieldType `Respawn.Rate`. Re-applying the effect resets the duration to `Shield.Respawn.Duration`
-  - `Shield.SelfHealing.Rate` & `Shield.SelfHealing.Amount` override ShieldType `SelfHealing.Rate` and `SelfHealing.Amount` for duration of `Shield.SelfHealing.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.SelfHealing.ResetTimer` is set, currently running self-healing timer is restarted, otherwise timer's duration 'is adjusted to match `Shield.SelfHealing.Rate` without restarting the timer. If the effect expires while self-healing timer is running, remaining time is adjusted to match ShieldType `SelfHealing.Rate`. Re-applying the effect resets the duration to `Shield.SelfHealing.Duration`.
+  - `Shield.ReceivedDamage.Minimum` & `Shield.ReceivedDamage.Maximum` override the values set in in the ShieldType that is being damaged.
+  - `Shield.Respawn.Rate` & `Shield.Respawn.Amount` override ShieldType `Respawn.Rate` and `Respawn.Amount` for duration of `Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.Respawn.RestartTimer` is set, currently running shield respawn timer is reset, otherwise the timer's duration is adjusted in proportion to the new `Shield.Respawn.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while respawn timer is running, remaining time is adjusted to proportionally match ShieldType `Respawn.Rate`. Re-applying the effect resets the duration to `Shield.Respawn.Duration`
+  - `Shield.SelfHealing.Rate` & `Shield.SelfHealing.Amount` override ShieldType `SelfHealing.Rate` and `SelfHealing.Amount` for duration of `Shield.SelfHealing.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.SelfHealing.RestartTimer` is set, currently running self-healing timer is restarted, otherwise timer's duration is adjusted in proportion to the new `Shield.SelfHealing.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while self-healing timer is running, remaining time is adjusted to proportionally match ShieldType `SelfHealing.Rate`. Re-applying the effect resets the duration to `Shield.SelfHealing.Duration`.
+    - Additionally `Shield.SelfHealing.RestartInCombat` & `Shield.SelfHealing.RestartInCombatDelay` can be used to override ShieldType settings.
   - `Shield.AffectTypes` allows listing which ShieldTypes can be affected by any of the effects listed above. If none are listed, all ShieldTypes are affected.
     -  `Shield.AffectTypes` can be overriden for specific shield interactions by using keys `Shield.Penetrate.Types`, `Shield.Break.Types`, `Shield.Respawn.Types` and `Shield.SelfHealing.Types` respectively.
   - `Shield.AttachTypes` & `Shield.RemoveTypes` allows listing ShieldTypes that are attached or removed, respectively from any targets affected by the warhead (positive `Verses` values). Normally only first listed ShieldType in `Shield.AttachTypes` is applied.
     - If `Shield.ReplaceOnly` is set, shields from `Shield.AttachTypes` are only applied to affected targets from which shields were simultaneously removed, matching the order listed in `Shield.RemoveTypes`. If `Shield.AttachTypes` contains less items than `Shield.RemoveTypes`, last item from the former is used for any remaining removed shields.
     - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
-      - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
+    - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
 ## Animations
@@ -449,6 +462,10 @@ Strength=0                             ; integer
 Armor=                                 ; ArmorType
 ```
 
+```{note}
+Currently interceptor weapons with projectiles that do not have `Inviso=true` will be unable to intercept projectiles if the firer of the interceptor weapon dies before the interceptor weapon projectile reaches its target. This may change in future.
+```
+
 ### Projectile trajectories
 
 - Projectiles can now have customizable trajectories.
@@ -467,11 +484,17 @@ Trajectory.Speed=100.0  ; floating point value
 *Straight trajectory used to make blasters in a private mod by @brsajo#9745*
 
 - Self-explanatory, is a straight-shot trajectory.
+  - `Trajectory.Straight.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation (note that this can cause the projectile to overshoot the target).
+  - `Trajectory.Straight.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
+  - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but ínstead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]     ; Projectile
-Trajectory=Straight  ; Trajectory type
+[SOMEPROJECTILE]                            ; Projectile
+Trajectory=Straight                         ; Trajectory type
+Trajectory.Straight.DetonationDistance=0.4  ; floating point value
+Trajectory.Straight.TargetSnapDistance=0.5  ; floating point value
+Trajectory.Straight.PassThrough=false       ; boolean
 ```
 
 #### Bombard trajectory
@@ -807,7 +830,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
   - `TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes exist or do not exist, respectively.
     - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
-    - `Technos(Dont)Exist.AllowLimboed` controls whether or not limboed TechnoTypes (f.ex those in transports) are counted. Note that this may count TechnoTypes that are still being built.
+    - `Technos(Dont)Exist.AllowLimboed` controls whether or not limboed TechnoTypes (f.ex those in transports) are counted.
     - `Technos(Dont)Exist.Houses` controls which houses are checked.
 
 - The auto-death behavior can be chosen from the following:
@@ -816,11 +839,12 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
 
 If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen.
+
 ```{note}
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
 ```
 
-This logic also supports buildings delivered by [LimboDelivery](#LimboDelivery)
+This logic also supports buildings delivered by [LimboDelivery](#LimboDelivery). However in this case, all `AutoDeath.Behavior` values produce identical result where the building is simply deleted.
 
 In `rulesmd.ini`:
 ```ini
@@ -926,6 +950,20 @@ In `rulesmd.ini`:
 [SOMETECHNO]    ; BuildingType or UnitType
 EVA.Sold=       ; EVA entry
 SellSound=      ; sound entry
+```
+
+### Sound entry on unit's creation
+
+- When a unit is created, sound specified in `VoiceCreated` will be played for the unit owner.
+- If `IsVoiceCreatedGlobal` is set to true, `VoiceCreated` will be played globally instead of `EVA_UnitReady`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+IsVoiceCreatedGlobal=false   ; boolean
+
+[SOMETECHNO]                 ; UnitType
+VoiceCreated=                ; sound entry
 ```
 
 ### Repair Legless Cyborgs in transports

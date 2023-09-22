@@ -34,10 +34,11 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		bool IsLeggedCyborg;
 		OptionalStruct<int, false> DamageNumberOffset;
-		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 		bool IsInTunnel;
+		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
+		int WHAnimRemainingCreationInterval;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -57,14 +58,16 @@ public:
 			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
 			, IsLeggedCyborg { false }
-			, CurrentLaserWeaponIndex {}
 			, IsInTunnel { false }
+			, HasBeenPlacedOnMap { false }
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
+			, WHAnimRemainingCreationInterval { 0 }
 		{ }
 
 		void ApplyInterceptor();
-		bool CheckDeathConditions();
+		bool CheckDeathConditions(bool isInLimbo = false);
+		void DepletedAmmoActions();
 		void EatPassengers();
 		void UpdateShield();
 		void UpdateOnTunnelEnter();
@@ -125,7 +128,7 @@ public:
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
-	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation);
+	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo = false);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
@@ -140,6 +143,8 @@ public:
 	static bool AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon = nullptr, bool useZone = false, int zone = -1);
 	static void UpdateAttachedAnimLayers(TechnoClass* pThis);
 	static bool ConvertToType(FootClass* pThis, TechnoTypeClass* toType);
+	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
+	static bool IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

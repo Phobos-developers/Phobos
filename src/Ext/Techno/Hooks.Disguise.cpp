@@ -24,47 +24,29 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 	return 0;
 }
 
-__forceinline bool CanBlinkDisguise(TechnoClass* pTechno)
+__forceinline bool CanBlinkDisguise(HouseClass* pCurrent, HouseClass* pTarget)
 {
-	return HouseClass::IsCurrentPlayerObserver()
-		|| EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, HouseClass::CurrentPlayer, pTechno->Owner);
+	if (!pCurrent || !pTarget)
+		return false;
+
+	return pCurrent->IsObserver()
+		|| EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, pCurrent, pTarget);
 }
 
-DEFINE_HOOK(0x4DEDCB, FootClass_GetImage_DisguiseBlinking, 0x7)
+bool __fastcall IsAlly_Wrapper(HouseClass* pThis, void* _, HouseClass* pOther)
 {
-	enum { ContinueChecks = 0x4DEDDB, AllowBlinking = 0x4DEE15 };
-
-	GET(TechnoClass*, pThis, ESI);
-
-	if (CanBlinkDisguise(pThis))
-		return AllowBlinking;
-
-	return ContinueChecks;
+	return CanBlinkDisguise(pOther, pThis);
 }
 
-DEFINE_HOOK(0x70EE70, TechnoClass_IsClearlyVisibleTo_DisguiseBlinking, 0x5)
+bool __fastcall IsControlledByCurrentPlayer_Wrapper(HouseClass* pThis)
 {
-	enum { ContinueChecks = 0x70EE79, DisallowBlinking = 0x70EEB6 };
-
-	GET(TechnoClass*, pThis, ESI);
-
-	if (CanBlinkDisguise(pThis))
-		return ContinueChecks;
-
-	return DisallowBlinking;
+	return CanBlinkDisguise(HouseClass::CurrentPlayer, pThis);
 }
 
-DEFINE_HOOK(0x7062F5, TechnoClass_TechnoClass_DrawObject_DisguiseBlinking, 0x6)
-{
-	enum { ContinueChecks = 0x706304, DisallowBlinking = 0x70631F };
-
-	GET(TechnoClass*, pThis, ESI);
-
-	if (CanBlinkDisguise(pThis))
-		return ContinueChecks;
-
-	return DisallowBlinking;
-}
+DEFINE_JUMP(CALL, 0x4DEDD2, GET_OFFSET(IsAlly_Wrapper));                      // FootClass_GetImage
+DEFINE_JUMP(CALL, 0x70EE5D, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
+DEFINE_JUMP(CALL, 0x70EE70, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
+DEFINE_JUMP(CALL, 0x7062FB, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_DrawObject
 
 DEFINE_HOOK(0x7060A9, TechnoClass_TechnoClass_DrawObject_DisguisePalette, 0x6)
 {
