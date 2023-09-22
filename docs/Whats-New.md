@@ -414,6 +414,7 @@ Phobos fixes:
 - Fixed interceptors causing multiplayer games to desync (by Starkku)
 - Optimized performance for map trigger retint action light source fix (by Starkku)
 - Fixed a number of issues with Warhead Shield respawn / self heal rate modifiers like timers getting reset unnecessarily, the timer being adjusted wrong after the Warhead effect runs out etc. (by Starkku)
+- Fixed a problem with disguise visibility logic that could cause game to crash on loading a map (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
