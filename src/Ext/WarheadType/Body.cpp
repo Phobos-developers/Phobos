@@ -116,8 +116,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SplashList.Read(exINI, pSection, "SplashList");
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->SplashList_CreateAll.Read(exINI, pSection, "SplashList.CreateAll");
+	this->SplashList_CreationInterval.Read(exINI, pSection, "SplashList.CreationInterval");
 	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
 	this->AnimList_CreateAll.Read(exINI, pSection, "AnimList.CreateAll");
+	this->AnimList_CreationInterval.Read(exINI, pSection, "AnimList.CreationInterval");
 	this->CreateAnimsOnZeroDamage.Read(exINI, pSection, "CreateAnimsOnZeroDamage");
 	this->Conventional_IgnoreUnits.Read(exINI, pSection, "Conventional.IgnoreUnits");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
@@ -298,8 +300,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
 		.Process(this->SplashList_CreateAll)
+		.Process(this->SplashList_CreationInterval)
 		.Process(this->AnimList_PickRandom)
 		.Process(this->AnimList_CreateAll)
+		.Process(this->AnimList_CreationInterval)
 		.Process(this->CreateAnimsOnZeroDamage)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->RemoveDisguise)
@@ -382,6 +386,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsOwner)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
+		.Process(this->RemainingAnimCreationInterval)
 		.Process(this->PossibleCellSpreadDetonate)
 
 		.Process(this->CanRemoveParasites)

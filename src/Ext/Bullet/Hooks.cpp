@@ -191,6 +191,8 @@ DEFINE_HOOK(0x44D074, BuildingClass_Mission_Missile_ApplyGravity, 0x6)
 	case 0x44D2AE:
 		return 0x44D2B4;
 		break;
+	default:
+		__assume(0);
 	}
 }
 
@@ -291,13 +293,10 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	}
 	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory)
+		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
 		{
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
-			{
-				R->EAX(pThis->Type);
-				return SkipChecks;
-			}
+			R->EAX(pThis->Type);
+			return SkipChecks;
 		}
 	}
 
@@ -325,11 +324,23 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	// Fixes issues with walls etc.
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory)
-		{
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
-				return SkipSetCoordinate;
-		}
+		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
+			return SkipSetCoordinate;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
+{
+	enum { SkipCheck = 0x468D73 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+			return SkipCheck;
 	}
 
 	return 0;

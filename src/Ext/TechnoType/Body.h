@@ -48,9 +48,17 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
+		Valueable<bool> ReloadInTransport;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
+
+		Nullable<int> Ammo_AddOnDeploy;
+		Valueable<int> Ammo_AutoDeployMinimumAmount;
+		Valueable<int> Ammo_AutoDeployMaximumAmount;
+		Valueable<int> Ammo_DeployUnlockMinimumAmount;
+		Valueable<int> Ammo_DeployUnlockMaximumAmount;
+		NullableIdx<VocClass> VoiceCantDeploy;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
@@ -69,6 +77,8 @@ public:
 		NullableIdx<VocClass> SlavesFreeSound;
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
+
+		NullableIdx<VocClass> VoiceCreated;
 
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
@@ -219,6 +229,7 @@ public:
 			, CameoPriority { 0 }
 			, NoManualMove { false }
 			, InitialStrength {}
+			, ReloadInTransport { false }
 			, ShieldType {}
 			, PassengerDeletionType { nullptr }
 
@@ -264,6 +275,12 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
+
+			, Ammo_AddOnDeploy { }
+			, Ammo_AutoDeployMinimumAmount { -1 }
+			, Ammo_AutoDeployMaximumAmount { -1 }
+			, Ammo_DeployUnlockMinimumAmount { -1 }
+			, Ammo_DeployUnlockMaximumAmount { -1 }
 
 			, AutoDeath_Behavior { }
 			, AutoDeath_VanishAnimation {}

@@ -115,11 +115,14 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 				auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
 				auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
 
-				if (pTechnoTypeExt->AutoDeath_Behavior.isset() && pTechnoTypeExt->AutoDeath_AfterDelay > 0)
+				if (pTechnoTypeExt->AutoDeath_Behavior.isset())
 				{
-					pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
-					pOwnerExt->OwnedTimedAutoDeathObjects.push_back(pTechnoExt);
+					pOwnerExt->OwnedAutoDeathObjects.push_back(pTechnoExt);
+
+					if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
+						pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
 				}
+
 			}
 		}
 	}
@@ -133,10 +136,7 @@ inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
 
 	// Remove building from list of owned limbo buildings
 	if (pOwnerExt)
-	{
 		pOwnerExt->OwnedLimboDeliveredBuildings.erase(pBuilding);
-		pOwnerExt->RemoveFromLimboTracking(pBuilding->Type);
-	}
 
 	// Mandatory
 	pBuilding->InLimbo = true;

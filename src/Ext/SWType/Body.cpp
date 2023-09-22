@@ -44,6 +44,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Next_RollChances)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
+		.Process(this->ShowDesignatorRange)
 		;
 }
 
@@ -175,6 +176,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		else
 			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
 	}
+
+	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
