@@ -56,6 +56,11 @@
 
 namespace detail
 {
+	template<typename T>
+	concept HasFindOrAllocate = requires(const char* arg){
+		{ T::FindOrAllocate(arg) }->std::same_as<T*>;
+	};
+
 	template <typename T>
 	inline bool read(T& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate = false)
 	{
@@ -63,7 +68,11 @@ namespace detail
 		{
 			using base_type = std::remove_pointer_t<T>;
 			auto const pValue = parser.value();
-			auto const parsed = (allocate ? base_type::FindOrAllocate : base_type::Find)(pValue);
+			T parsed; //TODO: allocate should be a template param
+			if constexpr (HasFindOrAllocate<base_type>)
+				parsed = (allocate ? base_type::FindOrAllocate : base_type::Find)(pValue);
+			else
+				parsed = base_type::Find(pValue);
 
 			if (parsed || INIClass::IsBlank(pValue))
 			{
