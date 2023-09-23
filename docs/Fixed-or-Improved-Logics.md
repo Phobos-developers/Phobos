@@ -144,7 +144,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 ## Aircraft
 
-## Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
+### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
 
 - It is now possible to have aircraft spawned from `(Elite)AirstrikeTeamType` or `Type=SpyPlane` superweapons to be created at fixed distance from their intended target/destination instead of from edge of the map by setting `SpawnDistanceFromTarget`.
 - `SpawnHeight` can also be used to override the initial height of the aircraft, which defaults to `FlightLevel`, or if not set then `[General]` -> `FlightLevel`.
