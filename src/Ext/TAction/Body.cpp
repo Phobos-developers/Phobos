@@ -448,9 +448,13 @@ bool TActionExt::UndeployToWaypoint(TActionClass* pThis, HouseClass* pHouse, Obj
 	AbstractClass* pCell = MapClass::Instance->TryGetCellAt(nCell);
 
 	if (!pCell)
+	{
 		return true;
+	}
 
-	HouseClass* vHouse = pHouse;
+	bool allHouse = false;
+	HouseClass* vHouse = nullptr;
+
 	if (pThis->Param4 >= 0)
 	{
 		if (HouseClass::Index_IsMP(pThis->Param4))
@@ -458,27 +462,19 @@ bool TActionExt::UndeployToWaypoint(TActionClass* pThis, HouseClass* pHouse, Obj
 		else
 			vHouse = HouseClass::FindByCountryIndex(pThis->Param4);
 	}
-
-	if (!vHouse)
-		return true;
-
-	// Thanks to chaserli for the relevant code!
-	// There should be a more perfect way to do this, but I don't know how.
-	auto canUndeploy = [](BuildingClass* pBld)
+	else if (pThis->Param4 == -1)
 	{
-		const auto pType = pBld->Type;
+		vHouse = pHouse;
+	}
+	else if (pThis->Param4 == -2)
+	{
+		allHouse = true;
+	}
 
-		if (!pType->UndeploysInto)
-			return false;
-
-		if (pType->ConstructionYard)
-		{
-			if (!GameModeOptionsClass::Instance->MCVRedeploy || pBld->MindControlledBy)
-				return false;
-		}
-
+	if (!allHouse && !vHouse)
+	{
 		return true;
-	};
+	}
 
 	bool allBuilding = false;
 	BuildingTypeClass* pBldType = nullptr;
@@ -497,32 +493,54 @@ bool TActionExt::UndeployToWaypoint(TActionClass* pThis, HouseClass* pHouse, Obj
 	}
 
 	if (!allBuilding && !pBldType)
-		return true;
-
-	for (const auto pBld : *BuildingClass::Array)
 	{
-		if (!pBld->Type)
-			continue;
+		return true;
+	}
 
-		if (!canUndeploy(pBld))
-			continue;
+	// Thanks to chaserli for the relevant code!
+	// There should be a more perfect way to do this, but I don't know how.
+	auto canUndeploy = [pThis, pTrigger, allBuilding, allHouse, pBldType, vHouse](BuildingClass* pBld)
+	{
+		if (!allHouse && pBld->Owner != vHouse)
+		{
+			return false;
+		}
+
+		const auto pType = pBld->Type;
+		if (!pType)
+		{
+			return false;
+		}
+
+		if (!allBuilding && pType != pBldType)
+		{
+			return false;
+		}
+
+		if (!pType->UndeploysInto)
+		{
+			return false;
+		}
+
+		if (pType->ConstructionYard)
+		{
+			if (!GameModeOptionsClass::Instance->MCVRedeploy || pBld->MindControlledBy || pBld->Owner->IsControlledByHuman())
+				return false;
+		}
 
 		if (pThis->Param3 &&
 			(!pBld->AttachedTag ||
 			!pBld->AttachedTag->ContainsTrigger(pTrigger)))
-			continue;
-
-		bool canDo = false;
-		if (allBuilding)
 		{
-			canDo = true;
-		}
-		else if (pBld->Type == pBldType)
-		{
-			canDo = true;
+			return false;
 		}
 
-		if (!canDo)
+		return true;
+	};
+
+	for (const auto pBld : *BuildingClass::Array)
+	{
+		if (!canUndeploy(pBld))
 			continue;
 
 		// Why does having this allow it to undeploy?
