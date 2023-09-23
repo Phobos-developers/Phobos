@@ -122,12 +122,18 @@ bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 	{
 		auto const attachEffect = it->get();
 
-		if (attachEffect->GetType()->DiscardOnEntry)
+		if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Entry) != DiscardCondition::None)
 		{
 			altered = true;
 
 			if (attachEffect->GetType()->HasTint())
 				markForRedraw = true;
+
+			if (attachEffect->ResetIfRecreatable())
+			{
+				++it;
+				continue;
+			}
 
 			it = pExt->AttachedEffects.erase(it);
 		}

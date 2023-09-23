@@ -214,6 +214,16 @@ enum class ChronoSparkleDisplayPosition : unsigned char
 
 MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
 
+enum class DiscardCondition : unsigned char
+{
+	None = 0x0,
+	Entry = 0x1,
+	Move = 0x2,
+	Stationary = 0x4,
+};
+
+MAKE_ENUM_FLAGS(DiscardCondition);
+
 enum class HorizontalPosition : BYTE
 {
 	Left = 0,

@@ -25,7 +25,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
 	this->Cumulative_MaxCount.Read(exINI, pSection, "Cumulative.MaxCount");
 	this->Powered.Read(exINI, pSection, "Powered");
-	this->DiscardOnEntry.Read(exINI, pSection, "DiscardOnEntry");
+	this->DiscardOn.Read(exINI, pSection, "DiscardOn");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 
 	this->Animation.Read(exINI, pSection, "Animation");
@@ -69,7 +69,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Cumulative)
 		.Process(this->Cumulative_MaxCount)
 		.Process(this->Powered)
-		.Process(this->DiscardOnEntry)
+		.Process(this->DiscardOn)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->Animation)
 		.Process(this->Animation_ResetOnReapply)
