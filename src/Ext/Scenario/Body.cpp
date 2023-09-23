@@ -3,7 +3,6 @@
 #include <SessionClass.h>
 #include <GameStrings.h>
 
-template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
 bool ScenarioExt::CellParsed = false;
@@ -58,6 +57,25 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 				var.Value = 0;
 		}
 	}
+}
+
+void ScenarioExt::ExtData::SaveVariablesToFile(bool isGlobal)
+{
+	const auto fileName = isGlobal ? "globals.ini" : "locals.ini";
+	auto pINI = GameCreate<CCINIClass>();
+	auto pFile = GameCreate<CCFileClass>(fileName);
+
+	if (pFile->Exists())
+		pINI->ReadCCFile(pFile);
+	else
+		pFile->CreateFileA();
+
+	const auto& variables = Global()->Variables[isGlobal];
+	for (const auto& variable : variables)
+		pINI->WriteInteger(ScenarioClass::Instance()->FileName, variable.second.Name, variable.second.Value, false);
+
+	pINI->WriteCCFile(pFile);
+	pFile->Close();
 }
 
 void ScenarioExt::Allocate(ScenarioClass* pThis)
@@ -172,7 +190,7 @@ DEFINE_HOOK(0x689669, ScenarioClass_Load_Suffix, 0x6)
 	{
 		PhobosStreamReader Reader(Stm);
 
-		if (Reader.Expect(ScenarioExt::ExtData::Canary) && Reader.RegisterChange(buffer))
+		if (Reader.Expect(ScenarioExt::Canary) && Reader.RegisterChange(buffer))
 			buffer->LoadFromStream(Reader);
 	}
 
@@ -185,7 +203,7 @@ DEFINE_HOOK(0x68945B, ScenarioClass_Save_Suffix, 0x8)
 	PhobosByteStream saver(sizeof(*buffer));
 	PhobosStreamWriter writer(saver);
 
-	writer.Expect(ScenarioExt::ExtData::Canary);
+	writer.Expect(ScenarioExt::Canary);
 	writer.RegisterChange(buffer);
 
 	buffer->SaveToStream(writer);

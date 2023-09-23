@@ -19,25 +19,32 @@ class BuildingExt
 public:
 	using base_type = BuildingClass;
 
+	static constexpr DWORD Canary = 0x87654321;
+	static constexpr size_t ExtPointerOffset = 0x6FC;
+
 	class ExtData final : public Extension<BuildingClass>
 	{
 	public:
 		BuildingTypeExt::ExtData* TypeExtData;
+		TechnoExt::ExtData* TechnoExtData;
 		bool DeployedTechno;
 		bool IsCreatedFromMapFile;
 		int LimboID;
 		int GrindingWeapon_LastFiredFrame;
 		BuildingClass* CurrentAirFactory;
 		int AccumulatedIncome;
+		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
+			, TechnoExtData { nullptr }
 			, DeployedTechno { false }
 			, IsCreatedFromMapFile { false }
 			, LimboID { -1 }
 			, GrindingWeapon_LastFiredFrame { 0 }
 			, CurrentAirFactory { nullptr }
 			, AccumulatedIncome { 0 }
+			, CurrentLaserWeaponIndex {}
 		{ }
 
 		void DisplayIncomeString();
@@ -71,6 +78,7 @@ public:
 		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
 		{
 			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
 			switch (abs)
 			{
 			case AbstractType::Building:

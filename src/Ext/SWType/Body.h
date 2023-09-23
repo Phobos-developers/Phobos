@@ -8,11 +8,15 @@
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Building/Body.h>
+#include <Misc/TypeConvertHelper.h>
 
 class SWTypeExt
 {
 public:
 	using base_type = SuperWeaponTypeClass;
+
+	static constexpr DWORD Canary = 0x11111111;
+	static constexpr size_t ExtPointerOffset = 0x18;
 
 	class ExtData final : public Extension<SuperWeaponTypeClass>
 	{
@@ -52,9 +56,12 @@ public:
 		Nullable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
 		Valueable<bool> Detonate_AtFirer;
+		Valueable<bool> ShowDesignatorRange;
 
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
+
+		std::vector<TypeConvertGroup> Convert_Pairs;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
@@ -89,6 +96,8 @@ public:
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
+			, Convert_Pairs {}
+			, ShowDesignatorRange { true }
 		{ }
 
 		// Ares 0.A functions
@@ -107,6 +116,7 @@ public:
 		void ApplyLimboKill(HouseClass* pHouse);
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
+		void ApplyTypeConversion(SuperClass* pSW);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;

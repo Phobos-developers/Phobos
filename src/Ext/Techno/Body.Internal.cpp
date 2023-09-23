@@ -14,6 +14,7 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 
 	if (auto pTypeExt = this->TypeExtData)
 	{
+		this->LaserTrails.clear();
 		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
@@ -183,6 +184,9 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
+	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
+		return;
+
 	bool drawPip = false;
 	bool isInfantryHeal = false;
 	int selfHealFrames = 0;
@@ -202,7 +206,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 			isOrganic = true;
 		}
 
-		if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || isOrganic))
+		if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)))
 		{
 			drawPip = true;
 			selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;

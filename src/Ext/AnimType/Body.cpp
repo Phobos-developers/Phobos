@@ -10,10 +10,9 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>
 
-template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEEEEEEEE;
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
-const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
+void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 {
 	if (!pThis)
 		return;
@@ -22,7 +21,7 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 
 	if (pThis->Type->DestroyAnim.Count > 0)
 	{
-		auto const facing = pThis->PrimaryFacing.Current().GetFacing<256>();
+		auto const facing = pThis->PrimaryFacing.Current().GetDir();
 		AnimTypeClass* pAnimType = nullptr;
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
@@ -34,7 +33,7 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 			{
 				idxAnim = pThis->Type->DestroyAnim.Count;
 				if (pThis->Type->DestroyAnim.Count % 2 == 0)
-					idxAnim *= static_cast<int>(facing / 256.0);
+					idxAnim *= static_cast<int>(static_cast<unsigned char>(facing) / 256.0);
 			}
 
 			pAnimType = pThis->Type->DestroyAnim[idxAnim];
@@ -63,7 +62,7 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 				pAnimExt->FromDeathUnit = true;
 
 				if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
-					pAnimExt->DeathUnitFacing = static_cast<short>(facing);
+					pAnimExt->DeathUnitFacing = facing;
 
 				if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
 				{
@@ -110,6 +109,8 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->SplashAnims.Read(exINI, pID, "SplashAnims");
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
 	this->AttachedSystem.Read(exINI, pID, "AttachedSystem", true);
+	this->AltPalette_ApplyLighting.Read(exINI, pID, "AltPalette.ApplyLighting");
+	this->MakeInfantryOwner.Read(exINI, pID, "MakeInfantryOwner");
 }
 
 template <typename T>
@@ -142,6 +143,8 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SplashAnims)
 		.Process(this->SplashAnims_PickRandom)
 		.Process(this->AttachedSystem)
+		.Process(this->AltPalette_ApplyLighting)
+		.Process(this->MakeInfantryOwner)
 		;
 }
 
@@ -164,7 +167,7 @@ DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
 {
 	GET(AnimTypeClass*, pItem, EAX);
 
-	AnimTypeExt::ExtMap.FindOrAllocate(pItem);
+	AnimTypeExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 

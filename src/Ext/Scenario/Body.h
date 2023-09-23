@@ -19,6 +19,8 @@ class ScenarioExt
 public:
 	using base_type = ScenarioClass;
 
+	static constexpr DWORD Canary = 0xABCD1595;
+
 	class ExtData final : public Extension<ScenarioClass>
 	{
 	public:
@@ -33,10 +35,12 @@ public:
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
 		void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
 		void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
+		static void SaveVariablesToFile(bool isGlobal);
 
 		virtual ~ExtData() = default;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;

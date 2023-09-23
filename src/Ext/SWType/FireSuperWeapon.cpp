@@ -29,6 +29,9 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 
 		if (pTypeExt->SW_Next.size() > 0)
 			pTypeExt->ApplySWNext(pSW, cell);
+
+		if (pTypeExt->Convert_Pairs.size() > 0)
+			pTypeExt->ApplyTypeConversion(pSW);
 	}
 }
 
@@ -56,6 +59,16 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuilding->InLimbo = false;
 		pBuilding->IsAlive = true;
 		pBuilding->IsOnMap = true;
+
+		// For reasons beyond my comprehension, the discovery logic is checked for certain logics like power drain/output in campaign only.
+		// Normally on unlimbo the buildings are revealed to current player if unshrouded or if game is a campaign and to non-player houses always.
+		// Because of the unique nature of LimboDelivered buildings, this has been adjusted to always reveal to the current player in singleplayer
+		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist - Starkku
+		if (SessionClass::Instance->GameMode == GameMode::Campaign)
+			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
+
+		pBuilding->DiscoveredBy(pOwner);
+
 		pOwner->RegisterGain(pBuilding, false);
 		pOwner->UpdatePower();
 		pOwner->RecheckTechTree = true;
@@ -92,15 +105,24 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 			pBuildingExt->LimboID = ID;
 
 			if (auto pOwnerExt = HouseExt::ExtMap.Find(pOwner))
-			{	// Add building to list of owned limbo buildings
+			{
+				// Add building to list of owned limbo buildings
 				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding, pBuildingExt });
 
-				auto pTechExt = TechnoExt::ExtMap.Find(pBuilding);
-				if (pTechExt->TypeExtData->AutoDeath_Behavior.isset() && pTechExt->TypeExtData->AutoDeath_AfterDelay > 0)
+				if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+					pOwnerExt->AddToLimboTracking(pBuilding->Type);
+
+				auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
+				auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
+
+				if (pTechnoTypeExt->AutoDeath_Behavior.isset())
 				{
-					pTechExt->AutoDeathTimer.Start(pTechExt->TypeExtData->AutoDeath_AfterDelay);
-					pOwnerExt->OwnedTimedAutoDeathObjects.push_back(pTechExt);
+					pOwnerExt->OwnedAutoDeathObjects.push_back(pTechnoExt);
+
+					if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
+						pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
 				}
+
 			}
 		}
 	}
@@ -285,4 +307,13 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 		for (const auto swType : this->SW_Next)
 			LaunchTheSW(swType);
 	}
+}
+
+void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
+{
+	if (this->Convert_Pairs.size() == 0)
+		return;
+
+	for (const auto pTargetFoot : *FootClass::Array)
+		TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }

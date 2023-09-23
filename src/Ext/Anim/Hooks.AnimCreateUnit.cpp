@@ -1,5 +1,5 @@
 // Anim-to--Unit
-// Author: Otamaa
+// Author: Otamaa, revisions by Starkku
 
 #include "Body.h"
 
@@ -72,184 +72,121 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 		HouseClass* decidedOwner = pThis->Owner && !pThis->Owner->Defeated
 			? pThis->Owner : HouseClass::FindCivilianSide();
 
-		bool allowBridges = unit->SpeedType != SpeedType::Float;
 		auto pCell = pThis->GetCell();
 		CoordStruct location = pThis->GetCoords();
 
-		if (pCell && allowBridges)
-			location = pCell->GetCoordsWithBridge();
-
 		pThis->UnmarkAllOccupationBits(location);
 
-		if (pTypeExt->CreateUnit_ConsiderPathfinding)
+		bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(unit->SpeedType)] > 0.0;
+		bool isBridge = allowBridges && pCell->ContainsBridge();
+
+		if (pTypeExt->CreateUnit_ConsiderPathfinding && (!pCell || !pCell->IsClearToMove(unit->SpeedType, false, false, -1, unit->MovementZone, -1, isBridge)) )
 		{
 			auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
-				unit->SpeedType, -1, unit->MovementZone, false, 1, 1, true,
-				false, false, allowBridges, CellStruct::Empty, false, false);
+				unit->SpeedType, -1, unit->MovementZone, isBridge, 1, 1, true,
+				false, false, isBridge, CellStruct::Empty, false, false);
 
 			pCell = MapClass::Instance->TryGetCellAt(nCell);
-
-			if (pCell && allowBridges)
-				location = pCell->GetCoordsWithBridge();
+			location = pCell->GetCoords();
 		}
 
-		int z = pTypeExt->CreateUnit_AlwaysSpawnOnGround ? INT32_MIN : pThis->GetCoords().Z;
-		location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location), z);
-
-		if (auto pTechno = static_cast<FootClass*>(unit->CreateObject(decidedOwner)))
+		if (pCell)
 		{
-			bool success = false;
-			auto const pExt = AnimExt::ExtMap.Find(pThis);
-			TechnoClass* pInvoker = pExt->Invoker;
-			HouseClass* pInvokerHouse = pExt->InvokerHouse;
+			isBridge = allowBridges && pCell->ContainsBridge();
+			int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
+			int z = pTypeExt->CreateUnit_AlwaysSpawnOnGround ? INT32_MIN : pThis->GetCoords().Z;
+			location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location) + bridgeZ, z);
 
-			auto aFacing = pTypeExt->CreateUnit_RandomFacing.Get()
-				? static_cast<unsigned short>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pTypeExt->CreateUnit_Facing.Get();
-
-			short resultingFacing = (pTypeExt->CreateUnit_InheritDeathFacings.Get() && pExt->FromDeathUnit)
-				? pExt->DeathUnitFacing : aFacing;
-
-			if (pCell && allowBridges)
-				pTechno->OnBridge = pCell->ContainsBridge();
-
-			BuildingClass* pBuilding = pCell ? pCell->GetBuilding() : MapClass::Instance->TryGetCellAt(location)->GetBuilding();
-
-			if (!pBuilding)
+			if (auto pTechno = static_cast<FootClass*>(unit->CreateObject(decidedOwner)))
 			{
-				++Unsorted::IKnowWhatImDoing;
-				success = pTechno->Unlimbo(location, static_cast<DirType>(resultingFacing));
-				--Unsorted::IKnowWhatImDoing;
-			}
-			else
-			{
-				success = pTechno->Unlimbo(location, static_cast<DirType>(resultingFacing));
-			}
+				bool success = false;
+				auto const pExt = AnimExt::ExtMap.Find(pThis);
+				TechnoClass* pInvoker = pExt->Invoker;
+				HouseClass* pInvokerHouse = pExt->InvokerHouse;
 
-			if (success)
-			{
-				if (pTypeExt->CreateUnit_SpawnAnim.isset())
+				auto facing = pTypeExt->CreateUnit_RandomFacing
+					? static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pTypeExt->CreateUnit_Facing;
+
+				auto resultingFacing = pTypeExt->CreateUnit_InheritDeathFacings && pExt->FromDeathUnit ? pExt->DeathUnitFacing : facing;
+				pTechno->OnBridge = isBridge;
+
+				if (!pCell->GetBuilding())
 				{
-					const auto pAnimType = pTypeExt->CreateUnit_SpawnAnim.Get();
+					++Unsorted::IKnowWhatImDoing;
+					success = pTechno->Unlimbo(location, resultingFacing);
+					--Unsorted::IKnowWhatImDoing;
+				}
+				else
+				{
+					success = pTechno->Unlimbo(location, resultingFacing);
+				}
 
-					if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
+				if (success)
+				{
+					auto const loc = pTechno->Location;
+
+					if (pTypeExt->CreateUnit_SpawnAnim.isset())
 					{
-						pAnim->Owner = pThis->Owner;
+						const auto pAnimType = pTypeExt->CreateUnit_SpawnAnim.Get();
 
-						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+						if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
 						{
-							pAnimExt->Invoker = pInvoker;
-							pAnimExt->InvokerHouse = pInvokerHouse;
+							AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
+
+							if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+								pAnimExt->SetInvoker(pInvoker, pInvokerHouse);
 						}
 					}
-				}
 
-				if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings.Get())
-				{
-					pTechno->SecondaryFacing.SetCurrent(pExt->DeathUnitTurretFacing);
-					Debug::Log("CreateUnit: Stored Turret Facing %d \n", pExt->DeathUnitTurretFacing.GetFacing<256>());
-				}
-
-				if (!pTechno->InLimbo)
-				{
-					if (pThis->IsInAir() && !pTypeExt->CreateUnit_AlwaysSpawnOnGround)
+					if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings)
 					{
-						if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pTechno->Locomotor))
-						{
-							auto const pType = pTechno->GetTechnoType();
-							pJJLoco->LocomotionFacing.SetCurrent(DirStruct(static_cast<DirType>(resultingFacing)));
+						pTechno->SecondaryFacing.SetCurrent(pExt->DeathUnitTurretFacing);
+						Debug::Log("CreateUnit: Using stored turret facing %d\n", pExt->DeathUnitTurretFacing.GetFacing<256>());
+					}
 
-							if (pType->BalloonHover)
+					if (!pTechno->InLimbo)
+					{
+						if (pThis->IsInAir() && !pTypeExt->CreateUnit_AlwaysSpawnOnGround)
+						{
+							if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pTechno->Locomotor))
 							{
-								// Makes the jumpjet think it is hovering without actually moving.
-								pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
-								pJJLoco->IsMoving = true;
-								pJJLoco->DestinationCoords = location;
-								pJJLoco->CurrentHeight = pType->JumpjetHeight;
+								auto const pType = pTechno->GetTechnoType();
+								pJJLoco->LocomotionFacing.SetCurrent(DirStruct(static_cast<DirType>(resultingFacing)));
+
+								if (pType->BalloonHover)
+								{
+									// Makes the jumpjet think it is hovering without actually moving.
+									pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+									pJJLoco->IsMoving = true;
+									pJJLoco->DestinationCoords = location;
+									pJJLoco->CurrentHeight = pType->JumpjetHeight;
+								}
+								else
+								{
+									// Order non-BalloonHover jumpjets to land.
+									pJJLoco->Move_To(location);
+								}
 							}
 							else
 							{
-								// Order non-BalloonHover jumpjets to land.
-								pJJLoco->Move_To(location);
+								pTechno->IsFallingDown = true;
 							}
 						}
-						else
-						{
-							pTechno->IsFallingDown = true;
-						}
+
+						pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);
 					}
 
-					pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);
+					if (!decidedOwner->Type->MultiplayPassive)
+						decidedOwner->RecheckTechTree = true;
 				}
-
-				if (!decidedOwner->Type->MultiplayPassive)
-					decidedOwner->RecheckTechTree = true;
-			}
-			else
-			{
-				if (pTechno)
-					pTechno->UnInit();
+				else
+				{
+					if (pTechno)
+						pTechno->UnInit();
+				}
 			}
 		}
 	}
 
 	return (pThis->Type->MakeInfantry != -1) ? 0x42493E : 0x424B31;
-}
-
-DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
-{
-	enum { Continue = 0x469D06, NukeWarheadExtras = 0x469CAF };
-
-	GET(BulletClass*, pThis, ESI);
-	GET(AnimClass*, pAnim, EAX);
-
-	if (pAnim)
-	{
-		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-
-		HouseClass* pInvoker = (pThis->Owner) ? pThis->Owner->Owner : nullptr;
-		HouseClass* pVictim = nullptr;
-
-		if (TechnoClass* Target = generic_cast<TechnoClass*>(pThis->Target))
-			pVictim = Target->Owner;
-
-		if (auto unit = pTypeExt->CreateUnit.Get())
-		{
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
-		}
-		else if (!pAnim->Owner)
-		{
-			auto const pExt = BulletExt::ExtMap.Find(pThis);
-			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
-		}
-
-		if (pThis->Owner)
-		{
-			auto pExt = AnimExt::ExtMap.Find(pAnim);
-			pExt->SetInvoker(pThis->Owner);
-		}
-	}
-	else if (pThis->WH == RulesClass::Instance->NukeWarhead)
-	{
-		return NukeWarheadExtras;
-	}
-
-	return Continue;
-}
-
-DEFINE_HOOK(0x6E2368, ActionClass_PlayAnimAt, 0x7)
-{
-	GET(AnimClass*, pAnim, EAX);
-	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x18, 0x4));
-
-	if (pAnim)
-	{
-		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-
-		if (auto unit = pTypeExt->CreateUnit.Get())
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, pHouse, pHouse);
-		else if (!pAnim->Owner && pHouse)
-			pAnim->Owner = pHouse;
-	}
-
-	return 0;
 }

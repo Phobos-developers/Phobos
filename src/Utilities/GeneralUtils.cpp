@@ -127,3 +127,51 @@ bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 
 	return false;
 }
+
+std::string GeneralUtils::IntToDigits(int num)
+{
+	std::string digits;
+
+	if (num == 0)
+	{
+		digits.push_back('0');
+		return digits;
+	}
+
+	while (num)
+	{
+		digits.push_back(static_cast<char>(num % 10) + '0');
+		num /= 10;
+	}
+
+	std::reverse(digits.begin(), digits.end());
+
+	return digits;
+}
+
+int GeneralUtils::CountDigitsInNumber(int number)
+{
+	int digits = 0;
+
+	while (number)
+	{
+		number /= 10;
+		digits++;
+	}
+
+	return digits;
+}
+
+// Calculates a new coordinates based on current & target coordinates within specified distance (can be negative to switch the direction) in leptons.
+CoordStruct GeneralUtils::CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance)
+{
+	int deltaX = currentCoords.X - targetCoords.X;
+	int deltaY = targetCoords.Y - currentCoords.Y;
+
+	double atan = Math::atan2(deltaY, deltaX);
+	double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
+	int x = static_cast<int>(targetCoords.X + Math::cos(radians) * distance);
+	int y = static_cast<int>(targetCoords.Y - Math::sin(radians) * distance);
+
+	return CoordStruct { x, y, targetCoords.Z };
+}

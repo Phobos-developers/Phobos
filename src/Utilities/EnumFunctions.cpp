@@ -9,11 +9,11 @@ bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, 
 	return (flags & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
-bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells)
+bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells, bool considerBridgesLand)
 {
 	if (explicitEmptyCells)
 	{
-		auto pTechno = pCell->FirstObject ? abstract_cast<TechnoClass*>(pCell->FirstObject) : nullptr;
+		auto pTechno = pCell->GetContent() ? abstract_cast<TechnoClass*>(pCell->GetContent()) : nullptr;
 
 		if (!pTechno && !(allowed & AffectedTarget::NoContent))
 			return false;
@@ -21,7 +21,7 @@ bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowe
 
 	if (allowed & AffectedTarget::AllCells)
 	{
-		if (pCell->LandType == LandType::Water) // check whether it supports water
+		if (pCell->LandType == LandType::Water && (!considerBridgesLand || !pCell->ContainsBridge())) // check whether it supports water
 			return (allowed & AffectedTarget::Water) != AffectedTarget::None;
 		else                                    // check whether it supports non-water
 			return (allowed & AffectedTarget::Land) != AffectedTarget::None;
@@ -61,13 +61,13 @@ bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget 
 	return allowed != AffectedTarget::None;
 }
 
-bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells, bool considerAircraftSeparately)
+bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells, bool considerAircraftSeparately, bool allowBridges)
 {
 	if (!pCell)
 		return false;
 
 	auto object = pCell->FirstObject;
-	bool eligible = EnumFunctions::IsCellEligible(pCell, allowed, explicitEmptyCells);
+	bool eligible = EnumFunctions::IsCellEligible(pCell, allowed, explicitEmptyCells, allowBridges);
 
 	while (true)
 	{

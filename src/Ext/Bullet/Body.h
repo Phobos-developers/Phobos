@@ -13,6 +13,9 @@ class BulletExt
 public:
 	using base_type = BulletClass;
 
+	static constexpr DWORD Canary = 0x2A2A2A2A;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<BulletClass>
 	{
 	public:
@@ -23,6 +26,7 @@ public:
 		InterceptedStatus InterceptedStatus;
 		bool DetonateOnInterception;
 		std::vector<LaserTrailClass> LaserTrails;
+		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
 
 		PhobosTrajectory* Trajectory; // TODO: why not unique_ptr
 
@@ -35,11 +39,15 @@ public:
 			, DetonateOnInterception { true }
 			, LaserTrails {}
 			, Trajectory { nullptr }
+			, SnappedToTarget { false }
 		{ }
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+			AnnounceInvalidPointer(FirerHouse, ptr);
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -58,6 +66,19 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
+			switch (abs)
+			{
+			case AbstractType::House:
+				return false;
+			default:
+				return true;
+			}
+		}
 	};
 
 	static ExtContainer ExtMap;

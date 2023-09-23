@@ -10,6 +10,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when retinting map lighting with a map action corrupted light sources.
 - Fixed the bug when deploying mindcontrolled vehicle into a building permanently transferred the control to the house which mindcontrolled it.
 - Fixed the bug when capturing a mind-controlled building with an engineer fail to break the mind-control link.
+- Removed the EVA_BuildingCaptured event when capturing a building considered as a vehicle.
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again.
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon.
 - Fixed the bug that temporaryed unit cannot be erased correctly and no longer raise an error.
@@ -44,9 +45,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 *Side offset voxel turret in Breaking Blue project*
 
 - `TurretOffset` tag for voxel turreted TechnoTypes now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
+- `TurretOffset` is now supported for SHP vehicles.
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 - Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
-- `EMEffect` used for random AnimList pick is now replaced by a new tag `AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso projectile deals no damage to units in movement)
 - Vehicles using `DeployFire` will now use `DeployFireWeapon` for firing the deploy weapon if explicitly set, if not it behaves like previously (`Primary` if can fire, `Secondary` if not) and respect `FireOnce` setting on weapon and any stop commands issued during firing. If `FireOnce` is set to true the unit won't accept further deploy commands for number of frames that is equal to whichever is smaller between weapon `ROF` and `[Unload]` -> `Rate` times 900.
 - Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
@@ -84,7 +85,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 ![Waving trees](_static/images/tree-shake.gif)
 *Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
 
-- `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true.
+- `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true. Note that this might impact performance.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
 ![image](_static/images/translucency-fix.png)
@@ -111,9 +112,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `NavalTargeting=6` not preventing from targeting empty water cells or TerrainTypes (trees etc.) on water.
 - Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon.
 - Fixed an issue that causes objects in layers outside ground layer to not be sorted correctly (caused issues with animation and jumpjet layering for an instance)
-- Weapons with projectiles with `Level=true` now consider targets behind obstacles that cause the projectile to detonate (tiles belonging to non-water tilesets) as out of range and will attempt to reposition before firing.
 - Fixed infantry without `C4=true` being killed in water if paradropped, chronoshifted etc. even if they can normally enter water.
-- `AnimList` can now be made to create animations on Warheads dealing zero damage by setting `AnimList.ShowOnZeroDamage` to true.
 - Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings]->MCVRedeploys`.
 - Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
 - Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed.
@@ -126,10 +125,36 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map.
 - `SpySat=yes` can now be applied using building upgrades.
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do.
+- Fixed the bug when jumpjets were snapping into facing bottom-right when starting movement (observable when the starting unit is a jumpjet and is ordered to move).
+- Objects with `Palette` set now have their color tint adjusted accordingly by superweapons, map retint actions etc. if they belong to a house using any color scheme instead of only those from the first half of `[Colors]` list.
+- Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud. Color scheme from `[AudioVisual]` -> `AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still.
+  - They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true.
+- Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
+- Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
+- `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
+- `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting.
+- You can now specify houses named `<Player @ A>` through `<Player @ H>` as the owner of TechnoTypes preplaced on the map in the editor, and they will be correctly given to players starting on points 1-8. Originally, it was only possible to use these house names in events, actions and teams.
+- Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
+- `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
+- Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 
 ## Fixes / interactions with other extensions
 
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
+
+## Aircraft
+
+### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
+
+- It is now possible to have aircraft spawned from `(Elite)AirstrikeTeamType` or `Type=SpyPlane` superweapons to be created at fixed distance from their intended target/destination instead of from edge of the map by setting `SpawnDistanceFromTarget`.
+- `SpawnHeight` can also be used to override the initial height of the aircraft, which defaults to `FlightLevel`, or if not set then `[General]` -> `FlightLevel`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]            ; AircraftType
+SpawnDistanceFromTarget=  ; floating point value, distance in cells
+SpawnHeight=              ; integer, height in leptons
+```
 
 ## Animations
 
@@ -226,6 +251,7 @@ ZShapePointMove.OnBuildup=false  ; boolean
 ### Buildings considered as vehicles
 
 - By default game considers buildings with both `UndeploysInto` set and `Foundation` equaling `1x1` as vehicles, in a manner of speaking. This behaviour can now be toggled individually of these conditions by setting `ConsideredVehicle`. These buildings are counted as vehicles for unit count tracking, are not considered as base under attack when damaged and can be mass selected by default, for an example.
+- When capturing such "buildings", the player won't be notified by EVA capture event.
 
 In `rulesmd.ini`:
 ```ini
@@ -310,6 +336,7 @@ BallisticScatter.Max= ; float, distance in cells
 ### Building-provided self-healing customization
 
 - It is now possible to set a global cap for the effects of `InfantryGainSelfHeal` and `UnitsGainSelfHeal` by setting `InfantryGainSelfHealCap` & `UnitsGainSelfHealCap` under `[General]`, respectively.
+- Whether or not `MultiplayPassive=true` houses benefit from these effects can be controlled via `GainSelfHealAllowMultiplayPassive`.
 - It is also possible to change the pip frames displayed from `pips.shp` individually for infantry, units and buildings by setting the frames for infantry & unit self-healing on `Pips.SelfHeal.Infantry/Units/Buildings` under `[AudioVisual]`, respectively.
   - `Pips.SelfHeal.Infantry/Units/Buildings.Offset` can be used to customize the pixel offsets for the displayed pips, individually for infantry, units and buildings.
 - Whether or not a TechnoType benefits from effects of `InfantryGainSelfHeal` or `UnitsGainSelfHeal` buildings or neither can now be controlled by setting `SelfHealGainType`.
@@ -318,19 +345,35 @@ BallisticScatter.Max= ; float, distance in cells
 In `rulesmd.ini`:
 ```ini
 [General]
-InfantryGainSelfHealCap=               ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
-UnitsGainSelfHealCap=                  ; integer, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
+InfantryGainSelfHealCap=                ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
+UnitsGainSelfHealCap=                   ; integer, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
+GainSelfHealAllowMultiplayPassive=true  ; boolean
 
 [AudioVisual]
-Pips.SelfHeal.Infantry=13,20           ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Units=13,20              ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Buildings=13,20          ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Infantry.Offset=25,-35   ; X,Y, pixels relative to default
-Pips.SelfHeal.Units.Offset=33,-32      ; X,Y, pixels relative to default
-Pips.SelfHeal.Buildings.Offset=15,10   ; X,Y, pixels relative to default
+Pips.SelfHeal.Infantry=13,20            ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Units=13,20               ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Buildings=13,20           ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Infantry.Offset=25,-35    ; X,Y, pixels relative to default
+Pips.SelfHeal.Units.Offset=33,-32       ; X,Y, pixels relative to default
+Pips.SelfHeal.Buildings.Offset=15,10    ; X,Y, pixels relative to default
 
-[SOMETECHNO]                           ; TechnoType
-SelfHealGainType=                      ; Self-Heal Gain Type Enumeration (none|infantry|units)
+[SOMETECHNO]                            ; TechnoType
+SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (none|infantry|units)
+```
+
+### Chrono sparkle animation customization & improvements
+
+- It is now possible to customize the frame delay between instances of `[General]` -> `ChronoSparkle1` animations created on objects being warped by setting `[General]` -> `ChronoSparkleDisplayDelay`.
+- By default on buildings with `MaxOccupants` higher than 0, chrono sparkle animation would be shown at each of the `MuzzleFlashN` coordinates. This behaviour is now customizable, and supports `MuzzleFlashN` indices higher than 10.
+  - `[General]` -> `ChronoSparkleBuildingDisplayPositions` can be set to show the sparkle animation on the building (`building`), muzzle flash coordinates of current occupants (`occupants`), muzzle flash coordinates of all occupant slots (`occupantslots`) or any combination of these.
+    - If `occupants` or `occupantslots` is listed without `building`, a single chrono sparkle animation is still displayed on building if it doesn't have any occupants or it has `MaxOccupants` value less than 1, respectively.
+- The chrono sparkle animation that is displayed on building itself is also now displayed at the center of it rather than at center of its topmost cell.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ChronoSparkleDisplayDelay=24                         ; integer, game frames
+ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle position enum (building | occupants | occupantslots | all)
 ```
 
 ### Customizable veterancy insignias
@@ -486,6 +529,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]    ; TechnoType
 JumpjetRotateOnCrash=true  ; boolean
 ```
+
 ```{warning}
 This may subject to further changes.
 ```
@@ -499,6 +543,47 @@ In `rulesmd.ini`:
 ```ini
 [SOMESTRUCTURE]          ; BuildingType
 Powered.KillSpawns=false ; boolean
+```
+
+### PipScale pip customizations
+
+- It is now possible to change the size of pips (or more accurately the pixel increment to the next pip drawn) displayed on `PipScale`.
+  - `Pips.Generic.(Buildings.)Size` is for non-ammo pips on non-building TechnoTypes / buildings, accordingly, and `Pips.Ammo.(Buildings.)Size` is in turn for ammo pips, split similarly between non-building technos and buildings.
+  - Ammo pip size can also be overridden on per TechnoType-basis using `AmmoPipSize`.
+- Ammo pip frames can now also be customized.
+  - `AmmoPipFrame` and `AmmoPipFrame` are frames (zero-based) of `pips2.shp` used for ammo pip and empty ammo pip (this is not set by default) for when `PipWrap=0` (this is the default).
+  - `AmmoPipWrapStartFrame` is used as start frame (zero-based, from `pips2.shp`) for when `PipWrap` is above 0. The start frame is the empty frame and up to `Ammo` divided by `PipWrap` frames after it are used for the different reload stages.
+  - `AmmoPipOffset` can be used to shift the starting position of ammo pips.
+- Pips for TechnoTypes with `Spawns` can now also be customized.
+  - `ShowSpawnsPips` determines whether or not these pips are shown at all, as they are independent from `PipScale` setting.
+  - `SpawnsPipFrame` and `EmptySpawnsPipFrame` are frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for a spawnee pip and empty spawnee pip, respectively.
+  - `SpawnsPipSize` determines the pixel increment to the next pip drawn. Defaults to `[AudioVisual]` -> `Pips.Generic.(Buildings.)Size` if not set.
+  - `SpawnsPipoffset` can be used to shift the starting position of spawnee pips.
+- Pips for `Storage` can now also be customized via new keys in `[AudioVisual]`.
+  - `Pips.Tiberiums.Frames` can be used to list frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for tiberium types, in the listed order corresponding to tiberium type index. Defaults to 5 for tiberium type index 1, otherwise 2.
+  - `Pips.Tiberiums.DisplayOrder` controls in which order the tiberium type pips are displayed, takes a list of tiberium type indices. Any tiberium type not listed will be displayed in sequential order after the listed ones.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+Pips.Generic.Size=4,0                ; X,Y, increment in pixels to next pip
+Pips.Generic.Buildings.Size=4,2      ; X,Y, increment in pixels to next pip
+Pips.Ammo.Size=4,0                   ; X,Y, increment in pixels to next pip
+Pips.Ammo.Buildings.Size=4,2         ; X,Y, increment in pixels to next pip
+Pips.Tiberiums.Frames=2,5,2,2        ; list of integers, frames of pips.shp (buildings) or pips2.shp (others) (zero-based)
+Pips.Tiberiums.DisplayOrder=0,2,3,1  ; list of integers, tiberium type indices
+
+[SOMETECHNO]                         ; TechnoType
+AmmoPipFrame=13                      ; integer, frame of pips2.shp (zero-based)
+EmptyAmmoPipFrame=-1                 ; integer, frame of pips2.shp (zero-based)
+AmmoPipWrapStartFrame=14             ; integer, frame of pips2.shp (zero-based)
+AmmoPipSize=                         ; X,Y, increment in pixels to next pip
+AmmoPipOffset=0,0                    ; X,Y, position offset from default
+ShowSpawnsPips=true                  ; boolean
+SpawnsPipFrame=1                     ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
+EmptySpawnsPipFrame=0                ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
+SpawnsPipSize=                       ; X,Y, increment in pixels to next pip
+SpawnsPipOffset=0,0                  ; X,Y, position offset from default
 ```
 
 ### Re-enable obsolete [JumpjetControls]
@@ -515,6 +600,16 @@ NoWobbles=false  ; boolean
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Voxel body multi-section shadows
+
+- It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]    ; TechnoType
+ShadowIndices=  ; list of integers (voxel section indices)
 ```
 
 ### Forbid parallel AI queues
@@ -590,6 +685,23 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 ## Vehicles
 
+### Customizing crushing tilt and slowdown
+
+- Vehicles with `Crusher=true` and `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
+- `CrushForwardTiltPerFrame` determines how much the forward tilt is adjusted per frame when crushing overlays or vehicles. Defaults to -0.02 for vehicles using Ship locomotor crushing overlays, -0.050000001 for all other cases.
+- `CrushOverlayExtraForwardTilt` is additional forward tilt applied after an overlay has been crushed by the vehicle.
+- It is possible to customize the movement speed slowdown when `MovementZone=CrusherAll` vehicle crushes walls by setting `CrushSlowdownMultiplier`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                      ; VehicleType
+TiltsWhenCrushes.Vehicles=         ; boolean
+TiltsWhenCrushes.Overlays=         ; boolean
+CrushForwardTiltPerFrame=          ; floating point value
+CrushOverlayExtraForwardTilt=0.02  ; floating point value
+CrushSlowdownMultiplier=0.2        ; floating point value
+```
+
 ### Destroy animations
 
 - `DestroyAnim` has been extended to work with VehicleTypes, with option to pick random animation if `DestroyAnim.Random` is set to true. These animations store owner and facing information for use with [CreateUnit logic](New-or-Enhanced-Logics.md#anim-to-unit).
@@ -617,10 +729,6 @@ DeployingAnim.ReverseForUndeploy=true  ; boolean
 DeployingAnim.UseUnitDrawer=true       ; boolean
 ```
 
-### Stationary vehicles
-
-- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
-
 ### Preserve Iron Curtain status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
@@ -639,6 +747,57 @@ IronCurtain.KeptOnDeploy=yes ; boolean
 IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
 ```
 
+### Stationary vehicles
+
+- Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
+
+### Voxel turret shadow
+
+- Vehicle voxel turrets can now draw shadows if `[AudioVisual]` -> `DrawTurretShadow` is set to true. This can be overridden per VehicleType by setting `TurretShadow` in the vehicle's `artmd.ini` section.
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DrawTurretShadow=false  ; boolean
+```
+
+In `artmd.ini`:
+```ini
+[SOMEUNIT]      ; UnitType
+TurretShadow=   ; boolean
+```
+
+### `IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change
+
+- Vehicle deployment can now be affected by ammo count.
+  - `Ammo.AutoDeployMinimumAmount` determines the minimal number of ammo at which a vehicle converts/deploys automatically.
+  - `Ammo.DeployUnlockMinimumAmount` determines the minimal number of ammo that unlocks issuing vehicle converting/deploying command.
+    - `Ammo.AutoDeployMaximumAmount` and `Ammo.DeployUnlockMaximumAmount` behave analogically.
+    - Setting a negative number will disable ammo count check.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                        ; VehicleType
+Ammo.AutoDeployMinimumAmount=-1      ; integer
+Ammo.AutoDeployMaximumAmount=-1      ; integer
+Ammo.DeployUnlockMinimumAmount=-1    ; integer
+Ammo.DeployUnlockMaximumAmount=-1    ; integer
+```
+
+```{warning}
+Auto-deploy feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
+```
+
+### `IsSimpleDeployer` vehicle ammo change on deploy
+
+- `Ammo.AddOnDeploy` determines the number of ammo added or substracted on unit deploy.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]           ; VehicleType
+Ammo.AddOnDeploy=0      ; integer
+```
+
+
 ## VoxelAnims
 
 ### Customizable debris & meteor impact and warhead detonation behaviour
@@ -646,6 +805,30 @@ IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.K
 - The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris-%26-meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
 
 ## Warheads
+
+### Customizable Warhead animation behaviour
+
+- It is possible to make game play random animation from `AnimList` by setting `AnimList.PickRandom` to true. The result is similar to what `EMEffect=true` produces, however it comes with no side-effects (`EMEffect=true` prevents `Inviso=true` projectiles from snapping on targets, making them miss moving targets).
+- If `AnimList.CreateAll` is set to true, all animations from `AnimList` are created, instead of a single anim based on damage or random if  `AnimList.PickRandom` is set to true.
+- If `AnimList.CreationInterval` is set to a value higher than 0, there will be that number of detonations of the Warhead before animations from `AnimList` will be created again. If the Warhead had a TechnoType firing it, this number is remembered by the TechnoType across all Warheads fired by it, otherwise it is shared between all detonations of same WarheadType period. This can be useful for things like `Airburst` with large spread where one might want uniform distribution of animations to appear but not on every detonation.
+- `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage]` -> `SplashList` are used.
+  - `SplashList.PickRandom`, `SplashList.CreateAll` and `SplashList.CreationInterval` apply to these animations in same manner as the `AnimList` equivalents.
+- `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
+- Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; WarheadType
+AnimList.PickRandom=false       ; boolean
+AnimList.CreateAll=false        ; boolean
+AnimList.CreationInterval=0     ; integer
+SplashList=                     ; List of animations
+SplashList.PickRandom=false     ; boolean
+SplashList.CreateAll=false      ; boolean
+SplashList.CreationInterval=0   ; integer
+CreateAnimsOnZeroDamage=false   ; boolean
+Conventional.IgnoreUnits=false  ; boolean
+```
 
 ### Custom debris animations and additional debris spawn settings
 
@@ -735,16 +918,32 @@ IsSingleColor=false  ; boolean
 ![image](_static/images/ebolt.gif)
 *EBolt customization utilized for different Tesla bolt weapon usage* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
 
-
-- You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
+- You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPONTYPE]       ; WeaponType
-IsElectricBolt=true    ; an ElectricBolt Weapon, vanilla tag
 Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
+```
+
+```{note}
+Due to technical constraints, this does not work with electric bolts created from support weapon of Ares' Prism Forwarding.
+```
+
+### Customizable ElectricBolt Arcs
+
+- By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPONTYPE]       ; WeaponType
+Bolt.Arcs=8            ; integer, number of arcs in a bolt
+```
+
+```{note}
+Due to technical constraints, this does not work with electric bolts created from support weapon of Ares' Prism Forwarding.
 ```
 
 ## RadialIndicator visibility

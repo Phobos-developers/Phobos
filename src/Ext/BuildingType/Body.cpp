@@ -4,7 +4,6 @@
 #include <Utilities/GeneralUtils.h>
 #include <Ext/SWType/Body.h>
 
-template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 
 // Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
@@ -49,7 +48,7 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto& [pExt, nCount] : pHouseExt->BuildingCounter)
+	for (const auto& [pExt, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
 		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
@@ -177,6 +176,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// PlacementPreview
 	{
+		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
 		this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
 		this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
 		this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
@@ -282,7 +282,8 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 {
 	GET(BuildingTypeClass*, pItem, EAX);
 
-	BuildingTypeExt::ExtMap.FindOrAllocate(pItem);
+	BuildingTypeExt::ExtMap.TryAllocate(pItem);
+
 	return 0;
 }
 
