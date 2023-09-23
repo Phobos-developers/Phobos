@@ -26,6 +26,7 @@ public:
 	{
 	public:
 		BuildingTypeExt::ExtData* TypeExtData;
+		TechnoExt::ExtData* TechnoExtData;
 		bool DeployedTechno;
 		bool IsCreatedFromMapFile;
 		int LimboID;
@@ -33,9 +34,11 @@ public:
 		BuildingClass* CurrentAirFactory;
 		bool SecretLab_Placed;
 		int AccumulatedIncome;
+		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
+			, TechnoExtData { nullptr }
 			, DeployedTechno { false }
 			, IsCreatedFromMapFile { false }
 			, LimboID { -1 }
@@ -43,6 +46,7 @@ public:
 			, CurrentAirFactory { nullptr }
 			, SecretLab_Placed { false }
 			, AccumulatedIncome { 0 }
+			, CurrentLaserWeaponIndex {}
 		{ }
 
 		void DisplayIncomeString();

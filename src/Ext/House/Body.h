@@ -20,9 +20,15 @@ public:
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
-		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
+		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
 		std::map<BuildingClass*, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
-		std::vector<TechnoExt::ExtData*> OwnedTimedAutoDeathObjects;
+		std::vector<TechnoExt::ExtData*> OwnedAutoDeathObjects;
+		std::vector<TechnoExt::ExtData*> OwnedTransportReloaders; // Objects that can reload ammo in limbo
+
+		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
+		CounterClass LimboBuildings; // Currently owned buildings in limbo
+		CounterClass LimboInfantry;  // Currently owned infantry in limbo
+		CounterClass LimboVehicles;  // Currently owned vehicles in limbo
 
 		BuildingClass* Factory_BuildingType;
 		BuildingClass* Factory_InfantryType;
@@ -39,9 +45,14 @@ public:
 		int ProducingNavalUnitTypeIndex;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
-			, BuildingCounter {}
+			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
-			, OwnedTimedAutoDeathObjects {}
+			, OwnedAutoDeathObjects {}
+			, OwnedTransportReloaders {}
+			, LimboAircraft {}
+			, LimboBuildings {}
+			, LimboInfantry {}
+			, LimboVehicles {}
 			, Factory_BuildingType { nullptr }
 			, Factory_InfantryType { nullptr }
 			, Factory_VehicleType { nullptr }
@@ -54,6 +65,10 @@ public:
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
 		void UpdateAutoDeathObjectsInLimbo();
+		void UpdateTransportReloaders();
+		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
+		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
+		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);
 
 		virtual ~ExtData() = default;
 
@@ -84,9 +99,6 @@ public:
 			switch (abs)
 			{
 			case AbstractType::Building:
-			case AbstractType::Infantry:
-			case AbstractType::Unit:
-			case AbstractType::Aircraft:
 				return false;
 			}
 
@@ -106,6 +118,8 @@ public:
 	static bool PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, const std::map<TechnoTypeClass*, int> ownedBuildings, bool skipSecretLabChecks);
 	static bool HasGenericPrerequisite(int idx, std::map<TechnoTypeClass*, int> ownedBuildings);
 	static int FindGenericPrerequisite(const char* id);
+
+	static void SetSkirmishHouseName(HouseClass* pHouse);
 
 	static bool IsDisabledFromShell(
 	HouseClass const* pHouse, BuildingTypeClass const* pItem);

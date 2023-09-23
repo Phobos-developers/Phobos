@@ -34,6 +34,7 @@ public:
 		Valueable<int> Storage_TiberiumIndex;
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
+		Valueable<bool> GainSelfHealAllowMultiplayPassive;
 		Valueable<bool> EnemyInsignia;
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
@@ -64,6 +65,8 @@ public:
 		Valueable<Point2D> Pips_Generic_Buildings_Size;
 		Valueable<Point2D> Pips_Ammo_Size;
 		Valueable<Point2D> Pips_Ammo_Buildings_Size;
+		ValueableVector<int> Pips_Tiberiums_Frames;
+		NullableVector<int> Pips_Tiberiums_DisplayOrder;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -88,11 +91,16 @@ public:
 		Valueable<bool> CrateOnlyOnLand;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
+		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
+		ValueableIdx<ColorScheme> TimerBlinkColorScheme;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
+
+		Valueable<bool> ShowDesignatorRange;
+		Valueable<bool> IsVoiceCreatedGlobal;
 
 		DynamicVectorClass<DynamicVectorClass<int>> GenericPrerequisites;
 		DynamicVectorClass<const char*> GenericPrerequisitesNames;
@@ -106,11 +114,11 @@ public:
 		Valueable<double> NewTeamsSelector_NavalCategoryPercentage;
 		Valueable<double> NewTeamsSelector_AirCategoryPercentage;
 
-
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
+			, GainSelfHealAllowMultiplayPassive { true }
 			, EnemyInsignia { true }
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
@@ -139,6 +147,8 @@ public:
 			, Pips_Generic_Buildings_Size { { 4, 2 } }
 			, Pips_Ammo_Size { { 4, 0 } }
 			, Pips_Ammo_Buildings_Size { { 4, 2 } }
+			, Pips_Tiberiums_Frames {}
+			, Pips_Tiberiums_DisplayOrder {}
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
@@ -158,10 +168,14 @@ public:
 			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
+			, IsVoiceCreatedGlobal { false }
+			, AnimRemapDefaultColorScheme { 0 }
+			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, ShowDesignatorRange { true }
 			, GenericPrerequisites { }
 			, GenericPrerequisitesNames { }
 			, NewTeamsSelector { false }
