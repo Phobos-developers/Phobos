@@ -1,9 +1,10 @@
 #include <ScenarioClass.h>
 #include "Body.h"
 
+#include <Ext/BuildingType/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/BuildingType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -29,6 +30,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->UpdateShield();
 	pExt->ApplySpawnLimitRange();
 	pExt->UpdateLaserTrails();
+	pExt->DepletedAmmoActions();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 
@@ -55,124 +57,6 @@ DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 	TechnoExt::ApplyGainedSelfHeal(pThis);
 
 	return SkipGameSelfHeal;
-}
-
-DEFINE_HOOK(0x709B2E, TechnoClass_DrawPips_Sizes, 0x5)
-{
-	GET(TechnoClass*, pThis, ECX);
-	REF_STACK(int, pipWidth, STACK_OFFSET(0x74, -0x1C));
-
-	Point2D size;
-	bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
-
-	if (pThis->GetTechnoType()->PipScale == PipScale::Ammo)
-	{
-		if (isBuilding)
-			size = RulesExt::Global()->Pips_Ammo_Buildings_Size;
-		else
-			size = RulesExt::Global()->Pips_Ammo_Size;
-
-		size = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->AmmoPipSize.Get(size);
-	}
-	else
-	{
-		if (isBuilding)
-			size = RulesExt::Global()->Pips_Generic_Buildings_Size;
-		else
-			size = RulesExt::Global()->Pips_Generic_Size;
-	}
-
-	pipWidth = size.X;
-	R->ESI(size.Y);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
-{
-	enum { SkipGameDrawing = 0x70A4EC };
-
-	GET(TechnoClass*, pThis, ECX);
-	LEA_STACK(RectangleStruct*, offset, STACK_OFFSET(0x74, -0x24));
-	GET_STACK(RectangleStruct*, rect, STACK_OFFSET(0x74, 0xC));
-	GET(int, pipWrap, EBX);
-	GET_STACK(int, pipCount, STACK_OFFSET(0x74, -0x54));
-	GET_STACK(int, maxPips, STACK_OFFSET(0x74, -0x60));
-	GET(int, yOffset, ESI);
-
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	Point2D position = { offset->X, offset->Y };
-
-	if (pipWrap > 0)
-	{
-		int levels = maxPips / pipWrap - 1;
-
-		for (int i = 0; i < pipWrap; i++)
-		{
-			int frame = pTypeExt->PipWrapAmmoPip;
-
-			if (levels >= 0)
-			{
-				int counter = i + pipWrap * levels;
-				int frameCounter = levels;
-				bool calculateFrame = true;
-
-				while (counter >= pThis->Ammo)
-				{
-					frameCounter--;
-					counter -= pipWrap;
-
-					if (frameCounter < 0)
-					{
-						calculateFrame = false;
-						break;
-					}
-				}
-
-				if (calculateFrame)
-					frame = frameCounter + frame + 1;
-			}
-
-			position.X += offset->Width;
-			position.Y += yOffset;
-
-			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS2_SHP,
-				frame, &position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-		}
-	}
-	else
-	{
-		int ammoFrame = pTypeExt->AmmoPip;
-		int emptyFrame = pTypeExt->EmptyAmmoPip;
-
-		for (int i = 0; i < maxPips; i++)
-		{
-			if (i >= pipCount && emptyFrame < 0)
-				break;
-
-			int frame = i >= pipCount ? emptyFrame : ammoFrame;
-			position.X += offset->Width;
-			position.Y += yOffset;
-
-			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS2_SHP,
-				frame, &position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-		}
-	}
-
-	return SkipGameDrawing;
-}
-
-DEFINE_HOOK(0x70A4FB, TechnoClass_DrawPips_SelfHealGain, 0x5)
-{
-	enum { SkipGameDrawing = 0x70A6C0 };
-
-	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x74, 0x4));
-	GET_STACK(RectangleStruct*, pBounds, STACK_OFFSET(0x74, 0xC));
-
-	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
-
-	return SkipGameDrawing;
 }
 
 DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
@@ -214,8 +98,6 @@ DEFINE_HOOK(0x4483C0, BuildingClass_SetOwningHouse_MuteSound, 0x6)
 {
 	GET(BuildingClass* const, pThis, ESI);
 	REF_STACK(bool, announce, STACK_OFFSET(0x60, 0x8));
-
-	pThis->NextMission();
 
 	announce = announce && !pThis->Type->IsVehicle();
 

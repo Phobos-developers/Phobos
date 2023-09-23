@@ -5,7 +5,7 @@
 #include <CCINIClass.h>
 #include <SwizzleManagerClass.h>
 
-#include "Concepts.h"
+#include <string_view>
 #include "Debug.h"
 #include "Stream.h"
 #include "Swizzle.h"
