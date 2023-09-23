@@ -2,6 +2,9 @@
 #include <GameStrings.h>
 #include <Ext/Bullet/Body.h>
 
+#include <BulletTypeClass.h>
+#include <BulletClass.h>
+
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 void WeaponTypeExt::ExtData::Initialize()

@@ -63,6 +63,8 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
+	TechnoExt::InitializeAttachments(pThis);
+
 	auto const pType = pThis->GetTechnoType();
 
 	if (!pType)

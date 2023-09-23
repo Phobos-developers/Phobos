@@ -102,6 +102,9 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 
+		Valueable<int> AttachmentTopLayerMinHeight;
+		Valueable<int> AttachmentUndergroundLayerMaxHeight;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -164,6 +167,8 @@ public:
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
 			, ShowDesignatorRange { true }
+			, AttachmentTopLayerMinHeight { 500 }
+			, AttachmentUndergroundLayerMaxHeight { -256 }
 		{ }
 
 		virtual ~ExtData() = default;

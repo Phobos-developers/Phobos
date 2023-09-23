@@ -37,6 +37,7 @@ This page lists all the individual contributions to the project by their author.
   - Recursive transport killer fix
   - Custom locomotors example implementation and piggybacking test warheads
   - Jumpjet initial facing fix
+  - Techno Attachment logic
   - Migration utility
   - GitHub Actions setup
   - Official docs
