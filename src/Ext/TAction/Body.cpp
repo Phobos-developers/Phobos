@@ -462,6 +462,7 @@ bool TActionExt::UndeployToWaypoint(TActionClass* pThis, HouseClass* pHouse, Obj
 	if (!vHouse)
 		return true;
 
+	// Thanks to chaserli for the relevant code!
 	// There should be a more perfect way to do this, but I don't know how.
 	auto canUndeploy = [](BuildingClass* pBld)
 	{
@@ -472,7 +473,7 @@ bool TActionExt::UndeployToWaypoint(TActionClass* pThis, HouseClass* pHouse, Obj
 
 		if (pType->ConstructionYard)
 		{
-			if (!GameModeOptionsClass::Instance->MCVRedeploy || pBld->MindControlledBy || !pBld->Owner->IsControlledByHuman())
+			if (!GameModeOptionsClass::Instance->MCVRedeploy || pBld->MindControlledBy)
 				return false;
 		}
 
