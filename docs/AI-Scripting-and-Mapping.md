@@ -143,7 +143,7 @@ x=i,n             ; For i values check the next table
 | 10060    | [AITargetType] index# | Friendly       | Farther                |                                              |
 | 10061    | [AITargetType] index# | Friendly       | Farther                | Picks 1 random target from the selected list |
 
-#### `10000-10049` General Purpose
+#### `10100-10999` General Purpose
 
 ##### `10100` Timed Area Guard
 
@@ -593,7 +593,23 @@ ID=EventCount,...,600,2,0,0,...
 ...
 ```
 
+### `601-602` House owns/doesn't own Techno Type
+- 601: Springs when specified house owns at least 1 instance of set TechnoType.
+- 602: Springs when specified house doesn't own a single instance of set TechnoType.
+  - Multiplayer houses (indices 4475 through 4482) are supported.
 ### `601` There are no technos of the specified houses list
+
+```{note}
+These events, as opposed to [events 81 & 82 from Ares](https://ares-developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-type-81-82), take house as a parameter instead of using the trigger owner.
+```
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
+...
+```
 
 - Returns `True` if there are no technos of the specified houses in the map.
 - The second parameter is a 0-based index for the `AIHousesList` section that specifies the list of possible `HouseTypes` that can be evaluated. The new `AIHousesList` section must be declared in `rulesmd.ini` for making this script work:

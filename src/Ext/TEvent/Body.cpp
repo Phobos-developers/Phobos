@@ -9,6 +9,7 @@
 #include <InfantryClass.h>
 #include <UnitClass.h>
 #include <AircraftClass.h>
+#include <HouseClass.h>
 
 //Static init
 TEventExt::ExtContainer TEventExt::ExtMap;
@@ -120,6 +121,10 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 
 	case PhobosTriggerEvent::ShieldBroken:
 		return ShieldClass::ShieldIsBrokenTEvent(pObject);
+	case PhobosTriggerEvent::HouseOwnsTechnoType:
+		return TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
+	case PhobosTriggerEvent::HouseDoesntOwnTechnoType:
+		return TEventExt::HouseDoesntOwnTechnoTypeTEvent(pThis);
 	case PhobosTriggerEvent::HousesDestroyed:
 		return TEventExt::HousesAreDestroyedTEvent(pThis);
 
@@ -160,6 +165,24 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 	}
 
 	return false;
+}
+
+bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
+{
+	auto pType = TechnoTypeClass::Find(pThis->String);
+	if (!pType)
+		return false;
+
+	auto pHouse = HouseClass::FindByIndex(pThis->Value);
+	if (!pHouse)
+		return false;
+
+	return pHouse->CountOwnedNow(pType) > 0;
+}
+
+bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
+{
+	return !TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
 }
 
 bool TEventExt::HousesAreDestroyedTEvent(TEventClass* pThis)
