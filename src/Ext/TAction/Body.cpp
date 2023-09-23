@@ -69,6 +69,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 
 	case PhobosTriggerAction::ToggleMCVRedeploy:
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::UndeployToWaypoint:
+			return TActionExt::UndeployToWaypoint(pThis, pHouse, pObject, pTrigger, location);
 
 	default:
 		bHandled = false;
@@ -437,6 +439,97 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	GameModeOptionsClass::Instance->MCVRedeploy = pThis->Param3 != 0;
+	return true;
+}
+
+bool TActionExt::UndeployToWaypoint(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	const auto nCell = ScenarioExt::Global()->Waypoints[pThis->Param5];
+	AbstractClass* pCell = MapClass::Instance->TryGetCellAt(nCell);
+
+	if (!pCell)
+		return true;
+
+	HouseClass* vHouse = pHouse;
+	if (pThis->Param4 >= 0)
+	{
+		if (HouseClass::Index_IsMP(pThis->Param4))
+			vHouse = HouseClass::FindByIndex(pThis->Param4);
+		else
+			vHouse = HouseClass::FindByCountryIndex(pThis->Param4);
+	}
+
+	if (!vHouse)
+		return true;
+
+	// There should be a more perfect way to do this, but I don't know how.
+	auto canUndeploy = [](BuildingClass* pBld)
+	{
+		const auto pType = pBld->Type;
+
+		if (!pType->UndeploysInto)
+			return false;
+
+		if (pType->ConstructionYard)
+		{
+			if (!GameModeOptionsClass::Instance->MCVRedeploy || pBld->MindControlledBy || !pBld->Owner->IsControlledByHuman())
+				return false;
+		}
+
+		return true;
+	};
+
+	bool allBuilding = false;
+	BuildingTypeClass* pBldType = nullptr;
+
+	if (strcmp(pThis->Text, "<All>") == 0)
+	{
+		allBuilding = true;
+	}
+	else
+	{
+		pBldType = BuildingTypeClass::Find(pThis->Text);
+		if (!pBldType)
+		{
+			pBldType = BuildingTypeClass::Array()->GetItem(atoi(pThis->Text));
+		}
+	}
+
+	if (!allBuilding && !pBldType)
+		return true;
+
+	for (const auto pBld : *BuildingClass::Array)
+	{
+		if (!pBld->Type)
+			continue;
+
+		if (!canUndeploy(pBld))
+			continue;
+
+		if (pThis->Param3 &&
+			(!pBld->AttachedTag ||
+			!pBld->AttachedTag->ContainsTrigger(pTrigger)))
+			continue;
+
+		bool canDo = false;
+		if (allBuilding)
+		{
+			canDo = true;
+		}
+		else if (pBld->Type == pBldType)
+		{
+			canDo = true;
+		}
+
+		if (!canDo)
+			continue;
+
+		// Why does having this allow it to undeploy?
+		// Why don't vehicles move when waypoints are placed off the map?
+		pBld->SetFocus(pCell);
+		pBld->Sell(true);
+	}
+
 	return true;
 }
 

@@ -79,6 +79,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   60=Operate var index,0
   65=Campaign AI Repairable,0
   68=House,1,2
+  69=OnlyAttached,10
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -131,6 +132,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
   506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
   510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
+  511=Buildings undeploy to specified waypoint (Phobos),-4,8,69,2,30,0,0,0,0, If the building meets the conditions to be undeployed, have the building undeploy and move to the specified waypoint, There is no problem writing the numeric serial number or ID of the building. If the building ID is <All>, all buildings can be undeployed. OnlyAttached=1 then only the attached building can be undeployed. Houes=-1 then use the triggered house.,0,1,511
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -556,6 +558,7 @@ New:
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for Explodes=true units (by Starkku)
 - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist (by FlyStar)
+- Trigger Action 511 for Buildings undeploy to specified waypoint (by FlyStar)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
