@@ -27,12 +27,17 @@ public:
 		Valueable<AffectedHouse> TransactMoney_Display_Houses;
 		Valueable<bool> TransactMoney_Display_AtFirer;
 		Valueable<Point2D> TransactMoney_Display_Offset;
-		ValueableVector<AnimTypeClass*> SplashList;
+		NullableVector<AnimTypeClass*> SplashList;
 		Valueable<bool> SplashList_PickRandom;
+		Valueable<bool> SplashList_CreateAll;
+		Valueable<int> SplashList_CreationInterval;
+		Valueable<bool> AnimList_PickRandom;
+		Valueable<bool> AnimList_CreateAll;
+		Valueable<int> AnimList_CreationInterval;
+		Valueable<bool> CreateAnimsOnZeroDamage;
+		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
-		Valueable<bool> AnimList_PickRandom;
-		Valueable<bool> AnimList_ShowOnZeroDamage;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 
@@ -58,15 +63,19 @@ public:
 
 		Nullable<double> Shield_AbsorbPercent;
 		Nullable<double> Shield_PassPercent;
+		Nullable<int> Shield_ReceivedDamage_Minimum;
+		Nullable<int> Shield_ReceivedDamage_Maximum;
 
 		Valueable<int> Shield_Respawn_Duration;
 		Valueable<double> Shield_Respawn_Amount;
 		Valueable<int> Shield_Respawn_Rate;
-		Valueable<bool> Shield_Respawn_ResetTimer;
+		Valueable<bool> Shield_Respawn_RestartTimer;
 		Valueable<int> Shield_SelfHealing_Duration;
 		Nullable<double> Shield_SelfHealing_Amount;
 		Valueable<int> Shield_SelfHealing_Rate;
-		Valueable<bool> Shield_SelfHealing_ResetTimer;
+		Nullable<bool> Shield_SelfHealing_RestartInCombat;
+		Valueable<int> Shield_SelfHealing_RestartInCombatDelay;
+		Valueable<bool> Shield_SelfHealing_RestartTimer;
 
 		ValueableVector<ShieldTypeClass*> Shield_AttachTypes;
 		ValueableVector<ShieldTypeClass*> Shield_RemoveTypes;
@@ -100,7 +109,7 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
-		TypeConvertHelper::ConvertPairs Convert_Pairs;
+		std::vector<TypeConvertGroup> Convert_Pairs;
 
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
@@ -113,7 +122,8 @@ public:
 		double Crit_RandomBuffer;
 		bool HasCrit;
 		bool WasDetonatedOnAllMapObjects;
-
+		bool Splashed;
+		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 
 	private:
@@ -131,10 +141,15 @@ public:
 			, TransactMoney_Display_Offset { { 0, 0 } }
 			, SplashList {}
 			, SplashList_PickRandom { false }
+			, SplashList_CreateAll { false }
+			, SplashList_CreationInterval { 0 }
+			, AnimList_PickRandom { false }
+			, AnimList_CreateAll { false }
+			, AnimList_CreationInterval { 0 }
+			, CreateAnimsOnZeroDamage { false }
+			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
-			, AnimList_PickRandom { false }
-			, AnimList_ShowOnZeroDamage { false }
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 
@@ -159,17 +174,21 @@ public:
 			, Shield_BreakWeapon {}
 			, Shield_AbsorbPercent {}
 			, Shield_PassPercent {}
+			, Shield_ReceivedDamage_Minimum {}
+			, Shield_ReceivedDamage_Maximum {}
 
 			, Shield_Respawn_Duration { 0 }
 			, Shield_Respawn_Amount { 0.0 }
 			, Shield_Respawn_Rate { -1 }
 			, Shield_Respawn_Rate_InMinutes { -1.0 }
-			, Shield_Respawn_ResetTimer { false }
+			, Shield_Respawn_RestartTimer { false }
 			, Shield_SelfHealing_Duration { 0 }
 			, Shield_SelfHealing_Amount { }
 			, Shield_SelfHealing_Rate { -1 }
 			, Shield_SelfHealing_Rate_InMinutes { -1.0 }
-			, Shield_SelfHealing_ResetTimer { false }
+			, Shield_SelfHealing_RestartInCombat {}
+			, Shield_SelfHealing_RestartInCombatDelay { -1 }
+			, Shield_SelfHealing_RestartTimer { false }
 			, Shield_AttachTypes {}
 			, Shield_RemoveTypes {}
 			, Shield_ReplaceOnly { false }
@@ -213,7 +232,8 @@ public:
 			, Crit_RandomBuffer { 0.0 }
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
-
+			, Splashed { false }
+			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate {false}
 		{ }
 
