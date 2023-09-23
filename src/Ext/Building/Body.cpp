@@ -334,6 +334,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->TypeExtData)
+		.Process(this->TechnoExtData)
 		.Process(this->DeployedTechno)
 		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)
@@ -341,6 +342,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedIncome)
 		.Process(this->OwnerObject()->LightSource)
+		.Process(this->CurrentLaserWeaponIndex)
 		;
 }
 
@@ -385,7 +387,10 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 	auto const pExt = BuildingExt::ExtMap.TryAllocate(pItem);
 
 	if (pExt)
+	{
 		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
+		pExt->TechnoExtData = TechnoExt::ExtMap.Find(pItem);
+	}
 
 	return 0;
 }
