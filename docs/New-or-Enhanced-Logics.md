@@ -10,7 +10,10 @@ This page describes all the engine features that are either new and introduced b
   - `Duration` determines how long the effect lasts for. It can be overriden by `DurationOverrides` on TechnoTypes and Warheads.
   - `Cumulative`, if set to true, allows the same type of effect to be applied on same object multiple times, up to `Cumulative.MaxCount` number or with no limit if `Cumulative.MaxCount` is a negative number.
   - `Powered` controls whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power. What happens to animation is controlled by `Animation.OfflineAction`.
-  - If `DiscardOnEntry` is set to true, the effect is removed when the object it is attached to exits map (enters transport or a building, etc).
+  - `DiscardOn` accepts a list of values corresponding to conditions where the attached effect should be discarded. Defaults to `none`, meaning it is never discarded.
+    - `entry`: Discard on exiting the map when entering transports or buildings etc.
+    - `move`: Discard when the object the effect is attached on moves. Ignored if the object is a building.
+    - `stationary`: Discard when the object the effect is attached on stops moving. Ignored if the object is a building.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects (Iron Curtain / Force Shield).
   - `Animation` defines animation to play in an indefinite loop for as long as the effect is active on the object it is attached to.
     - If `Animation.ResetOnReapply` is set to true, the animation playback is reset every time the effect is applied if `Cumulative=false`.
@@ -56,7 +59,7 @@ Duration=0                                   ; integer - game frames or negative
 Cumulative=false                             ; boolean
 Cumulative.MaxCount=-1                       ; integer
 Powered=false                                ; boolean
-DiscardOnEntry=false                         ; boolean
+DiscardOn=none                               ; list of discard condition enumeration (none|entry|move|stationary)
 PenetratesIronCurtain=false                  ; boolean
 Animation=                                   ; Animation
 Animation.ResetOnReapply=false               ; boolean

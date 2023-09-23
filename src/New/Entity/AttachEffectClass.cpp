@@ -107,8 +107,12 @@ void AttachEffectClass::AI()
 	if (this->CurrentDelay > 0)
 	{
 		this->CurrentDelay--;
+		return;
+	}
 
-		if (this->CurrentDelay == 0)
+	if (this->CurrentDelay == 0 && !IsActive())
+	{
+		if (AllowedToBeActive())
 			this->RefreshDuration();
 
 		return;
@@ -126,7 +130,7 @@ void AttachEffectClass::AI()
 
 		if (this->Delay > 0)
 			KillAnim();
-		else
+		else if (AllowedToBeActive())
 			this->RefreshDuration();
 
 		return;
@@ -296,6 +300,17 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 	}
 }
 
+bool AttachEffectClass::ResetIfRecreatable()
+{
+	if (!this->IsSelfOwned() && this->RecreationDelay < 0)
+		return false;
+
+	this->KillAnim();
+	this->CurrentDelay = this->RecreationDelay;
+
+	return true;
+}
+
 bool AttachEffectClass::IsSelfOwned() const
 {
 	return this->Source == this->Techno;
@@ -304,6 +319,22 @@ bool AttachEffectClass::IsSelfOwned() const
 bool AttachEffectClass::HasExpired() const
 {
 	return IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration;
+}
+
+bool AttachEffectClass::AllowedToBeActive() const
+{
+	if (auto const pFoot = abstract_cast<FootClass*>(this->Techno))
+	{
+		bool isMoving = pFoot->Locomotor->Is_Moving();
+
+		if (isMoving && (Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
+			return false;
+
+		if (!isMoving && (Type->DiscardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+			return false;
+	}
+
+	return true;
 }
 
 bool AttachEffectClass::IsActive() const
@@ -523,15 +554,14 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, std::vector
 
 		if (pType == attachEffect->Type)
 		{
-			if (attachEffect->IsSelfOwned() && attachEffect->RecreationDelay >= 0)
+			detachedCount++;
+
+			if (attachEffect->ResetIfRecreatable())
 			{
-				attachEffect->KillAnim();
-				attachEffect->CurrentDelay = attachEffect->RecreationDelay;
 				++it;
 				continue;
 			}
 
-			detachedCount++;
 			it = targetAEs.erase(it);
 		}
 		else

@@ -20,8 +20,10 @@ public:
 	void SetAnimationVisibility(bool visible);
 	AttachEffectTypeClass* GetType() const;
 	void RefreshDuration(int durationOverride = 0);
+	bool ResetIfRecreatable();
 	bool IsSelfOwned() const;
 	bool HasExpired() const;
+	bool AllowedToBeActive() const;
 	bool IsActive() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
 

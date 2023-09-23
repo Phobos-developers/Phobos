@@ -1059,6 +1059,47 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<DiscardCondition>(DiscardCondition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = DiscardCondition::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "none"))
+				{
+					parsed |= DiscardCondition::None;
+				}
+				else if (!_strcmpi(cur, "entry"))
+				{
+					parsed |= DiscardCondition::Entry;
+				}
+				else if (!_strcmpi(cur, "move"))
+				{
+					parsed |= DiscardCondition::Move;
+				}
+				else if (!_strcmpi(cur, "stationary"))
+				{
+					parsed |= DiscardCondition::Stationary;
+				}
+				else
+				{
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a discard condition type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<CLSID>(CLSID &value, INI_EX &parser, const char *pSection, const char *pKey)
 	{
 		if (!parser.ReadString(pSection, pKey))

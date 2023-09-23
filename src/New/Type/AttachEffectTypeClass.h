@@ -11,7 +11,7 @@ public:
 	Valueable<bool> Cumulative;
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
-	Valueable<bool> DiscardOnEntry;
+	Valueable<DiscardCondition> DiscardOn;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<AnimTypeClass*> Animation;
 	Valueable<bool> Animation_ResetOnReapply;
@@ -44,7 +44,7 @@ public:
 		, Cumulative { false }
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
-		, DiscardOnEntry { false }
+		, DiscardOn { DiscardCondition::None }
 		, PenetratesIronCurtain { false }
 		, Animation {}
 		, Animation_ResetOnReapply { false }

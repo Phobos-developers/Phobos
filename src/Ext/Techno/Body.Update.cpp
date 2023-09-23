@@ -786,10 +786,16 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 
 		attachEffect->AI();
 
-		if (attachEffect->HasExpired())
+		if (attachEffect->HasExpired() || (attachEffect->IsActive() && !attachEffect->AllowedToBeActive()))
 		{
 			if (attachEffect->GetType()->HasTint())
 				markForRedraw = true;
+
+			if (!attachEffect->AllowedToBeActive() && attachEffect->ResetIfRecreatable())
+			{
+				++it;
+				continue;
+			}
 
 			it = this->AttachedEffects.erase(it);
 		}
