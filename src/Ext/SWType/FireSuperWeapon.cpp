@@ -105,17 +105,24 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 			pBuildingExt->LimboID = ID;
 
 			if (auto pOwnerExt = HouseExt::ExtMap.Find(pOwner))
-			{	// Add building to list of owned limbo buildings
+			{
+				// Add building to list of owned limbo buildings
 				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding, pBuildingExt });
+
+				if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+					pOwnerExt->AddToLimboTracking(pBuilding->Type);
 
 				auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
 				auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
 
-				if (pTechnoTypeExt->AutoDeath_Behavior.isset() && pTechnoTypeExt->AutoDeath_AfterDelay > 0)
+				if (pTechnoTypeExt->AutoDeath_Behavior.isset())
 				{
-					pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
-					pOwnerExt->OwnedTimedAutoDeathObjects.push_back(pTechnoExt);
+					pOwnerExt->OwnedAutoDeathObjects.push_back(pTechnoExt);
+
+					if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
+						pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
 				}
+
 			}
 		}
 	}

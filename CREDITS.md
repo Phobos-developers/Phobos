@@ -21,6 +21,7 @@ This page lists all the individual contributions to the project by their author.
   - Non-ASCII input fix
   - Building Placement Preview Adjustment
   - Check for Changelog/Documentation/Credits in Pull Requests
+  - Fix position and layer of info tip and reveal production cameo on selected building
 - **Kerbiter (Metadorius)**:
   - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
@@ -205,6 +206,12 @@ This page lists all the individual contributions to the project by their author.
   - PipScale pip size & ammo pip frame customization
   - Extension class optimization
   - Additional sync logging
+  - `Arcing` elevation inaccuracy fix
+  - `EMPulseCannon` projectile gravity fix
+  - Custom palette support for wall overlays
+  - Warhead animation improvements
+  - Reloading ammo in transports
+  - Straight projectile trajectory additions
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -219,6 +226,9 @@ This page lists all the individual contributions to the project by their author.
   - Ares detection and integration
   - TechnoType conversion warhead & superweapon
   - Unlimited skirmish colors
+  - Show designator & inhibitor range
+  - Dump variables to file on scenario end / hotkey
+  - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
@@ -282,8 +292,13 @@ This page lists all the individual contributions to the project by their author.
   - Custom slaves free sound
   - Jumpjet crash rotation control
   - Vehicle voxel turret shadows & body multi-section shadows
+  - `TurretOffset` support for SHP vehicles
 - **Fryone**
   - Customizable ElectricBolt Arcs
+  - Sound entry on unit's creation
+  - Auto-deploy/Deploy block on ammo change
+- **ZivDero**
+  - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

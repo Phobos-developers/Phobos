@@ -49,6 +49,8 @@ enum PhobosTriggerEvent
 	GlobalVariableAndIsTrueGlobalVariable = 535,
 
 	ShieldBroken = 600,
+	HouseOwnsTechnoType = 601,
+	HouseDoesntOwnTechnoType = 602,
 
 	_DummyMaximum,
 };
@@ -85,6 +87,9 @@ public:
 	static bool VariableCheck(TEventClass* pThis);
 	template<bool IsSrcGlobal, bool IsGlobal, typename _Pr>
 	static bool VariableCheckBinary(TEventClass* pThis);
+
+	static bool HouseOwnsTechnoTypeTEvent(TEventClass* pThis);
+	static bool HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis);
 
 	class ExtContainer final : public Container<TEventExt>
 	{
