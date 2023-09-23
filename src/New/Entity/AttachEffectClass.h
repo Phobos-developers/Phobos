@@ -71,5 +71,6 @@ private:
 	bool IsOnline;
 	bool IsCloaked;
 	bool HasInitialized;
+	bool NeedsDurationRefresh;
 };
 

@@ -12,6 +12,7 @@ std::vector<AttachEffectClass*> AttachEffectClass::Array;
 AttachEffectClass::AttachEffectClass() : Type { nullptr }, Techno { nullptr }, InvokerHouse { nullptr }, Invoker { nullptr }, Source { nullptr }, DurationOverride { 0 }, Delay { 0 }, InitialDelay { 0 }, RecreationDelay { -1 }
 , Duration { 0 }
 , CurrentDelay { 0 }
+, NeedsDurationRefresh { false }
 {
 	this->HasInitialized = false;
 	AttachEffectClass::Array.emplace_back(this);
@@ -28,6 +29,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, IsUnderTemporal { false }
 	, IsOnline { true }
 	, IsCloaked { false }
+	, NeedsDurationRefresh { false }
 {
 	this->HasInitialized = false;
 
@@ -107,13 +109,20 @@ void AttachEffectClass::AI()
 	if (this->CurrentDelay > 0)
 	{
 		this->CurrentDelay--;
+
+		if (this->CurrentDelay == 0)
+			this->NeedsDurationRefresh = true;
+
 		return;
 	}
 
-	if (this->CurrentDelay == 0 && !IsActive())
+	if (this->NeedsDurationRefresh)
 	{
 		if (AllowedToBeActive())
+		{
 			this->RefreshDuration();
+			this->NeedsDurationRefresh = false;
+		}
 
 		return;
 	}
@@ -126,12 +135,14 @@ void AttachEffectClass::AI()
 		if (!this->IsSelfOwned() || this->Delay < 0)
 			return;
 
-		this->CurrentDelay = this->Delay;
+		this->CurrentDelay = this->Delay; 
 
 		if (this->Delay > 0)
 			KillAnim();
 		else if (AllowedToBeActive())
 			this->RefreshDuration();
+		else
+			this->NeedsDurationRefresh = true;
 
 		return;
 	}
@@ -306,6 +317,7 @@ bool AttachEffectClass::ResetIfRecreatable()
 		return false;
 
 	this->KillAnim();
+	this->Duration = 0;
 	this->CurrentDelay = this->RecreationDelay;
 
 	return true;
@@ -340,7 +352,7 @@ bool AttachEffectClass::AllowedToBeActive() const
 bool AttachEffectClass::IsActive() const
 {
 	if (this->IsSelfOwned())
-		return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && this->IsOnline;
+		return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && this->IsOnline && !this->NeedsDurationRefresh;
 	else
 		return this->Duration && this->IsOnline;
 }
