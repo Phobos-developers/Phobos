@@ -51,7 +51,7 @@ enum PhobosTriggerEvent
 	ShieldBroken = 600,
 	HouseOwnsTechnoType = 601,
 	HouseDoesntOwnTechnoType = 602,
-	HousesDestroyed = 601,
+	HousesDestroyed = 603,
 
 	_DummyMaximum,
 };
