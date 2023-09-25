@@ -181,6 +181,9 @@ public:
 		Nullable<Point2D> SpawnsPipSize;
 		Valueable<Point2D> SpawnsPipOffset;
 
+		Nullable<Leptons> SpawnDistanceFromTarget;
+		Nullable<int> SpawnHeight;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -357,6 +360,9 @@ public:
 			, EmptySpawnsPipFrame { 0 }
 			, SpawnsPipSize {}
 			, SpawnsPipOffset {{ 0,0 }}
+
+			, SpawnDistanceFromTarget {}
+			, SpawnHeight {}
 		{ }
 
 		virtual ~ExtData() = default;
