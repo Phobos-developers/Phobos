@@ -346,6 +346,7 @@ New:
 - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
 - Allow toggling `Infantry/UnitsGainSelfHeal` for `MultiplayPassive=true` houses (by Starkku)
 - Customizable straight trajectory detonation & snap distance and pass-through option (by Starkku)
+- Airstrike & spy plane fixed spawn distance & height (by Starkku)
 - `Burst.Retarget` for assigning a new target in each projectile (by FS-21)
 
 Vanilla fixes:
