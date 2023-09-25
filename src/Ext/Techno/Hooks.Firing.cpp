@@ -317,6 +317,23 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
+{
+	enum { OutOfRange = 0x6FC0DF, Illegal = 0x6FC86A, Continue = 0x6FC0D3 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->SlaveOwner)
+		return Illegal;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->AE_DisableWeapons)
+		return OutOfRange;
+
+	return Continue;
+}
+
 DEFINE_HOOK(0x6FC587, TechnoClass_CanFire_OpenTopped, 0x6)
 {
 	enum { DisallowFiring = 0x6FC86A };

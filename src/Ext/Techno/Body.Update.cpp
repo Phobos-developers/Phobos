@@ -814,6 +814,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	double ROF = 1.0;
 	bool cloak = pThis->Cloakable;
 	bool forceDecloak = false;
+	bool disableWeapons = false;
 
 	for (const auto& attachEffect : this->AttachedEffects)
 	{
@@ -827,6 +828,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		ROF *= type->ROFMultiplier;
 		cloak |= type->Cloakable;
 		forceDecloak |= type->ForceDecloak;
+		disableWeapons |= type->DisableWeapons;
 	}
 
 	this->AE_FirepowerMultiplier = firepower;
@@ -835,6 +837,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	this->AE_ROFMultiplier = ROF;
 	pThis->Cloakable = cloak;
 	this->AE_ForceDecloak = forceDecloak;
+	this->AE_DisableWeapons = disableWeapons;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);

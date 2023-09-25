@@ -38,6 +38,7 @@ public:
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
 	Nullable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+	Valueable<bool> DisableWeapons;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
@@ -71,6 +72,7 @@ public:
 		, Crit_DisallowWarheads {}
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouses{ AffectedHouse::All }
+		, DisableWeapons { false }
 	{};
 
 	bool HasTint();

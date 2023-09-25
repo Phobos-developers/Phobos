@@ -33,6 +33,7 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
+  - `DisableWeapons` can be used to disable ability to fire any and all weapons.
 
 - AttachEffectTypes can be attached to TechnoTypes using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
@@ -86,6 +87,7 @@ Crit.AllowWarheads=                          ; list of WarheadTypes
 Crit.DisallowWarheads=                       ; list of WarheadTypes
 RevengeWeapon=                               ; WeaponType
 RevengeWeapon.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisableWeapons=false                         ; boolean
 
 [SOMETECHNO]                                 ; TechnoType
 AttachEffect.AttachTypes=                    ; List of AttachEffectTypes
