@@ -305,9 +305,9 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	if (!pTargetHouse || !pCurrentHouse)
 		return nullptr;
 
-	auto targetBaseCoords = CellClass::Cell2Coord(pTargetHouse->GetBaseCenter());
+	auto targetCoords = CellClass::Cell2Coord(pTargetHouse->GetBaseCenter());
 
-	if (targetBaseCoords == CoordStruct::Empty)
+	if (targetCoords == CoordStruct::Empty)
 		return nullptr;
 
 	auto currentCoords = CellClass::Cell2Coord(pCurrentHouse->GetBaseCenter());
@@ -315,16 +315,9 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	if (currentCoords == CoordStruct::Empty)
 		currentCoords = defaultCurrentCoords;
 
-	int deltaX = currentCoords.X - targetBaseCoords.X;
-	int deltaY = targetBaseCoords.Y - currentCoords.Y;
 	int distance = (RulesClass::Instance->AISafeDistance + extraDistance) * Unsorted::LeptonsPerCell;
+	auto newCoords = GeneralUtils::CalculateCoordsFromDistance(currentCoords, targetCoords, distance);
 
-	double atan = Math::atan2(deltaY, deltaX);
-	double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
-	int x = static_cast<int>(targetBaseCoords.X + Math::cos(radians) * distance);
-	int y = static_cast<int>(targetBaseCoords.Y - Math::sin(radians) * distance);
-
-	auto newCoords = CoordStruct { x, y, targetBaseCoords.Z };
 	auto cellStruct = CellClass::Coord2Cell(newCoords);
 	cellStruct = MapClass::Instance->NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
 
