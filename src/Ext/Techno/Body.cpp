@@ -430,6 +430,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AE_ROFMultiplier)
 		.Process(this->AE_Cloakable)
 		.Process(this->AE_ForceDecloak)
+		.Process(this->AE_DisableWeapons)
 		;
 }
 

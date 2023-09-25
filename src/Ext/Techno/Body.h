@@ -54,6 +54,7 @@ public:
 		double AE_ROFMultiplier;
 		bool AE_Cloakable;
 		bool AE_ForceDecloak;
+		bool AE_DisableWeapons;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -82,6 +83,7 @@ public:
 			, AE_ROFMultiplier { 1.0 }
 			, AE_Cloakable { false }
 			, AE_ForceDecloak { false }
+			, AE_DisableWeapons { false }
 		{ }
 
 		void OnEarlyUpdate();

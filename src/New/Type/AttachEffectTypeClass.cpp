@@ -59,6 +59,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->RevengeWeapon.Read(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+
+	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
 }
 
 template <typename T>
@@ -96,6 +98,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Crit_DisallowWarheads)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
+		.Process(this->DisableWeapons)
 		;
 }
 
