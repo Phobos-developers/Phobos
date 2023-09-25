@@ -179,6 +179,9 @@ public:
 		Nullable<Point2D> SpawnsPipSize;
 		Valueable<Point2D> SpawnsPipOffset;
 
+		Nullable<Leptons> SpawnDistanceFromTarget;
+		Nullable<int> SpawnHeight;
+
 		ValueableVector<AnimTypeClass*> Webby_Anims;
 		Valueable<bool> ImmuneToWeb;
 		Valueable<int> Webby_Duration;
@@ -358,6 +361,9 @@ public:
 			, EmptySpawnsPipFrame { 0 }
 			, SpawnsPipSize {}
 			, SpawnsPipOffset {{ 0,0 }}
+
+			, SpawnDistanceFromTarget {}
+			, SpawnHeight {}
 
 			, Webby_Anims {}
 			, ImmuneToWeb { false }
