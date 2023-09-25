@@ -161,3 +161,17 @@ int GeneralUtils::CountDigitsInNumber(int number)
 
 	return digits;
 }
+
+// Calculates a new coordinates based on current & target coordinates within specified distance (can be negative to switch the direction) in leptons.
+CoordStruct GeneralUtils::CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance)
+{
+	int deltaX = currentCoords.X - targetCoords.X;
+	int deltaY = targetCoords.Y - currentCoords.Y;
+
+	double atan = Math::atan2(deltaY, deltaX);
+	double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
+	int x = static_cast<int>(targetCoords.X + Math::cos(radians) * distance);
+	int y = static_cast<int>(targetCoords.Y - Math::sin(radians) * distance);
+
+	return CoordStruct { x, y, targetCoords.Z };
+}
