@@ -217,32 +217,27 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 	return Skip;
 }
 
-DEFINE_HOOK(0x469008, BulletClass_Explode_Cluster, 0x8)
+DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 {
 	enum { SkipGameCode = 0x469091 };
 
 	GET(BulletClass*, pThis, ESI);
 	GET_STACK(CoordStruct, origCoords, STACK_OFFSET(0x3C, -0x30));
 
-	if (pThis->Type->Cluster > 0)
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	int min = pTypeExt->ClusterScatter_Min.Get(Leptons(256));
+	int max = pTypeExt->ClusterScatter_Max.Get(Leptons(512));
+	auto coords = origCoords;
+
+	for (int i = 0; i < pThis->Type->Cluster; i++)
 	{
-		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
-		{
-			int min = pTypeExt->ClusterScatter_Min.Get(Leptons(256));
-			int max = pTypeExt->ClusterScatter_Max.Get(Leptons(512));
-			auto coords = origCoords;
+		pThis->Detonate(coords);
 
-			for (int i = 0; i < pThis->Type->Cluster; i++)
-			{
-				pThis->Detonate(coords);
+		if (!pThis->IsAlive)
+			break;
 
-				if (!pThis->IsAlive)
-					break;
-
-				int distance = ScenarioClass::Instance->Random.RandomRanged(min, max);
-				coords = MapClass::GetRandomCoordsNear(origCoords, distance, false);
-			}
-		}
+		int distance = ScenarioClass::Instance->Random.RandomRanged(min, max);
+		coords = MapClass::GetRandomCoordsNear(origCoords, distance, false);
 	}
 
 	return SkipGameCode;
@@ -293,13 +288,10 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	}
 	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory)
+		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
 		{
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
-			{
-				R->EAX(pThis->Type);
-				return SkipChecks;
-			}
+			R->EAX(pThis->Type);
+			return SkipChecks;
 		}
 	}
 
@@ -327,11 +319,23 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	// Fixes issues with walls etc.
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory)
-		{
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
-				return SkipSetCoordinate;
-		}
+		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
+			return SkipSetCoordinate;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
+{
+	enum { SkipCheck = 0x468D73 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+			return SkipCheck;
 	}
 
 	return 0;
