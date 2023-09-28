@@ -205,7 +205,8 @@ bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass* pBuilding)
 	if (!pBuilding)
 		return false;
 
-	return this->OwnedLimboDeliveredBuildings.count(pBuilding);
+	auto& vec = this->OwnedLimboDeliveredBuildings;
+	return std::find(vec.begin(), vec.end(), pBuilding) != vec.end();
 }
 
 size_t HouseExt::FindOwnedIndex(
@@ -555,7 +556,10 @@ void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 	AnnounceInvalidPointer(Factory_AircraftType, ptr);
 
 	if (!OwnedLimboDeliveredBuildings.empty() && ptr != nullptr)
-		OwnedLimboDeliveredBuildings.erase(reinterpret_cast<BuildingClass*>(ptr));
+	{
+		auto& vec = this->OwnedLimboDeliveredBuildings;
+		vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+	}
 }
 
 // =============================
