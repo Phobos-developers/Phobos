@@ -114,7 +114,7 @@ DEFINE_HOOK(0x414C0B, AircraftClass_ChronoSparkleDelay, 0x5)
 DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 {
 	GET(AircraftClass*, pThis, EDI);
-	GET_STACK(int, weaponIdx, STACK_OFFSET(0x7C, 0x8));
+	GET_BASE(int, weaponIdx, 0xC);
 
 	enum { KickOutPassengers = 0x415EF8, Fire = 0x415F08 };
 
