@@ -65,6 +65,12 @@ public:
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
+		//EMPulseExtra
+		Valueable<bool> EMPulse_Linked;
+		Valueable<bool> EMPulse_TargetSelf;
+		ValueableVector<TechnoTypeClass*> EMPulse_Cannons;
+		Valueable<bool> EMPulse_IgnoreMission;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
 			, Money_Amount { 0 }
@@ -101,6 +107,11 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+
+			, EMPulse_Cannons {}
+			, EMPulse_Linked { false }
+			, EMPulse_TargetSelf { false }
+			, EMPulse_IgnoreMission { false }
 		{ }
 
 		// Ares 0.A functions

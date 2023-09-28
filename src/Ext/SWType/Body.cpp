@@ -48,6 +48,11 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
+
+		.Process(this->EMPulse_Cannons)
+		.Process(this->EMPulse_Linked)
+		.Process(this->EMPulse_TargetSelf)
+		.Process(this->EMPulse_IgnoreMission)
 		;
 }
 
