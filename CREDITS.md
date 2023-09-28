@@ -289,6 +289,7 @@ This page lists all the individual contributions to the project by their author.
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
    - Unlimited `AlternateFLH` entries
+   - New superweapon type `EMPulseExtra`
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control
