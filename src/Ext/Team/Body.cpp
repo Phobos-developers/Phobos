@@ -22,14 +22,7 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceJump_InitialCountdown)
 		.Process(this->ForceJump_RepeatMode)
 		.Process(this->TeamLeader)
-		.Process(this->MapPath_Grid)
-		.Process(this->MapPath_Queue)
-		.Process(this->MapPath_InProgress)
-		.Process(this->MapPath_StartTechno)
-		.Process(this->MapPath_EndTechno)
-		.Process(this->MapPath_BridgeRepairHuts)
-		.Process(this->MapPath_ValidBridgeRepairHuts)
-		.Process(this->MapPath_CheckedBridgeRepairHuts)
+		.Process(this->BridgeRepairHuts)
 		;
 }
 

@@ -219,8 +219,6 @@ public:
 	template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
 	static void RepairDestroyedBridge(TeamClass* pTeam, int mode);
-	static bool FindLinkedPath(TeamClass* pTeam, TechnoClass* pThis, TechnoClass* pTarget);
-
 
 	static ExtContainer ExtMap;
 

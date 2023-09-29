@@ -28,14 +28,7 @@ public:
 		int ForceJump_InitialCountdown;
 		bool ForceJump_RepeatMode;
 		FootClass* TeamLeader;
-		std::vector<std::vector<bool>> MapPath_Grid; // Used for marking visited/analyzed cells
-		std::vector<MapPathCellElement> MapPath_Queue; // Cells that will be analyzed for finding a path
-		bool MapPath_InProgress;
-		TechnoClass* MapPath_StartTechno;
-		TechnoClass* MapPath_EndTechno;
-		DynamicVectorClass<TechnoClass*> MapPath_BridgeRepairHuts;
-		DynamicVectorClass<TechnoClass*> MapPath_ValidBridgeRepairHuts;
-		DynamicVectorClass<TechnoClass*> MapPath_CheckedBridgeRepairHuts;
+		std::vector<TechnoClass*> BridgeRepairHuts;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts { 0 }
@@ -50,14 +43,7 @@ public:
 			, ForceJump_InitialCountdown { -1 }
 			, ForceJump_RepeatMode { false }
 			, TeamLeader { nullptr }
-			, MapPath_Grid { }
-			, MapPath_Queue { }
-			, MapPath_InProgress { false }
-			, MapPath_StartTechno { nullptr }
-			, MapPath_EndTechno { nullptr }
-			, MapPath_BridgeRepairHuts { }
-			, MapPath_ValidBridgeRepairHuts { }
-			, MapPath_CheckedBridgeRepairHuts { }
+			, BridgeRepairHuts { }
 		{ }
 
 		virtual ~ExtData() = default;
