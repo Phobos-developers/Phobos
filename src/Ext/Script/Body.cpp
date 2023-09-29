@@ -1331,7 +1331,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 		if (pTeamData->BridgeRepairHuts.size() == 0)
 		{
 			pTeam->StepCompleted = true;
-			Debug::Log("[%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: No repair huts found)\n",
+			ScriptExt::Log("AI Scripts - [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: No repair huts found)\n",
 				pTeam->Type->ID,
 				pScript->Type->ID,
 				pScript->CurrentMission,
@@ -1382,6 +1382,13 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 		if (!IsUnitAvailable(pUnit, true))
 			continue;
 
+		if (!pTeam->Focus)
+		{
+			pUnit->SetTarget(nullptr);
+			pUnit->SetDestination(nullptr, false);
+			pUnit->ForceMission(Mission::Guard);
+		}
+
 		if (pUnit->WhatAmI() == AbstractType::Infantry)
 		{
 			auto pInf = static_cast<InfantryClass*>(pUnit);
@@ -1408,7 +1415,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 	if (engineers.size() == 0)
 	{
 		pTeam->StepCompleted = true;
-		Debug::Log("[%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: Team has no engineers)\n",
+		ScriptExt::Log("AI Scripts - [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: Team has no engineers)\n",
 			pTeam->Type->ID,
 			pScript->Type->ID,
 			pScript->CurrentMission,
@@ -1443,21 +1450,20 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 				auto coords = pTechno->GetCenterCoords();
 
 				// Only huts reachable by the (first) engineer are valid
-				if (engineers.at(0)->IsInSameZoneAsCoords(&pTechno->GetCenterCoords()))
+				if (engineers.at(0)->IsInSameZoneAsCoords(pTechno->GetCenterCoords()))
 					validHuts.push_back(pTechno);
 			}
 		}
 
 		// Find the best repair hut
 		int bestVal = -1;
-		TechnoClass* selectedTarget = nullptr;
 
 		for (auto pTechno : validHuts)
 		{
 			//auto hut = pTechno;
 
-			/*if (mode < 0)
-				mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;*/
+			if (mode < 0)
+				mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
 			if (mode < 0)
 			{
@@ -1496,12 +1502,13 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 		}
 	}
 
+	validHuts.clear();
+
 	if (!selectedTarget)
 	{
-		validHuts.clear();
 		pTeam->StepCompleted = true;
 
-		Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: Can not select a bridge repair hut)\n",
+		ScriptExt::Log("AI Scripts - [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: Can not select a bridge repair hut)\n",
 			pTeam->Type->ID,
 			pScript->Type->ID,
 			pScript->CurrentMission,
@@ -1516,7 +1523,6 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 
 	// Setting the team's target & mission
 	pTeam->Focus = selectedTarget;
-	validHuts.clear();
 
 	for (auto engineer : engineers)
 	{
@@ -1541,7 +1547,6 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 			{
 				// Reset previous command
 				pFoot->SetTarget(nullptr);
-				pFoot->SetFocus(nullptr);
 				pFoot->SetDestination(nullptr, false);
 				pFoot->ForceMission(Mission::Guard);
 
