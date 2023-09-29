@@ -18,12 +18,15 @@ enum class PhobosTriggerAction : unsigned int
 	BinaryOperation = 504,
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
+	ToggleMCVRedeploy = 510,
 };
 
 class TActionExt
 {
 public:
 	using base_type = TActionClass;
+
+	static constexpr DWORD Canary = 0x91919191;
 
 	class ExtData final : public Extension<TActionClass>
 	{
@@ -59,6 +62,7 @@ public:
 	ACTION_FUNC(BinaryOperation);
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
+	ACTION_FUNC(ToggleMCVRedeploy);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 

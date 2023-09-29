@@ -4,7 +4,6 @@
 #include <Utilities/GeneralUtils.h>
 #include <Ext/SWType/Body.h>
 
-template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 
 // Assuming SuperWeapon & SuperWeapon2 are used (for the moment)
@@ -49,11 +48,11 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto& [pExt, nCount] : pHouseExt->BuildingCounter)
+	for (const auto& [pExt, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
 		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
-			fFactor *= std::pow(pExt->PowerPlantEnhancer_Factor.Get(1.0f), nCount);
+			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor.Get(1.0f), static_cast<float>(nCount));
 			nAmount += pExt->PowerPlantEnhancer_Amount.Get(0) * nCount;
 		}
 	}
@@ -129,6 +128,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
 
 	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
+	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
@@ -137,10 +137,15 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_AllowTypes.Read(exINI, pSection, "Grinding.AllowTypes");
 	this->Grinding_DisallowTypes.Read(exINI, pSection, "Grinding.DisallowTypes");
 	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
+	this->Grinding_PlayDieSound.Read(exINI, pSection, "Grinding.PlayDieSound");
 	this->Grinding_Weapon.Read(exINI, pSection, "Grinding.Weapon", true);
-	this->Grinding_DisplayRefund.Read(exINI, pSection, "Grinding.DisplayRefund");
-	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
-	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
+
+	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
+	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
+	this->DisplayIncome_Offset.Read(exINI, pSection, "DisplayIncome.Offset");
+
+	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
+	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
@@ -155,8 +160,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (pThis->MaxNumberOccupants > 10)
 	{
 		char tempBuffer[32];
-		this->OccupierMuzzleFlashes.Clear();
-		this->OccupierMuzzleFlashes.Reserve(pThis->MaxNumberOccupants);
+		this->OccupierMuzzleFlashes.clear();
+		this->OccupierMuzzleFlashes.resize(pThis->MaxNumberOccupants);
 
 		for (int i = 0; i < pThis->MaxNumberOccupants; ++i)
 		{
@@ -171,6 +176,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// PlacementPreview
 	{
+		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
 		this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
 		this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
 		this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
@@ -178,6 +184,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
 		this->PlacementPreview_Translucency.Read(exINI, pSection, "PlacementPreview.Translucency");
 	}
+
+	// Art
+	this->ZShapePointMove_OnBuildup.Read(exArtINI, pSection, "ZShapePointMove.OnBuildup");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -199,6 +208,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OccupierMuzzleFlashes)
 		.Process(this->Powered_KillSpawns)
 		.Process(this->AllowAirstrike)
+		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
@@ -206,10 +216,11 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_AllowTypes)
 		.Process(this->Grinding_DisallowTypes)
 		.Process(this->Grinding_Sound)
+		.Process(this->Grinding_PlayDieSound)
 		.Process(this->Grinding_Weapon)
-		.Process(this->Grinding_DisplayRefund)
-		.Process(this->Grinding_DisplayRefund_Houses)
-		.Process(this->Grinding_DisplayRefund_Offset)
+		.Process(this->DisplayIncome)
+		.Process(this->DisplayIncome_Houses)
+		.Process(this->DisplayIncome_Offset)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Shape)
 		.Process(this->PlacementPreview_ShapeFrame)
@@ -220,6 +231,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_Custom)
 		.Process(this->SpyEffect_VictimSuperWeapon)
 		.Process(this->SpyEffect_InfiltratorSuperWeapon)
+		.Process(this->ConsideredVehicle)
+		.Process(this->ZShapePointMove_OnBuildup)
+		.Process(this->SellBuildupLength)
 		;
 }
 
@@ -268,7 +282,8 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 {
 	GET(BuildingTypeClass*, pItem, EAX);
 
-	BuildingTypeExt::ExtMap.FindOrAllocate(pItem);
+	BuildingTypeExt::ExtMap.TryAllocate(pItem);
+
 	return 0;
 }
 

@@ -12,11 +12,14 @@ public:
 	Valueable<int> Strength;
 	Nullable<int> InitialStrength;
 	Valueable<ArmorType> Armor;
+	Valueable<bool> InheritArmorFromTechno;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
 	Valueable<double> SelfHealing;
 	Valueable<int> SelfHealing_Rate;
+	Valueable<bool> SelfHealing_RestartInCombat;
+	Valueable<int> SelfHealing_RestartInCombatDelay;
 
 	Valueable<bool> AbsorbOverDamage;
 	Valueable<int> BracketDelta;
@@ -29,6 +32,8 @@ public:
 	Nullable<WeaponTypeClass*> BreakWeapon;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
+	Valueable<int> ReceivedDamage_Minimum;
+	Valueable<int> ReceivedDamage_Maximum;
 
 	Nullable<bool> AllowTransfer;
 
@@ -36,49 +41,49 @@ public:
 	Nullable<SHPStruct*> Pips_Background;
 	Valueable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
-
+	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
-
-private:
-	Valueable<double> Respawn_Rate__InMinutes;
-	Valueable<double> SelfHealing_Rate__InMinutes;
 
 public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle)
-		, Strength(0)
-		, InitialStrength()
-		, Armor(Armor::None)
-		, Powered(false)
-		, Respawn(0.0)
-		, Respawn_Rate(0)
-		, SelfHealing(0.0)
-		, SelfHealing_Rate(0)
-		, AbsorbOverDamage(false)
-		, BracketDelta(0)
-		, IdleAnim_OfflineAction(AttachedAnimFlag::Hides)
-		, IdleAnim_TemporalAction(AttachedAnimFlag::Hides)
-		, IdleAnim()
-		, IdleAnimDamaged()
-		, BreakAnim()
-		, HitAnim()
-		, BreakWeapon()
-		, AbsorbPercent(1.0)
-		, PassPercent(0.0)
-		, Respawn_Rate__InMinutes(0.0)
-		, SelfHealing_Rate__InMinutes(0.0)
-		, AllowTransfer()
+		, Strength { 0 }
+		, InitialStrength { }
+		, Armor { Armor::None }
+		, InheritArmorFromTechno { false }
+		, Powered { false }
+		, Respawn { 0.0 }
+		, Respawn_Rate { 0 }
+		, SelfHealing { 0.0 }
+		, SelfHealing_Rate { 0 }
+		, SelfHealing_RestartInCombat { true }
+		, SelfHealing_RestartInCombatDelay { 0 }
+		, AbsorbOverDamage { false }
+		, BracketDelta { 0 }
+		, IdleAnim_OfflineAction { AttachedAnimFlag::Hides }
+		, IdleAnim_TemporalAction { AttachedAnimFlag::Hides }
+		, IdleAnim { }
+		, IdleAnimDamaged { }
+		, BreakAnim { }
+		, HitAnim { }
+		, BreakWeapon { }
+		, AbsorbPercent { 1.0 }
+		, PassPercent { 0.0 }
+		, ReceivedDamage_Minimum { INT32_MIN }
+		, ReceivedDamage_Maximum { INT32_MAX }
+		, AllowTransfer { }
 		, Pips { { -1,-1,-1 } }
 		, Pips_Background { }
 		, Pips_Building { { -1,-1,-1 } }
 		, Pips_Building_Empty { }
 		, ImmuneToBerserk { false }
+		, ImmuneToCrit { false }
 	{ };
 
 	virtual ~ShieldTypeClass() override = default;
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm);
-	virtual void SaveToStream(PhobosStreamWriter& Stm);
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio);
 

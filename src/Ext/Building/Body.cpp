@@ -2,20 +2,23 @@
 
 #include <BitFont.h>
 
-#include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
-template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
-void BuildingExt::ExtData::DisplayGrinderRefund()
+void BuildingExt::ExtData::DisplayIncomeString()
 {
-	if (this->AccumulatedGrindingRefund && Unsorted::CurrentFrame % 15 == 0)
+	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
-		FlyingStrings::AddMoneyString(this->AccumulatedGrindingRefund, this->OwnerObject()->Owner,
-			this->TypeExtData->Grinding_DisplayRefund_Houses, this->OwnerObject()->GetRenderCoords(), this->TypeExtData->Grinding_DisplayRefund_Offset);
+		FlyingStrings::AddMoneyString(
+			this->AccumulatedIncome,
+			this->OwnerObject()->Owner,
+			this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
+			this->OwnerObject()->GetRenderCoords(),
+			this->TypeExtData->DisplayIncome_Offset
+		);
 
-		this->AccumulatedGrindingRefund = 0;
+		this->AccumulatedIncome = 0;
 	}
 }
 
@@ -77,35 +80,31 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 	}
 }
 
-void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
+void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 {
-	auto pOwner = pThis->Owner;
+	auto pOwner = this->OwnerObject()->Owner;
 
 	if (!pOwner || pOwner->ProducingAircraftTypeIndex < 0)
 		return;
 
-	auto BuildingExt = BuildingExt::ExtMap.Find(pThis);
-	if (!BuildingExt)
-		return;
-
 	AircraftTypeClass* pAircraft = AircraftTypeClass::Array->GetItem(pOwner->ProducingAircraftTypeIndex);
 	FactoryClass* currFactory = pOwner->GetFactoryProducing(pAircraft);
-	DynamicVectorClass<BuildingClass*> airFactoryBuilding;
+	std::vector<BuildingClass*> airFactoryBuilding;
 	BuildingClass* newBuilding = nullptr;
 
 	// Update what is the current air factory for future comparisons
-	if (BuildingExt->CurrentAirFactory)
+	if (this->CurrentAirFactory)
 	{
 		int nDocks = 0;
-		if (BuildingExt->CurrentAirFactory->Type)
-			nDocks = BuildingExt->CurrentAirFactory->Type->NumberOfDocks;
+		if (this->CurrentAirFactory->Type)
+			nDocks = this->CurrentAirFactory->Type->NumberOfDocks;
 
-		int nOccupiedDocks = CountOccupiedDocks(BuildingExt->CurrentAirFactory);
+		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(this->CurrentAirFactory);
 
 		if (nOccupiedDocks < nDocks)
-			currFactory = BuildingExt->CurrentAirFactory->Factory;
+			currFactory = this->CurrentAirFactory->Factory;
 		else
-			BuildingExt->CurrentAirFactory = nullptr;
+			this->CurrentAirFactory = nullptr;
 	}
 
 	// Obtain a list of air factories for optimizing the comparisons
@@ -116,18 +115,18 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 			if (!currFactory && pBuilding->Factory)
 				currFactory = pBuilding->Factory;
 
-			airFactoryBuilding.AddItem(pBuilding);
+			airFactoryBuilding.emplace_back(pBuilding);
 		}
 	}
 
-	if (BuildingExt->CurrentAirFactory)
+	if (this->CurrentAirFactory)
 	{
 		for (auto pBuilding : airFactoryBuilding)
 		{
-			if (pBuilding == BuildingExt->CurrentAirFactory)
+			if (pBuilding == this->CurrentAirFactory)
 			{
-				BuildingExt->CurrentAirFactory->Factory = currFactory;
-				BuildingExt->CurrentAirFactory->IsPrimaryFactory = true;
+				this->CurrentAirFactory->Factory = currFactory;
+				this->CurrentAirFactory->IsPrimaryFactory = true;
 			}
 			else
 			{
@@ -147,7 +146,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 	for (auto pBuilding : airFactoryBuilding)
 	{
 		int nDocks = pBuilding->Type->NumberOfDocks;
-		int nOccupiedDocks = CountOccupiedDocks(pBuilding);
+		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
 
 		if (nOccupiedDocks < nDocks)
 		{
@@ -156,7 +155,7 @@ void BuildingExt::UpdatePrimaryFactoryAI(BuildingClass* pThis)
 				newBuilding = pBuilding;
 				newBuilding->Factory = currFactory;
 				newBuilding->IsPrimaryFactory = true;
-				BuildingExt->CurrentAirFactory = newBuilding;
+				this->CurrentAirFactory = newBuilding;
 
 				continue;
 			}
@@ -239,14 +238,14 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 	return true;
 }
 
-bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno)
+bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund)
 {
-	if (const auto pExt = BuildingExt::ExtMap.Find(pBuilding))
+	if (auto const pExt = BuildingExt::ExtMap.Find(pBuilding))
 	{
-		const auto pTypeExt = pExt->TypeExtData;
+		auto const pTypeExt = pExt->TypeExtData;
 
-		if (pTypeExt->Grinding_DisplayRefund)
-			pExt->AccumulatedGrindingRefund += pTechno->GetRefund();
+		if (pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
+			pExt->AccumulatedIncome += refund;
 
 		if (pTypeExt->Grinding_Weapon.isset()
 			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
@@ -269,8 +268,9 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 {
 	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = this->TypeExtData;
 
-	if (this->TypeExtData->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
+	if (pTypeExt->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
 	{
 		if (auto pManager = pThis->SpawnManager)
 		{
@@ -334,11 +334,15 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->TypeExtData)
+		.Process(this->TechnoExtData)
 		.Process(this->DeployedTechno)
+		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
 		.Process(this->CurrentAirFactory)
-		.Process(this->AccumulatedGrindingRefund)
+		.Process(this->AccumulatedIncome)
+		.Process(this->OwnerObject()->LightSource)
+		.Process(this->CurrentLaserWeaponIndex)
 		;
 }
 
@@ -380,8 +384,13 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	auto pExt = BuildingExt::ExtMap.FindOrAllocate(pItem);
-	pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
+	auto const pExt = BuildingExt::ExtMap.TryAllocate(pItem);
+
+	if (pExt)
+	{
+		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
+		pExt->TechnoExtData = TechnoExt::ExtMap.Find(pItem);
+	}
 
 	return 0;
 }
@@ -419,3 +428,6 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 
 	return 0;
 }
+
+// Removes setting otherwise unused field (0x6FC) in BuildingClass when building has airstrike applied on it so that it can safely be used to store BuildingExt pointer.
+DEFINE_JUMP(LJMP, 0x41D9FB, 0x41DA05);

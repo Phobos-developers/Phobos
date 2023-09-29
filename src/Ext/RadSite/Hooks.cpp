@@ -31,7 +31,7 @@ DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 
 	auto const pWeapon = pThis->GetWeaponType();
 
-	if (pWeapon && pWeapon->RadLevel > 0)
+	if (pWeapon && pWeapon->RadLevel > 0 && MapClass::Instance->IsWithinUsableArea((*pCoords)))
 	{
 		auto const pExt = BulletExt::ExtMap.Find(pThis);
 		auto const pWH = pThis->WH;
@@ -43,50 +43,52 @@ DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 
 	return 0x46920B;
 }
-
+#ifndef __clang__
 //unused function , safeguard
-DEFINE_HOOK(0x46ADE0, BulletClass_ApplyRadiation_UnUsed, 0x5)
+DEFINE_HOOK(0x46ADE0, BulletClass_ApplyRadiation_Unused, 0x5)
 {
-	Debug::Log("[" __FUNCTION__ "] Called ! , You are not suppose to be here ! \n");
+	Debug::Log(__FUNCTION__ " called ! , You are not supposed to be here!\n");
 	return 0x46AE5E;
 }
-
+#endif
 // Fix for desolator
-DEFINE_HOOK(0x5213E3, InfantryClass_AIDeployment_CheckRad, 0x4)
+DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 {
+	enum { FireCheck = 0x5213F4, SetMissionRate = 0x521484 };
+
 	GET(InfantryClass*, pInf, ESI);
 	GET(int, weaponRadLevel, EBX);
 
 	auto const pWeapon = pInf->GetDeployWeapon()->WeaponType;
-
 	int radLevel = 0;
-	if (RadSiteExt::Array.Count > 0 && pWeapon)
+
+	if (RadSiteExt::ExtMap.size() > 0 && pWeapon)
 	{
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 		auto const pRadType = pWeaponExt->RadType;
 		auto const warhead = pWeapon->Warhead;
 		auto currentCoord = pInf->GetCell()->MapCoords;
 
-		auto const it = std::find_if(RadSiteExt::Array.begin(), RadSiteExt::Array.end(),
-			[=](RadSiteExt::ExtData* const pSite)
+		auto const it = std::find_if(RadSiteExt::ExtMap.begin(), RadSiteExt::ExtMap.end(),
+			[=](std::pair<RadSiteClass* const, RadSiteExt::ExtData* const> const& pair)
 			{
 				return
-					pSite->Type == pRadType &&
-					pSite->OwnerObject()->BaseCell == currentCoord &&
-					pSite->OwnerObject()->Spread == Game::F2I(warhead->CellSpread)
+				pair.second->Type == pRadType &&
+					pair.first->BaseCell == currentCoord &&
+					pair.first->Spread == Game::F2I(warhead->CellSpread)
 					;
 			});
 
-		if (it != RadSiteExt::Array.end())
+		if (it != RadSiteExt::ExtMap.end())
 		{
-			auto pRadExt = *it;
-			auto pRadSite = pRadExt->OwnerObject();
+			//auto pRadExt = it->second;
+			auto pRadSite = it->first;
 			radLevel = pRadSite->GetRadLevel();
 		}
 	}
 
 	return (!radLevel || (radLevel < weaponRadLevel / 3)) ?
-		0x5213F4 : 0x521484;
+		FireCheck : SetMissionRate;
 }
 
 // Fix for desolator unable to fire his deploy weapon when cloaked
@@ -136,9 +138,8 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 	{
 		CellStruct nCurrentCoord = buildingCoords + *pFoundation;
 
-		for (auto& pRadExt : RadSiteExt::Array)
+		for (auto& [pRadSite, pRadExt] : RadSiteExt::ExtMap)
 		{
-			RadSiteClass* pRadSite = pRadExt->OwnerObject();
 			RadTypeClass* pType = pRadExt->Type;
 
 			// Check the distance, if not in range, just skip this one
@@ -155,10 +156,10 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 					continue;
 			}
 
-			if (RadSiteExt::GetRadLevelAt(pRadSite, nCurrentCoord) <= 0.0 || !pType->GetWarhead())
+			if (pRadExt->GetRadLevelAt(nCurrentCoord) <= 0.0 || !pType->GetWarhead())
 				continue;
 
-			auto damage = Game::F2I((RadSiteExt::GetRadLevelAt(pRadSite, nCurrentCoord) / 2) * pType->GetLevelFactor());
+			auto damage = Game::F2I((pRadExt->GetRadLevelAt(nCurrentCoord) / 2) * pType->GetLevelFactor());
 
 			if (pBuilding->IsAlive) // simple fix for previous issues
 			{
@@ -177,6 +178,8 @@ DEFINE_JUMP(LJMP, 0x4DA554, 0x4DA56E);
 // Hook Adjusted to support Ares RadImmune Ability check
 DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 {
+	enum { Continue = 0x4DA63B, ReturnFromFunction = 0x4DAF00 };
+
 	GET(FootClass* const, pFoot, ESI);
 
 	int radDelay = RulesClass::Instance->RadApplicationDelay;
@@ -187,10 +190,8 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;
 
 		// Loop for each different radiation stored in the RadSites container
-		for (auto& pRadExt : RadSiteExt::Array)
+		for (auto& [pRadSite, pRadExt] : RadSiteExt::ExtMap)
 		{
-			RadSiteClass* pRadSite = pRadExt->OwnerObject();
-
 			// Check the distance, if not in range, just skip this one
 			double orDistance = pRadSite->BaseCell.DistanceFrom(CurrentCoord);
 
@@ -208,7 +209,7 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 			}
 
 			// for more precise dmg calculation
-			double nRadLevel = RadSiteExt::GetRadLevelAt(pRadSite, CurrentCoord);
+			double nRadLevel = pRadExt->GetRadLevelAt(CurrentCoord);
 
 			if (nRadLevel <= 0.0 || !pType->GetWarhead())
 				continue;
@@ -223,13 +224,13 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 		}
 	}
 
-	return pFoot->IsAlive ? 0x4DA63B : 0x4DAF00;
+	return pFoot->IsAlive ? Continue : ReturnFromFunction;
 }
 
 #define GET_RADSITE(reg, value)\
 	GET(RadSiteClass* const, pThis, reg);\
 	RadSiteExt::ExtData* pExt = RadSiteExt::ExtMap.Find(pThis);\
-	auto output = pExt->Type->## value ##;
+	auto output = pExt->Type-> value ;
 
 /*
 //All part of 0x65B580 Hooks is here

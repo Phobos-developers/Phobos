@@ -10,36 +10,9 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>
 
-template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEEEEEEEE;
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
-void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
-{
-	const char* pID = this->OwnerObject()->ID;
-
-	INI_EX exINI(pINI);
-
-	this->Palette.LoadFromINI(pINI, pID, "CustomPalette");
-	this->CreateUnit.Read(exINI, pID, "CreateUnit",true);
-	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
-	this->CreateUnit_InheritDeathFacings.Read(exINI, pID, "CreateUnit.InheritFacings");
-	this->CreateUnit_InheritTurretFacings.Read(exINI, pID, "CreateUnit.InheritTurretFacings");
-	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
-	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
-	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
-	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
-	this->CreateUnit_ConsiderPathfinding.Read(exINI, pID, "CreateUnit.ConsiderPathfinding");
-	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
-	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
-	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
-	this->UseCenterCoordsIfAttached.Read(exINI, pID, "UseCenterCoordsIfAttached");
-	this->Weapon.Read(exINI, pID, "Weapon", true);
-	this->Damage_Delay.Read(exINI, pID, "Damage.Delay");
-	this->Damage_DealtByInvoker.Read(exINI, pID, "Damage.DealtByInvoker");
-	this->Damage_ApplyOncePerLoop.Read(exINI, pID, "Damage.ApplyOncePerLoop");
-}
-
-const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
+void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 {
 	if (!pThis)
 		return;
@@ -48,7 +21,7 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 
 	if (pThis->Type->DestroyAnim.Count > 0)
 	{
-		auto const facing = pThis->PrimaryFacing.Current().GetFacing<256>();
+		auto const facing = pThis->PrimaryFacing.Current().GetDir();
 		AnimTypeClass* pAnimType = nullptr;
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
@@ -60,7 +33,7 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 			{
 				idxAnim = pThis->Type->DestroyAnim.Count;
 				if (pThis->Type->DestroyAnim.Count % 2 == 0)
-					idxAnim *= static_cast<int>(facing / 256.0);
+					idxAnim *= static_cast<int>(static_cast<unsigned char>(facing) / 256.0);
 			}
 
 			pAnimType = pThis->Type->DestroyAnim[idxAnim];
@@ -85,11 +58,11 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 
 				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
 
-				pAnimExt->Invoker = pThis;
+				pAnimExt->SetInvoker(pThis);
 				pAnimExt->FromDeathUnit = true;
 
 				if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
-					pAnimExt->DeathUnitFacing = static_cast<short>(facing);
+					pAnimExt->DeathUnitFacing = facing;
 
 				if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
 				{
@@ -102,6 +75,42 @@ const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKill
 			}
 		}
 	}
+}
+
+void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
+{
+	const char* pID = this->OwnerObject()->ID;
+
+	INI_EX exINI(pINI);
+
+	this->Palette.LoadFromINI(pINI, pID, "CustomPalette");
+	this->CreateUnit.Read(exINI, pID, "CreateUnit", true);
+	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
+	this->CreateUnit_InheritDeathFacings.Read(exINI, pID, "CreateUnit.InheritFacings");
+	this->CreateUnit_InheritTurretFacings.Read(exINI, pID, "CreateUnit.InheritTurretFacings");
+	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
+	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
+	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
+	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
+	this->CreateUnit_AlwaysSpawnOnGround.Read(exINI, pID, "CreateUnit.AlwaysSpawnOnGround");
+	this->CreateUnit_ConsiderPathfinding.Read(exINI, pID, "CreateUnit.ConsiderPathfinding");
+	this->CreateUnit_SpawnAnim.Read(exINI, pID, "CreateUnit.SpawnAnim");
+	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
+	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
+	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
+	this->UseCenterCoordsIfAttached.Read(exINI, pID, "UseCenterCoordsIfAttached");
+	this->Weapon.Read(exINI, pID, "Weapon", true);
+	this->Damage_Delay.Read(exINI, pID, "Damage.Delay");
+	this->Damage_DealtByInvoker.Read(exINI, pID, "Damage.DealtByInvoker");
+	this->Damage_ApplyOncePerLoop.Read(exINI, pID, "Damage.ApplyOncePerLoop");
+	this->ExplodeOnWater.Read(exINI, pID, "ExplodeOnWater");
+	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
+	this->WakeAnim.Read(exINI, pID, "WakeAnim");
+	this->SplashAnims.Read(exINI, pID, "SplashAnims");
+	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
+	this->AttachedSystem.Read(exINI, pID, "AttachedSystem", true);
+	this->AltPalette_ApplyLighting.Read(exINI, pID, "AltPalette.ApplyLighting");
+	this->MakeInfantryOwner.Read(exINI, pID, "MakeInfantryOwner");
 }
 
 template <typename T>
@@ -117,7 +126,9 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateUnit_InheritTurretFacings)
 		.Process(this->CreateUnit_Owner)
 		.Process(this->CreateUnit_RandomFacing)
+		.Process(this->CreateUnit_AlwaysSpawnOnGround)
 		.Process(this->CreateUnit_ConsiderPathfinding)
+		.Process(this->CreateUnit_SpawnAnim)
 		.Process(this->XDrawOffset)
 		.Process(this->HideIfNoOre_Threshold)
 		.Process(this->Layer_UseObjectLayer)
@@ -126,6 +137,14 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Damage_Delay)
 		.Process(this->Damage_DealtByInvoker)
 		.Process(this->Damage_ApplyOncePerLoop)
+		.Process(this->ExplodeOnWater)
+		.Process(this->Warhead_Detonate)
+		.Process(this->WakeAnim)
+		.Process(this->SplashAnims)
+		.Process(this->SplashAnims_PickRandom)
+		.Process(this->AttachedSystem)
+		.Process(this->AltPalette_ApplyLighting)
+		.Process(this->MakeInfantryOwner)
 		;
 }
 
@@ -148,7 +167,7 @@ DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
 {
 	GET(AnimTypeClass*, pItem, EAX);
 
-	AnimTypeExt::ExtMap.FindOrAllocate(pItem);
+	AnimTypeExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 

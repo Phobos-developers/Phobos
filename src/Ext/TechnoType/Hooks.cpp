@@ -6,6 +6,7 @@
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 #include <SpawnManagerClass.h>
+#include <TacticalClass.h>
 #include <BulletClass.h>
 
 #include "Body.h"
@@ -89,6 +90,29 @@ DEFINE_HOOK(0x43E0C4, BuildingClass_Draw_43DA80_TurretMultiOffset, 0x0)
 	return 0x43E0E8;
 }
 
+DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
+{
+	GET(UnitClass*, pThis, EBP);
+	REF_STACK(Point2D, pos, STACK_OFFSET(0x15C, -0xE8));
+
+	Matrix3D mtx;
+	mtx.MakeIdentity();
+	mtx.RotateZ(static_cast<float>(pThis->PrimaryFacing.Current().GetRadian<32>()));
+	TechnoTypeExt::ApplyTurretOffset(pThis->Type, &mtx);
+
+	double turretRad = pThis->TurretFacing().GetRadian<32>();
+	double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
+	float angle = static_cast<float>(turretRad - bodyRad);
+	mtx.RotateZ(angle);
+
+	auto res = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
+	auto location = CoordStruct { static_cast<int>(res.X), static_cast<int>(-res.Y), static_cast<int>(res.Z) };
+	Point2D temp;
+	pos += *TacticalClass::Instance()->CoordsToScreen(&temp, &location);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
@@ -164,36 +188,19 @@ DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x522790, TechnoClass_DefaultDisguise, 0x6) // InfantryClass_SetDisguise_DefaultDisguise
-DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDisguise
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	enum { SetDisguise = 0x5227BF, DefaultDisguise = 0x6F4277 };
-
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-	{
-		if (pExt->DefaultDisguise.isset())
-		{
-			pThis->Disguise = pExt->DefaultDisguise;
-			pThis->Disguised = true;
-			return R->Origin() == 0x522790 ? SetDisguise : DefaultDisguise;
-		}
-	}
-
-	pThis->Disguised = false;
-
-	return 0;
-}
-
 DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 {
+	enum { KeepUnitVisible = 0x73CF62 };
+
 	GET(UnitClass*, pThis, ESI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (pThis->Deploying || pThis->Undeploying)
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (pTypeExt->DeployingAnim_KeepUnitVisible && (pThis->Deploying || pThis->Undeploying))
-		return 0x73CF62;
+		if (pTypeExt->DeployingAnim_KeepUnitVisible)
+			return KeepUnitVisible;
+	}
 
 	return 0;
 }
@@ -311,3 +318,73 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 // Fixes recursive passenger kills not being accredited
 // to proper techno but to their transports
 DEFINE_PATCH(0x707CF2, 0x55);
+
+// Issue #601
+// Author : TwinkleStar
+DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
+{
+	GET(TechnoClass*, pSlave, EDI);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType());
+	int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance()->SlavesFreeSound);
+	if (sound != -1)
+		VocClass::PlayAt(sound, pSlave->Location);
+
+	return 0x6B0C65;
+}
+
+DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
+{
+	GET(FootClass*, pThis, ESI);
+	GET_STACK(Point2D, pos, STACK_OFFSET(0x18, 0x28));
+	GET_STACK(Surface*, pSurface, STACK_OFFSET(0x18, 0x24));
+	GET_STACK(bool, a9, STACK_OFFSET(0x18, 0x20)); // unknown usage
+	GET_STACK(Matrix3D*, pMatrix, STACK_OFFSET(0x18, 0x1C));
+	GET_STACK(Point2D*, a4, STACK_OFFSET(0x18, 0x14)); // unknown usage
+	GET_STACK(Point2D, a3, STACK_OFFSET(0x18, -0x10)); // unknown usage
+	GET_STACK(int*, a5, STACK_OFFSET(0x18, 0x10)); // unknown usage
+	GET_STACK(int, angle, STACK_OFFSET(0x18, 0xC));
+	GET_STACK(int, idx, STACK_OFFSET(0x18, 0x8));
+	GET_STACK(VoxelStruct*, pVXL, STACK_OFFSET(0x18, 0x4));
+
+	auto pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto tur = pType->Gunner || pType->IsChargeTurret
+		? &pType->ChargerTurrets[pThis->CurrentTurretNumber]
+		: &pType->TurretVoxel;
+
+	if (pTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow) && tur->VXL && tur->HVA)
+	{
+		auto mtx = pThis->Locomotor->Shadow_Matrix(0);
+		mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
+		float x = static_cast<float>(pTypeExt->TurretOffset.GetEx()->X / 8);
+		float y = static_cast<float>(pTypeExt->TurretOffset.GetEx()->Y / 8);
+		float z = -tur->VXL->TailerData->MinBounds.Z;
+		mtx.Translate(x, y, z);
+		Matrix3D::MatrixMultiply(&mtx, &Matrix3D::VoxelDefaultMatrix, &mtx);
+
+		pThis->DrawVoxelShadow(tur, 0, angle, 0, a4, &a3, &mtx, a9, pSurface, pos);
+		auto bar = &pType->BarrelVoxel;
+
+		if (bar->VXL && bar->HVA)
+			pThis->DrawVoxelShadow(bar, 0, angle, 0, a4, &a3, &mtx, a9, pSurface, pos);
+	}
+
+	if (!pTypeExt->ShadowIndices.size())
+	{
+		pThis->DrawVoxelShadow(pVXL, idx, angle, a5, a4, &a3, pMatrix, a9, pSurface, pos);
+	}
+	else
+	{
+		for (auto index : pTypeExt->ShadowIndices)
+		{
+			auto hva = pVXL->HVA;
+			Matrix3D idxmtx = *pMatrix;
+			idxmtx.TranslateZ(-hva->Matrixes[index].GetZVal());
+			Matrix3D::MatrixMultiply(&idxmtx, &Matrix3D::VoxelDefaultMatrix, &idxmtx);
+			pThis->DrawVoxelShadow(pVXL, index, angle, a5, a4, &a3, pMatrix, a9, pSurface, pos);
+		}
+	}
+
+	return 0x4DB195;
+}

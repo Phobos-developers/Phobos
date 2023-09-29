@@ -12,6 +12,8 @@
 #include <CCToolTip.h>
 #include <BitFont.h>
 #include <BitText.h>
+#include <FPSCounter.h>
+#include <Phobos.h>
 
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>
@@ -46,19 +48,19 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 	switch (pType->WhatAmI())
 	{
 	case AbstractType::BuildingType:
-		*reinterpret_cast<int*>(pTrick) = 0x7E3EBC; // BuildingClass::`vtable`
+		VTable::Set(pTrick, 0x7E3EBC); // BuildingClass::`vtable`
 		reinterpret_cast<BuildingClass*>(pTrick)->Type = (BuildingTypeClass*)pType;
 		break;
 	case AbstractType::AircraftType:
-		*reinterpret_cast<int*>(pTrick) = 0x7E22A4; // AircraftClass::`vtable`
+		VTable::Set(pTrick, 0x7E22A4); // AircraftClass::`vtable`
 		reinterpret_cast<AircraftClass*>(pTrick)->Type = (AircraftTypeClass*)pType;
 		break;
 	case AbstractType::InfantryType:
-		*reinterpret_cast<int*>(pTrick) = 0x7EB058; // InfantryClass::`vtable`
+		VTable::Set(pTrick, 0x7EB058); // InfantryClass::`vtable`
 		reinterpret_cast<InfantryClass*>(pTrick)->Type = (InfantryTypeClass*)pType;
 		break;
 	case AbstractType::UnitType:
-		*reinterpret_cast<int*>(pTrick) = 0x7F5C70; // UnitClass::`vtable`
+		VTable::Set(pTrick, 0x7F5C70); // UnitClass::`vtable`
 		reinterpret_cast<UnitClass*>(pTrick)->Type = (UnitTypeClass*)pType;
 		break;
 	}
@@ -93,6 +95,21 @@ void PhobosToolTip::HelpText(BuildType& cameo)
 		this->HelpText(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
 }
 
+inline int tickTimeToSeconds(int tickTime)
+{
+	if (!Phobos::Config::RealTimeTimers)
+		return tickTime / 15;
+
+	if (Phobos::Config::RealTimeTimers_Adaptive
+		|| GameOptionsClass::Instance->GameSpeed == 0
+		|| (Phobos::Misc::CustomGS && !SessionClass::IsMultiplayer()))
+	{
+		return tickTime / std::max((int)FPSCounter::CurrentFrameRate, 1);
+	}
+
+	return tickTime / (60 / GameOptionsClass::Instance->GameSpeed);
+}
+
 void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 {
 	if (!pType)
@@ -101,9 +118,9 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
 
 	int nBuildTime = this->GetBuildTime(pType);
-	int nSec = nBuildTime / 15 % 60;
-	int nMin = nBuildTime / 15 / 60 /* % 60*/;
-	// int nHour = pType->RechargeTime / 15 / 60 / 60;
+	int nSec = tickTimeToSeconds(nBuildTime) % 60;
+	int nMin = tickTimeToSeconds(nBuildTime) / 60 /* % 60*/;
+	// int nHour = tickTimeToSeconds(nBuildTime) / 60 / 60;
 
 	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
 
@@ -154,9 +171,9 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 		if (!showCost)
 			oss << L"\n";
 
-		int nSec = pType->RechargeTime / 15 % 60;
-		int nMin = pType->RechargeTime / 15 / 60 /* % 60*/;
-		// int nHour = pType->RechargeTime / 15 / 60 / 60;
+		int nSec = tickTimeToSeconds(pType->RechargeTime) % 60;
+		int nMin = tickTimeToSeconds(pType->RechargeTime) / 60 /* % 60*/;
+		// int nHour = tickTimeToSeconds(pType->RechargeTime) / 60 / 60;
 
 		oss << (showCost ? L" " : L"") << Phobos::UI::TimeLabel
 			// << std::setw(2) << std::setfill(L'0') << nHour << L":"

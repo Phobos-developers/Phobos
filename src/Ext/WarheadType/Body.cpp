@@ -4,9 +4,9 @@
 #include <HouseClass.h>
 
 #include <Ext/BulletType/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
 
-template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 
 bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget)
@@ -19,7 +19,7 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 		bool isAllies = pHouse->IsAlliedWith(pTarget);
 
 		if (this->OwnerObject()->AffectsAllies && isAllies)
-			return pTarget->Owner == pHouse ? false : true;
+			return pTarget->Owner != pHouse;
 
 		if (this->AffectsEnemies && !isAllies)
 			return true;
@@ -30,29 +30,31 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage)
+namespace DetonateTemp
 {
-	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
-
-	if (BulletClass* pBullet = pType->CreateBullet(pTarget, pOwner,
-		damage, pThis, 0, false))
-	{
-		const CoordStruct& coords = pTarget->GetCoords();
-
-		pBullet->Limbo();
-		pBullet->SetLocation(coords);
-		pBullet->Explode(true);
-		pBullet->UnInit();
-	}
+	AbstractClass* pTarget = nullptr;
 }
 
-void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage)
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+{
+	DetonateTemp::pTarget = pTarget;
+	WarheadTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse);
+	DetonateTemp::pTarget = nullptr;
+}
+
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
-	if (BulletClass* pBullet = pType->CreateBullet(nullptr, pOwner,
-		damage, pThis, 0, false))
+	if (BulletClass* pBullet = pType->CreateBullet(DetonateTemp::pTarget, pOwner,
+		damage, pThis, 0, pThis->Bright))
 	{
+		if (pFiringHouse)
+		{
+			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			pBulletExt->FirerHouse = pFiringHouse;
+		}
+
 		pBullet->Limbo();
 		pBullet->SetLocation(coords);
 		pBullet->Explode(true);
@@ -62,10 +64,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 
 bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner)
 {
-	if (!pTechno)
-		return false;
-
-	if (!pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo)
+	if (!pTechno || !pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking)
 		return false;
 
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectHouses, pOwner, pTechno->Owner))
@@ -78,10 +77,16 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 		return false;
 	}
 
-	if (this->DetonateOnAllMapObjects_RequireVerses &&
-		GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTechno->GetTechnoType()->Armor) == 0.0)
+	if (this->DetonateOnAllMapObjects_RequireVerses)
 	{
-		return false;
+		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+		auto armorType = pTechno->GetTechnoType()->Armor;
+
+		if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(this->OwnerObject()))
+			armorType = pExt->Shield->GetArmorType();
+
+		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) == 0.0)
+			return false;
 	}
 
 	return true;
@@ -110,9 +115,15 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TransactMoney_Display_Offset.Read(exINI, pSection, "TransactMoney.Display.Offset");
 	this->SplashList.Read(exINI, pSection, "SplashList");
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
+	this->SplashList_CreateAll.Read(exINI, pSection, "SplashList.CreateAll");
+	this->SplashList_CreationInterval.Read(exINI, pSection, "SplashList.CreationInterval");
+	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
+	this->AnimList_CreateAll.Read(exINI, pSection, "AnimList.CreateAll");
+	this->AnimList_CreationInterval.Read(exINI, pSection, "AnimList.CreationInterval");
+	this->CreateAnimsOnZeroDamage.Read(exINI, pSection, "CreateAnimsOnZeroDamage");
+	this->Conventional_IgnoreUnits.Read(exINI, pSection, "Conventional.IgnoreUnits");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
-	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 
@@ -139,16 +150,20 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_BreakWeapon.Read(exINI, pSection, "Shield.BreakWeapon", true);
 	this->Shield_AbsorbPercent.Read(exINI, pSection, "Shield.AbsorbPercent");
 	this->Shield_PassPercent.Read(exINI, pSection, "Shield.PassPercent");
+	this->Shield_ReceivedDamage_Minimum.Read(exINI, pSection, "Shield.ReceivedDamage.Minimum");
+	this->Shield_ReceivedDamage_Maximum.Read(exINI, pSection, "Shield.ReceivedDamage.Maximum");
 	this->Shield_Respawn_Duration.Read(exINI, pSection, "Shield.Respawn.Duration");
 	this->Shield_Respawn_Amount.Read(exINI, pSection, "Shield.Respawn.Amount");
 	this->Shield_Respawn_Rate_InMinutes.Read(exINI, pSection, "Shield.Respawn.Rate");
 	this->Shield_Respawn_Rate = (int)(this->Shield_Respawn_Rate_InMinutes * 900);
-	this->Shield_Respawn_ResetTimer.Read(exINI, pSection, "Shield.Respawn.RestartTimer");
+	this->Shield_Respawn_RestartTimer.Read(exINI, pSection, "Shield.Respawn.RestartTimer");
 	this->Shield_SelfHealing_Duration.Read(exINI, pSection, "Shield.SelfHealing.Duration");
 	this->Shield_SelfHealing_Amount.Read(exINI, pSection, "Shield.SelfHealing.Amount");
 	this->Shield_SelfHealing_Rate_InMinutes.Read(exINI, pSection, "Shield.SelfHealing.Rate");
 	this->Shield_SelfHealing_Rate = (int)(this->Shield_SelfHealing_Rate_InMinutes * 900);
-	this->Shield_SelfHealing_ResetTimer.Read(exINI, pSection, "Shield.SelfHealing.RestartTimer");
+	this->Shield_SelfHealing_RestartInCombat.Read(exINI, pSection, "Shield.SelfHealing.RestartInCombat");
+	this->Shield_SelfHealing_RestartInCombat.Read(exINI, pSection, "Shield.SelfHealing.RestartInCombatDelay");
+	this->Shield_SelfHealing_RestartTimer.Read(exINI, pSection, "Shield.SelfHealing.RestartTimer");
 	this->Shield_AttachTypes.Read(exINI, pSection, "Shield.AttachTypes");
 	this->Shield_RemoveTypes.Read(exINI, pSection, "Shield.RemoveTypes");
 	this->Shield_ReplaceOnly.Read(exINI, pSection, "Shield.ReplaceOnly");
@@ -156,14 +171,23 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_InheritStateOnReplace.Read(exINI, pSection, "Shield.InheritStateOnReplace");
 	this->Shield_MinimumReplaceDelay.Read(exINI, pSection, "Shield.MinimumReplaceDelay");
 	this->Shield_AffectTypes.Read(exINI, pSection, "Shield.AffectTypes");
+	this->Shield_Penetrate_Types.Read(exINI, pSection, "Shield.Penetrate.Types");
+	this->Shield_Break_Types.Read(exINI, pSection, "Shield.Break.Types");
+	this->Shield_Respawn_Types.Read(exINI, pSection, "Shield.Respawn.Types");
+	this->Shield_SelfHealing_Types.Read(exINI, pSection, "Shield.SelfHealing.Types");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
 	this->LaunchSW.Read(exINI, pSection, "LaunchSW");
 	this->LaunchSW_RealLaunch.Read(exINI, pSection, "LaunchSW.RealLaunch");
 	this->LaunchSW_IgnoreInhibitors.Read(exINI, pSection, "LaunchSW.IgnoreInhibitors");
 	this->LaunchSW_IgnoreDesignators.Read(exINI, pSection, "LaunchSW.IgnoreDesignators");
+	this->LaunchSW_DisplayMoney.Read(exINI, pSection, "LaunchSW.DisplayMoney");
+	this->LaunchSW_DisplayMoney_Houses.Read(exINI, pSection, "LaunchSW.DisplayMoney.Houses");
+	this->LaunchSW_DisplayMoney_Offset.Read(exINI, pSection, "LaunchSW.DisplayMoney.Offset");
 
 	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
+	this->DebrisAnims.Read(exINI, pSection, "DebrisAnims");
+	this->Debris_Conventional.Read(exINI, pSection, "Debris.Conventional");
 
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
 	this->DetonateOnAllMapObjects_RequireVerses.Read(exINI, pSection, "DetonateOnAllMapObjects.RequireVerses");
@@ -172,10 +196,88 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
+	char tempBuffer[32];
+	// Convert.From & Convert.To
+	for (size_t i = 0; ; ++i)
+	{
+		ValueableVector<TechnoTypeClass*> convertFrom;
+		Nullable<TechnoTypeClass*> convertTo;
+		Nullable<AffectedHouse> convertAffectedHouses;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
+		convertFrom.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
+		convertTo.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i);
+		convertAffectedHouses.Read(exINI, pSection, tempBuffer);
+
+		if (!convertTo.isset())
+			break;
+
+		if (!convertAffectedHouses.isset())
+			convertAffectedHouses = AffectedHouse::All;
+
+		this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
+	}
+	ValueableVector<TechnoTypeClass*> convertFrom;
+	Nullable<TechnoTypeClass*> convertTo;
+	Nullable<AffectedHouse> convertAffectedHouses;
+	convertFrom.Read(exINI, pSection, "Convert.From");
+	convertTo.Read(exINI, pSection, "Convert.To");
+	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
+	if (convertTo.isset())
+	{
+		if (!convertAffectedHouses.isset())
+			convertAffectedHouses = AffectedHouse::All;
+
+		if (this->Convert_Pairs.size())
+			this->Convert_Pairs[0] = { convertFrom, convertTo, convertAffectedHouses };
+		else
+			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
+	}
+
+#ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
+	this->InflictLocomotor.Read(exINI, pSection, "InflictLocomotor");
+	this->RemoveInflictedLocomotor.Read(exINI, pSection, "RemoveInflictedLocomotor");
+
+	if (this->InflictLocomotor && pThis->Locomotor == _GUID())
+	{
+		Debug::Log("[Developer warning][%s] InflictLocomotor is specified but Locomotor is not set!", pSection);
+		this->InflictLocomotor = false;
+	}
+
+	if ((this->InflictLocomotor || this->RemoveInflictedLocomotor) && pThis->IsLocomotor)
+	{
+		Debug::Log("[Developer warning][%s] InflictLocomotor=yes/RemoveInflictedLocomotor=yes can't be specified while IsLocomotor is set!", pSection);
+		this->InflictLocomotor = this->RemoveInflictedLocomotor = false;
+	}
+
+	if (this->InflictLocomotor && this->RemoveInflictedLocomotor)
+	{
+		Debug::Log("[Developer warning][%s] InflictLocomotor=yes and RemoveInflictedLocomotor=yes can't be set simultaneously!", pSection);
+		this->InflictLocomotor = this->RemoveInflictedLocomotor = false;
+	}
+#endif
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
+
+	// List all Warheads here that respect CellSpread
+	// Used in WarheadTypeExt::ExtData::Detonate
+	this->PossibleCellSpreadDetonate = (
+		this->RemoveDisguise
+		|| this->RemoveMindControl
+		|| this->Crit_Chance
+		|| this->Shield_Break
+		|| this->Shield_Respawn_Duration > 0
+		|| this->Shield_SelfHealing_Duration > 0
+		|| this->Shield_AttachTypes.size() > 0
+		|| this->Shield_RemoveTypes.size() > 0
+		|| this->Convert_Pairs.size() > 0
+		|| this->InflictLocomotor
+		|| this->RemoveInflictedLocomotor
+	);
 }
 
 template <typename T>
@@ -191,9 +293,15 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TransactMoney_Display_Offset)
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
+		.Process(this->SplashList_CreateAll)
+		.Process(this->SplashList_CreationInterval)
+		.Process(this->AnimList_PickRandom)
+		.Process(this->AnimList_CreateAll)
+		.Process(this->AnimList_CreationInterval)
+		.Process(this->CreateAnimsOnZeroDamage)
+		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
-		.Process(this->AnimList_PickRandom)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
 
@@ -218,15 +326,18 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_BreakWeapon)
 		.Process(this->Shield_AbsorbPercent)
 		.Process(this->Shield_PassPercent)
-
+		.Process(this->Shield_ReceivedDamage_Minimum)
+		.Process(this->Shield_ReceivedDamage_Maximum)
 		.Process(this->Shield_Respawn_Duration)
 		.Process(this->Shield_Respawn_Amount)
 		.Process(this->Shield_Respawn_Rate)
-		.Process(this->Shield_Respawn_ResetTimer)
+		.Process(this->Shield_Respawn_RestartTimer)
 		.Process(this->Shield_SelfHealing_Duration)
 		.Process(this->Shield_SelfHealing_Amount)
 		.Process(this->Shield_SelfHealing_Rate)
-		.Process(this->Shield_SelfHealing_ResetTimer)
+		.Process(this->Shield_SelfHealing_RestartInCombat)
+		.Process(this->Shield_SelfHealing_RestartInCombatDelay)
+		.Process(this->Shield_SelfHealing_RestartTimer)
 		.Process(this->Shield_AttachTypes)
 		.Process(this->Shield_RemoveTypes)
 		.Process(this->Shield_ReplaceOnly)
@@ -234,13 +345,23 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_InheritStateOnReplace)
 		.Process(this->Shield_MinimumReplaceDelay)
 		.Process(this->Shield_AffectTypes)
+		.Process(this->Shield_Penetrate_Types)
+		.Process(this->Shield_Break_Types)
+		.Process(this->Shield_Respawn_Types)
+		.Process(this->Shield_SelfHealing_Types)
 
 		.Process(this->NotHuman_DeathSequence)
 		.Process(this->LaunchSW)
 		.Process(this->LaunchSW_RealLaunch)
 		.Process(this->LaunchSW_IgnoreInhibitors)
 		.Process(this->LaunchSW_IgnoreDesignators)
+		.Process(this->LaunchSW_DisplayMoney)
+		.Process(this->LaunchSW_DisplayMoney_Houses)
+		.Process(this->LaunchSW_DisplayMoney_Offset)
+
 		.Process(this->AllowDamageOnSelf)
+		.Process(this->DebrisAnims)
+		.Process(this->Debris_Conventional)
 
 		.Process(this->DetonateOnAllMapObjects)
 		.Process(this->DetonateOnAllMapObjects_RequireVerses)
@@ -249,11 +370,18 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_AffectTypes)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
+		.Process(this->Convert_Pairs)
+
+		.Process(this->InflictLocomotor)
+		.Process(this->RemoveInflictedLocomotor)
+
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
+		.Process(this->RemainingAnimCreationInterval)
+		.Process(this->PossibleCellSpreadDetonate)
 		;
 }
 
@@ -286,11 +414,6 @@ WarheadTypeExt::ExtContainer::ExtContainer() : Container("WarheadTypeClass") { }
 
 WarheadTypeExt::ExtContainer::~ExtContainer() = default;
 
-void WarheadTypeExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved)
-{
-
-}
-
 // =============================
 // container hooks
 
@@ -298,7 +421,7 @@ DEFINE_HOOK(0x75D1A9, WarheadTypeClass_CTOR, 0x7)
 {
 	GET(WarheadTypeClass*, pItem, EBP);
 
-	WarheadTypeExt::ExtMap.FindOrAllocate(pItem);
+	WarheadTypeExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

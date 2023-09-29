@@ -7,6 +7,9 @@
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/Affiliated/InterceptorTypeClass.h>
+#include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
+#include <New/Type/DigitalDisplayTypeClass.h>
 
 class Matrix3D;
 
@@ -14,6 +17,9 @@ class TechnoTypeExt
 {
 public:
 	using base_type = TechnoTypeClass;
+
+	static constexpr DWORD Canary = 0x11111111;
+	static constexpr size_t ExtPointerOffset = 0xDF4;
 
 	class ExtData final : public Extension<TechnoTypeClass>
 	{
@@ -26,19 +32,15 @@ public:
 		Nullable<int> InhibitorRange;
 		Nullable<int> DesignatorRange;
 		Valueable<Leptons> MindControlRangeLimit;
-		Valueable<bool> Interceptor;
-		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
-		Promotable<Leptons> Interceptor_GuardRange;
-		Promotable<Leptons> Interceptor_MinimumGuardRange;
-		Valueable<int> Interceptor_Weapon;
-		Nullable<bool> Interceptor_DeleteOnIntercept;
-		Nullable<WeaponTypeClass*> Interceptor_WeaponOverride;
-		Valueable<bool> Interceptor_WeaponReplaceProjectile;
-		Valueable<bool> Interceptor_WeaponCumulativeDamage;
-		Valueable<bool> Interceptor_KeepIntact;
+
+		std::unique_ptr<InterceptorTypeClass> InterceptorType;
+
 		Valueable<PartialVector3D<int>> TurretOffset;
-		Valueable<bool> Spawn_LimitedRange;
-		Valueable<int> Spawn_LimitedExtraRange;
+		Nullable<bool> TurretShadow;
+		ValueableVector<int> ShadowIndices;
+		Valueable<bool> Spawner_LimitRange;
+		Valueable<int> Spawner_ExtraLimitRange;
+		Nullable<int> Spawner_DelayFrames;
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
@@ -46,28 +48,37 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
-		Valueable<bool> PassengerDeletion_Soylent;
-		Valueable<bool> PassengerDeletion_SoylentFriendlies;
-		Valueable<int> PassengerDeletion_Rate;
-		NullableIdx<VocClass> PassengerDeletion_ReportSound;
-		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
-		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
+		Valueable<bool> ReloadInTransport;
 
-		Valueable<bool> AutoDeath_OnAmmoDepletion;
-		Valueable<bool> AutoDeath_TechnosDontExist_Any;
-		Valueable<bool> AutoDeath_TechnosExist_Any;
-		Valueable<int> AutoDeath_AfterDelay;
+		Valueable<ShieldTypeClass*> ShieldType;
+		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
+
+		Nullable<int> Ammo_AddOnDeploy;
+		Valueable<int> Ammo_AutoDeployMinimumAmount;
+		Valueable<int> Ammo_AutoDeployMaximumAmount;
+		Valueable<int> Ammo_DeployUnlockMinimumAmount;
+		Valueable<int> Ammo_DeployUnlockMaximumAmount;
+		NullableIdx<VocClass> VoiceCantDeploy;
+
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
+		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<int> AutoDeath_AfterDelay;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
+		Valueable<bool> AutoDeath_TechnosDontExist_Any;
+		Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
 		Valueable<AffectedHouse> AutoDeath_TechnosDontExist_Houses;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosExist;
+		Valueable<bool> AutoDeath_TechnosExist_Any;
+		Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
 		Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
 
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
+		NullableIdx<VocClass> SlavesFreeSound;
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
 
-		Valueable<ShieldTypeClass*> ShieldType;
+		NullableIdx<VocClass> VoiceCreated;
 
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
@@ -87,30 +98,33 @@ public:
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
 
-		std::vector<DynamicVectorClass<CoordStruct>> WeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> WeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
+		std::vector<CoordStruct> AlternateFLHs;
 
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
 		Nullable<InfantryTypeClass*> DefaultDisguise;
+		Valueable<bool> UseDisguiseMovementSpeed;
 
 		Nullable<int> OpenTopped_RangeBonus;
 		Nullable<float> OpenTopped_DamageMultiplier;
 		Nullable<int> OpenTopped_WarpDistance;
 		Valueable<bool> OpenTopped_IgnoreRangefinding;
 		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
+		Valueable<bool> OpenTopped_ShareTransportTarget;
 
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
+		Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
 
 		Valueable<int> NoAmmoWeapon;
 		Valueable<int> NoAmmoAmount;
 
-		Nullable<bool> JumpjetAllowLayerDeviation;
-		Nullable<bool> JumpjetTurnToTarget;
+		Valueable<bool> JumpjetRotateOnCrash;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -130,8 +144,43 @@ public:
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
-
+		Nullable<IronCurtainEffect> IronCurtain_Effect;
+		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
+		Nullable<int> DeployFireWeapon;
+		Valueable<TargetZoneScanType> TargetZoneScanType;
+
+		Promotable<SHPStruct*> Insignia;
+		Valueable<Vector3D<int>> InsigniaFrames;
+		Promotable<int> InsigniaFrame;
+		Nullable<bool> Insignia_ShowEnemy;
+		std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
+		std::vector<Promotable<int>> InsigniaFrame_Weapon;
+		std::vector<Vector3D<int>> InsigniaFrames_Weapon;
+
+		Nullable<bool> TiltsWhenCrushes_Vehicles;
+		Nullable<bool> TiltsWhenCrushes_Overlays;
+		Nullable<double> CrushForwardTiltPerFrame;
+		Valueable<double> CrushOverlayExtraForwardTilt;
+		Valueable<double> CrushSlowdownMultiplier;
+
+		Valueable<bool> DigitalDisplay_Disable;
+		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
+
+		Valueable<int> AmmoPipFrame;
+		Valueable<int> EmptyAmmoPipFrame;
+		Valueable<int> AmmoPipWrapStartFrame;
+		Nullable<Point2D> AmmoPipSize;
+		Valueable<Point2D> AmmoPipOffset;
+
+		Valueable<bool> ShowSpawnsPips;
+		Valueable<int> SpawnsPipFrame;
+		Valueable<int> EmptySpawnsPipFrame;
+		Nullable<Point2D> SpawnsPipSize;
+		Valueable<Point2D> SpawnsPipOffset;
+
+		Nullable<Leptons> SpawnDistanceFromTarget;
+		Nullable<int> SpawnHeight;
 
 		struct LaserTrailDataEntry
 		{
@@ -153,10 +202,10 @@ public:
 		Nullable<CoordStruct> ProneSecondaryFireFLH;
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
 		Nullable<CoordStruct> DeployedSecondaryFireFLH;
-		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
-		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> CrouchedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
+		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -164,24 +213,18 @@ public:
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
-			, InhibitorRange { }
+			, InhibitorRange {}
 			, DesignatorRange { }
 			, MindControlRangeLimit {}
 
-			, Interceptor { false }
-			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
-			, Interceptor_GuardRange {}
-			, Interceptor_MinimumGuardRange {}
-			, Interceptor_Weapon { 0 }
-			, Interceptor_DeleteOnIntercept {}
-			, Interceptor_WeaponOverride {}
-			, Interceptor_WeaponReplaceProjectile { false }
-			, Interceptor_WeaponCumulativeDamage { false }
-			, Interceptor_KeepIntact { false }
+			, InterceptorType { nullptr }
 
 			, TurretOffset { { 0, 0, 0 } }
-			, Spawn_LimitedRange { false }
-			, Spawn_LimitedExtraRange { 0 }
+			, TurretShadow { }
+			, ShadowIndices { }
+			, Spawner_LimitRange { false }
+			, Spawner_ExtraLimitRange { 0 }
+			, Spawner_DelayFrames {}
 			, Harvester_Counted {}
 			, Promote_IncludeSpawns { false }
 			, ImmuneToCrit { false }
@@ -189,7 +232,9 @@ public:
 			, CameoPriority { 0 }
 			, NoManualMove { false }
 			, InitialStrength {}
+			, ReloadInTransport { false }
 			, ShieldType {}
+			, PassengerDeletionType { nullptr }
 
 			, WarpOut {}
 			, WarpIn {}
@@ -211,62 +256,109 @@ public:
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
 
-			, PassengerDeletion_Soylent { false }
-			, PassengerDeletion_SoylentFriendlies { false }
-			, PassengerDeletion_Rate { 0 }
-			, PassengerDeletion_ReportSound {}
-			, PassengerDeletion_Rate_SizeMultiply { true }
-			, PassengerDeletion_Anim {}
-
 			, DefaultDisguise {}
+			, UseDisguiseMovementSpeed {}
 
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
+			, OpenTopped_ShareTransportTarget { true }
 
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
 			, NoSecondaryWeaponFallback { false }
+			, NoSecondaryWeaponFallback_AllowAA { false }
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
-			, JumpjetAllowLayerDeviation {}
-			, JumpjetTurnToTarget {}
+			, JumpjetRotateOnCrash { true }
 
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 
+			, Ammo_AddOnDeploy { }
+			, Ammo_AutoDeployMinimumAmount { -1 }
+			, Ammo_AutoDeployMaximumAmount { -1 }
+			, Ammo_DeployUnlockMinimumAmount { -1 }
+			, Ammo_DeployUnlockMaximumAmount { -1 }
+
 			, AutoDeath_Behavior { }
+			, AutoDeath_VanishAnimation {}
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
 			, AutoDeath_TechnosDontExist {}
 			, AutoDeath_TechnosDontExist_Any { false }
+			, AutoDeath_TechnosDontExist_AllowLimboed { false }
 			, AutoDeath_TechnosDontExist_Houses { AffectedHouse::Owner }
 			, AutoDeath_TechnosExist {}
 			, AutoDeath_TechnosExist_Any { true }
+			, AutoDeath_TechnosExist_AllowLimboed { true }
 			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
 
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
-			, SellSound { }
-			, EVA_Sold { }
+			, SlavesFreeSound {}
+			, SellSound {}
+			, EVA_Sold {}
 			, EnemyUIName {}
+
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
+
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
-			, SelfHealGainType()
+
+			, SelfHealGainType {}
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
-			, PronePrimaryFireFLH { }
-			, ProneSecondaryFireFLH { }
-			, DeployedPrimaryFireFLH { }
-			, DeployedSecondaryFireFLH { }
-			, IronCurtain_KeptOnDeploy{ }
+
+			, PronePrimaryFireFLH {}
+			, ProneSecondaryFireFLH {}
+			, DeployedPrimaryFireFLH {}
+			, DeployedSecondaryFireFLH {}
+
+			, IronCurtain_KeptOnDeploy {}
+			, IronCurtain_Effect {}
+			, IronCurtain_KillWarhead {}
+
 			, Explodes_KillPassengers { true }
+			, DeployFireWeapon {}
+			, TargetZoneScanType { TargetZoneScanType::Same }
+
+			, Insignia {}
+			, InsigniaFrames { { -1, -1, -1 } }
+			, InsigniaFrame { -1 }
+			, Insignia_ShowEnemy {}
+			, Insignia_Weapon {}
+			, InsigniaFrame_Weapon {}
+			, InsigniaFrames_Weapon {}
+
+			, TiltsWhenCrushes_Vehicles {}
+			, TiltsWhenCrushes_Overlays {}
+			, CrushSlowdownMultiplier { 0.2 }
+			, CrushForwardTiltPerFrame {}
+			, CrushOverlayExtraForwardTilt { 0.02 }
+
+			, DigitalDisplay_Disable { false }
+			, DigitalDisplayTypes {}
+
+			, AmmoPipFrame { 13 }
+			, EmptyAmmoPipFrame { -1 }
+			, AmmoPipWrapStartFrame { 14 }
+			, AmmoPipSize {}
+			, AmmoPipOffset {{ 0,0 }}
+
+			, ShowSpawnsPips { true }
+			, SpawnsPipFrame { 1 }
+			, EmptySpawnsPipFrame { 0 }
+			, SpawnsPipSize {}
+			, SpawnsPipOffset {{ 0,0 }}
+
+			, SpawnDistanceFromTarget {}
+			, SpawnHeight {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -286,6 +378,9 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+
+		void ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection, std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag);
+
 	};
 
 	class ExtContainer final : public Container<TechnoTypeExt>
@@ -298,7 +393,7 @@ public:
 	static ExtContainer ExtMap;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
-	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
+	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);

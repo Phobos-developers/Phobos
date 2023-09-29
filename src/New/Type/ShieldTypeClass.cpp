@@ -28,18 +28,28 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Strength.Read(exINI, pSection, "Strength");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
 	this->Armor.Read(exINI, pSection, "Armor");
+	this->InheritArmorFromTechno.Read(exINI, pSection, "InheritArmorFromTechno");
 	this->Powered.Read(exINI, pSection, "Powered");
 
 	this->Respawn.Read(exINI, pSection, "Respawn");
-	this->Respawn_Rate__InMinutes.Read(exINI, pSection, "Respawn.Rate");
-	this->Respawn_Rate = (int)(this->Respawn_Rate__InMinutes * 900);
+	Nullable<double> Respawn_Rate__InMinutes;
+	Respawn_Rate__InMinutes.Read(exINI, pSection, "Respawn.Rate");
+	if (Respawn_Rate__InMinutes.isset())
+		this->Respawn_Rate = (int)(Respawn_Rate__InMinutes.Get() * 900);
 
 	this->SelfHealing.Read(exINI, pSection, "SelfHealing");
-	this->SelfHealing_Rate__InMinutes.Read(exINI, pSection, "SelfHealing.Rate");
-	this->SelfHealing_Rate = (int)(this->SelfHealing_Rate__InMinutes * 900);
+	Nullable<double> SelfHealing_Rate__InMinutes;
+	SelfHealing_Rate__InMinutes.Read(exINI, pSection, "SelfHealing.Rate");
+	if (SelfHealing_Rate__InMinutes.isset())
+		this->SelfHealing_Rate = (int)(SelfHealing_Rate__InMinutes.Get() * 900);
+
+	this->SelfHealing_RestartInCombat.Read(exINI, pSection, "SelfHealing.RestartInCombat");
+	this->SelfHealing_RestartInCombatDelay.Read(exINI, pSection, "SelfHealing.RestartInCombatDelay");
 
 	this->AbsorbOverDamage.Read(exINI, pSection, "AbsorbOverDamage");
 	this->BracketDelta.Read(exINI, pSection, "BracketDelta");
+	this->ReceivedDamage_Minimum.Read(exINI, pSection, "ReceivedDamage.Minimum");
+	this->ReceivedDamage_Maximum.Read(exINI, pSection, "ReceivedDamage.Maximum");
 
 	this->IdleAnim_OfflineAction.Read(exINI, pSection, "IdleAnim.OfflineAction");
 	this->IdleAnim_TemporalAction.Read(exINI, pSection, "IdleAnim.TemporalAction");
@@ -62,6 +72,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Pips_Building_Empty.Read(exINI, pSection, "Pips.Building.Empty");
 
 	this->ImmuneToBerserk.Read(exINI, pSection, "ImmuneToBerserk");
+	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 }
 
 template <typename T>
@@ -71,13 +82,18 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Strength)
 		.Process(this->InitialStrength)
 		.Process(this->Armor)
+		.Process(this->InheritArmorFromTechno)
 		.Process(this->Powered)
 		.Process(this->Respawn)
 		.Process(this->Respawn_Rate)
 		.Process(this->SelfHealing)
 		.Process(this->SelfHealing_Rate)
+		.Process(this->SelfHealing_RestartInCombat)
+		.Process(this->SelfHealing_RestartInCombatDelay)
 		.Process(this->AbsorbOverDamage)
 		.Process(this->BracketDelta)
+		.Process(this->ReceivedDamage_Minimum)
+		.Process(this->ReceivedDamage_Maximum)
 		.Process(this->IdleAnim_OfflineAction)
 		.Process(this->IdleAnim_TemporalAction)
 		.Process(this->IdleAnim)
@@ -92,6 +108,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Pips_Building)
 		.Process(this->Pips_Building_Empty)
 		.Process(this->ImmuneToBerserk)
+		.Process(this->ImmuneToCrit)
 		;
 }
 

@@ -28,20 +28,20 @@ private:
 public:
 
 	RadTypeClass(const char* const pTitle) : Enumerable<RadTypeClass>(pTitle)
-		, LevelDelay()
-		, LightDelay()
-		, RadSiteColor()
-		, LevelMax()
-		, LevelFactor()
-		, LightFactor()
-		, TintFactor()
-		, RadWarhead()
-		, RadWarhead_Detonate()
-		, DurationMultiple()
-		, ApplicationDelay()
-		, BuildingApplicationDelay()
-		, RadHasOwner()
-		, RadHasInvoker()
+		, LevelDelay { }
+		, LightDelay { }
+		, RadSiteColor { }
+		, LevelMax { }
+		, LevelFactor { }
+		, LightFactor { }
+		, TintFactor { }
+		, RadWarhead { }
+		, RadWarhead_Detonate { }
+		, DurationMultiple { }
+		, ApplicationDelay { }
+		, BuildingApplicationDelay { }
+		, RadHasOwner { }
+		, RadHasInvoker { }
 	{ }
 
 	virtual ~RadTypeClass() override = default;
@@ -119,8 +119,8 @@ public:
 	}
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm);
-	virtual void SaveToStream(PhobosStreamWriter& Stm);
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 private:
 	template <typename T>

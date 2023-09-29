@@ -1,4 +1,4 @@
-#include <Helpers/Macro.h>
+#include <Utilities/Macro.h>
 #include <BuildingClass.h>
 #include <BuildingTypeClass.h>
 #include <HouseClass.h>
@@ -87,7 +87,7 @@ int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* con
 
 }
 
-DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x3)
+DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 {
 	GET(HouseClass const* const, pThis, ECX);
 	GET_STACK(TechnoTypeClass const* const, pItem, 0x4);
@@ -102,6 +102,21 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x3)
 				R->EAX(CheckBuildLimit(pThis, pBuilding, includeInProduction));
 		}
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4F7877, HouseClass_CanBuild_UpgradesInteraction_WithoutAres, 0x5)
+{
+	Debug::Log("Hook [HouseClass_CanBuild_UpgradesInteraction] disabled\n");
+
+	Patch::Apply_RAW(0x4F8361, // Disable hook HouseClass_CanBuild_UpgradesInteraction
+		{ 0xC2, 0x0C, 0x00, 0x6E, 0x7D }
+	);
+
+	Patch::Apply_RAW(0x4F7877, // Disable this hook
+		{ 0x53, 0x55, 0x8B, 0xE9, 0x56 }
+	);
 
 	return 0;
 }

@@ -2,25 +2,157 @@
 
 #include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/WarheadType/Body.h>
+#include <Misc/SyncLogging.h>
 
-template<> const DWORD Extension<AnimClass>::Canary = 0xAAAAAAAA;
 AnimExt::ExtContainer AnimExt::ExtMap;
 
+void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
+{
+	this->Invoker = pInvoker;
+	this->InvokerHouse = pInvoker ? pInvoker->Owner : nullptr;
+}
+
+void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse)
+{
+	this->Invoker = pInvoker;
+	this->InvokerHouse = pInvokerHouse;
+}
+
+void AnimExt::ExtData::CreateAttachedSystem()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt && pTypeExt->AttachedSystem && !this->AttachedSystem)
+	{
+		if (auto const pSystem = GameCreate<ParticleSystemClass>(pTypeExt->AttachedSystem.Get(), pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr))
+			this->AttachedSystem = pSystem;
+	}
+}
+
+void AnimExt::ExtData::DeleteAttachedSystem()
+{
+	if (this->AttachedSystem)
+	{
+		this->AttachedSystem->Owner = nullptr;
+		this->AttachedSystem->UnInit();
+		this->AttachedSystem = nullptr;
+	}
+}
+
 //Modified from Ares
-const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner)
+bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner, bool defaultToInvokerOwner)
 {
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-	auto newOwner = HouseExt::GetHouseKind(pTypeExt->CreateUnit_Owner.Get(), true, defaultToVictimOwner ? pVictim : nullptr, pInvoker, pVictim);
+	bool makeInf = pAnim->Type->MakeInfantry > -1;
+	bool createUnit = pTypeExt->CreateUnit.Get();
+	auto ownerKind = OwnerHouseKind::Default;
+	HouseClass* pDefaultOwner = nullptr;
+
+	if (defaultToVictimOwner)
+		pDefaultOwner = pVictim;
+	else if (defaultToInvokerOwner)
+		pDefaultOwner = pInvoker;
+
+	if (makeInf)
+		ownerKind = pTypeExt->MakeInfantryOwner;
+
+	if (createUnit)
+		ownerKind = pTypeExt->CreateUnit_Owner;
+
+	auto newOwner = HouseExt::GetHouseKind(ownerKind, true, pDefaultOwner, pInvoker, pVictim);
 
 	if (newOwner)
 	{
 		pAnim->Owner = newOwner;
+		bool isRemappable = false;
 
-		if (pTypeExt->CreateUnit_RemapAnim.Get() && !newOwner->Defeated)
+		if (makeInf)
+			isRemappable = true;
+
+		if (createUnit)
+			isRemappable = pTypeExt->CreateUnit_RemapAnim;
+
+		if (isRemappable && !newOwner->Defeated)
 			pAnim->LightConvert = ColorScheme::Array->Items[newOwner->ColorSchemeIndex]->LightConvert;
 	}
 
 	return newOwner;
+}
+
+HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
+{
+	if (!pAnim)
+		return pDefaultOwner;
+
+	HouseClass* pTechnoOwner = nullptr;
+
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pAnim->OwnerObject))
+		pTechnoOwner = pTechno->Owner;
+
+	if (pAnim->Owner)
+		return pAnim->Owner;
+	else
+		return  pTechnoOwner ? pTechnoOwner : pDefaultOwner;
+}
+
+void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
+	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom)
+{
+	AnimTypeClass* pWakeAnimToUse = nullptr;
+	AnimTypeClass* pSplashAnimToUse = nullptr;
+
+	if (pCell->LandType != LandType::Water || heightFlag || explodeOnWater)
+	{
+		if (pWarhead)
+		{
+			if (warheadDetonate)
+			{
+				WarheadTypeExt::DetonateAt(pWarhead, nLocation, nullptr, nDamage);
+			}
+			else
+			{
+				MapClass::DamageArea(nLocation, nDamage, nullptr, pWarhead, pWarhead->Tiberium, pOwner);
+				MapClass::FlashbangWarheadAt(nDamage, pWarhead, nLocation);
+			}
+		}
+
+		if (pExpireAnim)
+		{
+			if (auto pAnim = GameCreate<AnimClass>(pExpireAnim, nLocation, 0, 1, 0x2600u, 0, 0))
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+		}
+	}
+	else
+	{
+		if (!isMeteor)
+			pWakeAnimToUse = RulesClass::Instance->Wake;
+
+		if (pWakeAnim)
+			pWakeAnimToUse = pWakeAnim;
+
+		if (splashAnims.size() > 0)
+		{
+			auto nIndexR = (splashAnims.size() - 1);
+			auto nIndex = splashAnimsPickRandom ?
+				ScenarioClass::Instance->Random.RandomRanged(0, nIndexR) : 0;
+
+			pSplashAnimToUse = splashAnims.at(nIndex);
+		}
+	}
+
+	if (pWakeAnimToUse)
+	{
+		if (auto const pWakeAnimCreated = GameCreate<AnimClass>(pWakeAnimToUse, nLocation, 0, 1, 0x600u, false))
+			AnimExt::SetAnimOwnerHouseKind(pWakeAnimCreated, pOwner, nullptr, false, true);
+	}
+
+	if (pSplashAnimToUse)
+	{
+		if (auto const pSplashAnimCreated = GameCreate<AnimClass>(pSplashAnimToUse, nLocation, 0, 1, 0x600u, false))
+			AnimExt::SetAnimOwnerHouseKind(pSplashAnimCreated, pOwner, nullptr, false, true);
+	}
 }
 
 // =============================
@@ -35,6 +167,8 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeathUnitTurretFacing)
 		.Process(this->DeathUnitHasTurret)
 		.Process(this->Invoker)
+		.Process(this->InvokerHouse)
+		.Process(this->AttachedSystem)
 		;
 }
 
@@ -50,6 +184,11 @@ void AnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
+void AnimExt::ExtData::InitializeConstants()
+{
+	CreateAttachedSystem();
+}
+
 // =============================
 // container
 
@@ -59,13 +198,42 @@ AnimExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
+namespace CTORTemp
+{
+	CoordStruct coords;
+	unsigned int callerAddress;
+}
+
+DEFINE_HOOK(0x421EA0, AnimClass_CTOR_SetContext, 0x6)
+{
+	GET_STACK(CoordStruct*, coords, 0x8);
+	GET_STACK(unsigned int, callerAddress, 0x0);
+
+	CTORTemp::coords = *coords;
+	CTORTemp::callerAddress = callerAddress;
+
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x422126, AnimClass_CTOR, 0x5)
 DEFINE_HOOK_AGAIN(0x422707, AnimClass_CTOR, 0x5)
 DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
 	GET(AnimClass*, pItem, ESI);
 
-	AnimExt::ExtMap.FindOrAllocate(pItem);
+	auto const callerAddress = CTORTemp::callerAddress;
+
+	// Do this here instead of using a duplicate hook in SyncLogger.cpp
+	if (!SyncLogger::HooksDisabled && pItem->UniqueID != -2)
+		SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, callerAddress);
+
+	if (pItem && !pItem->Type)
+	{
+		Debug::Log("Attempting to create animation with null Type (Caller: %08x)!\n", callerAddress);
+		return 0;
+	}
+
+	AnimExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }
@@ -114,4 +282,15 @@ DEFINE_HOOK(0x4253FF, AnimClass_Save_Suffix, 0x5)
 {
 	AnimExt::ExtMap.SaveStatic();
 	return 0;
+}
+
+// Field D0 in AnimClass is mostly unused so by removing the few uses it has it can be used to store AnimExt pointer.
+DEFINE_JUMP(LJMP, 0x42543A, 0x425448)
+
+DEFINE_HOOK_AGAIN(0x421EF4, AnimClass_CTOR_ClearD0, 0x6)
+DEFINE_HOOK(0x42276D, AnimClass_CTOR_ClearD0, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+	pThis->unknown_D0 = 0;
+	return R->Origin() + 0x6;
 }

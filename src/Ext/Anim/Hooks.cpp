@@ -1,6 +1,10 @@
 #include "Body.h"
 
+#include <ScenarioClass.h>
+#include <WarheadTypeClass.h>
+
 #include <Ext/AnimType/Body.h>
+#include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
@@ -81,6 +85,7 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 		pThis->Accum = 0.0;
 
 	TechnoClass* pInvoker = nullptr;
+	HouseClass* pInvokerHouse = nullptr;
 
 	if (pTypeExt->Damage_DealtByInvoker)
 	{
@@ -88,12 +93,15 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 		pInvoker = pExt->Invoker;
 
 		if (!pInvoker)
+		{
 			pInvoker = pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
+			pInvokerHouse = !pInvoker ? pExt->InvokerHouse : nullptr;
+		}
 	}
 
 	if (pTypeExt->Weapon.isset())
 	{
-		WeaponTypeExt::DetonateAt(pTypeExt->Weapon.Get(), pThis->GetCoords(), pInvoker, appliedDamage);
+		WeaponTypeExt::DetonateAt(pTypeExt->Weapon.Get(), pThis->GetCoords(), pInvoker, appliedDamage, pInvokerHouse);
 	}
 	else
 	{
@@ -105,7 +113,12 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 		auto pOwner = pInvoker ? pInvoker->Owner : nullptr;
 
 		if (!pOwner)
-			pOwner = pThis->OwnerObject ? pThis->OwnerObject->GetOwningHouse() : nullptr;
+		{
+			if (pThis->Owner)
+				pOwner = pThis->Owner;
+			else if (pThis->OwnerObject)
+				pOwner = pThis->OwnerObject->GetOwningHouse();
+		}
 
 		MapClass::DamageArea(pThis->GetCoords(), appliedDamage, pInvoker, pWarhead, true, pOwner);
 	}
@@ -113,21 +126,57 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	return Continue;
 }
 
-DEFINE_HOOK(0x424322, AnimClass_AI_TrailerInheritOwner, 0x6)
+DEFINE_HOOK(0x4242E1, AnimClass_AI_TrailerAnim, 0x5)
+{
+	enum { SkipGameCode = 0x424322 };
+
+	GET(AnimClass*, pThis, ESI);
+
+	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->TrailerAnim, pThis->GetCoords(), 1, 1))
+	{
+		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+		auto const pExt = AnimExt::ExtMap.Find(pThis);
+		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
+		pTrailerAnimExt->SetInvoker(pExt->Invoker, pExt->InvokerHouse);
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
+{
+	enum { SkipGameCode = 0x423EFD };
+
+	GET(AnimClass* const, pThis, ESI);
+	GET(bool const, heightFlag, EAX);
+
+	if (!pThis || !pThis->Type)
+		return SkipGameCode;
+
+	auto const pType = pThis->Type;
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+	auto const splashAnims = pTypeExt->SplashAnims.GetElements(RulesClass::Instance->SplashList);
+	auto const nDamage = Game::F2I(pType->Damage);
+	auto const pOwner = AnimExt::GetOwnerHouse(pThis);
+
+	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim.Get(), splashAnims, pOwner, pType->Warhead, nDamage,
+		pThis->GetCell(), pThis->Location, heightFlag, pType->IsMeteor, pTypeExt->Warhead_Detonate, pTypeExt->ExplodeOnWater, pTypeExt->SplashAnims_PickRandom);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
 {
 	GET(AnimClass*, pThis, ESI);
-	GET(AnimClass*, pTrailerAnim, EAX);
 
-	if (pThis->Type->TrailerAnim && pThis->Type->TrailerSeperation > 0 &&
-		Unsorted::CurrentFrame % pThis->Type->TrailerSeperation == 0)
-	{
-		if (auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim))
-		{
-			auto pExt = AnimExt::ExtMap.Find(pThis);
-			pTrailerAnim->Owner = pThis->Owner;
-			pTrailerAnimExt->Invoker = pExt->Invoker;
-		}
-	}
+	const auto pExt = AnimExt::ExtMap.Find(pThis);
+	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pExt->AttachedSystem && pExt->AttachedSystem->Type != pTypeExt->AttachedSystem.Get())
+		pExt->DeleteAttachedSystem();
+
+	if (!pExt->AttachedSystem && pTypeExt->AttachedSystem)
+		pExt->CreateAttachedSystem();
 
 	return 0;
 }
@@ -149,36 +198,38 @@ DEFINE_HOOK(0x424CB0, AnimClass_InWhichLayer_AttachedObjectLayer, 0x6)
 
 	GET(AnimClass*, pThis, ECX);
 
-	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pThis->OwnerObject && pExt->Layer_UseObjectLayer.isset())
+	if (pThis->OwnerObject)
 	{
-		Layer layer = pThis->Type->Layer;
+		auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-		if (pExt->Layer_UseObjectLayer.Get())
-			layer = pThis->OwnerObject->InWhichLayer();
+		if (pTypeExt->Layer_UseObjectLayer.isset())
+		{
+			Layer layer = pThis->Type->Layer;
 
-		R->EAX(layer);
+			if (pTypeExt->Layer_UseObjectLayer.Get())
+				layer = pThis->OwnerObject->InWhichLayer();
 
-		return ReturnValue;
+			R->EAX(layer);
+			return ReturnValue;
+		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x424C49, AnimClass_AttachTo_BuildingCoords, 0x5)
+DEFINE_HOOK(0x424C3D, AnimClass_AttachTo_CenterCoords, 0x6)
 {
+	enum { SkipGameCode = 0x424C76 };
+
 	GET(AnimClass*, pThis, ESI);
-	GET(ObjectClass*, pObject, EDI);
-	GET(CoordStruct*, pCoords, EAX);
 
 	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
 	if (pExt->UseCenterCoordsIfAttached)
 	{
-		pCoords = pObject->GetRenderCoords(pCoords);
-		pCoords->X += 128;
-		pCoords->Y += 128;
+		pThis->SetLocation(CoordStruct::Empty);
+
+		return SkipGameCode;
 	}
 
 	return 0;
@@ -194,3 +245,33 @@ DEFINE_HOOK(0x4236F0, AnimClass_DrawIt_Tiled_Palette, 0x6)
 
 	return 0x4236F6;
 }
+
+#pragma region AltPalette
+
+// Fix AltPalette anims not using owner color scheme.
+DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
+{
+	enum { SkipGameCode = 0x4232EA };
+
+	GET(AnimClass*, pThis, ESI);
+
+	int schemeIndex = pThis->Owner ? pThis->Owner->ColorSchemeIndex - 1 : RulesExt::Global()->AnimRemapDefaultColorScheme;
+	schemeIndex += AnimTypeExt::ExtMap.Find(pThis->Type)->AltPalette_ApplyLighting ? 1 : 0;
+	auto const scheme = ColorScheme::Array->Items[schemeIndex];
+
+	R->ECX(scheme);
+	return SkipGameCode;
+}
+
+// Set ShadeCount to 53 to initialize the palette fully shaded - this is required to make it not draw over shroud for some reason.
+DEFINE_HOOK(0x68C4C4, GenerateColorSpread_ShadeCountSet, 0x5)
+{
+	GET(int, shadeCount, EDX);
+
+	if (shadeCount == 1)
+		R->EDX(53);
+
+	return 0;
+}
+
+#pragma endregion

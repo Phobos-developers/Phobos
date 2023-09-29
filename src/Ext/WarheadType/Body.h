@@ -6,11 +6,15 @@
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <Ext/Bullet/Body.h>
+#include <Misc/TypeConvertHelper.h>
 
 class WarheadTypeExt
 {
 public:
 	using base_type = WarheadTypeClass;
+
+	static constexpr DWORD Canary = 0x22222222;
+	static constexpr size_t ExtPointerOffset = 0x18;
 
 	class ExtData final : public Extension<WarheadTypeClass>
 	{
@@ -23,11 +27,17 @@ public:
 		Valueable<AffectedHouse> TransactMoney_Display_Houses;
 		Valueable<bool> TransactMoney_Display_AtFirer;
 		Valueable<Point2D> TransactMoney_Display_Offset;
-		ValueableVector<AnimTypeClass*> SplashList;
+		NullableVector<AnimTypeClass*> SplashList;
 		Valueable<bool> SplashList_PickRandom;
+		Valueable<bool> SplashList_CreateAll;
+		Valueable<int> SplashList_CreationInterval;
+		Valueable<bool> AnimList_PickRandom;
+		Valueable<bool> AnimList_CreateAll;
+		Valueable<int> AnimList_CreationInterval;
+		Valueable<bool> CreateAnimsOnZeroDamage;
+		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
-		Valueable<bool> AnimList_PickRandom;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 
@@ -53,15 +63,19 @@ public:
 
 		Nullable<double> Shield_AbsorbPercent;
 		Nullable<double> Shield_PassPercent;
+		Nullable<int> Shield_ReceivedDamage_Minimum;
+		Nullable<int> Shield_ReceivedDamage_Maximum;
 
 		Valueable<int> Shield_Respawn_Duration;
 		Valueable<double> Shield_Respawn_Amount;
 		Valueable<int> Shield_Respawn_Rate;
-		Valueable<bool> Shield_Respawn_ResetTimer;
+		Valueable<bool> Shield_Respawn_RestartTimer;
 		Valueable<int> Shield_SelfHealing_Duration;
 		Nullable<double> Shield_SelfHealing_Amount;
 		Valueable<int> Shield_SelfHealing_Rate;
-		Valueable<bool> Shield_SelfHealing_ResetTimer;
+		Nullable<bool> Shield_SelfHealing_RestartInCombat;
+		Valueable<int> Shield_SelfHealing_RestartInCombatDelay;
+		Valueable<bool> Shield_SelfHealing_RestartTimer;
 
 		ValueableVector<ShieldTypeClass*> Shield_AttachTypes;
 		ValueableVector<ShieldTypeClass*> Shield_RemoveTypes;
@@ -70,13 +84,23 @@ public:
 		Valueable<bool> Shield_InheritStateOnReplace;
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
+		NullableVector<ShieldTypeClass*> Shield_Penetrate_Types;
+		NullableVector<ShieldTypeClass*> Shield_Break_Types;
+		NullableVector<ShieldTypeClass*> Shield_Respawn_Types;
+		NullableVector<ShieldTypeClass*> Shield_SelfHealing_Types;
 
 		Valueable<int> NotHuman_DeathSequence;
 		ValueableIdxVector<SuperWeaponTypeClass> LaunchSW;
 		Valueable<bool> LaunchSW_RealLaunch;
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
 		Valueable<bool> LaunchSW_IgnoreDesignators;
+		Valueable<bool> LaunchSW_DisplayMoney;
+		Valueable<AffectedHouse> LaunchSW_DisplayMoney_Houses;
+		Valueable<Point2D> LaunchSW_DisplayMoney_Offset;
+
 		Valueable<bool> AllowDamageOnSelf;
+		NullableVector<AnimTypeClass*> DebrisAnims;
+		Valueable<bool> Debris_Conventional;
 
 		Valueable<bool> DetonateOnAllMapObjects;
 		Valueable<bool> DetonateOnAllMapObjects_RequireVerses;
@@ -85,14 +109,22 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
+		std::vector<TypeConvertGroup> Convert_Pairs;
+
+		Valueable<bool> InflictLocomotor;
+		Valueable<bool> RemoveInflictedLocomotor;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 
-		double RandomBuffer;
+		double Crit_RandomBuffer;
 		bool HasCrit;
 		bool WasDetonatedOnAllMapObjects;
+		bool Splashed;
+		int RemainingAnimCreationInterval;
+		bool PossibleCellSpreadDetonate;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -109,9 +141,15 @@ public:
 			, TransactMoney_Display_Offset { { 0, 0 } }
 			, SplashList {}
 			, SplashList_PickRandom { false }
+			, SplashList_CreateAll { false }
+			, SplashList_CreationInterval { 0 }
+			, AnimList_PickRandom { false }
+			, AnimList_CreateAll { false }
+			, AnimList_CreationInterval { 0 }
+			, CreateAnimsOnZeroDamage { false }
+			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
-			, AnimList_PickRandom { false }
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 
@@ -136,17 +174,21 @@ public:
 			, Shield_BreakWeapon {}
 			, Shield_AbsorbPercent {}
 			, Shield_PassPercent {}
+			, Shield_ReceivedDamage_Minimum {}
+			, Shield_ReceivedDamage_Maximum {}
 
 			, Shield_Respawn_Duration { 0 }
 			, Shield_Respawn_Amount { 0.0 }
 			, Shield_Respawn_Rate { -1 }
 			, Shield_Respawn_Rate_InMinutes { -1.0 }
-			, Shield_Respawn_ResetTimer { false }
+			, Shield_Respawn_RestartTimer { false }
 			, Shield_SelfHealing_Duration { 0 }
 			, Shield_SelfHealing_Amount { }
 			, Shield_SelfHealing_Rate { -1 }
 			, Shield_SelfHealing_Rate_InMinutes { -1.0 }
-			, Shield_SelfHealing_ResetTimer { false }
+			, Shield_SelfHealing_RestartInCombat {}
+			, Shield_SelfHealing_RestartInCombatDelay { -1 }
+			, Shield_SelfHealing_RestartTimer { false }
 			, Shield_AttachTypes {}
 			, Shield_RemoveTypes {}
 			, Shield_ReplaceOnly { false }
@@ -154,27 +196,45 @@ public:
 			, Shield_InheritStateOnReplace { false }
 			, Shield_MinimumReplaceDelay { 0 }
 			, Shield_AffectTypes {}
+			, Shield_Penetrate_Types {}
+			, Shield_Break_Types {}
+			, Shield_Respawn_Types {}
+			, Shield_SelfHealing_Types {}
 
 			, NotHuman_DeathSequence { -1 }
 			, LaunchSW {}
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
 			, LaunchSW_IgnoreDesignators { true }
+			, LaunchSW_DisplayMoney { false }
+			, LaunchSW_DisplayMoney_Houses { AffectedHouse::All }
+			, LaunchSW_DisplayMoney_Offset { { 0, 0 } }
+
 			, AllowDamageOnSelf { false }
+			, DebrisAnims {}
+			, Debris_Conventional { false }
 
 			, DetonateOnAllMapObjects { false }
 			, DetonateOnAllMapObjects_RequireVerses { false }
-			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::All }
-			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::All }
+			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::None }
+			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::None }
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
+
+			, Convert_Pairs {}
+
+			, InflictLocomotor { false }
+			, RemoveInflictedLocomotor { false }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 
-			, RandomBuffer { 0.0 }
+			, Crit_RandomBuffer { 0.0 }
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
+			, Splashed { false }
+			, RemainingAnimCreationInterval { 0 }
+			, PossibleCellSpreadDetonate {false}
 		{ }
 
 	private:
@@ -184,6 +244,9 @@ public:
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
+		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyLocomotorInfliction(TechnoClass* pTarget);
+		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
@@ -207,14 +270,12 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
 
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static void DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage);
-	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage);
+	static void DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
+	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 };

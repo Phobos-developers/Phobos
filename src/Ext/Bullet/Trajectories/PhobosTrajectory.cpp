@@ -31,9 +31,9 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 	if (INIClass::IsBlank(Phobos::readBuffer))
 		pNewType = nullptr;
 	else if (_stricmp(Phobos::readBuffer, "Straight") == 0)
-		pNewType = GameCreate<StraightTrajectoryType>();
+		pNewType = DLLCreate<StraightTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Bombard") == 0)
-		pNewType = GameCreate<BombardTrajectoryType>();
+		pNewType = DLLCreate<BombardTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -42,7 +42,7 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 
 	if (bUpdateType)
 	{
-		GameDelete(pType); // GameDelete already has if(pType) check here.
+		DLLDelete(pType); // GameDelete already has if(pType) check here.
 		pType = pNewType;
 	}
 }
@@ -60,10 +60,10 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
-			pType = GameCreate<StraightTrajectoryType>();
+			pType = DLLCreate<StraightTrajectoryType>();
 			break;
 		case TrajectoryFlag::Bombard:
-			pType = GameCreate<BombardTrajectoryType>();
+			pType = DLLCreate<BombardTrajectoryType>();
 			break;
 		default:
 			return nullptr;
@@ -101,6 +101,7 @@ PhobosTrajectoryType* PhobosTrajectoryType::ProcessFromStream(PhobosStreamWriter
 bool PhobosTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	Stm.Process(this->Flag, false);
+
 	return true;
 }
 
@@ -125,11 +126,11 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 	switch (pType->Flag)
 	{
 	case TrajectoryFlag::Straight:
-		pRet = GameCreate<StraightTrajectory>(pType);
+		pRet = DLLCreate<StraightTrajectory>(pType);
 		break;
 
 	case TrajectoryFlag::Bombard:
-		pRet = GameCreate<BombardTrajectory>(pType);
+		pRet = DLLCreate<BombardTrajectory>(pType);
 		break;
 	}
 
@@ -152,10 +153,10 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
-			pTraj = GameCreate<StraightTrajectory>();
+			pTraj = DLLCreate<StraightTrajectory>();
 			break;
 		case TrajectoryFlag::Bombard:
-			pTraj = GameCreate<BombardTrajectory>();
+			pTraj = DLLCreate<BombardTrajectory>();
 			break;
 		default:
 			return nullptr;
@@ -209,6 +210,18 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (auto pTraj = pExt->Trajectory)
+		pTraj->OnAIPreDetonate(pThis);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 {
 	GET(BulletClass*, pThis, EBP);
@@ -225,7 +238,7 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 
 DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 {
-	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879 };
+	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879, Detonate = 0x467E53 };
 
 	GET(BulletClass*, pThis, EBP);
 
@@ -233,12 +246,20 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 
 	if (auto pTraj = pExt->Trajectory)
 	{
-		auto flag = pTraj->OnAITargetCoordCheck(pThis);
-
-		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
+		switch (pTraj->OnAITargetCoordCheck(pThis))
+		{
+		case TrajectoryCheckReturnType::SkipGameCheck:
 			return SkipCheck;
-		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+			break;
+		case TrajectoryCheckReturnType::SatisfyGameCheck:
 			return ContinueAfterCheck;
+			break;
+		case TrajectoryCheckReturnType::Detonate:
+			return Detonate;
+			break;
+		default:
+			break;
+		}
 	}
 
 	return 0;
@@ -255,12 +276,17 @@ DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 
 	if (auto pTraj = pExt->Trajectory)
 	{
-		auto flag = pTraj->OnAITechnoCheck(pThis, pTechno);
-
-		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
+		switch (pTraj->OnAITechnoCheck(pThis, pTechno))
+		{
+		case TrajectoryCheckReturnType::SkipGameCheck:
 			return SkipCheck;
-		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+			break;
+		case TrajectoryCheckReturnType::SatisfyGameCheck:
 			return ContinueAfterCheck;
+			break;
+		default:
+			break;
+		}
 	}
 
 	return 0;

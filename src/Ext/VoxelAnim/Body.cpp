@@ -1,8 +1,8 @@
 #include "Body.h"
 #include <Ext/VoxelAnimType/Body.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <Utilities/Macro.h>
 
-template<> const DWORD Extension<VoxelAnimClass>::Canary = 0xAAAAAACC;
 VoxelAnimExt::ExtContainer VoxelAnimExt::ExtMap;
 
 void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
@@ -17,8 +17,7 @@ void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
 	{
 		if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
 		{
-			pThisExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>
-				(pLaserType, pThis->OwnerHouse));
+			pThisExt->LaserTrails.push_back(LaserTrailClass { pLaserType, pThis->OwnerHouse });
 		}
 	}
 }
@@ -47,8 +46,6 @@ void VoxelAnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-void VoxelAnimExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) {}
-
 bool VoxelAnimExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	return Stm
@@ -75,7 +72,7 @@ DEFINE_HOOK(0x74942E, VoxelAnimClass_CTOR, 0xC)
 {
 	GET(VoxelAnimClass*, pItem, ESI);
 
-	VoxelAnimExt::ExtMap.FindOrAllocate(pItem);
+	VoxelAnimExt::ExtMap.TryAllocate(pItem);
 	VoxelAnimExt::InitializeLaserTrails(pItem);
 
 	return 0;
@@ -101,7 +98,7 @@ DEFINE_HOOK(0x74AA10, VoxelAnimClass_SaveLoad_Prefix, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x74A9FB, VoxelAnimClass_Load_Suffix, 0x5)
+DEFINE_HOOK(0x74A9FB, VoxelAnimClass_Load_Suffix, 0x7)
 {
 	VoxelAnimExt::ExtMap.LoadStatic();
 	return 0;

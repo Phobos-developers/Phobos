@@ -2,35 +2,43 @@
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
-
+#include <GameStrings.h>
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
+#include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Debug.h>
-
 
 class AnimTypeClass;
 class MouseCursor;
 class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
+class DigitalDisplayTypeClass;
 
 class RulesExt
 {
 public:
 	using base_type = RulesClass;
 
+	static constexpr DWORD Canary = 0x12341234;
+
 	class ExtData final : public Extension<RulesClass>
 	{
 	public:
-		DynamicVectorClass<DynamicVectorClass<TechnoTypeClass*>> AITargetTypesLists;
-		DynamicVectorClass<DynamicVectorClass<ScriptTypeClass*>> AIScriptsLists;
-		DynamicVectorClass<TechnoTypeClass*> HarvesterTypes;
+		std::vector<std::vector<TechnoTypeClass*>> AITargetTypesLists;
+		std::vector<std::vector<ScriptTypeClass*>> AIScriptsLists;
+		ValueableVector<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
+		Valueable<bool> GainSelfHealAllowMultiplayPassive;
+		Valueable<bool> EnemyInsignia;
+		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
+		Valueable<int> ChronoSparkleDisplayDelay;
+		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<bool> RadWarhead_Detonate;
@@ -38,8 +46,7 @@ public:
 		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
-		Valueable<bool> JumpjetAllowLayerDeviation;
-		Valueable<bool> JumpjetTurnToTarget;
+
 		PhobosFixedString<32u> MissingCameo;
 		TranslucencyLevel PlacementGrid_Translucency;
 		Valueable<bool> PlacementPreview;
@@ -54,25 +61,56 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
+		Valueable<Point2D> Pips_Generic_Size;
+		Valueable<Point2D> Pips_Generic_Buildings_Size;
+		Valueable<Point2D> Pips_Ammo_Size;
+		Valueable<Point2D> Pips_Ammo_Buildings_Size;
+		ValueableVector<int> Pips_Tiberiums_Frames;
+		NullableVector<int> Pips_Tiberiums_DisplayOrder;
 
-		Valueable<bool> ForbidParallelAIQueues_Infantry;
-		Valueable<bool> ForbidParallelAIQueues_Vehicle;
-		Valueable<bool> ForbidParallelAIQueues_Navy;
+		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
 		Valueable<bool> ForbidParallelAIQueues_Building;
+		Valueable<bool> ForbidParallelAIQueues_Infantry;
+		Valueable<bool> ForbidParallelAIQueues_Navy;
+		Valueable<bool> ForbidParallelAIQueues_Vehicle;
+
+		Valueable<bool> DisplayIncome;
+		Valueable<bool> DisplayIncome_AllowAI;
+		Valueable<AffectedHouse> DisplayIncome_Houses;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
+		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
+		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
+
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
 		Valueable<int> ToolTip_Background_Opacity;
 		Valueable<float> ToolTip_Background_BlurSize;
 
+		Valueable<bool> CrateOnlyOnLand;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
+		Valueable<bool> DrawTurretShadow;
+		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
+		ValueableIdx<ColorScheme> TimerBlinkColorScheme;
+
+		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
+
+		Valueable<bool> ShowDesignatorRange;
+		Valueable<bool> IsVoiceCreatedGlobal;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
+			, GainSelfHealAllowMultiplayPassive { true }
+			, EnemyInsignia { true }
+			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
+			, ChronoSparkleDisplayDelay { 24 }
+			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadWarhead_Detonate { false }
@@ -80,9 +118,7 @@ public:
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
-			, JumpjetAllowLayerDeviation { true }
-			, JumpjetTurnToTarget { false }
-			, MissingCameo { "xxicon.shp" }
+			, MissingCameo { GameStrings::XXICON_SHP() }
 			, PlacementGrid_Translucency { 0 }
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
@@ -95,17 +131,39 @@ public:
 			, Pips_SelfHeal_Infantry_Offset { { 25, -35 } }
 			, Pips_SelfHeal_Units_Offset { { 33, -32 } }
 			, Pips_SelfHeal_Buildings_Offset { { 15, 10 } }
+			, Pips_Generic_Size { { 4, 0 } }
+			, Pips_Generic_Buildings_Size { { 4, 2 } }
+			, Pips_Ammo_Size { { 4, 0 } }
+			, Pips_Ammo_Buildings_Size { { 4, 2 } }
+			, Pips_Tiberiums_Frames {}
+			, Pips_Tiberiums_DisplayOrder {}
+			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
 			, ForbidParallelAIQueues_Infantry { false }
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
 			, IronCurtain_KeptOnDeploy { true }
+			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
+			, IronCurtain_KillOrganicsWarhead { }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
+			, DisplayIncome { false }
+			, DisplayIncome_AllowAI { true }
+			, DisplayIncome_Houses { AffectedHouse::All }
+			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
+			, DrawTurretShadow { false }
+			, IsVoiceCreatedGlobal { false }
+			, AnimRemapDefaultColorScheme { 0 }
+			, TimerBlinkColorScheme { 5 }
+			, Buildings_DefaultDigitalDisplayTypes {}
+			, Infantry_DefaultDigitalDisplayTypes {}
+			, Vehicles_DefaultDigitalDisplayTypes {}
+			, Aircraft_DefaultDigitalDisplayTypes {}
+			, ShowDesignatorRange { true }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -157,6 +215,4 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static bool DetailsCurrentlyEnabled();
-	static bool DetailsCurrentlyEnabled(int minDetailLevel);
 };

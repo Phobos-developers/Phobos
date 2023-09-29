@@ -16,21 +16,21 @@ public:
 	Valueable<bool> CloakVisible;
 
 	LaserTrailTypeClass(const char* pTitle = NONE_STR) : Enumerable<LaserTrailTypeClass>(pTitle)
-		, IsHouseColor(false)
-		, Color({ 255, 0, 0 })
-		, FadeDuration(64)
-		, Thickness(4)
-		, SegmentLength(128)
-		, IgnoreVertical(false)
-		, IsIntense(false)
-		, CloakVisible(false)
+		, IsHouseColor { false }
+		, Color { { 255, 0, 0 } }
+		, FadeDuration { 64 }
+		, Thickness { 4 }
+		, SegmentLength { 128 }
+		, IgnoreVertical { false }
+		, IsIntense { false }
+		, CloakVisible { false }
 	{ }
 
 	virtual ~LaserTrailTypeClass() override = default;
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm);
-	virtual void SaveToStream(PhobosStreamWriter& Stm);
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 private:
 	template <typename T>
