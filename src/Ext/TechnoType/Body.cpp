@@ -270,6 +270,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsPipSize.Read(exINI, pSection, "SpawnsPipSize");
 	this->SpawnsPipOffset.Read(exINI, pSection, "SpawnsPipOffset");
 
+	this->SpawnDistanceFromTarget.Read(exINI, pSection, "SpawnDistanceFromTarget");
+	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -578,6 +581,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EmptySpawnsPipFrame)
 		.Process(this->SpawnsPipSize)
 		.Process(this->SpawnsPipOffset)
+
+		.Process(this->SpawnDistanceFromTarget)
+		.Process(this->SpawnHeight)
 		.Process(this->GiftBoxType)
 		;
 }

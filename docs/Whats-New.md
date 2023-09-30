@@ -26,6 +26,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From 0.3
 
+- `Trajectory=Straight` projectiles can now snap on targets within 0.5 cells from their detonation point, this distance can be customized via `Trajectory.Straight.TargetSnapDistance`.
 - `LaunchSW.RealLaunch=false` now checks if firing house has enough credits to satisfy SW's `Money.Amount` in order to be fired.
 - `CreateUnit` now creates the units by default at animation's height (even if `CreateUnit.ConsiderPathfinding` is enabled) instead of always at ground level. This behaviour can be restored by setting `CreateUnit.AlwaysSpawnOnGround` to true.
 - Phobos-introduced attack scripts now consider potential target's current map zone when evaluating targets. [TargetZoneScanType](Fixed-or-Improved-Logics.md#customizable-target-evaluation-map-zone-check-behaviour) can be used to customize this behaviour.
@@ -343,6 +344,9 @@ New:
 - Reloading ammo in transports (by Starkku)
 - Dump variables to file on scenario end / hotkey (by Morton)
 - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
+- Allow toggling `Infantry/UnitsGainSelfHeal` for `MultiplayPassive=true` houses (by Starkku)
+- Customizable straight trajectory detonation & snap distance and pass-through option (by Starkku)
+- Airstrike & spy plane fixed spawn distance & height (by Starkku)
 - GiftBox port from DP-Kratos (by Otamaa)
 
 Vanilla fixes:
@@ -413,6 +417,8 @@ Phobos fixes:
 - Shields will no longer take damage if the parent techno has `Immune=true` or has `TypeImmune=true` and the damage comes from instance of same TechnoType owned by same house (by Starkku)
 - Fixed interceptors causing multiplayer games to desync (by Starkku)
 - Optimized performance for map trigger retint action light source fix (by Starkku)
+- Fixed a number of issues with Warhead Shield respawn / self heal rate modifiers like timers getting reset unnecessarily, the timer being adjusted wrong after the Warhead effect runs out etc. (by Starkku)
+- Fixed a problem with disguise visibility logic that could cause game to crash on loading a map (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)

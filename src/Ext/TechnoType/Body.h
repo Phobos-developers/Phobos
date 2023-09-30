@@ -180,6 +180,9 @@ public:
 		Nullable<Point2D> SpawnsPipSize;
 		Valueable<Point2D> SpawnsPipOffset;
 
+		Nullable<Leptons> SpawnDistanceFromTarget;
+		Nullable<int> SpawnHeight;
+
 		std::unique_ptr<GiftBoxTypeClass> GiftBoxType;
 
 		struct LaserTrailDataEntry
@@ -356,6 +359,9 @@ public:
 			, EmptySpawnsPipFrame { 0 }
 			, SpawnsPipSize {}
 			, SpawnsPipOffset {{ 0,0 }}
+
+			, SpawnDistanceFromTarget {}
+			, SpawnHeight {}
 			, GiftBoxType { nullptr }
 		{ }
 

@@ -212,6 +212,8 @@ This page lists all the individual contributions to the project by their author.
   - Custom palette support for wall overlays
   - Warhead animation improvements
   - Reloading ammo in transports
+  - Straight projectile trajectory additions
+  - Airstrike & spy plane fixed spawn distance & height
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
