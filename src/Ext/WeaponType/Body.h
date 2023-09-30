@@ -39,6 +39,11 @@ public:
 		Valueable<bool> OmniFire_TurnToTarget;
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
+		Nullable<AnimTypeClass*> DelayedFire_Anim;
+		Nullable<AnimTypeClass*> DelayedFire_PostAnim;
+		Valueable<bool> DelayedFire_Anim_UseFLH;
+		Valueable<int> DelayedFire_Duration;
+		Valueable<bool> DelayedFire_Suicide;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -60,6 +65,11 @@ public:
 			, OmniFire_TurnToTarget { false }
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
+			, DelayedFire_Anim { }
+			, DelayedFire_PostAnim { }
+			, DelayedFire_Anim_UseFLH { true }
+			, DelayedFire_Duration { 0 }
+			, DelayedFire_Suicide { false }
 		{ }
 
 		int GetBurstDelay(int burstIndex);
@@ -69,7 +79,11 @@ public:
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
+		{
+			AnnounceInvalidPointer(DelayedFire_Anim, ptr);
+			AnnounceInvalidPointer(DelayedFire_PostAnim, ptr);
+		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 

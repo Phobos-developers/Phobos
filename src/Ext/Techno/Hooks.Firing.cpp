@@ -3,9 +3,12 @@
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
 #include <TerrainClass.h>
+#include <AnimClass.h>
 
 #include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/Anim/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
@@ -872,3 +875,58 @@ DEFINE_JUMP(CALL6, 0x6F8CE3, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponWrapper
 DEFINE_JUMP(CALL6, 0x6F8DD2, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponRangeWrapper));
 
 #pragma endregion
+
+DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DelayedFire, 0x6) //0x6FDD93
+{
+	//GET(WeaponTypeClass*, pWeaponType, EBX);
+	GET(TechnoClass*, pThis, ESI);
+
+	enum { continueFireAt = 0, skipFireAt = 0x6FDE03 };
+
+	if (!pThis)
+		return continueFireAt;
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return continueFireAt;
+
+	if (pExt->DelayedFire_Charged)
+	{
+		pExt->DelayedFire_Charging = false;
+		pExt->DelayedFire_Charged = false;
+
+		return continueFireAt;
+	}
+
+	int weaponIndex = pThis->SelectWeapon(pThis->Target);
+
+	auto pWeaponType = pThis->GetWeapon(weaponIndex)->WeaponType;
+	if (!pWeaponType)
+		return continueFireAt;
+
+	auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+	if (!pWeaponTypeExt || !pWeaponTypeExt->DelayedFire_Anim.isset())
+	{
+		pExt->DelayedFire_Charging = false;
+		return continueFireAt;
+	}
+
+	// Check if weapon was changed and reset values if needed
+	if (pExt->DelayedFire_WeaponIndex != weaponIndex)
+	{
+		pExt->DelayedFire_Charging = true;
+		pExt->DelayedFire_Charged = false;
+		pExt->DelayedFire_WeaponIndex = weaponIndex;
+
+		return skipFireAt;
+	}
+
+	//auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+	//if (!pWeaponTypeExt)
+		//return continueFireAt;
+
+	if (pExt->DelayedFire_Charging)
+		return skipFireAt;
+
+	return continueFireAt;
+}

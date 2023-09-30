@@ -38,6 +38,13 @@ public:
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
 		int WHAnimRemainingCreationInterval;
+		bool DelayedFire_Charging;
+		bool DelayedFire_Charged;
+		AnimClass* DelayedFire_Anim;
+		AnimClass* DelayedFire_PostAnim;
+		int DelayedFire_Duration;
+		int DelayedFire_WeaponIndex;
+		CDTimerClass DelayedFire_DurationTimer;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -61,6 +68,13 @@ public:
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
 			, WHAnimRemainingCreationInterval { 0 }
+			, DelayedFire_Charging { false }
+			, DelayedFire_Charged { false }
+			, DelayedFire_Anim { nullptr }
+			, DelayedFire_PostAnim { nullptr }
+			, DelayedFire_Duration { -1 }
+			, DelayedFire_WeaponIndex { -1 }
+			, DelayedFire_DurationTimer {}
 		{ }
 
 		void ApplyInterceptor();
@@ -74,12 +88,15 @@ public:
 		void UpdateLaserTrails();
 		void InitializeLaserTrails();
 		void UpdateMindControlAnim();
+		void UpdateDelayFire();
 
 		virtual ~ExtData() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
 			AnnounceInvalidPointer(OriginalPassengerOwner, ptr);
+			AnnounceInvalidPointer(DelayedFire_Anim, ptr);
+			AnnounceInvalidPointer(DelayedFire_PostAnim, ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
