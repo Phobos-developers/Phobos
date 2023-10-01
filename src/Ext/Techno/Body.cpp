@@ -35,16 +35,25 @@ TechnoExt::ExtData::~ExtData()
 	}
 }
 
-bool TechnoExt::IsActive(TechnoClass* pThis)
+bool __fastcall TechnoExt::IsActive(TechnoClass* const pThis)
 {
-	return
-		pThis &&
-		!pThis->TemporalTargetingMe &&
-		!pThis->BeingWarpedOut &&
-		!pThis->IsUnderEMP() &&
-		pThis->IsAlive &&
-		pThis->Health > 0 &&
-		!pThis->InLimbo;
+	return pThis
+		&& pThis->IsAlive
+		&& pThis->Health > 0
+		&& !pThis->InLimbo
+		&& !pThis->TemporalTargetingMe
+		&& !pThis->BeingWarpedOut
+		&& !pThis->IsUnderEMP();
+}
+
+bool __fastcall TechnoExt::IsActivePower(TechnoClass* const pThis)
+{
+	bool active = IsActive(pThis);
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis))
+		active &= pBuilding->IsPowerOnline();
+
+	return active;
 }
 
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
@@ -659,6 +668,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->WHAnimRemainingCreationInterval)
+		.Process(this->CurrentFiringSW)
+		.Process(this->FinishSW)
 		;
 }
 

@@ -43,6 +43,9 @@ public:
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
 
+		SuperClass* CurrentFiringSW;
+		bool FinishSW;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -61,6 +64,8 @@ public:
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
 			, WHAnimRemainingCreationInterval { 0 }
+			, CurrentFiringSW { nullptr }
+			, FinishSW { false }
 		{ }
 
 		void ApplyInterceptor();
@@ -74,6 +79,7 @@ public:
 		void UpdateLaserTrails();
 		void InitializeLaserTrails();
 		void UpdateMindControlAnim();
+		void UpdateFiringSW();
 
 		virtual ~ExtData() override;
 
@@ -115,7 +121,8 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static bool IsActive(TechnoClass* pThis);
+	static bool __fastcall IsActive(TechnoClass* pThis);
+	static bool __fastcall IsActivePower(TechnoClass* pThis);
 
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);

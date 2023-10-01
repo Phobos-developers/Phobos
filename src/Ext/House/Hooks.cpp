@@ -43,6 +43,27 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 	return 0;
 }
 
+
+DEFINE_HOOK(0x4FF550, HouseClass_RegisterLoss, 0x6)
+{
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(TechnoClass*, pTechno, 0x4);
+
+	HouseExt::RegisterLoss(pThis, pTechno);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4FF700, HouseClass_RegisterGain, 0x6)
+{
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(TechnoClass*, pTechno, 0x4);
+
+	HouseExt::RegisterGain(pThis, pTechno);
+
+	return 0;
+}
+
 // Power Plant Enhancer #131
 DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 {

@@ -689,3 +689,12 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 		}
 	}
 }
+
+void TechnoExt::ExtData::UpdateFiringSW()
+{
+	if (this->FinishSW)
+	{
+		this->FinishSW = false;
+		OwnerObject()->Guard();
+	}
+}

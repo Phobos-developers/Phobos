@@ -22,6 +22,8 @@ public:
 	{
 	public:
 
+		PhobosFixedString<0x20> TypeID;
+
 		//Ares 0.A
 		Valueable<int> Money_Amount;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
@@ -63,7 +65,14 @@ public:
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
+		//EMPulseExtra
+		Valueable<bool> EMPulse_Linked;
+		Valueable<bool> EMPulse_TargetSelf;
+		ValueableVector<TechnoTypeClass*> EMPulse_Cannons;
+		Valueable<bool> EMPulse_IgnoreMission;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
+			, TypeID { "" }
 			, Money_Amount { 0 }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
@@ -98,6 +107,11 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+
+			, EMPulse_Cannons {}
+			, EMPulse_Linked { false }
+			, EMPulse_TargetSelf { false }
+			, EMPulse_IgnoreMission { false }
 		{ }
 
 		// Ares 0.A functions
@@ -145,5 +159,7 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer);
 
 };
