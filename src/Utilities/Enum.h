@@ -220,6 +220,7 @@ enum class DiscardCondition : unsigned char
 	Entry = 0x1,
 	Move = 0x2,
 	Stationary = 0x4,
+	Drain = 0x8,
 };
 
 MAKE_ENUM_FLAGS(DiscardCondition);
