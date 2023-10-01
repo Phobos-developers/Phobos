@@ -248,6 +248,7 @@ Phobos fixes:
 - Fixed `PlacementPreview` setting for BuildingTypes not being parsed from INI (by Starkku)
 - Optimized performance for map trigger retint action light source fix (by Starkku)
 - Fixed owned `LimboDelivery` buildings not being saved correctly in savegames (by Starkku)
+- Fixed a typo in weapon selector code causing issues with `NoAmmoWeapon` and related checks (by Starkku)
 </details>
 
 ### 0.3.0.1
