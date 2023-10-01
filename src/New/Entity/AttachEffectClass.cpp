@@ -346,6 +346,9 @@ bool AttachEffectClass::AllowedToBeActive() const
 			return false;
 	}
 
+	if (this->Techno->DrainingMe && (Type->DiscardOn & DiscardCondition::Drain) != DiscardCondition::None)
+		return false;
+
 	return true;
 }
 

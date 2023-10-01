@@ -1085,6 +1085,10 @@ namespace detail
 				{
 					parsed |= DiscardCondition::Stationary;
 				}
+				else if (!_strcmpi(cur, "drain"))
+				{
+					parsed |= DiscardCondition::Drain;
+				}
 				else
 				{
 					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a discard condition type");

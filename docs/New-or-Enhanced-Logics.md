@@ -14,6 +14,7 @@ This page describes all the engine features that are either new and introduced b
     - `entry`: Discard on exiting the map when entering transports or buildings etc.
     - `move`: Discard when the object the effect is attached on moves. Ignored if the object is a building.
     - `stationary`: Discard when the object the effect is attached on stops moving. Ignored if the object is a building.
+    - `drain`: Discard when the object is being affected by a weapon with `DrainWeapon=true`.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects (Iron Curtain / Force Shield).
   - `Animation` defines animation to play in an indefinite loop for as long as the effect is active on the object it is attached to.
     - If `Animation.ResetOnReapply` is set to true, the animation playback is reset every time the effect is applied if `Cumulative=false`.
@@ -60,7 +61,7 @@ Duration=0                                   ; integer - game frames or negative
 Cumulative=false                             ; boolean
 Cumulative.MaxCount=-1                       ; integer
 Powered=false                                ; boolean
-DiscardOn=none                               ; list of discard condition enumeration (none|entry|move|stationary)
+DiscardOn=none                               ; list of discard condition enumeration (none|entry|move|stationary|drain)
 PenetratesIronCurtain=false                  ; boolean
 Animation=                                   ; Animation
 Animation.ResetOnReapply=false               ; boolean
