@@ -213,6 +213,7 @@ This page lists all the individual contributions to the project by their author.
   - Reloading ammo in transports
   - Straight projectile trajectory additions
   - Airstrike & spy plane fixed spawn distance & height
+  - Negative damage `Verses/PercentAtMax` toggle
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
