@@ -892,11 +892,21 @@ DEFINE_HOOK(0x4D4E8A, FootClass_FiringAI_BurstRandomTarget_Setup, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x44AFF8, TechnoClass_FireAt_BurstRandomTarget_Setup, 0x6)
+DEFINE_HOOK(0x44AFF8, BuildingClass_FireAt_BurstRandomTarget_Setup, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
+	auto pOriginalTarget = pThis->Target;
+
 	TechnoExt::UpdateRandomTarget(pThis);
+
+	int weaponIndex = pThis->SelectWeapon(pThis->Target);
+	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	if (!pWeapon || pWeapon->IsLaser || pWeapon->Spawner)
+		return 0;
+
+	if (pThis->Target)
+		pThis->Target = pOriginalTarget;
 
 	return 0;
 }
@@ -972,7 +982,7 @@ DEFINE_HOOK(0x6B7AE3, SpawnerManagerClassAI_SpawnControlStatus3, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected, 0x5)
+DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected_ClearRetargets, 0x5)
 {
 	// Makes technos with random targets stop targeting
 	for (auto pObj : ObjectClass::CurrentObjects())
@@ -993,6 +1003,50 @@ DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected, 0x5)
 			pTechno->QueueMission(Mission::Guard, 0);
 		}
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4D4256, Mission_Move_ClearRetargets, 0x9)
+{
+	GET(FootClass*, pThis, ESI);
+
+	if (!pThis)
+		return 0;
+
+	auto pTechno = abstract_cast<TechnoClass*>(pThis);
+	if (!pTechno)
+		return 0;
+
+	auto pExt = TechnoExt::ExtMap.Find(pTechno);
+	if (!pExt)
+		return 0;
+
+	if (pExt->CurrentRandomTarget && pThis->CurrentMission == Mission::Move)
+	{
+		pExt->CurrentRandomTarget = nullptr;
+		pExt->OriginalTarget = nullptr;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FE562, TechnoClass_FireAt_BulletNewTarget, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(BulletClass*, pBullet, EAX);
+
+	if (!pBullet)
+		return 0;
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return 0;
+
+	if (!pExt->OriginalTarget)
+		return 0;
+
+	pBullet->Target = pExt->CurrentRandomTarget;
 
 	return 0;
 }
