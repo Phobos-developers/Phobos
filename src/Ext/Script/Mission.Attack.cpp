@@ -19,6 +19,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	bool agentMode = false;
 	bool pacifistTeam = true;
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	std::vector<double> disguiseDetection = {};
 
 	if (!pScript)
 		return;
@@ -136,6 +137,19 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 				if ((pTypeInf->Agent && pTypeInf->Infiltrate) || pTypeInf->Engineer)
 					agentMode = true;
 			}
+
+			auto pTechnoData = TechnoTypeExt::ExtMap.Find(pTechnoType);
+			if (pTechnoType->DetectDisguise)
+			{
+				auto const AIDifficulty = static_cast<int>(pFoot->Owner->GetAIDifficultyIndex());
+				double detectionValue = 1.0;
+
+				if (pTechnoData->DetectDisguise_Percent.size() == 3)
+					detectionValue = pTechnoData->DetectDisguise_Percent[AIDifficulty];
+
+				detectionValue = detectionValue > 0.0 ? detectionValue : 1.0;
+				disguiseDetection.push_back(detectionValue);
+			}
 		}
 	}
 
@@ -194,7 +208,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 			enemyHouse = HouseClass::Array->GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
 
 		int targetMask = scriptArgument;
-		selectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse, attackAITargetType, idxAITargetTypeItem, agentMode);
+		selectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse, attackAITargetType, idxAITargetTypeItem, agentMode, disguiseDetection);
 
 		if (selectedTarget)
 		{
@@ -399,7 +413,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	}
 }
 
-TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1, int idxAITargetTypeItem = -1, bool agentMode = false)
+TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1, int idxAITargetTypeItem = -1, bool agentMode = false, std::vector<double> disguiseDetection = {})
 {
 	TechnoClass* bestObject = nullptr;
 	double bestVal = -1;
@@ -492,6 +506,29 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 			&& object->Owner != pTechno->Owner
 			&& (!pTechno->Owner->IsAlliedWith(object) || IsUnitMindControlledFriendly(pTechno->Owner, object)))
 		{
+			if (object->IsDisguised())
+			{
+				if (disguiseDetection.size() == 0)
+					continue;
+
+				bool detected = false;
+
+				for (double item : disguiseDetection)
+				{
+					int dice = ScenarioClass::Instance->Random.RandomRanged(0, 99);
+					int detectionValue = std::round(item * 100.0);
+
+					if (detectionValue > dice)
+					{
+						detected = true;
+						break;
+					}
+				}
+
+				if (!detected)
+					continue;
+			}
+
 			double value = 0;
 
 			if (EvaluateObjectWithMask(object, method, attackAITargetType, idxAITargetTypeItem, pTechno))

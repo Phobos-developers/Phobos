@@ -273,6 +273,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnDistanceFromTarget.Read(exINI, pSection, "SpawnDistanceFromTarget");
 	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
 
+	this->DetectDisguise_Percent.Read(exINI, pSection, "DetectDisguise.Percent");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -569,6 +571,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->SpawnDistanceFromTarget)
 		.Process(this->SpawnHeight)
+
+		.Process(this->DetectDisguise_Percent)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

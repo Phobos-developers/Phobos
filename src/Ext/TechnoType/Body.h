@@ -182,6 +182,8 @@ public:
 		Nullable<Leptons> SpawnDistanceFromTarget;
 		Nullable<int> SpawnHeight;
 
+		ValueableVector<double> DetectDisguise_Percent;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -359,6 +361,7 @@ public:
 
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
+			, DetectDisguise_Percent {}
 		{ }
 
 		virtual ~ExtData() = default;

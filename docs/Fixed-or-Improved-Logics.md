@@ -463,6 +463,17 @@ In `rulesmd.ini`:
 TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 ```
 
+### Customizable disguised target evaluation behaviour in new ScriptType attack actions
+
+- By default, any unit with `DetectDisguise=yes` seeking targets via new [attack team missions introduced in Phobos](AI-Scripting-and-Mapping.md#10000-10049-attack-actions) always detects the disguised units. The probability to detect a disguised object now can be customized.
+- `DetectDisguise.Percent` values represent the probabilities in hard, medium & easy difficulty, in that order.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                          ; TechnoType
+DetectDisguise.Percent=1.0, 1.0, 1.0  ; float, percents or absolute
+```
+
 ### Customizable unit image in art
 
 - `Image` tag in art INI is no longer limited to AnimationTypes and BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, VehicleTypes, AircraftTypes, BuildingTypes).

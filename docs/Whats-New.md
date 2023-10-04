@@ -348,6 +348,7 @@ New:
 - Customizable straight trajectory detonation & snap distance and pass-through option (by Starkku)
 - Airstrike & spy plane fixed spawn distance & height (by Starkku)
 - Allow enabling application of `Verses` and `PercentAtMax` for negative damage (by Starkku)
+- Customizable disguised target evaluation behaviour in new ScriptType attack actions (by FS-21)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
