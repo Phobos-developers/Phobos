@@ -87,6 +87,15 @@ DEFINE_HOOK(0x5FE3A2, OverlayTypeClass_CTOR, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x5FE3F6, OverlayTypeClass_DTOR, 0x6)
+{
+	GET(OverlayTypeClass*, pItem, ESI);
+
+	OverlayTypeExt::ExtMap.Remove(pItem);
+
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x5FEAF0, OverlayTypeClass_SaveLoad_Prefix, 0xA)
 DEFINE_HOOK(0x5FEC10, OverlayTypeClass_SaveLoad_Prefix, 0x8)
 {
