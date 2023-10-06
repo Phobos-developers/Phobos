@@ -898,6 +898,9 @@ DEFINE_HOOK(0x44AFF8, BuildingClass_FireAt_BurstRandomTarget_Setup, 0x6)
 
 	auto pOriginalTarget = pThis->Target;
 
+	if (!pThis->Target)
+		return 0;
+
 	TechnoExt::UpdateRandomTarget(pThis);
 
 	int weaponIndex = pThis->SelectWeapon(pThis->Target);
