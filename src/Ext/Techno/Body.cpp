@@ -674,6 +674,12 @@ bool TechnoExt::UpdateRandomTarget(TechnoClass* pThis)
 		return false;
 	}
 
+	if (pExt->OriginalTarget && !ScriptExt::IsUnitAvailable(abstract_cast<TechnoClass*>(pExt->OriginalTarget), false))
+	{
+		pExt->CurrentRandomTarget = nullptr;
+		pExt->OriginalTarget = nullptr;
+	}
+
 	if (pThis->GetCurrentMission() != Mission::Attack)
 	{
 		pExt->OriginalTarget = nullptr;
