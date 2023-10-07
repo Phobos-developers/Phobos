@@ -225,8 +225,19 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 		if (!EnumFunctions::CanTargetHouse(type->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
 			continue;
 
-		color |= Drawing::RGB_To_Int(type->Tint_Color);
+		color |= Drawing::RGB_To_Int(type->Tint_Color.Get(ColorStruct { 0,0,0 }));
 		intensity += static_cast<int>(type->Tint_Intensity * 1000);
+	}
+
+	if (pExt->Shield && pExt->Shield->IsActive())
+	{
+		auto const pShieldType = pExt->Shield->GetType();
+
+		if (pShieldType->Tint_Color.isset())
+			color |= Drawing::RGB_To_Int(pShieldType->Tint_Color);
+
+		if (pShieldType->Tint_Intensity != 0.0)
+			intensity += static_cast<int>(pShieldType->Tint_Intensity * 1000);
 	}
 }
 

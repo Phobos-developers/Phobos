@@ -449,6 +449,9 @@ void ShieldClass::OnlineCheck()
 
 	if (!isActive)
 	{
+		if (this->Online)
+			UpdateTint();
+
 		this->Online = false;
 		timer->Pause();
 
@@ -477,6 +480,9 @@ void ShieldClass::OnlineCheck()
 	}
 	else
 	{
+		if (!this->Online)
+			UpdateTint();
+
 		this->Online = true;
 		timer->Resume();
 
@@ -524,6 +530,7 @@ bool ShieldClass::ConvertCheck()
 		this->KillAnim();
 		pTechnoExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
 		pTechnoExt->Shield = nullptr;
+		UpdateTint();
 
 		return true;
 	}
@@ -566,6 +573,7 @@ bool ShieldClass::ConvertCheck()
 	}
 
 	this->TechnoID = newID;
+	UpdateTint();
 
 	return false;
 }
@@ -662,6 +670,8 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 
 	this->LastBreakFrame = Unsorted::CurrentFrame;
 
+	UpdateTint();
+
 	if (pWeaponType)
 		TechnoExt::FireWeaponAtSelf(this->Techno, pWeaponType);
 }
@@ -676,6 +686,7 @@ void ShieldClass::RespawnShield()
 		timer->Stop();
 		double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
 		this->HP = this->GetPercentageAmount(amount);
+		UpdateTint();
 	}
 	else if (timerWHModifier->Completed() && timer->InProgress())
 	{
@@ -762,6 +773,12 @@ void ShieldClass::UpdateIdleAnim()
 		this->KillAnim();
 		this->CreateAnim();
 	}
+}
+
+void ShieldClass::UpdateTint()
+{
+	if (this->Type->Tint_Color.isset() || this->Type->Tint_Intensity != 0.0)
+		this->Techno->MarkForRedraw();
 }
 
 AnimTypeClass* ShieldClass::GetIdleAnimType()
