@@ -438,6 +438,8 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 	GET_STACK(RectangleStruct*, pRect, 0xA0);
 	Point2D pictOffset = RulesExt::Global()->DrawPowerOffline_Offset;
 
+	//CustomPalette custPal = RulesExt::Global()->DrawPowerOffline_Palette;
+
 	ConvertClass* pPalette = FileSystem::MOUSE_PAL;
 	SHPStruct* pSHP = RulesExt::Global()->DrawPowerOffline_Shape ? RulesExt::Global()->DrawPowerOffline_Shape : FileSystem::POWEROFF_SHP;
 
