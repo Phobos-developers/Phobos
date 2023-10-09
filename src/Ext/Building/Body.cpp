@@ -10,14 +10,17 @@ void BuildingExt::ExtData::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
-		FlyingStrings::AddMoneyString(
-			this->AccumulatedIncome,
-			this->OwnerObject()->Owner,
-			this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-			this->OwnerObject()->GetRenderCoords(),
-			this->TypeExtData->DisplayIncome_Offset
-		);
-
+		if ((RulesExt::Global()->DisplayIncome_AllowAI || this->OwnerObject()->Owner->IsControlledByHuman())
+			&& this->TypeExtData->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
+		{
+			FlyingStrings::AddMoneyString(
+				this->AccumulatedIncome,
+				this->OwnerObject()->Owner,
+				this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
+				this->OwnerObject()->GetRenderCoords(),
+				this->TypeExtData->DisplayIncome_Offset
+			);
+		}
 		this->AccumulatedIncome = 0;
 	}
 }
@@ -244,8 +247,7 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 	{
 		auto const pTypeExt = pExt->TypeExtData;
 
-		if (pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
-			pExt->AccumulatedIncome += refund;
+		pExt->AccumulatedIncome += refund;
 
 		if (pTypeExt->Grinding_Weapon.isset()
 			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
