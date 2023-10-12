@@ -335,6 +335,174 @@ In `rulesmd.ini`:
 0=SOMESCRIPTTYPE,SOMEOTHERSCRIPTTYPE,SAMPLESCRIPTTYPE
 1=ANOTHERSCRIPTTYPE,YETANOTHERSCRIPTTYPE
 ; ...
+
+```
+### `16012` Conditional Jump, Clear Variables
+- Reset all variables related to conditional jumps.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16012,0
+```
+
+### `16013` Conditional Jump, Manage Variables Reset If The Jump Is Successful
+- By default the conditional jump variables are cleaned after a successful jump.
+- This action enables the ability to retain variables value after the jump.
+- This action behavior isn't affected by the action `16012` "Clear Variables".
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16013,0         ; Integer, 1 = true, 0 = false
+```
+
+### `16014` Action Abortion After Success Kill
+- If the team kills a target and this option is enabled the current action is interrumped and jumps to the next script line.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16014,0         ; integer, 0 for disable it, 1 for enable it
+```
+
+### `16015` Conditional Jump, Manage Kills Counter
+- The team kills counter will work if this action enables it.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16015,0         ; integer, 0 for disable it, 1 for enable it
+```
+
+### `16016` Conditional Jump, Reset Counter
+- Sets the team's counter to any initial value. It can be used for counting kills.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16016,n         ; integer
+```
+
+### `16017` Conditional Jump, Set Comparator Mode
+- Sets the comparator used in conditional jumps.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16017,3         ; integer, from 0 to 5, default to 3 (>=)
+```
+
+- The possible comparator values:
+
+| *Argument* | *Comparator type* |
+| :--------: | :---------------: |
+| 0          | <                 |
+| 1          | <=                |
+| 2          | =                 |
+| 3          | >=                |
+| 4          | >                 |
+| 5          | !=                |
+
+### `16018` Conditional Jump, Set Comparator Value
+- Sets the value used in conditional jumps comparisons.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16018,1         ; integer
+```
+
+### `16019` Conditional Jump, Set Index
+- Sets the index of a list used in conditional jumps comparisons. Depends of the conditional jump action.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16019,n         ; integer
+```
+
+### `16020` Conditional Jump, Jump If False
+- Check the conditional jump evaluation and jumps to the specified line if the value is false. Like in the script action `6,x` the line number is 1-based.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16020,n         ; integer, n > 0
+```
+
+### `16021` Conditional Jump, Jump If True
+- Check the conditional jump evaluation and jumps to the specified line if the value is true. Like in the script action `6,x` the line number is 1-based.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16021,n         ; integer, n > 0
+```
+
+### `16022` Conditional Jump, Check Kills Count
+- Checks the team kills count and saves the result for the conditional jump evaluation.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16022,0
+```
+
+### `16023` Conditional Jump, Check Simple Count
+- Increases or decreases the conditional jump counter with the specified value by the Action argument and saves the comparison result for the conditional jump evaluation.
+- The count can be reseted using the script action `16016`.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16023,n         ; Integer
+```
+
+### `16024` Conditional Jump, Check If Exist Alive Human Players
+- Checks if exist human players in the map and saves the result for the conditional jump evaluation.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16024,n         ; integer n = 0, 2 <= n >= 0
+```
+
+- The possible argument values:
+
+| *Operation* | *Description*                                |
+| :---------: | :------------------------------------------: |
+| 0           | Any human house (including the team's owner) |
+| 1           | Enemy human house                            |
+| 2           | Friendly house                               |
+
+### `16025` Conditional Jump, Check Enemy Objects Count
+- Count the number of enemy living object instances and saves the result for the conditional jump evaluation.
+- The list of objects that will be used by this Action is selected by the Script Action `16019`.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16025,0
+```
+
+- This action use a 0-based index for the `AITargetTypes` section and specifies the list of possible `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` that can be evaluated. The new `AITargetTypes` section must be declared in `rulesmd.ini` for making this script work:
+
+In `rulesmd.ini`:
+```ini
+[AITargetTypes]  ; List of TechnoType lists
+0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE
+1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE
+; ...
+```
+
+### `16026` Conditional Jump, Check If The Most Hated Enemy Is Human
+- Checks if the major team's enemy is human player and saves the result for the conditional jump evaluation.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16026,0
 ```
 
 ### `18000-18999` Variable Manipulation
