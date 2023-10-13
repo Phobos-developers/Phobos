@@ -66,7 +66,7 @@ public:
 		Valueable<Point2D> Pips_Ammo_Size;
 		Valueable<Point2D> Pips_Ammo_Buildings_Size;
 		ValueableVector<int> Pips_Tiberiums_Frames;
-		NullableVector<int> Pips_Tiberiums_DisplayOrder;
+		ValueableVector<int> Pips_Tiberiums_DisplayOrder;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
