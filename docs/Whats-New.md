@@ -422,6 +422,7 @@ Phobos fixes:
 - Fixed owned `LimboDelivery` buildings not being saved correctly in savegames (by Starkku)
 - Fixed a typo in weapon selector code causing issues with `NoAmmoWeapon` and related checks (by Starkku)
 - Fixed `DetonateOnAllMapObjects` behaving erratically or potentially crashing if it destroys buildings using Ares' advanced rubble (by Starkku)
+- Fixed game crashing on loading save games if the saved game state had active radiation sites (by Starkku)
 
 Fixes / interactions with other extensions:
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
