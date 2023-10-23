@@ -68,9 +68,9 @@ DEFINE_HOOK(0x644215, ParticleSystemTypeClass_CTOR, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x644256, ParticleSystemTypeClass_DTOR, 0x6)
+DEFINE_HOOK(0x644986, ParticleSystemTypeClass_SDDTOR, 0x6)
 {
-	GET(ParticleSystemTypeClass*, pItem, ECX);
+	GET(ParticleSystemTypeClass*, pItem, ESI);
 
 	ParticleSystemTypeExt::ExtMap.Remove(pItem);
 
