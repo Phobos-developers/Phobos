@@ -493,8 +493,8 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	{
 		if (sourceMatch)
 			sourceMatch->RefreshDuration(durationOverride);
-		else
-			return nullptr;
+
+		return nullptr;
 	}
 
 	if (!pType->Cumulative && currentTypeCount > 0 && match)
