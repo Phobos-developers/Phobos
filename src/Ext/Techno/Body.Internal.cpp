@@ -45,10 +45,12 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 	auto const pFootKiller = static_cast<FootClass*>(pRealKiller);
 	TechnoClass* pFocus = nullptr;
 
-	if (pFootKiller->Team->Focus->WhatAmI() == AbstractType::Unit
-		|| pFootKiller->Team->Focus->WhatAmI() == AbstractType::Aircraft
-		|| pFootKiller->Team->Focus->WhatAmI() == AbstractType::Infantry
-		|| pFootKiller->Team->Focus->WhatAmI() == AbstractType::Building)
+	if (pFootKiller->Team->Focus
+		&& (pFootKiller->Team->Focus->WhatAmI() == AbstractType::Unit
+			|| pFootKiller->Team->Focus->WhatAmI() == AbstractType::Aircraft
+			|| pFootKiller->Team->Focus->WhatAmI() == AbstractType::Infantry
+			|| pFootKiller->Team->Focus->WhatAmI() == AbstractType::Building)
+		)
 	{
 		pFocus = static_cast<TechnoClass*>(pFootKiller->Team->Focus);
 	}
