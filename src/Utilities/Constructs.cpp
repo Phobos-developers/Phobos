@@ -50,6 +50,9 @@ bool CustomPalette::LoadFromINI(
 			this->CreateConvert();
 		}
 
+		if (this->Convert != nullptr)
+			this->Name = Phobos::readBuffer;
+
 		return this->Convert != nullptr;
 	}
 	return false;
@@ -60,13 +63,17 @@ bool CustomPalette::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	this->Clear();
 
 	bool hasPalette = false;
-	auto ret = Stm.Load(this->Mode) && Stm.Load(hasPalette);
+	auto ret = Stm.Load(this->Mode)
+		&& Stm.Load(hasPalette)
+		&& Stm.Load(this->Name);
 
-	if (ret && hasPalette) {
+	if (ret && hasPalette)
+	{
 		this->Palette.reset(GameCreate<BytePalette>());
 		ret = Stm.Load(*this->Palette);
 
-		if (ret) {
+		if (ret)
+		{
 			this->CreateConvert();
 		}
 	}
@@ -78,7 +85,10 @@ bool CustomPalette::Save(PhobosStreamWriter& Stm) const
 {
 	Stm.Save(this->Mode);
 	Stm.Save(this->Palette != nullptr);
-	if (this->Palette) {
+	Stm.Save(this->Name);
+
+	if (this->Palette)
+	{
 		Stm.Save(*this->Palette);
 	}
 	return true;

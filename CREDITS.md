@@ -43,6 +43,7 @@ This page lists all the individual contributions to the project by their author.
   - VSCode configs
   - Code style
   - Customizable ElectricBolt Arcs
+  - Custom isometric tile palette
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -90,6 +91,7 @@ This page lists all the individual contributions to the project by their author.
   - Vanilla map preview reading bugfix
   - Customizable tooltip background
   - Parts of Ares calling code
+  - Custom isometric tile palette
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
@@ -290,6 +292,7 @@ This page lists all the individual contributions to the project by their author.
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
    - Unlimited `AlternateFLH` entries
+   - Custom isometric tile palette
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control
