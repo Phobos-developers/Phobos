@@ -6,7 +6,6 @@
 
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<IsometricTileTypeClass>::Canary = 0x91577125;
 IsometricTileTypeExt::ExtContainer IsometricTileTypeExt::ExtMap;
 int IsometricTileTypeExt::ExtData::CurrentTileset = -1;
 std::map<std::string, std::map<TintStruct, LightConvertClass*>> IsometricTileTypeExt::ExtData::LightConvertEntities;
@@ -126,7 +125,7 @@ DEFINE_HOOK(0x5449F2, IsometricTileTypeClass_CTOR, 0x5)
 {
 	GET(IsometricTileTypeClass*, pItem, EBP);
 
-	IsometricTileTypeExt::ExtMap.FindOrAllocate(pItem);
+	IsometricTileTypeExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }
