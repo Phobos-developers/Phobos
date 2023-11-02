@@ -125,7 +125,7 @@ DEFINE_HOOK(0x5449F2, IsometricTileTypeClass_CTOR, 0x5)
 {
 	GET(IsometricTileTypeClass*, pItem, EBP);
 
-	IsometricTileTypeExt::ExtMap.Allocate(pItem);
+	IsometricTileTypeExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }
