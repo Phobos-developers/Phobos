@@ -876,9 +876,8 @@ DEFINE_JUMP(CALL6, 0x6F8DD2, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponRangeWr
 
 #pragma endregion
 
-DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DelayedFire, 0x6) //0x6FDD93
+DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DelayedFire, 0x6)
 {
-	//GET(WeaponTypeClass*, pWeaponType, EBX);
 	GET(TechnoClass*, pThis, ESI);
 
 	enum { continueFireAt = 0, skipFireAt = 0x6FDE03 };
@@ -892,8 +891,8 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DelayedFire, 0x6) //0x6FDD93
 
 	if (pExt->DelayedFire_Charged)
 	{
-		pExt->DelayedFire_Charging = false;
 		pExt->DelayedFire_Charged = false;
+		pExt->DelayedFire_Charging = false;
 
 		return continueFireAt;
 	}
@@ -920,10 +919,6 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DelayedFire, 0x6) //0x6FDD93
 
 		return skipFireAt;
 	}
-
-	//auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
-	//if (!pWeaponTypeExt)
-		//return continueFireAt;
 
 	if (pExt->DelayedFire_Charging)
 		return skipFireAt;

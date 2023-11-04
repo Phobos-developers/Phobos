@@ -701,29 +701,26 @@ void TechnoExt::ExtData::UpdateDelayFire()
 	if (!pThis)
 		return;
 
-	if (!this->DelayedFire_Charging)
-		return;
-
 	auto clearVariables = [this]()
-	{
-		this->DelayedFire_Duration = -1;
-		this->DelayedFire_WeaponIndex = -1;
-		this->DelayedFire_DurationTimer.Stop();
-
-		if (this->DelayedFire_Anim)
 		{
-			if (this->DelayedFire_Anim->Type && !this->DelayedFire_Anim->InLimbo) // This anim doesn't have type pointer, just detach it
-			{
-				this->DelayedFire_Anim->TimeToDie = true;
-				this->DelayedFire_Anim->Limbo();
-			}
+			this->DelayedFire_Duration = -1;
+			this->DelayedFire_WeaponIndex = -1;
+			this->DelayedFire_DurationTimer.Stop();
 
-			this->DelayedFire_Anim = nullptr;
-		}
-	};
+			if (this->DelayedFire_Anim)
+			{
+				if (!this->DelayedFire_Anim->InLimbo) // This anim doesn't have type pointer, just detach it // this->DelayedFire_Anim->Type && 
+				{
+					this->DelayedFire_Anim->TimeToDie = true;
+					this->DelayedFire_Anim->UnInit();
+				}
+
+				this->DelayedFire_Anim = nullptr;
+			}
+		};
 
 	// Disable the logic if the object isn't attacking
-	if (!pThis->Target || pThis->GetCurrentMission() != Mission::Attack)
+	if (pThis->GetCurrentMission() != Mission::Attack && !pThis->Target)
 	{
 		clearVariables();
 		this->DelayedFire_Charged = false;
@@ -731,6 +728,9 @@ void TechnoExt::ExtData::UpdateDelayFire()
 
 		return;
 	}
+
+	if (!this->DelayedFire_Charging)
+		return;
 
 	int weaponIndex = pThis->SelectWeapon(pThis->Target);
 
@@ -812,6 +812,7 @@ void TechnoExt::ExtData::UpdateDelayFire()
 				this->DelayedFire_DurationTimer.Start(delayedFire_Duration);
 				this->DelayedFire_Charging = true;
 				this->DelayedFire_Charged = false;
+
 				return;
 			}
 			else if (this->DelayedFire_DurationTimer.Completed())
@@ -865,6 +866,7 @@ void TechnoExt::ExtData::UpdateDelayFire()
 				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 				WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
 			}
+
 			return;
 		}
 
