@@ -703,28 +703,31 @@ void TechnoExt::ExtData::UpdateDelayFire()
 
 	auto clearVariables = [this]()
 		{
-			this->DelayedFire_Duration = -1;
-			this->DelayedFire_WeaponIndex = -1;
-			this->DelayedFire_DurationTimer.Stop();
-
-			if (this->DelayedFire_Anim)
+			if (this)
 			{
-				if (!this->DelayedFire_Anim->InLimbo) // This anim doesn't have type pointer, just detach it // this->DelayedFire_Anim->Type && 
-				{
-					this->DelayedFire_Anim->TimeToDie = true;
-					this->DelayedFire_Anim->UnInit();
-				}
+				this->DelayedFire_Duration = -1;
+				this->DelayedFire_WeaponIndex = -1;
+				this->DelayedFire_DurationTimer.Stop();
 
-				this->DelayedFire_Anim = nullptr;
+				if (this->DelayedFire_Anim)
+				{
+					//if (!this->DelayedFire_Anim->InLimbo) // This anim doesn't have type ointer, just detach it // this->DelayedFire_Anim->Type &&
+					//{
+						//this->DelayedFire_Anim->TimeToDie = true;
+						//this->DelayedFire_Anim->UnInit();
+					//}
+
+					this->DelayedFire_Anim = nullptr;
+				}
 			}
 		};
 
 	// Disable the logic if the object isn't attacking
 	if (pThis->GetCurrentMission() != Mission::Attack && !pThis->Target)
 	{
-		clearVariables();
 		this->DelayedFire_Charged = false;
 		this->DelayedFire_Charging = false;
+		clearVariables();
 
 		return;
 	}
