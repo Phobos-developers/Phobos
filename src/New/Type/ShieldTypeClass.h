@@ -14,6 +14,7 @@ public:
 	Valueable<ArmorType> Armor;
 	Valueable<bool> InheritArmorFromTechno;
 	Valueable<bool> Powered;
+	ValueableVector<BuildingTypeClass*> PoweredBy;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
 	Valueable<double> SelfHealing;
@@ -41,6 +42,7 @@ public:
 	Nullable<SHPStruct*> Pips_Background;
 	Valueable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
+	Valueable<bool> Pips_HideIfNoStrength;
 	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
 
@@ -51,6 +53,7 @@ public:
 		, Armor { Armor::None }
 		, InheritArmorFromTechno { false }
 		, Powered { false }
+		, PoweredBy { }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }
 		, SelfHealing { 0.0 }
@@ -75,6 +78,7 @@ public:
 		, Pips_Background { }
 		, Pips_Building { { -1,-1,-1 } }
 		, Pips_Building_Empty { }
+		, Pips_HideIfNoStrength { false }
 		, ImmuneToBerserk { false }
 		, ImmuneToCrit { false }
 	{ };

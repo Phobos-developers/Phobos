@@ -34,6 +34,7 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 	, Attached { isAttached }
 	, SelfHealing_Rate_Warhead { -1 }
 	, Respawn_Rate_Warhead { -1 }
+	, IsPoweredBy { -1 }
 {
 	this->UpdateType();
 	this->SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
@@ -96,6 +97,7 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Respawn_Rate_Warhead)
 		.Process(this->LastBreakFrame)
 		.Process(this->LastTechnoHealthRatio)
+		.Process(this->IsPoweredBy)
 		.Success();
 }
 
@@ -385,7 +387,10 @@ void ShieldClass::AI()
 
 	this->OnlineCheck();
 	this->RespawnShield();
-	this->SelfHealing();
+	this->PoweredByCheck();
+
+	if (this->IsPoweredBy != 0)
+		this->SelfHealing();
 
 	double ratio = this->Techno->GetHealthPercentage();
 
@@ -416,6 +421,36 @@ void ShieldClass::CloakCheck()
 
 	if (this->Cloak)
 		this->KillAnim();
+}
+
+void ShieldClass::PoweredByCheck()
+{
+	this->IsPoweredBy = -1;
+
+	if (this->Type->PoweredBy.size() > 0)
+		this->IsPoweredBy = 0;
+	else
+		return;
+
+	auto const pOwner = this->Techno->Owner;
+
+	for (auto const pBuilding : pOwner->Buildings)
+	{
+		bool isActive = !(pBuilding->Deactivated || pBuilding->IsUnderEMP()) && pBuilding->IsPowerOnline();
+
+		if (this->Type->PoweredBy.Contains(pBuilding->Type) && isActive)
+		{
+			this->IsPoweredBy = 1;
+			break;
+		}
+	}
+
+	const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
+
+	if (this->IsPoweredBy == 0)
+		timer->Pause();
+	else
+		timer->Resume();
 }
 
 void ShieldClass::OnlineCheck()
@@ -793,6 +828,9 @@ void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, R
 	vLoc.X -= 5;
 	vLoc.Y -= 3;
 
+	if (this->HP == 0 && this->Type->Pips_HideIfNoStrength)
+		return;
+
 	Point2D position = { 0, 0 };
 	const int totalLength = DrawShieldBar_PipAmount(length);
 	int frame = this->DrawShieldBar_Pip(true);
@@ -843,6 +881,9 @@ void ShieldClass::DrawShieldBar_Other(const int length, Point2D* pLocation, Rect
 		frame = pipBoard->Frames > 2 ? 3 : 1;
 	else
 		frame = pipBoard->Frames > 2 ? 2 : 0;
+
+	if (this->HP == 0 && this->Type->Pips_HideIfNoStrength)
+		return;
 
 	if (this->Techno->IsSelected)
 	{

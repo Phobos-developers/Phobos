@@ -30,6 +30,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Armor.Read(exINI, pSection, "Armor");
 	this->InheritArmorFromTechno.Read(exINI, pSection, "InheritArmorFromTechno");
 	this->Powered.Read(exINI, pSection, "Powered");
+	this->PoweredBy.Read(exINI, pSection, "PoweredBy");
 
 	this->Respawn.Read(exINI, pSection, "Respawn");
 	Nullable<double> Respawn_Rate__InMinutes;
@@ -70,6 +71,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Pips_Background.Read(exINI, pSection, "Pips.Background");
 	this->Pips_Building.Read(exINI, pSection, "Pips.Building");
 	this->Pips_Building_Empty.Read(exINI, pSection, "Pips.Building.Empty");
+	this->Pips_HideIfNoStrength.Read(exINI, pSection, "Pips.HideIfNoStrength");
 
 	this->ImmuneToBerserk.Read(exINI, pSection, "ImmuneToBerserk");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
@@ -84,6 +86,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Armor)
 		.Process(this->InheritArmorFromTechno)
 		.Process(this->Powered)
+		.Process(this->PoweredBy)
 		.Process(this->Respawn)
 		.Process(this->Respawn_Rate)
 		.Process(this->SelfHealing)
@@ -107,6 +110,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Pips_Background)
 		.Process(this->Pips_Building)
 		.Process(this->Pips_Building_Empty)
+		.Process(this->Pips_HideIfNoStrength)
 		.Process(this->ImmuneToBerserk)
 		.Process(this->ImmuneToCrit)
 		;
