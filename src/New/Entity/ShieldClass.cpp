@@ -425,13 +425,10 @@ void ShieldClass::CloakCheck()
 
 void ShieldClass::EnabledByCheck()
 {
-	this->IsSelfHealingEnabled = true;
-
-	if (this->Type->SelfHealing_EnabledBy.size() > 0)
-		this->IsSelfHealingEnabled = false;
-	else
+	if (this->Type->SelfHealing_EnabledBy.empty())
 		return;
 
+	this->IsSelfHealingEnabled = false;
 	auto const pOwner = this->Techno->Owner;
 
 	for (auto const pBuilding : pOwner->Buildings)
