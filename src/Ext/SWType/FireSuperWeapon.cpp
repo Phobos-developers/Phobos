@@ -99,32 +99,28 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 
 		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
 
-		if (pBuildingExt)
+		// LimboKill ID
+		pBuildingExt->LimboID = ID;
+
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+
+		// Add building to list of owned limbo buildings
+		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
+
+		if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+			pOwnerExt->AddToLimboTracking(pBuilding->Type);
+
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
+		auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
+
+		if (pTechnoTypeExt->AutoDeath_Behavior.isset())
 		{
-			// LimboKill ID
-			pBuildingExt->LimboID = ID;
+			pOwnerExt->OwnedAutoDeathObjects.push_back(pTechnoExt);
 
-			if (auto pOwnerExt = HouseExt::ExtMap.Find(pOwner))
-			{
-				// Add building to list of owned limbo buildings
-				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding, pBuildingExt });
-
-				if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
-					pOwnerExt->AddToLimboTracking(pBuilding->Type);
-
-				auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
-				auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
-
-				if (pTechnoTypeExt->AutoDeath_Behavior.isset())
-				{
-					pOwnerExt->OwnedAutoDeathObjects.push_back(pTechnoExt);
-
-					if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
-						pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
-				}
-
-			}
+			if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
+				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
 		}
+
 	}
 }
 
@@ -135,8 +131,8 @@ inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
 	auto pOwnerExt = HouseExt::ExtMap.Find(pTargetHouse);
 
 	// Remove building from list of owned limbo buildings
-	if (pOwnerExt)
-		pOwnerExt->OwnedLimboDeliveredBuildings.erase(pBuilding);
+	auto& vec = pOwnerExt->OwnedLimboDeliveredBuildings;
+	vec.erase(std::remove(vec.begin(), vec.end(), pBuilding), vec.end());
 
 	// Mandatory
 	pBuilding->InLimbo = true;
@@ -208,13 +204,14 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 		{
 			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
 			{
-				if (auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse))
+				auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
+
+				for (const auto& pBuilding : pHouseExt->OwnedLimboDeliveredBuildings)
 				{
-					for (const auto& [pBuilding, pBuildingExt] : pHouseExt->OwnedLimboDeliveredBuildings)
-					{
-						if (pBuildingExt->LimboID == limboKillID)
-							LimboDelete(pBuildingExt->OwnerObject(), pTargetHouse);
-					}
+					auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+
+					if (pBuildingExt->LimboID == limboKillID)
+						LimboDelete(pBuilding, pTargetHouse);
 				}
 			}
 		}

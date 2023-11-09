@@ -67,6 +67,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
 		{
 			pWHExt->WasDetonatedOnAllMapObjects = true;
+			auto const pOriginalTarget = pThis->Target;
 			auto const pExt = BulletExt::ExtMap.Find(pThis);
 			auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
 
@@ -81,28 +82,37 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
 			{
-				for (auto pTechno : *AircraftClass::Array)
-					tryDetonate(pTechno);
+				auto const aircraft = DynamicVectorClass<AircraftClass*>(*AircraftClass::Array);
+
+				for (auto pAircraft : aircraft)
+					tryDetonate(pAircraft);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
 			{
-				for (auto pTechno : *BuildingClass::Array)
-					tryDetonate(pTechno);
+				auto const buildings = DynamicVectorClass<BuildingClass*>(*BuildingClass::Array);
+
+				for (auto pBuilding : buildings)
+					tryDetonate(pBuilding);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
 			{
-				for (auto pTechno : *InfantryClass::Array)
-					tryDetonate(pTechno);
+				auto const infantry = DynamicVectorClass<InfantryClass*>(*InfantryClass::Array);
+
+				for (auto pInf : infantry)
+					tryDetonate(pInf);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
 			{
-				for (auto pTechno : *UnitClass::Array)
-					tryDetonate(pTechno);
+				auto const units = DynamicVectorClass<UnitClass*>(*UnitClass::Array);
+
+				for (auto const pUnit : units)
+					tryDetonate(pUnit);
 			}
 
+			pThis->Target = pOriginalTarget;
 			pWHExt->WasDetonatedOnAllMapObjects = false;
 
 			return ReturnFromFunction;
