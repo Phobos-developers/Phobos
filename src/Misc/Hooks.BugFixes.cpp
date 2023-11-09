@@ -603,6 +603,8 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 	return SpawnCrate;
 }
 
+/*
+// NOTE: Disabled because of possible cause of desync - Starkku
 // Enable sorted add for Air/Top layers to fix issues with attached anims etc.
 DEFINE_HOOK(0x4A9750, DisplayClass_Submit_LayerSort, 0x9)
 {
@@ -611,7 +613,7 @@ DEFINE_HOOK(0x4A9750, DisplayClass_Submit_LayerSort, 0x9)
 	R->ECX(layer != Layer::Surface && layer != Layer::Underground);
 
 	return 0;
-}
+}*/
 
 // Fixes C4=no amphibious infantry being killed in water if Chronoshifted/Paradropped there.
 DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
