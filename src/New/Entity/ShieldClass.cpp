@@ -34,7 +34,7 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 	, Attached { isAttached }
 	, SelfHealing_Rate_Warhead { -1 }
 	, Respawn_Rate_Warhead { -1 }
-	, IsPoweredBy { -1 }
+	, IsSelfHealingEnabled { true }
 {
 	this->UpdateType();
 	this->SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
@@ -97,7 +97,7 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Respawn_Rate_Warhead)
 		.Process(this->LastBreakFrame)
 		.Process(this->LastTechnoHealthRatio)
-		.Process(this->IsPoweredBy)
+		.Process(this->IsSelfHealingEnabled)
 		.Success();
 }
 
@@ -387,9 +387,9 @@ void ShieldClass::AI()
 
 	this->OnlineCheck();
 	this->RespawnShield();
-	this->PoweredByCheck();
+	this->EnabledByCheck();
 
-	if (this->IsPoweredBy != 0)
+	if (this->IsSelfHealingEnabled)
 		this->SelfHealing();
 
 	double ratio = this->Techno->GetHealthPercentage();
@@ -423,12 +423,12 @@ void ShieldClass::CloakCheck()
 		this->KillAnim();
 }
 
-void ShieldClass::PoweredByCheck()
+void ShieldClass::EnabledByCheck()
 {
-	this->IsPoweredBy = -1;
+	this->IsSelfHealingEnabled = true;
 
 	if (this->Type->SelfHealing_EnabledBy.size() > 0)
-		this->IsPoweredBy = 0;
+		this->IsSelfHealingEnabled = false;
 	else
 		return;
 
@@ -440,14 +440,14 @@ void ShieldClass::PoweredByCheck()
 
 		if (this->Type->SelfHealing_EnabledBy.Contains(pBuilding->Type) && isActive)
 		{
-			this->IsPoweredBy = 1;
+			this->IsSelfHealingEnabled = true;
 			break;
 		}
 	}
 
 	const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
 
-	if (this->IsPoweredBy == 0)
+	if (!this->IsSelfHealingEnabled)
 		timer->Pause();
 	else
 		timer->Resume();
