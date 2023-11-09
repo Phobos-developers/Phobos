@@ -30,7 +30,6 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Armor.Read(exINI, pSection, "Armor");
 	this->InheritArmorFromTechno.Read(exINI, pSection, "InheritArmorFromTechno");
 	this->Powered.Read(exINI, pSection, "Powered");
-	this->PoweredBy.Read(exINI, pSection, "PoweredBy");
 
 	this->Respawn.Read(exINI, pSection, "Respawn");
 	Nullable<double> Respawn_Rate__InMinutes;
@@ -46,6 +45,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->SelfHealing_RestartInCombat.Read(exINI, pSection, "SelfHealing.RestartInCombat");
 	this->SelfHealing_RestartInCombatDelay.Read(exINI, pSection, "SelfHealing.RestartInCombatDelay");
+	this->SelfHealing_EnabledBy.Read(exINI, pSection, "SelfHealing.EnabledBy");
 
 	this->AbsorbOverDamage.Read(exINI, pSection, "AbsorbOverDamage");
 	this->BracketDelta.Read(exINI, pSection, "BracketDelta");
@@ -86,13 +86,13 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Armor)
 		.Process(this->InheritArmorFromTechno)
 		.Process(this->Powered)
-		.Process(this->PoweredBy)
 		.Process(this->Respawn)
 		.Process(this->Respawn_Rate)
 		.Process(this->SelfHealing)
 		.Process(this->SelfHealing_Rate)
 		.Process(this->SelfHealing_RestartInCombat)
 		.Process(this->SelfHealing_RestartInCombatDelay)
+		.Process(this->SelfHealing_EnabledBy)
 		.Process(this->AbsorbOverDamage)
 		.Process(this->BracketDelta)
 		.Process(this->ReceivedDamage_Minimum)

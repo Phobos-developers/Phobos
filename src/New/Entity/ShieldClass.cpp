@@ -427,7 +427,7 @@ void ShieldClass::PoweredByCheck()
 {
 	this->IsPoweredBy = -1;
 
-	if (this->Type->PoweredBy.size() > 0)
+	if (this->Type->SelfHealing_EnabledBy.size() > 0)
 		this->IsPoweredBy = 0;
 	else
 		return;
@@ -438,7 +438,7 @@ void ShieldClass::PoweredByCheck()
 	{
 		bool isActive = !(pBuilding->Deactivated || pBuilding->IsUnderEMP()) && pBuilding->IsPowerOnline();
 
-		if (this->Type->PoweredBy.Contains(pBuilding->Type) && isActive)
+		if (this->Type->SelfHealing_EnabledBy.Contains(pBuilding->Type) && isActive)
 		{
 			this->IsPoweredBy = 1;
 			break;

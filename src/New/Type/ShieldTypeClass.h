@@ -14,13 +14,13 @@ public:
 	Valueable<ArmorType> Armor;
 	Valueable<bool> InheritArmorFromTechno;
 	Valueable<bool> Powered;
-	ValueableVector<BuildingTypeClass*> PoweredBy;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
 	Valueable<double> SelfHealing;
 	Valueable<int> SelfHealing_Rate;
 	Valueable<bool> SelfHealing_RestartInCombat;
 	Valueable<int> SelfHealing_RestartInCombatDelay;
+	ValueableVector<BuildingTypeClass*> SelfHealing_EnabledBy;
 
 	Valueable<bool> AbsorbOverDamage;
 	Valueable<int> BracketDelta;
@@ -53,13 +53,13 @@ public:
 		, Armor { Armor::None }
 		, InheritArmorFromTechno { false }
 		, Powered { false }
-		, PoweredBy { }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }
 		, SelfHealing { 0.0 }
 		, SelfHealing_Rate { 0 }
 		, SelfHealing_RestartInCombat { true }
 		, SelfHealing_RestartInCombatDelay { 0 }
+		, SelfHealing_EnabledBy { }
 		, AbsorbOverDamage { false }
 		, BracketDelta { 0 }
 		, IdleAnim_OfflineAction { AttachedAnimFlag::Hides }
