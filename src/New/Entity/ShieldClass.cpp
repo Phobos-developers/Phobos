@@ -386,11 +386,13 @@ void ShieldClass::AI()
 		return;
 
 	this->OnlineCheck();
-	this->RespawnShield();
 	this->EnabledByCheck();
 
 	if (this->IsSelfHealingEnabled)
+	{
+		this->RespawnShield();
 		this->SelfHealing();
+	}
 
 	double ratio = this->Techno->GetHealthPercentage();
 
