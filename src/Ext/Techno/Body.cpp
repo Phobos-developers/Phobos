@@ -639,6 +639,19 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 	return false;
 }
 
+bool TechnoExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed)
+{
+	if (!pTechno)
+		return false;
+
+	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && pTechno->IsOnMap;
+
+	if (checkIfInTransportOrAbsorbed)
+		isAvailable &= !pTechno->Absorbed && !pTechno->Transporter;
+
+	return isAvailable;
+}
+
 bool TechnoExt::UpdateRandomTarget(TechnoClass* pThis)
 {
 	if (!pThis)
@@ -665,16 +678,16 @@ bool TechnoExt::UpdateRandomTarget(TechnoClass* pThis)
 		return false;
 	}
 
-	if (pExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(pExt->CurrentRandomTarget, false) && pThis->SpawnManager)
+	if (pExt->CurrentRandomTarget && TechnoExt::IsUnitAvailable(pExt->CurrentRandomTarget, false) && pThis->SpawnManager)
 		return false;
 
-	if (!pThis->Target && !ScriptExt::IsUnitAvailable(abstract_cast<TechnoClass*>(pExt->OriginalTarget), false))
+	if (!pThis->Target && !TechnoExt::IsUnitAvailable(abstract_cast<TechnoClass*>(pExt->OriginalTarget), false))
 	{
 		pExt->OriginalTarget = nullptr;
 		return false;
 	}
 
-	if (pExt->OriginalTarget && !ScriptExt::IsUnitAvailable(abstract_cast<TechnoClass*>(pExt->OriginalTarget), false))
+	if (pExt->OriginalTarget && !TechnoExt::IsUnitAvailable(abstract_cast<TechnoClass*>(pExt->OriginalTarget), false))
 	{
 		pExt->CurrentRandomTarget = nullptr;
 		pExt->OriginalTarget = nullptr;
@@ -795,7 +808,7 @@ TechnoClass* TechnoExt::GetRandomTarget(TechnoClass* pThis)
 	for (auto pCandidate : *TechnoClass::Array)
 	{
 		if (pCandidate == pThis
-			|| !ScriptExt::IsUnitAvailable(pCandidate, true)
+			|| !TechnoExt::IsUnitAvailable(pCandidate, true)
 			|| pThisType->Immune
 			|| !EnumFunctions::IsTechnoEligible(pCandidate, pWeaponExt->CanTarget, true)
 			|| (!pWeapon->Projectile->AA && pCandidate->IsInAir())

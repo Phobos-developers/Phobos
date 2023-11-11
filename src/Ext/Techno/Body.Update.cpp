@@ -721,7 +721,7 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::ExtData::RefreshRandomTargets()
+void TechnoExt::ExtData::UpdateRandomTargets()
 {
 	auto const pThis = this->OwnerObject();
 	if (!pThis)
@@ -731,7 +731,7 @@ void TechnoExt::ExtData::RefreshRandomTargets()
 	if (!pExt)
 		return;
 
-	if (pThis->Target && pThis->SpawnManager && pExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(static_cast<TechnoClass*>(pExt->CurrentRandomTarget), true))
+	if (pThis->Target && pThis->SpawnManager && pExt->CurrentRandomTarget && TechnoExt::IsUnitAvailable(static_cast<TechnoClass*>(pExt->CurrentRandomTarget), true))
 	{
 		if (pThis->SpawnManager)
 		{
@@ -758,9 +758,9 @@ void TechnoExt::ExtData::RefreshRandomTargets()
 		}
 	}
 
-	if (pExt->OriginalTarget && !pThis->Target && ScriptExt::IsUnitAvailable(static_cast<TechnoClass*>(pExt->OriginalTarget), true) && !pThis->IsInAir())
+	if (pExt->OriginalTarget && !pThis->Target && TechnoExt::IsUnitAvailable(static_cast<TechnoClass*>(pExt->OriginalTarget), true) && !pThis->IsInAir())
 	{
-		if (pExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(pExt->CurrentRandomTarget, true))
+		if (pExt->CurrentRandomTarget && TechnoExt::IsUnitAvailable(pExt->CurrentRandomTarget, true))
 			pThis->SetTarget(pExt->CurrentRandomTarget);
 		else
 			pThis->SetTarget(pExt->OriginalTarget);

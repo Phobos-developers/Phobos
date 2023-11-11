@@ -923,7 +923,7 @@ DEFINE_HOOK(0x6B770D, SpawnerManagerClassAI_SwitchCase3, 0xB)
 		if (!pSpawnExt)
 			continue;
 
-		if (pSpawnExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
+		if (pSpawnExt->CurrentRandomTarget && TechnoExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
 		{
 			skip = true;
 			pItem->Unit->Target = pSpawnExt->CurrentRandomTarget;
@@ -948,7 +948,7 @@ DEFINE_HOOK(0x6B776E, SpawnerManagerClassAI_SwitchCase4, 0x6) // Note: Not sure 
 	if (!pSpawnExt)
 		return 0;
 
-	if (pSpawnExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
+	if (pSpawnExt->CurrentRandomTarget && TechnoExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
 	{
 		pThis->Target = pSpawnExt->CurrentRandomTarget;
 		return 0x6B777A;
@@ -969,7 +969,7 @@ DEFINE_HOOK(0x6B7AE3, SpawnerManagerClassAI_SpawnControlStatus3, 0x6)
 	if (!pSpawnExt)
 		return 0;
 
-	if (pSpawnExt->CurrentRandomTarget && ScriptExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
+	if (pSpawnExt->CurrentRandomTarget && TechnoExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
 	{
 		pThis->Target = pSpawnExt->CurrentRandomTarget;
 		return 0x6B7AEF;
