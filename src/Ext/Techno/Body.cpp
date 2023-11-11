@@ -678,16 +678,16 @@ bool TechnoExt::UpdateRandomTarget(TechnoClass* pThis)
 		return false;
 	}
 
-	if (pExt->CurrentRandomTarget && TechnoExt::IsUnitAvailable(pExt->CurrentRandomTarget, false) && pThis->SpawnManager)
+	if (pExt->CurrentRandomTarget && IsUnitAvailable(pExt->CurrentRandomTarget, false) && pThis->SpawnManager)
 		return false;
 
-	if (!pThis->Target && !TechnoExt::IsUnitAvailable(abstract_cast<TechnoClass*>(pExt->OriginalTarget), false))
+	if (!pThis->Target && !IsUnitAvailable(abstract_cast<TechnoClass*>(pExt->OriginalTarget), false))
 	{
 		pExt->OriginalTarget = nullptr;
 		return false;
 	}
 
-	if (pExt->OriginalTarget && !TechnoExt::IsUnitAvailable(abstract_cast<TechnoClass*>(pExt->OriginalTarget), false))
+	if (pExt->OriginalTarget && !IsUnitAvailable(abstract_cast<TechnoClass*>(pExt->OriginalTarget), false))
 	{
 		pExt->CurrentRandomTarget = nullptr;
 		pExt->OriginalTarget = nullptr;
@@ -808,7 +808,7 @@ TechnoClass* TechnoExt::GetRandomTarget(TechnoClass* pThis)
 	for (auto pCandidate : *TechnoClass::Array)
 	{
 		if (pCandidate == pThis
-			|| !TechnoExt::IsUnitAvailable(pCandidate, true)
+			|| !IsUnitAvailable(pCandidate, true)
 			|| pThisType->Immune
 			|| !EnumFunctions::IsTechnoEligible(pCandidate, pWeaponExt->CanTarget, true)
 			|| (!pWeapon->Projectile->AA && pCandidate->IsInAir())
