@@ -731,7 +731,10 @@ void TechnoExt::ExtData::UpdateRandomTargets()
 	if (!pExt)
 		return;
 
-	if (pThis->Target && pThis->SpawnManager && pExt->CurrentRandomTarget && IsUnitAvailable(static_cast<TechnoClass*>(pExt->CurrentRandomTarget), true))
+	if (pThis->Target
+		&& pThis->SpawnManager
+		&& pExt->CurrentRandomTarget
+		&& IsUnitAvailable(static_cast<TechnoClass*>(pExt->CurrentRandomTarget), true))
 	{
 		if (pThis->SpawnManager)
 		{
@@ -746,7 +749,7 @@ void TechnoExt::ExtData::UpdateRandomTargets()
 
 				if (!pSpawnExt->CurrentRandomTarget)
 				{
-					pSpawnExt->CurrentRandomTarget = TechnoExt::GetRandomTarget(pThis);
+					pSpawnExt->CurrentRandomTarget = TechnoExt::FindRandomTarget(pThis);
 					pSpawn->Unit->Target = pSpawnExt->CurrentRandomTarget;
 				}
 				else if (pSpawn->Status == SpawnNodeStatus::Preparing && pSpawn->Unit->IsInAir())

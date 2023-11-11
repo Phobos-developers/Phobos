@@ -153,7 +153,7 @@ public:
 	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
 	static bool IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource);
 	static bool UpdateRandomTarget(TechnoClass* pThis = nullptr);
-	static TechnoClass* GetRandomTarget(TechnoClass* pThis = nullptr);
+	static TechnoClass* FindRandomTarget(TechnoClass* pThis = nullptr);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

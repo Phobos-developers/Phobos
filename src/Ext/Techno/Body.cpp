@@ -722,7 +722,7 @@ bool TechnoExt::UpdateRandomTarget(TechnoClass* pThis)
 		return false;
 	}
 
-	auto pRandomTarget = GetRandomTarget(pThis);
+	auto pRandomTarget = FindRandomTarget(pThis);
 
 	if (!pRandomTarget)
 		return false;
@@ -755,7 +755,7 @@ bool TechnoExt::UpdateRandomTarget(TechnoClass* pThis)
 			}
 			else
 			{
-				pSpawnTarget = GetRandomTarget(pThis);
+				pSpawnTarget = FindRandomTarget(pThis);
 
 				if (!pSpawnTarget)
 					pSpawnTarget = abstract_cast<TechnoClass*>(pExt->OriginalTarget);
@@ -769,7 +769,7 @@ bool TechnoExt::UpdateRandomTarget(TechnoClass* pThis)
 	return true;
 }
 
-TechnoClass* TechnoExt::GetRandomTarget(TechnoClass* pThis)
+TechnoClass* TechnoExt::FindRandomTarget(TechnoClass* pThis)
 {
 	TechnoClass* selection = nullptr;
 
