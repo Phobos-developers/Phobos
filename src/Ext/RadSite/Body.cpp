@@ -37,7 +37,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 {
 	// use real ctor
 	auto const pRadSite = GameCreate<RadSiteClass>();
-	auto pRadExt = RadSiteExt::ExtMap.FindOrAllocate(pRadSite);
+	auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 
 	//Adding Owner to RadSite, from bullet
 	if (pWeaponExt->RadType->GetHasOwner() && pRadExt->RadHouse != pOwner)
@@ -133,13 +133,20 @@ void RadSiteExt::ExtData::SetRadLevel(int amount)
 }
 
 // helper function provided by AlexB
-const double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell)
+double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) const
 {
 	const auto pThis = this->OwnerObject();
 	const auto base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
 	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
 	const auto max = static_cast<double>(pThis->SpreadInLeptons);
 	const auto dist = coords.DistanceFrom(base);
+
+	//  will produce `-nan(ind)` result if both dist and max is zero
+	// and used on formula below this check
+	// ,.. -Otamaa
+	if(!dist && !max)
+		return pThis->RadLevel;
+
 	return (dist > max) ? 0.0 : (max - dist) / max * pThis->RadLevel;
 }
 

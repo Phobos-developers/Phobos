@@ -34,8 +34,10 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		OptionalStruct<int, false> DamageNumberOffset;
 		bool IsInTunnel;
+		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
+		int WHAnimRemainingCreationInterval;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -55,12 +57,15 @@ public:
 			, DamageNumberOffset {}
 			, OriginalPassengerOwner {}
 			, IsInTunnel { false }
+			, HasBeenPlacedOnMap { false }
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
+			, WHAnimRemainingCreationInterval { 0 }
 		{ }
 
 		void ApplyInterceptor();
 		bool CheckDeathConditions(bool isInLimbo = false);
+		void DepletedAmmoActions();
 		void EatPassengers();
 		void UpdateShield();
 		void UpdateOnTunnelEnter();

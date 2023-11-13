@@ -43,14 +43,14 @@ DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 
 	return 0x46920B;
 }
-
+#ifndef __clang__
 //unused function , safeguard
 DEFINE_HOOK(0x46ADE0, BulletClass_ApplyRadiation_Unused, 0x5)
 {
 	Debug::Log(__FUNCTION__ " called ! , You are not supposed to be here!\n");
 	return 0x46AE5E;
 }
-
+#endif
 // Fix for desolator
 DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 {
@@ -230,7 +230,7 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 #define GET_RADSITE(reg, value)\
 	GET(RadSiteClass* const, pThis, reg);\
 	RadSiteExt::ExtData* pExt = RadSiteExt::ExtMap.Find(pThis);\
-	auto output = pExt->Type->## value ##;
+	auto output = pExt->Type-> value ;
 
 /*
 //All part of 0x65B580 Hooks is here

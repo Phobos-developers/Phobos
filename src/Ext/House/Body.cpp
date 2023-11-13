@@ -205,7 +205,8 @@ bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass* pBuilding)
 	if (!pBuilding)
 		return false;
 
-	return this->OwnedLimboDeliveredBuildings.count(pBuilding);
+	auto& vec = this->OwnedLimboDeliveredBuildings;
+	return std::find(vec.begin(), vec.end(), pBuilding) != vec.end();
 }
 
 size_t HouseExt::FindOwnedIndex(
@@ -305,9 +306,9 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	if (!pTargetHouse || !pCurrentHouse)
 		return nullptr;
 
-	auto targetBaseCoords = CellClass::Cell2Coord(pTargetHouse->GetBaseCenter());
+	auto targetCoords = CellClass::Cell2Coord(pTargetHouse->GetBaseCenter());
 
-	if (targetBaseCoords == CoordStruct::Empty)
+	if (targetCoords == CoordStruct::Empty)
 		return nullptr;
 
 	auto currentCoords = CellClass::Cell2Coord(pCurrentHouse->GetBaseCenter());
@@ -315,16 +316,9 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	if (currentCoords == CoordStruct::Empty)
 		currentCoords = defaultCurrentCoords;
 
-	int deltaX = currentCoords.X - targetBaseCoords.X;
-	int deltaY = targetBaseCoords.Y - currentCoords.Y;
 	int distance = (RulesClass::Instance->AISafeDistance + extraDistance) * Unsorted::LeptonsPerCell;
+	auto newCoords = GeneralUtils::CalculateCoordsFromDistance(currentCoords, targetCoords, distance);
 
-	double atan = Math::atan2(deltaY, deltaX);
-	double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
-	int x = static_cast<int>(targetBaseCoords.X + Math::cos(radians) * distance);
-	int y = static_cast<int>(targetBaseCoords.Y - Math::sin(radians) * distance);
-
-	auto newCoords = CoordStruct {x, y, targetBaseCoords.Z};
 	auto cellStruct = CellClass::Coord2Cell(newCoords);
 	cellStruct = MapClass::Instance->NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
 
@@ -388,23 +382,23 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 
 void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
 {
-	for (auto it = this->OwnedLimboDeliveredBuildings.begin(); it != this->OwnedLimboDeliveredBuildings.end(); )
+	for (auto const pExt : this->OwnedAutoDeathObjects)
 	{
-		auto const pBuilding = it->first;
-		auto const pExt = it->second;
+		auto const pTechno = pExt->OwnerObject();
 
-		if (!pBuilding->IsInLogic && pBuilding->IsAlive)
-		{
-			if (pExt->TechnoExtData->CheckDeathConditions(true))
-			{
-				this->OwnedLimboDeliveredBuildings.erase(it++);
-				this->RemoveFromLimboTracking(pBuilding->Type);
-			}
-			else
-			{
-				it++;
-			}
-		}
+		if (!pTechno->IsInLogic && pTechno->IsAlive)
+			pExt->CheckDeathConditions(true);
+	}
+}
+
+void HouseExt::ExtData::UpdateTransportReloaders()
+{
+	for (auto const pExt : this->OwnedTransportReloaders)
+	{
+		auto const pTechno = pExt->OwnerObject();
+
+		if (pTechno->Transporter)
+			pTechno->Reload();
 	}
 }
 
@@ -512,7 +506,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->PowerPlantEnhancers)
 		.Process(this->OwnedLimboDeliveredBuildings)
-		.Process(this->OwnedTimedAutoDeathObjects)
+		.Process(this->OwnedAutoDeathObjects)
+		.Process(this->OwnedTransportReloaders)
 		.Process(this->LimboAircraft)
 		.Process(this->LimboBuildings)
 		.Process(this->LimboInfantry)
@@ -560,20 +555,10 @@ void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 	AnnounceInvalidPointer(Factory_NavyType, ptr);
 	AnnounceInvalidPointer(Factory_AircraftType, ptr);
 
-	if (!OwnedTimedAutoDeathObjects.empty() && ptr != nullptr)
-	{
-		auto const pExt = TechnoExt::ExtMap.Find(reinterpret_cast<TechnoClass*>(ptr));
-
-		if (pExt)
-			OwnedTimedAutoDeathObjects.erase(std::remove(OwnedTimedAutoDeathObjects.begin(), OwnedTimedAutoDeathObjects.end(), pExt), OwnedTimedAutoDeathObjects.end());
-	}
-
 	if (!OwnedLimboDeliveredBuildings.empty() && ptr != nullptr)
 	{
-		auto const abstract = reinterpret_cast<AbstractClass*>(ptr);
-
-		if (abstract->WhatAmI() == AbstractType::Building)
-			OwnedLimboDeliveredBuildings.erase(reinterpret_cast<BuildingClass*>(ptr));
+		auto& vec = this->OwnedLimboDeliveredBuildings;
+		vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
 	}
 }
 

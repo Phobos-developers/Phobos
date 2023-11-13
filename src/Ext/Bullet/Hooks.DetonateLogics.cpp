@@ -67,6 +67,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
 		{
 			pWHExt->WasDetonatedOnAllMapObjects = true;
+			auto const pOriginalTarget = pThis->Target;
 			auto const pExt = BulletExt::ExtMap.Find(pThis);
 			auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
 
@@ -81,28 +82,37 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
 			{
-				for (auto pTechno : *AircraftClass::Array)
-					tryDetonate(pTechno);
+				auto const aircraft = DynamicVectorClass<AircraftClass*>(*AircraftClass::Array);
+
+				for (auto pAircraft : aircraft)
+					tryDetonate(pAircraft);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
 			{
-				for (auto pTechno : *BuildingClass::Array)
-					tryDetonate(pTechno);
+				auto const buildings = DynamicVectorClass<BuildingClass*>(*BuildingClass::Array);
+
+				for (auto pBuilding : buildings)
+					tryDetonate(pBuilding);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
 			{
-				for (auto pTechno : *InfantryClass::Array)
-					tryDetonate(pTechno);
+				auto const infantry = DynamicVectorClass<InfantryClass*>(*InfantryClass::Array);
+
+				for (auto pInf : infantry)
+					tryDetonate(pInf);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
 			{
-				for (auto pTechno : *UnitClass::Array)
-					tryDetonate(pTechno);
+				auto const units = DynamicVectorClass<UnitClass*>(*UnitClass::Array);
+
+				for (auto const pUnit : units)
+					tryDetonate(pUnit);
 			}
 
+			pThis->Target = pOriginalTarget;
 			pWHExt->WasDetonatedOnAllMapObjects = false;
 
 			return ReturnFromFunction;
@@ -185,39 +195,54 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	if (pAnimType)
 	{
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
-		HouseClass* pInvoker = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
-		HouseClass* pVictim = nullptr;
+		int creationInterval = pWHExt->Splashed ? pWHExt->SplashList_CreationInterval : pWHExt->AnimList_CreationInterval;
+		int* remainingInterval = &pWHExt->RemainingAnimCreationInterval;
 
-		if (TechnoClass* Target = generic_cast<TechnoClass*>(pThis->Target))
-			pVictim = Target->Owner;
+		if (creationInterval > 0 && pThis->Owner)
+			remainingInterval = &TechnoExt::ExtMap.Find(pThis->Owner)->WHAnimRemainingCreationInterval;
 
-		auto types = make_iterator_single(pAnimType);
-
-		if (pWHExt->SplashList_CreateAll && pWHExt->Splashed)
-			types = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
-		else if (pWHExt->AnimList_CreateAll && !pWHExt->Splashed)
-			types = pWHExt->OwnerObject()->AnimList;
-
-		for (auto const& pType : types)
+		if (creationInterval < 1 || *remainingInterval <= 0)
 		{
-			if (!pType)
-				continue;
+			*remainingInterval = creationInterval;
 
-			if (auto const pAnim = GameCreate<AnimClass>(pType, *coords, 0, 1, 0x2600, -15, false))
+			HouseClass* pInvoker = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+			HouseClass* pVictim = nullptr;
+
+			if (TechnoClass* Target = generic_cast<TechnoClass*>(pThis->Target))
+				pVictim = Target->Owner;
+
+			auto types = make_iterator_single(pAnimType);
+
+			if (pWHExt->SplashList_CreateAll && pWHExt->Splashed)
+				types = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
+			else if (pWHExt->AnimList_CreateAll && !pWHExt->Splashed)
+				types = pWHExt->OwnerObject()->AnimList;
+
+			for (auto const& pType : types)
 			{
-				createdAnim = true;
+				if (!pType)
+					continue;
 
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
-
-				if (!pAnim->Owner)
-					pAnim->Owner = pInvoker;
-
-				if (pThis->Owner)
+				if (auto const pAnim = GameCreate<AnimClass>(pType, *coords, 0, 1, 0x2600, -15, false))
 				{
-					auto pExt = AnimExt::ExtMap.Find(pAnim);
-					pExt->SetInvoker(pThis->Owner);
+					createdAnim = true;
+
+					AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+
+					if (!pAnim->Owner)
+						pAnim->Owner = pInvoker;
+
+					if (pThis->Owner)
+					{
+						auto pExt = AnimExt::ExtMap.Find(pAnim);
+						pExt->SetInvoker(pThis->Owner);
+					}
 				}
 			}
+		}
+		else
+		{
+			(*remainingInterval)--;
 		}
 	}
 

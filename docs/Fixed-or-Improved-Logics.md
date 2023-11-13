@@ -45,6 +45,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 *Side offset voxel turret in Breaking Blue project*
 
 - `TurretOffset` tag for voxel turreted TechnoTypes now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
+- `TurretOffset` is now supported for SHP vehicles.
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 - Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
 - Vehicles using `DeployFire` will now use `DeployFireWeapon` for firing the deploy weapon if explicitly set, if not it behaves like previously (`Primary` if can fire, `Secondary` if not) and respect `FireOnce` setting on weapon and any stop commands issued during firing. If `FireOnce` is set to true the unit won't accept further deploy commands for number of frames that is equal to whichever is smaller between weapon `ROF` and `[Unload]` -> `Rate` times 900.
@@ -134,10 +135,28 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting.
 - You can now specify houses named `<Player @ A>` through `<Player @ H>` as the owner of TechnoTypes preplaced on the map in the editor, and they will be correctly given to players starting on points 1-8. Originally, it was only possible to use these house names in events, actions and teams.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
+- `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
+- Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
+- It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 
 ## Fixes / interactions with other extensions
 
+- All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
+
+## Aircraft
+
+### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
+
+- It is now possible to have aircraft spawned from `(Elite)AirstrikeTeamType` or `Type=SpyPlane` superweapons to be created at fixed distance from their intended target/destination instead of from edge of the map by setting `SpawnDistanceFromTarget`.
+- `SpawnHeight` can also be used to override the initial height of the aircraft, which defaults to `FlightLevel`, or if not set then `[General]` -> `FlightLevel`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]            ; AircraftType
+SpawnDistanceFromTarget=  ; floating point value, distance in cells
+SpawnHeight=              ; integer, height in leptons
+```
 
 ## Animations
 
@@ -319,6 +338,7 @@ BallisticScatter.Max= ; float, distance in cells
 ### Building-provided self-healing customization
 
 - It is now possible to set a global cap for the effects of `InfantryGainSelfHeal` and `UnitsGainSelfHeal` by setting `InfantryGainSelfHealCap` & `UnitsGainSelfHealCap` under `[General]`, respectively.
+- Whether or not `MultiplayPassive=true` houses benefit from these effects can be controlled via `GainSelfHealAllowMultiplayPassive`.
 - It is also possible to change the pip frames displayed from `pips.shp` individually for infantry, units and buildings by setting the frames for infantry & unit self-healing on `Pips.SelfHeal.Infantry/Units/Buildings` under `[AudioVisual]`, respectively.
   - `Pips.SelfHeal.Infantry/Units/Buildings.Offset` can be used to customize the pixel offsets for the displayed pips, individually for infantry, units and buildings.
 - Whether or not a TechnoType benefits from effects of `InfantryGainSelfHeal` or `UnitsGainSelfHeal` buildings or neither can now be controlled by setting `SelfHealGainType`.
@@ -327,19 +347,20 @@ BallisticScatter.Max= ; float, distance in cells
 In `rulesmd.ini`:
 ```ini
 [General]
-InfantryGainSelfHealCap=               ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
-UnitsGainSelfHealCap=                  ; integer, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
+InfantryGainSelfHealCap=                ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
+UnitsGainSelfHealCap=                   ; integer, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
+GainSelfHealAllowMultiplayPassive=true  ; boolean
 
 [AudioVisual]
-Pips.SelfHeal.Infantry=13,20           ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Units=13,20              ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Buildings=13,20          ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
-Pips.SelfHeal.Infantry.Offset=25,-35   ; X,Y, pixels relative to default
-Pips.SelfHeal.Units.Offset=33,-32      ; X,Y, pixels relative to default
-Pips.SelfHeal.Buildings.Offset=15,10   ; X,Y, pixels relative to default
+Pips.SelfHeal.Infantry=13,20            ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Units=13,20               ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Buildings=13,20           ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Infantry.Offset=25,-35    ; X,Y, pixels relative to default
+Pips.SelfHeal.Units.Offset=33,-32       ; X,Y, pixels relative to default
+Pips.SelfHeal.Buildings.Offset=15,10    ; X,Y, pixels relative to default
 
-[SOMETECHNO]                           ; TechnoType
-SelfHealGainType=                      ; Self-Heal Gain Type Enumeration (none|infantry|units)
+[SOMETECHNO]                            ; TechnoType
+SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (none|infantry|units)
 ```
 
 ### Chrono sparkle animation customization & improvements
@@ -510,6 +531,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]    ; TechnoType
 JumpjetRotateOnCrash=true  ; boolean
 ```
+
 ```{warning}
 This may subject to further changes.
 ```
@@ -746,6 +768,38 @@ In `artmd.ini`:
 TurretShadow=   ; boolean
 ```
 
+### `IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change
+
+- Vehicle deployment can now be affected by ammo count.
+  - `Ammo.AutoDeployMinimumAmount` determines the minimal number of ammo at which a vehicle converts/deploys automatically.
+  - `Ammo.DeployUnlockMinimumAmount` determines the minimal number of ammo that unlocks issuing vehicle converting/deploying command.
+    - `Ammo.AutoDeployMaximumAmount` and `Ammo.DeployUnlockMaximumAmount` behave analogically.
+    - Setting a negative number will disable ammo count check.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                        ; VehicleType
+Ammo.AutoDeployMinimumAmount=-1      ; integer
+Ammo.AutoDeployMaximumAmount=-1      ; integer
+Ammo.DeployUnlockMinimumAmount=-1    ; integer
+Ammo.DeployUnlockMaximumAmount=-1    ; integer
+```
+
+```{warning}
+Auto-deploy feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
+```
+
+### `IsSimpleDeployer` vehicle ammo change on deploy
+
+- `Ammo.AddOnDeploy` determines the number of ammo added or substracted on unit deploy.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]           ; VehicleType
+Ammo.AddOnDeploy=0      ; integer
+```
+
+
 ## VoxelAnims
 
 ### Customizable debris & meteor impact and warhead detonation behaviour
@@ -758,8 +812,9 @@ TurretShadow=   ; boolean
 
 - It is possible to make game play random animation from `AnimList` by setting `AnimList.PickRandom` to true. The result is similar to what `EMEffect=true` produces, however it comes with no side-effects (`EMEffect=true` prevents `Inviso=true` projectiles from snapping on targets, making them miss moving targets).
 - If `AnimList.CreateAll` is set to true, all animations from `AnimList` are created, instead of a single anim based on damage or random if  `AnimList.PickRandom` is set to true.
+- If `AnimList.CreationInterval` is set to a value higher than 0, there will be that number of detonations of the Warhead before animations from `AnimList` will be created again. If the Warhead had a TechnoType firing it, this number is remembered by the TechnoType across all Warheads fired by it, otherwise it is shared between all detonations of same WarheadType period. This can be useful for things like `Airburst` with large spread where one might want uniform distribution of animations to appear but not on every detonation.
 - `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage]` -> `SplashList` are used.
-  - `SplashList.PickRandom` and `SplashList.CreateAll` apply to these animations in same manner as the `AnimList` equivalents.
+  - `SplashList.PickRandom`, `SplashList.CreateAll` and `SplashList.CreationInterval` apply to these animations in same manner as the `AnimList` equivalents.
 - `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
 - Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land.
 
@@ -768,9 +823,11 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]                   ; WarheadType
 AnimList.PickRandom=false       ; boolean
 AnimList.CreateAll=false        ; boolean
+AnimList.CreationInterval=0     ; integer
 SplashList=                     ; List of animations
 SplashList.PickRandom=false     ; boolean
 SplashList.CreateAll=false      ; boolean
+SplashList.CreationInterval=0   ; integer
 CreateAnimsOnZeroDamage=false   ; boolean
 Conventional.IgnoreUnits=false  ; boolean
 ```

@@ -15,7 +15,7 @@ class RadSiteExt
 public:
 	using base_type = RadSiteClass;
 
-	static constexpr DWORD Canary = 0x87654321;
+	static constexpr DWORD Canary = 0x88446622;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
 	class ExtData final : public Extension<RadSiteClass>
@@ -43,7 +43,7 @@ public:
 		bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance);
 		void Add(int amount);
 		void SetRadLevel(int amount);
-		const double GetRadLevelAt(CellStruct const& cell);
+		double GetRadLevelAt(CellStruct const& cell) const;
 		void CreateLight();
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;

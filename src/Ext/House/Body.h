@@ -21,8 +21,9 @@ public:
 	{
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
-		std::map<BuildingClass*, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
-		std::vector<TechnoExt::ExtData*> OwnedTimedAutoDeathObjects;
+		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
+		std::vector<TechnoExt::ExtData*> OwnedAutoDeathObjects;
+		std::vector<TechnoExt::ExtData*> OwnedTransportReloaders; // Objects that can reload ammo in limbo
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 		CounterClass LimboBuildings; // Currently owned buildings in limbo
@@ -44,7 +45,8 @@ public:
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
-			, OwnedTimedAutoDeathObjects {}
+			, OwnedAutoDeathObjects {}
+			, OwnedTransportReloaders {}
 			, LimboAircraft {}
 			, LimboBuildings {}
 			, LimboInfantry {}
@@ -61,6 +63,7 @@ public:
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
 		void UpdateAutoDeathObjectsInLimbo();
+		void UpdateTransportReloaders();
 		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
 		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
 		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);
@@ -94,9 +97,6 @@ public:
 			switch (abs)
 			{
 			case AbstractType::Building:
-			case AbstractType::Infantry:
-			case AbstractType::Unit:
-			case AbstractType::Aircraft:
 				return false;
 			}
 

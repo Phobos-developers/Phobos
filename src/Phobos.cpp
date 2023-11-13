@@ -21,6 +21,7 @@ const char Phobos::readDelims[4] = ",";
 const char* Phobos::AppIconPath = nullptr;
 
 bool Phobos::DisplayDamageNumbers = false;
+bool Phobos::IsLoadingSaveGame = false;
 
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
@@ -184,6 +185,18 @@ DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 
 	Phobos::CmdLineParse(ppArgs, nNumArgs);
 	Debug::LogDeferredFinalize();
+	return 0;
+}
+
+DEFINE_HOOK(0x67E44D, LoadGame_SetFlag, 0x5)
+{
+	Phobos::IsLoadingSaveGame = true;
+	return 0;
+}
+
+DEFINE_HOOK(0x67E68A, LoadGame_UnsetFlag, 0x5)
+{
+	Phobos::IsLoadingSaveGame = false;
 	return 0;
 }
 

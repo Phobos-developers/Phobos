@@ -116,14 +116,17 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SplashList.Read(exINI, pSection, "SplashList");
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->SplashList_CreateAll.Read(exINI, pSection, "SplashList.CreateAll");
+	this->SplashList_CreationInterval.Read(exINI, pSection, "SplashList.CreationInterval");
 	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
 	this->AnimList_CreateAll.Read(exINI, pSection, "AnimList.CreateAll");
+	this->AnimList_CreationInterval.Read(exINI, pSection, "AnimList.CreationInterval");
 	this->CreateAnimsOnZeroDamage.Read(exINI, pSection, "CreateAnimsOnZeroDamage");
 	this->Conventional_IgnoreUnits.Read(exINI, pSection, "Conventional.IgnoreUnits");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
+	this->ApplyModifiersOnNegativeDamage.Read(exINI, pSection, "ApplyModifiersOnNegativeDamage");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -292,14 +295,17 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
 		.Process(this->SplashList_CreateAll)
+		.Process(this->SplashList_CreationInterval)
 		.Process(this->AnimList_PickRandom)
 		.Process(this->AnimList_CreateAll)
+		.Process(this->AnimList_CreationInterval)
 		.Process(this->CreateAnimsOnZeroDamage)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
+		.Process(this->ApplyModifiersOnNegativeDamage)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)
@@ -376,6 +382,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsOwner)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
+		.Process(this->RemainingAnimCreationInterval)
 		.Process(this->PossibleCellSpreadDetonate)
 		;
 }

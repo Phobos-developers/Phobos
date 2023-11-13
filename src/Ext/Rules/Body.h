@@ -34,6 +34,7 @@ public:
 		Valueable<int> Storage_TiberiumIndex;
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
+		Valueable<bool> GainSelfHealAllowMultiplayPassive;
 		Valueable<bool> EnemyInsignia;
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
@@ -66,7 +67,7 @@ public:
 		Valueable<Point2D> Pips_Ammo_Buildings_Size;
 		Valueable<int> Pips_Tiberiums_EmptyFrame;
 		ValueableVector<int> Pips_Tiberiums_Frames;
-		NullableVector<int> Pips_Tiberiums_DisplayOrder;
+		ValueableVector<int> Pips_Tiberiums_DisplayOrder;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -99,10 +100,14 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
 
+		Valueable<bool> ShowDesignatorRange;
+		Valueable<bool> IsVoiceCreatedGlobal;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
+			, GainSelfHealAllowMultiplayPassive { true }
 			, EnemyInsignia { true }
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
@@ -153,12 +158,14 @@ public:
 			, CrateOnlyOnLand { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
+			, IsVoiceCreatedGlobal { false }
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, ShowDesignatorRange { true }
 		{ }
 
 		virtual ~ExtData() = default;

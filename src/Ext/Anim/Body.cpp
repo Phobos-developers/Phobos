@@ -13,6 +13,12 @@ void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
 	this->InvokerHouse = pInvoker ? pInvoker->Owner : nullptr;
 }
 
+void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse)
+{
+	this->Invoker = pInvoker;
+	this->InvokerHouse = pInvokerHouse;
+}
+
 void AnimExt::ExtData::CreateAttachedSystem()
 {
 	const auto pThis = this->OwnerObject();
@@ -36,7 +42,7 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 }
 
 //Modified from Ares
-const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner, bool defaultToInvokerOwner)
+bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner, bool defaultToInvokerOwner)
 {
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
 	bool makeInf = pAnim->Type->MakeInfantry > -1;
@@ -213,21 +219,24 @@ DEFINE_HOOK_AGAIN(0x422126, AnimClass_CTOR, 0x5)
 DEFINE_HOOK_AGAIN(0x422707, AnimClass_CTOR, 0x5)
 DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
-	GET(AnimClass*, pItem, ESI);
-
-	auto const callerAddress = CTORTemp::callerAddress;
-
-	// Do this here instead of using a duplicate hook in SyncLogger.cpp
-	if (!SyncLogger::HooksDisabled && pItem->UniqueID != -2)
-		SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, callerAddress);
-
-	if (pItem && !pItem->Type)
+	if (!Phobos::IsLoadingSaveGame)
 	{
-		Debug::Log("Attempting to create animation with null Type (Caller: %08x)!", callerAddress);
-		return 0;
-	}
+		GET(AnimClass*, pItem, ESI);
 
-	AnimExt::ExtMap.TryAllocate(pItem);
+		auto const callerAddress = CTORTemp::callerAddress;
+
+		// Do this here instead of using a duplicate hook in SyncLogger.cpp
+		if (!SyncLogger::HooksDisabled && pItem->UniqueID != -2)
+			SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, callerAddress);
+
+		if (pItem && !pItem->Type)
+		{
+			Debug::Log("Attempting to create animation with null Type (Caller: %08x)!\n", callerAddress);
+			return 0;
+		}
+
+		AnimExt::ExtMap.Allocate(pItem);
+	}
 
 	return 0;
 }
