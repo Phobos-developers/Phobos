@@ -736,27 +736,24 @@ void TechnoExt::ExtData::UpdateRandomTargets()
 		&& pExt->CurrentRandomTarget
 		&& IsUnitAvailable(static_cast<TechnoClass*>(pExt->CurrentRandomTarget), true))
 	{
-		if (pThis->SpawnManager)
+		for (auto pSpawn : pThis->SpawnManager->SpawnedNodes)
 		{
-			for (auto pSpawn : pThis->SpawnManager->SpawnedNodes)
+			if (!pSpawn->Unit)
+				continue;
+
+			auto pSpawnExt = TechnoExt::ExtMap.Find(pSpawn->Unit);
+			if (!pSpawnExt)
+				continue;
+
+			if (!pSpawnExt->CurrentRandomTarget)
 			{
-				if (!pSpawn->Unit)
-					continue;
-
-				auto pSpawnExt = TechnoExt::ExtMap.Find(pSpawn->Unit);
-				if (!pSpawnExt)
-					continue;
-
-				if (!pSpawnExt->CurrentRandomTarget)
-				{
-					pSpawnExt->CurrentRandomTarget = TechnoExt::FindRandomTarget(pThis);
+				pSpawnExt->CurrentRandomTarget = TechnoExt::FindRandomTarget(pThis);
+				pSpawn->Unit->Target = pSpawnExt->CurrentRandomTarget;
+			}
+			else if (pSpawn->Status == SpawnNodeStatus::Preparing && pSpawn->Unit->IsInAir())
+			{
+				if (!pSpawn->Unit->Target && pSpawnExt->CurrentRandomTarget)
 					pSpawn->Unit->Target = pSpawnExt->CurrentRandomTarget;
-				}
-				else if (pSpawn->Status == SpawnNodeStatus::Preparing && pSpawn->Unit->IsInAir())
-				{
-					if (!pSpawn->Unit->Target && pSpawnExt->CurrentRandomTarget)
-						pSpawn->Unit->Target = pSpawnExt->CurrentRandomTarget;
-				}
 			}
 		}
 	}

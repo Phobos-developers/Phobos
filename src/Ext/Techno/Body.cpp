@@ -769,6 +769,7 @@ bool TechnoExt::UpdateRandomTarget(TechnoClass* pThis)
 	return true;
 }
 
+// Find all valid targets in the attacker's area and from the valid ones picks one randomly
 TechnoClass* TechnoExt::FindRandomTarget(TechnoClass* pThis)
 {
 	TechnoClass* selection = nullptr;
