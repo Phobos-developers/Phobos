@@ -454,7 +454,7 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
-#pragma region Fly_Layer_Update
+#pragma region Fly Layer Update
 
 // Update attached anim layers after parent unit changes layer.
 void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, ObjectClass* pObject)
