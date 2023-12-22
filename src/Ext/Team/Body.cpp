@@ -227,8 +227,14 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			}
 		}
 
+		int parentCountryTypeIdx = pHouse->Type->FindParentCountryIndex(); // ParentCountry can change the House in a SP map
+		int houseTypeIdx = parentCountryTypeIdx >= 0 ? parentCountryTypeIdx : pHouse->Type->ArrayIndex; // Indexes in AITriggers section are 1-based
 		int houseIdx = pHouse->ArrayIndex;
-		int sideIdx = pHouse->SideIndex + 1;
+
+		int parentCountrySideTypeIdx = pHouse->Type->FindParentCountry()->SideIndex;
+		int sideTypeIdx = parentCountrySideTypeIdx >= 0 ? parentCountrySideTypeIdx + 1 : pHouse->Type->SideIndex + 1; // Side indexes in AITriggers section are 1-based
+		int sideIdx = pHouse->SideIndex + 1; // Side indexes in AITriggers section are 1-based
+
 		auto houseDifficulty = pHouse->AIDifficulty;
 		int maxBaseDefenseTeams = RulesClass::Instance->MaximumAIDefensiveTeams.GetItem((int)houseDifficulty);
 		int activeDefenseTeamsCount = 0;
@@ -356,7 +362,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			if (pTrigger->IsEnabled)
 			{
 				// The trigger must be compatible with the owner
-				if ((triggerHouse == -1 || houseIdx == triggerHouse) && (triggerSide == 0 || sideIdx == triggerSide))
+				if ((triggerHouse == -1 || houseTypeIdx == triggerHouse) && (triggerSide == 0 || sideTypeIdx == triggerSide))
 				{
 					// "ConditionType=-1" will be skipped, always is valid
 					if ((int)pTrigger->ConditionType >= 0)
