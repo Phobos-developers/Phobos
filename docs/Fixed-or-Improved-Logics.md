@@ -138,7 +138,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
-
+- Fixed the issue where the powered anims of `Powered`/`PoweredSpecial` buildings cease to update when being captured by enemies.
 ## Fixes / interactions with other extensions
 
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.

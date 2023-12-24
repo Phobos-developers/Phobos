@@ -777,3 +777,34 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 	return 0;
 }
 #pragma endregion DrawInfoTipAndSpiedSelection
+
+
+bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
+{
+	// Fix : Suppress capture EVA event if ConsideredVehicle=no
+	announce = announce && !pThis->Type->IsVehicle();
+
+	using this_func_sig = bool(__thiscall*)(BuildingClass*, HouseClass*, bool);
+	bool res = reinterpret_cast<this_func_sig>(0x448260)(pThis, pHouse, announce);
+
+	// Fix : update powered anims
+	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
+		reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
+	return res;
+}
+
+DEFINE_JUMP(VTABLE, 0x7E4290, GET_OFFSET(BuildingClass_SetOwningHouse_Wrapper));
+
+DEFINE_HOOK(0x6E0BB4, TActionClass_36_Rewrite, 0x6)
+{
+	GET(HouseClass*, pDecided, EBP);
+	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x10, 0x4));
+	bool res = false;
+	for (auto* pTechno : *TechnoClass::Array)
+	{
+		if (pTechno->Owner == pHouse)
+			res = res || pTechno->SetOwningHouse(pDecided, false);
+	}
+	R->BL(res);
+	return 0x6E0C8B;
+}
