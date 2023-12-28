@@ -794,17 +794,5 @@ bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*
 }
 
 DEFINE_JUMP(VTABLE, 0x7E4290, GET_OFFSET(BuildingClass_SetOwningHouse_Wrapper));
-
-DEFINE_HOOK(0x6E0BB4, TActionClass_36_Rewrite, 0x6)
-{
-	GET(HouseClass*, pDecided, EBP);
-	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x10, 0x4));
-	bool res = false;
-	for (auto* pTechno : *TechnoClass::Array)
-	{
-		if (pTechno->Owner == pHouse)
-			res = res || pTechno->SetOwningHouse(pDecided, false);
-	}
-	R->BL(res);
-	return 0x6E0C8B;
-}
+DEFINE_JUMP(LJMP, 0x6E0BD4, 0x6E0BFE);
+DEFINE_JUMP(LJMP, 0x6E0C1D, 0x6E0C8B);//Simplify TAction 36

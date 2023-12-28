@@ -278,6 +278,7 @@ This page lists all the individual contributions to the project by their author.
    - Remove sound events when mind-controlled vehicles deploy into buildings or when buildings considered as vehicles get captured
    - Building LightSource tint S/L fix
    - Permanent healthbar display on units targeted by temporal weapons fix
+   - Powered anims on buildings cease playing upon capture by different house fix
    - TechnoType conversion placeholder
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
