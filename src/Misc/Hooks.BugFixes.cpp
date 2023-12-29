@@ -6,6 +6,7 @@
 #include <UnitClass.h>
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
+#include <SpawnManagerClass.h>
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
@@ -624,3 +625,18 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 	return 0;
 }
 #pragma endregion DrawInfoTipAndSpiedSelection
+
+// Fix a glitch related to incorrect target setting for missiles
+// Author: Belonit
+DEFINE_HOOK(0x6B75AC, SpawnManagerClass_AI_SetDestinationForMissiles, 0x5)
+{
+	GET(SpawnManagerClass*, pSpawnManager, ESI);
+	GET(TechnoClass*, pSpawnTechno, EDI);
+
+	CoordStruct coord = pSpawnManager->Target->GetCenterCoords();
+	CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+
+	pSpawnTechno->SetDestination(pCellDestination, true);
+
+	return 0x6B75BC;
+}

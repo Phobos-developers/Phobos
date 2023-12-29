@@ -22,6 +22,7 @@ This page lists all the individual contributions to the project by their author.
   - Building Placement Preview Adjustment
   - Check for Changelog/Documentation/Credits in Pull Requests
   - Fix position and layer of info tip and reveal production cameo on selected building
+  - Fix a glitch related to incorrect target setting for missiles
 - **Kerbiter (Metadorius)**:
   - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
