@@ -94,16 +94,6 @@ DEFINE_HOOK(0x4DBF13, FootClass_SetOwningHouse, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4483C0, BuildingClass_SetOwningHouse_MuteSound, 0x6)
-{
-	GET(BuildingClass* const, pThis, ESI);
-	REF_STACK(bool, announce, STACK_OFFSET(0x60, 0x8));
-
-	announce = announce && !pThis->Type->IsVehicle();
-
-	return 0;
-}
-
 DEFINE_HOOK_AGAIN(0x7355C0, TechnoClass_Init_InitialStrength, 0x6) // UnitClass_Init
 DEFINE_HOOK_AGAIN(0x517D69, TechnoClass_Init_InitialStrength, 0x6) // InfantryClass_Init
 DEFINE_HOOK_AGAIN(0x442C7B, TechnoClass_Init_InitialStrength, 0x6) // BuildingClass_Init
@@ -454,24 +444,21 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x54B188, JumpjetLocomotionClass_Process_LayerUpdate, 0x6)
+#pragma region Fly Layer Update
+
+// Update attached anim layers after parent unit changes layer.
+void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, ObjectClass* pObject)
 {
-	GET(TechnoClass*, pLinkedTo, EAX);
+	pThis->Submit(pObject);
 
-	TechnoExt::UpdateAttachedAnimLayers(pLinkedTo);
-
-	return 0;
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
+		TechnoExt::UpdateAttachedAnimLayers(pTechno);
 }
 
-DEFINE_HOOK(0x4CD4E1, FlyLocomotionClass_Update_LayerUpdate, 0x6)
-{
-	GET(TechnoClass*, pLinkedTo, ECX);
+DEFINE_JUMP(CALL, 0x54B18E, GET_OFFSET(DisplayClass_Submit_Wrapper));  // JumpjetLocomotionClass_Process
+DEFINE_JUMP(CALL, 0x4CD4E7, GET_OFFSET(DisplayClass_Submit_Wrapper));  // FlyLocomotionClass_Update
 
-	if (pLinkedTo->LastLayer != pLinkedTo->InWhichLayer())
-		TechnoExt::UpdateAttachedAnimLayers(pLinkedTo);
-
-	return 0;
-}
+#pragma endregion
 
 // Move to UnitClass hooks file if it is ever created.
 DEFINE_HOOK(0x736234, UnitClass_ChronoSparkleDelay, 0x5)

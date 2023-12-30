@@ -7,6 +7,7 @@
 #include <UnitClass.h>
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
+#include <SpawnManagerClass.h>
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
@@ -14,6 +15,7 @@
 #include <JumpjetLocomotionClass.h>
 #include <BombClass.h>
 #include <WarheadTypeClass.h>
+
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -603,16 +605,6 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 	return SpawnCrate;
 }
 
-// Enable sorted add for Air/Top layers to fix issues with attached anims etc.
-DEFINE_HOOK(0x4A9750, DisplayClass_Submit_LayerSort, 0x9)
-{
-	GET(Layer, layer, EDI);
-
-	R->ECX(layer != Layer::Surface && layer != Layer::Underground);
-
-	return 0;
-}
-
 // Fixes C4=no amphibious infantry being killed in water if Chronoshifted/Paradropped there.
 DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 {
@@ -787,3 +779,37 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 	return 0;
 }
 #pragma endregion DrawInfoTipAndSpiedSelection
+
+
+bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
+{
+	// Fix : Suppress capture EVA event if ConsideredVehicle=no
+	announce = announce && !pThis->Type->IsVehicle();
+
+	using this_func_sig = bool(__thiscall*)(BuildingClass*, HouseClass*, bool);
+	bool res = reinterpret_cast<this_func_sig>(0x448260)(pThis, pHouse, announce);
+
+	// Fix : update powered anims
+	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
+		reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
+	return res;
+}
+
+DEFINE_JUMP(VTABLE, 0x7E4290, GET_OFFSET(BuildingClass_SetOwningHouse_Wrapper));
+DEFINE_JUMP(LJMP, 0x6E0BD4, 0x6E0BFE);
+DEFINE_JUMP(LJMP, 0x6E0C1D, 0x6E0C8B);//Simplify TAction 36
+
+// Fix a glitch related to incorrect target setting for missiles
+// Author: Belonit
+DEFINE_HOOK(0x6B75AC, SpawnManagerClass_AI_SetDestinationForMissiles, 0x5)
+{
+	GET(SpawnManagerClass*, pSpawnManager, ESI);
+	GET(TechnoClass*, pSpawnTechno, EDI);
+
+	CoordStruct coord = pSpawnManager->Target->GetCenterCoords();
+	CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+
+	pSpawnTechno->SetDestination(pCellDestination, true);
+
+	return 0x6B75BC;
+}

@@ -70,16 +70,11 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
-	auto const pThis = this->OwnerObject();
-	auto const pType = pThis->GetTechnoType();
-	if ((pThis->WhatAmI() != AbstractType::Unit) || (pType->Ammo <= 0))
+	auto const pThis = specific_cast<UnitClass*>(this->OwnerObject());
+	if (!pThis || (pThis->Type->Ammo <= 0) ||!pThis->Type->IsSimpleDeployer)
 		return;
 
 	auto const pTypeExt = this->TypeExtData;
-	auto const pUnit = abstract_cast<UnitClass*>(pThis);
-
-	if (!pUnit->Type->IsSimpleDeployer)
-		return;
 
 	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
 	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
@@ -449,7 +444,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 				// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
 				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
-				MapClass::Logics.get().RemoveObject(pPassenger);
+				MapClass::Logics->RemoveObject(pPassenger);
 			}
 
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
