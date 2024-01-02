@@ -196,6 +196,7 @@ This page lists all the individual contributions to the project by their author.
    - "Shield is broken" trigger event
    - RadialIndicator observer visibility
    - Forbidding parallel AI queues by type
+   - EIP 00529A14 crash fix on Linux
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support

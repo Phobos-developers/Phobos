@@ -640,3 +640,8 @@ DEFINE_HOOK(0x6B75AC, SpawnManagerClass_AI_SetDestinationForMissiles, 0x5)
 
 	return 0x6B75BC;
 }
+
+DEFINE_HOOK(0x689EB0, ScenarioClass_ReadMap_SkipHeaderInCampaign, 0x6)
+{
+	return SessionClass::IsCampaign() ? 0x689FC0 : 0;
+}
