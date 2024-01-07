@@ -7,6 +7,7 @@
 #include <UnitClass.h>
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
+#include <SpawnManagerClass.h>
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
@@ -14,6 +15,7 @@
 #include <JumpjetLocomotionClass.h>
 #include <BombClass.h>
 #include <WarheadTypeClass.h>
+
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -490,12 +492,10 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	{
 		if (auto pAnim = GameCreate<AnimClass>(pAnimType, nCoord, 0, 1, 0x2600, -15, false))
 		{
-			if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
-			{
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
-					pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
-			}
-			else
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
+				pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+
+			if (!pAnim->Owner)
 			{
 				pAnim->Owner = pThisBomb->OwnerHouse;
 			}
@@ -605,16 +605,6 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 	return SpawnCrate;
 }
 
-// Enable sorted add for Air/Top layers to fix issues with attached anims etc.
-DEFINE_HOOK(0x4A9750, DisplayClass_Submit_LayerSort, 0x9)
-{
-	GET(Layer, layer, EDI);
-
-	R->ECX(layer != Layer::Surface && layer != Layer::Underground);
-
-	return 0;
-}
-
 // Fixes C4=no amphibious infantry being killed in water if Chronoshifted/Paradropped there.
 DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 {
@@ -695,15 +685,29 @@ DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
 // Stops INI parsing for Anim/BuildingTypeClass on game startup, will only be read on scenario load later like everything else.
 DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);
 
-// Only first half of the colorschemes array gets adjusted thanks to the count being wrong, quick and dirty fix.
-DEFINE_HOOK(0x53AD97, IonStormClass_AdjustLighting_ColorCount, 0x6)
-{
-	GET(int, colorSchemesCount, EAX);
+// Fixes second half of Colors list not getting retinted correctly by map triggers, superweapons etc.
+#pragma region LightingColorSchemesFix
 
-	R->EAX(colorSchemesCount * 2);
+namespace AdjustLightingTemp
+{
+	int colorSchemeCount = 0;
+}
+
+DEFINE_HOOK(0x53AD7D, IonStormClass_AdjustLighting_SetContext, 0x8)
+{
+	AdjustLightingTemp::colorSchemeCount = ColorScheme::GetNumberOfSchemes() * 2;
 
 	return 0;
 }
+
+int __fastcall NumberOfSchemes_Wrapper()
+{
+	return AdjustLightingTemp::colorSchemeCount;
+}
+
+DEFINE_JUMP(CALL, 0x53AD92, GET_OFFSET(NumberOfSchemes_Wrapper));
+
+#pragma endregion
 
 // Fixes a literal edge-case in passability checks to cover cells with bridges that are not accessible when moving on the bridge and
 // normally not even attempted to enter but things like MapClass::NearByLocation() can still end up trying to pick.
@@ -746,4 +750,71 @@ DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
 		return MustDeploy;
 
 	return SkipGameCode;
+}
+
+// Fixed position and layer of info tip and reveal production cameo on selected building
+// Author: Belonit
+#pragma region DrawInfoTipAndSpiedSelection
+
+// skip call DrawInfoTipAndSpiedSelection
+// Note that Ares have the TacticalClass_DrawUnits_ParticleSystems hook at 0x6D9427
+DEFINE_JUMP(LJMP, 0x6D9430, 0x6D95A1); // Tactical_RenderLayers
+
+// Call DrawInfoTipAndSpiedSelection in new location
+DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
+{
+	GET(BuildingClass*, pBuilding, EBX);
+	GET(Point2D*, pLocation, EAX);
+
+	if (pBuilding->IsSelected && pBuilding->IsOnMap && pBuilding->WhatAmI() == AbstractType::Building)
+	{
+		const int foundationHeight = pBuilding->Type->GetFoundationHeight(0);
+		const int typeHeight = pBuilding->Type->Height;
+		const int yOffest = (Unsorted::CellHeightInPixels * (foundationHeight + typeHeight)) >> 2;
+
+		Point2D centeredPoint = { pLocation->X, pLocation->Y - yOffest };
+		pBuilding->DrawInfoTipAndSpiedSelection(&centeredPoint, &DSurface::ViewBounds);
+	}
+
+	return 0;
+}
+#pragma endregion DrawInfoTipAndSpiedSelection
+
+
+bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
+{
+	// Fix : Suppress capture EVA event if ConsideredVehicle=no
+	announce = announce && !pThis->Type->IsVehicle();
+
+	using this_func_sig = bool(__thiscall*)(BuildingClass*, HouseClass*, bool);
+	bool res = reinterpret_cast<this_func_sig>(0x448260)(pThis, pHouse, announce);
+
+	// Fix : update powered anims
+	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
+		reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
+	return res;
+}
+
+DEFINE_JUMP(VTABLE, 0x7E4290, GET_OFFSET(BuildingClass_SetOwningHouse_Wrapper));
+DEFINE_JUMP(LJMP, 0x6E0BD4, 0x6E0BFE);
+DEFINE_JUMP(LJMP, 0x6E0C1D, 0x6E0C8B);//Simplify TAction 36
+
+// Fix a glitch related to incorrect target setting for missiles
+// Author: Belonit
+DEFINE_HOOK(0x6B75AC, SpawnManagerClass_AI_SetDestinationForMissiles, 0x5)
+{
+	GET(SpawnManagerClass*, pSpawnManager, ESI);
+	GET(TechnoClass*, pSpawnTechno, EDI);
+
+	CoordStruct coord = pSpawnManager->Target->GetCenterCoords();
+	CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+
+	pSpawnTechno->SetDestination(pCellDestination, true);
+
+	return 0x6B75BC;
+}
+
+DEFINE_HOOK(0x689EB0, ScenarioClass_ReadMap_SkipHeaderInCampaign, 0x6)
+{
+	return SessionClass::IsCampaign() ? 0x689FC0 : 0;
 }

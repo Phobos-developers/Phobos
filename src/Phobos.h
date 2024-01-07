@@ -31,6 +31,7 @@ public:
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
 	static bool DisplayDamageNumbers;
+	static bool IsLoadingSaveGame;
 
 #ifdef DEBUG
 	static bool DetachFromDebugger();
@@ -73,6 +74,8 @@ public:
 		static bool RealTimeTimers_Adaptive;
 		static int CampaignDefaultGameSpeed;
 		static bool SkirmishUnlimitedColors;
+		static bool ShowDesignatorRange;
+		static bool SaveVariablesOnScenarioEnd;
 	};
 
 	class Misc

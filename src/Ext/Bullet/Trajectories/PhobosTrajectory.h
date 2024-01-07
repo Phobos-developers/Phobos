@@ -20,14 +20,17 @@ enum class TrajectoryCheckReturnType : int
 	ExecuteGameCheck = 0,
 	SkipGameCheck = 1,
 	SatisfyGameCheck = 2,
+	Detonate = 3
 };
 
 class PhobosTrajectoryType
 {
 public:
 	PhobosTrajectoryType(noinit_t) { }
-	PhobosTrajectoryType(TrajectoryFlag flag) : Flag { flag } { }
+	PhobosTrajectoryType(TrajectoryFlag flag) : Flag { flag }
+	{}
 
+	virtual ~PhobosTrajectoryType() noexcept = default;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 
@@ -47,13 +50,16 @@ class PhobosTrajectory
 {
 public:
 	PhobosTrajectory(noinit_t) { }
-	PhobosTrajectory(TrajectoryFlag flag) : Flag { flag } { }
+	PhobosTrajectory(TrajectoryFlag flag) : Flag { flag }
+	{}
 
+	virtual ~PhobosTrajectory() noexcept = default;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) = 0;
 	virtual bool OnAI(BulletClass* pBullet) = 0;
+	virtual void OnAIPreDetonate(BulletClass* pBullet) = 0;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) = 0;
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) = 0;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) = 0;

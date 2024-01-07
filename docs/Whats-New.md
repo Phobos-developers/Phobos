@@ -20,11 +20,14 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Air and Top layer contents are no longer sorted, animations in these layers no longer respect `YSortAdjust`. Animations attached to flying units now get their layer updated immediately after parent unit, if they are on same layer they will draw above the parent unit.
+- `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 - `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
 
 #### From 0.3
 
+- `Trajectory=Straight` projectiles can now snap on targets within 0.5 cells from their detonation point, this distance can be customized via `Trajectory.Straight.TargetSnapDistance`.
 - `LaunchSW.RealLaunch=false` now checks if firing house has enough credits to satisfy SW's `Money.Amount` in order to be fired.
 - `CreateUnit` now creates the units by default at animation's height (even if `CreateUnit.ConsiderPathfinding` is enabled) instead of always at ground level. This behaviour can be restored by setting `CreateUnit.AlwaysSpawnOnGround` to true.
 - Phobos-introduced attack scripts now consider potential target's current map zone when evaluating targets. [TargetZoneScanType](Fixed-or-Improved-Logics.md#customizable-target-evaluation-map-zone-check-behaviour) can be used to customize this behaviour.
@@ -76,6 +79,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   59=Operate var is global,10
   60=Operate var index,0
   65=Campaign AI Repairable,0
+  68=House,1,2
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -115,6 +119,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
   534=Global variable is less than or equals to global variable,48,35,0,0,[LONG DESC],0,1,510,1
   535=Global variable and global variable is true,48,35,0,0,[LONG DESC],0,1,511,1
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
+  601=House owns Techno Type,68,46,0,0,[LONG DESC],0,1,601,1
+  602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1
 
   [ActionsRA2]
   125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
@@ -320,15 +326,29 @@ New:
 - Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar)
 - Crushing tilt and slowdown customization (by Starkku)
 - Extra warhead detonations on weapon (by Starkku)
-- Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
 - Chrono sparkle animation display customization and improvements (by Starkku)
 - Script action to Chronoshift teams to enemy base (by Starkku)
+- Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
 - Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
-- PipScale pip size & ammo pip frame customization (by Starkku)
+- PipScale pip customizations (size, ammo / spawn / tiberium frames or offsets) (by Starkku)
+- Auto-deploy/Deploy block on ammo change (by Fryone)
 - `AltPalette` lighting toggle (by Starkku)
 - Unhardcoded timer blinking color scheme (by Starkku)
 - Customizing shield self-healing timer restart when shield is damaged (by Starkku)
 - Customizing minimum & maximum amount of damage shield can take from a single hit (by Starkku)
+- Players can now be given ownership of preplaced buildings in Skirmish and Multiplayer in maps using houses of the format <Player @ X> where X goes from A to H for spawn positions 1-8 (by ZivDero)
+- `AutoDeath.Technos(Dont)Exist` can optionally track limboed (not physically on map, e.g transports etc) technos (by Starkku)
+- Wall overlay `Palette` support (by Starkku)
+- Show designator & inhibitor range (by Morton)
+- Owner-only sound on unit creation (by Fryone)
+- Allow using `Secondary` weapon against walls if `Primary` cannot target them (by Starkku)
+- Reloading ammo in transports (by Starkku)
+- Dump variables to file on scenario end / hotkey (by Morton)
+- "House owns TechnoType" and "House doesn't own TechnoType" trigger events
+- Allow toggling `Infantry/UnitsGainSelfHeal` for `MultiplayPassive=true` houses (by Starkku)
+- Customizable straight trajectory detonation & snap distance and pass-through option (by Starkku)
+- Airstrike & spy plane fixed spawn distance & height (by Starkku)
+- Allow enabling application of `Verses` and `PercentAtMax` for negative damage (by Starkku)
 - Change target Owner on warhead impact (by Fryone)
 
 Vanilla fixes:
@@ -374,6 +394,11 @@ Vanilla fixes:
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy (by Starkku)
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false` (by Starkku)
 - `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting (by Starkku)
+- Fixed position and layer of info tip and reveal production cameo on selected building (by Belonit)
+- Fixed `TurretOffset` to be supported for SHP vehicles (by TwinkleStar)
+- `Powered`/`PoweredSpecial` buildings' powered anims will update as usual when being captured by enemies (by Trsdy)
+- Fixed a glitch related to incorrect target setting for missiles (by Belonit)
+- Skipped parsing `[Header]` section of compaign maps which led to occasional crashes on Linux (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -391,8 +416,22 @@ Phobos fixes:
 - Used `MindControl.Anim` for buildings deployed from mind-controlled vehicles (by Trsdy)
 - Optimized extension class implementation, should improve performance all around (by Otamaa & Starkku)
 - Fixed `Interceptor` not resetting target if the intercepted projectile changes type to non-interceptable one afterwards (by Starkku)
+- Fixed `PlacementPreview` setting for BuildingTypes not being parsed from INI (by Starkku)
+- Fixed Phobos animation additions that support `CreateUnit.Owner` not also checking `MakeInfantryOwner` (by Starkku)
+- Fixed `AutoDeath` to consider all conditions for objects in limbo (by Starkku)
+- Shields will no longer take damage if the parent techno has `Immune=true` or has `TypeImmune=true` and the damage comes from instance of same TechnoType owned by same house (by Starkku)
+- Fixed interceptors causing multiplayer games to desync (by Starkku)
+- Optimized performance for map trigger retint action light source fix (by Starkku)
+- Fixed a number of issues with Warhead Shield respawn / self heal rate modifiers like timers getting reset unnecessarily, the timer being adjusted wrong after the Warhead effect runs out etc. (by Starkku)
+- Fixed a problem with disguise visibility logic that could cause game to crash on loading a map (by Starkku)
+- Fixed owned `LimboDelivery` buildings not being saved correctly in savegames (by Starkku)
+- Fixed a typo in weapon selector code causing issues with `NoAmmoWeapon` and related checks (by Starkku)
+- Fixed `DetonateOnAllMapObjects` behaving erratically or potentially crashing if it destroys buildings using Ares' advanced rubble (by Starkku)
+- Fixed game crashing on loading save games if the saved game state had active radiation sites (by Starkku)
+- Fixed a desync error caused by air/top layer sorting (by Starkku)
 
 Fixes / interactions with other extensions:
+- All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
 </details>
 
@@ -591,7 +630,6 @@ Phobos fixes:
 - Fixed techno-extdata update after type conversion (by Trsdy)
 - Fixed Phobos Warhead effects (crits, new shield modifiers etc.) considering sinking units valid targets (by Starkku)
 - Fixed an issue where `FireOnce=yes` deploy weapons on vehicles would still fire multiple times if deploy command is issued repeatedly or when not idle (by Starkku)
-- Fixed techno-extdata update after type conversion (by Trsdy)
 - Fixed a game crash when checking BuildLimit if Phobos is running without Ares (by Belonit)
 - Corrected the misinterpretation in the definition of `DiskLaser.Radius` (by Trsdy)
 

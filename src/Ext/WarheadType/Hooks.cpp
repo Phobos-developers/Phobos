@@ -72,19 +72,18 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
+	GET(int, nDamage, ECX);
+
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+	pWHExt->Splashed = true;
+	auto animTypes = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
 
-	if (pWHExt && pWHExt->SplashList.size())
-	{
-		GET(int, nDamage, ECX);
-		int idx = pWHExt->SplashList_PickRandom ?
-			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.size() - 1) :
-			std::min(pWHExt->SplashList.size() * 35 - 1, (size_t)nDamage) / 35;
-		R->EAX(pWHExt->SplashList[idx]);
-		return 0x48A5AD;
-	}
+	int idx = pWHExt->SplashList_PickRandom ?
+		ScenarioClass::Instance->Random.RandomRanged(0, animTypes.size() - 1) :
+		std::min(animTypes.size() * 35 - 1, (size_t)nDamage) / 35;
 
-	return 0;
+	R->EAX(animTypes.size() > 0 ? animTypes[idx] : nullptr);
+	return 0x48A5AD;
 }
 
 DEFINE_HOOK(0x48A5BD, SelectDamageAnimation_PickRandom, 0x6)
@@ -172,7 +171,9 @@ DEFINE_HOOK(0x48A4F3, SelectDamageAnimation_NegativeZeroDamage, 0x6)
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(warhead);
 
-	if (damage == 0 && !pWHExt->AnimList_ShowOnZeroDamage)
+	pWHExt->Splashed = false;
+
+	if (damage == 0 && !pWHExt->CreateAnimsOnZeroDamage)
 		return NoAnim;
 	else if (damage < 0)
 		damage = -damage;
@@ -180,4 +181,18 @@ DEFINE_HOOK(0x48A4F3, SelectDamageAnimation_NegativeZeroDamage, 0x6)
 	R->EDI(damage);
 	R->ESI(warhead);
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4891AF, GetTotalDamage_NegativeDamageModifiers, 0x6)
+{
+	enum { ApplyModifiers = 0x4891C6 };
+
+	GET(WarheadTypeClass* const, pWarhead, EDI);
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (pWHExt->ApplyModifiersOnNegativeDamage)
+		return ApplyModifiers;
+
+	return 0;
 }

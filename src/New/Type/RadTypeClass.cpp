@@ -4,9 +4,7 @@
 #include <GameStrings.h>
 #include <WarheadTypeClass.h>
 
-Enumerable<RadTypeClass>::container_t Enumerable<RadTypeClass>::Array;
-
-// pretty nice, eh
+template<>
 const char* Enumerable<RadTypeClass>::GetMainSection()
 {
 	return "RadiationTypes";

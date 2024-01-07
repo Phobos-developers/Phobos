@@ -21,6 +21,8 @@ This page lists all the individual contributions to the project by their author.
   - Non-ASCII input fix
   - Building Placement Preview Adjustment
   - Check for Changelog/Documentation/Credits in Pull Requests
+  - Fix position and layer of info tip and reveal production cameo on selected building
+  - Fix a glitch related to incorrect target setting for missiles
 - **Kerbiter (Metadorius)**:
   - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
@@ -207,6 +209,12 @@ This page lists all the individual contributions to the project by their author.
   - Additional sync logging
   - `Arcing` elevation inaccuracy fix
   - `EMPulseCannon` projectile gravity fix
+  - Custom palette support for wall overlays
+  - Warhead animation improvements
+  - Reloading ammo in transports
+  - Straight projectile trajectory additions
+  - Airstrike & spy plane fixed spawn distance & height
+  - Negative damage `Verses/PercentAtMax` toggle
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -221,6 +229,9 @@ This page lists all the individual contributions to the project by their author.
   - Ares detection and integration
   - TechnoType conversion warhead & superweapon
   - Unlimited skirmish colors
+  - Show designator & inhibitor range
+  - Dump variables to file on scenario end / hotkey
+  - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
@@ -268,7 +279,9 @@ This page lists all the individual contributions to the project by their author.
    - Remove sound events when mind-controlled vehicles deploy into buildings or when buildings considered as vehicles get captured
    - Building LightSource tint S/L fix
    - Permanent healthbar display on units targeted by temporal weapons fix
+   - Powered anims on buildings cease playing upon capture by different house fix
    - TechnoType conversion placeholder
+   - EIP 00529A14 crash fix on Linux 
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -284,9 +297,14 @@ This page lists all the individual contributions to the project by their author.
   - Custom slaves free sound
   - Jumpjet crash rotation control
   - Vehicle voxel turret shadows & body multi-section shadows
+  - `TurretOffset` support for SHP vehicles
 - **Fryone**
   - Customizable ElectricBolt Arcs
+  - Sound entry on unit's creation
+  - Auto-deploy/Deploy block on ammo change
   - Change target Owner on warhead impact
+- **ZivDero**
+  - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
