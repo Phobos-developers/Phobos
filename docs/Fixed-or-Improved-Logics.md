@@ -140,6 +140,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
 - Fixed the issue where the powered anims of `Powered`/`PoweredSpecial` buildings cease to update when being captured by enemies.
 - Fix a glitch related to incorrect target setting for missiles.
+- Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
+
 ## Fixes / interactions with other extensions
 
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
