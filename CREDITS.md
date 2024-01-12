@@ -281,7 +281,8 @@ This page lists all the individual contributions to the project by their author.
    - Permanent healthbar display on units targeted by temporal weapons fix
    - Powered anims on buildings cease playing upon capture by different house fix
    - TechnoType conversion placeholder
-   - EIP 00529A14 crash fix on Linux 
+   - EIP 00529A14 crash fix on Linux
+   - Skip units' turret rotation and jumpjets' wobbling under EMP
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
