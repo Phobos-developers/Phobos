@@ -1,7 +1,10 @@
 #include <AircraftClass.h>
+
 #include <Utilities/Macro.h>
+
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
@@ -106,4 +109,30 @@ DEFINE_HOOK(0x414C0B, AircraftClass_ChronoSparkleDelay, 0x5)
 {
 	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
 	return 0x414C10;
+}
+
+DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
+{
+	GET(AircraftClass*, pThis, EDI);
+	GET_BASE(int, weaponIdx, 0xC);
+
+	enum { KickOutPassengers = 0x415EF8, Fire = 0x415F08 };
+
+	if (!TechnoExt::IsActive(pThis))
+		return 0;
+
+	if (!pThis->Passengers.GetFirstPassenger())
+		return Fire;
+
+	const WeaponStruct* pWeapon = pThis->GetWeapon(weaponIdx);
+
+	if (!pWeapon)
+		return KickOutPassengers;
+
+	const auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon->WeaponType);
+
+	if (!pWeaponTypeExt)
+		return KickOutPassengers;
+
+	return pWeaponTypeExt->KickOutPassengers ? KickOutPassengers : Fire;
 }

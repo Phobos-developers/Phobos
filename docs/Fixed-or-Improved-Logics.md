@@ -882,6 +882,16 @@ ShakeIsLocal=false  ; boolean
 
 ## Weapons
 
+### Customizing whether passengers are kicked out when an aircraft fires
+
+- You can now customize whether aircraft will forcefully eject passengers (vanilla behavior) or fire its weapon when attempting to fire.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+KickOutPassengers=true  ; boolean
+```
+
 ### Customizable disk laser radius
 
 ![image](_static/images/disklaser-radius-values-01.gif)
