@@ -122,13 +122,9 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRules->PlacementPreview_Translucency) |
 			BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
 
-		ConvertClass* pPalette = nullptr;
-		{
-			if (pTypeExt->PlacementPreview_Remap.Get())
-				pPalette = pBuilding->GetDrawer();
-			else
-				pPalette = pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
-		}
+		ConvertClass* pPalette = pTypeExt->PlacementPreview_Remap.Get()
+			? pBuilding->GetDrawer()
+			: pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
 
 		DSurface* pSurface = DSurface::Temp;
 		RectangleStruct nRect = pSurface->GetRect();
@@ -141,7 +137,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_MakePlacementGridTranparent, 0x6)
+DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_SetPlacementGridTranslucency, 0x6)
 {
 	LEA_STACK(BlitterFlags*, blitFlags, STACK_OFFSET(0x68, -0x58));
 
