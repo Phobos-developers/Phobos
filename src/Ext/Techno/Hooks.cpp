@@ -1,4 +1,5 @@
-#include <ScenarioClass.h>
+#include <GameOptionsClass.h>
+#include <TacticalClass.h>
 #include "Body.h"
 
 #include <Ext/BuildingType/Body.h>
