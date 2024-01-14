@@ -416,6 +416,18 @@ In `rulesmd.ini`
 SlavesFreeSound=      ; sound entry
 ```
 
+## Isometric Tile
+
+### Custom Palette
+
+- You can now use custom palette for isometric tile.
+
+In `SomeTheater.ini`
+```ini
+[IsometricTileType]
+CustomPalette=        ; palette
+```
+
 ## Projectiles
 
 
