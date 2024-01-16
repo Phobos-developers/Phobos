@@ -26,10 +26,12 @@ public:
 	public:
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
+		PhobosFixedString<0x40> CustomTheaterID;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, Waypoints { }
 			, Variables { }
+			, CustomTheaterID { NONE_STR }
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
