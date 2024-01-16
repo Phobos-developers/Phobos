@@ -115,10 +115,11 @@ template <typename T>
 void ScenarioExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(SessionClass::Instance->Config)
 		.Process(this->Waypoints)
 		.Process(this->Variables[0])
 		.Process(this->Variables[1])
-		.Process(SessionClass::Instance->Config)
+		.Process(this->CustomTheaterID)
 		;
 }
 

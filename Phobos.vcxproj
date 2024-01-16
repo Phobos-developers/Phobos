@@ -150,6 +150,10 @@
     <ClCompile Include="src\Misc\Hooks.Timers.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
     <ClCompile Include="src\Misc\TypeConvertHelper.cpp" />
+    <ClCompile Include="src\Misc\CustomTheater\CustomTheater.cpp" />
+    <ClCompile Include="src\Misc\CustomTheater\Hook.RMP.cpp" />
+    <ClCompile Include="src\Misc\CustomTheater\Hooks.cpp" />
+    <ClCompile Include="src\Misc\CustomTheater\TheaterProto.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
     <ClCompile Include="src\Phobos.COM.cpp" />
     <ClCompile Include="src\Phobos.CRT.cpp" />
@@ -197,6 +201,8 @@
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\Misc\SyncLogging.h" />
     <ClInclude Include="src\Misc\TypeConvertHelper.h" />
+    <ClInclude Include="src\Misc\CustomTheater\CustomTheater.h" />
+    <ClInclude Include="src\Misc\CustomTheater\TheaterProto.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
