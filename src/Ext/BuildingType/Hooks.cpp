@@ -141,7 +141,7 @@ DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_SetPlacementGridTranslucency, 0x6)
 {
 	auto pRules = RulesExt::Global();
 	BlitterFlags translucency = (pRules->PlacementPreview && Phobos::Config::ShowPlacementPreview)
-		? pRules->PlacementPreview_Grid_Translucency.Get(pRules->PlacementGrid_Translucency)
+		? pRules->PlacementGrid_TranslucencyWithPreview.Get(pRules->PlacementGrid_Translucency)
 		: pRules->PlacementGrid_Translucency;
 
 	if (translucency != BlitterFlags::None)

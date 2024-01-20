@@ -50,9 +50,9 @@ public:
 		PhobosFixedString<32u> MissingCameo;
 
 		TranslucencyLevel PlacementGrid_Translucency;
+		Nullable<TranslucencyLevel> PlacementGrid_TranslucencyWithPreview;
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
-		Nullable<TranslucencyLevel> PlacementPreview_Grid_Translucency;
 
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
@@ -124,9 +124,9 @@ public:
 			, MissingCameo { GameStrings::XXICON_SHP() }
 
 			, PlacementGrid_Translucency { 0 }
+			, PlacementGrid_TranslucencyWithPreview { }
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
-			, PlacementPreview_Grid_Translucency { }
 
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
