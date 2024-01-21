@@ -274,7 +274,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	else
 		dice = this->Crit_RandomBuffer;
 
-	if (GetCritChance(pOwner) < dice)
+	if (this->GetCritChance(pOwner) < dice)
 		return;
 
 	if (!pTargetExt)

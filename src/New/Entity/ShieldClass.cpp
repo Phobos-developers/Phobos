@@ -393,6 +393,7 @@ void ShieldClass::AI()
 		return;
 
 	this->TemporalCheck();
+
 	if (this->Temporal)
 		return;
 
@@ -450,7 +451,7 @@ void ShieldClass::OnlineCheck()
 	if (!isActive)
 	{
 		if (this->Online)
-			UpdateTint();
+			this->UpdateTint();
 
 		this->Online = false;
 		timer->Pause();
@@ -481,7 +482,7 @@ void ShieldClass::OnlineCheck()
 	else
 	{
 		if (!this->Online)
-			UpdateTint();
+			this->UpdateTint();
 
 		this->Online = true;
 		timer->Resume();
@@ -530,7 +531,7 @@ bool ShieldClass::ConvertCheck()
 		this->KillAnim();
 		pTechnoExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
 		pTechnoExt->Shield = nullptr;
-		UpdateTint();
+		this->UpdateTint();
 
 		return true;
 	}
@@ -573,7 +574,7 @@ bool ShieldClass::ConvertCheck()
 	}
 
 	this->TechnoID = newID;
-	UpdateTint();
+	this->UpdateTint();
 
 	return false;
 }
@@ -670,7 +671,7 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 
 	this->LastBreakFrame = Unsorted::CurrentFrame;
 
-	UpdateTint();
+	this->UpdateTint();
 
 	if (pWeaponType)
 		TechnoExt::FireWeaponAtSelf(this->Techno, pWeaponType);
@@ -686,7 +687,7 @@ void ShieldClass::RespawnShield()
 		timer->Stop();
 		double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
 		this->HP = this->GetPercentageAmount(amount);
-		UpdateTint();
+		this->UpdateTint();
 	}
 	else if (timerWHModifier->Completed() && timer->InProgress())
 	{
