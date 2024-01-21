@@ -143,6 +143,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
 - Units will no longer rotate its turret under EMP.
 - Jumpjets will no longer wobble under EMP.
+- Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes.
+- Fixed railgun and fire particles being cut off by elevation changes.
+
 
 ## Fixes / interactions with other extensions
 
@@ -301,6 +304,18 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]        ; BuildingType
 SellBuildupLength=23  ; integer, number of buildup frames to play
+```
+
+## Particle systems
+
+### Fire particle target coordinate adjustment when firer rotates
+
+- By default particle systems with `BehavesLike=Fire` shift their target coordinates if the object that created the particle system (e.g firer of a weapon) is rotating. This behavior can now be disabled per particle system type.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPARTICLESYSTEM]               ; ParticleSystemType
+AdjustTargetCoordsOnRotation=true  ; boolean
 ```
 
 ## Projectiles
@@ -881,6 +896,17 @@ ShakeIsLocal=false  ; boolean
 ```
 
 ## Weapons
+
+### AmbientDamage customizations
+
+- You can now specify separate Warhead used for `AmbientDamage` via `AmbientDamage.Warhead` or make it never apply to weapon's main target by setting `AmbientDamage.IgnoreTarget` to true.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                      ; WeaponType
+AmbientDamage.Warhead=            ; WarheadType
+AmbientDamage.IgnoreTarget=false  ; boolean
+```
 
 ### Customizable disk laser radius
 

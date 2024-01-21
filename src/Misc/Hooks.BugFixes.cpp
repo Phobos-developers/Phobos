@@ -14,6 +14,7 @@
 #include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <BombClass.h>
+#include <ParticleSystemClass.h>
 #include <WarheadTypeClass.h>
 
 #include <Ext/Rules/Body.h>
@@ -542,23 +543,6 @@ DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
 
 	return 0;
 }
-
-// Fix railgun target coordinates potentially differing from actual target coords.
-DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
-{
-	GET(AbstractClass*, pTarget, EBX);
-
-	auto coords = pTarget->GetCenterCoords();
-
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
-		coords = pBuilding->GetTargetCoords();
-	else if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-		coords = pCell->GetCoordsWithBridge();
-
-	R->EAX(&coords);
-	return 0;
-}
-
 // Fix techno target coordinates (used for fire angle calculations, target lines etc) to take building target coordinate offsets into accord.
 // This, for an example, fixes a vanilla bug where Destroyer has trouble targeting Naval Yards with its cannon weapon from certain angles.
 DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
