@@ -397,11 +397,8 @@ DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
 	GET(RectangleStruct*, pBounds, ESI);
 
 	if (pThis->VisualCharacter(false, nullptr) != VisualType::Hidden)
-		if(RulesExt::Global()->DrawInsigniaOnlyOnSelected.Get())
-			if(pThis->IsSelected)
-				TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
-			else
-				return SkipGameCode;
+		if(RulesExt::Global()->DrawInsigniaOnlyOnSelected.Get() && !pThis->IsSelected)
+			return SkipGameCode;
 		else
 			TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
 
