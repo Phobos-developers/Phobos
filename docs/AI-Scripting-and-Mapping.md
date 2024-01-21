@@ -37,7 +37,7 @@ DefaultLS640BriefLocY=0  ; integer
 DefaultLS800BriefLocX=0  ; integer
 DefaultLS800BriefLocY=0  ; integer
 DefaultLS640BkgdName=    ; filename - including the .shp extension.
-DefaultLS800BkgdName     ; filename - including the .shp extension.
+DefaultLS800BkgdName=    ; filename - including the .shp extension.
 DefaultLS800BkgdPal=     ; filename - including the .pal extension
 ```
 
