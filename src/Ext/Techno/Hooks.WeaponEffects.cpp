@@ -181,8 +181,12 @@ DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 
 	GET(ParticleClass*, pThis, ESI);
 
-	if (pThis->ParticleSystem && (pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Railgun || pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Fire))
+	if (pThis->ParticleSystem
+		&& (pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Railgun
+			|| pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Fire))
+	{
 		return SkipCoordAdjust;
+	}
 
 	return 0;
 }
@@ -214,9 +218,7 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_TargetSet, 0x6)
 	if (FireAtTemp::pObstacleCell)
 	{
 		auto coords = FireAtTemp::pObstacleCell->GetCoordsWithBridge();
-		pTargetCoords->X = coords.X;
-		pTargetCoords->Y = coords.Y;
-		pTargetCoords->Z = coords.Z;
+		pTargetCoords = &coords;
 		R->EDI(FireAtTemp::pObstacleCell);
 	}
 
@@ -229,9 +231,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_ObstacleCellUnset, 0x6)
 	LEA_STACK(CoordStruct*, pTargetCoords, STACK_OFFSET(0xB0, -0x28));
 
 	auto coords = FireAtTemp::originalTargetCoords;
-	pTargetCoords->X = coords.X;
-	pTargetCoords->Y = coords.Y;
-	pTargetCoords->Z = coords.Z;
+	pTargetCoords = &coords;
 	auto target = FireAtTemp::pOriginalTarget;
 
 	FireAtTemp::originalTargetCoords = CoordStruct::Empty;
