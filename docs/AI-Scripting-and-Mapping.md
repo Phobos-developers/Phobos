@@ -21,12 +21,13 @@ This page describes all AI scripting and mapping related additions and changes i
 In map file:
 ```ini
 [Country House]
-RepairBaseNodes=false,false,false  ; list of 3 booleans indicating whether AI repair basenodes in Easy/ Normal/ Difficult game diffculty.
+RepairBaseNodes=false,false,false  ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
 ```
 
 ### Default loading screen and briefing offsets
 
 - It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
+  - Note that despite the key name being `DefaultLS800BkgdPal`, this applies to both shapes just like the original scenario-specific `LS800BkgdPal` does.
 
 - In `missionmd.ini`:
 ```ini

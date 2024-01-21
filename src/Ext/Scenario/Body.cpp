@@ -135,8 +135,8 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->Variables[0])
 		.Process(this->Variables[1])
 		.Process(SessionClass::Instance->Config)
-		.Process(ShowBriefing)
-		.Process(BriefingTheme)
+		.Process(this->ShowBriefing)
+		.Process(this->BriefingTheme)
 		;
 }
 
