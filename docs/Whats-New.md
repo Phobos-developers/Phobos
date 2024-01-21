@@ -244,6 +244,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 New:
 - Option to center pause menu background (by Starkku)
+- In addition to `PlacementGrid.Translucency`, allow to set the transparency of the grid when PlacementPreview is enabled, using the `PlacementGrid.TranslucencyWithPreview` tag (by Belonit).
 
 Phobos fixes:
 - Fixed `Interceptor` not resetting target if the intercepted projectile changes type to non-interceptable one afterwards (by Starkku)
