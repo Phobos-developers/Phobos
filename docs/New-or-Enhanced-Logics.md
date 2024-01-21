@@ -643,7 +643,7 @@ SW.Next.RandomWeightsN=         ; List of integers.
 In `rulesmd.ini`:
 ```ini
 [SOMESW]                ; Super Weapon
-Detonate.Warhead=       ; Warhead
+Detonate.Warhead=       ; WarheadType
 Detonate.Weapon=        ; WeaponType
 Detonate.Damage=        ; integer
 Detonate.AtFirer=false  ; boolean

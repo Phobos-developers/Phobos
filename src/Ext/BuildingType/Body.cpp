@@ -138,7 +138,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_DisallowTypes.Read(exINI, pSection, "Grinding.DisallowTypes");
 	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
 	this->Grinding_PlayDieSound.Read(exINI, pSection, "Grinding.PlayDieSound");
-	this->Grinding_Weapon.Read(exINI, pSection, "Grinding.Weapon", true);
+	this->Grinding_Weapon.Read<true>(exINI, pSection, "Grinding.Weapon");
 
 	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");

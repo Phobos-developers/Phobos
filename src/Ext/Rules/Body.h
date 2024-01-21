@@ -48,9 +48,12 @@ public:
 		Valueable<bool> JumpjetNoWobbles;
 
 		PhobosFixedString<32u> MissingCameo;
+
 		TranslucencyLevel PlacementGrid_Translucency;
+		Nullable<TranslucencyLevel> PlacementGrid_TranslucencyWithPreview;
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
+
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
@@ -119,9 +122,12 @@ public:
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, MissingCameo { GameStrings::XXICON_SHP() }
+
 			, PlacementGrid_Translucency { 0 }
+			, PlacementGrid_TranslucencyWithPreview { }
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
+
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }

@@ -78,8 +78,30 @@ DEFINE_HOOK(0x736EE9, UnitClass_UpdateFiring_FireErrorIsOK, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x54D208, JumpjetLocomotionClass_ProcessMove_EMPWobble, 0x5)
+{
+	GET(JumpjetLocomotionClass* const, pThis, ESI);
+	enum { ZeroWobble = 0x54D22C };
+
+	if (pThis->LinkedTo->IsUnderEMP())
+		return ZeroWobble;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x736990, UnitClass_UpdateRotation_TurretFacing_EMP, 0x6)
+{
+	GET(UnitClass* const, pThis, ECX);
+	enum { SkipAll = 0x736C0E };
+
+	if (pThis->Deactivated || pThis->IsUnderEMP())
+		return SkipAll;
+
+	return 0;
+}
+
 // Bugfix: Align jumpjet turret's facing with body's
-DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_TemporaryFix, 0x6)
+DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_Jumpjet, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
 	enum { SkipCheckDestination = 0x736BCA, GetDirectionTowardsDestination = 0x736BBB };

@@ -350,6 +350,12 @@ New:
 - Airstrike & spy plane fixed spawn distance & height (by Starkku)
 - Allow enabling application of `Verses` and `PercentAtMax` for negative damage (by Starkku)
 - Change target Owner on warhead impact (by Fryone)
+- In addition to `PlacementGrid.Translucency`, allow to set the transparency of the grid when PlacementPreview is enabled, using the `PlacementGrid.TranslucencyWithPreview` tag (by Belonit).
+- Show briefing screen on singleplayer mission start (by Starkku)
+- Allow setting mission par times and related messages in `missionmd.ini` (by Starkku)
+- Allow setting default singleplayer map loading screen and briefing offsets (by Starkku)
+- Allow toggling whether or not fire particle systems adjust target coordinates when firer rotates (by Starkku)
+- `AmbientDamage` warhead & main target ignore customization (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -399,6 +405,9 @@ Vanilla fixes:
 - `Powered`/`PoweredSpecial` buildings' powered anims will update as usual when being captured by enemies (by Trsdy)
 - Fixed a glitch related to incorrect target setting for missiles (by Belonit)
 - Skipped parsing `[Header]` section of compaign maps which led to occasional crashes on Linux (by Trsdy)
+- Fixed units' turret rotation and jumpjet wobble under EMP (by Trsdy)
+- Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes (by Starkku)
+- Fixed railgun and fire particles being cut off by elevation changes (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
