@@ -39,6 +39,7 @@
     <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
     <ClCompile Include="src\Ext\OverlayType\Body.cpp" />
     <ClCompile Include="src\Ext\OverlayType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Scenario\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Hooks.cpp" />
