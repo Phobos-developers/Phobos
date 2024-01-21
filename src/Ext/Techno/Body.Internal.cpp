@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <AirstrikeClass.h>
+
 #include <Utilities/EnumFunctions.h>
 
 // Unsorted methods
