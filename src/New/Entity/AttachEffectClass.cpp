@@ -9,18 +9,20 @@
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
-AttachEffectClass::AttachEffectClass() : Type { nullptr }, Techno { nullptr }, InvokerHouse { nullptr }, Invoker { nullptr }, Source { nullptr }, DurationOverride { 0 }, Delay { 0 }, InitialDelay { 0 }, RecreationDelay { -1 }
-, Duration { 0 }
-, CurrentDelay { 0 }
-, NeedsDurationRefresh { false }
+AttachEffectClass::AttachEffectClass()
+	: Type { nullptr }, Techno { nullptr }, InvokerHouse { nullptr }, Invoker { nullptr },
+	Source { nullptr }, DurationOverride { 0 }, Delay { 0 }, InitialDelay { 0 }, RecreationDelay { -1 }
+	, Duration { 0 }
+	, CurrentDelay { 0 }
+	, NeedsDurationRefresh { false }
 {
 	this->HasInitialized = false;
 	AttachEffectClass::Array.emplace_back(this);
 }
 
-AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pTechno,
-	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, int durationOverride, int delay, int initialDelay, int recreationDelay) :
-	Type { pType }, Techno { pTechno }, InvokerHouse { pInvokerHouse }, Invoker { pInvoker }, Source { pSource },
+AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pTechno, HouseClass* pInvokerHouse,
+	TechnoClass* pInvoker, AbstractClass* pSource, int durationOverride, int delay, int initialDelay, int recreationDelay)
+	: Type { pType }, Techno { pTechno }, InvokerHouse { pInvokerHouse }, Invoker { pInvoker }, Source { pSource },
 	DurationOverride { durationOverride }, Delay { delay }, InitialDelay { initialDelay }, RecreationDelay { recreationDelay }
 	, Duration { 0 }
 	, CurrentDelay { 0 }
@@ -135,10 +137,10 @@ void AttachEffectClass::AI()
 		if (!this->IsSelfOwned() || this->Delay < 0)
 			return;
 
-		this->CurrentDelay = this->Delay; 
+		this->CurrentDelay = this->Delay;
 
 		if (this->Delay > 0)
-			KillAnim();
+			this->KillAnim();
 		else if (AllowedToBeActive())
 			this->RefreshDuration();
 		else
@@ -154,7 +156,7 @@ void AttachEffectClass::AI()
 	this->OnlineCheck();
 
 	if (!this->Animation && !this->IsUnderTemporal && this->IsOnline && !this->IsCloaked && !this->IsAnimHidden)
-		CreateAnim();
+		this->CreateAnim();
 }
 
 void AttachEffectClass::AI_Temporal()
@@ -166,7 +168,7 @@ void AttachEffectClass::AI_Temporal()
 		this->CloakCheck();
 
 		if (!this->Animation && this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides && this->IsOnline && !this->IsCloaked && !this->IsAnimHidden)
-			CreateAnim();
+			this->CreateAnim();
 
 		if (this->Animation)
 		{
@@ -247,7 +249,7 @@ void AttachEffectClass::CloakCheck()
 	if (cloakState == CloakState::Cloaked || cloakState == CloakState::Cloaking)
 	{
 		this->IsCloaked = true;
-		KillAnim();
+		this->KillAnim();
 	}
 	else
 	{
@@ -330,7 +332,7 @@ bool AttachEffectClass::IsSelfOwned() const
 
 bool AttachEffectClass::HasExpired() const
 {
-	return IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration;
+	return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration;
 }
 
 bool AttachEffectClass::AllowedToBeActive() const
@@ -367,8 +369,10 @@ bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSour
 
 AttachEffectTypeClass* AttachEffectClass::GetType() const
 {
-	return Type;
+	return this->Type;
 }
+
+#pragma region StaticFunctions_AttachDetachTransfer
 
 bool AttachEffectClass::Attach(AttachEffectTypeClass* pType, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 	AbstractClass* pSource, int durationOverride, int delay, int initialDelay, int recreationDelay)
@@ -378,7 +382,7 @@ bool AttachEffectClass::Attach(AttachEffectTypeClass* pType, TechnoClass* pTarge
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 
-	if (auto const pAE = CreateAndAttach(pType, pTarget, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay))
+	if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay))
 	{
 		if (initialDelay <= 0)
 		{
@@ -432,7 +436,7 @@ bool AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types,
 		if (recreationDelays.size() > 0)
 			recreationDelay = recreationDelays[recreationDelays.size() > i ? i : recreationDelays.size() - 1];
 
-		if (auto const pAE = CreateAndAttach(pType, pTarget, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay))
+		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay))
 		{
 			attachedCount++;
 
@@ -514,7 +518,7 @@ int AttachEffectClass::Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget
 		return 0;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	int detachedCount = RemoveAllOfType(pType, pTargetExt->AttachedEffects);
+	int detachedCount = AttachEffectClass::RemoveAllOfType(pType, pTargetExt->AttachedEffects);
 
 	if (detachedCount > 0)
 	{
@@ -538,7 +542,7 @@ int AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, 
 
 	for (auto const pType : types)
 	{
-		int count = RemoveAllOfType(pType, pTargetExt->AttachedEffects);
+		int count = AttachEffectClass::RemoveAllOfType(pType, pTargetExt->AttachedEffects);
 
 		if (count && pType->HasTint())
 			markForRedraw = true;
@@ -633,13 +637,15 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		}
 		else
 		{
-			if (auto const pAE = CreateAndAttach(type, pTarget, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, attachEffect->DurationOverride))
+			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, attachEffect->DurationOverride))
 				pAE->Duration = attachEffect->Duration;
 		}
 
 		it = pSourceExt->AttachedEffects.erase(it);
 	}
 }
+
+#pragma endregion
 
 // =============================
 // load / save
