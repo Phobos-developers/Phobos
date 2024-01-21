@@ -406,11 +406,16 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
     - A shorthand `InsigniaFrames` can be used to list them in order from rookie, veteran and elite instead as well. `InsigniaFrame(.Rookie|Veteran|Elite)` takes priority over this.
   - Normal insignia can be overridden for specific weapon modes of `Gunner=true` units by setting `Insignia(.Frame/.Frames).WeaponN` where `N` stands for 1-based weapon mode index. If not set, defaults to non-mode specific insignia settings.
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true.
+  - You can make insignias appear only on selected units using `DrawInsigniaOnlyOnSelected`.
+
 
 In `rulesmd.ini`:
 ```ini
 [General]
 EnemyInsignia=true                ; boolean
+
+[AudioVisual]
+DrawInsigniaOnlyOnSelected=false  ; boolean
 
 [SOMETECHNO]                      ; TechnoType
 Insignia=                         ; filename - excluding the .shp extension
