@@ -135,7 +135,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Detonate_Warhead.Read(exINI, pSection, "Detonate.Warhead");
-	this->Detonate_Weapon.Read(exINI, pSection, "Detonate.Weapon", true);
+	this->Detonate_Weapon.Read<true>(exINI, pSection, "Detonate.Weapon");
 	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
 	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
 
