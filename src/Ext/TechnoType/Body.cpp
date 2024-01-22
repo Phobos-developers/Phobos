@@ -151,7 +151,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->InitialStrength = Math::clamp(this->InitialStrength, 1, pThis->Strength);
 
 	this->ReloadInTransport.Read(exINI, pSection, "ReloadInTransport");
-	this->ShieldType.Read<true>(exINI, pSection, "ShieldType");
+	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 
 	this->Ammo_AddOnDeploy.Read(exINI, pSection, "Ammo.AddOnDeploy");
 	this->Ammo_AutoDeployMinimumAmount.Read(exINI, pSection, "Ammo.AutoDeployMinimumAmount");
@@ -191,9 +191,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
 
-	this->WarpInWeapon.Read<true>(exINI, pSection, "WarpInWeapon");
-	this->WarpInMinRangeWeapon.Read<true>(exINI, pSection, "WarpInMinRangeWeapon");
-	this->WarpOutWeapon.Read<true>(exINI, pSection, "WarpOutWeapon");
+	this->WarpInWeapon.Read(exINI, pSection, "WarpInWeapon", true);
+	this->WarpInMinRangeWeapon.Read(exINI, pSection, "WarpInMinRangeWeapon", true);
+	this->WarpOutWeapon.Read(exINI, pSection, "WarpOutWeapon", true);
 	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
 
 	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");

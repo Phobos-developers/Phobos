@@ -80,16 +80,9 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				}
 			};
 
-			auto copy_dvc = []<typename T>(const DynamicVectorClass<T>& dvc)
-			{
-				std::vector<T> vec(dvc.Count);
-				std::copy(dvc.begin(), dvc.end(), vec.begin());
-				return vec;
-			};
-
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
 			{
-				auto const aircraft = copy_dvc(*AircraftClass::Array);
+				auto const aircraft = DynamicVectorClass<AircraftClass*>(*AircraftClass::Array);
 
 				for (auto pAircraft : aircraft)
 					tryDetonate(pAircraft);
@@ -97,7 +90,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
 			{
-				auto const buildings = copy_dvc(*BuildingClass::Array);
+				auto const buildings = DynamicVectorClass<BuildingClass*>(*BuildingClass::Array);
 
 				for (auto pBuilding : buildings)
 					tryDetonate(pBuilding);
@@ -105,7 +98,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
 			{
-				auto const infantry = copy_dvc(*InfantryClass::Array);
+				auto const infantry = DynamicVectorClass<InfantryClass*>(*InfantryClass::Array);
 
 				for (auto pInf : infantry)
 					tryDetonate(pInf);
@@ -113,7 +106,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
 			{
-				auto const units = copy_dvc(*UnitClass::Array);
+				auto const units = DynamicVectorClass<UnitClass*>(*UnitClass::Array);
 
 				for (auto const pUnit : units)
 					tryDetonate(pUnit);

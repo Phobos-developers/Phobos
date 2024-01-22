@@ -111,8 +111,7 @@ public:
 		return &this->Value;
 	}
 
-	template<bool Allocate = false>
-	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
+	inline void Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate = false);
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
@@ -218,8 +217,7 @@ public:
 		this->HasValue = false;
 	}
 
-	template<bool Allocate = false>
-	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
+	inline void Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate = false);
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
