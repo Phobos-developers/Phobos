@@ -111,7 +111,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		CCINIClass* pINI_MISSIONMD = CCINIClass::LoadINIFile(GameStrings::MISSIONMD_INI);
 		auto const scenarioName = pThis->FileName;
 
-	    // Override rankings
+		// Override rankings
 		pThis->ParTimeEasy = pINI_MISSIONMD->ReadTime(scenarioName, "Ranking.ParTimeEasy", pThis->ParTimeEasy);
 		pThis->ParTimeMedium = pINI_MISSIONMD->ReadTime(scenarioName, "Ranking.ParTimeMedium", pThis->ParTimeMedium);
 		pThis->ParTimeDifficult = pINI_MISSIONMD->ReadTime(scenarioName, "Ranking.ParTimeHard", pThis->ParTimeDifficult);
