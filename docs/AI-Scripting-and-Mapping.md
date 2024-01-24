@@ -33,7 +33,7 @@ RepairBaseNodes=false,false,false  ; list of 3 booleans indicating whether AI re
 ```ini
 [Defaults]
 DefaultLS640BriefLocX=0  ; integer
-DefaultLS640BriefLocY=0  ; integer 
+DefaultLS640BriefLocY=0  ; integer
 DefaultLS800BriefLocX=0  ; integer
 DefaultLS800BriefLocY=0  ; integer
 DefaultLS640BkgdName=    ; filename - including the .shp extension.
