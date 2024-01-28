@@ -67,6 +67,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
 		{
 			pWHExt->WasDetonatedOnAllMapObjects = true;
+			auto const pOriginalTarget = pThis->Target;
 			auto const pExt = BulletExt::ExtMap.Find(pThis);
 			auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
 
@@ -79,30 +80,46 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				}
 			};
 
+			auto copy_dvc = []<typename T>(const DynamicVectorClass<T>& dvc)
+			{
+				std::vector<T> vec(dvc.Count);
+				std::copy(dvc.begin(), dvc.end(), vec.begin());
+				return vec;
+			};
+
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
 			{
-				for (auto pTechno : *AircraftClass::Array)
-					tryDetonate(pTechno);
+				auto const aircraft = copy_dvc(*AircraftClass::Array);
+
+				for (auto pAircraft : aircraft)
+					tryDetonate(pAircraft);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
 			{
-				for (auto pTechno : *BuildingClass::Array)
-					tryDetonate(pTechno);
+				auto const buildings = copy_dvc(*BuildingClass::Array);
+
+				for (auto pBuilding : buildings)
+					tryDetonate(pBuilding);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
 			{
-				for (auto pTechno : *InfantryClass::Array)
-					tryDetonate(pTechno);
+				auto const infantry = copy_dvc(*InfantryClass::Array);
+
+				for (auto pInf : infantry)
+					tryDetonate(pInf);
 			}
 
 			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
 			{
-				for (auto pTechno : *UnitClass::Array)
-					tryDetonate(pTechno);
+				auto const units = copy_dvc(*UnitClass::Array);
+
+				for (auto const pUnit : units)
+					tryDetonate(pUnit);
 			}
 
+			pThis->Target = pOriginalTarget;
 			pWHExt->WasDetonatedOnAllMapObjects = false;
 
 			return ReturnFromFunction;

@@ -199,7 +199,7 @@ public:
 			bool Serialize(T& stm);
 		};
 
-		ValueableVector<LaserTrailDataEntry> LaserTrailData;
+		std::vector<LaserTrailDataEntry> LaserTrailData;
 
 		Nullable<CoordStruct> PronePrimaryFireFLH;
 		Nullable<CoordStruct> ProneSecondaryFireFLH;

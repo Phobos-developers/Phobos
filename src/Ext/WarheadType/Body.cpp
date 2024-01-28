@@ -126,6 +126,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
+	this->ApplyModifiersOnNegativeDamage.Read(exINI, pSection, "ApplyModifiersOnNegativeDamage");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -147,7 +148,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_Break.Read(exINI, pSection, "Shield.Break");
 	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
 	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
-	this->Shield_BreakWeapon.Read(exINI, pSection, "Shield.BreakWeapon", true);
+	this->Shield_BreakWeapon.Read<true>(exINI, pSection, "Shield.BreakWeapon");
 	this->Shield_AbsorbPercent.Read(exINI, pSection, "Shield.AbsorbPercent");
 	this->Shield_PassPercent.Read(exINI, pSection, "Shield.PassPercent");
 	this->Shield_ReceivedDamage_Minimum.Read(exINI, pSection, "Shield.ReceivedDamage.Minimum");
@@ -304,6 +305,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RemoveMindControl)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
+		.Process(this->ApplyModifiersOnNegativeDamage)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)

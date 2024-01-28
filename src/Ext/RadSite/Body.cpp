@@ -37,7 +37,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 {
 	// use real ctor
 	auto const pRadSite = GameCreate<RadSiteClass>();
-	auto pRadExt = RadSiteExt::ExtMap.FindOrAllocate(pRadSite);
+	auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 
 	//Adding Owner to RadSite, from bullet
 	if (pWeaponExt->RadType->GetHasOwner() && pRadExt->RadHouse != pOwner)

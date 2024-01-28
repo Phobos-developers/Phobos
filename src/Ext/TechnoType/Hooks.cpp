@@ -356,11 +356,9 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 	if (pTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow) && tur->VXL && tur->HVA)
 	{
 		auto mtx = pThis->Locomotor->Shadow_Matrix(0);
+		pTypeExt->ApplyTurretOffset(&mtx, *reinterpret_cast<double*>(0xB1D008));
+		mtx.TranslateZ(-tur->HVA->Matrixes[0].GetZVal());
 		mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
-		float x = static_cast<float>(pTypeExt->TurretOffset.GetEx()->X / 8);
-		float y = static_cast<float>(pTypeExt->TurretOffset.GetEx()->Y / 8);
-		float z = -tur->VXL->TailerData->MinBounds.Z;
-		mtx.Translate(x, y, z);
 		Matrix3D::MatrixMultiply(&mtx, &Matrix3D::VoxelDefaultMatrix, &mtx);
 
 		pThis->DrawVoxelShadow(tur, 0, angle, 0, a4, &a3, &mtx, a9, pSurface, pos);

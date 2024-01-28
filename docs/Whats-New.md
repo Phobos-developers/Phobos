@@ -20,6 +20,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Air and Top layer contents are no longer sorted, animations in these layers no longer respect `YSortAdjust`. Animations attached to flying units now get their layer updated immediately after parent unit, if they are on same layer they will draw above the parent unit.
 - `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 - `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
@@ -347,6 +348,13 @@ New:
 - Allow toggling `Infantry/UnitsGainSelfHeal` for `MultiplayPassive=true` houses (by Starkku)
 - Customizable straight trajectory detonation & snap distance and pass-through option (by Starkku)
 - Airstrike & spy plane fixed spawn distance & height (by Starkku)
+- Allow enabling application of `Verses` and `PercentAtMax` for negative damage (by Starkku)
+- In addition to `PlacementGrid.Translucency`, allow to set the transparency of the grid when PlacementPreview is enabled, using the `PlacementGrid.TranslucencyWithPreview` tag (by Belonit).
+- Show briefing screen on singleplayer mission start (by Starkku)
+- Allow setting mission par times and related messages in `missionmd.ini` (by Starkku)
+- Allow setting default singleplayer map loading screen and briefing offsets (by Starkku)
+- Allow toggling whether or not fire particle systems adjust target coordinates when firer rotates (by Starkku)
+- `AmbientDamage` warhead & main target ignore customization (by Starkku)
 - GiftBox port from DP-Kratos (by Otamaa)
 
 Vanilla fixes:
@@ -394,6 +402,12 @@ Vanilla fixes:
 - `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting (by Starkku)
 - Fixed position and layer of info tip and reveal production cameo on selected building (by Belonit)
 - Fixed `TurretOffset` to be supported for SHP vehicles (by TwinkleStar)
+- `Powered`/`PoweredSpecial` buildings' powered anims will update as usual when being captured by enemies (by Trsdy)
+- Fixed a glitch related to incorrect target setting for missiles (by Belonit)
+- Skipped parsing `[Header]` section of compaign maps which led to occasional crashes on Linux (by Trsdy)
+- Fixed units' turret rotation and jumpjet wobble under EMP (by Trsdy)
+- Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes (by Starkku)
+- Fixed railgun and fire particles being cut off by elevation changes (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -419,8 +433,14 @@ Phobos fixes:
 - Optimized performance for map trigger retint action light source fix (by Starkku)
 - Fixed a number of issues with Warhead Shield respawn / self heal rate modifiers like timers getting reset unnecessarily, the timer being adjusted wrong after the Warhead effect runs out etc. (by Starkku)
 - Fixed a problem with disguise visibility logic that could cause game to crash on loading a map (by Starkku)
+- Fixed owned `LimboDelivery` buildings not being saved correctly in savegames (by Starkku)
+- Fixed a typo in weapon selector code causing issues with `NoAmmoWeapon` and related checks (by Starkku)
+- Fixed `DetonateOnAllMapObjects` behaving erratically or potentially crashing if it destroys buildings using Ares' advanced rubble (by Starkku)
+- Fixed game crashing on loading save games if the saved game state had active radiation sites (by Starkku)
+- Fixed a desync error caused by air/top layer sorting (by Starkku)
 
 Fixes / interactions with other extensions:
+- All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
 </details>
 
@@ -619,7 +639,6 @@ Phobos fixes:
 - Fixed techno-extdata update after type conversion (by Trsdy)
 - Fixed Phobos Warhead effects (crits, new shield modifiers etc.) considering sinking units valid targets (by Starkku)
 - Fixed an issue where `FireOnce=yes` deploy weapons on vehicles would still fire multiple times if deploy command is issued repeatedly or when not idle (by Starkku)
-- Fixed techno-extdata update after type conversion (by Trsdy)
 - Fixed a game crash when checking BuildLimit if Phobos is running without Ares (by Belonit)
 - Corrected the misinterpretation in the definition of `DiskLaser.Radius` (by Trsdy)
 

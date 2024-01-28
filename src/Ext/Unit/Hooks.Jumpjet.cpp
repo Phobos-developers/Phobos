@@ -78,8 +78,30 @@ DEFINE_HOOK(0x736EE9, UnitClass_UpdateFiring_FireErrorIsOK, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x54D208, JumpjetLocomotionClass_ProcessMove_EMPWobble, 0x5)
+{
+	GET(JumpjetLocomotionClass* const, pThis, ESI);
+	enum { ZeroWobble = 0x54D22C };
+
+	if (pThis->LinkedTo->IsUnderEMP())
+		return ZeroWobble;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x736990, UnitClass_UpdateRotation_TurretFacing_EMP, 0x6)
+{
+	GET(UnitClass* const, pThis, ECX);
+	enum { SkipAll = 0x736C0E };
+
+	if (pThis->Deactivated || pThis->IsUnderEMP())
+		return SkipAll;
+
+	return 0;
+}
+
 // Bugfix: Align jumpjet turret's facing with body's
-DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_TemporaryFix, 0x6)
+DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_Jumpjet, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
 	enum { SkipCheckDestination = 0x736BCA, GetDirectionTowardsDestination = 0x736BBB };
@@ -129,6 +151,7 @@ DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 DEFINE_HOOK(0x54DCCF, JumpjetLocomotionClass_DrawMatrix_TiltCrashJumpjet, 0x5)
 {
 	GET(ILocomotion*, iloco, ESI);
+	__assume(iloco != nullptr);
 	//if (static_cast<JumpjetLocomotionClass*>(iloco)->State < JumpjetLocomotionClass::State::Crashing)
 	if (static_cast<JumpjetLocomotionClass*>(iloco)->State == JumpjetLocomotionClass::State::Grounded)
 		return 0x54DCE8;
@@ -140,6 +163,7 @@ DEFINE_HOOK(0x54DCCF, JumpjetLocomotionClass_DrawMatrix_TiltCrashJumpjet, 0x5)
 DEFINE_HOOK(0x54DD3D, JumpjetLocomotionClass_DrawMatrix_AxisCenterInAir, 0x5)
 {
 	GET(ILocomotion*, iloco, ESI);
+	__assume(iloco != nullptr);
 	auto state = static_cast<JumpjetLocomotionClass*>(iloco)->State;
 	if (state && state < JumpjetLocomotionClass::State::Crashing)
 		return  0x54DE88;
@@ -149,6 +173,7 @@ DEFINE_HOOK(0x54DD3D, JumpjetLocomotionClass_DrawMatrix_AxisCenterInAir, 0x5)
 
 FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
 {
+	__assume(pThis != nullptr);
 	// do not use explicit toggle for this
 	if (static_cast<JumpjetLocomotionClass*>(pThis)->State == JumpjetLocomotionClass::State::Crashing)
 		return FireError::CANT;
@@ -163,6 +188,7 @@ DEFINE_JUMP(VTABLE, 0x7ECDF4, GET_OFFSET(JumpjetLocomotionClass_Can_Fire));
 DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 {
 	GET(ILocomotion*, iLoco, EBP);
+	__assume(iLoco != nullptr);
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iLoco);
 
 	pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
@@ -174,6 +200,7 @@ DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 // Fix initial facing when jumpjet locomotor on unlimbo
 void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 {
+	__assume(pThis != nullptr);
 	auto const pThisLoco = static_cast<JumpjetLocomotionClass*>(pThis);
 
 	pThisLoco->LocomotionFacing.SetCurrent(pThisLoco->LinkedTo->PrimaryFacing.Current());

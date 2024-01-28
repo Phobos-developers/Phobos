@@ -660,16 +660,15 @@ DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
 
 	GET(TechnoClass* const, pThis, ECX);
 
-	if (pThis->WhatAmI() == AbstractType::Building)
+	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
 	{
-		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*>(pThis)))
+		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
+
+		if (!pExt->CurrentLaserWeaponIndex.empty())
 		{
-			if (!pExt->CurrentLaserWeaponIndex.empty())
-			{
-				auto weaponStruct = pThis->GetWeapon(pExt->CurrentLaserWeaponIndex.get());
-				R->EAX(weaponStruct);
-				return ReturnResult;
-			}
+			auto weaponStruct = pThis->GetWeapon(pExt->CurrentLaserWeaponIndex.get());
+			R->EAX(weaponStruct);
+			return ReturnResult;
 		}
 	}
 
