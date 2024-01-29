@@ -1,4 +1,5 @@
 #include <Helpers/Macro.h>
+#include <Utilities/Debug.h>
 
 #include <GScreenClass.h>
 #include <WWMouseClass.h>
@@ -25,6 +26,7 @@ namespace Multithreading
 	std::mutex PauseMutex;
 	std::unique_lock DrawingLock { DrawingMutex, std::defer_lock };
 	std::unique_lock PauseLock { PauseMutex, std::defer_lock };
+	bool MainDemandsDrawingMutex = false;
 	bool DrawingDemandsDrawingMutex = false;
 	bool MainDemandsPauseMutex = false;
 
@@ -33,6 +35,9 @@ namespace Multithreading
 
 	void MultiplayerDebugPrint()
 		{ JMP_STD(0x55F1E0); }
+
+	bool MainLoop()
+		{ JMP_STD(0x55D360); }
 
 	// Faithful reproduction of GScreenClass::Render().
 	void Render(GScreenClass* pThis)
@@ -88,7 +93,11 @@ namespace Multithreading
 			// If the game is paused, wait until it's unpaused (aka until the mutex is free to be locked).
 			PauseMutex.lock();
 
-			// We must avoid starving out the main thread, but we also don't want to run 1200 TPS with 10 FPS.
+			// We must avoid starving out the main thread...
+			while (MainDemandsDrawingMutex)
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+			// ...but we also don't want to run 1200 TPS with 10 FPS.
 			// Let's try waiting for the lock until we get impatient and *demand* priority.
 			bool gotLock = DrawingMutex.try_lock_for(std::chrono::milliseconds(5));
 			if (!gotLock)
@@ -105,40 +114,70 @@ namespace Multithreading
 			DrawingMutex.unlock();
 			PauseMutex.unlock();
 		}
+		Debug::Log("Exiting the drawing thread.");
 	}
 }
 
 // Before the MainLoop/AuxLoop begins in MainGame.
 DEFINE_HOOK(0x48CE7E, MainGame_BeforeGameLoop, 7)
 {
+	Debug::Log("Entering the MainLoop/AuxLoop loop.");
 	Multithreading::InGameLoop = true;
 	Multithreading::DrawingThread = std::thread(Multithreading::DrawingLoop);
 	return 0;
 }
 
+DEFINE_HOOK(0x48CE8A, MainGame_MainLoop, 0)
+{
+	bool gameEnded = Multithreading::MainLoop();
+	R->EAX(gameEnded);
+
+	if (gameEnded)
+	{
+		Debug::Log("Exiting the MainLoop/AuxLoop loop.");
+		Multithreading::InGameLoop = false;
+		Multithreading::DrawingThread.detach();
+		Multithreading::DrawingThread.~thread();
+	}
+
+	return 0x48CE8F;
+}
+
+/*
 // After we exited the MainLoop/AuxLoop.
 DEFINE_HOOK(0x48CEAF, MainGame_AfterGameLoop, 5)
 {
+	Debug::Log("Exiting the MainLoop/AuxLoop loop.");
 	Multithreading::InGameLoop = false;
 	Multithreading::DrawingThread.detach();
 	Multithreading::DrawingThread.~thread();
 	return 0;
 }
+*/
 
 // Completely skip vanilla GScreenClass::Render code in the main thread.
-DEFINE_HOOK(0x4F4480, GScreenClass_Render_Disable, 0)
+DEFINE_HOOK(0x4F4480, GScreenClass_Render_Disable, 8)
 {
-	return 0x4F45A8;
+	return Multithreading::InGameLoop ? 0x4F45A8 : 0;
 }
 
 // We want to lock access to game resources when we're doing game logic potientially realted to graphics.
-// The main thread should let the drawing thread run if it complains that it's too hungry.
+// The main thread should let the drawing thread run if it complains that it's too hungry and vice versa.
 // TODO: Try to hook later for shorter lock period.
 DEFINE_HOOK(0x55D878, MainLoop_StartLock, 6)
 {
 	while (Multithreading::DrawingDemandsDrawingMutex)
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	Multithreading::DrawingMutex.lock();
+
+	bool gotLock = Multithreading::DrawingMutex.try_lock_for(std::chrono::milliseconds(5));
+	if (!gotLock)
+	{
+		Multithreading::MainDemandsDrawingMutex = true;
+		Multithreading::DrawingMutex.lock();
+	}
+
+	Multithreading::MainDemandsDrawingMutex = false;
+
 	return 0;
 }
 
@@ -162,7 +201,7 @@ DEFINE_HOOK(0x683EB6, PauseGame_SetPause, 6)
 }
 
 // Resume operation after pausing the game.
-DEFINE_HOOK(0x683FB2, ResmueGame_ResetPause, 5)
+DEFINE_HOOK(0x683FB2, ResumeGame_ResetPause, 5)
 {
 	Multithreading::PauseMutex.unlock();
 	return 0;
