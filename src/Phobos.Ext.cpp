@@ -29,6 +29,8 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
+#include <New/Entity/Affiliated/GiftBoxClass.h>
+#include <New/Type/Affiliated/GiftBoxTypeClass.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
@@ -218,6 +220,7 @@ using PhobosTypeRegistry = TypeRegistry<
 	WarheadTypeExt,
 	WeaponTypeExt,
 	// New classes
+	GiftBoxClass,
 	ShieldTypeClass,
 	LaserTrailTypeClass,
 	RadTypeClass,

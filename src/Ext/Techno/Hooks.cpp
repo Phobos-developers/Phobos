@@ -31,6 +31,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ApplySpawnLimitRange();
 	pExt->UpdateLaserTrails();
 	pExt->DepletedAmmoActions();
+	pExt->UpdateGiftBox();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 
@@ -455,4 +456,17 @@ DEFINE_HOOK(0x51BAFB, InfantryClass_ChronoSparkleDelay, 0x5)
 {
 	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
 	return 0x51BB00;
+}
+
+DEFINE_HOOK(0x6F6CA0, TechnoClass_Put_GiftBox, 0x7)
+{
+	GET(TechnoClass* const, pThis, ECX);
+
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pThis);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (!pTechnoExt->AttachedGiftBox.get() && pTypeExt->GiftBoxType)
+		pTechnoExt->AttachedGiftBox = std::make_unique<GiftBoxClass>(pThis);
+
+	return 0;
 }

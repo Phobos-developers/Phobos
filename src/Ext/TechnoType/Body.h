@@ -10,6 +10,7 @@
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/Affiliated/GiftBoxTypeClass.h>
 
 class Matrix3D;
 
@@ -181,6 +182,8 @@ public:
 
 		Nullable<Leptons> SpawnDistanceFromTarget;
 		Nullable<int> SpawnHeight;
+
+		std::unique_ptr<GiftBoxTypeClass> GiftBoxType;
 
 		struct LaserTrailDataEntry
 		{
@@ -359,6 +362,7 @@ public:
 
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
+			, GiftBoxType { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;

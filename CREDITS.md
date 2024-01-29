@@ -113,6 +113,7 @@ This page lists all the individual contributions to the project by their author.
   - Ares detection and integration
   - Help with custom locomotors
   - Extension class optimization
+  - GiftBox port from DP-Kratos
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`

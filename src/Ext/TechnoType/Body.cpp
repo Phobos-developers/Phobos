@@ -405,6 +405,21 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->InterceptorType.reset();
 	}
+
+	NullableVector<TechnoTypeClass*> giftBoxTechnoList;
+	giftBoxTechnoList.Read(exINI, pSection, "GiftBox.Types");
+
+	if (giftBoxTechnoList.size())
+	{
+		if (this->GiftBoxType == nullptr)
+			this->GiftBoxType = std::make_unique<GiftBoxTypeClass>(this->OwnerObject());
+
+		this->GiftBoxType->LoadFromINI(pINI, pSection);
+	}
+	else if (giftBoxTechnoList.HasValue())
+	{
+		this->GiftBoxType.reset();
+	}
 }
 
 template <typename T>
@@ -570,6 +585,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->SpawnDistanceFromTarget)
 		.Process(this->SpawnHeight)
+		.Process(this->GiftBoxType)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

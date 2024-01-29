@@ -714,3 +714,9 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 		}
 	}
 }
+
+void TechnoExt::ExtData::UpdateGiftBox()
+{
+	if (this->AttachedGiftBox.get())
+		this->AttachedGiftBox->AI();
+}
