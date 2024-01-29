@@ -645,3 +645,5 @@ DEFINE_HOOK(0x689EB0, ScenarioClass_ReadMap_SkipHeaderInCampaign, 0x6)
 {
 	return SessionClass::IsCampaign() ? 0x689FC0 : 0;
 }
+
+DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Skip incorrect load ctor call in TeleportLocomotionClass_Load

@@ -89,6 +89,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines.
 - Fix a glitch related to incorrect target setting for missiles.
 - Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
+- Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
 
 ## Fixes / interactions with other extensions
 
