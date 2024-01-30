@@ -145,7 +145,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Jumpjets will no longer wobble under EMP.
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes.
 - Fixed railgun and fire particles being cut off by elevation changes.
-
+- Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
 
 ## Fixes / interactions with other extensions
 

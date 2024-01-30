@@ -407,6 +407,7 @@ Vanilla fixes:
 - Fixed units' turret rotation and jumpjet wobble under EMP (by Trsdy)
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes (by Starkku)
 - Fixed railgun and fire particles being cut off by elevation changes (by Starkku)
+- Fixed teleport units' frozen-still timer being reset after load game (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
