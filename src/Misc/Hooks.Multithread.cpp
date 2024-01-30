@@ -20,162 +20,165 @@ namespace Multithreading
 	static constexpr reference<bool, 0xA8ED6Bu> const DebugDebugDebug {};
 	static constexpr reference<bool, 0xA8B8B4u> const EnableMultiplayerDebug {};
 
-	std::thread DrawingThread;
+	void MultiplayerDebugPrint()
+	{ JMP_STD(0x55F1E0); }
 
+	bool MainLoop()
+	{ JMP_STD(0x55D360); }
+
+	// Wait this long in LockOrDemandMutex before getting impatient.
+	static const std::chrono::duration PatienceDuration = std::chrono::milliseconds(5);
+	// Check this often if the demanded mutex lock has been released by the other thread.
+	static const std::chrono::duration ChillingDuration = std::chrono::milliseconds(1);
+
+	std::thread DrawingThread;
 	std::timed_mutex DrawingMutex;
 	std::mutex PauseMutex;
-	std::unique_lock DrawingLock { DrawingMutex, std::defer_lock };
-	std::unique_lock PauseLock { PauseMutex, std::defer_lock };
 	bool MainDemandsDrawingMutex = false;
 	bool DrawingDemandsDrawingMutex = false;
 	bool MainDemandsPauseMutex = false;
-
 	bool InGameLoop = false;
-	bool IsPaused = false;
-
-	void MultiplayerDebugPrint()
-		{ JMP_STD(0x55F1E0); }
-
-	bool MainLoop()
-		{ JMP_STD(0x55D360); }
-
-	// Faithful reproduction of GScreenClass::Render().
-	void Render(GScreenClass* pThis)
-	{
-		auto pTempSurface = DSurface::Temp.get();
-		DSurface::Temp = DSurface::Composite;
-		WWMouseClass::Instance->func_40(DSurface::Composite, false);
-
-		bool shouldDraw = pThis->Bitfield != 0;
-		bool complete = pThis->Bitfield == 2;
-		pThis->Bitfield = 0;
-
-		if (!IonStormClass_ChronoScreenEffect_Status)
-		{
-			TacticalClass::Instance->Render(DSurface::Composite, shouldDraw, 0);
-			TacticalClass::Instance->Render(DSurface::Composite, shouldDraw, 1);
-			pThis->Draw(complete);
-			TacticalClass::Instance->Render(DSurface::Composite, shouldDraw, 2);
-		}
-
-		if (BlitMouse.get() && !DebugDebugDebug.get())
-		{
-			WWMouseClass::Instance->func_40(DSurface::Sidebar, true);
-			BlitMouse = false;
-		}
-
-		if (Buttons.get())
-			Buttons->DrawAll(false);
-
-		MessageListClass::Instance->Draw();
-
-		if (CCToolTip::Instance.get())
-			CCToolTip::Instance->Draw(false);
-
-		if (EnableMultiplayerDebug.get())
-			MultiplayerDebugPrint();
-
-		WWMouseClass::Instance->func_3C(DSurface::Composite, false);
-		pThis->vt_entry_44();
-
-		DSurface::Temp = pTempSurface;
-	}
 
 	// Our new drawing thread loop.
-	void DrawingLoop()
+	void DrawingLoop();
+	// Faithful reproduction of GScreenClass::Render().
+	void Render(GScreenClass* pThis);
+	// Spawn the drawing thread.
+	void EnterMultithreadMode();
+	// Kill the drawing thread.
+	void ExitMultithreadMode();
+	// Wait for mutex lock respectfuly or, if too much time has passed, demand it.
+	void LockOrDemandMutex(std::timed_mutex& mutex, bool& demands);
+}
+
+void Multithreading::EnterMultithreadMode()
+{
+	Debug::Log("Entering the multithread mode - just before MainLoop gameplay loop.");
+	InGameLoop = true;
+	DrawingThread = std::thread(DrawingLoop);
+}
+
+void Multithreading::ExitMultithreadMode()
+{
+	Debug::Log("Exiting the multithread mode - MainLoop reported end of gameplay.");
+	InGameLoop = false;
+	DrawingThread.detach();
+	DrawingThread.~thread();
+}
+
+void Multithreading::LockOrDemandMutex(std::timed_mutex& mutex, bool& demands)
+{
+	if (mutex.try_lock_for(PatienceDuration))
+		return;
+	demands = true;
+	mutex.lock();
+}
+
+void Multithreading::Render(GScreenClass* pThis)
+{
+	auto pTempSurface = DSurface::Temp.get();
+	DSurface::Temp = DSurface::Composite;
+	WWMouseClass::Instance->func_40(DSurface::Composite, false);
+
+	bool shouldDraw = pThis->Bitfield != 0;
+	bool complete = pThis->Bitfield == 2;
+	pThis->Bitfield = 0;
+
+	if (!IonStormClass_ChronoScreenEffect_Status)
 	{
-		while (InGameLoop)
-		{
-			// Main thread wants to pause the game. Let it lock the mutex by not doing anything yourself.
-			while (MainDemandsPauseMutex)
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-			// If the game is paused, wait until it's unpaused (aka until the mutex is free to be locked).
-			PauseMutex.lock();
-
-			// We must avoid starving out the main thread...
-			while (MainDemandsDrawingMutex)
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-			// ...but we also don't want to run 1200 TPS with 10 FPS.
-			// Let's try waiting for the lock until we get impatient and *demand* priority.
-			bool gotLock = DrawingMutex.try_lock_for(std::chrono::milliseconds(5));
-			if (!gotLock)
-			{
-				DrawingDemandsDrawingMutex = true;
-				DrawingMutex.lock();
-			}
-
-			// Do the thing.
-			Render(MouseClass::Instance);
-
-			// We're done. Unlock all mutexes.
-			DrawingDemandsDrawingMutex = false;
-			DrawingMutex.unlock();
-			PauseMutex.unlock();
-		}
-		Debug::Log("Exiting the drawing thread.");
+		TacticalClass::Instance->Render(DSurface::Composite, shouldDraw, 0);
+		TacticalClass::Instance->Render(DSurface::Composite, shouldDraw, 1);
+		pThis->Draw(complete);
+		TacticalClass::Instance->Render(DSurface::Composite, shouldDraw, 2);
 	}
+
+	if (BlitMouse.get() && !DebugDebugDebug.get())
+	{
+		WWMouseClass::Instance->func_40(DSurface::Sidebar, true);
+		BlitMouse = false;
+	}
+
+	if (Buttons.get())
+		Buttons->DrawAll(false);
+
+	MessageListClass::Instance->Draw();
+
+	if (CCToolTip::Instance.get())
+		CCToolTip::Instance->Draw(false);
+
+	if (EnableMultiplayerDebug.get())
+		MultiplayerDebugPrint();
+
+	WWMouseClass::Instance->func_3C(DSurface::Composite, false);
+	pThis->vt_entry_44();
+
+	DSurface::Temp = pTempSurface;
+}
+
+void Multithreading::DrawingLoop()
+{
+	while (InGameLoop)
+	{
+		// Main thread wants to pause the game. Let it lock the mutex by not doing anything yourself.
+		while (MainDemandsPauseMutex)
+			std::this_thread::sleep_for(ChillingDuration);
+
+		// If the game is paused, wait until it's unpaused (aka until the mutex is free to be locked).
+		PauseMutex.lock();
+
+		// We must avoid starving out the main thread...
+		while (MainDemandsDrawingMutex)
+			std::this_thread::sleep_for(ChillingDuration);
+
+		// ...but we also don't want to run 1200 TPS with 10 FPS.
+		// Let's try waiting for the lock until we get impatient and *demand* priority.
+		LockOrDemandMutex(DrawingMutex, DrawingDemandsDrawingMutex);
+
+		// Do the thing.
+		Render(MouseClass::Instance);
+
+		// We're done. Unlock all mutexes.
+		DrawingDemandsDrawingMutex = false;
+		DrawingMutex.unlock();
+		PauseMutex.unlock();
+	}
+	Debug::Log("Exiting the drawing thread.");
 }
 
 // Before the MainLoop/AuxLoop begins in MainGame.
 DEFINE_HOOK(0x48CE7E, MainGame_BeforeGameLoop, 7)
 {
-	Debug::Log("Entering the MainLoop/AuxLoop loop.");
-	Multithreading::InGameLoop = true;
-	Multithreading::DrawingThread = std::thread(Multithreading::DrawingLoop);
+	Multithreading::EnterMultithreadMode();
 	return 0;
 }
 
+// Run the MainLoop (sadly not enough space to hook after it),
+// then decide if we should exit multithread mode.
 DEFINE_HOOK(0x48CE8A, MainGame_MainLoop, 0)
 {
 	bool gameEnded = Multithreading::MainLoop();
 	R->EAX(gameEnded);
-
 	if (gameEnded)
-	{
-		Debug::Log("Exiting the MainLoop/AuxLoop loop.");
-		Multithreading::InGameLoop = false;
-		Multithreading::DrawingThread.detach();
-		Multithreading::DrawingThread.~thread();
-	}
+		Multithreading::ExitMultithreadMode();
 
 	return 0x48CE8F;
 }
 
-/*
-// After we exited the MainLoop/AuxLoop.
-DEFINE_HOOK(0x48CEAF, MainGame_AfterGameLoop, 5)
-{
-	Debug::Log("Exiting the MainLoop/AuxLoop loop.");
-	Multithreading::InGameLoop = false;
-	Multithreading::DrawingThread.detach();
-	Multithreading::DrawingThread.~thread();
-	return 0;
-}
-*/
-
-// Completely skip vanilla GScreenClass::Render code in the main thread.
+// Completely skip vanilla GScreenClass::Render code in the main thread
+// if we run in multithread mode.
 DEFINE_HOOK(0x4F4480, GScreenClass_Render_Disable, 8)
 {
 	return Multithreading::InGameLoop ? 0x4F45A8 : 0;
 }
 
-// We want to lock access to game resources when we're doing game logic potientially realted to graphics.
+// We want to lock access to game resources when we're doing game logic potientially related to graphics.
 // The main thread should let the drawing thread run if it complains that it's too hungry and vice versa.
 // TODO: Try to hook later for shorter lock period.
 DEFINE_HOOK(0x55D878, MainLoop_StartLock, 6)
 {
 	while (Multithreading::DrawingDemandsDrawingMutex)
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-	bool gotLock = Multithreading::DrawingMutex.try_lock_for(std::chrono::milliseconds(5));
-	if (!gotLock)
-	{
-		Multithreading::MainDemandsDrawingMutex = true;
-		Multithreading::DrawingMutex.lock();
-	}
-
+		std::this_thread::sleep_for(Multithreading::ChillingDuration);
+	Multithreading::LockOrDemandMutex(Multithreading::DrawingMutex, Multithreading::MainDemandsDrawingMutex);
 	Multithreading::MainDemandsDrawingMutex = false;
 
 	return 0;
@@ -206,44 +209,3 @@ DEFINE_HOOK(0x683FB2, ResumeGame_ResetPause, 5)
 	Multithreading::PauseMutex.unlock();
 	return 0;
 }
-
-// Old things below.
-
-/*
-// Main stuff
-DEFINE_HOOK(0x55D84F, MainLoop_SkipRender_1, 0)
-{
-	return 0x55D854;
-}
-
-DEFINE_HOOK(0x55D8F2, MainLoop_SkipRender_2, 0)
-{
-	return 0x55D8F7;
-}
-
-DEFINE_HOOK(0x55DBBE, MainLoop_SkipRender_3, 0)
-{
-	return 0x55DBC3;
-}
-
-DEFINE_HOOK(0x53B66B, MainLoop_SkipRender_3, 0)
-{
-	return 0x53B670;
-}
-
-DEFINE_HOOK(0x683F95, PauseGame_SkipRender, 0)
-{
-	return 0x683F9F;
-}
-
-// Mouse stuff
-DEFINE_HOOK(0x7BA204, ProcessMouse_SkipBlit_1, 0)
-{
-	return 0x7BA20B;
-}
-
-DEFINE_HOOK(0x7BA26C, ProcessMouse_SkipBlit_2, 0)
-{
-	return 0x7BA282;
-}
-*/
