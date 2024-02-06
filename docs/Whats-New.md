@@ -355,6 +355,7 @@ New:
 - Allow setting default singleplayer map loading screen and briefing offsets (by Starkku)
 - Allow toggling whether or not fire particle systems adjust target coordinates when firer rotates (by Starkku)
 - `AmbientDamage` warhead & main target ignore customization (by Starkku)
+- Promotion animation (by Fryone)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
