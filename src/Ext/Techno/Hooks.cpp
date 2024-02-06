@@ -459,3 +459,16 @@ DEFINE_HOOK(0x51BAFB, InfantryClass_ChronoSparkleDelay, 0x5)
 	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
 	return 0x51BB00;
 }
+
+DEFINE_HOOK(0x6F9FA9, TechnoClass_Update_TurretAndVeterancy, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	if(pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
+	{
+		if(pThis->Veterancy.GetRemainingLevel() == Rank::Elite && RulesExt::Global()->Promote_EliteAnimation)
+			GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCoords());
+		else
+			RulesExt::Global()->Promote_VeteranAnimation ? GameCreate<AnimClass>(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCoords()) : 0;
+	}
+	return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054;
+}
