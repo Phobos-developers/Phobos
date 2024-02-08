@@ -651,18 +651,20 @@ Detonate.AtFirer=false  ; boolean
 
 ### Grant new superweapons in superweapons
 
-- Superweapons can add 1-time superweapons to the firer like the nuke crate.
+- Superweapons can add 1-time superweapons to the firer like the nuke crate. Granted types can be additionally randomized using the same rules as with LimboDelivery (see above).
 - `SW.GrantOneTime.InitialReady` specifies if all new granted superweapons will be ready for launch. If not set this behaviour will be managed by `SW.InitialReady` of the granted superweapon.
 - `Message.GrantOneTimeLaunched` will be displayed to the firer when the main superweapon is launched.
 - `EVA.GrantOneTimeLaunched` will be played to the firer when the main superweapon is launched.
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                       ; Super Weapon
-SW.GrantOneTime=               ; List of Superweapons
-SW.GrantOneTime.InitialReady=  ; boolean
-Message.GrantOneTimeLaunched=  ; CSF entry key
-EVA.GrantOneTimeLaunched=      ; EVA entry
+[SOMESW]                         ; Super Weapon
+SW.GrantOneTime=                 ; List of super weapons
+SW.GrantOneTime.RollChances=     ; List of percentages.
+SW.GrantOneTime.RandomWeightsN=  ; List of integers.
+SW.GrantOneTime.InitialReady=    ; boolean
+Message.GrantOneTimeLaunched=    ; CSF entry key
+EVA.GrantOneTimeLaunched=        ; EVA entry
 ```
 
 ## Technos

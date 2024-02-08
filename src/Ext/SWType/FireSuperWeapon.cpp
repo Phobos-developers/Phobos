@@ -330,21 +330,21 @@ void SWTypeExt::ExtData::GrantOneTimeFromList(SuperClass* pSW)
 		if (const auto pSuper = pHouse->Supers.GetItem(swIdxToAdd))
 		{
 			bool granted = pSuper->Grant(true, false, false);
-			
+
 			if (granted)
 			{
 				auto const pTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
-				bool needsReset = this->SW_GrantOneTime_InitialReady.isset() && this->SW_GrantOneTime_InitialReady.Get() ? true : false;
-				needsReset = !this->SW_GrantOneTime_InitialReady.isset() && pTypeExt->SW_InitialReady ? true : needsReset;
+				bool isReady = this->SW_GrantOneTime_InitialReady.isset() && this->SW_GrantOneTime_InitialReady.Get() ? true : false;
+				isReady = !this->SW_GrantOneTime_InitialReady.isset() && pTypeExt->SW_InitialReady ? true : isReady;
 
-				if (needsReset)
-				{
-					pSuper->Reset();
-				}
-				else
+				if (isReady)
 				{
 					pSuper->RechargeTimer.TimeLeft = 0;
 					pSuper->SetReadiness(true);
+				}
+				else
+				{
+					pSuper->Reset();
 				}
 
 				if (notObserver && pHouse->IsCurrentPlayer())
@@ -362,17 +362,31 @@ void SWTypeExt::ExtData::GrantOneTimeFromList(SuperClass* pSW)
 
 	bool grantedAnySW = false;
 
-	for (const auto swType : this->SW_GrantOneTime)
+	// random mode
+	if (this->SW_GrantOneTime_RandomWeightsData.size())
 	{
-		if (grantTheSW(swType))
-			grantedAnySW = true;
+		auto results = this->WeightedRollsHandler(&this->SW_GrantOneTime_RollChances, &this->SW_GrantOneTime_RandomWeightsData, this->SW_GrantOneTime.size());
+		for (int result : results)
+		{
+			if (grantTheSW(this->SW_GrantOneTime[result]))
+				grantedAnySW = true;
+		}
+	}
+	// no randomness mode
+	else
+	{
+		for (const auto swType : this->SW_GrantOneTime)
+		{
+			if (grantTheSW(swType))
+				grantedAnySW = true;
+		}
 	}
 
 	if (notObserver && pHouse->IsCurrentPlayer())
 	{
 		if (this->EVA_GrantOneTimeLaunched.isset())
 			VoxClass::PlayIndex(this->EVA_GrantOneTimeLaunched.Get(), -1, -1);
-		
+
 		MessageListClass::Instance->PrintMessage(this->Message_GrantOneTimeLaunched.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	}
 }
