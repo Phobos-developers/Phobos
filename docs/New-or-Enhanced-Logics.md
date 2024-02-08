@@ -649,6 +649,22 @@ Detonate.Damage=        ; integer
 Detonate.AtFirer=false  ; boolean
 ```
 
+### Grant new superweapons in superweapons
+
+- Superweapons can add 1-time superweapons to the firer like the nuke crate.
+- `SW.GrantOneTime.InitialReady` specifies if all new granted superweapons will be ready for launch. If not set this behaviour will be managed by `SW.InitialReady` of the granted superweapon.
+- `Message.GrantOneTimeLaunched` will be displayed to the firer when the main superweapon is launched.
+- `EVA.GrantOneTimeLaunched` will be played to the firer when the main superweapon is launched.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                       ; Super Weapon
+SW.GrantOneTime=               ; List of Superweapons
+SW.GrantOneTime.InitialReady=  ; boolean
+Message.GrantOneTimeLaunched=  ; CSF entry key
+EVA.GrantOneTimeLaunched=      ; EVA entry
+```
+
 ## Technos
 
 ### Automatic passenger deletion

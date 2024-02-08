@@ -45,6 +45,10 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->SW_GrantOneTime)
+		.Process(this->SW_GrantOneTime_InitialReady)
+		.Process(this->Message_GrantOneTimeLaunched)
+		.Process(this->EVA_GrantOneTimeLaunched)
 		;
 }
 
@@ -179,6 +183,11 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
+
+	this->SW_GrantOneTime.Read(exINI, pSection, "SW.GrantOneTime");
+	this->SW_GrantOneTime_InitialReady.Read(exINI, pSection, "SW.GrantOneTime.InitialReady");
+	this->Message_GrantOneTimeLaunched.Read(exINI, pSection, "Message.GrantOneTimeLaunched");
+	this->EVA_GrantOneTimeLaunched.Read(exINI, pSection, "EVA.GrantOneTimeLaunched");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
