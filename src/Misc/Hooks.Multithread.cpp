@@ -8,6 +8,7 @@
 #include <MessageListClass.h>
 #include <CCToolTip.h>
 #include <MouseClass.h>
+#include <SessionClass.h>
 
 #include <mutex>
 #include <thread>
@@ -155,7 +156,8 @@ void Multithreading::DrawingLoop()
 // then decide if we should exit multithread mode.
 DEFINE_HOOK(0x48CE8A, MainGame_MainLoop, 0)
 {
-	Multithreading::EnterMultithreadMode();
+	if (SessionClass::Instance->IsSingleplayer())
+		Multithreading::EnterMultithreadMode();
 
 	bool gameEnded = Multithreading::MainLoop();
 	R->EAX(gameEnded);
@@ -177,6 +179,9 @@ DEFINE_HOOK(0x4F4480, GScreenClass_Render_Disable, 8)
 // TODO: Try to hook later for shorter lock period.
 DEFINE_HOOK(0x55D878, MainLoop_StartLock, 6)
 {
+	if (!Multithreading::IsMultithreadMode)
+		return 0;
+
 	while (Multithreading::DrawingDemandsDrawingMutex)
 		std::this_thread::sleep_for(Multithreading::ChillingDuration);
 
@@ -194,6 +199,9 @@ DEFINE_HOOK(0x55D878, MainLoop_StartLock, 6)
 // TODO: Try to hook sooner for shorter lock period.
 DEFINE_HOOK(0x55DDA0, MainLoop_StopLock, 5)
 {
+	if (!Multithreading::IsMultithreadMode)
+		return 0;
+
 	Multithreading::DrawingMutex.unlock(); // TODO: shut up the warning
 	return 0;
 }
@@ -203,6 +211,9 @@ DEFINE_HOOK(0x55DDA0, MainLoop_StopLock, 5)
 // The main thread should always have priority for the mutex access.
 DEFINE_HOOK(0x683EB6, PauseGame_SetPause, 6)
 {
+	if (!Multithreading::IsMultithreadMode)
+		return 0;
+
 	Multithreading::MainDemandsPauseMutex = true;
 	Multithreading::PauseMutex.lock();
 	Multithreading::MainDemandsPauseMutex = false;
@@ -212,6 +223,9 @@ DEFINE_HOOK(0x683EB6, PauseGame_SetPause, 6)
 // Resume operation after pausing the game.
 DEFINE_HOOK(0x683FB2, ResumeGame_ResetPause, 5)
 {
+	if (!Multithreading::IsMultithreadMode)
+		return 0;
+
 	Multithreading::PauseMutex.unlock();
 	return 0;
 }
