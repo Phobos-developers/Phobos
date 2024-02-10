@@ -212,7 +212,7 @@ DEFINE_HOOK(0x4F4480, GScreenClass_Render_Disable, 8)
 
 // We want to lock access to game resources when we're doing game logic potientially related to graphics.
 // The main thread should let the drawing thread run if it complains that it's too hungry and vice versa.
-DEFINE_HOOK_AGAIN(0x55DBC3, MainLoop_StartLock_2, 5)
+DEFINE_HOOK_AGAIN(0x55DBC3, MainLoop_StartLock, 5)
 DEFINE_HOOK(0x55D878, MainLoop_StartLock, 6)
 {
 	if (!Multithreading::IsInMultithreadMode)
@@ -232,7 +232,7 @@ DEFINE_HOOK(0x55D878, MainLoop_StartLock, 6)
 }
 
 // See above.
-DEFINE_HOOK_AGAIN(0x55D903, MainLoop_StopLock_2, 7)
+DEFINE_HOOK_AGAIN(0x55D903, MainLoop_StopLock, 7)
 DEFINE_HOOK(0x55DDA0, MainLoop_StopLock, 5)
 {
 	if (!Multithreading::IsInMultithreadMode)
