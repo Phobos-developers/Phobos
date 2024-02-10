@@ -163,6 +163,17 @@ function onInput() {
 }
 </script>
 
+### Single player multithreading
+
+- It is now possible to use **experimental** multithreading support for single player modes (campaign and skirmish) to improve game performance.
+- This feature must be enabled using with `MultiThreadSinglePlayer=true`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+MultiThreadSinglePlayer=true    ; boolean
+```
+
 ## INI
 
 ### Include files

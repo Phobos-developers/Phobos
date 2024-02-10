@@ -40,6 +40,7 @@ int Phobos::Config::CampaignDefaultGameSpeed = 2;
 bool Phobos::Config::SkirmishUnlimitedColors = false;
 bool Phobos::Config::ShowDesignatorRange = false;
 bool Phobos::Config::SaveVariablesOnScenarioEnd = false;
+bool Phobos::Config::MultiThreadSinglePlayer = false;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -158,6 +159,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		if (temp >= 1)
 			Phobos::Misc::CustomGS_ChangeInterval[i] = temp;
 	}
+
+	Phobos::Config::MultiThreadSinglePlayer = pINI_RULESMD->ReadBool(GameStrings::General, "MultiThreadSinglePlayer", false);
 
 	if (pINI_RULESMD->ReadBool(GameStrings::General, "FixTransparencyBlitters", true))
 		BlittersFix::Apply();
