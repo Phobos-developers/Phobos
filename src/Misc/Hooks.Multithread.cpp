@@ -1,5 +1,7 @@
 #include <Helpers/Macro.h>
+#include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
+#include <Phobos.h>
 
 #include <GScreenClass.h>
 #include <WWMouseClass.h>
@@ -13,7 +15,6 @@
 #include <mutex>
 #include <thread>
 
-
 namespace Multithreading
 {
 	static constexpr reference<bool, 0xB0B519u> const BlitMouse {};
@@ -23,14 +24,14 @@ namespace Multithreading
 	static constexpr reference<bool, 0xA8B8B4u> const EnableMultiplayerDebug {};
 
 	void MultiplayerDebugPrint()
-	{ JMP_STD(0x55F1E0); }
+		{ JMP_STD(0x55F1E0); }
 
 	bool MainLoop()
-	{ JMP_STD(0x55D360); }
+		{ JMP_STD(0x55D360); }
 
-	// Wait this long in LockOrDemandMutex before getting impatient. Bigger values = less frequent locks.
+	// Wait this long in LockOrDemandMutex before getting impatient. Bigger values = less frequent lock demands.
 	static const std::chrono::duration MainPatienceDuration = std::chrono::milliseconds(5);
-	// Wait this long in LockOrDemandMutex before getting impatient. Bigger values = less frequent locks.
+	// Wait this long in LockOrDemandMutex before getting impatient. Bigger values = less frequent lock demands.
 	static const std::chrono::duration DrawingPatienceDuration = std::chrono::milliseconds(5);
 	// Check this often if the demanded mutex lock has been released by the other thread.
 	static const std::chrono::duration ChillingDuration = std::chrono::milliseconds(1);
@@ -38,10 +39,10 @@ namespace Multithreading
 	std::unique_ptr<std::thread> DrawingThread = nullptr;
 	std::timed_mutex DrawingMutex;
 	std::mutex PauseMutex;
-	bool MainDemandsDrawingMutex = false;
-	bool DrawingDemandsDrawingMutex = false;
-	bool MainDemandsPauseMutex = false;
-	bool IsMultithreadMode = false;
+	bool MainThreadDemandsDrawingMutex = false;
+	bool DrawingThreadDemandsDrawingMutex = false;
+	bool MainThreadDemandsPauseMutex = false;
+	bool IsInMultithreadMode = false;
 
 	// Our new drawing thread loop.
 	void DrawingLoop();
@@ -53,23 +54,40 @@ namespace Multithreading
 	void ExitMultithreadMode();
 	// Wait for mutex lock respectfuly or, if too much time has passed, demand it.
 	void LockOrDemandMutex(std::timed_mutex& mutex, bool& demands, std::chrono::duration<long long, std::milli> patienceDuration);
+
+	DEFINE_DYNAMIC_PATCH(Disable_MainGame_MainLoop, 0x48CE8A,
+		0xE8, 0xD1, 0x04, 0x0D, 0x00);
+	DEFINE_DYNAMIC_PATCH(Disable_GScreenClass_Render_Disable, 0x4F4480,
+		0x83, 0xEC, 0x08, 0xA1, 0x1C, 0x73, 0x88, 0x00);
+	DEFINE_DYNAMIC_PATCH(Disable_MainLoop_StartLock, 0x55D878,
+		0x8B, 0x0D, 0xF8, 0xD5, 0xA8, 0x00);
+	DEFINE_DYNAMIC_PATCH(Disable_MainLoop_StartLock_2, 0x55DBC3,
+		0xB9, 0x90, 0x03, 0x8A, 0x00);
+	DEFINE_DYNAMIC_PATCH(Disable_MainLoop_StopLock, 0x55DDA0,
+		0xB9, 0x60, 0xBC, 0xA8, 0x00);
+	DEFINE_DYNAMIC_PATCH(Disable_MainLoop_StopLock_2, 0x55D903,
+		0xC6, 0x05, 0x9D, 0xED, 0xA8, 0x00, 0x00);
+	DEFINE_DYNAMIC_PATCH(Disable_PauseGame_SetPause, 0x683EB6,
+		0x8B, 0x0D, 0x58, 0xE7, 0x87, 0x00);
+	DEFINE_DYNAMIC_PATCH(Disable_PauseGame_ResetPause, 0x683FB2,
+		0xB9, 0xE8, 0xF7, 0x87, 0x00);
 }
 
 void Multithreading::EnterMultithreadMode()
 {
-	if (IsMultithreadMode)
+	if (IsInMultithreadMode)
 		return;
 	Debug::Log("Entering the multithread mode - just before MainLoop gameplay loop.\n");
-	IsMultithreadMode = true;
+	IsInMultithreadMode = true;
 	DrawingThread = std::make_unique<std::thread>(std::thread(DrawingLoop));
 }
 
 void Multithreading::ExitMultithreadMode()
 {
-	if (!IsMultithreadMode)
+	if (!IsInMultithreadMode)
 		return;
 	Debug::Log("Exiting the multithread mode - MainLoop reported end of gameplay.\n");
-	IsMultithreadMode = false;
+	IsInMultithreadMode = false;
 	DrawingThread.get()->detach();
 	DrawingThread.release();
 }
@@ -125,40 +143,57 @@ void Multithreading::Render(GScreenClass* pThis)
 
 void Multithreading::DrawingLoop()
 {
-	while (IsMultithreadMode)
+	while (IsInMultithreadMode)
 	{
 		// Main thread wants to pause the game. Let it lock the mutex by not doing anything yourself.
-		while (MainDemandsPauseMutex)
+		while (MainThreadDemandsPauseMutex)
 			std::this_thread::sleep_for(ChillingDuration);
 
 		// If the game is paused, wait until it's unpaused (aka until the mutex is free to be locked).
 		PauseMutex.lock();
 
 		// We must avoid starving out the main thread...
-		while (MainDemandsDrawingMutex)
+		while (MainThreadDemandsDrawingMutex)
 			std::this_thread::sleep_for(ChillingDuration);
 
 		// ...but we also don't want to run 1200 TPS with 10 FPS.
 		// Let's try waiting for the lock until we get impatient and *demand* priority.
-		LockOrDemandMutex(DrawingMutex, DrawingDemandsDrawingMutex, DrawingPatienceDuration);
+		LockOrDemandMutex(DrawingMutex, DrawingThreadDemandsDrawingMutex, DrawingPatienceDuration);
 
 		// Do the thing.
 		Render(MouseClass::Instance);
 
 		// We're done. Unlock all mutexes.
-		DrawingDemandsDrawingMutex = false;
+		DrawingThreadDemandsDrawingMutex = false;
 		DrawingMutex.unlock();
 		PauseMutex.unlock();
 	}
 	Debug::Log("Exiting the drawing thread.\n");
 }
 
+// Disable the hooks if we're in multiplayer modes or if multithreading was disabled in rules.
+DEFINE_HOOK(0x48CE7E, MainGame_BeforeMainLoop, 7)
+{
+	if (Phobos::Config::MultiThreadSinglePlayer && SessionClass::Instance->IsSingleplayer())
+		return 0;
+
+	Multithreading::Disable_MainGame_MainLoop->Apply();
+	Multithreading::Disable_GScreenClass_Render_Disable->Apply();
+	Multithreading::Disable_MainLoop_StartLock->Apply();
+	Multithreading::Disable_MainLoop_StartLock_2->Apply();
+	Multithreading::Disable_MainLoop_StopLock->Apply();
+	Multithreading::Disable_MainLoop_StopLock_2->Apply();
+	Multithreading::Disable_PauseGame_SetPause->Apply();
+	Multithreading::Disable_PauseGame_ResetPause->Apply();
+
+	return 0;
+}
+
 // Run the MainLoop (sadly not enough space to hook after it),
 // then decide if we should exit multithread mode.
 DEFINE_HOOK(0x48CE8A, MainGame_MainLoop, 0)
 {
-	if (SessionClass::Instance->IsSingleplayer())
-		Multithreading::EnterMultithreadMode();
+	Multithreading::EnterMultithreadMode();
 
 	bool gameEnded = Multithreading::MainLoop();
 	R->EAX(gameEnded);
@@ -172,7 +207,7 @@ DEFINE_HOOK(0x48CE8A, MainGame_MainLoop, 0)
 // if we run in multithread mode.
 DEFINE_HOOK(0x4F4480, GScreenClass_Render_Disable, 8)
 {
-	return Multithreading::IsMultithreadMode ? 0x4F45A8 : 0;
+	return Multithreading::IsInMultithreadMode ? 0x4F45A8 : 0;
 }
 
 // We want to lock access to game resources when we're doing game logic potientially related to graphics.
@@ -180,18 +215,18 @@ DEFINE_HOOK(0x4F4480, GScreenClass_Render_Disable, 8)
 DEFINE_HOOK_AGAIN(0x55DBC3, MainLoop_StartLock_2, 5)
 DEFINE_HOOK(0x55D878, MainLoop_StartLock, 6)
 {
-	if (!Multithreading::IsMultithreadMode)
+	if (!Multithreading::IsInMultithreadMode)
 		return 0;
 
-	while (Multithreading::DrawingDemandsDrawingMutex)
+	while (Multithreading::DrawingThreadDemandsDrawingMutex)
 		std::this_thread::sleep_for(Multithreading::ChillingDuration);
 
 	Multithreading::LockOrDemandMutex(
 		Multithreading::DrawingMutex,
-		Multithreading::MainDemandsDrawingMutex,
+		Multithreading::MainThreadDemandsDrawingMutex,
 		Multithreading::MainPatienceDuration);
 
-	Multithreading::MainDemandsDrawingMutex = false;
+	Multithreading::MainThreadDemandsDrawingMutex = false;
 
 	return 0;
 }
@@ -200,7 +235,7 @@ DEFINE_HOOK(0x55D878, MainLoop_StartLock, 6)
 DEFINE_HOOK_AGAIN(0x55D903, MainLoop_StopLock_2, 7)
 DEFINE_HOOK(0x55DDA0, MainLoop_StopLock, 5)
 {
-	if (!Multithreading::IsMultithreadMode)
+	if (!Multithreading::IsInMultithreadMode)
 		return 0;
 
 	Multithreading::DrawingMutex.unlock(); // TODO: shut up the warning
@@ -212,19 +247,19 @@ DEFINE_HOOK(0x55DDA0, MainLoop_StopLock, 5)
 // The main thread should always have priority for the mutex access.
 DEFINE_HOOK(0x683EB6, PauseGame_SetPause, 6)
 {
-	if (!Multithreading::IsMultithreadMode)
+	if (!Multithreading::IsInMultithreadMode)
 		return 0;
 
-	Multithreading::MainDemandsPauseMutex = true;
+	Multithreading::MainThreadDemandsPauseMutex = true;
 	Multithreading::PauseMutex.lock();
-	Multithreading::MainDemandsPauseMutex = false;
+	Multithreading::MainThreadDemandsPauseMutex = false;
 	return 0;
 }
 
 // Resume operation after pausing the game.
 DEFINE_HOOK(0x683FB2, ResumeGame_ResetPause, 5)
 {
-	if (!Multithreading::IsMultithreadMode)
+	if (!Multithreading::IsInMultithreadMode)
 		return 0;
 
 	Multithreading::PauseMutex.unlock();

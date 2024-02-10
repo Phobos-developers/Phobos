@@ -76,6 +76,7 @@ public:
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;
 		static bool SaveVariablesOnScenarioEnd;
+		static bool MultiThreadSinglePlayer;
 	};
 
 	class Misc
