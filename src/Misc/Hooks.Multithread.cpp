@@ -13,6 +13,7 @@
 #include <mutex>
 #include <thread>
 
+
 namespace Multithreading
 {
 	static constexpr reference<bool, 0xB0B519u> const BlitMouse {};
@@ -34,7 +35,7 @@ namespace Multithreading
 	// Check this often if the demanded mutex lock has been released by the other thread.
 	static const std::chrono::duration ChillingDuration = std::chrono::milliseconds(1);
 
-	std::thread DrawingThread;
+	std::unique_ptr<std::thread> DrawingThread = nullptr;
 	std::timed_mutex DrawingMutex;
 	std::mutex PauseMutex;
 	bool MainDemandsDrawingMutex = false;
@@ -60,7 +61,7 @@ void Multithreading::EnterMultithreadMode()
 		return;
 	Debug::Log("Entering the multithread mode - just before MainLoop gameplay loop.\n");
 	IsMultithreadMode = true;
-	DrawingThread = std::thread(DrawingLoop);
+	DrawingThread = std::make_unique<std::thread>(std::thread(DrawingLoop));
 }
 
 void Multithreading::ExitMultithreadMode()
@@ -69,8 +70,8 @@ void Multithreading::ExitMultithreadMode()
 		return;
 	Debug::Log("Exiting the multithread mode - MainLoop reported end of gameplay.\n");
 	IsMultithreadMode = false;
-	DrawingThread.detach();
-	DrawingThread.~thread();
+	DrawingThread.get()->detach();
+	DrawingThread.release();
 }
 
 void Multithreading::LockOrDemandMutex(std::timed_mutex& mutex, bool& demands, std::chrono::duration<long long, std::milli> patienceDuration)
