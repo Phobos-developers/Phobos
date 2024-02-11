@@ -31,13 +31,13 @@ DEFINE_HOOK(0x683E7F, Start_Scenario_SetInitialTint, 7)
 DEFINE_HOOK(0x52BE3B, InitGame_CreateTiberiumDrawer, 0x5)
 {
 	MapTintFix::TiberiumLightDrawer = std::make_unique<LightConvertClass>(LightConvertClass(
-		&FileSystem::ISOx_PAL, &FileSystem::TEMPERAT_PAL,
+		&FileSystem::TEMPERAT_PAL, &FileSystem::TEMPERAT_PAL,
 		DSurface::Primary, 1000, 1000, 1000, false, nullptr, 53));
 
 	return 0;
 }
 
-DEFINE_HOOK(0x53AD00, IonStormClass_AdjustLighting_TintTiberiumDrawer, 5)
+DEFINE_HOOK(0x53AD00, ScenarioClass_RecalcLighting_TintTiberiumDrawer, 5)
 {
 	GET(int, red, ECX);
 	GET(int, green, EDX);
