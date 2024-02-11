@@ -1003,10 +1003,10 @@ CrateOnlyOnLand=no  ; boolean
 
 ## Flashing Technos on selecting
 
-Selecting technos, controlled by player, now may show a flash effect by setting `SelectFlashTimer` parameter. Set `SelectFlashTimer=0` to disable it.
+Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-SelectFlashTimer=0  ; integer, number of frames
+SelectionFlashDuration=0  ; integer, number of frames
 ```
