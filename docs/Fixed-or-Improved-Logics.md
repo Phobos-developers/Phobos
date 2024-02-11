@@ -146,7 +146,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes.
 - Fixed railgun and fire particles being cut off by elevation changes.
 - Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
-- Fixed units, buildings and tibeirums not being affected by map lighting color tint (must be enabled with `FixLightingTint=true` under `[General]` in `rulesmd.ini`).
+- Fixed units, buildings and tiberiums not being affected by map lighting color tint (can be disabled with `FixLightingTint=false` under `[General]` in `rulesmd.ini`).
 
 ## Fixes / interactions with other extensions
 
