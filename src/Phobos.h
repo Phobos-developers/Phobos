@@ -76,7 +76,8 @@ public:
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;
 		static bool SaveVariablesOnScenarioEnd;
-		static bool FixLightingTint;
+		static bool FixUnitLightingTint;
+		static bool FixTiberiumLightingTint;
 	};
 
 	class Misc

@@ -10,7 +10,7 @@ namespace MapTintFix
 
 DEFINE_HOOK(0x53C441, ScenarioClass_UpdateLighting, 5)
 {
-	if (!Phobos::Config::FixLightingTint)
+	if (!Phobos::Config::FixUnitLightingTint)
 		return 0;
 
 	auto tint = ScenarioClass::Instance->NormalLighting.Tint;
@@ -20,7 +20,7 @@ DEFINE_HOOK(0x53C441, ScenarioClass_UpdateLighting, 5)
 
 DEFINE_HOOK(0x683E7F, Start_Scenario_SetInitialTint, 7)
 {
-	if (!Phobos::Config::FixLightingTint)
+	if (!Phobos::Config::FixUnitLightingTint)
 		return 0;
 
 	auto tint = ScenarioClass::Instance->NormalLighting.Tint;
@@ -39,6 +39,9 @@ DEFINE_HOOK(0x52BE3B, InitGame_CreateTiberiumDrawer, 0x5)
 
 DEFINE_HOOK(0x53AD00, ScenarioClass_RecalcLighting_TintTiberiumDrawer, 5)
 {
+	if (!Phobos::Config::FixTiberiumLightingTint)
+		return 0;
+
 	GET(int, red, ECX);
 	GET(int, green, EDX);
 	GET_STACK(int, blue, STACK_OFFSET(0x0, 0x4));
