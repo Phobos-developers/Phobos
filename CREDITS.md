@@ -236,7 +236,7 @@ This page lists all the individual contributions to the project by their author.
   - Show designator & inhibitor range
   - Dump variables to file on scenario end / hotkey
   - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
-  - Fixed units and buildings not being affected by map lighting color tint
+  - Fixed units, buildings and tiberiums not being affected by map lighting color tint
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance

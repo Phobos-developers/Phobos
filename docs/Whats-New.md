@@ -408,7 +408,7 @@ Vanilla fixes:
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes (by Starkku)
 - Fixed railgun and fire particles being cut off by elevation changes (by Starkku)
 - Fixed teleport units' frozen-still timer being reset after load game (by Trsdy)
-- Fixed units and buildings not being affected by map lighting color tint (by Morton)
+- Fixed units, buildings and tiberiums not being affected by map lighting color tint (by Morton)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
