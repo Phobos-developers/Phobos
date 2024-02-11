@@ -456,3 +456,24 @@ DEFINE_HOOK(0x51BAFB, InfantryClass_ChronoSparkleDelay, 0x5)
 	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
 	return 0x51BB00;
 }
+
+/*DEFINE_HOOK(0x708F95, Techno_ResponseSelect, 0x7)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(unsigned int, v3, EDI);
+	GET(TypeList<int>*, v2, ECX);
+
+	pThis->QueueVoice(v2->GetItem(v3 % v2->Count));
+	return 0x708FAD;
+}*/
+
+DEFINE_HOOK_AGAIN(0x5F4718, ObjectClass_Select, 0x7)
+DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
+{
+	GET(ObjectClass*, pThis, ESI);
+	pThis->IsSelected = true;
+	if(RulesExt::Global()->SelectFlashTimer != 0)
+		if(pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+			pThis->Flash(RulesExt::Global()->SelectFlashTimer);
+	return 0;
+}
