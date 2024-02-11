@@ -461,9 +461,11 @@ DEFINE_HOOK_AGAIN(0x5F4718, ObjectClass_Select, 0x7)
 DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 {
 	GET(ObjectClass*, pThis, ESI);
+
 	pThis->IsSelected = true;
-	if(RulesExt::Global()->SelectFlashTimer != 0)
-		if(pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
-			pThis->Flash(RulesExt::Global()->SelectFlashTimer);
+
+	if(RulesExt::Global()->SelectFlashTimer > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+		pThis->Flash(RulesExt::Global()->SelectFlashTimer);
+
 	return 0;
 }
