@@ -104,6 +104,7 @@ public:
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
+		Valueable<int> SelectionFlashDuration;
 		Valueable<bool> DrawInsigniaOnlyOnSelected;
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
@@ -166,6 +167,7 @@ public:
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
+			, SelectionFlashDuration { 0 }
 			, DrawInsigniaOnlyOnSelected { false }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}

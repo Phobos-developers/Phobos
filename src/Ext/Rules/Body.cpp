@@ -132,6 +132,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
 
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
+	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
 	this->DrawInsigniaOnlyOnSelected.Read(exINI, GameStrings::AudioVisual, "DrawInsigniaOnlyOnSelected");
 	this->Promote_VeteranAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.VeteranAnimation");
 	this->Promote_EliteAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.EliteAnimation");
@@ -265,6 +266,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadialIndicatorVisibility)
 		.Process(this->DrawTurretShadow)
 		.Process(this->IsVoiceCreatedGlobal)
+		.Process(this->SelectionFlashDuration)
 		.Process(this->DrawInsigniaOnlyOnSelected)
 		.Process(this->Promote_VeteranAnimation)
 		.Process(this->Promote_EliteAnimation)

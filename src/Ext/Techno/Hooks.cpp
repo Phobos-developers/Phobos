@@ -460,6 +460,19 @@ DEFINE_HOOK(0x51BAFB, InfantryClass_ChronoSparkleDelay, 0x5)
 	return 0x51BB00;
 }
 
+DEFINE_HOOK_AGAIN(0x5F4718, ObjectClass_Select, 0x7)
+DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
+{
+	GET(ObjectClass*, pThis, ESI);
+
+	pThis->IsSelected = true;
+
+	if(RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6F9FA9, TechnoClass_Update_TurretAndVeterancy, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);

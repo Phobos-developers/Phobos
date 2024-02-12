@@ -1005,3 +1005,13 @@ In `rulesmd.ini`:
 [CrateRules]
 CrateOnlyOnLand=no  ; boolean
 ```
+
+## Flashing Technos on selecting
+
+Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SelectionFlashDuration=0  ; integer, number of frames
+```
