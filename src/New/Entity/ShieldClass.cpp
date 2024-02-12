@@ -146,18 +146,31 @@ bool ShieldClass::ShieldIsBrokenTEvent(ObjectClass* pAttached)
 
 int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 {
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-
-	if (!this->HP || this->Temporal || *args->Damage == 0 ||
-		this->Techno->IsIronCurtained() || CanBePenetrated(pWHExt->OwnerObject()) ||
-		this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
-	{
+	if (!this->HP || this->Temporal || *args->Damage == 0)
 		return *args->Damage;
+
+	// Handle a special case where parasite damages shield but not the unit and unit itself cannot be targeted by repair weapons.
+	if (*args->Damage < 0)
+	{
+		if (auto const pFoot = abstract_cast<FootClass*>(this->Techno))
+		{
+			if (auto const pParasite = pFoot->ParasiteEatingMe)
+			{
+				// Remove parasite.
+				pParasite->ParasiteImUsing->SuppressionTimer.Start(50);
+				pParasite->ParasiteImUsing->ExitUnit();
+			}
+		}
 	}
+
+	if (this->Techno->IsIronCurtained() || CanBePenetrated(args->WH) || this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
+		return *args->Damage;
 
 	int nDamage = 0;
 	int shieldDamage = 0;
 	int healthDamage = 0;
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	if (pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
 	{
