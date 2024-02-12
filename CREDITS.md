@@ -241,6 +241,7 @@ This page lists all the individual contributions to the project by their author.
   - Allowed and disallowed types for `FactoryPlant`
   - Forbidding parallel AI queues for specific TechnoTypes
   - Nonprovocative Warheads
+  - Buildings considered as destroyable pathfinding obstacles
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
