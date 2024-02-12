@@ -227,6 +227,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom tint effects
   - Revenge weapons
   - AttachEffect
+  - Unit pathfinding blockage handling improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
