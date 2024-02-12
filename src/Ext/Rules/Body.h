@@ -108,6 +108,7 @@ public:
 		Valueable<bool> DrawInsigniaOnlyOnSelected;
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
+		Valueable<AffectedHouse> Promote_AnimationVisibility;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -171,6 +172,7 @@ public:
 			, DrawInsigniaOnlyOnSelected { false }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
+			, Promote_AnimationVisibility { AffectedHouse::All }
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
