@@ -477,10 +477,12 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_Update_TurretAndVeterancy, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	if(RulesExt::Global()->Promote_PlayerOnlyAnimation && !pThis->Owner->IsHumanPlayer && !HouseClass::IsCurrentPlayerObserver())
+	AffectedHouse const animVis = RulesExt::Global()->Promote_AnimationVisibility.Get();
+	if(!EnumFunctions::CanTargetHouse(animVis, HouseClass::CurrentPlayer, pThis->Owner))
 	{
 		return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054;
 	}
+
 	if(pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
 	{
 		if(pThis->Veterancy.GetRemainingLevel() == Rank::Elite && RulesExt::Global()->Promote_EliteAnimation)
