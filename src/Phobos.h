@@ -70,6 +70,7 @@ public:
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
+		static bool UseImprovedPathfindingBlockageHandling;
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
 		static bool DigitalDisplay_Enable;
