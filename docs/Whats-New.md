@@ -356,6 +356,7 @@ New:
 - Allow setting default singleplayer map loading screen and briefing offsets (by Starkku)
 - Allow toggling whether or not fire particle systems adjust target coordinates when firer rotates (by Starkku)
 - `AmbientDamage` warhead & main target ignore customization (by Starkku)
+- Flashing Technos on selecting (by Fryone)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -408,6 +409,7 @@ Vanilla fixes:
 - Fixed units' turret rotation and jumpjet wobble under EMP (by Trsdy)
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes (by Starkku)
 - Fixed railgun and fire particles being cut off by elevation changes (by Starkku)
+- Fixed teleport units' frozen-still timer being reset after load game (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -438,6 +440,7 @@ Phobos fixes:
 - Fixed `DetonateOnAllMapObjects` behaving erratically or potentially crashing if it destroys buildings using Ares' advanced rubble (by Starkku)
 - Fixed game crashing on loading save games if the saved game state had active radiation sites (by Starkku)
 - Fixed a desync error caused by air/top layer sorting (by Starkku)
+- Fixed heal / repair weapons being unable to remove parasites from shielded targets if they were unable to heal / repair the parent unit (by Starkku)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)

@@ -106,7 +106,7 @@ DEFINE_HOOK_AGAIN(0x644615, ParticleSystemTypeClass_LoadFromINI, 0x5)
 DEFINE_HOOK(0x644620, ParticleSystemTypeClass_LoadFromINI, 0x5)
 {
 	GET(ParticleSystemTypeClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0x64, 0x4));
+	GET(CCINIClass*, pINI, EBX);
 
 	ParticleSystemTypeExt::ExtMap.LoadFromINI(pItem, pINI);
 

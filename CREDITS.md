@@ -286,6 +286,7 @@ This page lists all the individual contributions to the project by their author.
    - Powered anims on buildings cease playing upon capture by different house fix
    - TechnoType conversion placeholder
    - EIP 00529A14 crash fix on Linux
+   - Teleport timer reset after load game fix
    - Skip units' turret rotation and jumpjets' wobbling under EMP
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
@@ -307,6 +308,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
   - Auto-deploy/Deploy block on ammo change
+  - Flashing Technos on selecting
   - Change target Owner on warhead impact
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>

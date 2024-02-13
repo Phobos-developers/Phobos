@@ -324,6 +324,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TurretShadow.Read(exArtINI, pArtSection, "TurretShadow");
 	this->ShadowIndices.Read(exArtINI, pArtSection, "ShadowIndices");
 
+	this->LaserTrailData.clear();
 	for (size_t i = 0; ; ++i)
 	{
 		NullableIdx<LaserTrailTypeClass> trail;

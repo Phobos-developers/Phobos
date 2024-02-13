@@ -145,7 +145,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Jumpjets will no longer wobble under EMP.
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes.
 - Fixed railgun and fire particles being cut off by elevation changes.
-
+- Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
 
 ## Fixes / interactions with other extensions
 
@@ -999,4 +999,14 @@ In `rulesmd.ini`:
 ```ini
 [CrateRules]
 CrateOnlyOnLand=no  ; boolean
+```
+
+## Flashing Technos on selecting
+
+Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SelectionFlashDuration=0  ; integer, number of frames
 ```
