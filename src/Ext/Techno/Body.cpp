@@ -2,9 +2,11 @@
 
 #include <AircraftClass.h>
 #include <HouseClass.h>
+#include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
 
 #include <Ext/House/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -360,6 +362,30 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 		return true;
 
 	return false;
+}
+
+// Gets weapon index for a weapon to use against wall overlay.
+int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType, bool isBlockageCheck)
+{
+	int weaponIndex = pThis->GetTechnoType()->TurretCount > 0 ? pThis->CurrentWeaponNumber : 0;
+	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	if (!pWeapon || (!pWeapon->Warhead->Wall && (!pWeapon->Warhead->Wood || pWallOverlayType->Armor != Armor::Wood)
+		&& (!isBlockageCheck || (!pWeapon->NeverUse && pWeapon->Damage > 0) || !WeaponTypeExt::ExtMap.Find(pWeapon)->BlockageTargetingBypassDamageOverride.Get(false))))
+	{
+		pWeapon = pThis->GetWeapon(1)->WeaponType;
+
+		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood)
+			&& !TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoSecondaryWeaponFallback
+			&& (!isBlockageCheck || (!pWeapon->NeverUse && pWeapon->Damage > 0) || WeaponTypeExt::ExtMap.Find(pWeapon)->BlockageTargetingBypassDamageOverride.Get(false))))
+		{
+			return 1;
+		}
+
+		return isBlockageCheck ? -1 : weaponIndex;
+	}
+
+	return weaponIndex;
 }
 
 // =============================
