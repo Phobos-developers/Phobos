@@ -54,14 +54,12 @@ DEFINE_HOOK(0x53AD00, ScenarioClass_RecalcLighting_TintTiberiumDrawer, 5)
 DEFINE_HOOK(0x47F94B, CellClass_DrawOverlay_ReplaceTiberiumDrawer_1, 6)
 {
 	R->EDX(MapTintFix::TiberiumLightDrawer.get());
-	//*(int*)(R->ESP() + 12) = 0;
 	return 0x47F951;
 }
 
 DEFINE_HOOK(0x47FA5C, CellClass_DrawOverlay_ReplaceTiberiumDrawer_2, 6)
 {
 	R->EDX(MapTintFix::TiberiumLightDrawer.get());
-	//*(int*)(R->ESP() + 8) = 0;
 	return 0x47FA62;
 }
 
