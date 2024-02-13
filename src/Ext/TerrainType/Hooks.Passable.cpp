@@ -75,24 +75,21 @@ DEFINE_HOOK(0x483DDF, CellClass_CheckPassability_PassableTerrain, 0x6)
 }
 
 // Passable TerrainTypes Hook #4 - Make passable for vehicles.
-DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
+DEFINE_HOOK(0x73FBA7, UnitClass_CanEnterCell_PassableTerrain, 0x5)
 {
 	enum { ReturnPassable = 0x73FD37, SkipTerrainChecks = 0x73FA7C };
 
-	GET(AbstractClass*, pTarget, ESI);
+	GET(TerrainClass*, pTerrain, ESI);
 
-	if (auto const pTerrain = abstract_cast<TerrainClass*>(pTarget))
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+
+	if (pTypeExt->IsPassable)
 	{
-		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+		if (IS_CELL_OCCUPIED(pTerrain->GetCell()))
+			return SkipTerrainChecks;
 
-		if (pTypeExt->IsPassable)
-		{
-			if (IS_CELL_OCCUPIED(pTerrain->GetCell()))
-				return SkipTerrainChecks;
-
-			R->EBP(0);
-			return ReturnPassable;
-		}
+		R->EBP(0);
+		return ReturnPassable;
 	}
 
 	return 0;

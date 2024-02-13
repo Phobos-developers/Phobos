@@ -1,8 +1,10 @@
 #include "Body.h"
 
 #include <OverlayTypeClass.h>
+#include <TerrainClass.h>
 
 #include <Ext/BulletType/Body.h>
+#include <Ext/TerrainType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 /* Hooks & helper functions concerning pathfinding blockages e.g enemy units on occupying cells on the way. */
@@ -22,35 +24,6 @@ public:
 
 			if (pWeaponSecondary && PathfindingBlockageHelper::CanDealDamageToObject(pWeaponSecondary, pTarget) && pThis->GetFireError(pTarget, 1, true) != FireError::ILLEGAL)
 				return true;
-
-			return false;
-		}
-
-		return true;
-	}
-
-	static bool CanTargetOverlay(TechnoClass* pThis, OverlayTypeClass* pOverlayType)
-	{
-		if (pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Not_OK)
-			return false;
-
-		int primaryWeaponIndex = pThis->GetTechnoType()->TurretCount > 0 ? pThis->CurrentWeaponNumber : 0;
-		auto pWeaponPrimary = pThis->GetWeapon(primaryWeaponIndex)->WeaponType;
-
-		if (!pWeaponPrimary || ((pWeaponPrimary->Damage < 1 || pWeaponPrimary->NeverUse)
-			&& !WeaponTypeExt::ExtMap.Find(pWeaponPrimary)->BlockageTargetingBypassDamageOverride.Get(false))
-			|| (!pWeaponPrimary->Warhead->Wall && (!pWeaponPrimary->Warhead->Wood || pOverlayType->Armor != Armor::Wood))
-			|| BulletTypeExt::ExtMap.Find(pWeaponPrimary->Projectile)->AAOnly)
-		{
-			auto pWeaponSecondary = pThis->GetWeapon(1)->WeaponType;
-
-			if (pOverlayType->Wall && pWeaponSecondary && ((pWeaponSecondary->Damage > 0 && !pWeaponPrimary->NeverUse)
-				|| WeaponTypeExt::ExtMap.Find(pWeaponSecondary)->BlockageTargetingBypassDamageOverride.Get(false))
-				&& (pWeaponSecondary->Warhead->Wall || (pWeaponSecondary->Warhead->Wood && pOverlayType->Armor == Armor::Wood))
-				&& !BulletTypeExt::ExtMap.Find(pWeaponSecondary->Projectile)->AAOnly)
-			{
-				return true;
-			}
 
 			return false;
 		}
@@ -100,7 +73,12 @@ DEFINE_HOOK(0x51C1F1, InfantryClass_CanEnterCell_BlockageOverlay, 0x5)
 
 	if (Phobos::Config::UseImprovedPathfindingBlockageHandling)
 	{
-		if (!PathfindingBlockageHelper::CanTargetOverlay(pThis, pOverlayType))
+		if (pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Not_OK)
+			return IsBlockage;
+
+		int weaponIndex = TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayType, true);
+
+		if (weaponIndex == -1 || BulletTypeExt::ExtMap.Find(pThis->GetWeapon(weaponIndex)->WeaponType->Projectile)->AAOnly)
 			return IsBlockage;
 	}
 	else
@@ -138,12 +116,17 @@ DEFINE_HOOK(0x51C540, InfantryClass_CanEnterCell_BlockageGate, 0x9)
 	return SkipToNext;
 }
 
+
 DEFINE_HOOK(0x51C5C8, InfantryClass_CanEnterCell_BlockageGeneral1, 0x6)
 {
 	enum { IsBlockage = 0x51C7D0, Continue = 0x51C5E0 };
 
 	GET(InfantryClass*, pThis, EBP);
 	GET(ObjectClass*, pOccupier, ESI);
+	GET(AbstractType, rtti, EAX);
+
+	// Restore overridden instructions.
+	R->EDI(rtti);
 
 	bool condition = false;
 
@@ -152,7 +135,7 @@ DEFINE_HOOK(0x51C5C8, InfantryClass_CanEnterCell_BlockageGeneral1, 0x6)
 	else
 		condition = pThis->CombatDamage(-1) <= 0;
 
-	if (pOccupier->WhatAmI() != AbstractType::Terrain && condition)
+	if (condition && rtti != AbstractType::Terrain)
 		return IsBlockage;
 
 	return Continue;
@@ -191,7 +174,12 @@ DEFINE_HOOK(0x73F495, UnitClass_CanEnterCell_BlockageOverlay, 0x6)
 
 	if (Phobos::Config::UseImprovedPathfindingBlockageHandling)
 	{
-		if (!PathfindingBlockageHelper::CanTargetOverlay(pThis, pOverlayType))
+		if (pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Not_OK)
+			return IsBlockage;
+
+		int weaponIndex = TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayType, true);
+
+		if (weaponIndex == -1 || BulletTypeExt::ExtMap.Find(pThis->GetWeapon(weaponIndex)->WeaponType->Projectile)->AAOnly)
 			return IsBlockage;
 	}
 	else
@@ -228,6 +216,15 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_BlockageGeneral1, 0x6)
 
 	GET(UnitClass*, pThis, EBX);
 	GET(ObjectClass*, pOccupier, ESI);
+
+	// Skip blockage checks for passable TerrainTypes.
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pOccupier))
+	{
+		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+
+		if (pTypeExt->IsPassable)
+			return Continue;
+	}
 
 	if (Phobos::Config::UseImprovedPathfindingBlockageHandling)
 	{
