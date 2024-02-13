@@ -253,12 +253,12 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 
 ### Aircraft docking direction
 
-- It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir` on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting and defaults to `[AudioVisual]` -> `PoseDir`.
+- It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir(N)` (`N` optionally replaced by 0-based index for each `DockingOffset` separately, `AircraftDockingDir` and `AircraftDockingDir0` are synonymous and will be used if direction is not set for a specific offset) on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting and defaults to `[AudioVisual]` -> `PoseDir`.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]       ; BuildingType
-AircraftDockingDir=  ; Direction type (integers from 0-255)
+[SOMEBUILDING]          ; BuildingType
+AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
 ```
 
 ### Airstrike target eligibility

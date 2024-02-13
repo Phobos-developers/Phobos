@@ -61,7 +61,7 @@ public:
 		Valueable<bool> ZShapePointMove_OnBuildup;
 		Valueable<int> SellBuildupLength;
 
-		Nullable<DirType> AircraftDockingDir;
+		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -98,7 +98,7 @@ public:
 			, ConsideredVehicle {}
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
-			, AircraftDockingDir {}
+			, AircraftDockingDirs {}
 		{ }
 
 		// Ares 0.A functions

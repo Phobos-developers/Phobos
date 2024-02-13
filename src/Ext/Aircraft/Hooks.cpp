@@ -12,7 +12,7 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 	GET(AircraftClass*, pThis, ESI);
 
 	if (pThis->MissionStatus < (int)AirAttackStatus::FireAtTarget2_Strafe
-		|| pThis->MissionStatus > (int)AirAttackStatus::FireAtTarget5_Strafe)
+		|| pThis->MissionStatus >(int)AirAttackStatus::FireAtTarget5_Strafe)
 	{
 		return 0;
 	}
@@ -143,13 +143,24 @@ DEFINE_HOOK(0x446F6C, BuildingClass_GrandOpening_PoseDir, 0x9)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x443FEF, BuildingClass_ExitObject_PoseDir, 0xA)
-DEFINE_HOOK(0x443FC7, BuildingClass_ExitObject_PoseDir, 0x8)
+DEFINE_HOOK(0x443FC7, BuildingClass_ExitObject_PoseDir1, 0x8)
 {
 	GET(BuildingClass*, pThis, ESI);
 	GET(AircraftClass*, pAircraft, EBP);
 
 	R->EAX(AircraftExt::GetLandingDir(pAircraft, pThis));
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44402E, BuildingClass_ExitObject_PoseDir2, 0x5)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(AircraftClass*, pAircraft, EBP);
+
+	auto dir = DirStruct(AircraftExt::GetLandingDir(pAircraft, pThis));
+	pAircraft->PrimaryFacing.SetCurrent(dir);
+	pAircraft->SecondaryFacing.SetCurrent(dir);
 
 	return 0;
 }
