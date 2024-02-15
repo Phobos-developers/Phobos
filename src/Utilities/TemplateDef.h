@@ -1312,8 +1312,15 @@ template <typename T>
 template <bool Allocate>
 void __declspec(noinline) Nullable<T>::Read(INI_EX& parser, const char* pSection, const char* pKey)
 {
-	if (detail::read<T,Allocate>(this->Value, parser, pSection, pKey))
-		this->HasValue = true;
+	if (parser.ReadString(pSection, pKey))
+	{
+		const char* val = parser.value();
+
+		if (!_strcmpi(val, "<default>") || INIClass::IsBlank(val))
+			this->Reset();
+		else if (detail::read<T, Allocate>(this->Value, parser, pSection, pKey))
+			this->HasValue = true;
+	}
 }
 
 template <typename T>
@@ -1516,7 +1523,8 @@ void __declspec(noinline) NullableVector<T>::Read(INI_EX& parser, const char* pS
 	{
 		this->clear();
 
-		auto const non_default = _strcmpi(parser.value(), "<default>") != 0;
+		const char* val = parser.value();
+		auto const non_default = _strcmpi(val, "<default>");
 		this->hasValue = non_default;
 
 		if (non_default)
@@ -1567,7 +1575,8 @@ void __declspec(noinline) NullableIdxVector<Lookuper>::Read(INI_EX& parser, cons
 	{
 		this->clear();
 
-		auto const non_default = _strcmpi(parser.value(), "<default>") != 0;
+		const char* val = parser.value();
+		auto const non_default = _strcmpi(val, "<default>") != 0;
 		this->hasValue = non_default;
 
 		if (non_default)
