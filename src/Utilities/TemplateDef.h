@@ -1522,9 +1522,7 @@ void __declspec(noinline) NullableVector<T>::Read(INI_EX& parser, const char* pS
 	if (parser.ReadString(pSection, pKey))
 	{
 		this->clear();
-
-		const char* val = parser.value();
-		auto const non_default = _strcmpi(val, "<default>");
+		auto const non_default = _strcmpi(parser.value(), "<default>");
 		this->hasValue = non_default;
 
 		if (non_default)
@@ -1574,9 +1572,7 @@ void __declspec(noinline) NullableIdxVector<Lookuper>::Read(INI_EX& parser, cons
 	if (parser.ReadString(pSection, pKey))
 	{
 		this->clear();
-
-		const char* val = parser.value();
-		auto const non_default = _strcmpi(val, "<default>") != 0;
+		auto const non_default = _strcmpi(parser.value(), "<default>") != 0;
 		this->hasValue = non_default;
 
 		if (non_default)
