@@ -367,16 +367,22 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 // Gets weapon index for a weapon to use against wall overlay.
 int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType, bool isBlockageCheck)
 {
-	int weaponIndex = pThis->GetTechnoType()->TurretCount > 0 ? pThis->CurrentWeaponNumber : 0;
-	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pTechnoType = pThis->GetTechnoType();
+	int weaponIndex = -1;
+	auto pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndex);
+
+	if ((pTechnoType->TurretCount > 0 && !pTechnoType->IsGattling) || !pWallOverlayType)
+		return weaponIndex;
+	else if (weaponIndex == -1)
+		return 0;
 
 	if (!pWeapon || (!pWeapon->Warhead->Wall && (!pWeapon->Warhead->Wood || pWallOverlayType->Armor != Armor::Wood)
 		&& (!isBlockageCheck || (!pWeapon->NeverUse && pWeapon->Damage > 0) || !WeaponTypeExt::ExtMap.Find(pWeapon)->BlockageTargetingBypassDamageOverride.Get(false))))
 	{
-		pWeapon = pThis->GetWeapon(1)->WeaponType;
+		pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndex, true);
 
 		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood)
-			&& !TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoSecondaryWeaponFallback
+			&& !TechnoTypeExt::ExtMap.Find(pTechnoType)->NoSecondaryWeaponFallback
 			&& (!isBlockageCheck || (!pWeapon->NeverUse && pWeapon->Damage > 0) || WeaponTypeExt::ExtMap.Find(pWeapon)->BlockageTargetingBypassDamageOverride.Get(false))))
 		{
 			return 1;
