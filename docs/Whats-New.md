@@ -240,7 +240,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ## Changelog
 
-### 0.3.0.2
+### 0.3.1.0
 
 <details open>
   <summary>Click to show</summary>
