@@ -25,15 +25,6 @@
 #include <Utilities/Debug.h>
 #include <Utilities/TemplateDef.h>
 
-//Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
-DEFINE_HOOK(0x423365, Phobos_BugFixes_SHPShadowCheck, 0x8)
-{
-	GET(AnimClass*, pAnim, ESI);
-	return (pAnim->Type->Shadow && pAnim->HasExtras) ?
-		0x42336D :
-		0x4233EE;
-}
-
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
 
