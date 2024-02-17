@@ -23,8 +23,8 @@ This page lists all the individual contributions to the project by their author.
   - Check for Changelog/Documentation/Credits in Pull Requests
   - Fix position and layer of info tip and reveal production cameo on selected building
   - Fix a glitch related to incorrect target setting for missiles
+  - Ability to disable shadow for debris & meteor animations
 - **Kerbiter (Metadorius)**:
-  - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
   - Extended tooltips
   - Selection priority filtering
@@ -44,6 +44,7 @@ This page lists all the individual contributions to the project by their author.
   - VSCode configs
   - Code style
   - Customizable ElectricBolt Arcs
+  - Ability to disable shadow for debris & meteor animations
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
