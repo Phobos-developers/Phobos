@@ -312,5 +312,5 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 		return;
 
 	for (const auto pTargetFoot : *FootClass::Array)
-		TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
+		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }
