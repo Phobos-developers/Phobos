@@ -63,7 +63,7 @@ public:
 	Valueable& operator = (Valueable const& value) = default;
 	Valueable& operator = (Valueable&& value) = default;
 
-	template <typename Val, typename = std::enable_if_t<std::is_assignable<T&, Val&&>::value>>
+	template <typename Val> requires std::assignable_from<T&, Val&&>
 	Valueable& operator = (Val value)
 	{
 		this->Value = std::move(value);
@@ -156,7 +156,7 @@ public:
 	ValueableIdx& operator = (ValueableIdx const& value) = default;
 	ValueableIdx& operator = (ValueableIdx&& value) = default;
 
-	template <typename Val, typename = std::enable_if_t<std::is_assignable<int&, Val&&>::value>>
+	template <typename Val> requires std::assignable_from<int&, Val&&>
 	ValueableIdx& operator = (Val value)
 	{
 		this->Value = std::move(value);

@@ -103,7 +103,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		}
 		else
 		{
-			auto pType = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+			auto pType = static_cast<BuildingClass*>(pThis)->Type;
 			int fHeight = pType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 

@@ -199,7 +199,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_ReceiveDamage_CanC4DamageRounding, 0x6)
 
 	if (*pDamage == 0 && pThis->WhatAmI() == AbstractType::Building)
 	{
-		auto const pType = static_cast<BuildingTypeClass*>(pThis->GetType());
+		auto const pType = static_cast<BuildingClass*>(pThis)->Type;
 
 		if (!pType->CanC4)
 		{
