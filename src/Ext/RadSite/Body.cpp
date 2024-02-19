@@ -61,10 +61,8 @@ void RadSiteExt::ExtData::CreateLight()
 	auto nLevelDelay = this->Type->GetLevelDelay();
 	auto nLightDelay = this->Type->GetLightDelay();
 
-	pThis->RadLevelTimer.StartTime = Unsorted::CurrentFrame;
-	pThis->RadLevelTimer.TimeLeft = nLevelDelay;
-	pThis->RadLightTimer.StartTime = Unsorted::CurrentFrame;
-	pThis->RadLightTimer.TimeLeft = nLightDelay;
+	pThis->RadLevelTimer.Start(nLevelDelay);
+	pThis->RadLightTimer.Start(nLightDelay);
 
 	auto nLightFactor = pThis->RadLevel * this->Type->GetLightFactor();
 	nLightFactor = Math::min(nLightFactor, 2000.0);

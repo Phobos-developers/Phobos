@@ -10,7 +10,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 - The obsolete `[General] WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
@@ -38,6 +37,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
   - `OmniFire.TurnToTarget` is recommended for jumpjet units' omnifiring weapons for facing turning.
 - Buildings delivered by trigger action 125 will now **always** play buildup anim as long as it exists. `[ParamTypes]->53` is deprecated.
+- `Shadow` for debris & meteor animations is changed to `ExtraShadow`.
 
 #### From pre-0.3 devbuilds
 
@@ -440,6 +440,7 @@ Phobos fixes:
 - Fixed `DetonateOnAllMapObjects` behaving erratically or potentially crashing if it destroys buildings using Ares' advanced rubble (by Starkku)
 - Fixed game crashing on loading save games if the saved game state had active radiation sites (by Starkku)
 - Fixed a desync error caused by air/top layer sorting (by Starkku)
+- Fixed heal / repair weapons being unable to remove parasites from shielded targets if they were unable to heal / repair the parent unit (by Starkku)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)

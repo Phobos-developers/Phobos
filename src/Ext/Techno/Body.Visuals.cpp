@@ -103,7 +103,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		}
 		else
 		{
-			auto pType = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+			auto pType = static_cast<BuildingClass*>(pThis)->Type;
 			int fHeight = pType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
@@ -231,12 +231,7 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
 {
-	CoordStruct absolute = pThis->GetCoords();
-	Point2D  position = { 0,0 };
-	TacticalClass::Instance->CoordsToScreen(&position, &absolute);
-	position -= TacticalClass::Instance->TacticalPos;
-
-	return position;
+	return TacticalClass::Instance->CoordsToClient(pThis->GetCoords()).first;
 }
 
 Point2D TechnoExt::GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor)
@@ -264,9 +259,8 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 	Point2D position = GetScreenLocation(pThis);
 	CoordStruct dim2 = CoordStruct::Empty;
 	pBuildingType->Dimension2(&dim2);
-	Point2D positionFix = Point2D::Empty;
 	dim2 = { -dim2.X / 2, dim2.Y / 2, dim2.Z };
-	TacticalClass::Instance->CoordsToScreen(&positionFix, &dim2);
+	Point2D positionFix = TacticalClass::CoordsToScreen(dim2);
 
 	const int foundationWidth = pBuildingType->GetFoundationWidth();
 	const int foundationHeight = pBuildingType->GetFoundationHeight(false);

@@ -4,10 +4,9 @@
 #include <Ext/CaptureManager/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Techno/Body.h>
 
 #include <AircraftClass.h>
-#include <BuildingClass.h>
-#include <InfantryClass.h>
 #include <TacticalClass.h>
 
 DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
@@ -31,9 +30,9 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 
 	if (auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
-		Point2D screenCoords;
+		auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
 
-		if (pExt->ShakeIsLocal && !TacticalClass::Instance->CoordsToClient(*pCoords, &screenCoords))
+		if (pExt->ShakeIsLocal && !visible)
 			return SkipShaking;
 	}
 

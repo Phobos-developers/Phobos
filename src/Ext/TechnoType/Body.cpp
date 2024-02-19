@@ -375,8 +375,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Parasitic types
 
-	bool resetValue = false;
-	bool canParse = PassengerDeletionTypeClass::CanParse(exINI, pSection, resetValue);
+	auto [canParse, resetValue] = PassengerDeletionTypeClass::CanParse(exINI, pSection);
 
 	if (canParse)
 	{
