@@ -387,12 +387,14 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	if (!pWeapon || (!pWeapon->Warhead->Wall && (!pWeapon->Warhead->Wood || pWallOverlayType->Armor != Armor::Wood)
 		&& (!isBlockageCheck || (!pWeapon->NeverUse && pWeapon->Damage > 0) || !WeaponTypeExt::ExtMap.Find(pWeapon)->BlockageTargetingBypassDamageOverride.Get(false))))
 	{
-		pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndex, true);
+		int weaponIndexSec = -1;
+		pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndexSec, true);
 
 		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood)
 			&& !TechnoTypeExt::ExtMap.Find(pTechnoType)->NoSecondaryWeaponFallback
 			&& (!isBlockageCheck || (!pWeapon->NeverUse && pWeapon->Damage > 0) || WeaponTypeExt::ExtMap.Find(pWeapon)->BlockageTargetingBypassDamageOverride.Get(false))))
 		{
+			weaponIndex = weaponIndexSec;
 			return 1;
 		}
 
