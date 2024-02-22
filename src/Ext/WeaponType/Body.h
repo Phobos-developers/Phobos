@@ -54,7 +54,6 @@ public:
 		ValueableVector<int> AttachEffect_DisallowedMinCounts;
 		ValueableVector<int> AttachEffect_DisallowedMaxCounts;
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
-		Nullable<bool> BlockageTargetingBypassDamageOverride;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -90,7 +89,6 @@ public:
 			, AttachEffect_DisallowedMinCounts {}
 			, AttachEffect_DisallowedMaxCounts {}
 			, AttachEffect_IgnoreFromSameSource { false }
-			, BlockageTargetingBypassDamageOverride {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
