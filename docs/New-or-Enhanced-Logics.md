@@ -820,20 +820,6 @@ ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary
 ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
-### Improved pathfinding blockage handling
-
-- By default, game makes some rather inconsistent assumptions regarding if an unit is able to clear a blockage such as enemy unit or building on its way. In most cases simply having a weapon would be enough for game to assume that this blockage can be cleared, irregardless of it the said weapon is actually able to fire, much less destroy the said blockage. It is possible to enable improved checks for this behaviour by setting `[General]`-> `UseImprovedPathfindingBlockageHandling`, which will take Warhead `Verses` as well as other targeting and weapon selection checks into accord.
-  - These checks include that the weapon must be able to deal positive damage to the target. It is possible bypass this check for specific weapons or automatically reject them by setting `BlockageTargetingBypassDamageOverride` to either true or false, respectively.
-
-In `rulesmd.ini`:
-```ini
-[General]
-UseImprovedPathfindingBlockageHandling=false  ; boolean
-
-[SOMEWEAPON]                                  ; WeaponType
-BlockageTargetingBypassDamageOverride=        ; boolean
-```
-
 ### Make units try turning to target when firing with `OmniFire=yes`
 - The unit will try to turn the body to target even firing with `OmniFire=yes`
   - Recommended for jumpjets if you want it to turn to target when firing.
