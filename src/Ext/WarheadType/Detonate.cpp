@@ -267,14 +267,9 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 	const bool doesAffectElites = this->ChangeOwner_AffectElites;
 	const bool targetImmuneToPsionics = pTarget->GetTechnoType()->ImmuneToPsionics;
 
-	bool pImmune = (isMindControl && targetImmuneToPsionics);
-	if(pTarget->GetHealthPercentage() > ownerChangeHealthThreshold)
-		pImmune = true;
+	bool isImmune = (isMindControl && targetImmuneToPsionics) || (pTarget->GetHealthPercentage() > ownerChangeHealthThreshold) || (!doesAffectElites && pTarget->Veterancy.IsElite());
 
-	if(!doesAffectElites && (pTarget->Veterancy.IsElite()))
-		pImmune = true;
-
-	if (!pImmune)
+	if (!isImmune)
 	{
 		if ((GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0) && (!pTarget->IsMindControlled()))
 		{
