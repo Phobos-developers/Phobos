@@ -227,6 +227,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom tint effects
   - Revenge weapons
   - AttachEffect
+  - Buildings considered as destroyable pathfinding obstacles
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
