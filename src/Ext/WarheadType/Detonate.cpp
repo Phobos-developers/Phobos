@@ -404,7 +404,7 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 	if (!pTargetFoot || this->Convert_Pairs.size() == 0)
 		return;
 
-	TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
+	TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
 }
 
 void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)

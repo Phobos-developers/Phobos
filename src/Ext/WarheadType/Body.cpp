@@ -202,44 +202,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
-	char tempBuffer[32];
 	// Convert.From & Convert.To
-	for (size_t i = 0; ; ++i)
-	{
-		ValueableVector<TechnoTypeClass*> convertFrom;
-		Nullable<TechnoTypeClass*> convertTo;
-		Nullable<AffectedHouse> convertAffectedHouses;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
-		convertFrom.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
-		convertTo.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i);
-		convertAffectedHouses.Read(exINI, pSection, tempBuffer);
-
-		if (!convertTo.isset())
-			break;
-
-		if (!convertAffectedHouses.isset())
-			convertAffectedHouses = AffectedHouse::All;
-
-		this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
-	}
-	ValueableVector<TechnoTypeClass*> convertFrom;
-	Nullable<TechnoTypeClass*> convertTo;
-	Nullable<AffectedHouse> convertAffectedHouses;
-	convertFrom.Read(exINI, pSection, "Convert.From");
-	convertTo.Read(exINI, pSection, "Convert.To");
-	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
-	if (convertTo.isset())
-	{
-		if (!convertAffectedHouses.isset())
-			convertAffectedHouses = AffectedHouse::All;
-
-		if (this->Convert_Pairs.size())
-			this->Convert_Pairs[0] = { convertFrom, convertTo, convertAffectedHouses };
-		else
-			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
-	}
+	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
 #ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 	this->InflictLocomotor.Read(exINI, pSection, "InflictLocomotor");

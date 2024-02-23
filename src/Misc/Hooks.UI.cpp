@@ -16,7 +16,7 @@
 
 DEFINE_HOOK(0x777C41, UI_ApplyAppIcon, 0x9)
 {
-	if (Phobos::AppIconPath != nullptr)
+	if (Phobos::AppIconPath != nullptr && strlen(Phobos::AppIconPath))
 	{
 		Debug::Log("Applying AppIcon from \"%s\"\n", Phobos::AppIconPath);
 
@@ -157,7 +157,7 @@ DEFINE_HOOK(0x715A4D, Replace_XXICON_With_New, 0x7)         //TechnoTypeClass::R
 	strcpy_s(pFilename, RulesExt::Global()->MissingCameo.data());
 	_strlwr_s(pFilename);
 
-	if (_stricmp(pFilename, "xxicon.shp")
+	if (_stricmp(pFilename, GameStrings::XXICON_SHP)
 		&& strstr(pFilename, ".shp"))
 	{
 		if (auto pFile = FileSystem::LoadFile(RulesExt::Global()->MissingCameo, false))
@@ -236,7 +236,7 @@ DEFINE_HOOK(0x683E41, ScenarioClass_Start_ShowBriefing, 0x6)
 	GET_STACK(bool, showBriefing, STACK_OFFSET(0xFC, -0xE9));
 
 	// Don't show briefing dialog for non-campaign games or on restarts etc.
-	if (!ScenarioExt::Global()->ShowBriefing || !showBriefing || !SessionClass::Instance->IsCampaign())
+	if (!ScenarioExt::Global()->ShowBriefing || !showBriefing || !SessionClass::IsCampaign())
 		return 0;
 
 	BriefingTemp::ShowBriefing = true;

@@ -45,6 +45,7 @@ public:
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
 		Valueable<bool> AltPalette_ApplyLighting;
 		Valueable<OwnerHouseKind> MakeInfantryOwner;
+		Valueable<bool> ExtraShadow;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -74,6 +75,7 @@ public:
 			, AttachedSystem {}
 			, AltPalette_ApplyLighting { false }
 			, MakeInfantryOwner { OwnerHouseKind::Victim }
+			, ExtraShadow { true }
 		{ }
 
 		virtual ~ExtData() = default;

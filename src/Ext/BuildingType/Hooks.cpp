@@ -107,17 +107,15 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 			nImageFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(nImageFrame), 0, (int)pImage->Frames);
 		}
 
-		Point2D nPoint = { 0, 0 };
-		{
+
 			CoordStruct offset = pTypeExt->PlacementPreview_Offset;
 			int nHeight = offset.Z + pCell->GetFloorHeight({ 0, 0 });
-			TacticalClass::Instance->CoordsToClient(
-				CellClass::Cell2Coord(pCell->MapCoords, nHeight),
-				&nPoint
-			);
+			Point2D nPoint = TacticalClass::Instance->CoordsToClient(
+				CellClass::Cell2Coord(pCell->MapCoords, nHeight)
+			).first;
 			nPoint.X += offset.X;
 			nPoint.Y += offset.Y;
-		}
+		
 
 		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRules->PlacementPreview_Translucency) |
 			BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
@@ -199,7 +197,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_ReceiveDamage_CanC4DamageRounding, 0x6)
 
 	if (*pDamage == 0 && pThis->WhatAmI() == AbstractType::Building)
 	{
-		auto const pType = static_cast<BuildingTypeClass*>(pThis->GetType());
+		auto const pType = static_cast<BuildingClass*>(pThis)->Type;
 
 		if (!pType->CanC4)
 		{
