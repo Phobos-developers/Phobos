@@ -129,7 +129,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ApplyModifiersOnNegativeDamage.Read(exINI, pSection, "ApplyModifiersOnNegativeDamage");
 	this->ChangeOwner.Read(exINI, pSection, "IsOwnerChanger");
 	this->ChangeOwner_MindControl.Read(exINI, pSection, "IsOwnerChanger.SetAsMindControl");
-	this->ChangeOwner_Anim.Read(exINI, pSection, "IsOwnerChanger.ControlAnim");
+	this->ChangeOwner_MindAnim.Read(exINI, pSection, "IsOwnerChanger.MindControlAnim");
 	this->ChangeOwner_Threshold.Read(exINI, pSection, "IsOwnerChanger.HealthThreshold");
 	this->ChangeOwner_AffectElites.Read(exINI, pSection, "IsOwnerChanger.AffectElites");
 
@@ -278,7 +278,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ApplyModifiersOnNegativeDamage)
 		.Process(this->ChangeOwner)
 		.Process(this->ChangeOwner_MindControl)
-		.Process(this->ChangeOwner_Anim)
+		.Process(this->ChangeOwner_MindAnim)
 		.Process(this->ChangeOwner_Threshold)
 		.Process(this->ChangeOwner_AffectElites)
 

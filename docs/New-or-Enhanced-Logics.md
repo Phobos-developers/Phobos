@@ -1205,18 +1205,19 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 ### Change target Owner on impact
 
 - Warheads can now change targets owner to warhead's owner.
-- `IsOwnerChanger.SetAsMindControl` sets control as PermanentMindControl, uses `MindControlRingOffset` for anim, respects `ImmuneToPsionics`.
+- `IsOwnerChanger.SetAsMindControl` sets control as PermanentMindControl, uses `IsOwnerChanger.MindControlAnim` if set
+or `MindControlRingOffset` for anim, respects `ImmuneToPsionics`.
 - `IsOwnerChanger.AffectElites` sets if elite veterancy units can be affected to owner change.
 - `IsOwnerChanger.HealthThreshold` sets target minimal health percentage to have owner changed.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                         ; Warhead
-IsOwnerChanger = yes                  ; boolean
-IsOwnerChanger.SetAsMindControl = no  ; boolean
-IsOwnerChanger.ControlAnim = SOMEANIM ; animation on target
-IsOwnerChanger.AffectElites = yes     ; boolean
-IsOwnerChanger.HealthThreshold = 1.0  ; float
+[SOMEWARHEAD]                             ; Warhead
+IsOwnerChanger = yes                      ; boolean
+IsOwnerChanger.SetAsMindControl = no      ; boolean
+IsOwnerChanger.MindControlAnim = SOMEANIM ; animation on target
+IsOwnerChanger.AffectElites = yes         ; boolean
+IsOwnerChanger.HealthThreshold = 1.0      ; float
 ```
 
 ## Weapons

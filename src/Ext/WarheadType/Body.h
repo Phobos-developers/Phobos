@@ -43,7 +43,7 @@ public:
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
 		Valueable<bool> ChangeOwner;
 		Valueable<bool> ChangeOwner_MindControl;
-		Nullable<AnimTypeClass*> ChangeOwner_Anim;
+		Nullable<AnimTypeClass*> ChangeOwner_MindAnim;
 		Valueable<double> ChangeOwner_Threshold;
 		Valueable<bool> ChangeOwner_AffectElites;
 
@@ -162,7 +162,7 @@ public:
 			, ApplyModifiersOnNegativeDamage { false }
 			, ChangeOwner { false }
 			, ChangeOwner_MindControl { false }
-			, ChangeOwner_Anim {}
+			, ChangeOwner_MindAnim {}
 			, ChangeOwner_Threshold { 1.0 }
 			, ChangeOwner_AffectElites { true }
 

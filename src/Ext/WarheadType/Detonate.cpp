@@ -261,9 +261,9 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 	if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(this->OwnerObject()))
 		armorType = pExt->Shield->GetArmorType();
 
-	const auto pOwnerAnimType = this->ChangeOwner_Anim.Get(nullptr);
 	const double ownerChangeHealthThreshold = this->ChangeOwner_Threshold;
 	const bool isMindControl = this->ChangeOwner_MindControl;
+	const auto pOwnerAnimType = this->ChangeOwner_MindAnim.Get(nullptr);
 	const bool doesAffectElites = this->ChangeOwner_AffectElites;
 	const bool targetImmuneToPsionics = pTarget->GetTechnoType()->ImmuneToPsionics;
 	const bool isBld = pTarget->What_Am_I() == AbstractType::Building;
@@ -275,35 +275,26 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 		if ((GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0) && (!pTarget->IsMindControlled()))
 		{
 			pTarget->SetOwningHouse(pHouse, true);
-			if (pOwnerAnimType)
+			if (isMindControl)
 			{
-				CoordStruct OwningAnimLocation = pTarget->Location;
-				if (isMindControl)
+				pTarget->MindControlledByAUnit = true;
+				if (pOwnerAnimType)
+				{
+					CoordStruct OwningAnimLocation = pTarget->Location;
 					if (isBld)
-						OwningAnimLocation.Z += pTarget->GetTechnoType()->Height * Unsorted::LevelHeight;
+						OwningAnimLocation.Z += specific_cast<BuildingClass*>(pTarget)->Type->Height * Unsorted::LevelHeight;
 					else
 						OwningAnimLocation.Z += pTarget->GetTechnoType()->MindControlRingOffset;
-				if (auto pOwnerAnim = GameCreate<AnimClass>(pOwnerAnimType, OwningAnimLocation, 0, 1))
-				{
-					pOwnerAnim->Owner = pHouse;
-					if (isMindControl)
-					{
-						pTarget->MindControlRingAnim = pOwnerAnim;
-						pTarget->MindControlledByAUnit = true;
-					}
-					else
+
+					if (auto pOwnerAnim = GameCreate<AnimClass>(pOwnerAnimType, OwningAnimLocation, 0, 1))
 					{
 						pOwnerAnim->Owner = pHouse;
+						pTarget->MindControlRingAnim = pOwnerAnim;
+						pOwnerAnim->SetOwnerObject(pTarget);
+						if (isBld)
+							pOwnerAnim->ZAdjust = -1024;
 					}
-					pOwnerAnim->SetOwnerObject(pTarget);
-					if (isBld)
-						pOwnerAnim->ZAdjust = -1024;
 				}
-			}
-			else
-			{
-				if (isMindControl)
-					pTarget->MindControlledByAUnit = true;
 			}
 		}
 	}
