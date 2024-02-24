@@ -78,21 +78,22 @@ DEFINE_HOOK(0x730D1F, DeployCommandClass_Execute_VoiceDeploy, 0x5)
 	GET_STACK(int, unitsToDeploy, STACK_OFFSET(0x18, -0x4));
 
 	const int voiceDeploy = pThis->GetTechnoType()->VoiceDeploy;
+	const int voiceUndeploy = pThis->GetTechnoType()->VoiceUndeploy;
 
-	if (unitsToDeploy == 1 && voiceDeploy && pThis->IsOwnedByCurrentPlayer)
+	if (unitsToDeploy != 1)
+		return 0;
+
+	if (pThis->WhatAmI() == AbstractType::Infantry)
 	{
-		if (AbstractType::Infantry == pThis->WhatAmI())
-		{
-			auto pInfantry = abstract_cast<InfantryClass*>(pThis);
-			if (pInfantry->CanDeployNow())
-				pThis->QueueVoice(voiceDeploy);
-		}
-		else if (AbstractType::Unit == pThis->WhatAmI())
-		{
-			auto pUnit = abstract_cast<UnitClass*>(pThis);
-			if (pUnit->TryToDeploy() || pUnit->Type->IsSimpleDeployer)
-				pThis->QueueVoice(voiceDeploy);
-		}
+		auto pInfantry = abstract_cast<InfantryClass*>(pThis);
+		if (!pInfantry->IsDeploying)
+			pInfantry->IsDeployed() ? pThis->QueueVoice(voiceUndeploy) : pThis->QueueVoice(voiceDeploy);
+	}
+	else if (pThis->WhatAmI() == AbstractType::Unit)
+	{
+		auto pUnit = abstract_cast<UnitClass*>(pThis);
+		if (pUnit->TryToDeploy() || pUnit->Type->IsSimpleDeployer)
+			pThis->QueueVoice(voiceDeploy);
 	}
 
 	return 0;
