@@ -266,6 +266,7 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 	const bool isMindControl = this->ChangeOwner_MindControl;
 	const bool doesAffectElites = this->ChangeOwner_AffectElites;
 	const bool targetImmuneToPsionics = pTarget->GetTechnoType()->ImmuneToPsionics;
+	const bool isBld = pTarget->What_Am_I() == AbstractType::Building;
 
 	bool isImmune = (isMindControl && targetImmuneToPsionics) || (pTarget->GetHealthPercentage() > ownerChangeHealthThreshold) || (!doesAffectElites && pTarget->Veterancy.IsElite());
 
@@ -278,8 +279,11 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 			{
 				CoordStruct OwningAnimLocation = pTarget->Location;
 				if (isMindControl)
-					OwningAnimLocation.Z += pTarget->GetTechnoType()->MindControlRingOffset;
-				if (auto const pOwnerAnim = GameCreate<AnimClass>(pOwnerAnimType, OwningAnimLocation))
+					if (isBld)
+						OwningAnimLocation.Z += pTarget->GetTechnoType()->Height * Unsorted::LevelHeight;
+					else
+						OwningAnimLocation.Z += pTarget->GetTechnoType()->MindControlRingOffset;
+				if (auto pOwnerAnim = GameCreate<AnimClass>(pOwnerAnimType, OwningAnimLocation, 0, 1))
 				{
 					pOwnerAnim->Owner = pHouse;
 					if (isMindControl)
@@ -289,9 +293,11 @@ void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* 
 					}
 					else
 					{
-						pOwnerAnim->SetOwnerObject(pTarget);
 						pOwnerAnim->Owner = pHouse;
 					}
+					pOwnerAnim->SetOwnerObject(pTarget);
+					if (isBld)
+						pOwnerAnim->ZAdjust = -1024;
 				}
 			}
 			else
