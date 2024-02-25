@@ -135,6 +135,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pHouse, pTarget);
 
+	if (this->ChangeOwner)
+		this->ApplyOwnerChange(pHouse, pTarget);
+
 	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 
@@ -247,6 +250,53 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 	{
 		if (pInf->IsDisguised())
 			pInf->Disguised = false;
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyOwnerChange(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	const auto pExt = TechnoExt::ExtMap.Find(pTarget);
+	auto armorType = pTarget->GetTechnoType()->Armor;
+
+	if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(this->OwnerObject()))
+		armorType = pExt->Shield->GetArmorType();
+
+	const double ownerChangeHealthThreshold = this->ChangeOwner_Threshold;
+	const bool isMindControl = this->ChangeOwner_MindControl;
+	const auto pOwnerAnimType = this->ChangeOwner_MindAnim.Get(nullptr);
+	const bool doesAffectElites = this->ChangeOwner_AffectElites;
+	const bool targetImmuneToPsionics = pTarget->GetTechnoType()->ImmuneToPsionics;
+	const bool isBld = pTarget->What_Am_I() == AbstractType::Building;
+
+	bool isImmune = (isMindControl && targetImmuneToPsionics) || (pTarget->GetHealthPercentage() > ownerChangeHealthThreshold) || (!doesAffectElites && pTarget->Veterancy.IsElite());
+
+	if (!isImmune)
+	{
+		if ((GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0) && (!pTarget->IsMindControlled()))
+		{
+			pTarget->SetOwningHouse(pHouse, true);
+			if (isMindControl)
+			{
+				pTarget->MindControlledByAUnit = true;
+				if (pOwnerAnimType)
+				{
+					CoordStruct OwningAnimLocation = pTarget->Location;
+					if (isBld)
+						OwningAnimLocation.Z += specific_cast<BuildingClass*>(pTarget)->Type->Height * Unsorted::LevelHeight;
+					else
+						OwningAnimLocation.Z += pTarget->GetTechnoType()->MindControlRingOffset;
+
+					if (auto pOwnerAnim = GameCreate<AnimClass>(pOwnerAnimType, OwningAnimLocation, 0, 1))
+					{
+						pOwnerAnim->Owner = pHouse;
+						pTarget->MindControlRingAnim = pOwnerAnim;
+						pOwnerAnim->SetOwnerObject(pTarget);
+						if (isBld)
+							pOwnerAnim->ZAdjust = -1024;
+					}
+				}
+			}
+		}
 	}
 }
 

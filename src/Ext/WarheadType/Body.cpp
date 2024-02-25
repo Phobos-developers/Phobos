@@ -127,6 +127,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 	this->ApplyModifiersOnNegativeDamage.Read(exINI, pSection, "ApplyModifiersOnNegativeDamage");
+	this->ChangeOwner.Read(exINI, pSection, "IsOwnerChanger");
+	this->ChangeOwner_MindControl.Read(exINI, pSection, "IsOwnerChanger.SetAsMindControl");
+	this->ChangeOwner_MindAnim.Read(exINI, pSection, "IsOwnerChanger.MindControlAnim");
+	this->ChangeOwner_Threshold.Read(exINI, pSection, "IsOwnerChanger.HealthThreshold");
+	this->ChangeOwner_AffectElites.Read(exINI, pSection, "IsOwnerChanger.AffectElites");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -242,6 +247,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Convert_Pairs.size() > 0
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
+		|| this->ChangeOwner
 	);
 }
 
@@ -270,6 +276,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
 		.Process(this->ApplyModifiersOnNegativeDamage)
+		.Process(this->ChangeOwner)
+		.Process(this->ChangeOwner_MindControl)
+		.Process(this->ChangeOwner_MindAnim)
+		.Process(this->ChangeOwner_Threshold)
+		.Process(this->ChangeOwner_AffectElites)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)

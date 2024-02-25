@@ -182,6 +182,8 @@ public:
 		Nullable<Leptons> SpawnDistanceFromTarget;
 		Nullable<int> SpawnHeight;
 
+		NullableVector<int> ChangeOwnerImmunities;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -359,6 +361,8 @@ public:
 
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
+
+			, ChangeOwnerImmunities {}
 		{ }
 
 		virtual ~ExtData() = default;

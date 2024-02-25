@@ -41,6 +41,11 @@ public:
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
+		Valueable<bool> ChangeOwner;
+		Valueable<bool> ChangeOwner_MindControl;
+		Nullable<AnimTypeClass*> ChangeOwner_MindAnim;
+		Valueable<double> ChangeOwner_Threshold;
+		Valueable<bool> ChangeOwner_AffectElites;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -155,6 +160,11 @@ public:
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
+			, ChangeOwner { false }
+			, ChangeOwner_MindControl { false }
+			, ChangeOwner_MindAnim {}
+			, ChangeOwner_Threshold { 1.0 }
+			, ChangeOwner_AffectElites { true }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
@@ -250,6 +260,7 @@ public:
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyLocomotorInfliction(TechnoClass* pTarget);
 		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
+		void ApplyOwnerChange(HouseClass* pHouse, TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

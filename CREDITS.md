@@ -310,6 +310,7 @@ This page lists all the individual contributions to the project by their author.
   - Sound entry on unit's creation
   - Auto-deploy/Deploy block on ammo change
   - Flashing Technos on selecting
+  - Change target Owner on warhead impact
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
 - **Ares developers**
