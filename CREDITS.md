@@ -220,6 +220,7 @@ This page lists all the individual contributions to the project by their author.
   - Weapon effect obstacle interaction fix
   - Fire particle rotation coordinate adjust toggle
   - `AmbientDamage` warhead & main target ignore customization
+  - Projectile return weapon
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

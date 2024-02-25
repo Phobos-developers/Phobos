@@ -536,6 +536,20 @@ SubjectToWater=               ; boolean
 SubjectToWater.Detonate=true  ; boolean
 ```
 
+### Return weapon
+
+- It is now possible to make another weapon & projectile go off from a detonated projectile (in somewhat similar manner to `AirburstWeapon` or `ShrapnelWeapon`) straight back to the firer by setting `ReturnWeapon`. If the firer perishes before the initial projectile detonates, `ReturnWeapon` is not fired off.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]  ; Projectile
+ReturnWeapon=     ; WeaponType
+```
+
+```{note}
+This currently has same limitations as `AirburstWeapon` in that it does not properly support `Arcing=true` projectiles.
+```
+
 ## Super Weapons
 
 ### Convert TechnoType
