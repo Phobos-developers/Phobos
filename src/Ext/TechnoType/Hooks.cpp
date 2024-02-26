@@ -107,8 +107,8 @@ DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
 
 	auto res = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
 	auto location = CoordStruct { static_cast<int>(res.X), static_cast<int>(-res.Y), static_cast<int>(res.Z) };
-	Point2D temp;
-	pos += *TacticalClass::Instance()->CoordsToScreen(&temp, &location);
+
+	pos += TacticalClass::CoordsToScreen(location);
 
 	return 0;
 }

@@ -14,6 +14,7 @@
 #include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <BombClass.h>
+#include <ParticleSystemClass.h>
 #include <WarheadTypeClass.h>
 
 #include <Ext/Rules/Body.h>
@@ -26,15 +27,6 @@
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
 #include <Utilities/TemplateDef.h>
-
-//Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
-DEFINE_HOOK(0x423365, Phobos_BugFixes_SHPShadowCheck, 0x8)
-{
-	GET(AnimClass*, pAnim, ESI);
-	return (pAnim->Type->Shadow && pAnim->HasExtras) ?
-		0x42336D :
-		0x4233EE;
-}
 
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
@@ -542,23 +534,6 @@ DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
 
 	return 0;
 }
-
-// Fix railgun target coordinates potentially differing from actual target coords.
-DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
-{
-	GET(AbstractClass*, pTarget, EBX);
-
-	auto coords = pTarget->GetCenterCoords();
-
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
-		coords = pBuilding->GetTargetCoords();
-	else if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-		coords = pCell->GetCoordsWithBridge();
-
-	R->EAX(&coords);
-	return 0;
-}
-
 // Fix techno target coordinates (used for fire angle calculations, target lines etc) to take building target coordinate offsets into accord.
 // This, for an example, fixes a vanilla bug where Destroyer has trouble targeting Naval Yards with its cannon weapon from certain angles.
 DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
@@ -818,3 +793,5 @@ DEFINE_HOOK(0x689EB0, ScenarioClass_ReadMap_SkipHeaderInCampaign, 0x6)
 {
 	return SessionClass::IsCampaign() ? 0x689FC0 : 0;
 }
+
+DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Skip incorrect load ctor call in TeleportLocomotionClass_Load

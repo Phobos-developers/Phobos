@@ -61,6 +61,9 @@ The documentation is split by a few major categories, each represented with a pa
 [SOMENAME]           ; BuildingType
 ; KeyName=DefaultValue ; accepted type with optional explanation
 ; if there's nothing to the right of equals sign - the default value is empty/absent
+; if these keys have had their value set, they can only be set to their default
+; unset state again by setting the value to <default>, <none> or none
+; for list of values only <default> clears the entire list
 ; if the default value is not static - it's written and explained in a comment
 UIDescription=<none> ; CSF entry key
 ```

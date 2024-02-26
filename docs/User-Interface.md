@@ -178,7 +178,7 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 *Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual]->PlacementPreview` and then further customized for each building with `[SOMEBUILDING]->PlacementPreview`.
-- The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency`.
+- The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is disabled and `PlacementGrid.TranslucencyWithPreview` if enabled.
 - If using the building's appropriate `Buildup` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to show as preview through `PlacementPreview.Shape`, `PlacementPreview.ShapeFrame` and `PlacementPreview.Palette`.
   - You can specify theater-specific palettes and shapes by putting three `~` marks to the theater specific part of the filename. `~~~` is replaced with the theater’s three-letter extension.
 - `PlacementPreview.ShapeFrame=` tag defaults to building's artmd.ini `Buildup` entry's last non-shadow frame. If there is no 'Buildup' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
@@ -186,9 +186,11 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
+PlacementGrid.Translucency=0            ; translucency level (0/25/50/75)
+PlacementGrid.TranslucencyWithPreview=  ; translucency level (0/25/50/75), defaults to [AudioVisual]->PlacementGrid.Translucency
+
 PlacementPreview=no                  ; boolean
 PlacementPreview.Translucency=75     ; translucency level (0/25/50/75)
-PlacementGrid.Translucency=0         ; translucency level (0/25/50/75)
 
 [SOMEBUILDING]
 PlacementPreview=yes                 ; boolean

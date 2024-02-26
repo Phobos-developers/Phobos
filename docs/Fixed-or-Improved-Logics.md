@@ -37,7 +37,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 - Allowed usage of `AlternateFLH` of vehicles in `OpenTopped` transport.
 - Improved the statistic distribution of the spawned crates over the visible area of the map so that they will no longer have a higher chance to show up near the edges.
-- SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - Added a "Load Game" button to the retry dialog on mission failure.
 
@@ -143,6 +142,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
 - Units will no longer rotate its turret under EMP.
 - Jumpjets will no longer wobble under EMP.
+- Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes.
+- Fixed railgun and fire particles being cut off by elevation changes.
+- Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
 
 ## Fixes / interactions with other extensions
 
@@ -202,6 +204,7 @@ UseCenterCoordsIfAttached=false  ; boolean
 - `WakeAnim` contains a wake animation to play if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[General]` -> `Wake` if `IsMeteor` is not set to true, otherwise no animation.
 - `SplashAnims` contains list of splash animations used if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[CombatDamage]` -> `SplashList`.
   - If `SplashAnims.PickRandom` is set to true, picks a random animation from `SplashAnims` to use on each impact with water. Otherwise last listed animation from `SplashAnims` is used.
+- `ExtraShadow` can be set to false to disable the display of shadows on the ground.
 
 In `artmd.ini`:
 ```ini
@@ -211,6 +214,7 @@ Warhead.Detonate=false        ; boolean
 WakeAnim=                     ; Animation
 SplashAnims=                  ; list of animations
 SplashAnims.PickRandom=false  ; boolean
+ExtraShadow=true              ; boolean
 ```
 
 ### Layer on animations attached to objects
@@ -301,6 +305,18 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]        ; BuildingType
 SellBuildupLength=23  ; integer, number of buildup frames to play
+```
+
+## Particle systems
+
+### Fire particle target coordinate adjustment when firer rotates
+
+- By default particle systems with `BehavesLike=Fire` shift their target coordinates if the object that created the particle system (e.g firer of a weapon) is rotating. This behavior can now be disabled per particle system type.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPARTICLESYSTEM]               ; ParticleSystemType
+AdjustTargetCoordsOnRotation=true  ; boolean
 ```
 
 ## Projectiles
@@ -882,6 +898,17 @@ ShakeIsLocal=false  ; boolean
 
 ## Weapons
 
+### AmbientDamage customizations
+
+- You can now specify separate Warhead used for `AmbientDamage` via `AmbientDamage.Warhead` or make it never apply to weapon's main target by setting `AmbientDamage.IgnoreTarget` to true.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                      ; WeaponType
+AmbientDamage.Warhead=            ; WarheadType
+AmbientDamage.IgnoreTarget=false  ; boolean
+```
+
 ### Customizable disk laser radius
 
 ![image](_static/images/disklaser-radius-values-01.gif)
@@ -973,4 +1000,14 @@ In `rulesmd.ini`:
 ```ini
 [CrateRules]
 CrateOnlyOnLand=no  ; boolean
+```
+
+## Flashing Technos on selecting
+
+Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SelectionFlashDuration=0  ; integer, number of frames
 ```

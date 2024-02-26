@@ -246,6 +246,23 @@ DEFINE_HOOK(0x4236F0, AnimClass_DrawIt_Tiled_Palette, 0x6)
 	return 0x4236F6;
 }
 
+DEFINE_HOOK(0x423365, AnimClass_DrawIt_ExtraShadow, 0x8)
+{
+	enum { DrawExtraShadow = 0x42336D, SkipExtraShadow = 0x4233EE };
+
+	GET(AnimClass*, pThis, ESI);
+
+	if (pThis->HasExtras)
+	{
+		const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+		if (!pTypeExt->ExtraShadow)
+			return SkipExtraShadow;
+	}
+
+	return SkipExtraShadow;
+}
+
 #pragma region AltPalette
 
 // Fix AltPalette anims not using owner color scheme.
