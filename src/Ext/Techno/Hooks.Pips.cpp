@@ -176,7 +176,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 
 	for (int i = 0; i < maxPips; i++)
 	{
-		int frame = 0;
+		int frame = RulesExt::Global()->Pips_Tiberiums_EmptyFrame;
 
 		for (size_t orderIndex = 0; orderIndex < tibPipCounts.size(); orderIndex++)
 		{

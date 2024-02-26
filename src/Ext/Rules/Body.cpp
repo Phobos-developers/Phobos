@@ -101,6 +101,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Generic_Buildings_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Generic.Buildings.Size");
 	this->Pips_Ammo_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Ammo.Size");
 	this->Pips_Ammo_Buildings_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Ammo.Buildings.Size");
+	this->Pips_Tiberiums_EmptyFrame.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.EmptyFrame");
 	this->Pips_Tiberiums_Frames.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.Frames");
 	this->Pips_Tiberiums_DisplayOrder.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.DisplayOrder");
 	this->ToolTip_Background_Color.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Color");
@@ -241,6 +242,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Generic_Buildings_Size)
 		.Process(this->Pips_Ammo_Size)
 		.Process(this->Pips_Ammo_Buildings_Size)
+		.Process(this->Pips_Tiberiums_EmptyFrame)
 		.Process(this->Pips_Tiberiums_Frames)
 		.Process(this->Pips_Tiberiums_DisplayOrder)
 		.Process(this->AllowParallelAIQueues)
