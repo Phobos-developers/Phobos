@@ -256,11 +256,12 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x46A290, BulletClass_Logics_ExtraWarheads, 0x5)
+DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 {
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct*, coords, 0x8);
 
+	// Extra warheads
 	if (pThis->WeaponType)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
@@ -276,6 +277,27 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_ExtraWarheads, 0x5)
 				damage = pWeaponExt->ExtraWarheads_DamageOverrides[i];
 
 			WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner);
+		}
+	}
+
+	// Return to sender
+	if (pThis->Type && pThis->Owner)
+	{
+		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+		if (pTypeExt->ReturnWeapon.isset())
+		{
+			auto const pWeapon = pTypeExt->ReturnWeapon.Get();
+
+			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pThis->Owner, pThis->Owner,
+				pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+			{
+				pBullet->WeaponType = pWeapon;
+				auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+				pBulletExt->FirerHouse = BulletExt::ExtMap.Find(pThis)->FirerHouse;
+
+				pBullet->MoveTo(pThis->Location, BulletVelocity::Empty);
+			}
 		}
 	}
 

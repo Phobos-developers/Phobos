@@ -186,7 +186,9 @@ void AnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 
 void AnimExt::ExtData::InitializeConstants()
 {
-	CreateAttachedSystem();
+	// Something about creating this in constructor messes with debris anims, so it has to be done for them later.
+	if (!this->OwnerObject()->HasExtras)
+		CreateAttachedSystem();
 }
 
 // =============================
