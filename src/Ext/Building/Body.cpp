@@ -325,6 +325,38 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 	return true;
 }
 
+void BuildingExt::HideBuildingAnimations(BuildingClass* pThis)
+{
+	if (!pThis)
+		return;
+
+	// Hide building animations
+	for (auto pAnim : pThis->Anims)
+	{
+		if (!pAnim)
+			continue;
+
+		pAnim->Invisible = true;
+		pAnim->NeedsRedraw = true;
+	}
+}
+
+void BuildingExt::UnhideBuildingAnimations(BuildingClass* pThis)
+{
+	if (!pThis)
+		return;
+
+	// Show building animations
+	for (auto pAnim : pThis->Anims)
+	{
+		if (!pAnim)
+			continue;
+
+		pAnim->Invisible = false;
+		pAnim->NeedsRedraw = true;
+	}
+}
+
 // =============================
 // load / save
 

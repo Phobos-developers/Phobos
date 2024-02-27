@@ -404,6 +404,29 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->InterceptorType.reset();
 	}
+
+	this->Convert_UniversalDeploy.Read(exINI, pSection, "Convert.UniversalDeploy");
+	this->Convert_DeployToLand.Read(exINI, pSection, "Convert.DeployToLand");
+	this->Convert_PreDeploy_AnimFX.Read(exINI, pSection, "Convert.PreDeploy.AnimFX");
+	this->Convert_PreDeploy_AnimFX_FollowDeployer.Read(exINI, pSection, "Convert.PreDeploy.AnimFX.FollowDeployer");
+	this->Convert_PostDeploy_AnimFX.Read(exINI, pSection, "Convert.PostDeploy.AnimFX");
+	this->Convert_PostDeploy_AnimFX_FollowDeployer.Read(exINI, pSection, "Convert.PostDeploy.AnimFX.FollowDeployer");
+	this->Convert_PostDeploySound.Read(exINI, pSection, "Convert.PostDeploySound");
+	this->Convert_DeployDir.Read(exINI, pSection, "Convert.DeployDir");
+	this->Convert_TransferPassengers.Read(exINI, pSection, "Convert.TransferPassengers");
+	this->Convert_TransferPassengers_IgnoreInvalidOccupiers.Read(exINI, pSection, "Convert.TransferPassengers.IgnoreInvalidOccupiers");
+	this->Convert_ForceVeterancyTransfer.Read(exINI, pSection, "Convert.ForceVeterancyTransfer");
+
+	// A structure deploy animation takes priority
+	pINI->ReadString(pSection, "Convert.DeployingAnim", "", Phobos::readBuffer);
+
+	if (strlen(Phobos::readBuffer))
+	{
+		auto const pDeployAnimType = AnimTypeClass::Find(Phobos::readBuffer);
+
+		if (pDeployAnimType)
+			this->Convert_DeployingAnim = pDeployAnimType;
+	}
 }
 
 template <typename T>
@@ -569,6 +592,19 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->SpawnDistanceFromTarget)
 		.Process(this->SpawnHeight)
+
+		.Process(this->Convert_UniversalDeploy)
+		.Process(this->Convert_DeployToLand)
+		.Process(this->Convert_PreDeploy_AnimFX)
+		.Process(this->Convert_PreDeploy_AnimFX_FollowDeployer)
+		.Process(this->Convert_PostDeploy_AnimFX)
+		.Process(this->Convert_PostDeploy_AnimFX_FollowDeployer)
+		.Process(this->Convert_DeployingAnim)
+		.Process(this->Convert_PostDeploySound)
+		.Process(this->Convert_DeployDir)
+		.Process(this->Convert_TransferPassengers)
+		.Process(this->Convert_TransferPassengers_IgnoreInvalidOccupiers)
+		.Process(this->Convert_ForceVeterancyTransfer)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

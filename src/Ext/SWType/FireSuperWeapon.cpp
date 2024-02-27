@@ -311,6 +311,14 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 	if (this->Convert_Pairs.size() == 0)
 		return;
 
+	if (this->Convert_UseUniversalDeploy.Get())
+	{
+		for (const auto pTarget : *TechnoClass::Array)
+			TypeConvertGroup::UniversalConvert(pTarget, this->Convert_Pairs, pSW->Owner);
+
+		return;
+	}
+
 	for (const auto pTargetFoot : *FootClass::Array)
 		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }

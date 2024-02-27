@@ -29,6 +29,40 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 	}
 }
 
+void TypeConvertGroup::UniversalConvert(TechnoClass* pTarget, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner)
+{
+	for (const auto& [fromTypes, toType, affectedHouses] : convertPairs)
+	{
+		if (!toType.isset() || !toType.Get()) continue;
+
+		if (!EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTarget->Owner))
+			continue;
+
+		if (fromTypes.size())
+		{
+			for (const auto& from : fromTypes)
+			{
+				// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
+				if (from == pTarget->GetTechnoType())
+				{
+					if (pTarget->Target)
+					{
+						auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+						pTargetExt->Convert_UniversalDeploy_RememberTarget = pTarget->Target;
+					}
+
+					bool converted = TechnoExt::UniversalDeployConversion(pTarget, toType) ? true : false;
+
+					break;
+				}
+			}
+		}
+		else
+		{
+			TechnoExt::UniversalDeployConversion(pTarget, toType);
+		}
+	}
+}
 
 bool TypeConvertGroup::Load(PhobosStreamReader& stm, bool registerForChange)
 {

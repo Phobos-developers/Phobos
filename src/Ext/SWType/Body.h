@@ -63,6 +63,8 @@ public:
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
+		Valueable<bool> Convert_UseUniversalDeploy;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
 			, SW_Inhibitors {}
@@ -98,6 +100,7 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+			, Convert_UseUniversalDeploy { false }
 		{ }
 
 		// Ares 0.A functions

@@ -102,4 +102,6 @@ public:
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
 	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
 	static bool CanUndeployOnSell(BuildingClass* pThis);
+	static void HideBuildingAnimations(BuildingClass* pThis = nullptr);
+	static void UnhideBuildingAnimations(BuildingClass* pThis = nullptr);
 };
