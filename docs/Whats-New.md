@@ -357,6 +357,7 @@ New:
 - `AmbientDamage` warhead & main target ignore customization (by Starkku)
 - Flashing Technos on selecting (by Fryone)
 - Projectile return weapon (by Starkku)
+- Universal deploy from any techno into any techno (by FS-21)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

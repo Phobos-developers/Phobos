@@ -937,6 +937,47 @@ Spawner.ExtraLimitRange=0  ; integer, range in cells
 Spawner.DelayFrames=       ; integer, game frames
 ```
 
+### Universal deploy from any techno into any techno
+- Now is possible to convert any infantry/unit/structure into any infantry/unit/structure.
+- No direct support for aircrafts but they can be converted through warheads or super weapons (see below).
+- `Convert.UniversalDeploy` specifies the TechnoType which is the result of conversion.
+- `Convert.DeployingAnim` specifies the deployment animation. If no animation is declared then the conversion will be instantaneous.
+- `Convert.DeployToLand` forces the deployer to land before starting the deployment process.
+- `Convert.PreDeploy.AnimFX` specifies an animation at the same time the conversion starts.
+- `Convert.PostDeploy.AnimFX.FollowDeployer` attach the animation to the deployer.
+- `Convert.PostDeploy.AnimFX` specifies an animation at the end of the conversion.
+- `Convert.PostDeploy.AnimFX.FollowDeployer` attach the animation to the deployed TechnoType.
+- `Convert.PostDeploySound` specifies the sound that will be played when the deployemnt ends.
+- `Convert.DeployDir` determines the initial facing of created TechnoType.
+- `Convert.TransferPassengers` transfers passengers into the deployed TechnoType. If the new TechnoType has no enough space will kick out all the remaining passengers. 
+- `Convert.TransferPassengers.IgnoreInvalidOccupiers` if the deployed TechnoType is a structure all infantry passengers can be transfered ignoring the passenger's `Occupier` tag.
+- `Convert.ForceVeterancyTransfer` transfer the veterancy from the deployer to the deployed TechnoType ignoring the `Trainable` tag of the deployed TechnoType.
+- The use of `Convert.UseUniversalDeploy=true` in warheads or super weapons replaces the Ares techno deploy conversion logic by this logic. In this case it uses the `Convert.From` && `Convert.To` tags from the Ares logic.
+- `Convert.UseUniversalDeploy=true` skips lots of checks so in the case of deploying a structure into structure keep the same foundation size.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                                             ; TechnoType
+Convert.UniversalDeploy=                                 ; TechnoType
+Convert.DeployingAnim=                                   ; Animation
+Convert.DeployToLand=false                               ; WeaponType
+Convert.PreDeploy.AnimFX=                                ; Animation
+Convert.PreDeploy.AnimFX.FollowDeployer=false            ; Boolean
+Convert.PostDeploy.AnimFX=                               ; Animation
+Convert.PostDeploy.AnimFX.FollowDeployer=false           ; Boolean
+Convert.PostDeploySound=                                 ; Sound entry
+Convert.DeployDir=-1                                     ; Integer, facings in range of 0-7
+Convert.TransferPassengers=true                          ; Boolean
+Convert.TransferPassengers.IgnoreInvalidOccupiers=false  ; Boolean
+Convert.ForceVeterancyTransfer=false                     ; Boolean
+
+[SOMEWARHEAD]                     ; Warhead
+Convert.UseUniversalDeploy=false  ; Boolean
+
+[SOMESW]                          ; Superweapon
+Convert.UseUniversalDeploy=false  ; Boolean
+```
+
 ### Weapons fired on warping in / out
 
 - It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
