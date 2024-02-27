@@ -8,7 +8,6 @@
 #include <Utilities/Macro.h>
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
-#include <Ext/Building/Body.h>
 
 class BulletClass;
 

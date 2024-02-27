@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Script/Body.h>
+#include <Ext/Building/Body.h>
 
 void TechnoExt::CreateUniversalDeployAnimation(TechnoClass* pThis, AnimTypeClass* pAnimType)
 {
