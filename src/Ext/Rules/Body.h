@@ -54,6 +54,8 @@ public:
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
 
+		Nullable<double> Shield_ConditionYellow;
+		Nullable<double> Shield_ConditionRed;
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
@@ -130,6 +132,8 @@ public:
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
 
+			, Shield_ConditionYellow { }
+			, Shield_ConditionRed { }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }

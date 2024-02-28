@@ -18,12 +18,12 @@ AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRat
 
 double ShieldTypeClass::GetConditionYellow()
 {
-	return this->ConditionYellow.Get(RulesClass::Instance->ConditionYellow);
+	return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow));
 }
 
 double ShieldTypeClass::GetConditionRed()
 {
-	return this->ConditionRed.Get(RulesClass::Instance->ConditionRed);
+	return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed));
 }
 
 void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)

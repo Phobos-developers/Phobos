@@ -99,6 +99,8 @@ LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
+Shield.ConditionYellow=                     ; floating point value, percents or absolute
+Shield.ConditionRed=                        ; floating point value, percents or absolute
 Pips.Shield=-1,-1,-1                        ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Shield.Building=-1,-1,-1               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Shield.Background=PIPBRD.SHP           ; filename - including the .shp/.pcx extension
@@ -188,7 +190,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for targeting and damage calculation purposes.
     - `InheritArmorFromTechno` can be set to true to override this so that `[TechnoType]->Armor` is used even if shield is active and `[ShieldType]->Armor` is ignored.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
-  - `ConditionYellow` and `ConditionRed` can be used to set the thresholds for shield damage states, defaulting to `[AudioVisual]` -> `ConditionYellow` & `ConditionRed` respectively.
+  - `ConditionYellow` and `ConditionRed` can be used to set the thresholds for shield damage states, defaulting to `[AudioVisual]` -> `Shield.ConditionYellow` & `Shield.ConditionRed` respectively which in turn default to just `ConditionYellow` & `ConditionRed`.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
   - This also works with Ares' `Convert.*`.
 - `Powered` controls whether or not the shield is active when a unit is running low on power or it is affected by EMP.

@@ -87,6 +87,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
 
+	this->Shield_ConditionYellow.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionYellow");
+	this->Shield_ConditionRed.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionRed");
 	this->Pips_Shield.Read(exINI, GameStrings::AudioVisual, "Pips.Shield");
 	this->Pips_Shield_Background.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Background");
 	this->Pips_Shield_Building.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Building");
@@ -228,6 +230,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementGrid_TranslucencyWithPreview)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Translucency)
+		.Process(this->Shield_ConditionYellow)
+		.Process(this->Shield_ConditionRed)
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)
