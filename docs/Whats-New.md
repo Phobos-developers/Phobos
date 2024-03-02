@@ -410,6 +410,8 @@ Vanilla fixes:
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes (by Starkku)
 - Fixed railgun and fire particles being cut off by elevation changes (by Starkku)
 - Fixed teleport units' frozen-still timer being reset after load game (by Trsdy)
+- Fixed teleport units being unable to visually tilt on slopes (by Trsdy)
+- Fixed teleport and drill units being unable to be visually flipped (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
