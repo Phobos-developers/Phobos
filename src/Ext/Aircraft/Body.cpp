@@ -62,6 +62,10 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 	if (!pThis)
 		return poseDir;
 
+	// If this is a spawnee, use the spawner's facing.
+	if (auto pOwner = pThis->SpawnOwner)
+		return pOwner->PrimaryFacing.Current().GetDir();
+
 	bool isAirportBound = true;
 
 	if (pDock || pThis->HasAnyLink())
