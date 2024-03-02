@@ -137,6 +137,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
 	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
 
+	Nullable<AnimTypeClass*> droppod_trailer {};
+	droppod_trailer.Read(exINI, GameStrings::General, "DropPodTrailer");
+	droppod_trailer = droppod_trailer.Get(AnimTypeClass::Find("SMOKEY")); // Ares convention
+	if (!droppod_trailer.Get())
+		this->DropPodTrailer = droppod_trailer.Get();
+	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
+
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
@@ -277,6 +284,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->DropPodTrailer)
+		.Process(this->PodImage)
 		;
 }
 
