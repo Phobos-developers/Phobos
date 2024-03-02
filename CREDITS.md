@@ -221,6 +221,7 @@ This page lists all the individual contributions to the project by their author.
   - Fire particle rotation coordinate adjust toggle
   - `AmbientDamage` warhead & main target ignore customization
   - Projectile return weapon
+  - Aircraft landing / docking direction
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
