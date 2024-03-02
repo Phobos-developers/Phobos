@@ -110,7 +110,9 @@ public:
 		Valueable<int> SelectionFlashDuration;
 		AnimTypeClass* DropPodTrailer;
 		SHPStruct* PodImage;
-		Valueable<bool> DrawInsigniaOnlyOnSelected;
+		Valueable<bool> DrawInsignia_OnlyOnSelected;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Infantry;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Techno;
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
 		Valueable<AffectedHouse> Promote_AnimationVisibility;
@@ -177,7 +179,9 @@ public:
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
-			, DrawInsigniaOnlyOnSelected { false }
+			, DrawInsignia_OnlyOnSelected { false }
+			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }
+			, DrawInsignia_AdjustPos_Techno { { 10, 6  } }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
 			, Promote_AnimationVisibility { AffectedHouse::All }
