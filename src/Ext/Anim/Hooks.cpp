@@ -143,6 +143,16 @@ DEFINE_HOOK(0x4242E1, AnimClass_AI_TrailerAnim, 0x5)
 	return SkipGameCode;
 }
 
+// Deferred creation of attached particle systems for debris anims.
+DEFINE_HOOK(0x423939, AnimClass_BounceAI_AttachedSystem, 0x6)
+{
+	GET(AnimClass*, pThis, EBP);
+
+	AnimExt::ExtMap.Find(pThis)->CreateAttachedSystem();
+
+	return 0;
+}
+
 DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 {
 	enum { SkipGameCode = 0x423EFD };
@@ -186,8 +196,8 @@ DEFINE_HOOK(0x422CAB, AnimClass_DrawIt_XDrawOffset, 0x5)
 	GET(AnimClass* const, pThis, ECX);
 	GET_STACK(Point2D*, pCoord, STACK_OFFSET(0x100, 0x4));
 
-	if (auto const pThisTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type))
-		pCoord->X += pThisTypeExt->XDrawOffset;
+	if (auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type))
+		pCoord->X += pTypeExt->XDrawOffset;
 
 	return 0;
 }

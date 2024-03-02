@@ -397,7 +397,7 @@ void HouseExt::ExtData::UpdateTransportReloaders()
 	{
 		auto const pTechno = pExt->OwnerObject();
 
-		if (pTechno->Transporter)
+		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
 			pTechno->Reload();
 	}
 }

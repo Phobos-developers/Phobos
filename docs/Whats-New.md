@@ -356,6 +356,9 @@ New:
 - Allow toggling whether or not fire particle systems adjust target coordinates when firer rotates (by Starkku)
 - `AmbientDamage` warhead & main target ignore customization (by Starkku)
 - Flashing Technos on selecting (by Fryone)
+- Customizable DropPod properties on a per-InfantryType basis (by Trsdy)
+- Projectile return weapon (by Starkku)
+- Allow customizing aircraft landing direction per aircraft or per dock (by Starkku)
 - Promotion animation (by Fryone)
 
 Vanilla fixes:
@@ -410,6 +413,10 @@ Vanilla fixes:
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes (by Starkku)
 - Fixed railgun and fire particles being cut off by elevation changes (by Starkku)
 - Fixed teleport units' frozen-still timer being reset after load game (by Trsdy)
+- Fixed teleport units being unable to visually tilt on slopes (by Trsdy)
+- Fixed teleport and drill units being unable to be visually flipped (by Trsdy)
+- Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction (by Starkku)
+- Spawned aircraft now align with the spawner's facing when landing (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

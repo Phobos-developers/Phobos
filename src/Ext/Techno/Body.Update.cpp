@@ -1,3 +1,4 @@
+// methods used in TechnoClass_AI hooks or anything similar
 #include "Body.h"
 
 #include <SpawnManagerClass.h>
@@ -9,7 +10,31 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
-// methods used in TechnoClass_AI hooks or anything similar
+
+// TechnoClass_AI_0x6F9E50
+// It's not recommended to do anything more here it could have a better place for performance consideration
+void TechnoExt::ExtData::OnEarlyUpdate()
+{
+	auto pType = this->OwnerObject()->GetTechnoType();
+
+	// Set only if unset or type is changed
+	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
+	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
+		this->UpdateTypeData(pType);
+
+	this->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
+
+	if (this->CheckDeathConditions())
+		return;
+
+	this->ApplyInterceptor();
+	this->EatPassengers();
+	this->UpdateShield();
+	this->ApplySpawnLimitRange();
+	this->UpdateLaserTrails();
+	this->DepletedAmmoActions();
+}
+
 
 void TechnoExt::ExtData::ApplyInterceptor()
 {
@@ -454,12 +479,18 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 void TechnoExt::ExtData::UpdateLaserTrails()
 {
-	auto const pThis = this->OwnerObject();
+	auto const pThis = generic_cast<FootClass*>(this->OwnerObject());
+	if (!pThis)
+		return;
 
-	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
-	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
+	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI
 	for (auto& trail : this->LaserTrails)
 	{
+		// @Kerbiter if you want to limit it to certain locos you do it here
+		// with vtable check you can avoid the tedious process of Query IPersit/IUnknown Interface, GetClassID, compare with loco GUID, which is omnipresent in vanilla code
+		if (VTable::Get(pThis->Locomotor.GetInterfacePtr()) != 0x7E8278 && trail.Type->DroppodOnly)
+			continue;
+
 		if (pThis->CloakState == CloakState::Cloaked && !trail.Type->CloakVisible)
 			continue;
 

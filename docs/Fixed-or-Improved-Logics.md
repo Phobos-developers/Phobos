@@ -145,6 +145,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes.
 - Fixed railgun and fire particles being cut off by elevation changes.
 - Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
+- Fixed teleport units being unable to visually tilt on slopes.
+- Fixed units with Teleport or Tunnel locomotor being unable to be visually flipped like other locomotors do.
+- Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
+- Spawned aircraft now align with the spawner's facing when landing.
 
 ## Fixes / interactions with other extensions
 
@@ -163,6 +167,17 @@ In `rulesmd.ini`:
 [SOMEAIRCRAFT]            ; AircraftType
 SpawnDistanceFromTarget=  ; floating point value, distance in cells
 SpawnHeight=              ; integer, height in leptons
+```
+
+### Landing direction
+
+- By default aircraft land facing the direction specified by `[AudioVisual]`->`PoseDir`. This can now be customized per AircraftType via `LandingDir`, defaults to `[AudioVisual]`->`PoseDir`. If the building the aircraft is docking to has [aircraft docking direction](#aircraft-docking-direction) set, that setting takes priority over this.
+  - Negative values are allowed as a special case for `AirportBound=false` aircraft which makes them land facing their current direction.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]  ; AircraftType
+LandingDir=     ; Direction type (integers from 0-255). Accepts negative values as a special case.
 ```
 
 ## Animations
@@ -238,6 +253,16 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 ```
 
 ## Buildings
+
+### Aircraft docking direction
+
+- It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir(N)` (`N` optionally replaced by 0-based index for each `DockingOffset` separately, `AircraftDockingDir` and `AircraftDockingDir0` are synonymous and will be used if direction is not set for a specific offset) on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting and defaults to `[AudioVisual]` -> `PoseDir`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]          ; BuildingType
+AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
+```
 
 ### Airstrike target eligibility
 
@@ -589,6 +614,7 @@ Powered.KillSpawns=false ; boolean
   - `SpawnsPipoffset` can be used to shift the starting position of spawnee pips.
 - Pips for `Storage` can now also be customized via new keys in `[AudioVisual]`.
   - `Pips.Tiberiums.Frames` can be used to list frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for tiberium types, in the listed order corresponding to tiberium type index. Defaults to 5 for tiberium type index 1, otherwise 2.
+    - `Pips.Tiberiums.EmptyFrame` can be used to set the frame for empty slots, defaults to 0.
   - `Pips.Tiberiums.DisplayOrder` controls in which order the tiberium type pips are displayed, takes a list of tiberium type indices. Any tiberium type not listed will be displayed in sequential order after the listed ones.
 
 In `rulesmd.ini`:
@@ -598,6 +624,7 @@ Pips.Generic.Size=4,0                ; X,Y, increment in pixels to next pip
 Pips.Generic.Buildings.Size=4,2      ; X,Y, increment in pixels to next pip
 Pips.Ammo.Size=4,0                   ; X,Y, increment in pixels to next pip
 Pips.Ammo.Buildings.Size=4,2         ; X,Y, increment in pixels to next pip
+Pips.Tiberiums.EmptyFrame=0          ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
 Pips.Tiberiums.Frames=2,5,2,2        ; list of integers, frames of pips.shp (buildings) or pips2.shp (others) (zero-based)
 Pips.Tiberiums.DisplayOrder=0,2,3,1  ; list of integers, tiberium type indices
 
@@ -1015,4 +1042,31 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 SelectionFlashDuration=0  ; integer, number of frames
+```
+
+## DropPod
+
+DropPod properties can now be customized on a per-InfantryType basis.
+- Note that the DropPod is actually the infantry itself with a different shp image.
+- If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
+- By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
+  - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
+- If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
+- The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
+
+In `rulesmd.ini`
+```ini
+[SOMEINFANTRY]
+DropPod.Angle =               ; double, default to [General]->DropPodAngle, measured in radians
+DropPod.AtmosphereEntry =     ; anim, default to [AudioVisual]->AtmosphereEntry
+DropPod.GroundAnim =          ; 2 anims, default to [General]->DropPod
+DropPod.AirImage =            ; SHP file, the pod's shape, default to POD
+DropPod.Height =              ; int, default to [General]->DropPodHeight
+DropPod.Puff =                ; anim, default to [General]->DropPodPuff
+DropPod.Speed =               ; int, default to [General]->DropPodSpeed
+DropPod.Trailer =             ; anim, default to [General]->DropPodTrailer, which by default is SMOKEY
+DropPod.Trailer.Attached =    ; boolean, default to no
+DropPod.Trailer.SpawnDelay =  ; int, number of frames between each spawn of DropPod.Trailer, default to 6
+DropPod.Weapon =              ; weapon, default to [General]->DropPodWeapon
+DropPod.Weapon.HitLandOnly =  ; boolean, default to no
 ```

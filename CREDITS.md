@@ -220,6 +220,8 @@ This page lists all the individual contributions to the project by their author.
   - Weapon effect obstacle interaction fix
   - Fire particle rotation coordinate adjust toggle
   - `AmbientDamage` warhead & main target ignore customization
+  - Projectile return weapon
+  - Aircraft landing / docking direction
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -288,7 +290,9 @@ This page lists all the individual contributions to the project by their author.
    - TechnoType conversion placeholder
    - EIP 00529A14 crash fix on Linux
    - Teleport timer reset after load game fix
+   - Teleport and Tunnel loco visual tilt fix
    - Skip units' turret rotation and jumpjets' wobbling under EMP
+   - Droppod properties dehardcode
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
