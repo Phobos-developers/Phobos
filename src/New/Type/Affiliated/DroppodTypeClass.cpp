@@ -64,7 +64,7 @@ bool DroppodTypeClass::Save(PhobosStreamWriter& stm) const
 
 // DropPod loco is so far the easiest loco to rewrite completely
 
-DEFINE_HOOK(0x4B5B70, DroppodLoco_ILoco_Process, 0x5)
+DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 {
 	GET_STACK(ILocomotion*, iloco, 0x4);
 	__assume(iloco != nullptr);
@@ -158,7 +158,7 @@ DEFINE_HOOK(0x4B5B70, DroppodLoco_ILoco_Process, 0x5)
 	return 0x4B6036;
 }
 
-DEFINE_HOOK(0x4B607D, DroppodLoco_ILoco_MoveTo, 0x8)
+DEFINE_HOOK(0x4B607D, DroppodLocomotionClass_ILoco_MoveTo, 0x8)
 {
 	GET(ILocomotion*, iloco, EDI);
 	REF_STACK(CoordStruct, to, STACK_OFFSET(0x1C, 0x8));

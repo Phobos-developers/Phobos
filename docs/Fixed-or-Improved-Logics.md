@@ -1052,16 +1052,16 @@ DropPod properties can now be customized on a per-InfantryType basis.
 In `rulesmd.ini`
 ```ini
 [SOMEINFANTRY]
-DropPod.Angle =            ; double, default to [General]->DropPodAngle, measured in radians
-DropPod.AtmosphereEntry =  ; anim, default to [AudioVisual]->AtmosphereEntry
-DropPod.GroundAnim =       ; 2 anims, default to [General]->DropPod
-DropPod.AirImage =         ; SHP file, default to POD
-DropPod.Height =           ; int, default to [General]->DropPodHeight
-DropPod.Puff =             ; anim, default to [General]->DropPodPuff
-DropPod.Speed =            ; int, default to [General]->DropPodSpeed
-DropPod.Trailer =          ; anim, default to [General]->DropPodTrailer, which by default is SMOKEY , spawned every 6 frame
-DropPod.Trailer.Attached = ; boolean, default to no
-DropPod.Trailer.SpawnDelay=; int, number of frames between each spawn of DropPod.Trailer, default to 6
-DropPod.Weapon =           ; weapon, default to [General]->DropPodWeapon
-DropPod.Weapon.HitLandOnly ; boolean, default to no
+DropPod.Angle =               ; double, default to [General]->DropPodAngle, measured in radians
+DropPod.AtmosphereEntry =     ; anim, default to [AudioVisual]->AtmosphereEntry
+DropPod.GroundAnim =          ; 2 anims, default to [General]->DropPod
+DropPod.AirImage =            ; SHP file, the pod's shape, default to POD
+DropPod.Height =              ; int, default to [General]->DropPodHeight
+DropPod.Puff =                ; anim, default to [General]->DropPodPuff
+DropPod.Speed =               ; int, default to [General]->DropPodSpeed
+DropPod.Trailer =             ; anim, default to [General]->DropPodTrailer, which by default is SMOKEY
+DropPod.Trailer.Attached =    ; boolean, default to no
+DropPod.Trailer.SpawnDelay =  ; int, number of frames between each spawn of DropPod.Trailer, default to 6
+DropPod.Weapon =              ; weapon, default to [General]->DropPodWeapon
+DropPod.Weapon.HitLandOnly =  ; boolean, default to no
 ```
