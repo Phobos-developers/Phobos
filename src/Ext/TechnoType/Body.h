@@ -10,6 +10,7 @@
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/Affiliated/DroppodTypeClass.h>
 
 class Matrix3D;
 
@@ -52,6 +53,7 @@ public:
 
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
+		std::unique_ptr<DroppodTypeClass> DroppodType;
 
 		Nullable<int> Ammo_AddOnDeploy;
 		Valueable<int> Ammo_AutoDeployMinimumAmount;
@@ -361,6 +363,7 @@ public:
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
 			, LandingDir {}
+			, DroppodType {}
 		{ }
 
 		virtual ~ExtData() = default;

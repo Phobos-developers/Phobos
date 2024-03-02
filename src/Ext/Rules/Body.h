@@ -108,6 +108,8 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
+		AnimTypeClass* DropPodTrailer;
+		SHPStruct* PodImage;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -178,6 +180,8 @@ public:
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
 			, ShowDesignatorRange { true }
+			, DropPodTrailer { }
+			, PodImage { }
 		{ }
 
 		virtual ~ExtData() = default;

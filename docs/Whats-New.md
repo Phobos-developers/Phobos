@@ -356,6 +356,7 @@ New:
 - Allow toggling whether or not fire particle systems adjust target coordinates when firer rotates (by Starkku)
 - `AmbientDamage` warhead & main target ignore customization (by Starkku)
 - Flashing Technos on selecting (by Fryone)
+- Customizable DropPod properties on a per-InfantryType basis (by Trsdy)
 - Projectile return weapon (by Starkku)
 - Allow customizing aircraft landing direction per aircraft or per dock (by Starkku)
 

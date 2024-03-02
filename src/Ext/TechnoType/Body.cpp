@@ -405,6 +405,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->InterceptorType.reset();
 	}
+
+	if (this->OwnerObject()->WhatAmI() == AbstractType::InfantryType)
+	{
+		if (this->DroppodType == nullptr)
+			this->DroppodType = std::make_unique<DroppodTypeClass>();
+		this->DroppodType->LoadFromINI(pINI, pSection);
+	}
+	else
+	{
+		this->DroppodType.reset();
+	}
 }
 
 template <typename T>
@@ -571,6 +582,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnDistanceFromTarget)
 		.Process(this->SpawnHeight)
 		.Process(this->LandingDir)
+		.Process(this->DroppodType)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -1038,3 +1038,30 @@ In `rulesmd.ini`:
 [AudioVisual]
 SelectionFlashDuration=0  ; integer, number of frames
 ```
+
+## DropPod
+
+DropPod properties can now be customized on a per-InfantryType basis.
+- Note that the DropPod is actually the infantry itself with a different shp image.
+- If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
+- By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
+  - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
+- If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
+- The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
+
+In `rulesmd.ini`
+```ini
+[SOMEINFANTRY]
+DropPod.Angle =               ; double, default to [General]->DropPodAngle, measured in radians
+DropPod.AtmosphereEntry =     ; anim, default to [AudioVisual]->AtmosphereEntry
+DropPod.GroundAnim =          ; 2 anims, default to [General]->DropPod
+DropPod.AirImage =            ; SHP file, the pod's shape, default to POD
+DropPod.Height =              ; int, default to [General]->DropPodHeight
+DropPod.Puff =                ; anim, default to [General]->DropPodPuff
+DropPod.Speed =               ; int, default to [General]->DropPodSpeed
+DropPod.Trailer =             ; anim, default to [General]->DropPodTrailer, which by default is SMOKEY
+DropPod.Trailer.Attached =    ; boolean, default to no
+DropPod.Trailer.SpawnDelay =  ; int, number of frames between each spawn of DropPod.Trailer, default to 6
+DropPod.Weapon =              ; weapon, default to [General]->DropPodWeapon
+DropPod.Weapon.HitLandOnly =  ; boolean, default to no
+```
