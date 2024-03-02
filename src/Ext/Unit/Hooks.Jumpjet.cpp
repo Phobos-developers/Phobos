@@ -228,6 +228,7 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
+
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
 		if (pIndex)// just forget it bro, no one cares

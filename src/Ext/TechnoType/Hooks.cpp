@@ -362,25 +362,35 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 
 	auto GetTurretVoxel = [pType](int idx) ->VoxelStruct*
 	{
-		if (pType->TurretCount == 0 || pType->IsGattling || idx < 0) return &pType->TurretVoxel;
-		if (idx < 18) return &pType->ChargerTurrets[idx];
+		if (pType->TurretCount == 0 || pType->IsGattling || idx < 0)
+			return &pType->TurretVoxel;
+
+		if (idx < 18)
+			return &pType->ChargerTurrets[idx];
+
 		if (CAN_USE_ARES && AresHelper::CanUseAres)
 		{
 			auto* aresTypeExt = reinterpret_cast<DummyExtHere*>(pType->align_2FC);
 			return &aresTypeExt->ChargerTurrets[idx - 18];
 		}
+
 		return nullptr;
 	};
 
 	auto GetBarrelVoxel = [pType](int idx)->VoxelStruct*
 	{
-		if (pType->TurretCount == 0 || pType->IsGattling || idx < 0) return &pType->BarrelVoxel;
-		if (idx < 18) return &pType->ChargerBarrels[idx];
+		if (pType->TurretCount == 0 || pType->IsGattling || idx < 0)
+			return &pType->BarrelVoxel;
+
+		if (idx < 18)
+			return &pType->ChargerBarrels[idx];
+
 		if (CAN_USE_ARES && AresHelper::CanUseAres)
 		{
 			auto* aresTypeExt = reinterpret_cast<DummyExtHere*>(pType->align_2FC);
 			return &aresTypeExt->ChargerBarrels[idx - 18];
 		}
+
 		return nullptr;
 	};
 
@@ -395,6 +405,7 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 		mtx = *pMatrix * mtx;
 
 		pThis->DrawVoxelShadow(tur, 0, index_key, nullptr, bound, &a3, &mtx, a9, pSurface, pos);
+
 		auto bar = GetBarrelVoxel(pThis->CurrentTurretNumber);
 
 		if (bar && bar->VXL && bar->HVA)
