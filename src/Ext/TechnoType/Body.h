@@ -181,6 +181,7 @@ public:
 
 		Nullable<Leptons> SpawnDistanceFromTarget;
 		Nullable<int> SpawnHeight;
+		Nullable<int> LandingDir;
 
 		struct LaserTrailDataEntry
 		{
@@ -359,6 +360,7 @@ public:
 
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
+			, LandingDir {}
 		{ }
 
 		virtual ~ExtData() = default;

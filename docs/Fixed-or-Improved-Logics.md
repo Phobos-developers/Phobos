@@ -145,6 +145,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes.
 - Fixed railgun and fire particles being cut off by elevation changes.
 - Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
+- Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
+- Spawned aircraft now align with the spawner's facing when landing.
 
 ## Fixes / interactions with other extensions
 
@@ -163,6 +165,17 @@ In `rulesmd.ini`:
 [SOMEAIRCRAFT]            ; AircraftType
 SpawnDistanceFromTarget=  ; floating point value, distance in cells
 SpawnHeight=              ; integer, height in leptons
+```
+
+### Landing direction
+
+- By default aircraft land facing the direction specified by `[AudioVisual]`->`PoseDir`. This can now be customized per AircraftType via `LandingDir`, defaults to `[AudioVisual]`->`PoseDir`. If the building the aircraft is docking to has [aircraft docking direction](#aircraft-docking-direction) set, that setting takes priority over this.
+  - Negative values are allowed as a special case for `AirportBound=false` aircraft which makes them land facing their current direction.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]  ; AircraftType
+LandingDir=     ; Direction type (integers from 0-255). Accepts negative values as a special case.
 ```
 
 ## Animations
@@ -238,6 +251,16 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 ```
 
 ## Buildings
+
+### Aircraft docking direction
+
+- It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir(N)` (`N` optionally replaced by 0-based index for each `DockingOffset` separately, `AircraftDockingDir` and `AircraftDockingDir0` are synonymous and will be used if direction is not set for a specific offset) on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting and defaults to `[AudioVisual]` -> `PoseDir`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]          ; BuildingType
+AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
+```
 
 ### Airstrike target eligibility
 
