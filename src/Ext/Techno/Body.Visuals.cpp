@@ -210,14 +210,11 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	if (frameIndex != -1 && pShapeFile)
 	{
-		offset.X += 5;
-		offset.Y += 2;
 
 		if (pThis->WhatAmI() != AbstractType::Infantry)
-		{
-			offset.X += 5;
-			offset.Y += 4;
-		}
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Techno.Get();
+		else
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Infantry.Get();
 
 		DSurface::Temp->DrawSHP(
 			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);

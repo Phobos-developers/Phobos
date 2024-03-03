@@ -985,6 +985,22 @@ IsVoiceCreatedGlobal=false   ; boolean
 VoiceCreated=                ; sound entry
 ```
 
+### Promotion animation
+
+- You can now specify an animation on the unit or structure promotion.
+  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran.
+  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite.
+  - If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
+  - You can customize visibility from other houses using `Promote.AnimationVisibility`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+Promote.VeteranAnimation=         ; Animation
+Promote.EliteAnimation=           ; Animation
+Promote.AnimationVisibility=all   ; list of Affected House Enumeration (owner/self | allies/ally | team | enemies/enemy | all)
+```
+
 ## Terrain
 
 ### Destroy animation & sound
