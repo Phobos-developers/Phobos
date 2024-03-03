@@ -139,9 +139,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	Nullable<AnimTypeClass*> droppod_trailer {};
 	droppod_trailer.Read(exINI, GameStrings::General, "DropPodTrailer");
-	droppod_trailer = droppod_trailer.Get(AnimTypeClass::Find("SMOKEY")); // Ares convention
-	if (!droppod_trailer.Get())
-		this->DropPodTrailer = droppod_trailer.Get();
+	this->DropPodTrailer = droppod_trailer.Get(AnimTypeClass::Find("SMOKEY"));// Ares convention
 	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");

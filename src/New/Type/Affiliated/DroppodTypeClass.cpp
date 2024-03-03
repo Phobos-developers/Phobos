@@ -70,8 +70,7 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 	__assume(iloco != nullptr);
 	auto const lThis = static_cast<DropPodLocomotionClass*>(iloco);
 	auto const pLinked = lThis->LinkedTo;
-	auto const linkedExt = TechnoExt::ExtMap.Find(pLinked);
-	const auto podType = linkedExt->TypeExtData->DroppodType.get();
+	const auto podType = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType())->DroppodType.get();
 
 	CoordStruct oldLoc = pLinked->Location;
 
