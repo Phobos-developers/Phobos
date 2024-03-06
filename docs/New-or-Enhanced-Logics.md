@@ -290,6 +290,16 @@ In `artmd.ini`:
 AttachedSystem=  ; ParticleSystem
 ```
 
+### Play sound as a detached sound event
+
+- It is now possible for animation to play a sound that is not attached to an audio event handler by using `DetachedReport`. By default animation `Report/StartSound` is played by an audio event handler, which allows the sound to loop and play at correct location even if it changes after its initial creation. This can also cause issues with animations that chain different types through `Next`, as the audio event handler resets when the animation restarts.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]       ; AnimationType
+DetachedReport=  ; sound entry
+```
+
 ## Buildings
 
 ### Extended building upgrades

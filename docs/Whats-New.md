@@ -359,6 +359,7 @@ New:
 - Customizable DropPod properties on a per-InfantryType basis (by Trsdy)
 - Projectile return weapon (by Starkku)
 - Allow customizing aircraft landing direction per aircraft or per dock (by Starkku)
+- Allow animations to play sounds detached from audio event handler (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
