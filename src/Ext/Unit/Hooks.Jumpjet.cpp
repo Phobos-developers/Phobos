@@ -78,6 +78,16 @@ DEFINE_HOOK(0x736EE9, UnitClass_UpdateFiring_FireErrorIsOK, 0x6)
 	return 0;
 }
 
+// Man, what can I say
+DEFINE_HOOK(0x54D67B, JumpjetLocomotionClass_ProcessMove_NotJumpjetTurn, 0x5)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+
+	pThis->LinkedTo->PrimaryFacing.SetDesired(pThis->LocomotionFacing.Desired());
+
+	return 0x54D697;
+}
+
 DEFINE_HOOK(0x54D208, JumpjetLocomotionClass_ProcessMove_EMPWobble, 0x5)
 {
 	GET(JumpjetLocomotionClass* const, pThis, ESI);
