@@ -85,6 +85,7 @@ public:
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
 		Nullable<AnimTypeClass*> WarpAway;
+		Valueable<AnimTypeClass*> Wake;
 		Nullable<bool> ChronoTrigger;
 		Nullable<int> ChronoDistanceFactor;
 		Nullable<int> ChronoMinimumDelay;
@@ -242,6 +243,7 @@ public:
 			, WarpOut {}
 			, WarpIn {}
 			, WarpAway {}
+			, Wake {}
 			, ChronoTrigger {}
 			, ChronoDistanceFactor {}
 			, ChronoMinimumDelay {}
@@ -399,6 +401,7 @@ public:
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
+	static AnimTypeClass* GetWakeAnim(LocomotionClass* pLoco);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
