@@ -35,7 +35,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `Grinding.DisplayRefund` is changed to `DisplayIncome`, `Grinding.DisplayRefund.Houses` is changed to `DisplayIncome.Houses`, `Grinding.DisplayRefund.Offset` is changed to `DisplayIncome.Offset`
 - `[JumpjetControls]`->`AllowLayerDeviation` and `JumpjetAllowLayerDeviation` have been deprecated as the animation layering issues have been properly fixed by default now.
 - `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
-  - `OmniFire.TurnToTarget` is recommended for jumpjet units' omnifiring weapons for facing turning.
 - Buildings delivered by trigger action 125 will now **always** play buildup anim as long as it exists. `[ParamTypes]->53` is deprecated.
 - `Shadow` for debris & meteor animations is changed to `ExtraShadow`.
 
@@ -417,6 +416,7 @@ Vanilla fixes:
 - Fixed teleport and drill units being unable to be visually flipped (by Trsdy)
 - Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction (by Starkku)
 - Spawned aircraft now align with the spawner's facing when landing (by Starkku)
+- Fixed infantries attempted to entering buildings when waypointing together with engineer/agent/occupier/etc (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

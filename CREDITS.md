@@ -293,6 +293,7 @@ This page lists all the individual contributions to the project by their author.
    - Teleport and Tunnel loco visual tilt fix
    - Skip units' turret rotation and jumpjets' wobbling under EMP
    - Droppod properties dehardcode
+   - Waypoint entering building together with engineer/agent bug fix
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support

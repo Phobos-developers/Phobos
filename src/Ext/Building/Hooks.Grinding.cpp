@@ -55,6 +55,28 @@ DEFINE_HOOK(0x4D4CD3, FootClass_Mission_Eaten_Grinding, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture_ForbidUnintended, 0x6)
+{
+	GET(InfantryClass*, pThis, EDI);
+	enum { LosesDestination = 0x4D4BD1 };
+
+	auto pBld = specific_cast<BuildingClass*>(pThis->Destination);
+	if (!pThis || !pBld || pThis->Target)//try less agressive first, only when no target, see if it doesn't fix something
+		return 0;
+
+	if (!(pBld->Type->Capturable && pThis->Type->Engineer)   // can't capture
+	&& !(pBld->Type->Spyable && pThis->Type->Infiltrate)     // can't infiltrate
+	&& !(pBld->Type->CanBeOccupied && (pThis->Type->Occupier || pThis->Type->Assaulter)) // can't occupy
+	&& !(pThis->Type->C4 || pThis->HasAbility(Ability::C4)) // can't C4, what else?
+	)// If you can't do any of these why are you here?
+	{
+		pThis->SetDestination(nullptr, false);
+		return LosesDestination;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x51F0AF, InfantryClass_WhatAction_Grinding, 0x0)
 {
 	enum { Skip = 0x51F05E, ReturnValue = 0x51F17E };
