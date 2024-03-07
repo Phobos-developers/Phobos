@@ -149,7 +149,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed units with Teleport or Tunnel locomotor being unable to be visually flipped like other locomotors do.
 - Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
 - Spawned aircraft now align with the spawner's facing when landing.
-- Fixed the bug that waypointing unarmed infantries with agent/engineer to a spyable/capturable building triggers EnteredBy event.
+- Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers EnteredBy event by executing capture mission.
 
 ## Fixes / interactions with other extensions
 
@@ -1028,16 +1028,6 @@ In `rulesmd.ini`:
 ```ini
 [CrateRules]
 CrateOnlyOnLand=no  ; boolean
-```
-
-## Flashing Technos on selecting
-
-Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-SelectionFlashDuration=0  ; integer, number of frames
 ```
 
 ## DropPod
