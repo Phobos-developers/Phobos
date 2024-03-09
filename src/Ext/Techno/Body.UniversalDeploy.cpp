@@ -2,7 +2,7 @@
 
 #include <Ext/Script/Body.h>
 #include <Ext/Building/Body.h>
-
+/*
 void TechnoExt::CreateUniversalDeployAnimation(TechnoClass* pThis, AnimTypeClass* pAnimType)
 {
 	if (!pThis || !pAnimType)
@@ -634,7 +634,7 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 		pNew->Owner->RecheckPower = true;
 		pNew->Owner->RecheckRadar = true;
 	}
-}
+}*/
 
 // This simplified method transfer all settings from the old object to the new.
 // If a new object isn't defined then it will be picked from a list.

@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Script/Body.h>
-
+/*
 DEFINE_HOOK(0x730B8F, DeployCommand_UniversalDeploy, 0x6)
 {
 	GET(int, index, EDI);
@@ -549,3 +549,4 @@ DEFINE_HOOK(0x43D29D, BuildingClass_DrawIt_UniversalDeploy_DontRenderObject, 0xD
 	// Here enters SHP objects, voxel turrets
 	return Skip;
 }
+*/
