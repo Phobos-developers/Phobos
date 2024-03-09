@@ -58,23 +58,27 @@ DEFINE_HOOK(0x4D4CD3, FootClass_Mission_Eaten_Grinding, 0x6)
 DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture_ForbidUnintended, 0x6)
 {
 	GET(InfantryClass*, pThis, EDI);
-	enum { LosesDestination = 0x4D4BD1 };
+	enum { LosesDestination = 0x4D4BD1, Go = 0 };
 
 	auto pBld = specific_cast<BuildingClass*>(pThis->Destination);
-	if (!pThis || !pBld || pThis->Target)//try less agressive first, only when no target, see if it doesn't fix something
-		return 0;
+	if (!pThis || !pBld || pThis->Target)
+		return Go;
 
-	if (!(pBld->Type->Capturable && pThis->Type->Engineer)   // can't capture
-	&& !(pBld->Type->Spyable && pThis->Type->Infiltrate)     // can't infiltrate
-	&& !(pBld->Type->CanBeOccupied && (pThis->Type->Occupier || pThis->Type->Assaulter)) // can't occupy
-	&& !(pThis->Type->C4 || pThis->HasAbility(Ability::C4)) // can't C4, what else?
-	)// If you can't do any of these why are you here?
-	{
-		pThis->SetDestination(nullptr, false);
-		return LosesDestination;
-	}
+	if (pThis->Type->Engineer)
+		return Go;
 
-	return 0;
+	if (pBld->Type->Spyable && pThis->Type->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
+		return Go;
+
+	if (pBld->Type->CanBeOccupied && (pThis->Type->Occupier || pThis->Type->Assaulter))
+		return Go;
+
+	if (pThis->Type->C4 || pThis->HasAbility(Ability::C4))
+		return Go;
+
+	// If you can't do any of these then why are you here?
+	pThis->SetDestination(nullptr, false);
+	return LosesDestination;
 }
 
 DEFINE_HOOK(0x51F0AF, InfantryClass_WhatAction_Grinding, 0x0)
