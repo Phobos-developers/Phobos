@@ -21,6 +21,7 @@ const char Phobos::readDelims[4] = ",";
 const char* Phobos::AppIconPath = nullptr;
 
 bool Phobos::DisplayDamageNumbers = false;
+bool Phobos::IsLoadingSaveGame = false;
 
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
@@ -160,23 +161,23 @@ DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 
 	return 0;
 }
-
-void NAKED _ExeTerminate()
+// Avoid confusing the profiler unless really necessary
+#ifdef DEBUG
+DEFINE_NAKED_HOOK(0x7CD8EA, _ExeTerminate)
 {
 	// Call WinMain
 	SET_REG32(EAX, 0x6BB9A0);
 	CALL(EAX);
 	PUSH_REG(EAX);
 
-	Phobos::ExeTerminate();
+	__asm {call Phobos::ExeTerminate};
 
 	// Jump back
 	POP_REG(EAX);
 	SET_REG32(EBX, 0x7CD8EF);
 	__asm {jmp ebx};
 }
-DEFINE_JUMP(LJMP, 0x7CD8EA, GET_OFFSET(_ExeTerminate));
-
+#endif
 DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 {
 	GET(char**, ppArgs, ESI);
@@ -184,6 +185,18 @@ DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 
 	Phobos::CmdLineParse(ppArgs, nNumArgs);
 	Debug::LogDeferredFinalize();
+	return 0;
+}
+
+DEFINE_HOOK(0x67E44D, LoadGame_SetFlag, 0x5)
+{
+	Phobos::IsLoadingSaveGame = true;
+	return 0;
+}
+
+DEFINE_HOOK(0x67E68A, LoadGame_UnsetFlag, 0x5)
+{
+	Phobos::IsLoadingSaveGame = false;
 	return 0;
 }
 

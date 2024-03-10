@@ -64,7 +64,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		// Normally on unlimbo the buildings are revealed to current player if unshrouded or if game is a campaign and to non-player houses always.
 		// Because of the unique nature of LimboDelivered buildings, this has been adjusted to always reveal to the current player in singleplayer
 		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist - Starkku
-		if (SessionClass::Instance->GameMode == GameMode::Campaign)
+		if (SessionClass::IsCampaign())
 			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
 
 		pBuilding->DiscoveredBy(pOwner);
@@ -99,32 +99,28 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 
 		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
 
-		if (pBuildingExt)
+		// LimboKill ID
+		pBuildingExt->LimboID = ID;
+
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+
+		// Add building to list of owned limbo buildings
+		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
+
+		if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+			pOwnerExt->AddToLimboTracking(pBuilding->Type);
+
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
+		auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
+
+		if (pTechnoTypeExt->AutoDeath_Behavior.isset())
 		{
-			// LimboKill ID
-			pBuildingExt->LimboID = ID;
+			pOwnerExt->OwnedAutoDeathObjects.push_back(pTechnoExt);
 
-			if (auto pOwnerExt = HouseExt::ExtMap.Find(pOwner))
-			{
-				// Add building to list of owned limbo buildings
-				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding, pBuildingExt });
-
-				if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
-					pOwnerExt->AddToLimboTracking(pBuilding->Type);
-
-				auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
-				auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
-
-				if (pTechnoTypeExt->AutoDeath_Behavior.isset())
-				{
-					pOwnerExt->OwnedAutoDeathObjects.push_back(pTechnoExt);
-
-					if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
-						pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
-				}
-
-			}
+			if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
+				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
 		}
+
 	}
 }
 
@@ -135,8 +131,8 @@ inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
 	auto pOwnerExt = HouseExt::ExtMap.Find(pTargetHouse);
 
 	// Remove building from list of owned limbo buildings
-	if (pOwnerExt)
-		pOwnerExt->OwnedLimboDeliveredBuildings.erase(pBuilding);
+	auto& vec = pOwnerExt->OwnedLimboDeliveredBuildings;
+	vec.erase(std::remove(vec.begin(), vec.end(), pBuilding), vec.end());
 
 	// Mandatory
 	pBuilding->InLimbo = true;
@@ -208,13 +204,14 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 		{
 			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
 			{
-				if (auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse))
+				auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
+
+				for (const auto& pBuilding : pHouseExt->OwnedLimboDeliveredBuildings)
 				{
-					for (const auto& [pBuilding, pBuildingExt] : pHouseExt->OwnedLimboDeliveredBuildings)
-					{
-						if (pBuildingExt->LimboID == limboKillID)
-							LimboDelete(pBuildingExt->OwnerObject(), pTargetHouse);
-					}
+					auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+
+					if (pBuildingExt->LimboID == limboKillID)
+						LimboDelete(pBuilding, pTargetHouse);
 				}
 			}
 		}
@@ -274,7 +271,7 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 		{
 			const auto pNextTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 			if (!this->SW_Next_RealLaunch ||
-				(pSuper->Granted && pSuper->IsCharged && !pSuper->IsOnHold && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
+				(pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
 			{
 				if (this->SW_Next_IgnoreInhibitors || !pNextTypeExt->HasInhibitor(pHouse, cell)
 					&& (this->SW_Next_IgnoreDesignators || pNextTypeExt->HasDesignator(pHouse, cell)))
@@ -315,5 +312,5 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 		return;
 
 	for (const auto pTargetFoot : *FootClass::Array)
-		TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
+		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }

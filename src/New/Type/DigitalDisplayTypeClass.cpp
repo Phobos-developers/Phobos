@@ -7,8 +7,7 @@
 
 #include <Ext/Techno/Body.h>
 
-Enumerable<DigitalDisplayTypeClass>::container_t Enumerable<DigitalDisplayTypeClass>::Array;
-
+template<>
 const char* Enumerable<DigitalDisplayTypeClass>::GetMainSection()
 {
 	return "DigitalDisplayTypes";

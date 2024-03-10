@@ -82,9 +82,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
 
+	this->PlacementGrid_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.Translucency");
+	this->PlacementGrid_TranslucencyWithPreview.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.TranslucencyWithPreview");
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
-	this->PlacementGrid_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.Translucency");
+
+	this->Shield_ConditionYellow.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionYellow");
+	this->Shield_ConditionRed.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionRed");
 	this->Pips_Shield.Read(exINI, GameStrings::AudioVisual, "Pips.Shield");
 	this->Pips_Shield_Background.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Background");
 	this->Pips_Shield_Building.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Building");
@@ -99,6 +103,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Generic_Buildings_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Generic.Buildings.Size");
 	this->Pips_Ammo_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Ammo.Size");
 	this->Pips_Ammo_Buildings_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Ammo.Buildings.Size");
+	this->Pips_Tiberiums_EmptyFrame.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.EmptyFrame");
 	this->Pips_Tiberiums_Frames.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.Frames");
 	this->Pips_Tiberiums_DisplayOrder.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.DisplayOrder");
 	this->ToolTip_Background_Color.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Color");
@@ -130,6 +135,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
 
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
+	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
+
+	Nullable<AnimTypeClass*> droppod_trailer {};
+	droppod_trailer.Read(exINI, GameStrings::General, "DropPodTrailer");
+	this->DropPodTrailer = droppod_trailer.Get(AnimTypeClass::Find("SMOKEY"));// Ares convention
+	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
@@ -221,8 +232,11 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->MissingCameo)
 		.Process(this->PlacementGrid_Translucency)
+		.Process(this->PlacementGrid_TranslucencyWithPreview)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Translucency)
+		.Process(this->Shield_ConditionYellow)
+		.Process(this->Shield_ConditionRed)
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)
@@ -237,6 +251,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Generic_Buildings_Size)
 		.Process(this->Pips_Ammo_Size)
 		.Process(this->Pips_Ammo_Buildings_Size)
+		.Process(this->Pips_Tiberiums_EmptyFrame)
 		.Process(this->Pips_Tiberiums_Frames)
 		.Process(this->Pips_Tiberiums_DisplayOrder)
 		.Process(this->AllowParallelAIQueues)
@@ -259,6 +274,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadialIndicatorVisibility)
 		.Process(this->DrawTurretShadow)
 		.Process(this->IsVoiceCreatedGlobal)
+		.Process(this->SelectionFlashDuration)
 		.Process(this->AnimRemapDefaultColorScheme)
 		.Process(this->TimerBlinkColorScheme)
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)
@@ -266,6 +282,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->DropPodTrailer)
+		.Process(this->PodImage)
 		;
 }
 
