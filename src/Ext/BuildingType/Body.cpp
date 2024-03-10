@@ -138,7 +138,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_DisallowTypes.Read(exINI, pSection, "Grinding.DisallowTypes");
 	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
 	this->Grinding_PlayDieSound.Read(exINI, pSection, "Grinding.PlayDieSound");
-	this->Grinding_Weapon.Read(exINI, pSection, "Grinding.Weapon", true);
+	this->Grinding_Weapon.Read<true>(exINI, pSection, "Grinding.Weapon");
 
 	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
@@ -162,6 +162,28 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	key = nullptr;
+
+	if (pThis->NumberOfDocks > 0)
+	{
+		this->AircraftDockingDirs.clear();
+		this->AircraftDockingDirs.resize(pThis->NumberOfDocks);
+
+		Nullable<DirType> nLandingDir;
+		nLandingDir.Read(exINI, pSection, "AircraftDockingDir");
+
+		if (nLandingDir.isset())
+			this->AircraftDockingDirs[0] = nLandingDir.Get();
+
+		for (int i = 0; i < pThis->NumberOfDocks; ++i)
+		{
+			char tempBuffer[32];
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "AircraftDockingDir%d", i);
+			nLandingDir.Read(exINI, pSection, tempBuffer);
+
+			if (nLandingDir.isset())
+				this->AircraftDockingDirs[i] = nLandingDir.Get();
+		}
+	}
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
@@ -252,6 +274,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SellBuildupLength)
 		.Process(this->Secret_RecalcOnCapture)
 		.Process(this->PossibleBoons)
+		.Process(this->AircraftDockingDirs)
 		;
 }
 

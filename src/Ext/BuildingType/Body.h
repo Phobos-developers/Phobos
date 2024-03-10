@@ -64,6 +64,8 @@ public:
 		Valueable<bool> Secret_RecalcOnCapture;
 		NullableVector<TechnoTypeClass*> PossibleBoons;
 
+		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -101,6 +103,7 @@ public:
 			, SellBuildupLength { 23 }
 			, Secret_RecalcOnCapture { false }
 			, PossibleBoons {}
+			, AircraftDockingDirs {}
 		{ }
 
 		// Ares 0.A functions

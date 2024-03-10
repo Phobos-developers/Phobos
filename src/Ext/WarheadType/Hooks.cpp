@@ -182,3 +182,17 @@ DEFINE_HOOK(0x48A4F3, SelectDamageAnimation_NegativeZeroDamage, 0x6)
 	R->ESI(warhead);
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x4891AF, GetTotalDamage_NegativeDamageModifiers, 0x6)
+{
+	enum { ApplyModifiers = 0x4891C6 };
+
+	GET(WarheadTypeClass* const, pWarhead, EDI);
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (pWHExt->ApplyModifiersOnNegativeDamage)
+		return ApplyModifiers;
+
+	return 0;
+}
