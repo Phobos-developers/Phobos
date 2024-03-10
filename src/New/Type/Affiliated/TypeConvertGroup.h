@@ -14,14 +14,12 @@ public:
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 
+	static void Parse(std::vector<TypeConvertGroup>& list,INI_EX& exINI, const char* section,AffectedHouse defaultAffectHouse);
+
+	static void Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner);
+
 private:
 	template <typename T>
 	bool Serialize(T& stm);
 };
 
-namespace TypeConvertHelper
-{
-	typedef std::vector<std::tuple<ValueableVector<TechnoTypeClass*>, NullableIdx<TechnoTypeClass>, Nullable<AffectedHouse>>> ConvertPairs;
-
-	void Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner, AnimTypeClass* pTypeAnim);
-}

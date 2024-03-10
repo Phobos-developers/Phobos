@@ -8,7 +8,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Building/Body.h>
-#include <Misc/TypeConvertHelper.h>
+#include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class SWTypeExt
 {

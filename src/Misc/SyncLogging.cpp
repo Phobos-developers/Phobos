@@ -444,7 +444,7 @@ DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
 // Disable sync logging hooks in non-MP games
 DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 {
-	if (SessionClass::Instance->IsMultiplayer() || SyncLogger::HooksDisabled)
+	if (SessionClass::IsMultiplayer() || SyncLogger::HooksDisabled)
 		return 0;
 
 	SyncLogger::HooksDisabled = true;
