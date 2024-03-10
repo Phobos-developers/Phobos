@@ -230,7 +230,7 @@ bool HouseExt::IsDisabledFromShell(
 	HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
 {
 	// SWAllowed does not apply to campaigns any more
-	if (SessionClass::Instance->GameMode == GameMode::Campaign
+	if (SessionClass::IsCampaign()
 		|| GameModeOptionsClass::Instance->SWAllowed)
 	{
 		return false;
@@ -397,7 +397,7 @@ void HouseExt::ExtData::UpdateTransportReloaders()
 	{
 		auto const pTechno = pExt->OwnerObject();
 
-		if (pTechno->Transporter)
+		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
 			pTechno->Reload();
 	}
 }

@@ -11,6 +11,8 @@ class ShieldTypeClass final : public Enumerable<ShieldTypeClass>
 public:
 	Valueable<int> Strength;
 	Nullable<int> InitialStrength;
+	Nullable<double> ConditionYellow;
+	Nullable<double> ConditionRed;
 	Valueable<ArmorType> Armor;
 	Valueable<bool> InheritArmorFromTechno;
 	Valueable<bool> Powered;
@@ -48,6 +50,8 @@ public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle)
 		, Strength { 0 }
 		, InitialStrength { }
+		, ConditionYellow { }
+		, ConditionRed { }
 		, Armor { Armor::None }
 		, InheritArmorFromTechno { false }
 		, Powered { false }
@@ -86,6 +90,8 @@ public:
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio);
+	double GetConditionYellow();
+	double GetConditionRed();
 
 private:
 	template <typename T>
