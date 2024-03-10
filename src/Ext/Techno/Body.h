@@ -65,6 +65,8 @@ public:
 			, WHAnimRemainingCreationInterval { 0 }
 		{ }
 
+		void OnEarlyUpdate();
+
 		void ApplyInterceptor();
 		bool CheckDeathConditions(bool isInLimbo = false);
 		void DepletedAmmoActions();

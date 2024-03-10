@@ -5,7 +5,7 @@
 
 void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
-	auto const pAnimType = pTechnoFrom->MindControlRingAnim ?
+	auto pAnimType = pTechnoFrom->MindControlRingAnim ?
 		pTechnoFrom->MindControlRingAnim->Type : TechnoExt::ExtMap.Find(pTechnoFrom)->MindControlRingAnimType;
 
 	if (auto Controller = pTechnoFrom->MindControlledBy)
@@ -54,7 +54,7 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 			location.Z += pBuilding->Type->Height * Unsorted::LevelHeight;
 		else
 			location.Z += pTechnoTo->GetTechnoType()->MindControlRingOffset;
-
+		if(pAnimType)
 		if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location, 0, 1))
 		{
 			pTechnoTo->MindControlRingAnim = pAnim;
