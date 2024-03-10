@@ -13,24 +13,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	// Do not search this up again in any functions called here because it is costly for performance - Starkku
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	auto pType = pThis->GetTechnoType();
-
-	// Set only if unset or type is changed
-	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
-	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
-		pExt->UpdateTypeData(pType);
-
-	pExt->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
-
-	if (pExt->CheckDeathConditions())
-		return 0;
-
-	pExt->ApplyInterceptor();
-	pExt->EatPassengers();
-	pExt->UpdateShield();
-	pExt->ApplySpawnLimitRange();
-	pExt->UpdateLaserTrails();
-	pExt->DepletedAmmoActions();
+	pExt->OnEarlyUpdate();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 
@@ -90,16 +73,6 @@ DEFINE_HOOK(0x4DBF13, FootClass_SetOwningHouse, 0x6)
 
 	if (pThis->Owner->IsHumanPlayer)
 		TechnoExt::ChangeOwnerMissionFix(pThis);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4483C0, BuildingClass_SetOwningHouse_MuteSound, 0x6)
-{
-	GET(BuildingClass* const, pThis, ESI);
-	REF_STACK(bool, announce, STACK_OFFSET(0x60, 0x8));
-
-	announce = announce && !pThis->Type->IsVehicle();
 
 	return 0;
 }
@@ -286,23 +259,6 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
-{
-	GET(WeaponTypeClass* const, pWeapon, ECX);
-	GET(LaserDrawClass* const, pLaser, EAX);
-
-	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
-	{
-		if (!pLaser->IsHouseColor && pWeaponExt->Laser_IsSingleColor)
-			pLaser->IsHouseColor = true;
-	}
-
-	// Fixes drawing thick lasers for non-PrismSupport building-fired lasers.
-	pLaser->IsSupported = pLaser->Thickness > 3;
-
-	return 0;
-}
-
 DEFINE_HOOK_AGAIN(0x703789, TechnoClass_CloakUpdateMCAnim, 0x6) // TechnoClass_Do_Cloak
 DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_Cloaking_AI
 {
@@ -454,24 +410,21 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x54B188, JumpjetLocomotionClass_Process_LayerUpdate, 0x6)
+#pragma region Fly Layer Update
+
+// Update attached anim layers after parent unit changes layer.
+void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, ObjectClass* pObject)
 {
-	GET(TechnoClass*, pLinkedTo, EAX);
+	pThis->Submit(pObject);
 
-	TechnoExt::UpdateAttachedAnimLayers(pLinkedTo);
-
-	return 0;
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
+		TechnoExt::UpdateAttachedAnimLayers(pTechno);
 }
 
-DEFINE_HOOK(0x4CD4E1, FlyLocomotionClass_Update_LayerUpdate, 0x6)
-{
-	GET(TechnoClass*, pLinkedTo, ECX);
+DEFINE_JUMP(CALL, 0x54B18E, GET_OFFSET(DisplayClass_Submit_Wrapper));  // JumpjetLocomotionClass_Process
+DEFINE_JUMP(CALL, 0x4CD4E7, GET_OFFSET(DisplayClass_Submit_Wrapper));  // FlyLocomotionClass_Update
 
-	if (pLinkedTo->LastLayer != pLinkedTo->InWhichLayer())
-		TechnoExt::UpdateAttachedAnimLayers(pLinkedTo);
-
-	return 0;
-}
+#pragma endregion
 
 // Move to UnitClass hooks file if it is ever created.
 DEFINE_HOOK(0x736234, UnitClass_ChronoSparkleDelay, 0x5)
@@ -485,4 +438,17 @@ DEFINE_HOOK(0x51BAFB, InfantryClass_ChronoSparkleDelay, 0x5)
 {
 	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
 	return 0x51BB00;
+}
+
+DEFINE_HOOK_AGAIN(0x5F4718, ObjectClass_Select, 0x7)
+DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
+{
+	GET(ObjectClass*, pThis, ESI);
+
+	pThis->IsSelected = true;
+
+	if(RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
+
+	return 0;
 }

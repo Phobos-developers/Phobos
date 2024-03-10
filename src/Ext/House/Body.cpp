@@ -205,7 +205,8 @@ bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass* pBuilding)
 	if (!pBuilding)
 		return false;
 
-	return this->OwnedLimboDeliveredBuildings.count(pBuilding);
+	auto& vec = this->OwnedLimboDeliveredBuildings;
+	return std::find(vec.begin(), vec.end(), pBuilding) != vec.end();
 }
 
 size_t HouseExt::FindOwnedIndex(
@@ -229,7 +230,7 @@ bool HouseExt::IsDisabledFromShell(
 	HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
 {
 	// SWAllowed does not apply to campaigns any more
-	if (SessionClass::Instance->GameMode == GameMode::Campaign
+	if (SessionClass::IsCampaign()
 		|| GameModeOptionsClass::Instance->SWAllowed)
 	{
 		return false;
@@ -396,7 +397,7 @@ void HouseExt::ExtData::UpdateTransportReloaders()
 	{
 		auto const pTechno = pExt->OwnerObject();
 
-		if (pTechno->Transporter)
+		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
 			pTechno->Reload();
 	}
 }
@@ -555,7 +556,10 @@ void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 	AnnounceInvalidPointer(Factory_AircraftType, ptr);
 
 	if (!OwnedLimboDeliveredBuildings.empty() && ptr != nullptr)
-		OwnedLimboDeliveredBuildings.erase(reinterpret_cast<BuildingClass*>(ptr));
+	{
+		auto& vec = this->OwnedLimboDeliveredBuildings;
+		vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+	}
 }
 
 // =============================

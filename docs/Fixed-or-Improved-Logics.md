@@ -37,7 +37,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 - Allowed usage of `AlternateFLH` of vehicles in `OpenTopped` transport.
 - Improved the statistic distribution of the spawned crates over the visible area of the map so that they will no longer have a higher chance to show up near the edges.
-- SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - Added a "Load Game" button to the retry dialog on mission failure.
 
@@ -111,7 +110,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `LandTargeting=1` not preventing from targeting TerrainTypes (trees etc.) on land.
 - Fixed `NavalTargeting=6` not preventing from targeting empty water cells or TerrainTypes (trees etc.) on water.
 - Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still targeting TerrainTypes (trees etc.) on land with `Primary` weapon.
-- Fixed an issue that causes objects in layers outside ground layer to not be sorted correctly (caused issues with animation and jumpjet layering for an instance)
 - Fixed infantry without `C4=true` being killed in water if paradropped, chronoshifted etc. even if they can normally enter water.
 - Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings]->MCVRedeploys`.
 - Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
@@ -137,9 +135,25 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
 - `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
+- It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
+- Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
+- Fixed the issue where the powered anims of `Powered`/`PoweredSpecial` buildings cease to update when being captured by enemies.
+- Fix a glitch related to incorrect target setting for missiles.
+- Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
+- Units will no longer rotate its turret under EMP.
+- Jumpjets will no longer wobble under EMP.
+- Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes.
+- Fixed railgun and fire particles being cut off by elevation changes.
+- Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
+- Fixed teleport units being unable to visually tilt on slopes.
+- Fixed units with Teleport or Tunnel locomotor being unable to be visually flipped like other locomotors do.
+- Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
+- Spawned aircraft now align with the spawner's facing when landing.
+- Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers EnteredBy event by executing capture mission.
 
 ## Fixes / interactions with other extensions
 
+- All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
 
 ## Aircraft
@@ -154,6 +168,17 @@ In `rulesmd.ini`:
 [SOMEAIRCRAFT]            ; AircraftType
 SpawnDistanceFromTarget=  ; floating point value, distance in cells
 SpawnHeight=              ; integer, height in leptons
+```
+
+### Landing direction
+
+- By default aircraft land facing the direction specified by `[AudioVisual]`->`PoseDir`. This can now be customized per AircraftType via `LandingDir`, defaults to `[AudioVisual]`->`PoseDir`. If the building the aircraft is docking to has [aircraft docking direction](#aircraft-docking-direction) set, that setting takes priority over this.
+  - Negative values are allowed as a special case for `AirportBound=false` aircraft which makes them land facing their current direction.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]  ; AircraftType
+LandingDir=     ; Direction type (integers from 0-255). Accepts negative values as a special case.
 ```
 
 ## Animations
@@ -195,6 +220,7 @@ UseCenterCoordsIfAttached=false  ; boolean
 - `WakeAnim` contains a wake animation to play if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[General]` -> `Wake` if `IsMeteor` is not set to true, otherwise no animation.
 - `SplashAnims` contains list of splash animations used if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[CombatDamage]` -> `SplashList`.
   - If `SplashAnims.PickRandom` is set to true, picks a random animation from `SplashAnims` to use on each impact with water. Otherwise last listed animation from `SplashAnims` is used.
+- `ExtraShadow` can be set to false to disable the display of shadows on the ground.
 
 In `artmd.ini`:
 ```ini
@@ -204,6 +230,7 @@ Warhead.Detonate=false        ; boolean
 WakeAnim=                     ; Animation
 SplashAnims=                  ; list of animations
 SplashAnims.PickRandom=false  ; boolean
+ExtraShadow=true              ; boolean
 ```
 
 ### Layer on animations attached to objects
@@ -227,6 +254,16 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 ```
 
 ## Buildings
+
+### Aircraft docking direction
+
+- It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir(N)` (`N` optionally replaced by 0-based index for each `DockingOffset` separately, `AircraftDockingDir` and `AircraftDockingDir0` are synonymous and will be used if direction is not set for a specific offset) on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting and defaults to `[AudioVisual]` -> `PoseDir`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]          ; BuildingType
+AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
+```
 
 ### Airstrike target eligibility
 
@@ -294,6 +331,18 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]        ; BuildingType
 SellBuildupLength=23  ; integer, number of buildup frames to play
+```
+
+## Particle systems
+
+### Fire particle target coordinate adjustment when firer rotates
+
+- By default particle systems with `BehavesLike=Fire` shift their target coordinates if the object that created the particle system (e.g firer of a weapon) is rotating. This behavior can now be disabled per particle system type.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPARTICLESYSTEM]               ; ParticleSystemType
+AdjustTargetCoordsOnRotation=true  ; boolean
 ```
 
 ## Projectiles
@@ -561,6 +610,7 @@ Powered.KillSpawns=false ; boolean
   - `SpawnsPipoffset` can be used to shift the starting position of spawnee pips.
 - Pips for `Storage` can now also be customized via new keys in `[AudioVisual]`.
   - `Pips.Tiberiums.Frames` can be used to list frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for tiberium types, in the listed order corresponding to tiberium type index. Defaults to 5 for tiberium type index 1, otherwise 2.
+    - `Pips.Tiberiums.EmptyFrame` can be used to set the frame for empty slots, defaults to 0.
   - `Pips.Tiberiums.DisplayOrder` controls in which order the tiberium type pips are displayed, takes a list of tiberium type indices. Any tiberium type not listed will be displayed in sequential order after the listed ones.
 
 In `rulesmd.ini`:
@@ -570,6 +620,7 @@ Pips.Generic.Size=4,0                ; X,Y, increment in pixels to next pip
 Pips.Generic.Buildings.Size=4,2      ; X,Y, increment in pixels to next pip
 Pips.Ammo.Size=4,0                   ; X,Y, increment in pixels to next pip
 Pips.Ammo.Buildings.Size=4,2         ; X,Y, increment in pixels to next pip
+Pips.Tiberiums.EmptyFrame=0          ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
 Pips.Tiberiums.Frames=2,5,2,2        ; list of integers, frames of pips.shp (buildings) or pips2.shp (others) (zero-based)
 Pips.Tiberiums.DisplayOrder=0,2,3,1  ; list of integers, tiberium type indices
 
@@ -875,6 +926,17 @@ ShakeIsLocal=false  ; boolean
 
 ## Weapons
 
+### AmbientDamage customizations
+
+- You can now specify separate Warhead used for `AmbientDamage` via `AmbientDamage.Warhead` or make it never apply to weapon's main target by setting `AmbientDamage.IgnoreTarget` to true.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                      ; WeaponType
+AmbientDamage.Warhead=            ; WarheadType
+AmbientDamage.IgnoreTarget=false  ; boolean
+```
+
 ### Customizable disk laser radius
 
 ![image](_static/images/disklaser-radius-values-01.gif)
@@ -966,4 +1028,31 @@ In `rulesmd.ini`:
 ```ini
 [CrateRules]
 CrateOnlyOnLand=no  ; boolean
+```
+
+## DropPod
+
+DropPod properties can now be customized on a per-InfantryType basis.
+- Note that the DropPod is actually the infantry itself with a different shp image.
+- If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
+- By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
+  - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
+- If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
+- The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
+
+In `rulesmd.ini`
+```ini
+[SOMEINFANTRY]
+DropPod.Angle =               ; double, default to [General]->DropPodAngle, measured in radians
+DropPod.AtmosphereEntry =     ; anim, default to [AudioVisual]->AtmosphereEntry
+DropPod.GroundAnim =          ; 2 anims, default to [General]->DropPod
+DropPod.AirImage =            ; SHP file, the pod's shape, default to POD
+DropPod.Height =              ; int, default to [General]->DropPodHeight
+DropPod.Puff =                ; anim, default to [General]->DropPodPuff
+DropPod.Speed =               ; int, default to [General]->DropPodSpeed
+DropPod.Trailer =             ; anim, default to [General]->DropPodTrailer, which by default is SMOKEY
+DropPod.Trailer.Attached =    ; boolean, default to no
+DropPod.Trailer.SpawnDelay =  ; int, number of frames between each spawn of DropPod.Trailer, default to 6
+DropPod.Weapon =              ; weapon, default to [General]->DropPodWeapon
+DropPod.Weapon.HitLandOnly =  ; boolean, default to no
 ```
