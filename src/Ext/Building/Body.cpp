@@ -416,6 +416,15 @@ DEFINE_HOOK(0x453E20, BuildingClass_SaveLoad_Prefix, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x454174, BuildingClass_Load, 0xA)
+{
+	GET(BuildingClass*, pThis, EDI);
+
+	SwizzleManagerClass::Instance->Swizzle((void**)&pThis->LightSource);
+
+	return 0x45417E;
+}
+
 DEFINE_HOOK(0x45417E, BuildingClass_Load_Suffix, 0x5)
 {
 	BuildingExt::ExtMap.LoadStatic();
