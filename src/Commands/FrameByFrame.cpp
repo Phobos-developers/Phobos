@@ -34,7 +34,7 @@ void FrameByFrameCommandClass::Execute(WWKey eInput) const
 	if (this->CheckDebugDeactivated())
 		return;
 
-	if (!SessionClass::Instance->IsSingleplayer())
+	if (!SessionClass::IsSingleplayer())
 		return;
 
 	if (!FrameStep)
