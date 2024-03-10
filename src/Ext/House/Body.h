@@ -22,7 +22,7 @@ public:
 	{
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
-		std::map<BuildingClass*, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
+		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 		std::vector<TechnoExt::ExtData*> OwnedAutoDeathObjects;
 		std::vector<TechnoExt::ExtData*> OwnedTransportReloaders; // Objects that can reload ammo in limbo
 

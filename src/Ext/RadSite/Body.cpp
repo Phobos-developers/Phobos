@@ -37,7 +37,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 {
 	// use real ctor
 	auto const pRadSite = GameCreate<RadSiteClass>();
-	auto pRadExt = RadSiteExt::ExtMap.FindOrAllocate(pRadSite);
+	auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 
 	//Adding Owner to RadSite, from bullet
 	if (pWeaponExt->RadType->GetHasOwner() && pRadExt->RadHouse != pOwner)
@@ -61,10 +61,8 @@ void RadSiteExt::ExtData::CreateLight()
 	auto nLevelDelay = this->Type->GetLevelDelay();
 	auto nLightDelay = this->Type->GetLightDelay();
 
-	pThis->RadLevelTimer.StartTime = Unsorted::CurrentFrame;
-	pThis->RadLevelTimer.TimeLeft = nLevelDelay;
-	pThis->RadLightTimer.StartTime = Unsorted::CurrentFrame;
-	pThis->RadLightTimer.TimeLeft = nLightDelay;
+	pThis->RadLevelTimer.Start(nLevelDelay);
+	pThis->RadLightTimer.Start(nLightDelay);
 
 	auto nLightFactor = pThis->RadLevel * this->Type->GetLightFactor();
 	nLightFactor = Math::min(nLightFactor, 2000.0);
