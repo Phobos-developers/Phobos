@@ -2,7 +2,7 @@
 
 #include <SuperClass.h>
 
-//Ares hooked at 0x6CC390 and jumped to 0x6CDE40
+// Ares hooked at 0x6CC390 and jumped to 0x6CDE40
 // If a super is not handled by Ares however, we do it at the original entry point
 DEFINE_HOOK_AGAIN(0x6CC390, SuperClass_Place_FireExt, 0x6)
 DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x4)
@@ -15,7 +15,7 @@ DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x4)
 	if (pSuper && VTable::Get(pSuper) == SuperClass::AbsVTable)
 		SWTypeExt::FireSuperWeaponExt(pSuper, *pCell);
 	else
-		Debug::Log("SuperClass_Place_FireExt: Hook entered with an invalid or corrupt SuperClass pointer.");
+		Debug::Log(__FUNCTION__": Hook entered with an invalid or corrupt SuperClass pointer.");
 
 	return 0;
 }

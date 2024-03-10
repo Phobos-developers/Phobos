@@ -43,6 +43,7 @@ public:
 
 		Valueable<bool> AAOnly;
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
+		Nullable<WeaponTypeClass*> ReturnWeapon;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -69,6 +70,7 @@ public:
 			, SubjectToWater_Detonate { true }
 			, AAOnly { false }
 			, Arcing_AllowElevationInaccuracy { true }
+			, ReturnWeapon {}
 		{ }
 
 		virtual ~ExtData() = default;
