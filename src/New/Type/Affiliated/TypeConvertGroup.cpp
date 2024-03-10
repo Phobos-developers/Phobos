@@ -1,7 +1,7 @@
 #include <Ext/Techno/Body.h>
 #include "TypeConvertGroup.h"
 
-void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner)
+void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner, AnimTypeClass* pAnimType)
 {
 	for (const auto& [fromTypes, toType, affectedHouses] : convertPairs)
 	{
@@ -17,14 +17,27 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 				// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
 				if (from == pTargetFoot->GetTechnoType())
 				{
-					TechnoExt::ConvertToType(pTargetFoot, toType);
+					bool converted = TechnoExt::ConvertToType(pTargetFoot, toType);
+
+					if (converted && pAnimType)
+					{
+						if (auto pAnim = GameCreate<AnimClass>(pAnimType, pTargetFoot->Location))
+							pAnim->SetOwnerObject(pTargetFoot);
+					}
+
 					break;
 				}
 			}
 		}
 		else
 		{
-			TechnoExt::ConvertToType(pTargetFoot, toType);
+			bool converted = TechnoExt::ConvertToType(pTargetFoot, toType);
+
+			if (converted && pAnimType)
+			{
+				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pTargetFoot->Location))
+					pAnim->SetOwnerObject(pTargetFoot);
+			}
 		}
 	}
 }
