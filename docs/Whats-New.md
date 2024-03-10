@@ -10,7 +10,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 - The obsolete `[General] WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
@@ -36,8 +35,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `Grinding.DisplayRefund` is changed to `DisplayIncome`, `Grinding.DisplayRefund.Houses` is changed to `DisplayIncome.Houses`, `Grinding.DisplayRefund.Offset` is changed to `DisplayIncome.Offset`
 - `[JumpjetControls]`->`AllowLayerDeviation` and `JumpjetAllowLayerDeviation` have been deprecated as the animation layering issues have been properly fixed by default now.
 - `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
-  - `OmniFire.TurnToTarget` is recommended for jumpjet units' omnifiring weapons for facing turning.
 - Buildings delivered by trigger action 125 will now **always** play buildup anim as long as it exists. `[ParamTypes]->53` is deprecated.
+- `Shadow` for debris & meteor animations is changed to `ExtraShadow`.
 
 #### From pre-0.3 devbuilds
 
@@ -356,6 +355,11 @@ New:
 - Allow toggling whether or not fire particle systems adjust target coordinates when firer rotates (by Starkku)
 - `AmbientDamage` warhead & main target ignore customization (by Starkku)
 - Grant new superweapons in superweapons (by FS-21).
+- Flashing Technos on selecting (by Fryone)
+- Customizable DropPod properties on a per-InfantryType basis (by Trsdy)
+- Projectile return weapon (by Starkku)
+- Allow customizing aircraft landing direction per aircraft or per dock (by Starkku)
+- Allow animations to play sounds detached from audio event handler (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -409,6 +413,11 @@ Vanilla fixes:
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes (by Starkku)
 - Fixed railgun and fire particles being cut off by elevation changes (by Starkku)
 - Fixed teleport units' frozen-still timer being reset after load game (by Trsdy)
+- Fixed teleport units being unable to visually tilt on slopes (by Trsdy)
+- Fixed teleport and drill units being unable to be visually flipped (by Trsdy)
+- Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction (by Starkku)
+- Spawned aircraft now align with the spawner's facing when landing (by Starkku)
+- Fixed infantries attempted to entering buildings when waypointing together with engineer/agent/occupier/etc (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -439,6 +448,7 @@ Phobos fixes:
 - Fixed `DetonateOnAllMapObjects` behaving erratically or potentially crashing if it destroys buildings using Ares' advanced rubble (by Starkku)
 - Fixed game crashing on loading save games if the saved game state had active radiation sites (by Starkku)
 - Fixed a desync error caused by air/top layer sorting (by Starkku)
+- Fixed heal / repair weapons being unable to remove parasites from shielded targets if they were unable to heal / repair the parent unit (by Starkku)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)

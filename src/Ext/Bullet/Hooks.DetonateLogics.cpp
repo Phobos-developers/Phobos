@@ -4,10 +4,9 @@
 #include <Ext/CaptureManager/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Techno/Body.h>
 
 #include <AircraftClass.h>
-#include <BuildingClass.h>
-#include <InfantryClass.h>
 #include <TacticalClass.h>
 
 DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
@@ -31,9 +30,9 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 
 	if (auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
-		Point2D screenCoords;
+		auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
 
-		if (pExt->ShakeIsLocal && !TacticalClass::Instance->CoordsToClient(*pCoords, &screenCoords))
+		if (pExt->ShakeIsLocal && !visible)
 			return SkipShaking;
 	}
 
@@ -257,11 +256,12 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x46A290, BulletClass_Logics_ExtraWarheads, 0x5)
+DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 {
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct*, coords, 0x8);
 
+	// Extra warheads
 	if (pThis->WeaponType)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
@@ -277,6 +277,27 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_ExtraWarheads, 0x5)
 				damage = pWeaponExt->ExtraWarheads_DamageOverrides[i];
 
 			WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner);
+		}
+	}
+
+	// Return to sender
+	if (pThis->Type && pThis->Owner)
+	{
+		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+		if (pTypeExt->ReturnWeapon.isset())
+		{
+			auto const pWeapon = pTypeExt->ReturnWeapon.Get();
+
+			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pThis->Owner, pThis->Owner,
+				pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+			{
+				pBullet->WeaponType = pWeapon;
+				auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+				pBulletExt->FirerHouse = BulletExt::ExtMap.Find(pThis)->FirerHouse;
+
+				pBullet->MoveTo(pThis->Location, BulletVelocity::Empty);
+			}
 		}
 	}
 

@@ -241,6 +241,16 @@ ShowTimer=yes
 ShowTimer.Priority=0  ; integer
 ```
 
+### Flashing Technos on selecting
+
+Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SelectionFlashDuration=0  ; integer, number of frames
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers

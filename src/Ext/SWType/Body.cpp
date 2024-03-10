@@ -147,42 +147,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
 
 	// Convert.From & Convert.To
-	for (size_t i = 0; ; ++i)
-	{
-		ValueableVector<TechnoTypeClass*> convertFrom;
-		Nullable<TechnoTypeClass*> convertTo;
-		Nullable<AffectedHouse> convertAffectedHouses;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
-		convertFrom.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
-		convertTo.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i);
-		convertAffectedHouses.Read(exINI, pSection, tempBuffer);
-
-		if (!convertTo.isset())
-			break;
-
-		if (!convertAffectedHouses.isset())
-			convertAffectedHouses = AffectedHouse::Owner;
-
-		this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
-	}
-	ValueableVector<TechnoTypeClass*> convertFrom;
-	Nullable<TechnoTypeClass*> convertTo;
-	Nullable<AffectedHouse> convertAffectedHouses;
-	convertFrom.Read(exINI, pSection, "Convert.From");
-	convertTo.Read(exINI, pSection, "Convert.To");
-	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
-	if (convertTo.isset())
-	{
-		if (!convertAffectedHouses.isset())
-			convertAffectedHouses = AffectedHouse::Owner;
-
-		if (this->Convert_Pairs.size())
-			this->Convert_Pairs[0] = { convertFrom, convertTo, convertAffectedHouses };
-		else
-			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
-	}
+	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::Owner);
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
 

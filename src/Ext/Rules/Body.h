@@ -54,6 +54,8 @@ public:
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
 
+		Nullable<double> Shield_ConditionYellow;
+		Nullable<double> Shield_ConditionRed;
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
@@ -68,6 +70,7 @@ public:
 		Valueable<Point2D> Pips_Generic_Buildings_Size;
 		Valueable<Point2D> Pips_Ammo_Size;
 		Valueable<Point2D> Pips_Ammo_Buildings_Size;
+		Valueable<int> Pips_Tiberiums_EmptyFrame;
 		ValueableVector<int> Pips_Tiberiums_Frames;
 		ValueableVector<int> Pips_Tiberiums_DisplayOrder;
 
@@ -104,6 +107,9 @@ public:
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
+		Valueable<int> SelectionFlashDuration;
+		AnimTypeClass* DropPodTrailer;
+		SHPStruct* PodImage;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -128,6 +134,8 @@ public:
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
 
+			, Shield_ConditionYellow { }
+			, Shield_ConditionRed { }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }
@@ -141,6 +149,7 @@ public:
 			, Pips_Generic_Buildings_Size { { 4, 2 } }
 			, Pips_Ammo_Size { { 4, 0 } }
 			, Pips_Ammo_Buildings_Size { { 4, 2 } }
+			, Pips_Tiberiums_EmptyFrame { 0 }
 			, Pips_Tiberiums_Frames {}
 			, Pips_Tiberiums_DisplayOrder {}
 			, AllowParallelAIQueues { true }
@@ -163,6 +172,7 @@ public:
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
+			, SelectionFlashDuration { 0 }
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
@@ -170,6 +180,8 @@ public:
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
 			, ShowDesignatorRange { true }
+			, DropPodTrailer { }
+			, PodImage { }
 		{ }
 
 		virtual ~ExtData() = default;

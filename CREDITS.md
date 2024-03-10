@@ -23,8 +23,8 @@ This page lists all the individual contributions to the project by their author.
   - Check for Changelog/Documentation/Credits in Pull Requests
   - Fix position and layer of info tip and reveal production cameo on selected building
   - Fix a glitch related to incorrect target setting for missiles
+  - Ability to disable shadow for debris & meteor animations
 - **Kerbiter (Metadorius)**:
-  - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
   - Extended tooltips
   - Selection priority filtering
@@ -44,6 +44,7 @@ This page lists all the individual contributions to the project by their author.
   - VSCode configs
   - Code style
   - Customizable ElectricBolt Arcs
+  - Ability to disable shadow for debris & meteor animations
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -220,6 +221,8 @@ This page lists all the individual contributions to the project by their author.
   - Weapon effect obstacle interaction fix
   - Fire particle rotation coordinate adjust toggle
   - `AmbientDamage` warhead & main target ignore customization
+  - Projectile return weapon
+  - Aircraft landing / docking direction
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -288,7 +291,10 @@ This page lists all the individual contributions to the project by their author.
    - TechnoType conversion placeholder
    - EIP 00529A14 crash fix on Linux
    - Teleport timer reset after load game fix
+   - Teleport and Tunnel loco visual tilt fix
    - Skip units' turret rotation and jumpjets' wobbling under EMP
+   - Droppod properties dehardcode
+   - Waypoint entering building together with engineer/agent bug fix
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -309,6 +315,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
   - Auto-deploy/Deploy block on ammo change
+  - Flashing Technos on selecting
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
 - **Ares developers**

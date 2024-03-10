@@ -16,6 +16,7 @@
 #include <BombClass.h>
 #include <ParticleSystemClass.h>
 #include <WarheadTypeClass.h>
+#include <HashTable.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -27,15 +28,6 @@
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
 #include <Utilities/TemplateDef.h>
-
-//Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
-DEFINE_HOOK(0x423365, Phobos_BugFixes_SHPShadowCheck, 0x8)
-{
-	GET(AnimClass*, pAnim, ESI);
-	return (pAnim->Type->Shadow && pAnim->HasExtras) ?
-		0x42336D :
-		0x4233EE;
-}
 
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
@@ -670,28 +662,37 @@ DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
 DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);
 
 // Fixes second half of Colors list not getting retinted correctly by map triggers, superweapons etc.
-#pragma region LightingColorSchemesFix
-
-namespace AdjustLightingTemp
+DEFINE_HOOK(0x53AD85, IonStormClass_AdjustLighting_ColorSchemes, 0x5)
 {
-	int colorSchemeCount = 0;
+	enum { SkipGameCode = 0x53ADD6 };
+
+	GET_STACK(bool, tint, STACK_OFFSET(0x20, 0x8));
+	GET(HashIterator*, it, ECX);
+	GET(int, red, EBP);
+	GET(int, green, EDI);
+	GET(int, blue, EBX);
+
+	int paletteCount = 0;
+
+	for (auto pSchemes = ColorScheme::GetPaletteSchemesFromIterator(it); pSchemes; pSchemes = ColorScheme::GetPaletteSchemesFromIterator(it))
+	{
+		for (int i = 1; i < pSchemes->Count; i += 2)
+		{
+			auto pScheme = pSchemes->GetItem(i);
+			pScheme->LightConvert->UpdateColors(red, green, blue, tint);
+		}
+
+		paletteCount++;
+	}
+
+	if (paletteCount > 0)
+	{
+		int schemeCount = ColorScheme::GetNumberOfSchemes();
+		Debug::Log("Recalculated %d extra palettes across %d color schemes (total: %d).\n", paletteCount, schemeCount, schemeCount* paletteCount);
+	}
+
+	return SkipGameCode;
 }
-
-DEFINE_HOOK(0x53AD7D, IonStormClass_AdjustLighting_SetContext, 0x8)
-{
-	AdjustLightingTemp::colorSchemeCount = ColorScheme::GetNumberOfSchemes() * 2;
-
-	return 0;
-}
-
-int __fastcall NumberOfSchemes_Wrapper()
-{
-	return AdjustLightingTemp::colorSchemeCount;
-}
-
-DEFINE_JUMP(CALL, 0x53AD92, GET_OFFSET(NumberOfSchemes_Wrapper));
-
-#pragma endregion
 
 // Fixes a literal edge-case in passability checks to cover cells with bridges that are not accessible when moving on the bridge and
 // normally not even attempted to enter but things like MapClass::NearByLocation() can still end up trying to pick.
@@ -803,4 +804,8 @@ DEFINE_HOOK(0x689EB0, ScenarioClass_ReadMap_SkipHeaderInCampaign, 0x6)
 	return SessionClass::IsCampaign() ? 0x689FC0 : 0;
 }
 
-DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Skip incorrect load ctor call in TeleportLocomotionClass_Load
+//Skip incorrect load ctor call in various LocomotionClass_Load
+DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Teleport, notorious CLEG frozen state removal on loading game
+DEFINE_JUMP(LJMP, 0x72A16A, 0x72A186);//Tunnel, not a big deal
+DEFINE_JUMP(LJMP, 0x663428, 0x663445);//Rocket, not a big deal
+DEFINE_JUMP(LJMP, 0x5170CE, 0x5170E0);//Hover, not a big deal

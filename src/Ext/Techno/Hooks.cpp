@@ -13,24 +13,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	// Do not search this up again in any functions called here because it is costly for performance - Starkku
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	auto pType = pThis->GetTechnoType();
-
-	// Set only if unset or type is changed
-	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
-	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
-		pExt->UpdateTypeData(pType);
-
-	pExt->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
-
-	if (pExt->CheckDeathConditions())
-		return 0;
-
-	pExt->ApplyInterceptor();
-	pExt->EatPassengers();
-	pExt->UpdateShield();
-	pExt->ApplySpawnLimitRange();
-	pExt->UpdateLaserTrails();
-	pExt->DepletedAmmoActions();
+	pExt->OnEarlyUpdate();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 
@@ -455,4 +438,17 @@ DEFINE_HOOK(0x51BAFB, InfantryClass_ChronoSparkleDelay, 0x5)
 {
 	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
 	return 0x51BB00;
+}
+
+DEFINE_HOOK_AGAIN(0x5F4718, ObjectClass_Select, 0x7)
+DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
+{
+	GET(ObjectClass*, pThis, ESI);
+
+	pThis->IsSelected = true;
+
+	if(RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
+
+	return 0;
 }
