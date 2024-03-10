@@ -340,9 +340,11 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->GrindingWeapon_LastFiredFrame)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedIncome)
-		.Process(this->OwnerObject()->LightSource)
 		.Process(this->CurrentLaserWeaponIndex)
 		;
+
+	if (this->OwnerObject()->LightSource)
+		Stm.Process(this->OwnerObject()->LightSource);
 }
 
 void BuildingExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
