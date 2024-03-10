@@ -64,7 +64,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		// Normally on unlimbo the buildings are revealed to current player if unshrouded or if game is a campaign and to non-player houses always.
 		// Because of the unique nature of LimboDelivered buildings, this has been adjusted to always reveal to the current player in singleplayer
 		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist - Starkku
-		if (SessionClass::Instance->GameMode == GameMode::Campaign)
+		if (SessionClass::IsCampaign())
 			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
 
 		pBuilding->DiscoveredBy(pOwner);
@@ -271,7 +271,7 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 		{
 			const auto pNextTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 			if (!this->SW_Next_RealLaunch ||
-				(pSuper->Granted && pSuper->IsCharged && !pSuper->IsOnHold && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
+				(pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
 			{
 				if (this->SW_Next_IgnoreInhibitors || !pNextTypeExt->HasInhibitor(pHouse, cell)
 					&& (this->SW_Next_IgnoreDesignators || pNextTypeExt->HasDesignator(pHouse, cell)))
@@ -312,5 +312,5 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 		return;
 
 	for (const auto pTargetFoot : *FootClass::Array)
-		TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
+		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }

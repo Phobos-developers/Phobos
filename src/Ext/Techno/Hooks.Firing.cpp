@@ -458,16 +458,16 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
-	if (auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
 		if (pWeaponExt->FeedbackWeapon.isset())
 		{
-			auto fbWeapon = pWeaponExt->FeedbackWeapon.Get();
+			auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon.Get();
 
-			if (pThis->InOpenToppedTransport && !fbWeapon->FireInTransport)
+			if (pThis->InOpenToppedTransport && !pWeaponFeedback->FireInTransport)
 				return 0;
 
-			WeaponTypeExt::DetonateAt(fbWeapon, pThis, pThis);
+			WeaponTypeExt::DetonateAt(pWeaponFeedback, pThis, pThis);
 		}
 	}
 

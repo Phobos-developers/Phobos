@@ -41,6 +41,8 @@ public:
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		Valueable<double> RandomTarget;
 		Valueable<bool> RandomTarget_Spawners_MultipleTargets;
+		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
+		Valueable<bool> AmbientDamage_IgnoreTarget;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -64,6 +66,8 @@ public:
 			, ExtraWarheads_DamageOverrides {}
 			, RandomTarget { 0.0 }
 			, RandomTarget_Spawners_MultipleTargets { false }
+			, AmbientDamage_Warhead {}
+			, AmbientDamage_IgnoreTarget { false }
 		{ }
 
 		int GetBurstDelay(int burstIndex);

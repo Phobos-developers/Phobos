@@ -68,6 +68,8 @@ public:
 			, CurrentRandomTarget { nullptr }
 		{ }
 
+		void OnEarlyUpdate();
+
 		void ApplyInterceptor();
 		bool CheckDeathConditions(bool isInLimbo = false);
 		void DepletedAmmoActions();
