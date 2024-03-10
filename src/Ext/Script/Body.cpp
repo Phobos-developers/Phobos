@@ -1130,7 +1130,6 @@ void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine = fals
 	{
 		pTeamData->ForceJump_InitialCountdown = -1;
 		pTeamData->ForceJump_Countdown.Stop();
-		pTeamData->ForceJump_Countdown = -1;
 		pTeamData->ForceJump_RepeatMode = false;
 	}
 
@@ -1153,7 +1152,6 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
 
 	pTeamData->ForceJump_InitialCountdown = -1;
 	pTeamData->ForceJump_Countdown.Stop();
-	pTeamData->ForceJump_Countdown = -1;
 	pTeamData->ForceJump_RepeatMode = false;
 
 	auto pScript = pTeam->CurrentScript;
@@ -1240,9 +1238,9 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 		return;
 	}
 
-	if (!pSuperChronosphere->IsCharged || (pSuperChronosphere->IsPowered() && !pOwner->Is_Powered()))
+	if (!pSuperChronosphere->IsReady || (pSuperChronosphere->IsPowered() && !pOwner->Is_Powered()))
 	{
-		if (pSuperChronosphere->Granted)
+		if (pSuperChronosphere->IsPresent)
 		{
 			int rechargeTime = pSuperChronosphere->GetRechargeTime();
 			int timeLeft = pSuperChronosphere->RechargeTimer.GetTimeLeft();

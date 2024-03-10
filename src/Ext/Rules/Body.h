@@ -48,9 +48,14 @@ public:
 		Valueable<bool> JumpjetNoWobbles;
 
 		PhobosFixedString<32u> MissingCameo;
+
 		TranslucencyLevel PlacementGrid_Translucency;
+		Nullable<TranslucencyLevel> PlacementGrid_TranslucencyWithPreview;
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
+
+		Nullable<double> Shield_ConditionYellow;
+		Nullable<double> Shield_ConditionRed;
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
@@ -65,8 +70,9 @@ public:
 		Valueable<Point2D> Pips_Generic_Buildings_Size;
 		Valueable<Point2D> Pips_Ammo_Size;
 		Valueable<Point2D> Pips_Ammo_Buildings_Size;
+		Valueable<int> Pips_Tiberiums_EmptyFrame;
 		ValueableVector<int> Pips_Tiberiums_Frames;
-		NullableVector<int> Pips_Tiberiums_DisplayOrder;
+		ValueableVector<int> Pips_Tiberiums_DisplayOrder;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -101,6 +107,9 @@ public:
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
+		Valueable<int> SelectionFlashDuration;
+		AnimTypeClass* DropPodTrailer;
+		SHPStruct* PodImage;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -119,9 +128,14 @@ public:
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, MissingCameo { GameStrings::XXICON_SHP() }
+
 			, PlacementGrid_Translucency { 0 }
+			, PlacementGrid_TranslucencyWithPreview { }
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
+
+			, Shield_ConditionYellow { }
+			, Shield_ConditionRed { }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }
@@ -135,6 +149,7 @@ public:
 			, Pips_Generic_Buildings_Size { { 4, 2 } }
 			, Pips_Ammo_Size { { 4, 0 } }
 			, Pips_Ammo_Buildings_Size { { 4, 2 } }
+			, Pips_Tiberiums_EmptyFrame { 0 }
 			, Pips_Tiberiums_Frames {}
 			, Pips_Tiberiums_DisplayOrder {}
 			, AllowParallelAIQueues { true }
@@ -157,6 +172,7 @@ public:
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
+			, SelectionFlashDuration { 0 }
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
@@ -164,6 +180,8 @@ public:
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
 			, ShowDesignatorRange { true }
+			, DropPodTrailer { }
+			, PodImage { }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -101,4 +101,5 @@ public:
 	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
 	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
+	static bool CanUndeployOnSell(BuildingClass* pThis);
 };

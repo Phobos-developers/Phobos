@@ -10,7 +10,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 - The obsolete `[General] WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
@@ -20,6 +19,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Air and Top layer contents are no longer sorted, animations in these layers no longer respect `YSortAdjust`. Animations attached to flying units now get their layer updated immediately after parent unit, if they are on same layer they will draw above the parent unit.
 - `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 - `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
@@ -35,8 +35,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `Grinding.DisplayRefund` is changed to `DisplayIncome`, `Grinding.DisplayRefund.Houses` is changed to `DisplayIncome.Houses`, `Grinding.DisplayRefund.Offset` is changed to `DisplayIncome.Offset`
 - `[JumpjetControls]`->`AllowLayerDeviation` and `JumpjetAllowLayerDeviation` have been deprecated as the animation layering issues have been properly fixed by default now.
 - `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
-  - `OmniFire.TurnToTarget` is recommended for jumpjet units' omnifiring weapons for facing turning.
 - Buildings delivered by trigger action 125 will now **always** play buildup anim as long as it exists. `[ParamTypes]->53` is deprecated.
+- `Shadow` for debris & meteor animations is changed to `ExtraShadow`.
 
 #### From pre-0.3 devbuilds
 
@@ -348,6 +348,18 @@ New:
 - Allow toggling `Infantry/UnitsGainSelfHeal` for `MultiplayPassive=true` houses (by Starkku)
 - Customizable straight trajectory detonation & snap distance and pass-through option (by Starkku)
 - Airstrike & spy plane fixed spawn distance & height (by Starkku)
+- Allow enabling application of `Verses` and `PercentAtMax` for negative damage (by Starkku)
+- In addition to `PlacementGrid.Translucency`, allow to set the transparency of the grid when PlacementPreview is enabled, using the `PlacementGrid.TranslucencyWithPreview` tag (by Belonit).
+- Show briefing screen on singleplayer mission start (by Starkku)
+- Allow setting mission par times and related messages in `missionmd.ini` (by Starkku)
+- Allow setting default singleplayer map loading screen and briefing offsets (by Starkku)
+- Allow toggling whether or not fire particle systems adjust target coordinates when firer rotates (by Starkku)
+- `AmbientDamage` warhead & main target ignore customization (by Starkku)
+- Flashing Technos on selecting (by Fryone)
+- Customizable DropPod properties on a per-InfantryType basis (by Trsdy)
+- Projectile return weapon (by Starkku)
+- Allow customizing aircraft landing direction per aircraft or per dock (by Starkku)
+- Allow animations to play sounds detached from audio event handler (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -394,6 +406,18 @@ Vanilla fixes:
 - `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting (by Starkku)
 - Fixed position and layer of info tip and reveal production cameo on selected building (by Belonit)
 - Fixed `TurretOffset` to be supported for SHP vehicles (by TwinkleStar)
+- `Powered`/`PoweredSpecial` buildings' powered anims will update as usual when being captured by enemies (by Trsdy)
+- Fixed a glitch related to incorrect target setting for missiles (by Belonit)
+- Skipped parsing `[Header]` section of compaign maps which led to occasional crashes on Linux (by Trsdy)
+- Fixed units' turret rotation and jumpjet wobble under EMP (by Trsdy)
+- Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes (by Starkku)
+- Fixed railgun and fire particles being cut off by elevation changes (by Starkku)
+- Fixed teleport units' frozen-still timer being reset after load game (by Trsdy)
+- Fixed teleport units being unable to visually tilt on slopes (by Trsdy)
+- Fixed teleport and drill units being unable to be visually flipped (by Trsdy)
+- Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction (by Starkku)
+- Spawned aircraft now align with the spawner's facing when landing (by Starkku)
+- Fixed infantries attempted to entering buildings when waypointing together with engineer/agent/occupier/etc (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -419,8 +443,15 @@ Phobos fixes:
 - Optimized performance for map trigger retint action light source fix (by Starkku)
 - Fixed a number of issues with Warhead Shield respawn / self heal rate modifiers like timers getting reset unnecessarily, the timer being adjusted wrong after the Warhead effect runs out etc. (by Starkku)
 - Fixed a problem with disguise visibility logic that could cause game to crash on loading a map (by Starkku)
+- Fixed owned `LimboDelivery` buildings not being saved correctly in savegames (by Starkku)
+- Fixed a typo in weapon selector code causing issues with `NoAmmoWeapon` and related checks (by Starkku)
+- Fixed `DetonateOnAllMapObjects` behaving erratically or potentially crashing if it destroys buildings using Ares' advanced rubble (by Starkku)
+- Fixed game crashing on loading save games if the saved game state had active radiation sites (by Starkku)
+- Fixed a desync error caused by air/top layer sorting (by Starkku)
+- Fixed heal / repair weapons being unable to remove parasites from shielded targets if they were unable to heal / repair the parent unit (by Starkku)
 
 Fixes / interactions with other extensions:
+- All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
 </details>
 
@@ -619,7 +650,6 @@ Phobos fixes:
 - Fixed techno-extdata update after type conversion (by Trsdy)
 - Fixed Phobos Warhead effects (crits, new shield modifiers etc.) considering sinking units valid targets (by Starkku)
 - Fixed an issue where `FireOnce=yes` deploy weapons on vehicles would still fire multiple times if deploy command is issued repeatedly or when not idle (by Starkku)
-- Fixed techno-extdata update after type conversion (by Trsdy)
 - Fixed a game crash when checking BuildLimit if Phobos is running without Ares (by Belonit)
 - Corrected the misinterpretation in the definition of `DiskLaser.Radius` (by Trsdy)
 
