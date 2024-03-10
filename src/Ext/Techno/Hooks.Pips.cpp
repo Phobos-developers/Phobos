@@ -164,35 +164,35 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	Point2D position = { offset->X, offset->Y };
 	int totalStorage = pThis->GetTechnoType()->Storage;
 
-	std::vector<int> tiberiumCounts(TiberiumClass::Array.get()->Count);
+	std::vector<int> tibPipCounts(TiberiumClass::Array.get()->Count);
 
-	for (size_t i = 0; i < tiberiumCounts.size(); i++)
+	for (size_t i = 0; i < tibPipCounts.size(); i++)
 	{
-		tiberiumCounts[i] = static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5);
+		tibPipCounts[i] = static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5);
 	}
 
-	auto const orders = RulesExt::Global()->Pips_Tiberiums_DisplayOrder.GetElements(std::vector<int>{0, 2, 3, 1});
+	auto const& tibDisplayOrders = RulesExt::Global()->Pips_Tiberiums_DisplayOrder.size() ? RulesExt::Global()->Pips_Tiberiums_DisplayOrder : std::vector<int> { 0, 2, 3, 1 };
 	auto const& tibFrames = RulesExt::Global()->Pips_Tiberiums_Frames;
 
 	for (int i = 0; i < maxPips; i++)
 	{
-		int frame = 0;
+		int frame = RulesExt::Global()->Pips_Tiberiums_EmptyFrame;
 
-		for (size_t c = 0; c < tiberiumCounts.size(); c++)
+		for (size_t orderIndex = 0; orderIndex < tibPipCounts.size(); orderIndex++)
 		{
-			size_t index = c;
+			size_t tibTypeIndex = orderIndex;
 
-			if (c < orders.size())
-				index = orders.at(c);
+			if (orderIndex < tibDisplayOrders.size())
+				tibTypeIndex = tibDisplayOrders.at(orderIndex);
 
-			if (tiberiumCounts[index] > 0)
+			if (tibPipCounts[tibTypeIndex] > 0)
 			{
-				tiberiumCounts[index]--;
+				tibPipCounts[tibTypeIndex]--;
 
-				if (index >= tibFrames.size())
-					frame = index == 1 ? 5 : 2;
+				if (tibTypeIndex >= tibFrames.size())
+					frame = tibTypeIndex == 1 ? 5 : 2;
 				else
-					frame = tibFrames.at(index);
+					frame = tibFrames.at(tibTypeIndex);
 
 				break;
 			}

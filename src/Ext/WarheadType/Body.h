@@ -6,7 +6,7 @@
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <Ext/Bullet/Body.h>
-#include <Misc/TypeConvertHelper.h>
+#include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class WarheadTypeExt
 {
@@ -40,6 +40,7 @@ public:
 		Valueable<bool> RemoveMindControl;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
+		Valueable<bool> ApplyModifiersOnNegativeDamage;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -158,6 +159,7 @@ public:
 			, RemoveMindControl { false }
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
+			, ApplyModifiersOnNegativeDamage { false }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }

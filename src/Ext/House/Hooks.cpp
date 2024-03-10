@@ -61,11 +61,6 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 	REF_STACK(float, amount, 0x1C);
 
 	auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-	if (!pTypeExt)
-		return 0;
-
-	if (!pBuilding->Owner)
-		return 0;
 
 	auto storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
 

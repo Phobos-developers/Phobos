@@ -11,6 +11,7 @@ constexpr auto NONE_STR = "<none>";
 constexpr auto NONE_STR2 = "none";
 constexpr auto TOOLTIPS_SECTION = "ToolTips";
 constexpr auto SIDEBAR_SECTION = "Sidebar";
+constexpr auto UISETTINGS_SECTION = "UISettings";
 
 class Phobos
 {
@@ -31,6 +32,7 @@ public:
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
 	static bool DisplayDamageNumbers;
+	static bool IsLoadingSaveGame;
 
 #ifdef DEBUG
 	static bool DetachFromDebugger();
@@ -56,6 +58,8 @@ public:
 		static const wchar_t* PowerBlackoutLabel;
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
+		static const wchar_t* ShowBriefingResumeButtonLabel;
+		static char ShowBriefingResumeButtonStatusLabel[0x20];
 	};
 
 	class Config

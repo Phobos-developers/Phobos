@@ -74,6 +74,8 @@ public:
 			, WebbyLastMission { Mission::Sleep }
 		{ }
 
+		void OnEarlyUpdate();
+
 		void ApplyInterceptor();
 		bool CheckDeathConditions(bool isInLimbo = false);
 		void DepletedAmmoActions();
