@@ -1,3 +1,4 @@
+// methods used in TechnoClass_AI hooks or anything similar
 #include "Body.h"
 
 #include <SpawnManagerClass.h>
@@ -9,7 +10,31 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
-// methods used in TechnoClass_AI hooks or anything similar
+
+// TechnoClass_AI_0x6F9E50
+// It's not recommended to do anything more here it could have a better place for performance consideration
+void TechnoExt::ExtData::OnEarlyUpdate()
+{
+	auto pType = this->OwnerObject()->GetTechnoType();
+
+	// Set only if unset or type is changed
+	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
+	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
+		this->UpdateTypeData(pType);
+
+	this->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
+
+	if (this->CheckDeathConditions())
+		return;
+
+	this->ApplyInterceptor();
+	this->EatPassengers();
+	this->UpdateShield();
+	this->ApplySpawnLimitRange();
+	this->UpdateLaserTrails();
+	this->DepletedAmmoActions();
+}
+
 
 void TechnoExt::ExtData::ApplyInterceptor()
 {
@@ -70,16 +95,11 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
-	auto const pThis = this->OwnerObject();
-	auto const pType = pThis->GetTechnoType();
-	if ((pThis->WhatAmI() != AbstractType::Unit) || (pType->Ammo <= 0))
+	auto const pThis = specific_cast<UnitClass*>(this->OwnerObject());
+	if (!pThis || (pThis->Type->Ammo <= 0) ||!pThis->Type->IsSimpleDeployer)
 		return;
 
 	auto const pTypeExt = this->TypeExtData;
-	auto const pUnit = abstract_cast<UnitClass*>(pThis);
-
-	if (!pUnit->Type->IsSimpleDeployer)
-		return;
 
 	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
 	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
@@ -449,7 +469,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 				// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
 				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
-				MapClass::Logics.get().RemoveObject(pPassenger);
+				MapClass::Logics->RemoveObject(pPassenger);
 			}
 
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
@@ -459,12 +479,18 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 void TechnoExt::ExtData::UpdateLaserTrails()
 {
-	auto const pThis = this->OwnerObject();
+	auto const pThis = generic_cast<FootClass*>(this->OwnerObject());
+	if (!pThis)
+		return;
 
-	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
-	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
+	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI
 	for (auto& trail : this->LaserTrails)
 	{
+		// @Kerbiter if you want to limit it to certain locos you do it here
+		// with vtable check you can avoid the tedious process of Query IPersit/IUnknown Interface, GetClassID, compare with loco GUID, which is omnipresent in vanilla code
+		if (VTable::Get(pThis->Locomotor.GetInterfacePtr()) != 0x7E8278 && trail.Type->DroppodOnly)
+			continue;
+
 		if (pThis->CloakState == CloakState::Cloaked && !trail.Type->CloakVisible)
 			continue;
 

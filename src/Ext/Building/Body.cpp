@@ -194,9 +194,6 @@ int BuildingExt::CountOccupiedDocks(BuildingClass* pBuilding)
 
 bool BuildingExt::HasFreeDocks(BuildingClass* pBuilding)
 {
-	if (!pBuilding)
-		return false;
-
 	if (pBuilding->Type->Factory == AbstractType::AircraftType)
 	{
 		int nDocks = pBuilding->Type->NumberOfDocks;

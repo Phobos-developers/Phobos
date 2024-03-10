@@ -161,23 +161,23 @@ DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 
 	return 0;
 }
-
-void NAKED _ExeTerminate()
+// Avoid confusing the profiler unless really necessary
+#ifdef DEBUG
+DEFINE_NAKED_HOOK(0x7CD8EA, _ExeTerminate)
 {
 	// Call WinMain
 	SET_REG32(EAX, 0x6BB9A0);
 	CALL(EAX);
 	PUSH_REG(EAX);
 
-	Phobos::ExeTerminate();
+	__asm {call Phobos::ExeTerminate};
 
 	// Jump back
 	POP_REG(EAX);
 	SET_REG32(EBX, 0x7CD8EF);
 	__asm {jmp ebx};
 }
-DEFINE_JUMP(LJMP, 0x7CD8EA, GET_OFFSET(_ExeTerminate));
-
+#endif
 DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 {
 	GET(char**, ppArgs, ESI);
