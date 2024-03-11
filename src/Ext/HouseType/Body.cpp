@@ -2,7 +2,7 @@
 
 #include <Utilities/GeneralUtils.h>
 
-template<> const DWORD Extension<HouseTypeClass>::Canary = 0x1111111A;
+static constexpr DWORD Canary = 0x1111111A;
 HouseTypeExt::ExtContainer HouseTypeExt::ExtMap;
 
 void HouseTypeExt::ExtData::Initialize()
@@ -89,7 +89,7 @@ DEFINE_HOOK(0x511635, HouseTypeClass_CTOR_1, 0x5)
 {
 	GET(HouseTypeClass*, pItem, EAX);
 
-	HouseTypeExt::ExtMap.FindOrAllocate(pItem);
+	HouseTypeExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }
@@ -98,7 +98,7 @@ DEFINE_HOOK(0x511643, HouseTypeClass_CTOR_2, 0x5)
 {
 	GET(HouseTypeClass*, pItem, EAX);
 
-	HouseTypeExt::ExtMap.FindOrAllocate(pItem);
+	HouseTypeExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }
