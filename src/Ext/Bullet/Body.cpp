@@ -5,6 +5,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Misc/FlyingStrings.h>
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
@@ -25,7 +26,18 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 		if (versus != 0.0)
 		{
 			canAffect = true;
-			this->CurrentStrength -= static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+
+			int damage = static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+			this->CurrentStrength -= damage;
+
+			if (Phobos::DisplayDamageNumbers && damage != 0)
+			{
+				int width = Unsorted::CellWidthInPixels / 2;
+				wchar_t damageStr[0x20];
+				swprintf_s(damageStr, L"%d", damage);
+				ColorStruct color = damage > 0 ? ColorStruct { 255, 128, 128 } : ColorStruct { 128, 255, 128 };
+				FlyingStrings::Add(damageStr, this->OwnerObject()->Location, color, Point2D { ScenarioClass::Instance->Random.RandomRanged(-width, width), 0 });
+			}
 
 			if (this->CurrentStrength <= 0)
 				isIntercepted = true;
