@@ -31,13 +31,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 			this->CurrentStrength -= damage;
 
 			if (Phobos::DisplayDamageNumbers && damage != 0)
-			{
-				int width = Unsorted::CellWidthInPixels / 2;
-				wchar_t damageStr[0x20];
-				swprintf_s(damageStr, L"%d", damage);
-				ColorStruct color = damage > 0 ? ColorStruct { 255, 128, 128 } : ColorStruct { 128, 255, 128 };
-				FlyingStrings::Add(damageStr, this->OwnerObject()->Location, color, Point2D { ScenarioClass::Instance->Random.RandomRanged(-width, width), 0 });
-			}
+				GeneralUtils::DisplayDamageNumberString(damage, DamageDisplayType::Intercept, this->OwnerObject()->GetRenderCoords(), this->DamageNumberOffset);
 
 			if (this->CurrentStrength <= 0)
 				isIntercepted = true;
@@ -178,6 +172,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnInterception)
 		.Process(this->LaserTrails)
 		.Process(this->SnappedToTarget)
+		.Process(this->DamageNumberOffset)
 		;
 
 	this->Trajectory = PhobosTrajectory::ProcessFromStream(Stm, this->Trajectory);
