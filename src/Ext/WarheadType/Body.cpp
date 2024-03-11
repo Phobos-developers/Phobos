@@ -193,7 +193,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MindControl_Threshold.Read(exINI, pSection, "MindControl.Threshold");
 	this->MindControl_Threshold_Inverse.Read(exINI, pSection, "MindControl.Threshold.Inverse");
 	this->MindControl_AlternateDamage.Read(exINI, pSection, "MindControl.AlternateDamage");
-	this->MindControl_AlternateWarhead.Read(exINI, pSection, "MindControl.AlternateWarhead", true);
+	this->MindControl_AlternateWarhead.Read(exINI, pSection, "MindControl.AlternateWarhead");
 	this->MindControl_CanKill.Read(exINI, pSection, "MindControl.CanKill");
 
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
