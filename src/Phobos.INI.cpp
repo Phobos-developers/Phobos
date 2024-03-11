@@ -174,20 +174,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		BlittersFix::Apply();
 
 	Phobos::Config::SkirmishUnlimitedColors = pINI_RULESMD->ReadBool(GameStrings::General, "SkirmishUnlimitedColors", false);
+	// Disable Ares hook at this address so that our logic can run.
 	if (Phobos::Config::SkirmishUnlimitedColors)
-	{
-		// Game_GetLinkedColor converts vanilla dropdown color index into color scheme index ([Colors] from rules)
-		// What we want to do is to restore vanilla from Ares hook, and immediately return arg
-		// So if spawner feeds us a number, it will be used to look up color scheme directly
-		Patch::Apply_RAW(0x69A310,
-			{
-				0x8B, 0x44, 0x24, 0x04, // mov eax, [esp+4]
-				0xD1, 0xE0,             // shl eax, 1
-				0x40,                   // inc eax
-				0xC2, 0x04, 0x00        // retn 4
-			}
-		);
-	}
+		Patch::Apply_RAW(0x69A310, { 0x8B, 0x44, 0x24, 0x04, 0xD1, 0xE0, 0x40 });
 
 	Phobos::Config::SaveVariablesOnScenarioEnd = pINI_RULESMD->ReadBool(GameStrings::General, "SaveVariablesOnScenarioEnd", false);
 
