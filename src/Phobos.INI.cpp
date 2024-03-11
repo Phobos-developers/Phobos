@@ -42,6 +42,7 @@ int Phobos::Config::CampaignDefaultGameSpeed = 2;
 bool Phobos::Config::SkirmishUnlimitedColors = false;
 bool Phobos::Config::ShowDesignatorRange = false;
 bool Phobos::Config::SaveVariablesOnScenarioEnd = false;
+bool Phobos::Config::SaveGameOnScenarioStart = true;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -57,6 +58,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::RealTimeTimers = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers", false);
 	Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers.Adaptive", false);
 	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD->ReadBool("Phobos", "DigitalDisplay.Enable", false);
+	Phobos::Config::SaveGameOnScenarioStart = CCINIClass::INI_RA2MD->ReadBool("Phobos", "SaveGameOnScenarioStart", true);
 
 	CCINIClass* pINI_UIMD = CCINIClass::LoadINIFile(GameStrings::UIMD_INI);
 
@@ -205,4 +207,9 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 #endif
 
 	return 0;
+}
+
+DEFINE_HOOK(0x55DBF5, MainLoop_SaveGame, 0xA)
+{
+	return Phobos::Config::SaveGameOnScenarioStart ? 0 : 0x55DC99;
 }
