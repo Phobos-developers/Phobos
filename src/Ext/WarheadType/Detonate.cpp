@@ -318,8 +318,10 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 			auto const pExt = BulletExt::ExtMap.Find(pBullet);
 			auto const pTypeExt = pExt->TypeExtData;
 
-			// 1/8th of a cell as a margin of error.
-			if (pTypeExt && pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0)
+			// 1/8th of a cell as a margin of error if not Inviso interceptor.
+			bool distanceCheck = pWeapon->Projectile->Inviso || pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0;
+
+			if (pTypeExt && pTypeExt->Interceptable && distanceCheck)
 				pExt->InterceptBullet(pOwner, pWeapon);
 		}
 	}
