@@ -153,7 +153,7 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 	GET(int* const, pDamage, EBX);
 
 	if (Phobos::DisplayDamageNumbers && *pDamage)
-		TechnoExt::DisplayDamageNumberString(pThis, *pDamage, false);
+		GeneralUtils::DisplayDamageNumberString(*pDamage, DamageDisplayType::Regular, pThis->GetRenderCoords(), TechnoExt::ExtMap.Find(pThis)->DamageNumberOffset);
 
 	return 0;
 }
