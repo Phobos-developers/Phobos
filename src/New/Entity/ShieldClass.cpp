@@ -194,7 +194,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum));
 
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
-		TechnoExt::DisplayDamageNumberString(this->Techno, shieldDamage, true);
+		GeneralUtils::DisplayDamageNumberString(shieldDamage, DamageDisplayType::Shield, this->Techno->GetRenderCoords(), TechnoExt::ExtMap.Find(this->Techno)->DamageNumberOffset);
 
 	if (shieldDamage > 0)
 	{
