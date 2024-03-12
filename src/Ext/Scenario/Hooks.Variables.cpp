@@ -74,7 +74,9 @@ DEFINE_HOOK(0x6876C2, ReadScenarioINI_Inlined_ReadGlobalVariables, 0x6)
 	return 0x68773F;
 }
 
-DEFINE_HOOK(0x685670, DoWin_SaveVariables, 0x5)
+//IDK why but you can't do it at the beginning, just random place in the middle
+DEFINE_HOOK_AGAIN(0x6857EA, PhobosSaveVariables, 0x5)//Win
+DEFINE_HOOK(0x685EB1, PhobosSaveVariables, 0x5)//Lose
 {
 	if (Phobos::Config::SaveVariablesOnScenarioEnd)
 	{
@@ -85,13 +87,3 @@ DEFINE_HOOK(0x685670, DoWin_SaveVariables, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x685DC0, DoLose_SaveVariables, 0x5)
-{
-	if (Phobos::Config::SaveVariablesOnScenarioEnd)
-	{
-		ScenarioExt::ExtData::SaveVariablesToFile(false);
-		ScenarioExt::ExtData::SaveVariablesToFile(true);
-	}
-
-	return 0;
-}

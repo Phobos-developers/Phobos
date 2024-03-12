@@ -477,7 +477,6 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 {
 	GET(TechnoClass* const, pSource, ESI);
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
-	GET(WeaponTypeClass* const, pWeaponType, EBX);
 	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
 
 	auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
@@ -490,13 +489,6 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 			{
 				pBulletExt->IsInterceptor = true;
 				pBulletExt->InterceptedStatus = InterceptedStatus::Targeted;
-			}
-
-			// If using Inviso projectile, can intercept bullets right after firing.
-			if (pTargetObject->IsAlive && pWeaponType->Projectile->Inviso)
-			{
-				if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeaponType->Warhead))
-					pWHExt->InterceptBullets(pSource, pWeaponType, pTargetObject->Location);
 			}
 		}
 	}

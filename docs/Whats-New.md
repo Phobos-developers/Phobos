@@ -360,6 +360,7 @@ New:
 - Projectile return weapon (by Starkku)
 - Allow customizing aircraft landing direction per aircraft or per dock (by Starkku)
 - Allow animations to play sounds detached from audio event handler (by Starkku)
+- Game save option when starting campaigns (by Trsdy)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -449,6 +450,7 @@ Phobos fixes:
 - Fixed game crashing on loading save games if the saved game state had active radiation sites (by Starkku)
 - Fixed a desync error caused by air/top layer sorting (by Starkku)
 - Fixed heal / repair weapons being unable to remove parasites from shielded targets if they were unable to heal / repair the parent unit (by Starkku)
+- Fixed `Inviso=true` interceptor projectiles applying damage on interceptable, armor type-having projectiles twice (by Starkku)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)

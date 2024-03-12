@@ -294,6 +294,7 @@ This page lists all the individual contributions to the project by their author.
    - Skip units' turret rotation and jumpjets' wobbling under EMP
    - Droppod properties dehardcode
    - Waypoint entering building together with engineer/agent bug fix
+   - Skippable game save on scenario start
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
