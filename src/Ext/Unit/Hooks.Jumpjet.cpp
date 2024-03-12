@@ -28,7 +28,8 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 			if (jjLoco->State != JumpjetLocomotionClass::State::Cruising)
 			{
 				jjLoco->LocomotionFacing.SetDesired(tgtDir);
-				pThis->PrimaryFacing.SetDesired(tgtDir);
+				if (jjLoco->State == JumpjetLocomotionClass::State::Grounded)
+					pThis->PrimaryFacing.SetDesired(tgtDir);
 				pThis->SecondaryFacing.SetDesired(tgtDir);
 			}
 		}
@@ -208,3 +209,58 @@ void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 }
 
 DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))
+
+
+// Visual bugfix : Teleport loco vxls could not tilt
+Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
+{
+	__assume(iloco != nullptr);
+	auto const pThis = static_cast<LocomotionClass*>(iloco);
+	auto linked = pThis->LinkedTo;
+	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
+
+	if (pIndex && pIndex->Is_Valid_Key())
+		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
+
+	if (slope_idx && pIndex && pIndex->Is_Valid_Key())
+		*ret = Matrix3D::VoxelRampMatrix[slope_idx] * pThis->LocomotionClass::Draw_Matrix(pIndex);
+	else
+		*ret = pThis->LocomotionClass::Draw_Matrix(pIndex);
+
+	float arf = linked->AngleRotatedForwards;
+	float ars = linked->AngleRotatedSideways;
+
+	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	{
+		if (pIndex)// just forget it bro, no one cares
+			*(int*)pIndex = -1;
+
+		double scalex = linked->GetTechnoType()->VoxelScaleX;
+		double scaley = linked->GetTechnoType()->VoxelScaleY;
+
+		Matrix3D pre = Matrix3D::GetIdentity();
+		pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
+		ret->TranslateX(float(Math::sgn(arf) * (scaley * (1 - Math::cos(arf)))));
+		ret->TranslateY(float(Math::sgn(-ars) * (scalex * (1 - Math::cos(ars)))));
+		ret->RotateX(ars);
+		ret->RotateY(arf);
+
+		*ret = pre * *ret;
+	}
+	return ret;
+}
+
+DEFINE_JUMP(VTABLE, 0x7F5024, GET_OFFSET(TeleportLocomotionClass_Draw_Matrix));
+DEFINE_JUMP(VTABLE, 0x7F5028, 0x5142A0);//TeleportLocomotionClass_Shadow_Matrix : just use hover's to save my time
+
+// Visual bugfix: Tunnel loco could not tilt when being flipped
+DEFINE_HOOK(0x729B5D, TunnelLocomotionClass_DrawMatrix_Tilt, 0x8)
+{
+	GET(ILocomotion*, iloco, ESI);
+	GET_BASE(VoxelIndexKey*, pIndex, 0x10);
+	GET_BASE(Matrix3D*, ret, 0xC);
+	R->EAX(TeleportLocomotionClass_Draw_Matrix(iloco, ret, pIndex));
+	return 0x729C09;
+}
+
+DEFINE_JUMP(VTABLE, 0x7F5A4C, 0x5142A0);//TunnelLocomotionClass_Shadow_Matrix : just use hover's to save my time

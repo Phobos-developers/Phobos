@@ -2,40 +2,8 @@
 
 #include <TacticalClass.h>
 #include <SpawnManagerClass.h>
-#include <BitFont.h>
 
 #include <Utilities/EnumFunctions.h>
-#include <Misc/FlyingStrings.h>
-
-
-void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage)
-{
-	if (!pThis || damage == 0)
-		return;
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	ColorStruct color;
-
-	if (!isShieldDamage)
-		color = damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
-	else
-		color = damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 };
-
-	auto coords = pThis->GetRenderCoords();
-	int maxOffset = Unsorted::CellWidthInPixels / 2;
-	int width = 0, height = 0;
-	wchar_t damageStr[0x20];
-	swprintf_s(damageStr, L"%d", damage);
-
-	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
-
-	if (pExt->DamageNumberOffset >= maxOffset || pExt->DamageNumberOffset.empty())
-		pExt->DamageNumberOffset = -maxOffset;
-
-	FlyingStrings::Add(damageStr, coords, color, Point2D { pExt->DamageNumberOffset - (width / 2), 0 });
-
-	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
-}
 
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {

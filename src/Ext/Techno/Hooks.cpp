@@ -13,24 +13,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	// Do not search this up again in any functions called here because it is costly for performance - Starkku
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	auto pType = pThis->GetTechnoType();
-
-	// Set only if unset or type is changed
-	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
-	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
-		pExt->UpdateTypeData(pType);
-
-	pExt->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
-
-	if (pExt->CheckDeathConditions())
-		return 0;
-
-	pExt->ApplyInterceptor();
-	pExt->EatPassengers();
-	pExt->UpdateShield();
-	pExt->ApplySpawnLimitRange();
-	pExt->UpdateLaserTrails();
-	pExt->DepletedAmmoActions();
+	pExt->OnEarlyUpdate();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 	//TechnoExt::UpdateUniversalDeploy(pThis);
@@ -171,7 +154,7 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 	GET(int* const, pDamage, EBX);
 
 	if (Phobos::DisplayDamageNumbers && *pDamage)
-		TechnoExt::DisplayDamageNumberString(pThis, *pDamage, false);
+		GeneralUtils::DisplayDamageNumberString(*pDamage, DamageDisplayType::Regular, pThis->GetRenderCoords(), TechnoExt::ExtMap.Find(pThis)->DamageNumberOffset);
 
 	return 0;
 }

@@ -272,6 +272,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->SpawnDistanceFromTarget.Read(exINI, pSection, "SpawnDistanceFromTarget");
 	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
+	this->LandingDir.Read(exINI, pSection, "LandingDir");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -426,6 +427,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		if (pDeployAnimType)
 			this->Convert_DeployingAnim = pDeployAnimType;
+	}
+
+	if (this->OwnerObject()->WhatAmI() == AbstractType::InfantryType)
+	{
+		if (this->DroppodType == nullptr)
+			this->DroppodType = std::make_unique<DroppodTypeClass>();
+		this->DroppodType->LoadFromINI(pINI, pSection);
+	}
+	else
+	{
+		this->DroppodType.reset();
 	}
 }
 
@@ -592,6 +604,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->SpawnDistanceFromTarget)
 		.Process(this->SpawnHeight)
+		.Process(this->LandingDir)
+		.Process(this->DroppodType)
 
 		.Process(this->Convert_UniversalDeploy)
 		.Process(this->Convert_DeployToLand)

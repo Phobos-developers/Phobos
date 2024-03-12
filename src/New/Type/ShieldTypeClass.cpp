@@ -13,7 +13,17 @@ AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRat
 	if (isDamaged && damagedAnim)
 		return damagedAnim;
 	else
-		return this->IdleAnim.Get(healthRatio);
+		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
+}
+
+double ShieldTypeClass::GetConditionYellow()
+{
+	return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow));
+}
+
+double ShieldTypeClass::GetConditionRed()
+{
+	return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed));
 }
 
 void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
@@ -26,6 +36,8 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Strength.Read(exINI, pSection, "Strength");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
+	this->ConditionYellow.Read(exINI, pSection, "ConditionYellow");
+	this->ConditionRed.Read(exINI, pSection, "ConditionRed");
 	this->Armor.Read(exINI, pSection, "Armor");
 	this->InheritArmorFromTechno.Read(exINI, pSection, "InheritArmorFromTechno");
 	this->Powered.Read(exINI, pSection, "Powered");
@@ -80,6 +92,8 @@ void ShieldTypeClass::Serialize(T& Stm)
 	Stm
 		.Process(this->Strength)
 		.Process(this->InitialStrength)
+		.Process(this->ConditionYellow)
+		.Process(this->ConditionRed)
 		.Process(this->Armor)
 		.Process(this->InheritArmorFromTechno)
 		.Process(this->Powered)

@@ -89,13 +89,8 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 			pOwner->CalculateCostMultipliers();
 		}
 
-		if (pType->OrePurifier)
-			pOwner->NumOrePurifiers++;
-
-		// BuildingClass::Place is where Ares hooks secret lab expansion
-		// pTechnoBuilding->Place(false);
-		// even with it no bueno yet, plus new issues
-		// probably should just port it from Ares 0.A and be done
+		// BuildingClass::Place is already called in DiscoveredBy
+		// it added OrePurifier and xxxGainSelfHeal to House counter already
 
 		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
 
@@ -126,42 +121,15 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 
 inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
 {
-	BuildingTypeClass* pType = pBuilding->Type;
-
 	auto pOwnerExt = HouseExt::ExtMap.Find(pTargetHouse);
 
 	// Remove building from list of owned limbo buildings
 	auto& vec = pOwnerExt->OwnedLimboDeliveredBuildings;
 	vec.erase(std::remove(vec.begin(), vec.end(), pBuilding), vec.end());
 
-	// Mandatory
-	pBuilding->InLimbo = true;
-	pBuilding->IsAlive = false;
-	pBuilding->IsOnMap = false;
-	pTargetHouse->RegisterLoss(pBuilding, false);
-	pTargetHouse->UpdatePower();
-	pTargetHouse->RecheckTechTree = true;
-	pTargetHouse->RecheckPower = true;
-	pTargetHouse->RecheckRadar = true;
-	pTargetHouse->Buildings.Remove(pBuilding);
-
-	// Building logics
-	if (pType->ConstructionYard)
-		pTargetHouse->ConYards.Remove(pBuilding);
-
-	if (pType->SecretLab)
-		pTargetHouse->SecretLabs.Remove(pBuilding);
-
-	if (pType->FactoryPlant)
-	{
-		pTargetHouse->FactoryPlants.Remove(pBuilding);
-		pTargetHouse->CalculateCostMultipliers();
-	}
-
-	if (pType->OrePurifier)
-		pTargetHouse->NumOrePurifiers--;
-
-	// Remove completely
+	pBuilding->Stun();
+	pBuilding->Limbo();
+	pBuilding->RegisterDestruction(nullptr);
 	pBuilding->UnInit();
 }
 

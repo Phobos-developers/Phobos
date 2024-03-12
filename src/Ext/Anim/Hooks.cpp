@@ -191,6 +191,18 @@ DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x424CF1, AnimClass_Start_DetachedReport, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->DetachedReport.isset())
+		VocClass::PlayAt(pTypeExt->DetachedReport.Get(), pThis->GetCoords());
+
+	return 0;
+}
+
 DEFINE_HOOK(0x422CAB, AnimClass_DrawIt_XDrawOffset, 0x5)
 {
 	GET(AnimClass* const, pThis, ECX);
