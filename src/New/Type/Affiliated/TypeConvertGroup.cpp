@@ -35,6 +35,9 @@ void TypeConvertGroup::UniversalConvert(TechnoClass* pTarget, const std::vector<
 	{
 		if (!toType.isset() || !toType.Get()) continue;
 
+		bool isValidTechno = pTarget->WhatAmI() == AbstractType::Infantry || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Building || pTarget->WhatAmI() == AbstractType::Aircraft;
+		if (!isValidTechno) continue;
+
 		if (!EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTarget->Owner))
 			continue;
 
