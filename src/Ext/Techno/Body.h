@@ -9,6 +9,43 @@
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 
+struct MapPathCellElement
+{
+	int Distance = -1;
+	int X = -1;
+	int Y = -1;
+
+	//need to define a == operator so it can be used in array classes
+	bool operator==(const MapPathCellElement& other) const
+	{
+		return (X == other.X && Y == other.Y);
+	}
+
+	//unequality
+	bool operator!=(const MapPathCellElement& other) const
+	{
+		return (X != other.X || Y != other.Y);
+	}
+
+	bool operator<(const MapPathCellElement& other) const
+	{
+		return (Distance < other.Distance);
+	}
+
+	bool operator>(const MapPathCellElement& other) const
+	{
+		return (Distance > other.Distance);
+	}
+
+	CellStruct ToCellStruct() const
+	{
+		CellStruct c;
+		c.X = (short)X;
+		c.Y = (short)Y;
+		return c;
+	}
+};
+
 class BulletClass;
 
 class TechnoExt
@@ -144,6 +181,7 @@ public:
 	static bool ConvertToType(FootClass* pThis, TechnoTypeClass* toType);
 	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
 	static bool IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource);
+	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
