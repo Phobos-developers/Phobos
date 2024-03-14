@@ -1029,6 +1029,22 @@ In `rulesmd.ini`:
 RemoveMindControl=false  ; boolean
 ```
 
+### Mind Control Threshold
+
+- Now if the victim's health is over the threshold the Mind Control Warhead & Damage tags will be replaced by alternative Warhead and Damage values.
+- Mind Control will be used if the health's victim is under or equal the threshold.
+- If `MindControl.CanKill` is enabled the offensive warheads can kill the victims if they are weak.
+- If `MindControl.Threshold.Inverse` is true then the logic is inverted: Mind Control if health's victim is over the threshold and damage the target if below the threshold.
+
+In `rulesmd.ini`:
+```ini
+MindControl.Threshold=100% or 1.0   ; positive percentage. Represents a percentage from 0% to 100%
+MindControl.AlternateDamage=      ; integer
+MindControl.AlternateWarhead=     ; warhead
+MindControl.CanKill=false           ; boolean
+MindControl.Threshold.Inverse=false ; boolean
+```
+
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
