@@ -7,6 +7,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/TEvent/Body.h>
+#include <Ext/Script/Body.h>
 
 namespace RD
 {
@@ -40,6 +41,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				RD::SkipLowDamageCheck = true;
 		}
 	}
+
+	if (ScriptExt::IsUnitAvailable(pThis, false))
+		TechnoExt::RemoveParasite(pThis, args->SourceHouse, args->WH);
+
 	return 0;
 }
 
