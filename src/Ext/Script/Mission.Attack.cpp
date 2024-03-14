@@ -31,6 +31,14 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 		return;
 	}
 
+	auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
+	if (!pHouseExt)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
+	}
+
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (pTeamData->WaitNoTargetCounter > 0)
 	{
@@ -189,8 +197,13 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	{
 		// This part of the code is used for picking a new target.
 
+		bool onlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
+
+		if (pHouseExt->ForceOnlyTargetHouseEnemyMode != -1)
+			onlyTargetHouseEnemy = pHouseExt->ForceOnlyTargetHouseEnemy;
+
 		// Favorite Enemy House case. If set, AI will focus against that House
-		if (pTeam->Type->OnlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
+		if (onlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
 			enemyHouse = HouseClass::Array->GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
 
 		int targetMask = scriptArgument;
