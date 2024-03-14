@@ -62,6 +62,7 @@ public:
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
+		Nullable<AnimTypeClass*> Convert_Anim;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
@@ -97,6 +98,7 @@ public:
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
+			, Convert_Anim {}
 			, ShowDesignatorRange { true }
 		{ }
 
