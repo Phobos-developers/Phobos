@@ -61,6 +61,9 @@ public:
 		Valueable<bool> ZShapePointMove_OnBuildup;
 		Valueable<int> SellBuildupLength;
 
+		Valueable<bool> Secret_RecalcOnCapture;
+		NullableVector<TechnoTypeClass*> PossibleBoons;
+
 		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
@@ -98,6 +101,8 @@ public:
 			, ConsideredVehicle {}
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
+			, Secret_RecalcOnCapture { false }
+			, PossibleBoons {}
 			, AircraftDockingDirs {}
 		{ }
 

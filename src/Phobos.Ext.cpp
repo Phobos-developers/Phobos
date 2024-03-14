@@ -11,6 +11,7 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/OverlayType/Body.h>
+#include <Ext/HouseType/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Rules/Body.h>
@@ -200,6 +201,7 @@ using PhobosTypeRegistry = TypeRegistry<
 	BulletTypeExt,
 	HouseExt,
 	OverlayTypeExt,
+	HouseTypeExt,
 	ParticleSystemTypeExt,
 	RadSiteExt,
 	RulesExt,
