@@ -3,6 +3,7 @@
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
+#include <HouseTypeClass.h>
 
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
@@ -64,6 +65,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	const char* sectionAITargetTypes = "AITargetTypes";
 	const char* sectionAIScriptsList = "AIScriptsList";
+	const char* sectionAIHousesList = "AIHousesList";
 
 	INI_EX exINI(pINI);
 
@@ -184,6 +186,25 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		this->AIScriptsLists.emplace_back(std::move(objectsList));
 	}
+
+	// Section AIHousesList
+	int houseItemsCount = pINI->GetKeyCount(sectionAIHousesList);
+	for (int i = 0; i < houseItemsCount; ++i)
+	{
+		std::vector<HouseTypeClass*> objectsList;
+
+		char* context = nullptr;
+		pINI->ReadString(sectionAIHousesList, pINI->GetKeyName(sectionAIHousesList, i), "", Phobos::readBuffer);
+
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			HouseTypeClass* pNewHouse = HouseTypeClass::Find(cur);
+			if (pNewHouse)
+			objectsList.emplace_back(pNewHouse);
+		}
+
+		AIHousesLists.emplace_back(objectsList);
+	}
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -282,6 +303,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->AIHousesLists)
 		.Process(this->DropPodTrailer)
 		.Process(this->PodImage)
 		;

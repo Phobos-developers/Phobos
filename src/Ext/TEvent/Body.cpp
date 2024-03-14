@@ -3,6 +3,8 @@
 #include <Utilities/SavegameDef.h>
 #include <New/Entity/ShieldClass.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/Script/Body.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
 #include <UnitClass.h>
@@ -123,6 +125,8 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 		return TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
 	case PhobosTriggerEvent::HouseDoesntOwnTechnoType:
 		return TEventExt::HouseDoesntOwnTechnoTypeTEvent(pThis);
+	case PhobosTriggerEvent::HousesDestroyed:
+		return TEventExt::HousesAreDestroyedTEvent(pThis);
 
 	default:
 		bHandled = false;
@@ -179,6 +183,42 @@ bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
 bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
 {
 	return !TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
+}
+
+bool TEventExt::HousesAreDestroyedTEvent(TEventClass* pThis)
+{
+	int nIdxVariable = pThis->Value; //atoi(pThis->String);
+
+	if (nIdxVariable < 0)
+		return false;
+	
+	if (RulesExt::Global()->AIHousesLists.size() == 0)
+	{
+		Debug::Log("Map event %d: [AIHousesList] is empty. This event can't continue.\n", (int)pThis->EventKind);
+		return false;
+	}
+
+	std::vector<HouseTypeClass*> housesList = RulesExt::Global()->AIHousesLists.at(nIdxVariable);
+	
+	if (housesList.size() == 0)
+	{
+		Debug::Log("Map event %d: [AIHousesList](%d) is empty. This event can't continue.\n", (int)pThis->EventKind, nIdxVariable);
+		return false;
+	}
+
+	for (auto pTechno : *TechnoClass::Array)
+	{
+		if (ScriptExt::IsUnitAvailable(pTechno, false))
+		{
+			for (auto pHouse : housesList)
+			{
+				if (pTechno->Owner->Type == pHouse)
+					return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 // =============================
