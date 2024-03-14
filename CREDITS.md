@@ -116,9 +116,9 @@ This page lists all the individual contributions to the project by their author.
   - Extension class optimization
 - **FS-21**:
   - Dump Object Info enhancements
+  - Majority of ScriptType actions
   - `Powered.KillSpawns`
   - `Spawner.LimitRange`
-  - Majority of ScriptType actions
   - MC deployer fixes
   - Help with docs
   - Automatic Passenger Deletion logic
