@@ -1102,6 +1102,16 @@ Convert.To=                     ; TechnoType
 Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
+### Convert TechnoType on owner house change
+- You can now change a unit's type when changing ownership from human to computer or from computer to human.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]
+Convert.HumanToComputer =   ; TechnoType
+Convert.ComputerToHuman =   ; TechnoType 
+```
+
 ### Custom 'SplashList' on Warheads
 
 ![image](_static/images/splashlist-01.gif)
