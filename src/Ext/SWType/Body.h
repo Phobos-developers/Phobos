@@ -60,8 +60,15 @@ public:
 
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
+		std::vector<ValueableVector<int>> SW_GrantOneTime_RandomWeightsData;
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
+
+		ValueableIdxVector<SuperWeaponTypeClass> SW_GrantOneTime;
+		Nullable<bool> SW_GrantOneTime_InitialReady;
+		ValueableVector<float> SW_GrantOneTime_RollChances;
+		Valueable<CSFText> Message_GrantOneTimeLaunched;
+		NullableIdx<VoxClass> EVA_GrantOneTimeLaunched;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
@@ -98,6 +105,12 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+			, SW_GrantOneTime {}
+			, SW_GrantOneTime_InitialReady {}
+			, SW_GrantOneTime_RollChances {}
+			, SW_GrantOneTime_RandomWeightsData {}
+			, Message_GrantOneTimeLaunched {}
+			, EVA_GrantOneTimeLaunched {}
 		{ }
 
 		// Ares 0.A functions
@@ -117,6 +130,8 @@ public:
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
 		void ApplyTypeConversion(SuperClass* pSW);
+
+		void GrantOneTimeFromList(SuperClass* pSW);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
