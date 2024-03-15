@@ -213,6 +213,51 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Chronoshift to enemy base, argument is additional distance modifier
 		ScriptExt::ChronoshiftToEnemyBase(pTeam, argument);
 		break;
+	case PhobosScripts::AbortActionAfterSuccessKill:
+		ScriptExt::SetAbortActionAfterSuccessKill(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpSetCounter:
+		ScriptExt::ConditionalJump_SetCounter(pTeam, -100000000);
+		break;
+	case PhobosScripts::ConditionalJumpSetComparatorMode:
+		ScriptExt::ConditionalJump_SetComparatorMode(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpSetComparatorValue:
+		ScriptExt::ConditionalJump_SetComparatorValue(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpSetIndex:
+		ScriptExt::ConditionalJump_SetIndex(pTeam, -1000000);
+		break;
+	case PhobosScripts::ConditionalJumpResetVariables:
+		ScriptExt::ConditionalJump_ResetVariables(pTeam);
+		break;
+	case PhobosScripts::ConditionalJumpIfFalse:
+		ScriptExt::ConditionalJumpIfFalse(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpIfTrue:
+		ScriptExt::ConditionalJumpIfTrue(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpManageKillsCounter:
+		ScriptExt::ConditionalJump_ManageKillsCounter(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpCheckAliveHumans:
+		ScriptExt::ConditionalJump_CheckAliveHumans(pTeam, -1);
+		break;
+	case PhobosScripts::ConditionalJumpCheckHumanIsMostHated:
+		ScriptExt::ConditionalJump_CheckHumanIsMostHated(pTeam);
+		break;
+	case PhobosScripts::ConditionalJumpKillEvaluation:
+		ScriptExt::ConditionalJump_KillEvaluation(pTeam);
+		break;
+	case PhobosScripts::ConditionalJumpCheckObjects:
+		ScriptExt::ConditionalJump_CheckObjects(pTeam);
+		break;
+	case PhobosScripts::ConditionalJumpCheckCount:
+		ScriptExt::ConditionalJump_CheckCount(pTeam, 0);
+		break;
+	case PhobosScripts::ConditionalJumpManageResetIfJump:
+		ScriptExt::ConditionalJump_ManageResetIfJump(pTeam, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
