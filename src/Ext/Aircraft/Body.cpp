@@ -70,7 +70,6 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 
 	if (pDock || pThis->HasAnyLink())
 	{
-		auto pBuilding = pDock;
 		auto pLink = pThis->GetNthLink(0);
 
 		if (auto pBuilding = pDock ? pDock : abstract_cast<BuildingClass*>(pLink))
