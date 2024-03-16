@@ -1,4 +1,5 @@
 #include <Ext/Techno/Body.h>
+#include <Ext/Script/Body.h>
 #include "TypeConvertGroup.h"
 
 void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner)
@@ -29,14 +30,19 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 	}
 }
 
-void TypeConvertGroup::UniversalConvert(TechnoClass* pTarget, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner)
+void TypeConvertGroup::UniversalConvert(TechnoClass* pTarget, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner, AnimTypeClass* pAnimType)
 {
 	for (const auto& [fromTypes, toType, affectedHouses] : convertPairs)
 	{
 		if (!toType.isset() || !toType.Get()) continue;
 
 		bool isValidTechno = pTarget->WhatAmI() == AbstractType::Infantry || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Building || pTarget->WhatAmI() == AbstractType::Aircraft;
+		isValidTechno &= ScriptExt::IsUnitAvailable(pTarget, false);
+
 		if (!isValidTechno) continue;
+		auto const pTargetType = pTarget->GetTechnoType();
+
+		if (!pTargetType || !pTarget->Owner) continue;
 
 		if (!EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTarget->Owner))
 			continue;
@@ -54,7 +60,13 @@ void TypeConvertGroup::UniversalConvert(TechnoClass* pTarget, const std::vector<
 						pTargetExt->Convert_UniversalDeploy_RememberTarget = pTarget->Target;
 					}
 
-					bool converted = TechnoExt::UniversalDeployConversion(pTarget, toType) ? true : false;
+					auto pConverted = TechnoExt::UniversalDeployConversion(pTarget, toType);
+
+					if (pConverted && pAnimType)
+					{
+						if (auto pAnim = GameCreate<AnimClass>(pAnimType, pConverted->Location))
+							pAnim->SetOwnerObject(pConverted);
+					}
 
 					break;
 				}
@@ -62,7 +74,13 @@ void TypeConvertGroup::UniversalConvert(TechnoClass* pTarget, const std::vector<
 		}
 		else
 		{
-			TechnoExt::UniversalDeployConversion(pTarget, toType);
+			auto pConverted = TechnoExt::UniversalDeployConversion(pTarget, toType);
+
+			if (pConverted && pAnimType)
+			{
+				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pConverted->Location))
+					pAnim->SetOwnerObject(pConverted);
+			}
 		}
 	}
 }

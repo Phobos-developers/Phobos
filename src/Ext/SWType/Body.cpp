@@ -44,6 +44,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Next_RollChances)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
+		.Process(this->Convert_Anim)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->Convert_UseUniversalDeploy)
 		;
@@ -143,6 +144,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::Owner);
+	Convert_Anim.Read(exINI, pSection, "Convert.Anim");
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
 

@@ -279,10 +279,12 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 	if (this->Convert_Pairs.size() == 0)
 		return;
 
+	AnimTypeClass* pAnimType = this->Convert_Anim.isset() ? this->Convert_Anim.Get() : nullptr;
+
 	if (this->Convert_UseUniversalDeploy.Get())
 	{
 		for (const auto pTarget : *TechnoClass::Array)
-			TypeConvertGroup::UniversalConvert(pTarget, this->Convert_Pairs, pSW->Owner);
+			TypeConvertGroup::UniversalConvert(pTarget, this->Convert_Pairs, pSW->Owner, pAnimType);
 
 		return;
 	}
