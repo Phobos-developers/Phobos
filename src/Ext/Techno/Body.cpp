@@ -384,6 +384,11 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->WHAnimRemainingCreationInterval)
+		.Process(this->WebbyDurationCountDown)
+		.Process(this->WebbyDurationTimer)
+		.Process(this->WebbyAnim)
+		.Process(this->WebbyLastTarget)
+		.Process(this->WebbyLastMission)
 		;
 }
 
