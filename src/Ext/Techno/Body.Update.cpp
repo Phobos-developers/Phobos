@@ -33,6 +33,9 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplySpawnLimitRange();
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
+
+	if (this->WebbyAnim)
+		this->WebbyUpdate();
 }
 
 
@@ -104,23 +107,16 @@ void TechnoExt::ExtData::WebbyUpdate()
 	if (!pExt)
 		return;
 
-	if (pExt->WebbyDurationCountDown < 0)
-	{
-		if (pExt->WebbyAnim)
-			pExt->WebbyAnim->Limbo();
-
-		pExt->WebbyAnim = nullptr;
-
-		return;
-	}
-
 	if (pExt->WebbyDurationTimer.Completed())
 	{
 		pExt->WebbyDurationCountDown = -1;
 		pExt->WebbyDurationTimer.Stop();
 
-		if (pExt->WebbyAnim)
-			pExt->WebbyAnim->Limbo();
+		if (pExt->WebbyAnim->Type) // If this anim doesn't have a type pointer, just detach it
+		{
+			pExt->WebbyAnim->TimeToDie = true;
+			pExt->WebbyAnim->UnInit();
+		}
 
 		pExt->WebbyAnim = nullptr;
 
