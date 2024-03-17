@@ -1,3 +1,4 @@
+#include <AircraftClass.h>
 #include <ScenarioClass.h>
 #include "Body.h"
 
@@ -449,6 +450,32 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 
 	if(RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
 		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
+{
+	enum { SkipResponse = 0x709015 };
+
+	GET(TechnoClass*, pThis, ECX);
+
+	if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+	{
+		if (pAircraft->Type->Carryall && pAircraft->HasAnyLink() &&
+			pAircraft->Destination && (pAircraft->Destination->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+		{
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
+
+			if (pTypeExt->VoicePickup.isset())
+			{
+				pThis->QueueVoice(pTypeExt->VoicePickup.Get());
+
+				R->EAX(1);
+				return SkipResponse;
+			}
+		}
+	}
 
 	return 0;
 }
