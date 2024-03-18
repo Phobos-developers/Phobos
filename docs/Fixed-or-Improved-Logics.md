@@ -159,6 +159,16 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 ## Aircraft
 
+### Carryall pickup voice
+
+- It is now possible to override `VoiceMove` for `Carryall=true` aircraft for when commanding it to pick up vehicles by setting `VoicePickup`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]  ; AircraftType
+VoicePickup=    ; Sound
+```
+
 ### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
 
 - It is now possible to have aircraft spawned from `(Elite)AirstrikeTeamType` or `Type=SpyPlane` superweapons to be created at fixed distance from their intended target/destination instead of from edge of the map by setting `SpawnDistanceFromTarget`.
