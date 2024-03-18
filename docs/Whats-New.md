@@ -362,6 +362,9 @@ New:
 - Game save option when starting campaigns (by Trsdy)
 - Carryall pickup voice (by Starkku)
 - Option to have `Grinding.Weapon` require accumulated credits from grinding (by Starkku)
+- Re-enable the Veinhole Monster and Weeds from TS (by ZivDero)
+- Recreate the weed-charging of SWs like the TS Chemical Missile (by ZivDero)
+- Allow to change the speed of gas particles (by ZivDero)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
