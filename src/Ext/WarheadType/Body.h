@@ -51,7 +51,6 @@ public:
 		Valueable<double> Rocker_AmplitudeMultiplier;
 		Nullable<int> Rocker_AmplitudeOverride;
 
-
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
 		Valueable<int> Crit_ExtraDamage;
@@ -133,6 +132,8 @@ public:
 
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
+
+		Valueable<bool> Nonprovocative;
 
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RemoveTypes;
@@ -280,6 +281,8 @@ public:
 
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
+
+			, Nonprovocative { false }
 
 			, AttachEffect_AttachTypes {}
 			, AttachEffect_RemoveTypes {}
