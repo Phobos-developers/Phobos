@@ -284,7 +284,7 @@ DEFINE_HOOK(0x43C788, BuildingClass_ReceivedRadioCommand_Weeder_CompleteEnter, 0
 }
 
 // This assigns the weeder to the "Harvest" mission when it is granted as a free unit
-// Either the base game, or Ares (not sure which) made the weeder receive the "Guard" command instead
+// Ares made the weeder receive the "Guard" command instead
 DEFINE_HOOK(0x446EAD, BuildingClass_GrandOpening_FreeWeeder_Mission, 0x6)
 {
 	GET(UnitClass*, pUnit, EDI);
@@ -326,6 +326,23 @@ DEFINE_HOOK(0x7424BD, UnitClass_AssignDestination_Weeder_Teleport, 0x6)
 	return pDestination->DockUnload || pDestination->Weeder ? 0x7424CB : 0x7425DB;
 }
 
+//// Skip check for Weeder so that weeders go through teleport stuff
+//DEFINE_JUMP(LJMP, 0x73E844, 0x73E793)
+//
+//
+//DEFINE_HOOK(0x73E84A, UnitClass_Mission_Harvest, 0x6)
+//{
+//	GET(UnitClass*, pUnit, EBP);
+//
+//	bool isOnTiberium;
+//	if (pUnit->Type->Weeder)
+//		isOnTiberium = pUnit->MoveToWeed(RulesClass::Instance->TiberiumLongScan / Unsorted::LeptonsPerCell);
+//	else
+//		isOnTiberium = pUnit->MoveToTiberium(RulesClass::Instance->TiberiumLongScan / Unsorted::LeptonsPerCell);
+//
+//	R->EBX(isOnTiberium);
+//	return 0x73E86B;
+//}
 
 DEFINE_HOOK(0x73E9A0, UnitClass_Weeder_StopHarvesting, 0x6)
 {
