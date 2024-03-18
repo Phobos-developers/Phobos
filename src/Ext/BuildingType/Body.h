@@ -35,6 +35,7 @@ public:
 
 		NullableIdx<VocClass> Grinding_Sound;
 		Nullable<WeaponTypeClass*> Grinding_Weapon;
+		Valueable<int> Grinding_Weapon_RequiredCredits;
 		ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
 		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
 		Valueable<bool> Grinding_AllowAllies;
@@ -82,6 +83,7 @@ public:
 			, Grinding_Sound {}
 			, Grinding_PlayDieSound { true }
 			, Grinding_Weapon {}
+			, Grinding_Weapon_RequiredCredits { 0 }
 			, DisplayIncome { }
 			, DisplayIncome_Houses { }
 			, DisplayIncome_Offset { { 0,0 } }

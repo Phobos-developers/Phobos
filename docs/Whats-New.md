@@ -361,6 +361,7 @@ New:
 - Allow animations to play sounds detached from audio event handler (by Starkku)
 - Game save option when starting campaigns (by Trsdy)
 - Carryall pickup voice (by Starkku)
+- Option to have `Grinding.Weapon` require accumulated credits from grinding (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
