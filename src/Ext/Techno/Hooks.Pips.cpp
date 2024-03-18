@@ -236,17 +236,17 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 				{
 					tiberiumPipCounts[index]--;
 
-					if (index >= pipFrames.size())
+					if (static_cast<size_t>(index) >= pipFrames.size())
 						pipsToDraw.push_back(index == 1 ? 5 : 2);
 					else
 						pipsToDraw.push_back(pipFrames.at(index));
 
 					break;
 				}
-
-				if (pipsToDraw.size() < i)
-					pipsToDraw.push_back(emptyFrame);
 			}
+
+			if (pipsToDraw.size() <= static_cast<size_t>(i))
+				pipsToDraw.push_back(emptyFrame);
 		}
 	}
 
