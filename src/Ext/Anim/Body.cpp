@@ -97,6 +97,41 @@ HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 		return  pTechnoOwner ? pTechnoOwner : pDefaultOwner;
 }
 
+void AnimExt::VeinAttackAI(AnimClass* pAnim)
+{
+	CellStruct pCoordinates = pAnim->GetMapCoords();
+	CellClass* pCell = MapClass::Instance->GetCellAt(pCoordinates);
+	ObjectClass* pOccupier = pCell->FirstObject;
+	constexpr unsigned char weedOverlayData = 0x30;
+	constexpr unsigned int weedOverlay = 126;
+
+	if (!pOccupier || pOccupier->GetHeight() > 0 || pCell->OverlayTypeIndex != weedOverlay
+		|| pCell->OverlayData < weedOverlayData || pCell->SlopeIndex)
+	{
+		pAnim->UnableToContinue = true;
+	}
+
+	if (Unsorted::CurrentFrame % 2 == 0)
+	{
+		while (pOccupier != nullptr)
+		{
+			ObjectClass* pNext = pOccupier->NextObject;
+			int damage = RulesClass::Instance->VeinDamage;
+
+			TechnoClass* pTechno = static_cast<TechnoClass*>(pOccupier);
+			TechnoTypeClass* pType = pTechno->GetTechnoType();
+
+			if (pTechno && !pType->ImmuneToVeins && !pTechno->HasAbility(Ability::VeinProof)
+				&& pTechno->Health > 0 && pTechno->IsAlive && pTechno->GetHeight() <= 5)
+			{
+				pTechno->ReceiveDamage(&damage, 0, RulesExt::Global()->VeinholeWarhead, nullptr, false, false, nullptr);
+			}
+
+			pOccupier = pNext;
+		}
+	}
+}
+
 void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
 	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom)
 {
@@ -132,7 +167,7 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 		if (pWakeAnim)
 			pWakeAnimToUse = pWakeAnim;
 
-		if (splashAnims.size() > 0)
+		if (!splashAnims.empty())
 		{
 			auto nIndexR = (splashAnims.size() - 1);
 			auto nIndex = splashAnimsPickRandom ?

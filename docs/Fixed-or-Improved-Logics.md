@@ -359,6 +359,18 @@ In `rulesmd.ini`:
 AdjustTargetCoordsOnRotation=true  ; boolean
 ```
 
+## Particles
+
+### Customizable gas particle speed
+
+- Gas particles can now drift at a custom speed.
+
+In `rulesmd.ini`:
+```ini
+[GASPARTICLE]          ; Particle with BehavesLike=Gas
+Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
+```
+
 ## Projectiles
 
 ### Cluster scatter distance customization
@@ -367,7 +379,7 @@ AdjustTargetCoordsOnRotation=true  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]         ; Projectile
+[SOMEPROJECTILE]        ; Projectile
 ClusterScatter.Min=1.0  ; float, distance in cells
 ClusterScatter.Max=2.0  ; float, distance in cells
 ```
@@ -626,6 +638,9 @@ Powered.KillSpawns=false ; boolean
   - `Pips.Tiberiums.Frames` can be used to list frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for tiberium types, in the listed order corresponding to tiberium type index. Defaults to 5 for tiberium type index 1, otherwise 2.
     - `Pips.Tiberiums.EmptyFrame` can be used to set the frame for empty slots, defaults to 0.
   - `Pips.Tiberiums.DisplayOrder` controls in which order the tiberium type pips are displayed, takes a list of tiberium type indices. Any tiberium type not listed will be displayed in sequential order after the listed ones.
+  - `Pips.Tiberiums.EmptyFrame` controls which frame is displayed for empty pips, takes a (zero-based) index of a frame in `pips.shp` (for buildings) or `pips2.shp` (for others). Defaults to 0.
+  - `Pips.Tiberiums.WeedFrame` controls which frame is displayed on Technos with Weeder=yes, takes a (zero-based) index of a frame in `pips.shp` (for buildings) or `pips2.shp` (for others). Defaults to 1.
+  - `Pips.Tiberiums.WeedEmptyFrame` controls which frame is displayed for empty pips on Technos with Weeder=yes, takes a (zero-based) index of a frame in `pips.shp` (for buildings) or `pips2.shp` (for others). Defaults to 0.
 
 In `rulesmd.ini`:
 ```ini
@@ -862,6 +877,71 @@ In `rulesmd.ini`:
 Ammo.AddOnDeploy=0      ; integer
 ```
 
+
+## Veinholes & Weeds
+
+### Veinholes
+
+- Veinhole monsters now work like they used to in Tiberian Sun.
+- Their core parameters are still loaded from `[General]`
+- The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to be properly listed under `[Warheads]` as well. The warhead has to have `Veinhole=yes` set. 
+- Veinholes are hardcoded to use several overlay types.
+- The vein attack animation specified under `[AudioVisual]` is what deals the damage. The animation has to be properly listed under `[Animations]` as well.
+- Units can be made immune to veins the same way as in Tiberian Sun.
+- The monster itself is represented by the `VEINTREE` TerrainType, which has `IsVeinhole=true` set. Its strength is what determines the strength of the Veinhole.
+
+- Everything listed below functions identically to Tiberian Sun.
+
+In `rulesmd.ini`:
+```ini
+[General]
+VeinholeGrowthRate=300        ; integer
+VeinholeShrinkRate=100        ; integer
+MaxVeinholeGrowth=2000        ; integer
+VeinDamage=5                  ; integer
+VeinholeTypeClass=VEINTREE    ; TerrainType
+
+[CombatDamage]
+VeinholeWarhead=VeinholeWH
+
+[VeinholeWH]
+Veinhole=yes
+
+[OverlayTypes]
+126=VEINS                     ; The veins (weeds)
+167=VEINHOLE                  ; The Veinhole itself
+178=VEINHOLEDUMMY             ; A technical overlay
+
+[AudioVisual]
+VeinAttack=VEINATAC           ; Animation
+
+[TechnoType]
+EliteAbilities=VEIN_PROOF
+ImmuneToVeins=yes
+
+[VEINTREE]
+IsVeinhole=true
+Strength=1000                 ; integer - the strength of the Veinhole
+```
+
+### Weeds & Weed Eaters
+
+- Vehicles with `Weeder=yes` can now collect weeds. The weeds can then be deposited into a building with `Weeder=yes`.
+- Weeds are not stored in a building's storage, but rather in a House's storage. The weed capacity is listed under `[General]->WeedCapacity`.
+- Weeders now show the ore gathering animation. It can be customized the same was as for harvesters.
+- Weeders can use the Teleport locomotor like chrono miners.
+
+### Weed-consuming superweapons
+
+- Superweapons can consume weeds to recharge, like the Chemical Missile special in Tiberian Sun.
+In `rulesmd.ini`:
+```ini
+[SuperWeaponType]
+UseWeeds=no                                     ; boolean - should the SW use weeds to recharge?
+UseWeeds.Amount=                                ; integer - how many? default is General->WeedCapacity
+UseWeeds.StorageTimer=no                        ; boolean - should the counter on the sidebar display the % of weeds stored?
+UseWeeds.ReadinessAnimationPercentage=90        ; integer - when this many weeds % are stored, the SW will show it's ready on the building (open nuke/open chrono, etc.)
+```
 
 ## VoxelAnims
 
