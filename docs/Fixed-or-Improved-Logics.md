@@ -891,7 +891,9 @@ Ammo.AddOnDeploy=0      ; integer
 - Units can be made immune to veins the same way as in Tiberian Sun.
 - The monster itself is represented by the `VEINTREE` TerrainType, which has `IsVeinhole=true` set. Its strength is what determines the strength of the Veinhole.
 
-- Everything listed below functions identically to Tiberian Sun.
+```{note}
+Everything listed below functions identically to Tiberian Sun.
+```
 
 In `rulesmd.ini`:
 ```ini
