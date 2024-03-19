@@ -102,11 +102,11 @@ void AnimExt::VeinAttackAI(AnimClass* pAnim)
 	CellStruct pCoordinates = pAnim->GetMapCoords();
 	CellClass* pCell = MapClass::Instance->GetCellAt(pCoordinates);
 	ObjectClass* pOccupier = pCell->FirstObject;
-	constexpr unsigned char weedOverlayData = 0x30;
-	constexpr unsigned int weedOverlay = 126;
+	constexpr unsigned char fullyFlownWeedStart = 0x30; // Weeds starting from this overlay frame are fully grown
+	constexpr unsigned int weedOverlayIndex = 126;
 
-	if (!pOccupier || pOccupier->GetHeight() > 0 || pCell->OverlayTypeIndex != weedOverlay
-		|| pCell->OverlayData < weedOverlayData || pCell->SlopeIndex)
+	if (!pOccupier || pOccupier->GetHeight() > 0 || pCell->OverlayTypeIndex != weedOverlayIndex
+		|| pCell->OverlayData < fullyFlownWeedStart || pCell->SlopeIndex)
 	{
 		pAnim->UnableToContinue = true;
 	}
