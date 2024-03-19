@@ -905,7 +905,7 @@ VeinDamage=5                  ; integer
 VeinholeTypeClass=VEINTREE    ; TerrainType
 
 [CombatDamage]
-VeinholeWarhead=VeinholeWH
+VeinholeWarhead=              ; Warhead, no default, TS used VeinholeWH
 
 [VeinholeWH]
 Veinhole=yes
@@ -938,13 +938,17 @@ Strength=1000                 ; integer - the strength of the Veinhole
 
 - Superweapons can consume weeds to recharge, like the Chemical Missile special in Tiberian Sun.
 
+```{note}
+As the code for the Chemical Missile had been removed, setting `Type=ChemMissile` will not work.
+```
+
 In `rulesmd.ini`:
 ```ini
 [SuperWeaponType]
 UseWeeds=no                                     ; boolean - should the SW use weeds to recharge?
 UseWeeds.Amount=                                ; integer - how many? default is General->WeedCapacity
 UseWeeds.StorageTimer=no                        ; boolean - should the counter on the sidebar display the % of weeds stored?
-UseWeeds.ReadinessAnimationPercentage=90        ; integer - when this many weeds % are stored, the SW will show it's ready on the building (open nuke/open chrono, etc.)
+UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds % are stored, the SW will show it's ready on the building (open nuke/open chrono, etc.)
 ```
 
 ## VoxelAnims

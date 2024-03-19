@@ -146,7 +146,7 @@ DEFINE_HOOK(0x6CBD2C, SuperClass_AI_UseWeeds, 0x6)
 			return Charged;
 		}
 
-		if (pSuper->Owner->OwnedWeed.GetTotalAmount() >= pExt->UseWeeds_ReadinessAnimationPercentage / 100.0 * pExt->UseWeeds_Amount)
+		if (pSuper->Owner->OwnedWeed.GetTotalAmount() >= pExt->UseWeeds_ReadinessAnimationPercentage * pExt->UseWeeds_Amount)
 		{
 			pSuper->RechargeTimer.Start(SWAlmostReadyTimer); // The end is nigh!
 		}

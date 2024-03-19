@@ -118,10 +118,11 @@ void AnimExt::VeinAttackAI(AnimClass* pAnim)
 			ObjectClass* pNext = pOccupier->NextObject;
 			int damage = RulesClass::Instance->VeinDamage;
 
-			TechnoClass* pTechno = static_cast<TechnoClass*>(pOccupier);
-			TechnoTypeClass* pType = pTechno->GetTechnoType();
+			abstract_cast<TechnoClass*>(pOccupier);
 
-			if (pTechno && !pType->ImmuneToVeins && !pTechno->HasAbility(Ability::VeinProof)
+			TechnoClass* pTechno = abstract_cast<TechnoClass*>(pOccupier);
+
+			if (pTechno && !pTechno->GetTechnoType()->ImmuneToVeins && !pTechno->HasAbility(Ability::VeinProof)
 				&& pTechno->Health > 0 && pTechno->IsAlive && pTechno->GetHeight() <= 5)
 			{
 				pTechno->ReceiveDamage(&damage, 0, RulesExt::Global()->VeinholeWarhead, nullptr, false, false, nullptr);
