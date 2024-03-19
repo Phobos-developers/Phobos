@@ -893,6 +893,11 @@ Ammo.AddOnDeploy=0      ; integer
 
 ```{note}
 Everything listed below functions identically to Tiberian Sun.
+Many of the tags from Tiberian Sun have been re-enabled. You can read more about them on ModENC:
+[VeinholeGrowthRate](https://modenc.renegadeprojects.com/VeinholeGrowthRate), [VeinholeShrinkRate](https://modenc.renegadeprojects.com/VeinholeShrinkRate), [MaxVeinholeGrowth](https://modenc.renegadeprojects.com/MaxVeinholeGrowth), [VeinDamage](https://modenc.renegadeprojects.com/VeinDamage), [VeinholeTypeClass](https://modenc.renegadeprojects.com/VeinholeTypeClass),
+[VeinholeWarhead](https://modenc.renegadeprojects.com/VeinholeWarhead), [Veinhole](https://modenc.renegadeprojects.com/Veinhole), [VeinAttack](https://modenc.renegadeprojects.com/VeinAttack), [ImmuneToVeins](https://modenc.renegadeprojects.com/ImmuneToVeins), [IsVeinhole](https://modenc.renegadeprojects.com/IsVeinhole)
+
+The game expects certain overlays related to Veinholes to have certain indices, they are listed below.
 ```
 
 In `rulesmd.ini`:
