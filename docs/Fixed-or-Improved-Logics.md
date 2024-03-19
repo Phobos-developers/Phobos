@@ -931,12 +931,13 @@ Strength=1000                 ; integer - the strength of the Veinhole
 
 - Vehicles with `Weeder=yes` can now collect weeds. The weeds can then be deposited into a building with `Weeder=yes`.
 - Weeds are not stored in a building's storage, but rather in a House's storage. The weed capacity is listed under `[General]->WeedCapacity`.
-- Weeders now show the ore gathering animation. It can be customized the same was as for harvesters.
+- Weeders now show the ore gathering animation. It can be customized the same way as for harvesters.
 - Weeders can use the Teleport locomotor like chrono miners.
 
 ### Weed-consuming superweapons
 
 - Superweapons can consume weeds to recharge, like the Chemical Missile special in Tiberian Sun.
+
 In `rulesmd.ini`:
 ```ini
 [SuperWeaponType]
