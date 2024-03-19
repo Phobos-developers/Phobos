@@ -639,7 +639,7 @@ Powered.KillSpawns=false ; boolean
     - `Pips.Tiberiums.EmptyFrame` can be used to set the frame for empty slots, defaults to 0.
   - `Pips.Tiberiums.DisplayOrder` controls in which order the tiberium type pips are displayed, takes a list of tiberium type indices. Any tiberium type not listed will be displayed in sequential order after the listed ones.
   - `Pips.Tiberiums.WeedFrame` controls which frame is displayed on Technos with Weeder=yes, takes a (zero-based) index of a frame in `pips.shp` (for buildings) or `pips2.shp` (for others). Defaults to 1.
-    - `Pips.Tiberiums.EmptyFrame` can be used to set the frame for empty weed slots, defaults to 0.
+    - `Pips.Tiberiums.WeedEmptyFrame` can be used to set the frame for empty weed slots, defaults to 0.
 
 In `rulesmd.ini`:
 ```ini
@@ -651,6 +651,8 @@ Pips.Ammo.Buildings.Size=4,2         ; X,Y, increment in pixels to next pip
 Pips.Tiberiums.EmptyFrame=0          ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
 Pips.Tiberiums.Frames=2,5,2,2        ; list of integers, frames of pips.shp (buildings) or pips2.shp (others) (zero-based)
 Pips.Tiberiums.DisplayOrder=0,2,3,1  ; list of integers, tiberium type indices
+Pips.Tiberiums.WeedEmptyFrame=0      ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
+Pips.Tiberiums.WeedFrame=1           ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
 
 [SOMETECHNO]                         ; TechnoType
 AmmoPipFrame=13                      ; integer, frame of pips2.shp (zero-based)
