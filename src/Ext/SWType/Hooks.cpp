@@ -101,6 +101,7 @@ DEFINE_HOOK(0x6CBEF4, SuperClass_AnimStage_UseWeeds, 0x6)
 			int progress = static_cast<int>(pSuper->Owner->OwnedWeed.GetTotalAmount() * maxCounterFrames / pExt->UseWeeds_Amount);
 			if (progress > maxCounterFrames)
 				progress = maxCounterFrames;
+
 			R->EAX(progress);
 			return ProgressInEax;
 		}
