@@ -2,9 +2,11 @@
 
 #include <AircraftClass.h>
 #include <HouseClass.h>
+#include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
 
 #include <Ext/House/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -360,6 +362,35 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 		return true;
 
 	return false;
+}
+
+// Gets weapon index for a weapon to use against wall overlay.
+int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType)
+{
+	auto const pTechnoType = pThis->GetTechnoType();
+	int weaponIndex = -1;
+	auto pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndex);
+
+	if ((pTechnoType->TurretCount > 0 && !pTechnoType->IsGattling) || !pWallOverlayType)
+		return weaponIndex;
+	else if (weaponIndex == -1)
+		return 0;
+
+	if (!pWeapon || (!pWeapon->Warhead->Wall && (!pWeapon->Warhead->Wood || pWallOverlayType->Armor != Armor::Wood)))
+	{
+		int weaponIndexSec = -1;
+		pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndexSec, true);
+
+		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood)
+			&& !TechnoTypeExt::ExtMap.Find(pTechnoType)->NoSecondaryWeaponFallback))
+		{
+			return weaponIndexSec;
+		}
+
+		return weaponIndex;
+	}
+
+	return weaponIndex;
 }
 
 // =============================

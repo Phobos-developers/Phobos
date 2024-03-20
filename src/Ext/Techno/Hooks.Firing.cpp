@@ -37,7 +37,7 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 
 DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 {
-	enum { Secondary = 0x6F3745 };
+	enum { ReturnWeaponIndex = 0x6F37AF };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
@@ -50,16 +50,17 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 
 		if (pWeaponSecondary && !EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true))
 		{
-			return Secondary;
+			R->EAX(1);
+			return ReturnWeaponIndex;
 		}
 		else if (pCell->OverlayTypeIndex != -1)
 		{
 			auto const pOverlayType = OverlayTypeClass::Array()->GetItem(pCell->OverlayTypeIndex);
 
-			if (pOverlayType->Wall && pCell->OverlayData >> 4 != pOverlayType->DamageLevels && !pWeaponPrimary->Warhead->Wall &&
-				pWeaponSecondary && pWeaponSecondary->Warhead->Wall && !TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoSecondaryWeaponFallback)
+			if (pCell->OverlayData >> 4 != pOverlayType->DamageLevels)
 			{
-				return Secondary;
+				R->EAX(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayType));
+				return ReturnWeaponIndex;
 			}
 		}
 	}
@@ -804,35 +805,38 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 
 #pragma region WallWeaponStuff
 
-WeaponStruct* __fastcall TechnoClass_GetWeaponAgainstWallWrapper(TechnoClass* pThis, void* _, int weaponIndex)
-{
-	auto const weaponPrimary = pThis->GetWeapon(0);
-
-	if (!weaponPrimary->WeaponType->Warhead->Wall)
-	{
-		auto const weaponSecondary = pThis->GetWeapon(1);
-
-		if (weaponSecondary && weaponSecondary->WeaponType && weaponSecondary->WeaponType->Warhead->Wall &&
-			!TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoSecondaryWeaponFallback)
-		{
-			return weaponSecondary;
-		}
-	}
-
-	return weaponPrimary;
-}
-
-
-DEFINE_JUMP(CALL6, 0x51C1F8, GET_OFFSET(TechnoClass_GetWeaponAgainstWallWrapper));  // InfantryClass_CanEnterCell
-DEFINE_JUMP(CALL6, 0x73F49B, GET_OFFSET(TechnoClass_GetWeaponAgainstWallWrapper));  // UnitClass_CanEnterCell
-
 DEFINE_HOOK(0x70095A, TechnoClass_WhatAction_WallWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(OverlayTypeClass*, pOverlayTypeClass, STACK_OFFSET(0x2C, -0x18));
 
-	R->EAX(TechnoClass_GetWeaponAgainstWallWrapper(pThis, nullptr, 0));
+	R->EAX(pThis->GetWeapon(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass)));
 
 	return 0;
+}
+
+DEFINE_HOOK(0x51C1F1, InfantryClass_CanEnterCell_WallWeapon, 0x5)
+{
+	enum { SkipGameCode = 0x51C1FE };
+
+	GET(InfantryClass*, pThis, EBP);
+	GET(OverlayTypeClass*, pOverlayTypeClass, ESI);
+
+	R->EAX(pThis->GetWeapon(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass)));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x73F495, UnitClass_CanEnterCell_WallWeapon, 0x6)
+{
+	enum { SkipGameCode = 0x73F4A1 };
+
+	GET(UnitClass*, pThis, EBX);
+	GET(OverlayTypeClass*, pOverlayTypeClass, ESI);
+
+	R->EAX(pThis->GetWeapon(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass)));
+
+	return SkipGameCode;
 }
 
 namespace CellEvalTemp

@@ -61,6 +61,7 @@ public:
 		Nullable<bool> ConsideredVehicle;
 		Valueable<bool> ZShapePointMove_OnBuildup;
 		Valueable<int> SellBuildupLength;
+		Valueable<bool> IsDestroyableObstacle;
 
 		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
 
@@ -101,6 +102,7 @@ public:
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
 			, AircraftDockingDirs {}
+			, IsDestroyableObstacle { false }
 		{ }
 
 		// Ares 0.A functions
