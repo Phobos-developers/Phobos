@@ -115,6 +115,9 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		Nullable<int> CombatLightDetailLevel;
+		Valueable<double> CombatLightChance;
+		Nullable<bool> Particle_AlphaImageIsLightFlash;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -228,6 +231,10 @@ public:
 
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
+
+			, CombatLightDetailLevel {}
+			, CombatLightChance { 1.0 }
+			, Particle_AlphaImageIsLightFlash {}
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
