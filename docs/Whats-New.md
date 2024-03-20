@@ -426,7 +426,7 @@ Vanilla fixes:
 - Fixed jumpjet crash speed when crashing onto buildings (by NetsuNegi)
 - Fixed infantry requiring `MovementZone=AmphibiousDestroyer` specifically to be able to use water sequences instead of any amphibious / water `MovementZone` (by Starkku)
 
-- Phobos fixes:
+Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
 - Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
