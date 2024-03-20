@@ -59,8 +59,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 - AITrigger can now recognize Building Upgrades as legal condition.
 - `EWGates` and `NSGates` now will link walls like `xxGateOne` and `xxGateTwo` do.
-- Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
-- Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
@@ -885,7 +883,7 @@ Ammo.AddOnDeploy=0      ; integer
 
 - Veinhole monsters now work like they used to in Tiberian Sun.
 - Their core parameters are still loaded from `[General]`
-- The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to be properly listed under `[Warheads]` as well. The warhead has to have `Veinhole=yes` set. 
+- The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to be properly listed under `[Warheads]` as well. The warhead has to have `Veinhole=yes` set.
 - Veinholes are hardcoded to use several overlay types.
 - The vein attack animation specified under `[AudioVisual]` is what deals the damage. The animation has to be properly listed under `[Animations]` as well.
 - Units can be made immune to veins the same way as in Tiberian Sun.
@@ -908,7 +906,7 @@ VeinDamage=5                  ; integer
 VeinholeTypeClass=VEINTREE    ; TerrainType
 
 [CombatDamage]
-VeinholeWarhead=VeinholeWH    ; Warhead 
+VeinholeWarhead=VeinholeWH    ; Warhead
 
 [VeinholeWH]
 Veinhole=yes
