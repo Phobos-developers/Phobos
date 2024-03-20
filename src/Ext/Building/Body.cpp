@@ -245,12 +245,15 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 		auto const pTypeExt = pExt->TypeExtData;
 
 		pExt->AccumulatedIncome += refund;
+		pExt->GrindingWeapon_AccumulatedCredits += refund;
 
-		if (pTypeExt->Grinding_Weapon.isset()
-			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
+		if (pTypeExt->Grinding_Weapon.isset() &&
+			Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF &&
+			pExt->GrindingWeapon_AccumulatedCredits >= pTypeExt->Grinding_Weapon_RequiredCredits)
 		{
 			TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon.Get());
 			pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;
+			pExt->GrindingWeapon_AccumulatedCredits = 0;
 		}
 
 		if (pTypeExt->Grinding_Sound.isset())
@@ -338,6 +341,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
+		.Process(this->GrindingWeapon_AccumulatedCredits)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedIncome)
 		.Process(this->CurrentLaserWeaponIndex)

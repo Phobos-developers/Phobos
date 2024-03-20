@@ -47,6 +47,8 @@ public:
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 
+		Nullable<WarheadTypeClass*> VeinholeWarhead;
+
 		PhobosFixedString<32u> MissingCameo;
 
 		TranslucencyLevel PlacementGrid_Translucency;
@@ -70,9 +72,11 @@ public:
 		Valueable<Point2D> Pips_Generic_Buildings_Size;
 		Valueable<Point2D> Pips_Ammo_Size;
 		Valueable<Point2D> Pips_Ammo_Buildings_Size;
-		Valueable<int> Pips_Tiberiums_EmptyFrame;
 		ValueableVector<int> Pips_Tiberiums_Frames;
+		Valueable<int> Pips_Tiberiums_EmptyFrame;
 		ValueableVector<int> Pips_Tiberiums_DisplayOrder;
+		Valueable<int> Pips_Tiberiums_WeedFrame;
+		Valueable<int> Pips_Tiberiums_WeedEmptyFrame;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -127,6 +131,7 @@ public:
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
+			, VeinholeWarhead {}
 			, MissingCameo { GameStrings::XXICON_SHP() }
 
 			, PlacementGrid_Translucency { 0 }
@@ -149,9 +154,11 @@ public:
 			, Pips_Generic_Buildings_Size { { 4, 2 } }
 			, Pips_Ammo_Size { { 4, 0 } }
 			, Pips_Ammo_Buildings_Size { { 4, 2 } }
-			, Pips_Tiberiums_EmptyFrame { 0 }
 			, Pips_Tiberiums_Frames {}
+			, Pips_Tiberiums_EmptyFrame { 0 }
 			, Pips_Tiberiums_DisplayOrder {}
+			, Pips_Tiberiums_WeedFrame { 1 }
+			, Pips_Tiberiums_WeedEmptyFrame { 0 }
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
