@@ -822,7 +822,7 @@ ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary
 
 ### Make units try turning to target when firing with `OmniFire=yes`
 - The unit will try to turn the body to target even firing with `OmniFire=yes`
-  - Recommended for jumpjets if you want it to turn to target when firing.
+  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`
 
 In `rulesmd.ini`:
 ```ini
@@ -1287,6 +1287,18 @@ In `rulesmd.ini`:
 [SOMEWEAPON]     ; WeaponType
 FeedbackWeapon=  ; WeaponType
 ```
+
+### Recoil force
+
+- You can now tilt a voxel unit after firing to simulate the recoil force.
+  - The body's "moment of inertia" is simplified to be linearly proportional to the body voxel's size. Turret voxel is not considered yet. Therefore you must have a visible size voxel body.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]  ; WeaponType
+RecoilForce=  ; floating point value
+```
+
 
 ### Radiation enhancements
 
