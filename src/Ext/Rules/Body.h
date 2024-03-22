@@ -103,6 +103,8 @@ public:
 		Valueable<float> ToolTip_Background_BlurSize;
 
 		Valueable<bool> CrateOnlyOnLand;
+		Valueable<int> UnitCrateVehicleCap;
+		Valueable<int> FreeMCV_CreditsThreshold;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
 		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
@@ -185,6 +187,8 @@ public:
 			, DisplayIncome_AllowAI { true }
 			, DisplayIncome_Houses { AffectedHouse::All }
 			, CrateOnlyOnLand { false }
+			, UnitCrateVehicleCap { 50 }
+			, FreeMCV_CreditsThreshold { 1500 }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }

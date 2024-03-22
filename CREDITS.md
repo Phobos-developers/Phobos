@@ -223,6 +223,7 @@ This page lists all the individual contributions to the project by their author.
   - Projectile return weapon
   - Aircraft landing / docking direction
   - `DeploysInto` cursor desync fix
+  - Minor crate logic improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
