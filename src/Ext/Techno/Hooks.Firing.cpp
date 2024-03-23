@@ -869,7 +869,8 @@ DEFINE_HOOK(0x736F61, UnitClass_FiringAI_BurstRandomTarget_Setup, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	TechnoExt::UpdateRandomTarget(pThis);
+	if (pThis->DiskLaserTimer.TimeLeft <= 0 && pThis->Target)
+		TechnoExt::UpdateRandomTarget(pThis);
 
 	return 0;
 }
@@ -878,7 +879,8 @@ DEFINE_HOOK(0x4D4E8A, FootClass_FiringAI_BurstRandomTarget_Setup, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	TechnoExt::UpdateRandomTarget(pThis);
+	if (pThis->DiskLaserTimer.TimeLeft <= 0 && pThis->Target)
+		TechnoExt::UpdateRandomTarget(pThis);
 
 	return 0;
 }
@@ -889,7 +891,8 @@ DEFINE_HOOK(0x44AFF8, BuildingClass_FireAt_BurstRandomTarget_Setup, 0x6)
 
 	auto pOriginalTarget = pThis->Target;
 
-	TechnoExt::UpdateRandomTarget(pThis);
+	if (pThis->DiskLaserTimer.TimeLeft <= 0 && pThis->Target)
+		TechnoExt::UpdateRandomTarget(pThis);
 
 	int weaponIndex = pThis->SelectWeapon(pThis->Target);
 	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
@@ -905,7 +908,7 @@ DEFINE_HOOK(0x44AFF8, BuildingClass_FireAt_BurstRandomTarget_Setup, 0x6)
 
 DEFINE_HOOK(0x6B770D, SpawnerManagerClassAI_SwitchCase3, 0xB)
 {
-	GET(SpawnManagerClass *, pThis, ESI);
+	GET(SpawnManagerClass*, pThis, ESI);
 
 	bool skip = false;
 
@@ -915,7 +918,10 @@ DEFINE_HOOK(0x6B770D, SpawnerManagerClassAI_SwitchCase3, 0xB)
 		if (!pSpawnExt)
 			continue;
 
-		if (pSpawnExt->CurrentRandomTarget && TechnoExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
+		auto const pCurrRandTarget = pSpawnExt->CurrentRandomTarget;
+		bool isValidTechno = pCurrRandTarget && pCurrRandTarget->IsAlive && pCurrRandTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrRandTarget, true) && (pCurrRandTarget->WhatAmI() == AbstractType::Infantry || pCurrRandTarget->WhatAmI() == AbstractType::Unit || pCurrRandTarget->WhatAmI() == AbstractType::Building || pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
+
+		if (isValidTechno)
 		{
 			skip = true;
 			pItem->Unit->Target = pSpawnExt->CurrentRandomTarget;
@@ -940,7 +946,10 @@ DEFINE_HOOK(0x6B776E, SpawnerManagerClassAI_SwitchCase4, 0x6) // Note: Not sure 
 	if (!pSpawnExt)
 		return 0;
 
-	if (pSpawnExt->CurrentRandomTarget && TechnoExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
+	auto const pCurrRandTarget = pSpawnExt->CurrentRandomTarget;
+	bool isValidTechno = pCurrRandTarget && pCurrRandTarget->IsAlive && pCurrRandTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrRandTarget, true) && (pCurrRandTarget->WhatAmI() == AbstractType::Infantry || pCurrRandTarget->WhatAmI() == AbstractType::Unit || pCurrRandTarget->WhatAmI() == AbstractType::Building || pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
+
+	if (isValidTechno)
 	{
 		pThis->Target = pSpawnExt->CurrentRandomTarget;
 		return 0x6B777A;
@@ -961,7 +970,10 @@ DEFINE_HOOK(0x6B7AE3, SpawnerManagerClassAI_SpawnControlStatus3, 0x6)
 	if (!pSpawnExt)
 		return 0;
 
-	if (pSpawnExt->CurrentRandomTarget && TechnoExt::IsUnitAvailable(pSpawnExt->CurrentRandomTarget, true))
+	auto const pCurrRandTarget = pSpawnExt->CurrentRandomTarget;
+	bool isValidTechno = pCurrRandTarget && pCurrRandTarget->IsAlive && pCurrRandTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrRandTarget, true) && (pCurrRandTarget->WhatAmI() == AbstractType::Infantry || pCurrRandTarget->WhatAmI() == AbstractType::Unit || pCurrRandTarget->WhatAmI() == AbstractType::Building || pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
+
+	if (isValidTechno)
 	{
 		pThis->Target = pSpawnExt->CurrentRandomTarget;
 		return 0x6B7AEF;
@@ -992,7 +1004,7 @@ DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected_ClearRetargets, 0x5)
 			pExt->CurrentRandomTarget = nullptr;
 			pExt->OriginalTarget = nullptr;
 			pTechno->Target = nullptr;
-			pTechno->QueueMission(Mission::Guard, 0);
+			//pTechno->QueueMission(Mission::Guard, 0);
 		}
 	}
 
@@ -1035,10 +1047,64 @@ DEFINE_HOOK(0x6FE562, TechnoClass_FireAt_BulletNewTarget, 0x6)
 	if (!pExt)
 		return 0;
 
-	if (!pExt->OriginalTarget)
+	if (pExt->CurrentRandomTarget)
+	{
+		auto const pCurrRandTarget = pExt->CurrentRandomTarget;
+		bool isValidRandTechno = pCurrRandTarget && pCurrRandTarget->IsAlive && pCurrRandTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrRandTarget, true) && (pCurrRandTarget->WhatAmI() == AbstractType::Infantry || pCurrRandTarget->WhatAmI() == AbstractType::Unit || pCurrRandTarget->WhatAmI() == AbstractType::Building || pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
+
+		auto const pCurrTarget = static_cast<TechnoClass*>(pThis->Target);
+		bool isValidTechno = pCurrTarget && pCurrTarget->IsAlive && pCurrTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrTarget, true) && (pCurrTarget->WhatAmI() == AbstractType::Infantry || pCurrTarget->WhatAmI() == AbstractType::Unit || pCurrTarget->WhatAmI() == AbstractType::Building || pCurrTarget->WhatAmI() == AbstractType::Aircraft);
+
+		if (!isValidTechno)
+			pThis->SetTarget(nullptr);
+
+		if (!isValidTechno || !isValidRandTechno)
+		{
+			pExt->CurrentRandomTarget = nullptr;
+			pThis->SetTarget(pExt->OriginalTarget);
+			pExt->OriginalTarget = nullptr;
+			//pBullet->Target = pThis->Target;
+
+			//if (!pBullet->Target)
+			//{
+			pBullet->Detonate(pBullet->GetCoords());
+			pBullet->Limbo();
+			pBullet->UnInit();
+			//}
+
+			return 0;
+		}
+
+		pBullet->Target = pExt->CurrentRandomTarget;
+
+		int weaponIndex = pThis->SelectWeapon(pThis->Target);
+		const auto pWeaponType = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+		const auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+		if (!pWeaponTypeExt)
+			return 0;
+
+		if (pWeaponTypeExt->RandomTarget_DistributeBurst.Get() && !pThis->SpawnManager)
+			pExt->ResetRandomTarget = true;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FF8F1, TechnoClass_FireAt_ResetRandomTarget, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
 		return 0;
 
-	pBullet->Target = pExt->CurrentRandomTarget;
+	if (pExt->ResetRandomTarget)
+	{
+		pExt->ResetRandomTarget = false;
+		pExt->CurrentRandomTarget = TechnoExt::FindRandomTarget(pThis);
+		pThis->Target = pExt->CurrentRandomTarget;
+	}
 
 	return 0;
 }
