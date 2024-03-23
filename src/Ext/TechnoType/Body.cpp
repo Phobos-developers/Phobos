@@ -274,6 +274,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
 	this->LandingDir.Read(exINI, pSection, "LandingDir");
 
+	this->CrateGoodie_RerollChance.Read(exINI, pSection, "CrateGoodie.RerollChance");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -584,6 +585,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnHeight)
 		.Process(this->LandingDir)
 		.Process(this->DroppodType)
+
+		.Process(this->CrateGoodie_RerollChance)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

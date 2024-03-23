@@ -185,6 +185,8 @@ public:
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
 
+		Valueable<double> CrateGoodie_RerollChance;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -367,6 +369,8 @@ public:
 			, SpawnHeight {}
 			, LandingDir {}
 			, DroppodType {}
+
+			, CrateGoodie_RerollChance { 0.0 }
 		{ }
 
 		virtual ~ExtData() = default;
