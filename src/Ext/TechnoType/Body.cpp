@@ -407,16 +407,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->InterceptorType.reset();
 	}
 
-	if (this->OwnerObject()->WhatAmI() == AbstractType::InfantryType)
-	{
-		if (this->DroppodType == nullptr)
-			this->DroppodType = std::make_unique<DroppodTypeClass>();
-		this->DroppodType->LoadFromINI(pINI, pSection);
-	}
-	else
-	{
-		this->DroppodType.reset();
-	}
+	if (this->DroppodType == nullptr)
+		this->DroppodType = std::make_unique<DroppodTypeClass>();
+
+	this->DroppodType->LoadFromINI(pINI, pSection);
 }
 
 template <typename T>
