@@ -161,6 +161,7 @@ public:
 	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
 	static bool CanDeployIntoBuilding(BuildingClass* pThis, bool noDeploysIntoDefaultValue = false, BuildingTypeClass* pBuildingType = nullptr);
 	static bool IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource);
+	static bool IsValidTechno(TechnoClass* pTechno);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
