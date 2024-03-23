@@ -121,11 +121,14 @@ void TechnoExt::ExtData::WebbyUpdate()
 		pExt->WebbyAnim = nullptr;
 
 		// Restore previous action
-		pThis->SetDestination(pExt->WebbyLastTarget, false);
-		pThis->SetTarget(pExt->WebbyLastTarget);
-		pThis->QueueMission(pExt->WebbyLastMission, true);
-		pExt->WebbyLastTarget = nullptr;
-		pExt->WebbyLastMission = Mission::Sleep;
+		if (pExt->WebbyLastTarget)
+		{
+			pThis->SetDestination(pExt->WebbyLastTarget, false);
+			pThis->SetTarget(pExt->WebbyLastTarget);
+			pThis->QueueMission(pExt->WebbyLastMission, true);
+			pExt->WebbyLastTarget = nullptr;
+			pExt->WebbyLastMission = Mission::Sleep;
+		}
 	}
 }
 
