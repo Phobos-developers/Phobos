@@ -44,7 +44,7 @@ void TypeConvertGroup::UniversalConvert(TechnoClass* pTarget, const std::vector<
 
 		if (!pTargetType || !pTarget->Owner) continue;
 
-		if (!EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTarget->Owner))
+		if (pOwner && !EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTarget->Owner))
 			continue;
 
 		if (fromTypes.size())
