@@ -48,19 +48,19 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 	switch (pType->WhatAmI())
 	{
 	case AbstractType::BuildingType:
-		VTable::Set(pTrick, 0x7E3EBC); // BuildingClass::`vtable`
+		VTable::Set(pTrick, BuildingClass::AbsVTable);
 		reinterpret_cast<BuildingClass*>(pTrick)->Type = (BuildingTypeClass*)pType;
 		break;
 	case AbstractType::AircraftType:
-		VTable::Set(pTrick, 0x7E22A4); // AircraftClass::`vtable`
+		VTable::Set(pTrick, AircraftClass::AbsVTable);
 		reinterpret_cast<AircraftClass*>(pTrick)->Type = (AircraftTypeClass*)pType;
 		break;
 	case AbstractType::InfantryType:
-		VTable::Set(pTrick, 0x7EB058); // InfantryClass::`vtable`
+		VTable::Set(pTrick, InfantryClass::AbsVTable);
 		reinterpret_cast<InfantryClass*>(pTrick)->Type = (InfantryTypeClass*)pType;
 		break;
 	case AbstractType::UnitType:
-		VTable::Set(pTrick, 0x7F5C70); // UnitClass::`vtable`
+		VTable::Set(pTrick, UnitClass::AbsVTable);
 		reinterpret_cast<UnitClass*>(pTrick)->Type = (UnitTypeClass*)pType;
 		break;
 	}

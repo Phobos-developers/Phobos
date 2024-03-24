@@ -28,7 +28,8 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 			if (jjLoco->State != JumpjetLocomotionClass::State::Cruising)
 			{
 				jjLoco->LocomotionFacing.SetDesired(tgtDir);
-				pThis->PrimaryFacing.SetDesired(tgtDir);
+				if (jjLoco->State == JumpjetLocomotionClass::State::Grounded)
+					pThis->PrimaryFacing.SetDesired(tgtDir);
 				pThis->SecondaryFacing.SetDesired(tgtDir);
 			}
 		}
@@ -78,8 +79,36 @@ DEFINE_HOOK(0x736EE9, UnitClass_UpdateFiring_FireErrorIsOK, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x54D326, JumpjetLocomotionClass_MovementAI_CrashSpeedFix, 0x6)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+	return pThis->LinkedTo->IsCrashing ? 0x54D350 : 0;
+}
+
+DEFINE_HOOK(0x54D208, JumpjetLocomotionClass_MovementAI_EMPWobble, 0x5)
+{
+	GET(JumpjetLocomotionClass* const, pThis, ESI);
+	enum { ZeroWobble = 0x54D22C };
+
+	if (pThis->LinkedTo->IsUnderEMP())
+		return ZeroWobble;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x736990, UnitClass_UpdateRotation_TurretFacing_EMP, 0x6)
+{
+	GET(UnitClass* const, pThis, ECX);
+	enum { SkipAll = 0x736C0E };
+
+	if (pThis->Deactivated || pThis->IsUnderEMP())
+		return SkipAll;
+
+	return 0;
+}
+
 // Bugfix: Align jumpjet turret's facing with body's
-DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_TemporaryFix, 0x6)
+DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_Jumpjet, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
 	enum { SkipCheckDestination = 0x736BCA, GetDirectionTowardsDestination = 0x736BBB };
@@ -129,6 +158,7 @@ DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 DEFINE_HOOK(0x54DCCF, JumpjetLocomotionClass_DrawMatrix_TiltCrashJumpjet, 0x5)
 {
 	GET(ILocomotion*, iloco, ESI);
+	__assume(iloco != nullptr);
 	//if (static_cast<JumpjetLocomotionClass*>(iloco)->State < JumpjetLocomotionClass::State::Crashing)
 	if (static_cast<JumpjetLocomotionClass*>(iloco)->State == JumpjetLocomotionClass::State::Grounded)
 		return 0x54DCE8;
@@ -140,6 +170,7 @@ DEFINE_HOOK(0x54DCCF, JumpjetLocomotionClass_DrawMatrix_TiltCrashJumpjet, 0x5)
 DEFINE_HOOK(0x54DD3D, JumpjetLocomotionClass_DrawMatrix_AxisCenterInAir, 0x5)
 {
 	GET(ILocomotion*, iloco, ESI);
+	__assume(iloco != nullptr);
 	auto state = static_cast<JumpjetLocomotionClass*>(iloco)->State;
 	if (state && state < JumpjetLocomotionClass::State::Crashing)
 		return  0x54DE88;
@@ -149,6 +180,7 @@ DEFINE_HOOK(0x54DD3D, JumpjetLocomotionClass_DrawMatrix_AxisCenterInAir, 0x5)
 
 FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
 {
+	__assume(pThis != nullptr);
 	// do not use explicit toggle for this
 	if (static_cast<JumpjetLocomotionClass*>(pThis)->State == JumpjetLocomotionClass::State::Crashing)
 		return FireError::CANT;
@@ -157,12 +189,11 @@ FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
 
 DEFINE_JUMP(VTABLE, 0x7ECDF4, GET_OFFSET(JumpjetLocomotionClass_Can_Fire));
 
-//TODO : Issue #690 #655
-
 // Fix initial facing when jumpjet locomotor is being attached
 DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 {
 	GET(ILocomotion*, iLoco, EBP);
+	__assume(iLoco != nullptr);
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iLoco);
 
 	pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
@@ -174,6 +205,7 @@ DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 // Fix initial facing when jumpjet locomotor on unlimbo
 void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 {
+	__assume(pThis != nullptr);
 	auto const pThisLoco = static_cast<JumpjetLocomotionClass*>(pThis);
 
 	pThisLoco->LocomotionFacing.SetCurrent(pThisLoco->LinkedTo->PrimaryFacing.Current());
@@ -181,3 +213,58 @@ void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 }
 
 DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))
+
+
+// Visual bugfix : Teleport loco vxls could not tilt
+Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
+{
+	__assume(iloco != nullptr);
+	auto const pThis = static_cast<LocomotionClass*>(iloco);
+	auto linked = pThis->LinkedTo;
+	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
+
+	if (pIndex && pIndex->Is_Valid_Key())
+		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
+
+	if (slope_idx && pIndex && pIndex->Is_Valid_Key())
+		*ret = Matrix3D::VoxelRampMatrix[slope_idx] * pThis->LocomotionClass::Draw_Matrix(pIndex);
+	else
+		*ret = pThis->LocomotionClass::Draw_Matrix(pIndex);
+
+	float arf = linked->AngleRotatedForwards;
+	float ars = linked->AngleRotatedSideways;
+
+	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	{
+		if (pIndex)// just forget it bro, no one cares
+			*(int*)pIndex = -1;
+
+		double scalex = linked->GetTechnoType()->VoxelScaleX;
+		double scaley = linked->GetTechnoType()->VoxelScaleY;
+
+		Matrix3D pre = Matrix3D::GetIdentity();
+		pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
+		ret->TranslateX(float(Math::sgn(arf) * (scaley * (1 - Math::cos(arf)))));
+		ret->TranslateY(float(Math::sgn(-ars) * (scalex * (1 - Math::cos(ars)))));
+		ret->RotateX(ars);
+		ret->RotateY(arf);
+
+		*ret = pre * *ret;
+	}
+	return ret;
+}
+
+DEFINE_JUMP(VTABLE, 0x7F5024, GET_OFFSET(TeleportLocomotionClass_Draw_Matrix));
+DEFINE_JUMP(VTABLE, 0x7F5028, 0x5142A0);//TeleportLocomotionClass_Shadow_Matrix : just use hover's to save my time
+
+// Visual bugfix: Tunnel loco could not tilt when being flipped
+DEFINE_HOOK(0x729B5D, TunnelLocomotionClass_DrawMatrix_Tilt, 0x8)
+{
+	GET(ILocomotion*, iloco, ESI);
+	GET_BASE(VoxelIndexKey*, pIndex, 0x10);
+	GET_BASE(Matrix3D*, ret, 0xC);
+	R->EAX(TeleportLocomotionClass_Draw_Matrix(iloco, ret, pIndex));
+	return 0x729C09;
+}
+
+DEFINE_JUMP(VTABLE, 0x7F5A4C, 0x5142A0);//TunnelLocomotionClass_Shadow_Matrix : just use hover's to save my time

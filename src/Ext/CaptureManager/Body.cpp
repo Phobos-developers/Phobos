@@ -6,7 +6,7 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 		return pManager->CanCapture(pTarget);
 
 	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
-	if (pTechnoTypeExt && pTechnoTypeExt->MultiMindControl_ReleaseVictim)
+	if (pTechnoTypeExt->MultiMindControl_ReleaseVictim)
 	{
 		// I hate Ares' completely rewritten things - secsome
 		pManager->MaxControlNodes += 1;
@@ -51,8 +51,7 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 				pManager->DecideUnitFate(pTarget);
 				pTarget->MindControlledBy = nullptr;
 
-				if (pNode)
-					GameDelete(pNode);
+				GameDelete(pNode);
 
 				pManager->ControlNodes.RemoveItem(i);
 

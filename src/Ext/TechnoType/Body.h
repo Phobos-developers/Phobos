@@ -10,6 +10,7 @@
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/Affiliated/DroppodTypeClass.h>
 
 class Matrix3D;
 
@@ -52,13 +53,13 @@ public:
 
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
+		std::unique_ptr<DroppodTypeClass> DroppodType;
 
 		Nullable<int> Ammo_AddOnDeploy;
 		Valueable<int> Ammo_AutoDeployMinimumAmount;
 		Valueable<int> Ammo_AutoDeployMaximumAmount;
 		Valueable<int> Ammo_DeployUnlockMinimumAmount;
 		Valueable<int> Ammo_DeployUnlockMaximumAmount;
-		NullableIdx<VocClass> VoiceCantDeploy;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
@@ -79,6 +80,7 @@ public:
 		NullableIdx<VoxClass> EVA_Sold;
 
 		NullableIdx<VocClass> VoiceCreated;
+		NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
 
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
@@ -179,6 +181,10 @@ public:
 		Nullable<Point2D> SpawnsPipSize;
 		Valueable<Point2D> SpawnsPipOffset;
 
+		Nullable<Leptons> SpawnDistanceFromTarget;
+		Nullable<int> SpawnHeight;
+		Nullable<int> LandingDir;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -193,7 +199,7 @@ public:
 			bool Serialize(T& stm);
 		};
 
-		ValueableVector<LaserTrailDataEntry> LaserTrailData;
+		std::vector<LaserTrailDataEntry> LaserTrailData;
 
 		Nullable<CoordStruct> PronePrimaryFireFLH;
 		Nullable<CoordStruct> ProneSecondaryFireFLH;
@@ -301,6 +307,9 @@ public:
 			, EVA_Sold {}
 			, EnemyUIName {}
 
+			, VoiceCreated {}
+			, VoicePickup {}
+
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
@@ -353,6 +362,11 @@ public:
 			, EmptySpawnsPipFrame { 0 }
 			, SpawnsPipSize {}
 			, SpawnsPipOffset {{ 0,0 }}
+
+			, SpawnDistanceFromTarget {}
+			, SpawnHeight {}
+			, LandingDir {}
+			, DroppodType {}
 		{ }
 
 		virtual ~ExtData() = default;

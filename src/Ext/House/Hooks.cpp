@@ -1,6 +1,8 @@
 #include "Body.h"
-#include "../Techno/Body.h"
-#include "../Building/Body.h"
+
+#include <Ext/Aircraft/Body.h>
+#include "Ext/Techno/Body.h"
+#include "Ext/Building/Body.h"
 #include <unordered_map>
 
 DEFINE_HOOK(0x4F8440, HouseClass_Update_Beginning, 0x5)
@@ -59,11 +61,6 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 	REF_STACK(float, amount, 0x1C);
 
 	auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-	if (!pTypeExt)
-		return 0;
-
-	if (!pBuilding->Owner)
-		return 0;
 
 	auto storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
 
@@ -229,3 +226,27 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x65EB8D, HouseClass_SendSpyPlanes_PlaceAircraft, 0x6)
+{
+	enum { SkipGameCode = 0x65EBE5, SkipGameCodeNoSuccess = 0x65EC12 };
+
+	GET(AircraftClass* const, pAircraft, ESI);
+	GET(CellStruct const, edgeCell, EDI);
+
+	bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
+
+	return result ? SkipGameCode : SkipGameCodeNoSuccess;
+}
+
+DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
+{
+	enum { SkipGameCode = 0x65E9EE, SkipGameCodeNoSuccess = 0x65EA8B };
+
+	GET(AircraftClass* const, pAircraft, ESI);
+	GET(CellStruct const, edgeCell, EDI);
+
+	bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
+
+	return result ? SkipGameCode : SkipGameCodeNoSuccess;
+}

@@ -57,9 +57,7 @@ void FlyingStrings::UpdateAll()
 	{
 		auto& dataItem = Data[i];
 
-		Point2D point;
-
-		TacticalClass::Instance->CoordsToClient(dataItem.Location, &point);
+		auto [point,visible] = TacticalClass::Instance->CoordsToClient(dataItem.Location);
 
 		point += dataItem.PixelOffset;
 

@@ -39,8 +39,8 @@ public:
 			, Countdown_RegroupAtLeader { -1 }
 			, MoveMissionEndMode { 0 }
 			, WaitNoTargetCounter { 0 }
-			, WaitNoTargetTimer { 0 }
-			, ForceJump_Countdown { -1 }
+			, WaitNoTargetTimer { }
+			, ForceJump_Countdown { }
 			, ForceJump_InitialCountdown { -1 }
 			, ForceJump_RepeatMode { false }
 			, TeamLeader { nullptr }

@@ -35,6 +35,7 @@ public:
 
 		NullableIdx<VocClass> Grinding_Sound;
 		Nullable<WeaponTypeClass*> Grinding_Weapon;
+		Valueable<int> Grinding_Weapon_RequiredCredits;
 		ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
 		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
 		Valueable<bool> Grinding_AllowAllies;
@@ -61,6 +62,8 @@ public:
 		Valueable<bool> ZShapePointMove_OnBuildup;
 		Valueable<int> SellBuildupLength;
 
+		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -80,6 +83,7 @@ public:
 			, Grinding_Sound {}
 			, Grinding_PlayDieSound { true }
 			, Grinding_Weapon {}
+			, Grinding_Weapon_RequiredCredits { 0 }
 			, DisplayIncome { }
 			, DisplayIncome_Houses { }
 			, DisplayIncome_Offset { { 0,0 } }
@@ -96,6 +100,7 @@ public:
 			, ConsideredVehicle {}
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
+			, AircraftDockingDirs {}
 		{ }
 
 		// Ares 0.A functions

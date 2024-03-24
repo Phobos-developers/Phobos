@@ -24,7 +24,7 @@ void InterceptorTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
 	this->Weapon.Read(exINI, pSection, "Interceptor.Weapon");
 	this->DeleteOnIntercept.Read(exINI, pSection, "Interceptor.DeleteOnIntercept");
-	this->WeaponOverride.Read(exINI, pSection, "Interceptor.WeaponOverride", true);
+	this->WeaponOverride.Read<true>(exINI, pSection, "Interceptor.WeaponOverride");
 	this->WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
 	this->WeaponCumulativeDamage.Read(exINI, pSection, "Interceptor.WeaponCumulativeDamage");
 	this->KeepIntact.Read(exINI, pSection, "Interceptor.KeepIntact");

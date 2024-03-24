@@ -25,8 +25,7 @@ DEFINE_HOOK(0x73E4D0, UnitClass_Mission_Unload_CheckBalanceAfter, 0xA)
 
 	if (auto pBldExt = BuildingExt::ExtMap.Find(pDock))
 	{
-		if (pBldExt->TypeExtData->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
-			pBldExt->AccumulatedIncome += pHouse->Available_Money() - OwnerBalanceBefore::HarversterUnloads;
+		pBldExt->AccumulatedIncome += pHouse->Available_Money() - OwnerBalanceBefore::HarversterUnloads;
 	}
 
 	return 0;
@@ -48,8 +47,7 @@ DEFINE_HOOK(0x522E4F, InfantryClass_SlaveGiveMoney_CheckBalanceAfter, 0x6)
 	if (auto pBld = abstract_cast<BuildingClass*>(slaveMiner))
 	{
 		auto pBldExt = BuildingExt::ExtMap.Find(pBld);
-		if (pBldExt->TypeExtData->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
-			pBldExt->AccumulatedIncome += money;
+		pBldExt->AccumulatedIncome += money;
 	}
 	else if (auto pBldTypeExt = BuildingTypeExt::ExtMap.Find(slaveMiner->GetTechnoType()->DeploysInto))
 	{

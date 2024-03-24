@@ -33,6 +33,7 @@ public:
 		Nullable<ColorStruct> ToolTip_Background_Color;
 		Nullable<int> ToolTip_Background_Opacity;
 		Nullable<float> ToolTip_Background_BlurSize;
+		Valueable<int> BriefingTheme;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
@@ -52,6 +53,7 @@ public:
 			, ToolTip_Background_Color { }
 			, ToolTip_Background_Opacity { }
 			, ToolTip_Background_BlurSize { }
+			, BriefingTheme { -1 }
 		{ }
 
 		virtual ~ExtData() = default;

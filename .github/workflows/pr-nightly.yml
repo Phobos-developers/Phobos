@@ -19,7 +19,7 @@ jobs:
     runs-on: windows-2019
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
         # ref: ${{ github.event.pull_request.head.sha }}

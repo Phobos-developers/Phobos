@@ -15,6 +15,7 @@
 #include <Ext/Techno/Body.h>
 
 #include <Utilities/Macro.h>
+#include <Utilities/AresHelper.h>
 
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
@@ -26,7 +27,7 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x6F3C56, TechnoClass_Transform_6F3AD0_TurretMultiOffset, 0x0)
+DEFINE_HOOK(0x6F3C56, TechnoClass_GetFLH_TurretMultiOffset, 0x0)
 {
 	LEA_STACK(Matrix3D*, mtx, STACK_OFFSET(0xD8, -0x90));
 	GET(TechnoTypeClass*, technoType, EDX);
@@ -58,14 +59,14 @@ DEFINE_HOOK(0x73B780, UnitClass_DrawVXL_TurretMultiOffset, 0x0)
 	return 0x73B790;
 }
 
+constexpr reference<double, 0xB1D008> const Pixel_Per_Lepton {};
+
 DEFINE_HOOK(0x73BA4C, UnitClass_DrawVXL_TurretMultiOffset1, 0x0)
 {
 	LEA_STACK(Matrix3D*, mtx, STACK_OFFSET(0x1D0, -0x13C));
 	GET(TechnoTypeClass*, technoType, EBX);
 
-	double& factor = *reinterpret_cast<double*>(0xB1D008);
-
-	TechnoTypeExt::ApplyTurretOffset(technoType, mtx, factor);
+	TechnoTypeExt::ApplyTurretOffset(technoType, mtx, Pixel_Per_Lepton);
 
 	return 0x73BA68;
 }
@@ -105,10 +106,10 @@ DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
 	float angle = static_cast<float>(turretRad - bodyRad);
 	mtx.RotateZ(angle);
 
-	auto res = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
+	auto res = mtx.GetTranslation();
 	auto location = CoordStruct { static_cast<int>(res.X), static_cast<int>(-res.Y), static_cast<int>(res.Z) };
-	Point2D temp;
-	pos += *TacticalClass::Instance()->CoordsToScreen(&temp, &location);
+
+	pos += TacticalClass::CoordsToScreen(location);
 
 	return 0;
 }
@@ -338,51 +339,88 @@ DEFINE_HOOK(0x4DB157, FootClass_DrawVoxelShadow_TurretShadow, 0x8)
 	GET(FootClass*, pThis, ESI);
 	GET_STACK(Point2D, pos, STACK_OFFSET(0x18, 0x28));
 	GET_STACK(Surface*, pSurface, STACK_OFFSET(0x18, 0x24));
-	GET_STACK(bool, a9, STACK_OFFSET(0x18, 0x20)); // unknown usage
+	GET_STACK(bool, a9, STACK_OFFSET(0x18, 0x20));
 	GET_STACK(Matrix3D*, pMatrix, STACK_OFFSET(0x18, 0x1C));
-	GET_STACK(Point2D*, a4, STACK_OFFSET(0x18, 0x14)); // unknown usage
-	GET_STACK(Point2D, a3, STACK_OFFSET(0x18, -0x10)); // unknown usage
-	GET_STACK(int*, a5, STACK_OFFSET(0x18, 0x10)); // unknown usage
-	GET_STACK(int, angle, STACK_OFFSET(0x18, 0xC));
-	GET_STACK(int, idx, STACK_OFFSET(0x18, 0x8));
-	GET_STACK(VoxelStruct*, pVXL, STACK_OFFSET(0x18, 0x4));
+	GET_STACK(RectangleStruct*, bound, STACK_OFFSET(0x18, 0x14));
+	GET_STACK(Point2D, a3, STACK_OFFSET(0x18, -0x10));
+	GET_STACK(decltype(ObjectTypeClass::VoxelShadowCache)*, shadow_cache, STACK_OFFSET(0x18, 0x10));
+	GET_STACK(VoxelIndexKey, index_key, STACK_OFFSET(0x18, 0xC));
+	GET_STACK(int, shadow_index, STACK_OFFSET(0x18, 0x8));
+	GET_STACK(VoxelStruct*, main_vxl, STACK_OFFSET(0x18, 0x4));
 
 	auto pType = pThis->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto tur = pType->Gunner || pType->IsChargeTurret
-		? &pType->ChargerTurrets[pThis->CurrentTurretNumber]
-		: &pType->TurretVoxel;
 
-	if (pTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow) && tur->VXL && tur->HVA)
+
+	// We need to handle Ares turrets/barrels
+	struct DummyExtHere
 	{
-		auto mtx = pThis->Locomotor->Shadow_Matrix(0);
+		char before[0xA4];
+		std::vector<VoxelStruct> ChargerTurrets;
+		std::vector<VoxelStruct> ChargerBarrels;
+	};
+
+	auto GetTurretVoxel = [pType](int idx) ->VoxelStruct*
+	{
+		if (pType->TurretCount == 0 || pType->IsGattling || idx < 0)
+			return &pType->TurretVoxel;
+
+		if (idx < 18)
+			return &pType->ChargerTurrets[idx];
+
+		if (CAN_USE_ARES && AresHelper::CanUseAres)
+		{
+			auto* aresTypeExt = reinterpret_cast<DummyExtHere*>(pType->align_2FC);
+			return &aresTypeExt->ChargerTurrets[idx - 18];
+		}
+
+		return nullptr;
+	};
+
+	auto GetBarrelVoxel = [pType](int idx)->VoxelStruct*
+	{
+		if (pType->TurretCount == 0 || pType->IsGattling || idx < 0)
+			return &pType->BarrelVoxel;
+
+		if (idx < 18)
+			return &pType->ChargerBarrels[idx];
+
+		if (CAN_USE_ARES && AresHelper::CanUseAres)
+		{
+			auto* aresTypeExt = reinterpret_cast<DummyExtHere*>(pType->align_2FC);
+			return &aresTypeExt->ChargerBarrels[idx - 18];
+		}
+
+		return nullptr;
+	};
+
+	auto tur = GetTurretVoxel(pThis->CurrentTurretNumber);
+
+	if (tur && pTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow) && tur->VXL && tur->HVA)
+	{
+		auto mtx = Matrix3D::GetIdentity();
+		pTypeExt->ApplyTurretOffset(&mtx, Pixel_Per_Lepton);
+		mtx.TranslateZ(-tur->HVA->Matrixes[0].GetZVal());
 		mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
-		float x = static_cast<float>(pTypeExt->TurretOffset.GetEx()->X / 8);
-		float y = static_cast<float>(pTypeExt->TurretOffset.GetEx()->Y / 8);
-		float z = -tur->VXL->TailerData->MinBounds.Z;
-		mtx.Translate(x, y, z);
-		Matrix3D::MatrixMultiply(&mtx, &Matrix3D::VoxelDefaultMatrix, &mtx);
+		mtx = *pMatrix * mtx;
 
-		pThis->DrawVoxelShadow(tur, 0, angle, 0, a4, &a3, &mtx, a9, pSurface, pos);
-		auto bar = &pType->BarrelVoxel;
+		pThis->DrawVoxelShadow(tur, 0, index_key, nullptr, bound, &a3, &mtx, a9, pSurface, pos);
 
-		if (bar->VXL && bar->HVA)
-			pThis->DrawVoxelShadow(bar, 0, angle, 0, a4, &a3, &mtx, a9, pSurface, pos);
+		auto bar = GetBarrelVoxel(pThis->CurrentTurretNumber);
+
+		if (bar && bar->VXL && bar->HVA)
+			pThis->DrawVoxelShadow(bar, 0, index_key, nullptr, bound, &a3, &mtx, a9, pSurface, pos);
 	}
 
 	if (!pTypeExt->ShadowIndices.size())
 	{
-		pThis->DrawVoxelShadow(pVXL, idx, angle, a5, a4, &a3, pMatrix, a9, pSurface, pos);
+		pThis->DrawVoxelShadow(main_vxl, shadow_index, index_key, shadow_cache, bound, &a3, pMatrix, a9, pSurface, pos);
 	}
 	else
 	{
 		for (auto index : pTypeExt->ShadowIndices)
 		{
-			auto hva = pVXL->HVA;
-			Matrix3D idxmtx = *pMatrix;
-			idxmtx.TranslateZ(-hva->Matrixes[index].GetZVal());
-			Matrix3D::MatrixMultiply(&idxmtx, &Matrix3D::VoxelDefaultMatrix, &idxmtx);
-			pThis->DrawVoxelShadow(pVXL, index, angle, a5, a4, &a3, pMatrix, a9, pSurface, pos);
+			pThis->DrawVoxelShadow(main_vxl, index, index_key, shadow_cache, bound, &a3, pMatrix, a9, pSurface, pos);
 		}
 	}
 

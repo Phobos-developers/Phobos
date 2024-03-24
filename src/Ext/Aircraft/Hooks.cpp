@@ -1,15 +1,18 @@
 #include <AircraftClass.h>
-#include <Utilities/Macro.h>
+#include <FlyLocomotionClass.h>
+
+
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
 
 	if (pThis->MissionStatus < (int)AirAttackStatus::FireAtTarget2_Strafe
-		|| pThis->MissionStatus > (int)AirAttackStatus::FireAtTarget5_Strafe)
+		|| pThis->MissionStatus >(int)AirAttackStatus::FireAtTarget5_Strafe)
 	{
 		return 0;
 	}
@@ -107,3 +110,60 @@ DEFINE_HOOK(0x414C0B, AircraftClass_ChronoSparkleDelay, 0x5)
 	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
 	return 0x414C10;
 }
+
+
+#pragma region LandingDir
+
+DEFINE_HOOK(0x4CF31C, FlyLocomotionClass_FlightUpdate_LandingDir, 0x9)
+{
+	enum { SkipGameCode = 0x4CF351 };
+
+	GET(FootClass**, pLinkedToPtr, ESI);
+	REF_STACK(unsigned int, dir, STACK_OFFSET(0x48, 0x8));
+
+	auto const pLinkedTo = *pLinkedToPtr;
+	dir = 0;
+
+	if (pLinkedTo->CurrentMission == Mission::Enter || pLinkedTo->GetMapCoords() == CellClass::Coord2Cell(pLinkedTo->Locomotor->Destination()))
+	{
+		if (auto const pAircraft = abstract_cast<AircraftClass*>(pLinkedTo))
+			dir = DirStruct(AircraftExt::GetLandingDir(pAircraft)).Raw;
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x446F6C, BuildingClass_GrandOpening_PoseDir, 0x9)
+{
+	GET(BuildingClass*, pThis, EBP);
+	GET(AircraftClass*, pAircraft, ESI);
+
+	R->EAX(AircraftExt::GetLandingDir(pAircraft, pThis));
+
+	return 0;
+}
+
+DEFINE_HOOK(0x443FC7, BuildingClass_ExitObject_PoseDir1, 0x8)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(AircraftClass*, pAircraft, EBP);
+
+	R->EAX(AircraftExt::GetLandingDir(pAircraft, pThis));
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44402E, BuildingClass_ExitObject_PoseDir2, 0x5)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(AircraftClass*, pAircraft, EBP);
+
+	auto dir = DirStruct(AircraftExt::GetLandingDir(pAircraft, pThis));
+	pAircraft->PrimaryFacing.SetCurrent(dir);
+	pAircraft->SecondaryFacing.SetCurrent(dir);
+
+	return 0;
+}
+
+#pragma endregion
+

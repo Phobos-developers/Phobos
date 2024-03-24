@@ -24,8 +24,7 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
 	*/
 
-	if (RulesExt::Global()->DisplayIncome_AllowAI || pThis->Owner->IsControlledByHuman())
-		pExt->DisplayIncomeString();
+	pExt->DisplayIncomeString();
 	pExt->ApplyPoweredKillSpawns();
 
 	return 0;
@@ -110,7 +109,7 @@ DEFINE_HOOK(0x449ADA, BuildingClass_MissionConstruction_DeployToFireFix, 0x0)
 	return 0x449AE8;
 }
 
-DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
+DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
 
@@ -118,13 +117,7 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 	if (pRulesExt->AllowParallelAIQueues && !pRulesExt->ForbidParallelAIQueues_Aircraft)
 		return 0;
 
-	if (!pBuilding)
-		return 0;
-
 	HouseClass* pOwner = pBuilding->Owner;
-
-	if (!pOwner)
-		return 0;
 
 	if (pOwner->Type->MultiplayPassive
 		|| pOwner->IsCurrentPlayer()

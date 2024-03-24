@@ -99,6 +99,8 @@ LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
+Shield.ConditionYellow=                     ; floating point value, percents or absolute
+Shield.ConditionRed=                        ; floating point value, percents or absolute
 Pips.Shield=-1,-1,-1                        ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Shield.Building=-1,-1,-1               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Shield.Background=PIPBRD.SHP           ; filename - including the .shp/.pcx extension
@@ -110,16 +112,18 @@ Pips.Shield.Building.Empty=0                ; integer, frame of pips.shp (zero-b
 [SOMESHIELDTYPE]                            ; ShieldType name
 Strength=0                                  ; integer
 InitialStrength=0                           ; integer
+ConditionYellow=                            ; floating point value, percents or absolute
+ConditionRed=                               ; floating point value, percents or absolute
 Armor=none                                  ; ArmorType
 InheritArmorFromTechno=false                ; boolean
 Powered=false                               ; boolean
 AbsorbOverDamage=false                      ; boolean
-SelfHealing=0.0                             ; double, percents or absolute
-SelfHealing.Rate=0.0                        ; double, ingame minutes
+SelfHealing=0.0                             ; floating point value, percents or absolute
+SelfHealing.Rate=0.0                        ; floating point value, ingame minutes
 SelfHealing.RestartInCombat=true            ; boolean
 SelfHealing.RestartInCombatDelay=0          ; integer, game frames
-Respawn=0.0                                 ; double, percents or absolute
-Respawn.Rate=0.0                            ; double, ingame minutes
+Respawn=0.0                                 ; floating point value, percents or absolute
+Respawn.Rate=0.0                            ; floating point value, ingame minutes
 BracketDelta=0                              ; integer - pixels
 Pips=-1,-1,-1                               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Building=-1,-1,-1                      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
@@ -186,6 +190,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for targeting and damage calculation purposes.
     - `InheritArmorFromTechno` can be set to true to override this so that `[TechnoType]->Armor` is used even if shield is active and `[ShieldType]->Armor` is ignored.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
+  - `ConditionYellow` and `ConditionRed` can be used to set the thresholds for shield damage states, defaulting to `[AudioVisual]` -> `Shield.ConditionYellow` & `Shield.ConditionRed` respectively which in turn default to just `ConditionYellow` & `ConditionRed`.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
   - This also works with Ares' `Convert.*`.
 - `Powered` controls whether or not the shield is active when a unit is running low on power or it is affected by EMP.
@@ -261,7 +266,7 @@ CreateUnit=                            ; VehicleType
 CreateUnit.Owner=Victim                ; Owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
 CreateUnit.RemapAnim=false             ; boolean
 CreateUnit.Mission=Guard               ; MissionType
-CreateUnit.Facing=0                    ; integer, facings in range of 0-255
+CreateUnit.Facing=0                    ; Direction type (integers from 0-255)
 CreateUnit.RandomFacing=true           ; boolean
 CreateUnit.InheritFacings=false        ; boolean
 CreateUnit.InheritTurretFacings=false  ; boolean
@@ -283,6 +288,16 @@ In `artmd.ini`:
 ```ini
 [SOMEANIM]       ; AnimationType
 AttachedSystem=  ; ParticleSystem
+```
+
+### Play sound as a detached sound event
+
+- It is now possible for animation to play a sound that is not attached to an audio event handler by using `DetachedReport`. By default animation `Report/StartSound` is played by an audio event handler, which allows the sound to loop and play at correct location even if it changes after its initial creation. This can also cause issues with animations that chain different types through `Next`, as the audio event handler resets when the animation restarts.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]       ; AnimationType
+DetachedReport=  ; sound entry
 ```
 
 ## Buildings
@@ -536,6 +551,20 @@ SubjectToWater=               ; boolean
 SubjectToWater.Detonate=true  ; boolean
 ```
 
+### Return weapon
+
+- It is now possible to make another weapon & projectile go off from a detonated projectile (in somewhat similar manner to `AirburstWeapon` or `ShrapnelWeapon`) straight back to the firer by setting `ReturnWeapon`. If the firer perishes before the initial projectile detonates, `ReturnWeapon` is not fired off.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]  ; Projectile
+ReturnWeapon=     ; WeaponType
+```
+
+```{note}
+This currently has same limitations as `AirburstWeapon` in that it does not properly support `Arcing=true` projectiles.
+```
+
 ## Super Weapons
 
 ### Convert TechnoType
@@ -643,7 +672,7 @@ SW.Next.RandomWeightsN=         ; List of integers.
 In `rulesmd.ini`:
 ```ini
 [SOMESW]                ; Super Weapon
-Detonate.Warhead=       ; Warhead
+Detonate.Warhead=       ; WarheadType
 Detonate.Weapon=        ; WeaponType
 Detonate.Damage=        ; integer
 Detonate.AtFirer=false  ; boolean
