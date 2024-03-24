@@ -315,6 +315,25 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	return true;
 }
+//Ares bug Type Conversion logic. Spawns fails to spawn the elite weapon.
+void TechnoExt::ExtData::UpdateType(TechnoTypeClass* currentType)
+{
+	auto const pThis = this->Get();
+	const auto pOldType = this->Type;
+	this->Type = currentType;
+	auto const pTypeExtData = TechnoTypeExt::ExtMap.Find(currentType);
+
+	if (auto pSpawnManager = pThis->SpawnManager) {
+		if (currentType->Spawns && pSpawnManager->SpawnType != currentType->Spawns) {
+			pSpawnManager->SpawnType = currentType->Spawns;
+
+			if(currentType->SpawnsNumber > 0)
+				pSpawnManager->SpawnCount = currentType->SpawnsNumber;
+
+			pSpawnManager->RegenRate = currentType->SpawnRegenRate;
+			pSpawnManager->ReloadRate = currentType->SpawnReloadRate;
+		}
+	}
 
 // Checks if vehicle can deploy into a building at its current location. If unit has no DeploysInto set returns noDeploysIntoDefaultValue (def = false) instead.
 bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue)
