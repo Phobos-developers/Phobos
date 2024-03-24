@@ -484,7 +484,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
 ### Projectile trajectories
 
 - Projectiles can now have customizable trajectories.
-  - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT` or `Inviso`).
+  - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT`, `Vertical` or `Inviso`). Attempt to do so will result in the other logics being disabled and a warning being written to log file.
   - Initial speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
 
   In `rulesmd.ini`:
