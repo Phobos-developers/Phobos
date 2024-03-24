@@ -150,6 +150,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Spawned aircraft now align with the spawner's facing when landing.
 - Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers EnteredBy event by executing capture mission.
 - Fixed infantry requiring `MovementZone=AmphibiousDestroyer` specifically to be able to use water sequences instead of any amphibious / water `MovementZone`.
+- `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 
 ## Fixes / interactions with other extensions
 

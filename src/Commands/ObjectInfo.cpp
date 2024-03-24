@@ -158,6 +158,19 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 			append("\n");
 		}
 
+		if (pBuilding->Type->Upgrades)
+		{
+			append("Upgrades (%d/%d): ", pBuilding->UpgradeLevel, pBuilding->Type->Upgrades);
+			for (int i = 0; i < 3; i++)
+			{
+				if (i != 0)
+					append(", ");
+
+				append("Slot %d = %s", i+1, pBuilding->Upgrades[i] ? pBuilding->Upgrades[i]->get_ID() : "<none>");
+			}
+			append("\n");
+		}
+
 		if (pBuilding->Type->Ammo > 0)
 			append("Ammo = (%d / %d)\n", pBuilding->Ammo, pBuilding->Type->Ammo);
 
