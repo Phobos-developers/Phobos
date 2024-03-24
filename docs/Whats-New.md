@@ -366,6 +366,7 @@ New:
 - Re-enable the Veinhole Monster and Weeds from TS (by ZivDero)
 - Recreate the weed-charging of SWs like the TS Chemical Missile (by ZivDero)
 - Allow to change the speed of gas particles (by ZivDero)
+- Universal deploy from any techno into any techno (by FS-21)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
