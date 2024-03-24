@@ -115,6 +115,7 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		Valueable<bool> Nonprovocative;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -228,6 +229,8 @@ public:
 
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
+
+			, Nonprovocative { false }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
