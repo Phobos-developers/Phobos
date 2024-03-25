@@ -1,0 +1,39 @@
+---
+# See all possible options and defaults with:
+# clang-format --style=Microsoft --dump-config
+BasedOnStyle: Microsoft
+Language: Cpp
+Standard: c++20
+AccessModifierOffset: -4
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBinaryOperators: All
+BreakConstructorInitializers: BeforeColon
+ColumnLimit: 0
+CommentPragmas: 'NOLINT:.*|^ IWYU pragma:'
+IncludeBlocks: Regroup
+IndentCaseLabels: true
+IndentPPDirectives: AfterHash
+# IndentWidth: 4
+SpaceAfterCStyleCast: true
+UseTab: Always
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+AllowShortLambdasOnASingleLine: Inline
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: true
+BreakBeforeBraces: Allman
+DerivePointerAlignment: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+NamespaceIndentation: None
+PointerAlignment: Left
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
