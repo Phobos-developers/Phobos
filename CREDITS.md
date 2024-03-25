@@ -251,9 +251,10 @@ This page lists all the individual contributions to the project by their author.
       - Facing towards target even if not omni-firing
       - Turret direction in idle state fix
       - Sensor fix
-      - Allow to tilt on ground
+      - Allow to tilt regardless of TiltCrashJumpjet
       - Forbid firing when crashing
    - OmniFire.TurnToTarget
+   - RecoilForce
    - Object Self-destruction logic
    - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
