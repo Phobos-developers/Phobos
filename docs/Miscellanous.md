@@ -224,7 +224,7 @@ $Inherits=PARENT1SECTION,PARENT2SECTION...  ; section names
 
 ### Turning off/on in-game exception handling
 
-You can turn off/on exception handler of game main loop via following command line args: `-EH-off` and `-EH-on`.
+You can turn off/on exception handler of game main loop via following command line arg: `-ExceptionHandler=boolean` which `boolean` is `(true|false|yes|no|1|0)`.
 
 ```{note}
 In **debug** builds in-game exception hander **turned off** by default.

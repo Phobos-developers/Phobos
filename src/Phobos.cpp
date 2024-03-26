@@ -47,6 +47,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 	for (int i = 1; i < nNumArgs; i++)
 	{
 		const char* pArg = ppArgs[i];
+		std::string arg = pArg;
 
 		if (_stricmp(pArg, "-Icon") == 0)
 		{
@@ -66,13 +67,22 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			foundInclude = true;
 		}
-		if (_stricmp(pArg, "-EH-off"))
+		if (arg.starts_with("-ExceptionHandler="))
 		{
-			dontSetExceptionHandler = true;
-		}
-		if (_stricmp(pArg, "-EH-on"))
-		{
-			dontSetExceptionHandler = false;
+			auto delimIndex = arg.find("=");
+			auto value = arg.substr(delimIndex + 1, arg.size() - delimIndex - 1);
+			// to lwoer case
+			std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::tolower(c); });
+			// acceptable values
+			std::list<std::string> positiveValues { "true", "yes", "1" }, negativeValues { "false", "no", "0" };
+			// check positive
+			auto positiveIter = std::find(positiveValues.cbegin(), positiveValues.cend(), value);
+			if (positiveIter != positiveValues.cend())
+				dontSetExceptionHandler = false;
+			// check negative
+			auto negativeIter = std::find(negativeValues.cbegin(), negativeValues.cend(), value);
+			if (negativeIter != negativeValues.cend())
+				dontSetExceptionHandler = true;
 		}
 	}
 
@@ -113,6 +123,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 	Game::DontSetExceptionHandler = dontSetExceptionHandler;
 
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
+	Debug::Log("ExceptionHandler is %s\n", dontSetExceptionHandler ? "not present" : "present");
 }
 
 void Phobos::ExeRun()
