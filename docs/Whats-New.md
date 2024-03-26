@@ -365,6 +365,7 @@ New:
 - Re-enable the Veinhole Monster and Weeds from TS (by ZivDero)
 - Recreate the weed-charging of SWs like the TS Chemical Missile (by ZivDero)
 - Allow to change the speed of gas particles (by ZivDero)
+- Allow upgrade animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -426,7 +427,7 @@ Vanilla fixes:
 - Fixed jumpjet crash speed when crashing onto buildings (by NetsuNegi)
 - Fixed infantry requiring `MovementZone=AmphibiousDestroyer` specifically to be able to use water sequences instead of any amphibious / water `MovementZone` (by Starkku)
 
-- Phobos fixes:
+Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
 - Reimplemented the bugfix for jumpjet units' facing when firing, discard the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)
