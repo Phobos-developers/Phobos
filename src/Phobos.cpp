@@ -37,8 +37,12 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
 	bool foundInheritance = false;
 	bool foundInclude = false;
-	bool dontSetExceptionHandler = false;
-
+	bool dontSetExceptionHandler =
+#ifdef DEBUG
+		true;
+#else
+		false;
+#endif // DEBUG
 	// > 1 because the exe path itself counts as an argument, too!
 	for (int i = 1; i < nNumArgs; i++)
 	{
@@ -62,9 +66,13 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			foundInclude = true;
 		}
-		if (_stricmp(pArg, "-DontSetExceptionHandler"))
+		if (_stricmp(pArg, "-EH-off"))
 		{
 			dontSetExceptionHandler = true;
+		}
+		if (_stricmp(pArg, "-EH-on"))
+		{
+			dontSetExceptionHandler = false;
 		}
 	}
 
@@ -102,8 +110,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		);
 	}
 
-	if (dontSetExceptionHandler)
-		Game::DontSetExceptionHandler = true;
+	Game::DontSetExceptionHandler = dontSetExceptionHandler;
 
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
 }
