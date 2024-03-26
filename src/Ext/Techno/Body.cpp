@@ -575,7 +575,7 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 	{
 		if (const auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
-			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon = weaponIndex || pExt->NoAmmoWeapon == -1))
+			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon == weaponIndex || pExt->NoAmmoWeapon == -1))
 				return true;
 		}
 	}
@@ -1025,7 +1025,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
-		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->IsInTunnel)
 		.Process(this->DeployFireTimer)
 		;

@@ -193,3 +193,20 @@ DEFINE_HOOK(0x424C3D, AnimClass_AttachTo_CenterCoords, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x423365, AnimClass_DrawIt_ExtraShadow, 0x8)
+{
+	enum { DrawExtraShadow = 0x42336D, SkipExtraShadow = 0x4233EE };
+
+	GET(AnimClass*, pThis, ESI);
+
+	if (pThis->HasExtras)
+	{
+		const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+		if (!pTypeExt->ExtraShadow)
+			return SkipExtraShadow;
+	}
+
+	return SkipExtraShadow;
+}

@@ -60,7 +60,8 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 			{
 				pThis->Speed = pWeaponOverride->Speed;
 				pThis->Type = pWeaponOverride->Projectile;
-				this->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
+				pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+				this->TypeExtData = pTypeExt;
 
 				if (this->LaserTrails.size())
 				{
@@ -69,6 +70,10 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 					if (!pThis->Type->Inviso)
 						this->InitializeLaserTrails();
 				}
+
+				// Lose target if the current bullet is no longer interceptable.
+				if (!pTypeExt->Interceptable || (pTypeExt->Armor.isset() && GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor.Get()) == 0.0))
+					pSource->SetTarget(nullptr);
 			}
 		}
 

@@ -21,8 +21,10 @@ This page lists all the individual contributions to the project by their author.
   - Non-ASCII input fix
   - Building Placement Preview Adjustment
   - Check for Changelog/Documentation/Credits in Pull Requests
+  - Fix position and layer of info tip and reveal production cameo on selected building
+  - Fix a glitch related to incorrect target setting for missiles
+  - Ability to disable shadow for debris & meteor animations
 - **Kerbiter (Metadorius)**:
-  - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
   - Extended tooltips
   - Selection priority filtering
@@ -39,6 +41,7 @@ This page lists all the individual contributions to the project by their author.
   - Official docs
   - VSCode configs
   - Code style
+  - Ability to disable shadow for debris & meteor animations
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -163,6 +166,7 @@ This page lists all the individual contributions to the project by their author.
   - Railgun particle target coordinate fix
   - Building target coordinate offset fix
   - Additional sync logging
+  - Option to center pause menu background
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
@@ -193,6 +197,8 @@ This page lists all the individual contributions to the project by their author.
    - "Shield is broken" trigger event
    - RadialIndicator observer visibility
    - Forbidding parallel AI queues by type
+   - EIP 00529A14 crash fix on Linux
+   - Teleport timer reset after load game fix
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support

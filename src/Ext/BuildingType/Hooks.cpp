@@ -143,8 +143,16 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_MakePlacementGridTranparent, 0x6)
 {
-	LEA_STACK(BlitterFlags*, blitFlags, STACK_OFFSET(0x68, -0x58));
+	auto pRules = RulesExt::Global();
+	BlitterFlags translucency = (pRules->PlacementPreview && Phobos::Config::ShowPlacementPreview)
+		? pRules->PlacementGrid_TranslucencyWithPreview.Get(pRules->PlacementGrid_Translucency)
+		: pRules->PlacementGrid_Translucency;
 
-	*blitFlags |= RulesExt::Global()->PlacementGrid_Translucency;
+	if (translucency != BlitterFlags::None)
+	{
+		LEA_STACK(BlitterFlags*, blitFlags, STACK_OFFSET(0x68, -0x58));
+		*blitFlags |= translucency;
+	}
+
 	return 0;
 }

@@ -8,6 +8,7 @@ This page lists all user interface additions, changes, fixes that are implemente
 - You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
 - Fixed `Blowfish.dll`-caused error `***FATAL*** String Manager failed to initialize properly`, which occurred if `Blowfish.dll` could not be registered in the OS, for example, it happened when the player did not have administrator rights. With Phobos, if the game did not find a registered file in the system, it will no longer try to register this file, but will load it bypassing registration.
 - Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (font support required).
+- Fixed position and layer of info tip and reveal production cameo on selected building
 
 ```{note}
 You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
@@ -66,7 +67,7 @@ PrioritySelectionFiltering=true  ; boolean
 *Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual]->PlacementPreview` and then further customized for each building with `[SOMEBUILDING]->PlacementPreview`.
-- The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency`.
+- The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is disabled and `PlacementGrid.TranslucencyWithPreview` if enabled.
 - If using the building's appropriate `Buildup` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to show as preview through `PlacementPreview.Shape`, `PlacementPreview.ShapeFrame` and `PlacementPreview.Palette`.
   - You can specify theater-specific palettes and shapes by putting three `~` marks to the theater specific part of the filename. `~~~` is replaced with the theater’s three-letter extension.
 - `PlacementPreview.ShapeFrame=` tag defaults to building's artmd.ini `Buildup` entry's last non-shadow frame. If there is no 'Buildup' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
@@ -74,9 +75,11 @@ PrioritySelectionFiltering=true  ; boolean
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
+PlacementGrid.Translucency=0            ; translucency level (0/25/50/75)
+PlacementGrid.TranslucencyWithPreview=  ; translucency level (0/25/50/75), defaults to [AudioVisual]->PlacementGrid.Translucency
+
 PlacementPreview=no                  ; boolean
 PlacementPreview.Translucency=75     ; translucency level (0/25/50/75)
-PlacementGrid.Translucency=0         ; translucency level (0/25/50/75)
 
 [SOMEBUILDING]
 PlacementPreview=yes                 ; boolean
@@ -148,6 +151,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMENAME]             ; TechnoType / SuperWeaponType
 CameoPriority=0        ; integer
+```
+
+### Center pause menu background
+
+- Pause menu background (`bkgdXX(y).shp`) can now optionally be centered on the center of the available space instead of top-left corner. This allows for backgrounds to be better designed with resolutions larger than `1024x768` in mind.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+CenterPauseMenuBackground=false  ; boolean
 ```
 
 ### Custom Missing Cameo (`XXICON.SHP`)
