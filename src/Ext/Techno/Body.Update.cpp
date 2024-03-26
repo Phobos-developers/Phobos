@@ -7,6 +7,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/Script/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
@@ -40,6 +41,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplySpawnLimitRange();
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
+	this->UpdateRandomTargets();
 }
 
 
@@ -750,5 +752,65 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 				}
 			}
 		}
+	}
+}
+
+void TechnoExt::ExtData::UpdateRandomTargets()
+{
+	auto const pThis = this->OwnerObject();
+	if (!pThis)
+		return;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return;
+
+	if (pExt->CurrentRandomTarget)
+	{
+		auto const pCurrRandTarget = pExt->CurrentRandomTarget;
+		bool isValidTechno = pCurrRandTarget && pCurrRandTarget->IsAlive && pCurrRandTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrRandTarget, true) && (pCurrRandTarget->WhatAmI() == AbstractType::Infantry || pCurrRandTarget->WhatAmI() == AbstractType::Unit || pCurrRandTarget->WhatAmI() == AbstractType::Building || pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
+
+		if (!isValidTechno)
+		{
+			auto const pOrigTarget = pExt->OriginalTarget;
+			pExt->CurrentRandomTarget = nullptr;
+			pThis->SetTarget(pOrigTarget && !pOrigTarget->Dirty ? pExt->OriginalTarget : nullptr);
+			pExt->OriginalTarget = nullptr;
+		}
+	}
+
+	if (pThis->Target
+		&& pThis->SpawnManager
+		&& pExt->CurrentRandomTarget
+		&& IsUnitAvailable(static_cast<TechnoClass*>(pExt->CurrentRandomTarget), true))
+	{
+		for (auto pSpawn : pThis->SpawnManager->SpawnedNodes)
+		{
+			if (!pSpawn->Unit)
+				continue;
+
+			auto pSpawnExt = TechnoExt::ExtMap.Find(pSpawn->Unit);
+			if (!pSpawnExt)
+				continue;
+
+			if (!pSpawnExt->CurrentRandomTarget)
+			{
+				pSpawnExt->CurrentRandomTarget = TechnoExt::FindRandomTarget(pThis);
+				pSpawn->Unit->Target = pSpawnExt->CurrentRandomTarget;
+			}
+			else if (pSpawn->Status == SpawnNodeStatus::Preparing && pSpawn->Unit->IsInAir())
+			{
+				if (!pSpawn->Unit->Target && pSpawnExt->CurrentRandomTarget)
+					pSpawn->Unit->Target = pSpawnExt->CurrentRandomTarget;
+			}
+		}
+	}
+
+	if (pExt->OriginalTarget && !pThis->Target && IsUnitAvailable(static_cast<TechnoClass*>(pExt->OriginalTarget), true) && !pThis->IsInAir())
+	{
+		if (pExt->CurrentRandomTarget && IsUnitAvailable(pExt->CurrentRandomTarget, true))
+			pThis->SetTarget(pExt->CurrentRandomTarget);
+		else
+			pThis->SetTarget(pExt->OriginalTarget);
 	}
 }
