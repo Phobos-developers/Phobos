@@ -425,7 +425,6 @@ Vanilla fixes:
 - Spawned aircraft now align with the spawner's facing when landing (by Starkku)
 - Fixed infantries attempted to entering buildings when waypointing together with engineer/agent/occupier/etc (by Trsdy)
 - Fixed jumpjet crash speed when crashing onto buildings (by NetsuNegi)
-- Fixed infantry requiring `MovementZone=AmphibiousDestroyer` specifically to be able to use water sequences instead of any amphibious / water `MovementZone` (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

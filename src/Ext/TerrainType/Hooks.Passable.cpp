@@ -68,7 +68,7 @@ DEFINE_HOOK(0x483D87, CellClass_CheckPassability_PassableTerrain, 0x5)
 		{
 			if (pTypeExt->IsPassable)
 			{
-				pThis->Passability = 0;
+				pThis->Passability = PassabilityType::Passable;
 				return ReturnFromFunction;
 			}
 		}
