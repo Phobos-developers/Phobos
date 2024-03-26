@@ -5,6 +5,7 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
+#include <Unsorted.h>
 
 #include "Utilities/AresHelper.h"
 
@@ -36,6 +37,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
 	bool foundInheritance = false;
 	bool foundInclude = false;
+	bool dontSetExceptionHandler = false;
 
 	// > 1 because the exe path itself counts as an argument, too!
 	for (int i = 1; i < nNumArgs; i++)
@@ -59,6 +61,10 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		if (_stricmp(pArg, "-Include") == 0)
 		{
 			foundInclude = true;
+		}
+		if (_stricmp(pArg, "-DontSetExceptionHandler"))
+		{
+			dontSetExceptionHandler = true;
 		}
 	}
 
@@ -95,6 +101,9 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			{ 0x8B, 0x7C, 0x24, 0x2C, 0x33, 0xC0, 0x8B, 0x4C, 0x24, 0x28 }
 		);
 	}
+
+	if (dontSetExceptionHandler)
+		Game::DontSetExceptionHandler = true;
 
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
 }
