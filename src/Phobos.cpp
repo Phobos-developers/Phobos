@@ -8,6 +8,7 @@
 #include <Unsorted.h>
 
 #include "Utilities/AresHelper.h"
+#include "Utilities/Parser.h"
 
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
@@ -43,6 +44,8 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 #else
 		false;
 #endif // DEBUG
+	Parser<bool> boolParser { };
+
 	// > 1 because the exe path itself counts as an argument, too!
 	for (int i = 1; i < nNumArgs; i++)
 	{
@@ -73,16 +76,9 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			auto value = arg.substr(delimIndex + 1, arg.size() - delimIndex - 1);
 			// to lwoer case
 			std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::tolower(c); });
-			// acceptable values
-			std::list<std::string> positiveValues { "true", "yes", "1" }, negativeValues { "false", "no", "0" };
-			// check positive
-			auto positiveIter = std::find(positiveValues.cbegin(), positiveValues.cend(), value);
-			if (positiveIter != positiveValues.cend())
-				dontSetExceptionHandler = false;
-			// check negative
-			auto negativeIter = std::find(negativeValues.cbegin(), negativeValues.cend(), value);
-			if (negativeIter != negativeValues.cend())
-				dontSetExceptionHandler = true;
+			bool v = dontSetExceptionHandler;
+			if (boolParser.TryParse(value.c_str(), &v))
+				dontSetExceptionHandler = !v;
 		}
 	}
 
