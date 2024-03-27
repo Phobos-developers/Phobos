@@ -95,9 +95,7 @@ DEFINE_HOOK(0x4243BC, AnimClass_Update_VeinholeAttack, 0x6)
 	if (pAnim->Type->IsVeins)
 		AnimExt::VeinAttackAI(pAnim);
 
-	GET(AnimClass*, pAnim2, ESI);
-
-	return pAnim2->Type->IsTiberium ?
+	return pAnim->Type->IsAnimatedTiberium ?
 		ContinueDrawTiberium : ContinueNotTiberium;
 }
 
