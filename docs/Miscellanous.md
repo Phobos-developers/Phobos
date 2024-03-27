@@ -224,12 +224,12 @@ $Inherits=PARENT1SECTION,PARENT2SECTION...  ; section names
 
 ### Turning off/on in-game exception handling
 
-You can turn off/on exception handler of game main loop via following command line arg: `-ExceptionHandler=boolean` which `boolean` is `(true|false|yes|no|1|0)`.
+You can turn on/off the exception handler of the game's main loop using the following command line arg: `-ExceptionHandler=boolean` where `boolean` is `(true|false|yes|no|1|0)`.
 
 ```{note}
-In **debug** builds in-game exception hander **turned off** by default.
+In **debug** builds the in-game exception handler **turned off** by default.
 ```
 
 ```{warning}
-The CnCNet 5 spawner uses main exception handler to fixes. If you got any issue (crash, bug) in combination with that then please first test with enabled exception handler.
+The CnCNet 5 spawner uses the main loop exception handler for fixes. If you get any issues (crashes, bugs) in combination with that then please first test with the exception handler enabled.
 ```
