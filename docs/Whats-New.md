@@ -357,6 +357,7 @@ New:
 - Flashing Technos on selecting (by Fryone)
 - Customizable DropPod properties on a per-InfantryType basis (by Trsdy)
 - Projectile return weapon (by Starkku)
+- Universal deploy from any techno into any techno (by FS-21)
 - Allow customizing aircraft landing direction per aircraft or per dock (by Starkku)
 - Allow animations to play sounds detached from audio event handler (by Starkku)
 - Game save option when starting campaigns (by Trsdy)
@@ -365,6 +366,7 @@ New:
 - Re-enable the Veinhole Monster and Weeds from TS (by ZivDero)
 - Recreate the weed-charging of SWs like the TS Chemical Missile (by ZivDero)
 - Allow to change the speed of gas particles (by ZivDero)
+- Universal deploy from any techno into any techno (by FS-21)
 - Allow upgrade animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Starkku)
 
 Vanilla fixes:

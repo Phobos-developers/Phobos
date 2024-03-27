@@ -348,6 +348,12 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 	if (!pTargetFoot || this->Convert_Pairs.size() == 0)
 		return;
 
+	if (this->Convert_UseUniversalDeploy.Get())
+	{
+		TypeConvertGroup::UniversalConvert(pTarget, this->Convert_Pairs, pHouse, this->Convert_Anim);
+		return;
+	}
+
 	TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
 }
 

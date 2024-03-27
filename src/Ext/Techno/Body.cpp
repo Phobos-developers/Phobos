@@ -5,6 +5,7 @@
 #include <ScenarioClass.h>
 
 #include <Ext/House/Body.h>
+#include <Ext/Script/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -114,7 +115,7 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
-CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts = 1)
+CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts)
 {
 	if (!pThis || !pPassenger)
 		return CoordStruct::Empty;
@@ -346,6 +347,40 @@ bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaul
 	return canDeploy;
 }
 
+// Checks if a structure can deploy into another at its current location. If the building has problems forplacing the new one returns noDeploysIntoDefaultValue (def = false) instead.
+// If a building is specified then it will be used by default.
+bool TechnoExt::CanDeployIntoBuilding(BuildingClass* pThis, bool noDeploysIntoDefaultValue, BuildingTypeClass* pBuildingType)
+{
+	if (!pThis)
+		return false;
+
+	auto pDeployType = pBuildingType;
+
+	if (!pDeployType)
+	{
+		auto pBldTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		if (!pBldTypeExt || !pBldTypeExt->Convert_UniversalDeploy.isset())
+			return noDeploysIntoDefaultValue;
+
+		pDeployType = static_cast<BuildingTypeClass*>(pBldTypeExt->Convert_UniversalDeploy.Get());
+	}
+
+	if (!pDeployType)
+		return noDeploysIntoDefaultValue;
+
+	bool canDeploy = true;
+	auto mapCoords = CellClass::Coord2Cell(pThis->GetCoords());
+
+	pThis->Mark(MarkType::Up);
+
+	if (!pDeployType->CanCreateHere(mapCoords, pThis->Owner))
+		canDeploy = false;
+
+	pThis->Mark(MarkType::Down);
+
+	return canDeploy;
+}
+
 bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 {
 	if (!pThis || !pSource)
@@ -360,6 +395,22 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 		return true;
 
 	return false;
+}
+
+bool TechnoExt::IsValidTechno(TechnoClass* pTechno)
+{
+	if (!pTechno)
+		return false;
+
+	bool isValid = !pTechno->Dirty
+		&& ScriptExt::IsUnitAvailable(pTechno, true)
+		&& pTechno->Owner
+		&& (pTechno->WhatAmI() == AbstractType::Infantry
+			|| pTechno->WhatAmI() == AbstractType::Unit
+			|| pTechno->WhatAmI() == AbstractType::Building
+			|| pTechno->WhatAmI() == AbstractType::Aircraft);
+
+	return isValid;
 }
 
 // =============================
@@ -384,6 +435,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->WHAnimRemainingCreationInterval)
+		.Process(this->Convert_UniversalDeploy_DeployAnim)
+		.Process(this->Convert_UniversalDeploy_InProgress)
+		.Process(this->Convert_UniversalDeploy_MakeInvisible)
+		.Process(this->Convert_UniversalDeploy_TemporalTechno)
+		.Process(this->Convert_UniversalDeploy_IsOriginalDeployer)
+		.Process(this->Convert_UniversalDeploy_RememberTarget)
 		;
 }
 
