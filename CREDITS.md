@@ -222,6 +222,9 @@ This page lists all the individual contributions to the project by their author.
   - `AmbientDamage` warhead & main target ignore customization
   - Projectile return weapon
   - Aircraft landing / docking direction
+  - Custom tint effects
+  - Revenge weapons
+  - AttachEffect
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

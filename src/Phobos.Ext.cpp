@@ -222,7 +222,9 @@ using PhobosTypeRegistry = TypeRegistry<
 	LaserTrailTypeClass,
 	RadTypeClass,
 	ShieldClass,
-	DigitalDisplayTypeClass
+	DigitalDisplayTypeClass,
+	AttachEffectTypeClass,
+	AttachEffectClass
 	// other classes
 >;
 

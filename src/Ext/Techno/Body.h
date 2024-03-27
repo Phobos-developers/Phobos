@@ -8,6 +8,7 @@
 #include <Utilities/Macro.h>
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <New/Entity/AttachEffectClass.h>
 
 class BulletClass;
 
@@ -34,14 +35,25 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
 		bool IsInTunnel;
+		bool IsBurrowed;
 		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
 		int WHAnimRemainingCreationInterval;
+		std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
+
+		// AttachEffect stuff.
+		double AE_FirepowerMultiplier;
+		double AE_ArmorMultiplier;
+		double AE_SpeedMultiplier;
+		double AE_ROFMultiplier;
+		bool AE_Cloakable;
+		bool AE_ForceDecloak;
+		bool AE_DisableWeapons;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -57,10 +69,19 @@ public:
 			, DamageNumberOffset { INT32_MIN }
 			, OriginalPassengerOwner {}
 			, IsInTunnel { false }
+			, IsBurrowed { false }
 			, HasBeenPlacedOnMap { false }
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
 			, WHAnimRemainingCreationInterval { 0 }
+			, AttachedEffects {}
+			, AE_FirepowerMultiplier { 1.0 }
+			, AE_ArmorMultiplier { 1.0 }
+			, AE_SpeedMultiplier { 1.0 }
+			, AE_ROFMultiplier { 1.0 }
+			, AE_Cloakable { false }
+			, AE_ForceDecloak { false }
+			, AE_DisableWeapons { false }
 		{ }
 
 		void OnEarlyUpdate();
@@ -74,8 +95,13 @@ public:
 		void ApplySpawnLimitRange();
 		void UpdateTypeData(TechnoTypeClass* currentType);
 		void UpdateLaserTrails();
-		void InitializeLaserTrails();
+		void UpdateAttachEffects();
+		void RecalculateStatMultipliers();
+		void UpdateTemporal();
 		void UpdateMindControlAnim();
+		void InitializeLaserTrails();
+		void InitializeAttachEffects();
+		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource);
 
 		virtual ~ExtData() override;
 
@@ -144,6 +170,10 @@ public:
 	static bool ConvertToType(FootClass* pThis, TechnoTypeClass* toType);
 	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
 	static bool IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource);
+	static int GetTintColor(TechnoClass* pThis, bool invulnerability, bool airstrike, bool berserk);
+	static int GetCustomTintColor(TechnoClass* pThis);
+	static int GetCustomTintIntensity(TechnoClass* pThis);
+	static void ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

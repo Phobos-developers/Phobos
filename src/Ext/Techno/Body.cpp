@@ -110,7 +110,9 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 	else
 		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
 
-	return pThis->SpeedMultiplier * houseMultiplier *
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pThis->SpeedMultiplier * houseMultiplier * pExt->AE_SpeedMultiplier *
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
@@ -362,6 +364,42 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 	return false;
 }
 
+bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource)
+{
+	unsigned int foundCount = 0;
+	unsigned int typeCounter = 1;
+
+	for (auto const& type : attachEffectTypes)
+	{
+		for (auto const& attachEffect : this->AttachedEffects)
+		{
+			if (attachEffect->GetType() == type)
+			{
+				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+					continue;
+
+				// Only need to find one match, can stop here.
+				if (!requireAll)
+					return true;
+
+				foundCount++;
+				break;
+			}
+		}
+
+		// One of the required types was not found, can stop here.
+		if (requireAll && foundCount < typeCounter)
+			return false;
+
+		typeCounter++;
+	}
+
+	if (requireAll && foundCount == attachEffectTypes.size())
+		return true;
+
+	return false;
+}
+
 // =============================
 // load / save
 
@@ -380,10 +418,19 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->IsInTunnel)
+		.Process(this->IsBurrowed)
 		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->WHAnimRemainingCreationInterval)
+		.Process(this->AttachedEffects)
+		.Process(this->AE_FirepowerMultiplier)
+		.Process(this->AE_ArmorMultiplier)
+		.Process(this->AE_SpeedMultiplier)
+		.Process(this->AE_ROFMultiplier)
+		.Process(this->AE_Cloakable)
+		.Process(this->AE_ForceDecloak)
+		.Process(this->AE_DisableWeapons)
 		;
 }
 

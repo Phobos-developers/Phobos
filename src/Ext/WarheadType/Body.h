@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/Techno/Body.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class WarheadTypeExt
@@ -115,11 +116,15 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_RemoveTypes;
+		ValueableVector<int> AttachEffect_DurationOverrides;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
+		Valueable<bool> EffectsRequireVerses;
 
 		double Crit_RandomBuffer;
 		bool HasCrit;
@@ -229,8 +234,13 @@ public:
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
 
+			, AttachEffect_AttachTypes {}
+			, AttachEffect_RemoveTypes {}
+			, AttachEffect_DurationOverrides {}
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
+			, EffectsRequireVerses { true }
 
 			, Crit_RandomBuffer { 0.0 }
 			, HasCrit { false }
@@ -240,21 +250,12 @@ public:
 			, PossibleCellSpreadDetonate {false}
 		{ }
 
-	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
-
-		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
-		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyLocomotorInfliction(TechnoClass* pTarget);
 		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
-
 	public:
-		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
-		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
+		bool CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner);
 
 		virtual ~ExtData() = default;
@@ -266,6 +267,19 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+
+	public:
+		// Detonate.cpp
+		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
+		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
+	private:
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
+		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
+		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
+		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
+		double GetCritChance(TechnoClass* pFirer);
 	};
 
 	class ExtContainer final : public Container<WarheadTypeExt>
