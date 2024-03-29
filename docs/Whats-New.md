@@ -366,6 +366,7 @@ New:
 - Recreate the weed-charging of SWs like the TS Chemical Missile (by ZivDero)
 - Allow to change the speed of gas particles (by ZivDero)
 - Allow upgrade animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Starkku)
+- Toggle for `Explodes=true` BuildingTypes to not explode during buildup or being sold (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

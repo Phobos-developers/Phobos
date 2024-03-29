@@ -565,14 +565,18 @@ In `rulesmd.ini`:
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
-### Exploding unit passenger killing customization
+### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
+- BuildingTypes with `Explodes=true` can by default explode even when they are still being built or sold. This can be disabled by setting `Explodes.DuringBuildup` to false. This causes them to behave as if `Explodes` was set to false while being built up or sold.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                 ; TechnoType
 Explodes.KillPassengers=true ; boolean
+
+[SOMEBUILDING]               ; BuildingType
+Explodes.DuringBuildup=true  ; boolean
 ```
 
 ### IronCurtain effects on organics customization
