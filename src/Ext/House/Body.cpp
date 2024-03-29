@@ -5,6 +5,8 @@
 
 #include <ScenarioClass.h>
 
+#include "New/Entity/ExtendedStorageClass.h"
+
 //Static init
 
 HouseExt::ExtContainer HouseExt::ExtMap;
@@ -579,6 +581,8 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 	GET(HouseClass*, pItem, EAX);
 
 	HouseExt::ExtMap.TryAllocate(pItem);
+	auto storageClass = new ExtendedStorageClass();
+	std::memcpy(&pItem->OwnedTiberium, &storageClass, sizeof(storageClass));
 	return 0;
 }
 
@@ -597,6 +601,7 @@ DEFINE_HOOK(0x503040, HouseClass_SaveLoad_Prefix, 0x5)
 	GET_STACK(IStream*, pStm, 0x8);
 
 	HouseExt::ExtMap.PrepareStream(pItem, pStm);
+	delete* (ExtendedStorageClass**)&pItem->OwnedTiberium;
 
 	return 0;
 }
