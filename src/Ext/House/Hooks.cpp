@@ -457,3 +457,70 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 
 	return ret;
 }
+
+// restored from TS
+DEFINE_HOOK(0x4F961A, HouseClass_GiveTiberium_Storage, 0x9)
+{
+	GET(HouseClass* const, pThis, ECX);
+	GET_STACK(float, amount, 0x4);
+	GET_STACK(int const, idxType, 0x8);
+
+	// If we don't have ares don't patch this function, since it's a replacement of theirs
+	if (!AresHelper::CanUseAres)
+	{
+		return 0;
+	}
+
+	pThis->SiloMoney += static_cast<int>(amount * 5.0);
+
+	if (SessionClass::Instance->GameMode == GameMode::Campaign || pThis->IsHumanPlayer)
+	{
+		// don't change, old values are needed for silo update
+		const auto lastStorage = static_cast<int>(pThis->OwnedTiberium.GetTotalAmount());
+		const auto lastTotalStorage = pThis->TotalStorage;
+
+		// this is the upper limit for stored tiberium
+		if (amount > static_cast<float>(lastTotalStorage - lastStorage))
+		{
+			amount = static_cast<float>(lastTotalStorage - lastStorage);
+		}
+
+		// go through all buildings and fill them up until all is in there
+		for (auto const& pBuilding : pThis->Buildings)
+		{
+			if (amount <= 0.0)
+			{
+				break;
+			}
+
+			auto const storage = pBuilding->Type->Storage;
+			if (pBuilding->IsOnMap && storage > 0)
+			{
+				// put as much tiberium into this silo
+				auto freeSpace = static_cast<float>(storage) - pBuilding->Tiberium.GetTotalAmount();
+				if (freeSpace > 0.0)
+				{
+					if (freeSpace > amount)
+					{
+						freeSpace = amount;
+					}
+
+					pBuilding->Tiberium.AddAmount(freeSpace, idxType);
+					pThis->OwnedTiberium.AddAmount(freeSpace, idxType);
+
+					amount -= freeSpace;
+				}
+			}
+		}
+
+		// redraw silos
+		pThis->UpdateAllSilos(lastStorage, lastTotalStorage);
+	}
+	else
+	{
+		// just add the money. this is the only original YR logic
+		pThis->Balance += static_cast<int>(amount * static_cast<float>(TiberiumClass::Array->GetItem(idxType)->Value) * pThis->Type->IncomeMult);
+	}
+
+	return 0x4F9664;
+}
