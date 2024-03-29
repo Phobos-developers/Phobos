@@ -727,8 +727,10 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 	if (RulesExt::Global()->EnablePowerSurplus)
 		pItem->PowerSurplus = RulesClass::Instance->PowerSurplus;
 
-	auto storageClass = new ExtendedStorageClass();
-	std::memcpy(&pItem->OwnedTiberium, &storageClass, sizeof(storageClass));
+	auto ownedTiberium = new ExtendedStorageClass();
+	std::memcpy(&pItem->OwnedTiberium, &ownedTiberium, sizeof(ownedTiberium));
+	auto ownedWeed = new ExtendedStorageClass();
+	std::memcpy(&pItem->OwnedWeed, &ownedWeed, sizeof(ownedWeed));
 	return 0;
 }
 
@@ -748,7 +750,8 @@ DEFINE_HOOK(0x503040, HouseClass_SaveLoad_Prefix, 0x5)
 	GET_STACK(IStream*, pStm, 0x8);
 
 	HouseExt::ExtMap.PrepareStream(pItem, pStm);
-	delete* (ExtendedStorageClass**)&pItem->OwnedTiberium;
+	delete *(ExtendedStorageClass**)&pItem->OwnedTiberium;
+	delete *(ExtendedStorageClass**)&pItem->OwnedWeed;
 
 	return 0;
 }
