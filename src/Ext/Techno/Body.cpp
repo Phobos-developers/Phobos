@@ -4,11 +4,10 @@
 #include <HouseClass.h>
 #include <ScenarioClass.h>
 
+#include "New/Entity/ExtendedStorageClass.h"
 #include <Ext/House/Body.h>
 
 #include <Utilities/AresFunctions.h>
-
-#include "New/Entity/ExtendedStorageClass.h"
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
