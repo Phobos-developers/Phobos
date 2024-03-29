@@ -629,12 +629,17 @@ void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<TechnoClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	auto storage = reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->Tiberium);
+	*storage = new ExtendedStorageClass();
+	(*storage)->Load(Stm, false);
 }
 
 void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<TechnoClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+	(*reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->Tiberium))->Save(Stm);
 }
 
 bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm)
@@ -676,7 +681,7 @@ DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 	GET(TechnoClass*, pItem, ECX);
 
 	TechnoExt::ExtMap.Remove(pItem);
-	delete *(ExtendedStorageClass**)&pItem->Tiberium;
+	delete *reinterpret_cast<ExtendedStorageClass**>(&pItem->Tiberium);
 
 	return 0;
 }

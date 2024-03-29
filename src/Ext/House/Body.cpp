@@ -662,12 +662,23 @@ void HouseExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<HouseClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	auto ownedTiberium = reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->OwnedTiberium);
+	auto ownedWeed = reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->OwnedWeed);
+
+	*ownedTiberium = new ExtendedStorageClass();
+	*ownedWeed = new ExtendedStorageClass();
+
+	(*ownedTiberium)->Load(Stm, false);
+	(*ownedWeed)->Load(Stm, false);
 }
 
 void HouseExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<HouseClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+	(*reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->OwnedTiberium))->Save(Stm);
+	(*reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->OwnedWeed))->Save(Stm);
 }
 
 bool HouseExt::LoadGlobals(PhobosStreamReader& Stm)
@@ -728,9 +739,11 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 		pItem->PowerSurplus = RulesClass::Instance->PowerSurplus;
 
 	auto ownedTiberium = new ExtendedStorageClass();
-	std::memcpy(&pItem->OwnedTiberium, &ownedTiberium, sizeof(ownedTiberium));
 	auto ownedWeed = new ExtendedStorageClass();
+
+	std::memcpy(&pItem->OwnedTiberium, &ownedTiberium, sizeof(ownedTiberium));
 	std::memcpy(&pItem->OwnedWeed, &ownedWeed, sizeof(ownedWeed));
+
 	return 0;
 }
 
@@ -739,6 +752,9 @@ DEFINE_HOOK(0x4F7371, HouseClass_DTOR, 0x6)
 	GET(HouseClass*, pItem, ESI);
 
 	HouseExt::ExtMap.Remove(pItem);
+
+	delete* reinterpret_cast<ExtendedStorageClass**>(&pItem->OwnedTiberium);
+	delete* reinterpret_cast<ExtendedStorageClass**>(&pItem->OwnedWeed);
 
 	return 0;
 }
@@ -750,8 +766,6 @@ DEFINE_HOOK(0x503040, HouseClass_SaveLoad_Prefix, 0x5)
 	GET_STACK(IStream*, pStm, 0x8);
 
 	HouseExt::ExtMap.PrepareStream(pItem, pStm);
-	delete *(ExtendedStorageClass**)&pItem->OwnedTiberium;
-	delete *(ExtendedStorageClass**)&pItem->OwnedWeed;
 
 	return 0;
 }
