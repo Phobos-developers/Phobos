@@ -862,6 +862,7 @@ ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 
 - You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
   - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
+- You can also exclude specific TechnoTypes from being built in parallel by AI by setting `ForbidParallelAIQueues` to true on a TechnoType.
 
 In `rulesmd.ini`
 ```ini
@@ -872,6 +873,9 @@ ForbidParallelAIQueues.Vehicle=no   ; boolean
 ForbidParallelAIQueues.Navy=no      ; boolean
 ForbidParallelAIQueues.Aircraft=no  ; boolean
 ForbidParallelAIQueues.Building=no  ; boolean
+
+[SOMETECHNO]                        ; TechnoType
+ForbidParallelAIQueues=false        ; boolean
 ```
 
 ## Terrains

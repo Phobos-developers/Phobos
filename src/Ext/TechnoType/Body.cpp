@@ -153,6 +153,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->InitialStrength = Math::clamp(this->InitialStrength, 1, pThis->Strength);
 
 	this->ReloadInTransport.Read(exINI, pSection, "ReloadInTransport");
+	this->ForbidParallelAIQueues.Read(exINI, pSection, "ForbidParallelAIQueues");
 	this->ShieldType.Read<true>(exINI, pSection, "ShieldType");
 
 	this->Ammo_AddOnDeploy.Read(exINI, pSection, "Ammo.AddOnDeploy");
@@ -509,6 +510,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
 		.Process(this->ReloadInTransport)
+		.Process(this->ForbidParallelAIQueues)
 		.Process(this->ShieldType)
 		.Process(this->PassengerDeletionType)
 
