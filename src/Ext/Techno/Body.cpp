@@ -11,6 +11,8 @@
 
 #include <Utilities/AresFunctions.h>
 
+#include "New/Entity/ExtendedStorageClass.h"
+
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
 
@@ -663,6 +665,8 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 	GET(TechnoClass*, pItem, ESI);
 
 	TechnoExt::ExtMap.TryAllocate(pItem);
+	auto storageClass = new ExtendedStorageClass();
+	std::memcpy(&pItem->Tiberium, &storageClass, sizeof(storageClass));
 
 	return 0;
 }
@@ -672,6 +676,7 @@ DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 	GET(TechnoClass*, pItem, ECX);
 
 	TechnoExt::ExtMap.Remove(pItem);
+	delete *(ExtendedStorageClass**)&pItem->Tiberium;
 
 	return 0;
 }
