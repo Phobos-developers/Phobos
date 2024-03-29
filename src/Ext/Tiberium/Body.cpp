@@ -10,6 +10,7 @@ void TiberiumExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->MinimapColor)
+		.Process(this->LinkedOverlayType)
 		;
 }
 
@@ -24,6 +25,16 @@ void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
+
+	//TIB3_21
+	this->LinkedOverlayType.Read(exINI, pSection, "LinkedOverlayType");
+
+	if (!this->LinkedOverlayType.empty())
+	{
+		detail::read<int>(pThis->NumFrames, exINI, pSection, "NumFrames");
+		detail::read<int>(pThis->field_EC, exINI, pSection, "field_EC");
+		pThis->NumImages = this->LinkedOverlayType.size();
+	}
 }
 
 void TiberiumExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -110,6 +121,15 @@ DEFINE_HOOK(0x721C7B, TiberiumClass_LoadFromINI, 0xA)
 	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0xC4, 0x4));
 
 	TiberiumExt::ExtMap.LoadFromINI(pItem, pINI);
+
+	if (R->Origin() == 0x721CDC && !TiberiumExt::ExtMap.Find(pItem)->LinkedOverlayType.empty())
+	{
+		if (auto pLinked = TiberiumExt::ExtMap.Find(pItem)->LinkedOverlayType[0])
+		{
+			// This is suppose to be a linked list
+			pItem->Image = pLinked; 
+		}
+	}
 
 	return 0;
 }
