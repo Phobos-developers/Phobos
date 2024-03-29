@@ -1,12 +1,11 @@
 #include "Body.h"
 
 #include <Ext/SWType/Body.h>
+#include "New/Entity/ExtendedStorageClass.h"
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 
 #include <ScenarioClass.h>
-
-#include "New/Entity/ExtendedStorageClass.h"
 
 //Static init
 

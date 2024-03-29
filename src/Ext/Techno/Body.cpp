@@ -8,10 +8,10 @@
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include "New/Entity/ExtendedStorageClass.h"
+#include <Ext/House/Body.h>
 
 #include <Utilities/AresFunctions.h>
-
-#include "New/Entity/ExtendedStorageClass.h"
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;

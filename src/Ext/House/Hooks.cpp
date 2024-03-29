@@ -465,7 +465,7 @@ DEFINE_HOOK(0x4F961A, HouseClass_GiveTiberium_Storage, 0x9)
 	GET_STACK(float, amount, 0x4);
 	GET_STACK(int const, idxType, 0x8);
 
-	// If we don't have ares don't patch this function, since it's a replacement of theirs
+	// If we don't have Ares, don't patch this function since it's a replacement of theirs
 	if (!AresHelper::CanUseAres)
 	{
 		return 0;
