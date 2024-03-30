@@ -10,7 +10,9 @@ void TiberiumExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->MinimapColor)
-		.Process(this->LinkedOverlayType)
+		.Process(this->Overlays)
+		.Process(this->Overlays_UseSlopes)
+		.Process(this->Overlays_FrameCount)
 		;
 }
 
@@ -26,14 +28,32 @@ void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
 
-	//TIB3_21
-	this->LinkedOverlayType.Read(exINI, pSection, "LinkedOverlayType");
+	this->Overlays_UseSlopes.Read(exINI, pSection, "Overlays.UseSlopes");
+	this->Overlays_FrameCount.Read(exINI, pSection, "Overlays.FrameCount");
+	this->Overlays.Read(exINI, pSection, "Overlays");
 
-	if (!this->LinkedOverlayType.empty())
+	if (!this->Overlays.empty())
 	{
-		detail::read<int>(pThis->NumFrames, exINI, pSection, "NumFrames");
-		detail::read<int>(pThis->field_EC, exINI, pSection, "field_EC");
-		pThis->NumImages = this->LinkedOverlayType.size();
+		const int overlayCount = this->Overlays.size();
+
+		pThis->NumFrames = this->Overlays_FrameCount;
+		pThis->field_EC = 0;
+		pThis->NumImages = overlayCount;
+
+		if (this->Overlays_UseSlopes)
+		{
+			constexpr int rampCount = 8;
+
+			if (overlayCount <= rampCount)
+			{
+				Debug::Log("Tiberium %s is set to use slopes, but has only got %d frames (need at least 9), turning slopes off!", pThis->ID, overlayCount);
+			}
+			else
+			{
+				pThis->field_EC = rampCount;
+				pThis->NumImages -= rampCount;
+			}
+		}
 	}
 }
 
@@ -122,12 +142,11 @@ DEFINE_HOOK(0x721C7B, TiberiumClass_LoadFromINI, 0xA)
 
 	TiberiumExt::ExtMap.LoadFromINI(pItem, pINI);
 
-	if (R->Origin() == 0x721CDC && !TiberiumExt::ExtMap.Find(pItem)->LinkedOverlayType.empty())
+	if (!TiberiumExt::ExtMap.Find(pItem)->Overlays.empty())
 	{
-		if (auto pLinked = TiberiumExt::ExtMap.Find(pItem)->LinkedOverlayType[0])
+		if (auto pOverlay = TiberiumExt::ExtMap.Find(pItem)->Overlays[0])
 		{
-			// This is suppose to be a linked list
-			pItem->Image = pLinked; 
+			pItem->Image = pOverlay; 
 		}
 	}
 
