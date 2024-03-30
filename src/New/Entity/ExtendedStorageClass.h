@@ -10,12 +10,12 @@ public:
 	ExtendedStorageClass() : Tiberiums(TiberiumClass::Array->Count) {}
 	~ExtendedStorageClass() = default;
 
-	int Get_Total_Value() const;
-	float Get_Total_Amount() const;
-	float Get_Amount(int tiberium) const;
-	float Increase_Amount(float amount, int tiberium);
-	float Decrease_Amount(float amount, int tiberium);
-	int First_Used_Slot() const;
+	int GetTotalValue() const;
+	float GetTotalAmount() const;
+	float GetAmount(int index) const;
+	float IncreaseAmount(float amount, int index);
+	float DecreaseAmount(float amount, int index);
+	int FirstUsedSlot() const;
 
 	ExtendedStorageClass operator+(ExtendedStorageClass& that) const;
 	ExtendedStorageClass* operator+=(ExtendedStorageClass& that);
