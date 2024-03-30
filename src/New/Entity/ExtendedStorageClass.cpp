@@ -1,6 +1,6 @@
 #include "ExtendedStorageClass.h"
 
-int ExtendedStorageClass::Get_Total_Value() const
+int ExtendedStorageClass::GetTotalValue() const
 {
 	int total = 0;
 
@@ -12,7 +12,7 @@ int ExtendedStorageClass::Get_Total_Value() const
 	return total;
 }
 
-float ExtendedStorageClass::Get_Total_Amount() const
+float ExtendedStorageClass::GetTotalAmount() const
 {
 	float total = 0;
 
@@ -24,27 +24,27 @@ float ExtendedStorageClass::Get_Total_Amount() const
 	return total;
 }
 
-float ExtendedStorageClass::Get_Amount(int tiberium) const
+float ExtendedStorageClass::GetAmount(int index) const
 {
-	return Tiberiums[tiberium];
+	return Tiberiums[index];
 }
 
-float ExtendedStorageClass::Increase_Amount(float amount, int tiberium)
+float ExtendedStorageClass::IncreaseAmount(float amount, int index)
 {
-	Tiberiums[tiberium] += amount;
-	return Tiberiums[tiberium];
+	Tiberiums[index] += amount;
+	return Tiberiums[index];
 }
 
-float ExtendedStorageClass::Decrease_Amount(float amount, int tiberium)
+float ExtendedStorageClass::DecreaseAmount(float amount, int index)
 {
-	if (amount < Tiberiums[tiberium])
-		amount = Tiberiums[tiberium];
+	if (amount < Tiberiums[index])
+		amount = Tiberiums[index];
 
-	Tiberiums[tiberium] -= amount;
+	Tiberiums[index] -= amount;
 	return amount;
 }
 
-int ExtendedStorageClass::First_Used_Slot() const
+int ExtendedStorageClass::FirstUsedSlot() const
 {
 	for (int i = 0; i < TiberiumClass::Array->Count; i++)
 	{
