@@ -55,12 +55,12 @@ int ExtendedStorageClass::First_Used_Slot() const
 	return -1;
 }
 
-ExtendedStorageClass* ExtendedStorageClass::operator+(ExtendedStorageClass& that) const
+ExtendedStorageClass ExtendedStorageClass::operator+(ExtendedStorageClass& that) const
 {
-	const auto storageClass = new ExtendedStorageClass();
+	auto storageClass = ExtendedStorageClass();
 	for (int i = 0; i < TiberiumClass::Array->Count; i++)
 	{
-		storageClass->Tiberiums[i] = Tiberiums[i] + that.Tiberiums[i];
+		storageClass.Tiberiums[i] = Tiberiums[i] + that.Tiberiums[i];
 	}
 
 	return storageClass;
@@ -76,12 +76,12 @@ ExtendedStorageClass* ExtendedStorageClass::operator+=(ExtendedStorageClass& tha
 	return this;
 }
 
-ExtendedStorageClass* ExtendedStorageClass::operator-(ExtendedStorageClass& that) const
+ExtendedStorageClass ExtendedStorageClass::operator-(ExtendedStorageClass& that) const
 {
-	const auto storageClass = new ExtendedStorageClass();
+	auto storageClass = ExtendedStorageClass();
 	for (int i = 0; i < TiberiumClass::Array->Count; i++)
 	{
-		storageClass->Tiberiums[i] = Tiberiums[i] - that.Tiberiums[i];
+		storageClass.Tiberiums[i] = Tiberiums[i] - that.Tiberiums[i];
 	}
 
 	return storageClass;
