@@ -1,138 +1,72 @@
 #include "Body.h"
 #include "New/Entity/ExtendedStorageClass.h"
 
-DEFINE_HOOK(0x6C9600, StorageClass_Get_Total_Value, 0x5)
+namespace StorageClass_Wrappers
 {
-	enum { Exit = 0x6C964E };
+	int __fastcall Get_Total_Value(ExtendedStorageClass** pStorageClass)
+	{
+		return (*pStorageClass)->Get_Total_Value();
+	}
 
-	GET(ExtendedStorageClass**, pStorageClass, ECX);
-	int value = (*pStorageClass)->Get_Total_Value();
-	R->EAX(value);
+	double __fastcall Get_Total_Amount(ExtendedStorageClass** pStorageClass)
+	{
+		return (*pStorageClass)->Get_Total_Amount();
+	}
 
-	return Exit;
+	double __fastcall Get_Amount(ExtendedStorageClass** pStorageClass, void*, int index)
+	{
+		return (*pStorageClass)->Get_Amount(index);
+	}
+
+	float __fastcall Increase_Amount(ExtendedStorageClass** pStorageClass, void*, float amount, int index)
+	{
+		return (*pStorageClass)->Increase_Amount(amount, index);
+	}
+
+	float __fastcall Decrease_Amount(ExtendedStorageClass** pStorageClass, void*, float amount, int index)
+	{
+		return (*pStorageClass)->Decrease_Amount(amount, index);
+	}
+
+	ExtendedStorageClass** __fastcall Operator_Plus(ExtendedStorageClass** pStorageClass, void*, ExtendedStorageClass** retstr, ExtendedStorageClass** that)
+	{
+		**retstr = **pStorageClass + **that;
+		return retstr;
+	}
+
+	ExtendedStorageClass** __fastcall Operator_PlusEquals(ExtendedStorageClass** pStorageClass, void*, ExtendedStorageClass** retstr, ExtendedStorageClass** that)
+	{
+		**pStorageClass += **that;
+		*retstr = *pStorageClass;
+		return pStorageClass;
+	}
+
+	ExtendedStorageClass** __fastcall Operator_Minus(ExtendedStorageClass** pStorageClass, void*, ExtendedStorageClass** retstr, ExtendedStorageClass** that)
+	{
+		**retstr = **pStorageClass - **that;
+		return retstr;
+	}
+
+	ExtendedStorageClass** __fastcall Operator_MinusEquals(ExtendedStorageClass** pStorageClass, void*, ExtendedStorageClass** retstr, ExtendedStorageClass** that)
+	{
+		**pStorageClass -= **that;
+		*retstr = *pStorageClass;
+		return pStorageClass;
+	}
+
+	int __fastcall First_Used_Slot(ExtendedStorageClass** pStorageClass)
+	{
+		return (*pStorageClass)->First_Used_Slot();
+	}
 }
 
-DEFINE_HOOK(0x6C9653, StorageClass_Get_Total_Amount, 0x5)
-{
-	enum { Exit = 0x6C967B };
-
-	GET(ExtendedStorageClass**, pStorageClass, ECX);
-
-	float value = (*pStorageClass)->Get_Total_Amount();
-	__asm fld value
-
-	return Exit;
-}
-
-DEFINE_HOOK(0x6C9680, StorageClass_Get_Amount, 0x5)
-{
-	enum { Exit = 0x6C9687 };
-
-	GET(ExtendedStorageClass**, pStorageClass, ECX);
-	GET_STACK(int, tiberium, 4);
-
-	float value = (*pStorageClass)->Get_Amount(tiberium);
-	__asm fld value
-
-	return Exit;
-}
-
-DEFINE_HOOK(0x6C9694, StorageClass_Increase_Amount, 0x5)
-{
-	enum { Exit = 0x6C969E };
-
-	GET(ExtendedStorageClass**, pStorageClass, ECX);
-	GET(int, tiberium, EAX);
-	GET_STACK(float, amount, 4);
-
-	float value = (*pStorageClass)->Increase_Amount(amount, tiberium);
-	__asm fld value
-
-	return Exit;
-}
-
-DEFINE_HOOK(0x6C96B4, StorageClass_Decrease_Amount, 0x5)
-{
-	enum { Exit = 0x6C96DC };
-
-	GET(ExtendedStorageClass**, pStorageClass, ECX);
-	GET(int, tiberium, EDX);
-	GET_STACK(float, amount, 4);
-
-	float value = (*pStorageClass)->Decrease_Amount(amount, tiberium);
-	__asm fld value
-
-	return Exit;
-}
-
-DEFINE_HOOK(0x6C96E3, StorageClass_Operator_Plus, 0x5)
-{
-	enum { Exit = 0x6C973A };
-
-	GET(ExtendedStorageClass**, pStorageClass, ECX);
-	GET_STACK(ExtendedStorageClass**, that, STACK_OFFSET(0x10, 0x8));
-	GET_STACK(ExtendedStorageClass**, retstr, STACK_OFFSET(0x10, 0x4));
-
-	auto newStorageClass = **pStorageClass + **that;
-	R->EAX(newStorageClass);
-	*retstr = newStorageClass;
-
-	return Exit;
-}
-
-DEFINE_HOOK(0x6C9745, StorageClass_Operator_PlusEquals, 0x5)
-{
-	enum { Exit = 0x6C9775 };
-
-	GET(ExtendedStorageClass**, pStorageClass, ECX);
-	GET(ExtendedStorageClass**, that, EDX);
-	GET_STACK(ExtendedStorageClass**, retstr, STACK_OFFSET(0x4, 0x4));
-
-	**pStorageClass += **that;
-	R->EAX(*pStorageClass);
-	*retstr = *pStorageClass;
-
-	return Exit;
-}
-
-DEFINE_HOOK(0x6C9783, StorageClass_Operator_Minus, 0x5)
-{
-	enum { Exit = 0x6C97D8 };
-
-	GET(ExtendedStorageClass**, pStorageClass, ECX);
-	GET_STACK(ExtendedStorageClass**, that, STACK_OFFSET(0x10, 0x8));
-	GET_STACK(ExtendedStorageClass**, retstr, STACK_OFFSET(0x10, 0x4));
-
-	auto newStorageClass = **pStorageClass - **that;
-	R->EAX(newStorageClass);
-	*retstr = newStorageClass;
-
-	return Exit;
-}
-
-DEFINE_HOOK(0x6C97E5, StorageClass_Operator_MinusEquals, 0x5)
-{
-	enum { Exit = 0x6C9815 };
-
-	GET(ExtendedStorageClass**, pStorageClass, ECX);
-	GET(ExtendedStorageClass**, that, EDX);
-	GET_STACK(ExtendedStorageClass**, retstr, STACK_OFFSET(0x4, 0x4));
-
-	**pStorageClass -= **that;
-	R->EAX(*pStorageClass);
-	*retstr = *pStorageClass;
-
-	return Exit;
-}
-
-DEFINE_HOOK(0x6C9820, StorageClass_First_Used_Slot, 0x5)
-{
-	enum { Exit = 0x6C983D };
-
-	GET(ExtendedStorageClass**, pStorageClass, ECX);
-
-	int result = (*pStorageClass)->First_Used_Slot();
-	R->EAX(result);
-
-	return Exit;
-}
+DEFINE_JUMP(LJMP, 0x6C9600, GET_OFFSET(StorageClass_Wrappers::Get_Total_Value))
+DEFINE_JUMP(LJMP, 0x6C9650, GET_OFFSET(StorageClass_Wrappers::Get_Total_Amount))
+DEFINE_JUMP(LJMP, 0x6C9680, GET_OFFSET(StorageClass_Wrappers::Get_Amount))
+DEFINE_JUMP(LJMP, 0x6C9690, GET_OFFSET(StorageClass_Wrappers::Increase_Amount))
+DEFINE_JUMP(LJMP, 0x6C96B0, GET_OFFSET(StorageClass_Wrappers::Decrease_Amount))
+DEFINE_JUMP(LJMP, 0x6C96E0, GET_OFFSET(StorageClass_Wrappers::Operator_Plus))
+DEFINE_JUMP(LJMP, 0x6C9740, GET_OFFSET(StorageClass_Wrappers::Operator_PlusEquals))
+DEFINE_JUMP(LJMP, 0x6C9780, GET_OFFSET(StorageClass_Wrappers::Operator_Minus))
+DEFINE_JUMP(LJMP, 0x6C97E0, GET_OFFSET(StorageClass_Wrappers::Operator_MinusEquals))
+DEFINE_JUMP(LJMP, 0x6C9820, GET_OFFSET(StorageClass_Wrappers::First_Used_Slot))
