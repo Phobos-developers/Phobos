@@ -117,6 +117,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AnimRemapDefaultColorScheme.Read(exINI, GameStrings::AudioVisual, "AnimRemapDefaultColorScheme");
 	this->TimerBlinkColorScheme.Read(exINI, GameStrings::AudioVisual, "TimerBlinkColorScheme");
 	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
+	this->AirShadowBaseScale.Read(exINI, GameStrings::AudioVisual, "AirShadowBaseScale");
+	this->HeightShadowScaling.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling");
+	this->HeightShadowScaling_MinScale.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling.MinScale");
 
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
 	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
@@ -260,6 +263,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Tiberiums_DisplayOrder)
 		.Process(this->Pips_Tiberiums_WeedFrame)
 		.Process(this->Pips_Tiberiums_WeedEmptyFrame)
+		.Process(this->AirShadowBaseScale)
+		.Process(this->HeightShadowScaling)
+		.Process(this->HeightShadowScaling_MinScale)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)

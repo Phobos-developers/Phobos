@@ -688,11 +688,30 @@ NoWobbles=false  ; boolean
 ### Voxel body multi-section shadows
 
 - It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
+  - `ShadowIndex.Frame` and `ShadowIndices.Frame` can be used to customize which frame of the HVA animation for the section from `ShadowIndex` and `ShadowIndices` is used to display the shadow, respectively. -1 is special value which means currently shown frame is used, and `ShadowIndices.Frame` defaults to this.
 
 In `artmd.ini`:
 ```ini
-[SOMETECHNO]    ; TechnoType
-ShadowIndices=  ; list of integers (voxel section indices)
+[SOMETECHNO]          ; TechnoType
+ShadowIndices=        ; list of integers (voxel section indices)
+ShadowIndex.Frame=0   ; integer (HVA animation frame index)
+ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
+```
+
+### Voxel shadow scaling in air
+
+- It is now possible to adjust how voxel air units (`VehicleType` & `AircraftType`) shadows scale in air. By default the shadows scale by `AirShadowBaseScale` (defaults to 0.5) amount if unit is `ConsideredAircraft=true`.
+  - If `HeightShadowScaling=true`, the shadow is scaled by amount that is determined by following formula: `Max(1.0 - AirShadowBaseScale * currentHeight / ShadowSizeCharacteristicHeight, HeightShadowScaling.MinScale)`, where `currentHeight` is unit's current height in leptons, `ShadowSizeCharacteristicHeight` overrideable value that defaults to the maximum cruise height (`JumpjetHeight`, `FlightLevel` etc) and `HeightShadowScaling.MinScale` sets a floor for the scale.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+AirShadowBaseScale=0.5            ; floating point value
+HeightShadowScaling=false         ; boolean
+HeightShadowScaling.MinScale=0.0  ; floating point value
+
+[SOMETECHNO]                      ; TechnoType
+ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 ```
 
 ### Forbid parallel AI queues

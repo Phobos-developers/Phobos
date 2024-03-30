@@ -355,31 +355,40 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	// This is the very reason I need to do this here, there's no less hacky way to get this Type from those inner calls
 
 	const auto uTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-	// Byebye ConsideredAircraft
 	const auto jjloco = locomotion_cast<JumpjetLocomotionClass*>(loco);
 	const auto height = pThis->GetHeight();
-	if (height > 0)
+	const auto baseScale = Math::max(RulesExt::Global()->AirShadowBaseScale, 0.0);
+
+	if (RulesExt::Global()->HeightShadowScaling && height > 0)
 	{
+		const auto minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
+
 		if (jjloco)
 		{
-			const float ch = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(jjloco->Height);
-			if (ch > 0)
+			const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(jjloco->Height);
+
+			if (cHeight > 0)
 			{
-				shadow_matrix.Scale(1.f - 0.5f * height / ch);
+				shadow_matrix.Scale((float)Math::max(1.f - baseScale * height / cHeight, minScale));
+
 				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
 					vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);
 			}
 		}
 		else
 		{
-			const float ch = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(RulesClass::Instance->CruiseHeight);
-			if (ch > 0)
+			const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(RulesClass::Instance->CruiseHeight);
+
+			if (cHeight > 0)
 			{
-				shadow_matrix.Scale(1.f - 0.5f * height / ch);
+				shadow_matrix.Scale((float)Math::max(1.f - baseScale * height / cHeight, minScale));
 				vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);
 			}
 		}
+	}
+	else if (!RulesExt::Global()->HeightShadowScaling && pThis->Type->ConsideredAircraft)
+	{
+		shadow_matrix.Scale((float)baseScale);
 	}
 
 	// We need to handle Ares turrets/barrels
@@ -561,14 +570,23 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		return FinishDrawing;
 
 	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
+	const auto baseScale = Math::max(RulesExt::Global()->AirShadowBaseScale, 0.0);
 
-	const float ch = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(loco->FlightLevel);
-	if (ch > 0)
+	if (RulesExt::Global()->HeightShadowScaling)
 	{
-		shadow_mtx.Scale(1.f - 0.5f * height / ch);
-		key = std::bit_cast<VoxelIndexKey>(-1); // I'm sorry
+		const auto minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
+		const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(loco->FlightLevel);
+
+		if (cHeight > 0)
+		{
+			shadow_mtx.Scale((float)Math::max(1.f - baseScale * height / cHeight, minScale));
+			key = std::bit_cast<VoxelIndexKey>(-1); // I'm sorry
+		}
+	}
+	else if (pThis->Type->ConsideredAircraft)
+	{
+		shadow_mtx.Scale((float)baseScale);
 	}
 
 	if (pThis->IsCrashing)
