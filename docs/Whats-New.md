@@ -398,6 +398,7 @@ New:
 - Restore functionality of `[CrateRules]` -> `FreeMCV` with customizable credits threshold (by Starkku)
 - Allow customizing the number of vehicles required for unit crates to turn into money crates (by Starkku)
 - Per-VehicleType reroll chance for `CrateGoodie=true` (by Starkku)
+- Warheads spawning powerup crates (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

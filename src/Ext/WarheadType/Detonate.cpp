@@ -62,6 +62,14 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 		}
 
+		if (this->SpawnsCrate_Types.size() > 0)
+		{
+			int index = GeneralUtils::ChooseOneWeighted(ScenarioClass::Instance->Random.RandomDouble(), &this->SpawnsCrate_Weights);
+
+			if (index < static_cast<int>(this->SpawnsCrate_Types.size()))
+				MapClass::Instance->PlacePowerupCrate(CellClass::Coord2Cell(coords), this->SpawnsCrate_Types.at(index));
+		}
+
 		for (const int swIdx : this->LaunchSW)
 		{
 			if (const auto pSuper = pHouse->Supers.GetItem(swIdx))
@@ -212,12 +220,12 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 		if (pExt->Shield)
 		{
 			auto isShieldTypeEligible = [pExt](Iterator<ShieldTypeClass*> elements) -> bool
-			{
-				if (elements.size() > 0 && !elements.contains(pExt->Shield->GetType()))
-					return false;
+				{
+					if (elements.size() > 0 && !elements.contains(pExt->Shield->GetType()))
+						return false;
 
-				return true;
-			};
+					return true;
+				};
 
 			if (this->Shield_Break && pExt->Shield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
 				pExt->Shield->BreakShield(this->Shield_BreakAnim.Get(nullptr), this->Shield_BreakWeapon.Get(nullptr));

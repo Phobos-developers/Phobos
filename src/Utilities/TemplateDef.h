@@ -595,6 +595,99 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Powerup>(Powerup& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (!_strcmpi(parser.value(), "money"))
+			{
+				value = Powerup::Money;
+			}
+			else if (!_strcmpi(parser.value(), "unit"))
+			{
+				value = Powerup::Unit;
+			}
+			else if (!_strcmpi(parser.value(), "healbase"))
+			{
+				value = Powerup::HealBase;
+			}
+			else if (!_strcmpi(parser.value(), "cloak"))
+			{
+				value = Powerup::Cloak;
+			}
+			else if (!_strcmpi(parser.value(), "explosion"))
+			{
+				value = Powerup::Explosion;
+			}
+			else if (!_strcmpi(parser.value(), "napalm"))
+			{
+				value = Powerup::Napalm;
+			}
+			else if (!_strcmpi(parser.value(), "squad"))
+			{
+				value = Powerup::Squad;
+			}
+			else if (!_strcmpi(parser.value(), "darkness"))
+			{
+				value = Powerup::Darkness;
+			}
+			else if (!_strcmpi(parser.value(), "reveal"))
+			{
+				value = Powerup::Reveal;
+			}
+			else if (!_strcmpi(parser.value(), "armor"))
+			{
+				value = Powerup::Armor;
+			}
+			else if (!_strcmpi(parser.value(), "speed"))
+			{
+				value = Powerup::Speed;
+			}
+			else if (!_strcmpi(parser.value(), "firepower"))
+			{
+				value = Powerup::Firepower;
+			}
+			else if (!_strcmpi(parser.value(), "icbm"))
+			{
+				value = Powerup::ICBM;
+			}
+			else if (!_strcmpi(parser.value(), "invulnerability"))
+			{
+				value = Powerup::Invulnerability;
+			}
+			else if (!_strcmpi(parser.value(), "veteran"))
+			{
+				value = Powerup::Veteran;
+			}
+			else if (!_strcmpi(parser.value(), "ionstorm"))
+			{
+				value = Powerup::IonStorm;
+			}
+			else if (!_strcmpi(parser.value(), "gas"))
+			{
+				value = Powerup::Gas;
+			}
+			else if (!_strcmpi(parser.value(), "tiberium"))
+			{
+				value = Powerup::Tiberium;
+			}
+			else if (!_strcmpi(parser.value(), "pod"))
+			{
+				value = Powerup::Pod;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected powerup crate type");
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<SuperWeaponAITargetingMode>(SuperWeaponAITargetingMode &value, INI_EX &parser, const char *pSection, const char *pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
