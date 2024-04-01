@@ -149,7 +149,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
 - Spawned aircraft now align with the spawner's facing when landing.
 - Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers EnteredBy event by executing capture mission.
-- Fixed infantry requiring `MovementZone=AmphibiousDestroyer` specifically to be able to use water sequences instead of any amphibious / water `MovementZone`.
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 
 ## Fixes / interactions with other extensions
@@ -566,14 +565,18 @@ In `rulesmd.ini`:
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
-### Exploding unit passenger killing customization
+### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
+- BuildingTypes with `Explodes=true` can by default explode even when they are still being built or sold. This can be disabled by setting `Explodes.DuringBuildup` to false. This causes them to behave as if `Explodes` was set to false while being built up or sold.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                 ; TechnoType
 Explodes.KillPassengers=true ; boolean
+
+[SOMEBUILDING]               ; BuildingType
+Explodes.DuringBuildup=true  ; boolean
 ```
 
 ### IronCurtain effects on organics customization
