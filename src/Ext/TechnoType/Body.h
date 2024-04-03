@@ -186,6 +186,10 @@ public:
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
 
+		ValueableVector<TechnoTypeClass*> BuildLimit_Group_Types;
+		Valueable<bool> BuildLimit_Group_Any;
+		ValueableVector<int> BuildLimit_Group_Limits;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -369,6 +373,10 @@ public:
 			, SpawnHeight {}
 			, LandingDir {}
 			, DroppodType {}
+
+			, BuildLimit_Group_Types {}
+			, BuildLimit_Group_Any { false }
+			, BuildLimit_Group_Limits {}
 		{ }
 
 		virtual ~ExtData() = default;
