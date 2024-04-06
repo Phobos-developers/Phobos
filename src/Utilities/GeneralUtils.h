@@ -37,6 +37,7 @@ public:
 	static CoordStruct CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance);
 	static void DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset);
 	static int GetColorFromColorAdd(int colorIndex);
+	static DynamicVectorClass<ColorScheme*>* BuildPalette(const char* paletteFileName);
 
 	template<typename T>
 	static constexpr T FastPow(T x, size_t n)

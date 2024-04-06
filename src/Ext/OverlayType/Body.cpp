@@ -33,26 +33,14 @@ void OverlayTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	auto pArtSection = pThis->ImageFile;
 
 	this->PaletteFile.Read(pArtINI, pArtSection, "Palette");
-
-	BuildPalette();
-}
-
-void OverlayTypeExt::ExtData::BuildPalette()
-{
-	if (GeneralUtils::IsValidString(this->PaletteFile))
-	{
-		char pFilename[0x20];
-		strcpy_s(pFilename, this->PaletteFile.data());
-
-		this->Palette = ColorScheme::GeneratePalette(pFilename);
-	}
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
 void OverlayTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<OverlayTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
-	this->BuildPalette();
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
 void OverlayTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
