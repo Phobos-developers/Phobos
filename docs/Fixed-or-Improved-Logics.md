@@ -701,7 +701,7 @@ ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
 ### Voxel shadow scaling in air
 
 - It is now possible to adjust how voxel air units (`VehicleType` & `AircraftType`) shadows scale in air. By default the shadows scale by `AirShadowBaseScale` (defaults to 0.5) amount if unit is `ConsideredAircraft=true`.
-  - If `HeightShadowScaling=true`, the shadow is scaled by amount that is determined by following formula: `Max(1.0 - AirShadowBaseScale * currentHeight / ShadowSizeCharacteristicHeight, HeightShadowScaling.MinScale)`, where `currentHeight` is unit's current height in leptons, `ShadowSizeCharacteristicHeight` overrideable value that defaults to the maximum cruise height (`JumpjetHeight`, `FlightLevel` etc) and `HeightShadowScaling.MinScale` sets a floor for the scale.
+  - If `HeightShadowScaling=true`, the shadow is scaled by amount that is determined by following formula: `Max(AirShadowBaseScale ^ (currentHeight / ShadowSizeCharacteristicHeight), HeightShadowScaling.MinScale)`, where `currentHeight` is unit's current height in leptons, `ShadowSizeCharacteristicHeight` overrideable value that defaults to the maximum cruise height (`JumpjetHeight`, `FlightLevel` etc) and `HeightShadowScaling.MinScale` sets a floor for the scale.
 
 In `rulesmd.ini`:
 ```ini
@@ -856,6 +856,8 @@ IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.K
 ### Voxel turret shadow
 
 - Vehicle voxel turrets can now draw shadows if `[AudioVisual]` -> `DrawTurretShadow` is set to true. This can be overridden per VehicleType by setting `TurretShadow` in the vehicle's `artmd.ini` section.
+  - If you don't want to render the body's shadow at all, set `ShadowIndex` to an invalid number.
+
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]

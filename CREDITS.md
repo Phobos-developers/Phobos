@@ -292,6 +292,7 @@ This page lists all the individual contributions to the project by their author.
    - EIP 00529A14 crash fix on Linux
    - Teleport timer reset after load game fix
    - Teleport, Tunnel and Fly loco visual tilt fix
+   - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
    - Skip units' turret rotation and jumpjets' wobbling under EMP
    - Droppod properties dehardcode
    - Waypoint entering building together with engineer/agent bug fix

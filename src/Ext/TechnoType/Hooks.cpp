@@ -336,6 +336,14 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 	return 0x6B0C65;
 }
 
+// 2nd order Pade approximant just in case someone complains about performance
+constexpr double Pade2_2(double in)
+{
+	const double s = in - static_cast<int>(in);
+	return GeneralUtils::FastPow(0.36787944117144233, static_cast<int>(in))
+		* (12. - 6 * s + s * s) / (12. + 6 * s + s * s);
+}
+
 DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 {
 	GET(UnitClass*, pThis, EBP);
@@ -357,19 +365,18 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	const auto uTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const auto jjloco = locomotion_cast<JumpjetLocomotionClass*>(loco);
 	const auto height = pThis->GetHeight();
-	const auto baseScale = Math::max(RulesExt::Global()->AirShadowBaseScale, 0.0);
+	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log; // -ln(baseScale) precomputed
 
 	if (RulesExt::Global()->HeightShadowScaling && height > 0)
 	{
-		const auto minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
-
+		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
 		if (jjloco)
 		{
 			const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(jjloco->Height);
 
 			if (cHeight > 0)
 			{
-				shadow_matrix.Scale((float)Math::max(1.f - baseScale * height / cHeight, minScale));
+				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
 
 				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
 					vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);
@@ -381,14 +388,14 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 			if (cHeight > 0)
 			{
-				shadow_matrix.Scale((float)Math::max(1.f - baseScale * height / cHeight, minScale));
+				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
 				vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);
 			}
 		}
 	}
 	else if (!RulesExt::Global()->HeightShadowScaling && pThis->Type->ConsideredAircraft)
 	{
-		shadow_matrix.Scale((float)baseScale);
+		shadow_matrix.Scale((float)Pade2_2(baseScale_log));
 	}
 
 	// We need to handle Ares turrets/barrels
@@ -531,7 +538,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			surface,
 			shadow_point
 		);
-	
+
 	auto bar = GetBarrelVoxel(pThis->CurrentTurretNumber);
 
 	// and you are utterly fucked
@@ -565,28 +572,28 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	GET_STACK(RectangleStruct*, bound, STACK_OFFSET(0xCC, 0x10));
 	enum { FinishDrawing = 0x4148A5 };
 
-	const auto loco = static_cast<FlyLocomotionClass*>(pThis->Locomotor.GetInterfacePtr());
-	if (!loco->Is_To_Have_Shadow() || pThis->IsSinking)
+	const auto loco = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor);
+	if (!loco || !loco->Is_To_Have_Shadow() || pThis->IsSinking)
 		return FinishDrawing;
 
 	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
-	const auto baseScale = Math::max(RulesExt::Global()->AirShadowBaseScale, 0.0);
+	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
 
 	if (RulesExt::Global()->HeightShadowScaling)
 	{
-		const auto minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
+		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
 		const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(loco->FlightLevel);
 
 		if (cHeight > 0)
 		{
-			shadow_mtx.Scale((float)Math::max(1.f - baseScale * height / cHeight, minScale));
+			shadow_mtx.Scale((float)std::max(Pade2_2(baseScale_log* height / cHeight), minScale));
 			key = std::bit_cast<VoxelIndexKey>(-1); // I'm sorry
 		}
 	}
 	else if (pThis->Type->ConsideredAircraft)
 	{
-		shadow_mtx.Scale((float)baseScale);
+		shadow_mtx.Scale((float)Pade2_2(baseScale_log));
 	}
 
 	if (pThis->IsCrashing)
