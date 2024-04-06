@@ -26,6 +26,10 @@ public:
 		Nullable<ColorStruct> MinimapColor;
 		Valueable<bool> IsPassable;
 		Valueable<bool> CanBeBuiltOn;
+		Valueable<bool> HasDamagedFrames;
+		Valueable<bool> HasCrumblingFrames;
+		NullableIdx<VocClass> CrumblingSound;
+		Nullable<int> AnimationLength;
 
 		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
 			, SpawnsTiberium_Type { 0 }
@@ -37,6 +41,10 @@ public:
 			, MinimapColor {}
 			, IsPassable { false }
 			, CanBeBuiltOn { false }
+			, HasDamagedFrames { false }
+			, HasCrumblingFrames { false }
+			, CrumblingSound {}
+			, AnimationLength {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -50,6 +58,7 @@ public:
 
 		int GetTiberiumGrowthStage();
 		int GetCellsPerAnim();
+		void PlayDestroyEffects(CoordStruct coords);
 
 	private:
 		template <typename T>

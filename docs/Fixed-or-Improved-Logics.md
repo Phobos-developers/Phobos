@@ -82,7 +82,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 ![Waving trees](_static/images/tree-shake.gif)
 *Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
 
-- `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true. Note that this might impact performance.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
 ![image](_static/images/translucency-fix.png)
@@ -877,6 +876,17 @@ ForbidParallelAIQueues.Building=no  ; boolean
 
 ## Terrains
 
+### Animated TerrainTypes
+
+- By default `IsAnimated`, `AnimationRate` and `AnimationProbability` only work on TerrainTypes with `SpawnsTiberium` set to true. This restriction has now been lifted.
+  - Length of the animation can now be customized by setting `AnimationLength` as well, defaulting to half (or quarter if [damaged frames](#damaged-frames-and-crumbling-animation) are enabled) the number of frames in TerrainType's image.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+AnimationLength=   ; integer, number of frames
+```
+
 ### Customizable ore spawners
 
 ![image](_static/images/ore-01.png)
@@ -893,6 +903,27 @@ SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
+```
+
+### Damaged frames and crumbling animation
+
+- By default game shows damage frame only for TerrainTypes alive at only 1 point of health left. Because none of the original game TerrainType assets were made with this in mind, the logic is now locked behind a new key `HasDamagedFrames`.
+  - Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual]` -> `ConditionYellow.Terrain` percentage of their maximum health. Defaults to `ConditionYellow` if not set.
+- In addition, TerrainTypes can now show 'crumbling' animation after their health has reached zero and before they are deleted from the map by setting `HasCrumblingFrames` to true.
+  - Crumbling frames start from first frame after both regular & damaged frames and ends at halfway point of the frames in TerrainType's image.
+    - Note that the number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes). Exercise caution and ensure there are correct amount of frames to display.
+  - Sound event from `CrumblingSound` (if set) is played when crumbling animation starts playing.
+  - [Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation-sound) only play after crumbling animation has finished.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ConditionYellow.Terrain=  ; floating-point value
+
+[SOMETERRAINTYPE]         ; TerrainType
+HasDamagedFrames=false    ; boolean
+HasCrumblingFrames=false
+CrumblingSound=           ; Sound
 ```
 
 ### Minimap color customization
