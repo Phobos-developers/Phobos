@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <HouseClass.h>
 #include <ScenarioClass.h>
 #include <SpecificStructures.h>
 #include <TacticalClass.h>
@@ -114,6 +115,28 @@ DEFINE_HOOK(0x71C1FE, TerrainClass_Draw_PickFrame, 0x6)
 
 	R->EBX(frame);
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x71C2BC, TerrainClass_Draw_Palette, 0x6)
+{
+	GET(TerrainClass*, pThis, ESI);
+
+	auto const pCell = pThis->GetCell();
+	int wallOwnerIndex = pCell->WallOwnerIndex;
+	int colorSchemeIndex = HouseClass::CurrentPlayer->ColorSchemeIndex;
+
+	if (wallOwnerIndex >= 0)
+		colorSchemeIndex = HouseClass::Array->GetItem(wallOwnerIndex)->ColorSchemeIndex;
+
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->Palette)
+	{
+		R->EDX(pTypeExt->Palette->GetItem(colorSchemeIndex)->LightConvert);
+		R->EBP(pCell->Intensity_Normal);
+	}
+
+	return 0;
 }
 
 // Overrides Ares hook at 0x5F4FF9, required for animated terrain cause game & Ares check SpawnsTiberium instead of IsAnimated

@@ -59,6 +59,7 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasCrumblingFrames)
 		.Process(this->CrumblingSound)
 		.Process(this->AnimationLength)
+		.Process(this->PaletteFile)
 		;
 }
 
@@ -91,12 +92,19 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");
+
+	auto const pArtINI = &CCINIClass::INI_Art();
+	auto pArtSection = pThis->ImageFile;
+
+	this->PaletteFile.Read(pArtINI, pArtSection, "Palette");
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
 void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<TerrainTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
 void TerrainTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)

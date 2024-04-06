@@ -905,6 +905,17 @@ SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
 ```
 
+### Custom palette
+
+- You can now specify custom palette for TerrainTypes in similar manner as TechnoTypes can.
+  - Note that this palette behaves like an object palette and does not use tint etc. that have been applied to the tile the TerrainType resides on like a TerrainType using tile palette would.
+
+In `artmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+Palette=           ; filename - excluding .pal extension and three-character theater-specific suffix
+```
+
 ### Damaged frames and crumbling animation
 
 - By default game shows damage frame only for TerrainTypes alive at only 1 point of health left. Because none of the original game TerrainType assets were made with this in mind, the logic is now locked behind a new key `HasDamagedFrames`.

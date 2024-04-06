@@ -446,6 +446,7 @@ New:
 - Customizable ChronoSphere teleport delays for units (by Starkku)
 - Allowed and disallowed types for `FactoryPlant` (by Starkku)
 - Customizable damage & 'crumbling' (destruction) frames for TerrainTypes (by Starkku)
+- Custom object palettes for TerrainTypes (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
