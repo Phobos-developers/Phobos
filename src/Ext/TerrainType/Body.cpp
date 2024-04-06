@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <AnimClass.h>
 #include <TacticalClass.h>
 #include <TerrainClass.h>
 #include <TerrainTypeClass.h>
@@ -16,6 +17,14 @@ int TerrainTypeExt::ExtData::GetTiberiumGrowthStage()
 int TerrainTypeExt::ExtData::GetCellsPerAnim()
 {
 	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_CellsPerAnim.Get());
+}
+
+void TerrainTypeExt::ExtData::PlayDestroyEffects(CoordStruct coords)
+{
+	VocClass::PlayIndexAtPos(this->DestroySound.Get(-1), coords);
+
+	if (auto const pAnimType = this->DestroyAnim)
+		GameCreate<AnimClass>(pAnimType, coords);
 }
 
 void TerrainTypeExt::Remove(TerrainClass* pTerrain)
@@ -46,6 +55,10 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MinimapColor)
 		.Process(this->IsPassable)
 		.Process(this->CanBeBuiltOn)
+		.Process(this->HasDamagedFrames)
+		.Process(this->HasCrumblingFrames)
+		.Process(this->CrumblingSound)
+		.Process(this->AnimationLength)
 		;
 }
 
@@ -70,6 +83,11 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->IsPassable.Read(exINI, pSection, "IsPassable");
 	this->CanBeBuiltOn.Read(exINI, pSection, "CanBeBuiltOn");
+
+	this->HasDamagedFrames.Read(exINI, pSection, "HasDamagedFrames");
+	this->HasCrumblingFrames.Read(exINI, pSection, "HasCrumblingFrames");
+	this->CrumblingSound.Read(exINI, pSection, "CrumblingSound");
+	this->AnimationLength.Read(exINI, pSection, "AnimationLength");
 
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");

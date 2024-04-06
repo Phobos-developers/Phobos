@@ -60,6 +60,7 @@ public:
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
 
+		Nullable<double> ConditionYellow_Terrain;
 		Nullable<double> Shield_ConditionYellow;
 		Nullable<double> Shield_ConditionRed;
 		Valueable<Vector3D<int>> Pips_Shield;
