@@ -367,6 +367,7 @@ New:
 - Allow to change the speed of gas particles (by ZivDero)
 - Allow upgrade animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Starkku)
 - Toggle for `Explodes=true` BuildingTypes to not explode during buildup or being sold (by Starkku)
+- Allow different technos to share build limit in a group (by ststl)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
