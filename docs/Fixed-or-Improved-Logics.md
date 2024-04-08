@@ -100,7 +100,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Animation with `Tiled=yes` now supports `CustomPalette`.
 - Attempted to avoid units from retaining previous orders (attack,grind,garrison,etc) after changing ownership (mind-control,abduction,etc).
 - Fixed buildings' `NaturalParticleSystem` being created for in-map pre-placed structures.
-- Fixed jumpjet units being unable to visually tilt or be flipped over on the ground if `TiltCrashJumpjet=no`.
+- Fixed jumpjet units being unable to visually tilt or be flipped if `TiltCrashJumpjet=no`.
 - Unlimited (more than 5) `AlternateFLH` entries for units.
 - Warheads spawning debris now use `MaxDebris` as an actual cap for number of debris to spawn instead of `MaxDebris` - 1.
  If both `Primary` and `Secondary` weapons can fire at air targets (projectile has `AA=true`), `Primary` can now be picked instead of always forcing `Secondary`. Also applies to `IsGattling=true`, with odd-numbered and even-numbered `WeaponX` slots instead of `Primary` and `Secondary`, respectively.
@@ -145,7 +145,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed railgun and fire particles being cut off by elevation changes.
 - Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
 - Fixed teleport units being unable to visually tilt on slopes.
-- Fixed units with Teleport or Tunnel locomotor being unable to be visually flipped like other locomotors do.
+- Fixed units with Teleport, Tunnel or Fly locomotor being unable to be visually flipped like other locomotors do.
 - Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
 - Spawned aircraft now align with the spawner's facing when landing.
 - Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers EnteredBy event by executing capture mission.

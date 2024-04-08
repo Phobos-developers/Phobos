@@ -251,7 +251,7 @@ This page lists all the individual contributions to the project by their author.
       - Facing towards target even if not omni-firing
       - Turret direction in idle state fix
       - Sensor fix
-      - Allow to tilt on ground
+      - Allow to tilt regardless of TiltCrashJumpjet
       - Forbid firing when crashing
    - OmniFire.TurnToTarget
    - Object Self-destruction logic
@@ -290,7 +290,7 @@ This page lists all the individual contributions to the project by their author.
    - TechnoType conversion placeholder
    - EIP 00529A14 crash fix on Linux
    - Teleport timer reset after load game fix
-   - Teleport and Tunnel loco visual tilt fix
+   - Teleport, Tunnel and Fly loco visual tilt fix
    - Skip units' turret rotation and jumpjets' wobbling under EMP
    - Droppod properties dehardcode
    - Waypoint entering building together with engineer/agent bug fix
