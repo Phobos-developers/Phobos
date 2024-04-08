@@ -226,8 +226,8 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	{
 		bool I_am_human = pThis->Owner->IsControlledByHuman();
 		bool You_are_human = pNewOwner->IsControlledByHuman();
-		auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_Human2AI.Get() :
-			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_AI2Human.Get() : nullptr;
+		auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
+			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_ComputerToHuman.Get() : nullptr;
 
 		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
 			TechnoExt::ConvertToType(pMe, pConvertTo);

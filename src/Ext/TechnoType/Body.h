@@ -185,8 +185,8 @@ public:
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
 
-		Valueable<TechnoTypeClass*> Convert_Human2AI;
-		Valueable<TechnoTypeClass*> Convert_AI2Human;
+		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
+		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 
 		struct LaserTrailDataEntry
 		{
@@ -367,8 +367,8 @@ public:
 			, SpawnHeight {}
 			, LandingDir {}
 			, DroppodType {}
-			, Convert_Human2AI { }
-			, Convert_AI2Human { }
+			, Convert_HumanToComputer { }
+			, Convert_ComputerToHuman { }
 		{ }
 
 		virtual ~ExtData() = default;
