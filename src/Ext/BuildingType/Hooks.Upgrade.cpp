@@ -6,6 +6,7 @@
 #include "Body.h"
 #include <Ext/TechnoType/Body.h>
 #include <FactoryClass.h>
+#include <Ext/House/Body.h>
 
 bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner)
 {

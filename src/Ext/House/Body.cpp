@@ -623,6 +623,13 @@ DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 	return 0;
 }
 
+int HouseExt::CountOwnedIncludeDeploy(const HouseClass* pThis, const TechnoTypeClass* pItem)
+{
+	return pThis->CountOwnedNow(pItem) +
+		(pItem->DeploysInto == nullptr ? 0 : pThis->CountOwnedNow(pItem->DeploysInto)) +
+		(pItem->UndeploysInto == nullptr ? 0 : pThis->CountOwnedNow(pItem->UndeploysInto));
+}
+
 CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued)
 {
 	auto pItemExt = TechnoTypeExt::ExtMap.Find(pItem);
