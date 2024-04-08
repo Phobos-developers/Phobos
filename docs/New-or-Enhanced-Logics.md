@@ -1298,6 +1298,18 @@ In `rulesmd.ini`:
 FeedbackWeapon=  ; WeaponType
 ```
 
+### Recoil force
+
+- You can now tilt a voxel unit after firing to simulate the recoil force.
+  - The body's "moment of inertia" is simplified to be linearly proportional to the body voxel's size. Turret voxel is not considered yet. Therefore you must have a visible size voxel body.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]  ; WeaponType
+RecoilForce=  ; floating point value
+```
+
+
 ### Radiation enhancements
 
 - In addition to allowing custom radiation types, several enhancements are also available to the default radiation type defined in `[Radiation]`, such as ability to set owner & invoker or deal damage against buildings. See [Custom Radiation Types](#custom-radiation-types) for more details.
