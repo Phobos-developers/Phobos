@@ -22,7 +22,14 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
 		this->UpdateTypeData(pType);
 
-	this->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
+	// Update tunnel state on exit, TechnoClass::AI is only called when not in tunnel.
+	if (this->IsInTunnel)
+	{
+		this->IsInTunnel = false;
+
+		if (const auto pShieldData = this->Shield.get())
+			pShieldData->SetAnimationVisibility(true);
+	}
 
 	if (this->CheckDeathConditions())
 		return;

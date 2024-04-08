@@ -290,6 +290,16 @@ In `artmd.ini`:
 AttachedSystem=  ; ParticleSystem
 ```
 
+### Play sound as a detached sound event
+
+- It is now possible for animation to play a sound that is not attached to an audio event handler by using `DetachedReport`. By default animation `Report/StartSound` is played by an audio event handler, which allows the sound to loop and play at correct location even if it changes after its initial creation. This can also cause issues with animations that chain different types through `Next`, as the audio event handler resets when the animation restarts.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]       ; AnimationType
+DetachedReport=  ; sound entry
+```
+
 ## Buildings
 
 ### Extended building upgrades
@@ -474,7 +484,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
 ### Projectile trajectories
 
 - Projectiles can now have customizable trajectories.
-  - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT` or `Inviso`).
+  - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT`, `Vertical` or `Inviso`). Attempt to do so will result in the other logics being disabled and a warning being written to log file.
   - Initial speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
 
   In `rulesmd.ini`:
@@ -812,7 +822,7 @@ ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary
 
 ### Make units try turning to target when firing with `OmniFire=yes`
 - The unit will try to turn the body to target even firing with `OmniFire=yes`
-  - Recommended for jumpjets if you want it to turn to target when firing.
+  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`
 
 In `rulesmd.ini`:
 ```ini

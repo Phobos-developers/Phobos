@@ -251,7 +251,7 @@ This page lists all the individual contributions to the project by their author.
       - Facing towards target even if not omni-firing
       - Turret direction in idle state fix
       - Sensor fix
-      - Allow to tilt on ground
+      - Allow to tilt regardless of TiltCrashJumpjet
       - Forbid firing when crashing
    - OmniFire.TurnToTarget
    - Object Self-destruction logic
@@ -291,14 +291,18 @@ This page lists all the individual contributions to the project by their author.
    - TechnoType conversion upon ownership change
    - EIP 00529A14 crash fix on Linux
    - Teleport timer reset after load game fix
-   - Teleport and Tunnel loco visual tilt fix
+   - Teleport, Tunnel and Fly loco visual tilt fix
    - Skip units' turret rotation and jumpjets' wobbling under EMP
    - Droppod properties dehardcode
+   - Waypoint entering building together with engineer/agent bug fix
+   - Skippable game save on scenario start
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
-- **NetsuNegi** - Forbidding parallel AI queues by type
+- **NetsuNegi**
+   - Forbidding parallel AI queues by type
+   - Jumpjet crash speed fix when crashing onto building
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons
@@ -317,6 +321,9 @@ This page lists all the individual contributions to the project by their author.
   - Flashing Technos on selecting
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
+  - Re-enable the Veinhole Monster and Weeds from TS
+  - Recreate the weed-charging of SWs like the TS Chemical Missile
+  - Allow to change the speed of gas particles
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

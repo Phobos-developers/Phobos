@@ -241,6 +241,16 @@ ShowTimer=yes
 ShowTimer.Priority=0  ; integer
 ```
 
+### Flashing Technos on selecting
+
+Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SelectionFlashDuration=0  ; integer, number of frames
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers
@@ -483,4 +493,15 @@ In `RA2MD.ini`:
 ```ini
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
+```
+## Miscellanous
+
+### Skip saving game on starting a new campaign
+
+When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+SaveGameOnScenarioStart=true ; boolean
 ```
