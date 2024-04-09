@@ -38,7 +38,8 @@ public:
 
 		Valueable<PartialVector3D<int>> TurretOffset;
 		Nullable<bool> TurretShadow;
-		ValueableVector<int> ShadowIndices;
+		Valueable<int> ShadowIndex_Frame;
+		std::map<int, int> ShadowIndices;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
@@ -127,6 +128,7 @@ public:
 		Valueable<int> NoAmmoAmount;
 
 		Valueable<bool> JumpjetRotateOnCrash;
+		Nullable<int> ShadowSizeCharacteristicHeight;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -186,6 +188,9 @@ public:
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
 
+		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
+		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
+
 		ValueableVector<TechnoTypeClass*> BuildLimit_Group_Types;
 		Valueable<bool> BuildLimit_Group_Any;
 		ValueableVector<int> BuildLimit_Group_Limits;
@@ -231,6 +236,7 @@ public:
 			, TurretOffset { { 0, 0, 0 } }
 			, TurretShadow { }
 			, ShadowIndices { }
+			, ShadowIndex_Frame { 0 }
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}
@@ -282,7 +288,7 @@ public:
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetRotateOnCrash { true }
-
+			, ShadowSizeCharacteristicHeight { }
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
@@ -374,6 +380,9 @@ public:
 			, SpawnHeight {}
 			, LandingDir {}
 			, DroppodType {}
+
+			, Convert_HumanToComputer { }
+			, Convert_ComputerToHuman { }
 
 			, BuildLimit_Group_Types {}
 			, BuildLimit_Group_Any { false }

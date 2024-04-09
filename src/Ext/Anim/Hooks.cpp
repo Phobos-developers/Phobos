@@ -280,6 +280,8 @@ DEFINE_HOOK(0x423365, AnimClass_DrawIt_ExtraShadow, 0x8)
 
 		if (!pTypeExt->ExtraShadow)
 			return SkipExtraShadow;
+
+		return DrawExtraShadow;
 	}
 
 	return SkipExtraShadow;
