@@ -189,6 +189,7 @@ public:
 		ValueableVector<TechnoTypeClass*> BuildLimit_Group_Types;
 		Valueable<bool> BuildLimit_Group_Any;
 		ValueableVector<int> BuildLimit_Group_Limits;
+		Valueable<bool> BuildLimit_Group_Stop;
 
 		struct LaserTrailDataEntry
 		{
@@ -377,6 +378,7 @@ public:
 			, BuildLimit_Group_Types {}
 			, BuildLimit_Group_Any { false }
 			, BuildLimit_Group_Limits {}
+			, BuildLimit_Group_Stop { false }
 		{ }
 
 		virtual ~ExtData() = default;

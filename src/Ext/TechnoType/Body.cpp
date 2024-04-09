@@ -278,7 +278,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimit_Group_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
 	this->BuildLimit_Group_Any.Read(exINI, pSection, "BuildLimitGroup.ContentIfAnyMatch");
 	this->BuildLimit_Group_Limits.Read(exINI, pSection, "BuildLimitGroup.Nums");
-
+	this->BuildLimit_Group_Stop.Read(exINI, pSection, "BuildLimitGroup.StopProductionIfMatch");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -593,6 +593,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimit_Group_Types)
 		.Process(this->BuildLimit_Group_Any)
 		.Process(this->BuildLimit_Group_Limits)
+		.Process(this->BuildLimit_Group_Stop)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -25,6 +25,23 @@ inline int __fastcall QueuedNum(const HouseClass* pHouse, const TechnoTypeClass*
 	return queued;
 }
 
+inline void __fastcall RemoveProduction(const HouseClass* pHouse, const TechnoTypeClass* pType, int num)
+{
+	const AbstractType absType = pType->WhatAmI();
+	const FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, BuildCat::DontCare);
+	if (pFactory)
+	{
+		int queued = pFactory->CountTotal(pType);
+		if (num >= 0)
+			queued = Math::min(num, queued);
+
+		for (int i = 0; i < queued; i ++)
+		{
+			pFactory->RemoveOneFromQueue(pType);
+		}
+	}
+}
+
 inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued)
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -36,42 +53,74 @@ inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoT
 
 	if (pTypeExt->BuildLimit_Group_Limits.size() == 1)
 	{
-		int num = 0;
+		int count = 0;
+		int queued = 0;
+		bool inside = false;
 
 		for (const TechnoTypeClass* pTmpType : pTypeExt->BuildLimit_Group_Types)
 		{
 			if (!ignoreQueued)
-				num += QueuedNum(pHouse, pTmpType);
+				queued += QueuedNum(pHouse, pTmpType);
 
-			num += pHouse->CountOwnedNow(pTmpType);
+			count += pHouse->CountOwnedNow(pTmpType);
+			if (pTmpType == pType)
+				inside = true;
 		}
 
-		if (num >= pTypeExt->BuildLimit_Group_Limits.back())
+		int num = count - BuildLimit_Group_Limits.back();
+		if (num + queued >= 0)
+		{
+			if (inside)
+				RemoveProduction(pHouse, pType, num + queued);
+			else if (num >= 0 || pTypeExt->BuildLimit_Group_Stop)
+				RemoveProduction(pHouse, pType, -1);
+
 			return true;
+		}
 	}
 	else
 	{
 		size_t size = Math::min(pTypeExt->BuildLimit_Group_Limits.size(), pTypeExt->BuildLimit_Group_Types.size());
 		bool reached = true;
+		bool realReached = true;
 
 		for (size_t i = 0; i < size; i++)
 		{
 			const TechnoTypeClass* pTmpType = pTypeExt->BuildLimit_Group_Types[i];
 			int queued = ignoreQueued ? 0 : QueuedNum(pHouse, pTmpType);
+			int num = pHouse->CountOwnedNow(pTmpType) - pTypeExt->BuildLimit_Group_Limits[i];
 
-			if (queued + pHouse->CountOwnedNow(pTmpType) >= pTypeExt->BuildLimit_Group_Limits[i])
+			if (num + queued >= 0)
 			{
 				if (pTypeExt->BuildLimit_Group_Any)
+				{
+					if (num >= 0 || pTypeExt->BuildLimit_Group_Stop)
+						RemoveProduction(pHouse, pType, -1);
 					return true;
+				}
+				else if (num < 0)
+				{
+					realReached = false;
+				}
 			}
 			else
 			{
+				if (pTypeExt->BuildLimit_Group_Any && pType == pTmpType)
+				{
+					RemoveProduction(pHouse, pType, num + queued);
+				}
+
 				reached = false;
 			}
 		}
 
 		if (reached)
+		{
+			if (realReached || pTypeExt->BuildLimit_Group_Stop)
+				RemoveProduction(pHouse, pType, -1);
+
 			return true;
+		}
 	}
 
 	return false;
