@@ -282,7 +282,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimit_Group_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
 	this->BuildLimit_Group_Any.Read(exINI, pSection, "BuildLimitGroup.ContentIfAnyMatch");
 	this->BuildLimit_Group_Limits.Read(exINI, pSection, "BuildLimitGroup.Nums");
-	this->BuildLimit_Group_Stop.Read(exINI, pSection, "BuildLimitGroup.StopProductionIfMatch");
+	this->BuildLimit_Group_Stop.Read(exINI, pSection, "BuildLimitGroup.NotBuildableIfQueueMatch");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");

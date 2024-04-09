@@ -28,7 +28,7 @@ inline int __fastcall QueuedNum(const HouseClass* pHouse, const TechnoTypeClass*
 inline void __fastcall RemoveProduction(const HouseClass* pHouse, const TechnoTypeClass* pType, int num)
 {
 	const AbstractType absType = pType->WhatAmI();
-	const FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, BuildCat::DontCare);
+	FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, BuildCat::DontCare);
 	if (pFactory)
 	{
 		int queued = pFactory->CountTotal(pType);
@@ -67,7 +67,7 @@ inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoT
 				inside = true;
 		}
 
-		int num = count - BuildLimit_Group_Limits.back();
+		int num = count - pTypeExt->BuildLimit_Group_Limits.back();
 		if (num + queued >= 0)
 		{
 			if (inside)
@@ -105,11 +105,6 @@ inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoT
 			}
 			else
 			{
-				if (pTypeExt->BuildLimit_Group_Any && pType == pTmpType)
-				{
-					RemoveProduction(pHouse, pType, num + queued);
-				}
-
 				reached = false;
 			}
 		}
