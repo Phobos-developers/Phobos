@@ -187,17 +187,6 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
-{
-#ifndef DEBUG
-	GET(CCINIClass*, rulesINI, EDI);
-
-	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
-#endif
-
-	return 0;
-}
-
 DEFINE_HOOK(0x55DBF5, MainLoop_SaveGame, 0xA)
 {
 	return Phobos::Config::SaveGameOnScenarioStart ? 0 : 0x55DC99;
