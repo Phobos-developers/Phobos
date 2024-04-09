@@ -172,10 +172,7 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 	GET(ILocomotion*, iloco, ESI);
 	__assume(iloco != nullptr);
 	auto loco = static_cast<FlyLocomotionClass*>(iloco);
-	//FlyLocomotionClass mainly use `Owner`
-	//`LinkedTo` is usually filled with garbage value
-	//please check it on debugger properly before use !
-	auto pThis = static_cast<AircraftClass*>(loco->Owner);
+	auto pThis = static_cast<AircraftClass*>(loco->LinkedTo);
 	if (loco->AirportBound && loco->CurrentSpeed == 0.0 && pThis->GetHeight() <= 0)
 	{
 		float ars = pThis->AngleRotatedSideways;
