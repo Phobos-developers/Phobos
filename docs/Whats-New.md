@@ -320,9 +320,10 @@ New:
 - `UndeploysInto` building selling buildup sequence length customization (by Starkku)
 - Allow overriding `Shield.AffectTypes` for each Warhead shield interaction (by Starkku)
 - TechnoType conversion warhead & superweapon (by Morton)
+- TechnoType conversion on ownership change (by Trsdy)
 - Unlimited skirmish colors (by Morton)
 - Example custom locomotor that circles around the target (*NOTE: For developer use only*) (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
-- Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar)
+- Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar & Trsdy)
 - Crushing tilt and slowdown customization (by Starkku)
 - Extra warhead detonations on weapon (by Starkku)
 - Chrono sparkle animation display customization and improvements (by Starkku)
@@ -367,6 +368,7 @@ New:
 - Allow to change the speed of gas particles (by ZivDero)
 - Allow upgrade animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Starkku)
 - Toggle for `Explodes=true` BuildingTypes to not explode during buildup or being sold (by Starkku)
+- Toggleable height-based shadow scaling for voxel air units (by Trsdy & Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -458,6 +460,7 @@ Phobos fixes:
 - Fixed a desync error caused by air/top layer sorting (by Starkku)
 - Fixed heal / repair weapons being unable to remove parasites from shielded targets if they were unable to heal / repair the parent unit (by Starkku)
 - Fixed `Inviso=true` interceptor projectiles applying damage on interceptable, armor type-having projectiles twice (by Starkku)
+- Fixed `AutoDeath` causing crashes when used to kill a parasite unit inside an another unit (by Starkku)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)

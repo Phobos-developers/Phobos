@@ -220,6 +220,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoSecondaryWeaponFallback_AllowAA.Read(exINI, pSection, "NoSecondaryWeaponFallback.AllowAA");
 
 	this->JumpjetRotateOnCrash.Read(exINI, pSection, "JumpjetRotateOnCrash");
+	this->ShadowSizeCharacteristicHeight.Read(exINI, pSection, "ShadowSizeCharacteristicHeight");
 
 	this->DeployingAnim_AllowAnyDirection.Read(exINI, pSection, "DeployingAnim.AllowAnyDirection");
 	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
@@ -275,6 +276,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
 	this->LandingDir.Read(exINI, pSection, "LandingDir");
 
+	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
+	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -325,7 +328,21 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 	this->TurretShadow.Read(exArtINI, pArtSection, "TurretShadow");
-	this->ShadowIndices.Read(exArtINI, pArtSection, "ShadowIndices");
+	ValueableVector<int> shadow_indices;
+	shadow_indices.Read(exArtINI, pArtSection, "ShadowIndices");
+	ValueableVector<int> shadow_indices_frame;
+	shadow_indices_frame.Read(exArtINI, pArtSection, "ShadowIndices.Frame");
+	if (shadow_indices_frame.size() != shadow_indices.size())
+	{
+		if (!shadow_indices_frame.empty())
+			Debug::LogGame("[Developer warning] %s ShadowIndices.Frame size (%d) does not match ShadowIndices size (%d) \n"
+				, pSection, shadow_indices_frame.size(), shadow_indices.size());
+		shadow_indices_frame.resize(shadow_indices.size(), -1);
+	}
+	for (size_t i = 0; i < shadow_indices.size(); i++)
+		this->ShadowIndices[shadow_indices[i]] = shadow_indices_frame[i];
+
+	this->ShadowIndex_Frame.Read(exArtINI, pArtSection, "ShadowIndex.Frame");
 
 	this->LaserTrailData.clear();
 	for (size_t i = 0; ; ++i)
@@ -438,6 +455,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TurretOffset)
 		.Process(this->TurretShadow)
 		.Process(this->ShadowIndices)
+		.Process(this->ShadowIndex_Frame)
 		.Process(this->Spawner_LimitRange)
 		.Process(this->Spawner_ExtraLimitRange)
 		.Process(this->Spawner_DelayFrames)
@@ -518,7 +536,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoAmmoWeapon)
 		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetRotateOnCrash)
-
+		.Process(this->ShadowSizeCharacteristicHeight)
 		.Process(this->DeployingAnim_AllowAnyDirection)
 		.Process(this->DeployingAnim_KeepUnitVisible)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
@@ -585,6 +603,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnHeight)
 		.Process(this->LandingDir)
 		.Process(this->DroppodType)
+		.Process(this->Convert_HumanToComputer)
+		.Process(this->Convert_ComputerToHuman)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

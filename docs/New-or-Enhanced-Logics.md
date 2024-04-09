@@ -822,7 +822,7 @@ ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary
 
 ### Make units try turning to target when firing with `OmniFire=yes`
 - The unit will try to turn the body to target even firing with `OmniFire=yes`
-  - Recommended for jumpjets if you want it to turn to target when firing.
+  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`
 
 In `rulesmd.ini`:
 ```ini
@@ -1100,6 +1100,16 @@ ConvertN.AffectedHouses=all     ; list of Affected House Enumeration (none|owner
 Convert.From=                   ; list of TechnoTypes
 Convert.To=                     ; TechnoType
 Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+### Convert TechnoType on owner house change
+- You can now change a unit's type when changing ownership from human to computer or from computer to human.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]
+Convert.HumanToComputer =   ; TechnoType
+Convert.ComputerToHuman =   ; TechnoType 
 ```
 
 ### Custom 'SplashList' on Warheads

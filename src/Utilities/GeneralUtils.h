@@ -38,7 +38,7 @@ public:
 	static void DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset);
 
 	template<typename T>
-	static T FastPow(T x, size_t n)
+	static constexpr T FastPow(T x, size_t n)
 	{
 		// Real fast pow calc x^n in O(log(n))
 		T result = 1;
