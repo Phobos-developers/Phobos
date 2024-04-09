@@ -3,7 +3,7 @@
 #include "Commands.h"
 
 // Display damage strings
-class ToggleDigitalDisplayCommandClass : public PhobosCommandClass
+class ToggleDigitalDisplayCommandClass : public CommandClass
 {
 public:
 	virtual const char* GetName() const override;

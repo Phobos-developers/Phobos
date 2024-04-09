@@ -36,9 +36,6 @@ const wchar_t* ObjectInfoCommandClass::GetUIDescription() const
 
 void ObjectInfoCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
-		return;
-
 	char buffer[0x800] = { 0 };
 
 	auto append = [&buffer](const char* pFormat, ...)
