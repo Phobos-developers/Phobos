@@ -703,11 +703,13 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 
 	Matrix3D hvamat = hva->Matrixes[shadow_index_now + hva->LayerCount * ChooseFrame()];
 
+	// A nasty temporary backward compatibility option
+	if (hva->LayerCount > 1 || pType->Turret)
 	// TO TEST : Check if this is the proper Z offset to shift the sections to the same level
-	hvamat.TranslateZ(
-		-hvamat.GetZVal()
-		- pVXL->VXL->TailerData->Bounds[0].Z
-	);
+		hvamat.TranslateZ(
+			-hvamat.GetZVal()
+			- pVXL->VXL->TailerData->Bounds[0].Z
+		);
 
 	matRet = *pMat * hvamat;
 
