@@ -445,6 +445,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	}
 
 	auto mtx = Matrix3D::VoxelDefaultMatrix() * shadow_matrix;
+	if (pThis->GetHeight() > 0)
+		shadow_point.Y += 1;
 
 	if (uTypeExt->ShadowIndices.empty())
 	{
@@ -705,7 +707,7 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 
 	// A nasty temporary backward compatibility option
 	if (hva->LayerCount > 1 || pType->Turret)
-	// TO TEST : Check if this is the proper Z offset to shift the sections to the same level
+	// NEEDS IMPROVEMENT : Choose the proper Z offset to shift the sections to the same level
 		hvamat.TranslateZ(
 			-hvamat.GetZVal()
 			- pVXL->VXL->TailerData->Bounds[0].Z

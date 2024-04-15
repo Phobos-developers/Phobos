@@ -856,7 +856,6 @@ IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.K
 ### Voxel turret shadow
 
 - Vehicle voxel turrets can now draw shadows if `[AudioVisual]` -> `DrawTurretShadow` is set to true. This can be overridden per VehicleType by setting `TurretShadow` in the vehicle's `artmd.ini` section.
-  - If you don't want to render the body's shadow at all, set `ShadowIndex` to an invalid number.
 
 In `rulesmd.ini`:
 ```ini
