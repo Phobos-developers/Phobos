@@ -4,11 +4,6 @@
 
 #include <Ext/Anim/Body.h>
 
-namespace AnimDrawTemp
-{
-	BuildingClass* pParentBuilding = nullptr;
-}
-
 DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
@@ -161,23 +156,17 @@ DEFINE_HOOK(0x0423420, AnimClass_Draw_ParentBuildingCheck, 0x6)
 	GET(AnimClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EAX);
 
-	AnimDrawTemp::pParentBuilding = pBuilding;
-
 	if (!pBuilding)
-	{
-		auto const pExt = AnimExt::ExtMap.Find(pThis);
-		R->EAX(pExt->ParentBuilding);
-		AnimDrawTemp::pParentBuilding = pExt->ParentBuilding;
-	}
+		R->EAX(AnimExt::ExtMap.Find(pThis)->ParentBuilding);
 
 	return 0;
 }
 
-DEFINE_HOOK(0x423508, AnimClass_Draw_ForceShieldICColor, 0xB)
+DEFINE_HOOK(0x423519, AnimClass_Draw_ForceShieldICColor, 0x6)
 {
 	enum { SkipGameCode = 0x423525 };
 
-	auto const pBuilding = AnimDrawTemp::pParentBuilding;
+	GET(BuildingClass*, pBuilding, ECX);
 
 	RulesClass* rules = RulesClass::Instance;
 
@@ -193,14 +182,13 @@ DEFINE_HOOK(0x4235D3, AnimClass_Draw_TintColor, 0x6)
 	GET(int, color, EBP);
 	REF_STACK(int, intensity, STACK_OFFSET(0x110, -0xD8));
 
-	auto const pBuilding = AnimDrawTemp::pParentBuilding;
+	auto const pBuilding = AnimExt::ExtMap.Find(pThis)->ParentBuilding;
 
 	if (!pBuilding)
 		return 0;
 
 	int dummy = 0;
 	TechnoExt::ApplyCustomTintValues(pBuilding, color, !pThis->Type->UseNormalLight ? intensity : dummy);
-	AnimDrawTemp::pParentBuilding = nullptr;
 	R->EBP(color);
 
 	return 0;

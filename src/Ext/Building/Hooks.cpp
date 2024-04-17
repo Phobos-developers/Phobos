@@ -398,15 +398,10 @@ DEFINE_HOOK(0x4575A2, BuildingClass_Infiltrate_AfterAres, 0xE)
 DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
-	GET(AnimClass*, pAnim , EBP);
+	GET(AnimClass*, pAnim, EBP);
 
-	auto const pCell = MapClass::Instance->GetCellAt(pAnim->GetCenterCoords());
-
-	if (pCell && pCell->GetBuilding() != pThis)
-	{
-		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-		pAnimExt->ParentBuilding = pThis;
-	}
+	auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+	pAnimExt->ParentBuilding = pThis;
 
 	return 0;
 }

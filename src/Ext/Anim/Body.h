@@ -25,7 +25,7 @@ public:
 		TechnoClass* Invoker;
 		HouseClass* InvokerHouse;
 		ParticleSystemClass* AttachedSystem;
-		BuildingClass* ParentBuilding; // This is a failsafe that is only set if this is a building animation and the building is not on same cell as the animation.
+		BuildingClass* ParentBuilding; // Only set on building anims, used for tinting the anims etc. especially when not on same cell as building
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
