@@ -315,7 +315,7 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 
 bool AttachEffectClass::ResetIfRecreatable()
 {
-	if (!this->IsSelfOwned() && this->RecreationDelay < 0)
+	if (!this->IsSelfOwned() || this->RecreationDelay < 0)
 		return false;
 
 	this->KillAnim();
