@@ -26,6 +26,8 @@ public:
 		InterceptedStatus InterceptedStatus;
 		bool DetonateOnInterception;
 		std::vector<LaserTrailClass> LaserTrails;
+		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
+		int DamageNumberOffset;
 
 		PhobosTrajectory* Trajectory; // TODO: why not unique_ptr
 
@@ -38,6 +40,8 @@ public:
 			, DetonateOnInterception { true }
 			, LaserTrails {}
 			, Trajectory { nullptr }
+			, SnappedToTarget { false }
+			, DamageNumberOffset { INT32_MIN }
 		{ }
 
 		virtual ~ExtData() = default;

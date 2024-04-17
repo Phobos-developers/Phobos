@@ -45,6 +45,8 @@ public:
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
 		Valueable<bool> AltPalette_ApplyLighting;
 		Valueable<OwnerHouseKind> MakeInfantryOwner;
+		Valueable<bool> ExtraShadow;
+		NullableIdx<VocClass> DetachedReport;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -74,6 +76,8 @@ public:
 			, AttachedSystem {}
 			, AltPalette_ApplyLighting { false }
 			, MakeInfantryOwner { OwnerHouseKind::Victim }
+			, ExtraShadow { true }
+			, DetachedReport {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -99,5 +103,5 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static const void ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller = nullptr);
+	static void ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller = nullptr);
 };

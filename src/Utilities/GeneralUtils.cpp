@@ -2,6 +2,9 @@
 #include "Debug.h"
 #include <Theater.h>
 #include <ScenarioClass.h>
+#include <BitFont.h>
+
+#include <Misc/FlyingStrings.h>
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -160,4 +163,55 @@ int GeneralUtils::CountDigitsInNumber(int number)
 	}
 
 	return digits;
+}
+
+// Calculates a new coordinates based on current & target coordinates within specified distance (can be negative to switch the direction) in leptons.
+CoordStruct GeneralUtils::CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance)
+{
+	int deltaX = currentCoords.X - targetCoords.X;
+	int deltaY = targetCoords.Y - currentCoords.Y;
+
+	double atan = Math::atan2(deltaY, deltaX);
+	double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
+	int x = static_cast<int>(targetCoords.X + Math::cos(radians) * distance);
+	int y = static_cast<int>(targetCoords.Y - Math::sin(radians) * distance);
+
+	return CoordStruct { x, y, targetCoords.Z };
+}
+
+void GeneralUtils::DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset)
+{
+	if (damage == 0)
+		return;
+
+	ColorStruct color;
+
+	switch (type)
+	{
+	case DamageDisplayType::Regular:
+		color = damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+		break;
+	case DamageDisplayType::Shield:
+		color = damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 };
+		break;
+	case DamageDisplayType::Intercept:
+		color = damage > 0 ? ColorStruct { 255, 128, 128 } : ColorStruct { 128, 255, 128 };
+		break;
+	default:
+		break;
+	}
+
+	int maxOffset = Unsorted::CellWidthInPixels / 2;
+	int width = 0, height = 0;
+	wchar_t damageStr[0x20];
+	swprintf_s(damageStr, L"%d", damage);
+
+	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
+
+	if (offset >= maxOffset || offset == INT32_MIN)
+		offset = -maxOffset;
+
+	FlyingStrings::Add(damageStr, coords, color, Point2D { offset - (width / 2), 0 });
+
+	offset = offset + width;
 }

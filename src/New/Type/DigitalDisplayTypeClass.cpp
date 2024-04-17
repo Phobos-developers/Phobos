@@ -7,8 +7,7 @@
 
 #include <Ext/Techno/Body.h>
 
-Enumerable<DigitalDisplayTypeClass>::container_t Enumerable<DigitalDisplayTypeClass>::Array;
-
+template<>
 const char* Enumerable<DigitalDisplayTypeClass>::GetMainSection()
 {
 	return "DigitalDisplayTypes";
@@ -91,6 +90,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 	COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
 	RectangleStruct rect = { 0, 0, 0, 0 };
 	DSurface::Composite->GetRect(&rect);
+	rect.Height -= 32; // account for bottom bar
 	const int textHeight = 12;
 	const int pipsHeight = hasShield ? 4 : 0;
 
@@ -137,8 +137,8 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 	}
 	case TextAlign::Center:
 	{
-		position.X -= valueString.length() * spacing.X / 2;
-		position.Y += valueString.length() * spacing.Y / 2;
+		position.X -= static_cast<int>(valueString.length()) * spacing.X / 2;
+		position.Y += static_cast<int>(valueString.length()) * spacing.Y / 2;
 		break;
 	}
 	case TextAlign::Right:
@@ -186,6 +186,8 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 	);
 
 	RectangleStruct rect = DSurface::Composite->GetRect();
+	rect.Height -= 32; // account for bottom bar
+
 	ShapeTextPrinter::PrintShape(valueString.c_str(), shapeTextPrintData, position, rect, DSurface::Composite);
 }
 

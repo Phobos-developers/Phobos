@@ -24,10 +24,16 @@ public:
 	class ExtData final : public Extension<ScenarioClass>
 	{
 	public:
+
+		bool ShowBriefing;
+		int BriefingTheme;
+
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
+			, ShowBriefing { false }
+			, BriefingTheme { -1 }
 			, Waypoints { }
 			, Variables { }
 		{ }
@@ -35,6 +41,7 @@ public:
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
 		void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
 		void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
+		static void SaveVariablesToFile(bool isGlobal);
 
 		virtual ~ExtData() = default;
 

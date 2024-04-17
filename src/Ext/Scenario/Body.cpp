@@ -59,6 +59,25 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 	}
 }
 
+void ScenarioExt::ExtData::SaveVariablesToFile(bool isGlobal)
+{
+	const auto fileName = isGlobal ? "globals.ini" : "locals.ini";
+	auto pINI = GameCreate<CCINIClass>();
+	auto pFile = GameCreate<CCFileClass>(fileName);
+
+	if (pFile->Exists())
+		pINI->ReadCCFile(pFile);
+	else
+		pFile->CreateFileA();
+
+	const auto& variables = Global()->Variables[isGlobal];
+	for (const auto& variable : variables)
+		pINI->WriteInteger(ScenarioClass::Instance()->FileName, variable.second.Name, variable.second.Value, false);
+
+	pINI->WriteCCFile(pFile);
+	pFile->Close();
+}
+
 void ScenarioExt::Allocate(ScenarioClass* pThis)
 {
 	Data = std::make_unique<ScenarioExt::ExtData>(pThis);
@@ -79,7 +98,7 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 
 void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
-	// auto pThis = this->OwnerObject();
+	auto pThis = this->OwnerObject();
 
 	INI_EX exINI(pINI);
 
@@ -88,8 +107,24 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		Nullable<bool> SP_MCVRedeploy;
 		SP_MCVRedeploy.Read(exINI, GameStrings::Basic, GameStrings::MCVRedeploys);
 		GameModeOptionsClass::Instance->MCVRedeploy = SP_MCVRedeploy.Get(false);
-	}
 
+		CCINIClass* pINI_MISSIONMD = CCINIClass::LoadINIFile(GameStrings::MISSIONMD_INI);
+		auto const scenarioName = pThis->FileName;
+
+		// Override rankings
+		pThis->ParTimeEasy = pINI_MISSIONMD->ReadTime(scenarioName, "Ranking.ParTimeEasy", pThis->ParTimeEasy);
+		pThis->ParTimeMedium = pINI_MISSIONMD->ReadTime(scenarioName, "Ranking.ParTimeMedium", pThis->ParTimeMedium);
+		pThis->ParTimeDifficult = pINI_MISSIONMD->ReadTime(scenarioName, "Ranking.ParTimeHard", pThis->ParTimeDifficult);
+		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.UnderParTitle", pThis->UnderParTitle, pThis->UnderParTitle);
+		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.UnderParMessage", pThis->UnderParMessage, pThis->UnderParMessage);
+		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.OverParTitle", pThis->OverParTitle, pThis->OverParTitle);
+		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.OverParMessage", pThis->OverParMessage, pThis->OverParMessage);
+
+		this->ShowBriefing = pINI_MISSIONMD->ReadBool(scenarioName, "ShowBriefing", pINI->ReadBool(GameStrings::Basic,"ShowBriefing", this->ShowBriefing));
+		this->BriefingTheme = pINI_MISSIONMD->ReadTheme(scenarioName, "BriefingTheme", pINI->ReadTheme(GameStrings::Basic, "BriefingTheme", this->BriefingTheme));
+
+		CCINIClass::UnloadINIFile(pINI_MISSIONMD);
+	}
 }
 
 template <typename T>
@@ -100,6 +135,8 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->Variables[0])
 		.Process(this->Variables[1])
 		.Process(SessionClass::Instance->Config)
+		.Process(this->ShowBriefing)
+		.Process(this->BriefingTheme)
 		;
 }
 

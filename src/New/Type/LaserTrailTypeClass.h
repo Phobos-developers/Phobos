@@ -14,6 +14,7 @@ public:
 	Valueable<bool> IgnoreVertical;
 	Valueable<bool> IsIntense;
 	Valueable<bool> CloakVisible;
+	Valueable<bool> DroppodOnly;
 
 	LaserTrailTypeClass(const char* pTitle = NONE_STR) : Enumerable<LaserTrailTypeClass>(pTitle)
 		, IsHouseColor { false }
@@ -24,13 +25,14 @@ public:
 		, IgnoreVertical { false }
 		, IsIntense { false }
 		, CloakVisible { false }
+		, DroppodOnly { false }
 	{ }
 
 	virtual ~LaserTrailTypeClass() override = default;
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm);
-	virtual void SaveToStream(PhobosStreamWriter& Stm);
+	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 private:
 	template <typename T>

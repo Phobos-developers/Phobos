@@ -33,7 +33,7 @@ public:
 		int LastWarpDistance;
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
-		OptionalStruct<int, false> DamageNumberOffset;
+		int DamageNumberOffset;
 		bool IsInTunnel;
 		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 		CDTimerClass DeployFireTimer;
@@ -58,7 +58,7 @@ public:
 			, LastWarpDistance {}
 			, AutoDeathTimer {}
 			, MindControlRingAnimType { nullptr }
-			, DamageNumberOffset {}
+			, DamageNumberOffset { INT32_MIN }
 			, OriginalPassengerOwner {}
 			, IsInTunnel { false }
 			, HasBeenPlacedOnMap { false }
@@ -68,6 +68,8 @@ public:
 			, ParentAttachment {}
 			, ChildAttachments {}
 		{ }
+
+		void OnEarlyUpdate();
 
 		void ApplyInterceptor();
 		bool CheckDeathConditions(bool isInLimbo = false);
@@ -165,7 +167,6 @@ public:
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
-	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);

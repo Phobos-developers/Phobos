@@ -1,6 +1,8 @@
 #include "Body.h"
-#include "../Techno/Body.h"
-#include "../Building/Body.h"
+
+#include <Ext/Aircraft/Body.h>
+#include "Ext/Techno/Body.h"
+#include "Ext/Building/Body.h"
 #include <unordered_map>
 
 DEFINE_HOOK(0x4F8440, HouseClass_Update_Beginning, 0x5)
@@ -10,6 +12,7 @@ DEFINE_HOOK(0x4F8440, HouseClass_Update_Beginning, 0x5)
 	auto pExt = HouseExt::ExtMap.Find(pThis);
 
 	pExt->UpdateAutoDeathObjectsInLimbo();
+	pExt->UpdateTransportReloaders();
 
 	return 0;
 }
@@ -58,11 +61,6 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 	REF_STACK(float, amount, 0x1C);
 
 	auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-	if (!pTypeExt)
-		return 0;
-
-	if (!pBuilding->Owner)
-		return 0;
 
 	auto storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
 
@@ -182,6 +180,12 @@ DEFINE_HOOK(0x6F6D85, TechnoClass_Unlimbo_RemoveTracking, 0x6)
 	else if (!pExt->HasBeenPlacedOnMap)
 	{
 		pExt->HasBeenPlacedOnMap = true;
+
+		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+		{
+			auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
+			pOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+		}
 	}
 
 	return 0;
@@ -210,7 +214,50 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
 	}
 
+	if (pThis->Transporter && pThis->WhatAmI() != AbstractType::Aircraft
+		&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
+	{
+		auto& vec = pOwnerExt->OwnedTransportReloaders;
+		vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
+		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+	}
+
+	if (auto pMe = generic_cast<FootClass*>(pThis))
+	{
+		bool I_am_human = pThis->Owner->IsControlledByHuman();
+		bool You_are_human = pNewOwner->IsControlledByHuman();
+		auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
+			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_ComputerToHuman.Get() : nullptr;
+
+		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
+			TechnoExt::ConvertToType(pMe, pConvertTo);
+	}
+
 	return 0;
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x65EB8D, HouseClass_SendSpyPlanes_PlaceAircraft, 0x6)
+{
+	enum { SkipGameCode = 0x65EBE5, SkipGameCodeNoSuccess = 0x65EC12 };
+
+	GET(AircraftClass* const, pAircraft, ESI);
+	GET(CellStruct const, edgeCell, EDI);
+
+	bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
+
+	return result ? SkipGameCode : SkipGameCodeNoSuccess;
+}
+
+DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
+{
+	enum { SkipGameCode = 0x65E9EE, SkipGameCodeNoSuccess = 0x65EA8B };
+
+	GET(AircraftClass* const, pAircraft, ESI);
+	GET(CellStruct const, edgeCell, EDI);
+
+	bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
+
+	return result ? SkipGameCode : SkipGameCodeNoSuccess;
+}

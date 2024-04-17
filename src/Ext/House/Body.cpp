@@ -205,7 +205,8 @@ bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass* pBuilding)
 	if (!pBuilding)
 		return false;
 
-	return this->OwnedLimboDeliveredBuildings.count(pBuilding);
+	auto& vec = this->OwnedLimboDeliveredBuildings;
+	return std::find(vec.begin(), vec.end(), pBuilding) != vec.end();
 }
 
 size_t HouseExt::FindOwnedIndex(
@@ -229,7 +230,7 @@ bool HouseExt::IsDisabledFromShell(
 	HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
 {
 	// SWAllowed does not apply to campaigns any more
-	if (SessionClass::Instance->GameMode == GameMode::Campaign
+	if (SessionClass::IsCampaign()
 		|| GameModeOptionsClass::Instance->SWAllowed)
 	{
 		return false;
@@ -305,9 +306,9 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	if (!pTargetHouse || !pCurrentHouse)
 		return nullptr;
 
-	auto targetBaseCoords = CellClass::Cell2Coord(pTargetHouse->GetBaseCenter());
+	auto targetCoords = CellClass::Cell2Coord(pTargetHouse->GetBaseCenter());
 
-	if (targetBaseCoords == CoordStruct::Empty)
+	if (targetCoords == CoordStruct::Empty)
 		return nullptr;
 
 	auto currentCoords = CellClass::Cell2Coord(pCurrentHouse->GetBaseCenter());
@@ -315,16 +316,9 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	if (currentCoords == CoordStruct::Empty)
 		currentCoords = defaultCurrentCoords;
 
-	int deltaX = currentCoords.X - targetBaseCoords.X;
-	int deltaY = targetBaseCoords.Y - currentCoords.Y;
 	int distance = (RulesClass::Instance->AISafeDistance + extraDistance) * Unsorted::LeptonsPerCell;
+	auto newCoords = GeneralUtils::CalculateCoordsFromDistance(currentCoords, targetCoords, distance);
 
-	double atan = Math::atan2(deltaY, deltaX);
-	double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
-	int x = static_cast<int>(targetBaseCoords.X + Math::cos(radians) * distance);
-	int y = static_cast<int>(targetBaseCoords.Y - Math::sin(radians) * distance);
-
-	auto newCoords = CoordStruct { x, y, targetBaseCoords.Z };
 	auto cellStruct = CellClass::Coord2Cell(newCoords);
 	cellStruct = MapClass::Instance->NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
 
@@ -394,6 +388,17 @@ void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
 
 		if (!pTechno->IsInLogic && pTechno->IsAlive)
 			pExt->CheckDeathConditions(true);
+	}
+}
+
+void HouseExt::ExtData::UpdateTransportReloaders()
+{
+	for (auto const pExt : this->OwnedTransportReloaders)
+	{
+		auto const pTechno = pExt->OwnerObject();
+
+		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
+			pTechno->Reload();
 	}
 }
 
@@ -502,6 +507,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerPlantEnhancers)
 		.Process(this->OwnedLimboDeliveredBuildings)
 		.Process(this->OwnedAutoDeathObjects)
+		.Process(this->OwnedTransportReloaders)
 		.Process(this->LimboAircraft)
 		.Process(this->LimboBuildings)
 		.Process(this->LimboInfantry)
@@ -550,7 +556,10 @@ void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 	AnnounceInvalidPointer(Factory_AircraftType, ptr);
 
 	if (!OwnedLimboDeliveredBuildings.empty() && ptr != nullptr)
-		OwnedLimboDeliveredBuildings.erase(reinterpret_cast<BuildingClass*>(ptr));
+	{
+		auto& vec = this->OwnedLimboDeliveredBuildings;
+		vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+	}
 }
 
 // =============================

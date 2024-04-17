@@ -40,7 +40,7 @@ CoordStruct TestLocomotionClass::Head_To_Coord()
 
 Move TestLocomotionClass::Can_Enter_Cell(CellStruct cell)
 {
-	return LinkedTo->IsCellOccupied(MapClass::Instance->GetCellAt(cell), -1, -1, nullptr, false);
+	return LinkedTo->IsCellOccupied(MapClass::Instance->GetCellAt(cell), FacingType::None, -1, nullptr, false);
 }
 
 bool TestLocomotionClass::Process()
