@@ -14,6 +14,8 @@
 #include <JumpjetLocomotionClass.h>
 #include <BombClass.h>
 #include <WarheadTypeClass.h>
+#include <EventClass.h>
+
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>

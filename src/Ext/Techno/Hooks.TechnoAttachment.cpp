@@ -337,6 +337,39 @@ DEFINE_HOOK(0x4495F7, BuildingClass_ClearFactoryBib_SkipCreatedUnitAttachments, 
 	return NotClear;
 }
 
+// original code doesn't account for multiple possible technos on the cell
+DEFINE_HOOK(0x73A5EA, UnitClass_PerCellProcess_EntryLoopTechnos, 0x0)
+{
+	enum { SkipEntry = 0x73A7D2, TryEnterTarget = 0x73A6D1 };
+
+	GET(UnitClass*, pThis, EBP);
+
+	if (pThis->GetCurrentMission() != Mission::Enter)
+		return SkipEntry;
+
+	CellClass* pCell = pThis->GetCell();
+	ObjectClass*& pFirst = pThis->OnBridge
+		? pCell->AltObject : pCell->FirstObject;
+
+	for (ObjectClass* pObject = pFirst; pObject; pObject = pObject->NextObject)
+	{
+		auto pEntryTarget = abstract_cast<TechnoClass*>(pObject);
+
+		if (pEntryTarget
+			&& pEntryTarget != pThis
+			&& pEntryTarget->GetMapCoords() == pThis->GetMapCoords()
+			&& pThis->ContainsLink(pEntryTarget)
+			&& pEntryTarget->GetTechnoType()->Passengers > 0)
+		{
+			R->ESI<TechnoClass*>(pEntryTarget);
+			return TryEnterTarget;
+		}
+	}
+
+	return SkipEntry;
+}
+
+
 #pragma endregion
 
 #pragma region InAir/OnGround
