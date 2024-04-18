@@ -64,7 +64,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		// Normally on unlimbo the buildings are revealed to current player if unshrouded or if game is a campaign and to non-player houses always.
 		// Because of the unique nature of LimboDelivered buildings, this has been adjusted to always reveal to the current player in singleplayer
 		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist - Starkku
-		if (SessionClass::Instance->GameMode == GameMode::Campaign)
+		if (SessionClass::IsCampaign())
 			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
 
 		pBuilding->DiscoveredBy(pOwner);
@@ -89,13 +89,8 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 			pOwner->CalculateCostMultipliers();
 		}
 
-		if (pType->OrePurifier)
-			pOwner->NumOrePurifiers++;
-
-		// BuildingClass::Place is where Ares hooks secret lab expansion
-		// pTechnoBuilding->Place(false);
-		// even with it no bueno yet, plus new issues
-		// probably should just port it from Ares 0.A and be done
+		// BuildingClass::Place is already called in DiscoveredBy
+		// it added OrePurifier and xxxGainSelfHeal to House counter already
 
 		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
 
@@ -126,42 +121,15 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 
 inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
 {
-	BuildingTypeClass* pType = pBuilding->Type;
-
 	auto pOwnerExt = HouseExt::ExtMap.Find(pTargetHouse);
 
 	// Remove building from list of owned limbo buildings
 	auto& vec = pOwnerExt->OwnedLimboDeliveredBuildings;
 	vec.erase(std::remove(vec.begin(), vec.end(), pBuilding), vec.end());
 
-	// Mandatory
-	pBuilding->InLimbo = true;
-	pBuilding->IsAlive = false;
-	pBuilding->IsOnMap = false;
-	pTargetHouse->RegisterLoss(pBuilding, false);
-	pTargetHouse->UpdatePower();
-	pTargetHouse->RecheckTechTree = true;
-	pTargetHouse->RecheckPower = true;
-	pTargetHouse->RecheckRadar = true;
-	pTargetHouse->Buildings.Remove(pBuilding);
-
-	// Building logics
-	if (pType->ConstructionYard)
-		pTargetHouse->ConYards.Remove(pBuilding);
-
-	if (pType->SecretLab)
-		pTargetHouse->SecretLabs.Remove(pBuilding);
-
-	if (pType->FactoryPlant)
-	{
-		pTargetHouse->FactoryPlants.Remove(pBuilding);
-		pTargetHouse->CalculateCostMultipliers();
-	}
-
-	if (pType->OrePurifier)
-		pTargetHouse->NumOrePurifiers--;
-
-	// Remove completely
+	pBuilding->Stun();
+	pBuilding->Limbo();
+	pBuilding->RegisterDestruction(nullptr);
 	pBuilding->UnInit();
 }
 
@@ -271,7 +239,7 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 		{
 			const auto pNextTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 			if (!this->SW_Next_RealLaunch ||
-				(pSuper->Granted && pSuper->IsCharged && !pSuper->IsOnHold && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
+				(pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
 			{
 				if (this->SW_Next_IgnoreInhibitors || !pNextTypeExt->HasInhibitor(pHouse, cell)
 					&& (this->SW_Next_IgnoreDesignators || pNextTypeExt->HasDesignator(pHouse, cell)))
@@ -279,7 +247,7 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 					int oldstart = pSuper->RechargeTimer.StartTime;
 					int oldleft = pSuper->RechargeTimer.TimeLeft;
 					pSuper->SetReadiness(true);
-					pSuper->Launch(cell, true);
+					pSuper->Launch(cell, pHouse->IsCurrentPlayer());
 					pSuper->Reset();
 					if (!this->SW_Next_RealLaunch)
 					{
@@ -312,5 +280,5 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 		return;
 
 	for (const auto pTargetFoot : *FootClass::Array)
-		TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
+		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }

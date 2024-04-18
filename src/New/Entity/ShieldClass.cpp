@@ -146,18 +146,31 @@ bool ShieldClass::ShieldIsBrokenTEvent(ObjectClass* pAttached)
 
 int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 {
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-
-	if (!this->HP || this->Temporal || *args->Damage == 0 ||
-		this->Techno->IsIronCurtained() || CanBePenetrated(pWHExt->OwnerObject()) ||
-		this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
-	{
+	if (!this->HP || this->Temporal || *args->Damage == 0)
 		return *args->Damage;
+
+	// Handle a special case where parasite damages shield but not the unit and unit itself cannot be targeted by repair weapons.
+	if (*args->Damage < 0)
+	{
+		if (auto const pFoot = abstract_cast<FootClass*>(this->Techno))
+		{
+			if (auto const pParasite = pFoot->ParasiteEatingMe)
+			{
+				// Remove parasite.
+				pParasite->ParasiteImUsing->SuppressionTimer.Start(50);
+				pParasite->ParasiteImUsing->ExitUnit();
+			}
+		}
 	}
+
+	if (this->Techno->IsIronCurtained() || CanBePenetrated(args->WH) || this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
+		return *args->Damage;
 
 	int nDamage = 0;
 	int shieldDamage = 0;
 	int healthDamage = 0;
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	if (pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
 	{
@@ -181,7 +194,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum));
 
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
-		TechnoExt::DisplayDamageNumberString(this->Techno, shieldDamage, true);
+		GeneralUtils::DisplayDamageNumberString(shieldDamage, DamageDisplayType::Shield, this->Techno->GetRenderCoords(), TechnoExt::ExtMap.Find(this->Techno)->DamageNumberOffset);
 
 	if (shieldDamage > 0)
 	{
@@ -774,17 +787,17 @@ void ShieldClass::DrawShieldBar(int length, Point2D* pLocation, RectangleStruct*
 
 bool ShieldClass::IsGreenSP()
 {
-	return RulesClass::Instance->ConditionYellow * Type->Strength.Get() < HP;
+	return this->Type->GetConditionYellow() * this->Type->Strength.Get() < this->HP;
 }
 
 bool ShieldClass::IsYellowSP()
 {
-	return RulesClass::Instance->ConditionRed * Type->Strength.Get() < HP && HP <= RulesClass::Instance->ConditionYellow * Type->Strength.Get();
+	return this->Type->GetConditionRed() * this->Type->Strength.Get() < this->HP && this->HP <= this->Type->GetConditionYellow() * this->Type->Strength.Get();
 }
 
 bool ShieldClass::IsRedSP()
 {
-	return HP <= RulesClass::Instance->ConditionRed * Type->Strength.Get();
+	return this->HP <= this->Type->GetConditionYellow() * this->Type->Strength.Get();
 }
 
 void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, RectangleStruct* pBound)
@@ -877,9 +890,9 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 	else
 		shieldPip = pipsGlobal;
 
-	if (this->HP > RulesClass::Instance->ConditionYellow * strength && shieldPip.X != -1)
+	if (this->HP > this->Type->GetConditionYellow() * strength && shieldPip.X != -1)
 		return shieldPip.X;
-	else if (this->HP > RulesClass::Instance->ConditionRed * strength && (shieldPip.Y != -1 || shieldPip.X != -1))
+	else if (this->HP > this->Type->GetConditionRed() * strength && (shieldPip.Y != -1 || shieldPip.X != -1))
 		return shieldPip.Y == -1 ? shieldPip.X : shieldPip.Y;
 	else if (shieldPip.Z != -1 || shieldPip.X != -1)
 		return shieldPip.Z == -1 ? shieldPip.X : shieldPip.Z;

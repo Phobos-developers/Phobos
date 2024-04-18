@@ -6,7 +6,7 @@
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <Ext/Bullet/Body.h>
-#include <Misc/TypeConvertHelper.h>
+#include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class WarheadTypeExt
 {

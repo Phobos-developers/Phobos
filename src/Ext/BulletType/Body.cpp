@@ -35,7 +35,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Armor.Read(exINI, pSection, "Armor");
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
 	this->Interceptable_DeleteOnIntercept.Read(exINI, pSection, "Interceptable.DeleteOnIntercept");
-	this->Interceptable_WeaponOverride.Read(exINI, pSection, "Interceptable.WeaponOverride", true);
+	this->Interceptable_WeaponOverride.Read<true>(exINI, pSection, "Interceptable.WeaponOverride");
 	this->Gravity.Read(exINI, pSection, "Gravity");
 
 	PhobosTrajectoryType::CreateType(this->TrajectoryType, pINI, pSection, "Trajectory");
@@ -51,6 +51,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SubjectToWater_Detonate.Read(exINI, pSection, "SubjectToWater.Detonate");
 	this->AAOnly.Read(exINI, pSection, "AAOnly");
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, pSection, "Arcing.AllowElevationInaccuracy");
+	this->ReturnWeapon.Read<true>(exINI, pSection, "ReturnWeapon");
 
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
@@ -62,6 +63,42 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		pSection = pThis->ImageFile;
 
 	this->LaserTrail_Types.Read(exArtINI, pSection, "LaserTrail.Types");
+
+	this->TrajectoryValidation();
+}
+
+void BulletTypeExt::ExtData::TrajectoryValidation() const
+{
+	auto pThis = this->OwnerObject();
+	const char* pSection = pThis->ID;
+
+	// Trajectory validation combined with other projectile behaviour.
+	if (this->TrajectoryType)
+	{
+		if (pThis->Arcing)
+		{
+			Debug::Log("[Developer warning] [%s] has Trajectory set together with Arcing. Arcing has been set to false.\n", pSection);
+			pThis->Arcing = false;
+		}
+
+		if (pThis->Inviso)
+		{
+			Debug::Log("[Developer warning] [%s] has Trajectory set together with Inviso. Inviso has been set to false.\n", pSection);
+			pThis->Inviso = false;
+		}
+
+		if (pThis->ROT)
+		{
+			Debug::Log("[Developer warning] [%s] has Trajectory set together with ROT value other than 0. ROT has been set to 0.\n", pSection);
+			pThis->ROT = 0;
+		}
+
+		if (pThis->Vertical)
+		{
+			Debug::Log("[Developer warning] [%s] has Trajectory set together with Vertical. Vertical has been set to false.\n", pSection);
+			pThis->Vertical = false;
+		}
+	}
 }
 
 template <typename T>
@@ -87,6 +124,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SubjectToWater_Detonate)
 		.Process(this->AAOnly)
 		.Process(this->Arcing_AllowElevationInaccuracy)
+		.Process(this->ReturnWeapon)
 		;
 
 	this->TrajectoryType = PhobosTrajectoryType::ProcessFromStream(Stm, this->TrajectoryType);

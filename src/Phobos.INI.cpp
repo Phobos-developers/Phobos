@@ -22,6 +22,8 @@ const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::PowerBlackoutLabel = L"";
 const wchar_t* Phobos::UI::TimeLabel = L"";
 const wchar_t* Phobos::UI::HarvesterLabel = L"";
+const wchar_t* Phobos::UI::ShowBriefingResumeButtonLabel = L"";
+char Phobos::UI::ShowBriefingResumeButtonStatusLabel[32];
 bool Phobos::UI::ShowPowerDelta = false;
 double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
@@ -40,6 +42,8 @@ int Phobos::Config::CampaignDefaultGameSpeed = 2;
 bool Phobos::Config::SkirmishUnlimitedColors = false;
 bool Phobos::Config::ShowDesignatorRange = false;
 bool Phobos::Config::SaveVariablesOnScenarioEnd = false;
+bool Phobos::Config::SaveGameOnScenarioStart = true;
+bool Phobos::Config::ShowBriefing = true;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -55,6 +59,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::RealTimeTimers = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers", false);
 	Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers.Adaptive", false);
 	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD->ReadBool("Phobos", "DigitalDisplay.Enable", false);
+	Phobos::Config::SaveGameOnScenarioStart = CCINIClass::INI_RA2MD->ReadBool("Phobos", "SaveGameOnScenarioStart", true);
+	Phobos::Config::ShowBriefing = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBriefing", true);
 
 	CCINIClass* pINI_UIMD = CCINIClass::LoadINIFile(GameStrings::UIMD_INI);
 
@@ -115,6 +121,15 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "CenterPauseMenuBackground", Phobos::UI::CenterPauseMenuBackground);
 	}
 
+	// UISettings
+	{
+		pINI_UIMD->ReadString(UISETTINGS_SECTION, "ShowBriefingResumeButtonLabel", "GUI:Resume", Phobos::readBuffer);
+		Phobos::UI::ShowBriefingResumeButtonLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"");
+
+		pINI_UIMD->ReadString(UISETTINGS_SECTION, "ShowBriefingResumeButtonStatusLabel", "STT:BriefingButtonReturn", Phobos::readBuffer);
+		strcpy_s(Phobos::UI::ShowBriefingResumeButtonStatusLabel, Phobos::readBuffer);
+	}
+
 	CCINIClass::UnloadINIFile(pINI_UIMD);
 
 	CCINIClass* pINI_RULESMD = CCINIClass::LoadINIFile(GameStrings::RULESMD_INI);
@@ -163,20 +178,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		BlittersFix::Apply();
 
 	Phobos::Config::SkirmishUnlimitedColors = pINI_RULESMD->ReadBool(GameStrings::General, "SkirmishUnlimitedColors", false);
+	// Disable Ares hook at this address so that our logic can run.
 	if (Phobos::Config::SkirmishUnlimitedColors)
-	{
-		// Game_GetLinkedColor converts vanilla dropdown color index into color scheme index ([Colors] from rules)
-		// What we want to do is to restore vanilla from Ares hook, and immediately return arg
-		// So if spawner feeds us a number, it will be used to look up color scheme directly
-		Patch::Apply_RAW(0x69A310,
-			{
-				0x8B, 0x44, 0x24, 0x04, // mov eax, [esp+4]
-				0xD1, 0xE0,             // shl eax, 1
-				0x40,                   // inc eax
-				0xC2, 0x04, 0x00        // retn 4
-			}
-		);
-	}
+		Patch::Apply_RAW(0x69A310, { 0x8B, 0x44, 0x24, 0x04, 0xD1, 0xE0, 0x40 });
 
 	Phobos::Config::SaveVariablesOnScenarioEnd = pINI_RULESMD->ReadBool(GameStrings::General, "SaveVariablesOnScenarioEnd", false);
 
@@ -185,13 +189,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
+DEFINE_HOOK(0x55DBF5, MainLoop_SaveGame, 0xA)
 {
-#ifndef DEBUG
-	GET(CCINIClass*, rulesINI, EDI);
-
-	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
-#endif
-
-	return 0;
+	return Phobos::Config::SaveGameOnScenarioStart ? 0 : 0x55DC99;
 }
