@@ -145,6 +145,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed railgun and fire particles being cut off by elevation changes.
 - Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
 - Fixed teleport units being unable to visually tilt on slopes.
+- Fixed rockets' shadow location.
 - Fixed units with Teleport, Tunnel or Fly locomotor being unable to be visually flipped like other locomotors do.
 - Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
 - Spawned aircraft now align with the spawner's facing when landing.
