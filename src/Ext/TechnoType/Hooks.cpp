@@ -18,6 +18,7 @@
 #include <Utilities/AresHelper.h>
 #include <JumpjetLocomotionClass.h>
 #include <FlyLocomotionClass.h>
+#include <RocketLocomotionClass.h>
 
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
@@ -349,7 +350,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	GET(UnitClass*, pThis, EBP);
 	enum { SkipDrawing = 0x73C5C9 };
 	auto const loco = pThis->Locomotor.GetInterfacePtr();
-	if (!loco->Is_To_Have_Shadow())
+	if (pThis->Type->NoShadow || !loco->Is_To_Have_Shadow())
 		return SkipDrawing;
 
 	REF_STACK(Matrix3D, shadow_matrix, STACK_OFFSET(0x1C4, -0x130));
@@ -445,6 +446,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	}
 
 	auto mtx = Matrix3D::VoxelDefaultMatrix() * shadow_matrix;
+	if (height > 0)
+		shadow_point.Y += 1;
 
 	if (uTypeExt->ShadowIndices.empty())
 	{
@@ -568,45 +571,55 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	GET(AircraftClass*, pThis, EBP);
 	GET(const int, height, EBX);
 	REF_STACK(VoxelIndexKey, key, STACK_OFFSET(0xCC, -0xBC));
-	REF_STACK(Point2D, flor, STACK_OFFSET(0xCC, -0xAC));
+	GET_STACK(Point2D, flor, STACK_OFFSET(0xCC, -0xAC));
 	GET_STACK(RectangleStruct*, bound, STACK_OFFSET(0xCC, 0x10));
 	enum { FinishDrawing = 0x4148A5 };
 
-	const auto loco = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor);
-	if (!loco || !loco->Is_To_Have_Shadow() || pThis->IsSinking)
+	const auto loco = pThis->Locomotor.GetInterfacePtr();
+	if (pThis->Type->NoShadow || !loco->Is_To_Have_Shadow() || pThis->IsSinking)
 		return FinishDrawing;
 
-	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
-	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
+	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-	if (RulesExt::Global()->HeightShadowScaling)
+	if (auto const flyLoco = locomotion_cast<FlyLocomotionClass*>(loco))
 	{
-		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
-		const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(loco->FlightLevel);
+		const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
 
-		if (cHeight > 0)
+		if (RulesExt::Global()->HeightShadowScaling)
 		{
-			shadow_mtx.Scale((float)std::max(Pade2_2(baseScale_log* height / cHeight), minScale));
-			key = std::bit_cast<VoxelIndexKey>(-1); // I'm sorry
+			const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
+			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(flyLoco->FlightLevel);
+
+			if (cHeight > 0)
+			{
+				shadow_mtx.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
+				key = std::bit_cast<VoxelIndexKey>(-1); // I'm sorry
+			}
+		}
+		else if (pThis->Type->ConsideredAircraft)
+		{
+			shadow_mtx.Scale((float)Pade2_2(baseScale_log));
+		}
+
+		if (pThis->IsCrashing)
+		{
+			double arf = pThis->AngleRotatedForwards;
+			if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
+				arf += pThis->Type->PitchAngle;
+			shadow_mtx.ScaleY((float)Math::cos(pThis->AngleRotatedSideways));
+			shadow_mtx.ScaleX((float)Math::cos(arf));
 		}
 	}
-	else if (pThis->Type->ConsideredAircraft)
+	else if (height > 0)
 	{
-		shadow_mtx.Scale((float)Pade2_2(baseScale_log));
-	}
-
-	if (pThis->IsCrashing)
-	{
-		double arf = pThis->AngleRotatedForwards;
-		if (loco->CurrentSpeed > pThis->Type->PitchSpeed)
-			arf += pThis->Type->PitchAngle;
-		shadow_mtx.ScaleY((float)Math::cos(pThis->AngleRotatedSideways));
-		shadow_mtx.ScaleX((float)Math::cos(arf));
+		// You must be Rocket, otherwise GO FUCK YOURSELF
+		shadow_mtx.ScaleX((float)Math::cos(static_cast<RocketLocomotionClass*>(loco)->CurrentPitch));
+		key = std::bit_cast<VoxelIndexKey>(-1);
 	}
 
 	shadow_mtx = Matrix3D::VoxelDefaultMatrix() * shadow_mtx;
-	Point2D why = flor + loco->Shadow_Point();
+
 	auto const main_vxl = &pThis->Type->MainVoxel;
 
 	if (aTypeExt->ShadowIndices.empty())
@@ -618,7 +631,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 				key,
 				&pThis->Type->VoxelShadowCache,
 				bound,
-				&why,
+				&flor,
 				&shadow_mtx,
 				true,
 				nullptr,
@@ -633,7 +646,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 				key,
 				&pThis->Type->VoxelShadowCache,
 				bound,
-				&why,
+				&flor,
 				&shadow_mtx,
 				true,
 				nullptr,
@@ -643,6 +656,10 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 
 	return FinishDrawing;
 }
+
+// Shadow_Point of RocketLoco was forgotten to be set to {0,0}. It was an oversight.
+// Anyway we don't need to call it from Fly or Rocket loco anymore
+// DEFINE_JUMP(VTABLE, 0x7F0B4C, 0x4CF940);
 
 DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 {
@@ -703,11 +720,13 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 
 	Matrix3D hvamat = hva->Matrixes[shadow_index_now + hva->LayerCount * ChooseFrame()];
 
-	// TO TEST : Check if this is the proper Z offset to shift the sections to the same level
-	hvamat.TranslateZ(
-		-hvamat.GetZVal()
-		- pVXL->VXL->TailerData->Bounds[0].Z
-	);
+	// A nasty temporary backward compatibility option
+	if (hva->LayerCount > 1 || pType->Turret)
+	// NEEDS IMPROVEMENT : Choose the proper Z offset to shift the sections to the same level
+		hvamat.TranslateZ(
+			-hvamat.GetZVal()
+			- pVXL->VXL->TailerData->Bounds[0].Z
+		);
 
 	matRet = *pMat * hvamat;
 

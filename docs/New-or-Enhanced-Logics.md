@@ -995,6 +995,16 @@ IsVoiceCreatedGlobal=false   ; boolean
 VoiceCreated=                ; sound entry
 ```
 
+### Convert TechnoType on owner house change
+- You can now change a unit's type when changing ownership from human to computer or from computer to human.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]
+Convert.HumanToComputer =   ; TechnoType
+Convert.ComputerToHuman =   ; TechnoType 
+```
+
 ## Terrain
 
 ### Destroy animation & sound
@@ -1034,7 +1044,7 @@ RemoveMindControl=false  ; boolean
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
   - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
   - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
-  - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against.
+  - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
   - `Crit.AffectBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
@@ -1049,7 +1059,7 @@ Crit.Chance=0.0                     ; floating point value, percents or absolute
 Crit.ApplyChancePerTarget=false     ; boolean
 Crit.ExtraDamage=0                  ; integer
 Crit.Warhead=                       ; Warhead
-Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
 Crit.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                      ; list of animations
@@ -1102,15 +1112,6 @@ Convert.To=                     ; TechnoType
 Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
-### Convert TechnoType on owner house change
-- You can now change a unit's type when changing ownership from human to computer or from computer to human.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]
-Convert.HumanToComputer =   ; TechnoType
-Convert.ComputerToHuman =   ; TechnoType 
-```
 
 ### Custom 'SplashList' on Warheads
 
@@ -1275,13 +1276,15 @@ Burst.FireWithinSequence=false  ; boolean
 ### Extra warhead detonations
 
 - It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
-  - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found. If not, weapon `Damage` is used.
+  - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, WeaponType `Damage` is used.
+  - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                    ; WeaponType
-ExtraWarheads=                  ; list of WarheadTypes
-ExtraWarheads.DamageOverrides=  ; list of integers
+[SOMEWEAPON]                      ; WeaponType
+ExtraWarheads=                    ; list of WarheadTypes
+ExtraWarheads.DamageOverrides=    ; list of integers
+ExtraWarheads.DetonationChances=  ; list of floating-point values (percentage or absolute)
 ```
 
 ### Feedback weapon

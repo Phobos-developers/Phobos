@@ -100,7 +100,7 @@ ShowBriefingResumeButtonLabel=GUI:Resume                      ; CSF entry key
 ShowBriefingResumeButtonStatusLabel=STT:BriefingButtonReturn  ; CSF entry key
 ```
 
-In `Ra2MD.ini`:
+In `RA2MD.ini`:
 ```ini
 [Phobos]
 ShowBriefing=true  ; boolean

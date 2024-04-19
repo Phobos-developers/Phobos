@@ -19,6 +19,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- `ExtraWarheads.DamageOverrides` now falls back to last listed value if list is shorter than `ExtraWarheads` for all Warhead detonations exceeding the length.
 - Air and Top layer contents are no longer sorted, animations in these layers no longer respect `YSortAdjust`. Animations attached to flying units now get their layer updated immediately after parent unit, if they are on same layer they will draw above the parent unit.
 - `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
@@ -59,6 +60,25 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From 0.1.1
 
 - Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
+
+### New user settings in RA2MD.ini
+
+- These are new user setting keys added by various features in Phobos. Most of them can be found in either in [user inteface](User-Interface.md) or [miscellaneous](Miscellanous.md) sections. Search functionality can be used to find them quickly if needed.
+
+```ini
+[Phobos]
+CampaignDefaultGameSpeed=4       ; integer
+ShowBriefing=true                ; boolean
+DigitalDisplay.Enable=false      ; boolean
+ShowDesignatorRange=false        ; boolean
+PrioritySelectionFiltering=true  ; boolean
+ShowPlacementPreview=yes         ; boolean
+RealTimeTimers=false             ; boolean
+RealTimeTimers.Adaptive=false    ; boolean
+ToolTipDescriptions=true         ; boolean
+ToolTipBlur=false                ; boolean
+SaveGameOnScenarioStart=true     ; boolean
+```
 
 ### For Map Editor (Final Alert 2)
 
