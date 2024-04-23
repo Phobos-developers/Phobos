@@ -45,6 +45,8 @@ public:
 		Valueable<bool> AmbientDamage_IgnoreTarget;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
+		std::vector<const char*> AttachEffect_RequiredGroups;
+		std::vector<const char*> AttachEffect_DisallowedGroups;
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
@@ -72,6 +74,8 @@ public:
 			, AmbientDamage_IgnoreTarget { false }
 			, AttachEffect_RequiredTypes {}
 			, AttachEffect_DisallowedTypes {}
+			, AttachEffect_RequiredGroups {}
+			, AttachEffect_DisallowedGroups {}
 			, AttachEffect_IgnoreFromSameSource { false }
 		{ }
 

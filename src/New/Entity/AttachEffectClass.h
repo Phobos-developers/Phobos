@@ -39,6 +39,7 @@ public:
 
 	static int Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget);
 	static int Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget);
+	static int DetachByGroups(std::vector<const char*> const& groups, TechnoClass* pTarget);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
 
 private:

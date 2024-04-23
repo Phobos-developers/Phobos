@@ -227,6 +227,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
 	this->AttachEffect_RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
+	exINI.ParseStringList(this->AttachEffect_RemoveGroups, pSection, "AttachEffect.RemoveGroups");
 	this->AttachEffect_DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
 
 	// Convert.From & Convert.To
@@ -277,6 +278,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->RemoveInflictedLocomotor
 		|| this->AttachEffect_AttachTypes.size() > 0
 		|| this->AttachEffect_RemoveTypes.size() > 0
+		|| this->AttachEffect_RemoveGroups.size() > 0
 	);
 
 	char tempBuffer[32];
@@ -416,6 +418,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AttachEffect_AttachTypes)
 		.Process(this->AttachEffect_RemoveTypes)
+		.Process(this->AttachEffect_RemoveGroups)
 		.Process(this->AttachEffect_DurationOverrides)
 
 		.Process(this->InflictLocomotor)

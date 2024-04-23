@@ -35,6 +35,8 @@ This page describes all the engine features that are either new and introduced b
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
+  - It is possible to set groups for attach effect types by defining strings in `Groups`.
+    - Groups can be used instead of types for removing effects and weapon filters.
 
 - AttachEffectTypes can be attached to TechnoTypes using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
@@ -44,11 +46,12 @@ This page describes all the engine features that are either new and introduced b
 
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
-  - Attached effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes`.
+  - Attached effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes` or `AttachEffect.RemoveGroups`.
 
 - Weapons can require attached effects on target to fire, or be prevented by firing if specific attached effects are applied.
   - `AttachEffect.RequiredTypes` can be used to list attached effects required to be on target to fire, all listed effect types must be present to allow firing.
   - `AttachEffect.DisallowedTypes` can be used to list attached effects that when present prevent the weapon from firing, any of the listed effect types will prevent firing if present.
+  - `AttachEffect.Required/DisallowedGroups` have the same effect except applied with/to all types that have one of the listed groups in their `Groups` listing.
   - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead.
 
 In `rulesmd.ini`:
@@ -89,6 +92,7 @@ Crit.DisallowWarheads=                       ; list of WarheadTypes
 RevengeWeapon=                               ; WeaponType
 RevengeWeapon.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisableWeapons=false                         ; boolean
+Groups=                                      ; comma-separated list of strings (group IDs)
 
 [SOMETECHNO]                                 ; TechnoType
 AttachEffect.AttachTypes=                    ; List of AttachEffectTypes
@@ -101,11 +105,14 @@ OpenTopped.UseTransportRangeModifiers=false  ; boolean
 [SOMEWEAPON]                                 ; WeaponType
 AttachEffect.RequiredTypes=                  ; List of AttachEffectTypes
 AttachEffect.DisallowedTypes=                ; List of AttachEffectTypes
+AttachEffect.RequiredGroups=                 ; comma-separated list of strings (group IDs)
+AttachEffect.DisallowedGroups=               ; comma-separated list of strings (group IDs)
 AttachEffect.IgnoreFromSameSource=false      ; boolean
 
 [SOMEWARHEAD]
 AttachEffect.AttachTypes=                    ; List of AttachEffectTypes
 AttachEffect.RemoveTypes=                    ; List of AttachEffectTypes
+AttachEffect.RemoveGroups=                   ; comma-separated list of strings (group IDs)
 AttachEffect.DurationOverrides=              ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
 ```
 

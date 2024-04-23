@@ -9,15 +9,24 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, Te
 {
 	bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
 	bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
+	bool hasRequiredGroups = this->AttachEffect_RequiredGroups.size() > 0;
+	bool hasDisallowedGroups = this->AttachEffect_DisallowedGroups.size() > 0;
 
-	if (hasRequiredTypes || hasDisallowedTypes)
+	if (hasRequiredTypes || hasDisallowedTypes || hasRequiredGroups || hasDisallowedGroups)
 	{
 		auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
 		if (hasDisallowedTypes && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead))
 			return false;
 
-		if (hasRequiredTypes && !pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead))
+		if (hasDisallowedGroups && pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_DisallowedGroups), false, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead))
+			return false;
+
+		if (hasRequiredTypes &&!pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead))
+			return false;
+
+		if (hasRequiredGroups &&
+			!pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_RequiredGroups), true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead))
 			return false;
 	}
 
@@ -84,6 +93,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AmbientDamage_IgnoreTarget.Read(exINI, pSection, "AmbientDamage.IgnoreTarget");
 	this->AttachEffect_RequiredTypes.Read(exINI, pSection, "AttachEffect.RequiredTypes");
 	this->AttachEffect_DisallowedTypes.Read(exINI, pSection, "AttachEffect.DisallowedTypes");
+	exINI.ParseStringList(this->AttachEffect_RequiredGroups, pSection, "AttachEffect.RequiredGroups");
+	exINI.ParseStringList(this->AttachEffect_DisallowedGroups, pSection, "AttachEffect.DisallowedGroups");
 	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
 }
 
@@ -115,6 +126,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AmbientDamage_IgnoreTarget)
 		.Process(this->AttachEffect_RequiredTypes)
 		.Process(this->AttachEffect_DisallowedTypes)
+		.Process(this->AttachEffect_RequiredGroups)
+		.Process(this->AttachEffect_DisallowedGroups)
 		.Process(this->AttachEffect_IgnoreFromSameSource)
 		;
 };

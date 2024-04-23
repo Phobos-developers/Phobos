@@ -149,7 +149,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->Convert_Pairs.size() > 0)
 		this->ApplyConvert(pHouse, pTarget);
 
-	if (this->AttachEffect_AttachTypes.size() > 0 || this->AttachEffect_RemoveTypes.size() > 0)
+	if (this->AttachEffect_AttachTypes.size() > 0 || this->AttachEffect_RemoveTypes.size() > 0 || this->AttachEffect_RemoveGroups.size() > 0)
 		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
 
 #ifdef LOCO_TEST_WARHEADS
@@ -425,6 +425,7 @@ void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pTarget, HouseClas
 
 	AttachEffectClass::Attach(this->AttachEffect_AttachTypes, pTarget, pInvokerHouse, pInvoker, this->OwnerObject(), this->AttachEffect_DurationOverrides, dummy, dummy, dummy);
 	AttachEffectClass::Detach(this->AttachEffect_RemoveTypes, pTarget);
+	AttachEffectClass::DetachByGroups(this->AttachEffect_RemoveGroups, pTarget);
 }
 
 double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer)

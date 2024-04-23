@@ -559,6 +559,25 @@ int AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, 
 	return detachedCount;
 }
 
+int AttachEffectClass::DetachByGroups(std::vector<const char*> const& groups, TechnoClass* pTarget)
+{
+	if (groups.size() < 1 || !pTarget)
+		return 0;
+
+	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	std::vector<AttachEffectTypeClass*> types;
+
+	for (auto const& attachEffect : pTargetExt->AttachedEffects)
+	{
+		auto const pType = attachEffect->Type;
+
+		if (pType->HasGroups(groups, false))
+			types.push_back(pType);
+	}
+
+	return Detach(types, pTarget);
+}
+
 int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs)
 {
 	if (!pType || targetAEs.size() <= 0)

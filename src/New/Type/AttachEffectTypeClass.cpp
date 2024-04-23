@@ -1,10 +1,60 @@
 #include "AttachEffectTypeClass.h"
 
 Enumerable<AttachEffectTypeClass>::container_t Enumerable<AttachEffectTypeClass>::Array;
+std::unordered_map<const char*, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
 
 bool AttachEffectTypeClass::HasTint()
 {
 	return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
+}
+
+bool AttachEffectTypeClass::HasGroup(const char* pGroupID)
+{
+	for (auto const group : this->Groups)
+	{
+		if (!strcmp(group, pGroupID))
+			return true;
+	}
+
+	return false;
+}
+
+bool AttachEffectTypeClass::HasGroups(std::vector<const char*> groupIDs, bool requireAll)
+{
+	size_t foundCount = 0;
+
+	for (auto const group : this->Groups)
+	{
+		for (auto const requiredGroup : groupIDs)
+		{
+			if (!strcmp(group, requiredGroup))
+			{
+				if (!requireAll)
+					return true;
+
+				foundCount++;
+			}
+		}
+	}
+
+	return !requireAll ? false : foundCount >= groupIDs.size();
+}
+
+std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(std::vector<const char*> groupIDs)
+{
+	std::set<AttachEffectTypeClass*> types;
+	auto const map = &AttachEffectTypeClass::GroupsMap;
+
+	for (auto const group : groupIDs)
+	{
+		if (map->contains(group))
+		{
+			auto const values = &map->at(group);
+			types.insert(values->begin(), values->end());
+		}
+	}
+
+	return std::vector<AttachEffectTypeClass*> (types.begin(), types.end());;
 }
 
 const char* Enumerable<AttachEffectTypeClass>::GetMainSection()
@@ -61,6 +111,23 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
+
+	// Groups
+	exINI.ParseStringList(this->Groups, pSection, "Groups");
+	auto const map = &AttachEffectTypeClass::GroupsMap;
+
+	for (auto const group : this->Groups)
+	{
+		if (!map->contains(group))
+		{
+			map->insert(std::make_pair(group, std::set<AttachEffectTypeClass*>{this}));
+		}
+		else
+		{
+			auto const values = &map->at(group);
+			values->insert(this);
+		}
+	}
 }
 
 template <typename T>
@@ -99,6 +166,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
 		.Process(this->DisableWeapons)
+		.Process(this->Groups)
 		;
 }
 
