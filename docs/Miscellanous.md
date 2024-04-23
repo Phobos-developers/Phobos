@@ -227,7 +227,7 @@ $Inherits=PARENT1SECTION,PARENT2SECTION...  ; section names
 You can turn on/off the exception handler of the game's main loop using the following command line arg: `-ExceptionHandler=boolean` where `boolean` is `(true|false|yes|no|1|0)`.
 
 ```{note}
-In **debug** builds the in-game exception handler **turned off** by default.
+In **debug** builds the in-game exception handler is **turned off** by default.
 ```
 
 ```{warning}
