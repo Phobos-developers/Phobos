@@ -1,6 +1,5 @@
 #include "AttachEffectTypeClass.h"
 
-Enumerable<AttachEffectTypeClass>::container_t Enumerable<AttachEffectTypeClass>::Array;
 std::unordered_map<const char*, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
 
 bool AttachEffectTypeClass::HasTint()
@@ -67,6 +66,7 @@ AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount
 	return this->CumulativeAnimations.at(index);
 }
 
+template<>
 const char* Enumerable<AttachEffectTypeClass>::GetMainSection()
 {
 	return "AttachEffectTypes";
