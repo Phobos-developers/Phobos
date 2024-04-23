@@ -772,6 +772,7 @@ void TechnoExt::ExtData::UpdateTemporal()
 		ae->AI_Temporal();
 }
 
+// Updates state of all AttachEffects on techno.
 void TechnoExt::ExtData::UpdateAttachEffects()
 {
 	bool markForRedraw = false;
@@ -790,6 +791,8 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		{
 			if (attachEffect->GetType()->HasTint())
 				markForRedraw = true;
+
+			this->UpdateCumulativeAttachEffects(attachEffect->GetType());
 
 			if (!attachEffect->AllowedToBeActive() && attachEffect->ResetIfRecreatable())
 			{
@@ -811,6 +814,35 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		this->OwnerObject()->MarkForRedraw();
 }
 
+// Updates state of AttachEffects of same cumulative type on techno, (which one is first active instance existing, if any), kills animations if needed.
+void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType)
+{
+	if (!pAttachEffectType || !pAttachEffectType->Cumulative)
+		return;
+
+	bool foundFirst = false;
+
+	for (auto const& attachEffect : this->AttachedEffects)
+	{
+		if (attachEffect->GetType() != pAttachEffectType || !attachEffect->IsActive())
+			continue;
+
+		if (!foundFirst)
+		{
+			foundFirst = true;
+			attachEffect->IsFirstCumulativeInstance = true;
+		}
+		else
+		{
+			attachEffect->IsFirstCumulativeInstance = false;
+		}
+
+		if (pAttachEffectType->CumulativeAnimations.HasValue())
+			attachEffect->KillAnim();
+	}
+}
+
+// Recalculates AttachEffect stat multipliers and other bonuses.
 void TechnoExt::ExtData::RecalculateStatMultipliers()
 {
 	auto const pThis = this->OwnerObject();

@@ -15,6 +15,7 @@ AttachEffectClass::AttachEffectClass()
 	, Duration { 0 }
 	, CurrentDelay { 0 }
 	, NeedsDurationRefresh { false }
+	, IsFirstCumulativeInstance { false }
 {
 	this->HasInitialized = false;
 	AttachEffectClass::Array.emplace_back(this);
@@ -32,6 +33,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, IsOnline { true }
 	, IsCloaked { false }
 	, NeedsDurationRefresh { false }
+	, IsFirstCumulativeInstance { false }
 {
 	this->HasInitialized = false;
 
@@ -262,7 +264,20 @@ void AttachEffectClass::CreateAnim()
 	if (!this->Type)
 		return;
 
-	auto pAnimType = this->Type->Animation.Get(nullptr);
+	AnimTypeClass* pAnimType = nullptr;
+
+	if (this->Type->Cumulative && this->Type->CumulativeAnimations.HasValue())
+	{
+		if (!this->IsFirstCumulativeInstance)
+			return;
+
+		int count = TechnoExt::ExtMap.Find(this->Techno)->GetAttachedEffectCumulativeCount(this->Type);
+		pAnimType = this->Type->GetCumulativeAnimation(count);
+	}
+	else
+	{
+		pAnimType = this->Type->Animation.Get(nullptr);
+	}
 
 	if (!this->Animation && pAnimType)
 	{
@@ -374,6 +389,19 @@ AttachEffectTypeClass* AttachEffectClass::GetType() const
 
 #pragma region StaticFunctions_AttachDetachTransfer
 
+/// <summary>
+/// Creates and attaches AttachEffect of a given type to a techno.
+/// </summary>
+/// <param name="pType">AttachEffect type.</param>
+/// <param name="pTarget">Target techno.</param>
+/// <param name="pInvokerHouse">House that invoked the attachment.</param>
+/// <param name="pInvoker">Techno that invoked the attachment.</param>
+/// <param name="pSource">Source object for the attachment e.g a Warhead or Techno.</param>
+/// <param name="durationOverride">Override for AttachEffect duration.</param>
+/// <param name="delay">Override for AttachEffect delay.</param>
+/// <param name="initialDelay">Override for AttachEffect initial delay.</param>
+/// <param name="recreationDelay">Override for AttachEffect recreation delay.</param>
+/// <returns>True if successful, false if not.</returns>
 bool AttachEffectClass::Attach(AttachEffectTypeClass* pType, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 	AbstractClass* pSource, int durationOverride, int delay, int initialDelay, int recreationDelay)
 {
@@ -404,7 +432,20 @@ bool AttachEffectClass::Attach(AttachEffectTypeClass* pType, TechnoClass* pTarge
 	return false;
 }
 
-bool AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
+/// <summary>
+/// Creates and attaches AttachEffects of given types to a techno.
+/// </summary>
+/// <param name="types">List of AttachEffect types.</param>
+/// <param name="pTarget">Target techno.</param>
+/// <param name="pInvokerHouse">House that invoked the attachment.</param>
+/// <param name="pInvoker">Techno that invoked the attachment.</param>
+/// <param name="pSource">Source object for the attachment e.g a Warhead or Techno.</param>
+/// <param name="durationOverrides">Overrides for AttachEffect duration.</param>
+/// <param name="delays">Overrides for AttachEffect delay.</param>
+/// <param name="initialDelays">Overrides for AttachEffect initial delay.</param>
+/// <param name="recreationDelays">Overrides for AttachEffect recreation delay.</param>
+/// <returns>Number of AttachEffect instances created and attached.</returns>
+int AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 	AbstractClass* pSource, std::vector<int>& durationOverrides, std::vector<int> const& delays, std::vector<int> const& initialDelays, std::vector<int> const& recreationDelays)
 {
 	if (types.size() < 1 || !pTarget)
@@ -447,6 +488,9 @@ bool AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types,
 
 				if (pType->HasTint())
 					markForRedraw = true;
+
+				if (pType->Cumulative)
+					pTargetExt->UpdateCumulativeAttachEffects(pType);
 			}
 		}
 	}
@@ -463,9 +507,23 @@ bool AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types,
 	if (markForRedraw)
 		pTarget->MarkForRedraw();
 
-	return attachedCount > 0;
+	return attachedCount;
 }
 
+/// <summary>
+/// Creates and attaches a single AttachEffect instance of specified type on techno.
+/// </summary>
+/// <param name="pType">AttachEffect type.</param>
+/// <param name="pTarget">Target techno.</param>
+/// <param name="targetAEs">Target's AttachEffect vector</param>
+/// <param name="pInvokerHouse">House that invoked the attachment.</param>
+/// <param name="pInvoker">Techno that invoked the attachment.</param>
+/// <param name="pSource">Source object for the attachment e.g a Warhead or Techno.</param>
+/// <param name="durationOverride">Override for AttachEffect duration.</param>
+/// <param name="delay">Override for AttachEffect delay.</param>
+/// <param name="initialDelay">Override for AttachEffect initial delay.</param>
+/// <param name="recreationDelay">Override for AttachEffect recreation delay.</param>
+/// <returns>The created and attached AttachEffect if successful, nullptr if not.</returns>
 AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
 	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, int durationOverride, int delay, int initialDelay, int recreationDelay)
 {
@@ -512,13 +570,21 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	return nullptr;
 }
 
-int AttachEffectClass::Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget)
+/// <summary>
+/// Remove AttachEffects of given type from techno.
+/// </summary>
+/// <param name="types">AttachEffect type.</param>
+/// <param name="pTarget">Target techno.</param>
+/// <param name="minCount">Minimum instance count needed for cumulative type to be removed.</param>
+/// <param name="maxCount">Maximum instance count of cumulative type to be removed.</param>
+/// <returns>Number of AttachEffect instances removed.</returns>
+int AttachEffectClass::Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount)
 {
 	if (!pType || !pTarget)
 		return 0;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	int detachedCount = AttachEffectClass::RemoveAllOfType(pType, pTargetExt->AttachedEffects);
+	int detachedCount = AttachEffectClass::RemoveAllOfType(pType, pTarget, minCount, maxCount);
 
 	if (detachedCount > 0)
 	{
@@ -531,7 +597,15 @@ int AttachEffectClass::Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget
 	return detachedCount;
 }
 
-int AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget)
+/// <summary>
+/// Remove all AttachEffects matching given types from techno.
+/// </summary>
+/// <param name="types">List of AttachEffect types.</param>
+/// <param name="pTarget">Target techno.</param>
+/// <param name="minCounts">Minimum instance counts needed for cumulative types to be removed.</param>
+/// <param name="maxCounts">Maximum instance counts of cumulative types to be removed.</param>
+/// <returns>Number of AttachEffect instances removed.</returns>
+int AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts)
 {
 	if (types.size() < 1 || !pTarget)
 		return 0;
@@ -539,15 +613,23 @@ int AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	int detachedCount = 0;
 	bool markForRedraw = false;
+	size_t index = 0, minSize = minCounts.size(), maxSize = maxCounts.size();
 
 	for (auto const pType : types)
 	{
-		int count = AttachEffectClass::RemoveAllOfType(pType, pTargetExt->AttachedEffects);
+		int minCount = minSize > 0 ? (index < minSize ? minCounts.at(index) : minCounts.at(minSize-1)) : -1;
+		int maxCount = maxSize > 0 ? (index < maxSize ? maxCounts.at(index) : maxCounts.at(maxSize - 1)) : -1;
+
+		int count = AttachEffectClass::RemoveAllOfType(pType, pTarget, minCount, maxCount);
 
 		if (count && pType->HasTint())
 			markForRedraw = true;
 
+		if (count && pType->Cumulative)
+			pTargetExt->UpdateCumulativeAttachEffects(pType);
+
 		detachedCount += count;
+		index++;
 	}
 
 	if (detachedCount > 0)
@@ -559,7 +641,15 @@ int AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, 
 	return detachedCount;
 }
 
-int AttachEffectClass::DetachByGroups(std::vector<const char*> const& groups, TechnoClass* pTarget)
+/// <summary>
+/// Remove all AttachEffects matching given groups from techno.
+/// </summary>
+/// <param name="groups">List of group ID's.</param>
+/// <param name="pTarget">Target techno.</param>
+/// <param name="minCounts">Minimum instance counts needed for cumulative types to be removed.</param>
+/// <param name="maxCounts">Maximum instance counts of cumulative types to be removed.</param>
+/// <returns>Number of AttachEffect instances removed.</returns>
+int AttachEffectClass::DetachByGroups(std::vector<const char*> const& groups, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts)
 {
 	if (groups.size() < 1 || !pTarget)
 		return 0;
@@ -575,19 +665,36 @@ int AttachEffectClass::DetachByGroups(std::vector<const char*> const& groups, Te
 			types.push_back(pType);
 	}
 
-	return Detach(types, pTarget);
+	return Detach(types, pTarget, minCounts, maxCounts);
 }
 
-int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs)
+/// <summary>
+/// Remove all AttachEffects of given type from a techno.
+/// </summary>
+/// <param name="pType">Type of AttachEffect to remove.</param>
+/// <param name="targetAEs">Target techno.</param>
+/// <param name="minCount">Minimum instance count needed for cumulative type to be removed.</param>
+/// <param name="maxCount">Maximum instance count of cumulative type to be removed.</param>
+/// <returns>Number of AttachEffect instances removed.</returns>
+int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount)
 {
-	if (!pType || targetAEs.size() <= 0)
+	if (!pType || !pTarget)
 		return 0;
 
+	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	int detachedCount = 0;
+
+	if (minCount > 0 && pType->Cumulative && minCount > pTargetExt->GetAttachedEffectCumulativeCount(pType))
+		return 0;
+
+	auto const targetAEs = &pTargetExt->AttachedEffects;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
-	for (it = targetAEs.begin(); it != targetAEs.end(); )
+	for (it = targetAEs->begin(); it != targetAEs->end(); )
 	{
+		if (maxCount > 0 && detachedCount >= maxCount)
+			break;
+
 		auto const attachEffect = it->get();
 
 		if (pType == attachEffect->Type)
@@ -600,7 +707,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, std::vector
 				continue;
 			}
 
-			it = targetAEs.erase(it);
+			it = targetAEs->erase(it);
 		}
 		else
 		{
@@ -611,6 +718,11 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, std::vector
 	return detachedCount;
 }
 
+/// <summary>
+/// Transfer AttachEffects from one techno to another.
+/// </summary>
+/// <param name="pSource">Source techno.</param>
+/// <param name="pTarget">Target techno.</param>
 void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget)
 {
 	const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);

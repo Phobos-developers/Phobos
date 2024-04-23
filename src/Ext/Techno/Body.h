@@ -98,12 +98,14 @@ public:
 		void UpdateTypeData(TechnoTypeClass* currentType);
 		void UpdateLaserTrails();
 		void UpdateAttachEffects();
+		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType);
 		void RecalculateStatMultipliers();
 		void UpdateTemporal();
 		void UpdateMindControlAnim();
 		void InitializeLaserTrails();
 		void InitializeAttachEffects();
-		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource);
+		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const& minCounts, std::vector<int> const& maxCounts);
+		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr);
 
 		virtual ~ExtData() override;
 

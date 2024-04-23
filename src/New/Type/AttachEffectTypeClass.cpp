@@ -57,6 +57,16 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(st
 	return std::vector<AttachEffectTypeClass*> (types.begin(), types.end());;
 }
 
+AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount)
+{
+	if (cumulativeCount < 0 || !this->CumulativeAnimations.HasValue())
+		return nullptr;
+
+	int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
+
+	return this->CumulativeAnimations.at(index);
+}
+
 const char* Enumerable<AttachEffectTypeClass>::GetMainSection()
 {
 	return "AttachEffectTypes";
@@ -79,6 +89,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 
 	this->Animation.Read(exINI, pSection, "Animation");
+	this->CumulativeAnimations.Read(exINI, pSection, "CumulativeAnimations");
 	this->Animation_ResetOnReapply.Read(exINI, pSection, "Animation.ResetOnReapply");
 	this->Animation_OfflineAction.Read(exINI, pSection, "Animation.OfflineAction");
 	this->Animation_TemporalAction.Read(exINI, pSection, "Animation.TemporalAction");
@@ -107,7 +118,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crit_AllowWarheads.Read(exINI, pSection, "Crit.AllowWarheads");
 	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
 
-	this->RevengeWeapon.Read(exINI, pSection, "RevengeWeapon");
+	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
@@ -141,6 +152,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DiscardOn)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->Animation)
+		.Process(this->CumulativeAnimations)
 		.Process(this->Animation_ResetOnReapply)
 		.Process(this->Animation_OfflineAction)
 		.Process(this->Animation_TemporalAction)

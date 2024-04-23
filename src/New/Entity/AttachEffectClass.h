@@ -34,12 +34,12 @@ public:
 	static bool Attach(AttachEffectTypeClass* pType, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 		AbstractClass* pSource, int durationOverride = 0, int delay = 0, int initialDelay = 0, int recreationDelay = -1);
 
-	static bool Attach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
+	static int Attach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 		AbstractClass* pSource, std::vector<int>& durationOverrides, std::vector<int> const& delays, std::vector<int> const& initialDelays, std::vector<int> const& recreationDelays);
 
-	static int Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget);
-	static int Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget);
-	static int DetachByGroups(std::vector<const char*> const& groups, TechnoClass* pTarget);
+	static int Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget,int minCount = -1, int maxCount = -1);
+	static int Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts);
+	static int DetachByGroups(std::vector<const char*> const& groups, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
 
 private:
@@ -50,7 +50,7 @@ private:
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
 		HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, int durationOverride = 0, int delay = 0, int initialDelay = 0, int recreationDelay = -1);
 
-	static int RemoveAllOfType(AttachEffectTypeClass* pType, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs);
+	static int RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount);
 
 	template <typename T>
 	bool Serialize(T& Stm);
@@ -73,5 +73,8 @@ private:
 	bool IsCloaked;
 	bool HasInitialized;
 	bool NeedsDurationRefresh;
+
+public:
+	bool IsFirstCumulativeInstance;
 };
 

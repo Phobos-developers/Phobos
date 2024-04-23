@@ -424,8 +424,8 @@ void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pTarget, HouseClas
 	std::vector<int> dummy = std::vector<int>();
 
 	AttachEffectClass::Attach(this->AttachEffect_AttachTypes, pTarget, pInvokerHouse, pInvoker, this->OwnerObject(), this->AttachEffect_DurationOverrides, dummy, dummy, dummy);
-	AttachEffectClass::Detach(this->AttachEffect_RemoveTypes, pTarget);
-	AttachEffectClass::DetachByGroups(this->AttachEffect_RemoveGroups, pTarget);
+	AttachEffectClass::Detach(this->AttachEffect_RemoveTypes, pTarget, this->AttachEffect_CumulativeRemoveMinCounts, this->AttachEffect_CumulativeRemoveMaxCounts);
+	AttachEffectClass::DetachByGroups(this->AttachEffect_RemoveGroups, pTarget, this->AttachEffect_CumulativeRemoveMinCounts, this->AttachEffect_CumulativeRemoveMaxCounts);
 }
 
 double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer)

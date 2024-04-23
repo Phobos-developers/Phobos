@@ -122,6 +122,8 @@ public:
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RemoveTypes;
 		std::vector<const char*> AttachEffect_RemoveGroups;
+		ValueableVector<int> AttachEffect_CumulativeRemoveMinCounts;
+		ValueableVector<int> AttachEffect_CumulativeRemoveMaxCounts;
 		ValueableVector<int> AttachEffect_DurationOverrides;
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -243,6 +245,8 @@ public:
 			, AttachEffect_AttachTypes {}
 			, AttachEffect_RemoveTypes {}
 			, AttachEffect_RemoveGroups {}
+			, AttachEffect_CumulativeRemoveMinCounts {}
+			, AttachEffect_CumulativeRemoveMaxCounts {}
 			, AttachEffect_DurationOverrides {}
 
 			, AffectsEnemies { true }

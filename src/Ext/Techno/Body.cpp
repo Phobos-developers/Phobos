@@ -364,7 +364,17 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 	return false;
 }
 
-bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource)
+/// <summary>
+/// Gets whether or not techno has listed AttachEffect types active on it
+/// </summary>
+/// <param name="attachEffectTypes">Attacheffect types.</param>
+/// <param name="requireAll">Whether or not to require all listed types to be present or if only one will satisfy the check.</param>
+/// <param name="ignoreSameSource">Ignore AttachEffects that come from set invoker and source.</param>
+/// <param name="pInvoker">Invoker Techno used for same source check.</param>
+/// <param name="pSource">Source AbstractClass instance used for same source check.</param>
+/// <returns>True if techno has active AttachEffects that satisfy the source, false if not.</returns>
+bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource,
+	TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const& minCounts, std::vector<int> const& maxCounts)
 {
 	unsigned int foundCount = 0;
 	unsigned int typeCounter = 1;
@@ -373,10 +383,29 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 	{
 		for (auto const& attachEffect : this->AttachedEffects)
 		{
-			if (attachEffect->GetType() == type)
+			if (attachEffect->GetType() == type && attachEffect->IsActive())
 			{
 				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
 					continue;
+
+				unsigned int minSize = minCounts.size();
+				unsigned int maxSize = maxCounts.size();
+
+				if (type->Cumulative && (minSize > 0 || maxSize > 0))
+				{
+					int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+
+					if (minSize > 0)
+					{
+						if (cumulativeCount < minCounts.at(typeCounter-1 >= minSize ? minSize - 1 : typeCounter - 1))
+							continue;
+					}
+					if (maxSize > 0)
+					{
+						if (cumulativeCount > maxCounts.at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
+							continue;
+					}
+				}
 
 				// Only need to find one match, can stop here.
 				if (!requireAll)
@@ -398,6 +427,35 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 		return true;
 
 	return false;
+}
+
+/// <summary>
+/// Gets how many counts of same cumulative AttachEffect type instance techno has active on it.
+/// </summary>
+/// <param name="pAttachEffectType">AttachEffect type.</param>
+/// <param name="ignoreSameSource">Ignore AttachEffects that come from set invoker and source.</param>
+/// <param name="pInvoker">Invoker Techno used for same source check.</param>
+/// <param name="pSource">Source AbstractClass instance used for same source check.</param>
+/// <returns>Number of active cumulative AttachEffect type instances on the techno. 0 if the AttachEffect type is not cumulative.</returns>
+int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource)
+{
+	if (!pAttachEffectType->Cumulative)
+		return 0;
+
+	unsigned int foundCount = 0;
+
+	for (auto const& attachEffect : this->AttachedEffects)
+	{
+		if (attachEffect->GetType() == pAttachEffectType && attachEffect->IsActive())
+		{
+			if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+				continue;
+
+			foundCount++;
+		}
+	}
+
+	return foundCount;
 }
 
 // =============================

@@ -21,6 +21,7 @@ This page describes all the engine features that are either new and introduced b
     - `Animation.OfflineAction` determines what happens to the animation when the attached object is deactivated or not powered. Only applies if `Powered=true`.
     - `Animation.TemporalAction` determines what happens to the animation when the attached object is under effect of `Temporal=true` Warhead.
     - `Animation.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the animation's owner & invoker instead of the object the effect is attached to.
+  - `CumulativeAnimations` can be used to declare a list of animations used for `Cumulative=true` types instead of `Animation`. An animation is picked from the list in order matching the number of active instances of the type on the object, with last listed animation used if number is higher than the number of listed animations. This animation is only displayed once, on the first active instance of the effect found attached and is updated and restarted if the number of active instances changed.
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
@@ -47,11 +48,14 @@ This page describes all the engine features that are either new and introduced b
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
   - Attached effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes` or `AttachEffect.RemoveGroups`.
+    - `AttachEffect.CumulativeRemoveMinCounts` sets minimum number of active instaces per `RemoveTypes`/`RemoveGroups` required for `Cumulative=true` types to be removed.
+    - `AttachEffect.CumulativeRemoveMaxCounts` sets maximum number of active instaces per `RemoveTypes`/`RemoveGroups` for `Cumulative=true` that are removed at once by this Warhead.
 
 - Weapons can require attached effects on target to fire, or be prevented by firing if specific attached effects are applied.
   - `AttachEffect.RequiredTypes` can be used to list attached effects required to be on target to fire, all listed effect types must be present to allow firing.
   - `AttachEffect.DisallowedTypes` can be used to list attached effects that when present prevent the weapon from firing, any of the listed effect types will prevent firing if present.
   - `AttachEffect.Required/DisallowedGroups` have the same effect except applied with/to all types that have one of the listed groups in their `Groups` listing.
+  - `AttachEffect.(Required|Disallowed)MinCounts & (Required|Disallowed)MaxCounts` can be used to set the minimum and maximum number of instances required / disallowed to be on the Techno for `Cumulative=true` types (ignored for other types) respectively.
   - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead.
 
 In `rulesmd.ini`:
@@ -71,6 +75,7 @@ Animation.ResetOnReapply=false               ; boolean
 Animation.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.TemporalAction=None                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.UseInvokerAsOwner=false            ; boolean
+CumulativeAnimations=                        ; list of animations
 Tint.Color=                                  ; integer - R,G,B
 Tint.Intensity=                              ; floating point value
 Tint.VisibleToHouses=all                     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -107,12 +112,18 @@ AttachEffect.RequiredTypes=                  ; List of AttachEffectTypes
 AttachEffect.DisallowedTypes=                ; List of AttachEffectTypes
 AttachEffect.RequiredGroups=                 ; comma-separated list of strings (group IDs)
 AttachEffect.DisallowedGroups=               ; comma-separated list of strings (group IDs)
+AttachEffect.RequiredMinCounts=              ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.RequiredMaxCounts=              ; integer - maximum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMinCounts=            ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMaxCounts=            ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.IgnoreFromSameSource=false      ; boolean
 
 [SOMEWARHEAD]
 AttachEffect.AttachTypes=                    ; List of AttachEffectTypes
 AttachEffect.RemoveTypes=                    ; List of AttachEffectTypes
 AttachEffect.RemoveGroups=                   ; comma-separated list of strings (group IDs)
+AttachEffect.CumulativeRemoveMinCounts=      ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.CumulativeRemoveMaxCounts=      ; integer - maximum removed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.DurationOverrides=              ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
 ```
 

@@ -47,6 +47,10 @@ public:
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
 		std::vector<const char*> AttachEffect_RequiredGroups;
 		std::vector<const char*> AttachEffect_DisallowedGroups;
+		ValueableVector<int> AttachEffect_RequiredMinCounts;
+		ValueableVector<int> AttachEffect_RequiredMaxCounts;
+		ValueableVector<int> AttachEffect_DisallowedMinCounts;
+		ValueableVector<int> AttachEffect_DisallowedMaxCounts;
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
@@ -76,6 +80,10 @@ public:
 			, AttachEffect_DisallowedTypes {}
 			, AttachEffect_RequiredGroups {}
 			, AttachEffect_DisallowedGroups {}
+			, AttachEffect_RequiredMinCounts {}
+			, AttachEffect_RequiredMaxCounts {}
+			, AttachEffect_DisallowedMinCounts {}
+			, AttachEffect_DisallowedMaxCounts {}
 			, AttachEffect_IgnoreFromSameSource { false }
 		{ }
 

@@ -19,6 +19,7 @@ public:
 	Valueable<DiscardCondition> DiscardOn;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<AnimTypeClass*> Animation;
+	NullableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> Animation_ResetOnReapply;
 	Valueable<AttachedAnimFlag> Animation_OfflineAction;
 	Valueable<AttachedAnimFlag> Animation_TemporalAction;
@@ -55,6 +56,7 @@ public:
 		, DiscardOn { DiscardCondition::None }
 		, PenetratesIronCurtain { false }
 		, Animation {}
+		, CumulativeAnimations {}
 		, Animation_ResetOnReapply { false }
 		, Animation_OfflineAction { AttachedAnimFlag::Hides }
 		, Animation_TemporalAction { AttachedAnimFlag::None }
@@ -86,6 +88,7 @@ public:
 	bool HasTint();
 	bool HasGroup(const char* pGroupID);
 	bool HasGroups(std::vector<const char*> groupIDs, bool requireAll);
+	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount);
 
 	virtual ~AttachEffectTypeClass() override = default;
 

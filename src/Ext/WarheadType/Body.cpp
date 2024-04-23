@@ -228,6 +228,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
 	this->AttachEffect_RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
 	exINI.ParseStringList(this->AttachEffect_RemoveGroups, pSection, "AttachEffect.RemoveGroups");
+	this->AttachEffect_CumulativeRemoveMinCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMinCounts");
+	this->AttachEffect_CumulativeRemoveMaxCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMaxCounts");
 	this->AttachEffect_DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
 
 	// Convert.From & Convert.To
@@ -419,6 +421,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_AttachTypes)
 		.Process(this->AttachEffect_RemoveTypes)
 		.Process(this->AttachEffect_RemoveGroups)
+		.Process(this->AttachEffect_CumulativeRemoveMinCounts)
+		.Process(this->AttachEffect_CumulativeRemoveMaxCounts)
 		.Process(this->AttachEffect_DurationOverrides)
 
 		.Process(this->InflictLocomotor)
