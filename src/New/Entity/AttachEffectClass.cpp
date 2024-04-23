@@ -387,6 +387,11 @@ AttachEffectTypeClass* AttachEffectClass::GetType() const
 	return this->Type;
 }
 
+void AttachEffectClass::ExpireWeapon() const
+{
+	TechnoExt::FireWeaponAtSelf(this->Techno, this->Type->ExpireWeapon.Get());
+}
+
 #pragma region StaticFunctions_AttachDetachTransfer
 
 /// <summary>
@@ -683,8 +688,12 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	int detachedCount = 0;
+	int stackCount = -1;
 
-	if (minCount > 0 && pType->Cumulative && minCount > pTargetExt->GetAttachedEffectCumulativeCount(pType))
+	if (pType->Cumulative)
+		stackCount = pTargetExt->GetAttachedEffectCumulativeCount(pType);
+
+	if (minCount > 0 && stackCount > -1 && pType->Cumulative && minCount > stackCount)
 		return 0;
 
 	auto const targetAEs = &pTargetExt->AttachedEffects;
@@ -700,6 +709,12 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		if (pType == attachEffect->Type)
 		{
 			detachedCount++;
+
+			if (pType->ExpireWeapon.isset() && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
+			{
+				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || pTargetExt->GetAttachedEffectCumulativeCount(pType) < 2)
+					attachEffect->ExpireWeapon();
+			}
 
 			if (attachEffect->ResetIfRecreatable())
 			{

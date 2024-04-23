@@ -22,6 +22,9 @@ This page describes all the engine features that are either new and introduced b
     - `Animation.TemporalAction` determines what happens to the animation when the attached object is under effect of `Temporal=true` Warhead.
     - `Animation.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the animation's owner & invoker instead of the object the effect is attached to.
   - `CumulativeAnimations` can be used to declare a list of animations used for `Cumulative=true` types instead of `Animation`. An animation is picked from the list in order matching the number of active instances of the type on the object, with last listed animation used if number is higher than the number of listed animations. This animation is only displayed once, on the first active instance of the effect found attached and is updated and restarted if the number of active instances changed.
+  - Attached effect can fire off a weapon when expired / removed / object dies by setting `ExpireWeapon`.
+    - `ExpireWeapon.TriggerOn` determines the exact conditions upon which the weapon is fired, defaults to `expire` which means only if the effect naturally expires.
+    - `ExpireWeapon.CumulativeOnlyOnce`, if set to true, makes it so that `Cumulative=true` attached effects only detonate the weapon once period, instead of once per active instance. On `remove` and `expire` condition this means it will only detonate after last instance has expired or been removed.
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
@@ -76,6 +79,9 @@ Animation.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Te
 Animation.TemporalAction=None                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.UseInvokerAsOwner=false            ; boolean
 CumulativeAnimations=                        ; list of animations
+ExpireWeapon=
+ExpireWeapon.TriggerOn=expire                ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
+ExpireWeapon.CumulativeOnlyOnce=false        ; boolean
 Tint.Color=                                  ; integer - R,G,B
 Tint.Intensity=                              ; floating point value
 Tint.VisibleToHouses=all                     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)

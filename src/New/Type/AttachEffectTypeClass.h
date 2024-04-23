@@ -24,6 +24,9 @@ public:
 	Valueable<AttachedAnimFlag> Animation_OfflineAction;
 	Valueable<AttachedAnimFlag> Animation_TemporalAction;
 	Valueable<bool> Animation_UseInvokerAsOwner;
+	Nullable<WeaponTypeClass*> ExpireWeapon;
+	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
+	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -61,6 +64,9 @@ public:
 		, Animation_OfflineAction { AttachedAnimFlag::Hides }
 		, Animation_TemporalAction { AttachedAnimFlag::None }
 		, Animation_UseInvokerAsOwner { false }
+		, ExpireWeapon {}
+		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
+		, ExpireWeapon_CumulativeOnlyOnce { false }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }

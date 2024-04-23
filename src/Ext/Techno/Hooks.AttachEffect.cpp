@@ -155,3 +155,29 @@ bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 DEFINE_JUMP(VTABLE, 0x7F4A34, GET_OFFSET(TechnoClass_Limbo_Wrapper)); // TechnoClass
 DEFINE_JUMP(CALL, 0x4DB3B1, GET_OFFSET(TechnoClass_Limbo_Wrapper));   // FootClass
 DEFINE_JUMP(CALL, 0x445DDA, GET_OFFSET(TechnoClass_Limbo_Wrapper))    // BuildingClass
+
+DEFINE_HOOK(0x702050, TechnoClass_TakeDamage_AttachEffectExpireWeapon, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	std::set<AttachEffectTypeClass*> cumulativeTypes;
+
+	for (auto const& attachEffect : pExt->AttachedEffects)
+	{
+		auto const pType = attachEffect->GetType();
+
+		if (pType->ExpireWeapon.isset() && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Death) != ExpireWeaponCondition::None)
+		{
+			if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || !cumulativeTypes.contains(pType))
+			{
+				if (pType->Cumulative && pType->ExpireWeapon_CumulativeOnlyOnce)
+					cumulativeTypes.insert(pType);
+
+				attachEffect->ExpireWeapon();
+			}
+		}
+	}
+
+	return 0;
+}

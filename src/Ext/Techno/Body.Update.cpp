@@ -789,10 +789,18 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 
 		if (attachEffect->HasExpired() || (attachEffect->IsActive() && !attachEffect->AllowedToBeActive()))
 		{
-			if (attachEffect->GetType()->HasTint())
+			auto const pType = attachEffect->GetType();
+
+			if (pType->HasTint())
 				markForRedraw = true;
 
 			this->UpdateCumulativeAttachEffects(attachEffect->GetType());
+
+			if (pType->ExpireWeapon.isset() && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
+			{
+				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
+					attachEffect->ExpireWeapon();
+			}
 
 			if (!attachEffect->AllowedToBeActive() && attachEffect->ResetIfRecreatable())
 			{

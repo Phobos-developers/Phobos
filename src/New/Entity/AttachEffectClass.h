@@ -27,6 +27,8 @@ public:
 	bool IsActive() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
 
+	void ExpireWeapon() const;
+
 	static void PointerGotInvalid(void* ptr, bool removed);
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
