@@ -18,7 +18,7 @@ public:
 	{
 	public:
 		PhobosFixedString<32u> PaletteFile;
-		DynamicVectorClass<ColorScheme*>* Palette;
+		DynamicVectorClass<ColorScheme*>* Palette; // Intentionally not serialized - rebuilt from the palette file on load.
 
 		ExtData(OverlayTypeClass* OwnerObject) : Extension<OverlayTypeClass>(OwnerObject)
 			, PaletteFile {}
@@ -37,6 +37,7 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+		void BuildPalette();
 	};
 
 	class ExtContainer final : public Container<OverlayTypeExt>

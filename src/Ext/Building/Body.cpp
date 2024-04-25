@@ -417,7 +417,7 @@ DEFINE_HOOK(0x453E20, BuildingClass_SaveLoad_Prefix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x454174, BuildingClass_Load, 0xA)
+DEFINE_HOOK(0x454174, BuildingClass_Load_LightSource, 0xA)
 {
 	GET(BuildingClass*, pThis, EDI);
 

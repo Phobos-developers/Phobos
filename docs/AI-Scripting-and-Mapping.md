@@ -69,7 +69,7 @@ Ranking.OverParMessage=   ; CSF entry key
 
 ### Show briefing dialog on startup
 
-- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available).
+- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available). This can be disabled by user by setting `ShowBriefing` to false in `Ra2MD.ini`. 
   - `BriefingTheme` (In order of precedence from highest to lowest: `missionmd.ini`, map file, side entry in `rulesmd.ini`) can be used to define a custom theme to play on this briefing screen. If not set, the loading screen theme will keep playing until the scenario starts properly.
   - String labels for the startup briefing dialog screen's resume button as well as the button's status bar text can be customized by setting `ShowBriefingResumeButtonLabel` and `ShowBriefingResumeButtonStatusLabel` respectively. They default to the same labels used by the briefing screen dialog when opened otherwise.
 
@@ -98,6 +98,12 @@ In `uimd.ini`
 [UISettings]
 ShowBriefingResumeButtonLabel=GUI:Resume                      ; CSF entry key
 ShowBriefingResumeButtonStatusLabel=STT:BriefingButtonReturn  ; CSF entry key
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowBriefing=true  ; boolean
 ```
 
 ## Script Actions

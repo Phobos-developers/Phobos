@@ -159,13 +159,19 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
+DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 {
-	enum { SkipKillingPassengers = 0x702669 };
+	enum { SkipExploding = 0x702672, SkipKillingPassengers = 0x702669 };
 
 	GET(TechnoClass*, pThis, ESI);
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+	{
+		if (!pTypeExt->Explodes_DuringBuildup && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
+			return SkipExploding;
+	}
 
 	if (!pTypeExt->Explodes_KillPassengers)
 		return SkipKillingPassengers;

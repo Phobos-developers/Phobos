@@ -6,7 +6,6 @@
 #include <IonBlastClass.h>
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
-#include <SmudgeTypeClass.h>
 #include <TeleportLocomotionClass.h>
 #include <UnitClass.h>
 #include <VeinholeMonsterClass.h>
@@ -22,26 +21,17 @@
 
 // Loads the veinhole monster art
 // Call removed from YR by WW
-DEFINE_HOOK(0x4AD097, DisplayClass_ReadIni_LoadVeinholeArt, 0x5)
+DEFINE_HOOK(0x4AD097, DisplayClass_ReadIni_LoadVeinholeArt, 0x6)
 {
-	enum { ContinueReadIni = 0x4AD0A8 };
-
 	int theater = static_cast<int>(ScenarioClass::Instance->Theater);
-	SmudgeTypeClass::LoadFromIniList(theater);
 	VeinholeMonsterClass::LoadVeinholeArt(theater);
 
-	return ContinueReadIni;
+	return 0;
 }
 
 // Applies damage to the veinhole monster
 DEFINE_HOOK(0x489671, Damage_at_Cell_Update_Veinhole, 0x6)
 {
-	enum
-	{
-		ContinueDrawWall = 0x48967B,
-		ContinueNotWall = 0x4896B2
-	};
-
 	GET(OverlayTypeClass*, pOverlay, EAX);
 	GET(WarheadTypeClass*, pWH, ESI);
 	GET_STACK(CellStruct, pCell, STACK_OFFSET(0xE0, -0x4C));
@@ -55,7 +45,7 @@ DEFINE_HOOK(0x489671, Damage_at_Cell_Update_Veinhole, 0x6)
 			pVeinhole->ReceiveDamage(&damage, 0, pWH, pAttacker, false, false, pAttackingHouse);
 	}
 
-	return pOverlay->Wall ? ContinueDrawWall : ContinueNotWall;
+	return 0;
 }
 
 DEFINE_HOOK(0x6D4656, TacticalClass_Draw_Veinhole, 0x5)
@@ -84,21 +74,12 @@ DEFINE_HOOK(0x55B4E1, LogicClass_Update_Veinhole, 0x5)
 // Handles the veins' attack animation
 DEFINE_HOOK(0x4243BC, AnimClass_Update_VeinholeAttack, 0x6)
 {
-	enum
-	{
-		ContinueDrawTiberium = 0x4243CC,
-		ContinueNotTiberium = 0x42442E
-	};
-
 	GET(AnimClass*, pAnim, ESI);
 
 	if (pAnim->Type->IsVeins)
 		AnimExt::VeinAttackAI(pAnim);
 
-	GET(AnimClass*, pAnim2, ESI);
-
-	return pAnim2->Type->IsTiberium ?
-		ContinueDrawTiberium : ContinueNotTiberium;
+	return 0;
 }
 
 ///

@@ -3,7 +3,7 @@
 #include "Commands.h"
 
 // Display damage strings
-class SaveVariablesToFileCommandClass : public PhobosCommandClass
+class SaveVariablesToFileCommandClass : public CommandClass
 {
 public:
 	virtual const char* GetName() const override;

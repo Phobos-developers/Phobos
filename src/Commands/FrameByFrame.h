@@ -2,7 +2,7 @@
 
 #include "Commands.h"
 
-class FrameByFrameCommandClass : public PhobosCommandClass
+class FrameByFrameCommandClass : public CommandClass
 {
 public:
 	static size_t FrameStepCount;

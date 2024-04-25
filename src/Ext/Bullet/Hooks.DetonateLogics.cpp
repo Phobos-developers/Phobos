@@ -272,11 +272,23 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 			auto const pWH = pWeaponExt->ExtraWarheads[i];
 			auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 			int damage = defaultDamage;
+			size_t size = pWeaponExt->ExtraWarheads_DamageOverrides.size();
 
-			if (pWeaponExt->ExtraWarheads_DamageOverrides.size() > i)
+			if (size > i)
 				damage = pWeaponExt->ExtraWarheads_DamageOverrides[i];
+			else if (size > 0)
+				damage = pWeaponExt->ExtraWarheads_DamageOverrides[size - 1];
 
-			WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner);
+			bool detonate = true;
+			size = pWeaponExt->ExtraWarheads_DetonationChances.size();
+
+			if (size > i)
+				detonate = pWeaponExt->ExtraWarheads_DetonationChances[i] >= ScenarioClass::Instance->Random.RandomDouble();
+			if (size > 0)
+				detonate = pWeaponExt->ExtraWarheads_DetonationChances[size - 1] >= ScenarioClass::Instance->Random.RandomDouble();
+
+			if (detonate)
+				WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner);
 		}
 	}
 

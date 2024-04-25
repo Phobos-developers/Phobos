@@ -86,6 +86,8 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+
+		void TrajectoryValidation() const;
 	};
 
 	class ExtContainer final : public Container<BulletTypeExt> {

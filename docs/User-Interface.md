@@ -84,7 +84,7 @@ DigitalDisplay.Disable=false            ; boolean
 DigitalDisplayTypes=                    ; list of DigitalDisplayTypes
 ```
 
-In `Ra2MD.ini`:
+In `RA2MD.ini`:
 ```ini
 [Phobos]
 DigitalDisplay.Enable=false             ; boolean
@@ -110,7 +110,7 @@ ShowDesignatorRange=true    ; boolean
 ShowDesignatorRange=true    ; boolean
 ```
 
-In `Ra2MD.ini`:
+In `RA2MD.ini`:
 ```ini
 [Phobos]
 ShowDesignatorRange=false             ; boolean
@@ -208,7 +208,7 @@ The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap=y
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
-In `ra2md.ini`:
+In `RA2MD.ini`:
 ```ini
 [Phobos]
 ShowPlacementPreview=yes   ; boolean

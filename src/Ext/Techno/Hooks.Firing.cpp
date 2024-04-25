@@ -273,7 +273,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		CellClass* pTargetCell = nullptr;
 
 		// AAOnly doesn't need to be checked if LandTargeting=1.
-		if ((!pTechno || pTechno->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK) && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
+		if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
 		{
 			auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pWeapon->Projectile);
 

@@ -39,6 +39,7 @@ public:
 		Valueable<bool> OmniFire_TurnToTarget;
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
+		ValueableVector<double> ExtraWarheads_DetonationChances;
 		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 		Valueable<bool> AmbientDamage_IgnoreTarget;
 
@@ -62,6 +63,7 @@ public:
 			, OmniFire_TurnToTarget { false }
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
+			, ExtraWarheads_DetonationChances {}
 			, AmbientDamage_Warhead {}
 			, AmbientDamage_IgnoreTarget { false }
 		{ }
