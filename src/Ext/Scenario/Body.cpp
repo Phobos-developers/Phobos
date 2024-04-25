@@ -72,10 +72,34 @@ void ScenarioExt::ExtData::SaveVariablesToFile(bool isGlobal)
 
 	const auto& variables = Global()->Variables[isGlobal];
 	for (const auto& variable : variables)
-		pINI->WriteInteger(ScenarioClass::Instance()->FileName, variable.second.Name, variable.second.Value, false);
+	{
+		// Using "GlobalVariables" is probably not a good idea.
+		pINI->WriteInteger(
+			isGlobal ? "GlobalVariables" : ScenarioClass::Instance()->FileName,
+			variable.second.Name, variable.second.Value, false);
+	}
 
 	pINI->WriteCCFile(pFile);
 	pFile->Close();
+}
+
+void ScenarioExt::ExtData::LoadVariablesToFile(bool isGlobal)
+{
+	const auto fileName = isGlobal ? "globals.ini" : "locals.ini";
+	auto pINI = CCINIClass::LoadINIFile(fileName);
+	if (pINI)
+	{
+		auto& variables = Global()->Variables[isGlobal];
+		for (auto& variable : variables)
+		{
+			// Does it really work for LocalVariables?
+			variable.second.Value = pINI->ReadInteger(
+				isGlobal ? "GlobalVariables" : ScenarioClass::Instance()->FileName,
+				variable.second.Name, 0);
+		}
+	}
+
+	CCINIClass::UnloadINIFile(pINI);
 }
 
 void ScenarioExt::Allocate(ScenarioClass* pThis)

@@ -42,6 +42,7 @@ public:
 		void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
 		void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
 		static void SaveVariablesToFile(bool isGlobal);
+		static void LoadVariablesToFile(bool isGlobal);
 
 		virtual ~ExtData() = default;
 

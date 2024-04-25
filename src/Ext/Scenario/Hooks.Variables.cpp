@@ -83,7 +83,77 @@ DEFINE_HOOK(0x685EB1, PhobosSaveVariables, 0x5)//Lose
 		ScenarioExt::ExtData::SaveVariablesToFile(false);
 		ScenarioExt::ExtData::SaveVariablesToFile(true);
 	}
+	else if (R->Origin() == 0x6857EA) // Only Win
+	{
+		ScenarioExt::ExtData::SaveVariablesToFile(true);
+	}
 
 	return 0;
+}
+
+// I'm not sure how it works, this seems to solve the problem for now.
+DEFINE_HOOK(0x4C6217, ScenarioClass_LoadVariables, 0x5)
+{
+	if (Phobos::Config::SaveVariablesOnScenarioEnd)
+	{
+		ScenarioExt::Global()->LoadVariablesToFile(false);
+		ScenarioExt::Global()->LoadVariablesToFile(true);
+	}
+	else
+	{
+		ScenarioExt::Global()->LoadVariablesToFile(true);
+
+		// Is it better not to delete the file?
+		DeleteFileA("globals.ini");
+	}
+
+	return 0x4C622F;
+}
+
+// Inside the original code it forces the use of ScenarioClass::Instance->GlobalVariables[1] as a startup switch.
+// This is a big problem for Phobos that rewrote Variables.
+DEFINE_HOOK(0x685A38, ScenarioClass_sub_685670_SetNextScenario, 0x6)
+{
+	enum { AltNextScenario = 0x685A4C, NextScenario = 0x685A59, Continue = 0x685A63 };
+
+	if (ScenarioClass::Instance->SkipMapSelect)
+	{
+		if (strcmp(ScenarioClass::Instance->AltNextScenario, ""))
+		{
+			auto const& LocalVariables = ScenarioExt::Global()->Variables[false];
+			auto const& GlobalVariables = ScenarioExt::Global()->Variables[true];
+
+			if (!LocalVariables.empty())
+			{
+				for (auto const& itr : LocalVariables)
+				{
+					// AltNextScenario can be started as long as any variable has the name <Alternate Next Scenario>.
+					if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
+						continue;
+
+					return AltNextScenario;
+				}
+			}
+
+			if (!GlobalVariables.empty())
+			{
+				for (auto const& itr : GlobalVariables)
+				{
+					// Same result as above.
+					if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
+						continue;
+
+					return AltNextScenario;
+				}
+			}
+		}
+
+		if (strcmp(ScenarioClass::Instance->NextScenario, ""))
+		{
+			return NextScenario;
+		}
+	}
+
+	return Continue;
 }
 
