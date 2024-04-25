@@ -57,6 +57,17 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 				var.Value = 0;
 		}
 	}
+
+	if (bIsGlobal)
+	{
+		ScenarioExt::Global()->LoadVariablesToFile(true);
+
+		if (!Phobos::Config::SaveVariablesOnScenarioEnd)
+		{
+			// Is it better not to delete the file?
+			DeleteFileA("globals.ini");
+		}
+	}
 }
 
 void ScenarioExt::ExtData::SaveVariablesToFile(bool isGlobal)
@@ -86,9 +97,13 @@ void ScenarioExt::ExtData::SaveVariablesToFile(bool isGlobal)
 void ScenarioExt::ExtData::LoadVariablesToFile(bool isGlobal)
 {
 	const auto fileName = isGlobal ? "globals.ini" : "locals.ini";
-	auto pINI = CCINIClass::LoadINIFile(fileName);
-	if (pINI)
+	auto pINI = GameCreate<CCINIClass>();
+	auto pFile = GameCreate<CCFileClass>(fileName);
+
+	if (pFile->Exists())
 	{
+		pINI->ReadCCFile(pFile);
+
 		auto& variables = Global()->Variables[isGlobal];
 		for (auto& variable : variables)
 		{
@@ -99,7 +114,7 @@ void ScenarioExt::ExtData::LoadVariablesToFile(bool isGlobal)
 		}
 	}
 
-	CCINIClass::UnloadINIFile(pINI);
+	pFile->Close();
 }
 
 void ScenarioExt::Allocate(ScenarioClass* pThis)

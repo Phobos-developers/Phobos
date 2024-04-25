@@ -94,15 +94,10 @@ DEFINE_HOOK(0x685EB1, PhobosSaveVariables, 0x5)//Lose
 // I'm not sure how it works, this seems to solve the problem for now.
 DEFINE_HOOK(0x4C6217, ScenarioClass_LoadVariables, 0x5)
 {
-	if (Phobos::Config::SaveVariablesOnScenarioEnd)
-	{
-		ScenarioExt::Global()->LoadVariablesToFile(false);
-		ScenarioExt::Global()->LoadVariablesToFile(true);
-	}
-	else
-	{
-		ScenarioExt::Global()->LoadVariablesToFile(true);
+	ScenarioExt::Global()->LoadVariablesToFile(true);
 
+	if (!Phobos::Config::SaveVariablesOnScenarioEnd)
+	{
 		// Is it better not to delete the file?
 		DeleteFileA("globals.ini");
 	}
