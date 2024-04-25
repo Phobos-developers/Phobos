@@ -96,12 +96,6 @@ DEFINE_HOOK(0x4C6217, ScenarioClass_LoadVariables, 0x5)
 {
 	ScenarioExt::Global()->LoadVariablesToFile(true);
 
-	if (!Phobos::Config::SaveVariablesOnScenarioEnd)
-	{
-		// Is it better not to delete the file?
-		DeleteFileA("globals.ini");
-	}
-
 	return 0x4C622F;
 }
 
