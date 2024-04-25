@@ -384,6 +384,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->WHAnimRemainingCreationInterval)
+		.Process(this->CanCurrentlyDeployIntoBuilding)
 		;
 }
 
