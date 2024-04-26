@@ -269,7 +269,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PossibleCellSpreadDetonate = (
 		this->RemoveDisguise
 		|| this->RemoveMindControl
-		|| this->Crit_Chance
 		|| this->Shield_Break
 		|| this->Shield_Respawn_Duration > 0
 		|| this->Shield_SelfHealing_Duration > 0

@@ -102,9 +102,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 	}
 
-	if (this->PossibleCellSpreadDetonate)
+	this->Crit_CurrentChance = this->GetCritChance(pOwner);
+
+	if (this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0)
 	{
-		this->HasCrit = false;
+		this->Crit_Active = false;
 
 		if (!this->Crit_ApplyChancePerTarget)
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
@@ -143,7 +145,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pHouse, pTarget);
 
-	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
+	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner, pTargetExt);
 
 	if (this->Convert_Pairs.size() > 0)
@@ -274,7 +276,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	else
 		dice = this->Crit_RandomBuffer;
 
-	if (this->GetCritChance(pOwner) < dice)
+	if (this->Crit_CurrentChance < dice)
 		return;
 
 	if (!pTargetExt)
@@ -304,7 +306,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (!EnumFunctions::IsTechnoEligible(pTarget, this->Crit_Affects))
 		return;
 
-	this->HasCrit = true;
+	this->Crit_Active = true;
 
 	if (this->Crit_AnimOnAffectedTargets && this->Crit_AnimList.size())
 	{
@@ -428,11 +430,11 @@ void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pTarget, HouseClas
 	AttachEffectClass::DetachByGroups(this->AttachEffect_RemoveGroups, pTarget, this->AttachEffect_CumulativeRemoveMinCounts, this->AttachEffect_CumulativeRemoveMaxCounts);
 }
 
-double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer)
+double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 {
 	double critChance = this->Crit_Chance;
 
-	if (critChance == 0.0 || !pFirer)
+	if (!pFirer)
 		return critChance;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pFirer);

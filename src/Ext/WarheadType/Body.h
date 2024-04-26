@@ -132,7 +132,8 @@ public:
 		Valueable<bool> EffectsRequireVerses;
 
 		double Crit_RandomBuffer;
-		bool HasCrit;
+		double Crit_CurrentChance;
+		bool Crit_Active;
 		bool WasDetonatedOnAllMapObjects;
 		bool Splashed;
 		int RemainingAnimCreationInterval;
@@ -254,7 +255,8 @@ public:
 			, EffectsRequireVerses { true }
 
 			, Crit_RandomBuffer { 0.0 }
-			, HasCrit { false }
+			, Crit_CurrentChance { 0.0 }
+			, Crit_Active { false }
 			, WasDetonatedOnAllMapObjects { false }
 			, Splashed { false }
 			, RemainingAnimCreationInterval { 0 }
@@ -290,7 +292,7 @@ public:
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
 		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
-		double GetCritChance(TechnoClass* pFirer);
+		double GetCritChance(TechnoClass* pFirer) const;
 	};
 
 	class ExtContainer final : public Container<WarheadTypeExt>
