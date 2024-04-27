@@ -40,6 +40,9 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplySpawnLimitRange();
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
+
+	if (this->WebbyAnim)
+		this->WebbyUpdate();
 }
 
 
@@ -97,6 +100,42 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 		if (pTargetBullet)
 			pThis->SetTarget(pTargetBullet);
+	}
+}
+
+void TechnoExt::ExtData::WebbyUpdate()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (!TechnoExt::IsActive(pThis) || pThis->WhatAmI() != AbstractType::Infantry)
+		return;
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return;
+
+	if (pExt->WebbyDurationTimer.Completed())
+	{
+		pExt->WebbyDurationCountDown = -1;
+		pExt->WebbyDurationTimer.Stop();
+
+		if (pExt->WebbyAnim->Type) // If this anim doesn't have a type pointer, just detach it
+		{
+			pExt->WebbyAnim->TimeToDie = true;
+			pExt->WebbyAnim->UnInit();
+		}
+
+		pExt->WebbyAnim = nullptr;
+
+		// Restore previous action
+		if (pExt->WebbyLastTarget)
+		{
+			pThis->SetDestination(pExt->WebbyLastTarget, false);
+			pThis->SetTarget(pExt->WebbyLastTarget);
+			pThis->QueueMission(pExt->WebbyLastMission, true);
+			pExt->WebbyLastTarget = nullptr;
+			pExt->WebbyLastMission = Mission::Sleep;
+		}
 	}
 }
 

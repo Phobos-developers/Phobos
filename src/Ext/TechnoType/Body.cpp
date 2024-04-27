@@ -276,6 +276,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
 	this->LandingDir.Read(exINI, pSection, "LandingDir");
 
+	this->Webby_Anims.Read(exINI, pSection, "Webby.Anims");
+	this->ImmuneToWeb.Read(exINI, pSection, "ImmuneToWeb");
+	this->Webby_Duration.Read(exINI, pSection, "Webby.Duration");
+	this->Webby_DurationVariation.Read(exINI, pSection, "Webby.DurationVariation");
+
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
 
@@ -601,6 +606,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->SpawnDistanceFromTarget)
 		.Process(this->SpawnHeight)
+		.Process(this->Webby_Anims)
+		.Process(this->ImmuneToWeb)
+		.Process(this->Webby_Duration)
+		.Process(this->Webby_DurationVariation)
 		.Process(this->LandingDir)
 		.Process(this->DroppodType)
 		.Process(this->Convert_HumanToComputer)
