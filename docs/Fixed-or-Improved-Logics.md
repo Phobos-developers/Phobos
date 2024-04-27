@@ -949,7 +949,7 @@ Strength=1000                 ; integer - the strength of the Veinhole
 ```
 
 ```{warning}
-The game expects certain overlays related to Veinholes to have certain indices, they are listed below.
+The game expects certain overlays related to Veinholes to have certain indices, they are listed below. Please keep in mind that the indices in the OverlayTypes list are 0-based, formed internally by the game, and the identifiers left of "=" don't matter. Vanilla `rulesmd.ini` already has the required overlays listed at the correct indices.
 ```
 
 In `rulesmd.ini`:
