@@ -36,9 +36,6 @@ const wchar_t* ObjectInfoCommandClass::GetUIDescription() const
 
 void ObjectInfoCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
-		return;
-
 	char buffer[0x800] = { 0 };
 
 	auto append = [&buffer](const char* pFormat, ...)
@@ -154,6 +151,19 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 			for (int i = 1; i < pBuilding->Occupants.Count; i++)
 			{
 				append(", %s", pBuilding->Occupants.GetItem(i)->Type->ID);
+			}
+			append("\n");
+		}
+
+		if (pBuilding->Type->Upgrades)
+		{
+			append("Upgrades (%d/%d): ", pBuilding->UpgradeLevel, pBuilding->Type->Upgrades);
+			for (int i = 0; i < 3; i++)
+			{
+				if (i != 0)
+					append(", ");
+
+				append("Slot %d = %s", i+1, pBuilding->Upgrades[i] ? pBuilding->Upgrades[i]->get_ID() : "<none>");
 			}
 			append("\n");
 		}
