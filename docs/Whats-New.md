@@ -19,6 +19,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- `ExtraWarheads.DamageOverrides` now falls back to last listed value if list is shorter than `ExtraWarheads` for all Warhead detonations exceeding the length.
 - Air and Top layer contents are no longer sorted, animations in these layers no longer respect `YSortAdjust`. Animations attached to flying units now get their layer updated immediately after parent unit, if they are on same layer they will draw above the parent unit.
 - `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
@@ -59,6 +60,25 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From 0.1.1
 
 - Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
+
+### New user settings in RA2MD.ini
+
+- These are new user setting keys added by various features in Phobos. Most of them can be found in either in [user inteface](User-Interface.md) or [miscellaneous](Miscellanous.md) sections. Search functionality can be used to find them quickly if needed.
+
+```ini
+[Phobos]
+CampaignDefaultGameSpeed=4       ; integer
+ShowBriefing=true                ; boolean
+DigitalDisplay.Enable=false      ; boolean
+ShowDesignatorRange=false        ; boolean
+PrioritySelectionFiltering=true  ; boolean
+ShowPlacementPreview=yes         ; boolean
+RealTimeTimers=false             ; boolean
+RealTimeTimers.Adaptive=false    ; boolean
+ToolTipDescriptions=true         ; boolean
+ToolTipBlur=false                ; boolean
+SaveGameOnScenarioStart=true     ; boolean
+```
 
 ### For Map Editor (Final Alert 2)
 
@@ -320,9 +340,10 @@ New:
 - `UndeploysInto` building selling buildup sequence length customization (by Starkku)
 - Allow overriding `Shield.AffectTypes` for each Warhead shield interaction (by Starkku)
 - TechnoType conversion warhead & superweapon (by Morton)
+- TechnoType conversion on ownership change (by Trsdy)
 - Unlimited skirmish colors (by Morton)
 - Example custom locomotor that circles around the target (*NOTE: For developer use only*) (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
-- Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar)
+- Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar & Trsdy)
 - Crushing tilt and slowdown customization (by Starkku)
 - Extra warhead detonations on weapon (by Starkku)
 - Chrono sparkle animation display customization and improvements (by Starkku)
@@ -368,6 +389,8 @@ New:
 - Allow to change the speed of gas particles (by ZivDero)
 - Universal deploy from any techno into any techno (by FS-21)
 - Allow upgrade animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Starkku)
+- Toggle for `Explodes=true` BuildingTypes to not explode during buildup or being sold (by Starkku)
+- Toggleable height-based shadow scaling for voxel air units (by Trsdy & Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -427,7 +450,6 @@ Vanilla fixes:
 - Spawned aircraft now align with the spawner's facing when landing (by Starkku)
 - Fixed infantries attempted to entering buildings when waypointing together with engineer/agent/occupier/etc (by Trsdy)
 - Fixed jumpjet crash speed when crashing onto buildings (by NetsuNegi)
-- Fixed infantry requiring `MovementZone=AmphibiousDestroyer` specifically to be able to use water sequences instead of any amphibious / water `MovementZone` (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -460,6 +482,7 @@ Phobos fixes:
 - Fixed a desync error caused by air/top layer sorting (by Starkku)
 - Fixed heal / repair weapons being unable to remove parasites from shielded targets if they were unable to heal / repair the parent unit (by Starkku)
 - Fixed `Inviso=true` interceptor projectiles applying damage on interceptable, armor type-having projectiles twice (by Starkku)
+- Fixed `AutoDeath` causing crashes when used to kill a parasite unit inside an another unit (by Starkku)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)

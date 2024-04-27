@@ -809,21 +809,3 @@ DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Teleport, notorious CLEG frozen state re
 DEFINE_JUMP(LJMP, 0x72A16A, 0x72A186);//Tunnel, not a big deal
 DEFINE_JUMP(LJMP, 0x663428, 0x663445);//Rocket, not a big deal
 DEFINE_JUMP(LJMP, 0x5170CE, 0x5170E0);//Hover, not a big deal
-
-// Allow infantry to use all amphibious/water movement zones and still display sequence correctly.
-DEFINE_HOOK(0x51D793, InfantryClass_DoAction_MovementZoneCheck, 0x6)
-{
-	enum { Amphibious = 0x51D7A6, NotAmphibious = 0x51D8BF };
-
-	GET(InfantryClass*, pThis, ESI);
-
-	auto const mZone = pThis->Type->MovementZone;
-
-	if (mZone == MovementZone::Amphibious || mZone == MovementZone::AmphibiousDestroyer || mZone == MovementZone::AmphibiousCrusher ||
-		mZone == MovementZone::Water || mZone == MovementZone::WaterBeach)
-	{
-		return Amphibious;
-	}
-
-	return NotAmphibious;
-}

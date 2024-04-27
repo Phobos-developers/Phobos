@@ -100,7 +100,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Animation with `Tiled=yes` now supports `CustomPalette`.
 - Attempted to avoid units from retaining previous orders (attack,grind,garrison,etc) after changing ownership (mind-control,abduction,etc).
 - Fixed buildings' `NaturalParticleSystem` being created for in-map pre-placed structures.
-- Fixed jumpjet units being unable to visually tilt or be flipped over on the ground if `TiltCrashJumpjet=no`.
+- Fixed jumpjet units being unable to visually tilt or be flipped if `TiltCrashJumpjet=no`.
 - Unlimited (more than 5) `AlternateFLH` entries for units.
 - Warheads spawning debris now use `MaxDebris` as an actual cap for number of debris to spawn instead of `MaxDebris` - 1.
  If both `Primary` and `Secondary` weapons can fire at air targets (projectile has `AA=true`), `Primary` can now be picked instead of always forcing `Secondary`. Also applies to `IsGattling=true`, with odd-numbered and even-numbered `WeaponX` slots instead of `Primary` and `Secondary`, respectively.
@@ -145,11 +145,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed railgun and fire particles being cut off by elevation changes.
 - Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
 - Fixed teleport units being unable to visually tilt on slopes.
-- Fixed units with Teleport or Tunnel locomotor being unable to be visually flipped like other locomotors do.
+- Fixed rockets' shadow location.
+- Fixed units with Teleport, Tunnel or Fly locomotor being unable to be visually flipped like other locomotors do.
 - Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
 - Spawned aircraft now align with the spawner's facing when landing.
 - Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers EnteredBy event by executing capture mission.
-- Fixed infantry requiring `MovementZone=AmphibiousDestroyer` specifically to be able to use water sequences instead of any amphibious / water `MovementZone`.
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 
 ## Fixes / interactions with other extensions
@@ -566,14 +566,18 @@ In `rulesmd.ini`:
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
-### Exploding unit passenger killing customization
+### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
+- BuildingTypes with `Explodes=true` can by default explode even when they are still being built or sold. This can be disabled by setting `Explodes.DuringBuildup` to false. This causes them to behave as if `Explodes` was set to false while being built up or sold.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                 ; TechnoType
 Explodes.KillPassengers=true ; boolean
+
+[SOMEBUILDING]               ; BuildingType
+Explodes.DuringBuildup=true  ; boolean
 ```
 
 ### IronCurtain effects on organics customization
@@ -685,11 +689,30 @@ NoWobbles=false  ; boolean
 ### Voxel body multi-section shadows
 
 - It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
+  - `ShadowIndex.Frame` and `ShadowIndices.Frame` can be used to customize which frame of the HVA animation for the section from `ShadowIndex` and `ShadowIndices` is used to display the shadow, respectively. -1 is special value which means currently shown frame is used, and `ShadowIndices.Frame` defaults to this.
 
 In `artmd.ini`:
 ```ini
-[SOMETECHNO]    ; TechnoType
-ShadowIndices=  ; list of integers (voxel section indices)
+[SOMETECHNO]          ; TechnoType
+ShadowIndices=        ; list of integers (voxel section indices)
+ShadowIndex.Frame=0   ; integer (HVA animation frame index)
+ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
+```
+
+### Voxel shadow scaling in air
+
+- It is now possible to adjust how voxel air units (`VehicleType` & `AircraftType`) shadows scale in air. By default the shadows scale by `AirShadowBaseScale` (defaults to 0.5) amount if unit is `ConsideredAircraft=true`.
+  - If `HeightShadowScaling=true`, the shadow is scaled by amount that is determined by following formula: `Max(AirShadowBaseScale ^ (currentHeight / ShadowSizeCharacteristicHeight), HeightShadowScaling.MinScale)`, where `currentHeight` is unit's current height in leptons, `ShadowSizeCharacteristicHeight` overrideable value that defaults to the maximum cruise height (`JumpjetHeight`, `FlightLevel` etc) and `HeightShadowScaling.MinScale` sets a floor for the scale.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+AirShadowBaseScale=0.5            ; floating point value
+HeightShadowScaling=false         ; boolean
+HeightShadowScaling.MinScale=0.0  ; floating point value
+
+[SOMETECHNO]                      ; TechnoType
+ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 ```
 
 ### Forbid parallel AI queues
@@ -834,6 +857,7 @@ IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.K
 ### Voxel turret shadow
 
 - Vehicle voxel turrets can now draw shadows if `[AudioVisual]` -> `DrawTurretShadow` is set to true. This can be overridden per VehicleType by setting `TurretShadow` in the vehicle's `artmd.ini` section.
+
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
@@ -925,7 +949,7 @@ Strength=1000                 ; integer - the strength of the Veinhole
 ```
 
 ```{warning}
-The game expects certain overlays related to Veinholes to have certain indices, they are listed below.
+The game expects certain overlays related to Veinholes to have certain indices, they are listed below. Please keep in mind that the indices in the OverlayTypes list are 0-based, formed internally by the game, and the identifiers left of "=" don't matter. Vanilla `rulesmd.ini` already has the required overlays listed at the correct indices.
 ```
 
 In `rulesmd.ini`:
