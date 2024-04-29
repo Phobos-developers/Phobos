@@ -1,6 +1,6 @@
 # What's New
 
-This page lists the history of changes across stable Phobos releases and also all the stuff that requires modders to change something in their mods to accomodate.
+This page lists the history of changes across stable Phobos releases and also all the stuff that requires modders to change something in their mods to accommodate.
 
 ## Migrating
 
@@ -19,6 +19,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- `ExtraWarheads.DamageOverrides` now falls back to last listed value if list is shorter than `ExtraWarheads` for all Warhead detonations exceeding the length.
 - Air and Top layer contents are no longer sorted, animations in these layers no longer respect `YSortAdjust`. Animations attached to flying units now get their layer updated immediately after parent unit, if they are on same layer they will draw above the parent unit.
 - `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
@@ -44,7 +45,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 - `DetachedFromOwner` on weapons is deprecated. This has been replaced by `AllowDamageOnSelf` on warheads.
-- Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accomodate to this change.
+- Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accommodate to this change.
 - [Placement Preview](User-Interface.md#placement-preview) logic has been adjusted, `BuildingPlacementPreview.DefaultTranslucentLevel`, `BuildingPlacementGrid.TranslucentLevel`, `PlacementPreview.Show`, `PlacementPreview.TranslucentLevel` and `ShowBuildingPlacementPreview` tags have been remade/renamed and require adjustments to function. In addition, you must explicitly enable this feature by specifying `[AudioVisual]->PlacementPreview=yes`.
 - Existing script actions were renumbered, please use the migration utility to change the numbers to the correct ones.
 - `DiskLaser.Radius` values were misinterpreted by a factor of 1/2π. The default radius is now 240, please multiply your customized radii by 2π.
@@ -59,6 +60,25 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From 0.1.1
 
 - Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
+
+### New user settings in RA2MD.ini
+
+- These are new user setting keys added by various features in Phobos. Most of them can be found in either in [user inteface](User-Interface.md) or [miscellaneous](Miscellanous.md) sections. Search functionality can be used to find them quickly if needed.
+
+```ini
+[Phobos]
+CampaignDefaultGameSpeed=4       ; integer
+ShowBriefing=true                ; boolean
+DigitalDisplay.Enable=false      ; boolean
+ShowDesignatorRange=false        ; boolean
+PrioritySelectionFiltering=true  ; boolean
+ShowPlacementPreview=yes         ; boolean
+RealTimeTimers=false             ; boolean
+RealTimeTimers.Adaptive=false    ; boolean
+ToolTipDescriptions=true         ; boolean
+ToolTipBlur=false                ; boolean
+SaveGameOnScenarioStart=true     ; boolean
+```
 
 ### For Map Editor (Final Alert 2)
 
@@ -320,9 +340,10 @@ New:
 - `UndeploysInto` building selling buildup sequence length customization (by Starkku)
 - Allow overriding `Shield.AffectTypes` for each Warhead shield interaction (by Starkku)
 - TechnoType conversion warhead & superweapon (by Morton)
+- TechnoType conversion on ownership change (by Trsdy)
 - Unlimited skirmish colors (by Morton)
 - Example custom locomotor that circles around the target (*NOTE: For developer use only*) (by Kerbiter, CCHyper, with help from Otamaa; based on earlier experiment by CnCVK)
-- Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar)
+- Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar & Trsdy)
 - Crushing tilt and slowdown customization (by Starkku)
 - Extra warhead detonations on weapon (by Starkku)
 - Chrono sparkle animation display customization and improvements (by Starkku)
@@ -360,6 +381,14 @@ New:
 - Allow customizing aircraft landing direction per aircraft or per dock (by Starkku)
 - Allow animations to play sounds detached from audio event handler (by Starkku)
 - Game save option when starting campaigns (by Trsdy)
+- Carryall pickup voice (by Starkku)
+- Option to have `Grinding.Weapon` require accumulated credits from grinding (by Starkku)
+- Re-enable the Veinhole Monster and Weeds from TS (by ZivDero)
+- Recreate the weed-charging of SWs like the TS Chemical Missile (by ZivDero)
+- Allow to change the speed of gas particles (by ZivDero)
+- Allow upgrade animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Starkku)
+- Toggle for `Explodes=true` BuildingTypes to not explode during buildup or being sold (by Starkku)
+- Toggleable height-based shadow scaling for voxel air units (by Trsdy & Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -418,6 +447,7 @@ Vanilla fixes:
 - Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction (by Starkku)
 - Spawned aircraft now align with the spawner's facing when landing (by Starkku)
 - Fixed infantries attempted to entering buildings when waypointing together with engineer/agent/occupier/etc (by Trsdy)
+- Fixed jumpjet crash speed when crashing onto buildings (by NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -450,6 +480,7 @@ Phobos fixes:
 - Fixed a desync error caused by air/top layer sorting (by Starkku)
 - Fixed heal / repair weapons being unable to remove parasites from shielded targets if they were unable to heal / repair the parent unit (by Starkku)
 - Fixed `Inviso=true` interceptor projectiles applying damage on interceptable, armor type-having projectiles twice (by Starkku)
+- Fixed `AutoDeath` causing crashes when used to kill a parasite unit inside an another unit (by Starkku)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)
