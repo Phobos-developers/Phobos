@@ -515,9 +515,11 @@ The possible argument values are:
 
 | *Argument* | *Description*                                 |
 | :--------: | :-------------------------------------------: |
+| -5         | Selects a random House, including civilians. The own house is excluded in the selection of the most hated by everyone |
+| -4         | Any random civilian house   |
 | -3         | All Human players will be hated by everyone   |
-| -2         | The Team House will be the most hated by everyone (allies remain allies) |
-| -1         | Selects a random House. The own House is excluded in the selection of the most hated by everyone |
+| -2         | The Team House will be the most hated by everyone (allies won't pick allies as enemies) |
+| -1         | Selects a random House. The own house & civilians are excluded in the selection of the most hated by everyone |
 | >= 0       | House index that will be hated by everyone    |
 
 ### `16000-16999` Flow Control
