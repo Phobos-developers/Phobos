@@ -329,7 +329,7 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 	return true;
 }
 
-// Assigns a secret production option to the AI building.
+// Assigns a secret production option to the AI building (Ares doesn't handle the AI case).
 void BuildingExt::ExtData::UpdateSecretLabAI()
 {
 	auto pThis = this->OwnerObject();
