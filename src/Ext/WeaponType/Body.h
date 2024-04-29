@@ -40,6 +40,9 @@ public:
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		ValueableVector<double> ExtraWarheads_DetonationChances;
+		Valueable<double> RandomTarget;
+		Valueable<bool> RandomTarget_DistributeBurst;
+		Valueable<bool> RandomTarget_Spawners_MultipleTargets;
 		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 		Valueable<bool> AmbientDamage_IgnoreTarget;
 
@@ -64,6 +67,9 @@ public:
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
 			, ExtraWarheads_DetonationChances {}
+			, RandomTarget { 0.0 }
+			, RandomTarget_DistributeBurst { false }
+			, RandomTarget_Spawners_MultipleTargets { false }
 			, AmbientDamage_Warhead {}
 			, AmbientDamage_IgnoreTarget { false }
 		{ }

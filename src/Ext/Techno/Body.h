@@ -6,8 +6,10 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Macro.h>
+#include <Utilities/EnumFunctions.h>
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <Ext/Event/Body.h>
 
 class BulletClass;
 
@@ -38,6 +40,9 @@ public:
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
 		int WHAnimRemainingCreationInterval;
+		AbstractClass* OriginalTarget;
+		bool ResetRandomTarget;
+		TechnoClass* CurrentRandomTarget;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -61,6 +66,9 @@ public:
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
 			, WHAnimRemainingCreationInterval { 0 }
+			, OriginalTarget { nullptr }
+			, ResetRandomTarget { false }
+			, CurrentRandomTarget { nullptr }
 		{ }
 
 		void OnEarlyUpdate();
@@ -76,12 +84,15 @@ public:
 		void UpdateLaserTrails();
 		void InitializeLaserTrails();
 		void UpdateMindControlAnim();
+		void UpdateRandomTargets();
 
 		virtual ~ExtData() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
 			AnnounceInvalidPointer(OriginalPassengerOwner, ptr);
+			AnnounceInvalidPointer(CurrentRandomTarget, ptr);
+			AnnounceInvalidPointer(OriginalTarget, ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -118,6 +129,7 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static bool IsActive(TechnoClass* pThis);
+	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed);
 
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);
@@ -144,6 +156,9 @@ public:
 	static bool ConvertToType(FootClass* pThis, TechnoTypeClass* toType);
 	static bool CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue = false);
 	static bool IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource);
+	static bool UpdateRandomTarget(TechnoClass* pThis = nullptr);
+	static TechnoClass* FindRandomTarget(TechnoClass* pThis = nullptr);
+	static bool IsValidTechno(TechnoClass* pTechno);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
@@ -158,4 +173,7 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
+
+	static void SendStopTarNav(TechnoClass* pThis);
+	static void HandleStopTarNav(EventExt* event);
 };

@@ -60,6 +60,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
 	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
+	this->RandomTarget.Read(exINI, pSection, "RandomTarget");
+	this->RandomTarget_DistributeBurst.Read(exINI, pSection, "RandomTarget.DistributeBurst");
+	this->RandomTarget_Spawners_MultipleTargets.Read(exINI, pSection, "RandomTarget.Spawners.MultipleTargets");
 	this->AmbientDamage_Warhead.Read(exINI, pSection, "AmbientDamage.Warhead");
 	this->AmbientDamage_IgnoreTarget.Read(exINI, pSection, "AmbientDamage.IgnoreTarget");
 }
@@ -88,6 +91,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraWarheads)
 		.Process(this->ExtraWarheads_DamageOverrides)
 		.Process(this->ExtraWarheads_DetonationChances)
+		.Process(this->RandomTarget)
+		.Process(this->RandomTarget_DistributeBurst)
+		.Process(this->RandomTarget_Spawners_MultipleTargets)
 		.Process(this->AmbientDamage_Warhead)
 		.Process(this->AmbientDamage_IgnoreTarget)
 		;

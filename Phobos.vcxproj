@@ -88,6 +88,7 @@
     <ClCompile Include="src\Ext\Bullet\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Hooks.cpp" />
     <ClCompile Include="src\Ext\Bullet\Hooks.Obstacles.cpp" />
+    <ClCompile Include="src\Ext\Event\Body.cpp" />
     <ClCompile Include="src\Ext\House\Body.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.AINavalProduction.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\StraightTrajectory.h" />
+    <ClInclude Include="src\Ext\Event\Body.h" />
     <ClInclude Include="src\Ext\OverlayType\Body.h" />
     <ClInclude Include="src\Ext\ParticleType\Body.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />
