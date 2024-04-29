@@ -192,11 +192,7 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 			break;
 		}
 
-		if (!currFactory)
-		{
-			Game::RaiseError(E_POINTER);
-		}
-		else if (!*currFactory)
+		if (!*currFactory)
 		{
 			*currFactory = pThis;
 			return 0;

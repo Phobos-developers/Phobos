@@ -1,3 +1,4 @@
+#include <AircraftClass.h>
 #include <ScenarioClass.h>
 #include "Body.h"
 
@@ -158,13 +159,19 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
+DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 {
-	enum { SkipKillingPassengers = 0x702669 };
+	enum { SkipExploding = 0x702672, SkipKillingPassengers = 0x702669 };
 
 	GET(TechnoClass*, pThis, ESI);
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+	{
+		if (!pTypeExt->Explodes_DuringBuildup && (pThis->CurrentMission == Mission::Construction || pThis->CurrentMission == Mission::Selling))
+			return SkipExploding;
+	}
 
 	if (!pTypeExt->Explodes_KillPassengers)
 		return SkipKillingPassengers;
@@ -449,6 +456,32 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 
 	if(RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
 		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
+{
+	enum { SkipResponse = 0x709015 };
+
+	GET(TechnoClass*, pThis, ECX);
+
+	if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+	{
+		if (pAircraft->Type->Carryall && pAircraft->HasAnyLink() &&
+			pAircraft->Destination && (pAircraft->Destination->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+		{
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
+
+			if (pTypeExt->VoicePickup.isset())
+			{
+				pThis->QueueVoice(pTypeExt->VoicePickup.Get());
+
+				R->EAX(1);
+				return SkipResponse;
+			}
+		}
+	}
 
 	return 0;
 }
