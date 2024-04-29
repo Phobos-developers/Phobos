@@ -1,28 +1,27 @@
 #pragma once
-#include <OverlayTypeClass.h>
+
+#include <ParticleTypeClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Macro.h>
 
-class OverlayTypeExt
+class ParticleTypeExt
 {
 public:
-	using base_type = OverlayTypeClass;
+	using base_type = ParticleTypeClass;
 
-	static constexpr DWORD Canary = 0xADF48498;
+	static constexpr DWORD Canary = 0xEAFEEAFE;
 	static constexpr size_t ExtPointerOffset = 0x18;
 
-	class ExtData final : public Extension<OverlayTypeClass>
+	class ExtData final : public Extension<ParticleTypeClass>
 	{
 	public:
-		PhobosFixedString<32u> PaletteFile;
-		DynamicVectorClass<ColorScheme*>* Palette; // Intentionally not serialized - rebuilt from the palette file on load.
+		Valueable<int> Gas_MaxDriftSpeed;
 
-		ExtData(OverlayTypeClass* OwnerObject) : Extension<OverlayTypeClass>(OwnerObject)
-			, PaletteFile {}
-			, Palette {}
+		ExtData(ParticleTypeClass* OwnerObject) : Extension<ParticleTypeClass>(OwnerObject)
+			, Gas_MaxDriftSpeed { 2 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -37,10 +36,9 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
-		void BuildPalette();
 	};
 
-	class ExtContainer final : public Container<OverlayTypeExt>
+	class ExtContainer final : public Container<ParticleTypeExt>
 	{
 	public:
 		ExtContainer();
