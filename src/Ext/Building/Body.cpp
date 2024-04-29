@@ -380,7 +380,7 @@ void BuildingExt::ExtData::UpdateSecretLabAI()
 
 	if (possibleCandidates.Count > 0)
 	{
-		std::map<TechnoTypeClass*, int> ownedBuildings;
+		std::map<BuildingTypeClass*, int> ownedBuildings;
 
 		for (auto building : pOwner->Buildings)
 		{

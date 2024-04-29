@@ -281,6 +281,25 @@ void RulesExt::FillDefaultPrerequisites()
 
 		objectsList.Clear();
 	}
+
+	// Debug
+	/*if (RulesExt::Global()->GenericPrerequisites.Count > 0)
+	{
+		Debug::Log("[GenericPrerequisites] = %d\n", RulesExt::Global()->GenericPrerequisites.Count);
+		Debug::Log("[GenericPrerequisites] (ID names) = %d\n\n", RulesExt::Global()->GenericPrerequisitesNames.Count);
+
+		for (int i = 0; i < RulesExt::Global()->GenericPrerequisites.Count; i++)
+		{
+			auto list = RulesExt::Global()->GenericPrerequisites.GetItem(i);
+			const auto listName = RulesExt::Global()->GenericPrerequisitesNames[i];
+
+			for (int j : list)
+			{
+				auto pTypeName = BuildingTypeClass::Array->GetItem(j)->ID;
+				Debug::Log("[GenericPrerequisites][%s](%d) -> [%s](%d)\n", listName, i, pTypeName, j);
+			}
+		}
+	}*/
 }
 
 // =============================

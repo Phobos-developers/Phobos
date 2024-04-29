@@ -380,7 +380,7 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 	}
 }
 
-bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, std::map<TechnoTypeClass*, int> ownedBuildings, bool skipSecretLabChecks)
+bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const pItem, std::map<BuildingTypeClass*, int> ownedBuildings, bool skipSecretLabChecks)
 {
 	if (!pThis || !pItem)
 		return false;
@@ -448,7 +448,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			}
 			else
 			{
-				if (ownedBuildings[TechnoTypeClass::Array->GetItem(idx)] > 0)
+				if (ownedBuildings.count(BuildingTypeClass::Array->GetItem(idx)) > 0)
 					prerequisiteNegativeMet = true;
 			}
 
@@ -480,7 +480,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			}
 			else
 			{
-				if (ownedBuildings[TechnoTypeClass::Array->GetItem(idx)] > 0)
+				if (ownedBuildings.count(BuildingTypeClass::Array->GetItem(idx)) > 0)
 					prerequisiteOverrideMet = true;
 			}
 		}
@@ -501,7 +501,8 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			}
 			else
 			{
-				if (ownedBuildings[TechnoTypeClass::Array->GetItem(idx)] > 0)
+				auto debugType = BuildingTypeClass::Array->GetItem(idx);
+				if (ownedBuildings.count(BuildingTypeClass::Array->GetItem(idx)) > 0)
 					found = true;
 			}
 
@@ -540,7 +541,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 				{
 					found = false;
 
-					if (ownedBuildings[TechnoTypeClass::Array->GetItem(idx)] > 0)
+					if (ownedBuildings.count(BuildingTypeClass::Array->GetItem(idx)) > 0)
 						found = true;
 				}
 
@@ -555,14 +556,14 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 	return prerequisiteMet || prerequisiteListsMet || prerequisiteOverrideMet;
 }
 
-bool HouseExt::HasGenericPrerequisite(int idx, std::map<TechnoTypeClass*, int> ownedBuildings)
+bool HouseExt::HasGenericPrerequisite(int idx, std::map<BuildingTypeClass*, int> ownedBuildings)
 
 {
 	if (idx >= 0)
 		return false;
 
 	DynamicVectorClass<int> selectedPrerequisite = RulesExt::Global()->GenericPrerequisites.GetItem(std::abs(idx));
-	//auto selectedPrerequisiteName = RulesExt::Global()->GenericPrerequisitesNames.GetItem(std::abs(idx));// Only used for easy debug
+	const char* selectedPrerequisiteName = RulesExt::Global()->GenericPrerequisitesNames[std::abs(idx)];// Only used for easy debug
 
 	if (selectedPrerequisite.Count == 0)
 		return false;
@@ -574,7 +575,8 @@ bool HouseExt::HasGenericPrerequisite(int idx, std::map<TechnoTypeClass*, int> o
 		if (found)
 			break;
 
-		if (ownedBuildings[TechnoTypeClass::Array->GetItem(idxItem)] > 0)
+		auto debugType = BuildingTypeClass::Array->GetItem(idxItem);
+		if (ownedBuildings.count(BuildingTypeClass::Array->GetItem(idxItem)) > 0)
 			found = true;
 	}
 

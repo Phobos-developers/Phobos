@@ -300,7 +300,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		int destroyedBridgesCount = 0;
 		int undamagedBridgesCount = 0;
 		std::map<TechnoTypeClass*, int> ownedRecruitables;
-		std::map<TechnoTypeClass*, int> ownedBuildings;
+		std::map<BuildingTypeClass*, int> ownedBuildings;
 
 		for (auto pTechno : *TechnoClass::Array)
 		{
@@ -308,7 +308,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			{
 				if (pTechno->Owner == pHouse)
 				{
-					++ownedBuildings[pTechno->GetTechnoType()];
+					++ownedBuildings[static_cast<BuildingTypeClass*>(pTechno->GetTechnoType())];
 				}
 				else
 				{
@@ -701,7 +701,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							// Check if each unit in the taskforce has the available recruitable units in the map
 							if (allObjectsCanBeBuiltOrRecruited && entry.Type && entry.Amount > 0)
 							{
-								if (ownedRecruitables[entry.Type] < entry.Amount)
+								if (ownedRecruitables.count(entry.Type) < entry.Amount)
 								{
 									allObjectsCanBeBuiltOrRecruited = false;
 									break;
