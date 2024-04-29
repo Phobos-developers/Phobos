@@ -45,6 +45,10 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->UseWeeds)
+		.Process(this->UseWeeds_Amount)
+		.Process(this->UseWeeds_StorageTimer)
+		.Process(this->UseWeeds_ReadinessAnimationPercentage)
 		.Process(this->SW_GrantOneTime)
 		.Process(this->SW_GrantOneTime_InitialReady)
 		.Process(this->SW_GrantOneTime_RandomWeightsData)
@@ -150,6 +154,11 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::Owner);
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
+
+	this->UseWeeds.Read(exINI, pSection, "UseWeeds");
+	this->UseWeeds_Amount.Read(exINI, pSection, "UseWeeds.Amount");
+	this->UseWeeds_StorageTimer.Read(exINI, pSection, "UseWeeds.StorageTimer");
+	this->UseWeeds_ReadinessAnimationPercentage.Read(exINI, pSection, "UseWeeds.ReadinessAnimationPercentage");
 
 	this->SW_GrantOneTime.Read(exINI, pSection, "SW.GrantOneTime");
 	this->SW_GrantOneTime_InitialReady.Read(exINI, pSection, "SW.GrantOneTime.InitialReady");

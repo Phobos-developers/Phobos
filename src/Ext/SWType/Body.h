@@ -64,6 +64,11 @@ public:
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
+		Valueable<bool> UseWeeds;
+		Valueable<int> UseWeeds_Amount;
+		Valueable<bool> UseWeeds_StorageTimer;
+		Valueable<double> UseWeeds_ReadinessAnimationPercentage;
+
 		ValueableIdxVector<SuperWeaponTypeClass> SW_GrantOneTime;
 		Nullable<bool> SW_GrantOneTime_InitialReady;
 		ValueableVector<float> SW_GrantOneTime_RollChances;
@@ -105,6 +110,10 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+			, UseWeeds { false }
+			, UseWeeds_Amount { RulesClass::Instance->WeedCapacity }
+			, UseWeeds_StorageTimer { false }
+			, UseWeeds_ReadinessAnimationPercentage { 0.9 }
 			, SW_GrantOneTime {}
 			, SW_GrantOneTime_InitialReady {}
 			, SW_GrantOneTime_RollChances {}
