@@ -610,6 +610,44 @@ bool TechnoExt::IsValidTechno(TechnoClass* pTechno)
 	return isValid;
 }
 
+void TechnoExt::SendStopTarNav(TechnoClass* pThis)
+{
+	auto pFoot = abstract_cast<FootClass*>(pThis);
+
+	EventExt event;
+	event.Type = EventTypeExt::SyncStopTarNav;
+	event.HouseIndex = (char)HouseClass::CurrentPlayer->ArrayIndex;
+	event.Frame = Unsorted::CurrentFrame;
+
+	event.AddEvent();
+}
+
+void TechnoExt::HandleStopTarNav(EventExt* event)
+{
+	int technoUniqueID = event->SyncStopTarNav.TechnoUniqueID;
+
+	for (auto pTechno : *TechnoClass::Array)
+	{
+		if (pTechno && pTechno->UniqueID == technoUniqueID)
+		{
+			auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+
+			pTechno->SetTarget(nullptr);
+			pExt->CurrentRandomTarget = nullptr;
+			pExt->OriginalTarget = nullptr;
+			pTechno->SetDestination(nullptr, true);
+
+			auto pFoot = abstract_cast<FootClass*>(pTechno);
+
+			if (pFoot->Locomotor->Is_Moving_Now())
+				pFoot->StopMoving();
+
+			pTechno->QueueMission(Mission::Guard, false);
+			break;
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -627,6 +665,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
+		.Process(this->ResetRandomTarget)
 		.Process(this->IsInTunnel)
 		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)

@@ -9,6 +9,7 @@
 #include <Utilities/EnumFunctions.h>
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
+#include <Ext/Event/Body.h>
 
 class BulletClass;
 
@@ -172,4 +173,7 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
+
+	static void SendStopTarNav(TechnoClass* pThis);
+	static void HandleStopTarNav(EventExt* event);
 };

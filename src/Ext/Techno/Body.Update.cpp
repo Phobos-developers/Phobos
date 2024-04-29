@@ -765,31 +765,34 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 void TechnoExt::ExtData::UpdateRandomTargets()
 {
 	auto const pThis = this->OwnerObject();
-	if (!pThis)
+	if (!pThis || !IsValidTechno(pThis))
 		return;
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (!pExt)
-		return;
-
-	if (pExt->CurrentRandomTarget)
+	if (this->CurrentRandomTarget)
 	{
-		auto const pCurrRandTarget = pExt->CurrentRandomTarget;
-		bool isValidTechno = pCurrRandTarget && pCurrRandTarget->IsAlive && pCurrRandTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrRandTarget, true) && (pCurrRandTarget->WhatAmI() == AbstractType::Infantry || pCurrRandTarget->WhatAmI() == AbstractType::Unit || pCurrRandTarget->WhatAmI() == AbstractType::Building || pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
+		auto const pCurrRandTarget = this->CurrentRandomTarget;
+		bool isValidTechno = pCurrRandTarget
+			&& pCurrRandTarget->IsAlive
+			&& pCurrRandTarget->Health > 0
+			&& TechnoExt::IsUnitAvailable(pCurrRandTarget, true)
+			&& (pCurrRandTarget->WhatAmI() == AbstractType::Infantry
+				|| pCurrRandTarget->WhatAmI() == AbstractType::Unit
+				|| pCurrRandTarget->WhatAmI() == AbstractType::Building
+				|| pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
 
 		if (!isValidTechno)
 		{
-			auto const pOrigTarget = pExt->OriginalTarget;
-			pExt->CurrentRandomTarget = nullptr;
-			pThis->SetTarget(pOrigTarget && !pOrigTarget->Dirty ? pExt->OriginalTarget : nullptr);
-			pExt->OriginalTarget = nullptr;
+			bool isValidOriginalTarget = TechnoExt::IsValidTechno(abstract_cast<TechnoClass*>(this->OriginalTarget));
+			this->CurrentRandomTarget = nullptr;
+			pThis->Target = isValidOriginalTarget ? this->OriginalTarget : nullptr;
+			this->OriginalTarget = nullptr;
 		}
 	}
 
 	if (pThis->Target
 		&& pThis->SpawnManager
-		&& pExt->CurrentRandomTarget
-		&& IsUnitAvailable(static_cast<TechnoClass*>(pExt->CurrentRandomTarget), true))
+		&& this->CurrentRandomTarget
+		&& IsUnitAvailable(static_cast<TechnoClass*>(this->CurrentRandomTarget), true))
 	{
 		for (auto pSpawn : pThis->SpawnManager->SpawnedNodes)
 		{
@@ -813,11 +816,12 @@ void TechnoExt::ExtData::UpdateRandomTargets()
 		}
 	}
 
-	if (pExt->OriginalTarget && !pThis->Target && IsUnitAvailable(static_cast<TechnoClass*>(pExt->OriginalTarget), true) && !pThis->IsInAir())
+	if (this->OriginalTarget && !pThis->Target && IsUnitAvailable(static_cast<TechnoClass*>(this->OriginalTarget), true) && !pThis->IsInAir())
 	{
-		if (pExt->CurrentRandomTarget && IsUnitAvailable(pExt->CurrentRandomTarget, true))
-			pThis->SetTarget(pExt->CurrentRandomTarget);
+		if (this->CurrentRandomTarget && IsUnitAvailable(this->CurrentRandomTarget, true))
+			pThis->SetTarget(this->CurrentRandomTarget);
 		else
-			pThis->SetTarget(pExt->OriginalTarget);
+			pThis->SetTarget(this->OriginalTarget);
 	}
 }
+

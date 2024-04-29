@@ -919,7 +919,14 @@ DEFINE_HOOK(0x6B770D, SpawnerManagerClassAI_SwitchCase3, 0xB)
 			continue;
 
 		auto const pCurrRandTarget = pSpawnExt->CurrentRandomTarget;
-		bool isValidTechno = pCurrRandTarget && pCurrRandTarget->IsAlive && pCurrRandTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrRandTarget, true) && (pCurrRandTarget->WhatAmI() == AbstractType::Infantry || pCurrRandTarget->WhatAmI() == AbstractType::Unit || pCurrRandTarget->WhatAmI() == AbstractType::Building || pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
+		bool isValidTechno = pCurrRandTarget
+			&& pCurrRandTarget->IsAlive
+			&& pCurrRandTarget->Health > 0
+			&& TechnoExt::IsUnitAvailable(pCurrRandTarget, true)
+			&& (pCurrRandTarget->WhatAmI() == AbstractType::Infantry
+				|| pCurrRandTarget->WhatAmI() == AbstractType::Unit
+				|| pCurrRandTarget->WhatAmI() == AbstractType::Building
+				|| pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
 
 		if (isValidTechno)
 		{
@@ -947,7 +954,14 @@ DEFINE_HOOK(0x6B776E, SpawnerManagerClassAI_SwitchCase4, 0x6) // Note: Not sure 
 		return 0;
 
 	auto const pCurrRandTarget = pSpawnExt->CurrentRandomTarget;
-	bool isValidTechno = pCurrRandTarget && pCurrRandTarget->IsAlive && pCurrRandTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrRandTarget, true) && (pCurrRandTarget->WhatAmI() == AbstractType::Infantry || pCurrRandTarget->WhatAmI() == AbstractType::Unit || pCurrRandTarget->WhatAmI() == AbstractType::Building || pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
+	bool isValidTechno = pCurrRandTarget
+		&& pCurrRandTarget->IsAlive
+		&& pCurrRandTarget->Health > 0
+		&& TechnoExt::IsUnitAvailable(pCurrRandTarget, true)
+		&& (pCurrRandTarget->WhatAmI() == AbstractType::Infantry
+			|| pCurrRandTarget->WhatAmI() == AbstractType::Unit
+			|| pCurrRandTarget->WhatAmI() == AbstractType::Building
+			|| pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
 
 	if (isValidTechno)
 	{
@@ -971,7 +985,14 @@ DEFINE_HOOK(0x6B7AE3, SpawnerManagerClassAI_SpawnControlStatus3, 0x6)
 		return 0;
 
 	auto const pCurrRandTarget = pSpawnExt->CurrentRandomTarget;
-	bool isValidTechno = pCurrRandTarget && pCurrRandTarget->IsAlive && pCurrRandTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrRandTarget, true) && (pCurrRandTarget->WhatAmI() == AbstractType::Infantry || pCurrRandTarget->WhatAmI() == AbstractType::Unit || pCurrRandTarget->WhatAmI() == AbstractType::Building || pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
+	bool isValidTechno = pCurrRandTarget
+		&& pCurrRandTarget->IsAlive
+		&& pCurrRandTarget->Health > 0
+		&& TechnoExt::IsUnitAvailable(pCurrRandTarget, true)
+		&& (pCurrRandTarget->WhatAmI() == AbstractType::Infantry
+			|| pCurrRandTarget->WhatAmI() == AbstractType::Unit
+			|| pCurrRandTarget->WhatAmI() == AbstractType::Building
+			|| pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
 
 	if (isValidTechno)
 	{
@@ -999,13 +1020,8 @@ DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected_ClearRetargets, 0x5)
 		if (!pExt)
 			continue;
 
-		if (pExt->CurrentRandomTarget && pTechno->CurrentMission == Mission::Attack)
-		{
-			pExt->CurrentRandomTarget = nullptr;
-			pExt->OriginalTarget = nullptr;
-			pTechno->Target = nullptr;
-			//pTechno->QueueMission(Mission::Guard, 0);
-		}
+		if (pExt->CurrentRandomTarget)
+			TechnoExt::SendStopTarNav(pTechno);
 	}
 
 	return 0;
@@ -1050,10 +1066,24 @@ DEFINE_HOOK(0x6FE562, TechnoClass_FireAt_BulletNewTarget, 0x6)
 	if (pExt->CurrentRandomTarget)
 	{
 		auto const pCurrRandTarget = pExt->CurrentRandomTarget;
-		bool isValidRandTechno = pCurrRandTarget && pCurrRandTarget->IsAlive && pCurrRandTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrRandTarget, true) && (pCurrRandTarget->WhatAmI() == AbstractType::Infantry || pCurrRandTarget->WhatAmI() == AbstractType::Unit || pCurrRandTarget->WhatAmI() == AbstractType::Building || pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
+		bool isValidRandTechno = pCurrRandTarget
+			&& pCurrRandTarget->IsAlive
+			&& pCurrRandTarget->Health > 0
+			&& TechnoExt::IsUnitAvailable(pCurrRandTarget, true)
+			&& (pCurrRandTarget->WhatAmI() == AbstractType::Infantry
+				|| pCurrRandTarget->WhatAmI() == AbstractType::Unit
+				|| pCurrRandTarget->WhatAmI() == AbstractType::Building
+				|| pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
 
 		auto const pCurrTarget = static_cast<TechnoClass*>(pThis->Target);
-		bool isValidTechno = pCurrTarget && pCurrTarget->IsAlive && pCurrTarget->Health > 0 && TechnoExt::IsUnitAvailable(pCurrTarget, true) && (pCurrTarget->WhatAmI() == AbstractType::Infantry || pCurrTarget->WhatAmI() == AbstractType::Unit || pCurrTarget->WhatAmI() == AbstractType::Building || pCurrTarget->WhatAmI() == AbstractType::Aircraft);
+		bool isValidTechno = pCurrTarget
+			&& pCurrTarget->IsAlive
+			&& pCurrTarget->Health > 0
+			&& TechnoExt::IsUnitAvailable(pCurrTarget, true)
+			&& (pCurrTarget->WhatAmI() == AbstractType::Infantry
+				|| pCurrTarget->WhatAmI() == AbstractType::Unit
+				|| pCurrTarget->WhatAmI() == AbstractType::Building
+				|| pCurrTarget->WhatAmI() == AbstractType::Aircraft);
 
 		if (!isValidTechno)
 			pThis->SetTarget(nullptr);
@@ -1063,14 +1093,10 @@ DEFINE_HOOK(0x6FE562, TechnoClass_FireAt_BulletNewTarget, 0x6)
 			pExt->CurrentRandomTarget = nullptr;
 			pThis->SetTarget(pExt->OriginalTarget);
 			pExt->OriginalTarget = nullptr;
-			//pBullet->Target = pThis->Target;
 
-			//if (!pBullet->Target)
-			//{
 			pBullet->Detonate(pBullet->GetCoords());
 			pBullet->Limbo();
 			pBullet->UnInit();
-			//}
 
 			return 0;
 		}
@@ -1099,7 +1125,7 @@ DEFINE_HOOK(0x6FF8F1, TechnoClass_FireAt_ResetRandomTarget, 0x6)
 	if (!pExt)
 		return 0;
 
-	if (pExt->ResetRandomTarget)
+	if (pExt->ResetRandomTarget || (pExt->CurrentRandomTarget && !TechnoExt::IsValidTechno(pExt->CurrentRandomTarget)))
 	{
 		pExt->ResetRandomTarget = false;
 		pExt->CurrentRandomTarget = TechnoExt::FindRandomTarget(pThis);
