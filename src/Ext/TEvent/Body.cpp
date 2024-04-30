@@ -187,7 +187,7 @@ bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
 
 bool TEventExt::HousesAreDestroyedTEvent(TEventClass* pThis)
 {
-	int nIdxVariable = pThis->Value; //atoi(pThis->String);
+	const int nIdxVariable = pThis->Value;
 
 	if (nIdxVariable < 0)
 		return false;
@@ -202,7 +202,7 @@ bool TEventExt::HousesAreDestroyedTEvent(TEventClass* pThis)
 	
 	if (housesList.size() == 0)
 	{
-		Debug::Log("Map event %d: [AIHousesList](%d) is empty. This event can't continue.\n", (int)pThis->EventKind, nIdxVariable);
+		Debug::Log("Map event %d: List [AIHousesList](%d) is empty. This event can't continue.\n", (int)pThis->EventKind, nIdxVariable);
 		return false;
 	}
 

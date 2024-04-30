@@ -208,12 +208,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			HouseTypeClass* pNewHouse = HouseTypeClass::Find(cur);
-			if (pNewHouse)
-			objectsList.emplace_back(pNewHouse);
+			if (const auto pNewHouse = HouseTypeClass::Find(cur))
+				objectsList.emplace_back(pNewHouse);
 		}
 
-		AIHousesLists.emplace_back(objectsList);
+		this->AIHousesLists.emplace_back(std::move(objectsList));
 	}
 }
 
