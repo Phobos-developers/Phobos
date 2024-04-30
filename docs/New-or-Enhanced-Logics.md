@@ -820,6 +820,19 @@ ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary
 ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
+### Override Target under EMP attack behavior
+
+![image](_static/images/forceweapon_emp.gif)
+*Enemy behavior against EMP targets in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
+- Overrides a part of the vanilla YR logic for allowing units to use a different weapon if the target is under EMP effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+ForceWeapon.UnderEMP=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+```
+
 ### Make units try turning to target when firing with `OmniFire=yes`
 - The unit will try to turn the body to target even firing with `OmniFire=yes`
   - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`
@@ -920,19 +933,6 @@ MindControl.Anim=                     ; Animation, defaults to ControlledAnimati
 ```ini
 [SOMETECHNO]        ; TechnoType
 NoManualMove=false  ; boolean
-```
-
-### Override Target under EMP attack behavior
-
-![image](_static/images/forceweapon_emp.gif)
-*Enemy behavior against EMP targets in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
-
-- Overrides a part of the vanilla YR logic for allowing units to use a different weapon if the target is under EMP effect.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]             ; TechnoType
-ForceWeapon.UnderEMP=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
 ### Promoted Spawns
