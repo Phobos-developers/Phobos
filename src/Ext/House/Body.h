@@ -1,6 +1,6 @@
 #pragma once
 #include <HouseClass.h>
-#include <TActionClass.h >
+#include <TActionClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>

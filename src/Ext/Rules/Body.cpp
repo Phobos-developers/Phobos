@@ -201,7 +201,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 			objectsList.emplace_back(pNewTrigger);
 		}
 
-		AITriggersLists.emplace_back(objectsList);
+		this->AITriggersLists.emplace_back(std::move(objectsList));
 	}
 }
 
