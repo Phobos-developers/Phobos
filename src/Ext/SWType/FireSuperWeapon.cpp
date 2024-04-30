@@ -247,7 +247,7 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 					int oldstart = pSuper->RechargeTimer.StartTime;
 					int oldleft = pSuper->RechargeTimer.TimeLeft;
 					pSuper->SetReadiness(true);
-					pSuper->Launch(cell, true);
+					pSuper->Launch(cell, pHouse->IsCurrentPlayer());
 					pSuper->Reset();
 					if (!this->SW_Next_RealLaunch)
 					{
