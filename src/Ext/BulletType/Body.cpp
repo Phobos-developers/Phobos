@@ -63,6 +63,42 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		pSection = pThis->ImageFile;
 
 	this->LaserTrail_Types.Read(exArtINI, pSection, "LaserTrail.Types");
+
+	this->TrajectoryValidation();
+}
+
+void BulletTypeExt::ExtData::TrajectoryValidation() const
+{
+	auto pThis = this->OwnerObject();
+	const char* pSection = pThis->ID;
+
+	// Trajectory validation combined with other projectile behaviour.
+	if (this->TrajectoryType)
+	{
+		if (pThis->Arcing)
+		{
+			Debug::Log("[Developer warning] [%s] has Trajectory set together with Arcing. Arcing has been set to false.\n", pSection);
+			pThis->Arcing = false;
+		}
+
+		if (pThis->Inviso)
+		{
+			Debug::Log("[Developer warning] [%s] has Trajectory set together with Inviso. Inviso has been set to false.\n", pSection);
+			pThis->Inviso = false;
+		}
+
+		if (pThis->ROT)
+		{
+			Debug::Log("[Developer warning] [%s] has Trajectory set together with ROT value other than 0. ROT has been set to 0.\n", pSection);
+			pThis->ROT = 0;
+		}
+
+		if (pThis->Vertical)
+		{
+			Debug::Log("[Developer warning] [%s] has Trajectory set together with Vertical. Vertical has been set to false.\n", pSection);
+			pThis->Vertical = false;
+		}
+	}
 }
 
 template <typename T>
