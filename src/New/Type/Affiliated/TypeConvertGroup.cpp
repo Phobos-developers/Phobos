@@ -7,7 +7,7 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 	{
 		if (!toType.isset() || !toType.Get()) continue;
 
-		if (!EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTargetFoot->Owner))
+		if (pOwner && !EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTargetFoot->Owner))
 			continue;
 
 		if (fromTypes.size())
