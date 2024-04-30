@@ -206,15 +206,15 @@ bool TEventExt::HousesAreDestroyedTEvent(TEventClass* pThis)
 		return false;
 	}
 
-	for (auto pTechno : *TechnoClass::Array)
+	for (const auto pTechno : *TechnoClass::Array)
 	{
-		if (ScriptExt::IsUnitAvailable(pTechno, false))
+		if (!ScriptExt::IsUnitAvailable(pTechno, false))
+			continue;
+
+		for (const auto pHouse : housesList)
 		{
-			for (auto pHouse : housesList)
-			{
-				if (pTechno->Owner->Type == pHouse)
-					return false;
-			}
+			if (pTechno->Owner->Type == pHouse)
+				return false;
 		}
 	}
 

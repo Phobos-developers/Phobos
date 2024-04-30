@@ -692,7 +692,7 @@ ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 ### `603` There are no technos of the specified houses list
 
 - Returns `True` if there are no technos of the specified houses in the map.
-- The second parameter is a 0-based index for the `AIHousesList` section that specifies the list of possible `HouseTypes` that can be evaluated. The new `AIHousesList` section must be declared in `rulesmd.ini` for making this script work:
+- The second parameter is a 0-based index for the `AIHousesList` section that specifies the list of possible `Countries` that can be evaluated. The new `AIHousesList` section must be declared in `rulesmd.ini` for making this script work:
 
 In `mycampaign.map`:
 ```ini
