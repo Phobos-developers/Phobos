@@ -83,7 +83,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						// and therefore it will reuse the vanilla routine, which will crash inside of it
 						pSuper->SetReadiness(true);
 						// TODO: Can we use ClickFire instead of Launch?
-						pSuper->Launch(cell, true);
+						pSuper->Launch(cell, pHouse->IsCurrentPlayer());
 						pSuper->Reset();
 
 						if (!this->LaunchSW_RealLaunch)
