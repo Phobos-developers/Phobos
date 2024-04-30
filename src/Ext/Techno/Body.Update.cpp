@@ -22,7 +22,14 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
 		this->UpdateTypeData(pType);
 
-	this->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
+	// Update tunnel state on exit, TechnoClass::AI is only called when not in tunnel.
+	if (this->IsInTunnel)
+	{
+		this->IsInTunnel = false;
+
+		if (const auto pShieldData = this->Shield.get())
+			pShieldData->SetAnimationVisibility(true);
+	}
 
 	if (this->CheckDeathConditions())
 		return;
@@ -640,6 +647,13 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 {
 	if (isInLimbo)
 	{
+		// Remove parasite units first before deleting them.
+		if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+		{
+			if (pFoot->ParasiteImUsing && pFoot->ParasiteImUsing->Victim)
+				pFoot->ParasiteImUsing->ExitUnit();
+		}
+
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
 		return;

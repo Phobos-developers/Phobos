@@ -80,6 +80,7 @@ public:
 		static bool ShowDesignatorRange;
 		static bool SaveVariablesOnScenarioEnd;
 		static bool SaveGameOnScenarioStart;
+		static bool ShowBriefing;
 	};
 
 	class Misc

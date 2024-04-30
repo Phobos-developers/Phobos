@@ -257,7 +257,7 @@ DEFINE_HOOK(0x683E41, ScenarioClass_Start_ShowBriefing, 0x6)
 	GET_STACK(bool, showBriefing, STACK_OFFSET(0xFC, -0xE9));
 
 	// Don't show briefing dialog for non-campaign games etc.
-	if (!ScenarioExt::Global()->ShowBriefing || !showBriefing || !SessionClass::IsCampaign())
+	if (!Phobos::Config::ShowBriefing || !ScenarioExt::Global()->ShowBriefing || !showBriefing || !SessionClass::IsCampaign())
 		return 0;
 
 	BriefingTemp::ShowBriefing = true;
