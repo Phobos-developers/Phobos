@@ -33,7 +33,6 @@ public:
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
 		bool IsLeggedCyborg;
-		OptionalStruct<int, false> DamageNumberOffset;
 		int DamageNumberOffset;
 		bool IsInTunnel;
 		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
