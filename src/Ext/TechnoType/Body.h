@@ -191,6 +191,8 @@ public:
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 
+		ValueableVector<double> DetectDisguise_Percent;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -373,6 +375,7 @@ public:
 
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
+			, DetectDisguise_Percent {}
 			, LandingDir {}
 			, DroppodType {}
 			, Convert_HumanToComputer { }
