@@ -6,11 +6,7 @@
 void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -22,9 +18,10 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 
 	auto pScript = pTeam->CurrentScript;
 	int scriptArgument = newScriptLine;
+	int currentMission = pScript->CurrentMission;
 
 	if (scriptArgument < 1)
-		scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
+		scriptArgument = pScript->Type->ScriptActions[currentMission].Argument;
 
 	// if by mistake you put as first line=0 this corrects it because for WW/EALA this script argument is 1-based
 	if (scriptArgument < 1)
@@ -32,7 +29,15 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 
 	if (pTeamData->ConditionalJump_Evaluation)
 	{
-		Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - Conditional Jump was a success! - New Line: %d = %d,%d\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, scriptArgument - 1, pScript->Type->ScriptActions[scriptArgument - 1].Action, pScript->Type->ScriptActions[scriptArgument - 1].Argument);
+		ScriptExt::Log("[%s][%s] %d = %d,%d - Conditional Jump was a success! Next line will be: %d = %d,%d\n",
+			pTeam->Type->ID,
+			pScript->Type->ID,
+			currentMission,
+			pScript->Type->ScriptActions[currentMission].Action,
+			pScript->Type->ScriptActions[currentMission].Argument,
+			scriptArgument - 1,
+			pScript->Type->ScriptActions[scriptArgument - 1].Action,
+			pScript->Type->ScriptActions[scriptArgument - 1].Argument);
 
 		// Start conditional jump!
 		// This is magic: for example, for jumping into line 0 of the script list you have to point to the "-1" line so in the next AI iteration the current line will be increased by 1 and then it will point to the desired line 0
@@ -53,11 +58,7 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -69,6 +70,7 @@ void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 
 	auto pScript = pTeam->CurrentScript;
 	int scriptArgument = newScriptLine;
+	int currentMission = pScript->CurrentMission;
 
 	if (scriptArgument < 1)
 		scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
@@ -79,7 +81,15 @@ void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 
 	if (!pTeamData->ConditionalJump_Evaluation)
 	{
-		Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - Conditional Jump was a success! - New Line: %d = %d,%d\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, scriptArgument - 1, pScript->Type->ScriptActions[scriptArgument - 1].Action, pScript->Type->ScriptActions[scriptArgument - 1].Argument);
+		ScriptExt::Log("[%s][%s] %d = %d,%d - Conditional Jump was a success! Next line will be: %d = %d,%d\n",
+			pTeam->Type->ID,
+			pScript->Type->ID,
+			currentMission,
+			pScript->Type->ScriptActions[currentMission].Action,
+			pScript->Type->ScriptActions[currentMission].Argument,
+			scriptArgument - 1,
+			pScript->Type->ScriptActions[scriptArgument - 1].Action,
+			pScript->Type->ScriptActions[scriptArgument - 1].Argument);
 
 		// Start conditional jump!
 		// This is magic: for example, for jumping into line 0 of the script list you have to point to the "-1" line so in the next AI iteration the current line will be increased by 1 and then it will point to the desired line 0
@@ -99,11 +109,7 @@ void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 void ScriptExt::ConditionalJump_KillEvaluation(TeamClass* pTeam)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -132,11 +138,7 @@ void ScriptExt::ConditionalJump_KillEvaluation(TeamClass* pTeam)
 void ScriptExt::ConditionalJump_ManageKillsCounter(TeamClass* pTeam, int enable = -1)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -171,11 +173,7 @@ void ScriptExt::ConditionalJump_ManageKillsCounter(TeamClass* pTeam, int enable 
 void ScriptExt::ConditionalJump_SetIndex(TeamClass* pTeam, int index = -1000000)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -191,9 +189,6 @@ void ScriptExt::ConditionalJump_SetIndex(TeamClass* pTeam, int index = -1000000)
 	if (scriptArgument == -1000000)
 		scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
 
-	//	if (scriptArgument < 0)
-	//		scriptArgument = -1;
-
 	pTeamData->ConditionalJump_Index = scriptArgument;
 
 	// This action finished
@@ -205,11 +200,7 @@ void ScriptExt::ConditionalJump_SetIndex(TeamClass* pTeam, int index = -1000000)
 void ScriptExt::ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value = -1)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -225,9 +216,6 @@ void ScriptExt::ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value =
 	if (scriptArgument < 0)
 		scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
 
-	//	if (scriptArgument < 0)
-	//		scriptArgument = 0;
-
 	pTeamData->ConditionalJump_ComparatorValue = scriptArgument;
 
 	// This action finished
@@ -240,11 +228,7 @@ void ScriptExt::ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value =
 void ScriptExt::ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value = -1)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -274,11 +258,7 @@ void ScriptExt::ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value = 
 void ScriptExt::ConditionalJump_SetCounter(TeamClass* pTeam, int value = -100000000)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -304,11 +284,7 @@ void ScriptExt::ConditionalJump_SetCounter(TeamClass* pTeam, int value = -100000
 void ScriptExt::ConditionalJump_ResetVariables(TeamClass* pTeam)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -336,11 +312,7 @@ void ScriptExt::ConditionalJump_ResetVariables(TeamClass* pTeam)
 void ScriptExt::ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable = -1)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -369,11 +341,7 @@ void ScriptExt::ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable =
 void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable = -1)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -407,11 +375,7 @@ void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
 	long countValue = 0;
 
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -467,11 +431,7 @@ void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
 void ScriptExt::ConditionalJump_CheckCount(TeamClass* pTeam, int modifier = 0)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -549,11 +509,7 @@ bool ScriptExt::ConditionalJump_MakeEvaluation(int comparatorMode, int studiedVa
 void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
@@ -597,11 +553,7 @@ void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
 void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass* pTeam, int mode = 0)
 {
 	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
 		return;
-	}
 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
