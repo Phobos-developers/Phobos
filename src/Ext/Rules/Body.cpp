@@ -207,14 +207,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		char* context = nullptr;
 		pINI->ReadString(sectionAIHousesList, pINI->GetKeyName(sectionAIHousesList, i), "", Phobos::readBuffer);
 
-		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
-			HouseTypeClass* pNewHouse = HouseTypeClass::Find(cur);//GameCreate<HouseTypeClass>(cur);
-			if (pNewHouse)
+			if (const auto pNewHouse = HouseTypeClass::Find(cur))
 				objectsList.emplace_back(pNewHouse);
 		}
 
-		AIHousesLists.emplace_back(objectsList);
+		this->AIHousesLists.emplace_back(std::move(objectsList));
 	}
 }
 
