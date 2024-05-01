@@ -91,7 +91,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 
 		if (pUnit->WhatAmI() == AbstractType::Infantry)
 		{
-			auto pInf = static_cast<InfantryClass*>(pUnit);
+			auto const pInf = static_cast<InfantryClass*>(pUnit);
 
 			if (pInf->IsEngineer())
 			{
@@ -131,7 +131,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 
 	if (!selectedTarget)
 	{
-		for (auto pTechno : pTeamData->BridgeRepairHuts)
+		for (auto const pTechno : pTeamData->BridgeRepairHuts)
 		{
 			CellStruct cell = pTechno->GetCell()->MapCoords;
 
@@ -156,37 +156,30 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 		// Find the best repair hut
 		int bestVal = -1;
 
-		for (auto pTechno : validHuts)
+		if (mode < 0)
+			mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+
+		if (mode < 0) // Pick a random bridge
 		{
-			//auto hut = pTechno;
-
-			if (mode < 0)
-				mode = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
-
-			if (mode < 0)
+			selectedTarget = validHuts.at(ScenarioClass::Instance->Random.RandomRanged(0, validHuts.size() - 1));
+		}
+		else
+		{
+			for (auto const pHut : validHuts)
 			{
-				// Pick a random bridge
-				selectedTarget = validHuts.at(ScenarioClass::Instance->Random.RandomRanged(0, validHuts.size() - 1));
-				break;
-			}
-			else
-			{
-				for (auto pHut : validHuts)
+				int value = engineers.at(0)->DistanceFrom(pHut); // Note: distance is in leptons (*256)
+
+				bool isValidCandidate = false;
+
+				if (mode == 0)
+					isValidCandidate = value < bestVal; // Pick the closest target
+				else
+					isValidCandidate = value >= bestVal; // Pick the farthest target
+
+				if (isValidCandidate || bestVal < 0)
 				{
-					int value = engineers.at(0)->DistanceFrom(pHut); // Note: distance is in leptons (*256)
-
-					bool isValidCandidate = false;
-
-					if (mode <= 0)
-						isValidCandidate = value < bestVal; // Pick the closest target
-					else
-						isValidCandidate = value >= bestVal; // Pick the farthest target
-
-					if (isValidCandidate || bestVal < 0)
-					{
-						bestVal = value;
-						selectedTarget = pHut;
-					}
+					bestVal = value;
+					selectedTarget = pHut;
 				}
 			}
 		}
@@ -196,9 +189,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 
 	if (!selectedTarget)
 	{
-		pTeam->StepCompleted = true;
-
-		ScriptExt::Log("[%s][%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: Can not select a bridge repair hut).\n",
+		ScriptExt::Log("[%s][%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (Reason: Can not select a bridge repair hut).\n",
 			pTeam->Type->ID,
 			pScript->Type->ID,
 			currentMission,
@@ -208,6 +199,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 			pScript->Type->ScriptActions[currentMission + 1].Action,
 			pScript->Type->ScriptActions[currentMission + 1].Argument);
 
+		pTeam->StepCompleted = true;
 		return;
 	}
 
