@@ -266,8 +266,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		std::map<TechnoTypeClass*, int> ownedRecruitables;
 		std::map<BuildingTypeClass*, int> ownedBuildings;
 
-		for (auto pTechno : *TechnoClass::Array)
+		for (auto const pTechno : *TechnoClass::Array)
 		{
+			if (!TechnoExt::IsValidTechno(pTechno)) continue;
+
 			if (pTechno->WhatAmI() == AbstractType::Building)
 			{
 				if (pTechno->Owner == pHouse)
@@ -276,7 +278,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				}
 				else
 				{
-					auto pBuilding = static_cast<BuildingClass*>(pTechno);
+					auto const pBuilding = static_cast<BuildingClass*>(pTechno);
 					if (pBuilding && pBuilding->Type->BridgeRepairHut)
 					{
 						CellStruct cell = pTechno->GetCell()->MapCoords;
@@ -291,7 +293,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				continue;
 			}
 
-			auto* pFoot = static_cast<FootClass*>(pTechno);
+			auto const pFoot = static_cast<FootClass*>(pTechno);
 
 			if (!pFoot
 				|| !pTechno->IsAlive
@@ -1010,10 +1012,9 @@ bool TeamExt::HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool alli
 	{
 		for (auto pObject : *TechnoClass::Array)
 		{
-			if (pObject
-				&& pObject->IsAlive
-				&& pObject->Health > 0
-				&& ((!allies && pObject->Owner == pHouse) || (allies && pHouse != pObject->Owner && pHouse->IsAlliedWith(pObject->Owner)))
+			if (!TechnoExt::IsValidTechno(pObject)) continue;
+
+			if (((!allies && pObject->Owner == pHouse) || (allies && pHouse != pObject->Owner && pHouse->IsAlliedWith(pObject->Owner)))
 				&& !pObject->Owner->Type->MultiplayPassive
 				&& pObject->GetTechnoType() == pItem)
 			{
@@ -1058,14 +1059,13 @@ bool TeamExt::EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClas
 		pEnemy = nullptr;
 
 	// Count all objects of the list, like an OR operator
-	for (auto pItem : list)
+	for (auto const pItem : list)
 	{
-		for (auto pObject : *TechnoClass::Array)
+		for (auto const pObject : *TechnoClass::Array)
 		{
-			if (pObject
-				&& pObject->IsAlive
-				&& pObject->Health > 0
-				&& pObject->Owner != pHouse
+			if (!TechnoExt::IsValidTechno(pObject)) continue;
+
+			if (pObject->Owner != pHouse
 				&& (!pEnemy || (pEnemy && !pHouse->IsAlliedWith(pEnemy)))
 				&& !pObject->Owner->Type->MultiplayPassive
 				&& pObject->GetTechnoType() == pItem)
@@ -1107,24 +1107,20 @@ bool TeamExt::NeutralOwns(AITriggerTypeClass* pThis, std::vector<TechnoTypeClass
 	bool result = false;
 	int counter = 0;
 
-	for (auto pHouse : *HouseClass::Array)
+	for (auto const pHouse : *HouseClass::Array)
 	{
 		if (_stricmp(SideClass::Array->GetItem(pHouse->Type->SideIndex)->Name, "Civilian") != 0)
 			continue;
 
 		// Count all objects of the list, like an OR operator
-		for (auto pItem : list)
+		for (auto const pItem : list)
 		{
-			for (auto pObject : *TechnoClass::Array)
+			for (auto const pObject : *TechnoClass::Array)
 			{
-				if (pObject
-					&& pObject->IsAlive
-					&& pObject->Health > 0
-					&& pObject->Owner == pHouse
-					&& pObject->GetTechnoType() == pItem)
-				{
+				if (!TechnoExt::IsValidTechno(pObject)) continue;
+
+				if (pObject->Owner == pHouse && pObject->GetTechnoType() == pItem)
 					counter++;
-				}
 			}
 		}
 	}
@@ -1164,7 +1160,7 @@ bool TeamExt::HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, std::v
 		return false;
 
 	// Count all objects of the list, like an AND operator
-	for (auto pItem : list)
+	for (auto const pItem : list)
 	{
 		if (!result)
 			break;
@@ -1172,16 +1168,12 @@ bool TeamExt::HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, std::v
 		int counter = 0;
 		result = true;
 
-		for (auto pObject : *TechnoClass::Array)
+		for (auto const pObject : *TechnoClass::Array)
 		{
-			if (pObject &&
-				pObject->IsAlive &&
-				pObject->Health > 0 &&
-				pObject->Owner == pHouse &&
-				pObject->GetTechnoType() == pItem)
-			{
+			if (!TechnoExt::IsValidTechno(pObject)) continue;
+
+			if (pObject->Owner == pHouse && pObject->GetTechnoType() == pItem)
 				counter++;
-			}
 		}
 
 		switch (pThis->Conditions->ComparatorOperand)
@@ -1223,7 +1215,7 @@ bool TeamExt::EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseC
 		return false;
 
 	// Count all objects of the list, like an AND operator
-	for (auto pItem : list)
+	for (auto const pItem : list)
 	{
 		if (!result)
 			break;
@@ -1231,12 +1223,11 @@ bool TeamExt::EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseC
 		int counter = 0;
 		result = true;
 
-		for (auto pObject : *TechnoClass::Array)
+		for (auto const pObject : *TechnoClass::Array)
 		{
-			if (pObject
-				&& pObject->IsAlive
-				&& pObject->Health > 0
-				&& pObject->Owner != pHouse
+			if (!TechnoExt::IsValidTechno(pObject)) continue;
+
+			if (pObject->Owner != pHouse
 				&& (!pEnemy || (pEnemy && !pHouse->IsAlliedWith(pEnemy)))
 				&& !pObject->Owner->Type->MultiplayPassive
 				&& pObject->GetTechnoType() == pItem)
@@ -1281,7 +1272,7 @@ bool TeamExt::NeutralOwnsAll(AITriggerTypeClass* pThis, std::vector<TechnoTypeCl
 		return false;
 
 	// Any neutral house should be capable to meet the prerequisites
-	for (auto pHouse : *HouseClass::Array)
+	for (auto const pHouse : *HouseClass::Array)
 	{
 		if (!result)
 			break;
@@ -1292,23 +1283,19 @@ bool TeamExt::NeutralOwnsAll(AITriggerTypeClass* pThis, std::vector<TechnoTypeCl
 			continue;
 
 		// Count all objects of the list, like an AND operator
-		for (auto pItem : list)
+		for (auto const pItem : list)
 		{
 			if (!foundAll)
 				break;
 
 			int counter = 0;
 
-			for (auto pObject : *TechnoClass::Array)
+			for (auto const pObject : *TechnoClass::Array)
 			{
-				if (pObject &&
-					pObject->IsAlive &&
-					pObject->Health > 0 &&
-					pObject->Owner == pHouse &&
-					pObject->GetTechnoType() == pItem)
-				{
+				if (!TechnoExt::IsValidTechno(pObject)) continue;
+
+				if (pObject->Owner == pHouse &&	pObject->GetTechnoType() == pItem)
 					counter++;
-				}
 			}
 
 			switch (pThis->Conditions->ComparatorOperand)
