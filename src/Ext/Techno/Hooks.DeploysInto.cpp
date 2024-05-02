@@ -126,7 +126,7 @@ DEFINE_HOOK(0x7396AD, UnitClass_Deploy_CreateBuilding, 0x6)
 
 DEFINE_HOOK(0x73635B, UnitClass_AI_DeploysIntoDesyncFix, 0x6)
 {
-	if (!SessionClass::Instance->IsMultiplayer())
+	if (!SessionClass::IsMultiplayer())
 		return 0;
 
 	GET(UnitClass*, pThis, ESI);
@@ -139,7 +139,7 @@ DEFINE_HOOK(0x73635B, UnitClass_AI_DeploysIntoDesyncFix, 0x6)
 
 DEFINE_HOOK(0x73FEC1, UnitClass_WhatAction_DeploysIntoDesyncFix, 0x6)
 {
-	if (!SessionClass::Instance->IsMultiplayer())
+	if (!SessionClass::IsMultiplayer())
 		return 0;
 
 	enum { SkipGameCode = 0x73FFDF };
