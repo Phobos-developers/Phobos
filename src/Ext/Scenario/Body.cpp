@@ -57,6 +57,11 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 				var.Value = 0;
 		}
 	}
+
+	if (bIsGlobal)
+	{
+		ScenarioExt::Global()->LoadVariablesToFile(true);
+	}
 }
 
 void ScenarioExt::ExtData::SaveVariablesToFile(bool isGlobal)
@@ -72,10 +77,47 @@ void ScenarioExt::ExtData::SaveVariablesToFile(bool isGlobal)
 
 	const auto& variables = Global()->Variables[isGlobal];
 	for (const auto& variable : variables)
-		pINI->WriteInteger(ScenarioClass::Instance()->FileName, variable.second.Name, variable.second.Value, false);
+	{
+		// Using "GlobalVariables" is probably not a good idea.
+		pINI->WriteInteger(
+			isGlobal ? "GlobalVariables" : ScenarioClass::Instance()->FileName,
+			variable.second.Name, variable.second.Value, false);
+	}
 
 	pINI->WriteCCFile(pFile);
 	pFile->Close();
+}
+
+void ScenarioExt::ExtData::LoadVariablesToFile(bool isGlobal)
+{
+	if (!SessionClass::Instance->IsCampaign())
+		return;
+
+	const auto fileName = isGlobal ? "globals.ini" : "locals.ini";
+	auto pINI = GameCreate<CCINIClass>();
+	auto pFile = GameCreate<CCFileClass>(fileName);
+
+	if (pFile->Exists())
+	{
+		pINI->ReadCCFile(pFile);
+
+		auto& variables = Global()->Variables[isGlobal];
+		for (auto& variable : variables)
+		{
+			// Does it really work for LocalVariables?
+			variable.second.Value = pINI->ReadInteger(
+				isGlobal ? "GlobalVariables" : ScenarioClass::Instance()->FileName,
+				variable.second.Name, 0);
+		}
+	}
+
+	pFile->Close();
+
+	if (!Phobos::Config::SaveVariablesOnScenarioEnd)
+	{
+		// Is it better not to delete the file?
+		DeleteFileA(fileName);
+	}
 }
 
 void ScenarioExt::Allocate(ScenarioClass* pThis)

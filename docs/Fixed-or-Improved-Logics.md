@@ -26,6 +26,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
 - Fixed jumpjet units being unable to turn to the target when firing from a different direction.
 - Fixed jumpjet units being able to continue firing at enemy target when crashing.
+- Fixed bug where AltNextScenario was not working properly.
 
 ![image](_static/images/jumpjet-turning.gif)
 *Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
