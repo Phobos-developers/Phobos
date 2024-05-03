@@ -79,7 +79,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 	// Check if there are no engineers
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (!TechnoExt::IsUnitAvailable(pUnit, true))
+		if (!ScriptExt::IsUnitAvailable(pUnit, true))
 			continue;
 
 		if (!pTeam->Focus)
