@@ -2,6 +2,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Utilities/Macro.h>
 
 #include <ScenarioClass.h>
@@ -410,75 +411,75 @@ DEFINE_HOOK(0x469211, BulletClass_Logics_MindControlAlternative1, 0x6)
 
 	GET(BulletClass*, pBullet, ESI);
 
-	if (!pBullet->Target)
+	if (!pBullet || pBullet->WhatAmI() != AbstractType::Bullet || !pBullet->Target)
 		return ContinueFlow;
 
-	auto pBulletWH = pBullet->WH;
+	auto const pBulletWH = pBullet->WH;
 	if (!pBulletWH)
 		return ContinueFlow;
 
-	if (pBulletWH->MindControl && pBullet->Owner)
+	if (!pBulletWH->MindControl || !pBullet->Owner || !TechnoExt::IsValidTechno(pBullet->Owner))
+		return ContinueFlow;
+
+	auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target);
+	if (!pTarget || !TechnoExt::IsValidTechno(pTarget))
+		return ContinueFlow;
+
+	auto pTargetType = pTarget->GetTechnoType();
+	if (!pTargetType)
+		return ContinueFlow;
+
+	auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
+	if (!pWarheadExt)
+		return ContinueFlow;
+
+	double currentHealthPerc = pTarget->GetHealthPercentage();
+	bool flipComparations = pWarheadExt->MindControl_Threshold_Inverse.Get();
+
+	// If inversed threshold: mind control works until the target health is lower than the threshold percentage.
+	// If not inversed: mind control only works when the target health is lower than the threshold percentage.
+	double mindControlThreshold = pWarheadExt->MindControl_Threshold.Get();
+	if (mindControlThreshold < 0.0 || mindControlThreshold > 1.0)
+		mindControlThreshold = flipComparations ? 0.0 : 1.0;
+
+	// Targets health threshold calculations
+	bool skipMindControl = flipComparations ? (mindControlThreshold > 0.0) : (mindControlThreshold < 1.0);
+	bool healthComparation = flipComparations ? (currentHealthPerc <= mindControlThreshold) : (currentHealthPerc >= mindControlThreshold);
+
+	if (!skipMindControl
+		|| !healthComparation
+		|| !pWarheadExt->MindControl_AlternateDamage.isset()
+		|| !pWarheadExt->MindControl_AlternateWarhead.isset())
 	{
-		auto pTarget = static_cast<TechnoClass*>(pBullet->Target);
-		if (!pTarget)
-			return ContinueFlow;
-
-		auto pTargetType = pTarget->GetTechnoType();
-		if (!pTargetType)
-			return ContinueFlow;
-
-		auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
-		if (!pWarheadExt)
-			return ContinueFlow;
-
-		double currentHealthPerc = pTarget->GetHealthPercentage();
-		bool flipComparations = pWarheadExt->MindControl_Threshold_Inverse;
-
-		// If inversed threshold: mind control works until the target health is lower than the threshold percentage.
-		// If not inversed: mind control only works when the target health is lower than the threshold percentage.
-		if (pWarheadExt->MindControl_Threshold < 0.0 || pWarheadExt->MindControl_Threshold > 1.0)
-			pWarheadExt->MindControl_Threshold = flipComparations ? 0.0 : 1.0;
-
-		// Targets health threshold calculations
-		bool skipMindControl = flipComparations ? (pWarheadExt->MindControl_Threshold > 0.0) : (pWarheadExt->MindControl_Threshold < 1.0);
-		bool healthComparation = flipComparations ? (currentHealthPerc <= pWarheadExt->MindControl_Threshold) : (currentHealthPerc >= pWarheadExt->MindControl_Threshold);
-
-		if (skipMindControl
-			&& healthComparation
-			&& pWarheadExt->MindControl_AlternateDamage.isset()
-			&& pWarheadExt->MindControl_AlternateWarhead.isset())
-		{
-			// Alternate damage
-			int altDamage = pWarheadExt->MindControl_AlternateDamage.Get();
-			// Alternate warhead
-			WarheadTypeClass* pAltWarhead = pWarheadExt->MindControl_AlternateWarhead.Get();
-			// Get the damage the alternate warhead can produce against the target
-			int realDamage = MapClass::GetTotalDamage(altDamage, pAltWarhead, pTargetType->Armor, 0);
-			int animDamage = realDamage;
-
-			auto pAttacker = pBullet->Owner;
-			auto pAttackingHouse = pBullet->Owner->Owner;
-
-			// Keep the target alive if necessary
-			if (!pWarheadExt->MindControl_CanKill.Get() && realDamage >= pTarget->Health)
-				realDamage = pTarget->Health - 1;
-
-			pTarget->ReceiveDamage(&realDamage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
-
-			// Alternate Warhead's animation from AnimList
-			auto nLandType = MapClass::Instance()->GetCellAt(pTarget->Location)->LandType;
-			auto pAnimType = MapClass::SelectDamageAnimation(animDamage, pAltWarhead, nLandType, pTarget->Location);
-
-			if (pAnimType)
-			{
-				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pTarget->Location))
-					pAnim->Owner = pAttackingHouse;
-			}
-
-			return IgnoreMindControl;
-		}
+		return ContinueFlow;
 	}
 
-	// Run mind control code
-	return ContinueFlow;
+	// Alternate damage
+	int altDamage = pWarheadExt->MindControl_AlternateDamage.Get();
+	// Alternate warhead
+	WarheadTypeClass* pAltWarhead = pWarheadExt->MindControl_AlternateWarhead.Get();
+	// Get the damage the alternate warhead can produce against the target
+	int realDamage = MapClass::GetTotalDamage(altDamage, pAltWarhead, pTargetType->Armor, 0);
+	int animDamage = realDamage;
+
+	auto pAttacker = pBullet->Owner;
+	auto pAttackingHouse = pBullet->Owner->Owner;
+
+	// Keep the target alive if necessary
+	if (!pWarheadExt->MindControl_CanKill.Get() && realDamage >= pTarget->Health)
+		realDamage = pTarget->Health - 1;
+
+	pTarget->ReceiveDamage(&realDamage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
+
+	// Alternate Warhead's animation from AnimList
+	auto nLandType = MapClass::Instance()->GetCellAt(pTarget->Location)->LandType;
+	auto pAnimType = MapClass::SelectDamageAnimation(animDamage, pAltWarhead, nLandType, pTarget->Location);
+
+	if (pAnimType)
+	{
+		if (auto pAnim = GameCreate<AnimClass>(pAnimType, pTarget->Location))
+			pAnim->Owner = pAttackingHouse;
+	}
+
+	return IgnoreMindControl;
 }

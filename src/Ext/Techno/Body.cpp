@@ -5,6 +5,7 @@
 #include <ScenarioClass.h>
 
 #include <Ext/House/Body.h>
+#include <Ext/Script/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -360,6 +361,22 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 		return true;
 
 	return false;
+}
+
+bool TechnoExt::IsValidTechno(TechnoClass* pTechno)
+{
+	if (!pTechno)
+		return false;
+
+	bool isValid = !pTechno->Dirty
+		&& ScriptExt::IsUnitAvailable(pTechno, true)
+		&& pTechno->Owner
+		&& (pTechno->WhatAmI() == AbstractType::Infantry
+			|| pTechno->WhatAmI() == AbstractType::Unit
+			|| pTechno->WhatAmI() == AbstractType::Building
+			|| pTechno->WhatAmI() == AbstractType::Aircraft);
+
+	return isValid;
 }
 
 // =============================
