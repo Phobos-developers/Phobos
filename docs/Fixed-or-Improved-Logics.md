@@ -968,6 +968,7 @@ In `rulesmd.ini`:
 - Weeds are not stored in a building's storage, but rather in a House's storage. The weed capacity is listed under `[General]->WeedCapacity`.
 - Weeders now show the ore gathering animation. It can be customized the same way as for harvesters.
 - Weeders can use the Teleport locomotor like chrono miners.
+- Total amount of weeds in storage can be displayed on sidebar, see [Weeds counter](User-Interface.md#weeds-counter).
 
 ### Weed-consuming superweapons
 
