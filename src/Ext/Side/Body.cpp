@@ -28,6 +28,8 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Sidebar_HarvesterCounter_Offset.Read(exINI, pSection, "Sidebar.HarvesterCounter.Offset");
 	this->Sidebar_HarvesterCounter_Yellow.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorYellow");
 	this->Sidebar_HarvesterCounter_Red.Read(exINI, pSection, "Sidebar.HarvesterCounter.ColorRed");
+	this->Sidebar_WeedsCounter_Offset.Read(exINI, pSection, "Sidebar.WeedsCounter.Offset");
+	this->Sidebar_WeedsCounter_Color.Read(exINI, pSection, "Sidebar.WeedsCounter.Color");
 	this->Sidebar_ProducingProgress_Offset.Read(exINI, pSection, "Sidebar.ProducingProgress.Offset");
 	this->Sidebar_PowerDelta_Offset.Read(exINI, pSection, "Sidebar.PowerDelta.Offset");
 	this->Sidebar_PowerDelta_Green.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGreen");
@@ -53,6 +55,8 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->Sidebar_HarvesterCounter_Offset)
 		.Process(this->Sidebar_HarvesterCounter_Yellow)
 		.Process(this->Sidebar_HarvesterCounter_Red)
+		.Process(this->Sidebar_WeedsCounter_Offset)
+		.Process(this->Sidebar_WeedsCounter_Color)
 		.Process(this->Sidebar_ProducingProgress_Offset)
 		.Process(this->Sidebar_PowerDelta_Offset)
 		.Process(this->Sidebar_PowerDelta_Green)

@@ -1,6 +1,5 @@
 #include <AnimClass.h>
 #include <UnitClass.h>
-#include <AnimClass.h>
 #include <InfantryClass.h>
 #include <BuildingClass.h>
 #include <ScenarioClass.h>
@@ -18,6 +17,7 @@
 #include <Utilities/AresHelper.h>
 #include <JumpjetLocomotionClass.h>
 #include <FlyLocomotionClass.h>
+#include <RocketLocomotionClass.h>
 
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
@@ -350,7 +350,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	GET(UnitClass*, pThis, EBP);
 	enum { SkipDrawing = 0x73C5C9 };
 	auto const loco = pThis->Locomotor.GetInterfacePtr();
-	if (!loco->Is_To_Have_Shadow())
+	if (pThis->Type->NoShadow || !loco->Is_To_Have_Shadow())
 		return SkipDrawing;
 
 	REF_STACK(Matrix3D, shadow_matrix, STACK_OFFSET(0x1C4, -0x130));
@@ -380,7 +380,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
 
 				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
-					vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);
+					vxl_index_key.Invalidate();
 			}
 		}
 		else
@@ -390,7 +390,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			if (cHeight > 0)
 			{
 				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
-				vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);
+				vxl_index_key.Invalidate();
 			}
 		}
 	}
@@ -416,7 +416,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		{
 			if (CAN_USE_ARES && AresHelper::CanUseAres)
 			{
-				vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);// I'd just assume most of the time we have spawn
+				vxl_index_key.Invalidate();// I'd just assume most of the time we have spawn
 				return &reinterpret_cast<DummyExtHere*>(pType->align_2FC)->NoSpawnAltVXL;
 			}
 			return &pType->TurretVoxel;
@@ -438,7 +438,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	// lazy, don't want to hook inside Shadow_Matrix
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
-		// index key is already invalid
+		// index key should have been already invalid, so it won't hurt to invalidate again
+		vxl_index_key.Invalidate();
 		shadow_matrix.TranslateX(float(Math::sgn(arf) * pType->VoxelScaleX * (1 - Math::cos(arf))));
 		shadow_matrix.TranslateY(float(Math::sgn(-ars) * pType->VoxelScaleY * (1 - Math::cos(ars))));
 		shadow_matrix.ScaleX((float)Math::cos(arf));
@@ -446,7 +447,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	}
 
 	auto mtx = Matrix3D::VoxelDefaultMatrix() * shadow_matrix;
-	if (pThis->GetHeight() > 0)
+	if (height > 0)
 		shadow_point.Y += 1;
 
 	if (uTypeExt->ShadowIndices.empty())
@@ -571,45 +572,55 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	GET(AircraftClass*, pThis, EBP);
 	GET(const int, height, EBX);
 	REF_STACK(VoxelIndexKey, key, STACK_OFFSET(0xCC, -0xBC));
-	REF_STACK(Point2D, flor, STACK_OFFSET(0xCC, -0xAC));
+	GET_STACK(Point2D, flor, STACK_OFFSET(0xCC, -0xAC));
 	GET_STACK(RectangleStruct*, bound, STACK_OFFSET(0xCC, 0x10));
 	enum { FinishDrawing = 0x4148A5 };
 
-	const auto loco = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor);
-	if (!loco || !loco->Is_To_Have_Shadow() || pThis->IsSinking)
+	const auto loco = pThis->Locomotor.GetInterfacePtr();
+	if (pThis->Type->NoShadow || !loco->Is_To_Have_Shadow() || pThis->IsSinking)
 		return FinishDrawing;
 
-	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
-	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
+	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-	if (RulesExt::Global()->HeightShadowScaling)
+	if (auto const flyLoco = locomotion_cast<FlyLocomotionClass*>(loco))
 	{
-		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
-		const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(loco->FlightLevel);
+		const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
 
-		if (cHeight > 0)
+		if (RulesExt::Global()->HeightShadowScaling)
 		{
-			shadow_mtx.Scale((float)std::max(Pade2_2(baseScale_log* height / cHeight), minScale));
-			key = std::bit_cast<VoxelIndexKey>(-1); // I'm sorry
+			const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
+			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(flyLoco->FlightLevel);
+
+			if (cHeight > 0)
+			{
+				shadow_mtx.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
+				key.Invalidate(); // I'm sorry
+			}
+		}
+		else if (pThis->Type->ConsideredAircraft)
+		{
+			shadow_mtx.Scale((float)Pade2_2(baseScale_log));
+		}
+
+		if (pThis->IsCrashing)
+		{
+			double arf = pThis->AngleRotatedForwards;
+			if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
+				arf += pThis->Type->PitchAngle;
+			shadow_mtx.ScaleY((float)Math::cos(pThis->AngleRotatedSideways));
+			shadow_mtx.ScaleX((float)Math::cos(arf));
 		}
 	}
-	else if (pThis->Type->ConsideredAircraft)
+	else if (height > 0)
 	{
-		shadow_mtx.Scale((float)Pade2_2(baseScale_log));
-	}
-
-	if (pThis->IsCrashing)
-	{
-		double arf = pThis->AngleRotatedForwards;
-		if (loco->CurrentSpeed > pThis->Type->PitchSpeed)
-			arf += pThis->Type->PitchAngle;
-		shadow_mtx.ScaleY((float)Math::cos(pThis->AngleRotatedSideways));
-		shadow_mtx.ScaleX((float)Math::cos(arf));
+		// You must be Rocket, otherwise GO FUCK YOURSELF
+		shadow_mtx.ScaleX((float)Math::cos(static_cast<RocketLocomotionClass*>(loco)->CurrentPitch));
+		key.Invalidate();
 	}
 
 	shadow_mtx = Matrix3D::VoxelDefaultMatrix() * shadow_mtx;
-	Point2D why = flor + loco->Shadow_Point();
+
 	auto const main_vxl = &pThis->Type->MainVoxel;
 
 	if (aTypeExt->ShadowIndices.empty())
@@ -621,7 +632,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 				key,
 				&pThis->Type->VoxelShadowCache,
 				bound,
-				&why,
+				&flor,
 				&shadow_mtx,
 				true,
 				nullptr,
@@ -636,7 +647,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 				key,
 				&pThis->Type->VoxelShadowCache,
 				bound,
-				&why,
+				&flor,
 				&shadow_mtx,
 				true,
 				nullptr,
@@ -646,6 +657,10 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 
 	return FinishDrawing;
 }
+
+// Shadow_Point of RocketLoco was forgotten to be set to {0,0}. It was an oversight.
+// Anyway we don't need to call it from Fly or Rocket loco anymore
+// DEFINE_JUMP(VTABLE, 0x7F0B4C, 0x4CF940);
 
 DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 {

@@ -34,7 +34,7 @@ DEFINE_HOOK(0x6A5EA1, SidebarClass_UnloadShapes_AdditionalFiles, 0x5)
 
 DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 {
-	if (Phobos::UI::ShowProducingProgress)
+	if (Phobos::UI::ProducingProgress_Show)
 	{
 		auto pPlayer = HouseClass::CurrentPlayer();
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::CurrentPlayer->SideIndex));

@@ -145,11 +145,14 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed railgun and fire particles being cut off by elevation changes.
 - Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
 - Fixed teleport units being unable to visually tilt on slopes.
+- Fixed rockets' shadow location.
 - Fixed units with Teleport, Tunnel or Fly locomotor being unable to be visually flipped like other locomotors do.
 - Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
 - Spawned aircraft now align with the spawner's facing when landing.
 - Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers EnteredBy event by executing capture mission.
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
+- Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units.
+- Skipped drawing rally point line when undeploying a factory.
 
 ## Fixes / interactions with other extensions
 
@@ -948,7 +951,7 @@ Strength=1000                 ; integer - the strength of the Veinhole
 ```
 
 ```{warning}
-The game expects certain overlays related to Veinholes to have certain indices, they are listed below.
+The game expects certain overlays related to Veinholes to have certain indices, they are listed below. Please keep in mind that the indices in the OverlayTypes list are 0-based, formed internally by the game, and the identifiers left of "=" don't matter. Vanilla `rulesmd.ini` already has the required overlays listed at the correct indices.
 ```
 
 In `rulesmd.ini`:
@@ -966,6 +969,7 @@ In `rulesmd.ini`:
 - Weeds are not stored in a building's storage, but rather in a House's storage. The weed capacity is listed under `[General]->WeedCapacity`.
 - Weeders now show the ore gathering animation. It can be customized the same way as for harvesters.
 - Weeders can use the Teleport locomotor like chrono miners.
+- Total amount of weeds in storage can be displayed on sidebar, see [Weeds counter](User-Interface.md#weeds-counter).
 
 ### Weed-consuming superweapons
 
