@@ -298,6 +298,7 @@ This page lists all the individual contributions to the project by their author.
    - Droppod properties dehardcode
    - Waypoint entering building together with engineer/agent bug fix
    - Skippable game save on scenario start
+   - Skip rally point line drawing when undeploying a building
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
