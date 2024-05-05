@@ -250,7 +250,7 @@ DEFINE_HOOK(0x51C78F, InfantryClass_CanEnterCell_CheckMovingInto, 0x6)
 	return 0;
 }
 
-enum CellTechnoMode
+enum class CellTechnoMode
 {
 	NoAttachments,
 	NoVirtualOrRelatives,
@@ -263,7 +263,7 @@ enum CellTechnoMode
 
 namespace TechnoAttachmentTemp
 {
-	CellTechnoMode currentMode = DefaultBehavior;
+	CellTechnoMode currentMode = CellTechnoMode::DefaultBehavior;
 }
 
 #define DEFINE_CELLTECHNO_WRAPPER(mode) \
@@ -369,6 +369,41 @@ DEFINE_HOOK(0x73A5EA, UnitClass_PerCellProcess_EntryLoopTechnos, 0x0)
 	return SkipEntry;
 }
 
+enum class AttachCargoMode
+{
+	SingleObject,
+	ObjectChain,
+
+	DefaultBehavior = SingleObject,
+};
+
+namespace TechnoAttachmentTemp
+{
+	AttachCargoMode currentAttachMode = AttachCargoMode::DefaultBehavior;
+}
+
+#define DEFINE_ATTACH_WRAPPER(mode) \
+void __fastcall CargoClass_Attach_##mode(PassengersClass* pThis, discard_t, FootClass* pThat) \
+{ \
+	TechnoAttachmentTemp::currentAttachMode = AttachCargoMode::mode; \
+	pThis->AddPassenger(pThat); \
+	TechnoAttachmentTemp::currentAttachMode = AttachCargoMode::DefaultBehavior; \
+}
+
+DEFINE_ATTACH_WRAPPER(SingleObject);
+DEFINE_ATTACH_WRAPPER(ObjectChain);
+
+DEFINE_JUMP(CALL, 0x65DF88, GET_OFFSET(CargoClass_Attach_ObjectChain));  // Create_Group
+DEFINE_JUMP(CALL, 0x65DCF0, GET_OFFSET(CargoClass_Attach_ObjectChain));  // Do_Reinforcements, paradrop loading
+
+DEFINE_HOOK(0x4733BD, CargoClass_Attach_HandleCurrentAttachMode, 0x6)
+{
+	enum { SkipAttachingChain = 0x4733FA, Continue = 0x0 };
+
+	return TechnoAttachmentTemp::currentAttachMode == AttachCargoMode::SingleObject
+		? SkipAttachingChain
+		: Continue;
+}
 
 #pragma endregion
 
