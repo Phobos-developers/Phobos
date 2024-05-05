@@ -551,7 +551,7 @@ DEFINE_HOOK(0x6FFE4F, TechnoClass_ClickedEvent_HandleChildren, 0x6)
 			for (auto const& pAttachment : pExt->ChildAttachments)
 			{
 				if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
-					pAttachment->Child->ClickedEvent(NetworkEvents::Idle);
+					pAttachment->Child->ClickedEvent(EventType::Idle);
 			}
 		}
 	}
