@@ -57,7 +57,7 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct ed
 
 DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 {
-	auto const poseDir = static_cast<DirType>(RulesClass::Instance->PoseDir);
+	auto const poseDir = static_cast<DirType>(RulesClass::Instance->PoseDir << 5);
 
 	if (!pThis)
 		return poseDir;
