@@ -387,7 +387,10 @@ DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
 	GET(RectangleStruct*, pBounds, ESI);
 
 	if (pThis->VisualCharacter(false, nullptr) != VisualType::Hidden)
-		TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
+		if(RulesExt::Global()->DrawInsignia_OnlyOnSelected.Get() && !pThis->IsSelected)
+			return SkipGameCode;
+		else
+			TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
 
 	return SkipGameCode;
 }
@@ -484,4 +487,26 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x6F9FA9, TechnoClass_Update_TurretAndVeterancy, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	if(RulesExt::Global()->Promote_EliteAnimation || RulesExt::Global()->Promote_VeteranAnimation)
+	{
+		AffectedHouse const animVis = RulesExt::Global()->Promote_AnimationVisibility.Get();
+		if(EnumFunctions::CanTargetHouse(animVis, HouseClass::CurrentPlayer, pThis->Owner) || HouseClass::IsCurrentPlayerObserver())
+		{
+			if(pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
+			{
+				auto animToDraw = RulesExt::Global()->Promote_VeteranAnimation;
+				if(pThis->Veterancy.GetRemainingLevel() == Rank::Elite && RulesExt::Global()->Promote_EliteAnimation)
+					animToDraw = RulesExt::Global()->Promote_EliteAnimation;
+				animToDraw ? GameCreate<AnimClass>(animToDraw, pThis->GetCoords()) : 0;
+			}
+		}
+	}
+
+	return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054;
 }

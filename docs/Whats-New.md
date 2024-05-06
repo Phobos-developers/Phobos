@@ -76,7 +76,7 @@ ShowPlacementPreview=yes         ; boolean
 RealTimeTimers=false             ; boolean
 RealTimeTimers.Adaptive=false    ; boolean
 ShowHarvesterCounter=true        ; boolean
-ShowPowerDelta=true              ; boolean  
+ShowPowerDelta=true              ; boolean
 ShowWeedsCounter=true            ; boolean
 ToolTipDescriptions=true         ; boolean
 ToolTipBlur=false                ; boolean
@@ -393,6 +393,7 @@ New:
 - Toggle for `Explodes=true` BuildingTypes to not explode during buildup or being sold (by Starkku)
 - Toggleable height-based shadow scaling for voxel air units (by Trsdy & Starkku)
 - User setting toggles for harvester counter & power delta indicator (by Starkku)
+- Promotion animation (by Fryone)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

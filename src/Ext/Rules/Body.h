@@ -118,6 +118,13 @@ public:
 		Valueable<int> SelectionFlashDuration;
 		AnimTypeClass* DropPodTrailer;
 		SHPStruct* PodImage;
+		Valueable<bool> DrawInsignia_OnlyOnSelected;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Infantry;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
+		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
+		Nullable<AnimTypeClass*> Promote_EliteAnimation;
+		Valueable<AffectedHouse> Promote_AnimationVisibility;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -189,6 +196,13 @@ public:
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
+			, DrawInsignia_OnlyOnSelected { false }
+			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }
+			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
+			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
+			, Promote_VeteranAnimation {}
+			, Promote_EliteAnimation {}
+			, Promote_AnimationVisibility { AffectedHouse::All }
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
