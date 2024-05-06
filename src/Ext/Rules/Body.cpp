@@ -148,7 +148,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
 	this->DrawInsignia_OnlyOnSelected.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.OnlyOnSelected");
 	this->DrawInsignia_AdjustPos_Infantry.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Infantry");
-	this->DrawInsignia_AdjustPos_Techno.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Techno");
+	this->DrawInsignia_AdjustPos_Buildings.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Buildings");
+	this->DrawInsignia_AdjustPos_Units.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Units");
 	this->Promote_VeteranAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.VeteranAnimation");
 	this->Promote_EliteAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.EliteAnimation");
 	this->Promote_AnimationVisibility.Read(exINI, GameStrings::AudioVisual, "Promote.AnimationVisibility");
@@ -299,7 +300,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelectionFlashDuration)
 		.Process(this->DrawInsignia_OnlyOnSelected)
 		.Process(this->DrawInsignia_AdjustPos_Infantry)
-		.Process(this->DrawInsignia_AdjustPos_Techno)
+		.Process(this->DrawInsignia_AdjustPos_Buildings)
+		.Process(this->DrawInsignia_AdjustPos_Units)
 		.Process(this->Promote_VeteranAnimation)
 		.Process(this->Promote_EliteAnimation)
 		.Process(this->Promote_AnimationVisibility)

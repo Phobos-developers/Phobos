@@ -178,11 +178,18 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	if (frameIndex != -1 && pShapeFile)
 	{
-
-		if (pThis->WhatAmI() != AbstractType::Infantry)
-			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Techno.Get();
-		else
+		switch (pThis->WhatAmI())
+		{
+		case AbstractType::Infantry:
 			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Infantry.Get();
+			break;
+		case AbstractType::Building:
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Buildings.Get();
+			break;
+		default:
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units.Get();
+			break;
+		}
 
 		DSurface::Temp->DrawSHP(
 			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
