@@ -41,7 +41,6 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplySpawnLimitRange();
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
-	this->UpdateLocomotor();
 }
 
 
@@ -484,6 +483,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
+
+	CoherateLocomotor();	
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
@@ -762,12 +763,9 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::ExtData::UpdateLocomotor()
+void TechnoExt::ExtData::CoherateLocomotor()
 {
-	auto* pFoot = abstract_cast<FootClass*>(OwnerObject());
-	if (!pFoot)
-		return;
-	
+	auto* pFoot = abstract_cast<FootClass*>(OwnerObject()); if (!pFoot) return;
 	auto* pFootType = pFoot->GetTechnoType();
 	auto* pFootTypeExt = this->TypeExtData;
 

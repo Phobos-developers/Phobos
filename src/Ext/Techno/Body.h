@@ -78,7 +78,7 @@ public:
 		void UpdateLaserTrails();
 		void InitializeLaserTrails();
 		void UpdateMindControlAnim();
-		void UpdateLocomotor();
+		void CoherateLocomotor();
 
 		virtual ~ExtData() override;
 
