@@ -265,7 +265,13 @@ DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 DEFINE_HOOK(0x67D04E, GameSave_SavegameInformation, 0x7)
 {
 	REF_STACK(SavegameInformation, Info, STACK_OFFSET(0x4A4, -0x3F4));
+
 	Info.InternalVersion = Info.InternalVersion + SAVEGAME_ID;
+	strncat(Info.ExecutableName.data(),
+		" + Phobos " FILE_VERSION_STR,
+		Info.ExecutableName.Size - sizeof(" + Phobos " FILE_VERSION_STR)
+	);
+
 	return 0;
 }
 

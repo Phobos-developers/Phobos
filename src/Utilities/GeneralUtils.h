@@ -5,6 +5,7 @@
 
 #include <Helpers/Iterators.h>
 #include <Helpers/Enumerators.h>
+#include <Utilities/Enum.h>
 
 #include <string.h>
 #include <iterator>
@@ -34,9 +35,10 @@ public:
 	static std::string IntToDigits(int num);
 	static int CountDigitsInNumber(int number);
 	static CoordStruct CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance);
+	static void DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset);
 
 	template<typename T>
-	static T FastPow(T x, size_t n)
+	static constexpr T FastPow(T x, size_t n)
 	{
 		// Real fast pow calc x^n in O(log(n))
 		T result = 1;

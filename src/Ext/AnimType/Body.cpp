@@ -112,6 +112,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->AltPalette_ApplyLighting.Read(exINI, pID, "AltPalette.ApplyLighting");
 	this->MakeInfantryOwner.Read(exINI, pID, "MakeInfantryOwner");
 	this->ExtraShadow.Read(exINI, pID, "ExtraShadow");
+	this->DetachedReport.Read(exINI, pID, "DetachedReport");
 }
 
 template <typename T>
@@ -147,6 +148,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AltPalette_ApplyLighting)
 		.Process(this->MakeInfantryOwner)
 		.Process(this->ExtraShadow)
+		.Process(this->DetachedReport)
 		;
 }
 

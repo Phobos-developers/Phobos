@@ -83,7 +83,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						// and therefore it will reuse the vanilla routine, which will crash inside of it
 						pSuper->SetReadiness(true);
 						// TODO: Can we use ClickFire instead of Launch?
-						pSuper->Launch(cell, true);
+						pSuper->Launch(cell, pHouse->IsCurrentPlayer());
 						pSuper->Reset();
 
 						if (!this->LaunchSW_RealLaunch)
@@ -318,8 +318,10 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 			auto const pExt = BulletExt::ExtMap.Find(pBullet);
 			auto const pTypeExt = pExt->TypeExtData;
 
-			// 1/8th of a cell as a margin of error.
-			if (pTypeExt && pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0)
+			// 1/8th of a cell as a margin of error if not Inviso interceptor.
+			bool distanceCheck = pWeapon->Projectile->Inviso || pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0;
+
+			if (pTypeExt && pTypeExt->Interceptable && distanceCheck)
 				pExt->InterceptBullet(pOwner, pWeapon);
 		}
 	}
