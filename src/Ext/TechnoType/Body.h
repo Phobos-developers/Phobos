@@ -191,6 +191,9 @@ public:
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 
+		Valueable<bool> AlwaysBeInAir;
+		Valueable<bool> AlwaysBeInAir_StayGrounded;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -377,6 +380,7 @@ public:
 			, DroppodType {}
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+			, AlwaysBeInAir_StayGrounded { false }
 		{ }
 
 		virtual ~ExtData() = default;
