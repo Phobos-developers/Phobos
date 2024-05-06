@@ -158,6 +158,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
+- Fixed Ares jumpjet height sync issue during type conversion between types with different `JumpjetHeight` was not changed to unit instance.
 
 ## Aircraft
 
@@ -612,6 +613,17 @@ JumpjetRotateOnCrash=true  ; boolean
 
 ```{warning}
 This may subject to further changes.
+```
+### Jumpjet: convert unit type in air and force unit always be in air
+
+`AlwaysBeInAir` designed to use with Ares type conversion logic (`IsSimpleDeployer=true` and `Convert.Deploy=TECHNOTYPE`) and will convert unit in air instead of convert type during deploy on ground as`BalloonHover` does.
+
+`AlwaysBeInAir.StayGrounded` prevents `AlwaysBeInAir` tagged unit to being immediately ascended in case if initial unit type has `AlwaysBeInAir=false` and converted unit type hasn't.
+
+```ini
+[SOMETECHNO]    ; TechnoType
+AlwaysBeInAir=false  ; boolean
+AlwaysBeInAir.StayGrounded=false  ; boolean
 ```
 
 ### Kill spawns on low power
