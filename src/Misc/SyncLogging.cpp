@@ -270,13 +270,11 @@ DEFINE_HOOK(0x64CD11, ExecuteDoList_WriteDesyncLog, 0x8)
 
 	if (Game::EnableMPSyncDebug)
 	{
-#ifdef IS_RELEASE_VER
 		for (int i = 0; i < 256; i++)
 		{
 			_snprintf_s(logFilename, _TRUNCATE, "SYNC%01d_%03d.TXT", HouseClass::CurrentPlayer->ArrayIndex, i);
 			SyncLogger::WriteSyncLog(logFilename);
 		}
-#endif
 	}
 	else
 	{

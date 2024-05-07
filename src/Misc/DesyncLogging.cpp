@@ -1,13 +1,12 @@
 #ifndef IS_RELEASE_VER
-#ifndef BELONIT_IS_NOT_HAPPY_ABOUT_THESE
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Utilities/AresHelper.h>
 
-#include <ScenarioClass.h>
-#include <InfantryClass.h>
 #include <EventClass.h>
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
@@ -20,19 +19,26 @@
 
 #include <fstream>
 #include <string>
+#include <chrono>
 
 // -MPDEBUG cmd option only and devbuild only, let's begin with this and 
 void __fastcall DesyncLogging_MPDEBUG(int, EventClass*);
-DEFINE_JUMP(CALL,0x64735F,GET_OFFSET(DesyncLogging_MPDEBUG))
-DEFINE_JUMP(CALL,0x64CC98,GET_OFFSET(DesyncLogging_MPDEBUG))
+DEFINE_JUMP(CALL, 0x64735F, GET_OFFSET(DesyncLogging_MPDEBUG));
+DEFINE_JUMP(CALL, 0x64CC98, GET_OFFSET(DesyncLogging_MPDEBUG));
 
 
-struct DesyncLogger
+void __fastcall DesyncLogging_Normal(EventClass*);
+DEFINE_JUMP(CALL, 0x647368, GET_OFFSET(DesyncLogging_Normal));
+DEFINE_JUMP(CALL, 0x64CCBA, GET_OFFSET(DesyncLogging_Normal));
+
+
+class DesyncLogger
 {
 	using json = nlohmann::json;
 
 	int FrameIdx;
 	EventClass* OffendingEvent;
+public:
 
 	json MainFile;
 
@@ -41,7 +47,12 @@ struct DesyncLogger
 		MainFile {}
 	{	}
 
+	explicit DesyncLogger(EventClass* offendingEvent):
+		FrameIdx{0},OffendingEvent{offendingEvent },
+		MainFile {}
+	{ }
 
+private:
 
 	void WriteMetaInfo()
 	{
@@ -74,9 +85,36 @@ struct DesyncLogger
 		}
 
 		MainFile["Network"] = std::move(metaInfo);
-		MainFile["ModName"] = GameStrings::YURI_S_REVENGE();// TODO : TO BE PARSED
-		MainFile["Version"] = "3.3.6"; // TODO : TO BE PARSED
+		MainFile["ModName"] = "Oental Mmega";//GameStrings::YURI_S_REVENGE();// TODO : TO BE PARSED
+		switch (AresHelper::AresVersion)
+		{
+		case AresHelper::Version::Ares30:
+			MainFile["AresVersion"] = "3.0";
+			break;
+		case AresHelper::Version::Ares30p:
+			MainFile["AresVersion"] = "3.0p1";
+			break;
+		default:
+			MainFile["AresVersion"] = "Unknown";
+		}
+
+		MainFile["PhobosVersion"] = "Devbuild" _STR(BUILD_NUMBER)
+
+#ifdef STR_GIT_COMMIT
+		"(" STR_GIT_COMMIT " @ " STR_GIT_BRANCH ")"
+#endif
+			;
+		const auto now = std::chrono::system_clock::now();
+		const std::time_t t_c = std::chrono::system_clock::to_time_t(now);
+		MainFile["Time"] = std::ctime(&t_c);
+
+
+		MainFile["Version"] = "3.3.6 testing desync"; // TODO : TO BE PARSED
 		MainFile["CurrentPlayerName"] = HouseClass::CurrentPlayer->PlainName;
+
+
+
+
 		// TODO: more info
 
 	}
@@ -116,7 +154,7 @@ struct DesyncLogger
 		MainFile["Randomizer"] = std::move(randomizer);
 	}
 
-	static json FromAbstract(AbstractClass* abst)
+	static json FromAbstract(AbstractClass const* abst)
 	{
 		json jAbs;
 		jAbs["UniqueID"] = abst->UniqueID;
@@ -127,7 +165,7 @@ struct DesyncLogger
 		return jAbs;
 	}
 
-	static json FromObject(ObjectClass* obj)
+	static json FromObject(ObjectClass const* obj)
 	{
 		json jObj = FromAbstract(obj);
 		if (obj->NextObject)
@@ -146,7 +184,7 @@ struct DesyncLogger
 		return jObj;
 	}
 
-	static json FromAnim(AnimClass* anim)
+	static json FromAnim(AnimClass const* anim)
 	{
 		json jAnim = FromObject(anim);
 		if (anim->OwnerObject)
@@ -163,32 +201,34 @@ struct DesyncLogger
 		jAnim["RemainingIterations"] = anim->RemainingIterations;
 		jAnim["Type"] = anim->Type->ID;
 
+		json phoboshit;
 		auto const aext = AnimExt::ExtMap.Find(anim);
 		if (aext->Invoker)
-			jAnim["Invoker"] = aext->Invoker->UniqueID;
+			phoboshit["Invoker"] = aext->Invoker->UniqueID;
 		if (aext->InvokerHouse)
-			jAnim["InvokerHouse"] = aext->InvokerHouse->PlainName;
-
+			phoboshit["InvokerHouse"] = aext->InvokerHouse->PlainName;
+		jAnim["Phobos"] = std::move(phoboshit);
 
 		return jAnim;
 	}
 
-	static json FromRad(RadSiteClass* rad)
+	static json FromRad(RadSiteClass const* rad)
 	{
 		json jRad = FromAbstract(rad);
 		// not crc-ed
+		json phoboshit;
 		auto radext = RadSiteExt::ExtMap.Find(rad);
 		if (radext->RadHouse)
-			jRad["RadHouse"] = radext->RadHouse->PlainName;
+			phoboshit["RadHouse"] = radext->RadHouse->PlainName;
 		if (radext->RadInvoker)
-			jRad["RadInvoker"] = radext->RadInvoker->UniqueID;
-		jRad["Type"] = radext->Type->Name.data();
-
+			phoboshit["RadInvoker"] = radext->RadInvoker->UniqueID;
+		phoboshit["Type"] = radext->Type->Name.data();
+		jRad["Phobos"] = std::move(phoboshit);
 
 		return jRad;
 	}
 
-	static json FromBullet(BulletClass* bullet)
+	static json FromBullet(BulletClass const* bullet)
 	{
 		json jBul = FromObject(bullet);
 		// not crc-ed
@@ -197,18 +237,21 @@ struct DesyncLogger
 		jBul["Type"] = bullet->Type->ID;
 		if (bullet->Target)
 			jBul["Target"] = bullet->Target->UniqueID;
-		auto const bext = BulletExt::ExtMap.Find(bullet);
-		jBul["CurrentStrength"] = bext->CurrentStrength;
-		if (bext->FirerHouse)
-			jBul["FirerHouse"] = bext->FirerHouse->PlainName;
 
+		json phoboshit;
+		auto const bext = BulletExt::ExtMap.Find(bullet);
+		phoboshit["CurrentStrength"] = bext->CurrentStrength;
+		if (bext->FirerHouse)
+			phoboshit["FirerHouse"] = bext->FirerHouse->PlainName;
+		jBul["Phobos"] = std::move(phoboshit);
 
 		return jBul;
 	}
 
-	static json FromTechno(TechnoClass* techno)
+	static json FromTechno(TechnoClass const* techno)
 	{
 		json jTech = FromObject(techno);
+		jTech["Type"] = techno->get_ID();
 		// MissionClass
 		jTech["CurrentMission"] = MissionControlClass::FindName(techno->CurrentMission);
 		jTech["SuspendedMission"] = MissionControlClass::FindName(techno->SuspendedMission);
@@ -220,12 +263,40 @@ struct DesyncLogger
 		// RadioClass
 
 		// TechnoClass
+		jTech["ArmorMultiplier"] = techno->ArmorMultiplier;
+		jTech["FirepowerMultiplier"] = techno->FirepowerMultiplier;
+		jTech["CloakState"] = (int)techno->CloakState;
+		jTech["Ammo"] = techno->Ammo;
+		jTech["ROFTimeLeft"] = techno->DiskLaserTimer.GetTimeLeft();
+
+
 
 		// BuildingClass
-		
+		if (auto bld = specific_cast<BuildingClass const*>(techno))
+		{
+			jTech["BState"] = bld->BState;
+			jTech["HasPower"] = bld->HasPower;
+			jTech["IsReadyToCommence"] = bld->IsReadyToCommence;
+			jTech["IsBeingRepaired"] = bld->IsBeingRepaired;
+			jTech["ActuallyPlacedOnMap"] = bld->ActuallyPlacedOnMap;
+		}
 		 
 		// FootClass
+		if (auto foot = generic_cast<FootClass const*>(techno))
+		{
+			jTech["CurrentMapCoords"] = { foot->CurrentMapCoords.X,foot->CurrentMapCoords.Y };
+			if (foot->Destination)
+				jTech["Destination"] = foot->Destination->UniqueID;
+			jTech["SpeedPercentage"] = foot->SpeedPercentage;
+			jTech["SpeedMultiplier"] = foot->SpeedMultiplier;
+			if (foot->Team)
+				jTech["Team"] = foot->Team->UniqueID;
+			jTech["IsDeploying"] = foot->IsDeploying;
+			jTech["IsFiring"] = foot->IsFiring;
+			jTech["ShouldScanForTarget"] = foot->ShouldScanForTarget;
 
+
+		}
 		// Infantry
 		//
 		// 
@@ -234,18 +305,39 @@ struct DesyncLogger
 		// 
 		// Aircraft
 
-		jTech["Type"] = techno->get_ID();
+		
 		return jTech;
 	}
 
 
-	static json FromTeam(TeamClass* team)
+	static json FromHouse(HouseClass const* house)
+	{
+		json jHouse = FromAbstract(house);
+		jHouse["IsHumanPlayer"] = house->IsHumanPlayer;
+		jHouse["Production"] = house->Production;
+		jHouse["OwnedInfanty"] = house->OwnedInfantry;
+		jHouse["OwnedUnit"] = house->OwnedUnits;
+		jHouse["OwnedAircraft"] = house->OwnedAircraft;
+		jHouse["OwnedBuilding"] = house->OwnedBuildings;
+		jHouse["Balance"] = house->Balance;
+		jHouse["NumAirpads"] = house->NumAirpads;
+		jHouse["NumBarracks"] = house->NumBarracks;
+		jHouse["NumConYards"] = house->NumConYards;
+		jHouse["NumOrePurifiers"] = house->NumOrePurifiers;
+		jHouse["NumShipyards"] = house->NumShipyards;
+		jHouse["NumWarFactories"] = house->NumWarFactories;
+		jHouse["PowerOutput"] = house->PowerOutput;
+		jHouse["PowerDrain"] = house->PowerDrain;
+
+		return jHouse;
+	}
+
+	static json FromTeam(TeamClass const* team)
 	{
 		json jTeam = FromAbstract(team);
 
-
-
-
+		jTeam["Type"] = team->Type->ID;
+		jTeam["Owner"] = team->Owner->PlainName;
 
 		return jTeam;
 	}
@@ -253,7 +345,7 @@ struct DesyncLogger
 	void WriteAnims()
 	{
 		json jAnims = json::array();
-		for (auto anim : *AnimClass::Array)
+		for (auto const* anim : *AnimClass::Array)
 			jAnims.push_back(FromAnim(anim));
 		MainFile["Animations"] = std::move(jAnims);
 	}
@@ -261,7 +353,7 @@ struct DesyncLogger
 	void WriteRadSites()
 	{
 		json jRads = json::array();
-		for (auto rad : *RadSiteClass::Array)
+		for (auto const* rad : *RadSiteClass::Array)
 			jRads.push_back(FromRad(rad));
 		MainFile["RadSites"] = std::move(jRads);
 	}
@@ -269,22 +361,47 @@ struct DesyncLogger
 	void WriteBullets()
 	{
 		json jBullets = json::array();
-		for (auto rad : *RadSiteClass::Array)
-			jBullets.push_back(FromRad(rad));
+		for (auto const* rad : *BulletClass::Array)
+			jBullets.push_back(FromBullet(rad));
 		MainFile["Bullets"] = std::move(jBullets);
 	}
 
 	void WriteTechnos()
 	{
 		json jTechnos = json::array();
-		for (auto techno : *TechnoClass::Array)
+		for (auto const* techno : *TechnoClass::Array)
 			jTechnos.push_back(FromTechno(techno));
 		MainFile["RadSites"] = std::move(jTechnos);
 	}
 
 	void WriteTeams()
 	{
+		json jTeam = json::array();
+		for (auto const* team : *TeamClass::Array)
+			jTeam.push_back(FromTeam(team));
+		MainFile["Teams"] = std::move(jTeam);
+	}
 
+	void WriteHouses()
+	{
+		json jHouse = json::array();
+		for (auto const* house : *HouseClass::Array)
+			jHouse.push_back(FromHouse(house));
+		MainFile["Houses"] = std::move(jHouse);
+	}
+public:
+	void Poop()
+	{
+		this->WriteMetaInfo();
+		this->WriteOffendingEvent();
+		this->WriteRNG();
+
+		this->WriteAnims();
+		this->WriteBullets();
+		this->WriteTechnos();
+		this->WriteRadSites();
+		this->WriteTeams();
+		this->WriteHouses();
 	}
 };
 
@@ -297,27 +414,29 @@ void __fastcall DesyncLogging_MPDEBUG(int slot, EventClass* pOffendingEvent)
 	if (oss.is_open())
 	{
 		DesyncLogger logger { slot, pOffendingEvent };
-		logger.WriteMetaInfo();
-		logger.WriteOffendingEvent();
-		logger.WriteRNG();
-		logger.WriteAnims();
-		logger.WriteRadSites();
-		logger.WriteBullets();
-		logger.WriteTechnos();
-
-
-
-
+		logger.Poop();
 		oss << logger.MainFile.dump(4) << std::endl;
 	}
 	oss.close();
 
-#ifndef I_DONT_WANT_TO_FUCK_UP_IO_TIME
 	reinterpret_cast<decltype(DesyncLogging_MPDEBUG)*>(0x6516F0)(slot, pOffendingEvent);
-#elif STARKKU_HAS_INSOMNIA
 
-#endif
 }
 
-#endif
+
+void __fastcall DesyncLogging_Normal(EventClass* pOffendingEvent)
+{
+	std::ofstream oss { std::format("SYNC{:01d}.json", HouseClass::CurrentPlayer->ArrayIndex) };
+	if (oss.is_open())
+	{
+		DesyncLogger logger { pOffendingEvent };
+		logger.Poop();
+		oss << logger.MainFile.dump(4) << std::endl;
+	}
+	oss.close();
+
+	reinterpret_cast<decltype(DesyncLogging_Normal)*>(0x64DEA0)(pOffendingEvent);
+
+}
+
 #endif
