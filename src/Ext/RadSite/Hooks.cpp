@@ -62,24 +62,23 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 	auto const pWeapon = pInf->GetDeployWeapon()->WeaponType;
 	int radLevel = 0;
 
-	if (RadSiteExt::ExtMap.size() > 0 && pWeapon)
+	if (RadSiteClass::Array->Count > 0 && pWeapon)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 		auto const pRadType = pWeaponExt->RadType;
 		auto const warhead = pWeapon->Warhead;
 		auto currentCoord = pInf->GetCell()->MapCoords;
 
-		for (auto const iRad : *RadSiteClass::Array)
+		for (auto const pRadSite : *RadSiteClass::Array)
 		{
-			if (iRad->BaseCell == currentCoord &&
-				iRad->Spread == (int)warhead->CellSpread &&
-				RadSiteExt::ExtMap.Find(iRad)->Type == pRadType
+			if (pRadSite->BaseCell == currentCoord &&
+				pRadSite->Spread == (int)warhead->CellSpread &&
+				RadSiteExt::ExtMap.Find(pRadSite)->Type == pRadType
 				)
 			{
-				radLevel = iRad->GetRadLevel();
+				radLevel = pRadSite->GetRadLevel();
 				break;
 			}
-
 		}
 
 	}
