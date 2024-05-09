@@ -13,10 +13,10 @@
 bool Phobos::UI::DisableEmptySpawnPositions = false;
 bool Phobos::UI::ExtendedToolTips = false;
 int Phobos::UI::MaxToolTipWidth = 0;
-bool Phobos::UI::ShowHarvesterCounter = false;
+bool Phobos::UI::HarvesterCounter_Show = false;
 double Phobos::UI::HarvesterCounter_ConditionYellow = 0.99;
 double Phobos::UI::HarvesterCounter_ConditionRed = 0.5;
-bool Phobos::UI::ShowProducingProgress = false;
+bool Phobos::UI::ProducingProgress_Show = false;
 const wchar_t* Phobos::UI::CostLabel = L"";
 const wchar_t* Phobos::UI::PowerLabel = L"";
 const wchar_t* Phobos::UI::PowerBlackoutLabel = L"";
@@ -24,10 +24,11 @@ const wchar_t* Phobos::UI::TimeLabel = L"";
 const wchar_t* Phobos::UI::HarvesterLabel = L"";
 const wchar_t* Phobos::UI::ShowBriefingResumeButtonLabel = L"";
 char Phobos::UI::ShowBriefingResumeButtonStatusLabel[32];
-bool Phobos::UI::ShowPowerDelta = false;
+bool Phobos::UI::PowerDelta_Show = false;
 double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 bool Phobos::UI::CenterPauseMenuBackground = false;
+bool Phobos::UI::WeedsCounter_Show = false;
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
@@ -44,6 +45,9 @@ bool Phobos::Config::ShowDesignatorRange = false;
 bool Phobos::Config::SaveVariablesOnScenarioEnd = false;
 bool Phobos::Config::SaveGameOnScenarioStart = true;
 bool Phobos::Config::ShowBriefing = true;
+bool Phobos::Config::ShowHarvesterCounter = false;
+bool Phobos::Config::ShowPowerDelta = true;
+bool Phobos::Config::ShowWeedsCounter = false;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -61,6 +65,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD->ReadBool("Phobos", "DigitalDisplay.Enable", false);
 	Phobos::Config::SaveGameOnScenarioStart = CCINIClass::INI_RA2MD->ReadBool("Phobos", "SaveGameOnScenarioStart", true);
 	Phobos::Config::ShowBriefing = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBriefing", true);
+	Phobos::Config::ShowPowerDelta = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPowerDelta", true);
+	Phobos::Config::ShowHarvesterCounter = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowHarvesterCounter", true);
+	Phobos::Config::ShowWeedsCounter = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowWeedsCounter", true);
 
 	CCINIClass* pINI_UIMD = CCINIClass::LoadINIFile(GameStrings::UIMD_INI);
 
@@ -93,7 +100,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	// Sidebar
 	{
-		Phobos::UI::ShowHarvesterCounter =
+		Phobos::UI::HarvesterCounter_Show =
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
 
 		pINI_UIMD->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
@@ -105,10 +112,13 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		Phobos::UI::HarvesterCounter_ConditionRed =
 			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
 
-		Phobos::UI::ShowProducingProgress =
+		Phobos::UI::WeedsCounter_Show =
+			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "WeedsCounter.Show", false);
+
+		Phobos::UI::ProducingProgress_Show =
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
 
-		Phobos::UI::ShowPowerDelta =
+		Phobos::UI::PowerDelta_Show =
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "PowerDelta.Show", false);
 
 		Phobos::UI::PowerDelta_ConditionYellow =

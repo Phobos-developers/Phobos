@@ -75,6 +75,9 @@ PrioritySelectionFiltering=true  ; boolean
 ShowPlacementPreview=yes         ; boolean
 RealTimeTimers=false             ; boolean
 RealTimeTimers.Adaptive=false    ; boolean
+ShowHarvesterCounter=true        ; boolean
+ShowPowerDelta=true              ; boolean  
+ShowWeedsCounter=true            ; boolean
 ToolTipDescriptions=true         ; boolean
 ToolTipBlur=false                ; boolean
 SaveGameOnScenarioStart=true     ; boolean
@@ -389,6 +392,7 @@ New:
 - Allow upgrade animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Starkku)
 - Toggle for `Explodes=true` BuildingTypes to not explode during buildup or being sold (by Starkku)
 - Toggleable height-based shadow scaling for voxel air units (by Trsdy & Starkku)
+- User setting toggles for harvester counter & power delta indicator (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -448,6 +452,8 @@ Vanilla fixes:
 - Spawned aircraft now align with the spawner's facing when landing (by Starkku)
 - Fixed infantries attempted to entering buildings when waypointing together with engineer/agent/occupier/etc (by Trsdy)
 - Fixed jumpjet crash speed when crashing onto buildings (by NetsuNegi)
+- Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units (by Starkku)
+- Skipped drawing the rally point line when undeploying a factory (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

@@ -53,10 +53,9 @@ DEFINE_HOOK(0x4403D4, BuildingClass_AI_ChronoSparkle, 0x6)
 				if (!((Unsorted::CurrentFrame + i) % RulesExt::Global()->ChronoSparkleDisplayDelay))
 				{
 					auto muzzleOffset = pType->MaxNumberOccupants <= 10 ? pType->MuzzleFlash[i] : BuildingTypeExt::ExtMap.Find(pType)->OccupierMuzzleFlashes.at(i);
-					auto offset = Point2D::Empty;
 					auto coords = CoordStruct::Empty;
 					auto const renderCoords = pThis->GetRenderCoords();
-					offset = *TacticalClass::Instance->ApplyMatrix_Pixel(&offset, &muzzleOffset);
+					auto offset = TacticalClass::Instance->ApplyMatrix_Pixel(muzzleOffset);
 					coords.X += offset.X;
 					coords.Y += offset.Y;
 					coords += renderCoords;
