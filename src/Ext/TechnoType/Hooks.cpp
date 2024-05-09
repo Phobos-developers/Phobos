@@ -621,7 +621,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	shadow_mtx = Matrix3D::VoxelDefaultMatrix() * shadow_mtx;
 
 	auto const main_vxl = &pThis->Type->MainVoxel;
-
+	// flor += loco->Shadow_Point(); // no longer needed
 	if (aTypeExt->ShadowIndices.empty())
 	{
 		auto const shadow_index = pThis->Type->ShadowIndex;
@@ -658,8 +658,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 }
 
 // Shadow_Point of RocketLoco was forgotten to be set to {0,0}. It was an oversight.
-// Anyway we don't need to call it from Fly or Rocket loco anymore
-// DEFINE_JUMP(VTABLE, 0x7F0B4C, 0x4CF940);
+DEFINE_JUMP(VTABLE, 0x7F0B4C, 0x4CF940);
 
 DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 {
