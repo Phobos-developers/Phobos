@@ -98,11 +98,6 @@ void AttachmentClass::AI()
 
 	if (this->Child)
 	{
-		if (this->Child->InLimbo && !this->Parent->InLimbo)
-			this->Unlimbo();
-		else if (!this->Child->InLimbo && this->Parent->InLimbo)
-			this->Limbo();
-
 		this->Child->SetLocation(this->GetChildLocation());
 
 		DirStruct childDir = this->Data->IsOnTurret
@@ -276,6 +271,34 @@ bool AttachmentClass::DetachChild()
 	}
 
 	return false;
+}
+
+void AttachmentClass::UpdateRespawnTimerAtConversion(
+	AttachmentTimerConversionMode mode,
+	int timeLeftOld,
+	AttachmentTypeClass* pOldType
+) {
+	auto type = GetType();
+
+	auto isFreeze = CheckFlags(mode, AttachmentTimerConversionMode::Freeze);
+	auto isInheritAbsolute = CheckFlags(mode, AttachmentTimerConversionMode::InheritAbsolute);
+	auto isInheritRelative = CheckFlags(mode, AttachmentTimerConversionMode::InheritRelative);
+	auto isInstant = CheckFlags(mode, AttachmentTimerConversionMode::Instant);
+	auto isReset = CheckFlags(mode, AttachmentTimerConversionMode::Reset);
+
+	if (isInstant)
+		RespawnTimer.TimeLeft = 0;
+	if(isReset)
+		RespawnTimer.TimeLeft = type->RespawnDelay;
+	if (isInheritAbsolute && !pOldType)
+		RespawnTimer.TimeLeft = timeLeftOld;
+	if(isInheritRelative && !pOldType)
+		RespawnTimer.TimeLeft = (timeLeftOld / pOldType->RespawnDelay) * type->RespawnDelay;
+
+	if(isFreeze)
+		RespawnTimer.Pause();
+	else
+		RespawnTimer.Resume();
 }
 
 

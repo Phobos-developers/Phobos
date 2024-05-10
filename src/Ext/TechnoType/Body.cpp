@@ -232,9 +232,25 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (!type.isset())
 			continue;
 
+		Valueable<int> id { -1 };
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.ID", i);
+		id.Read(exINI, pSection, tempBuffer);
+
 		NullableIdx<TechnoTypeClass> technoType;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.TechnoType", i);
 		technoType.Read(exINI, pSection, tempBuffer);
+
+		Valueable<AttachmentInstanceConversionMode> instanceConversionMode { AttachmentInstanceConversionMode::Default };
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.ConversionMode.Instance", i);
+		instanceConversionMode.Read(exINI, pSection, tempBuffer);
+
+		Valueable<AttachmentTimerConversionMode> currentRespawnTimerConversionMode { AttachmentTimerConversionMode::Default };
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.ConversionMode.RespawnTimer.Current", i);
+		currentRespawnTimerConversionMode.Read(exINI, pSection, tempBuffer);
+
+		Valueable<AttachmentTimerConversionMode> nextRespawnTimerConversionMode { AttachmentTimerConversionMode::Default };
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.ConversionMode.RespawnTimer.Next", i);
+		nextRespawnTimerConversionMode.Read(exINI, pSection, tempBuffer);
 
 		Valueable<CoordStruct> flh;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.FLH", i);
@@ -248,7 +264,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.RotationAdjust", i);
 		rotationAdjust.Read(exINI, pSection, tempBuffer);
 
-		AttachmentDataEntry const entry { ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret, rotationAdjust };
+		AttachmentDataEntry const entry {
+			id, ValueableIdx<AttachmentTypeClass>(type),
+			technoType, instanceConversionMode,
+			currentRespawnTimerConversionMode, nextRespawnTimerConversionMode,
+			flh, isOnTurret, rotationAdjust
+		};
 		if (i == AttachmentData.size())
 			this->AttachmentData.push_back(entry);
 		else
@@ -697,8 +718,12 @@ template <typename T>
 bool TechnoTypeExt::ExtData::AttachmentDataEntry::Serialize(T& stm)
 {
 	return stm
+		.Process(this->ID)
 		.Process(this->Type)
 		.Process(this->TechnoType)
+		.Process(this->ConversionMode_Instance)
+		.Process(this->ConversionMode_RespawnTimer_Current)
+		.Process(this->ConversionMode_RespawnTimer_Next)
 		.Process(this->FLH)
 		.Process(this->IsOnTurret)
 		.Process(this->RotationAdjust)

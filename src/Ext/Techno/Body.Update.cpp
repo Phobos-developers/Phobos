@@ -482,6 +482,122 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
+	// Techno attachment behavior during type conversion
+	if (
+		!this->TypeExtData->AttachmentData.empty() ||
+		!pOldTypeExt->AttachmentData.empty() ||
+		!this->ChildAttachments.empty() ||
+		!this->ChildAttachmentsPerType.empty()
+	) {
+		// Save attachment sequence for previous (it should be executed once and only for initial type in theory)
+		if (!this->ChildAttachmentsPerType.contains(pOldTypeExt))
+		{
+			auto& vector = this->ChildAttachmentsPerType[pOldTypeExt];
+			for (auto& a : this->ChildAttachments)
+				vector.push_back(a);
+		}
+		// Create or copy attachments for new type
+		// NOTE:
+		// Converting attachments are the same instances 
+		// Switching attachments are new instances
+		if (!this->ChildAttachmentsPerType.contains(this->TypeExtData))
+		{
+			auto& vector = this->ChildAttachmentsPerType[this->TypeExtData];
+			for (auto& ae : this->TypeExtData->AttachmentData)
+			{
+				auto a = this->FindAttachmentForTypeByID(pOldTypeExt, ae.ID);
+				// do not make new attachment instance for jumping between types attachments
+				// i think that we should make inactive chlid & attachment which is off-field (i.e. disable updating it in-time)
+				if (!a || a->Data->ConversionMode_Instance.Get() == AttachmentInstanceConversionMode::Switch)
+				{
+					a = std::make_shared<AttachmentClass>(&ae, pThis, nullptr);
+					a->Initialize();
+					a->Limbo();
+				}
+				vector.push_back(a);
+			}
+		}
+		auto& vectorNew = this->ChildAttachmentsPerType[this->TypeExtData];
+
+		// Iterate over attachments of old type and do conversions if it needed
+		for (size_t i = 0; i < this->ChildAttachments.size(); i++)
+		{
+			auto& attachment = this->ChildAttachments.at(i);
+			auto const attachmentEntry = pOldTypeExt->AttachmentData.at(i);
+			auto const attachmentType = attachment->GetType();
+			auto const timeLeftCurrent = attachment->RespawnTimer.TimeLeft;
+
+			// Linked by ID attachment on new type
+			// You should know that in this case with switching attachment and attachmentNew are same instance if it were linked properly
+			auto attachmentNew = this->FindAttachmentForTypeByID(this->TypeExtData, attachmentEntry.ID);
+
+			// Apply conversion for chlid
+			switch (attachmentEntry.ConversionMode_Instance.Get())
+			{
+				case(AttachmentInstanceConversionMode::Convert):
+				{
+					// Type to convert is not define, so need just hide this as switching does.
+					// Exact same as switching wtthout linked by ID attachment
+					if (!attachmentNew)
+					{
+						attachment->Limbo();
+						attachment->UpdateRespawnTimerAtConversion(attachmentEntry.ConversionMode_RespawnTimer_Current);
+					}
+
+					auto const attachmentEntryNew = this->TypeExtData->GetAttachmentEntryByID(attachmentEntry.ID);
+					auto const attachmentTypeNew = AttachmentTypeClass::Array[attachmentEntryNew->Type].get();
+
+					auto pTechnoTypeNew = TechnoTypeClass::Array()->GetItem(attachmentEntryNew->TechnoType);
+					if (!AresFunctions::ConvertTypeTo(attachment->Child, pTechnoTypeNew))
+					{
+						auto pTechnoType = TechnoTypeClass::Array()->GetItem(attachmentEntry.TechnoType);
+						Debug::Log("[Developer warning] Error during attachment {%s } techno type conversion { %s } -> { %s }\n", attachmentType->Name, pTechnoType->Name, pTechnoTypeNew->Name);
+					}
+					attachment->Data = attachmentEntryNew;
+
+					// It is the same instance of attachment, so it is single call
+					attachment->UpdateRespawnTimerAtConversion(
+						attachmentEntry.ConversionMode_RespawnTimer_Next,
+						timeLeftCurrent, attachmentType
+					);
+				} break;
+				case(AttachmentInstanceConversionMode::Switch):
+				{
+					attachment->Limbo();
+					attachment->UpdateRespawnTimerAtConversion(attachmentEntry.ConversionMode_RespawnTimer_Current);
+					if (attachmentNew)
+					{
+						attachmentNew->Unlimbo();
+						attachmentNew->UpdateRespawnTimerAtConversion(
+							attachmentEntry.ConversionMode_RespawnTimer_Next,
+							timeLeftCurrent, attachmentType
+						);
+					}
+				} break;
+				case(AttachmentInstanceConversionMode::AlwaysPresent):
+				default:
+				{
+					if (attachmentNew != nullptr && attachment == attachmentNew)
+					{
+						Debug::Log("[Developer warning] Always presented attachment { %s } of type { %s } has linked by ID { %u } other attachment { %s } of type { %s }\n",
+							attachmentType->Name, pOldType->Name,
+							attachmentEntry.ID,
+							attachmentNew->GetType()->Name, this->TypeExtData->OwnerObject()->Name
+						);
+					}
+
+					attachment->Unlimbo();
+					attachment->IsMigrating = true;
+					vectorNew.AddUnique(attachment);
+				} break;
+			}
+		}
+
+		// DO MAGIC
+		this->ChildAttachments.clear();
+		this->ChildAttachments.assign(vectorNew.begin(), vectorNew.end());
+	}
+
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
