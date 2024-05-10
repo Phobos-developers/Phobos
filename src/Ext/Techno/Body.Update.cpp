@@ -548,7 +548,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 					auto const attachmentTypeNew = AttachmentTypeClass::Array[attachmentEntryNew->Type].get();
 
 					auto pTechnoTypeNew = TechnoTypeClass::Array()->GetItem(attachmentEntryNew->TechnoType);
-					if (!AresFunctions::ConvertTypeTo(attachment->Child, pTechnoTypeNew))
+					if (attachment->GetChildType() != attachmentNew->GetChildType() && !AresFunctions::ConvertTypeTo(attachment->Child, pTechnoTypeNew))
 					{
 						auto pTechnoType = TechnoTypeClass::Array()->GetItem(attachmentEntry.TechnoType);
 						Debug::Log("[Developer warning] Error during attachment {%s } techno type conversion { %s } -> { %s }\n", attachmentType->Name, pTechnoType->Name, pTechnoTypeNew->Name);
