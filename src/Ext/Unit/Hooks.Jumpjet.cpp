@@ -279,3 +279,48 @@ DEFINE_HOOK(0x729B5D, TunnelLocomotionClass_DrawMatrix_Tilt, 0x8)
 
 // DEFINE_JUMP(VTABLE, 0x7F5A4C, 0x5142A0);//TunnelLocomotionClass_Shadow_Matrix : just use hover's to save my time
 // Since I've already invalidated the key for tilted vxls when reimplementing the shadow drawing code, this is no longer necessary
+DEFINE_HOOK(0x54BED1, JumpjetLocomotionClass__State_Hovering_54BED1, 0x9)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);	
+
+	auto* pObj = pThis->LinkedTo;
+	TechnoTypeClass* pObjType = pObj->GetTechnoType();
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pObjType);
+
+	if (pTypeExt->AlwaysBeInAir)
+	{
+		pThis->CurrentHeight = pThis->Height;
+		pThis->State = JumpjetLocomotionClass::State::Hovering;
+	}
+	else
+	{
+		pThis->CurrentHeight = 0;
+		pThis->State = JumpjetLocomotionClass::State::Descending;
+	}
+
+	R->ECX(pObj);
+	return 0x54BEDB;
+}
+
+DEFINE_HOOK(0x54C2DC, JumpjetLocomotionClass__State_Cruising_54C2DC, 0x13)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+
+	auto* pObj = pThis->LinkedTo;
+	TechnoTypeClass* pObjType = pObj->GetTechnoType();
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pObjType);
+
+	if (pTypeExt->AlwaysBeInAir)
+	{
+		pThis->CurrentHeight = pThis->Height;
+		pThis->State = JumpjetLocomotionClass::State::Hovering;
+	}
+	else
+	{
+		pThis->CurrentHeight = 0;
+		pThis->State = JumpjetLocomotionClass::State::Descending;
+	}
+
+	R->ECX(pObj);
+	return 0x54C2F0;
+}

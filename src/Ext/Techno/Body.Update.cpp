@@ -3,6 +3,7 @@
 
 #include <SpawnManagerClass.h>
 #include <ParticleSystemClass.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -482,6 +483,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
+
+	CoherateLocomotor();	
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
@@ -757,5 +760,66 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 				}
 			}
 		}
+	}
+}
+
+void TechnoExt::ExtData::CoherateLocomotor()
+{
+	auto* pFoot = abstract_cast<FootClass*>(OwnerObject()); if (!pFoot) return;
+	auto* pFootType = pFoot->GetTechnoType();
+	auto* pFootTypeExt = this->TypeExtData;
+
+	/*
+		Put your locomotion handlers here
+	*/
+
+	if (auto* pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+	{
+		// Ares type convert function does not apply new target JJ height.
+		// So we need coherate JJ locomotor instance height value with new type.
+		if (pJJLoco->Height == pFootType->JumpjetHeight)
+			return;
+
+		// Save new height
+		pJJLoco->Height = pFoot->GetTechnoType()->JumpjetHeight;
+
+		/*
+			Need to update a real unit height, not only desired.
+			if unit considered to be in air:
+				- and it is grounded:
+					- and not forced to stay grounded then it must flight up anyway
+					- and force to stay frounded then it must stay grounded
+				- and it is hovering:
+					- height > current height then it should ascend
+					- height < current height then it should descend
+			if unit NOT considered to be in air:
+				- in all cases height should reapply during movement and there are no extra actions to do
+		*/
+		auto location = pFoot->Location;
+		auto floorHeight = MapClass::Instance->GetCellFloorHeight(location);
+		auto unitHeight = pFoot->GetHeight();
+		auto heightDiff = pJJLoco->Height - pJJLoco->CurrentHeight;
+		auto pCell = MapClass::Instance->GetCellAt(location);
+		auto isBridge = pCell->ContainsBridge();
+		int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
+		location.Z = floorHeight + bridgeZ + pJJLoco->Height;
+
+		auto mustFlight = pFootTypeExt->AlwaysBeInAir || pFootType->BalloonHover;
+		auto onWater = pCell->Tile_Is_Water() || pCell->Tile_Is_Shore();
+		auto onGround = pFoot->IsOnFloor() || pJJLoco->State == JumpjetLocomotionClass::State::Grounded;
+
+		auto reHeight =
+			(onGround && mustFlight && !pFootTypeExt->AlwaysBeInAir_StayGrounded) ||
+			heightDiff != 0 ||
+			onWater
+			;
+
+		if (reHeight)
+		{
+			pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+			pJJLoco->IsMoving = true;
+			pJJLoco->DestinationCoords = location;
+		}
+		else pJJLoco->Move_To(location);
 	}
 }
