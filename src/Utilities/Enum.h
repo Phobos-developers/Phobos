@@ -35,6 +35,16 @@
 #include <GeneralDefinitions.h>
 #include <Phobos.h>
 #include <GeneralDefinitions.h>
+#include <Utilities/Misc.hpp>
+
+// Guys, i f*ck current (old) way to parse enums. IT IS HARDCODED COPY-PASTE, WTF!? So, i made it's for you. Just use it. -Multfinite
+// Also see `ParseEnum` function at bottom of this file.
+// NOTICE:
+// USAGE:
+// 1. FIRST VALUE **ALWAYS** WILL BE TREATED AS DEFAULT IF PARSING FAILS OR KEY ISN'T PRESENT.
+// 2. Third parameter of map must be `CaseInsensitiveComparator` type
+template<typename TEnum> requires std::is_enum_v<TEnum>
+inline std::map<std::string, TEnum, detail::CaseInsensitiveComparator> GetEnumMapping();
 
 enum class AttachedAnimFlag
 {
@@ -322,3 +332,28 @@ public:
 		return false;
 	}
 };
+
+
+template<>
+inline std::map<std::string, Layer, detail::CaseInsensitiveComparator> GetEnumMapping<Layer>()
+{
+	return
+	{
+		  { "None", Layer::None }
+		, { "Underground", Layer::Underground }
+		, { "Surface", Layer::Surface }
+		, { "Ground", Layer::Ground }
+		, { "Air", Layer::Air }
+		, { "Top", Layer::Top }
+	};
+};
+
+// Unificate enum parsing using this please. -Multfinite
+template<typename TEnum> requires std::is_enum_v<TEnum>
+inline TEnum ParseEnum(const std::string& value, bool& success)
+{
+	auto mappings = GetEnumMapping<TEnum>();
+	auto iter = mappings.find(value);
+	success = iter != mappings.end();
+	return success ? iter->second : mappings.begin()->second;
+}

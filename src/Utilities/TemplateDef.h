@@ -1029,6 +1029,20 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Layer>(Layer& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			bool success;
+			value = ParseEnum<Layer>(parser.value(), success);
+			if (!success)
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a layer value, use default value.");
+			return success;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<CLSID>(CLSID &value, INI_EX &parser, const char *pSection, const char *pKey)
 	{
 		if (!parser.ReadString(pSection, pKey))

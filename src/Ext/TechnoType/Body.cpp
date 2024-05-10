@@ -125,7 +125,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (!pINI->GetSection(pSection))
 		return;
 
-	char tempBuffer[32];
+	char tempBuffer[256];
 	INI_EX exINI(pINI);
 
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
@@ -217,6 +217,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoFire.Read(exINI, pSection, "AutoFire");
 	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
 
+	this->AttachmentForcedLayer.Read(exINI, pSection, "Attachment.ForcedLayer");
 	this->AttachmentTopLayerMinHeight.Read(exINI, pSection, "AttachmentTopLayerMinHeight");
 	this->AttachmentUndergroundLayerMaxHeight.Read(exINI, pSection, "AttachmentUndergroundLayerMaxHeight");
 
@@ -642,6 +643,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
 
+		.Process(this->AttachmentForcedLayer)
 		.Process(this->AttachmentTopLayerMinHeight)
 		.Process(this->AttachmentUndergroundLayerMaxHeight)
 		.Process(this->AttachmentData)

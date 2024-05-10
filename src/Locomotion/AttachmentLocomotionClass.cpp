@@ -352,6 +352,9 @@ ILocomotionPtr AttachmentLocomotionClass::GetAttachmentParentLoco()
 Layer AttachmentLocomotionClass::CalculateLayer()
 {
 	auto const pExt = TechnoTypeExt::ExtMap.Find(this->LinkedTo->GetTechnoType());
+	if (pExt->AttachmentForcedLayer.isset())
+		return pExt->AttachmentForcedLayer;
+
 	int height = this->LinkedTo->GetHeight();
 
 	if (this->LinkedTo->IsInAir())

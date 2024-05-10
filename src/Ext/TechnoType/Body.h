@@ -192,6 +192,7 @@ public:
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 
+		Nullable<Layer> AttachmentForcedLayer;
 		Valueable<int> AttachmentTopLayerMinHeight;
 		Valueable<int> AttachmentUndergroundLayerMaxHeight;
 
@@ -400,6 +401,7 @@ public:
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
 
+			, AttachmentForcedLayer { }
 			, AttachmentTopLayerMinHeight { RulesExt::Global()->AttachmentTopLayerMinHeight }
 			, AttachmentUndergroundLayerMaxHeight { RulesExt::Global()->AttachmentUndergroundLayerMaxHeight }
 			, AttachmentData {}
