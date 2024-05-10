@@ -1029,6 +1029,34 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<AttachmentTimerConversionMode>(AttachmentTimerConversionMode& value, INI_EX &parser, const char *pSection, const char *pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			bool success;
+			value = ParseEnum<AttachmentTimerConversionMode>(parser.value(), success);
+			if(!success)
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a time conversion mode, use default value.");
+			return success;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<AttachmentInstanceConversionMode>(AttachmentInstanceConversionMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			bool success;
+			value = ParseEnum<AttachmentInstanceConversionMode>(parser.value(), success);
+			if (!success)
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a instance conversion mode, use default value.");
+			return success;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<Layer>(Layer& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))

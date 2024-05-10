@@ -25,6 +25,12 @@ __forceinline T* Make_Pointer(const uintptr_t address)
 	return reinterpret_cast<T*>(address);
 }
 
+template<typename T>
+__forceinline bool CheckFlags(T value, T flags)
+{
+	return (value & flags) == flags;
+}
+
 #define NAKED __declspec(naked)
 
 #pragma region Patch Macros

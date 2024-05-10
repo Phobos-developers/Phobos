@@ -333,6 +333,83 @@ public:
 	}
 };
 
+enum class AttachmentTimerConversionMode : unsigned char
+{
+	// Do not change parameters (but enable timer)
+	Nothing = 0,
+	// If defined, then pause timer, otherwise - resume.
+	Freeze = 1 << 0,
+	// Transfer absolute value from current timer to next
+	// Should be defined at next timer
+	InheritAbsolute = 1 << 1,
+	// Transfer relative value from current timer to next
+	// Should be defined at next timer
+	InheritRelative = 1 << 2,
+	// Set timer left time to zero
+	Instant = 1 << 3,
+	// Set timer left time to RespawnDelay
+	Reset = 1 << 4,
+	// Both Freeze and Instant effects
+	FreezeAndInstant = Freeze | Instant,
+	// Both Freeze and Reset effects
+	FreezeAndReset = Freeze | Reset,
+	// Both Freeze and InheritRelative effects
+	FreezeAndInheritAbsolute = Freeze | InheritAbsolute,
+	// Both Freeze and InheritRelative effects
+	FreezeAndInheritRelative = Freeze | InheritRelative,
+
+	Default = Nothing
+};
+MAKE_ENUM_FLAGS(AttachmentTimerConversionMode)
+
+template<>
+inline std::map<std::string, AttachmentTimerConversionMode, detail::CaseInsensitiveComparator> GetEnumMapping<AttachmentTimerConversionMode>()
+{
+	return
+	{
+		  { "Default", AttachmentTimerConversionMode::Default }
+		, { "Freeze", AttachmentTimerConversionMode::Freeze }
+		, { "InheritAbsolute", AttachmentTimerConversionMode::InheritAbsolute }
+		, { "InheritRelative", AttachmentTimerConversionMode::InheritRelative }
+		, { "Instant", AttachmentTimerConversionMode::Instant }
+		, { "Reset", AttachmentTimerConversionMode::Reset }
+		, { "FreezeAndInstant", AttachmentTimerConversionMode::FreezeAndInstant }
+		, { "FreezeAndReset", AttachmentTimerConversionMode::FreezeAndReset }
+		, { "FreezeAndInheritAbsolute", AttachmentTimerConversionMode::FreezeAndInheritAbsolute }
+		, { "FreezeAndInheritRelative", AttachmentTimerConversionMode::FreezeAndInheritRelative }
+	};
+};
+
+enum class AttachmentInstanceConversionMode : unsigned char
+{
+	// This will be never convert it's type (but respawn timer options of AttachmentTimerConversionMode still applied)
+	AlwaysPresent,
+	// If new AttachmentDataEntry present:
+	// Extract (create if not present) attachment from limbo with the same ID and replace current with it
+	// Current attachment moves to limbo
+	// This means that new attachment time will applies
+	// ---
+	// If new AttachmentDataEntry NOT present OR invalid ID:
+	// Just save this attachment to limbo (AKA disable)
+	Switch,
+	// Convert chlid to new TechnoType and apply new AttachmentDataEntry
+	// It requires a linked by ID attachment at new type. Valid unique ID [0; +inf) and defined AttachmentDataEntry on TechnoType.
+	Convert,
+
+	Default = AlwaysPresent
+};
+
+template<>
+inline std::map<std::string, AttachmentInstanceConversionMode, detail::CaseInsensitiveComparator> GetEnumMapping<AttachmentInstanceConversionMode>()
+{
+	return
+	{
+		  { "Default", AttachmentInstanceConversionMode::Default }
+		, { "AlwaysPresent", AttachmentInstanceConversionMode::AlwaysPresent }
+		, { "Switch", AttachmentInstanceConversionMode::Switch }
+		, { "Convert", AttachmentInstanceConversionMode::Convert }
+	};
+};
 
 template<>
 inline std::map<std::string, Layer, detail::CaseInsensitiveComparator> GetEnumMapping<Layer>()
