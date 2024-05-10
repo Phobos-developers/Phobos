@@ -382,7 +382,7 @@ inline std::map<std::string, AttachmentTimerConversionMode, detail::CaseInsensit
 
 enum class AttachmentInstanceConversionMode : unsigned char
 {
-	// This will be never convert it's type (but respawn timer options of AttachmentTimerConversionMode still applied)
+	// This will be never convert it's type and keep as-is
 	AlwaysPresent,
 	// If new AttachmentDataEntry present:
 	// Extract (create if not present) attachment from limbo with the same ID and replace current with it
