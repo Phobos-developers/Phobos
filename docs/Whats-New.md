@@ -393,6 +393,7 @@ New:
 - Toggle for `Explodes=true` BuildingTypes to not explode during buildup or being sold (by Starkku)
 - Toggleable height-based shadow scaling for voxel air units (by Trsdy & Starkku)
 - User setting toggles for harvester counter & power delta indicator (by Starkku)
+- Shrapnel weapon target filtering toggle (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

@@ -523,18 +523,20 @@ Trajectory=Bombard             ; Trajectory type
 Trajectory.Bombard.Height=0.0  ; double
 ```
 
-### Shrapnel enhancement
+### Shrapnel enhancements
 
 ![image](_static/images/shrapnel.gif)
 *Shrapnel appearing against ground & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
 
-- Shrapnel behavior can be triggered on the ground and buildings.
+- `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
+- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) will be checked.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]                 ; Projectile
-Shrapnel.AffectsGround=false     ; boolean
-Shrapnel.AffectsBuildings=false  ; boolean
+[SOMEPROJECTILE]                   ; Projectile
+Shrapnel.AffectsGround=false       ; boolean
+Shrapnel.AffectsBuildings=false    ; boolean
+Shrapnel.UseWeaponTargeting=false  ; boolean
 ```
 
 ### Projectiles blocked by land or water
