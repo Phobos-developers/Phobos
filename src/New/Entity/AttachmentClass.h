@@ -18,14 +18,18 @@ public:
 	TechnoClass* Parent;
 	TechnoClass* Child;
 	CDTimerClass RespawnTimer;
-
+	// Migrating between TechnoTypes in single unit instance
+	// This means, that this attachment was added at end of TechnoExt::ExtData::ChildAttachments vector of parent
+	// This was made for special case AttachmentTechnoTypeConversionMode::AlwaysPresent
+	bool IsMigrating;
 
 	AttachmentClass(TechnoTypeExt::ExtData::AttachmentDataEntry* data,
 		TechnoClass* pParent, TechnoClass* pChild = nullptr) :
 		Data { data },
 		Parent { pParent },
 		Child { pChild },
-		RespawnTimer { }
+		RespawnTimer { },
+		IsMigrating { false }
 	{
 		Array.push_back(this);
 	}
@@ -34,7 +38,8 @@ public:
 		Data { },
 		Parent { },
 		Child { },
-		RespawnTimer { }
+		RespawnTimer { },
+		IsMigrating { false }
 	{
 		Array.push_back(this);
 	}
@@ -56,6 +61,12 @@ public:
 
 	bool AttachChild(TechnoClass* pChild);
 	bool DetachChild();
+
+	void UpdateRespawnTimerAtConversion(
+		AttachmentTimerConversionMode mode,
+		int timeLeftOld = 0,
+		AttachmentTypeClass* pOldType = nullptr
+	);
 
 	void InvalidatePointer(void* ptr);
 

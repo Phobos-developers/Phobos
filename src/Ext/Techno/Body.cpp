@@ -213,6 +213,26 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 	return true;
 }
 
+std::shared_ptr<AttachmentClass> TechnoExt::ExtData::FindAttachmentForTypeByID(TechnoTypeExt::ExtData* pTypeExt, int entryId)
+{
+	if (entryId < 0) return nullptr;
+	auto& vector = ChildAttachmentsPerType[pTypeExt];
+	auto iter = std::find_if(vector.begin(), vector.end(), [&entryId](std::shared_ptr<AttachmentClass>& item) -> bool
+	{
+		return item->Data->ID.Get() == entryId;
+	});
+	return iter != vector.end() ? *iter : nullptr;
+}
+
+void TechnoExt::ExtData::RemoveAttachmentFromPerTypeLists(AttachmentClass* pWhat)
+{
+	for (auto& vector : ChildAttachmentsPerType)
+		std::remove_if(vector.second.begin(), vector.second.end(), [&pWhat](const AttachmentClassPtr& item) -> bool
+		{
+			return item.get() == pWhat && item;
+		});
+}
+
 // Feature for common usage : TechnoType conversion -- Trsdy
 // BTW, who said it was merely a Type pointer replacement and he could make a better one than Ares?
 bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
@@ -393,7 +413,7 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 
 	for (auto& entry : pTypeExt->AttachmentData)
 	{
-		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(&entry, pThis, nullptr));
+		pExt->ChildAttachments.push_back(std::make_shared<AttachmentClass>(&entry, pThis, nullptr));
 		pExt->ChildAttachments.back()->Initialize();
 	}
 }
@@ -439,13 +459,41 @@ void TechnoExt::TransferAttachments(TechnoClass* pThis, TechnoClass* pThat)
 	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pThatExt = TechnoExt::ExtMap.Find(pThat);
 
+	auto* pVectorOfThat = pThatExt->ChildAttachmentsPerType.contains(pThisExt->TypeExtData) ? &(pThatExt->ChildAttachmentsPerType.at(pThisExt->TypeExtData)) : nullptr;
+
 	for (auto& pAttachment : pThisExt->ChildAttachments)
 	{
 		pAttachment->Parent = pThat;
-		pThatExt->ChildAttachments.push_back(std::move(pAttachment));
+		pThisExt->RemoveAttachmentFromPerTypeLists(pAttachment.get());
+
+		pThatExt->ChildAttachments.push_back(pAttachment);
+		if (pVectorOfThat)
+			pVectorOfThat->push_back(pAttachment); // Non-safe for unique entry ID !
 	}
 
 	pThisExt->ChildAttachments.clear();
+}
+
+void TechnoExt::TransferAttachment(TechnoClass* pThis, TechnoClass* pThat, AttachmentClass* pWhat)
+{
+	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pThatExt = TechnoExt::ExtMap.Find(pThat);
+
+	auto srcIter = std::find_if(pThisExt->ChildAttachments.begin(), pThisExt->ChildAttachments.end(), [&pWhat](const AttachmentClassPtr& item) -> bool
+	{
+		return item.get() == pWhat;
+	});
+	if (srcIter == pThisExt->ChildAttachments.end())
+		return;
+
+	(*srcIter)->Parent = pThat;
+
+	pThatExt->ChildAttachments.push_back(*srcIter);
+	if (pThatExt->ChildAttachmentsPerType.contains(pThisExt->TypeExtData))
+		pThatExt->ChildAttachmentsPerType.at(pThisExt->TypeExtData).push_back(*srcIter); // Non-safe for unique entry ID !
+
+	pThisExt->RemoveAttachmentFromPerTypeLists(pWhat);
+	pThisExt->ChildAttachments.erase(srcIter);
 }
 
 bool TechnoExt::IsAttached(TechnoClass* pThis)
@@ -518,6 +566,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->WHAnimRemainingCreationInterval)
+		// In theory it should be serialized too
+		//.Process(this->ChildAttachments)
+		//.Process(this->ChildAttachmentsPerType)
 		;
 }
 

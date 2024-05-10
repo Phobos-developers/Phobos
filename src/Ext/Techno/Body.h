@@ -20,6 +20,9 @@ public:
 	static constexpr DWORD Canary = 0x55555555;
 	static constexpr size_t ExtPointerOffset = 0x34C;
 
+	using AttachmentClassPtr = std::shared_ptr<AttachmentClass>;
+	using AttachmentVector = ValueableVector<AttachmentClassPtr>;
+
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
@@ -46,7 +49,8 @@ public:
 		HouseClass* OriginalPassengerOwner;
 
 		AttachmentClass* ParentAttachment;
-		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
+		AttachmentVector ChildAttachments;
+		std::map<TechnoTypeExt::ExtData*, AttachmentVector> ChildAttachmentsPerType;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -69,6 +73,7 @@ public:
 			, CanCurrentlyDeployIntoBuilding { false }
 			, ParentAttachment {}
 			, ChildAttachments {}
+			, ChildAttachmentsPerType { }
 		{ }
 
 		void OnEarlyUpdate();
@@ -84,6 +89,9 @@ public:
 		void UpdateLaserTrails();
 		void InitializeLaserTrails();
 		void UpdateMindControlAnim();
+
+		std::shared_ptr<AttachmentClass> FindAttachmentForTypeByID(TechnoTypeExt::ExtData* pTypeExt, int entryId);
+		void RemoveAttachmentFromPerTypeLists(AttachmentClass* pWhat);
 
 		virtual ~ExtData() override;
 
@@ -152,6 +160,7 @@ public:
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
 	static void TransferAttachments(TechnoClass* pThis, TechnoClass* pThat);
+	static void TransferAttachment(TechnoClass* pThis, TechnoClass* pThat, AttachmentClass* pWhat);
 
 	static bool IsAttached(TechnoClass* pThis);
 	static bool HasAttachmentLoco(FootClass* pThis); // FIXME shouldn't be here

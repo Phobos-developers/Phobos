@@ -17,6 +17,32 @@ This feature is not final and is under development.
   - Currently the attached techno may only be a vehicle.
   - When attached, the special `Attachment` (`{C5D54B98-8C98-4275-8CE4-EF75CB0CBE3E}`) locomotor is automatically casted on a unit. You may also specify it in the child unit types manually if the unit is not intended to move without a parent (f. ex. a turret).
 
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html).
+```
+
+There are way to define special rules for attachments during type conversion and it's the following:
+- Attachment type and Techno type conversion rules via `AttachmentX.ConversionMode.Instance`
+  - `AlwaysPresent` which is `Default` forces attach to be always on unit and keep instance as-is
+  - `Switch` means that new attachment and techno instances will be created during type conversion - the current will be hidden and inactive, the new will be present on the unit
+    - If next attachment not present then the current just will be hidden and inactive
+    - Use it when you need to keep different state on objects
+  - `Convert` means that current instance will be converted and all state will be the same
+    - If TechnoTypes the same then chlid techno won't convert
+    - Attachment type will convert too
+  - `Switch` and `Convert` requires to be linked with attachment on other parent TechnoType via `AttachmentX.ID`. You **MUST** gurantee that each value is **unique**.
+- Attachment timers can be affected too using `AttachmentX.ConversionMode.RespawnTimer.Current` and `AttachmentX.ConversionMode.RespawnTimer.Next`
+  - `Nothing` which is `Default` will do obviosly nothing
+  - `Freeze` flag if present will pause timer and otherwise will resume timer
+  - `InheritAbsolute` will works only for `Next` and it will transfer timer value from `Current` itself
+  - `InheritRelative` will works only for `Next` and it will transfer timer value from `Current` as percent between attachment entries
+  - `Instant` set left time to zero
+  - `Reset` set left time to `RespawnDelay`
+  - `FreezeAndInstant` - both `Freeze` & `Instant` effects
+  - `FreezeAndReset` - both `Freeze` & `Reset` effects
+  - `FreezeAndInheritAbsolute` - both `Freeze` & `InheritAbsolute` effects
+  - `FreezeAndInheritRelative` - both `Freeze` & `InheritRelative` effects
+
 In `rulesmd.ini`:
 ```ini
 [AttachmentTypes]
@@ -41,14 +67,19 @@ ParentDetachmentMission=              ; MissionType, queued to child when it's d
 
 [SOMETECHNO]                          ; TechnoTypeClass
 ; used when this techno is attached
+Attachment.ForcedLayer=               ; Layer None|Underground|Surface|Ground|Air|Top (don't set anything to disable this feature)
 AttachmentTopLayerMinHeight=          ; integer
 AttachmentUndergroundLayerMaxHeight=  ; integer
 ; used for attaching other technos
+AttachmentX.ID=-1                     ; int, unique ID to link attachments during type conversion. Index must be in range [0; inf+) and any negative value treated as NO ID
 AttachmentX.Type=MNT                  ; AttachmentType (example)
 AttachmentX.TechnoType=               ; TechnoType that can be attached, currently only units are supported
 AttachmentX.FLH=0,0,0                 ; integer - Forward, Lateral, Height
 AttachmentX.IsOnTurret=false          ; boolean
 AttachmentX.RotationAdjust=0          ; rotation in DirType, from -255 to 255
+AttachmentX.ConversionMode.Instance=Default ; AttachmentInstanceConversionMode: Default | AlwaysPresent | Switch | Convert
+AttachmentX.ConversionMode.RespawnTimer.Current=Default ; AttachmentTimerConversionMode Default | Nothing | Freeze | InheritAbsolute | InheritRelative | Instant | Reset | FreezeAndInstant | FreezeAndReset | FreezeAndInheritAbsolute | FreezeAndInheritRelative
+AttachmentX.ConversionMode.RespawnTimer.Next=Default ; AttachmentTimerConversionMode Default | Nothing | Freeze | InheritAbsolute | InheritRelative | Instant | Reset | FreezeAndInstant | FreezeAndReset | FreezeAndInheritAbsolute | FreezeAndInheritRelative
 
 [General]
 AttachmentTopLayerMinHeight=500           ; integer,

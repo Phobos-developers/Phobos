@@ -192,13 +192,18 @@ public:
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 
+		Nullable<Layer> AttachmentForcedLayer;
 		Valueable<int> AttachmentTopLayerMinHeight;
 		Valueable<int> AttachmentUndergroundLayerMaxHeight;
 
 		struct AttachmentDataEntry
 		{
+			Valueable<int> ID;
 			ValueableIdx<AttachmentTypeClass> Type;
 			NullableIdx<TechnoTypeClass> TechnoType;
+			Valueable<AttachmentInstanceConversionMode> ConversionMode_Instance;
+			Valueable<AttachmentTimerConversionMode> ConversionMode_RespawnTimer_Current;
+			Valueable<AttachmentTimerConversionMode> ConversionMode_RespawnTimer_Next;
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
 			Valueable<DirType> RotationAdjust;
@@ -400,6 +405,7 @@ public:
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
 
+			, AttachmentForcedLayer { }
 			, AttachmentTopLayerMinHeight { RulesExt::Global()->AttachmentTopLayerMinHeight }
 			, AttachmentUndergroundLayerMaxHeight { RulesExt::Global()->AttachmentUndergroundLayerMaxHeight }
 			, AttachmentData {}
@@ -415,6 +421,17 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+
+		inline AttachmentDataEntry* GetAttachmentEntryByID(int entryId)
+		{
+			if (entryId < 0)
+				return nullptr;
+			auto entryIter = std::find_if(AttachmentData.begin(), AttachmentData.end(), [&entryId](AttachmentDataEntry& item) -> bool
+			{
+				return item.ID.Get() == entryId;
+			});
+			return entryIter == AttachmentData.end() ? nullptr : entryIter._Ptr;
+		}
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

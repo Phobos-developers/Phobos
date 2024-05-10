@@ -59,8 +59,8 @@
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Crushing.cpp" />
-    <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp"/>
-    <ClCompile Include="src\Locomotion\AttachmentLocomotionClass.cpp"/>
+    <ClCompile Include="src\Locomotion\TestLocomotionClass.cpp" />
+    <ClCompile Include="src\Locomotion\AttachmentLocomotionClass.cpp" />
     <ClCompile Include="src\Misc\Hooks.AssignHouses.cpp" />
     <ClCompile Include="src\Misc\Hooks.Gamespeed.cpp" />
     <ClCompile Include="src\Misc\Hooks.Ares.cpp" />
@@ -204,8 +204,8 @@
     <ClInclude Include="src\Ext\TAction\Body.h" />
     <ClInclude Include="src\Ext\Team\Body.h" />
     <ClInclude Include="src\Ext\TEvent\Body.h" />
-    <ClInclude Include="src\Locomotion\TestLocomotionClass.h"/>
-    <ClInclude Include="src\Locomotion\AttachmentLocomotionClass.h"/>
+    <ClInclude Include="src\Locomotion\TestLocomotionClass.h" />
+    <ClInclude Include="src\Locomotion\AttachmentLocomotionClass.h" />
     <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
@@ -224,6 +224,7 @@
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
     <ClInclude Include="src\New\Entity\AttachmentClass.h" />
     <ClInclude Include="src\Utilities\Anchor.h" />
+    <ClInclude Include="src\Utilities\Misc.hpp" />
     <ClInclude Include="src\Utilities\Enumerable.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\AnimType\Body.h" />

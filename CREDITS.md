@@ -242,6 +242,8 @@ This page lists all the individual contributions to the project by their author.
   - Dump variables to file on scenario end / hotkey
   - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
   - Help with docs
+- **Multfinite**
+  - Techno Attachment logic: type conversion handling and `Attachment.ForcedLayer` flag
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
    - Interceptor logic prototype
