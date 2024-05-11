@@ -74,8 +74,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			auto delimIndex = arg.find("=");
 			auto value = arg.substr(delimIndex + 1, arg.size() - delimIndex - 1);
-			// to lwoer case
-			std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) { return std::tolower(c); });
+			
 			bool v = dontSetExceptionHandler;
 			if (boolParser.TryParse(value.c_str(), &v))
 				dontSetExceptionHandler = !v;

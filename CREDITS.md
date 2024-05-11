@@ -324,7 +324,7 @@ This page lists all the individual contributions to the project by their author.
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
 - **Multfinite**
-  - Allow to control main exception handler via command line argument`-ExceptionHandler=boolean`
+  - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
