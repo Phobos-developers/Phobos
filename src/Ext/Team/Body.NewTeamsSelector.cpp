@@ -200,6 +200,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		int sideIdx = pHouse->SideIndex + 1; // Side indexes in AITriggers section are 1-based
 
 		auto houseDifficulty = pHouse->AIDifficulty;
+		int minBaseDefenseTeams = RulesClass::Instance->MinimumAIDefensiveTeams.GetItem((int)houseDifficulty);
 		int maxBaseDefenseTeams = RulesClass::Instance->MaximumAIDefensiveTeams.GetItem((int)houseDifficulty);
 		int activeDefenseTeamsCount = 0;
 		int maxTeamsLimit = RulesClass::Instance->TotalAITeamCap.GetItem((int)houseDifficulty);
@@ -222,16 +223,21 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 			activeTeamsList.AddItem(pRunningTeam);
 
-			if (pRunningTeam->Type->IsBaseDefense && activeDefenseTeamsCount < maxBaseDefenseTeams)
+			if (pRunningTeam->Type->IsBaseDefense)
 				activeDefenseTeamsCount++;
 		}
 
 		activeTeams = activeTeamsList.Count;
 
-		/*Debug::Log("=====================\n[%s] ACTIVE TEAMS: %d / %d\n", pHouse->Type->ID, activeTeams, maxTeamsLimit);
+		// We will use these values for discarding triggers
+		int defensiveTeamsLimit = RulesClass::Instance->UseMinDefenseRule ? minBaseDefenseTeams : maxBaseDefenseTeams;
+		bool hasReachedMaxTeamsLimit = activeTeams < maxTeamsLimit ? false : true;
+		bool hasReachedMaxDefensiveTeamsLimit = activeDefenseTeamsCount < defensiveTeamsLimit ? false : true;
+
+		/*Debug::Log("\n=====================\n[%s] ACTIVE TEAMS: %d / %d (of them, defensive teams: %d / %d)\n", pHouse->Type->ID, activeTeams, maxTeamsLimit, activeDefenseTeamsCount, defensiveTeamsLimit);
 		for (auto team : activeTeamsList)
 		{
-			Debug::Log("[%s](%d) : %s\n", team->Type->ID, team->TotalObjects, team->Type->Name);
+			Debug::Log("[%s](%d) : %s%s\n", team->Type->ID, team->TotalObjects, team->Type->Name, team->Type->IsBaseDefense ? " -> is DEFENDER team" : "");
 			Debug::Log("    IsMoving: %d, IsFullStrength: %d, IsUnderStrength: %d\n", team->IsMoving, team->IsFullStrength, team->IsUnderStrength);
 			int i = 0;
 
@@ -246,11 +252,15 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				i++;
 			}
 		}
-		Debug::Log("=====================\n");*/
+		Debug::Log("\n=====================\n");*/
 
-		// We will use these values for discarding triggers
-		bool hasReachedMaxTeamsLimit = activeTeams < maxTeamsLimit ? false : true;
-		bool hasReachedMaxDefensiveTeamsLimit = activeDefenseTeamsCount < maxBaseDefenseTeams ? false : true;
+		// Check if the next team must be a defensive team
+		bool onlyPickDefensiveTeams = false;
+		int defensiveDice = ScenarioClass::Instance->Random.RandomRanged(0, 99);
+		int defenseTeamSelectionThreshold = 50;
+
+		if ((defensiveDice < defenseTeamSelectionThreshold) && !hasReachedMaxDefensiveTeamsLimit)
+			onlyPickDefensiveTeams = true;
 
 		if (hasReachedMaxDefensiveTeamsLimit)
 			Debug::Log("DEBUG: House [%s] (idx: %d) reached the MaximumAIDefensiveTeams value!\n", pHouse->Type->ID, pHouse->ArrayIndex);
@@ -319,6 +329,10 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		for (auto const pTrigger : *AITriggerTypeClass::Array)
 		{
 			if (!pTrigger)
+				continue;
+
+			// Ignore offensive teams if the next trigger must be defensive
+			if (onlyPickDefensiveTeams && !pTrigger->IsForBaseDefense)
 				continue;
 
 			int triggerHouse = pTrigger->HouseIndex;
@@ -1294,7 +1308,7 @@ bool TeamExt::NeutralOwnsAll(AITriggerTypeClass* pThis, std::vector<TechnoTypeCl
 			{
 				if (!TechnoExt::IsValidTechno(pObject)) continue;
 
-				if (pObject->Owner == pHouse &&	pObject->GetTechnoType() == pItem)
+				if (pObject->Owner == pHouse && pObject->GetTechnoType() == pItem)
 					counter++;
 			}
 
