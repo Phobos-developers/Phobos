@@ -159,7 +159,7 @@ DEFINE_HOOK(0x44402E, BuildingClass_ExitObject_PoseDir2, 0x5)
 	GET(AircraftClass*, pAircraft, EBP);
 
 	auto dir = DirStruct(AircraftExt::GetLandingDir(pAircraft, pThis));
-	pAircraft->PrimaryFacing.SetCurrent(dir);
+	// pAircraft->PrimaryFacing.SetCurrent(dir);
 	pAircraft->SecondaryFacing.SetCurrent(dir);
 
 	return 0;
