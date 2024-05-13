@@ -11,6 +11,7 @@
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
+#include <New/Type/AttachmentTypeClass.h>
 
 class Matrix3D;
 
@@ -190,6 +191,27 @@ public:
 
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
+
+		Valueable<int> AttachmentTopLayerMinHeight;
+		Valueable<int> AttachmentUndergroundLayerMaxHeight;
+
+		struct AttachmentDataEntry
+		{
+			ValueableIdx<AttachmentTypeClass> Type;
+			NullableIdx<TechnoTypeClass> TechnoType;
+			Valueable<CoordStruct> FLH;
+			Valueable<bool> IsOnTurret;
+			Valueable<DirType> RotationAdjust;
+
+			bool Load(PhobosStreamReader& stm, bool registerForChange);
+			bool Save(PhobosStreamWriter& stm) const;
+
+		private:
+			template <typename T>
+			bool Serialize(T& stm);
+		};
+
+		ValueableVector<AttachmentDataEntry> AttachmentData;
 
 		struct LaserTrailDataEntry
 		{
@@ -377,6 +399,10 @@ public:
 			, DroppodType {}
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+
+			, AttachmentTopLayerMinHeight { RulesExt::Global()->AttachmentTopLayerMinHeight }
+			, AttachmentUndergroundLayerMaxHeight { RulesExt::Global()->AttachmentUndergroundLayerMaxHeight }
+			, AttachmentData {}
 		{ }
 
 		virtual ~ExtData() = default;

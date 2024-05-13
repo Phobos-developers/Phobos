@@ -125,6 +125,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (!pINI->GetSection(pSection))
 		return;
 
+	char tempBuffer[32];
 	INI_EX exINI(pINI);
 
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
@@ -216,6 +217,43 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoFire.Read(exINI, pSection, "AutoFire");
 	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
 
+	this->AttachmentTopLayerMinHeight.Read(exINI, pSection, "AttachmentTopLayerMinHeight");
+	this->AttachmentUndergroundLayerMaxHeight.Read(exINI, pSection, "AttachmentUndergroundLayerMaxHeight");
+
+	// The following loop iterates over size + 1 INI entries so that the
+	// vector contents can be properly overriden via scenario rules - Kerbiter
+	for (size_t i = 0; i <= this->AttachmentData.size(); ++i)
+	{
+		NullableIdx<AttachmentTypeClass> type;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.Type", i);
+		type.Read(exINI, pSection, tempBuffer);
+
+		if (!type.isset())
+			continue;
+
+		NullableIdx<TechnoTypeClass> technoType;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.TechnoType", i);
+		technoType.Read(exINI, pSection, tempBuffer);
+
+		Valueable<CoordStruct> flh;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.FLH", i);
+		flh.Read(exINI, pSection, tempBuffer);
+
+		Valueable<bool> isOnTurret;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.IsOnTurret", i);
+		isOnTurret.Read(exINI, pSection, tempBuffer);
+
+		Valueable<DirType> rotationAdjust;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.RotationAdjust", i);
+		rotationAdjust.Read(exINI, pSection, tempBuffer);
+
+		AttachmentDataEntry const entry { ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret, rotationAdjust };
+		if (i == AttachmentData.size())
+			this->AttachmentData.push_back(entry);
+		else
+			this->AttachmentData[i] = entry;
+	}
+
 	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
 	this->NoSecondaryWeaponFallback_AllowAA.Read(exINI, pSection, "NoSecondaryWeaponFallback.AllowAA");
 
@@ -292,8 +330,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.C
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
-
-	char tempBuffer[32];
 
 	if (this->OwnerObject()->Gunner && this->Insignia_Weapon.empty())
 	{
@@ -513,8 +549,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)
 		.Process(this->OreGathering_FramesPerDir)
-		.Process(this->LaserTrailData)
 		.Process(this->DestroyAnim_Random)
+		.Process(this->LaserTrailData)
 		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->DefaultDisguise)
 		.Process(this->UseDisguiseMovementSpeed)
@@ -605,6 +641,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DroppodType)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
+
+		.Process(this->AttachmentTopLayerMinHeight)
+		.Process(this->AttachmentUndergroundLayerMaxHeight)
+		.Process(this->AttachmentData)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -618,6 +658,8 @@ void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	Extension<TechnoTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
+
+#pragma region Data entry save/load
 
 bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Load(PhobosStreamReader& stm, bool registerForChange)
 {
@@ -638,6 +680,30 @@ bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Serialize(T& stm)
 		.Process(this->IsOnTurret)
 		.Success();
 }
+
+bool TechnoTypeExt::ExtData::AttachmentDataEntry::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool TechnoTypeExt::ExtData::AttachmentDataEntry::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<AttachmentDataEntry*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool TechnoTypeExt::ExtData::AttachmentDataEntry::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Type)
+		.Process(this->TechnoType)
+		.Process(this->FLH)
+		.Process(this->IsOnTurret)
+		.Process(this->RotationAdjust)
+		.Success();
+}
+
+#pragma endregion
 
 // =============================
 // container

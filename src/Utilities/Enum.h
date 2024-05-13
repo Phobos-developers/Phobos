@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <GeneralDefinitions.h>
 #include <Phobos.h>
 #include <GeneralDefinitions.h>
 
@@ -200,6 +201,13 @@ enum class DamageDisplayType
 	Regular = 0,
 	Shield = 1,
 	Intercept = 2
+};
+
+enum class AttachmentYSortPosition
+{
+	Default = 0,
+	UnderParent = 1,
+	OverParent = 2
 };
 
 enum class ChronoSparkleDisplayPosition : unsigned char

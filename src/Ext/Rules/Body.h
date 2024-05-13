@@ -119,6 +119,9 @@ public:
 		AnimTypeClass* DropPodTrailer;
 		SHPStruct* PodImage;
 
+		Valueable<int> AttachmentTopLayerMinHeight;
+		Valueable<int> AttachmentUndergroundLayerMaxHeight;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -198,6 +201,8 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, AttachmentTopLayerMinHeight { 500 }
+			, AttachmentUndergroundLayerMaxHeight { -256 }
 		{ }
 
 		virtual ~ExtData() = default;
