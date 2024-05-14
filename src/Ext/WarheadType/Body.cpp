@@ -245,10 +245,14 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	);
 
 	char tempBuffer[32];
+	Nullable<Powerup> crateType;
+	Nullable<int> weight;
 
 	for (size_t i = 0; ; i++)
 	{
-		Nullable<Powerup> crateType;
+		crateType.Reset();
+		weight.Reset();
+
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SpawnsCrate%u.Type", i);
 		crateType.Read(exINI, pSection, tempBuffer);
 
@@ -258,28 +262,24 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (!crateType.isset())
 			break;
 
-		if (crateType.isset())
-		{
-			if (this->SpawnsCrate_Types.size() < i)
-				this->SpawnsCrate_Types[i] = crateType;
-			else
-				this->SpawnsCrate_Types.push_back(crateType);
+		if (this->SpawnsCrate_Types.size() < i)
+			this->SpawnsCrate_Types[i] = crateType;
+		else
+			this->SpawnsCrate_Types.push_back(crateType);
 
-			Nullable<int> weight;
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "SpawnsCrate%u.Weight", i);
-			weight.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SpawnsCrate%u.Weight", i);
+		weight.Read(exINI, pSection, tempBuffer);
 
-			if (i == 0 && !weight.isset())
-				weight.Read(exINI, pSection, "SpawnsCrate.Weight");
+		if (i == 0 && !weight.isset())
+			weight.Read(exINI, pSection, "SpawnsCrate.Weight");
 
-			if (!weight.isset())
-				weight = 1;
+		if (!weight.isset())
+			weight = 1;
 
-			if (this->SpawnsCrate_Weights.size() < i)
-				this->SpawnsCrate_Weights[i] = weight;
-			else
-				this->SpawnsCrate_Weights.push_back(weight);
-		}
+		if (this->SpawnsCrate_Weights.size() < i)
+			this->SpawnsCrate_Weights[i] = weight;
+		else
+			this->SpawnsCrate_Weights.push_back(weight);
 	}
 }
 

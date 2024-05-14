@@ -47,6 +47,7 @@
 #include <BuildingTypeClass.h>
 #include <WarheadTypeClass.h>
 #include <FootClass.h>
+#include <Powerups.h>
 #include <VocClass.h>
 #include <VoxClass.h>
 #include <CRT.h>
@@ -599,85 +600,25 @@ namespace detail
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			if (!_strcmpi(parser.value(), "money"))
+			auto const& powerupNames = Powerups::Effects;
+			int index = -1;
+
+			for (size_t i = 0; i < powerupNames.size(); i++)
 			{
-				value = Powerup::Money;
+				if (!_strcmpi(parser.value(), powerupNames[i]))
+				{
+					index = static_cast<int>(i);
+					break;
+				}
 			}
-			else if (!_strcmpi(parser.value(), "unit"))
+
+			if (index >= 0)
 			{
-				value = Powerup::Unit;
-			}
-			else if (!_strcmpi(parser.value(), "healbase"))
-			{
-				value = Powerup::HealBase;
-			}
-			else if (!_strcmpi(parser.value(), "cloak"))
-			{
-				value = Powerup::Cloak;
-			}
-			else if (!_strcmpi(parser.value(), "explosion"))
-			{
-				value = Powerup::Explosion;
-			}
-			else if (!_strcmpi(parser.value(), "napalm"))
-			{
-				value = Powerup::Napalm;
-			}
-			else if (!_strcmpi(parser.value(), "squad"))
-			{
-				value = Powerup::Squad;
-			}
-			else if (!_strcmpi(parser.value(), "darkness"))
-			{
-				value = Powerup::Darkness;
-			}
-			else if (!_strcmpi(parser.value(), "reveal"))
-			{
-				value = Powerup::Reveal;
-			}
-			else if (!_strcmpi(parser.value(), "armor"))
-			{
-				value = Powerup::Armor;
-			}
-			else if (!_strcmpi(parser.value(), "speed"))
-			{
-				value = Powerup::Speed;
-			}
-			else if (!_strcmpi(parser.value(), "firepower"))
-			{
-				value = Powerup::Firepower;
-			}
-			else if (!_strcmpi(parser.value(), "icbm"))
-			{
-				value = Powerup::ICBM;
-			}
-			else if (!_strcmpi(parser.value(), "invulnerability"))
-			{
-				value = Powerup::Invulnerability;
-			}
-			else if (!_strcmpi(parser.value(), "veteran"))
-			{
-				value = Powerup::Veteran;
-			}
-			else if (!_strcmpi(parser.value(), "ionstorm"))
-			{
-				value = Powerup::IonStorm;
-			}
-			else if (!_strcmpi(parser.value(), "gas"))
-			{
-				value = Powerup::Gas;
-			}
-			else if (!_strcmpi(parser.value(), "tiberium"))
-			{
-				value = Powerup::Tiberium;
-			}
-			else if (!_strcmpi(parser.value(), "pod"))
-			{
-				value = Powerup::Pod;
+				value = Powerup(index);
 			}
 			else
 			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected powerup crate type");
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a powerup crate type");
 				return false;
 			}
 
