@@ -153,7 +153,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units.
 - Skipped drawing rally point line when undeploying a factory.
-
+ 
 ## Fixes / interactions with other extensions
 
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
@@ -1158,15 +1158,26 @@ In `rulesmd.ini`:
 RadialIndicatorVisibility=allies  ; list of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
 ```
 
-## Crate generation
+## Crate improvements
 
-The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
-- You can now limit the crates' spawn region to land only.
+There are some improvements on goodie crate logic:
+- The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
+- You can now limit the crates' spawn region to land only by setting `[CrateRules]` -> `CreateOnlyOnLand` to true.
+- The limit of vehicles a player can own before unit crates start giving money instead can now be customized by setting `UnitCrateVehicleCap`. Negative numbers disable the cap entirely.
+- `FreeMCV` setting is now actually respected and can be used to disable the forced unit selected from `[General]` -> `BaseUnit` that is given if player picks a crate and has enough credits but no existing buildings or `BaseUnit` vehicles.
+  - The previously hardcoded credits threshold that must be passed can also now be customized via `FreeMCV.CreditsThreshold`.
+- It is possible to influence weighting of units given from crates (`CrateGoodie=true`) via `CrateGoodie.RerollChance`, which determines the chance that if this type of unit is rolled, it will reroll again for another type of unit.
 
 In `rulesmd.ini`:
 ```ini
 [CrateRules]
-CrateOnlyOnLand=no  ; boolean
+CrateOnlyOnLand=false          ; boolean
+UnitCrateVehicleCap=50         ; integer
+FreeMCV=true                   ; boolean
+FreeMCV.CreditsThreshold=1500  ; integer
+
+[SOMEVEHICLE]                  ; VehicleType
+CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0-1.0)
 ```
 
 ## DropPod
