@@ -1008,7 +1008,7 @@ In `rulesmd.ini`:
 [AudioVisual]
 Promote.VeteranAnimation=         ; Animation
 Promote.EliteAnimation=           ; Animation
-Promote.AnimationVisibility=all   ; Affected House Enumeration (owner/self | allies/ally | team | enemies/enemy | all)
+Promote.AnimationVisibility=all   ; list of Affected House Enumeration (owner/self | allies/ally | team | enemies/enemy | all)
 ```
 
 ### Convert TechnoType on owner house change

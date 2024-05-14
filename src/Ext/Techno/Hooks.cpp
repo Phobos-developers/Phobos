@@ -493,18 +493,19 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_Update_TurretAndVeterancy, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	if(RulesExt::Global()->Promote_EliteAnimation || RulesExt::Global()->Promote_VeteranAnimation)
+	if(!RulesExt::Global()->Promote_VeteranAnimation && !RulesExt::Global()->Promote_EliteAnimation)
 	{
-		AffectedHouse const animVis = RulesExt::Global()->Promote_AnimationVisibility.Get();
-		if(EnumFunctions::CanTargetHouse(animVis, HouseClass::CurrentPlayer, pThis->Owner) || HouseClass::IsCurrentPlayerObserver())
+		return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054;
+	}
+
+	if(pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
+	{
+		if(EnumFunctions::CanTargetHouse(RulesExt::Global()->Promote_AnimationVisibility.Get(), HouseClass::CurrentPlayer, pThis->Owner) || HouseClass::IsCurrentPlayerObserver())
 		{
-			if(pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
-			{
-				auto animToDraw = RulesExt::Global()->Promote_VeteranAnimation;
-				if(pThis->Veterancy.GetRemainingLevel() == Rank::Elite && RulesExt::Global()->Promote_EliteAnimation)
-					animToDraw = RulesExt::Global()->Promote_EliteAnimation;
-				animToDraw ? GameCreate<AnimClass>(animToDraw, pThis->GetCoords()) : 0;
-			}
+			if(pThis->Veterancy.GetRemainingLevel() == Rank::Elite && RulesExt::Global()->Promote_EliteAnimation)
+				GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCoords());
+			else
+				GameCreate<AnimClass>(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCoords());
 		}
 	}
 
