@@ -253,7 +253,7 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 		}
 
 	}
-	else if (!pOwner->IsAlliedWith(pObject))
+	else if (pOwner->IsAlliedWith(pObject))
 	{
 		return SkipObject;
 	}
