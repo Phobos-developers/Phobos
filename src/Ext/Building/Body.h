@@ -33,6 +33,7 @@ public:
 		int GrindingWeapon_LastFiredFrame;
 		int GrindingWeapon_AccumulatedCredits;
 		BuildingClass* CurrentAirFactory;
+		bool SecretLab_Placed;
 		int AccumulatedIncome;
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 
@@ -45,6 +46,7 @@ public:
 			, GrindingWeapon_LastFiredFrame { 0 }
 			, GrindingWeapon_AccumulatedCredits { 0 }
 			, CurrentAirFactory { nullptr }
+			, SecretLab_Placed { false }
 			, AccumulatedIncome { 0 }
 			, CurrentLaserWeaponIndex {}
 		{ }
@@ -52,6 +54,7 @@ public:
 		void DisplayIncomeString();
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
+		void UpdateSecretLabAI();
 
 		void UpdatePrimaryFactoryAI();
 		virtual ~ExtData() = default;
