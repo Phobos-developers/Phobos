@@ -215,6 +215,7 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 	if (this->WaitOneFrame > 0)
 	{
 		this->WaitOneFrame -= 1;
+
 		if (this->WaitOneFrame == 0 || !pBullet->Target || (pBullet->Target && pBullet->Target->GetCoords() != this->LastTargetCoord))
 		{
 			PrepareForOpenFire(pBullet);
@@ -236,12 +237,16 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 			PrepareForDetonateAt(pBullet, pOwner, pBullet->Location);
 
 		if (StraightSpeed > 256.0)
+		{
 			BulletDetonateLastCheck(pBullet, StraightSpeed);
+		}
 		else
 		{
 			if (this->ConfineAtHeight > 0)
+			{
 				if (PassAndConfineAtHeight(pBullet, StraightSpeed))
 					return true;
+			}
 		}
 	}
 
@@ -293,7 +298,6 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBull
 
 		if (!this->ThroughBuilding && pTechno->WhatAmI() == AbstractType::Building)
 			this->ExtraCheck1 = pTechno;
-
 		else if (!this->ThroughVehicles && (pTechno->WhatAmI() == AbstractType::Unit || pTechno->WhatAmI() == AbstractType::Aircraft))
 			this->ExtraCheck1 = pTechno;
 	}
@@ -440,7 +444,9 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 			this->CheckTimesLimit = INT_MAX;
 	}
 	else
+	{
 		this->CheckTimesLimit = static_cast<int>(DistanceOfTwo / StraightSpeed) + 1;
+	}
 
 	pBullet->TargetCoords = TheTargetCoords;
 
@@ -579,7 +585,6 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, double St
 			this->CheckTimesLimit = 0;
 			pBullet->Velocity *= 0.5;
 		}
-
 		else if (VelocityCheck == 2)
 		{
 			this->CheckTimesLimit = 0;
@@ -659,7 +664,6 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 					{
 						if (!this->PassThrough)
 							continue;
-
 						else if (this->DetonationDistance < 0 && this->ProximityAllies == 0 && pOwner->IsAlliedWith(pTargetTechno->Owner))
 							this->ExtraCheck3 = pTargetTechno;
 					}
@@ -722,7 +726,6 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClas
 			else//↖
 				RecCells = GetCellsInRectangle(Cor4Cell, Cor3Cell, Cor1Cell, Cor2Cell);
 		}
-
 		else if (Cor1Cell.X == Cor2Cell.X)//Mid
 		{
 			if (Cor1Cell.Y >= Cor2Cell.Y)//↓ and Center
@@ -730,7 +733,6 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClas
 			else//↑
 				RecCells = GetCellsInRectangle(Cor4Cell, Cor3Cell, Cor1Cell, Cor2Cell);
 		}
-
 		else//Right
 		{
 			if (Cor1Cell.Y >= Cor2Cell.Y)//↘ and →
@@ -773,14 +775,12 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 				mCurCell.Y += mTheUnit.Y;
 				RecCells.push_back(mCurCell);
 			}
-
 			else if (mTheCurN < 0)
 			{
 				mTheCurN += mTheDist.Y;
 				mCurCell.X += mTheUnit.X;
 				RecCells.push_back(mCurCell);
 			}
-
 			else
 			{
 				mTheCurN += mTheDist.Y - mTheDist.X;
@@ -832,14 +832,15 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 						lCurCell.Y += l1stUnit.Y;
 
 						if (lCurCell == lMidCell)
+						{
 							lNext = true;
+						}
 						else
 						{
 							RecCells.push_back(lCurCell);
 							break;
 						}
 					}
-
 					else
 					{
 						l1stCurN += l1stDist.Y;
@@ -852,7 +853,6 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 						}
 					}
 				}
-
 				else//Top Left Side
 				{
 					if (l2ndCurN >= 0)
@@ -863,14 +863,12 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 							l2ndCurN -= l2ndDist.X;
 							lCurCell.Y += l2ndUnit.Y;
 						}
-
 						else
 						{
 							lContinue = true;
 							break;
 						}
 					}
-
 					else
 					{
 						l2ndCurN += l2ndDist.Y;
@@ -891,14 +889,15 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 						rCurCell.Y += r1stUnit.Y;
 
 						if (rCurCell == rMidCell)
+						{
 							rNext = true;
+						}
 						else
 						{
 							RecCells.push_back(rCurCell);
 							break;
 						}
 					}
-
 					else
 					{
 						r1stCurN += r1stDist.Y;
@@ -911,7 +910,6 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 						}
 					}
 				}
-
 				else//Top Right Side
 				{
 					if (r2ndCurN >= 0)
@@ -928,7 +926,6 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 							break;
 						}
 					}
-
 					else
 					{
 						r2ndCurN += r2ndDist.Y;
@@ -998,8 +995,10 @@ TechnoClass* StraightTrajectory::CompareThenDetonateAt(std::vector<TechnoClass*>
 				Check = false;
 				pThis = this->LastCasualty[i];
 				pThisTimes = this->LastCasualtyTimes[i];
+
 				if (pThisTimes > 0)
 					pThisTimes -= 1;
+
 				i += 1;
 			}
 			else if (this->LastCasualty[i] > Technos[j])
@@ -1014,10 +1013,12 @@ TechnoClass* StraightTrajectory::CompareThenDetonateAt(std::vector<TechnoClass*>
 				Check = false;
 				pThis = this->LastCasualty[i];
 				pThisTimes = this->LastCasualtyTimes[i];
+
 				if (pThisTimes > 0)
 					pThisTimes = 20;
 				else
 					Check = true;
+
 				i += 1;
 				j += 1;
 			}
@@ -1027,8 +1028,10 @@ TechnoClass* StraightTrajectory::CompareThenDetonateAt(std::vector<TechnoClass*>
 			Check = false;
 			pThis = this->LastCasualty[i];
 			pThisTimes = this->LastCasualtyTimes[i];
+
 			if (pThisTimes > 0)
 				pThisTimes -= 1;
+
 			i += 1;
 		}
 		else if (j < jMax)
@@ -1039,7 +1042,9 @@ TechnoClass* StraightTrajectory::CompareThenDetonateAt(std::vector<TechnoClass*>
 			j += 1;
 		}
 		else
+		{
 			break;
+		}
 
 		if (pThis && pThis != pLast)
 		{
@@ -1091,11 +1096,14 @@ double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, Techno
 	if (pTechno)
 	{
 		Distance = pTechno->GetCoords().DistanceFrom(pBullet->SourceCoords);
+
 		if (pOwner && pOwner->IsAlliedWith(pTechno->Owner))
 			AlliesMultiplier = this->ProximityAllies;
 	}
 	else
+	{
 		Distance = pBullet->Location.DistanceFrom(pBullet->SourceCoords);
+	}
 
 	if (MaxDistance < Distance)
 		return this->EdgeAttenuation;
@@ -1134,7 +1142,9 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet, double Str
 				return true;
 		}
 		else
+		{
 			return true;
+		}
 	}
 
 	return false;

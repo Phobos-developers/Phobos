@@ -851,7 +851,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				pLaser->IsHouseColor = false;
 			}
 
-			pLaser->Thickness = 3;//LaserThickness
+			pLaser->Thickness = 3;
 			pLaser->IsSupported = false;
 		}
 	}
@@ -865,9 +865,6 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 			else
 				pEBolt->AlternateColor = false;
 
-		//	Bolt.Color1,Bolt.Color2,Bolt.Color3
-		//	Bolt_Disable1,Bolt_Disable2,Bolt_Disable3
-		//	Bolt_Arcs
 			pEBolt->Fire(pBullet->Location, BulletTarget->GetCoords(), 0);
 		}
 	}
@@ -884,9 +881,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 		{
 			pRadBeam->SetCoordsSource(pBullet->Location);
 			pRadBeam->SetCoordsTarget(BulletTarget->GetCoords());
-			pRadBeam->Color = pWeapon->Warhead->Temporal ? ColorStruct { 255, 100, 0 } : ColorStruct { 128, 200, 255 };//Beam.Color
-		//	pRadBeam->Period = ;//Beam.Duration
-		//	pRadBeam->Amplitude = ;//Beam.Amplitude
+			pRadBeam->Color = pWeapon->Warhead->Temporal ? ColorStruct { 255, 100, 0 } : ColorStruct { 128, 200, 255 };
 		}
 	}
 

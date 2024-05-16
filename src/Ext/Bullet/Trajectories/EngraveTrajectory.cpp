@@ -167,15 +167,16 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		{
 			if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false))
 				this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
-
 			else if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true))
 				this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
 
 			CoordStruct FLH = TechnoExt::GetBurstFLH(pBullet->Owner, WeaponIndex, FLHFound);
 
 			if (!FLHFound)
+			{
 				if (auto pInfantry = abstract_cast<InfantryClass*>(pBullet->Owner))
 					FLH = TechnoExt::GetSimpleFLH(pInfantry, WeaponIndex, FLHFound);
+			}
 
 			if (FLHFound)
 				this->FLHCoord = FLH;
@@ -195,7 +196,9 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 						pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
 					}
 					else
+					{
 						break;
+					}
 				}
 
 				if (const auto pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType()))
@@ -270,8 +273,10 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 
 	this->CheckTimesLimit -= 1;
 	if (this->CheckTimesLimit < 0)
+	{
 		return true;
-	else//SetLocation() seems to work wrong if I put this part into OnAIVelocity().
+	}
+	else //SetLocation() seems to work wrong if I put this part into OnAIVelocity().
 	{
 		CoordStruct BulletCoords = pBullet->Location;
 
@@ -299,7 +304,9 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 				this->SetItsLocation = false;
 			}
 			else
+			{
 				this->SetItsLocation = true;
+			}
 		}
 		else
 		{
@@ -326,9 +333,11 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 					return true;
 			}
 			else
+			{
 				FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
+			}
 		}
-		else//Not accurate, just got the similar FLH.
+		else //Not accurate, just got the similar FLH.
 		{
 			float RotateAngle = 0.0;
 
@@ -350,14 +359,12 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 				ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
 			pLaser->IsHouseColor = true;
 		}
-
 		else if (this->IsSingleColor)
 		{
 			pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor,
 				ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
 			pLaser->IsHouseColor = true;
 		}
-
 		else
 		{
 			pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor,
