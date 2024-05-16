@@ -390,7 +390,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 	return false;
 }
 
-void EngraveTrajectory::OnAIPreDetonate(BulletClass* pBullet){}//do nothing
+void EngraveTrajectory::OnAIPreDetonate(BulletClass* pBullet){} //do nothing
 
 void EngraveTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {
