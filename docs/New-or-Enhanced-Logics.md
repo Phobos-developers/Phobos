@@ -521,7 +521,7 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.Warhead` defined the warhead detonated by `Trajectory.Straight.PassDetonate` and `Trajectory.Straight.ProximityImpact`.
   - `Trajectory.Straight.Damage` defined the damage caused by `Trajectory.Straight.Warhead`.
   - `Trajectory.Straight.EdgeAttenuation` controls the edge attenuation ratio of projectile damage, includes `Trajectory.Straight.Damage`. Can NOT be set to a negative integer.
-  - `Trajectory.Straight.SubjectToGround` controls whether the projectile should explode when it hits the ground.
+  - `Trajectory.Straight.SubjectToGround` controls whether the projectile should explode when it hits the ground. It will be forcibly cancelled by setting `Trajectory.Speed` above 512.
   - `Trajectory.Straight.ConfineAtHeight` controls the height above ground that projectile will try to travel as it can. It can not move down from the cliff by setting `SubjectToCliffs=yes`. It can be cancelled by setting as a non positive integer. It will be forcibly cancelled by setting `Trajectory.Speed` above 256.
 
 In `rulesmd.ini`:
@@ -568,10 +568,10 @@ Trajectory.Bombard.Height=0.0                   ; double
 #### Disperse trajectory
 
 - Its trajectory looks a bit like a `ROT`, but its settings are more flexible. It also has a unique trajectory. And as its name suggests, it can even spread out more weapons.
-  - `Trajectory.Disperse.UniqueCurve` controls whether to enable simulated Qian Xuesen trajectory. After enabling this, it will NOT respect the following 12 items and `Trajectory. Speed`.
+  - `Trajectory.Disperse.UniqueCurve` controls whether to enable simulated Qian Xuesen trajectory. After enabling this, it will NOT respect the following 12 items and `Trajectory.Speed`.
   - `Trajectory.Disperse.PreAimCoord` controls the initial flight direction of the projectile, and after reaching this coordinate, it will begin to turn towards the target direction. When it is set to 0,0,0 , it will directly face the target.
-  - `Trajectory.Disperse.LaunchSpeed` controls the initial flight speed of the projectile, it will be directly reduced to this value if it exceeds `Trajectory. Speed`.
-  - `Trajectory.Disperse.Acceleration` controls the acceleration of the projectile's flight speed, increasing the speed per frame according to this value, the final speed will not exceed `Trajectory. Speed`.
+  - `Trajectory.Disperse.LaunchSpeed` controls the initial flight speed of the projectile, it will be directly reduced to this value if it exceeds `Trajectory.Speed`.
+  - `Trajectory.Disperse.Acceleration` controls the acceleration of the projectile's flight speed, increasing the speed per frame according to this value, the final speed will not exceed `Trajectory.Speed`.
   - `Trajectory.Disperse.RateofTurning` controls the turning speed of the projectile and can determine the turning radius of the projectile. The turning speed will increase with the increase of speed.
   - `Trajectory.Disperse.LockDirection` controls whether after reaching `Trajectory.Disperse.PreAimCoord` and completing the first turn, the projectile will lock the direction of motion without further adjustment.
   - `Trajectory.Disperse.CruiseEnable` controls whether after reaching `Trajectory.Disperse.PreAimCoord` and completing the first turn, the projectile will maintain altitude while moving towards the target.

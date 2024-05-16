@@ -547,7 +547,7 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass
 
 void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, double StraightSpeed)
 {
-	if (StraightSpeed >= 512.0)
+	if (StraightSpeed > 512.0)
 		return;
 
 	int VelocityCheck = 0;
