@@ -9,6 +9,23 @@ public:
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
+		, PassDetonate { false }
+		, PassDetonateDelay { 1 }
+		, PassDetonateTimer { 0 }
+		, PassDetonateLocal { false }
+		, LeadTimeCalculate { false }
+		, OffsetCoord { { 0, 0, 0 } }
+		, MirrorCoord { true }
+		, ProximityImpact { 0 }
+		, ProximityRadius { 0.7 }
+		, ProximityAllies { 0.0 }
+		, ThroughVehicles { true }
+		, ThroughBuilding { true }
+		, StraightWarhead {}
+		, StraightDamage { 0 }
+		, SubjectToGround { false }
+		, ConfineAtHeight { 0 }
+		, EdgeAttenuation { 1.0 }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -19,6 +36,23 @@ public:
 	Valueable<Leptons> DetonationDistance;
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> PassThrough;
+	Valueable<bool> PassDetonate;
+	Valueable<int> PassDetonateDelay;
+	Valueable<int> PassDetonateTimer;
+	Valueable<bool> PassDetonateLocal;
+	Valueable<bool> LeadTimeCalculate;
+	Valueable<CoordStruct> OffsetCoord;
+	Valueable<bool> MirrorCoord;
+	Valueable<int> ProximityImpact;
+	Valueable<double> ProximityRadius;
+	Valueable<double> ProximityAllies;
+	Valueable<bool> ThroughVehicles;
+	Valueable<bool> ThroughBuilding;
+	Nullable<WarheadTypeClass*> StraightWarhead;
+	Valueable<int> StraightDamage;
+	Valueable<bool> SubjectToGround;
+	Valueable<int> ConfineAtHeight;
+	Valueable<double> EdgeAttenuation;
 };
 
 class StraightTrajectory final : public PhobosTrajectory
@@ -28,16 +62,64 @@ public:
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
-		, FirerZPosition { 0 }
-		, TargetZPosition { 0 }
+		, PassDetonate { false }
+		, PassDetonateDelay { 1 }
+		, PassDetonateTimer { 0 }
+		, PassDetonateLocal { false }
+		, LeadTimeCalculate { false }
+		, OffsetCoord {}
+		, MirrorCoord { true }
+		, ProximityImpact { 0 }
+		, ProximityRadius { 0.7 }
+		, ProximityAllies { 0.0 }
+		, ThroughVehicles { true }
+		, ThroughBuilding { true }
+		, StraightWarhead {}
+		, StraightDamage { 0 }
+		, SubjectToGround { false }
+		, ConfineAtHeight { 0 }
+		, EdgeAttenuation { 1.0 }
+		, CheckTimesLimit { 0 }
+		, ExtraCheck1 { nullptr }
+		, ExtraCheck2 { nullptr }
+		, ExtraCheck3 { nullptr }
+		, LastCasualty {}
+		, LastCasualtyTimes {}
+		, FirepowerMult { 1.0 }
+		, LastTargetCoord {}
+		, WaitOneFrame { false }
 	{}
 
 	StraightTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
-		, FirerZPosition { 0 }
-		, TargetZPosition { 0 }
+		, PassDetonate { false }
+		, PassDetonateDelay { 1 }
+		, PassDetonateTimer { 0 }
+		, PassDetonateLocal { false }
+		, LeadTimeCalculate { false }
+		, OffsetCoord {}
+		, MirrorCoord { true }
+		, ProximityImpact { 0 }
+		, ProximityRadius { 0.7 }
+		, ProximityAllies { 0.0 }
+		, ThroughVehicles { true }
+		, ThroughBuilding { true }
+		, StraightWarhead {}
+		, StraightDamage { 0 }
+		, SubjectToGround { false }
+		, ConfineAtHeight { 0 }
+		, EdgeAttenuation { 1.0 }
+		, CheckTimesLimit { 0 }
+		, ExtraCheck1 { nullptr }
+		, ExtraCheck2 { nullptr }
+		, ExtraCheck3 { nullptr }
+		, LastCasualty {}
+		, LastCasualtyTimes {}
+		, FirepowerMult { 1.0 }
+		, LastTargetCoord {}
+		, WaitOneFrame { false }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -53,12 +135,44 @@ public:
 	Leptons DetonationDistance;
 	Leptons TargetSnapDistance;
 	bool PassThrough;
-	int FirerZPosition;
-	int TargetZPosition;
+	bool PassDetonate;
+	int PassDetonateDelay;
+	int PassDetonateTimer;
+	bool PassDetonateLocal;
+	bool LeadTimeCalculate;
+	CoordStruct OffsetCoord;
+	bool MirrorCoord;
+	int ProximityImpact;
+	double ProximityRadius;
+	double ProximityAllies;
+	bool ThroughVehicles;
+	bool ThroughBuilding;
+	WarheadTypeClass* StraightWarhead;
+	int StraightDamage;
+	bool SubjectToGround;
+	int ConfineAtHeight;
+	double EdgeAttenuation;
+	int CheckTimesLimit;
+	TechnoClass* ExtraCheck1;
+	TechnoClass* ExtraCheck2;
+	TechnoClass* ExtraCheck3;
+	std::vector<TechnoClass*> LastCasualty;
+	std::vector<short> LastCasualtyTimes;
+	double FirepowerMult;
+	CoordStruct LastTargetCoord;
+	int WaitOneFrame;
 
 private:
+	void PrepareForOpenFire(BulletClass* pBullet);
 	int GetVelocityZ(BulletClass* pBullet);
-	int GetFirerZPosition(BulletClass* pBullet);
-	int GetTargetZPosition(BulletClass* pBullet);
-	bool ElevationDetonationCheck(BulletClass* pBullet);
+	bool CalculateBulletVelocity(BulletClass* pBullet, double StraightSpeed);
+	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner);
+	void BulletDetonateLastCheck(BulletClass* pBullet, double StraightSpeed);
+	void PassWithDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
+	void PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner, CoordStruct pCoord);
+	std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet);
+	std::vector<CellStruct> GetCellsInRectangle(CellStruct bStaCell, CellStruct lMidCell, CellStruct rMidCell, CellStruct tEndCell);
+	TechnoClass* CompareThenDetonateAt(std::vector<TechnoClass*> Technos, HouseClass* pOwner, BulletClass* pBullet);
+	double GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, bool Self);
+	bool PassAndConfineAtHeight(BulletClass* pBullet, double StraightSpeed);
 };

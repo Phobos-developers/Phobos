@@ -9,6 +9,8 @@
 
 #include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
+#include "DisperseTrajectory.h"
+#include "EngraveTrajectory.h"
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -34,6 +36,10 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 		pNewType = DLLCreate<StraightTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Bombard") == 0)
 		pNewType = DLLCreate<BombardTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Disperse") == 0)
+		pNewType = DLLCreate<DisperseTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Engrave") == 0)
+		pNewType = DLLCreate<EngraveTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -64,6 +70,12 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 			break;
 		case TrajectoryFlag::Bombard:
 			pType = DLLCreate<BombardTrajectoryType>();
+			break;
+		case TrajectoryFlag::Disperse:
+			pType = DLLCreate<DisperseTrajectoryType>();
+			break;
+		case TrajectoryFlag::Engrave:
+			pType = DLLCreate<EngraveTrajectoryType>();
 			break;
 		default:
 			return nullptr;
@@ -114,7 +126,11 @@ bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 {
 	if (auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
-		return pBulletTypeExt->Trajectory_Speed;
+	{
+		double StraightSpeed = pBulletTypeExt->Trajectory_Speed;
+		StraightSpeed = StraightSpeed > 1.0 ? StraightSpeed : 1.0 ;
+		return StraightSpeed;
+	}
 	else
 		return 100.0;
 }
@@ -131,6 +147,14 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 
 	case TrajectoryFlag::Bombard:
 		pRet = DLLCreate<BombardTrajectory>(pType);
+		break;
+
+	case TrajectoryFlag::Disperse:
+		pRet = DLLCreate<DisperseTrajectory>(pType);
+		break;
+
+	case TrajectoryFlag::Engrave:
+		pRet = DLLCreate<EngraveTrajectory>(pType);
 		break;
 	}
 
@@ -157,6 +181,12 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 			break;
 		case TrajectoryFlag::Bombard:
 			pTraj = DLLCreate<BombardTrajectory>();
+			break;
+		case TrajectoryFlag::Disperse:
+			pTraj = DLLCreate<DisperseTrajectory>();
+			break;
+		case TrajectoryFlag::Engrave:
+			pTraj = DLLCreate<EngraveTrajectory>();
 			break;
 		default:
 			return nullptr;
@@ -206,6 +236,24 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 
 	if (detonate && !pThis->SpawnNextAnim)
 		return Detonate;
+
+	if (pExt && pExt->LaserTrails.size())
+	{
+		CoordStruct FutureCoords
+		{
+			pThis->Location.X + static_cast<int>(pThis->Velocity.X),
+			pThis->Location.Y + static_cast<int>(pThis->Velocity.Y),
+			pThis->Location.Z + static_cast<int>(pThis->Velocity.Z)
+		};
+
+		for (auto& trail : pExt->LaserTrails)
+		{
+			if (!trail.LastLocation.isset())
+				trail.LastLocation = pThis->Location;
+
+			trail.Update(FutureCoords);
+		}
+	}
 
 	return 0;
 }

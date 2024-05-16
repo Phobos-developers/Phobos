@@ -485,7 +485,11 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
 
 - Projectiles can now have customizable trajectories.
   - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT`, `Vertical` or `Inviso`). Attempt to do so will result in the other logics being disabled and a warning being written to log file.
-  - Initial speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
+  - The speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
+    - In `Trajectory=Straight`, it refers to the whole distance speed of the projectile and it has no restrictions.
+    - In `Trajectory=Bombard`, it refers to the initial speed of the projectile and it has no restrictions.
+    - In `Trajectory=Disperse`, it refers to the maximum speed of the projectile and it cannot exceed 256. `Trajectory.Speed` will be fixed at 192 by setting `Trajectory.Disperse.UniqueCurve=true`.
+    - In `Trajectory=Engrave`, it refers to the engrave speed of the projectile and it cannot exceed 128. Recommend set as about 40.
 
   In `rulesmd.ini`:
 ```ini
@@ -499,17 +503,55 @@ Trajectory.Speed=100.0  ; floating point value
 *Straight trajectory used to make blasters in a private mod by @brsajo#9745*
 
 - Self-explanatory, is a straight-shot trajectory.
-  - `Trajectory.Straight.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation (note that this can cause the projectile to overshoot the target).
+  - `Trajectory.Straight.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation (note that this can cause the projectile to overshoot the target). By setting `Trajectory.Straight.PassThrough=true`, it refers to the distance that projectile should travel from itself when it above 0, and the distance that projectile should move behind the target when it below 0 (use the absolute value).
   - `Trajectory.Straight.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
-  - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but ínstead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
+  - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but instead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
+  - `Trajectory.Straight.PassDetonate` enables extra detonations when the projectile is traveling.
+  - `Trajectory.Straight.PassDetonateDelay` controls the maximum value of the extra detonations timer. When the timer goes back to 0, it will detonate a warhead defined by `Trajectory.Straight.Warhead`.
+  - `Trajectory.Straight.PassDetonateTimer` controls the initial value of the extra detonations timer. It can be set to a negative integer as initial delay.
+  - `Trajectory.Straight.PassDetonateLocal` controls whether the extra detonations are always at ground level.
+  - `Trajectory.Straight.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target when firing. Note that this will not affect the facing of the turret.
+  - `Trajectory.Straight.OffsetCoord` controls the offsets of the target. Projectile will aim at this position to attack. It also supports `Inaccurate=yes` and `Trajectory.Straight.LeadTimeCalculate=true` on this basis.
+  - `Trajectory.Straight.MirrorCoord` controls whether `Trajectory.Straight.OffsetCoord` need to mirror the lateral value to adapt to the current burst index.
+  - `Trajectory.Straight.ProximityImpact` controls the initial proximity fuse times. When there are enough remaining times and the projectile approaches another valid target, it will detonate a warhead defined by `Trajectory.Straight.Warhead` on it. If the times is about to run out, it will detonate itself on the last attempt. This function can be cancelled by setting to 0. A negative integer means unlimited times.
+  - `Trajectory.Straight.ProximityRadius` controls the range of proximity fuse. Never counted units in the air. It can NOT be set as a negative integer. This function only can be cancelled by setting `Trajectory.Straight.ProximityImpact` to 0.
+  - `Trajectory.Straight.ProximityAllies` controls the damage ratio if the target of proximity fuse is ally. It will not detonate at allies by setting as 0. Note that this is not related to whether the warhead itself affect allies.
+  - `Trajectory.Straight.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircrafts on the ground. When it is obstructed, it will be directly detonated at the obstacle. It will be forcibly Enabled by setting `Trajectory.Speed` above 256.
+  - `Trajectory.Straight.ThroughBuilding` controls whether the projectile will not be obstructed by buildings. When it is obstructed, it will be directly detonated in situ. It will be forcibly Enabled by setting `Trajectory.Speed` above 256.
+  - `Trajectory.Straight.Warhead` defined the warhead detonated by `Trajectory.Straight.PassDetonate` and `Trajectory.Straight.ProximityImpact`.
+  - `Trajectory.Straight.Damage` defined the damage caused by `Trajectory.Straight.Warhead`.
+  - `Trajectory.Straight.EdgeAttenuation` controls the edge attenuation ratio of projectile damage, includes `Trajectory.Straight.Damage`. Can NOT be set to a negative integer.
+  - `Trajectory.Straight.SubjectToGround` controls whether the projectile should explode when it hits the ground.
+  - `Trajectory.Straight.ConfineAtHeight` controls the height above ground that projectile will try to travel as it can. It can not move down from the cliff by setting `SubjectToCliffs=yes`. It can be cancelled by setting as a non positive integer. It will be forcibly cancelled by setting `Trajectory.Speed` above 256.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]                            ; Projectile
-Trajectory=Straight                         ; Trajectory type
-Trajectory.Straight.DetonationDistance=0.4  ; floating point value
-Trajectory.Straight.TargetSnapDistance=0.5  ; floating point value
-Trajectory.Straight.PassThrough=false       ; boolean
+[SOMEPROJECTILE]                                ; Projectile
+Trajectory=Straight                             ; Trajectory type
+Trajectory.Straight.DetonationDistance=0.4      ; floating point value
+Trajectory.Straight.TargetSnapDistance=0.5      ; floating point value
+Trajectory.Straight.PassThrough=false           ; boolean
+Trajectory.Straight.PassDetonate=false          ; boolean
+Trajectory.Straight.PassDetonateDelay=1         ; integer
+Trajectory.Straight.PassDetonateTimer=0         ; integer
+Trajectory.Straight.PassDetonateLocal=false     ; boolean
+Trajectory.Straight.LeadTimeCalculate=false     ; boolean
+Trajectory.Straight.OffsetCoord=0,0,0           ; integer - Forward,Lateral,Height
+Trajectory.Straight.MirrorCoord=true            ; boolean
+Trajectory.Straight.ProximityImpact=0           ; integer
+Trajectory.Straight.ProximityRadius=0.7         ; floating point value
+Trajectory.Straight.ProximityAllies=0           ; floating point value
+Trajectory.Straight.ThroughVehicles=true        ; boolean
+Trajectory.Straight.ThroughBuilding=true        ; boolean
+Trajectory.Straight.Warhead=                    ; WarheadType
+Trajectory.Straight.Damage=0                    ; integer
+Trajectory.Straight.EdgeAttenuation=1.0         ; floating point value
+Trajectory.Straight.SubjectToGround=false       ; boolean
+Trajectory.Straight.ConfineAtHeight=0           ; integer
+```
+
+```{warning}
+Make sure you set a low `Trajectory.Straight.ProximityRadius` value unless necessary.
 ```
 
 #### Bombard trajectory
@@ -518,9 +560,109 @@ Trajectory.Straight.PassThrough=false       ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]               ; Projectile
-Trajectory=Bombard             ; Trajectory type
-Trajectory.Bombard.Height=0.0  ; double
+[SOMEPROJECTILE]                                ; Projectile
+Trajectory=Bombard                              ; Trajectory type
+Trajectory.Bombard.Height=0.0                   ; double
+```
+
+#### Disperse trajectory
+
+- Its trajectory looks a bit like a `ROT`, but its settings are more flexible. It also has a unique trajectory. And as its name suggests, it can even spread out more weapons.
+  - `Trajectory.Disperse.UniqueCurve` controls whether to enable simulated Qian Xuesen trajectory. After enabling this, it will NOT respect the following 12 items and `Trajectory. Speed`.
+  - `Trajectory.Disperse.PreAimCoord` controls the initial flight direction of the projectile, and after reaching this coordinate, it will begin to turn towards the target direction. When it is set to 0,0,0 , it will directly face the target.
+  - `Trajectory.Disperse.LaunchSpeed` controls the initial flight speed of the projectile, it will be directly reduced to this value if it exceeds `Trajectory. Speed`.
+  - `Trajectory.Disperse.Acceleration` controls the acceleration of the projectile's flight speed, increasing the speed per frame according to this value, the final speed will not exceed `Trajectory. Speed`.
+  - `Trajectory.Disperse.RateofTurning` controls the turning speed of the projectile and can determine the turning radius of the projectile. The turning speed will increase with the increase of speed.
+  - `Trajectory.Disperse.LockDirection` controls whether after reaching `Trajectory.Disperse.PreAimCoord` and completing the first turn, the projectile will lock the direction of motion without further adjustment.
+  - `Trajectory.Disperse.CruiseEnable` controls whether after reaching `Trajectory.Disperse.PreAimCoord` and completing the first turn, the projectile will maintain altitude while moving towards the target.
+  - `Trajectory.Disperse.CruiseUnableRange` controls how far away it is from the target to end the cruise phase, no longer maintaining the cruise altitude, and begins to move directly towards the target. If the distance is already below this value by the time `Trajectory.Disperse.PreAimCoord` is reached, the cruise phase will be skipped.
+  - `Trajectory.Disperse.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target during motion.
+  - `Trajectory.Disperse.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
+  - `Trajectory.Disperse.RetargetAllies` controls whether the projectile chooses allies as its target when searching for new targets after losing its original target.
+  - `Trajectory.Disperse.RetargetRadius` controls the radius of the projectile to search for a new target after losing its original target. If the initial turn is not completed, the last coordinate of the original target is taken as the center of the searching circle. If the initial turn has been completed, the coordinate of the distance in front of the projectile is taken as the center of the circle. Set to 0 indicates that this function is not enabled, and it will self explode after moving forward in a straight line for about 16 frames. If it is set to a negative number, it will directly self explode in place.
+  - `Trajectory.Disperse.SuicideAboveRange` controls the projectile to self destruct directly after reaching the flight distance. Set to 0 to disable suicide.
+  - `Trajectory.Disperse.SuicideIfNoWeapon` controls whether the projectile will self destruct after the number of times it spreads the weapon has been exhausted.
+  - `Trajectory.Disperse.Weapons` defined the dispersal weapons of the projectile. Unlike `Splits=yes`, if the number of targets is insufficient, it will not hit the ground.
+  - `Trajectory.Disperse.WeaponBurst` defined how many corresponding weapons each time the projectile will fire. When the quantity does not match `Trajectory.Disperse.Weapons`, the mismatched parts will not be dispersed.
+  - `Trajectory.Disperse.WeaponCount` controls how many times the projectile can spread the weapon.
+  - `Trajectory.Disperse.WeaponDelay` controls the maximum value of the weapon dispersing timer. When the timer goes back to 0, it will spread the weapons defined by `Trajectory.Disperse.Weapons`.
+  - `Trajectory.Disperse.WeaponTimer` controls the initial value of the weapon dispersing timer. It can be set to a negative integer as initial delay.
+  - `Trajectory.Disperse.WeaponScope` controls the weapon dispersing timer to start counting only within this distance of reaching the target. Set to 0 to disable this function.
+  - `Trajectory.Disperse.WeaponRetarget` controls whether the dispersed weapons will find new targets on their own. Using the range of weapons to search new targets.
+  - `Trajectory.Disperse.WeaponLocation` controls whether the dispersed weapons will search for new targets at the center of the spreading position, otherwise they will focus on the original target. If a suitable target cannot be found, it will randomly attack the ground.
+  - `Trajectory.Disperse.WeaponTendency` controls whether the first new target in the first dispersed weapon chooses the original target.
+  - `Trajectory.Disperse.WeaponToAllies` controls whether to choose allies as targets when searching for new targets with the dispersed weapons.
+
+In `rulesmd.ini`:
+```ini
+Trajectory=Disperse                             ; Trajectory type
+Trajectory.Disperse.UniqueCurve=false           ; boolean
+Trajectory.Disperse.PreAimCoord=0,0,0           ; integer - Forward,Lateral,Height
+Trajectory.Disperse.LaunchSpeed=0               ; floating point value
+Trajectory.Disperse.Acceleration=10.0           ; floating point value
+Trajectory.Disperse.RateofTurning=10.0          ; floating point value
+Trajectory.Disperse.LockDirection=false         ; boolean
+Trajectory.Disperse.CruiseEnable=false          ; boolean
+Trajectory.Disperse.CruiseUnableRange=5         ; floating point value
+Trajectory.Disperse.LeadTimeCalculate=false     ; boolean
+Trajectory.Disperse.TargetSnapDistance=0.5      ; floating point value
+Trajectory.Disperse.RetargetAllies=false        ; boolean
+Trajectory.Disperse.RetargetRadius=0            ; floating point value
+Trajectory.Disperse.SuicideAboveRange=0         ; floating point value
+Trajectory.Disperse.SuicideIfNoWeapon=false     ; boolean
+Trajectory.Disperse.Weapons=                    ; list of WeaponTypes
+Trajectory.Disperse.WeaponBurst=                ; list of integers
+Trajectory.Disperse.WeaponCount=0               ; integer
+Trajectory.Disperse.WeaponDelay=1               ; integer
+Trajectory.Disperse.WeaponTimer=0               ; integer
+Trajectory.Disperse.WeaponScope=0               ; floating point value
+Trajectory.Disperse.WeaponRetarget=false        ; boolean
+Trajectory.Disperse.WeaponLocation=false        ; boolean
+Trajectory.Disperse.WeaponTendency=false        ; boolean
+Trajectory.Disperse.WeaponToAllies=false        ; boolean
+```
+
+```{warning}
+Make sure you set a low `Trajectory.Disperse.RetargetRadius` value unless necessary. If you set `Trajectory.Disperse.WeaponRetarget=true`, also make sure you set `Trajectory.Disperse.Weapons` a low `Range` value unless necessary.
+```
+
+#### Engrave trajectory
+
+- Obviously, like the thermal lance. Calling it 'trajectory' may not be appropriate. It does not read the settings on the weapon.
+  - `Trajectory.Engrave.SourceCoord` controls the starting point of engraving line segment. Taking the target as the coordinate center. Specifically, it will start from the firing position when set to 0,0 . The height of the point will always at ground level.
+  - `Trajectory.Engrave.TargetCoord` controls the end point of engraving line segment. Taking the target as the coordinate center. The height of the point will always at ground level.
+  - `Trajectory.Engrave.MirrorCoord` controls whether `Trajectory.Engrave.SourceCoord` and `Trajectory.Engrave.TargetCoord` need to mirror the lateral value to adapt to the current FLH.
+  - `Trajectory.Engrave.IsSupported` controls whether the engrave laser will be brighter and thicker. Need to set `Trajectory.Engrave.IsHouseColor` or `Trajectory.Engrave.IsSingleColor` to true.
+  - `Trajectory.Engrave.IsHouseColor` controls whether set the engrave laser to draw using player's team color. These lasers respect `Trajectory.Engrave.LaserThickness` and `Trajectory.Engrave.IsSupported`.
+  - `Trajectory.Engrave.IsSingleColor` controls whether set the engrave laser to draw using only `Trajectory.Engrave.LaserInnerColor`. These lasers respect `Trajectory.Engrave.LaserThickness` and `Trajectory.Engrave.IsSupported`.
+  - `Trajectory.Engrave.LaserInnerColor` controls the inner color of the engrave laser.
+  - `Trajectory.Engrave.LaserOuterColor` controls the outer color of the engrave laser.
+  - `Trajectory.Engrave.LaserOuterSpread` controls the spread color of the engrave laser.
+  - `Trajectory.Engrave.LaserThickness` controls the thickness of the engrave laser. Need to set `Trajectory.Engrave.IsHouseColor` or `Trajectory.Engrave.IsSingleColor` to true.
+  - `Trajectory.Engrave.LaserDuration` controls the duration of the engrave laser.
+  - `Trajectory.Engrave.LaserDelay` controls how often to draw the engrave laser.
+  - `Trajectory.Engrave.DamageDelay` controls how often to detonate warheads.
+
+In `rulesmd.ini`:
+```ini
+Trajectory=Engrave                             ; Trajectory type
+Trajectory.Engrave.SourceCoord=0,0             ; integer - Forward,Lateral
+Trajectory.Engrave.TargetCoord=0,0             ; integer - Forward,Lateral
+Trajectory.Engrave.MirrorCoord=true            ; boolean
+Trajectory.Engrave.IsSupported=false           ; boolean
+Trajectory.Engrave.IsHouseColor=false          ; boolean
+Trajectory.Engrave.IsSingleColor=false         ; boolean
+Trajectory.Engrave.LaserInnerColor=0,0,0       ; integer - Red,Green,Blue
+Trajectory.Engrave.LaserOuterColor=0,0,0       ; integer - Red,Green,Blue
+Trajectory.Engrave.LaserOuterSpread=0,0,0      ; integer - Red,Green,Blue
+Trajectory.Engrave.LaserThickness=3            ; integer
+Trajectory.Engrave.LaserDuration=1             ; integer
+Trajectory.Engrave.LaserDelay=1                ; integer
+Trajectory.Engrave.DamageDelay=10              ; integer
+```
+
+```{note}
+It's best not to let it be intercepted.
 ```
 
 ### Shrapnel enhancements
@@ -531,7 +673,7 @@ Trajectory.Bombard.Height=0.0  ; double
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]                   ; Projectile
@@ -1005,7 +1147,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]
 Convert.HumanToComputer =   ; TechnoType
-Convert.ComputerToHuman =   ; TechnoType 
+Convert.ComputerToHuman =   ; TechnoType
 ```
 
 ## Terrain
