@@ -237,14 +237,9 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 			PrepareForDetonateAt(pBullet, pOwner, pBullet->Location);
 
 		if (StraightSpeed > 256.0)
-		{
 			BulletDetonateLastCheck(pBullet, StraightSpeed);
-		}
-		else if (this->ConfineAtHeight > 0)
-		{
-			if (PassAndConfineAtHeight(pBullet, StraightSpeed))
-				return true;
-		}
+		else if (this->ConfineAtHeight > 0 && PassAndConfineAtHeight(pBullet, StraightSpeed))
+			return true;
 	}
 
 	return false;
