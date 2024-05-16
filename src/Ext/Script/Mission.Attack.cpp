@@ -7,6 +7,9 @@
 
 void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int calcThreatMode = 0, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
 {
+	if (!pTeam)
+		return;
+
 	auto pScript = pTeam->CurrentScript;
 	int scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument; // This is the target type
 	TechnoClass* selectedTarget = nullptr;
@@ -45,22 +48,9 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 			pTeamData->WaitNoTargetAttempts--;
 	}
 
-	// This team has no units!
-	if (!pTeam)
-	{
-		if (pTeamData->CloseEnough > 0)
-			pTeamData->CloseEnough = -1;
-
-		// This action finished
-		pTeam->StepCompleted = true;
-		ScriptExt::Log("AI Scripts - Attack: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: No team members alive)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
-
-		return;
-	}
-
 	pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
 
-	if (!IsUnitAvailable(pFocus, true))
+	if (!TechnoExt::IsUnitAvailable(pFocus, true))
 	{
 		pTeam->Focus = nullptr;
 		pFocus = nullptr;
@@ -114,7 +104,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 	for (auto pFoot = pTeam->FirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 	{
-		if (IsUnitAvailable(pFoot, true))
+		if (TechnoExt::IsUnitAvailable(pFoot, true))
 		{
 			auto const pTechnoType = pFoot->GetTechnoType();
 
@@ -126,7 +116,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 				bAircraftsWithoutAmmo = true;
 			}
 
-			pacifistTeam &= !IsUnitArmed(pFoot);
+			pacifistTeam &= !TechnoExt::IsUnitArmed(pFoot);
 
 			if (pFoot->WhatAmI() == AbstractType::Infantry)
 			{
@@ -142,7 +132,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	// Find the Leader
 	pLeaderUnit = pTeamData->TeamLeader;
 
-	if (!IsUnitAvailable(pLeaderUnit, true))
+	if (!TechnoExt::IsUnitAvailable(pLeaderUnit, true))
 	{
 		pLeaderUnit = FindTheTeamLeader(pTeam);
 		pTeamData->TeamLeader = pLeaderUnit;
@@ -168,7 +158,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	pLeaderUnitType = pLeaderUnit->GetTechnoType();
 	bool leaderWeaponsHaveAG = false;
 	bool leaderWeaponsHaveAA = false;
-	CheckUnitTargetingCapabilities(pLeaderUnit, leaderWeaponsHaveAG, leaderWeaponsHaveAA, agentMode);
+	TechnoExt::CheckUnitTargetingCapabilities(pLeaderUnit, leaderWeaponsHaveAG, leaderWeaponsHaveAA, agentMode);
 
 	// Special case: a Leader with OpenTopped tag
 	if (pLeaderUnitType->OpenTopped && pLeaderUnit->Passengers.NumPassengers > 0)
@@ -178,7 +168,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 			auto const passenger = abstract_cast<FootClass*>(*obj);
 			bool passengerWeaponsHaveAG = false;
 			bool passengerWeaponsHaveAA = false;
-			CheckUnitTargetingCapabilities(passenger, passengerWeaponsHaveAG, passengerWeaponsHaveAA, agentMode);
+			TechnoExt::CheckUnitTargetingCapabilities(passenger, passengerWeaponsHaveAG, passengerWeaponsHaveAA, agentMode);
 
 			leaderWeaponsHaveAG |= passengerWeaponsHaveAG;
 			leaderWeaponsHaveAA |= passengerWeaponsHaveAA;
@@ -298,10 +288,10 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 		bool isAirOK = pFocus->IsInAir() && leaderWeaponsHaveAA;
 		bool isGroundOK = !pFocus->IsInAir() && leaderWeaponsHaveAG;
 
-		if (IsUnitAvailable(pFocus, true)
+		if (TechnoExt::IsUnitAvailable(pFocus, true)
 			&& !pFocus->GetTechnoType()->Immune
 			&& (isAirOK || isGroundOK)
-			&& (!pLeaderUnit->Owner->IsAlliedWith(pFocus) || IsUnitMindControlledFriendly(pLeaderUnit->Owner, pFocus)))
+			&& (!pLeaderUnit->Owner->IsAlliedWith(pFocus) || TechnoExt::IsUnitMindControlledFriendly(pLeaderUnit->Owner, pFocus)))
 		{
 			bool bForceNextAction = false;
 
@@ -309,7 +299,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 			{
 				auto const pTechnoType = pFoot->GetTechnoType();
 
-				if (IsUnitAvailable(pFoot, true))
+				if (TechnoExt::IsUnitAvailable(pFoot, true))
 				{
 					// Aircraft case 1
 					if ((pFoot->WhatAmI() == AbstractType::Aircraft
@@ -485,12 +475,12 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 			continue;
 
 		if (object != pTechno
-			&& IsUnitAvailable(object, true)
+			&& TechnoExt::IsUnitAvailable(object, true)
 			&& !objectType->Immune
 			&& !object->TemporalTargetingMe
 			&& !object->BeingWarpedOut
 			&& object->Owner != pTechno->Owner
-			&& (!pTechno->Owner->IsAlliedWith(object) || IsUnitMindControlledFriendly(pTechno->Owner, object)))
+			&& (!pTechno->Owner->IsAlliedWith(object) || TechnoExt::IsUnitMindControlledFriendly(pTechno->Owner, object)))
 		{
 			double value = 0;
 
@@ -1116,9 +1106,17 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 void ScriptExt::Mission_Attack_List(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
 {
+	if (!pTeam)
+		return;
+
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (pTeamData)
-		pTeamData->IdxSelectedObjectFromAIList = -1;
+	if (!pTeamData)
+	{
+		pTeam->StepCompleted = true;
+		return;
+	}
+
+	pTeamData->IdxSelectedObjectFromAIList = -1;
 
 	if (attackAITargetType < 0)
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -1132,13 +1130,22 @@ void ScriptExt::Mission_Attack_List(TeamClass* pTeam, bool repeatAction, int cal
 
 void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
 {
+	if (!pTeam)
+		return;
+
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
+	{
+		pTeam->StepCompleted = true;
+		return;
+	}
+
 	auto pScript = pTeam->CurrentScript;
 	bool selected = false;
 	int idxSelectedObject = -1;
 	std::vector<int> validIndexes;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (pTeamData && pTeamData->IdxSelectedObjectFromAIList >= 0)
+	if (pTeamData->IdxSelectedObjectFromAIList >= 0)
 	{
 		idxSelectedObject = pTeamData->IdxSelectedObjectFromAIList;
 		selected = true;
@@ -1167,8 +1174,8 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, bool repeatAction, 
 					auto const pFirstUnit = pTeam->FirstUnit;
 
 					if (pTechnoType == objectFromList
-						&& IsUnitAvailable(pTechno, true)
-						&& (!pFirstUnit->Owner->IsAlliedWith(pTechno) || IsUnitMindControlledFriendly(pFirstUnit->Owner, pTechno)))
+						&& TechnoExt::IsUnitAvailable(pTechno, true)
+						&& (!pFirstUnit->Owner->IsAlliedWith(pTechno) || TechnoExt::IsUnitMindControlledFriendly(pFirstUnit->Owner, pTechno)))
 					{
 						validIndexes.push_back(j);
 						found = true;
@@ -1197,29 +1204,4 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, bool repeatAction, 
 		pTeam->StepCompleted = true;
 		ScriptExt::Log("AI Scripts - AttackListRandom: [%s] [%s] (line: %d = %d,%d) Failed to pick a random Techno from the list index [AITargetTypes][%d]! Valid Technos in the list: %d\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, attackAITargetType, validIndexes.size());
 	}
-}
-
-void ScriptExt::CheckUnitTargetingCapabilities(TechnoClass* pTechno, bool& hasAntiGround, bool& hasAntiAir, bool agentMode)
-{
-	auto const pWeaponPrimary = TechnoExt::GetCurrentWeapon(pTechno);
-	auto const pWeaponSecondary = TechnoExt::GetCurrentWeapon(pTechno, true);
-
-	if ((pWeaponPrimary && pWeaponPrimary->Projectile->AA) || (pWeaponSecondary && pWeaponSecondary->Projectile->AA))
-		hasAntiAir = true;
-
-	if ((pWeaponPrimary && pWeaponPrimary->Projectile->AG) || (pWeaponSecondary && pWeaponSecondary->Projectile->AG) || agentMode)
-		hasAntiGround = true;
-}
-
-bool ScriptExt::IsUnitArmed(TechnoClass* pTechno)
-{
-	auto const pWeaponPrimary = TechnoExt::GetCurrentWeapon(pTechno);
-	auto const pWeaponSecondary = TechnoExt::GetCurrentWeapon(pTechno, true);
-
-	return pWeaponPrimary || pWeaponSecondary;
-}
-
-bool ScriptExt::IsUnitMindControlledFriendly(HouseClass* pHouse, TechnoClass* pTechno)
-{
-	return pHouse->IsAlliedWith(pTechno) && pTechno->IsMindControlled() && !pHouse->IsAlliedWith(pTechno->MindControlledBy);
 }

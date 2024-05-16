@@ -5,6 +5,7 @@
 #include <ScenarioClass.h>
 
 #include <Ext/House/Body.h>
+#include <Ext/BulletType/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -360,6 +361,44 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 		return true;
 
 	return false;
+}
+
+bool TechnoExt::IsUnitArmed(TechnoClass* pTechno)
+{
+	auto const pWeaponPrimary = GetCurrentWeapon(pTechno);
+	auto const pWeaponSecondary = GetCurrentWeapon(pTechno, true);
+
+	return pWeaponPrimary || pWeaponSecondary;
+}
+
+void TechnoExt::CheckUnitTargetingCapabilities(TechnoClass* pTechno, bool& hasAntiGround, bool& hasAntiAir, bool agentMode)
+{
+	auto const pWeaponPrimary = GetCurrentWeapon(pTechno);
+	auto const pWeaponSecondary = GetCurrentWeapon(pTechno, true);
+
+	if ((pWeaponPrimary && pWeaponPrimary->Projectile->AA) || (pWeaponSecondary && pWeaponSecondary->Projectile->AA))
+		hasAntiAir = true;
+
+	if ((pWeaponPrimary && pWeaponPrimary->Projectile->AG) || (pWeaponSecondary && pWeaponSecondary->Projectile->AG) || agentMode)
+		hasAntiGround = true;
+}
+
+bool TechnoExt::IsUnitMindControlledFriendly(HouseClass* pHouse, TechnoClass* pTechno)
+{
+	return pHouse->IsAlliedWith(pTechno) && pTechno->IsMindControlled() && !pHouse->IsAlliedWith(pTechno->MindControlledBy);
+}
+
+bool TechnoExt::IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed)
+{
+	if (!pTechno)
+		return false;
+
+	bool isAvailable = pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && pTechno->IsOnMap;
+
+	if (checkIfInTransportOrAbsorbed)
+		isAvailable &= !pTechno->Absorbed && !pTechno->Transporter;
+
+	return isAvailable;
 }
 
 // =============================
