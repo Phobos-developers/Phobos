@@ -207,7 +207,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	if (!this->LeadTimeCalculate || (pBullet->Target && pBullet->Target->WhatAmI() == AbstractType::Building))
 		PrepareForOpenFire(pBullet);
 	else
-		this->WaitOneFrame = 2;//OnAI() not always check after OnUnlimbo() immediately.
+		this->WaitOneFrame = 2; //OnAI() not always check after OnUnlimbo() immediately.
 }
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
@@ -617,7 +617,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner, CoordStruct Coord)
 {
 	std::vector<CellClass*> RecCellClass = GetCellsInProximityRadius(pBullet);
-	size_t Capacity = RecCellClass.size() * 8;//Looking for better methods
+	size_t Capacity = RecCellClass.size() * 8; //Looking for better methods
 	size_t ThisSize = 0;
 	Capacity = Capacity > 2000 ? 2000 : Capacity;
 	std::vector<TechnoClass*> ValidTechnos;
@@ -719,25 +719,25 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClas
 
 		std::vector<CellStruct> RecCells;
 
-		if (Cor1Cell.X > Cor2Cell.X)//Left
+		if (Cor1Cell.X > Cor2Cell.X) //Left
 		{
-			if (Cor1Cell.Y >= Cor2Cell.Y)//↙ and ←
+			if (Cor1Cell.Y >= Cor2Cell.Y) //↙ and ←
 				RecCells = GetCellsInRectangle(Cor3Cell, Cor2Cell, Cor4Cell, Cor1Cell);
-			else//↖
+			else //↖
 				RecCells = GetCellsInRectangle(Cor4Cell, Cor3Cell, Cor1Cell, Cor2Cell);
 		}
-		else if (Cor1Cell.X == Cor2Cell.X)//Mid
+		else if (Cor1Cell.X == Cor2Cell.X) //Mid
 		{
-			if (Cor1Cell.Y >= Cor2Cell.Y)//↓ and Center
+			if (Cor1Cell.Y >= Cor2Cell.Y) //↓ and Center
 				RecCells = GetCellsInRectangle(Cor2Cell, Cor1Cell, Cor3Cell, Cor4Cell);
-			else//↑
+			else //↑
 				RecCells = GetCellsInRectangle(Cor4Cell, Cor3Cell, Cor1Cell, Cor2Cell);
 		}
-		else//Right
+		else //Right
 		{
-			if (Cor1Cell.Y >= Cor2Cell.Y)//↘ and →
+			if (Cor1Cell.Y >= Cor2Cell.Y) //↘ and →
 				RecCells = GetCellsInRectangle(Cor2Cell, Cor1Cell, Cor3Cell, Cor4Cell);
-			else//↗
+			else //↗
 				RecCells = GetCellsInRectangle(Cor1Cell, Cor4Cell, Cor2Cell, Cor3Cell);
 		}
 
@@ -822,9 +822,9 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 
 		while (lCurCell != tEndCell || rCurCell != tEndCell)
 		{
-			while (lCurCell != tEndCell)//Left
+			while (lCurCell != tEndCell) //Left
 			{
-				if (!lNext)//Bottom Left Side
+				if (!lNext) //Bottom Left Side
 				{
 					if (l1stCurN > 0)
 					{
@@ -853,7 +853,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 						}
 					}
 				}
-				else//Top Left Side
+				else //Top Left Side
 				{
 					if (l2ndCurN >= 0)
 					{
@@ -879,9 +879,9 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 				RecCells.push_back(lCurCell);
 			}
 
-			while (rCurCell != tEndCell)//Right
+			while (rCurCell != tEndCell) //Right
 			{
-				if (!rNext)//Bottom Right Side
+				if (!rNext) //Bottom Right Side
 				{
 					if (r1stCurN > 0)
 					{
@@ -910,7 +910,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 						}
 					}
 				}
-				else//Top Right Side
+				else //Top Right Side
 				{
 					if (r2ndCurN >= 0)
 					{
@@ -939,13 +939,13 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 
 			mCurCell = lCurCell;
 			mCurCell.X += 1;
-			while (mCurCell.X < rCurCell.X)//Center
+			while (mCurCell.X < rCurCell.X) //Center
 			{
 				RecCells.push_back(mCurCell);
 				mCurCell.X += 1;
 			}
 
-			if (lContinue)//Continue Top Left Side
+			if (lContinue) //Continue Top Left Side
 			{
 				lContinue = false;
 				l2ndCurN -= l2ndDist.X;
@@ -953,7 +953,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 				RecCells.push_back(lCurCell);
 			}
 
-			if (rContinue)//Continue Top Right Side
+			if (rContinue) //Continue Top Right Side
 			{
 				rContinue = false;
 				r2ndCurN -= r2ndDist.X;
@@ -986,7 +986,7 @@ TechnoClass* StraightTrajectory::CompareThenDetonateAt(std::vector<TechnoClass*>
 	TechnoClass* Detonate = nullptr;
 	std::sort(&Technos[0], &Technos[jMax]);
 
-	for (short k = 0; k < Capacity; k++)//Merge
+	for (short k = 0; k < Capacity; k++) //Merge
 	{
 		if (i < iMax && j < jMax)
 		{
