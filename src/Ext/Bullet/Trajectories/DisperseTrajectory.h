@@ -10,7 +10,7 @@ public:
 		, PreAimCoord { { 0, 0, 0 } }
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
-		, RateofTurning { 10.0 }
+		, ROT { 10.0 }
 		, LockDirection { false }
 		, CruiseEnable { false }
 		, CruiseUnableRange { Leptons(128) }
@@ -41,7 +41,7 @@ public:
 	Valueable<CoordStruct> PreAimCoord;
 	Valueable<double> LaunchSpeed;
 	Valueable<double> Acceleration;
-	Valueable<double> RateofTurning;
+	Valueable<double> ROT;
 	Valueable<bool> LockDirection;
 	Valueable<bool> CruiseEnable;
 	Valueable<Leptons> CruiseUnableRange;
@@ -71,7 +71,7 @@ public:
 		, PreAimCoord {}
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
-		, RateofTurning { 10.0 }
+		, ROT { 10.0 }
 		, LockDirection { false }
 		, CruiseEnable { false }
 		, CruiseUnableRange { Leptons(128) }
@@ -104,7 +104,7 @@ public:
 		, PreAimCoord {}
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
-		, RateofTurning { 10.0 }
+		, ROT { 10.0 }
 		, LockDirection { false }
 		, CruiseEnable { false }
 		, CruiseUnableRange { Leptons(128) }
@@ -146,7 +146,7 @@ public:
 	CoordStruct PreAimCoord;
 	double LaunchSpeed;
 	double Acceleration;
-	double RateofTurning;
+	double ROT;
 	bool LockDirection;
 	bool CruiseEnable;
 	Leptons CruiseUnableRange;

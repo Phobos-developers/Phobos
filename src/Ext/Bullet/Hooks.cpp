@@ -64,8 +64,9 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		}
 	}
 
-	//Let these two types of trajectory draw their own laser to avoid
-	//predicting incorrect positions or pass through targets.
+	//Because the laser trails will be drawn before the calculation of changing the velocity direction in each frame.
+	//This will cause the laser trails to be drawn in the wrong position too early, resulting in a visual appearance resembling a "bouncing".
+	//Let trajectories draw their own laser trails after the Trajectory‘s OnAI() to avoid predicting incorrect positions or pass through targets.
 	if (pBulletExt->Trajectory)
 		return 0;
 
@@ -377,7 +378,9 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 			&& (pExt->Trajectory->Flag == TrajectoryFlag::Straight
 			|| pExt->Trajectory->Flag == TrajectoryFlag::Disperse
 			|| pExt->Trajectory->Flag == TrajectoryFlag::Engrave))
+		{
 			return SkipSetCoordinate;
+		}
 	}
 
 	return 0;
@@ -394,7 +397,9 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 		if (pExt->Trajectory && (pExt->Trajectory->Flag == TrajectoryFlag::Straight
 			|| pExt->Trajectory->Flag == TrajectoryFlag::Disperse
 			|| pExt->Trajectory->Flag == TrajectoryFlag::Engrave))
+		{
 			return SkipCheck;
+		}
 	}
 
 	return 0;

@@ -18,7 +18,7 @@ bool DisperseTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 		.Process(this->PreAimCoord, false)
 		.Process(this->LaunchSpeed, false)
 		.Process(this->Acceleration, false)
-		.Process(this->RateofTurning, false)
+		.Process(this->ROT, false)
 		.Process(this->LockDirection, false)
 		.Process(this->CruiseEnable, false)
 		.Process(this->CruiseUnableRange, false)
@@ -52,7 +52,7 @@ bool DisperseTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->PreAimCoord)
 		.Process(this->LaunchSpeed)
 		.Process(this->Acceleration)
-		.Process(this->RateofTurning)
+		.Process(this->ROT)
 		.Process(this->LockDirection)
 		.Process(this->CruiseEnable)
 		.Process(this->CruiseUnableRange)
@@ -84,7 +84,7 @@ void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->PreAimCoord.Read(exINI, pSection, "Trajectory.Disperse.PreAimCoord");
 	this->LaunchSpeed.Read(exINI, pSection, "Trajectory.Disperse.LaunchSpeed");
 	this->Acceleration.Read(exINI, pSection, "Trajectory.Disperse.Acceleration");
-	this->RateofTurning.Read(exINI, pSection, "Trajectory.Disperse.RateofTurning");
+	this->ROT.Read(exINI, pSection, "Trajectory.Disperse.ROT");
 	this->LockDirection.Read(exINI, pSection, "Trajectory.Disperse.LockDirection");
 	this->CruiseEnable.Read(exINI, pSection, "Trajectory.Disperse.CruiseEnable");
 	this->CruiseUnableRange.Read(exINI, pSection, "Trajectory.Disperse.CruiseUnableRange");
@@ -115,7 +115,7 @@ bool DisperseTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->PreAimCoord)
 		.Process(this->LaunchSpeed)
 		.Process(this->Acceleration)
-		.Process(this->RateofTurning)
+		.Process(this->ROT)
 		.Process(this->LockDirection)
 		.Process(this->CruiseEnable)
 		.Process(this->CruiseUnableRange)
@@ -154,7 +154,7 @@ bool DisperseTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->PreAimCoord)
 		.Process(this->LaunchSpeed)
 		.Process(this->Acceleration)
-		.Process(this->RateofTurning)
+		.Process(this->ROT)
 		.Process(this->LockDirection)
 		.Process(this->CruiseEnable)
 		.Process(this->CruiseUnableRange)
@@ -192,7 +192,7 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->PreAimCoord = pType->PreAimCoord;
 	this->LaunchSpeed = pType->LaunchSpeed;
 	this->Acceleration = pType->Acceleration > 0.1 ? pType->Acceleration : 0.1;
-	this->RateofTurning = pType->RateofTurning > 0.1 ? pType->RateofTurning : 0.1;
+	this->ROT = pType->ROT > 0.1 ? pType->ROT : 0.1;
 	this->LockDirection = pType->LockDirection;
 	this->CruiseEnable = pType->CruiseEnable;
 	this->CruiseUnableRange = pType->CruiseUnableRange;
@@ -272,7 +272,9 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 			TheSource = pBullet->Owner->GetCoords();
 
 		if (pBullet->TargetCoords.Y != TheSource.Y || pBullet->TargetCoords.X != TheSource.X)
+		{
 			RotateAngle = Math::atan2(pBullet->TargetCoords.Y - TheSource.Y , pBullet->TargetCoords.X - TheSource.X);
+		}
 
 		else
 		{
@@ -284,7 +286,9 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 					RotateAngle = -(pBullet->Owner->PrimaryFacing.Current().GetRadian<32>());
 			}
 			else
+			{
 				RotateAngle = Math::atan2(pBullet->TargetCoords.Y - TheSource.Y , pBullet->TargetCoords.X - TheSource.X);
+			}
 		}
 
 		pBullet->Velocity.X = this->PreAimCoord.X * Math::cos(RotateAngle) + this->PreAimCoord.Y * Math::sin(RotateAngle);
@@ -314,7 +318,9 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 					return true;
 			}
 			else
+			{
 				return true;
+			}
 		}
 	}
 
@@ -328,6 +334,7 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 	{
 		double StraightSpeed = this->GetTrajectorySpeed(pBullet);
 		this->LaunchSpeed += this->Acceleration;
+
 		if (StraightSpeed > 256.0)
 		{
 			if	(this->LaunchSpeed >= 256.0)
@@ -429,11 +436,12 @@ bool DisperseTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 	if (this->SuicideAboveRange > 0)
 	{
 		double BulletSpeed = this->LaunchSpeed;
+
 		if (this->UniqueCurve)
-		{
 			BulletSpeed = pBullet->Velocity.Magnitude();
-		}
+
 		this->SuicideAboveRange -= BulletSpeed;
+
 		if (this->SuicideAboveRange <= 0)
 			return true;
 	}
@@ -447,51 +455,57 @@ bool DisperseTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* pOwner)
 {
 	bool Check = false;
+
 	if (!pBullet->Target)
+	{
 		Check = true;
+	}
 	else if (TechnoClass* pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+	{
 		if (pTarget->IsDead() || pTarget->InLimbo)
 			Check = true;
+	}
 
-	if (Check)
+	if (!Check)
+		return false;
+
+	if (this->RetargetRadius < 0)
+		return true;
+
+	if (this->RetargetRadius == 0)
 	{
-		if (this->RetargetRadius < 0)
-			return true;
+		this->LockDirection = true;
+		this->SuicideAboveRange = 16 * this->LaunchSpeed;
+		return false;
+	}
 
-		if (this->RetargetRadius == 0)
+	CoordStruct RetargetCoords = pBullet->TargetCoords;
+
+	if (this->InStraight)
+	{
+		BulletVelocity FutureVelocity = pBullet->Velocity * (this->RetargetRadius * 256.0 / this->LaunchSpeed);
+		CoordStruct FutureCoords
 		{
-			this->LockDirection = true;
-			this->SuicideAboveRange = 16 * this->LaunchSpeed;
-			return false;
-		}
+			pBullet->Location.X + static_cast<int>(FutureVelocity.X),
+			pBullet->Location.Y + static_cast<int>(FutureVelocity.Y),
+			pBullet->Location.Z + static_cast<int>(FutureVelocity.Z)
+		};
+		RetargetCoords = FutureCoords;
+	}
 
-		CoordStruct RetargetCoords = pBullet->TargetCoords;
-		if (this->InStraight)
-		{
-			BulletVelocity FutureVelocity = pBullet->Velocity * (this->RetargetRadius * 256.0 / this->LaunchSpeed);
-			CoordStruct FutureCoords
-			{
-				pBullet->Location.X + static_cast<int>(FutureVelocity.X),
-				pBullet->Location.Y + static_cast<int>(FutureVelocity.Y),
-				pBullet->Location.Z + static_cast<int>(FutureVelocity.Z)
-			};
-			RetargetCoords = FutureCoords;
-		}
+	std::vector<TechnoClass*> Technos = Helpers::Alex::getCellSpreadItems(RetargetCoords, this->RetargetRadius, this->TargetInAir);
+	std::vector<TechnoClass*> ValidTechnos = GetValidTechnosInSame(Technos, pOwner, pBullet->WeaponType->Warhead, false);
+	int ValidTechnoNums = ValidTechnos.size();
 
-		std::vector<TechnoClass*> Technos = Helpers::Alex::getCellSpreadItems(RetargetCoords, this->RetargetRadius, this->TargetInAir);
-		std::vector<TechnoClass*> ValidTechnos = GetValidTechnosInSame(Technos, pOwner, pBullet->WeaponType->Warhead, false);
-		int ValidTechnoNums = ValidTechnos.size();
+	if (ValidTechnoNums > 0)
+	{
+		int num = ScenarioClass::Instance->Random.RandomRanged(0, ValidTechnoNums - 1);
+		TechnoClass* BulletTarget = ValidTechnos[num];
 
-		if (ValidTechnoNums > 0)
-		{
-			int num = ScenarioClass::Instance->Random.RandomRanged(0, ValidTechnoNums - 1);
-			TechnoClass* BulletTarget = ValidTechnos[num];
+		pBullet->Target = BulletTarget;
+		pBullet->TargetCoords = BulletTarget->GetCoords();
 
-			pBullet->Target = BulletTarget;
-			pBullet->TargetCoords = BulletTarget->GetCoords();
-
-			this->LastTargetCoord = pBullet->TargetCoords;
-		}
+		this->LastTargetCoord = pBullet->TargetCoords;
 	}
 
 	return false;
@@ -506,6 +520,7 @@ void DisperseTrajectory::CurveVelocityChange(BulletClass* pBullet)
 	if (!this->InStraight)
 	{
 		int OffHeight = this->FinalHeight - 1600;
+
 		if (this->FinalHeight < 3200)
 			OffHeight = this->FinalHeight / 2;
 
@@ -536,6 +551,7 @@ void DisperseTrajectory::CurveVelocityChange(BulletClass* pBullet)
 		{
 			this->Accelerate = false;
 			double FutureLocation = pBullet->Location.Z + 8 * pBullet->Velocity.Z;
+
 			if (pBullet->Velocity.Z > -160.0)
 				pBullet->Velocity.Z -= 4.0;
 
@@ -545,7 +561,6 @@ void DisperseTrajectory::CurveVelocityChange(BulletClass* pBullet)
 				this->InStraight = true;
 		}
 	}
-
 	else
 	{
 		double TimeMult = TargetLocation.DistanceFrom(pBullet->Location) / 192.0;
@@ -582,7 +597,7 @@ void DisperseTrajectory::StandardVelocityChange(BulletClass* pBullet)
 	}
 
 	this->LastTargetCoord = pBullet->TargetCoords;
-	double TurningRadius = this->RateofTurning * this->LaunchSpeed * this->LaunchSpeed / 16384;
+	double TurningRadius = this->ROT * this->LaunchSpeed * this->LaunchSpeed / 16384;
 	ChangeBulletVelocity(pBullet, TargetLocation, TurningRadius, false);
 }
 
@@ -675,6 +690,7 @@ void DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct 
 	{
 		if (BulletSide < 192)
 			BulletSide += 4;
+
 		if (BulletSide > 192)
 			BulletSide = 192;
 
@@ -735,7 +751,6 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 				}
 			}
 		}
-
 		else
 		{
 			for (int i = 0; i < ValidWeapons; i++)
@@ -823,14 +838,12 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					pOwner->LaserColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
 				pLaser->IsHouseColor = true;
 			}
-
 			else if (pWeaponTypeExt->Laser_IsSingleColor)
 			{
 				pLaser = GameCreate<LaserDrawClass>(pBullet->Location, BulletTarget->GetCoords(),
 					pWeapon->LaserInnerColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
 				pLaser->IsHouseColor = true;
 			}
-
 			else
 			{
 				pLaser = GameCreate<LaserDrawClass>(pBullet->Location, BulletTarget->GetCoords(),
@@ -849,12 +862,8 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 		{
 			if (pWeapon->IsAlternateColor)
 				pEBolt->AlternateColor = true;
-
 			else
 				pEBolt->AlternateColor = false;
-
-			if (auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon))
-				if (pWeaponTypeExt->Bolt_Disable1)
 
 		//	Bolt.Color1,Bolt.Color2,Bolt.Color3
 		//	Bolt_Disable1,Bolt_Disable2,Bolt_Disable3
