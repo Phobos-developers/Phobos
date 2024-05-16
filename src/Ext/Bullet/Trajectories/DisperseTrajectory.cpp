@@ -337,7 +337,7 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 
 		if (StraightSpeed > 256.0)
 		{
-			if	(this->LaunchSpeed >= 256.0)
+			if (this->LaunchSpeed >= 256.0)
 			{
 				this->LaunchSpeed = 256.0;
 				this->Accelerate = false;
@@ -345,7 +345,7 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 		}
 		else
 		{
-			if	(this->LaunchSpeed >= StraightSpeed)
+			if (this->LaunchSpeed >= StraightSpeed)
 			{
 				this->LaunchSpeed = StraightSpeed;
 				this->Accelerate = false;
@@ -366,11 +366,8 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 		VelocityUp = true;
 	}
 
-	if (VelocityUp)
-	{
-		if (CalculateBulletVelocity(pBullet, this->LaunchSpeed))
-			return true;
-	}
+	if (VelocityUp && CalculateBulletVelocity(pBullet, this->LaunchSpeed))
+		return true;
 
 	if (pBullet->Velocity.X == 0 && pBullet->Velocity.Y == 0 && pBullet->Velocity.Z == 0)
 		return true;
