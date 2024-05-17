@@ -130,6 +130,12 @@ public:
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 
+		Valueable<bool> CanRemoveParasites;
+		Valueable<bool> CanRemoveParasites_KickOut;
+		Valueable<int> CanRemoveParasites_KickOut_Paralysis;
+		NullableIdx<VocClass> CanRemoveParasites_ReportSound;
+		Nullable<AnimTypeClass*> CanRemoveParasites_KickOut_Anim;
+
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
@@ -243,6 +249,12 @@ public:
 			, Splashed { false }
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate {false}
+
+			, CanRemoveParasites { false }
+			, CanRemoveParasites_KickOut { false }
+			, CanRemoveParasites_KickOut_Paralysis { 15 }
+			, CanRemoveParasites_ReportSound { }
+			, CanRemoveParasites_KickOut_Anim { nullptr }
 		{ }
 
 	private:
