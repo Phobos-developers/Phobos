@@ -139,6 +139,7 @@ bool DisperseTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->TargetInAir)
 		.Process(this->FinalHeight)
 		.Process(this->LastTargetCoord)
+		.Process(this->LastReviseMult)
 		.Process(this->FirepowerMult)
 		;
 
@@ -178,6 +179,7 @@ bool DisperseTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->TargetInAir)
 		.Process(this->FinalHeight)
 		.Process(this->LastTargetCoord)
+		.Process(this->LastReviseMult)
 		.Process(this->FirepowerMult)
 		;
 
@@ -215,6 +217,7 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->InStraight = false;
 	this->Accelerate = true;
 	this->TargetInAir = false;
+	this->LastReviseMult = 0;
 
 	if (ObjectClass* pTarget = abstract_cast<ObjectClass*>(pBullet->Target))
 		this->TargetInAir = (pTarget->GetHeight() > 0);
@@ -326,7 +329,9 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 
 	if (this->UniqueCurve)
 	{
-		CurveVelocityChange(pBullet);
+		if (CurveVelocityChange(pBullet))
+			return true;
+
 		return false;
 	}
 
@@ -355,21 +360,28 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 		VelocityUp = true;
 	}
 
-	if (!this->LockDirection || !this->InStraight)
+	if (!this->LockDirection)
 	{
-		if (BulletRetargetTechno(pBullet, pOwner))
+		if (this->RetargetRadius != 0 && BulletRetargetTechno(pBullet, pOwner))
 			return true;
 
-		if (this->InStraight || pBullet->SourceCoords.DistanceFrom(pBullet->Location) >= this->PreAimCoord.Magnitude())
-			StandardVelocityChange(pBullet);
+		if (this->InStraight)
+		{
+			if (StandardVelocityChange(pBullet))
+				return true;
+		}
+		else if (pBullet->SourceCoords.DistanceFromSquared(pBullet->Location) >= this->PreAimCoord.MagnitudeSquared())
+		{
+			if (StandardVelocityChange(pBullet))
+				return true;
+
+			this->InStraight = true;
+		}
 
 		VelocityUp = true;
 	}
 
 	if (VelocityUp && CalculateBulletVelocity(pBullet, this->LaunchSpeed))
-		return true;
-
-	if (pBullet->Velocity.X == 0 && pBullet->Velocity.Y == 0 && pBullet->Velocity.Z == 0)
 		return true;
 
 	return false;
@@ -469,25 +481,14 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 	if (this->RetargetRadius < 0)
 		return true;
 
-	if (this->RetargetRadius == 0)
-	{
-		this->LockDirection = true;
-		this->SuicideAboveRange = 16 * this->LaunchSpeed;
-		return false;
-	}
-
 	CoordStruct RetargetCoords = pBullet->TargetCoords;
 
 	if (this->InStraight)
 	{
 		BulletVelocity FutureVelocity = pBullet->Velocity * (this->RetargetRadius * 256.0 / this->LaunchSpeed);
-		CoordStruct FutureCoords
-		{
-			pBullet->Location.X + static_cast<int>(FutureVelocity.X),
-			pBullet->Location.Y + static_cast<int>(FutureVelocity.Y),
-			pBullet->Location.Z + static_cast<int>(FutureVelocity.Z)
-		};
-		RetargetCoords = FutureCoords;
+		RetargetCoords.X = pBullet->Location.X + static_cast<int>(FutureVelocity.X);
+		RetargetCoords.Y = pBullet->Location.Y + static_cast<int>(FutureVelocity.Y);
+		RetargetCoords.Z = pBullet->Location.Z;
 	}
 
 	std::vector<TechnoClass*> Technos = Helpers::Alex::getCellSpreadItems(RetargetCoords, this->RetargetRadius, this->TargetInAir);
@@ -508,7 +509,7 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 	return false;
 }
 
-void DisperseTrajectory::CurveVelocityChange(BulletClass* pBullet)
+bool DisperseTrajectory::CurveVelocityChange(BulletClass* pBullet)
 {
 	ObjectClass* pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
 	CoordStruct TargetLocation = pTarget ? pTarget->GetCoords() : pBullet->TargetCoords;
@@ -568,11 +569,15 @@ void DisperseTrajectory::CurveVelocityChange(BulletClass* pBullet)
 		TargetLocation.Y += static_cast<int>(TimeMult * (TargetLocation.Y - this->LastTargetCoord.Y));
 
 		this->LastTargetCoord = pBullet->TargetCoords;
-		ChangeBulletVelocity(pBullet, TargetLocation, 24.0, true);
+
+		if (ChangeBulletVelocity(pBullet, TargetLocation, 24.0, true))
+			return true;
 	}
+
+	return false;
 }
 
-void DisperseTrajectory::StandardVelocityChange(BulletClass* pBullet)
+bool DisperseTrajectory::StandardVelocityChange(BulletClass* pBullet)
 {
 	ObjectClass* pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
 	CoordStruct TargetLocation = pTarget ? pTarget->GetCoords() : pBullet->TargetCoords;
@@ -595,10 +600,14 @@ void DisperseTrajectory::StandardVelocityChange(BulletClass* pBullet)
 
 	this->LastTargetCoord = pBullet->TargetCoords;
 	double TurningRadius = this->ROT * this->LaunchSpeed * this->LaunchSpeed / 16384;
-	ChangeBulletVelocity(pBullet, TargetLocation, TurningRadius, false);
+
+	if (ChangeBulletVelocity(pBullet, TargetLocation, TurningRadius, false))
+		return true;
+
+	return false;
 }
 
-void DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct TargetLocation, double TurningRadius, bool Curve)
+bool DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct TargetLocation, double TurningRadius, bool Curve)
 {
 	CoordStruct TargetVelocity
 	{
@@ -663,6 +672,9 @@ void DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct 
 
 			double ReviseLength = ReviseVelocity.Magnitude();
 
+			if (!Curve && ReviseMult < 0 && this->LastReviseMult > 0 && this->InStraight)
+				return true;
+
 			if (TurningRadius < ReviseLength)
 			{
 				ReviseVelocity *= TurningRadius / ReviseLength;
@@ -676,12 +688,11 @@ void DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct 
 				pBullet->Velocity.X = TargetVelocity.X;
 				pBullet->Velocity.Y = TargetVelocity.Y;
 				pBullet->Velocity.Z = TargetVelocity.Z;
-
-				if (!Curve)
-					this->InStraight = true;
 			}
 		}
 	}
+
+	this->LastReviseMult = ReviseMult;
 
 	if (Curve)
 	{
@@ -692,8 +703,10 @@ void DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct 
 			BulletSide = 192;
 
 		if (CalculateBulletVelocity(pBullet, BulletSide))
-			pBullet->Velocity *= 0;
+			return true;
 	}
+
+	return false;
 }
 
 bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass* pOwner)

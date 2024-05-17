@@ -545,6 +545,7 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass
 		return true;
 }
 
+//If the check result here is true, it only needs to be detonated in the next frame, without returning.
 void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, double StraightSpeed)
 {
 	if (StraightSpeed > 512.0)
@@ -606,6 +607,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 		this->PassDetonateTimer %= this->PassDetonateDelay;
 }
 
+//Select suitable targets
 void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner, CoordStruct Coord)
 {
 	std::vector<CellClass*> RecCellClass = GetCellsInProximityRadius(pBullet);
@@ -623,7 +625,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (ThisSize >= Capacity)
 				break;
 
-			while (pObject)
+			while (pObject && ThisSize < Capacity)
 			{
 				auto const pTechno = abstract_cast<TechnoClass*>(pObject);
 				pObject = pObject->NextObject;
@@ -675,9 +677,6 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 				ValidTechnos.push_back(pTechno);
 				ThisSize += 1;
-
-				if (ThisSize >= Capacity)
-					break;
 			}
 		}
 	}
@@ -686,6 +685,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 }
 
+//A rectangular shape with a custom width from the current frame to the next frame in length.
 std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClass* pBullet)
 {
 	std::vector<CellClass*> RecCellClass;
@@ -711,6 +711,7 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClas
 
 		std::vector<CellStruct> RecCells;
 
+		//Arrange the vertices of the rectangle in order from bottom to top.
 		if (Cor1Cell.X > Cor2Cell.X) //Left
 		{
 			if (Cor1Cell.Y >= Cor2Cell.Y) //↙ and ←
@@ -744,6 +745,7 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClas
 	return RecCellClass;
 }
 
+//Record cells in the order of "draw left boundary, draw right boundary, fill middle, and move up one level".
 std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaCell, CellStruct lMidCell, CellStruct rMidCell, CellStruct tEndCell)
 {
 	std::vector<CellStruct> RecCells;
@@ -924,7 +926,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 					}
 				}
 
-				if (rCurCell != lCurCell)
+				if (rCurCell != lCurCell) //Avoid double counting cells.
 					RecCells.push_back(rCurCell);
 			}
 
@@ -957,6 +959,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 	return RecCells;
 }
 
+//Make each target only be attacked once.
 TechnoClass* StraightTrajectory::CompareThenDetonateAt(std::vector<TechnoClass*> Technos,
 	HouseClass* pOwner, BulletClass* pBullet)
 {
@@ -1049,10 +1052,12 @@ TechnoClass* StraightTrajectory::CompareThenDetonateAt(std::vector<TechnoClass*>
 					if (this->ProximityImpact != 1 && this->StraightWarhead)
 					{
 						int Damage = this->StraightDamage;
+
 						if (this->EdgeAttenuation != 1.0 || this->ProximityAllies != 0)
 							Damage = static_cast<int>(Damage * GetExtraDamageMultiplier(pBullet, pThis, pOwner, false));
 
 						WarheadTypeExt::DetonateAt(this->StraightWarhead, pThis->GetCoords(), pBullet->Owner, Damage, pOwner);
+
 						if (this->ProximityImpact > 0)
 							this->ProximityImpact -= 1;
 					}
@@ -1129,6 +1134,7 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet, double Str
 		if (abs(CheckDifference) < 384 || !pBullet->Type->SubjectToCliffs)
 		{
 			pBullet->Velocity.Z += static_cast<double>(CheckDifference + this->ConfineAtHeight);
+
 			if (CalculateBulletVelocity(pBullet, StraightSpeed))
 				return true;
 		}

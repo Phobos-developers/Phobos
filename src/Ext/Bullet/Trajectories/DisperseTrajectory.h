@@ -96,6 +96,7 @@ public:
 		, TargetInAir { false }
 		, FinalHeight { 0 }
 		, LastTargetCoord {}
+		, LastReviseMult { 0 }
 		, FirepowerMult { 1.0 }
 	{}
 
@@ -129,6 +130,7 @@ public:
 		, TargetInAir { false }
 		, FinalHeight { 0 }
 		, LastTargetCoord {}
+		, LastReviseMult { 0 }
 		, FirepowerMult { 1.0 }
 	{}
 
@@ -171,15 +173,16 @@ public:
 	bool TargetInAir;
 	int FinalHeight;
 	CoordStruct LastTargetCoord;
+	double LastReviseMult;
 	double FirepowerMult;
 
 private:
 	bool CalculateBulletVelocity(BulletClass* pBullet, double StraightSpeed);
 	bool BulletDetonatePreCheck(BulletClass* pBullet);
 	bool BulletRetargetTechno(BulletClass* pBullet, HouseClass* pOwner);
-	void CurveVelocityChange(BulletClass* pBullet);
-	void StandardVelocityChange(BulletClass* pBullet);
-	void ChangeBulletVelocity(BulletClass* pBullet, CoordStruct TargetLocation, double TurningRadius, bool Curve);
+	bool CurveVelocityChange(BulletClass* pBullet);
+	bool StandardVelocityChange(BulletClass* pBullet);
+	bool ChangeBulletVelocity(BulletClass* pBullet, CoordStruct TargetLocation, double TurningRadius, bool Curve);
 	bool PrepareDisperseWeapon(BulletClass* pBullet, HouseClass* pOwner);
 	std::vector<TechnoClass*> GetValidTechnosInSame(std::vector<TechnoClass*> Technos, HouseClass* pOwner, WarheadTypeClass* pWH, bool Mode);
 	void CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* BulletTarget, HouseClass* pOwner);
