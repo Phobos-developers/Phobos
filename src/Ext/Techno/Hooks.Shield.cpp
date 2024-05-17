@@ -232,8 +232,9 @@ double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 				if (pShieldData->IsActive())
 				{
 					const auto pWH = EvaluateObjectTemp::PickedWeapon ? EvaluateObjectTemp::PickedWeapon->Warhead : nullptr;
+					const auto pFoot = abstract_cast<FootClass*>(pTechno);
 
-					if (!pShieldData->CanBePenetrated(pWH))
+					if (!pShieldData->CanBePenetrated(pWH) || ((pFoot && pFoot->ParasiteEatingMe)))
 						result = pExt->Shield->GetHealthRatio();
 				}
 			}
@@ -271,8 +272,9 @@ public:
 					if (pShieldData->IsActive())
 					{
 						const auto pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
+						const auto pFoot = abstract_cast<FootClass*>(pObj);
 
-						if (pWeapon && !pShieldData->CanBePenetrated(pWeapon->Warhead))
+						if (pWeapon && (!pShieldData->CanBePenetrated(pWeapon->Warhead) || (pFoot && pFoot->ParasiteEatingMe)))
 						{
 							const auto shieldRatio = pExt->Shield->GetHealthRatio();
 

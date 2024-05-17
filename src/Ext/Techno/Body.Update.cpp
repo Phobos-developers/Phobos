@@ -1,3 +1,4 @@
+// methods used in TechnoClass_AI hooks or anything similar
 #include "Body.h"
 
 #include <SpawnManagerClass.h>
@@ -9,7 +10,38 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
-// methods used in TechnoClass_AI hooks or anything similar
+
+// TechnoClass_AI_0x6F9E50
+// It's not recommended to do anything more here it could have a better place for performance consideration
+void TechnoExt::ExtData::OnEarlyUpdate()
+{
+	auto pType = this->OwnerObject()->GetTechnoType();
+
+	// Set only if unset or type is changed
+	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
+	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
+		this->UpdateTypeData(pType);
+
+	// Update tunnel state on exit, TechnoClass::AI is only called when not in tunnel.
+	if (this->IsInTunnel)
+	{
+		this->IsInTunnel = false;
+
+		if (const auto pShieldData = this->Shield.get())
+			pShieldData->SetAnimationVisibility(true);
+	}
+
+	if (this->CheckDeathConditions())
+		return;
+
+	this->ApplyInterceptor();
+	this->EatPassengers();
+	this->UpdateShield();
+	this->ApplySpawnLimitRange();
+	this->UpdateLaserTrails();
+	this->DepletedAmmoActions();
+}
+
 
 void TechnoExt::ExtData::ApplyInterceptor()
 {
@@ -70,16 +102,11 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
-	auto const pThis = this->OwnerObject();
-	auto const pType = pThis->GetTechnoType();
-	if ((pThis->WhatAmI() != AbstractType::Unit) || (pType->Ammo <= 0))
+	auto const pThis = specific_cast<UnitClass*>(this->OwnerObject());
+	if (!pThis || (pThis->Type->Ammo <= 0) ||!pThis->Type->IsSimpleDeployer)
 		return;
 
 	auto const pTypeExt = this->TypeExtData;
-	auto const pUnit = abstract_cast<UnitClass*>(pThis);
-
-	if (!pUnit->Type->IsSimpleDeployer)
-		return;
 
 	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
 	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
@@ -381,15 +408,16 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 	}
 }
 
-void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
+void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 {
 	auto const pThis = this->OwnerObject();
-	auto const oldType = this->TypeExtData;
+	auto const pOldTypeExt = this->TypeExtData;
+	auto const pOldType = this->TypeExtData->OwnerObject();
 
 	if (this->LaserTrails.size())
 		this->LaserTrails.clear();
 
-	this->TypeExtData = TechnoTypeExt::ExtMap.Find(currentType);
+	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
 
 	// Recreate Laser Trails
 	for (auto const& entry : this->TypeExtData->LaserTrailData)
@@ -410,31 +438,66 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* currentType)
 		this->PassengerDeletionTimer.Stop();
 
 	// Remove from tracked AutoDeath objects if no longer has AutoDeath
-	if (oldType->AutoDeath_Behavior.isset() && !this->TypeExtData->AutoDeath_Behavior.isset())
+	if (pOldTypeExt->AutoDeath_Behavior.isset() && !this->TypeExtData->AutoDeath_Behavior.isset())
 	{
 		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedAutoDeathObjects;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	auto const rtti = oldType->OwnerObject()->WhatAmI();
+	auto const rtti = pOldType->WhatAmI();
 
 	// Remove from limbo reloaders if no longer applicable
 	if (rtti != AbstractType::AircraftType && rtti != AbstractType::BuildingType
-		&& oldType->OwnerObject()->Ammo > 0 && oldType->ReloadInTransport && !this->TypeExtData->ReloadInTransport)
+		&& pOldType->Ammo > 0 && pOldTypeExt->ReloadInTransport && !this->TypeExtData->ReloadInTransport)
 	{
 		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedTransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
+
+	// Update open topped state of potential passengers if transport's OpenTopped value changes.
+	bool toOpenTopped = pCurrentType->OpenTopped && !pOldType->OpenTopped;
+
+	if ((toOpenTopped || (!pCurrentType->OpenTopped && pOldType->OpenTopped)) && pThis->Passengers.NumPassengers > 0)
+	{
+		auto pPassenger = pThis->Passengers.FirstPassenger;
+
+		while (pPassenger)
+		{
+			if (toOpenTopped)
+			{
+				pThis->EnteredOpenTopped(pPassenger);
+			}
+			else
+			{
+				pThis->ExitedOpenTopped(pPassenger);
+
+				// Lose target & destination
+				pPassenger->Guard();
+
+				// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
+				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
+				MapClass::Logics->RemoveObject(pPassenger);
+			}
+
+			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+		}
 	}
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
 {
-	auto const pThis = this->OwnerObject();
+	auto const pThis = generic_cast<FootClass*>(this->OwnerObject());
+	if (!pThis)
+		return;
 
-	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
-	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
+	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI
 	for (auto& trail : this->LaserTrails)
 	{
+		// @Kerbiter if you want to limit it to certain locos you do it here
+		// with vtable check you can avoid the tedious process of Query IPersit/IUnknown Interface, GetClassID, compare with loco GUID, which is omnipresent in vanilla code
+		if (VTable::Get(pThis->Locomotor.GetInterfacePtr()) != 0x7E8278 && trail.Type->DroppodOnly)
+			continue;
+
 		if (pThis->CloakState == CloakState::Cloaked && !trail.Type->CloakVisible)
 			continue;
 
@@ -584,6 +647,13 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 {
 	if (isInLimbo)
 	{
+		// Remove parasite units first before deleting them.
+		if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+		{
+			if (pFoot->ParasiteImUsing && pFoot->ParasiteImUsing->Victim)
+				pFoot->ParasiteImUsing->ExitUnit();
+		}
+
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
 		return;

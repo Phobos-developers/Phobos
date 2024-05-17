@@ -106,7 +106,7 @@ CustomGSN.DefaultDelay=N    ; integer between 0 and 6
 ; where N = 0, 1, 2, 3, 4, 5, 6
 ```
 
-In `ra2md.ini`:
+In `RA2MD.ini`:
 ```ini
 [Phobos]
 CampaignDefaultGameSpeed=4  ; integer

@@ -47,10 +47,17 @@ public:
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 
+		Nullable<WarheadTypeClass*> VeinholeWarhead;
+
 		PhobosFixedString<32u> MissingCameo;
+
 		TranslucencyLevel PlacementGrid_Translucency;
+		Nullable<TranslucencyLevel> PlacementGrid_TranslucencyWithPreview;
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
+
+		Nullable<double> Shield_ConditionYellow;
+		Nullable<double> Shield_ConditionRed;
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
@@ -66,7 +73,14 @@ public:
 		Valueable<Point2D> Pips_Ammo_Size;
 		Valueable<Point2D> Pips_Ammo_Buildings_Size;
 		ValueableVector<int> Pips_Tiberiums_Frames;
-		NullableVector<int> Pips_Tiberiums_DisplayOrder;
+		Valueable<int> Pips_Tiberiums_EmptyFrame;
+		ValueableVector<int> Pips_Tiberiums_DisplayOrder;
+		Valueable<int> Pips_Tiberiums_WeedFrame;
+		Valueable<int> Pips_Tiberiums_WeedEmptyFrame;
+
+		Valueable<bool> HeightShadowScaling;
+		Valueable<double> HeightShadowScaling_MinScale;
+		double AirShadowBaseScale_log;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -89,6 +103,8 @@ public:
 		Valueable<float> ToolTip_Background_BlurSize;
 
 		Valueable<bool> CrateOnlyOnLand;
+		Valueable<int> UnitCrateVehicleCap;
+		Valueable<int> FreeMCV_CreditsThreshold;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
 		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
@@ -97,6 +113,7 @@ public:
 		Valueable<bool> DrawPowerOffline;
 		Valueable<Point2D> DrawPowerOffline_Offset;
 		Nullable<SHPStruct*> DrawPowerOffline_Shape;
+		Nullable<*> DrawPowerOffline_Palette;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
@@ -105,6 +122,9 @@ public:
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
+		Valueable<int> SelectionFlashDuration;
+		AnimTypeClass* DropPodTrailer;
+		SHPStruct* PodImage;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -122,10 +142,16 @@ public:
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
+			, VeinholeWarhead {}
 			, MissingCameo { GameStrings::XXICON_SHP() }
+
 			, PlacementGrid_Translucency { 0 }
+			, PlacementGrid_TranslucencyWithPreview { }
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
+
+			, Shield_ConditionYellow { }
+			, Shield_ConditionRed { }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }
@@ -140,7 +166,15 @@ public:
 			, Pips_Ammo_Size { { 4, 0 } }
 			, Pips_Ammo_Buildings_Size { { 4, 2 } }
 			, Pips_Tiberiums_Frames {}
+			, Pips_Tiberiums_EmptyFrame { 0 }
 			, Pips_Tiberiums_DisplayOrder {}
+			, Pips_Tiberiums_WeedFrame { 1 }
+			, Pips_Tiberiums_WeedEmptyFrame { 0 }
+
+			, HeightShadowScaling { false }
+			, HeightShadowScaling_MinScale { 0.0 }
+			, AirShadowBaseScale_log { 0.693376137 }
+
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
@@ -158,12 +192,16 @@ public:
 			, DisplayIncome_AllowAI { true }
 			, DisplayIncome_Houses { AffectedHouse::All }
 			, CrateOnlyOnLand { false }
+			, UnitCrateVehicleCap { 50 }
+			, FreeMCV_CreditsThreshold { 1500 }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
+			, SelectionFlashDuration { 0 }
 			, DrawPowerOffline { false }
 			, DrawPowerOffline_Offset { { 0, 0 } }
 			, DrawPowerOffline_Shape { }
+			, DrawPowerOffline_Palette { }
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
@@ -171,6 +209,8 @@ public:
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
 			, ShowDesignatorRange { true }
+			, DropPodTrailer { }
+			, PodImage { }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -125,3 +125,6 @@ public:
 
 	PhobosFixedString<32> Name;
 };
+
+template <typename T>
+Enumerable<T>::container_t Enumerable<T>::Array;

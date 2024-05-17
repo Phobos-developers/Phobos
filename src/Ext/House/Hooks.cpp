@@ -61,11 +61,6 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 	REF_STACK(float, amount, 0x1C);
 
 	auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-	if (!pTypeExt)
-		return 0;
-
-	if (!pBuilding->Owner)
-		return 0;
 
 	auto storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
 
@@ -225,6 +220,17 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		auto& vec = pOwnerExt->OwnedTransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
 		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+	}
+
+	if (auto pMe = generic_cast<FootClass*>(pThis))
+	{
+		bool I_am_human = pThis->Owner->IsControlledByHuman();
+		bool You_are_human = pNewOwner->IsControlledByHuman();
+		auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
+			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_ComputerToHuman.Get() : nullptr;
+
+		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
+			TechnoExt::ConvertToType(pMe, pConvertTo);
 	}
 
 	return 0;

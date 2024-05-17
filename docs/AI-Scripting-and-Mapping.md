@@ -9,23 +9,102 @@ This page describes all AI scripting and mapping related additions and changes i
 - Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
-- In **singleplayer campaigns**:
-  - You can now decide whether AI can repair the base nodes/buildings delivered by SW (Ares) by setting
+- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally. `InitialPayload` logic from Ares is not supported yet.
+- If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
+
+## Singleplayer Misssion Maps
+
+### Base node repairing
+
+- In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW (Ares) by setting `RepairBaseNodes`.
+
+In map file:
 ```ini
 [Country House]
-RepairBaseNodes=no,no,no ; 3 booleans indicating whether AI repair basenodes in Easy/ Normal/ Difficult game diffculty.
+RepairBaseNodes=false,false,false  ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
 ```
 
-  - You can now decide whether MCV can redeploy by setting
+### Default loading screen and briefing offsets
+
+- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
+  - Note that despite the key name being `DefaultLS800BkgdPal`, this applies to both shapes just like the original scenario-specific `LS800BkgdPal` does.
+
+- In `missionmd.ini`:
+```ini
+[Defaults]
+DefaultLS640BriefLocX=0  ; integer
+DefaultLS640BriefLocY=0  ; integer
+DefaultLS800BriefLocX=0  ; integer
+DefaultLS800BriefLocY=0  ; integer
+DefaultLS640BkgdName=    ; filename - including the .shp extension.
+DefaultLS800BkgdName=    ; filename - including the .shp extension.
+DefaultLS800BkgdPal=     ; filename - including the .pal extension
+```
+
+### MCV redeploying
+
+- You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `MCVRedeploys`. Overrides `[MultiplayerDialogSettings]`->`MCVRedeploys` only in singleplayer campaign missions.
+
+In map file:
 ```ini
 [Basic]
-MCVRedeploys=no  ; boolean, Overrides [MultiplayerDialogSettings]->MCVRedeploys only in campaigns
+MCVRedeploys=false  ; boolean
 ```
-  - **Note that these tags only work within the map file**
 
-- Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally.
-  - `InitialPayload` logic from Ares is not supported yet.
-- If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
+### Set par times and related string labels in missionmd.ini
+
+- By default the singleplayer mission par times and message strings are defined in `[Ranking]` section of the map file itself. These can now also be set in the map file's section in `missionmd.ini`, taking precedence over the map file's settings but defaulting to them if not set.
+
+In `missionmd.ini`:
+```ini
+[SOMEMISSION]             ; Filename of mission map
+Ranking.ParTimeEasy=      ; time string (hh:mm:ss)
+Ranking.ParTimeMedium=    ; time string (hh:mm:ss)
+Ranking.ParTimeHard=      ; time string (hh:mm:ss)
+Ranking.UnderParTitle=    ; CSF entry key
+Ranking.UnderParMessage=  ; CSF entry key
+Ranking.OverParTitle=     ; CSF entry key
+Ranking.OverParMessage=   ; CSF entry key
+```
+
+### Show briefing dialog on startup
+
+- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available). This can be disabled by user by setting `ShowBriefing` to false in `Ra2MD.ini`. 
+  - `BriefingTheme` (In order of precedence from highest to lowest: `missionmd.ini`, map file, side entry in `rulesmd.ini`) can be used to define a custom theme to play on this briefing screen. If not set, the loading screen theme will keep playing until the scenario starts properly.
+  - String labels for the startup briefing dialog screen's resume button as well as the button's status bar text can be customized by setting `ShowBriefingResumeButtonLabel` and `ShowBriefingResumeButtonStatusLabel` respectively. They default to the same labels used by the briefing screen dialog when opened otherwise.
+
+In `missionmd.ini`:
+```ini
+[SOMEMISSION]   ; Filename of mission map
+ShowBriefing=   ; boolean
+BriefingTheme=  ; Theme name
+```
+
+In map file:
+```ini
+[Basic]
+ShowBriefing=false  ; boolean
+BriefingTheme=      ; Theme name
+```
+
+In `rulesmd.ini`
+```ini
+[SOMESIDE]      ; Side
+BriefingTheme=  ; Theme name
+```
+
+In `uimd.ini`
+```ini
+[UISettings]
+ShowBriefingResumeButtonLabel=GUI:Resume                      ; CSF entry key
+ShowBriefingResumeButtonStatusLabel=STT:BriefingButtonReturn  ; CSF entry key
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowBriefing=true  ; boolean
+```
 
 ## Script Actions
 

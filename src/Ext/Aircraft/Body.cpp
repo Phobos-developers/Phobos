@@ -1,4 +1,8 @@
 #include "Body.h"
+
+#include <BuildingClass.h>
+
+#include <Ext/BuildingType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -50,3 +54,45 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct ed
 
 	return result;
 }
+
+DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
+{
+	auto const poseDir = static_cast<DirType>(RulesClass::Instance->PoseDir);
+
+	if (!pThis)
+		return poseDir;
+
+	// If this is a spawnee, use the spawner's facing.
+	if (auto pOwner = pThis->SpawnOwner)
+		return pOwner->PrimaryFacing.Current().GetDir();
+
+	if (pDock || pThis->HasAnyLink())
+	{
+		auto pLink = pThis->GetNthLink(0);
+
+		if (auto pBuilding = pDock ? pDock : abstract_cast<BuildingClass*>(pLink))
+		{
+			auto const pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+			int docks = pBuilding->Type->NumberOfDocks;
+			int linkIndex = pBuilding->FindLinkIndex(pThis);
+
+			if (docks > 0 && linkIndex >= 0 && linkIndex < docks)
+			{
+				if (!pBuildingTypeExt->AircraftDockingDirs[linkIndex].empty())
+					return pBuildingTypeExt->AircraftDockingDirs[linkIndex].get();
+			}
+			else if (docks > 0 && !pBuildingTypeExt->AircraftDockingDirs[0].empty())
+				return pBuildingTypeExt->AircraftDockingDirs[0].get();
+		}
+		else if (!pThis->Type->AirportBound)
+			return pLink->PrimaryFacing.Current().GetDir();
+	}
+
+	int landingDir = TechnoTypeExt::ExtMap.Find(pThis->Type)->LandingDir.Get((int)poseDir);
+
+	if (!pThis->Type->AirportBound && landingDir < 0)
+		return pThis->PrimaryFacing.Current().GetDir();
+
+	return static_cast<DirType>(Math::clamp(landingDir, 0, 255));
+}
+

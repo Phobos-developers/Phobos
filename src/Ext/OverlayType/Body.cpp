@@ -15,7 +15,6 @@ void OverlayTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->PaletteFile)
-		.Process(this->Palette)
 		;
 }
 
@@ -35,6 +34,11 @@ void OverlayTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->PaletteFile.Read(pArtINI, pArtSection, "Palette");
 
+	BuildPalette();
+}
+
+void OverlayTypeExt::ExtData::BuildPalette()
+{
 	if (GeneralUtils::IsValidString(this->PaletteFile))
 	{
 		char pFilename[0x20];
@@ -48,6 +52,7 @@ void OverlayTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<OverlayTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+	this->BuildPalette();
 }
 
 void OverlayTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
@@ -87,7 +92,7 @@ DEFINE_HOOK(0x5FE3A2, OverlayTypeClass_CTOR, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x5FE3F6, OverlayTypeClass_DTOR, 0x6)
+DEFINE_HOOK(0x5FEF61, OverlayTypeClass_SDDTOR, 0x5)
 {
 	GET(OverlayTypeClass*, pItem, ESI);
 

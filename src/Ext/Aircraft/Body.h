@@ -8,5 +8,6 @@ class AircraftExt
 public:
 	static void FireBurst(AircraftClass* pThis, AbstractClass* pTarget, int shotNumber);
 	static bool PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct edgeCell);
+	static DirType GetLandingDir(AircraftClass* pThis, BuildingClass* pDock = nullptr);
 };
 

@@ -5,6 +5,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Misc/FlyingStrings.h>
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
@@ -25,7 +26,12 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 		if (versus != 0.0)
 		{
 			canAffect = true;
-			this->CurrentStrength -= static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+
+			int damage = static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+			this->CurrentStrength -= damage;
+
+			if (Phobos::DisplayDamageNumbers && damage != 0)
+				GeneralUtils::DisplayDamageNumberString(damage, DamageDisplayType::Intercept, this->OwnerObject()->GetRenderCoords(), this->DamageNumberOffset);
 
 			if (this->CurrentStrength <= 0)
 				isIntercepted = true;
@@ -87,7 +93,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	auto const pThis = this->OwnerObject();
 
 	auto const pWeapon = pThis->GetWeaponType();
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	auto const pRadType = pWeaponExt->RadType;
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 
@@ -166,6 +172,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnInterception)
 		.Process(this->LaserTrails)
 		.Process(this->SnappedToTarget)
+		.Process(this->DamageNumberOffset)
 		;
 
 	this->Trajectory = PhobosTrajectory::ProcessFromStream(Stm, this->Trajectory);
@@ -197,7 +204,7 @@ DEFINE_HOOK(0x4664BA, BulletClass_CTOR, 0x5)
 {
 	GET(BulletClass*, pItem, ESI);
 
-	BulletExt::ExtMap.FindOrAllocate(pItem);
+	BulletExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

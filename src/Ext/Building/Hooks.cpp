@@ -24,8 +24,7 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
 	*/
 
-	if (RulesExt::Global()->DisplayIncome_AllowAI || pThis->Owner->IsControlledByHuman())
-		pExt->DisplayIncomeString();
+	pExt->DisplayIncomeString();
 	pExt->ApplyPoweredKillSpawns();
 
 	return 0;
@@ -54,10 +53,9 @@ DEFINE_HOOK(0x4403D4, BuildingClass_AI_ChronoSparkle, 0x6)
 				if (!((Unsorted::CurrentFrame + i) % RulesExt::Global()->ChronoSparkleDisplayDelay))
 				{
 					auto muzzleOffset = pType->MaxNumberOccupants <= 10 ? pType->MuzzleFlash[i] : BuildingTypeExt::ExtMap.Find(pType)->OccupierMuzzleFlashes.at(i);
-					auto offset = Point2D::Empty;
 					auto coords = CoordStruct::Empty;
 					auto const renderCoords = pThis->GetRenderCoords();
-					offset = *TacticalClass::Instance->ApplyMatrix_Pixel(&offset, &muzzleOffset);
+					auto offset = TacticalClass::Instance->ApplyMatrix_Pixel(muzzleOffset);
 					coords.X += offset.X;
 					coords.Y += offset.Y;
 					coords += renderCoords;
@@ -110,7 +108,7 @@ DEFINE_HOOK(0x449ADA, BuildingClass_MissionConstruction_DeployToFireFix, 0x0)
 	return 0x449AE8;
 }
 
-DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
+DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
 
@@ -118,13 +116,7 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 	if (pRulesExt->AllowParallelAIQueues && !pRulesExt->ForbidParallelAIQueues_Aircraft)
 		return 0;
 
-	if (!pBuilding)
-		return 0;
-
 	HouseClass* pOwner = pBuilding->Owner;
-
-	if (!pOwner)
-		return 0;
 
 	if (pOwner->Type->MultiplayPassive
 		|| pOwner->IsCurrentPlayer()
@@ -199,11 +191,7 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 			break;
 		}
 
-		if (!currFactory)
-		{
-			Game::RaiseError(E_POINTER);
-		}
-		else if (!*currFactory)
+		if (!*currFactory)
 		{
 			*currFactory = pThis;
 			return 0;

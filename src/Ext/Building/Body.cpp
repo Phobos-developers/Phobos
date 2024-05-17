@@ -10,14 +10,17 @@ void BuildingExt::ExtData::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
-		FlyingStrings::AddMoneyString(
-			this->AccumulatedIncome,
-			this->OwnerObject()->Owner,
-			this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-			this->OwnerObject()->GetRenderCoords(),
-			this->TypeExtData->DisplayIncome_Offset
-		);
-
+		if ((RulesExt::Global()->DisplayIncome_AllowAI || this->OwnerObject()->Owner->IsControlledByHuman())
+			&& this->TypeExtData->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
+		{
+			FlyingStrings::AddMoneyString(
+				this->AccumulatedIncome,
+				this->OwnerObject()->Owner,
+				this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
+				this->OwnerObject()->GetRenderCoords(),
+				this->TypeExtData->DisplayIncome_Offset
+			);
+		}
 		this->AccumulatedIncome = 0;
 	}
 }
@@ -191,9 +194,6 @@ int BuildingExt::CountOccupiedDocks(BuildingClass* pBuilding)
 
 bool BuildingExt::HasFreeDocks(BuildingClass* pBuilding)
 {
-	if (!pBuilding)
-		return false;
-
 	if (pBuilding->Type->Factory == AbstractType::AircraftType)
 	{
 		int nDocks = pBuilding->Type->NumberOfDocks;
@@ -244,14 +244,16 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 	{
 		auto const pTypeExt = pExt->TypeExtData;
 
-		if (pTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
-			pExt->AccumulatedIncome += refund;
+		pExt->AccumulatedIncome += refund;
+		pExt->GrindingWeapon_AccumulatedCredits += refund;
 
-		if (pTypeExt->Grinding_Weapon.isset()
-			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
+		if (pTypeExt->Grinding_Weapon.isset() &&
+			Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF &&
+			pExt->GrindingWeapon_AccumulatedCredits >= pTypeExt->Grinding_Weapon_RequiredCredits)
 		{
 			TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon.Get());
 			pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;
+			pExt->GrindingWeapon_AccumulatedCredits = 0;
 		}
 
 		if (pTypeExt->Grinding_Sound.isset())
@@ -339,9 +341,9 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
+		.Process(this->GrindingWeapon_AccumulatedCredits)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedIncome)
-		.Process(this->OwnerObject()->LightSource)
 		.Process(this->CurrentLaserWeaponIndex)
 		;
 }
@@ -413,6 +415,15 @@ DEFINE_HOOK(0x453E20, BuildingClass_SaveLoad_Prefix, 0x5)
 	BuildingExt::ExtMap.PrepareStream(pItem, pStm);
 
 	return 0;
+}
+
+DEFINE_HOOK(0x454174, BuildingClass_Load_LightSource, 0xA)
+{
+	GET(BuildingClass*, pThis, EDI);
+
+	SwizzleManagerClass::Instance->Swizzle((void**)&pThis->LightSource);
+
+	return 0x45417E;
 }
 
 DEFINE_HOOK(0x45417E, BuildingClass_Load_Suffix, 0x5)

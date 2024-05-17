@@ -99,6 +99,8 @@ LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
+Shield.ConditionYellow=                     ; floating point value, percents or absolute
+Shield.ConditionRed=                        ; floating point value, percents or absolute
 Pips.Shield=-1,-1,-1                        ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Shield.Building=-1,-1,-1               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Shield.Background=PIPBRD.SHP           ; filename - including the .shp/.pcx extension
@@ -110,16 +112,18 @@ Pips.Shield.Building.Empty=0                ; integer, frame of pips.shp (zero-b
 [SOMESHIELDTYPE]                            ; ShieldType name
 Strength=0                                  ; integer
 InitialStrength=0                           ; integer
+ConditionYellow=                            ; floating point value, percents or absolute
+ConditionRed=                               ; floating point value, percents or absolute
 Armor=none                                  ; ArmorType
 InheritArmorFromTechno=false                ; boolean
 Powered=false                               ; boolean
 AbsorbOverDamage=false                      ; boolean
-SelfHealing=0.0                             ; double, percents or absolute
-SelfHealing.Rate=0.0                        ; double, ingame minutes
+SelfHealing=0.0                             ; floating point value, percents or absolute
+SelfHealing.Rate=0.0                        ; floating point value, ingame minutes
 SelfHealing.RestartInCombat=true            ; boolean
 SelfHealing.RestartInCombatDelay=0          ; integer, game frames
-Respawn=0.0                                 ; double, percents or absolute
-Respawn.Rate=0.0                            ; double, ingame minutes
+Respawn=0.0                                 ; floating point value, percents or absolute
+Respawn.Rate=0.0                            ; floating point value, ingame minutes
 BracketDelta=0                              ; integer - pixels
 Pips=-1,-1,-1                               ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Building=-1,-1,-1                      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
@@ -186,6 +190,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for targeting and damage calculation purposes.
     - `InheritArmorFromTechno` can be set to true to override this so that `[TechnoType]->Armor` is used even if shield is active and `[ShieldType]->Armor` is ignored.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
+  - `ConditionYellow` and `ConditionRed` can be used to set the thresholds for shield damage states, defaulting to `[AudioVisual]` -> `Shield.ConditionYellow` & `Shield.ConditionRed` respectively which in turn default to just `ConditionYellow` & `ConditionRed`.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
   - This also works with Ares' `Convert.*`.
 - `Powered` controls whether or not the shield is active when a unit is running low on power or it is affected by EMP.
@@ -261,7 +266,7 @@ CreateUnit=                            ; VehicleType
 CreateUnit.Owner=Victim                ; Owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
 CreateUnit.RemapAnim=false             ; boolean
 CreateUnit.Mission=Guard               ; MissionType
-CreateUnit.Facing=0                    ; integer, facings in range of 0-255
+CreateUnit.Facing=0                    ; Direction type (integers from 0-255)
 CreateUnit.RandomFacing=true           ; boolean
 CreateUnit.InheritFacings=false        ; boolean
 CreateUnit.InheritTurretFacings=false  ; boolean
@@ -283,6 +288,16 @@ In `artmd.ini`:
 ```ini
 [SOMEANIM]       ; AnimationType
 AttachedSystem=  ; ParticleSystem
+```
+
+### Play sound as a detached sound event
+
+- It is now possible for animation to play a sound that is not attached to an audio event handler by using `DetachedReport`. By default animation `Report/StartSound` is played by an audio event handler, which allows the sound to loop and play at correct location even if it changes after its initial creation. This can also cause issues with animations that chain different types through `Next`, as the audio event handler resets when the animation restarts.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]       ; AnimationType
+DetachedReport=  ; sound entry
 ```
 
 ## Buildings
@@ -469,7 +484,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
 ### Projectile trajectories
 
 - Projectiles can now have customizable trajectories.
-  - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT` or `Inviso`).
+  - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT`, `Vertical` or `Inviso`). Attempt to do so will result in the other logics being disabled and a warning being written to log file.
   - Initial speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
 
   In `rulesmd.ini`:
@@ -508,18 +523,21 @@ Trajectory=Bombard             ; Trajectory type
 Trajectory.Bombard.Height=0.0  ; double
 ```
 
-### Shrapnel enhancement
+### Shrapnel enhancements
 
 ![image](_static/images/shrapnel.gif)
 *Shrapnel appearing against ground & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
 
-- Shrapnel behavior can be triggered on the ground and buildings.
-
+- `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
+- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) will be checked.
+  - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
+  
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]                 ; Projectile
-Shrapnel.AffectsGround=false     ; boolean
-Shrapnel.AffectsBuildings=false  ; boolean
+[SOMEPROJECTILE]                   ; Projectile
+Shrapnel.AffectsGround=false       ; boolean
+Shrapnel.AffectsBuildings=false    ; boolean
+Shrapnel.UseWeaponTargeting=false  ; boolean
 ```
 
 ### Projectiles blocked by land or water
@@ -534,6 +552,20 @@ SubjectToLand=                ; boolean
 SubjectToLand.Detonate=true   ; boolean
 SubjectToWater=               ; boolean
 SubjectToWater.Detonate=true  ; boolean
+```
+
+### Return weapon
+
+- It is now possible to make another weapon & projectile go off from a detonated projectile (in somewhat similar manner to `AirburstWeapon` or `ShrapnelWeapon`) straight back to the firer by setting `ReturnWeapon`. If the firer perishes before the initial projectile detonates, `ReturnWeapon` is not fired off.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]  ; Projectile
+ReturnWeapon=     ; WeaponType
+```
+
+```{note}
+This currently has same limitations as `AirburstWeapon` in that it does not properly support `Arcing=true` projectiles.
 ```
 
 ## Super Weapons
@@ -643,7 +675,7 @@ SW.Next.RandomWeightsN=         ; List of integers.
 In `rulesmd.ini`:
 ```ini
 [SOMESW]                ; Super Weapon
-Detonate.Warhead=       ; Warhead
+Detonate.Warhead=       ; WarheadType
 Detonate.Weapon=        ; WeaponType
 Detonate.Damage=        ; integer
 Detonate.AtFirer=false  ; boolean
@@ -793,7 +825,7 @@ ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary
 
 ### Make units try turning to target when firing with `OmniFire=yes`
 - The unit will try to turn the body to target even firing with `OmniFire=yes`
-  - Recommended for jumpjets if you want it to turn to target when firing.
+  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`
 
 In `rulesmd.ini`:
 ```ini
@@ -966,6 +998,16 @@ IsVoiceCreatedGlobal=false   ; boolean
 VoiceCreated=                ; sound entry
 ```
 
+### Convert TechnoType on owner house change
+- You can now change a unit's type when changing ownership from human to computer or from computer to human.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]
+Convert.HumanToComputer =   ; TechnoType
+Convert.ComputerToHuman =   ; TechnoType 
+```
+
 ## Terrain
 
 ### Destroy animation & sound
@@ -1005,7 +1047,7 @@ RemoveMindControl=false  ; boolean
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
   - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
   - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
-  - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against.
+  - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
   - `Crit.AffectBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
@@ -1020,7 +1062,7 @@ Crit.Chance=0.0                     ; floating point value, percents or absolute
 Crit.ApplyChancePerTarget=false     ; boolean
 Crit.ExtraDamage=0                  ; integer
 Crit.Warhead=                       ; Warhead
-Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
 Crit.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                      ; list of animations
@@ -1072,6 +1114,7 @@ Convert.From=                   ; list of TechnoTypes
 Convert.To=                     ; TechnoType
 Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
+
 
 ### Custom 'SplashList' on Warheads
 
@@ -1193,6 +1236,20 @@ In `rulesmd.ini`:
 BigGap=false   ; boolean
 ```
 
+### Spawn powerup crate
+
+- Warheads can now spawn powerup crates of specified type(s) on their impact cells (if free, or nearby cells if occupied something other than a crate) akin to map trigger action 108 ('Create Crate').
+  - `SpawnsCrateN` where N is a number starting from 0, parsed until no key is found can be used to define the type of crate spawned.
+  - `SpawnsCrateN.Weight` is a number that determines relative weighting of spawning corresponding crate type vs. other listed ones (0 is no chance, higher means higher probability) defaulting to 1 if not defined.
+  - `SpawnsCrate.Type/Weight` is an alias for `SpawnsCrate0.Type/Weight` if latter is not set.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; Warhead
+SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
+SpawnsCrate(N).Weight=1  ; integer
+```
+
 ### Trigger specific NotHuman infantry Death anim sequence
 - Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
 
@@ -1236,13 +1293,15 @@ Burst.FireWithinSequence=false  ; boolean
 ### Extra warhead detonations
 
 - It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
-  - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found. If not, weapon `Damage` is used.
+  - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, WeaponType `Damage` is used.
+  - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                    ; WeaponType
-ExtraWarheads=                  ; list of WarheadTypes
-ExtraWarheads.DamageOverrides=  ; list of integers
+[SOMEWEAPON]                      ; WeaponType
+ExtraWarheads=                    ; list of WarheadTypes
+ExtraWarheads.DamageOverrides=    ; list of integers
+ExtraWarheads.DetonationChances=  ; list of floating-point values (percentage or absolute)
 ```
 
 ### Feedback weapon

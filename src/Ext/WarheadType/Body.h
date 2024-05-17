@@ -6,7 +6,7 @@
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <Ext/Bullet/Body.h>
-#include <Misc/TypeConvertHelper.h>
+#include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class WarheadTypeExt
 {
@@ -78,6 +78,9 @@ public:
 		Valueable<int> Shield_SelfHealing_RestartInCombatDelay;
 		Valueable<bool> Shield_SelfHealing_RestartTimer;
 
+		std::vector<Powerup> SpawnsCrate_Types;
+		std::vector<int> SpawnsCrate_Weights;
+
 		ValueableVector<ShieldTypeClass*> Shield_AttachTypes;
 		ValueableVector<ShieldTypeClass*> Shield_RemoveTypes;
 		Valueable<bool> Shield_ReplaceOnly;
@@ -114,7 +117,6 @@ public:
 
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
-
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -203,6 +205,9 @@ public:
 			, Shield_Break_Types {}
 			, Shield_Respawn_Types {}
 			, Shield_SelfHealing_Types {}
+
+			, SpawnsCrate_Types {}
+			, SpawnsCrate_Weights {}
 
 			, NotHuman_DeathSequence { -1 }
 			, LaunchSW {}

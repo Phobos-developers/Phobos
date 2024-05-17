@@ -97,6 +97,39 @@ HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 		return  pTechnoOwner ? pTechnoOwner : pDefaultOwner;
 }
 
+void AnimExt::VeinAttackAI(AnimClass* pAnim)
+{
+	CellStruct pCoordinates = pAnim->GetMapCoords();
+	CellClass* pCell = MapClass::Instance->GetCellAt(pCoordinates);
+	ObjectClass* pOccupier = pCell->FirstObject;
+	constexpr unsigned char fullyFlownWeedStart = 0x30; // Weeds starting from this overlay frame are fully grown
+	constexpr unsigned int weedOverlayIndex = 126;
+
+	if (!pOccupier || pOccupier->GetHeight() > 0 || pCell->OverlayTypeIndex != weedOverlayIndex
+		|| pCell->OverlayData < fullyFlownWeedStart || pCell->SlopeIndex)
+	{
+		pAnim->UnableToContinue = true;
+	}
+
+	if (Unsorted::CurrentFrame % 2 == 0)
+	{
+		while (pOccupier != nullptr)
+		{
+			ObjectClass* pNext = pOccupier->NextObject;
+			int damage = RulesClass::Instance->VeinDamage;
+			TechnoClass* pTechno = abstract_cast<TechnoClass*>(pOccupier);
+
+			if (pTechno && !pTechno->GetTechnoType()->ImmuneToVeins && !pTechno->HasAbility(Ability::VeinProof)
+				&& pTechno->Health > 0 && pTechno->IsAlive && pTechno->GetHeight() <= 5)
+			{
+				pTechno->ReceiveDamage(&damage, 0, RulesExt::Global()->VeinholeWarhead, nullptr, false, false, nullptr);
+			}
+
+			pOccupier = pNext;
+		}
+	}
+}
+
 void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
 	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom)
 {
@@ -132,7 +165,7 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 		if (pWakeAnim)
 			pWakeAnimToUse = pWakeAnim;
 
-		if (splashAnims.size() > 0)
+		if (!splashAnims.empty())
 		{
 			auto nIndexR = (splashAnims.size() - 1);
 			auto nIndex = splashAnimsPickRandom ?
@@ -186,7 +219,9 @@ void AnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 
 void AnimExt::ExtData::InitializeConstants()
 {
-	CreateAttachedSystem();
+	// Something about creating this in constructor messes with debris anims, so it has to be done for them later.
+	if (!this->OwnerObject()->HasExtras)
+		CreateAttachedSystem();
 }
 
 // =============================
@@ -219,21 +254,24 @@ DEFINE_HOOK_AGAIN(0x422126, AnimClass_CTOR, 0x5)
 DEFINE_HOOK_AGAIN(0x422707, AnimClass_CTOR, 0x5)
 DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
-	GET(AnimClass*, pItem, ESI);
-
-	auto const callerAddress = CTORTemp::callerAddress;
-
-	// Do this here instead of using a duplicate hook in SyncLogger.cpp
-	if (!SyncLogger::HooksDisabled && pItem->UniqueID != -2)
-		SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, callerAddress);
-
-	if (pItem && !pItem->Type)
+	if (!Phobos::IsLoadingSaveGame)
 	{
-		Debug::Log("Attempting to create animation with null Type (Caller: %08x)!\n", callerAddress);
-		return 0;
-	}
+		GET(AnimClass*, pItem, ESI);
 
-	AnimExt::ExtMap.TryAllocate(pItem);
+		auto const callerAddress = CTORTemp::callerAddress;
+
+		// Do this here instead of using a duplicate hook in SyncLogger.cpp
+		if (!SyncLogger::HooksDisabled && pItem->UniqueID != -2)
+			SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, callerAddress);
+
+		if (pItem && !pItem->Type)
+		{
+			Debug::Log("Attempting to create animation with null Type (Caller: %08x)!\n", callerAddress);
+			return 0;
+		}
+
+		AnimExt::ExtMap.Allocate(pItem);
+	}
 
 	return 0;
 }

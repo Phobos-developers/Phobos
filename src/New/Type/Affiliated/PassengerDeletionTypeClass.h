@@ -34,7 +34,7 @@ public:
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 
-	static bool CanParse(INI_EX exINI, const char* pSection, bool& shouldResetValue);
+	static std::pair<bool,bool> CanParse(INI_EX exINI, const char* pSection);
 
 private:
 

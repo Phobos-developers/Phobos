@@ -64,6 +64,6 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 	}
 	else
 	{
-		PrintMessage(StringTable::LoadString("MSG:NotAvailableInMultiplayer"));
+		PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:NotAvailableInMultiplayer", L"QuickSave is not available in multiplayer"));
 	}
 }

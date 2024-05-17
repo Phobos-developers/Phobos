@@ -11,6 +11,7 @@ constexpr auto NONE_STR = "<none>";
 constexpr auto NONE_STR2 = "none";
 constexpr auto TOOLTIPS_SECTION = "ToolTips";
 constexpr auto SIDEBAR_SECTION = "Sidebar";
+constexpr auto UISETTINGS_SECTION = "UISettings";
 
 class Phobos
 {
@@ -31,6 +32,7 @@ public:
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
 	static bool DisplayDamageNumbers;
+	static bool IsLoadingSaveGame;
 
 #ifdef DEBUG
 	static bool DetachFromDebugger();
@@ -42,20 +44,23 @@ public:
 		static bool DisableEmptySpawnPositions;
 		static bool ExtendedToolTips;
 		static int MaxToolTipWidth;
-		static bool ShowHarvesterCounter;
+		static bool HarvesterCounter_Show;
 		static double HarvesterCounter_ConditionYellow;
 		static double HarvesterCounter_ConditionRed;
-		static bool ShowProducingProgress;
-		static bool ShowPowerDelta;
+		static bool ProducingProgress_Show;
+		static bool PowerDelta_Show;
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
 		static bool CenterPauseMenuBackground;
+		static bool WeedsCounter_Show;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
 		static const wchar_t* PowerBlackoutLabel;
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
+		static const wchar_t* ShowBriefingResumeButtonLabel;
+		static char ShowBriefingResumeButtonStatusLabel[0x20];
 	};
 
 	class Config
@@ -75,6 +80,11 @@ public:
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;
 		static bool SaveVariablesOnScenarioEnd;
+		static bool SaveGameOnScenarioStart;
+		static bool ShowBriefing;
+		static bool ShowPowerDelta;
+		static bool ShowHarvesterCounter;
+		static bool ShowWeedsCounter;
 	};
 
 	class Misc

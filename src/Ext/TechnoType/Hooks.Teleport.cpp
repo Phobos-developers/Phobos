@@ -7,6 +7,7 @@
 
 #define GET_LOCO(reg_Loco) \
 	GET(ILocomotion *, Loco, reg_Loco); \
+	__assume(Loco!=nullptr);\
 	TeleportLocomotionClass *pLocomotor = static_cast<TeleportLocomotionClass*>(Loco); \
 	TechnoTypeClass *pType = pLocomotor->LinkedTo->GetTechnoType(); \
 	TechnoTypeExt::ExtData *pExt = TechnoTypeExt::ExtMap.Find(pType);

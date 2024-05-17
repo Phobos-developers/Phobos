@@ -9,6 +9,7 @@
 #include "Debug.h"
 #include "Stream.h"
 #include "Swizzle.h"
+#include "Phobos.h"
 
 enum class InitState
 {
@@ -56,7 +57,6 @@ class Extension
 	InitState Initialized;
 
 public:
-	static const DWORD Canary;
 
 	Extension(T* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
 	{ }
@@ -361,6 +361,10 @@ public:
 
 	extension_type_ptr TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
 	{
+		// Do not allow allocation when loading save games.
+		if (Phobos::IsLoadingSaveGame)
+			return nullptr;
+
 		if (!key || (!bCond && !nMessage.empty()))
 		{
 			Debug::Log("%s \n", nMessage.data());
@@ -372,20 +376,15 @@ public:
 
 	extension_type_ptr TryAllocate(base_type_ptr key)
 	{
+		// Do not allow allocation when loading save games.
+		if (Phobos::IsLoadingSaveGame)
+			return nullptr;
+
 		if (!key)
 		{
 			Debug::Log("Attempted to allocate %s from nullptr!\n", typeid(extension_type).name());
 			return nullptr;
 		}
-
-		return Allocate(key);
-	}
-
-	extension_type_ptr FindOrAllocate(base_type_ptr key)
-	{
-		// Find Always check for nullptr here
-		if (auto const ptr = Find(key))
-			return ptr;
 
 		return Allocate(key);
 	}
@@ -418,6 +417,15 @@ public:
 		if (this->Items.size())
 		{
 			Debug::Log("Cleared %u items from %s.\n", this->Items.size(), this->Name);
+
+			if constexpr (HasOffset<T>)
+			{
+				for (const auto& item : this->Items)
+				{
+					ResetExtensionPointer(item.first);
+				}
+			}
+
 			this->Items.clear();
 		}
 	}
@@ -472,15 +480,9 @@ public:
 		this->SavingStream = nullptr;
 	}
 
-	decltype(auto) begin() const
-	{
-		return this->Items.begin();
-	}
+	decltype(auto) begin() const = delete;
 
-	decltype(auto) end() const
-	{
-		return this->Items.end();
-	}
+	decltype(auto) end() const = delete;
 
 	size_t size() const
 	{

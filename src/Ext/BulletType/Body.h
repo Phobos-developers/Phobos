@@ -33,6 +33,7 @@ public:
 
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
+		Valueable<bool> Shrapnel_UseWeaponTargeting;
 		Nullable<bool> SubjectToLand;
 		Valueable<bool> SubjectToLand_Detonate;
 		Nullable<bool> SubjectToWater;
@@ -43,6 +44,7 @@ public:
 
 		Valueable<bool> AAOnly;
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
+		Nullable<WeaponTypeClass*> ReturnWeapon;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -59,6 +61,7 @@ public:
 			, Trajectory_Speed { 100.0 }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
+			, Shrapnel_UseWeaponTargeting { false }
 			, ClusterScatter_Min {}
 			, ClusterScatter_Max {}
 			, BallisticScatter_Min {}
@@ -69,6 +72,7 @@ public:
 			, SubjectToWater_Detonate { true }
 			, AAOnly { false }
 			, Arcing_AllowElevationInaccuracy { true }
+			, ReturnWeapon {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -84,6 +88,8 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+
+		void TrajectoryValidation() const;
 	};
 
 	class ExtContainer final : public Container<BulletTypeExt> {

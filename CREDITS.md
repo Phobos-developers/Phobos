@@ -22,8 +22,9 @@ This page lists all the individual contributions to the project by their author.
   - Building Placement Preview Adjustment
   - Check for Changelog/Documentation/Credits in Pull Requests
   - Fix position and layer of info tip and reveal production cameo on selected building
+  - Fix a glitch related to incorrect target setting for missiles
+  - Ability to disable shadow for debris & meteor animations
 - **Kerbiter (Metadorius)**:
-  - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
   - Extended tooltips
   - Selection priority filtering
@@ -43,6 +44,7 @@ This page lists all the individual contributions to the project by their author.
   - VSCode configs
   - Code style
   - Customizable ElectricBolt Arcs
+  - Ability to disable shadow for debris & meteor animations
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -214,6 +216,14 @@ This page lists all the individual contributions to the project by their author.
   - Straight projectile trajectory additions
   - Airstrike & spy plane fixed spawn distance & height
   - Negative damage `Verses/PercentAtMax` toggle
+  - Misc. singleplayer mission improvements
+  - Weapon effect obstacle interaction fix
+  - Fire particle rotation coordinate adjust toggle
+  - `AmbientDamage` warhead & main target ignore customization
+  - Projectile return weapon
+  - Aircraft landing / docking direction
+  - `DeploysInto` cursor desync fix
+  - Minor crate logic improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -243,7 +253,7 @@ This page lists all the individual contributions to the project by their author.
       - Facing towards target even if not omni-firing
       - Turret direction in idle state fix
       - Sensor fix
-      - Allow to tilt on ground
+      - Allow to tilt regardless of TiltCrashJumpjet
       - Forbid firing when crashing
    - OmniFire.TurnToTarget
    - Object Self-destruction logic
@@ -278,12 +288,25 @@ This page lists all the individual contributions to the project by their author.
    - Remove sound events when mind-controlled vehicles deploy into buildings or when buildings considered as vehicles get captured
    - Building LightSource tint S/L fix
    - Permanent healthbar display on units targeted by temporal weapons fix
+   - Powered anims on buildings cease playing upon capture by different house fix
    - TechnoType conversion placeholder
+   - TechnoType conversion upon ownership change
+   - EIP 00529A14 crash fix on Linux
+   - Teleport timer reset after load game fix
+   - Teleport, Tunnel and Fly loco visual tilt fix
+   - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
+   - Skip units' turret rotation and jumpjets' wobbling under EMP
+   - Droppod properties dehardcode
+   - Waypoint entering building together with engineer/agent bug fix
+   - Skippable game save on scenario start
+   - Skip rally point line drawing when undeploying a building
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
-- **NetsuNegi** - Forbidding parallel AI queues by type
+- **NetsuNegi**
+   - Forbidding parallel AI queues by type
+   - Jumpjet crash speed fix when crashing onto building
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons
@@ -299,9 +322,13 @@ This page lists all the individual contributions to the project by their author.
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
   - Auto-deploy/Deploy block on ammo change
+  - Flashing Technos on selecting
   - Offline power plant indicator
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
+  - Re-enable the Veinhole Monster and Weeds from TS
+  - Recreate the weed-charging of SWs like the TS Chemical Missile
+  - Allow to change the speed of gas particles
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

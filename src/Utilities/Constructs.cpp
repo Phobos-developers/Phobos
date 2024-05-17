@@ -36,6 +36,9 @@
 #include <FileSystem.h>
 #include <Utilities/GeneralUtils.h>
 
+#include "Savegame.h"
+#include "Debug.h"
+
 bool CustomPalette::LoadFromINI(
 	CCINIClass* pINI, const char* pSection, const char* pKey,
 	const char* pDefault)
@@ -104,4 +107,175 @@ void CustomPalette::CreateConvert()
 			1, false);
 	}
 	this->Convert.reset(buffer);
+}
+
+
+PhobosPCXFile& PhobosPCXFile::operator = (const char* pFilename)
+{
+	this->filename = pFilename;
+	auto& data = this->filename.data();
+	_strlwr_s(data);
+
+	this->checked = false;
+	this->exists = false;
+
+	if (this->resolve)
+	{
+		this->Exists();
+	}
+
+	return *this;
+}
+
+BSurface* PhobosPCXFile::GetSurface(BytePalette* pPalette) const
+{
+	return this->Exists() ? PCX::Instance->GetSurface(this->filename, pPalette) : nullptr;
+}
+
+bool PhobosPCXFile::Exists() const
+{
+	if (!this->checked)
+	{
+		this->checked = true;
+		if (this->filename)
+		{
+			auto pPCX = &PCX::Instance();
+			this->exists = (pPCX->GetSurface(this->filename) || pPCX->LoadFile(this->filename));
+		}
+	}
+	return this->exists;
+}
+
+bool PhobosPCXFile::Read(INIClass* pINI, const char* pSection, const char* pKey, const char* pDefault)
+{
+	char buffer[Capacity];
+	if (pINI->ReadString(pSection, pKey, pDefault, buffer))
+	{
+		*this = buffer;
+
+		if (this->checked && !this->exists)
+		{
+			Debug::INIParseFailed(pSection, pKey, this->filename, "PCX file not found.");
+		}
+	}
+	return buffer[0] != 0;
+}
+
+bool PhobosPCXFile::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->filename = nullptr;
+	if (Stm.Load(*this))
+	{
+		if (this->checked && this->exists)
+		{
+			this->checked = false;
+			if (!this->Exists())
+			{
+				Debug::Log("PCX file '%s' was not found.\n", this->filename.data());
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+bool PhobosPCXFile::Save(PhobosStreamWriter& Stm) const
+{
+	Stm.Save(*this);
+	return true;
+}
+
+const CSFText& CSFText::operator = (const char* label)
+{
+	if (this->Label != label)
+	{
+		this->Label = label;
+		this->Text = nullptr;
+
+		if (this->Label)
+		{
+			this->Text = StringTable::LoadString(this->Label);
+		}
+	}
+
+	return *this;
+}
+
+bool CSFText::load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->Text = nullptr;
+	if (Stm.Load(this->Label.data()))
+	{
+		if (this->Label)
+		{
+			this->Text = StringTable::LoadString(this->Label);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool CSFText::save(PhobosStreamWriter& Stm) const
+{
+	Stm.Save(this->Label.data());
+	return true;
+}
+
+
+bool TranslucencyLevel::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	int buf;
+	if (parser.ReadInteger(pSection, pKey, &buf))
+	{
+		*this = buf;
+		return true;
+	}
+
+	return false;
+}
+
+bool TranslucencyLevel::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	Stm.Load(this->value);
+	return true;
+}
+
+bool TranslucencyLevel::Save(PhobosStreamWriter& Stm) const
+{
+	Stm.Save(this->value);
+	return true;
+}
+
+bool TheaterSpecificSHP::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		auto pValue = parser.value();
+		GeneralUtils::ApplyTheaterSuffixToString(pValue);
+
+		std::string Result = pValue;
+		if (!strstr(pValue, ".shp"))
+			Result += ".shp";
+
+		if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
+		{
+			value = pImage;
+			return true;
+		}
+		else
+		{
+			Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", Result.c_str(), pSection, pKey, pValue);
+		}
+	}
+	return false;
+}
+
+bool TheaterSpecificSHP::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Savegame::ReadPhobosStream(Stm, this->value, RegisterForChange);
+}
+
+bool TheaterSpecificSHP::Save(PhobosStreamWriter& Stm) const
+{
+	return Savegame::WritePhobosStream(Stm, this->value);
 }

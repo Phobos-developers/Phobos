@@ -273,7 +273,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		CellClass* pTargetCell = nullptr;
 
 		// AAOnly doesn't need to be checked if LandTargeting=1.
-		if ((!pTechno || pTechno->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK) && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
+		if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
 		{
 			auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pWeapon->Projectile);
 
@@ -457,16 +457,16 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
-	if (auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
 		if (pWeaponExt->FeedbackWeapon.isset())
 		{
-			auto fbWeapon = pWeaponExt->FeedbackWeapon.Get();
+			auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon.Get();
 
-			if (pThis->InOpenToppedTransport && !fbWeapon->FireInTransport)
+			if (pThis->InOpenToppedTransport && !pWeaponFeedback->FireInTransport)
 				return 0;
 
-			WeaponTypeExt::DetonateAt(fbWeapon, pThis, pThis);
+			WeaponTypeExt::DetonateAt(pWeaponFeedback, pThis, pThis);
 		}
 	}
 
@@ -477,7 +477,6 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 {
 	GET(TechnoClass* const, pSource, ESI);
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
-	GET(WeaponTypeClass* const, pWeaponType, EBX);
 	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
 
 	auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
@@ -490,13 +489,6 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 			{
 				pBulletExt->IsInterceptor = true;
 				pBulletExt->InterceptedStatus = InterceptedStatus::Targeted;
-			}
-
-			// If using Inviso projectile, can intercept bullets right after firing.
-			if (pTargetObject->IsAlive && pWeaponType->Projectile->Inviso)
-			{
-				if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeaponType->Warhead))
-					pWHExt->InterceptBullets(pSource, pWeaponType, pTargetObject->Location);
 			}
 		}
 	}

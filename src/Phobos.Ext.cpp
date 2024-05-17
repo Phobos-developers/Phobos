@@ -11,6 +11,7 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/OverlayType/Body.h>
+#include <Ext/ParticleSystemType/Body.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -199,6 +200,7 @@ using PhobosTypeRegistry = TypeRegistry<
 	BulletTypeExt,
 	HouseExt,
 	OverlayTypeExt,
+	ParticleSystemTypeExt,
 	RadSiteExt,
 	RulesExt,
 	ScenarioExt,
@@ -263,17 +265,22 @@ DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 DEFINE_HOOK(0x67D04E, GameSave_SavegameInformation, 0x7)
 {
 	REF_STACK(SavegameInformation, Info, STACK_OFFSET(0x4A4, -0x3F4));
+
 	Info.InternalVersion = Info.InternalVersion + SAVEGAME_ID;
+	strncat(Info.ExecutableName.data(),
+		" + Phobos " FILE_VERSION_STR,
+		Info.ExecutableName.Size - sizeof(" + Phobos " FILE_VERSION_STR)
+	);
+
 	return 0;
 }
 
-DEFINE_HOOK(0x559F29, LoadOptionsClass_GetFileInfo, 0x8)
+DEFINE_HOOK_AGAIN(0x67FD9D, LoadOptionsClass_GetFileInfo, 0x7)
+DEFINE_HOOK(0x67FDB1, LoadOptionsClass_GetFileInfo, 0x7)
 {
-	if (!R->BL()) return 0x55A03D; // vanilla overridden check
-
-	REF_STACK(SavegameInformation, Info, STACK_OFFSET(0x400, -0x3F4));
-	Info.InternalVersion = Info.InternalVersion - SAVEGAME_ID;
-	return 0x559F29 + 0x8;
+	GET(SavegameInformation*, Info, ESI);
+	Info->InternalVersion = Info->InternalVersion - SAVEGAME_ID;
+	return 0;
 }
 
 #ifdef DEBUG

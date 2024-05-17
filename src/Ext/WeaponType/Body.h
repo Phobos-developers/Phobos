@@ -39,6 +39,9 @@ public:
 		Valueable<bool> OmniFire_TurnToTarget;
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
+		ValueableVector<double> ExtraWarheads_DetonationChances;
+		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
+		Valueable<bool> AmbientDamage_IgnoreTarget;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -60,6 +63,9 @@ public:
 			, OmniFire_TurnToTarget { false }
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
+			, ExtraWarheads_DetonationChances {}
+			, AmbientDamage_Warhead {}
+			, AmbientDamage_IgnoreTarget { false }
 		{ }
 
 		int GetBurstDelay(int burstIndex);
