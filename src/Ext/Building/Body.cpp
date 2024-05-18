@@ -328,6 +328,16 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 	return true;
 }
 
+void BuildingExt::DrawOfflinePlantIndicator(Point2D* pPosition, RectangleStruct* pBounds, int drawSpeed)
+{
+	SHPStruct* pSHP = RulesExt::Global()->DrawPowerOffline_Shape ? RulesExt::Global()->DrawPowerOffline_Shape : FileSystem::POWEROFF_SHP;
+	ConvertClass* pPalette = RulesExt::Global()->DrawPowerOffline_Palette.GetOrDefaultConvert(FileSystem::MOUSE_PAL);
+	Point2D nPoint = *pPosition + RulesExt::Global()->DrawPowerOffline_Offset;
+
+	const int frame = (pSHP->Frames * (Unsorted::CurrentFrame % drawSpeed)) / drawSpeed;
+	DSurface::Temp->DrawSHP(pPalette, pSHP, frame, &nPoint, pBounds, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+}
+
 // =============================
 // load / save
 

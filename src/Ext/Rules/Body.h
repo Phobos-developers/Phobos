@@ -113,7 +113,7 @@ public:
 		Valueable<bool> DrawPowerOffline;
 		Valueable<Point2D> DrawPowerOffline_Offset;
 		Nullable<SHPStruct*> DrawPowerOffline_Shape;
-		Nullable<*> DrawPowerOffline_Palette;
+		CustomPalette DrawPowerOffline_Palette;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;

@@ -104,4 +104,6 @@ public:
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
 	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
 	static bool CanUndeployOnSell(BuildingClass* pThis);
+
+	static void DrawOfflinePlantIndicator(Point2D* pPosition, RectangleStruct* pBounds, int drawSpeed);
 };

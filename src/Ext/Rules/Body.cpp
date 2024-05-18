@@ -128,7 +128,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DrawPowerOffline.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline");
 	this->DrawPowerOffline_Offset.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline.Offset");
 	this->DrawPowerOffline_Shape.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline.Shape");
-	this->DrawPowerOffline_Palette.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline.Palette");
+	this->DrawPowerOffline_Palette.LoadFromINI(pINI, GameStrings::AudioVisual, "DrawPowerOffline.Palette");
 
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
 	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
