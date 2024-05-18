@@ -449,6 +449,7 @@ Vanilla fixes:
 - `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting (by Starkku)
 - Fixed position and layer of info tip and reveal production cameo on selected building (by Belonit)
 - Fixed `TurretOffset` to be supported for SHP vehicles (by TwinkleStar)
+- Map event `There are no technos of the specified houses list` (by FS-21)
 - `Powered`/`PoweredSpecial` buildings' powered anims will update as usual when being captured by enemies (by Trsdy)
 - Fixed a glitch related to incorrect target setting for missiles (by Belonit)
 - Skipped parsing `[Header]` section of compaign maps which led to occasional crashes on Linux (by Trsdy)
