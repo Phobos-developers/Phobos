@@ -42,16 +42,16 @@ public:
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
 
-		Valueable<double> Crit_Chance;
+		ValueableVector<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
-		Valueable<int> Crit_ExtraDamage;
+		ValueableVector<int> Crit_ExtraDamage;
 		Nullable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<AffectedTarget> Crit_Affects;
 		Valueable<AffectedHouse> Crit_AffectsHouses;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
 		Nullable<bool> Crit_AnimList_PickRandom;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
-		Valueable<double> Crit_AffectBelowPercent;
+		ValueableVector<double> Crit_AffectBelowPercent;
 		Valueable<bool> Crit_SuppressWhenIntercepted;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
@@ -156,16 +156,16 @@ public:
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
 
-			, Crit_Chance { 0.0 }
+			, Crit_Chance {}
 			, Crit_ApplyChancePerTarget { false }
-			, Crit_ExtraDamage { 0 }
+			, Crit_ExtraDamage {}
 			, Crit_Warhead {}
 			, Crit_Affects { AffectedTarget::All }
 			, Crit_AffectsHouses { AffectedHouse::All }
 			, Crit_AnimList {}
 			, Crit_AnimList_PickRandom {}
 			, Crit_AnimOnAffectedTargets { false }
-			, Crit_AffectBelowPercent { 1.0 }
+			, Crit_AffectBelowPercent {}
 			, Crit_SuppressWhenIntercepted { false }
 
 			, MindControl_Anim {}

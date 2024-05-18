@@ -135,7 +135,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pHouse, pTarget);
 
-	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
+	if (this->Crit_Chance.size() > 0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 
 	if (this->Convert_Pairs.size() > 0)
@@ -254,15 +254,6 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
-	double dice;
-
-	if (this->Crit_ApplyChancePerTarget)
-		dice = ScenarioClass::Instance->Random.RandomDouble();
-	else
-		dice = this->Crit_RandomBuffer;
-
-	if (this->Crit_Chance < dice)
-		return;
 
 	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
 	{
@@ -275,8 +266,36 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 			return;
 
-		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
+		if (this->Crit_AffectBelowPercent.size() > 0 && pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent[0])
 			return;
+	}
+
+	unsigned int level = 0;
+
+	if (this->Crit_AffectBelowPercent.size() > 0)
+	{
+		for (; level < this->Crit_AffectBelowPercent.size() - 1; level ++)
+		{
+			if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent[level + 1])
+				break;
+		}
+	}
+
+	double dice;
+
+	if (this->Crit_ApplyChancePerTarget)
+		dice = ScenarioClass::Instance->Random.RandomDouble();
+	else
+		dice = this->Crit_RandomBuffer;
+
+	if (this->Crit_Chance.size() == 1)
+	{
+		if (this->Crit_Chance[0] < dice)
+			return;
+	}
+	else if (this->Crit_Chance.size() <= level || this->Crit_Chance[level] < dice)
+	{
+		return;
 	}
 
 	if (pHouse && !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouses, pHouse, pTarget->Owner))
@@ -298,7 +317,12 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
 	}
 
-	auto damage = this->Crit_ExtraDamage.Get();
+	int damage = 0;
+
+	if (this->Crit_ExtraDamage.size() == 1)
+		damage = Crit_ExtraDamage[0];
+	else if (this->Crit_ExtraDamage.size() > level)
+		damage = Crit_ExtraDamage[level];
 
 	if (this->Crit_Warhead.isset())
 		WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTarget, pOwner, damage);
