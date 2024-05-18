@@ -16,6 +16,7 @@ bool DisperseTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 	Stm
 		.Process(this->UniqueCurve, false)
 		.Process(this->PreAimCoord, false)
+		.Process(this->FacingCoord, false)
 		.Process(this->LaunchSpeed, false)
 		.Process(this->Acceleration, false)
 		.Process(this->ROT, false)
@@ -50,6 +51,7 @@ bool DisperseTrajectoryType::Save(PhobosStreamWriter& Stm) const
 	Stm
 		.Process(this->UniqueCurve)
 		.Process(this->PreAimCoord)
+		.Process(this->FacingCoord)
 		.Process(this->LaunchSpeed)
 		.Process(this->Acceleration)
 		.Process(this->ROT)
@@ -82,6 +84,7 @@ void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	INI_EX exINI(pINI);
 	this->UniqueCurve.Read(exINI, pSection, "Trajectory.Disperse.UniqueCurve");
 	this->PreAimCoord.Read(exINI, pSection, "Trajectory.Disperse.PreAimCoord");
+	this->FacingCoord.Read(exINI, pSection, "Trajectory.Disperse.FacingCoord");
 	this->LaunchSpeed.Read(exINI, pSection, "Trajectory.Disperse.LaunchSpeed");
 	this->Acceleration.Read(exINI, pSection, "Trajectory.Disperse.Acceleration");
 	this->ROT.Read(exINI, pSection, "Trajectory.Disperse.ROT");
@@ -113,6 +116,7 @@ bool DisperseTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	Stm
 		.Process(this->UniqueCurve)
 		.Process(this->PreAimCoord)
+		.Process(this->FacingCoord)
 		.Process(this->LaunchSpeed)
 		.Process(this->Acceleration)
 		.Process(this->ROT)
@@ -153,6 +157,7 @@ bool DisperseTrajectory::Save(PhobosStreamWriter& Stm) const
 	Stm
 		.Process(this->UniqueCurve)
 		.Process(this->PreAimCoord)
+		.Process(this->FacingCoord)
 		.Process(this->LaunchSpeed)
 		.Process(this->Acceleration)
 		.Process(this->ROT)
@@ -192,6 +197,7 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 
 	this->UniqueCurve = pType->UniqueCurve;
 	this->PreAimCoord = pType->PreAimCoord;
+	this->FacingCoord = pType->FacingCoord;
 	this->LaunchSpeed = pType->LaunchSpeed;
 	this->Acceleration = pType->Acceleration > 0.1 ? pType->Acceleration : 0.1;
 	this->ROT = pType->ROT > 0.1 ? pType->ROT : 0.1;
@@ -274,12 +280,7 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 		if (pBullet->Owner)
 			TheSource = pBullet->Owner->GetCoords();
 
-		if (pBullet->TargetCoords.Y != TheSource.Y || pBullet->TargetCoords.X != TheSource.X)
-		{
-			RotateAngle = Math::atan2(pBullet->TargetCoords.Y - TheSource.Y , pBullet->TargetCoords.X - TheSource.X);
-		}
-
-		else
+		if (this->FacingCoord || (pBullet->TargetCoords.Y == TheSource.Y && pBullet->TargetCoords.X == TheSource.X))
 		{
 			if (pBullet->Owner)
 			{
@@ -288,10 +289,10 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 				else
 					RotateAngle = -(pBullet->Owner->PrimaryFacing.Current().GetRadian<32>());
 			}
-			else
-			{
-				RotateAngle = Math::atan2(pBullet->TargetCoords.Y - TheSource.Y , pBullet->TargetCoords.X - TheSource.X);
-			}
+		}
+		else
+		{
+			RotateAngle = Math::atan2(pBullet->TargetCoords.Y - TheSource.Y , pBullet->TargetCoords.X - TheSource.X);
 		}
 
 		pBullet->Velocity.X = this->PreAimCoord.X * Math::cos(RotateAngle) + this->PreAimCoord.Y * Math::sin(RotateAngle);
@@ -372,10 +373,10 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 		}
 		else if (pBullet->SourceCoords.DistanceFromSquared(pBullet->Location) >= this->PreAimCoord.MagnitudeSquared())
 		{
+			this->InStraight = true;
+
 			if (StandardVelocityChange(pBullet))
 				return true;
-
-			this->InStraight = true;
 		}
 
 		VelocityUp = true;
@@ -568,8 +569,6 @@ bool DisperseTrajectory::CurveVelocityChange(BulletClass* pBullet)
 		TargetLocation.X += static_cast<int>(TimeMult * (TargetLocation.X - this->LastTargetCoord.X));
 		TargetLocation.Y += static_cast<int>(TimeMult * (TargetLocation.Y - this->LastTargetCoord.Y));
 
-		this->LastTargetCoord = pBullet->TargetCoords;
-
 		if (ChangeBulletVelocity(pBullet, TargetLocation, 24.0, true))
 			return true;
 	}
@@ -598,7 +597,6 @@ bool DisperseTrajectory::StandardVelocityChange(BulletClass* pBullet)
 		TargetLocation.Y += static_cast<int>(TimeMult * (TargetLocation.Y - this->LastTargetCoord.Y));
 	}
 
-	this->LastTargetCoord = pBullet->TargetCoords;
 	double TurningRadius = this->ROT * this->LaunchSpeed * this->LaunchSpeed / 16384;
 
 	if (ChangeBulletVelocity(pBullet, TargetLocation, TurningRadius, false))
@@ -672,7 +670,7 @@ bool DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct 
 
 			double ReviseLength = ReviseVelocity.Magnitude();
 
-			if (!Curve && ReviseMult < 0 && this->LastReviseMult > 0 && this->InStraight)
+			if (!Curve && ReviseMult < 0 && this->LastReviseMult > 0 && this->LastTargetCoord == pBullet->TargetCoords)
 				return true;
 
 			if (TurningRadius < ReviseLength)
@@ -693,6 +691,7 @@ bool DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct 
 	}
 
 	this->LastReviseMult = ReviseMult;
+	this->LastTargetCoord = pBullet->TargetCoords;
 
 	if (Curve)
 	{

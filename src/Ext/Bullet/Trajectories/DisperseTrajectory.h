@@ -8,6 +8,7 @@ public:
 	DisperseTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Disperse)
 		, UniqueCurve { false }
 		, PreAimCoord { { 0, 0, 0 } }
+		, FacingCoord { false }
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
 		, ROT { 10.0 }
@@ -39,6 +40,7 @@ public:
 
 	Valueable<bool> UniqueCurve;
 	Valueable<CoordStruct> PreAimCoord;
+	Valueable<bool> FacingCoord;
 	Valueable<double> LaunchSpeed;
 	Valueable<double> Acceleration;
 	Valueable<double> ROT;
@@ -69,6 +71,7 @@ public:
 	DisperseTrajectory() : PhobosTrajectory(TrajectoryFlag::Disperse)
 		, UniqueCurve { false }
 		, PreAimCoord {}
+		, FacingCoord { false }
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
 		, ROT { 10.0 }
@@ -103,6 +106,7 @@ public:
 	DisperseTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Disperse)
 		, UniqueCurve { false }
 		, PreAimCoord {}
+		, FacingCoord { false }
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
 		, ROT { 10.0 }
@@ -146,6 +150,7 @@ public:
 
 	bool UniqueCurve;
 	CoordStruct PreAimCoord;
+	bool FacingCoord;
 	double LaunchSpeed;
 	double Acceleration;
 	double ROT;
