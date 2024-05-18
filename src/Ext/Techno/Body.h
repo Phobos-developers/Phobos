@@ -33,6 +33,7 @@ public:
 		int LastWarpDistance;
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
+		bool IsLeggedCyborg;
 		int DamageNumberOffset;
 		bool IsInTunnel;
 		bool IsBurrowed;
@@ -69,6 +70,7 @@ public:
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
 			, OriginalPassengerOwner {}
+			, IsLeggedCyborg { false }
 			, IsInTunnel { false }
 			, IsBurrowed { false }
 			, HasBeenPlacedOnMap { false }

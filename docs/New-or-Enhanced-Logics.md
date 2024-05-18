@@ -1169,6 +1169,16 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType 
 ```
 
+### Repair Legless Cyborgs in transports
+
+- Now transports can restore cyborg legs when the damaged soldier enter into the transport.
+
+In `rulesmd.ini`:
+```ini
+[SOME_TRANSPORT]                  ; TechnoType
+CanRepairCyborgLegs=false         ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound
