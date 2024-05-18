@@ -246,8 +246,8 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
-		if (pIndex)// just forget it bro, no one cares
-			*(int*)pIndex = -1;
+		if (pIndex)
+			pIndex->Invalidate();
 
 		double scalex = linked->GetTechnoType()->VoxelScaleX;
 		double scaley = linked->GetTechnoType()->VoxelScaleY;

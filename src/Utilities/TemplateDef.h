@@ -47,6 +47,7 @@
 #include <BuildingTypeClass.h>
 #include <WarheadTypeClass.h>
 #include <FootClass.h>
+#include <Powerups.h>
 #include <VocClass.h>
 #include <VoxClass.h>
 #include <CRT.h>
@@ -589,6 +590,39 @@ namespace detail
 			{
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid FacingType (0-7 or -1).");
 			}
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<Powerup>(Powerup& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto const& powerupNames = Powerups::Effects;
+			int index = -1;
+
+			for (size_t i = 0; i < powerupNames.size(); i++)
+			{
+				if (!_strcmpi(parser.value(), powerupNames[i]))
+				{
+					index = static_cast<int>(i);
+					break;
+				}
+			}
+
+			if (index >= 0)
+			{
+				value = Powerup(index);
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a powerup crate type");
+				return false;
+			}
+
+			return true;
 		}
 
 		return false;

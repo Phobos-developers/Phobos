@@ -137,6 +137,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->IronCurtain_KillOrganicsWarhead.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
 
 	this->CrateOnlyOnLand.Read(exINI, GameStrings::CrateRules, "CrateOnlyOnLand");
+	this->UnitCrateVehicleCap.Read(exINI, GameStrings::CrateRules, "UnitCrateVehicleCap");
+	this->FreeMCV_CreditsThreshold.Read(exINI, GameStrings::CrateRules, "FreeMCV.CreditsThreshold");
 
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
 
@@ -287,6 +289,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisplayIncome_AllowAI)
 		.Process(this->DisplayIncome_Houses)
 		.Process(this->CrateOnlyOnLand)
+		.Process(this->UnitCrateVehicleCap)
+		.Process(this->FreeMCV_CreditsThreshold)
 		.Process(this->RadialIndicatorVisibility)
 		.Process(this->DrawTurretShadow)
 		.Process(this->IsVoiceCreatedGlobal)

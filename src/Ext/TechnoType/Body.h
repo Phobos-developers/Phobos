@@ -191,6 +191,8 @@ public:
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 
+		Valueable<double> CrateGoodie_RerollChance;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -377,6 +379,8 @@ public:
 			, DroppodType {}
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+
+			, CrateGoodie_RerollChance { 0.0 }
 		{ }
 
 		virtual ~ExtData() = default;

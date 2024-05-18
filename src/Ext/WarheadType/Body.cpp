@@ -243,6 +243,44 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
 	);
+
+	char tempBuffer[32];
+	Nullable<Powerup> crateType;
+	Nullable<int> weight;
+
+	for (size_t i = 0; ; i++)
+	{
+		crateType.Reset();
+		weight.Reset();
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SpawnsCrate%u.Type", i);
+		crateType.Read(exINI, pSection, tempBuffer);
+
+		if (i == 0 && !crateType.isset())
+			crateType.Read(exINI, pSection, "SpawnsCrate.Type");
+
+		if (!crateType.isset())
+			break;
+
+		if (this->SpawnsCrate_Types.size() < i)
+			this->SpawnsCrate_Types[i] = crateType;
+		else
+			this->SpawnsCrate_Types.push_back(crateType);
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SpawnsCrate%u.Weight", i);
+		weight.Read(exINI, pSection, tempBuffer);
+
+		if (i == 0 && !weight.isset())
+			weight.Read(exINI, pSection, "SpawnsCrate.Weight");
+
+		if (!weight.isset())
+			weight = 1;
+
+		if (this->SpawnsCrate_Weights.size() < i)
+			this->SpawnsCrate_Weights[i] = weight;
+		else
+			this->SpawnsCrate_Weights.push_back(weight);
+	}
 }
 
 template <typename T>
@@ -315,6 +353,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_Break_Types)
 		.Process(this->Shield_Respawn_Types)
 		.Process(this->Shield_SelfHealing_Types)
+
+		.Process(this->SpawnsCrate_Types)
+		.Process(this->SpawnsCrate_Weights)
 
 		.Process(this->NotHuman_DeathSequence)
 		.Process(this->LaunchSW)
