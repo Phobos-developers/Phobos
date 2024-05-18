@@ -9,6 +9,7 @@ public:
 		, UniqueCurve { false }
 		, PreAimCoord { { 0, 0, 0 } }
 		, FacingCoord { false }
+		, ReduceCoord { false }
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
 		, ROT { 10.0 }
@@ -41,6 +42,7 @@ public:
 	Valueable<bool> UniqueCurve;
 	Valueable<CoordStruct> PreAimCoord;
 	Valueable<bool> FacingCoord;
+	Valueable<bool> ReduceCoord;
 	Valueable<double> LaunchSpeed;
 	Valueable<double> Acceleration;
 	Valueable<double> ROT;
@@ -72,6 +74,7 @@ public:
 		, UniqueCurve { false }
 		, PreAimCoord {}
 		, FacingCoord { false }
+		, ReduceCoord { false }
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
 		, ROT { 10.0 }
@@ -97,7 +100,7 @@ public:
 		, InStraight { false }
 		, Accelerate { true }
 		, TargetInAir { false }
-		, FinalHeight { 0 }
+		, OriginalDistance { 0 }
 		, LastTargetCoord {}
 		, LastReviseMult { 0 }
 		, FirepowerMult { 1.0 }
@@ -107,6 +110,7 @@ public:
 		, UniqueCurve { false }
 		, PreAimCoord {}
 		, FacingCoord { false }
+		, ReduceCoord { false }
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
 		, ROT { 10.0 }
@@ -132,7 +136,7 @@ public:
 		, InStraight { false }
 		, Accelerate { true }
 		, TargetInAir { false }
-		, FinalHeight { 0 }
+		, OriginalDistance { 0 }
 		, LastTargetCoord {}
 		, LastReviseMult { 0 }
 		, FirepowerMult { 1.0 }
@@ -151,6 +155,7 @@ public:
 	bool UniqueCurve;
 	CoordStruct PreAimCoord;
 	bool FacingCoord;
+	bool ReduceCoord;
 	double LaunchSpeed;
 	double Acceleration;
 	double ROT;
@@ -176,7 +181,7 @@ public:
 	bool InStraight;
 	bool Accelerate;
 	bool TargetInAir;
-	int FinalHeight;
+	int OriginalDistance;
 	CoordStruct LastTargetCoord;
 	double LastReviseMult;
 	double FirepowerMult;
