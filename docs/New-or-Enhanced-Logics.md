@@ -523,18 +523,21 @@ Trajectory=Bombard             ; Trajectory type
 Trajectory.Bombard.Height=0.0  ; double
 ```
 
-### Shrapnel enhancement
+### Shrapnel enhancements
 
 ![image](_static/images/shrapnel.gif)
 *Shrapnel appearing against ground & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
 
-- Shrapnel behavior can be triggered on the ground and buildings.
-
+- `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
+- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) will be checked.
+  - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
+  
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]                 ; Projectile
-Shrapnel.AffectsGround=false     ; boolean
-Shrapnel.AffectsBuildings=false  ; boolean
+[SOMEPROJECTILE]                   ; Projectile
+Shrapnel.AffectsGround=false       ; boolean
+Shrapnel.AffectsBuildings=false    ; boolean
+Shrapnel.UseWeaponTargeting=false  ; boolean
 ```
 
 ### Projectiles blocked by land or water
@@ -1231,6 +1234,20 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; Warhead
 BigGap=false   ; boolean
+```
+
+### Spawn powerup crate
+
+- Warheads can now spawn powerup crates of specified type(s) on their impact cells (if free, or nearby cells if occupied something other than a crate) akin to map trigger action 108 ('Create Crate').
+  - `SpawnsCrateN` where N is a number starting from 0, parsed until no key is found can be used to define the type of crate spawned.
+  - `SpawnsCrateN.Weight` is a number that determines relative weighting of spawning corresponding crate type vs. other listed ones (0 is no chance, higher means higher probability) defaulting to 1 if not defined.
+  - `SpawnsCrate.Type/Weight` is an alias for `SpawnsCrate0.Type/Weight` if latter is not set.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; Warhead
+SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
+SpawnsCrate(N).Weight=1  ; integer
 ```
 
 ### Trigger specific NotHuman infantry Death anim sequence

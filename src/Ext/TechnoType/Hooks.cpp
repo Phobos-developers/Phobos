@@ -386,9 +386,9 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		{
 			const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(RulesClass::Instance->CruiseHeight);
 
-			if (cHeight > 0)
+			if (cHeight > 0 && height > 208)
 			{
-				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
+				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale));
 				vxl_index_key.Invalidate();
 			}
 		}
@@ -589,12 +589,13 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		if (RulesExt::Global()->HeightShadowScaling)
 		{
 			const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
-			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(flyLoco->FlightLevel);
+			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pThis->Type->GetFlightLevel());
 
 			if (cHeight > 0)
 			{
 				shadow_mtx.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
-				key.Invalidate(); // I'm sorry
+				if (flyLoco->FlightLevel > 0 || height > 0)
+					key.Invalidate();
 			}
 		}
 		else if (pThis->Type->ConsideredAircraft)
@@ -602,14 +603,15 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 			shadow_mtx.Scale((float)Pade2_2(baseScale_log));
 		}
 
-		if (pThis->IsCrashing)
-		{
-			double arf = pThis->AngleRotatedForwards;
-			if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
-				arf += pThis->Type->PitchAngle;
-			shadow_mtx.ScaleY((float)Math::cos(pThis->AngleRotatedSideways));
-			shadow_mtx.ScaleX((float)Math::cos(arf));
-		}
+		double arf = pThis->AngleRotatedForwards;
+		if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
+			arf += pThis->Type->PitchAngle;
+		double ars = pThis->AngleRotatedSideways;
+		if (key.Is_Valid_Key() && (std::abs(arf) > 0.005 || std::abs(ars) > 0.005))
+			key.Invalidate();
+
+		shadow_mtx.ScaleY((float)Math::cos(ars));
+		shadow_mtx.ScaleX((float)Math::cos(arf));
 	}
 	else if (height > 0)
 	{
@@ -621,7 +623,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	shadow_mtx = Matrix3D::VoxelDefaultMatrix() * shadow_mtx;
 
 	auto const main_vxl = &pThis->Type->MainVoxel;
-
+	// flor += loco->Shadow_Point(); // no longer needed
 	if (aTypeExt->ShadowIndices.empty())
 	{
 		auto const shadow_index = pThis->Type->ShadowIndex;
@@ -658,8 +660,13 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 }
 
 // Shadow_Point of RocketLoco was forgotten to be set to {0,0}. It was an oversight.
-// Anyway we don't need to call it from Fly or Rocket loco anymore
-// DEFINE_JUMP(VTABLE, 0x7F0B4C, 0x4CF940);
+DEFINE_JUMP(VTABLE, 0x7F0B4C, 0x4CF940);
+/*
+//TO TEST AND EXPLAIN: why resetting height when drawing aircrafts?
+DEFINE_JUMP(CALL6, 0x4147D5, 0x5F4300);
+DEFINE_JUMP(CALL6, 0x4148AB, 0x5F4300);
+DEFINE_JUMP(CALL6, 0x4147F3, 0x5F4300);
+*/
 
 DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 {
