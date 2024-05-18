@@ -66,6 +66,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	const char* sectionAITargetTypes = "AITargetTypes";
 	const char* sectionAIScriptsList = "AIScriptsList";
+	const char* sectionAITriggersList = "AITriggersList";
 
 	INI_EX exINI(pINI);
 
@@ -198,6 +199,24 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 		this->AIScriptsLists.emplace_back(std::move(objectsList));
 	}
+
+	// Section AITriggersList
+	int triggerItemsCount = pINI->GetKeyCount(sectionAITriggersList);
+	for (int i = 0; i < triggerItemsCount; ++i)
+	{
+		std::vector<AITriggerTypeClass*> objectsList;
+
+		char* context = nullptr;
+		pINI->ReadString(sectionAITriggersList, pINI->GetKeyName(sectionAITriggersList, i), "", Phobos::readBuffer);
+
+		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			AITriggerTypeClass* pNewTrigger = GameCreate<AITriggerTypeClass>(cur); // Note: Don't use ::FindOrAllocate(cur) here...
+			objectsList.emplace_back(pNewTrigger);
+		}
+
+		this->AITriggersLists.emplace_back(std::move(objectsList));
+	}
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -228,6 +247,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
+		.Process(this->AITriggersLists)
 		.Process(this->HarvesterTypes)
 		.Process(this->Storage_TiberiumIndex)
 		.Process(this->InfantryGainSelfHealCap)

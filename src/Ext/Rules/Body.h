@@ -3,6 +3,8 @@
 #include <CCINIClass.h>
 #include <RulesClass.h>
 #include <GameStrings.h>
+#include <AITriggerTypeClass.h>
+
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
@@ -29,6 +31,7 @@ public:
 	public:
 		std::vector<std::vector<TechnoTypeClass*>> AITargetTypesLists;
 		std::vector<std::vector<ScriptTypeClass*>> AIScriptsLists;
+		std::vector<std::vector<AITriggerTypeClass*>> AITriggersLists;
 		ValueableVector<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;
