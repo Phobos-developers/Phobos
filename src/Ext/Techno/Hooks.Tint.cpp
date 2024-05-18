@@ -4,6 +4,65 @@
 
 #include <Ext/Anim/Body.h>
 
+#pragma region ICColorBugFix
+
+DEFINE_HOOK(0x43D442, BuildingClass_Draw_ICFSColor, 0x7)
+{
+	enum { SkipGameCode = 0x43D45B };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	RulesClass* rules = RulesClass::Instance;
+
+	R->ECX(rules);
+	R->EAX(pThis->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x43DCE1, BuildingClass_Draw2_ICFSColor, 0x7)
+{
+	enum { SkipGameCode = 0x43DCFA };
+
+	GET(BuildingClass*, pThis, EBP);
+
+	RulesClass* rules = RulesClass::Instance;
+
+	R->ECX(rules);
+	R->EAX(pThis->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x73BFBF, UnitClass_DrawAsVoxel_ICFSColor, 0x6)
+{
+	enum { SkipGameCode = 0x73BFC5 };
+
+	GET(UnitClass*, pThis, EBP);
+
+	RulesClass* rules = RulesClass::Instance;
+
+	R->EAX(pThis->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x423519, AnimClass_Draw_ICFSColor, 0x6)
+{
+	enum { SkipGameCode = 0x423525 };
+
+	GET(BuildingClass*, pBuilding, ECX);
+
+	RulesClass* rules = RulesClass::Instance;
+
+	R->ECX(rules);
+	R->EAX(pBuilding->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
+
+	return SkipGameCode;
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
@@ -42,20 +101,6 @@ DEFINE_HOOK(0x7067E4, TechnoClass_DrawVoxel_TintColor, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x43D442, BuildingClass_Draw_ForceShieldICColor, 0x7)
-{
-	enum { SkipGameCode = 0x43D45B };
-
-	GET(BuildingClass*, pThis, ESI);
-
-	RulesClass* rules = RulesClass::Instance;
-
-	R->ECX(rules);
-	R->EAX(pThis->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
-
-	return SkipGameCode;
-}
-
 DEFINE_HOOK(0x43D4EB, BuildingClass_Draw_TintColor, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
@@ -65,20 +110,6 @@ DEFINE_HOOK(0x43D4EB, BuildingClass_Draw_TintColor, 0x6)
 	R->EDI(color);
 
 	return 0;
-}
-
-DEFINE_HOOK(0x43DCE1, BuildingClass_Draw2_ForceShieldICColor, 0x7)
-{
-	enum { SkipGameCode = 0x43DCFA };
-
-	GET(BuildingClass*, pThis, EBP);
-
-	RulesClass* rules = RulesClass::Instance;
-
-	R->ECX(rules);
-	R->EAX(pThis->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
-
-	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x43DD8E, BuildingClass_Draw2_TintColor, 0xA)
@@ -125,19 +156,6 @@ DEFINE_HOOK(0x51946D, InfantryClass_Draw_TintIntensity, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x73BFBF, UnitClass_DrawAsVoxel_ForceShieldICColor, 0x6)
-{
-	enum { SkipGameCode = 0x73BFC5 };
-
-	GET(UnitClass*, pThis, EBP);
-
-	RulesClass* rules = RulesClass::Instance;
-
-	R->EAX(pThis->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
-
-	return SkipGameCode;
-}
-
 DEFINE_HOOK(0x73C083, UnitClass_DrawAsVoxel_TintColor, 0x6)
 {
 	GET(UnitClass*, pThis, EBP);
@@ -160,20 +178,6 @@ DEFINE_HOOK(0x0423420, AnimClass_Draw_ParentBuildingCheck, 0x6)
 		R->EAX(AnimExt::ExtMap.Find(pThis)->ParentBuilding);
 
 	return 0;
-}
-
-DEFINE_HOOK(0x423519, AnimClass_Draw_ForceShieldICColor, 0x6)
-{
-	enum { SkipGameCode = 0x423525 };
-
-	GET(BuildingClass*, pBuilding, ECX);
-
-	RulesClass* rules = RulesClass::Instance;
-
-	R->ECX(rules);
-	R->EAX(pBuilding->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
-
-	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x4235D3, AnimClass_Draw_TintColor, 0x6)

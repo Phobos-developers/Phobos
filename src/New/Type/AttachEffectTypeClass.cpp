@@ -1,5 +1,6 @@
 #include "AttachEffectTypeClass.h"
 
+// Used to match groups names to AttachEffectTypeClass instances. Do not iterate due to undetermined order being prone to desyncs.
 std::unordered_map<const char*, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
 
 bool AttachEffectTypeClass::HasTint()
@@ -72,6 +73,24 @@ const char* Enumerable<AttachEffectTypeClass>::GetMainSection()
 	return "AttachEffectTypes";
 }
 
+void AttachEffectTypeClass::AddToGroupsMap()
+{
+	auto const map = &AttachEffectTypeClass::GroupsMap;
+
+	for (auto const group : this->Groups)
+	{
+		if (!map->contains(group))
+		{
+			map->insert(std::make_pair(group, std::set<AttachEffectTypeClass*>{this}));
+		}
+		else
+		{
+			auto const values = &map->at(group);
+			values->insert(this);
+		}
+	}
+}
+
 void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
@@ -129,20 +148,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
-	auto const map = &AttachEffectTypeClass::GroupsMap;
-
-	for (auto const group : this->Groups)
-	{
-		if (!map->contains(group))
-		{
-			map->insert(std::make_pair(group, std::set<AttachEffectTypeClass*>{this}));
-		}
-		else
-		{
-			auto const values = &map->at(group);
-			values->insert(this);
-		}
-	}
+	AddToGroupsMap();
 }
 
 template <typename T>
@@ -192,6 +198,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 void AttachEffectTypeClass::LoadFromStream(PhobosStreamReader& Stm)
 {
 	this->Serialize(Stm);
+	AddToGroupsMap();
 }
 
 void AttachEffectTypeClass::SaveToStream(PhobosStreamWriter& Stm)

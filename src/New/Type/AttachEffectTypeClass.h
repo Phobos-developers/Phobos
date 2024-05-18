@@ -102,10 +102,16 @@ public:
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
 
+	static void Clear()
+	{
+		AttachEffectTypeClass::GroupsMap.clear();
+	}
+
 	static std::vector<AttachEffectTypeClass*> GetTypesFromGroups(std::vector<const char*> groupIDs);
 
 private:
 	template <typename T>
 	void Serialize(T& Stm);
+	void AddToGroupsMap();
 };
 
