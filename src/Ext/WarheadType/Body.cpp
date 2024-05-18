@@ -30,6 +30,34 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
+bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr)
+{
+	if (!pTarget)
+		return false;
+
+	if (!this->EffectsRequireVerses)
+		return true;
+
+	auto armorType = pTarget->GetTechnoType()->Armor;
+
+	if (!pTargetExt)
+		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	if (pTargetExt)
+	{
+		if (const auto pShieldData = pTargetExt->Shield.get())
+		{
+			if (pShieldData->IsActive())
+			{
+				if (!pShieldData->CanBePenetrated(this->OwnerObject()))
+					armorType = pShieldData->GetArmorType();
+			}
+		}
+	}
+
+	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0;
+}
+
 namespace DetonateTemp
 {
 	AbstractClass* pTarget = nullptr;
@@ -197,6 +225,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
+	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
+	this->AttachEffect_RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
+	exINI.ParseStringList(this->AttachEffect_RemoveGroups, pSection, "AttachEffect.RemoveGroups");
+	this->AttachEffect_CumulativeRemoveMinCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMinCounts");
+	this->AttachEffect_CumulativeRemoveMaxCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMaxCounts");
+	this->AttachEffect_DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -227,13 +262,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
+	this->EffectsRequireVerses.Read(exINI, pSection, "EffectsRequireVerses");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::ExtData::Detonate
 	this->PossibleCellSpreadDetonate = (
 		this->RemoveDisguise
 		|| this->RemoveMindControl
-		|| this->Crit_Chance
 		|| this->Shield_Break
 		|| this->Shield_Respawn_Duration > 0
 		|| this->Shield_SelfHealing_Duration > 0
@@ -242,6 +277,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Convert_Pairs.size() > 0
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
+		|| this->AttachEffect_AttachTypes.size() > 0
+		|| this->AttachEffect_RemoveTypes.size() > 0
+		|| this->AttachEffect_RemoveGroups.size() > 0
 	);
 
 	char tempBuffer[32];
@@ -379,12 +417,20 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Convert_Pairs)
 
+		.Process(this->AttachEffect_AttachTypes)
+		.Process(this->AttachEffect_RemoveTypes)
+		.Process(this->AttachEffect_RemoveGroups)
+		.Process(this->AttachEffect_CumulativeRemoveMinCounts)
+		.Process(this->AttachEffect_CumulativeRemoveMaxCounts)
+		.Process(this->AttachEffect_DurationOverrides)
+
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
+		.Process(this->EffectsRequireVerses)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
 		.Process(this->RemainingAnimCreationInterval)

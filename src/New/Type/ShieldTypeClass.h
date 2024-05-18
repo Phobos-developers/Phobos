@@ -46,6 +46,10 @@ public:
 	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
 
+	Nullable<ColorStruct> Tint_Color;
+	Valueable<double> Tint_Intensity;
+	Valueable<AffectedHouse> Tint_VisibleToHouses;
+
 public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle)
 		, Strength { 0 }
@@ -81,6 +85,9 @@ public:
 		, Pips_Building_Empty { }
 		, ImmuneToBerserk { false }
 		, ImmuneToCrit { false }
+		, Tint_Color {}
+		, Tint_Intensity { 0.0 }
+		, Tint_VisibleToHouses { AffectedHouse::All }
 	{ };
 
 	virtual ~ShieldTypeClass() override = default;
