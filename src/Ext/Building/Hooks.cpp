@@ -426,17 +426,17 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 	GET_STACK(RectangleStruct*, pRect, 0xA0);
 
 	const auto pBld = abstract_cast<BuildingClass*>(pThis);
-	if (!pBld)
+	auto exit = [R, pRect]()
 	{
 		R->ESI(pRect);
 		return 0x6F534E;
-	}
+	};
+
+	if (!pBld)
+		return exit();
 
 	if (!RulesExt::Global()->DrawPowerOffline)
-	{
-		R->ESI(pRect);
-		return 0x6F534E;
-	}
+		return exit();
 
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
 	bool showLowPower = (pTypeExt->DisablePowerOfflineIcon == false)
@@ -449,15 +449,11 @@ DEFINE_HOOK(0x6F5347, TechnoClass_DrawExtras_OfflinePlants, 0x7)
 		&& (pBld->CloakState == CloakState::Uncloaked);
 
 	if (!showLowPower || MapClass::Instance->GetCellAt(pBld->GetMapCoords())->IsShrouded())
-	{
-		R->ESI(pRect);
-		return 0x6F534E;
-	}
+		return exit();
 
 	Point2D nPoint = TacticalClass::Instance->CoordsToClient(pBld->GetCenterCoords()).first;
 	const int speed = Math::max(GameOptionsClass::Instance->GetAnimSpeed(14) / 4, 2);
 	BuildingExt::DrawOfflinePlantIndicator(&nPoint, pRect, speed);
 
-	R->ESI(pRect);
-	return 0x6F534E;
+	return exit();
 }
