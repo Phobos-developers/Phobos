@@ -1,6 +1,5 @@
 #include <AnimClass.h>
 #include <UnitClass.h>
-#include <AnimClass.h>
 #include <InfantryClass.h>
 #include <BuildingClass.h>
 #include <ScenarioClass.h>
@@ -13,11 +12,13 @@
 #include <Ext/AnimType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
-
+#include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
 #include <Utilities/AresHelper.h>
 #include <JumpjetLocomotionClass.h>
 #include <FlyLocomotionClass.h>
+#include <RocketLocomotionClass.h>
 
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
@@ -283,7 +284,7 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 {
 	enum { SetUIName = 0x4AE678 };
 
-	GET(ObjectClass* , pObject, ECX);
+	GET(ObjectClass*, pObject, ECX);
 
 	auto pDecidedUIName = pObject->GetUIName();
 	auto pFoot = generic_cast<FootClass*>(pObject);
@@ -336,6 +337,40 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 	return 0x6B0C65;
 }
 
+DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+
+	if (pSource)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		auto const pTypeExt = pExt->TypeExtData;
+
+		if (pTypeExt && pTypeExt->RevengeWeapon.isset() &&
+			EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		{
+			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon.Get(), pSource, pThis);
+		}
+
+		for (auto& attachEffect : pExt->AttachedEffects)
+		{
+			if (!attachEffect->IsActive())
+				continue;
+
+			auto const pType = attachEffect->GetType();
+
+			if (!pType->RevengeWeapon.isset())
+				continue;
+
+			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
+		}
+	}
+
+	return 0;
+}
+
 // 2nd order Pade approximant just in case someone complains about performance
 constexpr double Pade2_2(double in)
 {
@@ -349,7 +384,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	GET(UnitClass*, pThis, EBP);
 	enum { SkipDrawing = 0x73C5C9 };
 	auto const loco = pThis->Locomotor.GetInterfacePtr();
-	if (!loco->Is_To_Have_Shadow())
+	if (pThis->Type->NoShadow || !loco->Is_To_Have_Shadow())
 		return SkipDrawing;
 
 	REF_STACK(Matrix3D, shadow_matrix, STACK_OFFSET(0x1C4, -0x130));
@@ -379,17 +414,17 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
 
 				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
-					vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);
+					vxl_index_key.Invalidate();
 			}
 		}
 		else
 		{
 			const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(RulesClass::Instance->CruiseHeight);
 
-			if (cHeight > 0)
+			if (cHeight > 0 && height > 208)
 			{
-				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
-				vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);
+				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale));
+				vxl_index_key.Invalidate();
 			}
 		}
 	}
@@ -415,7 +450,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		{
 			if (CAN_USE_ARES && AresHelper::CanUseAres)
 			{
-				vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);// I'd just assume most of the time we have spawn
+				vxl_index_key.Invalidate();// I'd just assume most of the time we have spawn
 				return &reinterpret_cast<DummyExtHere*>(pType->align_2FC)->NoSpawnAltVXL;
 			}
 			return &pType->TurretVoxel;
@@ -437,7 +472,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	// lazy, don't want to hook inside Shadow_Matrix
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
-		// index key is already invalid
+		// index key should have been already invalid, so it won't hurt to invalidate again
+		vxl_index_key.Invalidate();
 		shadow_matrix.TranslateX(float(Math::sgn(arf) * pType->VoxelScaleX * (1 - Math::cos(arf))));
 		shadow_matrix.TranslateY(float(Math::sgn(-ars) * pType->VoxelScaleY * (1 - Math::cos(ars))));
 		shadow_matrix.ScaleX((float)Math::cos(arf));
@@ -445,6 +481,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	}
 
 	auto mtx = Matrix3D::VoxelDefaultMatrix() * shadow_matrix;
+	if (height > 0)
+		shadow_point.Y += 1;
 
 	if (uTypeExt->ShadowIndices.empty())
 	{
@@ -568,47 +606,59 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	GET(AircraftClass*, pThis, EBP);
 	GET(const int, height, EBX);
 	REF_STACK(VoxelIndexKey, key, STACK_OFFSET(0xCC, -0xBC));
-	REF_STACK(Point2D, flor, STACK_OFFSET(0xCC, -0xAC));
+	GET_STACK(Point2D, flor, STACK_OFFSET(0xCC, -0xAC));
 	GET_STACK(RectangleStruct*, bound, STACK_OFFSET(0xCC, 0x10));
 	enum { FinishDrawing = 0x4148A5 };
 
-	const auto loco = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor);
-	if (!loco || !loco->Is_To_Have_Shadow() || pThis->IsSinking)
+	const auto loco = pThis->Locomotor.GetInterfacePtr();
+	if (pThis->Type->NoShadow || !loco->Is_To_Have_Shadow() || pThis->IsSinking)
 		return FinishDrawing;
 
-	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
-	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
+	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-	if (RulesExt::Global()->HeightShadowScaling)
+	if (auto const flyLoco = locomotion_cast<FlyLocomotionClass*>(loco))
 	{
-		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
-		const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(loco->FlightLevel);
+		const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
 
-		if (cHeight > 0)
+		if (RulesExt::Global()->HeightShadowScaling)
 		{
-			shadow_mtx.Scale((float)std::max(Pade2_2(baseScale_log* height / cHeight), minScale));
-			key = std::bit_cast<VoxelIndexKey>(-1); // I'm sorry
-		}
-	}
-	else if (pThis->Type->ConsideredAircraft)
-	{
-		shadow_mtx.Scale((float)Pade2_2(baseScale_log));
-	}
+			const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
+			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pThis->Type->GetFlightLevel());
 
-	if (pThis->IsCrashing)
-	{
+			if (cHeight > 0)
+			{
+				shadow_mtx.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
+				if (flyLoco->FlightLevel > 0 || height > 0)
+					key.Invalidate();
+			}
+		}
+		else if (pThis->Type->ConsideredAircraft)
+		{
+			shadow_mtx.Scale((float)Pade2_2(baseScale_log));
+		}
+
 		double arf = pThis->AngleRotatedForwards;
-		if (loco->CurrentSpeed > pThis->Type->PitchSpeed)
+		if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
 			arf += pThis->Type->PitchAngle;
-		shadow_mtx.ScaleY((float)Math::cos(pThis->AngleRotatedSideways));
+		double ars = pThis->AngleRotatedSideways;
+		if (key.Is_Valid_Key() && (std::abs(arf) > 0.005 || std::abs(ars) > 0.005))
+			key.Invalidate();
+
+		shadow_mtx.ScaleY((float)Math::cos(ars));
 		shadow_mtx.ScaleX((float)Math::cos(arf));
+	}
+	else if (height > 0)
+	{
+		// You must be Rocket, otherwise GO FUCK YOURSELF
+		shadow_mtx.ScaleX((float)Math::cos(static_cast<RocketLocomotionClass*>(loco)->CurrentPitch));
+		key.Invalidate();
 	}
 
 	shadow_mtx = Matrix3D::VoxelDefaultMatrix() * shadow_mtx;
-	Point2D why = flor + loco->Shadow_Point();
-	auto const main_vxl = &pThis->Type->MainVoxel;
 
+	auto const main_vxl = &pThis->Type->MainVoxel;
+	// flor += loco->Shadow_Point(); // no longer needed
 	if (aTypeExt->ShadowIndices.empty())
 	{
 		auto const shadow_index = pThis->Type->ShadowIndex;
@@ -618,7 +668,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 				key,
 				&pThis->Type->VoxelShadowCache,
 				bound,
-				&why,
+				&flor,
 				&shadow_mtx,
 				true,
 				nullptr,
@@ -633,7 +683,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 				key,
 				&pThis->Type->VoxelShadowCache,
 				bound,
-				&why,
+				&flor,
 				&shadow_mtx,
 				true,
 				nullptr,
@@ -643,6 +693,15 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 
 	return FinishDrawing;
 }
+
+// Shadow_Point of RocketLoco was forgotten to be set to {0,0}. It was an oversight.
+DEFINE_JUMP(VTABLE, 0x7F0B4C, 0x4CF940);
+/*
+//TO TEST AND EXPLAIN: why resetting height when drawing aircrafts?
+DEFINE_JUMP(CALL6, 0x4147D5, 0x5F4300);
+DEFINE_JUMP(CALL6, 0x4148AB, 0x5F4300);
+DEFINE_JUMP(CALL6, 0x4147F3, 0x5F4300);
+*/
 
 DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 {
@@ -703,11 +762,13 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 
 	Matrix3D hvamat = hva->Matrixes[shadow_index_now + hva->LayerCount * ChooseFrame()];
 
-	// TO TEST : Check if this is the proper Z offset to shift the sections to the same level
-	hvamat.TranslateZ(
-		-hvamat.GetZVal()
-		- pVXL->VXL->TailerData->Bounds[0].Z
-	);
+	// A nasty temporary backward compatibility option
+	if (hva->LayerCount > 1 || pType->Turret)
+	// NEEDS IMPROVEMENT : Choose the proper Z offset to shift the sections to the same level
+		hvamat.TranslateZ(
+			-hvamat.GetZVal()
+			- pVXL->VXL->TailerData->Bounds[0].Z
+		);
 
 	matRet = *pMat * hvamat;
 

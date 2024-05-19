@@ -3,7 +3,7 @@
 #include "Commands.h"
 
 // #53 New debug feature for AI scripts
-class ObjectInfoCommandClass : public PhobosCommandClass
+class ObjectInfoCommandClass : public CommandClass
 {
 public:
 	// CommandClass

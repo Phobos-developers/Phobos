@@ -10,15 +10,17 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
+- `[CrateRules]` -> `FreeMCV` now controls whether or not player is forced to receive unit from `[General]` -> `BaseUnit` from goodie crate if they own no buildings or any existing `BaseUnit` vehicles and own more than `[CrateRules]` -> `FreeMCV.CreditsThreshold` (defaults to 1500) credits.- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
-- The obsolete `[General] WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
+- - The obsolete `[General] WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
 - Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
 
 ### From older Phobos versions
 
 #### From post-0.3 devbuilds
 
+- `ExtraWarheads.DamageOverrides` now falls back to last listed value if list is shorter than `ExtraWarheads` for all Warhead detonations exceeding the length.
 - Air and Top layer contents are no longer sorted, animations in these layers no longer respect `YSortAdjust`. Animations attached to flying units now get their layer updated immediately after parent unit, if they are on same layer they will draw above the parent unit.
 - `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
@@ -26,6 +28,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From 0.3
 
+- Phobos-introduced Warhead effects like shield modifiers, critical hits, disguise & mind control removal now require Warhead `Verses` to affect target to apply unless `EffectsRequireVerses` is set to false. Shield armor type is used if target has an active shield that cannot be penetrated by the Warhead.
 - `Trajectory=Straight` projectiles can now snap on targets within 0.5 cells from their detonation point, this distance can be customized via `Trajectory.Straight.TargetSnapDistance`.
 - `LaunchSW.RealLaunch=false` now checks if firing house has enough credits to satisfy SW's `Money.Amount` in order to be fired.
 - `CreateUnit` now creates the units by default at animation's height (even if `CreateUnit.ConsiderPathfinding` is enabled) instead of always at ground level. This behaviour can be restored by setting `CreateUnit.AlwaysSpawnOnGround` to true.
@@ -59,6 +62,28 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From 0.1.1
 
 - Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
+
+### New user settings in RA2MD.ini
+
+- These are new user setting keys added by various features in Phobos. Most of them can be found in either in [user inteface](User-Interface.md) or [miscellaneous](Miscellanous.md) sections. Search functionality can be used to find them quickly if needed.
+
+```ini
+[Phobos]
+CampaignDefaultGameSpeed=4       ; integer
+ShowBriefing=true                ; boolean
+DigitalDisplay.Enable=false      ; boolean
+ShowDesignatorRange=false        ; boolean
+PrioritySelectionFiltering=true  ; boolean
+ShowPlacementPreview=yes         ; boolean
+RealTimeTimers=false             ; boolean
+RealTimeTimers.Adaptive=false    ; boolean
+ShowHarvesterCounter=true        ; boolean
+ShowPowerDelta=true              ; boolean  
+ShowWeedsCounter=true            ; boolean
+ToolTipDescriptions=true         ; boolean
+ToolTipBlur=false                ; boolean
+SaveGameOnScenarioStart=true     ; boolean
+```
 
 ### For Map Editor (Final Alert 2)
 
@@ -369,6 +394,15 @@ New:
 - Allow upgrade animations to use `Powered` & `PoweredLight/Effect/Special` keys (by Starkku)
 - Toggle for `Explodes=true` BuildingTypes to not explode during buildup or being sold (by Starkku)
 - Toggleable height-based shadow scaling for voxel air units (by Trsdy & Starkku)
+- User setting toggles for harvester counter & power delta indicator (by Starkku)
+- Shrapnel weapon target filtering toggle (by Starkku)
+- Restore functionality of `[CrateRules]` -> `FreeMCV` with customizable credits threshold (by Starkku)
+- Allow customizing the number of vehicles required for unit crates to turn into money crates (by Starkku)
+- Per-VehicleType reroll chance for `CrateGoodie=true` (by Starkku)
+- Warheads spawning powerup crates (by Starkku)- Custom tint on TechnoTypes (by Starkku)
+- Custom tint on TechnoTypes (by Starkku)
+- Revenge weapon (by Starkku)
+- AttachEffect types with new features like custom tint and weapon range modifier (by Starkku)
 - Allow different technos to share build limit in a group (by ststl & Ollerus)
 
 Vanilla fixes:
@@ -429,6 +463,10 @@ Vanilla fixes:
 - Spawned aircraft now align with the spawner's facing when landing (by Starkku)
 - Fixed infantries attempted to entering buildings when waypointing together with engineer/agent/occupier/etc (by Trsdy)
 - Fixed jumpjet crash speed when crashing onto buildings (by NetsuNegi)
+- Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units (by Starkku)
+- Skipped drawing the rally point line when undeploying a factory (by Trsdy)
+- Tint effects are now correctly applied to SHP vehicles and all types of aircraft as well as building animations regardless of their position (by Starkku)
+- Iron Curtained / Force Shielded objects now always use the correct tint color (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

@@ -759,3 +759,134 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 		}
 	}
 }
+
+void TechnoExt::ExtData::UpdateTemporal()
+{
+	if (const auto pShieldData = this->Shield.get())
+	{
+		if (pShieldData->IsAvailable())
+			pShieldData->AI_Temporal();
+	}
+
+	for (auto const& ae : this->AttachedEffects)
+		ae->AI_Temporal();
+}
+
+// Updates state of all AttachEffects on techno.
+void TechnoExt::ExtData::UpdateAttachEffects()
+{
+	bool markForRedraw = false;
+	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
+
+	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
+	{
+		auto const attachEffect = it->get();
+
+		if (!this->IsInTunnel && !this->IsBurrowed)
+			attachEffect->SetAnimationVisibility(true);
+
+		attachEffect->AI();
+
+		if (attachEffect->HasExpired() || (attachEffect->IsActive() && !attachEffect->AllowedToBeActive()))
+		{
+			auto const pType = attachEffect->GetType();
+
+			if (pType->HasTint())
+				markForRedraw = true;
+
+			this->UpdateCumulativeAttachEffects(attachEffect->GetType());
+
+			if (pType->ExpireWeapon.isset() && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
+			{
+				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
+					attachEffect->ExpireWeapon();
+			}
+
+			if (!attachEffect->AllowedToBeActive() && attachEffect->ResetIfRecreatable())
+			{
+				++it;
+				continue;
+			}
+
+			it = this->AttachedEffects.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	this->RecalculateStatMultipliers();
+
+	if (markForRedraw)
+		this->OwnerObject()->MarkForRedraw();
+}
+
+// Updates state of AttachEffects of same cumulative type on techno, (which one is first active instance existing, if any), kills animations if needed.
+void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType)
+{
+	if (!pAttachEffectType || !pAttachEffectType->Cumulative)
+		return;
+
+	bool foundFirst = false;
+
+	for (auto const& attachEffect : this->AttachedEffects)
+	{
+		if (attachEffect->GetType() != pAttachEffectType || !attachEffect->IsActive())
+			continue;
+
+		if (!foundFirst)
+		{
+			foundFirst = true;
+			attachEffect->IsFirstCumulativeInstance = true;
+		}
+		else
+		{
+			attachEffect->IsFirstCumulativeInstance = false;
+		}
+
+		if (pAttachEffectType->CumulativeAnimations.HasValue())
+			attachEffect->KillAnim();
+	}
+}
+
+// Recalculates AttachEffect stat multipliers and other bonuses.
+void TechnoExt::ExtData::RecalculateStatMultipliers()
+{
+	auto const pThis = this->OwnerObject();
+
+	double firepower = 1.0;
+	double armor = 1.0;
+	double speed = 1.0;
+	double ROF = 1.0;
+	bool cloak = pThis->Cloakable;
+	bool forceDecloak = false;
+	bool disableWeapons = false;
+
+	for (const auto& attachEffect : this->AttachedEffects)
+	{
+		if (!attachEffect->IsActive())
+			continue;
+
+		auto const type = attachEffect->GetType();
+		firepower *= type->FirepowerMultiplier;
+		speed *= type->SpeedMultiplier;
+		armor *= type->ArmorMultiplier;
+		ROF *= type->ROFMultiplier;
+		cloak |= type->Cloakable;
+		forceDecloak |= type->ForceDecloak;
+		disableWeapons |= type->DisableWeapons;
+	}
+
+	this->AE_FirepowerMultiplier = firepower;
+	this->AE_ArmorMultiplier = armor;
+	this->AE_SpeedMultiplier = speed;
+	this->AE_ROFMultiplier = ROF;
+	pThis->Cloakable = cloak;
+	this->AE_ForceDecloak = forceDecloak;
+	this->AE_DisableWeapons = disableWeapons;
+
+	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
+		pThis->Uncloak(true);
+}
+

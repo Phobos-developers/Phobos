@@ -7,6 +7,8 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
+#include <Utilities/Macro.h>
+
 DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 {
 	GET(AnimClass* const, pThis, ESI);
@@ -23,20 +25,19 @@ DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 	return 0x423BBF;
 }
 
-// Goes before and replaces Ares animation damage / weapon hook at 0x424538.
-DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
+// Nuke Ares' animation damage hook at 0x424538.
+DEFINE_PATCH(0x424538, 0x8B, 0x8E, 0xCC, 0x00, 0x00, 0x00);
+
+// And add the new one after that.
+DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 {
 	enum { SkipDamage = 0x42465D, Continue = 0x42464C };
 
 	GET(AnimClass*, pThis, ESI);
 
-	if (pThis->Type->Damage <= 0.0 || pThis->HasExtras)
-		return SkipDamage;
-
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 	int delay = pTypeExt->Damage_Delay.Get();
 	int damageMultiplier = 1;
-	bool adjustAccum = false;
 	double damage = 0;
 	int appliedDamage = 0;
 
@@ -52,15 +53,19 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	}
 	else if (delay <= 0 || pThis->Type->Damage < 1.0) // If Damage.Delay is less than 1 or Damage is a fraction.
 	{
-		adjustAccum = true;
 		damage = damageMultiplier * pThis->Type->Damage + pThis->Accum;
-		pThis->Accum = damage;
 
 		// Deal damage if it is at least 1, otherwise accumulate it for later.
 		if (damage >= 1.0)
+		{
 			appliedDamage = static_cast<int>(std::round(damage));
+			pThis->Accum = damage - appliedDamage;
+		}
 		else
+		{
+			pThis->Accum = damage;
 			return SkipDamage;
+		}
 	}
 	else
 	{
@@ -73,16 +78,11 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 
 		// Use Type->Damage as the actually dealt damage.
 		appliedDamage = static_cast<int>(std::round(pThis->Type->Damage)) * damageMultiplier;
+		pThis->Accum = 0.0;
 	}
 
 	if (appliedDamage <= 0 || pThis->IsPlaying)
 		return SkipDamage;
-
-	// Store fractional damage if needed, or reset the accum if hit the Damage.Delay counter.
-	if (adjustAccum)
-		pThis->Accum = damage - appliedDamage;
-	else
-		pThis->Accum = 0.0;
 
 	TechnoClass* pInvoker = nullptr;
 	HouseClass* pInvokerHouse = nullptr;

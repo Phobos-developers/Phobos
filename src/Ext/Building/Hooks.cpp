@@ -4,6 +4,7 @@
 #include <UnitClass.h>
 #include <SuperClass.h>
 #include <GameOptionsClass.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <TacticalClass.h>
@@ -53,10 +54,9 @@ DEFINE_HOOK(0x4403D4, BuildingClass_AI_ChronoSparkle, 0x6)
 				if (!((Unsorted::CurrentFrame + i) % RulesExt::Global()->ChronoSparkleDisplayDelay))
 				{
 					auto muzzleOffset = pType->MaxNumberOccupants <= 10 ? pType->MuzzleFlash[i] : BuildingTypeExt::ExtMap.Find(pType)->OccupierMuzzleFlashes.at(i);
-					auto offset = Point2D::Empty;
 					auto coords = CoordStruct::Empty;
 					auto const renderCoords = pThis->GetRenderCoords();
-					offset = *TacticalClass::Instance->ApplyMatrix_Pixel(&offset, &muzzleOffset);
+					auto offset = TacticalClass::Instance->ApplyMatrix_Pixel(muzzleOffset);
 					coords.X += offset.X;
 					coords.Y += offset.Y;
 					coords += renderCoords;
@@ -192,11 +192,7 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 			break;
 		}
 
-		if (!currFactory)
-		{
-			Game::RaiseError(E_POINTER);
-		}
-		else if (!*currFactory)
+		if (!*currFactory)
 		{
 			*currFactory = pThis;
 			return 0;
@@ -396,6 +392,17 @@ DEFINE_HOOK(0x4575A2, BuildingClass_Infiltrate_AfterAres, 0xE)
 	GET(BuildingClass*, pBuilding, ECX);
 
 	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);
+	return 0;
+}
+
+DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(AnimClass*, pAnim, EBP);
+
+	auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+	pAnimExt->ParentBuilding = pThis;
+
 	return 0;
 }
 

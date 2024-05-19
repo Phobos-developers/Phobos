@@ -193,11 +193,30 @@ DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
 	enum { IsNaval = 0x4438BC, NotNaval = 0x4438C9 };
 
 	GET(BuildingTypeClass*, pBuildingType, EAX);
+	GET_STACK(bool, playEVA, STACK_OFFSET(0xA4, 0x8));
+	REF_STACK(SpeedType, spdtp, STACK_OFFSET(0xA4, -0x84));
+	if (!playEVA)// assuming the hook above is the only place where it's set to false when UndeploysInto
+	{
+		if (auto pInto = pBuildingType->UndeploysInto)// r u sure this is not too OP?
+		{
+			R->ESI(pInto->MovementZone);
+			spdtp = pInto->SpeedType;
+			return NotNaval;
+		}
+	}
 
 	if (pBuildingType->Naval || pBuildingType->SpeedType == SpeedType::Float)
 		return IsNaval;
 
 	return NotNaval;
+}
+
+DEFINE_HOOK(0x6DAAB2, TacticalClass_DrawRallyPointLines_NoUndeployBlyat, 0x6)
+{
+	GET(BuildingClass*, pBld, EDI);
+	if (pBld->Focus && pBld->CurrentMission != Mission::Selling)
+		return 0x6DAAC0;
+	return 0x6DAD45;
 }
 
 // bugfix: DeathWeapon not properly detonates
@@ -548,37 +567,6 @@ DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
 	}
 
 	return 0;
-}
-
-DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
-{
-	enum { SpawnCrate = 0x56BE7B, SkipSpawn = 0x56BE91 };
-
-	int XP = 2 * MapClass::Instance->VisibleRect.X - MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Width);
-	int YP = 2 * MapClass::Instance->VisibleRect.Y + MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Height + 2);
-	CellStruct candidate { (short)((XP + YP) / 2),(short)((YP - XP) / 2) };
-
-	auto pCell = MapClass::Instance->TryGetCellAt(candidate);
-	if (!pCell)
-		return SkipSpawn;
-
-	if (!MapClass::Instance->IsWithinUsableArea(pCell, true))
-		return SkipSpawn;
-
-	bool isWater = pCell->LandType == LandType::Water;
-	if (isWater && RulesExt::Global()->CrateOnlyOnLand.Get())
-		return SkipSpawn;
-
-	REF_STACK(CellStruct, cell, STACK_OFFSET(0x28, -0x18));
-	cell = MapClass::Instance->NearByLocation(pCell->MapCoords,
-		isWater ? SpeedType::Float : SpeedType::Track,
-		-1, MovementZone::Normal, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
-
-	R->EAX(&cell);
-
-	return SpawnCrate;
 }
 
 // Fixes C4=no amphibious infantry being killed in water if Chronoshifted/Paradropped there.

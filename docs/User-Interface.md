@@ -84,7 +84,7 @@ DigitalDisplay.Disable=false            ; boolean
 DigitalDisplayTypes=                    ; list of DigitalDisplayTypes
 ```
 
-In `Ra2MD.ini`:
+In `RA2MD.ini`:
 ```ini
 [Phobos]
 DigitalDisplay.Enable=false             ; boolean
@@ -110,7 +110,7 @@ ShowDesignatorRange=true    ; boolean
 ShowDesignatorRange=true    ; boolean
 ```
 
-In `Ra2MD.ini`:
+In `RA2MD.ini`:
 ```ini
 [Phobos]
 ShowDesignatorRange=false             ; boolean
@@ -208,7 +208,7 @@ The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap=y
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
-In `ra2md.ini`:
+In `RA2MD.ini`:
 ```ini
 [Phobos]
 ShowPlacementPreview=yes   ; boolean
@@ -338,12 +338,13 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 ![image](_static/images/harvestercounter-01.gif)
 *Harvester Counter in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
-- An additional counter for your active/total harvesters can be added near the credits indicator.
-- You can specify which TechnoType should be counted as a Harvester with `Harvester.Counted`. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted.
-  - Can be set to true on buildings with `ProduceCashAmount` to count them as active 'harvesters' while generating credits.
-- The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
-- You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
-- By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
+- An additional counter for your active / total harvesters can be added near the credits indicator.
+  - You can specify which TechnoType should be counted as a Harvester with `Harvester.Counted`. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted.
+    - Can be set to true on buildings with `ProduceCashAmount` to count them as active 'harvesters' while generating credits.
+  - The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
+  - You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
+  - By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowHarvesterCounter` setting in `RA2MD.ini`.
 
 In `uimd.ini`:
 ```ini
@@ -365,8 +366,16 @@ Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - R,G,B
 Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
 ```
 
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowHarvesterCounter=true  ; boolean
+```
+
 ```{note}
 If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+
+Additionally, default position for harvester counter overlaps with [weeds counter](#weeds-counter).
 ```
 
 ### Power delta counter
@@ -375,12 +384,13 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 *Power delta Counter in [Assault Amerika](https://www.moddb.com/mods/assault-amerika)*
 
 - An additional counter for your power delta (surplus) can be added near the credits indicator.
-- The counter is displayed with the format of `Label(sign)(Power Delta)`. The label is `PowerLabel` used in `ToolTips` (by default `⚡ U+26A1`).
-- When the power of the player is blacked-out by a spy or force-shield, `PowerBlackoutLabel` in `ToolTips` is displayed instead (by default ⚡❌ `U+26A1 U+274C`), the text color is `Sidebar.PowerDelta.ColorGrey`.
-- You can adjust counter position by `Sidebar.PowerDelta.Offset`, negative means left/up, positive means right/down.
-- You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, acceptable values are left, right, center/centre.
-- By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, the game will warn player by changing the color of counter whenever the percentage of used power exceeds the value (i.e. when drain to output ratio is above 100%, the counter will turn red).
-- The exception for this rule is when both power output and drain are 0 - in this case the counter will default to yellow.
+  - The counter is displayed with the format of `Label(sign)(Power Delta)`. The label is `PowerLabel` used in `ToolTips` (by default `⚡ U+26A1`).
+  - When the power of the player is blacked-out by a spy or force-shield, `PowerBlackoutLabel` in `ToolTips` is displayed instead (by default ⚡❌ `U+26A1 U+274C`), the text color is `Sidebar.PowerDelta.ColorGrey`.
+  - You can adjust counter position by `Sidebar.PowerDelta.Offset`, negative means left/up, positive means right/down.
+  - You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, acceptable values are left, right, center/centre.
+  - By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, the game will warn player by changing the color of counter whenever the percentage of used power exceeds the value (i.e. when drain to output ratio is above 100%, the counter will turn red).
+  - The exception for this rule is when both power output and drain are 0 - in this case the counter will default to yellow.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowPowerDelta` setting in `RA2MD.ini`.
 
 In `uimd.ini`:
 ```ini
@@ -401,8 +411,44 @@ Sidebar.PowerDelta.ColorGrey=128,128,128  ; integer - R,G,B
 Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left | center/centre | right
 ```
 
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowPowerDelta=true  ; boolean
+```
+
 ```{note}
 If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+```
+
+### Weeds counter
+
+- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds-weed-eaters) can be added near the credits indicator.
+  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
+  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.ini`.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+WeedsCounter.Show=false          ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                       ; Side
+Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
+Sidebar.WeedsCounter.Color=      ; integer - R,G,B
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowWeedsCounter=true  ; boolean
+```
+
+```{note}
+Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
 ```
 
 ### Producing Progress

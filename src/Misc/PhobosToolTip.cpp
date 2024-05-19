@@ -71,7 +71,7 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 	reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::CurrentPlayer;
 	int nTimeToBuild = reinterpret_cast<TechnoClass*>(pTrick)->TimeToBuild();
 	// 54 frames at least
-	return nTimeToBuild < 54 ? 54 : nTimeToBuild;
+	return std::max(54, nTimeToBuild);
 }
 
 inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const

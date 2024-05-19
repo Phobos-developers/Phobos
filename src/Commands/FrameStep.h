@@ -5,7 +5,7 @@
 #include "FrameByFrame.h"
 
 template<size_t Frame>
-class FrameStepCommandClass : public PhobosCommandClass
+class FrameStepCommandClass : public CommandClass
 {
 	virtual const char* GetName() const override;
 	virtual const wchar_t* GetUIName() const override;

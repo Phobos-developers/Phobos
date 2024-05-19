@@ -145,12 +145,17 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed railgun and fire particles being cut off by elevation changes.
 - Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
 - Fixed teleport units being unable to visually tilt on slopes.
+- Fixed rockets' shadow location.
 - Fixed units with Teleport, Tunnel or Fly locomotor being unable to be visually flipped like other locomotors do.
 - Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction.
 - Spawned aircraft now align with the spawner's facing when landing.
 - Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers EnteredBy event by executing capture mission.
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
-
+- Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units.
+- Skipped drawing rally point line when undeploying a factory.
+- Tint effects are now correctly applied to SHP vehicles and all types of aircraft as well as building animations regardless of their position.
+- Iron Curtained / Force Shielded objects now always use the correct tint color.
+ 
 ## Fixes / interactions with other extensions
 
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
@@ -856,7 +861,6 @@ IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.K
 ### Voxel turret shadow
 
 - Vehicle voxel turrets can now draw shadows if `[AudioVisual]` -> `DrawTurretShadow` is set to true. This can be overridden per VehicleType by setting `TurretShadow` in the vehicle's `artmd.ini` section.
-  - If you don't want to render the body's shadow at all, set `ShadowIndex` to an invalid number.
 
 In `rulesmd.ini`:
 ```ini
@@ -949,7 +953,7 @@ Strength=1000                 ; integer - the strength of the Veinhole
 ```
 
 ```{warning}
-The game expects certain overlays related to Veinholes to have certain indices, they are listed below.
+The game expects certain overlays related to Veinholes to have certain indices, they are listed below. Please keep in mind that the indices in the OverlayTypes list are 0-based, formed internally by the game, and the identifiers left of "=" don't matter. Vanilla `rulesmd.ini` already has the required overlays listed at the correct indices.
 ```
 
 In `rulesmd.ini`:
@@ -967,6 +971,7 @@ In `rulesmd.ini`:
 - Weeds are not stored in a building's storage, but rather in a House's storage. The weed capacity is listed under `[General]->WeedCapacity`.
 - Weeders now show the ore gathering animation. It can be customized the same way as for harvesters.
 - Weeders can use the Teleport locomotor like chrono miners.
+- Total amount of weeds in storage can be displayed on sidebar, see [Weeds counter](User-Interface.md#weeds-counter).
 
 ### Weed-consuming superweapons
 
@@ -1155,15 +1160,26 @@ In `rulesmd.ini`:
 RadialIndicatorVisibility=allies  ; list of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
 ```
 
-## Crate generation
+## Crate improvements
 
-The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
-- You can now limit the crates' spawn region to land only.
+There are some improvements on goodie crate logic:
+- The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
+- You can now limit the crates' spawn region to land only by setting `[CrateRules]` -> `CreateOnlyOnLand` to true.
+- The limit of vehicles a player can own before unit crates start giving money instead can now be customized by setting `UnitCrateVehicleCap`. Negative numbers disable the cap entirely.
+- `FreeMCV` setting is now actually respected and can be used to disable the forced unit selected from `[General]` -> `BaseUnit` that is given if player picks a crate and has enough credits but no existing buildings or `BaseUnit` vehicles.
+  - The previously hardcoded credits threshold that must be passed can also now be customized via `FreeMCV.CreditsThreshold`.
+- It is possible to influence weighting of units given from crates (`CrateGoodie=true`) via `CrateGoodie.RerollChance`, which determines the chance that if this type of unit is rolled, it will reroll again for another type of unit.
 
 In `rulesmd.ini`:
 ```ini
 [CrateRules]
-CrateOnlyOnLand=no  ; boolean
+CrateOnlyOnLand=false          ; boolean
+UnitCrateVehicleCap=50         ; integer
+FreeMCV=true                   ; boolean
+FreeMCV.CreditsThreshold=1500  ; integer
+
+[SOMEVEHICLE]                  ; VehicleType
+CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0-1.0)
 ```
 
 ## DropPod

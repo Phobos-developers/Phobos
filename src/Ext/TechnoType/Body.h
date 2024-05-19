@@ -7,6 +7,7 @@
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
@@ -117,6 +118,7 @@ public:
 		Valueable<bool> OpenTopped_IgnoreRangefinding;
 		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
 		Valueable<bool> OpenTopped_ShareTransportTarget;
+		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
 
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;
@@ -190,6 +192,21 @@ public:
 
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
+
+		Valueable<double> CrateGoodie_RerollChance;
+
+		Nullable<ColorStruct> Tint_Color;
+		Valueable<double> Tint_Intensity;
+		Valueable<AffectedHouse> Tint_VisibleToHouses;
+
+		Nullable<WeaponTypeClass*> RevengeWeapon;
+		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
+		ValueableVector<int> AttachEffect_DurationOverrides;
+		ValueableVector<int> AttachEffect_Delays;
+		ValueableVector<int> AttachEffect_InitialDelays;
+		NullableVector<int> AttachEffect_RecreationDelays;
 
 		ValueableVector<TechnoTypeClass*> BuildLimit_Group_Types;
 		Valueable<bool> BuildLimit_Group_Any;
@@ -280,6 +297,7 @@ public:
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
 			, OpenTopped_ShareTransportTarget { true }
+			, OpenTopped_UseTransportRangeModifiers { false }
 
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
@@ -383,6 +401,21 @@ public:
 
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+
+			, CrateGoodie_RerollChance { 0.0 }
+
+			, Tint_Color {}
+			, Tint_Intensity { 0.0 }
+			, Tint_VisibleToHouses { AffectedHouse::All }
+
+			, RevengeWeapon {}
+			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+
+			, AttachEffect_AttachTypes {}
+			, AttachEffect_DurationOverrides {}
+			, AttachEffect_Delays {}
+			, AttachEffect_InitialDelays {}
+			, AttachEffect_RecreationDelays {}
 
 			, BuildLimit_Group_Types {}
 			, BuildLimit_Group_Any { false }

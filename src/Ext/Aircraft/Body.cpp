@@ -88,7 +88,7 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 			return pLink->PrimaryFacing.Current().GetDir();
 	}
 
-	int landingDir = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->LandingDir.Get((int)poseDir);
+	int landingDir = TechnoTypeExt::ExtMap.Find(pThis->Type)->LandingDir.Get((int)poseDir);
 
 	if (!pThis->Type->AirportBound && landingDir < 0)
 		return pThis->PrimaryFacing.Current().GetDir();
