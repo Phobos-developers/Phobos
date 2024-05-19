@@ -836,22 +836,24 @@ DeployingAnim.ReverseForUndeploy=true  ; boolean
 DeployingAnim.UseUnitDrawer=true       ; boolean
 ```
 
-### Preserve Iron Curtain status on type conversion
+### Preserve Iron Curtain / Force Shield status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
 *Bugfix in action*
 
-- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`.
-  - This behavior can be turned off per-TechnoType and global basis.
-  - `IronCurtain.Modifier` is re-applied upon type conversion.
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. Force Shield status preservation is turned off by default.
+  - This behavior can be turned on/off per-TechnoType and on global basis.
+  - `IronCurtain.Modifier` / `ForceShield.Modifier` (whichever is applicable) is re-applied upon type conversion.
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-IronCurtain.KeptOnDeploy=yes ; boolean
+IronCurtain.KeptOnDeploy=true   ; boolean
+ForceShield.KeptOnDeploy=false  ; boolean
 
-[SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
-IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
+[SOMETECHNO]                    ; VehicleType with DeploysInto or BuildingType with UndeploysInto
+IronCurtain.KeptOnDeploy=       ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
+ForceShield.KeptOnDeploy=       ; boolean, default to [CombatDamage]->ForceShield.KeptOnDeploy
 ```
 
 ### Stationary vehicles
