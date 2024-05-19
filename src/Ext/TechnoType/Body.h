@@ -208,6 +208,11 @@ public:
 		ValueableVector<int> AttachEffect_InitialDelays;
 		NullableVector<int> AttachEffect_RecreationDelays;
 
+		ValueableVector<TechnoTypeClass*> BuildLimit_Group_Types;
+		Valueable<bool> BuildLimit_Group_Any;
+		ValueableVector<int> BuildLimit_Group_Limits;
+		Valueable<bool> BuildLimit_Group_Stop;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -393,6 +398,7 @@ public:
 			, SpawnHeight {}
 			, LandingDir {}
 			, DroppodType {}
+
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
 
@@ -410,6 +416,11 @@ public:
 			, AttachEffect_Delays {}
 			, AttachEffect_InitialDelays {}
 			, AttachEffect_RecreationDelays {}
+
+			, BuildLimit_Group_Types {}
+			, BuildLimit_Group_Any { false }
+			, BuildLimit_Group_Limits {}
+			, BuildLimit_Group_Stop { false }
 		{ }
 
 		virtual ~ExtData() = default;
