@@ -992,12 +992,12 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 
 ### Kill Object Automatically
 
-- Objects can be destroyed automatically if *any* of these conditions is met. If `ContentIfAnyMatch` set to false, it'll check if *all* conditions are met instead:
+- Objects can be destroyed automatically if *any* of these conditions is met. If `OnAnyCondition` set to false, it'll check if *all* conditions are met instead:
   - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
   - `MoneyExceed` / `MoneyBelow`: The object will die if its owner house has credits greater / smaller than (or equal to) set value.
   - `LowPower` / `FullPower`: The object will die if its owner house is in low / full power.
-  - `PassengerExceed` / `PassengerBelow`: The object will die if its current passenger amount is greater / smaller than (or equal to) set value.
+  - `PassengersExceed` / `PassengersBelow`: The object will die if its current passenger amount is greater / smaller than (or equal to) set value.
   - `TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes exist or do not exist, respectively.
     - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
     - `Technos(Dont)Exist.AllowLimboed` controls whether or not limboed TechnoTypes (f.ex those in transports) are counted.
@@ -1028,8 +1028,8 @@ AutoDeath.MoneyExceed=-1                       ; integer
 AutoDeath.MoneyBelow=-1                        ; integer
 AutoDeath.LowPower=false                       ; boolean
 AutoDeath.FullPower=false                      ; boolean
-AutoDeath.PassengerExceed=-1                   ; integer
-AutoDeath.PassengerBelow=-1                    ; integer
+AutoDeath.PassengersExceed=-1                  ; integer
+AutoDeath.PassengersBelow=-1                   ; integer
 AutoDeath.TechnosDontExist=                    ; list of TechnoType names
 AutoDeath.TechnosDontExist.Any=false           ; boolean
 AutoDeath.TechnosDontExist.AllowLimboed=false  ; boolean
@@ -1038,7 +1038,7 @@ AutoDeath.TechnosExist=                        ; list of TechnoType names
 AutoDeath.TechnosExist.Any=true                ; boolean
 AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
 AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-AutoDeath.ContentIfAnyMatch=true               ; boolean
+AutoDeath.OnAnyCondition=true                  ; boolean
 
 Convert.AutoDeath=                             ; TechnoType
 ```
