@@ -29,6 +29,7 @@ public:
 	public:
 		std::vector<std::vector<TechnoTypeClass*>> AITargetTypesLists;
 		std::vector<std::vector<ScriptTypeClass*>> AIScriptsLists;
+		std::vector<std::vector<HouseTypeClass*>> AIHousesLists;
 		ValueableVector<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;

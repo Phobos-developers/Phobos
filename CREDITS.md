@@ -130,6 +130,7 @@ This page lists all the individual contributions to the project by their author.
   - Shared ammo logic
   - Customizable FLH when infantry is prone or deployed
   - Initial strength for cloned infantry
+  - Map action 507 for printing a message with the remaining map objects
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
