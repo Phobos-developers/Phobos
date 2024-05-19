@@ -148,6 +148,7 @@ enum class AutoDeathBehavior
 	Kill = 0,     // default death option
 	Vanish = 1,
 	Sell = 2,     // buildings only
+	Convert = 3,
 };
 
 enum class SelfHealGainType

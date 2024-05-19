@@ -900,6 +900,10 @@ namespace detail
 			{
 				value = AutoDeathBehavior::Vanish;
 			}
+			else if (_strcmpi(parser.value(), "convert") == 0)
+			{
+				value = AutoDeathBehavior::Convert;
+			}
 			else
 			{
 				if (_strcmpi(parser.value(), "kill") != 0)

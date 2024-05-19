@@ -135,12 +135,124 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
 	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation.Get();
+	const auto pConvert = pTypeExt->AutoDeath_Convert.Get();
+	const bool anyMatched = pTypeExt->AutoDeath_ContentIfAnyMatch;
+
+	// Death by money
+
+	if (pTypeExt->AutoDeath_MoneyExceed >= 0)
+	{
+		if (pThis->Owner && pThis->Owner->Available_Money() >= pTypeExt->AutoDeath_MoneyExceed)
+		{
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+		}
+		else if (!anyMatched)
+		{
+			return false;
+		}
+	}
+
+	if (pTypeExt->AutoDeath_MoneyBelow >= 0)
+	{
+		if (pThis->Owner && pThis->Owner->Available_Money() <= pTypeExt->AutoDeath_MoneyBelow)
+		{
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+		}
+		else if (!anyMatched)
+		{
+			return false;
+		}
+	}
+
+	// Death by power
+	if (pTypeExt->AutoDeath_LowPower)
+	{
+		if (pThis->Owner && pThis->Owner->HasLowPower())
+		{
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+		}
+		else if (!anyMatched)
+		{
+			return false;
+		}
+	}
+
+	if (pTypeExt->AutoDeath_FullPower)
+	{
+		if (pThis->Owner && pThis->Owner->HasFullPower())
+		{
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+		}
+		else if (!anyMatched)
+		{
+			return false;
+		}
+	}
 
 	// Death if no ammo
-	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
+	if (pTypeExt->AutoDeath_OnAmmoDepletion)
 	{
-		TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
-		return true;
+		if (pType->Ammo > 0 && pThis->Ammo <= 0)
+		{
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+		}
+		else if (!anyMatched)
+		{
+			return false;
+		}
+	}
+
+	// Death by passengers
+	if (pTypeExt->AutoDeath_PassengerExceed >= 0)
+	{
+		if (pType->Passengers > 0 && pThis->Passengers.NumPassengers >= pTypeExt->AutoDeath_PassengerExceed)
+		{
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+		}
+		else if (!anyMatched)
+		{
+			return false;
+		}
+	}
+
+	if (pTypeExt->AutoDeath_PassengerBelow >= 0)
+	{
+		if (pType->Passengers > 0 && pThis->Passengers.NumPassengers <= pTypeExt->AutoDeath_PassengerBelow)
+		{
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+		}
+		else if (!anyMatched)
+		{
+			return false;
+		}
 	}
 
 	// Death if countdown ends
@@ -149,11 +261,21 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 		if (!this->AutoDeathTimer.HasStarted())
 		{
 			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
+
+			if (!anyMatched)
+				return false;
 		}
 		else if (this->AutoDeathTimer.Completed())
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
-			return true;
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+		}
+		else if (!anyMatched)
+		{
+			return false;
 		}
 	}
 
@@ -181,9 +303,15 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	{
 		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
-
-			return true;
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+		}
+		else if (!anyMatched)
+		{
+			return false;
 		}
 	}
 
@@ -192,10 +320,23 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	{
 		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
-
-			return true;
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
 		}
+		else if (!anyMatched)
+		{
+			return false;
+		}
+	}
+
+	// if ContentIfAnyMatched set to false, then all conditions have met in this step, execute auto death
+	if (!anyMatched)
+	{
+		TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+		return true;
 	}
 
 	return false;
@@ -643,7 +784,7 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo)
+void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo, TechnoTypeClass* pConvert)
 {
 	if (isInLimbo)
 	{
@@ -700,6 +841,20 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 		}
 		if (Phobos::Config::DevelopmentCommands)
 			Debug::Log("[Developer warning] AutoDeath: [%s] can't be sold, killing it instead\n", pThis->get_ID());
+	}
+
+	case AutoDeathBehavior::Convert:
+	{
+		if (auto pMe = abstract_cast<FootClass*>(pThis))
+		{
+			if (pConvert)
+			{
+				TechnoExt::ConvertToType(pMe, pConvert);
+				return;
+			}
+		}
+		if (Phobos::Config::DevelopmentCommands)
+			Debug::Log("[Developer warning] AutoDeath: [%s] can't be converted, killing it instead\n", pThis->get_ID());
 	}
 
 	default: //must be AutoDeathBehavior::Kill

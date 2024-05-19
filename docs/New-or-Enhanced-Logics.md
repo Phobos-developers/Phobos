@@ -857,9 +857,12 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 
 ### Kill Object Automatically
 
-- Objects can be destroyed automatically if *any* of these conditions is met:
+- Objects can be destroyed automatically if *any* of these conditions is met. If `ContentIfAnyMatch` set to false, it'll check if *all* conditions are met instead:
   - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
+  - `MoneyExceed` / `MoneyBelow`: The object will die if its owner house has credits greater / smaller than (or equal to) set value.
+  - `LowPower` / `FullPower`: The object will die if its owner house is in low / full power.
+  - `PassengerExceed` / `PassengerBelow`: The object will die if its current passenger amount is greater / smaller than (or equal to) set value.
   - `TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes exist or do not exist, respectively.
     - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
     - `Technos(Dont)Exist.AllowLimboed` controls whether or not limboed TechnoTypes (f.ex those in transports) are counted.
@@ -869,6 +872,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `kill`: The object will be destroyed normally.
   - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
+  - `convert`: If the object is a **unit**, it will be changed into the TechnoType in `Convert.AutoDeath` instead of destroyed.
 
 If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen.
 
@@ -881,18 +885,27 @@ This logic also supports buildings delivered by [LimboDelivery](#LimboDelivery).
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                   ; TechnoType
-AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
+AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell | convert), default not set
 AutoDeath.VanishAnimation                      ; Animation
 AutoDeath.OnAmmoDepletion=no                   ; boolean
 AutoDeath.AfterDelay=0                         ; positive integer
+AutoDeath.MoneyExceed=-1                       ; integer
+AutoDeath.MoneyBelow=-1                        ; integer
+AutoDeath.LowPower=false                       ; boolean
+AutoDeath.FullPower=false                      ; boolean
+AutoDeath.PassengerExceed=-1                   ; integer
+AutoDeath.PassengerBelow=-1                    ; integer
 AutoDeath.TechnosDontExist=                    ; list of TechnoType names
 AutoDeath.TechnosDontExist.Any=false           ; boolean
 AutoDeath.TechnosDontExist.AllowLimboed=false  ; boolean
 AutoDeath.TechnosDontExist.Houses=owner        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 AutoDeath.TechnosExist=                        ; list of TechnoType names
 AutoDeath.TechnosExist.Any=true                ; boolean
-AutoDeath.TechnosExist.AllowLimboed=false       ; boolean
+AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
 AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+AutoDeath.ContentIfAnyMatch=true               ; boolean
+
+Convert.AutoDeath=                             ; TechnoType
 ```
 
 ### Mind Control enhancement

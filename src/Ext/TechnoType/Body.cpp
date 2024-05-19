@@ -160,9 +160,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo_DeployUnlockMaximumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMaximumAmount");
 
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
+	this->AutoDeath_Convert.Read(exINI, pSection, "Convert.AutoDeath");
 	this->AutoDeath_VanishAnimation.Read(exINI, pSection, "AutoDeath.VanishAnimation");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
 	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
+	this->AutoDeath_MoneyExceed.Read(exINI, pSection, "AutoDeath.MoneyExceed");
+	this->AutoDeath_MoneyBelow.Read(exINI, pSection, "AutoDeath.MoneyBelow");
+	this->AutoDeath_LowPower.Read(exINI, pSection, "AutoDeath.LowPower");
+	this->AutoDeath_FullPower.Read(exINI, pSection, "AutoDeath.FullPower");
+	this->AutoDeath_PassengerExceed.Read(exINI, pSection, "AutoDeath.PassengerExceed");
+	this->AutoDeath_PassengerBelow.Read(exINI, pSection, "AutoDeath.PassengerBelow");
 	this->AutoDeath_TechnosDontExist.Read(exINI, pSection, "AutoDeath.TechnosDontExist");
 	this->AutoDeath_TechnosDontExist_Any.Read(exINI, pSection, "AutoDeath.TechnosDontExist.Any");
 	this->AutoDeath_TechnosDontExist_AllowLimboed.Read(exINI, pSection, "AutoDeath.TechnosDontExist.AllowLimboed");
@@ -171,6 +178,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_TechnosExist_Any.Read(exINI, pSection, "AutoDeath.TechnosExist.Any");
 	this->AutoDeath_TechnosExist_AllowLimboed.Read(exINI, pSection, "AutoDeath.TechnosExist.AllowLimboed");
 	this->AutoDeath_TechnosExist_Houses.Read(exINI, pSection, "AutoDeath.TechnosExist.Houses");
+	this->AutoDeath_ContentIfAnyMatch.Read(exINI, pSection, "AutoDeath.ContentIfAnyMatch");
 
 	this->Slaved_OwnerWhenMasterKilled.Read(exINI, pSection, "Slaved.OwnerWhenMasterKilled");
 	this->SlavesFreeSound.Read(exINI, pSection, "SlavesFreeSound");
@@ -479,9 +487,16 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Ammo_DeployUnlockMaximumAmount)
 
 		.Process(this->AutoDeath_Behavior)
+		.Process(this->AutoDeath_Convert)
 		.Process(this->AutoDeath_VanishAnimation)
 		.Process(this->AutoDeath_OnAmmoDepletion)
 		.Process(this->AutoDeath_AfterDelay)
+		.Process(this->AutoDeath_MoneyExceed)
+		.Process(this->AutoDeath_MoneyBelow)
+		.Process(this->AutoDeath_LowPower)
+		.Process(this->AutoDeath_FullPower)
+		.Process(this->AutoDeath_PassengerExceed)
+		.Process(this->AutoDeath_PassengerBelow)
 		.Process(this->AutoDeath_TechnosDontExist)
 		.Process(this->AutoDeath_TechnosDontExist_Any)
 		.Process(this->AutoDeath_TechnosDontExist_AllowLimboed)
@@ -490,6 +505,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoDeath_TechnosExist_Any)
 		.Process(this->AutoDeath_TechnosExist_AllowLimboed)
 		.Process(this->AutoDeath_TechnosExist_Houses)
+		.Process(this->AutoDeath_ContentIfAnyMatch)
 
 		.Process(this->Slaved_OwnerWhenMasterKilled)
 		.Process(this->SlavesFreeSound)

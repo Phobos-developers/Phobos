@@ -399,6 +399,8 @@ New:
 - Allow customizing the number of vehicles required for unit crates to turn into money crates (by Starkku)
 - Per-VehicleType reroll chance for `CrateGoodie=true` (by Starkku)
 - Warheads spawning powerup crates (by Starkku)
+- AutoDeath conditions extension (by Ollerus)
+- AutoDeath convert technos upon firing (by Ollerus)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
