@@ -47,7 +47,7 @@ DEFINE_HOOK(0x73BFBF, UnitClass_DrawAsVoxel_ICFSColor, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x423519, AnimClass_Draw_ICFSColor, 0x6)
+DEFINE_HOOK(0x42350C, AnimClass_Draw_ICFSColor, 0x7)
 {
 	enum { SkipGameCode = 0x423525 };
 
@@ -169,7 +169,7 @@ DEFINE_HOOK(0x73C083, UnitClass_DrawAsVoxel_TintColor, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x0423420, AnimClass_Draw_ParentBuildingCheck, 0x6)
+DEFINE_HOOK(0x423420, AnimClass_Draw_ParentBuildingCheck, 0x6)
 {
 	GET(AnimClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EAX);
