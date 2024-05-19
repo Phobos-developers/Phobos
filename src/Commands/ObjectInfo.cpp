@@ -13,6 +13,7 @@
 
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Script/Body.h>
 
 const char* ObjectInfoCommandClass::GetName() const
 {
@@ -125,6 +126,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 
 		append("\n");
 		display();
+		ScriptExt::DebugAngerNodesData(); // DEBUG - DELETE THIS LINE BEFORE MERGING, THIS IS USED ONLY FOR TESTERS!
 	};
 
 	auto printBuilding = [&append, &display](BuildingClass* pBuilding)
@@ -186,6 +188,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 			append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTechnoExt->CurrentShieldType->Strength);
 
 		display();
+		ScriptExt::DebugAngerNodesData(); // DEBUG - DELETE THIS LINE BEFORE MERGING, THIS IS USED ONLY FOR TESTERS!
 	};
 
 	bool dumped = false;

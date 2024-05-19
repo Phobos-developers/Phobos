@@ -30,6 +30,9 @@ public:
 		int ForceJump_InitialCountdown;
 		bool ForceJump_RepeatMode;
 		FootClass* TeamLeader;
+		int AngerNodeModifier;
+		bool OnlyTargetHouseEnemy;
+		int OnlyTargetHouseEnemyMode;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts { 0 }
@@ -44,6 +47,9 @@ public:
 			, ForceJump_InitialCountdown { -1 }
 			, ForceJump_RepeatMode { false }
 			, TeamLeader { nullptr }
+			, AngerNodeModifier { 5000 }
+			, OnlyTargetHouseEnemy { false }
+			, OnlyTargetHouseEnemyMode { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
