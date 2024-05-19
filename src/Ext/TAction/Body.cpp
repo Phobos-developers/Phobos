@@ -578,6 +578,7 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 			wchar_t strInteger[24] = { 0 };
 			swprintf_s(strInteger, L"%d", technosRemaining[i]);
 			wcscat_s(message, strInteger);
+			wcscat_s(message, L"\n");
 		}
 	}
 
