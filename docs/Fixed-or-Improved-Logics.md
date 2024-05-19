@@ -153,6 +153,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units.
 - Skipped drawing rally point line when undeploying a factory.
+- Tint effects are now correctly applied to SHP vehicles and all types of aircraft as well as building animations regardless of their position.
+- Iron Curtained / Force Shielded objects now always use the correct tint color.
  
 ## Fixes / interactions with other extensions
 

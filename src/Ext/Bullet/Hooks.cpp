@@ -250,6 +250,9 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
 				return SkipObject;
+
+			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
+				return SkipObject;
 		}
 
 	}

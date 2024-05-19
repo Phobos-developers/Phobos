@@ -7,6 +7,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <New/Type/RadTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 
 class WeaponTypeExt
 {
@@ -42,6 +43,15 @@ public:
 		ValueableVector<double> ExtraWarheads_DetonationChances;
 		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 		Valueable<bool> AmbientDamage_IgnoreTarget;
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
+		std::vector<const char*> AttachEffect_RequiredGroups;
+		std::vector<const char*> AttachEffect_DisallowedGroups;
+		ValueableVector<int> AttachEffect_RequiredMinCounts;
+		ValueableVector<int> AttachEffect_RequiredMaxCounts;
+		ValueableVector<int> AttachEffect_DisallowedMinCounts;
+		ValueableVector<int> AttachEffect_DisallowedMaxCounts;
+		Valueable<bool> AttachEffect_IgnoreFromSameSource;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -66,9 +76,20 @@ public:
 			, ExtraWarheads_DetonationChances {}
 			, AmbientDamage_Warhead {}
 			, AmbientDamage_IgnoreTarget { false }
+			, AttachEffect_RequiredTypes {}
+			, AttachEffect_DisallowedTypes {}
+			, AttachEffect_RequiredGroups {}
+			, AttachEffect_DisallowedGroups {}
+			, AttachEffect_RequiredMinCounts {}
+			, AttachEffect_RequiredMaxCounts {}
+			, AttachEffect_DisallowedMinCounts {}
+			, AttachEffect_DisallowedMaxCounts {}
+			, AttachEffect_IgnoreFromSameSource { false }
 		{ }
 
 		int GetBurstDelay(int burstIndex);
+
+		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer);
 
 		virtual ~ExtData() = default;
 
@@ -104,4 +125,5 @@ public:
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
+	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
 };

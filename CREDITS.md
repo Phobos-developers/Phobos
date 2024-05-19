@@ -224,6 +224,9 @@ This page lists all the individual contributions to the project by their author.
   - Aircraft landing / docking direction
   - `DeploysInto` cursor desync fix
   - Minor crate logic improvements
+  - Custom tint effects
+  - Revenge weapons
+  - AttachEffect
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

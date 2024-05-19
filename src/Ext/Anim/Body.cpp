@@ -202,6 +202,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->Invoker)
 		.Process(this->InvokerHouse)
 		.Process(this->AttachedSystem)
+		.Process(this->ParentBuilding)
 		;
 }
 

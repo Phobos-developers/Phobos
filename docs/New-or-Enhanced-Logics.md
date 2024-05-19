@@ -4,6 +4,135 @@ This page describes all the engine features that are either new and introduced b
 
 ## New types / ingame entities
 
+### Attached effects
+
+- Similar (but not identical) to Ares' AttachEffect, but with some differences and new features. The largest difference is that here attached effects are explicitly defined types.
+  - `Duration` determines how long the effect lasts for. It can be overriden by `DurationOverrides` on TechnoTypes and Warheads.
+  - `Cumulative`, if set to true, allows the same type of effect to be applied on same object multiple times, up to `Cumulative.MaxCount` number or with no limit if `Cumulative.MaxCount` is a negative number.
+  - `Powered` controls whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power. What happens to animation is controlled by `Animation.OfflineAction`.
+  - `DiscardOn` accepts a list of values corresponding to conditions where the attached effect should be discarded. Defaults to `none`, meaning it is never discarded.
+    - `entry`: Discard on exiting the map when entering transports or buildings etc.
+    - `move`: Discard when the object the effect is attached on moves. Ignored if the object is a building.
+    - `stationary`: Discard when the object the effect is attached on stops moving. Ignored if the object is a building.
+    - `drain`: Discard when the object is being affected by a weapon with `DrainWeapon=true`.
+  - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects (Iron Curtain / Force Shield).
+  - `Animation` defines animation to play in an indefinite loop for as long as the effect is active on the object it is attached to.
+    - If `Animation.ResetOnReapply` is set to true, the animation playback is reset every time the effect is applied if `Cumulative=false`.
+    - `Animation.OfflineAction` determines what happens to the animation when the attached object is deactivated or not powered. Only applies if `Powered=true`.
+    - `Animation.TemporalAction` determines what happens to the animation when the attached object is under effect of `Temporal=true` Warhead.
+    - `Animation.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the animation's owner & invoker instead of the object the effect is attached to.
+  - `CumulativeAnimations` can be used to declare a list of animations used for `Cumulative=true` types instead of `Animation`. An animation is picked from the list in order matching the number of active instances of the type on the object, with last listed animation used if number is higher than the number of listed animations. This animation is only displayed once, on the first active instance of the effect found attached and is updated and restarted if the number of active instances changed.
+  - Attached effect can fire off a weapon when expired / removed / object dies by setting `ExpireWeapon`.
+    - `ExpireWeapon.TriggerOn` determines the exact conditions upon which the weapon is fired, defaults to `expire` which means only if the effect naturally expires.
+    - `ExpireWeapon.CumulativeOnlyOnce`, if set to true, makes it so that `Cumulative=true` attached effects only detonate the weapon once period, instead of once per active instance. On `remove` and `expire` condition this means it will only detonate after last instance has expired or been removed.
+  - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
+    - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
+  - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
+    - If `ROFMultiplier.ApplyOnCurrentTimer` is set to true, `ROFMultiplier` is applied on currently running reload timer (if any) when the effect is first applied.
+  - If `Cloakable` is set to true, the object the effect is attached to is granted ability to cloak itself for duration of the effect.
+  - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
+  - `WeaponRange.Multiplier` and `WeaponRange.ExtraRange` can be used to multiply the weapon firing range of the object the effect is attached to, or give it an increase / decrease (measured in cells), respectively. `ExtraRange` is cumulatively applied from all attached effects after all `Multiplier` values have been applied.
+    - `WeaponRange.AllowWeapons` can be used to list only weapons that can benefit from this range bonus and `WeaponRange.DisallowWeapons` weapons that are not allowed to, respectively.
+    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
+  - `Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
+    - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
+  - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
+    - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
+  - `DisableWeapons` can be used to disable ability to fire any and all weapons.
+  - It is possible to set groups for attach effect types by defining strings in `Groups`.
+    - Groups can be used instead of types for removing effects and weapon filters.
+
+- AttachEffectTypes can be attached to TechnoTypes using `AttachEffect.AttachTypes`.
+  - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
+  - `AttachEffect.Delays` can be used to set the delays for recreating the effects on the TechnoType after they expire. Defaults to 0 (immediately), negative values mean the effects are not recreated. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+  - `AttachEffect.InitialDelays` can be used to set the delays before first creating the effects on TechnoType. Defaults to 0 (immediately). Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+  - `AttachEffect.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+
+- AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
+  - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
+  - Attached effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes` or `AttachEffect.RemoveGroups`.
+    - `AttachEffect.CumulativeRemoveMinCounts` sets minimum number of active instaces per `RemoveTypes`/`RemoveGroups` required for `Cumulative=true` types to be removed.
+    - `AttachEffect.CumulativeRemoveMaxCounts` sets maximum number of active instaces per `RemoveTypes`/`RemoveGroups` for `Cumulative=true` that are removed at once by this Warhead.
+
+- Weapons can require attached effects on target to fire, or be prevented by firing if specific attached effects are applied.
+  - `AttachEffect.RequiredTypes` can be used to list attached effects required to be on target to fire, all listed effect types must be present to allow firing.
+  - `AttachEffect.DisallowedTypes` can be used to list attached effects that when present prevent the weapon from firing, any of the listed effect types will prevent firing if present.
+  - `AttachEffect.Required/DisallowedGroups` have the same effect except applied with/to all types that have one of the listed groups in their `Groups` listing.
+  - `AttachEffect.(Required|Disallowed)MinCounts & (Required|Disallowed)MaxCounts` can be used to set the minimum and maximum number of instances required / disallowed to be on the Techno for `Cumulative=true` types (ignored for other types) respectively.
+  - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead.
+
+In `rulesmd.ini`:
+```ini
+[AttachEffectTypes]
+0=SOMEATTACHEFFECT
+
+[SOMEATTACHEFFECT]                           ; AttachEffectType
+Duration=0                                   ; integer - game frames or negative value for indefinite duration
+Cumulative=false                             ; boolean
+Cumulative.MaxCount=-1                       ; integer
+Powered=false                                ; boolean
+DiscardOn=none                               ; list of discard condition enumeration (none|entry|move|stationary|drain)
+PenetratesIronCurtain=false                  ; boolean
+Animation=                                   ; Animation
+Animation.ResetOnReapply=false               ; boolean
+Animation.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.TemporalAction=None                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.UseInvokerAsOwner=false            ; boolean
+CumulativeAnimations=                        ; list of animations
+ExpireWeapon=
+ExpireWeapon.TriggerOn=expire                ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
+ExpireWeapon.CumulativeOnlyOnce=false        ; boolean
+Tint.Color=                                  ; integer - R,G,B
+Tint.Intensity=                              ; floating point value
+Tint.VisibleToHouses=all                     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+FirepowerMultiplier=1.0                      ; floating point value
+ArmorMultiplier=1.0                          ; floating point value
+SpeedMultiplier=1.0                          ; floating point value
+ROFMultiplier=1.0                            ; floating point value
+ROFMultiplier.ApplyOnCurrentTimer=true       ; boolean
+Cloakable=false                              ; boolean
+ForceDecloak=false                           ; boolean
+WeaponRange.Multiplier=1.0                   ; floating point value
+WeaponRange.ExtraRange=0.0                   ; floating point value
+WeaponRange.AllowWeapons=                    ; list of WeaponTypes
+WeaponRange.DisallowWeapons=                 ; list of WeaponTypes
+Crit.Multiplier=1.0                          ; floating point value
+Crit.ExtraChance=0.0                         ; floating point value
+Crit.AllowWarheads=                          ; list of WarheadTypes
+Crit.DisallowWarheads=                       ; list of WarheadTypes
+RevengeWeapon=                               ; WeaponType
+RevengeWeapon.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisableWeapons=false                         ; boolean
+Groups=                                      ; comma-separated list of strings (group IDs)
+
+[SOMETECHNO]                                 ; TechnoType
+AttachEffect.AttachTypes=                    ; List of AttachEffectTypes
+AttachEffect.DurationOverrides=              ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.Delays=                         ; integer - delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.InitialDelays=                  ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.RecreationDelays=               ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
+OpenTopped.UseTransportRangeModifiers=false  ; boolean
+
+[SOMEWEAPON]                                 ; WeaponType
+AttachEffect.RequiredTypes=                  ; List of AttachEffectTypes
+AttachEffect.DisallowedTypes=                ; List of AttachEffectTypes
+AttachEffect.RequiredGroups=                 ; comma-separated list of strings (group IDs)
+AttachEffect.DisallowedGroups=               ; comma-separated list of strings (group IDs)
+AttachEffect.RequiredMinCounts=              ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.RequiredMaxCounts=              ; integer - maximum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMinCounts=            ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMaxCounts=            ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.IgnoreFromSameSource=false      ; boolean
+
+[SOMEWARHEAD]
+AttachEffect.AttachTypes=                    ; List of AttachEffectTypes
+AttachEffect.RemoveTypes=                    ; List of AttachEffectTypes
+AttachEffect.RemoveGroups=                   ; comma-separated list of strings (group IDs)
+AttachEffect.CumulativeRemoveMinCounts=      ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.CumulativeRemoveMaxCounts=      ; integer - maximum removed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DurationOverrides=              ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+```
+
 ### Custom Radiation Types
 
 ![image](_static/images/radtype-01.png)
@@ -38,7 +167,7 @@ RadLightDelay=90                   ; integer
 RadLevelFactor=0.2                 ; floating point value
 RadLightFactor=0.1                 ; floating point value
 RadTintFactor=1.0                  ; floating point value
-RadColor=0,255,0                   ; integer - Red,Green,Blue
+RadColor=0,255,0                   ; integer - R,G,B
 RadSiteWarhead=RadSite             ; WarheadType
 RadSiteWarhead.Detonate=false      ; boolean
 RadHasOwner=false                  ; boolean
@@ -67,7 +196,7 @@ In `artmd.ini`:
 
 [SOMETRAIL]                   ; LaserTrailType name
 IsHouseColor=false            ; boolean
-Color=255,0,0                 ; integer - Red,Green,Blue
+Color=255,0,0                 ; integer - R,G,B
 FadeDuration=64               ; integer
 Thickness=4                   ; integer
 SegmentLength=128             ; integer, minimal length of each trail segment
@@ -147,6 +276,9 @@ ReceivedDamage.Maximum=2147483647           ; integer
 AllowTransfer=                              ; boolean
 ImmuneToBerserk=no                          ; boolean
 ImmuneToCrit=no                             ; boolean
+Tint.Color=                                 ; integer - R,G,B
+Tint.Intensity=0.0                          ; floating point value
+Tint.VisibleToHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
 [SOMETECHNO]                                ; TechnoType
 ShieldType=SOMESHIELDTYPE                   ; ShieldType; none by default
@@ -214,6 +346,9 @@ Shield.InheritStateOnReplace=false          ; boolean
 - `ReceivedDamage.Minimum` & `ReceivedDamage.Maximum` control the minimum and maximum amount of damage that can be dealt to shield in a single hit. This is applied after armor type and `AbsorbPercent` adjustments. If `AbsorbOverDamage=false`, the residual damage dealt to the TechnoType is still based on the original damage before the clamping to the range.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
 - `ImmuneToBerserk` gives the immunity against `Psychedelic=yes` warhead. Otherwise the berserk effect penetrates shields by default. Note that this shouldn't prevent the unit from targeting at the shielded object. `Versus.shieldArmor=0%` is still required in this case.
+- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to to TechnoTypes with shields by setting `Tint.Color` and/or `Tint Intensity`.
+  - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
+  - `Tint.VisibleToHouses` can be used to customize which houses can see the tint effect.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable. Several customizations are available for the shield strength pips.
   - By default, buildings use the 6th frame of `pips.shp` to display the shield strength while others use the 17th frame.
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
@@ -221,7 +356,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Pips.Shield.Building.Empty` can be used to set the frame of `pips.shp` displayed for empty building strength pips, defaults to 1st frame of `pips.shp`.
   - The above customizations are also available on per ShieldType basis, e.g `[ShieldType]`->`Pips` instead of `[AudioVisual]`->`Pips.Shield` and so on. ShieldType settings take precedence over the global ones, but will fall back to them if not set.
   - `BracketDelta` can be used as additional vertical offset (negative shifts it up) for shield strength bar. Much like `PixelSelectionBracketDelta`, it is not applied on buildings.
-- Warheads have new options that interact with shields.
+- Warheads have new options that interact with shields. Note that all of these that do not by their very nature require ability to target the shield (such as modifiers like `Shield.Break` or removing / attaching) still require Warhead `Verses` to affect the target unless `EffectsRequireVerses` is set to false on the Warhead.
   - `Shield.Penetrate` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield doesn't exist.
   - `Shield.Break` allows the warhead to always break shields of TechnoTypes. This is done before damage is dealt.
   - `Shield.BreakAnim` will be displayed instead of ShieldType `BreakAnim` if the shield is broken by the Warhead, either through damage or `Shield.Break`.
@@ -529,7 +664,7 @@ Trajectory.Bombard.Height=0.0  ; double
 *Shrapnel appearing against ground & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
 
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
-- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) will be checked.
+- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
   
 In `rulesmd.ini`:
@@ -938,6 +1073,19 @@ In `rulesmd.ini`:
 Promote.IncludeSpawns=false  ; boolean
 ```
 
+### Revenge weapon
+
+- Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
+  - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
+  - It is possible to grant revenge weapons through [attached effects](#attached-effects) as well.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+RevengeWeapon=                  ; WeaponType
+RevengeWeapon.AffectsHouses=all ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ### Spawner pursuit range & spawn delay customization
 
 ![image](_static/images/spawnrange-01.gif)
@@ -970,10 +1118,23 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Custom tint on TechnoTypes
+
+- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint Intensity`.
+  - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
+  - `Tint.VisibleToHouses` can be used to customize which houses can see the tint effect.
+  - Tint effects can also be applied by [attached effects](#attached-effects) and on shields.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]              ; TechnoType
+Tint.Color=               ; integer - R,G,B
+Tint.Intensity=0.0        ; floating point value
+Tint.VisibleToHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
 ### Customize EVA voice and `SellSound` when selling units
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
-
   - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
   - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual]->SellSound`. Note that vanilla game played vehicles' SellSound globally. This has been changed in consistency with buildings' SellSound.
 
@@ -1024,9 +1185,10 @@ DestroySound=      ; Sound
 ## Warheads
 
 ```{hint}
-All new warhead effects
-- can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
-- cannot be used with `MindControl.Permanent=yes` of Ares.
+All new Warhead effects
+- Can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
+- Cannot be used with `MindControl.Permanent=yes` of Ares.
+- Respect `Verses` where applicable unless `EffectsRequireVerses` is set to false. If target has an active shield, its armor type is used instead unless warhead can penetrate the shield.
 ```
 
 ### Break Mind Control on impact
