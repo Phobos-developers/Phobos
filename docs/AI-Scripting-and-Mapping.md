@@ -578,6 +578,7 @@ ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointI
 - `[AITargetTypesIndex]` is the index of an entry in the `[AITargetTypes]` section located in `rulesmd.ini`. Each alive map object listed here will be counted.
 - If `[AITargetTypesIndex]` is negative this value will be evaluated as a positive index in `[AITargetTypesIndex]` but instead of printing a list of alive map objects and the respective count it will appear as an unique global count of all the alive map objects listed in `[AITargetTypes]`.
 - `MesageDelay` is the time (in minutes) of the message displayed. If the value is 0 then the duration of the message will be the default `MesageDelay` value specified in `rulesmd.ini`.
+- Be aware a message can't show more than 6 lines so if `[AITargetTypes]` contains more than 5 map objects then the first lines won't appear.
 
 In `mycampaign.map`:
 ```ini
