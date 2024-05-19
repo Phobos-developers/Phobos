@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "Parser.h"
 
 #include <Phobos.h>
@@ -130,5 +132,21 @@ public:
 	bool ReadArmor(const char* pSection, const char* pKey, int *nBuffer) {
 		*nBuffer = IniFile->ReadArmorType(pSection, pKey, *nBuffer);
 		return (*nBuffer != -1);
+	}
+
+	bool ParseStringList(std::vector<const char*>& values, const char* pSection, const char* pKey)
+	{
+		if (this->ReadString(pSection, pKey))
+		{
+			values.clear();
+			char* context = nullptr;
+
+			for (auto pCur = strtok_s(this->value(), Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
+				values.push_back(pCur);
+
+			return true;
+		}
+
+		return false;
 	}
 };
