@@ -68,6 +68,8 @@ public:
 		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
+		Valueable<bool> AutoDeath_OwnedByPlayer;
+		Valueable<bool> AutoDeath_OwnedByAI;
 		Valueable<int> AutoDeath_MoneyExceed;
 		Valueable<int> AutoDeath_MoneyBelow;
 		Valueable<bool> AutoDeath_LowPower;
@@ -326,6 +328,8 @@ public:
 			, AutoDeath_VanishAnimation {}
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
+			, AutoDeath_OwnedByPlayer { false }
+			, AutoDeath_OwnedByAI { false }
 			, AutoDeath_MoneyExceed { -1 }
 			, AutoDeath_MoneyBelow { -1 }
 			, AutoDeath_LowPower { false }

@@ -138,6 +138,39 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	const auto pConvert = pTypeExt->AutoDeath_Convert.Get();
 	const bool anyMatched = pTypeExt->AutoDeath_ContentIfAnyMatch;
 
+	// Death by owning house
+	if (pTypeExt->AutoDeath_OwnedByPlayer)
+	{
+		if (pThis->Owner && pThis->Owner->IsControlledByHuman())
+		{
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+		}
+		else if (!anyMatched)
+		{
+			return false;
+		}
+	}
+
+	if (pTypeExt->AutoDeath_OwnedByAI)
+	{
+		if (pThis->Owner && !pThis->Owner->IsControlledByHuman())
+		{
+			if (anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+		}
+		else if (!anyMatched)
+		{
+			return false;
+		}
+	}
+
 	// Death by money
 
 	if (pTypeExt->AutoDeath_MoneyExceed >= 0)

@@ -995,6 +995,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 - Objects can be destroyed automatically if *any* of these conditions is met. If `OnAnyCondition` set to false, it'll check if *all* conditions are met instead:
   - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
+  - `OwnedByPlayer` / `OwnedByAI`: The object will die if its owner house is / isn't a human player.
   - `MoneyExceed` / `MoneyBelow`: The object will die if its owner house has credits greater / smaller than (or equal to) set value.
   - `LowPower` / `FullPower`: The object will die if its owner house is in low / full power.
   - `PassengersExceed` / `PassengersBelow`: The object will die if its current passenger amount is greater / smaller than (or equal to) set value.
@@ -1024,6 +1025,8 @@ AutoDeath.Behavior=                            ; enumeration (kill | vanish | se
 AutoDeath.VanishAnimation                      ; Animation
 AutoDeath.OnAmmoDepletion=no                   ; boolean
 AutoDeath.AfterDelay=0                         ; positive integer
+AutoDeath.OwnedByPlayer=false                  ; boolean
+AutoDeath.OwnedByAI=false                      ; boolean
 AutoDeath.MoneyExceed=-1                       ; integer
 AutoDeath.MoneyBelow=-1                        ; integer
 AutoDeath.LowPower=false                       ; boolean

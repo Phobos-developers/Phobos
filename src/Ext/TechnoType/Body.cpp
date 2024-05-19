@@ -164,6 +164,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_VanishAnimation.Read(exINI, pSection, "AutoDeath.VanishAnimation");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
 	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
+	this->AutoDeath_OwnedByPlayer.Read(exINI, pSection, "AutoDeath.OwnedByPlayer");
+	this->AutoDeath_OwnedByAI.Read(exINI, pSection, "AutoDeath.OwnedByAI");
 	this->AutoDeath_MoneyExceed.Read(exINI, pSection, "AutoDeath.MoneyExceed");
 	this->AutoDeath_MoneyBelow.Read(exINI, pSection, "AutoDeath.MoneyBelow");
 	this->AutoDeath_LowPower.Read(exINI, pSection, "AutoDeath.LowPower");
@@ -505,6 +507,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoDeath_VanishAnimation)
 		.Process(this->AutoDeath_OnAmmoDepletion)
 		.Process(this->AutoDeath_AfterDelay)
+		.Process(this->AutoDeath_OwnedByPlayer)
+		.Process(this->AutoDeath_OwnedByAI)
 		.Process(this->AutoDeath_MoneyExceed)
 		.Process(this->AutoDeath_MoneyBelow)
 		.Process(this->AutoDeath_LowPower)
