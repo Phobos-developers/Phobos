@@ -399,7 +399,7 @@ New:
 - Restore functionality of `[CrateRules]` -> `FreeMCV` with customizable credits threshold (by Starkku)
 - Allow customizing the number of vehicles required for unit crates to turn into money crates (by Starkku)
 - Per-VehicleType reroll chance for `CrateGoodie=true` (by Starkku)
-- Warheads spawning powerup crates (by Starkku)- Custom tint on TechnoTypes (by Starkku)
+- Warheads spawning powerup crates (by Starkku)
 - Custom tint on TechnoTypes (by Starkku)
 - Revenge weapon (by Starkku)
 - AttachEffect types with new features like custom tint and weapon range modifier (by Starkku)
