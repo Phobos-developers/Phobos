@@ -64,9 +64,18 @@ public:
 		Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		Valueable<TechnoTypeClass*> AutoDeath_Convert;
 		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
+		Valueable<bool> AutoDeath_OwnedByPlayer;
+		Valueable<bool> AutoDeath_OwnedByAI;
+		Valueable<int> AutoDeath_MoneyExceed;
+		Valueable<int> AutoDeath_MoneyBelow;
+		Valueable<bool> AutoDeath_LowPower;
+		Valueable<bool> AutoDeath_FullPower;
+		Valueable<int> AutoDeath_PassengerExceed;
+		Valueable<int> AutoDeath_PassengerBelow;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
 		Valueable<bool> AutoDeath_TechnosDontExist_Any;
 		Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
@@ -75,6 +84,7 @@ public:
 		Valueable<bool> AutoDeath_TechnosExist_Any;
 		Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
 		Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
+		Valueable<bool> AutoDeath_ContentIfAnyMatch;
 
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
 		NullableIdx<VocClass> SlavesFreeSound;
@@ -314,9 +324,18 @@ public:
 			, Ammo_DeployUnlockMaximumAmount { -1 }
 
 			, AutoDeath_Behavior { }
+			, AutoDeath_Convert { }
 			, AutoDeath_VanishAnimation {}
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
+			, AutoDeath_OwnedByPlayer { false }
+			, AutoDeath_OwnedByAI { false }
+			, AutoDeath_MoneyExceed { -1 }
+			, AutoDeath_MoneyBelow { -1 }
+			, AutoDeath_LowPower { false }
+			, AutoDeath_FullPower { false }
+			, AutoDeath_PassengerExceed { -1 }
+			, AutoDeath_PassengerBelow { -1 }
 			, AutoDeath_TechnosDontExist {}
 			, AutoDeath_TechnosDontExist_Any { false }
 			, AutoDeath_TechnosDontExist_AllowLimboed { false }
@@ -325,6 +344,7 @@ public:
 			, AutoDeath_TechnosExist_Any { true }
 			, AutoDeath_TechnosExist_AllowLimboed { true }
 			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
+			, AutoDeath_ContentIfAnyMatch { true }
 
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 			, SlavesFreeSound {}
