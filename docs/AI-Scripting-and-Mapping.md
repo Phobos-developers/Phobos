@@ -570,6 +570,23 @@ ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointI
 ...
 ```
 
+### `507` Printing a message with the remaining map objects
+- A message will be printed with a list of alive map objects.
+- If no `CSFKey` is mentioned (value `0`) it will use the default header text `Remaining: `.
+- `HouseIndex` points to any house index of the map. Multiplayer 4475-4482 & 8997 indexes are valid.
+- If `HouseIndex` is set `-1` then `[AIHousesListsIndex]` will be used as index of a list of countries in the `[AIHousesList]` section located in `rulesmd.ini`. If any map object match the ownership with one of the list it will be counted.
+- `[AITargetTypesIndex]` is the index of an entry in the `[AITargetTypes]` section located in `rulesmd.ini`. Each alive map object listed here will be counted.
+- If `[AITargetTypesIndex]` is negative this value will be evaluated as a positive index in `[AITargetTypesIndex]` but instead of printing a list of alive map objects and the respective count it will appear as an unique global count of all the alive map objects listed in `[AITargetTypes]`.
+- `MesageDelay` is the time (in minutes) of the message displayed. If the value is 0 then the duration of the message will be the default `MesageDelay` value specified in `rulesmd.ini`.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],507,4,[CSFKey],[HouseIndex],[AIHousesListsIndex],[AITargetTypesIndex],[MesageDelay],A,[ActionX]
+...
+```
+
 ### `510` Toggle MCV redeployablility
 
 - Force MCV's redeployablility by setting the third parameter.
