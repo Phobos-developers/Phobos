@@ -99,7 +99,7 @@ DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt && pWHExt->HasCrit && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
+	if (pWHExt && pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
 	{
 		GET(int, nDamage, ECX);
 		int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?

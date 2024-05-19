@@ -12,7 +12,8 @@
 #include <Ext/AnimType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
-
+#include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
 #include <Utilities/AresHelper.h>
 #include <JumpjetLocomotionClass.h>
@@ -283,7 +284,7 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 {
 	enum { SetUIName = 0x4AE678 };
 
-	GET(ObjectClass* , pObject, ECX);
+	GET(ObjectClass*, pObject, ECX);
 
 	auto pDecidedUIName = pObject->GetUIName();
 	auto pFoot = generic_cast<FootClass*>(pObject);
@@ -334,6 +335,40 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 		VocClass::PlayAt(sound, pSlave->Location);
 
 	return 0x6B0C65;
+}
+
+DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+
+	if (pSource)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		auto const pTypeExt = pExt->TypeExtData;
+
+		if (pTypeExt && pTypeExt->RevengeWeapon.isset() &&
+			EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		{
+			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon.Get(), pSource, pThis);
+		}
+
+		for (auto& attachEffect : pExt->AttachedEffects)
+		{
+			if (!attachEffect->IsActive())
+				continue;
+
+			auto const pType = attachEffect->GetType();
+
+			if (!pType->RevengeWeapon.isset())
+				continue;
+
+			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
+		}
+	}
+
+	return 0;
 }
 
 // 2nd order Pade approximant just in case someone complains about performance
