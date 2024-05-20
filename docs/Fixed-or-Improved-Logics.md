@@ -153,6 +153,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
 - Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units.
 - Skipped drawing rally point line when undeploying a factory.
+- Tint effects are now correctly applied to SHP vehicles and all types of aircraft as well as building animations regardless of their position.
+- Iron Curtained / Force Shielded objects now always use the correct tint color.
  
 ## Fixes / interactions with other extensions
 
@@ -834,22 +836,24 @@ DeployingAnim.ReverseForUndeploy=true  ; boolean
 DeployingAnim.UseUnitDrawer=true       ; boolean
 ```
 
-### Preserve Iron Curtain status on type conversion
+### Preserve Iron Curtain / Force Shield status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
 *Bugfix in action*
 
-- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`.
-  - This behavior can be turned off per-TechnoType and global basis.
-  - `IronCurtain.Modifier` is re-applied upon type conversion.
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. Force Shield status preservation is turned off by default.
+  - This behavior can be turned on/off per-TechnoType and on global basis.
+  - `IronCurtain.Modifier` / `ForceShield.Modifier` (whichever is applicable) is re-applied upon type conversion.
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-IronCurtain.KeptOnDeploy=yes ; boolean
+IronCurtain.KeptOnDeploy=true   ; boolean
+ForceShield.KeptOnDeploy=false  ; boolean
 
-[SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
-IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
+[SOMETECHNO]                    ; VehicleType with DeploysInto or BuildingType with UndeploysInto
+IronCurtain.KeptOnDeploy=       ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
+ForceShield.KeptOnDeploy=       ; boolean, default to [CombatDamage]->ForceShield.KeptOnDeploy
 ```
 
 ### Stationary vehicles
