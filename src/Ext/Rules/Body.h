@@ -94,6 +94,7 @@ public:
 		Valueable<AffectedHouse> DisplayIncome_Houses;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
+		Valueable<bool> ForceShield_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
 
@@ -177,6 +178,7 @@ public:
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
 			, IronCurtain_KeptOnDeploy { true }
+			, ForceShield_KeptOnDeploy { false }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
 			, ROF_RandomDelay { { 0 ,2  } }

@@ -86,15 +86,21 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 	return false;
 }
 
-void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
+// Syncs Iron Curtain or Force Shield timer to another techno.
+void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 {
-	if (pFrom->IsIronCurtained() && !pFrom->ForceShielded)
+	if (pFrom->IsIronCurtained())
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFrom->GetTechnoType());
-		if (pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy))
+		bool isForceShielded = pFrom->ForceShielded;
+		bool allowSyncing = !isForceShielded ? pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy) :
+			pTypeExt->ForceShield_KeptOnDeploy.Get(RulesExt::Global()->ForceShield_KeptOnDeploy);
+
+		if (allowSyncing)
 		{
 			pTo->IronCurtain(pFrom->IronCurtainTimer.GetTimeLeft(), pFrom->Owner, false);
 			pTo->IronTintStage = pFrom->IronTintStage;
+			pTo->ForceShielded = isForceShielded;
 		}
 	}
 }

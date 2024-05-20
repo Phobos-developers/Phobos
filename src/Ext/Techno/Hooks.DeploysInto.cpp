@@ -75,7 +75,7 @@ DEFINE_HOOK(0x739956, UnitClass_Deploy_Transfer, 0x6)
 
 	TechnoExt::TransferMindControlOnDeploy(pUnit, pStructure);
 	ShieldClass::SyncShieldToAnother(pUnit, pStructure);
-	TechnoExt::SyncIronCurtainStatus(pUnit, pStructure);
+	TechnoExt::SyncInvulnerability(pUnit, pStructure);
 	AttachEffectClass::TransferAttachedEffects(pUnit, pStructure);
 
 	return 0;
@@ -88,7 +88,7 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_Transfer, 0x6)
 
 	TechnoExt::TransferMindControlOnDeploy(pStructure, pUnit);
 	ShieldClass::SyncShieldToAnother(pStructure, pUnit);
-	TechnoExt::SyncIronCurtainStatus(pStructure, pUnit);
+	TechnoExt::SyncInvulnerability(pStructure, pUnit);
 	AttachEffectClass::TransferAttachedEffects(pStructure, pUnit);
 
 	pUnit->QueueMission(Mission::Hunt, true);
