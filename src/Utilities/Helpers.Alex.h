@@ -210,7 +210,8 @@ namespace Helpers {
 				}
 			}
 
-			// flying objects are not included normally, use AircraftTrackerClass to find the affected ones.
+			// flying objects are not included normally
+		    // Starkku: Reimplemented using AircraftTrackerClass.
 			if (includeInAir)
 			{
 				auto const airTracker = &AircraftTrackerClass::Instance.get();
@@ -227,22 +228,6 @@ namespace Helpers {
 					}
 				}
 			}
-
-			/*
-			Starkku: Reimplemented using AircraftTrackerClass above.
-			// flying objects are not included normally
-			if (includeInAir) {
-				// the not quite so fast way. skip everything not in the air.
-				for (auto const& pTechno : *TechnoClass::Array) {
-					if (pTechno->GetHeight() > 0) {
-						// rough estimation
-						if (pTechno->Location.DistanceFrom(coords) <= spreadMult) {
-							set.insert(pTechno);
-						}
-					}
-				}
-			}
-			*/
 
 			// look closer. the final selection. put all affected items in a vector.
 			std::vector<TechnoClass*> ret;
