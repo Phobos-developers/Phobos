@@ -46,16 +46,16 @@ inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoT
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (pTypeExt->BuildLimit_Group_Types.empty() || pTypeExt->BuildLimit_Group_Limits.empty())
+	if (pTypeExt->BuildLimitGroup_Types.empty() || pTypeExt->BuildLimitGroup_Nums.empty())
 		return false;
 
-	if (pTypeExt->BuildLimit_Group_Limits.size() == 1)
+	if (pTypeExt->BuildLimitGroup_Nums.size() == 1)
 	{
 		int count = 0;
 		int queued = 0;
 		bool inside = false;
 
-		for (const TechnoTypeClass* pTmpType : pTypeExt->BuildLimit_Group_Types)
+		for (const TechnoTypeClass* pTmpType : pTypeExt->BuildLimitGroup_Types)
 		{
 			if (!ignoreQueued)
 				queued += QueuedNum(pHouse, pTmpType);
@@ -66,13 +66,13 @@ inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoT
 				inside = true;
 		}
 
-		int num = count - pTypeExt->BuildLimit_Group_Limits.back();
+		int num = count - pTypeExt->BuildLimitGroup_Nums.back();
 
 		if (num + queued >= 0)
 		{
 			if (inside)
 				RemoveProduction(pHouse, pType, num + queued);
-			else if (num >= 0 || pTypeExt->BuildLimit_Group_Stop)
+			else if (num >= 0 || pTypeExt->BuildLimitGroup_NotBuildableIfQueueMatch)
 				RemoveProduction(pHouse, pType, -1);
 
 			return true;
@@ -80,21 +80,21 @@ inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoT
 	}
 	else
 	{
-		size_t size = Math::min(pTypeExt->BuildLimit_Group_Limits.size(), pTypeExt->BuildLimit_Group_Types.size());
+		size_t size = Math::min(pTypeExt->BuildLimitGroup_Nums.size(), pTypeExt->BuildLimitGroup_Types.size());
 		bool reached = true;
 		bool realReached = true;
 
 		for (size_t i = 0; i < size; i++)
 		{
-			const TechnoTypeClass* pTmpType = pTypeExt->BuildLimit_Group_Types[i];
+			const TechnoTypeClass* pTmpType = pTypeExt->BuildLimitGroup_Types[i];
 			int queued = ignoreQueued ? 0 : QueuedNum(pHouse, pTmpType);
-			int num = pHouse->CountOwnedNow(pTmpType) - pTypeExt->BuildLimit_Group_Limits[i];
+			int num = pHouse->CountOwnedNow(pTmpType) - pTypeExt->BuildLimitGroup_Nums[i];
 
 			if (num + queued >= 0)
 			{
-				if (pTypeExt->BuildLimit_Group_Any)
+				if (pTypeExt->BuildLimitGroup_ContentIfAnyMatch)
 				{
-					if (num >= 0 || pTypeExt->BuildLimit_Group_Stop)
+					if (num >= 0 || pTypeExt->BuildLimitGroup_NotBuildableIfQueueMatch)
 						RemoveProduction(pHouse, pType, -1);
 
 					return true;
@@ -112,7 +112,7 @@ inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoT
 
 		if (reached)
 		{
-			if (realReached || pTypeExt->BuildLimit_Group_Stop)
+			if (realReached || pTypeExt->BuildLimitGroup_NotBuildableIfQueueMatch)
 				RemoveProduction(pHouse, pType, -1);
 
 			return true;
@@ -143,10 +143,7 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
 	GET_STACK(TechnoTypeClass*, pType, 0x4);
 	GET(bool, aresDisable, EAX);
 
-	if (aresDisable)
-		return 0;
-
-	if (pType == nullptr)
+	if (aresDisable || pType == nullptr)
 		return 0;
 
 	if (ReachedBuildLimit(pThis, pType, false))

@@ -208,10 +208,10 @@ public:
 		ValueableVector<int> AttachEffect_InitialDelays;
 		NullableVector<int> AttachEffect_RecreationDelays;
 
-		ValueableVector<TechnoTypeClass*> BuildLimit_Group_Types;
-		Valueable<bool> BuildLimit_Group_Any;
-		ValueableVector<int> BuildLimit_Group_Limits;
-		Valueable<bool> BuildLimit_Group_Stop;
+		ValueableVector<TechnoTypeClass*> BuildLimitGroup_Types;
+		Valueable<bool> BuildLimitGroup_ContentIfAnyMatch;
+		ValueableVector<int> BuildLimitGroup_Nums;
+		Valueable<bool> BuildLimitGroup_NotBuildableIfQueueMatch;
 
 		struct LaserTrailDataEntry
 		{
@@ -417,10 +417,10 @@ public:
 			, AttachEffect_InitialDelays {}
 			, AttachEffect_RecreationDelays {}
 
-			, BuildLimit_Group_Types {}
-			, BuildLimit_Group_Any { false }
-			, BuildLimit_Group_Limits {}
-			, BuildLimit_Group_Stop { false }
+			, BuildLimitGroup_Types {}
+			, BuildLimitGroup_ContentIfAnyMatch { false }
+			, BuildLimitGroup_Nums {}
+			, BuildLimitGroup_NotBuildableIfQueueMatch { false }
 		{ }
 
 		virtual ~ExtData() = default;

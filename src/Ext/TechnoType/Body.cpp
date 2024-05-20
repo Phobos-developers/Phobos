@@ -295,10 +295,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_InitialDelays.Read(exINI, pSection, "AttachEffect.InitialDelays");
 	this->AttachEffect_RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
 
-	this->BuildLimit_Group_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
-	this->BuildLimit_Group_Any.Read(exINI, pSection, "BuildLimitGroup.ContentIfAnyMatch");
-	this->BuildLimit_Group_Limits.Read(exINI, pSection, "BuildLimitGroup.Nums");
-	this->BuildLimit_Group_Stop.Read(exINI, pSection, "BuildLimitGroup.NotBuildableIfQueueMatch");
+	this->BuildLimitGroup_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
+	this->BuildLimitGroup_ContentIfAnyMatch.Read(exINI, pSection, "BuildLimitGroup.ContentIfAnyMatch");
+	this->BuildLimitGroup_Nums.Read(exINI, pSection, "BuildLimitGroup.Nums");
+	this->BuildLimitGroup_NotBuildableIfQueueMatch.Read(exINI, pSection, "BuildLimitGroup.NotBuildableIfQueueMatch");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -644,10 +644,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_InitialDelays)
 		.Process(this->AttachEffect_RecreationDelays)
 
-		.Process(this->BuildLimit_Group_Types)
-		.Process(this->BuildLimit_Group_Any)
-		.Process(this->BuildLimit_Group_Limits)
-		.Process(this->BuildLimit_Group_Stop)
+		.Process(this->BuildLimitGroup_Types)
+		.Process(this->BuildLimitGroup_ContentIfAnyMatch)
+		.Process(this->BuildLimitGroup_Nums)
+		.Process(this->BuildLimitGroup_NotBuildableIfQueueMatch)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
