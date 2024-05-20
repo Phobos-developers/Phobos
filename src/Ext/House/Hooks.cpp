@@ -96,8 +96,23 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	auto const pExt = RecalcCenterTemp::pExtData;
 
-	if (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding))
+	if (!MapClass::Instance->CoordinatesLegal(pBuilding->GetMapCoords())
+		|| (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding)))
+	{
 		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
+{
+	enum { SkipTechno = 0x4AC55B };
+
+	GET(TechnoClass* const, pTechno, ECX);
+
+	if (!MapClass::Instance->CoordinatesLegal(pTechno->GetMapCoords()))
+		return SkipTechno;
 
 	return 0;
 }

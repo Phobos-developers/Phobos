@@ -155,7 +155,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Skipped drawing rally point line when undeploying a factory.
 - Tint effects are now correctly applied to SHP vehicles and all types of aircraft as well as building animations regardless of their position.
 - Iron Curtained / Force Shielded objects now always use the correct tint color.
- 
+- Objects in invalid map coordinates are no longer used for starting view and AI base center calculations.
+
 ## Fixes / interactions with other extensions
 
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.

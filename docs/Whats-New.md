@@ -467,6 +467,7 @@ Vanilla fixes:
 - Skipped drawing the rally point line when undeploying a factory (by Trsdy)
 - Tint effects are now correctly applied to SHP vehicles and all types of aircraft as well as building animations regardless of their position (by Starkku)
 - Iron Curtained / Force Shielded objects now always use the correct tint color (by Starkku)
+- Objects in invalid map coordinates are no longer used for starting view and AI base center calculations (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
