@@ -210,13 +210,17 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		}
 
 		int BurstIndex = pBullet->Owner->CurrentBurstIndex;
-		if (this->MirrorCoord && BurstIndex % 2 == 1)
-		{
-			this->SourceCoord.Y = -(this->SourceCoord.Y);
-			this->TargetCoord.Y = -(this->TargetCoord.Y);
 
+		if (BurstIndex % 2 == 1)
+		{
 			if (!this->TechnoInLimbo && !FLHFound)
 				this->FLHCoord.Y = -(this->FLHCoord.Y);
+
+			if (this->MirrorCoord)
+			{
+				this->SourceCoord.Y = -(this->SourceCoord.Y);
+				this->TargetCoord.Y = -(this->TargetCoord.Y);
+			}
 		}
 
 		TheSourceCoords = pBullet->Owner->GetCoords();

@@ -400,11 +400,11 @@ New:
 - Allow customizing the number of vehicles required for unit crates to turn into money crates (by Starkku)
 - Per-VehicleType reroll chance for `CrateGoodie=true` (by Starkku)
 - Warheads spawning powerup crates (by Starkku)
-- New Disperse trajectory and Engrave trajectory with enhanced Straight trajectory(by CrimRecya)
 - Custom tint on TechnoTypes (by Starkku)
 - Revenge weapon (by Starkku)
 - AttachEffect types with new features like custom tint and weapon range modifier (by Starkku)
 - `ForceShield.KeptOnDeploy` to complement `IronCurtain.KeptOnDeploy` (by Starkku)
+- New Disperse trajectory and Engrave trajectory with enhanced Straight trajectory(by CrimRecya)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
