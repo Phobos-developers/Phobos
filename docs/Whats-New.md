@@ -403,7 +403,7 @@ New:
 - Custom tint on TechnoTypes (by Starkku)
 - Revenge weapon (by Starkku)
 - AttachEffect types with new features like custom tint and weapon range modifier (by Starkku)
-- `ForceShield.KeptOnDeploy` to complement `IronCurtain.KeptOnDeploy` (by Starkku)
+- Force shield effect sync on deploy & vs. organic targets effect customization to complement the Iron Curtain ones (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

@@ -324,41 +324,35 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 	GET(FootClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, EAX);
 	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
+	GET_STACK(int, isForceShield, STACK_OFFSET(0x10, 0xC));
 
-	enum { MakeInvunlnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
+	enum { MakeInvulnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
 
 	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
-		return MakeInvunlnerable;
+		return MakeInvulnerable;
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	IronCurtainEffect icEffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics);
+	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
+		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
 
 	switch (icEffect)
 	{
 	case IronCurtainEffect::Ignore:
-	{
 		R->EAX(DamageState::Unaffected);
-	}break;
+		break;
 	case IronCurtainEffect::Invulnerable:
-	{
-		return MakeInvunlnerable;
-	}break;
+		return MakeInvulnerable;
+		break;
 	default:
-	{
-		R->EAX
-		(
-			pThis->ReceiveDamage
-			(
-				&pThis->Health,
-				0,
-				pTypeExt->IronCurtain_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillOrganicsWarhead.Get(RulesClass::Instance->C4Warhead)),
-				nullptr,
-				true,
-				false,
-				pSource
-			)
-		);
-	}break;
+		auto pWH = RulesClass::Instance->C4Warhead;
+
+		if (!isForceShield)
+			pWH = pTypeExt->IronCurtain_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillOrganicsWarhead.Get(pWH));
+		else
+			pWH = pTypeExt->ForceShield_KillWarhead.Get(RulesExt::Global()->ForceShield_KillOrganicsWarhead.Get(pWH));
+
+		R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, pWH, nullptr, true, false, pSource));
+		break;
 	}
 
 	return SkipGameCode;
@@ -517,7 +511,7 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 
 	pThis->IsSelected = true;
 
-	if(RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+	if (RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
 		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
 
 	return 0;

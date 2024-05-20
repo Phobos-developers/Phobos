@@ -150,9 +150,11 @@ public:
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
-		Nullable<bool> ForceShield_KeptOnDeploy;
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
+		Nullable<bool> ForceShield_KeptOnDeploy;
+		Nullable<IronCurtainEffect> ForceShield_Effect;
+		Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
 		Valueable<bool> Explodes_DuringBuildup;
 		Nullable<int> DeployFireWeapon;
@@ -353,9 +355,11 @@ public:
 			, DeployedSecondaryFireFLH {}
 
 			, IronCurtain_KeptOnDeploy {}
-			, ForceShield_KeptOnDeploy {}
 			, IronCurtain_Effect {}
 			, IronCurtain_KillWarhead {}
+			, ForceShield_KeptOnDeploy {}
+			, ForceShield_Effect {}
+			, ForceShield_KillWarhead {}
 
 			, Explodes_KillPassengers { true }
 			, Explodes_DuringBuildup { true }
