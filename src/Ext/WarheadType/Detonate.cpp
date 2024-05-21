@@ -366,9 +366,6 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 
 	damage += extraDamageBonus;
 
-	if (damage < 0 && !pType->Crit_ExtraDamage_AllowNegative)
-		damage = 0;
-
 	if (this->Crit_Warhead.isset())
 		WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTarget, pOwner, damage);
 	else
