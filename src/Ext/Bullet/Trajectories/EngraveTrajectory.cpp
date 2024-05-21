@@ -12,6 +12,7 @@ bool EngraveTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange
 		.Process(this->SourceCoord, false)
 		.Process(this->TargetCoord, false)
 		.Process(this->MirrorCoord, false)
+		.Process(this->TheDuration, false)
 		.Process(this->IsSupported, false)
 		.Process(this->IsHouseColor, false)
 		.Process(this->IsSingleColor, false)
@@ -35,6 +36,7 @@ bool EngraveTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->SourceCoord)
 		.Process(this->TargetCoord)
 		.Process(this->MirrorCoord)
+		.Process(this->TheDuration)
 		.Process(this->IsSupported)
 		.Process(this->IsHouseColor)
 		.Process(this->IsSingleColor)
@@ -56,6 +58,7 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->SourceCoord.Read(exINI, pSection, "Trajectory.Engrave.SourceCoord");
 	this->TargetCoord.Read(exINI, pSection, "Trajectory.Engrave.TargetCoord");
 	this->MirrorCoord.Read(exINI, pSection, "Trajectory.Engrave.MirrorCoord");
+	this->TheDuration.Read(exINI, pSection, "Trajectory.Engrave.TheDuration");
 	this->IsSupported.Read(exINI, pSection, "Trajectory.Engrave.IsSupported");
 	this->IsHouseColor.Read(exINI, pSection, "Trajectory.Engrave.IsHouseColor");
 	this->IsSingleColor.Read(exINI, pSection, "Trajectory.Engrave.IsSingleColor");
@@ -76,6 +79,7 @@ bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->SourceCoord)
 		.Process(this->TargetCoord)
 		.Process(this->MirrorCoord)
+		.Process(this->TheDuration)
 		.Process(this->IsSupported)
 		.Process(this->IsHouseColor)
 		.Process(this->IsSingleColor)
@@ -88,7 +92,6 @@ bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->DamageDelay)
 		.Process(this->LaserTimer)
 		.Process(this->DamageTimer)
-		.Process(this->CheckTimesLimit)
 		.Process(this->SourceHeight)
 		.Process(this->SetItsLocation)
 		.Process(this->TechnoInLimbo)
@@ -107,6 +110,7 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->SourceCoord)
 		.Process(this->TargetCoord)
 		.Process(this->MirrorCoord)
+		.Process(this->TheDuration)
 		.Process(this->IsSupported)
 		.Process(this->IsHouseColor)
 		.Process(this->IsSingleColor)
@@ -119,7 +123,6 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->DamageDelay)
 		.Process(this->LaserTimer)
 		.Process(this->DamageTimer)
-		.Process(this->CheckTimesLimit)
 		.Process(this->SourceHeight)
 		.Process(this->SetItsLocation)
 		.Process(this->TechnoInLimbo)
@@ -137,6 +140,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->SourceCoord = pType->SourceCoord;
 	this->TargetCoord = pType->TargetCoord;
 	this->MirrorCoord = pType->MirrorCoord;
+	this->TheDuration = pType->TheDuration;
 	this->IsSupported = pType->IsSupported;
 	this->IsHouseColor = pType->IsHouseColor;
 	this->IsSingleColor = pType->IsSingleColor;
@@ -256,15 +260,12 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	double CoordDistance = pBullet->Velocity.Magnitude();
 
 	if (CoordDistance > 0)
-	{
-		this->CheckTimesLimit = static_cast<int>(CoordDistance / StraightSpeed) + 1;
 		pBullet->Velocity *= StraightSpeed / CoordDistance;
-	}
 	else
-	{
-		this->CheckTimesLimit = 0;
 		pBullet->Velocity *= 0;
-	}
+
+	if (this->TheDuration <= 0)
+		this->TheDuration = static_cast<int>(CoordDistance / StraightSpeed) + 1;
 }
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
@@ -275,8 +276,9 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 	if (this->TechnoInLimbo != pBullet->Owner->InLimbo)
 		return true;
 
-	this->CheckTimesLimit -= 1;
-	if (this->CheckTimesLimit < 0)
+	this->TheDuration -= 1;
+
+	if (this->TheDuration < 0)
 	{
 		return true;
 	}

@@ -9,6 +9,7 @@ public:
 		, SourceCoord { { 0, 0 } }
 		, TargetCoord { { 0, 0 } }
 		, MirrorCoord { true }
+		, TheDuration { 0 }
 		, IsSupported { false }
 		, IsHouseColor { false }
 		, IsSingleColor { false }
@@ -29,6 +30,7 @@ public:
 	Valueable<Point2D> SourceCoord;
 	Valueable<Point2D> TargetCoord;
 	Valueable<bool> MirrorCoord;
+	Valueable<int> TheDuration;
 	Valueable<bool> IsSupported;
 	Valueable<bool> IsHouseColor;
 	Valueable<bool> IsSingleColor;
@@ -48,6 +50,7 @@ public:
 		, SourceCoord {}
 		, TargetCoord {}
 		, MirrorCoord { true }
+		, TheDuration { 0 }
 		, IsSupported { false }
 		, IsHouseColor { false }
 		, IsSingleColor { false }
@@ -60,7 +63,6 @@ public:
 		, DamageDelay { 10 }
 		, LaserTimer { 0 }
 		, DamageTimer { 0 }
-		, CheckTimesLimit { 0 }
 		, SourceHeight { 0 }
 		, SetItsLocation { false }
 		, TechnoInLimbo { false }
@@ -72,6 +74,7 @@ public:
 		, SourceCoord {}
 		, TargetCoord {}
 		, MirrorCoord { true }
+		, TheDuration { 0 }
 		, IsSupported { false }
 		, IsHouseColor { false }
 		, IsSingleColor { false }
@@ -84,7 +87,6 @@ public:
 		, DamageDelay { 10 }
 		, LaserTimer { 0 }
 		, DamageTimer { 0 }
-		, CheckTimesLimit { 0 }
 		, SourceHeight { 0 }
 		, SetItsLocation { false }
 		, TechnoInLimbo { false }
@@ -105,6 +107,7 @@ public:
 	Point2D SourceCoord;
 	Point2D TargetCoord;
 	bool MirrorCoord;
+	int TheDuration;
 	bool IsSupported;
 	bool IsHouseColor;
 	bool IsSingleColor;
@@ -117,7 +120,6 @@ public:
 	int DamageDelay;
 	int LaserTimer;
 	int DamageTimer;
-	int CheckTimesLimit;
 	int SourceHeight;
 	bool SetItsLocation;
 	bool TechnoInLimbo;
