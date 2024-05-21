@@ -255,7 +255,7 @@ public:
 			, EffectsRequireVerses { true }
 
 			, Crit_RandomBuffer { 0.0 }
-			, Crit_CurrentChance { 0.0 }
+			, Crit_CurrentChance {}
 			, Crit_Active { false }
 			, WasDetonatedOnAllMapObjects { false }
 			, Splashed { false }

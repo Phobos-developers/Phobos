@@ -405,6 +405,7 @@ New:
 - AttachEffect types with new features like custom tint and weapon range modifier (by Starkku)
 - Warheads spawning powerup crates (by Starkku)
 - Crit chance and extra damage based on target health percentage (by Ollerus)
+- Crit extra damage multipliers for new AttachEffect (by Ollerus)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

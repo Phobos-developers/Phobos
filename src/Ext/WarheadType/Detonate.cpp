@@ -341,6 +341,34 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	else if (this->Crit_ExtraDamage.size() > level)
 		damage = Crit_ExtraDamage[level];
 
+	auto const pExt = TechnoExt::ExtMap.Find(pOwner);
+	int extraDamageBonus = 0;
+
+	for (auto& attachEffect : pExt->AttachedEffects)
+	{
+		if (!attachEffect->IsActive())
+			continue;
+
+		auto const pType = attachEffect->GetType();
+
+		if (pType->Crit_ExtraDamage_Multiplier == 1.0 && pType->Crit_ExtraDamage_Bonus == 0)
+			continue;
+
+		if (pType->Crit_AllowWarheads.size() > 0 && !pType->Crit_AllowWarheads.Contains(this->OwnerObject()))
+			continue;
+
+		if (pType->Crit_DisallowWarheads.size() > 0 && pType->Crit_DisallowWarheads.Contains(this->OwnerObject()))
+			continue;
+
+		damage = damage * pType->Crit_ExtraDamage_Multiplier;
+		extraDamageBonus += pType->Crit_ExtraDamage_Bonus;
+	}
+
+	damage += extraDamageBonus;
+
+	if (damage < 0 && !pType->Crit_ExtraDamage_AllowNegative)
+		damage = 0;
+
 	if (this->Crit_Warhead.isset())
 		WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTarget, pOwner, damage);
 	else
