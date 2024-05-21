@@ -626,8 +626,8 @@ DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 int HouseExt::CountOwnedIncludeDeploy(const HouseClass* pThis, const TechnoTypeClass* pItem)
 {
 	int count = pThis->CountOwnedNow(pItem);
-	count += pItem->DeploysInto == nullptr ? 0 : pThis->CountOwnedNow(pItem->DeploysInto);
-	count += pItem->UndeploysInto == nullptr ? 0 : pThis->CountOwnedNow(pItem->UndeploysInto);
+	count += pItem->DeploysInto ? pThis->CountOwnedNow(pItem->DeploysInto) : 0;
+	count += pItem->UndeploysInto ? pThis->CountOwnedNow(pItem->UndeploysInto) : 0;
 	return count;
 }
 
@@ -645,7 +645,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 		for (size_t i = 0; i < std::min(pItemExt->BuildLimitGroup_Types.size(), pItemExt->BuildLimitGroup_Nums.size()); i++)
 		{
 			TechnoTypeClass* pType = pItemExt->BuildLimitGroup_Types[i];
-			int ownedNow = CountOwnedIncludeDeploy(pThis, pType);
+			int ownedNow = HouseExt::CountOwnedIncludeDeploy(pThis, pType);
 
 			if (ownedNow >= pItemExt->BuildLimitGroup_Nums[i])
 			{
@@ -664,7 +664,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 
 			for (auto& pType : pItemExt->BuildLimitGroup_Types)
 			{
-				sum += CountOwnedIncludeDeploy(pThis, pType);
+				sum += HouseExt::CountOwnedIncludeDeploy(pThis, pType);
 			}
 
 			if (sum >= pItemExt->BuildLimitGroup_Nums[0])
@@ -682,7 +682,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 			for (size_t i = 0; i < std::min(pItemExt->BuildLimitGroup_Types.size(), pItemExt->BuildLimitGroup_Nums.size()); i++)
 			{
 				TechnoTypeClass* pType = pItemExt->BuildLimitGroup_Types[i];
-				int ownedNow = CountOwnedIncludeDeploy(pThis, pType);
+				int ownedNow = HouseExt::CountOwnedIncludeDeploy(pThis, pType);
 
 				if (ownedNow < pItemExt->BuildLimitGroup_Nums[i] || includeQueued && FactoryClass::FindByOwnerAndProduct(pThis, pType))
 					return CanBuildResult::Buildable;
