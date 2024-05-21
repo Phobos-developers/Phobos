@@ -44,7 +44,6 @@ public:
 	Valueable<double> Crit_Multiplier;
 	Valueable<double> Crit_ExtraChance;
 	Valueable<double> Crit_ExtraDamage_Multiplier;
-	Valueable<bool> Crit_ExtraDamage_AllowNegative;
 	Valueable<int> Crit_ExtraDamage_Bonus;
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
@@ -88,7 +87,6 @@ public:
 		, Crit_ExtraChance { 0.0 }
 		, Crit_ExtraDamage_Multiplier { 1.0 }
 		, Crit_ExtraDamage_Bonus { 0 }
-		, Crit_ExtraDamage_AllowNegative { true }
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
 		, RevengeWeapon {}

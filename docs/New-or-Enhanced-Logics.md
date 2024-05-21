@@ -37,7 +37,6 @@ This page describes all the engine features that are either new and introduced b
   - `Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from these critical multipliers and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `Crit.ExtraDamage.Multiplier` and `Crit.ExtraDamage.Bonus` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) extra damage or grant a fixed bonus to it for the object the effect is attached to, respectively. They also respect `Crit.AllowWarheads` and `Crit.DisallowWarheads`.
-    - `Crit.ExtraDamage.AllowNegative`, if set to false, will make the extra damage not less than 0 after the multiplier is applied.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
@@ -102,7 +101,6 @@ Crit.Multiplier=1.0                          ; floating point value
 Crit.ExtraChance=0.0                         ; floating point value
 Crit.ExtraDamage.Multiplier=1.0              ; floating point value
 Crit.ExtraDamage.Bonus=0                     ; integer
-Crit.ExtraDamage.AllowNegative=true          ; boolean
 Crit.AllowWarheads=                          ; list of WarheadTypes
 Crit.DisallowWarheads=                       ; list of WarheadTypes
 RevengeWeapon=                               ; WeaponType

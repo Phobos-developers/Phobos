@@ -360,14 +360,11 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		if (pType->Crit_DisallowWarheads.size() > 0 && pType->Crit_DisallowWarheads.Contains(this->OwnerObject()))
 			continue;
 
-		damage = damage * pType->Crit_ExtraDamage_Multiplier;
+		damage = static_cast<int>(damage * pType->Crit_ExtraDamage_Multiplier);
 		extraDamageBonus += pType->Crit_ExtraDamage_Bonus;
 	}
 
 	damage += extraDamageBonus;
-
-	if (damage < 0 && !pType->Crit_ExtraDamage_AllowNegative)
-		damage = 0;
 
 	if (this->Crit_Warhead.isset())
 		WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTarget, pOwner, damage);
