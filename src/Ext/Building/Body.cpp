@@ -301,12 +301,13 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 	{
 		// I assume you were not launching for real, Morton
 
-		auto launchTheSWHere = [pBuilding](SuperClass* const pSuper, HouseClass* const pHouse)
+		CoordStruct pLaunchLocation = pTypeExt->SpyEffect_SWTargetCenter.Get() ? pBuilding->GetCenterCoords() : pBuilding->Location;
+		auto launchTheSWHere = [pBuilding](SuperClass* const pSuper, HouseClass* const pHouse, CoordStruct pLocation)
 		{
 			int oldstart = pSuper->RechargeTimer.StartTime;
 			int oldleft = pSuper->RechargeTimer.TimeLeft;
 			pSuper->SetReadiness(true);
-			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pHouse->IsCurrentPlayer());
+			pSuper->Launch(CellClass::Coord2Cell(pLocation), pHouse->IsCurrentPlayer());
 			pSuper->Reset();
 			pSuper->RechargeTimer.StartTime = oldstart;
 			pSuper->RechargeTimer.TimeLeft = oldleft;
@@ -315,13 +316,13 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 		if (pTypeExt->SpyEffect_VictimSuperWeapon.isset())
 		{
 			if (const auto pSuper = pVictimHouse->Supers.GetItem(pTypeExt->SpyEffect_VictimSuperWeapon.Get()))
-				launchTheSWHere(pSuper, pVictimHouse);
+				launchTheSWHere(pSuper, pVictimHouse, pLaunchLocation);
 		}
 
 		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon.isset())
 		{
 			if (const auto pSuper = pInfiltratorHouse->Supers.GetItem(pTypeExt->SpyEffect_InfiltratorSuperWeapon.Get()))
-				launchTheSWHere(pSuper, pInfiltratorHouse);
+				launchTheSWHere(pSuper, pInfiltratorHouse, pLaunchLocation);
 		}
 	}
 
