@@ -84,10 +84,9 @@ public:
 		, ExtraCheck2 { nullptr }
 		, ExtraCheck3 { nullptr }
 		, LastCasualty {}
-		, LastCasualtyTimes {}
 		, FirepowerMult { 1.0 }
 		, LastTargetCoord {}
-		, WaitOneFrame { false }
+		, WaitOneFrame { 0 }
 	{}
 
 	StraightTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
@@ -116,10 +115,9 @@ public:
 		, ExtraCheck2 { nullptr }
 		, ExtraCheck3 { nullptr }
 		, LastCasualty {}
-		, LastCasualtyTimes {}
 		, FirepowerMult { 1.0 }
 		, LastTargetCoord {}
-		, WaitOneFrame { false }
+		, WaitOneFrame { 0 }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -157,7 +155,6 @@ public:
 	TechnoClass* ExtraCheck2;
 	TechnoClass* ExtraCheck3;
 	std::vector<TechnoClass*> LastCasualty;
-	std::vector<short> LastCasualtyTimes;
 	double FirepowerMult;
 	CoordStruct LastTargetCoord;
 	int WaitOneFrame;
@@ -172,7 +169,6 @@ private:
 	void PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner, CoordStruct pCoord);
 	std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet);
 	std::vector<CellStruct> GetCellsInRectangle(CellStruct bStaCell, CellStruct lMidCell, CellStruct rMidCell, CellStruct tEndCell);
-	TechnoClass* CompareThenDetonateAt(std::vector<TechnoClass*> Technos, HouseClass* pOwner, BulletClass* pBullet);
 	double GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, bool Self);
 	bool PassAndConfineAtHeight(BulletClass* pBullet, double StraightSpeed);
 };
