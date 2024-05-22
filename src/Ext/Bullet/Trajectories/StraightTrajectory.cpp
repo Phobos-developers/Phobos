@@ -253,6 +253,13 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 		pBullet->Construct(pBullet->Type, pBullet->Target, pBullet->Owner, Damage, pBullet->WH, pBullet->Speed, pBullet->Bright);
 	}
 
+	if (this->PassDetonateLocal)
+	{
+		CoordStruct DetonateCoords = pBullet->Location;
+		DetonateCoords.Z = MapClass::Instance->GetCellFloorHeight(DetonateCoords);
+		pBullet->SetLocation(DetonateCoords);
+	}
+
 	if (this->PassThrough || this->TargetSnapDistance <= 0)
 		return;
 

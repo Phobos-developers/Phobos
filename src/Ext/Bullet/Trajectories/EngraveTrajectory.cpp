@@ -156,6 +156,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->SourceHeight = pBullet->SourceCoords.Z;
 	this->SetItsLocation = false;
 	this->TechnoInLimbo = pBullet->Owner ? pBullet->Owner->InLimbo : false;
+	this->NotMainWeapon = false;
 	this->FirepowerMult = pBullet->Owner ? pBullet->Owner->FirepowerMultiplier : 1.0;
 	this->FLHCoord = pBullet->SourceCoords;
 
@@ -173,17 +174,22 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 				this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
 			else if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true))
 				this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
+			else
+				this->NotMainWeapon = true;
 
-			CoordStruct FLH = TechnoExt::GetBurstFLH(pBullet->Owner, WeaponIndex, FLHFound);
-
-			if (!FLHFound)
+			if (!this->NotMainWeapon)
 			{
-				if (auto pInfantry = abstract_cast<InfantryClass*>(pBullet->Owner))
-					FLH = TechnoExt::GetSimpleFLH(pInfantry, WeaponIndex, FLHFound);
-			}
+				CoordStruct FLH = TechnoExt::GetBurstFLH(pBullet->Owner, WeaponIndex, FLHFound);
 
-			if (FLHFound)
-				this->FLHCoord = FLH;
+				if (!FLHFound)
+				{
+					if (auto pInfantry = abstract_cast<InfantryClass*>(pBullet->Owner))
+						FLH = TechnoExt::GetSimpleFLH(pInfantry, WeaponIndex, FLHFound);
+				}
+
+				if (FLHFound)
+					this->FLHCoord = FLH;
+			}
 		}
 		else
 		{
@@ -329,11 +335,15 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 		LaserDrawClass* pLaser;
 		CoordStruct FireCoord = pTechno->GetCoords();
 
-		if (pTechno->WhatAmI() != AbstractType::Building)
+		if (this->NotMainWeapon)
+		{
+			FireCoord = this->FLHCoord;
+		}
+		else if (pTechno->WhatAmI() != AbstractType::Building)
 		{
 			if (this->TechnoInLimbo)
 			{
-				if (TechnoClass* pTransporter = pBullet->Owner->Transporter)
+				if (TechnoClass* pTransporter = pTechno->Transporter)
 					FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTransporter, this->FLHCoord, pTransporter->HasTurret());
 				else
 					return true;
@@ -380,6 +390,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 
 		pLaser->Thickness = this->LaserThickness;
 		pLaser->IsSupported = this->IsSupported;
+
 	}
 
 	if (this->DamageTimer == 0)

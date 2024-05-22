@@ -66,6 +66,7 @@ public:
 		, SourceHeight { 0 }
 		, SetItsLocation { false }
 		, TechnoInLimbo { false }
+		, NotMainWeapon { false }
 		, FirepowerMult { 1.0 }
 		, FLHCoord {}
 	{}
@@ -90,6 +91,7 @@ public:
 		, SourceHeight { 0 }
 		, SetItsLocation { false }
 		, TechnoInLimbo { false }
+		, NotMainWeapon { false }
 		, FirepowerMult { 1.0 }
 		, FLHCoord {}
 	{}
@@ -123,6 +125,7 @@ public:
 	int SourceHeight;
 	bool SetItsLocation;
 	bool TechnoInLimbo;
+	bool NotMainWeapon;
 	double FirepowerMult;
 	CoordStruct FLHCoord;
 
