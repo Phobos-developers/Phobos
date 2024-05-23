@@ -135,106 +135,90 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
 	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation.Get();
-	const auto pConvert = pTypeExt->AutoDeath_Convert.Get();
-	const bool anyMatched = pTypeExt->AutoDeath_ContentIfAnyMatch;
+	const auto pConvert = pTypeExt->Convert_AutoDeath.Get();
+	const bool anyMatched = pTypeExt->AutoDeath_OnAnyCondition;
 
-	// Death by owning house
-	if (pTypeExt->AutoDeath_OwnedByPlayer)
+	if (pThis->Owner)
 	{
-		if (pThis->Owner && pThis->Owner->IsControlledByHuman())
+		// Death by owning house
+		if (pThis->Owner->IsControlledByHuman())
 		{
-			if (anyMatched)
+			if (pTypeExt->AutoDeath_OwnedByPlayer && anyMatched)
+			{
+				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+				return true;
+			}
+
+			if (pTypeExt->AutoDeath_OwnedByAI && !anyMatched)
+				return false;
+		}
+		else
+		{
+			if (pTypeExt->AutoDeath_OwnedByPlayer && !anyMatched)
+				return false;
+
+			if (pTypeExt->AutoDeath_OwnedByAI && anyMatched)
 			{
 				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
 				return true;
 			}
 		}
-		else if (!anyMatched)
-		{
-			return false;
-		}
-	}
 
-	if (pTypeExt->AutoDeath_OwnedByAI)
-	{
-		if (pThis->Owner && !pThis->Owner->IsControlledByHuman())
+		// Death by money
+		if (pTypeExt->AutoDeath_MoneyExceed >= 0)
 		{
-			if (anyMatched)
+			if (pThis->Owner->Available_Money() >= pTypeExt->AutoDeath_MoneyExceed)
+			{
+				if (anyMatched)
+				{
+					TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+					return true;
+				}
+			}
+			else if (!anyMatched)
+			{
+				return false;
+			}
+		}
+
+		if (pTypeExt->AutoDeath_MoneyBelow >= 0)
+		{
+			if (pThis->Owner->Available_Money() <= pTypeExt->AutoDeath_MoneyBelow)
+			{
+				if (anyMatched)
+				{
+					TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
+					return true;
+				}
+			}
+			else if (!anyMatched)
+			{
+				return false;
+			}
+		}
+
+		// Death by power
+		if (pThis->Owner->HasLowPower())
+		{
+			if (pTypeExt->AutoDeath_LowPower && anyMatched)
 			{
 				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
 				return true;
 			}
-		}
-		else if (!anyMatched)
-		{
-			return false;
-		}
-	}
 
-	// Death by money
-
-	if (pTypeExt->AutoDeath_MoneyExceed >= 0)
-	{
-		if (pThis->Owner && pThis->Owner->Available_Money() >= pTypeExt->AutoDeath_MoneyExceed)
+			if (pTypeExt->AutoDeath_FullPower && !anyMatched)
+				return false;
+		}
+		else if (pThis->Owner->HasFullPower())
 		{
-			if (anyMatched)
+			if (pTypeExt->AutoDeath_LowPower && !anyMatched)
+				return false;
+
+			if (pTypeExt->AutoDeath_FullPower && anyMatched)
 			{
 				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
 				return true;
 			}
-		}
-		else if (!anyMatched)
-		{
-			return false;
-		}
-	}
-
-	if (pTypeExt->AutoDeath_MoneyBelow >= 0)
-	{
-		if (pThis->Owner && pThis->Owner->Available_Money() <= pTypeExt->AutoDeath_MoneyBelow)
-		{
-			if (anyMatched)
-			{
-				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
-				return true;
-			}
-		}
-		else if (!anyMatched)
-		{
-			return false;
-		}
-	}
-
-	// Death by power
-	if (pTypeExt->AutoDeath_LowPower)
-	{
-		if (pThis->Owner && pThis->Owner->HasLowPower())
-		{
-			if (anyMatched)
-			{
-				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
-				return true;
-			}
-		}
-		else if (!anyMatched)
-		{
-			return false;
-		}
-	}
-
-	if (pTypeExt->AutoDeath_FullPower)
-	{
-		if (pThis->Owner && pThis->Owner->HasFullPower())
-		{
-			if (anyMatched)
-			{
-				TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo, pConvert);
-				return true;
-			}
-		}
-		else if (!anyMatched)
-		{
-			return false;
 		}
 	}
 
@@ -256,9 +240,9 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	}
 
 	// Death by passengers
-	if (pTypeExt->AutoDeath_PassengerExceed >= 0)
+	if (pTypeExt->AutoDeath_PassengersExceed >= 0)
 	{
-		if (pType->Passengers > 0 && pThis->Passengers.NumPassengers >= pTypeExt->AutoDeath_PassengerExceed)
+		if (pType->Passengers > 0 && pThis->Passengers.NumPassengers >= pTypeExt->AutoDeath_PassengersExceed)
 		{
 			if (anyMatched)
 			{
@@ -272,9 +256,9 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 		}
 	}
 
-	if (pTypeExt->AutoDeath_PassengerBelow >= 0)
+	if (pTypeExt->AutoDeath_PassengersBelow >= 0)
 	{
-		if (pType->Passengers > 0 && pThis->Passengers.NumPassengers <= pTypeExt->AutoDeath_PassengerBelow)
+		if (pType->Passengers > 0 && pThis->Passengers.NumPassengers <= pTypeExt->AutoDeath_PassengersBelow)
 		{
 			if (anyMatched)
 			{

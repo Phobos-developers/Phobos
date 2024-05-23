@@ -64,7 +64,7 @@ public:
 		Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
-		Valueable<TechnoTypeClass*> AutoDeath_Convert;
+		Valueable<TechnoTypeClass*> Convert_AutoDeath;
 		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
@@ -74,8 +74,8 @@ public:
 		Valueable<int> AutoDeath_MoneyBelow;
 		Valueable<bool> AutoDeath_LowPower;
 		Valueable<bool> AutoDeath_FullPower;
-		Valueable<int> AutoDeath_PassengerExceed;
-		Valueable<int> AutoDeath_PassengerBelow;
+		Valueable<int> AutoDeath_PassengersExceed;
+		Valueable<int> AutoDeath_PassengersBelow;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
 		Valueable<bool> AutoDeath_TechnosDontExist_Any;
 		Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
@@ -84,7 +84,7 @@ public:
 		Valueable<bool> AutoDeath_TechnosExist_Any;
 		Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
 		Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
-		Valueable<bool> AutoDeath_ContentIfAnyMatch;
+		Valueable<bool> AutoDeath_OnAnyCondition;
 
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
 		NullableIdx<VocClass> SlavesFreeSound;
@@ -324,7 +324,7 @@ public:
 			, Ammo_DeployUnlockMaximumAmount { -1 }
 
 			, AutoDeath_Behavior { }
-			, AutoDeath_Convert { }
+			, Convert_AutoDeath { }
 			, AutoDeath_VanishAnimation {}
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
@@ -334,8 +334,8 @@ public:
 			, AutoDeath_MoneyBelow { -1 }
 			, AutoDeath_LowPower { false }
 			, AutoDeath_FullPower { false }
-			, AutoDeath_PassengerExceed { -1 }
-			, AutoDeath_PassengerBelow { -1 }
+			, AutoDeath_PassengersExceed { -1 }
+			, AutoDeath_PassengersBelow { -1 }
 			, AutoDeath_TechnosDontExist {}
 			, AutoDeath_TechnosDontExist_Any { false }
 			, AutoDeath_TechnosDontExist_AllowLimboed { false }
@@ -344,7 +344,7 @@ public:
 			, AutoDeath_TechnosExist_Any { true }
 			, AutoDeath_TechnosExist_AllowLimboed { true }
 			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
-			, AutoDeath_ContentIfAnyMatch { true }
+			, AutoDeath_OnAnyCondition { true }
 
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 			, SlavesFreeSound {}
