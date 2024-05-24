@@ -13,6 +13,7 @@ bool EngraveTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange
 		.Process(this->TargetCoord, false)
 		.Process(this->MirrorCoord, false)
 		.Process(this->TheDuration, false)
+		.Process(this->IsLaser, false)
 		.Process(this->IsSupported, false)
 		.Process(this->IsHouseColor, false)
 		.Process(this->IsSingleColor, false)
@@ -37,6 +38,7 @@ bool EngraveTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->TargetCoord)
 		.Process(this->MirrorCoord)
 		.Process(this->TheDuration)
+		.Process(this->IsLaser)
 		.Process(this->IsSupported)
 		.Process(this->IsHouseColor)
 		.Process(this->IsSingleColor)
@@ -59,6 +61,7 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->TargetCoord.Read(exINI, pSection, "Trajectory.Engrave.TargetCoord");
 	this->MirrorCoord.Read(exINI, pSection, "Trajectory.Engrave.MirrorCoord");
 	this->TheDuration.Read(exINI, pSection, "Trajectory.Engrave.TheDuration");
+	this->IsLaser.Read(exINI, pSection, "Trajectory.Engrave.IsLaser");
 	this->IsSupported.Read(exINI, pSection, "Trajectory.Engrave.IsSupported");
 	this->IsHouseColor.Read(exINI, pSection, "Trajectory.Engrave.IsHouseColor");
 	this->IsSingleColor.Read(exINI, pSection, "Trajectory.Engrave.IsSingleColor");
@@ -80,6 +83,7 @@ bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->TargetCoord)
 		.Process(this->MirrorCoord)
 		.Process(this->TheDuration)
+		.Process(this->IsLaser)
 		.Process(this->IsSupported)
 		.Process(this->IsHouseColor)
 		.Process(this->IsSingleColor)
@@ -111,6 +115,7 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->TargetCoord)
 		.Process(this->MirrorCoord)
 		.Process(this->TheDuration)
+		.Process(this->IsLaser)
 		.Process(this->IsSupported)
 		.Process(this->IsHouseColor)
 		.Process(this->IsSingleColor)
@@ -141,6 +146,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->TargetCoord = pType->TargetCoord;
 	this->MirrorCoord = pType->MirrorCoord;
 	this->TheDuration = pType->TheDuration;
+	this->IsLaser = pType->IsLaser;
 	this->IsSupported = pType->IsSupported;
 	this->IsHouseColor = pType->IsHouseColor;
 	this->IsSingleColor = pType->IsSingleColor;
@@ -166,64 +172,80 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	if (pBullet->Owner)
 	{
 		bool FLHFound = false;
-		int WeaponIndex = 0;
 
-		if (!this->TechnoInLimbo)
+		if (this->IsLaser)
 		{
-			if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false))
-				this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
-			else if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true))
-				this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
-			else
-				this->NotMainWeapon = true;
+			int WeaponIndex = 0;
 
-			if (!this->NotMainWeapon)
+			if (!this->TechnoInLimbo)
 			{
-				CoordStruct FLH = TechnoExt::GetBurstFLH(pBullet->Owner, WeaponIndex, FLHFound);
+				if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false))
+					this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
+				else if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true))
+					this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
+				else
+					this->NotMainWeapon = true;
 
-				if (!FLHFound)
+				if (!this->NotMainWeapon)
 				{
-					if (auto pInfantry = abstract_cast<InfantryClass*>(pBullet->Owner))
-						FLH = TechnoExt::GetSimpleFLH(pInfantry, WeaponIndex, FLHFound);
-				}
+					CoordStruct FLH = TechnoExt::GetBurstFLH(pBullet->Owner, WeaponIndex, FLHFound);
 
-				if (FLHFound)
-					this->FLHCoord = FLH;
+					if (!FLHFound)
+					{
+						if (auto pInfantry = abstract_cast<InfantryClass*>(pBullet->Owner))
+							FLH = TechnoExt::GetSimpleFLH(pInfantry, WeaponIndex, FLHFound);
+					}
+
+					if (FLHFound)
+						this->FLHCoord = FLH;
+				}
+			}
+			else
+			{
+				if (TechnoClass* pTransporter = pBullet->Owner->Transporter)
+				{
+					FootClass* pCurrentPassenger = pTransporter->Passengers.GetFirstPassenger();
+					FootClass* pBulletOwnerFoot = abstract_cast<FootClass*>(pBullet->Owner);
+
+					while (pCurrentPassenger)
+					{
+						if (pBulletOwnerFoot != pCurrentPassenger)
+						{
+							WeaponIndex += 1;
+							pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
+						}
+						else
+						{
+							break;
+						}
+					}
+
+					if (const auto pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType()))
+					{
+						if (WeaponIndex < static_cast<int>(pTransporterTypeExt->AlternateFLHs.size()))
+							this->FLHCoord = pTransporterTypeExt->AlternateFLHs[WeaponIndex];
+					}
+					else
+					{
+						this->NotMainWeapon = true;
+					}
+				}
+				else
+				{
+					this->NotMainWeapon = true;
+				}
 			}
 		}
 		else
 		{
-			if (TechnoClass* pTransporter = pBullet->Owner->Transporter)
-			{
-				FootClass* pCurrentPassenger = pTransporter->Passengers.GetFirstPassenger();
-				FootClass* pBulletOwnerFoot = abstract_cast<FootClass*>(pBullet->Owner);
-
-				while (pCurrentPassenger)
-				{
-					if (pBulletOwnerFoot != pCurrentPassenger)
-					{
-						WeaponIndex += 1;
-						pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
-					}
-					else
-					{
-						break;
-					}
-				}
-
-				if (const auto pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType()))
-				{
-					if (WeaponIndex < static_cast<int>(pTransporterTypeExt->AlternateFLHs.size()))
-						this->FLHCoord = pTransporterTypeExt->AlternateFLHs[WeaponIndex];
-				}
-			}
+			FLHFound = true;
 		}
 
 		int BurstIndex = pBullet->Owner->CurrentBurstIndex;
 
 		if (BurstIndex % 2 == 1)
 		{
-			if (!this->TechnoInLimbo && !FLHFound)
+			if (!FLHFound && !this->TechnoInLimbo)
 				this->FLHCoord.Y = -(this->FLHCoord.Y);
 
 			if (this->MirrorCoord)
@@ -235,9 +257,6 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 		TheSourceCoords = pBullet->Owner->GetCoords();
 		TheSourceCoords.Z = 0;
-
-		//Prevent incorrect explosion location when targeting buildings.
-		pBullet->Target = MapClass::Instance->TryGetCellAt(TheSourceCoords);
 	}
 
 	double RotateAngle = Math::atan2(TheTargetCoords.Y - TheSourceCoords.Y , TheTargetCoords.X - TheSourceCoords.X);
@@ -330,7 +349,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 	TechnoClass* pTechno = pBullet->Owner;
 	auto const pOwner = pBullet->Owner->Owner;
 
-	if (this->LaserTimer == 0)
+	if (this->IsLaser && this->LaserTimer == 0)
 	{
 		LaserDrawClass* pLaser;
 		CoordStruct FireCoord = pTechno->GetCoords();
@@ -390,10 +409,9 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 
 		pLaser->Thickness = this->LaserThickness;
 		pLaser->IsSupported = this->IsSupported;
-
 	}
 
-	if (this->DamageTimer == 0)
+	if (this->DamageTimer == 0 && pBullet->WeaponType)
 	{
 		int LaserDamage = static_cast<int>(pBullet->WeaponType->Damage * this->FirepowerMult);
 		WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, LaserDamage, pOwner);
@@ -401,13 +419,18 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 
 	this->LaserTimer += 1;
 	this->LaserTimer %= this->LaserDelay;
+
 	this->DamageTimer += 1;
 	this->DamageTimer %= this->DamageDelay;
 
 	return false;
 }
 
-void EngraveTrajectory::OnAIPreDetonate(BulletClass* pBullet){} //do nothing
+void EngraveTrajectory::OnAIPreDetonate(BulletClass* pBullet)
+{
+	//Prevent damage again.
+	pBullet->UnInit();
+}
 
 void EngraveTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {

@@ -8,30 +8,36 @@ public:
 	DisperseTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Disperse)
 		, UniqueCurve { false }
 		, PreAimCoord { { 0, 0, 0 } }
+		, RotateCoord { 0 }
 		, FacingCoord { false }
-		, ReduceCoord { false }
+		, ReduceCoord { true }
+		, UseDisperseBurst { false }
+		, AxisOfRotation { { 0, 0, 1 } }
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
-		, ROT { 10.0 }
+		, ROT { 30.0 }
 		, LockDirection { false }
 		, CruiseEnable { false }
 		, CruiseUnableRange { Leptons(128) }
-		, LeadTimeCalculate { false }
+		, LeadTimeCalculate { true }
 		, TargetSnapDistance { Leptons(128) }
 		, RetargetAllies { false }
 		, RetargetRadius { 0 }
+		, SuicideShortOfROT { true }
 		, SuicideAboveRange { 0 }
-		, SuicideIfNoWeapon { false }
+		, SuicideIfNoWeapon { true }
 		, Weapon {}
 		, WeaponBurst {}
 		, WeaponCount { 0 }
 		, WeaponDelay { 1 }
 		, WeaponTimer { 0 }
 		, WeaponScope { Leptons(0) }
+		, WeaponSeparate { false }
 		, WeaponRetarget { false }
 		, WeaponLocation { false }
 		, WeaponTendency { false }
 		, WeaponToAllies { false }
+		, WeaponToGround { false }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -41,8 +47,11 @@ public:
 
 	Valueable<bool> UniqueCurve;
 	Valueable<CoordStruct> PreAimCoord;
+	Valueable<double> RotateCoord;
 	Valueable<bool> FacingCoord;
 	Valueable<bool> ReduceCoord;
+	Valueable<bool> UseDisperseBurst;
+	Valueable<CoordStruct> AxisOfRotation;
 	Valueable<double> LaunchSpeed;
 	Valueable<double> Acceleration;
 	Valueable<double> ROT;
@@ -53,6 +62,7 @@ public:
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> RetargetAllies;
 	Valueable<double> RetargetRadius;
+	Valueable<bool> SuicideShortOfROT;
 	Valueable<double> SuicideAboveRange;
 	Valueable<bool> SuicideIfNoWeapon;
 	ValueableVector<WeaponTypeClass*> Weapon;
@@ -61,10 +71,12 @@ public:
 	Valueable<int> WeaponDelay;
 	Valueable<int> WeaponTimer;
 	Valueable<Leptons> WeaponScope;
+	Valueable<bool> WeaponSeparate;
 	Valueable<bool> WeaponRetarget;
 	Valueable<bool> WeaponLocation;
 	Valueable<bool> WeaponTendency;
 	Valueable<bool> WeaponToAllies;
+	Valueable<bool> WeaponToGround;
 };
 
 class DisperseTrajectory final : public PhobosTrajectory
@@ -73,35 +85,44 @@ public:
 	DisperseTrajectory() : PhobosTrajectory(TrajectoryFlag::Disperse)
 		, UniqueCurve { false }
 		, PreAimCoord {}
+		, RotateCoord { 0 }
 		, FacingCoord { false }
-		, ReduceCoord { false }
+		, ReduceCoord { true }
+		, UseDisperseBurst { false }
+		, AxisOfRotation {}
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
-		, ROT { 10.0 }
+		, ROT { 30.0 }
 		, LockDirection { false }
 		, CruiseEnable { false }
 		, CruiseUnableRange { Leptons(128) }
-		, LeadTimeCalculate { false }
+		, LeadTimeCalculate { true }
 		, TargetSnapDistance { Leptons(128) }
 		, RetargetAllies { false }
 		, RetargetRadius { 0 }
+		, SuicideShortOfROT { true }
 		, SuicideAboveRange { 0 }
-		, SuicideIfNoWeapon { false }
+		, SuicideIfNoWeapon { true }
 		, Weapon {}
 		, WeaponBurst {}
 		, WeaponCount { 0 }
 		, WeaponDelay { 1 }
 		, WeaponTimer { 0 }
 		, WeaponScope { Leptons(0) }
+		, WeaponSeparate { false }
 		, WeaponRetarget { false }
 		, WeaponLocation { false }
 		, WeaponTendency { false }
 		, WeaponToAllies { false }
+		, WeaponToGround { false }
 		, InStraight { false }
 		, Accelerate { true }
 		, TargetInAir { false }
 		, OriginalDistance { 0 }
+		, CurrentBurst { 0 }
+		, ThisWeaponIndex { 0 }
 		, LastTargetCoord {}
+		, PreAimDistance { 0 }
 		, LastReviseMult { 0 }
 		, FirepowerMult { 1.0 }
 	{}
@@ -109,35 +130,44 @@ public:
 	DisperseTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Disperse)
 		, UniqueCurve { false }
 		, PreAimCoord {}
+		, RotateCoord { 0 }
 		, FacingCoord { false }
-		, ReduceCoord { false }
+		, ReduceCoord { true }
+		, UseDisperseBurst { false }
+		, AxisOfRotation {}
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
-		, ROT { 10.0 }
+		, ROT { 30.0 }
 		, LockDirection { false }
 		, CruiseEnable { false }
 		, CruiseUnableRange { Leptons(128) }
-		, LeadTimeCalculate { false }
+		, LeadTimeCalculate { true }
 		, TargetSnapDistance { Leptons(128) }
 		, RetargetAllies { false }
 		, RetargetRadius { 0 }
+		, SuicideShortOfROT { true }
 		, SuicideAboveRange { 0 }
-		, SuicideIfNoWeapon { false }
+		, SuicideIfNoWeapon { true }
 		, Weapon {}
 		, WeaponBurst {}
 		, WeaponCount { 0 }
 		, WeaponDelay { 1 }
 		, WeaponTimer { 0 }
 		, WeaponScope { Leptons(0) }
+		, WeaponSeparate { false }
 		, WeaponRetarget { false }
 		, WeaponLocation { false }
 		, WeaponTendency { false }
 		, WeaponToAllies { false }
+		, WeaponToGround { false }
 		, InStraight { false }
 		, Accelerate { true }
 		, TargetInAir { false }
 		, OriginalDistance { 0 }
+		, CurrentBurst { 0 }
+		, ThisWeaponIndex { 0 }
 		, LastTargetCoord {}
+		, PreAimDistance { 0 }
 		, LastReviseMult { 0 }
 		, FirepowerMult { 1.0 }
 	{}
@@ -154,8 +184,11 @@ public:
 
 	bool UniqueCurve;
 	CoordStruct PreAimCoord;
+	double RotateCoord;
 	bool FacingCoord;
 	bool ReduceCoord;
+	bool UseDisperseBurst;
+	CoordStruct AxisOfRotation;
 	double LaunchSpeed;
 	double Acceleration;
 	double ROT;
@@ -166,6 +199,7 @@ public:
 	Leptons TargetSnapDistance;
 	bool RetargetAllies;
 	double RetargetRadius;
+	bool SuicideShortOfROT;
 	double SuicideAboveRange;
 	bool SuicideIfNoWeapon;
 	std::vector<WeaponTypeClass*> Weapon;
@@ -174,15 +208,20 @@ public:
 	int WeaponDelay;
 	int WeaponTimer;
 	Leptons WeaponScope;
+	bool WeaponSeparate;
 	bool WeaponRetarget;
 	bool WeaponLocation;
 	bool WeaponTendency;
 	bool WeaponToAllies;
+	bool WeaponToGround;
 	bool InStraight;
 	bool Accelerate;
 	bool TargetInAir;
 	int OriginalDistance;
+	int CurrentBurst;
+	size_t ThisWeaponIndex;
 	CoordStruct LastTargetCoord;
+	double PreAimDistance;
 	double LastReviseMult;
 	double FirepowerMult;
 
@@ -193,7 +232,8 @@ private:
 	bool CurveVelocityChange(BulletClass* pBullet);
 	bool StandardVelocityChange(BulletClass* pBullet);
 	bool ChangeBulletVelocity(BulletClass* pBullet, CoordStruct TargetLocation, double TurningRadius, bool Curve);
+	BulletVelocity RotateAboutTheAxis(BulletVelocity TheSpeed, BulletVelocity TheAxis, double TheRadian);
 	bool PrepareDisperseWeapon(BulletClass* pBullet, HouseClass* pOwner);
-	std::vector<TechnoClass*> GetValidTechnosInSame(std::vector<TechnoClass*> Technos, HouseClass* pOwner, WarheadTypeClass* pWH, bool Mode);
-	void CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* BulletTarget, HouseClass* pOwner);
+	std::vector<TechnoClass*> GetValidTechnosInSame(std::vector<TechnoClass*> Technos, HouseClass* pOwner, WarheadTypeClass* pWH, AbstractClass* pTargetAbstract);
+	void CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* BulletTarget, HouseClass* pOwner, int CurBurst, int MaxBurst);
 };

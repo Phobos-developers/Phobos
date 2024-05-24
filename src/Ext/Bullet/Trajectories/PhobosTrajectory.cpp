@@ -128,7 +128,7 @@ double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 	if (auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
 	{
 		double StraightSpeed = pBulletTypeExt->Trajectory_Speed;
-		StraightSpeed = StraightSpeed > 1.0 ? StraightSpeed : 1.0 ;
+		StraightSpeed = StraightSpeed > 0.001 ? StraightSpeed : 0.001 ;
 		return StraightSpeed;
 	}
 	else

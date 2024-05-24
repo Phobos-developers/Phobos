@@ -15,7 +15,10 @@ public:
 		, PassDetonateLocal { false }
 		, LeadTimeCalculate { false }
 		, OffsetCoord { { 0, 0, 0 } }
+		, RotateCoord { 0 }
 		, MirrorCoord { true }
+		, UseDisperseBurst { false }
+		, AxisOfRotation { { 0, 0, 1 } }
 		, ProximityImpact { 0 }
 		, ProximityRadius { 0.7 }
 		, ProximityAllies { 0.0 }
@@ -42,7 +45,10 @@ public:
 	Valueable<bool> PassDetonateLocal;
 	Valueable<bool> LeadTimeCalculate;
 	Valueable<CoordStruct> OffsetCoord;
+	Valueable<double> RotateCoord;
 	Valueable<bool> MirrorCoord;
+	Valueable<bool> UseDisperseBurst;
+	Valueable<CoordStruct> AxisOfRotation;
 	Valueable<int> ProximityImpact;
 	Valueable<double> ProximityRadius;
 	Valueable<double> ProximityAllies;
@@ -68,7 +74,10 @@ public:
 		, PassDetonateLocal { false }
 		, LeadTimeCalculate { false }
 		, OffsetCoord {}
+		, RotateCoord { 0 }
 		, MirrorCoord { true }
+		, UseDisperseBurst { false }
+		, AxisOfRotation {}
 		, ProximityImpact { 0 }
 		, ProximityRadius { 0.7 }
 		, ProximityAllies { 0.0 }
@@ -86,6 +95,8 @@ public:
 		, LastCasualty {}
 		, FirepowerMult { 1.0 }
 		, LastTargetCoord {}
+		, CurrentBurst { 0 }
+		, CountOfBurst { 0 }
 		, WaitOneFrame { 0 }
 	{}
 
@@ -99,7 +110,10 @@ public:
 		, PassDetonateLocal { false }
 		, LeadTimeCalculate { false }
 		, OffsetCoord {}
+		, RotateCoord { 0 }
 		, MirrorCoord { true }
+		, UseDisperseBurst { false }
+		, AxisOfRotation {}
 		, ProximityImpact { 0 }
 		, ProximityRadius { 0.7 }
 		, ProximityAllies { 0.0 }
@@ -117,6 +131,8 @@ public:
 		, LastCasualty {}
 		, FirepowerMult { 1.0 }
 		, LastTargetCoord {}
+		, CurrentBurst { 0 }
+		, CountOfBurst { 0 }
 		, WaitOneFrame { 0 }
 	{}
 
@@ -139,7 +155,10 @@ public:
 	bool PassDetonateLocal;
 	bool LeadTimeCalculate;
 	CoordStruct OffsetCoord;
+	double RotateCoord;
 	bool MirrorCoord;
+	bool UseDisperseBurst;
+	CoordStruct AxisOfRotation;
 	int ProximityImpact;
 	double ProximityRadius;
 	double ProximityAllies;
@@ -157,6 +176,8 @@ public:
 	std::vector<TechnoClass*> LastCasualty;
 	double FirepowerMult;
 	CoordStruct LastTargetCoord;
+	int CurrentBurst;
+	int CountOfBurst;
 	int WaitOneFrame;
 
 private:

@@ -10,6 +10,7 @@ public:
 		, TargetCoord { { 0, 0 } }
 		, MirrorCoord { true }
 		, TheDuration { 0 }
+		, IsLaser { true }
 		, IsSupported { false }
 		, IsHouseColor { false }
 		, IsSingleColor { false }
@@ -31,6 +32,7 @@ public:
 	Valueable<Point2D> TargetCoord;
 	Valueable<bool> MirrorCoord;
 	Valueable<int> TheDuration;
+	Valueable<bool> IsLaser;
 	Valueable<bool> IsSupported;
 	Valueable<bool> IsHouseColor;
 	Valueable<bool> IsSingleColor;
@@ -51,6 +53,7 @@ public:
 		, TargetCoord {}
 		, MirrorCoord { true }
 		, TheDuration { 0 }
+		, IsLaser { true }
 		, IsSupported { false }
 		, IsHouseColor { false }
 		, IsSingleColor { false }
@@ -76,6 +79,7 @@ public:
 		, TargetCoord {}
 		, MirrorCoord { true }
 		, TheDuration { 0 }
+		, IsLaser { true }
 		, IsSupported { false }
 		, IsHouseColor { false }
 		, IsSingleColor { false }
@@ -110,6 +114,7 @@ public:
 	Point2D TargetCoord;
 	bool MirrorCoord;
 	int TheDuration;
+	bool IsLaser;
 	bool IsSupported;
 	bool IsHouseColor;
 	bool IsSingleColor;

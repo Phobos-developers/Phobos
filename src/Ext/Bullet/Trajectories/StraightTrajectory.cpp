@@ -18,7 +18,10 @@ bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 		.Process(this->PassDetonateLocal, false)
 		.Process(this->LeadTimeCalculate, false)
 		.Process(this->OffsetCoord, false)
+		.Process(this->RotateCoord, false)
 		.Process(this->MirrorCoord, false)
+		.Process(this->UseDisperseBurst, false)
+		.Process(this->AxisOfRotation, false)
 		.Process(this->ProximityImpact, false)
 		.Process(this->ProximityRadius, false)
 		.Process(this->ProximityAllies, false)
@@ -48,7 +51,10 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->PassDetonateLocal)
 		.Process(this->LeadTimeCalculate)
 		.Process(this->OffsetCoord)
+		.Process(this->RotateCoord)
 		.Process(this->MirrorCoord)
+		.Process(this->UseDisperseBurst)
+		.Process(this->AxisOfRotation)
 		.Process(this->ProximityImpact)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityAllies)
@@ -78,7 +84,10 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->PassDetonateLocal.Read(exINI, pSection, "Trajectory.Straight.PassDetonateLocal");
 	this->LeadTimeCalculate.Read(exINI, pSection, "Trajectory.Straight.LeadTimeCalculate");
 	this->OffsetCoord.Read(exINI, pSection, "Trajectory.Straight.OffsetCoord");
+	this->RotateCoord.Read(exINI, pSection, "Trajectory.Straight.RotateCoord");
 	this->MirrorCoord.Read(exINI, pSection, "Trajectory.Straight.MirrorCoord");
+	this->UseDisperseBurst.Read(exINI, pSection, "Trajectory.Straight.UseDisperseBurst");
+	this->AxisOfRotation.Read(exINI, pSection, "Trajectory.Straight.AxisOfRotation");
 	this->ProximityImpact.Read(exINI, pSection, "Trajectory.Straight.ProximityImpact");
 	this->ProximityRadius.Read(exINI, pSection, "Trajectory.Straight.ProximityRadius");
 	this->ProximityAllies.Read(exINI, pSection, "Trajectory.Straight.ProximityAllies");
@@ -105,7 +114,10 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->PassDetonateLocal)
 		.Process(this->LeadTimeCalculate)
 		.Process(this->OffsetCoord)
+		.Process(this->RotateCoord)
 		.Process(this->MirrorCoord)
+		.Process(this->UseDisperseBurst)
+		.Process(this->AxisOfRotation)
 		.Process(this->ProximityImpact)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityAllies)
@@ -123,6 +135,8 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->LastCasualty)
 		.Process(this->FirepowerMult)
 		.Process(this->LastTargetCoord)
+		.Process(this->CurrentBurst)
+		.Process(this->CountOfBurst)
 		.Process(this->WaitOneFrame)
 		;
 
@@ -143,7 +157,10 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->PassDetonateLocal)
 		.Process(this->LeadTimeCalculate)
 		.Process(this->OffsetCoord)
+		.Process(this->RotateCoord)
 		.Process(this->MirrorCoord)
+		.Process(this->UseDisperseBurst)
+		.Process(this->AxisOfRotation)
 		.Process(this->ProximityImpact)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityAllies)
@@ -161,6 +178,8 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->LastCasualty)
 		.Process(this->FirepowerMult)
 		.Process(this->LastTargetCoord)
+		.Process(this->CurrentBurst)
+		.Process(this->CountOfBurst)
 		.Process(this->WaitOneFrame)
 		;
 
@@ -181,7 +200,10 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->PassDetonateLocal = pType->PassDetonateLocal;
 	this->LeadTimeCalculate = pType->LeadTimeCalculate;
 	this->OffsetCoord = pType->OffsetCoord;
+	this->RotateCoord = pType->RotateCoord;
 	this->MirrorCoord = pType->MirrorCoord;
+	this->UseDisperseBurst = pType->UseDisperseBurst;
+	this->AxisOfRotation = pType->AxisOfRotation;
 	this->ProximityImpact = pType->ProximityImpact;
 	this->ProximityRadius = pType->ProximityRadius > 0.0 ? pType->ProximityRadius : 0.0;
 	this->ProximityAllies = pType->ProximityAllies;
@@ -197,14 +219,35 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->ExtraCheck2 = nullptr;
 	this->ExtraCheck3 = nullptr;
 	this->LastCasualty.reserve(1);
-	this->FirepowerMult = 1.0;
 	this->LastTargetCoord = pBullet->TargetCoords;
+	this->CountOfBurst = pBullet->WeaponType ? pBullet->WeaponType->Burst : 0;
 	this->WaitOneFrame = 0;
+
+	if (pBullet->Owner)
+	{
+		this->CurrentBurst = pBullet->Owner->CurrentBurstIndex;
+		this->LastCasualty.push_back(pBullet->Owner);
+		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
+
+		if (this->MirrorCoord && pBullet->Owner->CurrentBurstIndex % 2 == 1)
+			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
+	}
+	else
+	{
+		this->CurrentBurst += 1;
+
+		if (this->CountOfBurst > 0)
+			this->CurrentBurst %= this->CountOfBurst;
+		else
+			this->CurrentBurst = 0;
+
+		this->FirepowerMult = 1.0;
+	}
 
 	if (!this->LeadTimeCalculate || (pBullet->Target && pBullet->Target->WhatAmI() == AbstractType::Building))
 		PrepareForOpenFire(pBullet);
 	else
-		this->WaitOneFrame = 2; //OnAI() not always check after OnUnlimbo() immediately.
+		this->WaitOneFrame = 2; //OnAI() not always check after OnUnlimbo() immediately. And Looking for better method.
 }
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
@@ -246,7 +289,7 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
 	auto const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 
-	if (this->EdgeAttenuation != 1.0 || this->ProximityAllies != 0)
+	if ((this->EdgeAttenuation != 1.0 || this->ProximityAllies != 0) && pBullet->WeaponType)
 	{
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pBullet->Target);
 		int Damage = static_cast<int>(pBullet->WeaponType->Damage * this->FirepowerMult * GetExtraDamageMultiplier(pBullet, pTechno, pOwner, true));
@@ -281,7 +324,7 @@ void StraightTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpe
 
 TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)
 {
-	return TrajectoryCheckReturnType::SkipGameCheck;
+	return TrajectoryCheckReturnType::SkipGameCheck; // No longer needed.
 }
 
 TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno)
@@ -309,15 +352,6 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	{
 		this->ThroughVehicles = true;
 		this->ThroughBuilding = true;
-	}
-
-	if (pBullet->Owner)
-	{
-		this->LastCasualty.push_back(pBullet->Owner);
-		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
-
-		if (this->MirrorCoord && pBullet->Owner->CurrentBurstIndex % 2 == 1)
-			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
 	}
 
 	ObjectClass* pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
@@ -378,16 +412,15 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 						TravelTime += 2;
 				}
 
-				TheTargetCoords.X += ExtraOffsetCoord.X * TravelTime;
-				TheTargetCoords.Y += ExtraOffsetCoord.Y * TravelTime;
-				TheTargetCoords.Z += ExtraOffsetCoord.Z * TravelTime;
+				TheTargetCoords += ExtraOffsetCoord * TravelTime;
 			}
 		}
 	}
 
+	double RotateAngle = Math::atan2(TheTargetCoords.Y - TheSourceCoords.Y , TheTargetCoords.X - TheSourceCoords.X);
+
 	if (this->OffsetCoord.X != 0 || this->OffsetCoord.Y != 0 || this->OffsetCoord.Z != 0)
 	{
-		double RotateAngle = Math::atan2(TheTargetCoords.Y - TheSourceCoords.Y , TheTargetCoords.X - TheSourceCoords.X);
 		TheTargetCoords.X += static_cast<int>(this->OffsetCoord.X * Math::cos(RotateAngle) + this->OffsetCoord.Y * Math::sin(RotateAngle));
 		TheTargetCoords.Y += static_cast<int>(this->OffsetCoord.X * Math::sin(RotateAngle) - this->OffsetCoord.Y * Math::cos(RotateAngle));
 		TheTargetCoords.Z += this->OffsetCoord.Z;
@@ -429,6 +462,28 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	pBullet->Velocity.X = static_cast<double>(TheTargetCoords.X - TheSourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(TheTargetCoords.Y - TheSourceCoords.Y);
 	pBullet->Velocity.Z = static_cast<double>(this->GetVelocityZ(pBullet));
+
+	if (!this->UseDisperseBurst && this->RotateCoord != 0 && this->CountOfBurst > 1)
+	{
+		BulletVelocity RotationAxis
+		{
+			this->AxisOfRotation.X * Math::cos(RotateAngle) + this->AxisOfRotation.Y * Math::sin(RotateAngle),
+			this->AxisOfRotation.X * Math::sin(RotateAngle) - this->AxisOfRotation.Y * Math::cos(RotateAngle),
+			static_cast<double>(this->AxisOfRotation.Z)
+		};
+
+		double ExtraRotate = Math::Pi * (this->RotateCoord * (this->CurrentBurst / (this->CountOfBurst - 1.0) - 0.5)) / 180;
+		double RotationAxisLengthSquared = RotationAxis.MagnitudeSquared();
+
+		if (RotationAxisLengthSquared != 0)
+		{
+			RotationAxis *= 1 / sqrt(RotationAxisLengthSquared);
+			double CosRotate = Math::cos(ExtraRotate);
+
+			pBullet->Velocity = (pBullet->Velocity * CosRotate) + (RotationAxis * ((1 - CosRotate) * (pBullet->Velocity * RotationAxis)))
+				+ (RotationAxis.CrossProduct(pBullet->Velocity) * Math::sin(ExtraRotate));
+		}
+	}
 
 	if (CalculateBulletVelocity(pBullet, StraightSpeed))
 		this->CheckTimesLimit = 0;
@@ -1078,7 +1133,7 @@ double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, Techno
 	double Distance = 0;
 	double DamageMult = 1.0;
 	double AlliesMultiplier = 1.0;
-	double MaxDistance = static_cast<double>(pBullet->WeaponType->Range);
+	double MaxDistance = pBullet->WeaponType ? static_cast<double>(pBullet->WeaponType->Range) : 0;
 
 	if (pTechno)
 	{
