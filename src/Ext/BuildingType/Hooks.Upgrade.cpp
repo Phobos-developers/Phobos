@@ -132,7 +132,26 @@ inline bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* p
 	if (pTypeExt->BuildLimitGroup_Types.empty() || pTypeExt->BuildLimitGroup_Nums.empty())
 		return false;
 
-	if (pTypeExt->BuildLimitGroup_Nums.size() == 1)
+	std::vector<int> limits = pTypeExt->BuildLimitGroup_Nums;
+
+	if (!pTypeExt->BuildLimitGroup_ExtraLimit_Types.empty() && !pTypeExt->BuildLimitGroup_ExtraLimit_Nums.empty())
+	{
+		for (int i = 0; i < pTypeExt->BuildLimitGroup_ExtraLimit_Types.size(); i ++)
+		{
+			int count = pHouse->CountOwnedNow(pTypeExt->BuildLimitGroup_ExtraLimit_Types[i]);
+
+			if (i < pTypeExt->BuildLimitGroup_ExtraLimit_MaxCount.size() && pTypeExt->BuildLimitGroup_ExtraLimit_MaxCount[i] > 0)
+				count = Math::min(count, pTypeExt->BuildLimitGroup_ExtraLimit_MaxCount[i]);
+
+			for (auto& limit : limits)
+			{
+				if (i < pTypeExt->BuildLimitGroup_ExtraLimit_Nums.size() && pTypeExt->BuildLimitGroup_ExtraLimit_Nums[i] > 0)
+					limit += count * pTypeExt->BuildLimitGroup_ExtraLimit_Nums[i];
+			}
+		}
+	}
+
+	if (limits.size() == 1)
 	{
 		int count = 0;
 		int queued = 0;
@@ -140,16 +159,18 @@ inline bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* p
 
 		for (const TechnoTypeClass* pTmpType : pTypeExt->BuildLimitGroup_Types)
 		{
-			if (!ignoreQueued)
-				queued += QueuedNum(pHouse, pTmpType);
+			const auto pTmpTypeExt = TechnoTypeExt::ExtMap.Find(pTmpType);
 
-			count += pHouse->CountOwnedNow(pTmpType);
+			if (!ignoreQueued)
+				queued += QueuedNum(pHouse, pTmpType) * pTmpTypeExt->BuildLimitGroup_Factor;
+
+			count += pHouse->CountOwnedNow(pTmpType) * pTmpTypeExt->BuildLimitGroup_Factor;
 
 			if (pTmpType == pType)
 				inside = true;
 		}
 
-		int num = count - pTypeExt->BuildLimitGroup_Nums.back();
+		int num = count - limits.back();
 
 		if (num + queued >= 0)
 		{
@@ -163,15 +184,16 @@ inline bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* p
 	}
 	else
 	{
-		size_t size = Math::min(pTypeExt->BuildLimitGroup_Nums.size(), pTypeExt->BuildLimitGroup_Types.size());
+		size_t size = Math::min(limits.size(), pTypeExt->BuildLimitGroup_Types.size());
 		bool reached = true;
 		bool realReached = true;
 
 		for (size_t i = 0; i < size; i++)
 		{
 			const TechnoTypeClass* pTmpType = pTypeExt->BuildLimitGroup_Types[i];
+			const auto pTmpTypeExt = TechnoTypeExt::ExtMap.Find(pTmpType);
 			int queued = ignoreQueued ? 0 : QueuedNum(pHouse, pTmpType);
-			int num = pHouse->CountOwnedNow(pTmpType) - pTypeExt->BuildLimitGroup_Nums[i];
+			int num = pHouse->CountOwnedNow(pTmpType) * pTmpTypeExt->BuildLimitGroup_Factor - limits[i];
 
 			if (num + queued >= 0)
 			{

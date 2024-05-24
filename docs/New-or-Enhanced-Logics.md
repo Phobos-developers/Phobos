@@ -881,18 +881,28 @@ AutoFire.TargetSelf=false  ; boolean
 
 ### Build limit group
 - You can now make different technos share build limit in a group.
-  - `BuildLimitGroup.Types` determines the technos that'll be used for build limit conditions of the selected techno.
-  - `BuildLimitGroup.Nums` determines the amount of technos that would reach the build limit. If using a single integer, it'll use the sum of all technos in the group to calculate build limit. If using a list of integers with the same size of `BuildLimitGroup.Types`, it'll calculate build limit per techno.
-  - `BuildLimitGroup.ContentIfAnyMatch` determines the rule of calculating build limit per techno. If set to true, build limit will be content if the amount of any techno in the group reaches its `BuildLimitGroup.Nums` value. If set to false, then it'll only be content if the amount of all technos in the group reached.
-  - `BuildLimitGroup.NotBuildableIfQueueMatch` determines the moment to stop the techno's production. If set to true, its production will be stopped once the condition is content by the sum of real technos and technos in production queue. If set to false, it'll only be stopped when the condition is content by real technos.
+- `BuildLimitGroup.Types` determines the technos that'll be used for build limit conditions of the selected techno.
+- `BuildLimitGroup.Nums` determines the amount of technos that would reach the build limit. If using a single integer, it'll use the sum of all technos in the group to calculate build limit. If using a list of integers with the same size of `BuildLimitGroup.Types`, it'll calculate build limit per techno with value matching the position in `BuildLimitGroup.Types` is used for that type.
+- `BuildLimitGroup.Factor` determines each of this techno instance will count as what value when calculating build limit.
+  - This is only used by BuildLimitGroup. No other place will use it when counting owned objects, including `BuildLimitGroup.ExtraLimit`.
+- `BuildLimitGroup.ContentIfAnyMatch` determines the rule of calculating build limit per techno. If set to true, build limit will be content if the amount of any techno in the group reaches its `BuildLimitGroup.Nums` value. If set to false, then it'll only be content if the amount of all technos in the group reached.
+- `BuildLimitGroup.NotBuildableIfQueueMatch` determines the moment to stop the techno's production. If set to true, its production will be stopped once the condition is content by the sum of real technos and technos in production queue. If set to false, it'll only be stopped when the condition is content by real technos.
+- You can also add an extra value into `BuildLimitGroup.Nums`, determined by the amount of specific technos owned by its house.
+  - `BuildLimitGroup.ExtraLimit.Types` determines the technos that'll be used for extra value calculation.
+  - `BuildLimitGroup.ExtraLimit.Nums` determines the actual value of increment. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. For each of these technos, it'll increase the extra value by its amount * corresponding value from the list.
+  - `BuildLimitGroup.ExtraLimit.MaxCount` determines the maximum amount of technos being counted into the extra value calculation. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type.
 
   In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                    ; TechnoType
 BuildLimitGroup.Types=                          ; list of TechnoType names
 BuildLimitGroup.Nums=                           ; integer, or a list of integers
+BuildLimitGroup.Factor=1                        ; integer
 BuildLimitGroup.ContentIfAnyMatch=false         ; boolean
 BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
+BuildLimitGroup.ExtraLimit.Types=               ; list of TechnoType names
+BuildLimitGroup.ExtraLimit.Nums=                ; list of integers
+BuildLimitGroup.ExtraLimit.MaxCount=            ; list of integers
 ```
 
 ### Customizable OpenTopped properties
