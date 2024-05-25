@@ -890,7 +890,7 @@ AutoFire.TargetSelf=false  ; boolean
 - You can also add an extra value into `BuildLimitGroup.Nums`, determined by the amount of specific technos owned by its house.
   - `BuildLimitGroup.ExtraLimit.Types` determines the technos that'll be used for extra value calculation.
   - `BuildLimitGroup.ExtraLimit.Nums` determines the actual value of increment. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. For each of these technos, it'll increase the extra value by its amount * corresponding value from the list.
-  - `BuildLimitGroup.ExtraLimit.MaxCount` determines the maximum amount of technos being counted into the extra value calculation. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type.
+  - `BuildLimitGroup.ExtraLimit.MaxCount` determines the maximum amount of technos being counted into the extra value calculation. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. If not set or set to a value below 1, it'll be considered as no maximum count.
 
   In `rulesmd.ini`:
 ```ini

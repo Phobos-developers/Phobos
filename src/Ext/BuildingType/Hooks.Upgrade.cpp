@@ -118,7 +118,7 @@ inline void RemoveProduction(const HouseClass* pHouse, const TechnoTypeClass* pT
 		if (num >= 0)
 			queued = Math::min(num, queued);
 
-		for (int i = 0; i < queued; i++)
+		for (int i = 0; i < queued; i ++)
 		{
 			pFactory->RemoveOneFromQueue(pType);
 		}
@@ -136,7 +136,7 @@ inline bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* p
 
 	if (!pTypeExt->BuildLimitGroup_ExtraLimit_Types.empty() && !pTypeExt->BuildLimitGroup_ExtraLimit_Nums.empty())
 	{
-		for (int i = 0; i < pTypeExt->BuildLimitGroup_ExtraLimit_Types.size(); i ++)
+		for (size_t i = 0; i < pTypeExt->BuildLimitGroup_ExtraLimit_Types.size(); i ++)
 		{
 			int count = pHouse->CountOwnedNow(pTypeExt->BuildLimitGroup_ExtraLimit_Types[i]);
 
@@ -172,11 +172,11 @@ inline bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* p
 
 		int num = count - limits.back();
 
-		if (num + queued >= 0)
+		if (num + queued >= 1 - pTypeExt->BuildLimitGroup_Factor)
 		{
 			if (inside)
-				RemoveProduction(pHouse, pType, num + queued);
-			else if (num >= 0 || pTypeExt->BuildLimitGroup_NotBuildableIfQueueMatch)
+				RemoveProduction(pHouse, pType, (num + queued + pTypeExt->BuildLimitGroup_Factor - 1) / pTypeExt->BuildLimitGroup_Factor);
+			else if (num >= 1 - pTypeExt->BuildLimitGroup_Factor || pTypeExt->BuildLimitGroup_NotBuildableIfQueueMatch)
 				RemoveProduction(pHouse, pType, -1);
 
 			return true;
@@ -188,14 +188,28 @@ inline bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* p
 		bool reached = true;
 		bool realReached = true;
 
-		for (size_t i = 0; i < size; i++)
+		for (size_t i = 0; i < size; i ++)
 		{
 			const TechnoTypeClass* pTmpType = pTypeExt->BuildLimitGroup_Types[i];
 			const auto pTmpTypeExt = TechnoTypeExt::ExtMap.Find(pTmpType);
-			int queued = ignoreQueued ? 0 : QueuedNum(pHouse, pTmpType);
+			int queued = ignoreQueued ? 0 : QueuedNum(pHouse, pTmpType) * pTmpTypeExt->BuildLimitGroup_Factor;
 			int num = pHouse->CountOwnedNow(pTmpType) * pTmpTypeExt->BuildLimitGroup_Factor - limits[i];
 
-			if (num + queued >= 0)
+			if (pType == pTmpType && num + queued >= 1 - pTypeExt->BuildLimitGroup_Factor)
+			{
+				if (pTypeExt->BuildLimitGroup_ContentIfAnyMatch)
+				{
+					if (num >= 1 - pTypeExt->BuildLimitGroup_Factor || pTypeExt->BuildLimitGroup_NotBuildableIfQueueMatch)
+						RemoveProduction(pHouse, pType, (num + queued + pTypeExt->BuildLimitGroup_Factor - 1) / pTypeExt->BuildLimitGroup_Factor);
+
+					return true;
+				}
+				else if (num < 1 - pTypeExt->BuildLimitGroup_Factor)
+				{
+					realReached = false;
+				}
+			}
+			else if (pType != pTmpType && num + queued >= 0)
 			{
 				if (pTypeExt->BuildLimitGroup_ContentIfAnyMatch)
 				{

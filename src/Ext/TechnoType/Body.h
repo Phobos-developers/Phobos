@@ -423,7 +423,7 @@ public:
 
 			, BuildLimitGroup_Types {}
 			, BuildLimitGroup_Nums {}
-			, BuildLimitGroup_Factor { 0 }
+			, BuildLimitGroup_Factor { 1 }
 			, BuildLimitGroup_ContentIfAnyMatch { false }
 			, BuildLimitGroup_NotBuildableIfQueueMatch { false }
 			, BuildLimitGroup_ExtraLimit_Types {}
