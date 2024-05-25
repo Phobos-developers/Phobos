@@ -273,13 +273,13 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 		if (this->PassDetonate && this->StraightWarhead)
 			PassWithDetonateAt(pBullet, pOwner);
 
-		if (this->ProximityImpact != 0)
-			PrepareForDetonateAt(pBullet, pOwner, pBullet->Location);
+		if (this->ProximityImpact != 0 && this->ProximityRadius > 0)
+			PrepareForDetonateAt(pBullet, pOwner);
 
-		if (StraightSpeed > 256.0)
-			BulletDetonateLastCheck(pBullet, StraightSpeed);
-		else if (this->ConfineAtHeight > 0 && PassAndConfineAtHeight(pBullet, StraightSpeed))
+		if (StraightSpeed <= 256.0 && this->ConfineAtHeight > 0 && PassAndConfineAtHeight(pBullet, StraightSpeed))
 			return true;
+
+		BulletDetonateLastCheck(pBullet, pOwner, StraightSpeed);
 	}
 
 	return false;
@@ -329,16 +329,37 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* 
 
 TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno)
 {
-	if (pTechno)
+	if (pTechno && this->GetTrajectorySpeed(pBullet) <= 256.0)
 	{
 		auto const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 		if (this->ProximityAllies == 0 && pOwner->IsAlliedWith(pTechno->Owner))
 			return TrajectoryCheckReturnType::SkipGameCheck;
 
-		if (!this->ThroughBuilding && pTechno->WhatAmI() == AbstractType::Building)
-			this->ExtraCheck1 = pTechno;
+		if (pTechno->WhatAmI() == AbstractType::Building)
+		{
+			auto const pBuilding = static_cast<BuildingClass*>(pTechno);
+
+			if (pBuilding->Type)
+			{
+				if (pBuilding->Type->InvisibleInGame)
+					return TrajectoryCheckReturnType::SkipGameCheck;
+
+				if (pBuilding->Type->IsVehicle())
+				{
+					if (!this->ThroughVehicles)
+						this->ExtraCheck1 = pTechno;
+				}
+				else
+				{
+					if (!this->ThroughBuilding)
+						this->ExtraCheck1 = pTechno;
+				}
+			}
+		}
 		else if (!this->ThroughVehicles && (pTechno->WhatAmI() == AbstractType::Unit || pTechno->WhatAmI() == AbstractType::Aircraft))
+		{
 			this->ExtraCheck1 = pTechno;
+		}
 	}
 
 	return TrajectoryCheckReturnType::SkipGameCheck; // Bypass game checks entirely.
@@ -347,12 +368,6 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBull
 void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 {
 	double StraightSpeed = this->GetTrajectorySpeed(pBullet);
-
-	if (StraightSpeed > 256.0)
-	{
-		this->ThroughVehicles = true;
-		this->ThroughBuilding = true;
-	}
 
 	ObjectClass* pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
 	CoordStruct TheTargetCoords = pBullet->TargetCoords;
@@ -534,9 +549,6 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass
 	{
 		CoordStruct ExtraCheckCoord = this->ExtraCheck1->GetCoords();
 
-		if (this->ExtraCheck1->WhatAmI() != AbstractType::Building)
-			pBullet->SetLocation(ExtraCheckCoord);
-
 		pBullet->Target = this->ExtraCheck1;
 		pBullet->TargetCoords = ExtraCheckCoord;
 
@@ -585,40 +597,117 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass
 }
 
 //If the check result here is true, it only needs to be detonated in the next frame, without returning.
-void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, double StraightSpeed)
+void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed)
 {
-	if (StraightSpeed > 512.0)
-		return;
-
-	int VelocityCheck = 0;
-
-	CoordStruct MiddleCoords
-	{
-		pBullet->Location.X + static_cast<int>(pBullet->Velocity.X / 2),
-		pBullet->Location.Y + static_cast<int>(pBullet->Velocity.Y / 2),
-		pBullet->Location.Z + static_cast<int>(pBullet->Velocity.Z / 2)
-	};
-
+	bool VelocityCheck = false;
 	double LocationDistance = pBullet->Location.DistanceFrom(pBullet->TargetCoords);
 
-	if (!this->PassThrough)
+	if (this->PassThrough)
 	{
-		if (LocationDistance < StraightSpeed)
-			VelocityCheck = 2;
+		if (this->DetonationDistance < 0)
+			LocationDistance -= this->DetonationDistance;
+		else
+			LocationDistance = DBL_MAX;
 	}
 
-	if (VelocityCheck != 2)
+	if (LocationDistance < StraightSpeed)
+		VelocityCheck = true;
+
+	if (this->ExtraCheck1)
 	{
-		if (this->SubjectToGround && MapClass::Instance->GetCellFloorHeight(MiddleCoords) >= MiddleCoords.Z)
-			VelocityCheck = 1;
+		LocationDistance = this->ExtraCheck1->GetCoords().DistanceFrom(pBullet->Location);
+		VelocityCheck = true;
+	}
+	else if (this->ExtraCheck2)
+	{
+		LocationDistance = this->ExtraCheck2->GetCoords().DistanceFrom(pBullet->Location);
+		VelocityCheck = true;
+	}
+	else if (this->ExtraCheck3)
+	{
+		LocationDistance = this->ExtraCheck3->GetCoords().DistanceFrom(pBullet->Location);
+		VelocityCheck = true;
 	}
 
-	if (VelocityCheck == 1)
+	if (StraightSpeed > 256 && (!this->ThroughBuilding || !this->ThroughVehicles || this->SubjectToGround))
 	{
-		this->CheckTimesLimit = 0;
-		pBullet->Velocity *= 0.5;
+		std::vector<CellClass*> StaCellClass = GetCellsInPassThrough(pBullet);
+
+		for (auto const pStaCell : StaCellClass)
+		{
+			double CellDistance = pStaCell->GetCoords().DistanceFrom(pBullet->Location);
+			double BulletHeight = pBullet->Location.Z + CellDistance / StraightSpeed * pBullet->Velocity.Z;
+
+			if (MapClass::Instance->GetCellFloorHeight(pStaCell->GetCoords()) >= BulletHeight
+				&& CellDistance < LocationDistance)
+			{
+				LocationDistance = CellDistance;
+				VelocityCheck = true;
+			}
+
+			if (this->ThroughBuilding && this->ThroughVehicles)
+				continue;
+
+			ObjectClass* pObject = pStaCell->FirstObject;
+
+			while (pObject)
+			{
+				auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+				pObject = pObject->NextObject;
+
+				if (!pTechno)
+					continue;
+
+				if (pOwner->IsAlliedWith(pTechno->Owner))
+					continue;
+
+				if (pTechno->GetHeight() > 0)
+					continue;
+
+				auto const TechnoType = pTechno->WhatAmI();
+
+				if (TechnoType == AbstractType::Building)
+				{
+					BuildingClass* pBuilding = static_cast<BuildingClass*>(pTechno);
+
+					if (pBuilding->Type)
+					{
+						if (pBuilding->Type->InvisibleInGame)
+							continue;
+
+						if (CellDistance < LocationDistance)
+						{
+							if (pBuilding->Type->IsVehicle())
+							{
+								if (!this->ThroughVehicles)
+								{
+									LocationDistance = CellDistance;
+									VelocityCheck = true;
+								}
+							}
+							else
+							{
+								if (!this->ThroughBuilding)
+								{
+									LocationDistance = CellDistance;
+									VelocityCheck = true;
+								}
+							}
+						}
+					}
+				}
+
+				if (CellDistance < LocationDistance && !this->ThroughVehicles
+					&& (TechnoType == AbstractType::Unit || TechnoType == AbstractType::Aircraft))
+				{
+					LocationDistance = CellDistance;
+					VelocityCheck = true;
+				}
+			}
+		}
 	}
-	else if (VelocityCheck == 2)
+
+	if (VelocityCheck)
 	{
 		this->CheckTimesLimit = 0;
 		pBullet->Velocity *= LocationDistance / StraightSpeed;
@@ -647,7 +736,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 }
 
 //Select suitable targets and choose the closer targets then attack each target only once.
-void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner, CoordStruct Coord)
+void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner)
 {
 	//Step1 Find valid targets on the ground within range.
 	std::vector<CellClass*> RecCellClass = GetCellsInProximityRadius(pBullet);
@@ -680,12 +769,24 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 			if (TechnoType == AbstractType::Building)
 			{
-				if (!this->ThroughBuilding)
-					continue;
-
 				auto const pBuilding = static_cast<BuildingClass*>(pTechno);
-				if (pBuilding->Type->InvisibleInGame)
-					continue;
+
+				if (pBuilding->Type)
+				{
+					if (pBuilding->Type->InvisibleInGame)
+						continue;
+
+					if (pBuilding->Type->IsVehicle())
+					{
+						if (!this->ThroughVehicles)
+							continue;
+					}
+					else
+					{
+						if (!this->ThroughBuilding)
+							continue;
+					}
+				}
 			}
 
 			if (!this->ThroughVehicles && (TechnoType == AbstractType::Unit || TechnoType == AbstractType::Aircraft))
@@ -730,7 +831,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 				Distance = abs(Factor * TechnoCrd.X - TechnoCrd.Y + BulletCrd.Y - Factor * BulletCrd.X) / sqrt(Factor * Factor + 1);
 			}
 
-			if (Distance > this->ProximityRadius * 256.0)
+			if (TechnoType != AbstractType::Building && Distance > this->ProximityRadius * 256.0)
 				continue;
 
 			if (ThisSize < CellSize)
@@ -852,6 +953,30 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			break;
 		}
 	}
+}
+
+std::vector<CellClass*> StraightTrajectory::GetCellsInPassThrough(BulletClass* pBullet)
+{
+	std::vector<CellClass*> StaCellClass;
+
+	if (pBullet->Velocity.X != 0 || pBullet->Velocity.Y != 0)
+	{
+		CoordStruct WalkCoord { static_cast<int>(pBullet->Velocity.X), static_cast<int>(pBullet->Velocity.Y), 0 };
+
+		CellStruct ThisCell = CellClass::Coord2Cell(pBullet->Location);
+		CellStruct NextCell = CellClass::Coord2Cell((pBullet->Location + WalkCoord));
+
+		std::vector<CellStruct> StaCells = GetCellsInRectangle(ThisCell, ThisCell, NextCell, NextCell);
+
+		StaCellClass.reserve(StaCells.size());
+		for (auto const& pCells : StaCells)
+		{
+			if (CellClass* pStaCell = MapClass::Instance->TryGetCellAt(pCells))
+				StaCellClass.push_back(pStaCell);
+		}
+	}
+
+	return StaCellClass;
 }
 
 //A rectangular shape with a custom width from the current frame to the next frame in length.
