@@ -220,8 +220,10 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->ExtraCheck3 = nullptr;
 	this->LastCasualty.reserve(1);
 	this->LastTargetCoord = pBullet->TargetCoords;
+	this->CurrentBurst = 0;
 	this->CountOfBurst = pBullet->WeaponType ? pBullet->WeaponType->Burst : 0;
 	this->WaitOneFrame = 0;
+	this->FirepowerMult = 1.0;
 
 	if (pBullet->Owner)
 	{
@@ -231,17 +233,6 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 
 		if (this->MirrorCoord && pBullet->Owner->CurrentBurstIndex % 2 == 1)
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
-	}
-	else
-	{
-		this->CurrentBurst += 1;
-
-		if (this->CountOfBurst > 0)
-			this->CurrentBurst %= this->CountOfBurst;
-		else
-			this->CurrentBurst = 0;
-
-		this->FirepowerMult = 1.0;
 	}
 
 	if (!this->LeadTimeCalculate || (pBullet->Target && pBullet->Target->WhatAmI() == AbstractType::Building))
@@ -487,12 +478,25 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 			static_cast<double>(this->AxisOfRotation.Z)
 		};
 
-		double ExtraRotate = Math::Pi * (this->RotateCoord * (this->CurrentBurst / (this->CountOfBurst - 1.0) - 0.5)) / 180;
 		double RotationAxisLengthSquared = RotationAxis.MagnitudeSquared();
 
 		if (RotationAxisLengthSquared != 0)
 		{
+			double ExtraRotate = 0;
 			RotationAxis *= 1 / sqrt(RotationAxisLengthSquared);
+
+			if (this->MirrorCoord)
+			{
+				if (pBullet->Owner && pBullet->Owner->CurrentBurstIndex % 2 == 1)
+					RotationAxis *= -1;
+
+				ExtraRotate = Math::Pi * (this->RotateCoord * ((this->CurrentBurst / 2) / (this->CountOfBurst - 1.0) - 0.5)) / 180;
+			}
+			else
+			{
+				ExtraRotate = Math::Pi * (this->RotateCoord * (this->CurrentBurst / (this->CountOfBurst - 1.0) - 0.5)) / 180;
+			}
+
 			double CosRotate = Math::cos(ExtraRotate);
 
 			pBullet->Velocity = (pBullet->Velocity * CosRotate) + (RotationAxis * ((1 - CosRotate) * (pBullet->Velocity * RotationAxis)))

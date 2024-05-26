@@ -9,6 +9,7 @@ public:
 		, UniqueCurve { false }
 		, PreAimCoord { { 0, 0, 0 } }
 		, RotateCoord { 0 }
+		, MirrorCoord { true }
 		, FacingCoord { false }
 		, ReduceCoord { true }
 		, UseDisperseBurst { false }
@@ -48,6 +49,7 @@ public:
 	Valueable<bool> UniqueCurve;
 	Valueable<CoordStruct> PreAimCoord;
 	Valueable<double> RotateCoord;
+	Valueable<bool> MirrorCoord;
 	Valueable<bool> FacingCoord;
 	Valueable<bool> ReduceCoord;
 	Valueable<bool> UseDisperseBurst;
@@ -86,6 +88,7 @@ public:
 		, UniqueCurve { false }
 		, PreAimCoord {}
 		, RotateCoord { 0 }
+		, MirrorCoord { true }
 		, FacingCoord { false }
 		, ReduceCoord { true }
 		, UseDisperseBurst { false }
@@ -131,6 +134,7 @@ public:
 		, UniqueCurve { false }
 		, PreAimCoord {}
 		, RotateCoord { 0 }
+		, MirrorCoord { true }
 		, FacingCoord { false }
 		, ReduceCoord { true }
 		, UseDisperseBurst { false }
@@ -185,6 +189,7 @@ public:
 	bool UniqueCurve;
 	CoordStruct PreAimCoord;
 	double RotateCoord;
+	bool MirrorCoord;
 	bool FacingCoord;
 	bool ReduceCoord;
 	bool UseDisperseBurst;
@@ -219,7 +224,7 @@ public:
 	bool TargetInAir;
 	int OriginalDistance;
 	int CurrentBurst;
-	size_t ThisWeaponIndex;
+	int ThisWeaponIndex;
 	CoordStruct LastTargetCoord;
 	double PreAimDistance;
 	double LastReviseMult;

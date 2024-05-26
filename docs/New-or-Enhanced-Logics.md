@@ -648,7 +648,7 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target when firing. Note that this will not affect the facing of the turret.
   - `Trajectory.Straight.OffsetCoord` controls the offsets of the target. Projectile will aim at this position to attack. It also supports `Inaccurate=yes` and `Trajectory.Straight.LeadTimeCalculate=true` on this basis.
   - `Trajectory.Straight.RotateCoord` controls whether to rotate the projectile's firing direction within the angle bisector of `Trajectory.Straight.OffsetCoord` according to the weapon's `Burst`. Set to 0 to disable this function.
-  - `Trajectory.Straight.MirrorCoord` controls whether `Trajectory.Straight.OffsetCoord` need to mirror the lateral value to adapt to the current burst index.
+  - `Trajectory.Straight.MirrorCoord` controls whether `Trajectory.Straight.OffsetCoord` need to mirror the lateral value to adapt to the current burst index. At the same time, the rotation direction calculated by `Trajectory.Straight.RotateCoord` will also be reversed, and the rotation angle between each adjacent projectile on each side will not change as a result.
   - `Trajectory.Straight.UseDisperseBurst` controls whether the calculation of `Trajectory.Straight.RotateCoord` is based on its superior's `Trajectory.Disperse.WeaponBurst` of the dispersed trajectory, rather than `Burst` of the weapon. If this value is not appropriate, it will result in unsatisfactory visual displays.
   - `Trajectory.Straight.AxisOfRotation` controls the rotation axis when calculating `Trajectory.Straight.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position.
   - `Trajectory.Straight.ProximityImpact` controls the initial proximity fuse times. When there are enough remaining times and the projectile approaches another valid target, it will detonate a warhead defined by `Trajectory.Straight.Warhead` on it. If the times is about to run out, it will detonate itself on the last attempt. This function can be cancelled by setting to 0. A negative integer means unlimited times.
@@ -709,9 +709,10 @@ Trajectory.Bombard.Height=0.0                   ; double
 #### Disperse trajectory
 
 - Its trajectory looks a bit like a `ROT`, but its settings are more flexible. It also has a unique trajectory. And as its name suggests, it can even spread out more weapons.
-  - `Trajectory.Disperse.UniqueCurve` controls whether to enable simulated Qian Xuesen trajectory. After enabling this, it will NOT respect the following 18 items and `Trajectory.Speed`.
+  - `Trajectory.Disperse.UniqueCurve` controls whether to enable simulated Qian Xuesen trajectory. After enabling this, it will NOT respect the following 19 items and `Trajectory.Speed`.
   - `Trajectory.Disperse.PreAimCoord` controls the initial flight direction of the projectile, and after reaching this coordinate, it will begin to turn towards the target direction. When it is set to 0,0,0 , it will directly face the target.
   - `Trajectory.Disperse.RotateCoord` controls whether to rotate the projectile's firing direction within the angle bisector of `Trajectory.Disperse.PreAimCoord` according to the weapon's `Burst`. Set to 0 to disable this function.
+  - `Trajectory.Disperse.MirrorCoord` controls whether `Trajectory.Disperse.PreAimCoord` need to mirror the lateral value to adapt to the current burst index. At the same time, the rotation direction calculated by `Trajectory.Disperse.RotateCoord` will also be reversed, and the rotation angle between each adjacent projectile on each side will not change as a result.
   - `Trajectory.Disperse.FacingCoord` controls whether the forward direction in `Trajectory.Disperse.PreAimCoord` is depending on the orientation of the firer. By default, it will depend on the vector between the firer and the target.
   - `Trajectory.Disperse.ReduceCoord` controls whether `Trajectory.Disperse.PreAimCoord` defines the initial movement coordinates when the attack distance is 10 cells, and the actual initial movement coordinates will change with the length of the attack distance. It can be simply understood as an optimization term aimed at ensuring hits at close range.
   - `Trajectory.Disperse.UseDisperseBurst` controls whether the calculation of `Trajectory.Disperse.RotateCoord` is based on its superior's `Trajectory.Disperse.WeaponBurst` of the dispersed trajectory, rather than `Burst` of the weapon. If this value is not appropriate, it will result in unsatisfactory visual displays.
@@ -748,6 +749,7 @@ Trajectory=Disperse                             ; Trajectory type
 Trajectory.Disperse.UniqueCurve=false           ; boolean
 Trajectory.Disperse.PreAimCoord=0,0,0           ; integer - Forward,Lateral,Height
 Trajectory.Disperse.RotateCoord=0               ; floating point value
+Trajectory.Disperse.MirrorCoord=true            ; boolean
 Trajectory.Disperse.FacingCoord=false           ; boolean
 Trajectory.Disperse.ReduceCoord=true            ; boolean
 Trajectory.Disperse.UseDisperseBurst=false      ; boolean

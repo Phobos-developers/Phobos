@@ -99,6 +99,7 @@ bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->SourceHeight)
 		.Process(this->SetItsLocation)
 		.Process(this->TechnoInLimbo)
+		.Process(this->NotMainWeapon)
 		.Process(this->FirepowerMult)
 		.Process(this->FLHCoord)
 		;
@@ -131,6 +132,7 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->SourceHeight)
 		.Process(this->SetItsLocation)
 		.Process(this->TechnoInLimbo)
+		.Process(this->NotMainWeapon)
 		.Process(this->FirepowerMult)
 		.Process(this->FLHCoord)
 		;
