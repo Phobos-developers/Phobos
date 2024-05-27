@@ -642,6 +642,7 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
   - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but instead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
   - `Trajectory.Straight.PassDetonate` enables extra detonations when the projectile is traveling.
+  - `Trajectory.Straight.PassDetonateWarhead` defined the warhead detonated by `Trajectory.Straight.PassDetonate`, and `Trajectory.Straight.PassDetonateDamage` defined the damage caused by `Trajectory.Straight.PassDetonateWarhead`.
   - `Trajectory.Straight.PassDetonateDelay` controls the maximum value of the extra detonations timer. When the timer goes back to 0, it will detonate a warhead defined by `Trajectory.Straight.Warhead`.
   - `Trajectory.Straight.PassDetonateTimer` controls the initial value of the extra detonations timer. It can be set to a negative integer as initial delay.
   - `Trajectory.Straight.PassDetonateLocal` controls whether the extra detonations are always at ground level.
@@ -652,12 +653,11 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.UseDisperseBurst` controls whether the calculation of `Trajectory.Straight.RotateCoord` is based on its superior's `Trajectory.Disperse.WeaponBurst` of the dispersed trajectory, rather than `Burst` of the weapon. If this value is not appropriate, it will result in unsatisfactory visual displays.
   - `Trajectory.Straight.AxisOfRotation` controls the rotation axis when calculating `Trajectory.Straight.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position.
   - `Trajectory.Straight.ProximityImpact` controls the initial proximity fuse times. When there are enough remaining times and the projectile approaches another valid target, it will detonate a warhead defined by `Trajectory.Straight.Warhead` on it. If the times is about to run out, it will detonate itself on the last attempt. This function can be cancelled by setting to 0. A negative integer means unlimited times.
+  - `Trajectory.Straight.ProximityWarhead` defined the warhead detonated by `Trajectory.Straight.ProximityImpact`, and `Trajectory.Straight.ProximityDamage` defined the damage caused by `Trajectory.Straight.ProximityWarhead`.
   - `Trajectory.Straight.ProximityRadius` controls the range of proximity fuse. Never counted units in the air. It can NOT be set as a negative integer.
   - `Trajectory.Straight.ProximityAllies` controls the damage ratio if the target of proximity fuse is ally. It will not detonate at allies by setting as 0. Note that this is not related to whether the warhead itself affect allies.
   - `Trajectory.Straight.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircrafts on the ground. When it is obstructed, it will be directly detonated at the obstacle.
   - `Trajectory.Straight.ThroughBuilding` controls whether the projectile will not be obstructed by buildings. When it is obstructed, it will be directly detonated in situ.
-  - `Trajectory.Straight.Warhead` defined the warhead detonated by `Trajectory.Straight.PassDetonate` and `Trajectory.Straight.ProximityImpact`.
-  - `Trajectory.Straight.Damage` defined the damage caused by `Trajectory.Straight.Warhead`.
   - `Trajectory.Straight.EdgeAttenuation` controls the edge attenuation ratio of projectile damage, includes `Trajectory.Straight.Damage`. Can NOT be set to a negative integer.
   - `Trajectory.Straight.SubjectToGround` controls whether the projectile should explode when it hits the ground. Note that this will not make AI search for suitable attack locations.
   - `Trajectory.Straight.ConfineAtHeight` controls the height above ground that projectile will try to travel as it can. It can not move down from the cliff by setting `SubjectToCliffs=yes`. It can be cancelled by setting as a non positive integer. It will be forcibly cancelled by setting `Trajectory.Speed` above 256.
@@ -670,6 +670,8 @@ Trajectory.Straight.DetonationDistance=0.4      ; floating point value
 Trajectory.Straight.TargetSnapDistance=0.5      ; floating point value
 Trajectory.Straight.PassThrough=false           ; boolean
 Trajectory.Straight.PassDetonate=false          ; boolean
+Trajectory.Straight.PassDetonateWarhead=        ; WarheadType
+Trajectory.Straight.PassDetonateDamage=0        ; integer
 Trajectory.Straight.PassDetonateDelay=1         ; integer
 Trajectory.Straight.PassDetonateTimer=0         ; integer
 Trajectory.Straight.PassDetonateLocal=false     ; boolean
@@ -680,12 +682,12 @@ Trajectory.Straight.MirrorCoord=true            ; boolean
 Trajectory.Straight.UseDisperseBurst=false      ; boolean
 Trajectory.Straight.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Height
 Trajectory.Straight.ProximityImpact=0           ; integer
+Trajectory.Straight.ProximityWarhead=           ; WarheadType
+Trajectory.Straight.ProximityDamage=0           ; integer
 Trajectory.Straight.ProximityRadius=0.7         ; floating point value
 Trajectory.Straight.ProximityAllies=0           ; floating point value
 Trajectory.Straight.ThroughVehicles=true        ; boolean
 Trajectory.Straight.ThroughBuilding=true        ; boolean
-Trajectory.Straight.Warhead=                    ; WarheadType
-Trajectory.Straight.Damage=0                    ; integer
 Trajectory.Straight.EdgeAttenuation=1.0         ; floating point value
 Trajectory.Straight.SubjectToGround=false       ; boolean
 Trajectory.Straight.ConfineAtHeight=0           ; integer
