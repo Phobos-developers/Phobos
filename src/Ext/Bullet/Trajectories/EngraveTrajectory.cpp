@@ -222,15 +222,12 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 						}
 					}
 
-					if (const auto pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType()))
-					{
-						if (WeaponIndex < static_cast<int>(pTransporterTypeExt->AlternateFLHs.size()))
-							this->FLHCoord = pTransporterTypeExt->AlternateFLHs[WeaponIndex];
-					}
+					const auto pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType());
+
+					if (WeaponIndex < static_cast<int>(pTransporterTypeExt->AlternateFLHs.size()))
+						this->FLHCoord = pTransporterTypeExt->AlternateFLHs[WeaponIndex];
 					else
-					{
 						this->NotMainWeapon = true;
-					}
 				}
 				else
 				{

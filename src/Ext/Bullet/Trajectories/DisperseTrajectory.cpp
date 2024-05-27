@@ -1148,30 +1148,29 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 	if (pWeapon->IsLaser)
 	{
 		LaserDrawClass* pLaser;
-		if (auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon))
-		{
-			if (pWeapon->IsHouseColor)
-			{
-				pLaser = GameCreate<LaserDrawClass>(pBullet->Location, BulletTarget->GetCoords(),
-					pOwner->LaserColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
-				pLaser->IsHouseColor = true;
-			}
-			else if (pWeaponTypeExt->Laser_IsSingleColor)
-			{
-				pLaser = GameCreate<LaserDrawClass>(pBullet->Location, BulletTarget->GetCoords(),
-					pWeapon->LaserInnerColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
-				pLaser->IsHouseColor = true;
-			}
-			else
-			{
-				pLaser = GameCreate<LaserDrawClass>(pBullet->Location, BulletTarget->GetCoords(),
-					pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
-				pLaser->IsHouseColor = false;
-			}
+		auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-			pLaser->Thickness = 3;
-			pLaser->IsSupported = false;
+		if (pWeapon->IsHouseColor)
+		{
+			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, BulletTarget->GetCoords(),
+				pOwner->LaserColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
+			pLaser->IsHouseColor = true;
 		}
+		else if (pWeaponTypeExt->Laser_IsSingleColor)
+		{
+			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, BulletTarget->GetCoords(),
+				pWeapon->LaserInnerColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
+			pLaser->IsHouseColor = true;
+		}
+		else
+		{
+			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, BulletTarget->GetCoords(),
+				pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
+			pLaser->IsHouseColor = false;
+		}
+
+		pLaser->Thickness = 3;
+		pLaser->IsSupported = false;
 	}
 
 	if (pWeapon->IsElectricBolt)

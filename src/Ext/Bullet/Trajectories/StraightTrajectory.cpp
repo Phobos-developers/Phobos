@@ -13,6 +13,8 @@ bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 		.Process(this->TargetSnapDistance, false)
 		.Process(this->PassThrough, false)
 		.Process(this->PassDetonate, false)
+		.Process(this->PassDetonateWarhead, false)
+		.Process(this->PassDetonateDamage, false)
 		.Process(this->PassDetonateDelay, false)
 		.Process(this->PassDetonateTimer, false)
 		.Process(this->PassDetonateLocal, false)
@@ -23,12 +25,12 @@ bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 		.Process(this->UseDisperseBurst, false)
 		.Process(this->AxisOfRotation, false)
 		.Process(this->ProximityImpact, false)
+		.Process(this->ProximityWarhead, false)
+		.Process(this->ProximityDamage, false)
 		.Process(this->ProximityRadius, false)
 		.Process(this->ProximityAllies, false)
 		.Process(this->ThroughVehicles, false)
 		.Process(this->ThroughBuilding, false)
-		.Process(this->StraightWarhead, false)
-		.Process(this->StraightDamage, false)
 		.Process(this->SubjectToGround, false)
 		.Process(this->ConfineAtHeight, false)
 		.Process(this->EdgeAttenuation, false)
@@ -46,6 +48,8 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->TargetSnapDistance)
 		.Process(this->PassThrough)
 		.Process(this->PassDetonate)
+		.Process(this->PassDetonateWarhead)
+		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateDelay)
 		.Process(this->PassDetonateTimer)
 		.Process(this->PassDetonateLocal)
@@ -56,12 +60,12 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->UseDisperseBurst)
 		.Process(this->AxisOfRotation)
 		.Process(this->ProximityImpact)
+		.Process(this->ProximityWarhead)
+		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityAllies)
 		.Process(this->ThroughVehicles)
 		.Process(this->ThroughBuilding)
-		.Process(this->StraightWarhead)
-		.Process(this->StraightDamage)
 		.Process(this->SubjectToGround)
 		.Process(this->ConfineAtHeight)
 		.Process(this->EdgeAttenuation)
@@ -79,6 +83,8 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.Straight.TargetSnapDistance");
 	this->PassThrough.Read(exINI, pSection, "Trajectory.Straight.PassThrough");
 	this->PassDetonate.Read(exINI, pSection, "Trajectory.Straight.PassDetonate");
+	this->PassDetonateWarhead.Read(exINI, pSection, "Trajectory.Straight.PassDetonateWarhead");
+	this->PassDetonateDamage.Read(exINI, pSection, "Trajectory.Straight.PassDetonateDamage");
 	this->PassDetonateDelay.Read(exINI, pSection, "Trajectory.Straight.PassDetonateDelay");
 	this->PassDetonateTimer.Read(exINI, pSection, "Trajectory.Straight.PassDetonateTimer");
 	this->PassDetonateLocal.Read(exINI, pSection, "Trajectory.Straight.PassDetonateLocal");
@@ -89,12 +95,12 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->UseDisperseBurst.Read(exINI, pSection, "Trajectory.Straight.UseDisperseBurst");
 	this->AxisOfRotation.Read(exINI, pSection, "Trajectory.Straight.AxisOfRotation");
 	this->ProximityImpact.Read(exINI, pSection, "Trajectory.Straight.ProximityImpact");
+	this->ProximityWarhead.Read(exINI, pSection, "Trajectory.Straight.ProximityWarhead");
+	this->ProximityDamage.Read(exINI, pSection, "Trajectory.Straight.ProximityDamage");
 	this->ProximityRadius.Read(exINI, pSection, "Trajectory.Straight.ProximityRadius");
 	this->ProximityAllies.Read(exINI, pSection, "Trajectory.Straight.ProximityAllies");
 	this->ThroughVehicles.Read(exINI, pSection, "Trajectory.Straight.ThroughVehicles");
 	this->ThroughBuilding.Read(exINI, pSection, "Trajectory.Straight.ThroughBuilding");
-	this->StraightWarhead.Read(exINI, pSection, "Trajectory.Straight.Warhead");
-	this->StraightDamage.Read(exINI, pSection, "Trajectory.Straight.Damage");
 	this->SubjectToGround.Read(exINI, pSection, "Trajectory.Straight.SubjectToGround");
 	this->ConfineAtHeight.Read(exINI, pSection, "Trajectory.Straight.ConfineAtHeight");
 	this->EdgeAttenuation.Read(exINI, pSection, "Trajectory.Straight.EdgeAttenuation");
@@ -109,6 +115,8 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->TargetSnapDistance)
 		.Process(this->PassThrough)
 		.Process(this->PassDetonate)
+		.Process(this->PassDetonateWarhead)
+		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateDelay)
 		.Process(this->PassDetonateTimer)
 		.Process(this->PassDetonateLocal)
@@ -119,12 +127,12 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->UseDisperseBurst)
 		.Process(this->AxisOfRotation)
 		.Process(this->ProximityImpact)
+		.Process(this->ProximityWarhead)
+		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityAllies)
 		.Process(this->ThroughVehicles)
 		.Process(this->ThroughBuilding)
-		.Process(this->StraightWarhead)
-		.Process(this->StraightDamage)
 		.Process(this->SubjectToGround)
 		.Process(this->ConfineAtHeight)
 		.Process(this->EdgeAttenuation)
@@ -152,6 +160,8 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->TargetSnapDistance)
 		.Process(this->PassThrough)
 		.Process(this->PassDetonate)
+		.Process(this->PassDetonateWarhead)
+		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateDelay)
 		.Process(this->PassDetonateTimer)
 		.Process(this->PassDetonateLocal)
@@ -162,12 +172,12 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->UseDisperseBurst)
 		.Process(this->AxisOfRotation)
 		.Process(this->ProximityImpact)
+		.Process(this->ProximityWarhead)
+		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityAllies)
 		.Process(this->ThroughVehicles)
 		.Process(this->ThroughBuilding)
-		.Process(this->StraightWarhead)
-		.Process(this->StraightDamage)
 		.Process(this->SubjectToGround)
 		.Process(this->ConfineAtHeight)
 		.Process(this->EdgeAttenuation)
@@ -194,6 +204,8 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->TargetSnapDistance = pType->TargetSnapDistance;
 	this->PassThrough = pType->PassThrough;
 	this->PassDetonate = pType->PassDetonate;
+	this->PassDetonateWarhead = pType->PassDetonateWarhead;
+	this->PassDetonateDamage = pType->PassDetonateDamage;
 	this->PassDetonateDelay = pType->PassDetonateDelay > 0 ? pType->PassDetonateDelay : 1;
 	this->PassDetonateTimer = pType->PassDetonateTimer < this->PassDetonateDelay ?
 		pType->PassDetonateTimer : this->PassDetonateDelay - 1;
@@ -205,12 +217,12 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->UseDisperseBurst = pType->UseDisperseBurst;
 	this->AxisOfRotation = pType->AxisOfRotation;
 	this->ProximityImpact = pType->ProximityImpact;
+	this->ProximityWarhead = pType->ProximityWarhead;
+	this->ProximityDamage = pType->ProximityDamage;
 	this->ProximityRadius = pType->ProximityRadius > 0.0 ? pType->ProximityRadius : 0.0;
 	this->ProximityAllies = pType->ProximityAllies;
 	this->ThroughVehicles = pType->ThroughVehicles;
 	this->ThroughBuilding = pType->ThroughBuilding;
-	this->StraightWarhead = pType->StraightWarhead;
-	this->StraightDamage = pType->StraightDamage;
 	this->SubjectToGround = pType->SubjectToGround;
 	this->ConfineAtHeight = pType->ConfineAtHeight;
 	this->EdgeAttenuation = pType->EdgeAttenuation > 0.0 ? pType->EdgeAttenuation : 1.0;
@@ -238,7 +250,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	if (!this->LeadTimeCalculate || (pBullet->Target && pBullet->Target->WhatAmI() == AbstractType::Building))
 		PrepareForOpenFire(pBullet);
 	else
-		this->WaitOneFrame = 2; //OnAI() not always check after OnUnlimbo() immediately. And Looking for better method.
+		this->WaitOneFrame = 2;
 }
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
@@ -247,31 +259,34 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 	{
 		this->WaitOneFrame -= 1;
 
+		//OnAI() not always check after OnUnlimbo() immediately. Looking for better method.
 		if (this->WaitOneFrame == 0 || !pBullet->Target || (pBullet->Target && pBullet->Target->GetCoords() != this->LastTargetCoord))
 		{
 			PrepareForOpenFire(pBullet);
 			this->WaitOneFrame = 0;
 		}
+		else
+		{
+			return false;
+		}
 	}
-	else
-	{
-		double StraightSpeed = this->GetTrajectorySpeed(pBullet);
-		auto const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 
-		if (BulletDetonatePreCheck(pBullet, pOwner))
-			return true;
+	double StraightSpeed = this->GetTrajectorySpeed(pBullet);
+	auto const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 
-		if (this->PassDetonate && this->StraightWarhead)
-			PassWithDetonateAt(pBullet, pOwner);
+	if (BulletDetonatePreCheck(pBullet, pOwner, StraightSpeed))
+		return true;
 
-		if (this->ProximityImpact != 0 && this->ProximityRadius > 0)
-			PrepareForDetonateAt(pBullet, pOwner);
+	if (this->PassDetonate && this->PassDetonateWarhead)
+		PassWithDetonateAt(pBullet, pOwner);
 
-		if (StraightSpeed <= 256.0 && this->ConfineAtHeight > 0 && PassAndConfineAtHeight(pBullet, StraightSpeed))
-			return true;
+	if (this->ProximityImpact != 0 && this->ProximityRadius > 0 && this->ProximityWarhead)
+		PrepareForDetonateAt(pBullet, pOwner);
 
-		BulletDetonateLastCheck(pBullet, pOwner, StraightSpeed);
-	}
+	if (StraightSpeed <= 256.0 && this->ConfineAtHeight > 0 && PassAndConfineAtHeight(pBullet, StraightSpeed))
+		return true;
+
+	BulletDetonateLastCheck(pBullet, pOwner, StraightSpeed);
 
 	return false;
 }
@@ -330,21 +345,18 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBull
 		{
 			auto const pBuilding = static_cast<BuildingClass*>(pTechno);
 
-			if (pBuilding->Type)
-			{
-				if (pBuilding->Type->InvisibleInGame)
-					return TrajectoryCheckReturnType::SkipGameCheck;
+			if (pBuilding->Type->InvisibleInGame)
+				return TrajectoryCheckReturnType::SkipGameCheck;
 
-				if (pBuilding->Type->IsVehicle())
-				{
-					if (!this->ThroughVehicles)
-						this->ExtraCheck1 = pTechno;
-				}
-				else
-				{
-					if (!this->ThroughBuilding)
-						this->ExtraCheck1 = pTechno;
-				}
+			if (pBuilding->Type->IsVehicle())
+			{
+				if (!this->ThroughVehicles)
+					this->ExtraCheck1 = pTechno;
+			}
+			else
+			{
+				if (!this->ThroughBuilding)
+					this->ExtraCheck1 = pTechno;
 			}
 		}
 		else if (!this->ThroughVehicles && (pTechno->WhatAmI() == AbstractType::Unit || pTechno->WhatAmI() == AbstractType::Aircraft))
@@ -359,7 +371,6 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBull
 void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 {
 	double StraightSpeed = this->GetTrajectorySpeed(pBullet);
-
 	ObjectClass* pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
 	CoordStruct TheTargetCoords = pBullet->TargetCoords;
 	CoordStruct TheSourceCoords = pBullet->SourceCoords;
@@ -435,11 +446,12 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	if (pBullet->Type->Inaccurate)
 	{
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+
 		int ScatterDefault = RulesClass::Instance->BallisticScatter;
 		int ScatterMin = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
 		int ScatterMax = pTypeExt->BallisticScatter_Max.Get(Leptons(ScatterDefault));
-		double OffsetMult = 0.0004 * TheSourceCoords.DistanceFrom(TheTargetCoords);
 
+		double OffsetMult = 0.0004 * TheSourceCoords.DistanceFrom(TheTargetCoords);
 		int OffsetMin = static_cast<int>(OffsetMult * ScatterMin);
 		int OffsetMax = static_cast<int>(OffsetMult * ScatterMax);
 
@@ -447,20 +459,18 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		TheTargetCoords = MapClass::GetRandomCoordsNear(TheTargetCoords, OffsetDistance, false);
 	}
 
-	double DistanceOfTwo = TheSourceCoords.DistanceFrom(TheTargetCoords);
-
 	if (this->PassThrough)
 	{
 		if (this->DetonationDistance > 0)
 			this->CheckTimesLimit = static_cast<int>(this->DetonationDistance / StraightSpeed) + 1;
 		else if (this->DetonationDistance < 0)
-			this->CheckTimesLimit = static_cast<int>((DistanceOfTwo - this->DetonationDistance) / StraightSpeed) + 1;
+			this->CheckTimesLimit = static_cast<int>((TheSourceCoords.DistanceFrom(TheTargetCoords) - this->DetonationDistance) / StraightSpeed) + 1;
 		else
 			this->CheckTimesLimit = INT_MAX;
 	}
 	else
 	{
-		this->CheckTimesLimit = static_cast<int>(DistanceOfTwo / StraightSpeed) + 1;
+		this->CheckTimesLimit = static_cast<int>(TheSourceCoords.DistanceFrom(TheTargetCoords) / StraightSpeed) + 1;
 	}
 
 	pBullet->TargetCoords = TheTargetCoords;
@@ -547,7 +557,7 @@ bool StraightTrajectory::CalculateBulletVelocity(BulletClass* pBullet, double St
 	return false;
 }
 
-bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner)
+bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed)
 {
 	if (this->ExtraCheck1)
 	{
@@ -582,6 +592,7 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass
 	}
 
 	this->CheckTimesLimit -= 1;
+
 	if (this->CheckTimesLimit < 0)
 		return true;
 
@@ -674,28 +685,25 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 				{
 					BuildingClass* pBuilding = static_cast<BuildingClass*>(pTechno);
 
-					if (pBuilding->Type)
-					{
-						if (pBuilding->Type->InvisibleInGame)
-							continue;
+					if (pBuilding->Type->InvisibleInGame)
+						continue;
 
-						if (CellDistance < LocationDistance)
+					if (CellDistance < LocationDistance)
+					{
+						if (pBuilding->Type->IsVehicle())
 						{
-							if (pBuilding->Type->IsVehicle())
+							if (!this->ThroughVehicles)
 							{
-								if (!this->ThroughVehicles)
-								{
-									LocationDistance = CellDistance;
-									VelocityCheck = true;
-								}
+								LocationDistance = CellDistance;
+								VelocityCheck = true;
 							}
-							else
+						}
+						else
+						{
+							if (!this->ThroughBuilding)
 							{
-								if (!this->ThroughBuilding)
-								{
-									LocationDistance = CellDistance;
-									VelocityCheck = true;
-								}
+								LocationDistance = CellDistance;
+								VelocityCheck = true;
 							}
 						}
 					}
@@ -723,7 +731,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 	if (this->PassDetonateTimer == 0)
 	{
 		CoordStruct DetonateCoords = pBullet->Location;
-		int Damage = this->StraightDamage;
+		int Damage = this->PassDetonateDamage;
 
 		if (this->PassDetonateLocal)
 			DetonateCoords.Z = MapClass::Instance->GetCellFloorHeight(DetonateCoords);
@@ -731,7 +739,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 		if (this->EdgeAttenuation != 1.0 || this->ProximityAllies != 0)
 			Damage = static_cast<int>(Damage * GetExtraDamageMultiplier(pBullet, nullptr, nullptr, false));
 
-		WarheadTypeExt::DetonateAt(this->StraightWarhead, DetonateCoords, pBullet->Owner, Damage, pOwner);
+		WarheadTypeExt::DetonateAt(this->PassDetonateWarhead, DetonateCoords, pBullet->Owner, Damage, pOwner);
 	}
 
 	this->PassDetonateTimer += 1;
@@ -939,14 +947,14 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 	for (auto const& pTechno : CasualtyChecked)
 	{
-		if (this->ProximityImpact != 1 && this->StraightWarhead)
+		if (this->ProximityImpact != 1)
 		{
-			int Damage = this->StraightDamage;
+			int Damage = this->ProximityDamage;
 
 			if (this->EdgeAttenuation != 1.0 || this->ProximityAllies != 0)
 				Damage = static_cast<int>(Damage * GetExtraDamageMultiplier(pBullet, pTechno, pOwner, false));
 
-			WarheadTypeExt::DetonateAt(this->StraightWarhead, pTechno->GetCoords(), pBullet->Owner, Damage, pOwner);
+			WarheadTypeExt::DetonateAt(this->ProximityWarhead, pTechno->GetCoords(), pBullet->Owner, Damage, pOwner);
 
 			if (this->ProximityImpact > 0)
 				this->ProximityImpact -= 1;

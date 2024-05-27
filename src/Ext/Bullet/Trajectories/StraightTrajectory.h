@@ -10,6 +10,8 @@ public:
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
 		, PassDetonate { false }
+		, PassDetonateWarhead {}
+		, PassDetonateDamage { 0 }
 		, PassDetonateDelay { 1 }
 		, PassDetonateTimer { 0 }
 		, PassDetonateLocal { false }
@@ -20,12 +22,12 @@ public:
 		, UseDisperseBurst { false }
 		, AxisOfRotation { { 0, 0, 1 } }
 		, ProximityImpact { 0 }
+		, ProximityWarhead {}
+		, ProximityDamage { 0 }
 		, ProximityRadius { 0.7 }
 		, ProximityAllies { 0.0 }
 		, ThroughVehicles { true }
 		, ThroughBuilding { true }
-		, StraightWarhead {}
-		, StraightDamage { 0 }
 		, SubjectToGround { false }
 		, ConfineAtHeight { 0 }
 		, EdgeAttenuation { 1.0 }
@@ -40,6 +42,8 @@ public:
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> PassThrough;
 	Valueable<bool> PassDetonate;
+	Nullable<WarheadTypeClass*> PassDetonateWarhead;
+	Valueable<int> PassDetonateDamage;
 	Valueable<int> PassDetonateDelay;
 	Valueable<int> PassDetonateTimer;
 	Valueable<bool> PassDetonateLocal;
@@ -50,12 +54,12 @@ public:
 	Valueable<bool> UseDisperseBurst;
 	Valueable<CoordStruct> AxisOfRotation;
 	Valueable<int> ProximityImpact;
+	Nullable<WarheadTypeClass*> ProximityWarhead;
+	Valueable<int> ProximityDamage;
 	Valueable<double> ProximityRadius;
 	Valueable<double> ProximityAllies;
 	Valueable<bool> ThroughVehicles;
 	Valueable<bool> ThroughBuilding;
-	Nullable<WarheadTypeClass*> StraightWarhead;
-	Valueable<int> StraightDamage;
 	Valueable<bool> SubjectToGround;
 	Valueable<int> ConfineAtHeight;
 	Valueable<double> EdgeAttenuation;
@@ -69,6 +73,8 @@ public:
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
 		, PassDetonate { false }
+		, PassDetonateWarhead {}
+		, PassDetonateDamage { 0 }
 		, PassDetonateDelay { 1 }
 		, PassDetonateTimer { 0 }
 		, PassDetonateLocal { false }
@@ -79,16 +85,16 @@ public:
 		, UseDisperseBurst { false }
 		, AxisOfRotation {}
 		, ProximityImpact { 0 }
+		, ProximityWarhead {}
+		, ProximityDamage { 0 }
 		, ProximityRadius { 0.7 }
 		, ProximityAllies { 0.0 }
 		, ThroughVehicles { true }
 		, ThroughBuilding { true }
-		, StraightWarhead {}
-		, StraightDamage { 0 }
 		, SubjectToGround { false }
 		, ConfineAtHeight { 0 }
 		, EdgeAttenuation { 1.0 }
-		, CheckTimesLimit { 0 }
+		, CheckTimesLimit { 1 }
 		, ExtraCheck1 { nullptr }
 		, ExtraCheck2 { nullptr }
 		, ExtraCheck3 { nullptr }
@@ -97,7 +103,7 @@ public:
 		, LastTargetCoord {}
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
-		, WaitOneFrame { 0 }
+		, WaitOneFrame { false }
 	{}
 
 	StraightTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
@@ -105,6 +111,8 @@ public:
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
 		, PassDetonate { false }
+		, PassDetonateWarhead {}
+		, PassDetonateDamage { 0 }
 		, PassDetonateDelay { 1 }
 		, PassDetonateTimer { 0 }
 		, PassDetonateLocal { false }
@@ -115,16 +123,16 @@ public:
 		, UseDisperseBurst { false }
 		, AxisOfRotation {}
 		, ProximityImpact { 0 }
+		, ProximityWarhead {}
+		, ProximityDamage { 0 }
 		, ProximityRadius { 0.7 }
 		, ProximityAllies { 0.0 }
 		, ThroughVehicles { true }
 		, ThroughBuilding { true }
-		, StraightWarhead {}
-		, StraightDamage { 0 }
 		, SubjectToGround { false }
 		, ConfineAtHeight { 0 }
 		, EdgeAttenuation { 1.0 }
-		, CheckTimesLimit { 0 }
+		, CheckTimesLimit { 1 }
 		, ExtraCheck1 { nullptr }
 		, ExtraCheck2 { nullptr }
 		, ExtraCheck3 { nullptr }
@@ -133,7 +141,7 @@ public:
 		, LastTargetCoord {}
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
-		, WaitOneFrame { 0 }
+		, WaitOneFrame { false }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -150,6 +158,8 @@ public:
 	Leptons TargetSnapDistance;
 	bool PassThrough;
 	bool PassDetonate;
+	WarheadTypeClass* PassDetonateWarhead;
+	int PassDetonateDamage;
 	int PassDetonateDelay;
 	int PassDetonateTimer;
 	bool PassDetonateLocal;
@@ -160,12 +170,12 @@ public:
 	bool UseDisperseBurst;
 	CoordStruct AxisOfRotation;
 	int ProximityImpact;
+	WarheadTypeClass* ProximityWarhead;
+	int ProximityDamage;
 	double ProximityRadius;
 	double ProximityAllies;
 	bool ThroughVehicles;
 	bool ThroughBuilding;
-	WarheadTypeClass* StraightWarhead;
-	int StraightDamage;
 	bool SubjectToGround;
 	int ConfineAtHeight;
 	double EdgeAttenuation;
@@ -184,7 +194,7 @@ private:
 	void PrepareForOpenFire(BulletClass* pBullet);
 	int GetVelocityZ(BulletClass* pBullet);
 	bool CalculateBulletVelocity(BulletClass* pBullet, double StraightSpeed);
-	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner);
+	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed);
 	void BulletDetonateLastCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed);
 	void PassWithDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
 	void PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
