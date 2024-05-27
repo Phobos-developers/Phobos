@@ -623,7 +623,7 @@ DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 	return 0;
 }
 
-int HouseExt::CountOwnedIncludeDeploy(const HouseClass* pThis, const TechnoTypeClass* pItem)
+int CountOwnedIncludeDeploy(const HouseClass* pThis, const TechnoTypeClass* pItem)
 {
 	int count = pThis->CountOwnedNow(pItem);
 	count += pItem->DeploysInto ? pThis->CountOwnedNow(pItem->DeploysInto) : 0;
@@ -652,7 +652,12 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 			for (auto& limit : limits)
 			{
 				if (i < pItemExt->BuildLimitGroup_ExtraLimit_Nums.size() && pItemExt->BuildLimitGroup_ExtraLimit_Nums[i] > 0)
+				{
 					limit += count * pItemExt->BuildLimitGroup_ExtraLimit_Nums[i];
+
+					if (pItemExt->BuildLimitGroup_ExtraLimit_MaxNum > 0)
+						limit = Math::min(limit, pItemExt->BuildLimitGroup_ExtraLimit_MaxNum);
+				}
 			}
 		}
 	}
@@ -661,11 +666,11 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 	{
 		bool reachedLimit = false;
 
-		for (size_t i = 0; i < std::min(pItemExt->BuildLimitGroup_Types.size(), pItemExt->BuildLimitGroup_Nums.size()); i++)
+		for (size_t i = 0; i < std::min(pItemExt->BuildLimitGroup_Types.size(), pItemExt->BuildLimitGroup_Nums.size()); i ++)
 		{
 			TechnoTypeClass* pType = pItemExt->BuildLimitGroup_Types[i];
 			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-			int ownedNow = HouseExt::CountOwnedIncludeDeploy(pThis, pType) * pTypeExt->BuildLimitGroup_Factor;
+			int ownedNow = CountOwnedIncludeDeploy(pThis, pType) * pTypeExt->BuildLimitGroup_Factor;
 
 			if (ownedNow >= limits[i] + 1 - pItemExt->BuildLimitGroup_Factor)
 				reachedLimit |= (includeQueued && FactoryClass::FindByOwnerAndProduct(pThis, pType)) ? false : true;
@@ -683,7 +688,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 			for (auto& pType : pItemExt->BuildLimitGroup_Types)
 			{
 				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-				sum += HouseExt::CountOwnedIncludeDeploy(pThis, pType) * pTypeExt->BuildLimitGroup_Factor;
+				sum += CountOwnedIncludeDeploy(pThis, pType) * pTypeExt->BuildLimitGroup_Factor;
 			}
 
 			if (sum >= limits[0] + 1 - pItemExt->BuildLimitGroup_Factor)
@@ -702,7 +707,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 			{
 				TechnoTypeClass* pType = pItemExt->BuildLimitGroup_Types[i];
 				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-				int ownedNow = HouseExt::CountOwnedIncludeDeploy(pThis, pType) * pTypeExt->BuildLimitGroup_Factor;
+				int ownedNow = CountOwnedIncludeDeploy(pThis, pType) * pTypeExt->BuildLimitGroup_Factor;
 
 				if ((pItem == pType && ownedNow < limits[i] + 1 - pItemExt->BuildLimitGroup_Factor) || includeQueued && FactoryClass::FindByOwnerAndProduct(pThis, pType))
 					return CanBuildResult::Buildable;
@@ -746,7 +751,7 @@ void RemoveProduction(const HouseClass* pHouse, const TechnoTypeClass* pType, in
 		if (num >= 0)
 			queued = Math::min(num, queued);
 
-		for (int i = 0; i < queued; i++)
+		for (int i = 0; i < queued; i ++)
 		{
 			pFactory->RemoveOneFromQueue(pType);
 		}
@@ -764,7 +769,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 
 	if (!pTypeExt->BuildLimitGroup_ExtraLimit_Types.empty() && !pTypeExt->BuildLimitGroup_ExtraLimit_Nums.empty())
 	{
-		for (size_t i = 0; i < pTypeExt->BuildLimitGroup_ExtraLimit_Types.size(); i++)
+		for (size_t i = 0; i < pTypeExt->BuildLimitGroup_ExtraLimit_Types.size(); i ++)
 		{
 			int count = pHouse->CountOwnedNow(pTypeExt->BuildLimitGroup_ExtraLimit_Types[i]);
 
@@ -774,7 +779,12 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 			for (auto& limit : limits)
 			{
 				if (i < pTypeExt->BuildLimitGroup_ExtraLimit_Nums.size() && pTypeExt->BuildLimitGroup_ExtraLimit_Nums[i] > 0)
+				{
 					limit += count * pTypeExt->BuildLimitGroup_ExtraLimit_Nums[i];
+
+					if (pTypeExt->BuildLimitGroup_ExtraLimit_MaxNum > 0)
+						limit = Math::min(limit, pTypeExt->BuildLimitGroup_ExtraLimit_MaxNum);
+				}
 			}
 		}
 	}
@@ -816,7 +826,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 		bool reached = true;
 		bool realReached = true;
 
-		for (size_t i = 0; i < size; i++)
+		for (size_t i = 0; i < size; i ++)
 		{
 			const TechnoTypeClass* pTmpType = pTypeExt->BuildLimitGroup_Types[i];
 			const auto pTmpTypeExt = TechnoTypeExt::ExtMap.Find(pTmpType);

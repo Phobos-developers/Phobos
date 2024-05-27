@@ -666,7 +666,7 @@ Trajectory.Bombard.Height=0.0  ; double
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]                   ; Projectile
@@ -881,7 +881,7 @@ AutoFire.TargetSelf=false  ; boolean
 
 ### Build limit group
 - You can now make different technos share build limit in a group.
-- `BuildLimitGroup.Types` determines the technos that'll be used for build limit conditions of the selected techno.
+- `BuildLimitGroup.Types` determines the technos that'll be used for build limit conditions of the selected techno. Note that the limit won't be applied to technos in the list. To do this, you'll have to manually define the limit per techno.
 - `BuildLimitGroup.Nums` determines the amount of technos that would reach the build limit. If using a single integer, it'll use the sum of all technos in the group to calculate build limit. If using a list of integers with the same size of `BuildLimitGroup.Types`, it'll calculate build limit per techno with value matching the position in `BuildLimitGroup.Types` is used for that type.
 - `BuildLimitGroup.Factor` determines each of this techno instance will count as what value when calculating build limit.
   - This is only used by BuildLimitGroup. No other place will use it when counting owned objects, including `BuildLimitGroup.ExtraLimit`.
@@ -891,6 +891,7 @@ AutoFire.TargetSelf=false  ; boolean
   - `BuildLimitGroup.ExtraLimit.Types` determines the technos that'll be used for extra value calculation.
   - `BuildLimitGroup.ExtraLimit.Nums` determines the actual value of increment. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. For each of these technos, it'll increase the extra value by its amount * corresponding value from the list.
   - `BuildLimitGroup.ExtraLimit.MaxCount` determines the maximum amount of technos being counted into the extra value calculation. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. If not set or set to a value below 1, it'll be considered as no maximum count.
+  - `BuildLimitGroup.ExtraLimit.MaxNum` determines the maximum of values in `BuildLimitGroup.Nums` after extra limit calculation. If not set or set to a value below 1, it'll be considered as no maximum value.
 
   In `rulesmd.ini`:
 ```ini
@@ -903,6 +904,7 @@ BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
 BuildLimitGroup.ExtraLimit.Types=               ; list of TechnoType names
 BuildLimitGroup.ExtraLimit.Nums=                ; list of integers
 BuildLimitGroup.ExtraLimit.MaxCount=            ; list of integers
+BuildLimitGroup.ExtraLimit.MaxNum=0             ; integer
 ```
 
 ### Customizable OpenTopped properties
@@ -1192,7 +1194,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]
 Convert.HumanToComputer =   ; TechnoType
-Convert.ComputerToHuman =   ; TechnoType 
+Convert.ComputerToHuman =   ; TechnoType
 ```
 
 ## Terrain

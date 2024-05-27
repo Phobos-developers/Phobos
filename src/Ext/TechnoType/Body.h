@@ -216,6 +216,7 @@ public:
 		ValueableVector<TechnoTypeClass*> BuildLimitGroup_ExtraLimit_Types;
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_Nums;
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
+		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
 		struct LaserTrailDataEntry
 		{
@@ -428,7 +429,8 @@ public:
 			, BuildLimitGroup_NotBuildableIfQueueMatch { false }
 			, BuildLimitGroup_ExtraLimit_Types {}
 			, BuildLimitGroup_ExtraLimit_Nums {}
-			, BuildLimitGroup_ExtraLimit_MaxCount ()
+			, BuildLimitGroup_ExtraLimit_MaxCount {}
+			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
