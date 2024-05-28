@@ -907,10 +907,10 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 			{
 				CreateDisperseBullets(pBullet, pWeapon, BulletTarget, pOwner, BurstNow, BurstCount);
 				BurstNow += 1;
-			}
 
-			if (BurstCount <= 1)
-				continue;
+				if (BurstCount <= 1)
+					continue;
+			}
 
 			double Spread = pWeapon->Range / 256.0;
 			bool IncludeInAir = (this->TargetInAir && pWeapon->Projectile->AA);
