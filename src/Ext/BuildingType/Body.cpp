@@ -171,6 +171,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	// Ares tag
+	this->Fake.Read(exINI, pSection, "Fake");
+
+	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array->Count > 0)
 	{
@@ -234,6 +237,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
 		.Process(this->Refinery_UseStorage)
+		.Process(this->Fake)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)
 		.Process(this->Grinding_AllowTypes)

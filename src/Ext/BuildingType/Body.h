@@ -62,6 +62,8 @@ public:
 		Valueable<bool> ZShapePointMove_OnBuildup;
 		Valueable<int> SellBuildupLength;
 
+		Valueable<bool> Fake; //Ares parameter
+
 		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
@@ -101,6 +103,7 @@ public:
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
 			, AircraftDockingDirs {}
+			, Fake { false }
 		{ }
 
 		// Ares 0.A functions
@@ -140,4 +143,5 @@ public:
 	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
+	static void DrawPrimaryIcon(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 };
