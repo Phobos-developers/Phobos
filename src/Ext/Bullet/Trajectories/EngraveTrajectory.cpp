@@ -163,9 +163,9 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->DamageTimer = 0;
 	this->SourceHeight = pBullet->SourceCoords.Z;
 	this->SetItsLocation = false;
-	this->TechnoInLimbo = pBullet->Owner ? pBullet->Owner->InLimbo : false;
+	this->TechnoInLimbo = false;
 	this->NotMainWeapon = false;
-	this->FirepowerMult = pBullet->Owner ? pBullet->Owner->FirepowerMultiplier : 1.0;
+	this->FirepowerMult = 1.0;
 	this->FLHCoord = pBullet->SourceCoords;
 
 	CoordStruct TheSourceCoords { pBullet->SourceCoords.X, pBullet->SourceCoords.Y, 0 };
@@ -173,6 +173,9 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 	if (pBullet->Owner)
 	{
+		this->TechnoInLimbo = pBullet->Owner->InLimbo;
+		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
+
 		bool FLHFound = false;
 
 		if (this->IsLaser)
@@ -181,7 +184,9 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 			if (!this->TechnoInLimbo)
 			{
-				if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false))
+				if (!pBullet->WeaponType) //Bullets create from AirburstWeapon have no WeaponType.
+					this->NotMainWeapon = true;
+				else if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false))
 					this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
 				else if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true))
 					this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
@@ -259,6 +264,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	}
 
 	double RotateAngle = Math::atan2(TheTargetCoords.Y - TheSourceCoords.Y , TheTargetCoords.X - TheSourceCoords.X);
+
 	if (this->SourceCoord.X != 0 || this->SourceCoord.Y != 0)
 	{
 		TheSourceCoords = TheTargetCoords;
@@ -290,6 +296,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 	if (this->TheDuration <= 0)
 		this->TheDuration = static_cast<int>(CoordDistance / StraightSpeed) + 1;
+
 }
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
@@ -410,10 +417,18 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 		pLaser->IsSupported = this->IsSupported;
 	}
 
-	if (this->DamageTimer == 0 && pBullet->WeaponType)
+	if (this->DamageTimer == 0)
 	{
-		int LaserDamage = static_cast<int>(pBullet->WeaponType->Damage * this->FirepowerMult);
-		WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, LaserDamage, pOwner);
+		if (pBullet->WeaponType) //Bullets create from AirburstWeapon have no WeaponType.
+		{
+			int LaserDamage = static_cast<int>(pBullet->WeaponType->Damage * this->FirepowerMult);
+			WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, LaserDamage, pOwner);
+		}
+		else
+		{
+			//I don't know how to simply get the bullet damage without WeaponType.
+			WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, 1, pOwner);
+		}
 	}
 
 	this->LaserTimer += 1;

@@ -269,8 +269,8 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->Weapon = pType->Weapon;
 	this->WeaponBurst = pType->WeaponBurst;
 	this->WeaponCount = pType->WeaponCount;
-	this->WeaponDelay = pType->WeaponDelay;
-	this->WeaponTimer = pType->WeaponTimer;
+	this->WeaponDelay = pType->WeaponDelay > 0 ? pType->WeaponDelay : 1;
+	this->WeaponTimer = pType->WeaponTimer < this->WeaponDelay ? pType->WeaponTimer : this->WeaponDelay - 1;
 	this->WeaponScope = pType->WeaponScope;
 	this->WeaponSeparate = pType->WeaponSeparate;
 	this->WeaponRetarget = pType->WeaponRetarget;
@@ -433,19 +433,16 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 	HouseClass* pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 	bool VelocityUp = false;
 
-	if (this->WeaponScope <=0 || pBullet->TargetCoords.DistanceFrom(pBullet->Location) <= this->WeaponScope)
+	if ((this->WeaponScope == 0 || pBullet->TargetCoords.DistanceFrom(pBullet->Location) <= this->WeaponScope) && this->WeaponCount != 0)
 	{
-		if (this->WeaponCount != 0)
+		if (pOwner)
 		{
-			if (pOwner)
-			{
-				if (PrepareDisperseWeapon(pBullet, pOwner))
-					return true;
-			}
-			else
-			{
+			if (PrepareDisperseWeapon(pBullet, pOwner))
 				return true;
-			}
+		}
+		else
+		{
+			return true;
 		}
 	}
 
@@ -532,6 +529,13 @@ void DisperseTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 		auto const pExt = BulletExt::ExtMap.Find(pBullet);
 		pExt->SnappedToTarget = true;
 		pBullet->SetLocation(pCoords);
+	}
+
+	if (this->WeaponScope < 0 && this->WeaponCount != 0)
+	{
+		HouseClass* pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+		this->WeaponTimer = 0;
+		PrepareDisperseWeapon(pBullet, pOwner);
 	}
 }
 
