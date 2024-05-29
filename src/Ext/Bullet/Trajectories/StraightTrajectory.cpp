@@ -569,14 +569,6 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 	bool VelocityCheck = false;
 	double LocationDistance = this->RemainingDistance;
 
-	if (this->PassThrough)
-	{
-		if (this->DetonationDistance < 0)
-			LocationDistance -= this->DetonationDistance;
-		else
-			LocationDistance = DBL_MAX;
-	}
-
 	if (LocationDistance < StraightSpeed)
 		VelocityCheck = true;
 
