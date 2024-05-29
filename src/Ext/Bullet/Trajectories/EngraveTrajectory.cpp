@@ -185,7 +185,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 			if (!this->TechnoInLimbo)
 			{
 				if (!pBullet->WeaponType) //Bullets create from AirburstWeapon have no WeaponType.
-					this->NotMainWeapon = true;
+					return;
 				else if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false))
 					this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
 				else if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true))
@@ -301,10 +301,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (!pBullet->Owner)
-		return true;
-
-	if (this->TechnoInLimbo != pBullet->Owner->InLimbo)
+	if (!pBullet->WeaponType || !pBullet->Owner || this->TechnoInLimbo != pBullet->Owner->InLimbo)
 		return true;
 
 	this->TheDuration -= 1;
@@ -419,16 +416,8 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 
 	if (this->DamageTimer == 0)
 	{
-		if (pBullet->WeaponType) //Bullets create from AirburstWeapon have no WeaponType.
-		{
-			int LaserDamage = static_cast<int>(pBullet->WeaponType->Damage * this->FirepowerMult);
-			WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, LaserDamage, pOwner);
-		}
-		else
-		{
-			//I don't know how to simply get the bullet damage without WeaponType.
-			WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, 1, pOwner);
-		}
+		int LaserDamage = static_cast<int>(pBullet->WeaponType->Damage * this->FirepowerMult);
+		WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, LaserDamage, pOwner);
 	}
 
 	this->LaserTimer += 1;
