@@ -94,7 +94,7 @@ public:
 		, SubjectToGround { false }
 		, ConfineAtHeight { 0 }
 		, EdgeAttenuation { 1.0 }
-		, CheckTimesLimit { 1 }
+		, RemainingDistance { 1 }
 		, ExtraCheck { nullptr }
 		, LastCasualty {}
 		, FirepowerMult { 1.0 }
@@ -130,7 +130,7 @@ public:
 		, SubjectToGround { false }
 		, ConfineAtHeight { 0 }
 		, EdgeAttenuation { 1.0 }
-		, CheckTimesLimit { 1 }
+		, RemainingDistance { 1 }
 		, ExtraCheck { nullptr }
 		, LastCasualty {}
 		, FirepowerMult { 1.0 }
@@ -181,7 +181,7 @@ public:
 	bool SubjectToGround;
 	int ConfineAtHeight;
 	double EdgeAttenuation;
-	int CheckTimesLimit;
+	int RemainingDistance;
 	TechnoClass* ExtraCheck;
 	std::vector<CasualtyData> LastCasualty;
 	double FirepowerMult;

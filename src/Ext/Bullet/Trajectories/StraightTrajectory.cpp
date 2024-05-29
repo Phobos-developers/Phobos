@@ -137,7 +137,7 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->SubjectToGround)
 		.Process(this->ConfineAtHeight)
 		.Process(this->EdgeAttenuation)
-		.Process(this->CheckTimesLimit)
+		.Process(this->RemainingDistance)
 		.Process(this->ExtraCheck)
 		.Process(this->LastCasualty)
 		.Process(this->FirepowerMult)
@@ -180,7 +180,7 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->SubjectToGround)
 		.Process(this->ConfineAtHeight)
 		.Process(this->EdgeAttenuation)
-		.Process(this->CheckTimesLimit)
+		.Process(this->RemainingDistance)
 		.Process(this->ExtraCheck)
 		.Process(this->LastCasualty)
 		.Process(this->FirepowerMult)
@@ -223,7 +223,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->SubjectToGround = pType->SubjectToGround;
 	this->ConfineAtHeight = pType->ConfineAtHeight;
 	this->EdgeAttenuation = pType->EdgeAttenuation > 0.0 ? pType->EdgeAttenuation : 1.0;
-	this->CheckTimesLimit = 1;
+	this->RemainingDistance = 1;
 	this->ExtraCheck = nullptr;
 	this->LastCasualty.reserve(1);
 	this->LastTargetCoord = pBullet->TargetCoords;
@@ -438,15 +438,15 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	if (this->PassThrough)
 	{
 		if (this->DetonationDistance > 0)
-			this->CheckTimesLimit = static_cast<int>(this->DetonationDistance / StraightSpeed) + 1;
+			this->RemainingDistance = static_cast<int>(this->DetonationDistance + StraightSpeed);
 		else if (this->DetonationDistance < 0)
-			this->CheckTimesLimit = static_cast<int>((TheSourceCoords.DistanceFrom(TheTargetCoords) - this->DetonationDistance) / StraightSpeed) + 1;
+			this->RemainingDistance = static_cast<int>(TheSourceCoords.DistanceFrom(TheTargetCoords) - this->DetonationDistance + StraightSpeed);
 		else
-			this->CheckTimesLimit = INT_MAX;
+			this->RemainingDistance = INT_MAX;
 	}
 	else
 	{
-		this->CheckTimesLimit = static_cast<int>(TheSourceCoords.DistanceFrom(TheTargetCoords) / StraightSpeed) + 1;
+		this->RemainingDistance = static_cast<int>(TheSourceCoords.DistanceFrom(TheTargetCoords) + StraightSpeed);
 	}
 
 	pBullet->TargetCoords = TheTargetCoords;
@@ -491,7 +491,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	}
 
 	if (CalculateBulletVelocity(pBullet, StraightSpeed))
-		this->CheckTimesLimit = 0;
+		this->RemainingDistance = 0;
 }
 
 int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
@@ -543,9 +543,9 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass
 		return true;
 	}
 
-	this->CheckTimesLimit -= 1;
+	this->RemainingDistance -= static_cast<int>(StraightSpeed);
 
-	if (this->CheckTimesLimit < 0)
+	if (this->RemainingDistance < 0)
 		return true;
 
 	if (!this->PassThrough && this->DetonationDistance > 0
@@ -567,7 +567,7 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass
 void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed)
 {
 	bool VelocityCheck = false;
-	double LocationDistance = pBullet->Location.DistanceFrom(pBullet->TargetCoords);
+	double LocationDistance = this->RemainingDistance;
 
 	if (this->PassThrough)
 	{
@@ -640,7 +640,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 
 	if (VelocityCheck)
 	{
-		this->CheckTimesLimit = 0;
+		this->RemainingDistance = 0;
 		pBullet->Velocity *= LocationDistance / StraightSpeed;
 	}
 }
