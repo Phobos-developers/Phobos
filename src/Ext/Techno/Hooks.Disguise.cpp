@@ -24,21 +24,7 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 	return 0;
 }
 
-__forceinline bool CanBlinkDisguise(HouseClass* pCurrent, HouseClass* pTarget)
-{
-	if (!pCurrent || !pTarget)
-		return false;
-
-	if (SessionClass::IsCampaign() && (pTarget->IsHumanPlayer || pTarget->IsInPlayerControl))
-	{
-		if ((RulesExt::Global()->DisguiseBlinkingVisibility & AffectedHouse::Allies) != AffectedHouse::None && pCurrent->IsAlliedWith(pTarget))
-			return true;
-
-		return (RulesExt::Global()->DisguiseBlinkingVisibility & AffectedHouse::Owner) != AffectedHouse::None;
-	}
-
-	return pCurrent->IsObserver() || EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, pCurrent, pTarget);
-}
+#pragma region DisguiseBlinkingVisibility
 
 bool __fastcall IsAlly_Wrapper(HouseClass* pThis, void* _, HouseClass* pOther)
 {
@@ -47,13 +33,26 @@ bool __fastcall IsAlly_Wrapper(HouseClass* pThis, void* _, HouseClass* pOther)
 
 bool __fastcall IsControlledByCurrentPlayer_Wrapper(HouseClass* pThis)
 {
-	return CanBlinkDisguise(HouseClass::CurrentPlayer, pThis);
+	HouseClass* pCurrent = HouseClass::CurrentPlayer;
+	AffectedHouse visibilityFlags = RulesExt::Global()->DisguiseBlinkingVisibility;
+
+	if (SessionClass::IsCampaign() && (pThis->IsHumanPlayer || pThis->IsInPlayerControl))
+	{
+		if ((visibilityFlags & AffectedHouse::Allies) != AffectedHouse::None && pCurrent->IsAlliedWith(pThis))
+			return true;
+
+		return (visibilityFlags & AffectedHouse::Owner) != AffectedHouse::None;
+	}
+
+	return pCurrent->IsObserver() || EnumFunctions::CanTargetHouse(visibilityFlags, pCurrent, pThis);
 }
 
 DEFINE_JUMP(CALL, 0x4DEDD2, GET_OFFSET(IsAlly_Wrapper));                      // FootClass_GetImage
 DEFINE_JUMP(CALL, 0x70EE5D, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
 DEFINE_JUMP(CALL, 0x70EE70, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
 DEFINE_JUMP(CALL, 0x7062FB, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_DrawObject
+
+#pragma endregion
 
 DEFINE_HOOK(0x7060A9, TechnoClass_TechnoClass_DrawObject_DisguisePalette, 0x6)
 {
