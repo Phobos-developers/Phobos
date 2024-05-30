@@ -41,7 +41,7 @@ public:
 
 	static int Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget,int minCount = -1, int maxCount = -1);
 	static int Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts);
-	static int DetachByGroups(std::vector<const char*> const& groups, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts);
+	static int DetachByGroups(std::vector<std::string> const& groups, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
 
 private:

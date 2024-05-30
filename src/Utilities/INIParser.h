@@ -33,6 +33,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 #include "Parser.h"
 
@@ -134,7 +135,7 @@ public:
 		return (*nBuffer != -1);
 	}
 
-	bool ParseStringList(std::vector<const char*>& values, const char* pSection, const char* pKey)
+	bool ParseStringList(std::vector<std::string>& values, const char* pSection, const char* pKey)
 	{
 		if (this->ReadString(pSection, pKey))
 		{

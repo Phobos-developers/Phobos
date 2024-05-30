@@ -9,7 +9,7 @@
 
 class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 {
-	static std::unordered_map<const char*, std::set<AttachEffectTypeClass*>> GroupsMap;
+	static std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> GroupsMap;
 
 public:
 	Valueable<int> Duration;
@@ -49,7 +49,7 @@ public:
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 	Valueable<bool> DisableWeapons;
 
-	std::vector<const char*> Groups;
+	std::vector<std::string> Groups;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
@@ -92,8 +92,8 @@ public:
 	{};
 
 	bool HasTint() const;
-	bool HasGroup(const char* pGroupID);
-	bool HasGroups(std::vector<const char*> groupIDs, bool requireAll);
+	bool HasGroup(std::string groupID);
+	bool HasGroups(std::vector<std::string> groupIDs, bool requireAll);
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount);
 
 	virtual ~AttachEffectTypeClass() override = default;
@@ -107,7 +107,7 @@ public:
 		AttachEffectTypeClass::GroupsMap.clear();
 	}
 
-	static std::vector<AttachEffectTypeClass*> GetTypesFromGroups(std::vector<const char*> groupIDs);
+	static std::vector<AttachEffectTypeClass*> GetTypesFromGroups(std::vector<std::string> groupIDs);
 
 private:
 	template <typename T>

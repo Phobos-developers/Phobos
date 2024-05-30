@@ -121,7 +121,7 @@ public:
 
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RemoveTypes;
-		std::vector<const char*> AttachEffect_RemoveGroups;
+		std::vector<std::string> AttachEffect_RemoveGroups;
 		ValueableVector<int> AttachEffect_CumulativeRemoveMinCounts;
 		ValueableVector<int> AttachEffect_CumulativeRemoveMaxCounts;
 		ValueableVector<int> AttachEffect_DurationOverrides;

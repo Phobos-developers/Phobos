@@ -1,33 +1,33 @@
 #include "AttachEffectTypeClass.h"
 
 // Used to match groups names to AttachEffectTypeClass instances. Do not iterate due to undetermined order being prone to desyncs.
-std::unordered_map<const char*, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
+std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
 
 bool AttachEffectTypeClass::HasTint() const
 {
 	return this->Tint_Intensity != 0.0 || this->Tint_Color.isset();
 }
 
-bool AttachEffectTypeClass::HasGroup(const char* pGroupID)
+bool AttachEffectTypeClass::HasGroup(std::string groupID)
 {
-	for (auto const group : this->Groups)
+	for (auto const& group : this->Groups)
 	{
-		if (!strcmp(group, pGroupID))
+		if (!group.compare(groupID))
 			return true;
 	}
 
 	return false;
 }
 
-bool AttachEffectTypeClass::HasGroups(std::vector<const char*> groupIDs, bool requireAll)
+bool AttachEffectTypeClass::HasGroups(std::vector<std::string> groupIDs, bool requireAll)
 {
 	size_t foundCount = 0;
 
-	for (auto const group : this->Groups)
+	for (auto const& group : this->Groups)
 	{
-		for (auto const requiredGroup : groupIDs)
+		for (auto const& requiredGroup : groupIDs)
 		{
-			if (!strcmp(group, requiredGroup))
+			if (!group.compare(requiredGroup))
 			{
 				if (!requireAll)
 					return true;
@@ -40,7 +40,7 @@ bool AttachEffectTypeClass::HasGroups(std::vector<const char*> groupIDs, bool re
 	return !requireAll ? false : foundCount >= groupIDs.size();
 }
 
-std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(std::vector<const char*> groupIDs)
+std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(std::vector<std::string> groupIDs)
 {
 	std::set<AttachEffectTypeClass*> types;
 	auto const map = &AttachEffectTypeClass::GroupsMap;

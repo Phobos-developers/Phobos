@@ -45,8 +45,8 @@ public:
 		Valueable<bool> AmbientDamage_IgnoreTarget;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
-		std::vector<const char*> AttachEffect_RequiredGroups;
-		std::vector<const char*> AttachEffect_DisallowedGroups;
+		std::vector<std::string> AttachEffect_RequiredGroups;
+		std::vector<std::string> AttachEffect_DisallowedGroups;
 		ValueableVector<int> AttachEffect_RequiredMinCounts;
 		ValueableVector<int> AttachEffect_RequiredMaxCounts;
 		ValueableVector<int> AttachEffect_DisallowedMinCounts;
