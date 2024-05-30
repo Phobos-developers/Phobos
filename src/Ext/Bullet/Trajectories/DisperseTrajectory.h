@@ -232,7 +232,6 @@ public:
 
 private:
 	bool CalculateBulletVelocity(BulletClass* pBullet, double StraightSpeed);
-	bool BulletDetonatePreCheck(BulletClass* pBullet);
 	bool BulletRetargetTechno(BulletClass* pBullet, HouseClass* pOwner);
 	bool CurveVelocityChange(BulletClass* pBullet);
 	bool StandardVelocityChange(BulletClass* pBullet);

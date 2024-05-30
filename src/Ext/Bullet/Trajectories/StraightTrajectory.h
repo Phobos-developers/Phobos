@@ -26,6 +26,7 @@ public:
 		, ProximityDamage { 0 }
 		, ProximityRadius { 0.7 }
 		, ProximityAllies { 0.0 }
+		, ProximityFlight { false }
 		, ThroughVehicles { true }
 		, ThroughBuilding { true }
 		, SubjectToGround { false }
@@ -58,6 +59,7 @@ public:
 	Valueable<int> ProximityDamage;
 	Valueable<double> ProximityRadius;
 	Valueable<double> ProximityAllies;
+	Valueable<bool> ProximityFlight;
 	Valueable<bool> ThroughVehicles;
 	Valueable<bool> ThroughBuilding;
 	Valueable<bool> SubjectToGround;
@@ -89,6 +91,7 @@ public:
 		, ProximityDamage { 0 }
 		, ProximityRadius { 0.7 }
 		, ProximityAllies { 0.0 }
+		, ProximityFlight { false }
 		, ThroughVehicles { true }
 		, ThroughBuilding { true }
 		, SubjectToGround { false }
@@ -101,7 +104,7 @@ public:
 		, LastTargetCoord {}
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
-		, WaitOneFrame { false }
+		, WaitOneFrame { 0 }
 	{}
 
 	StraightTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
@@ -125,6 +128,7 @@ public:
 		, ProximityDamage { 0 }
 		, ProximityRadius { 0.7 }
 		, ProximityAllies { 0.0 }
+		, ProximityFlight { false }
 		, ThroughVehicles { true }
 		, ThroughBuilding { true }
 		, SubjectToGround { false }
@@ -137,7 +141,7 @@ public:
 		, LastTargetCoord {}
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
-		, WaitOneFrame { false }
+		, WaitOneFrame { 0 }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -176,6 +180,7 @@ public:
 	int ProximityDamage;
 	double ProximityRadius;
 	double ProximityAllies;
+	bool ProximityFlight;
 	bool ThroughVehicles;
 	bool ThroughBuilding;
 	bool SubjectToGround;

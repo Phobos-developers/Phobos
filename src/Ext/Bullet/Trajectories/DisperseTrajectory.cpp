@@ -287,7 +287,7 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->FirepowerMult = 1.0;
 
 	if (ObjectClass* pTarget = abstract_cast<ObjectClass*>(pBullet->Target))
-		this->TargetInAir = (pTarget->GetHeight() > 0);
+		this->TargetInAir = (pTarget->GetHeight() > 200);
 	else
 		this->TargetInAir = false;
 
@@ -427,11 +427,10 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 
 bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (BulletDetonatePreCheck(pBullet))
+	if (MapClass::Instance->GetCellFloorHeight(pBullet->Location) > pBullet->Location.Z)
 		return true;
 
 	HouseClass* pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
-	bool VelocityUp = false;
 
 	if ((this->WeaponScope == 0 || pBullet->TargetCoords.DistanceFrom(pBullet->Location) <= this->WeaponScope) && this->WeaponCount != 0)
 	{
@@ -446,6 +445,22 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 		}
 	}
 
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < (this->UniqueCurve ? 128 : this->TargetSnapDistance))
+		return true;
+
+	if (this->SuicideAboveRange > 0)
+	{
+		double BulletSpeed = this->LaunchSpeed;
+
+		if (this->UniqueCurve)
+			BulletSpeed = pBullet->Velocity.Magnitude();
+
+		this->SuicideAboveRange -= BulletSpeed;
+
+		if (this->SuicideAboveRange <= 0)
+			return true;
+	}
+
 	if (this->UniqueCurve)
 	{
 		if (CurveVelocityChange(pBullet))
@@ -453,6 +468,8 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 
 		return false;
 	}
+
+	bool VelocityUp = false;
 
 	if (this->Accelerate)
 	{
@@ -561,40 +578,6 @@ bool DisperseTrajectory::CalculateBulletVelocity(BulletClass* pBullet, double St
 	if (VelocityLength > 0)
 		pBullet->Velocity *= StraightSpeed / VelocityLength;
 	else
-		return true;
-
-	return false;
-}
-
-bool DisperseTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
-{
-	if (MapClass::Instance->GetCellFloorHeight(pBullet->Location) > pBullet->Location.Z)
-		return true;
-
-	double TargetDistance = pBullet->TargetCoords.DistanceFrom(pBullet->Location);
-
-	if (this->UniqueCurve)
-	{
-		if (TargetDistance > 128)
-			return false;
-		else
-			return true;
-	}
-
-	if (this->SuicideAboveRange > 0)
-	{
-		double BulletSpeed = this->LaunchSpeed;
-
-		if (this->UniqueCurve)
-			BulletSpeed = pBullet->Velocity.Magnitude();
-
-		this->SuicideAboveRange -= BulletSpeed;
-
-		if (this->SuicideAboveRange <= 0)
-			return true;
-	}
-
-	if (TargetDistance < this->TargetSnapDistance)
 		return true;
 
 	return false;
@@ -1016,7 +999,7 @@ std::vector<TechnoClass*> DisperseTrajectory::GetValidTechnosInSame(std::vector<
 
 	for (auto const& pTechno : Technos)
 	{
-		if (this->TargetInAir != pTechno->GetHeight() > 0)
+		if (this->TargetInAir != pTechno->GetHeight() > 200)
 			continue;
 
 		if (pTechno->IsDead() || pTechno->InLimbo)
