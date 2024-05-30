@@ -33,17 +33,11 @@ __forceinline bool CanBlinkDisguise(HouseClass* pCurrent, HouseClass* pTarget)
 		|| EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, pCurrent, pTarget);
 }
 
-bool __fastcall IsAlly_Wrapper(HouseClass* pThis, void* _, HouseClass* pOther)
-{
-	return CanBlinkDisguise(pOther, pThis);
-}
-
 bool __fastcall IsControlledByCurrentPlayer_Wrapper(HouseClass* pThis)
 {
 	return CanBlinkDisguise(HouseClass::CurrentPlayer, pThis);
 }
 
-DEFINE_JUMP(CALL, 0x4DEDD2, GET_OFFSET(IsAlly_Wrapper));                      // FootClass_GetImage
 DEFINE_JUMP(CALL, 0x70EE5D, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
 DEFINE_JUMP(CALL, 0x70EE70, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
 DEFINE_JUMP(CALL, 0x7062FB, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_DrawObject
