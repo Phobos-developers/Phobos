@@ -46,7 +46,7 @@ public:
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
 		Valueable<int> Crit_ExtraDamage;
-		Nullable<WarheadTypeClass*> Crit_Warhead;
+		Valueable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<AffectedTarget> Crit_Affects;
 		Valueable<AffectedHouse> Crit_AffectsHouses;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
@@ -59,8 +59,8 @@ public:
 
 		Valueable<bool> Shield_Penetrate;
 		Valueable<bool> Shield_Break;
-		Nullable<AnimTypeClass*> Shield_BreakAnim;
-		Nullable<AnimTypeClass*> Shield_HitAnim;
+		Valueable<AnimTypeClass*> Shield_BreakAnim;
+		Valueable<AnimTypeClass*> Shield_HitAnim;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
 
 		Nullable<double> Shield_AbsorbPercent;

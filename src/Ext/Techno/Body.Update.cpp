@@ -134,7 +134,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
-	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation.Get();
+	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation;
 
 	// Death if no ammo
 	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
@@ -796,7 +796,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 
 			this->UpdateCumulativeAttachEffects(attachEffect->GetType());
 
-			if (pType->ExpireWeapon.isset() && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
+			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
 					attachEffect->ExpireWeapon();
@@ -845,7 +845,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 			attachEffect->IsFirstCumulativeInstance = false;
 		}
 
-		if (pAttachEffectType->CumulativeAnimations.HasValue())
+		if (pAttachEffectType->CumulativeAnimations.size() > 0)
 			attachEffect->KillAnim();
 	}
 }

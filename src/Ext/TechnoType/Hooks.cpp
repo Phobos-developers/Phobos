@@ -347,10 +347,10 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 		auto const pExt = TechnoExt::ExtMap.Find(pThis);
 		auto const pTypeExt = pExt->TypeExtData;
 
-		if (pTypeExt && pTypeExt->RevengeWeapon.isset() &&
+		if (pTypeExt && pTypeExt->RevengeWeapon &&
 			EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 		{
-			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon.Get(), pSource, pThis);
+			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
 		}
 
 		for (auto& attachEffect : pExt->AttachedEffects)
@@ -360,7 +360,7 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 
 			auto const pType = attachEffect->GetType();
 
-			if (!pType->RevengeWeapon.isset())
+			if (!pType->RevengeWeapon)
 				continue;
 
 			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))

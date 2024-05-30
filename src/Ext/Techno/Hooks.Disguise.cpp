@@ -11,7 +11,7 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		if (pExt->DefaultDisguise.isset())
+		if (pExt->DefaultDisguise)
 		{
 			pThis->Disguise = pExt->DefaultDisguise;
 			pThis->Disguised = true;

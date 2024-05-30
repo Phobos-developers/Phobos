@@ -3,9 +3,9 @@
 // Used to match groups names to AttachEffectTypeClass instances. Do not iterate due to undetermined order being prone to desyncs.
 std::unordered_map<const char*, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
 
-bool AttachEffectTypeClass::HasTint()
+bool AttachEffectTypeClass::HasTint() const
 {
-	return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
+	return this->Tint_Intensity != 0.0 || this->Tint_Color.isset();
 }
 
 bool AttachEffectTypeClass::HasGroup(const char* pGroupID)
@@ -59,7 +59,7 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(st
 
 AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount)
 {
-	if (cumulativeCount < 0 || !this->CumulativeAnimations.HasValue())
+	if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
 		return nullptr;
 
 	int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;

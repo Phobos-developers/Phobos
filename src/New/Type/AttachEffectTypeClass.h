@@ -18,13 +18,13 @@ public:
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
 	Valueable<bool> PenetratesIronCurtain;
-	Nullable<AnimTypeClass*> Animation;
-	NullableVector<AnimTypeClass*> CumulativeAnimations;
+	Valueable<AnimTypeClass*> Animation;
+	ValueableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> Animation_ResetOnReapply;
 	Valueable<AttachedAnimFlag> Animation_OfflineAction;
 	Valueable<AttachedAnimFlag> Animation_TemporalAction;
 	Valueable<bool> Animation_UseInvokerAsOwner;
-	Nullable<WeaponTypeClass*> ExpireWeapon;
+	Valueable<WeaponTypeClass*> ExpireWeapon;
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
 	Nullable<ColorStruct> Tint_Color;
@@ -45,7 +45,7 @@ public:
 	Valueable<double> Crit_ExtraChance;
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
-	Nullable<WeaponTypeClass*> RevengeWeapon;
+	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 	Valueable<bool> DisableWeapons;
 
@@ -91,7 +91,7 @@ public:
 		, Groups {}
 	{};
 
-	bool HasTint();
+	bool HasTint() const;
 	bool HasGroup(const char* pGroupID);
 	bool HasGroups(std::vector<const char*> groupIDs, bool requireAll);
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount);

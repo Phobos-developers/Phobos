@@ -34,7 +34,7 @@ public:
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<AreaFireTarget> AreaFire_Target;
-		Nullable<WeaponTypeClass*> FeedbackWeapon;
+		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<bool> OmniFire_TurnToTarget;
