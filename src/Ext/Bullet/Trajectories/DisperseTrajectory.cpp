@@ -1037,7 +1037,6 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 	HouseClass* pOwner, int CurBurst, int MaxBurst)
 {
 	int FinalDamage = static_cast<int>(pWeapon->Damage * this->FirepowerMult);
-	int AnimCounts = pWeapon->Anim.Count;
 
 	if (BulletClass* pCreateBullet = pWeapon->Projectile->CreateBullet(BulletTarget, pBullet->Owner,
 		FinalDamage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
@@ -1046,6 +1045,10 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 		auto const pBulletExt = BulletExt::ExtMap.Find(pCreateBullet);
 		pBulletExt->FirerHouse = BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 		pCreateBullet->MoveTo(pBullet->Location, BulletVelocity::Empty);
+		int AnimCounts = pWeapon->Anim.Count;
+		int AnimIndex = 0;
+		bool DrawAnim = (AnimCounts > 0);
+		double AnimRotate = 0;
 
 		if (pBulletExt->Trajectory)
 		{
@@ -1135,34 +1138,22 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				}
 			}
 
-			if (AnimCounts > 0)
-			{
-				int AnimIndex = 0;
-
-				if (AnimCounts % 8 == 0)
-				{
-					double RotateAngle = Math::atan2(pCreateBullet->Velocity.Y , pCreateBullet->Velocity.X);
-					AnimIndex = static_cast<int>((RotateAngle + Math::TwoPi + Math::Pi) * AnimCounts / Math::TwoPi) % AnimCounts;
-				}
-
-				if (AnimClass* pAnim = GameCreate<AnimClass>(pWeapon->Anim[AnimIndex], pBullet->Location))
-				{
-					pAnim->SetOwnerObject(pBullet->Owner);
-					pAnim->Owner = pOwner;
-				}
-			}
+			if (DrawAnim && AnimCounts % 8 == 0)
+				AnimRotate = Math::atan2(pCreateBullet->Velocity.Y , pCreateBullet->Velocity.X);
 		}
-		else if (AnimCounts > 0)
+		else if (DrawAnim && AnimCounts % 8 == 0)
 		{
-			int AnimIndex = 0;
 			CoordStruct SourceCoord = pBullet->Location;
 			CoordStruct TargetCoord = BulletTarget->GetCoords();
 
 			if (AnimCounts % 8 == 0)
-			{
-				double RotateAngle = Math::atan2(TargetCoord.Y - SourceCoord.Y , TargetCoord.X - SourceCoord.X);
-				AnimIndex = static_cast<int>((RotateAngle - Math::Pi / AnimCounts + Math::TwoPi + Math::Pi) * AnimCounts / Math::TwoPi) % AnimCounts;
-			}
+				AnimRotate = Math::atan2(TargetCoord.Y - SourceCoord.Y , TargetCoord.X - SourceCoord.X);
+		}
+
+		if (DrawAnim)
+		{
+			double RotateIndex = AnimRotate + Math::TwoPi + Math::Pi;
+			AnimIndex = static_cast<int>(RotateIndex * AnimCounts / Math::TwoPi - (AnimCounts / 8) + 0.5) % AnimCounts;
 
 			if (AnimClass* pAnim = GameCreate<AnimClass>(pWeapon->Anim[AnimIndex], pBullet->Location))
 			{
@@ -1174,6 +1165,14 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 	else
 	{
 		return;
+	}
+
+	if (pWeapon->Report.Count > 0)
+	{
+		int ReportIndex = pWeapon->Report.GetItem(ScenarioClass::Instance->Random.RandomRanged(0 , pWeapon->Report.Count - 1));
+
+		if (ReportIndex != -1)
+			VocClass::PlayAt(ReportIndex, pBullet->Location, nullptr);
 	}
 
 	if (pWeapon->IsLaser)

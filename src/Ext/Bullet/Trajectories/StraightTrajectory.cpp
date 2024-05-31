@@ -803,7 +803,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			CoordStruct DistanceCrd = pTechno->GetCoords() - pBullet->SourceCoords;
 			CoordStruct LocationCrd = (VelocityCrd + (pBullet->Location - pBullet->SourceCoords));
 			CoordStruct TerminalCrd = DistanceCrd - LocationCrd;
-			double Distance = LocationCrd.MagnitudeSquared();
+			double Distance = LocationCrd.MagnitudeSquared(); //Not true distance yet.
 
 			if (DistanceCrd * VelocityCrd < 0 || TerminalCrd * VelocityCrd > 0)
 				continue;
@@ -850,10 +850,9 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (!this->ThroughVehicles && (TechnoType == AbstractType::Unit || TechnoType == AbstractType::Aircraft))
 				continue;
 
-			CoordStruct DistanceCrd = pTechno->GetCoords() - pBullet->SourceCoords;
-			CoordStruct LocationCrd = (VelocityCrd + (pBullet->Location - pBullet->SourceCoords));
-			CoordStruct TerminalCrd = DistanceCrd - LocationCrd;
-			double Distance = LocationCrd.MagnitudeSquared();
+			CoordStruct DistanceCrd = pTechno->GetCoords() - pBullet->Location;
+			CoordStruct TerminalCrd = DistanceCrd - VelocityCrd;
+			double Distance = VelocityCrd.MagnitudeSquared(); //Not true distance yet.
 
 			if (DistanceCrd * VelocityCrd < 0 || TerminalCrd * VelocityCrd > 0)
 				continue;
@@ -1024,7 +1023,10 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInPassThrough(BulletClass* p
 std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClass* pBullet)
 {
 	std::vector<CellClass*> RecCellClass;
-	CoordStruct WalkCoord { static_cast<int>(pBullet->Velocity.X), static_cast<int>(pBullet->Velocity.Y), 0 };
+	double WalkVelocity = sqrt(pBullet->Velocity.X * pBullet->Velocity.X + pBullet->Velocity.Y * pBullet->Velocity.Y);
+	double CellCheckMult = (WalkVelocity + 256.0) / WalkVelocity;
+
+	CoordStruct WalkCoord { static_cast<int>(pBullet->Velocity.X * CellCheckMult), static_cast<int>(pBullet->Velocity.Y * CellCheckMult), 0 };
 	double SideMult = (this->ProximityRadius * 256.0) / WalkCoord.Magnitude();
 
 	CoordStruct Cor1Coord { static_cast<int>((-WalkCoord.Y) * SideMult), static_cast<int>(WalkCoord.X * SideMult), 0 };
