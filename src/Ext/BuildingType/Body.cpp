@@ -52,8 +52,8 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 	{
 		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
-			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor.Get(1.0f), static_cast<float>(nCount));
-			nAmount += pExt->PowerPlantEnhancer_Amount.Get(0) * nCount;
+			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
+			nAmount += pExt->PowerPlantEnhancer_Amount * nCount;
 		}
 	}
 

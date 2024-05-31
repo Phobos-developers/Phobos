@@ -94,9 +94,11 @@ public:
 		Valueable<AffectedHouse> DisplayIncome_Houses;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
-		Valueable<bool> ForceShield_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
+		Valueable<bool> ForceShield_KeptOnDeploy;
+		Valueable<IronCurtainEffect> ForceShield_EffectOnOrganics;
+		Nullable<WarheadTypeClass*> ForceShield_KillOrganicsWarhead;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -180,9 +182,11 @@ public:
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
 			, IronCurtain_KeptOnDeploy { true }
-			, ForceShield_KeptOnDeploy { false }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
+			, ForceShield_KeptOnDeploy { false }
+			, ForceShield_EffectOnOrganics { IronCurtainEffect::Kill }
+			, ForceShield_KillOrganicsWarhead { }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }

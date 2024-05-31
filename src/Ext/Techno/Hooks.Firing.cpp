@@ -479,10 +479,8 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 
 	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
-		if (pWeaponExt->FeedbackWeapon.isset())
+		if (auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon)
 		{
-			auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon.Get();
-
 			if (pThis->InOpenToppedTransport && !pWeaponFeedback->FireInTransport)
 				return 0;
 

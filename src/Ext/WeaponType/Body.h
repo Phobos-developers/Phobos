@@ -34,7 +34,7 @@ public:
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<AreaFireTarget> AreaFire_Target;
-		Nullable<WeaponTypeClass*> FeedbackWeapon;
+		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<bool> OmniFire_TurnToTarget;
@@ -45,8 +45,8 @@ public:
 		Valueable<bool> AmbientDamage_IgnoreTarget;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
-		std::vector<const char*> AttachEffect_RequiredGroups;
-		std::vector<const char*> AttachEffect_DisallowedGroups;
+		std::vector<std::string> AttachEffect_RequiredGroups;
+		std::vector<std::string> AttachEffect_DisallowedGroups;
 		ValueableVector<int> AttachEffect_RequiredMinCounts;
 		ValueableVector<int> AttachEffect_RequiredMaxCounts;
 		ValueableVector<int> AttachEffect_DisallowedMinCounts;

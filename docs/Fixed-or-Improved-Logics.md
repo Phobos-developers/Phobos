@@ -155,7 +155,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Skipped drawing rally point line when undeploying a factory.
 - Tint effects are now correctly applied to SHP vehicles and all types of aircraft as well as building animations regardless of their position.
 - Iron Curtained / Force Shielded objects now always use the correct tint color.
- 
+- Objects in invalid map coordinates are no longer used for starting view and AI base center calculations.
+
 ## Fixes / interactions with other extensions
 
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
@@ -584,21 +585,28 @@ Explodes.KillPassengers=true ; boolean
 Explodes.DuringBuildup=true  ; boolean
 ```
 
-### IronCurtain effects on organics customization
-- In vanilla game, when iron-curtain is applied on organic units like infantries and squids, they could only get killed instantly by C4Warhead. This behavior is now dehardcoded, and the effect under iron-curtain can now be chosen among
-  - `kill` : Iron-Curtain kills the organic object with a specifc warhead.
-  - `invulnerable` : Iron-Curtain makes the organic object invulnerable like buildings and vehicles.
-  - `ignore` : Iron-Curtain doesn't give any effect on the organic object.
+### Iron Curtain & Force Shield effects on organics customization
+
+- In vanilla game, when Iron Curtain is applied on `Organic=true` units like squids or infantry, they could only get killed instantly by `C4Warhead`. This behavior is now unhardcoded and can be set with `IronCurtain.EffectOnOrganics` globally and on per-TechnoType basis with `IronCurtain.Effect`. Following values are respected:
+  - `kill` : Iron Curtain kills the organic object with a specifc warhead. This is the default value for `Organic=true` units and infantry if not otherwise specified.
+  - `invulnerable` : Iron Curtain makes the organic object invulnerable like buildings and vehicles.
+  - `ignore` : Iron Curtain doesn't give any effect on the organic object.
+- `IronCurtain.KillOrganicsWarhead` and `IronCurtain.KillWarhead` can be used to customize the Warhead used to kill units, globally or per TechnoType-basis respectively, with latter defaulting to former and former defaulting to `[CombatDamage]` -> `C4Warhead`.
+- Identical controls are available for Force Shield as well.
 
 In `rulesmd.ini`
 ```ini
 [CombatDamage]
-IronCurtain.EffectOnOrganics=kill  ; IronCurtain effect Enumeration (kill | invulnerable | ignore), IronCurtain to Infantry and Techno with Organic=yes
-IronCurtain.KillOrganicsWarhead=   ; IronCurtain uses this warhead to kill organics, default to [CombatDamage]->C4Warhead
+IronCurtain.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
+IronCurtain.KillOrganicsWarhead=   ; Warhead
+ForceShield.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
+ForceShield.KillOrganicsWarhead=   ; Warhead
 
-[SOMETECHNO]                       ; InfantryType or Organic TechnoType
-IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore), default to [CombatDamage]-> IronCurtain.EffectOnOrganics
-IronCurtain.KillWarhead=           ; IronCurtain uses this warhead to kill this organic, default to [CombatDamage]->IronCurtain.KillWarhead
+[SOMETECHNO]                       ; InfantryType or Organic=true TechnoType
+IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
+IronCurtain.KillWarhead=           ; Warhead
+ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
+ForceShield.KillWarhead=           ; Warhead
 ```
 
 ### Jumpjet rotating on crashing toggle
