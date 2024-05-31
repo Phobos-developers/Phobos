@@ -4,6 +4,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include "Ext/WeaponType/Body.h"
+#include <AnimClass.h>
 #include <LaserDrawClass.h>
 #include <EBolt.h>
 #include <RadBeam.h>
@@ -1036,6 +1037,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 	HouseClass* pOwner, int CurBurst, int MaxBurst)
 {
 	int FinalDamage = static_cast<int>(pWeapon->Damage * this->FirepowerMult);
+	int AnimCounts = pWeapon->Anim.Count;
 
 	if (BulletClass* pCreateBullet = pWeapon->Projectile->CreateBullet(BulletTarget, pBullet->Owner,
 		FinalDamage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
@@ -1045,91 +1047,133 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 		pBulletExt->FirerHouse = BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 		pCreateBullet->MoveTo(pBullet->Location, BulletVelocity::Empty);
 
-		if (CurBurst >= 0 && pBulletExt->Trajectory)
+		if (pBulletExt->Trajectory)
 		{
-			if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Disperse)
+			if (CurBurst >= 0)
 			{
-				DisperseTrajectory* pTrajectory = static_cast<DisperseTrajectory*>(pBulletExt->Trajectory);
-				pTrajectory->FirepowerMult = this->FirepowerMult;
-
-				//The created bullet's velocity calculation has been completed, so we should stack the calculations.
-				if (!pTrajectory->UniqueCurve && pTrajectory->PreAimCoord != CoordStruct::Empty
-					&& pTrajectory->UseDisperseBurst && pTrajectory->RotateCoord != 0 && MaxBurst > 1)
+				if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Disperse)
 				{
-					CoordStruct CreateBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
-					double RotateAngle = Math::atan2(CreateBulletTargetToSource.Y , CreateBulletTargetToSource.X);
+					DisperseTrajectory* pTrajectory = static_cast<DisperseTrajectory*>(pBulletExt->Trajectory);
+					pTrajectory->FirepowerMult = this->FirepowerMult;
 
-					BulletVelocity RotationAxis
+					//The created bullet's velocity calculation has been completed, so we should stack the calculations.
+					if (!pTrajectory->UniqueCurve && pTrajectory->PreAimCoord != CoordStruct::Empty
+						&& pTrajectory->UseDisperseBurst && pTrajectory->RotateCoord != 0 && MaxBurst > 1)
 					{
-						pTrajectory->AxisOfRotation.X * Math::cos(RotateAngle) + pTrajectory->AxisOfRotation.Y * Math::sin(RotateAngle),
-						pTrajectory->AxisOfRotation.X * Math::sin(RotateAngle) - pTrajectory->AxisOfRotation.Y * Math::cos(RotateAngle),
-						static_cast<double>(pTrajectory->AxisOfRotation.Z)
-					};
+						CoordStruct CreateBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
+						double RotateAngle = Math::atan2(CreateBulletTargetToSource.Y , CreateBulletTargetToSource.X);
 
-					double ExtraRotate = 0;
+						BulletVelocity RotationAxis
+						{
+							pTrajectory->AxisOfRotation.X * Math::cos(RotateAngle) + pTrajectory->AxisOfRotation.Y * Math::sin(RotateAngle),
+							pTrajectory->AxisOfRotation.X * Math::sin(RotateAngle) - pTrajectory->AxisOfRotation.Y * Math::cos(RotateAngle),
+							static_cast<double>(pTrajectory->AxisOfRotation.Z)
+						};
 
-					if (pTrajectory->MirrorCoord)
-					{
-						if (CurBurst % 2 == 1)
-							RotationAxis *= -1;
+						double ExtraRotate = 0;
 
-						ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * ((CurBurst / 2) / (MaxBurst - 1.0) - 0.5)) / 180;
+						if (pTrajectory->MirrorCoord)
+						{
+							if (CurBurst % 2 == 1)
+								RotationAxis *= -1;
+
+							ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * ((CurBurst / 2) / (MaxBurst - 1.0) - 0.5)) / 180;
+						}
+						else
+						{
+							ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * (CurBurst / (MaxBurst - 1.0) - 0.5)) / 180;
+						}
+
+						pCreateBullet->Velocity = RotateAboutTheAxis(pCreateBullet->Velocity, RotationAxis, ExtraRotate);
 					}
-					else
-					{
-						ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * (CurBurst / (MaxBurst - 1.0) - 0.5)) / 180;
-					}
+				}
+				else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Straight)
+				{
+					StraightTrajectory* pTrajectory = static_cast<StraightTrajectory*>(pBulletExt->Trajectory);
+					pTrajectory->FirepowerMult = this->FirepowerMult;
 
-					pCreateBullet->Velocity = RotateAboutTheAxis(pCreateBullet->Velocity, RotationAxis, ExtraRotate);
+					//The straight trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
+					if (pTrajectory->LeadTimeCalculate)
+					{
+						pTrajectory->CurrentBurst = CurBurst;
+						pTrajectory->CountOfBurst = MaxBurst;
+						pTrajectory->UseDisperseBurst = false;
+					}
+					else if (pTrajectory->UseDisperseBurst && pTrajectory->RotateCoord != 0 && MaxBurst > 1)
+					{
+						CoordStruct CreateBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
+						double RotateAngle = Math::atan2(CreateBulletTargetToSource.Y , CreateBulletTargetToSource.X);
+
+						BulletVelocity RotationAxis
+						{
+							pTrajectory->AxisOfRotation.X * Math::cos(RotateAngle) + pTrajectory->AxisOfRotation.Y * Math::sin(RotateAngle),
+							pTrajectory->AxisOfRotation.X * Math::sin(RotateAngle) - pTrajectory->AxisOfRotation.Y * Math::cos(RotateAngle),
+							static_cast<double>(pTrajectory->AxisOfRotation.Z)
+						};
+
+						double ExtraRotate = 0;
+
+						if (pTrajectory->MirrorCoord)
+						{
+							if (CurBurst % 2 == 1)
+								RotationAxis *= -1;
+
+							ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * ((CurBurst / 2) / (MaxBurst - 1.0) - 0.5)) / 180;
+						}
+						else
+						{
+							ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * (CurBurst / (MaxBurst - 1.0) - 0.5)) / 180;
+						}
+
+						pCreateBullet->Velocity = RotateAboutTheAxis(pCreateBullet->Velocity, RotationAxis, ExtraRotate);
+					}
+				}
+				else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Engrave)
+				{
+					EngraveTrajectory* pTrajectory = static_cast<EngraveTrajectory*>(pBulletExt->Trajectory);
+					pTrajectory->FirepowerMult = this->FirepowerMult;
 				}
 			}
-			else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Straight)
+
+			if (AnimCounts > 0)
 			{
-				StraightTrajectory* pTrajectory = static_cast<StraightTrajectory*>(pBulletExt->Trajectory);
-				pTrajectory->FirepowerMult = this->FirepowerMult;
+				int AnimIndex = 0;
 
-				//The straight trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
-				if (pTrajectory->LeadTimeCalculate)
+				if (AnimCounts % 8 == 0)
 				{
-					pTrajectory->CurrentBurst = CurBurst;
-					pTrajectory->CountOfBurst = MaxBurst;
-					pTrajectory->UseDisperseBurst = false;
+					double RotateAngle = Math::atan2(pCreateBullet->Velocity.Y , pCreateBullet->Velocity.X);
+					AnimIndex = static_cast<int>((RotateAngle + Math::TwoPi + Math::Pi) * AnimCounts / Math::TwoPi) % AnimCounts;
 				}
-				else if (pTrajectory->UseDisperseBurst && pTrajectory->RotateCoord != 0 && MaxBurst > 1)
+
+				if (AnimClass* pAnim = GameCreate<AnimClass>(pWeapon->Anim[AnimIndex], pBullet->Location))
 				{
-					CoordStruct CreateBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
-					double RotateAngle = Math::atan2(CreateBulletTargetToSource.Y , CreateBulletTargetToSource.X);
-
-					BulletVelocity RotationAxis
-					{
-						pTrajectory->AxisOfRotation.X * Math::cos(RotateAngle) + pTrajectory->AxisOfRotation.Y * Math::sin(RotateAngle),
-						pTrajectory->AxisOfRotation.X * Math::sin(RotateAngle) - pTrajectory->AxisOfRotation.Y * Math::cos(RotateAngle),
-						static_cast<double>(pTrajectory->AxisOfRotation.Z)
-					};
-
-					double ExtraRotate = 0;
-
-					if (pTrajectory->MirrorCoord)
-					{
-						if (CurBurst % 2 == 1)
-							RotationAxis *= -1;
-
-						ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * ((CurBurst / 2) / (MaxBurst - 1.0) - 0.5)) / 180;
-					}
-					else
-					{
-						ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * (CurBurst / (MaxBurst - 1.0) - 0.5)) / 180;
-					}
-
-					pCreateBullet->Velocity = RotateAboutTheAxis(pCreateBullet->Velocity, RotationAxis, ExtraRotate);
+					pAnim->SetOwnerObject(pBullet->Owner);
+					pAnim->Owner = pOwner;
 				}
-			}
-			else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Engrave)
-			{
-				EngraveTrajectory* pTrajectory = static_cast<EngraveTrajectory*>(pBulletExt->Trajectory);
-				pTrajectory->FirepowerMult = this->FirepowerMult;
 			}
 		}
+		else if (AnimCounts > 0)
+		{
+			int AnimIndex = 0;
+			CoordStruct SourceCoord = pBullet->Location;
+			CoordStruct TargetCoord = BulletTarget->GetCoords();
+
+			if (AnimCounts % 8 == 0)
+			{
+				double RotateAngle = Math::atan2(TargetCoord.Y - SourceCoord.Y , TargetCoord.X - SourceCoord.X);
+				AnimIndex = static_cast<int>((RotateAngle - Math::Pi / AnimCounts + Math::TwoPi + Math::Pi) * AnimCounts / Math::TwoPi) % AnimCounts;
+			}
+
+			if (AnimClass* pAnim = GameCreate<AnimClass>(pWeapon->Anim[AnimIndex], pBullet->Location))
+			{
+				pAnim->SetOwnerObject(pBullet->Owner);
+				pAnim->Owner = pOwner;
+			}
+		}
+	}
+	else
+	{
+		return;
 	}
 
 	if (pWeapon->IsLaser)
