@@ -336,6 +336,12 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		if (value == -1 || maxValue == -1)
 			continue;
 
+		if (pDisplayType->ValueScaleDivisor > 1)
+		{
+			value = Math::max(value / pDisplayType->ValueScaleDivisor, value != 0 ? 1 : 0);
+			maxValue = Math::max(maxValue / pDisplayType->ValueScaleDivisor, maxValue != 0 ? 1 : 0);
+		}
+
 		const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
 		const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
 		const bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
