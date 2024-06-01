@@ -173,7 +173,7 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 	__assume(iloco != nullptr);
 	auto loco = static_cast<FlyLocomotionClass*>(iloco);
 	auto pThis = static_cast<AircraftClass*>(loco->LinkedTo);
-	if (loco->AirportBound && loco->CurrentSpeed == 0.0 && pThis->GetHeight() <= 0)
+	if (pThis->GetHeight() <= 0)
 	{
 		float ars = pThis->AngleRotatedSideways;
 		float arf = pThis->AngleRotatedForwards;

@@ -481,6 +481,10 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	}
 
 	auto mtx = Matrix3D::VoxelDefaultMatrix() * shadow_matrix;
+	{
+		auto& arr = mtx.row;
+		arr[0][2] = arr[1][2] = arr[2][2] = arr[2][1] = arr[2][0] = 0;
+	}
 	if (height > 0)
 		shadow_point.Y += 1;
 
@@ -506,12 +510,12 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			pThis->DrawVoxelShadow(
 				   main_vxl,
 				   index,
-				   vxl_index_key,
+				   index == pType->ShadowIndex ? vxl_index_key : std::bit_cast<VoxelIndexKey>(-1),
 				   &pType->VoxelShadowCache,
 				   bounding,
 				   &why,
 				   &mtx,
-				   true,
+				   index == pType->ShadowIndex,
 				   surface,
 				   shadow_point
 			);
@@ -559,7 +563,10 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	uTypeExt->ApplyTurretOffset(&rot, Pixel_Per_Lepton);
 	rot.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
 	auto tur_mtx = mtx * rot; // unfortunately we won't have TurretVoxelScaleX/Y given the amount of work
-
+	{
+		auto& arr = tur_mtx.row;
+		arr[0][2] = arr[1][2] = arr[2][2] = arr[2][1] = arr[2][0] = 0;
+	}
 	auto tur = GetTurretVoxel(pThis->CurrentTurretNumber);
 
 	// sorry but you're fucked
@@ -615,6 +622,10 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		return FinishDrawing;
 
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
+	{
+		auto& arr = shadow_mtx.row;
+		arr[0][2] = arr[1][2] = arr[2][2] = arr[2][1] = arr[2][0] = 0;
+	}
 	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 	if (auto const flyLoco = locomotion_cast<FlyLocomotionClass*>(loco))
@@ -680,12 +691,12 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		for (auto& [index, _] : aTypeExt->ShadowIndices)
 			pThis->DrawVoxelShadow(main_vxl,
 				index,
-				key,
+				index == pThis->Type->ShadowIndex ? key : std::bit_cast<VoxelIndexKey>(-1),
 				&pThis->Type->VoxelShadowCache,
 				bound,
 				&flor,
 				&shadow_mtx,
-				true,
+				index == pThis->Type->ShadowIndex,
 				nullptr,
 				{ 0, 0 }
 		);
@@ -760,15 +771,7 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 	};
 
 
-	Matrix3D hvamat = hva->Matrixes[shadow_index_now + hva->LayerCount * ChooseFrame()];
-
-	// A nasty temporary backward compatibility option
-	if (hva->LayerCount > 1 || pType->Turret)
-	// NEEDS IMPROVEMENT : Choose the proper Z offset to shift the sections to the same level
-		hvamat.TranslateZ(
-			-hvamat.GetZVal()
-			- pVXL->VXL->TailerData->Bounds[0].Z
-		);
+	const Matrix3D& hvamat = hva->Matrixes[shadow_index_now + hva->LayerCount * ChooseFrame()];
 
 	matRet = *pMat * hvamat;
 
