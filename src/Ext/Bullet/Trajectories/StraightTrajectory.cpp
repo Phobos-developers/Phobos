@@ -1022,15 +1022,12 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInPassThrough(BulletClass* p
 //A rectangular shape with a custom width from the current frame to the next frame in length.
 std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClass* pBullet)
 {
-	std::vector<CellClass*> RecCellClass;
-	double WalkVelocity = sqrt(pBullet->Velocity.X * pBullet->Velocity.X + pBullet->Velocity.Y * pBullet->Velocity.Y);
-	double CellCheckMult = (WalkVelocity + 256.0) / WalkVelocity;
-
-	CoordStruct WalkCoord { static_cast<int>(pBullet->Velocity.X * CellCheckMult), static_cast<int>(pBullet->Velocity.Y * CellCheckMult), 0 };
+	//Seems like the y-axis is reversed, but it's okay.
+	CoordStruct WalkCoord { static_cast<int>(pBullet->Velocity.X), static_cast<int>(pBullet->Velocity.Y), 0 };
 	double SideMult = (this->ProximityRadius * 256.0) / WalkCoord.Magnitude();
 
-	CoordStruct Cor1Coord { static_cast<int>((-WalkCoord.Y) * SideMult), static_cast<int>(WalkCoord.X * SideMult), 0 };
-	CoordStruct Cor4Coord { static_cast<int>(WalkCoord.Y * SideMult), static_cast<int>((-WalkCoord.X) * SideMult), 0 };
+	CoordStruct Cor1Coord { static_cast<int>(WalkCoord.Y * SideMult), static_cast<int>((-WalkCoord.X) * SideMult), 0 };
+	CoordStruct Cor4Coord { static_cast<int>((-WalkCoord.Y) * SideMult), static_cast<int>(WalkCoord.X * SideMult), 0 };
 
 	CellStruct ThisCell = CellClass::Coord2Cell(pBullet->Location);
 	CellStruct Cor1Cell = CellClass::Coord2Cell((pBullet->Location + Cor1Coord));
@@ -1043,33 +1040,28 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClas
 	CellStruct Cor2Cell = NextCell + Off1Cell;
 	CellStruct Cor3Cell = NextCell + Off4Cell;
 
-	std::vector<CellStruct> RecCells;
-
 	//Arrange the vertices of the rectangle in order from bottom to top.
-	//Seems like the y-axis is reversed, but it's okay.
-	if (Cor1Cell.X > Cor2Cell.X) //Left
+	int CornerCell = 0;
+	CellStruct Corner[4] = {Cor1Cell, Cor2Cell, Cor3Cell, Cor4Cell};
+
+	for (int i = 1; i < 4; i++)
 	{
-		if (Cor1Cell.Y >= Cor2Cell.Y) //↙ and ←
-			RecCells = GetCellsInRectangle(Cor3Cell, Cor2Cell, Cor4Cell, Cor1Cell);
-		else //↖
-			RecCells = GetCellsInRectangle(Cor4Cell, Cor3Cell, Cor1Cell, Cor2Cell);
-	}
-	else if (Cor1Cell.X == Cor2Cell.X) //Mid
-	{
-		if (Cor1Cell.Y >= Cor2Cell.Y) //↓ and Center
-			RecCells = GetCellsInRectangle(Cor2Cell, Cor1Cell, Cor3Cell, Cor4Cell);
-		else //↑
-			RecCells = GetCellsInRectangle(Cor4Cell, Cor3Cell, Cor1Cell, Cor2Cell);
-	}
-	else //Right
-	{
-		if (Cor1Cell.Y >= Cor2Cell.Y) //↘ and →
-			RecCells = GetCellsInRectangle(Cor2Cell, Cor1Cell, Cor3Cell, Cor4Cell);
-		else //↗
-			RecCells = GetCellsInRectangle(Cor1Cell, Cor4Cell, Cor2Cell, Cor3Cell);
+		if (Corner[CornerCell].Y > Corner[i].Y)
+			CornerCell = i;
 	}
 
+	Cor1Cell = Corner[CornerCell++];
+	CornerCell %= 4;
+	Cor2Cell = Corner[CornerCell++];
+	CornerCell %= 4;
+	Cor3Cell = Corner[CornerCell++];
+	CornerCell %= 4;
+	Cor4Cell = Corner[CornerCell];
+
+	std::vector<CellStruct> RecCells = GetCellsInRectangle(Cor1Cell, Cor4Cell, Cor2Cell, Cor3Cell);
+	std::vector<CellClass*> RecCellClass;
 	RecCellClass.reserve(RecCells.size());
+
 	for (auto const& pCells : RecCells)
 	{
 		if (CellClass* pRecCell = MapClass::Instance->TryGetCellAt(pCells))
@@ -1205,7 +1197,8 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 					}
 				}
 
-				RecCells.push_back(lCurCell);
+				if (lCurCell != rCurCell) //Avoid double counting cells.
+					RecCells.push_back(lCurCell);
 			}
 
 			while (rCurCell != tEndCell) //Right
