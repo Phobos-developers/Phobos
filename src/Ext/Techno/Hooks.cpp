@@ -81,23 +81,6 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	return 0;
 }
 
-DEFINE_HOOK(0x4DBF13, FootClass_SetOwningHouse, 0x6)
-{
-	GET(FootClass* const, pThis, ESI);
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	for (auto& trail : pExt->LaserTrails)
-	{
-		if (trail.Type->IsHouseColor)
-			trail.CurrentColor = pThis->Owner->LaserColor;
-	}
-
-	if (pThis->Owner->IsHumanPlayer)
-		TechnoExt::ChangeOwnerMissionFix(pThis);
-
-	return 0;
-}
-
 DEFINE_HOOK_AGAIN(0x7355C0, TechnoClass_Init_InitialStrength, 0x6) // UnitClass_Init
 DEFINE_HOOK_AGAIN(0x517D69, TechnoClass_Init_InitialStrength, 0x6) // InfantryClass_Init
 DEFINE_HOOK_AGAIN(0x442C7B, TechnoClass_Init_InitialStrength, 0x6) // BuildingClass_Init
