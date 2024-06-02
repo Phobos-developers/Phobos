@@ -1,7 +1,6 @@
 #include "Body.h"
 
 #include <TacticalClass.h>
-#include <SpawnManagerClass.h>
 
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
@@ -93,6 +92,7 @@ void __fastcall TechnoClass_DrawExtraInfo_Wrapper(TechnoClass* pThis)
 				else
 				{
 					swprintf_s(pOutDrainFormat, L"Power=%d", pOutput);
+					DrawTheStuff(pOutDrainFormat);
 					pLocation.Y += textHeight - 2;
 					swprintf_s(pOutDrainFormat, L"Drain=%d", pDrain);
 				}
@@ -112,7 +112,7 @@ void __fastcall TechnoClass_DrawExtraInfo_Wrapper(TechnoClass* pThis)
 
 			if (hasStorage && isUsingStorage)
 			{
-				auto pStorageFormat = L"Storage = %d"; //temp
+				auto pStorageFormat = L"Storage: %d"; //temp
 				wchar_t pOutStorageFormat[0x80];
 				auto nStorage = pBuilding->GetStoragePercentage();
 				swprintf_s(pOutStorageFormat, pStorageFormat, nStorage);
