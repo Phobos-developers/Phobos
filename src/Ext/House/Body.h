@@ -42,8 +42,6 @@ public:
 		int LastBuiltNavalVehicleType;
 		int ProducingNavalUnitTypeIndex;
 
-		int StrengthenDestroyedCost;
-
 		/**
 		 *  If we are currently expanding our base towards a resourceful location,
 		 *  this records the cell that we are expanding towards.
