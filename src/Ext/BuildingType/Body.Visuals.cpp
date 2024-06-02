@@ -8,13 +8,15 @@
 
 #include <Ext/Rules/Body.h>
 
-void BuildingTypeExt::DrawPrimaryIcon(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
+void BuildingTypeExt::DrawPrimaryIcon(BuildingClass* pThisBuilding, RectangleStruct* pBounds)
 {
-//PrimaryFactoryIndicator_Palette
-
 	SHPStruct* pImage = RulesExt::Global()->PrimaryFactoryIndicator;
-	Point2D position = { pLocation->X - pImage->Width - 20, pLocation->Y + pImage->Height + 20 };
-	DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pImage, 0, &position, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	ConvertClass* pPalette = RulesExt::Global()->PrimaryFactoryIndicator_Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	int const cellsToAdjust = pThisBuilding->Type->GetFoundationHeight(false) - 1;
+	Point2D pPosition = TacticalClass::Instance->CoordsToClient(pThisBuilding->GetCell()->GetCoords()).first;
+	pPosition.X -= Unsorted::CellWidthInPixels/2 * cellsToAdjust;
+	pPosition.Y += Unsorted::CellHeightInPixels/2 * cellsToAdjust - 4;
+	DSurface::Temp->DrawSHP(pPalette, pImage, 0, &pPosition, pBounds, BlitterFlags(0x600), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 
 	return;
 }
@@ -31,7 +33,7 @@ void __fastcall TechnoClass_DrawExtraInfo_Wrapper(TechnoClass* pThis)
 		Point2D pLocation = TacticalClass::Instance->CoordsToClient(pBuilding->GetRenderCoords()).first;
 		RectangleStruct pRect = DSurface::Temp->GetRect();
 		pRect.Height -= 32;
-		int const textHeight = 22;
+		int const textHeight = 22; //temporarily hardcoded
 
 		auto DrawTheStuff = [&](const wchar_t* pFormat)
 		{
@@ -41,32 +43,30 @@ void __fastcall TechnoClass_DrawExtraInfo_Wrapper(TechnoClass* pThis)
 			int nColorInt = Drawing::RGB_To_Int(pOwner->Color); //0x63DAD0
 			DSurface::Temp->FillRect(&nIntersect, 0);
 			DSurface::Temp->DrawRectEx(&pRect, &nIntersect, nColorInt);
-			nIntersect.Width -= 2;
+			nIntersect.Width += 2;
 			nIntersect.Height -= 2;
-			nIntersect.X += 1;
+			nIntersect.X -= 1;
 			nIntersect.Y += 1;
-			DSurface::Temp->DrawRectEx(&pRect, &nIntersect, nColorInt);
-			
-			//Point2D pLocation2 = {pLocation.X - 1, pLocation.Y + 1};
-			//DSurface::Temp->DrawText(pFormat, &pRect, &pLocation2, (COLORREF)0, (COLORREF)0, TextPrintType::Center | TextPrintType::FullShadow | TextPrintType::Efnt);
+			DSurface::Temp->DrawRectEx(&pRect, &nIntersect, nColorInt); //rounded effect for text frame
 			DSurface::Temp->DrawTextA(pFormat, &pRect, &pLocation, nColorInt, 0, TextPrintType::Center | TextPrintType::FullShadow | TextPrintType::Efnt);
 		};
 
-		const bool IsAlly = pOwner->IsAlliedWith(HouseClass::CurrentPlayer);
-		const bool IsObserver = HouseClass::Observer || HouseClass::IsCurrentPlayerObserver();
+		const bool isAlly = pOwner->IsAlliedWith(HouseClass::CurrentPlayer);
+		const bool isObserver = HouseClass::Observer || HouseClass::IsCurrentPlayerObserver();
 		const bool isFake = BuildingTypeExt::ExtMap.Find(pType)->Fake;
 		const bool isPrimary = pThis->IsPrimaryFactory;
-		const bool hasPowerBonus = pType->PowerBonus > 0;
+		const bool hasPowerBonus = pType->PowerBonus > 0 && BuildingTypeExt::ExtMap.Find(pType)->ShowPower;
 		const bool hasStorage = pType->Storage > 0;
+		const bool isUsingStorage = BuildingTypeExt::ExtMap.Find(pType)->Refinery_UseStorage;
 		const bool bReveal = pThis->DisplayProductionTo.Contains(HouseClass::CurrentPlayer);
 
-		if (IsAlly || IsObserver || bReveal)
+		if (isAlly || isObserver || bReveal)
 		{
 
 			if (isPrimary)
 			{
 				if(RulesExt::Global()->PrimaryFactoryIndicator)
-					BuildingTypeExt::DrawPrimaryIcon(pThis, &pLocation, &pRect);
+					BuildingTypeExt::DrawPrimaryIcon(pBuilding, &pRect);
 				else
 				{
 					pLocation.Y -= textHeight/2;
@@ -88,18 +88,35 @@ void __fastcall TechnoClass_DrawExtraInfo_Wrapper(TechnoClass* pThis)
 				wchar_t pOutDrainFormat[0x80];
 				auto pDrain = (int)pOwner->Power_Drain();
 				auto pOutput = (int)pOwner->Power_Output();
-				swprintf_s(pOutDrainFormat, pDrainFormat, pOutput, pDrain);
+				if(pType->GetFoundationWidth() > 2 && pType->GetFoundationHeight(false) > 2)
+					swprintf_s(pOutDrainFormat, pDrainFormat, pOutput, pDrain);
+				else
+				{
+					swprintf_s(pOutDrainFormat, L"Power=%d", pOutput);
+					pLocation.Y += textHeight - 2;
+					swprintf_s(pOutDrainFormat, L"Drain=%d", pDrain);
+				}
 				DrawTheStuff(pOutDrainFormat);
 				pLocation.Y += textHeight;
 			}
 
-			if (hasStorage)
+			if (hasStorage && !isUsingStorage)
 			{
 				auto pMoneyFormat = StringTable::LoadString(GameStrings::TXT_MONEY_FORMAT_1());
 				wchar_t pOutMoneyFormat[0x80];
 				auto nMoney = pOwner->Available_Money();
 				swprintf_s(pOutMoneyFormat, pMoneyFormat, nMoney);
 				DrawTheStuff(pOutMoneyFormat);
+				pLocation.Y += textHeight;
+			}
+
+			if (hasStorage && isUsingStorage)
+			{
+				auto pStorageFormat = L"Storage = %d"; //temp
+				wchar_t pOutStorageFormat[0x80];
+				auto nStorage = pBuilding->GetStoragePercentage();
+				swprintf_s(pOutStorageFormat, pStorageFormat, nStorage);
+				DrawTheStuff(pOutStorageFormat);
 			}
 		}
 	}
