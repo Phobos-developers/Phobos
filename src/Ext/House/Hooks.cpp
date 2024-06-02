@@ -300,18 +300,8 @@ DEFINE_HOOK(0x4FE3E9, HouseClass_AI_Building_Intercept, 0x7)
 	 */
 	if (RulesExt::Global()->IsUseAdvancedAI)
 	{
-		int result = HouseExt::Vinifera_HouseClass_AI_Building(pHouse);
-
+		HouseExt::Vinifera_HouseClass_AI_Building(pHouse);
 		return 0x4FE3F0;
-
-		//// Rebuild function epilogue
-		//R->EAX(result);
-		//_asm { pop edi }
-		//_asm { pop esi }
-		//_asm { pop ebp }
-		//_asm { pop ebx }
-		//_asm { add esp, 30h }
-		//_asm { retn }
 	}
 
 	return 0;

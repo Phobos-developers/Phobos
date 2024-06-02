@@ -1407,13 +1407,15 @@ void HouseExt::AdvAI_Sell_Extra_ConYards(HouseClass* pHouse)
  *
  *  Author: Rampastring
  */
-int HouseExt::Vinifera_HouseClass_AI_Building(HouseClass* pHouse)
+void HouseExt::Vinifera_HouseClass_AI_Building(HouseClass* pHouse)
 {
 	// Decide what to build.
 	// If we already have something to build, do nothing.
-	if (pHouse->ProducingBuildingTypeIndex != -1) return TICKS_PER_SECOND;
+	if (pHouse->ProducingBuildingTypeIndex != -1)
+		return;
 
-	if (pHouse->ConYards.Count <= 0) return TICKS_PER_SECOND;
+	if (pHouse->ConYards.Count <= 0)
+		return;
 
 	const auto houseExt = ExtMap.Find(pHouse);
 
@@ -1430,17 +1432,12 @@ int HouseExt::Vinifera_HouseClass_AI_Building(HouseClass* pHouse)
 
 		if (toBuild == nullptr)
 		{
-			return TICKS_PER_SECOND * 5;
+			return;
 		}
 
 		Debug::Log("AI %d selected building %s to build. Frame: %d\n", pHouse->ArrayIndex, toBuild->Name, Unsorted::CurrentFrame.get());
 
 		pHouse->ProducingBuildingTypeIndex = toBuild->ArrayIndex;
-
-		// Limit the tick rate a bit for better performance and fairness.
-		// Also, add some randomization to reduce the "all AIs place buildings at the same time"
-		// effect, avoiding a lag spike.
-		return TICKS_PER_SECOND * 5 + ScenarioClass::Instance->Random.RandomRanged(0, 3);
 
 	}
 	else
@@ -1452,8 +1449,6 @@ int HouseExt::Vinifera_HouseClass_AI_Building(HouseClass* pHouse)
 			pHouse->ProducingBuildingTypeIndex = node->BuildingTypeIndex;
 		}
 	}
-
-	return TICKS_PER_SECOND;
 }
 
 /**
