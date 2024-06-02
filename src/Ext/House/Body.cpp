@@ -167,7 +167,7 @@ bool HouseExt::ExtData::UpdateHarvesterProduction()
 	if (pHarvesterUnit)
 	{
 		auto const harvesters = pThis->CountResourceGatherers;
-		auto maxHarvesters = HouseExt::FindBuildable(
+		auto maxHarvesters = FindBuildable(
 			pThis, idxParentCountry, make_iterator(RulesClass::Instance->BuildRefinery))
 			? RulesClass::Instance->HarvestersPerRefinery[AIDifficulty] * pThis->CountResourceDestinations
 			: RulesClass::Instance->AISlaveMinerNumber[AIDifficulty];
@@ -186,8 +186,7 @@ bool HouseExt::ExtData::UpdateHarvesterProduction()
 
 		if (pThis->CountResourceGatherers < maxHarvesters)
 		{
-			auto const pRefinery = HouseExt::FindBuildable(
-				pThis, idxParentCountry, make_iterator(RulesClass::Instance->BuildRefinery));
+			auto const pRefinery = FindBuildable(pThis, idxParentCountry, make_iterator(RulesClass::Instance->BuildRefinery));
 
 			if (pRefinery)
 			{
@@ -270,7 +269,7 @@ size_t HouseExt::FindBuildableIndex(
 		if (pHouse->CanExpectToBuild(pItem, idxParentCountry))
 		{
 			auto const pBld = abstract_cast<const BuildingTypeClass*>(pItem);
-			if (pBld && HouseExt::IsDisabledFromShell(pHouse, pBld))
+			if (pBld && IsDisabledFromShell(pHouse, pBld))
 				continue;
 
 			return i;
@@ -494,35 +493,39 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 		{
 			if (prerequisite < 0)
 			{
-				TypeList<BuildingTypeClass*>* prerequisites;
+				// If we want a refinery, check if we have a slave miner unit
+				if (prerequisite == -6 && pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
+					continue;
+
+				TypeList<int>* prerequisites;
 				switch (prerequisite)
 				{
 				case -6:
-					prerequisites = &RulesClass::Instance->BuildRefinery;
+					prerequisites = &RulesClass::Instance->PrerequisiteProc;
 					break;
 				case -5:
-					prerequisites = &RulesClass::Instance->BuildTech;
+					prerequisites = &RulesClass::Instance->PrerequisiteTech;
 					break;
 				case -4:
-					prerequisites = &RulesClass::Instance->BuildRadar;
+					prerequisites = &RulesClass::Instance->PrerequisiteRadar;
 					break;
 				case -3:
-					prerequisites = &RulesClass::Instance->BuildBarracks;
+					prerequisites = &RulesClass::Instance->PrerequisiteBarracks;
 					break;
 				case -2:
-					prerequisites = &RulesClass::Instance->BuildWeapons;
+					prerequisites = &RulesClass::Instance->PrerequisiteFactory;
 					break;
 				case -1:
-					prerequisites = &RulesClass::Instance->BuildPower;
+					prerequisites = &RulesClass::Instance->PrerequisitePower;
 					break;
 				default:
 					Debug::FatalErrorAndExit("Invalid prerequisite %d in AdvAI_Can_Build_Building!!!", prerequisite);
 				}
 
 				bool prerequisiteFound = false;
-				for (const auto pPrerequisite : *prerequisites)
+				for (const auto prerequisiteIndex : *prerequisites)
 				{
-					if (pHouse->ActiveBuildingTypes.GetItemCount(pPrerequisite->ArrayIndex) > 0)
+					if (pHouse->ActiveBuildingTypes.GetItemCount(prerequisiteIndex) > 0)
 					{
 						prerequisiteFound = true;
 						break;
