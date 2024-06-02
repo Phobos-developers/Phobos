@@ -124,6 +124,26 @@ public:
 		AnimTypeClass* DropPodTrailer;
 		SHPStruct* PodImage;
 
+		/**
+		*  Is DTA's custom advanced AI logic enabled?
+		*/
+		Valueable<bool> IsUseAdvancedAI;
+
+		/**
+		 *  Is the advanced AI allowed to own multiple Construction Yards at a time?
+		 */
+		Valueable<bool> IsAdvancedAIMultiConYard;
+
+		/**
+		 *  Specifies the maximum distance that the advanced AI is allowed to expand at.
+		 */
+		Valueable<int> AdvancedAIMaxExpansionDistance;
+
+		/**
+		 *  Specifies the minimum number of refineries that the Advanced AI thinks it should build.
+		 */
+		Valueable<int> AdvancedAIMinimumRefineryCount;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -208,6 +228,10 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, IsUseAdvancedAI { false }
+			, IsAdvancedAIMultiConYard { false }
+			, AdvancedAIMaxExpansionDistance { 150 }
+			, AdvancedAIMinimumRefineryCount { 2 }
 		{ }
 
 		virtual ~ExtData() = default;

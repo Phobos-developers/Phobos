@@ -158,6 +158,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DropPodTrailer = droppod_trailer.Get(AnimTypeClass::Find("SMOKEY"));// Ares convention
 	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
 
+	this->IsUseAdvancedAI.Read(exINI, GameStrings::General, "IsUseAdvancedAI");
+	this->IsAdvancedAIMultiConYard.Read(exINI, GameStrings::General, "IsAdvancedAIMultiConYard");
+	this->AdvancedAIMaxExpansionDistance.Read(exINI, GameStrings::General, "AdvancedAIMaxExpansionDistance");
+	this->AdvancedAIMinimumRefineryCount.Read(exINI, GameStrings::General, "AdvancedAIMinimumRefineryCount");
+
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");

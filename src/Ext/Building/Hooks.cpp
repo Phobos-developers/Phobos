@@ -430,3 +430,30 @@ DEFINE_HOOK(0x4511D6, BuildingClass_AnimationAI_SellBuildup, 0x7)
 
 	return pTypeExt->SellBuildupLength == pThis->Animation.Value ? Continue : Skip;
 }
+
+
+///
+/// Advanced AI
+///	Credits to Rampastring
+///
+
+DEFINE_HOOK(0x444F39, BuildingClass_Exit_Object_Seek_Building_Position, 0x6)
+{
+	GET(BuildingClass*, base, EDI);
+
+	if (!RulesExt::Global()->IsUseAdvancedAI || base->Type->PowersUpBuilding[0] != '\0')
+		return 0;
+
+	int result = BuildingExt::Exit_Object_Custom_Position(base);
+	switch (result)
+	{
+	case 1:
+		return 0x4440C5;
+	case 2:
+		return 0x4454D4;
+	case 0:
+	default:
+		return 0x445696;
+	}
+}
+

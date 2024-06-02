@@ -180,6 +180,7 @@
     <ClCompile Include="src\Utilities\AresHelper.cpp" />
     <ClCompile Include="src\Utilities\AresAddressTable.cpp" />
     <ClCompile Include="src\Misc\SyncLogging.cpp" />
+    <ClCompile Include="YRpp\RectangleStruct.cpp" />
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>

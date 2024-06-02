@@ -64,6 +64,11 @@ public:
 
 		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
 
+		/**
+		*  Should the Advanced AI ignore prerequisites when considering whether it can build this building?
+		*/
+		Valueable<bool> IsAdvancedAIIgnoresPrerequisites;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -101,6 +106,7 @@ public:
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
 			, AircraftDockingDirs {}
+			, IsAdvancedAIIgnoresPrerequisites { false }
 		{ }
 
 		// Ares 0.A functions

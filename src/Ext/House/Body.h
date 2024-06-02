@@ -42,6 +42,55 @@ public:
 		int LastBuiltNavalVehicleType;
 		int ProducingNavalUnitTypeIndex;
 
+		int StrengthenDestroyedCost;
+
+		/**
+		 *  If we are currently expanding our base towards a resourceful location,
+		 *  this records the cell that we are expanding towards.
+		 */
+		CellStruct NextExpansionPointLocation;
+
+		/**
+		 *  Locations that we should never expand towards.
+		 *  Basically, locations that are unreachable.
+		 */
+		CellStruct PermanentlyBlockedExpansionPointLocations[20];
+
+		/**
+		 *  Records whether the AI has reached its expansion point.
+		 *  If yes, the AI should build a refinery.
+		 */
+		bool ShouldBuildRefinery;
+
+		/**
+		 *  Set when the AI has built its first barracks during the game.
+		 *  Used to figure out whether the AI should reset its TeamDelay
+		 *  timer when it has built a barracks.
+		 */
+		bool HasBuiltFirstBarracks;
+
+		/**
+		 *  Records when the AI last checked for excess refineries.
+		 */
+		int LastExcessRefineryCheckFrame;
+
+		/**
+		 *  Records when the AI last checked for sleeping harvesters.
+		 */
+		int LastSleepingHarvesterCheckFrame;
+
+		/**
+		 *  Defines whether the AI has already performed a final "desperate vehicle charge".
+		 *  If it has been done, then there is no need to do it again.
+		 */
+		bool HasPerformedVehicleCharge;
+
+		/**
+		 *  Records a value whether the current structure build choice
+		 *  was made under threat of getting rushed early in the game.
+		 */
+		bool IsUnderStartRushThreat;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -115,6 +164,20 @@ public:
 	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
 
 	static void SetSkirmishHouseName(HouseClass* pHouse);
+
+	static bool AdvAI_House_Search_For_Next_Expansion_Point(HouseClass* pHouse);
+	static bool AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* pBuildingType, bool checkPrereqs);
+	static bool AdvAI_Is_Recently_Attacked(HouseClass* pHouse);
+	static bool AdvAI_Is_Under_Start_Rush_Threat(HouseClass* pHouse, int enemyAircraftCount);
+	static int AdvAI_Calculate_Enemy_Aircraft_Count(HouseClass* pHouse);
+	static const BuildingTypeClass* AdvAI_Evaluate_Get_Best_Building(HouseClass* pHouse);
+	static const BuildingTypeClass* AdvAI_Get_Building_To_Build(HouseClass* pHouse);
+	static void AdvAI_Raise_Money(HouseClass* pHouse);
+	static void AdvAI_Economy_Upkeep(HouseClass* pHouse);
+	static void AdvAI_Awaken_Sleeping_Harvesters(HouseClass* pHouse);
+	static void AdvAI_Sell_Extra_ConYards(HouseClass* pHouse);
+	static int Vinifera_HouseClass_AI_Building(HouseClass* pHouse);
+	static void AdvAI_HouseClass_Expert_AI(HouseClass* pHouse);
 
 	static bool IsDisabledFromShell(
 	HouseClass const* pHouse, BuildingTypeClass const* pItem);
