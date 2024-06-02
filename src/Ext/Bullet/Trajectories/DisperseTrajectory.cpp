@@ -592,9 +592,9 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 	{
 		Check = true;
 	}
-	else if (TechnoClass* pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+	else if (TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target))
 	{
-		if (pTarget->IsDead() || pTarget->InLimbo)
+		if (pTargetTechno->IsDead() || pTargetTechno->InLimbo)
 			Check = true;
 	}
 
@@ -621,10 +621,10 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 	if (ValidTechnoNums > 0)
 	{
 		int num = ScenarioClass::Instance->Random.RandomRanged(0, ValidTechnoNums - 1);
-		TechnoClass* BulletTarget = ValidTechnos[num];
+		TechnoClass* pTargetTechno = ValidTechnos[num];
 
-		pBullet->Target = BulletTarget;
-		pBullet->TargetCoords = BulletTarget->GetCoords();
+		pBullet->Target = pTargetTechno;
+		pBullet->TargetCoords = pTargetTechno->GetCoords();
 
 		this->LastTargetCoord = pBullet->TargetCoords;
 	}
@@ -855,7 +855,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 		if (this->WeaponCount > 0)
 			this->WeaponCount -= 1;
 
-		AbstractClass* BulletTarget = pBullet->Target ? pBullet->Target : MapClass::Instance->TryGetCellAt(pBullet->TargetCoords);
+		AbstractClass* pTarget = pBullet->Target ? pBullet->Target : MapClass::Instance->TryGetCellAt(pBullet->TargetCoords);
 
 		for (size_t WeaponNum = 0; WeaponNum < ValidWeapons; WeaponNum++)
 		{
@@ -884,7 +884,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 			if (!this->WeaponRetarget)
 			{
 				for (int BurstNum = 0; BurstNum < BurstCount; BurstNum++)
-					CreateDisperseBullets(pBullet, pWeapon, BulletTarget, pOwner, BurstNum, BurstCount);
+					CreateDisperseBullets(pBullet, pWeapon, pTarget, pOwner, BurstNum, BurstCount);
 
 				continue;
 			}
@@ -893,7 +893,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 
 			if (this->WeaponTendency && BurstCount > 0)
 			{
-				CreateDisperseBullets(pBullet, pWeapon, BulletTarget, pOwner, BurstNow, BurstCount);
+				CreateDisperseBullets(pBullet, pWeapon, pTarget, pOwner, BurstNow, BurstCount);
 				BurstNow += 1;
 
 				if (BurstCount <= 1)
@@ -904,7 +904,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 			bool IncludeInAir = (this->TargetInAir && pWeapon->Projectile->AA);
 			CoordStruct CenterCoords = this->WeaponLocation ? pBullet->Location : pBullet->TargetCoords;
 			std::vector<TechnoClass*> Technos = Helpers::Alex::getCellSpreadItems(CenterCoords, Spread, IncludeInAir);
-			std::vector<TechnoClass*> ValidTechnos = GetValidTechnosInSame(Technos, pOwner, pWeapon->Warhead, BulletTarget);
+			std::vector<TechnoClass*> ValidTechnos = GetValidTechnosInSame(Technos, pOwner, pWeapon->Warhead, pTarget);
 			size_t ValidTechnoNums = ValidTechnos.size();
 			std::vector<AbstractClass*> ValidTargets;
 			ValidTargets.reserve(BurstCount);
@@ -971,9 +971,9 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 				}
 			}
 
-			for (auto const& pTarget : ValidTargets)
+			for (auto const& pNewTarget : ValidTargets)
 			{
-				CreateDisperseBullets(pBullet, pWeapon, pTarget, pOwner, BurstNow, BurstCount);
+				CreateDisperseBullets(pBullet, pWeapon, pNewTarget, pOwner, BurstNow, BurstCount);
 				BurstNow += 1;
 			}
 		}
@@ -990,13 +990,13 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 }
 
 std::vector<TechnoClass*> DisperseTrajectory::GetValidTechnosInSame(std::vector<TechnoClass*> Technos,
-	HouseClass* pOwner, WarheadTypeClass* pWH, AbstractClass* pTargetAbstract)
+	HouseClass* pOwner, WarheadTypeClass* pWH, AbstractClass* pTarget)
 {
 	std::vector<TechnoClass*> ValidTechnos;
 	ValidTechnos.reserve(Technos.size());
 
-	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTargetAbstract);
-	bool CheckAllies = pTargetAbstract ? !this->WeaponToAllies : !this->RetargetAllies;
+	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+	bool CheckAllies = pTarget ? !this->WeaponToAllies : !this->RetargetAllies;
 
 	for (auto const& pTechno : Technos)
 	{
@@ -1033,127 +1033,130 @@ std::vector<TechnoClass*> DisperseTrajectory::GetValidTechnosInSame(std::vector<
 	return ValidTechnos;
 }
 
-void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* BulletTarget,
+void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* pTarget,
 	HouseClass* pOwner, int CurBurst, int MaxBurst)
 {
 	int FinalDamage = static_cast<int>(pWeapon->Damage * this->FirepowerMult);
 
-	if (BulletClass* pCreateBullet = pWeapon->Projectile->CreateBullet(BulletTarget, pBullet->Owner,
+	if (BulletClass* pCreateBullet = pWeapon->Projectile->CreateBullet(pTarget, pBullet->Owner,
 		FinalDamage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 	{
 		pCreateBullet->WeaponType = pWeapon;
 		auto const pBulletExt = BulletExt::ExtMap.Find(pCreateBullet);
 		pBulletExt->FirerHouse = BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 		pCreateBullet->MoveTo(pBullet->Location, BulletVelocity::Empty);
-		int AnimCounts = pWeapon->Anim.Count;
-		int AnimIndex = 0;
-		bool DrawAnim = (AnimCounts > 0);
-		double AnimRotate = 0;
 
-		if (pBulletExt->Trajectory)
+		if (pBulletExt->Trajectory && CurBurst >= 0)
 		{
-			if (CurBurst >= 0)
+			if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Disperse)
 			{
-				if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Disperse)
+				DisperseTrajectory* pTrajectory = static_cast<DisperseTrajectory*>(pBulletExt->Trajectory);
+				pTrajectory->FirepowerMult = this->FirepowerMult;
+
+				//The created bullet's velocity calculation has been completed, so we should stack the calculations.
+				if (!pTrajectory->UniqueCurve && pTrajectory->PreAimCoord != CoordStruct::Empty
+					&& pTrajectory->UseDisperseBurst && pTrajectory->RotateCoord != 0 && MaxBurst > 1)
 				{
-					DisperseTrajectory* pTrajectory = static_cast<DisperseTrajectory*>(pBulletExt->Trajectory);
-					pTrajectory->FirepowerMult = this->FirepowerMult;
+					CoordStruct CreateBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
+					double RotateAngle = Math::atan2(CreateBulletTargetToSource.Y , CreateBulletTargetToSource.X);
 
-					//The created bullet's velocity calculation has been completed, so we should stack the calculations.
-					if (!pTrajectory->UniqueCurve && pTrajectory->PreAimCoord != CoordStruct::Empty
-						&& pTrajectory->UseDisperseBurst && pTrajectory->RotateCoord != 0 && MaxBurst > 1)
+					BulletVelocity RotationAxis
 					{
-						CoordStruct CreateBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
-						double RotateAngle = Math::atan2(CreateBulletTargetToSource.Y , CreateBulletTargetToSource.X);
+						pTrajectory->AxisOfRotation.X * Math::cos(RotateAngle) + pTrajectory->AxisOfRotation.Y * Math::sin(RotateAngle),
+						pTrajectory->AxisOfRotation.X * Math::sin(RotateAngle) - pTrajectory->AxisOfRotation.Y * Math::cos(RotateAngle),
+						static_cast<double>(pTrajectory->AxisOfRotation.Z)
+					};
 
-						BulletVelocity RotationAxis
-						{
-							pTrajectory->AxisOfRotation.X * Math::cos(RotateAngle) + pTrajectory->AxisOfRotation.Y * Math::sin(RotateAngle),
-							pTrajectory->AxisOfRotation.X * Math::sin(RotateAngle) - pTrajectory->AxisOfRotation.Y * Math::cos(RotateAngle),
-							static_cast<double>(pTrajectory->AxisOfRotation.Z)
-						};
+					double ExtraRotate = 0;
 
-						double ExtraRotate = 0;
-
-						if (pTrajectory->MirrorCoord)
-						{
-							if (CurBurst % 2 == 1)
-								RotationAxis *= -1;
-
-							ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * ((CurBurst / 2) / (MaxBurst - 1.0) - 0.5)) / 180;
-						}
-						else
-						{
-							ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * (CurBurst / (MaxBurst - 1.0) - 0.5)) / 180;
-						}
-
-						pCreateBullet->Velocity = RotateAboutTheAxis(pCreateBullet->Velocity, RotationAxis, ExtraRotate);
-					}
-				}
-				else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Straight)
-				{
-					StraightTrajectory* pTrajectory = static_cast<StraightTrajectory*>(pBulletExt->Trajectory);
-					pTrajectory->FirepowerMult = this->FirepowerMult;
-
-					//The straight trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
-					if (pTrajectory->LeadTimeCalculate)
+					if (pTrajectory->MirrorCoord)
 					{
-						pTrajectory->CurrentBurst = CurBurst;
-						pTrajectory->CountOfBurst = MaxBurst;
-						pTrajectory->UseDisperseBurst = false;
+						if (CurBurst % 2 == 1)
+							RotationAxis *= -1;
+
+						ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * ((CurBurst / 2) / (MaxBurst - 1.0) - 0.5)) / 180;
 					}
-					else if (pTrajectory->UseDisperseBurst && pTrajectory->RotateCoord != 0 && MaxBurst > 1)
+					else
 					{
-						CoordStruct CreateBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
-						double RotateAngle = Math::atan2(CreateBulletTargetToSource.Y , CreateBulletTargetToSource.X);
-
-						BulletVelocity RotationAxis
-						{
-							pTrajectory->AxisOfRotation.X * Math::cos(RotateAngle) + pTrajectory->AxisOfRotation.Y * Math::sin(RotateAngle),
-							pTrajectory->AxisOfRotation.X * Math::sin(RotateAngle) - pTrajectory->AxisOfRotation.Y * Math::cos(RotateAngle),
-							static_cast<double>(pTrajectory->AxisOfRotation.Z)
-						};
-
-						double ExtraRotate = 0;
-
-						if (pTrajectory->MirrorCoord)
-						{
-							if (CurBurst % 2 == 1)
-								RotationAxis *= -1;
-
-							ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * ((CurBurst / 2) / (MaxBurst - 1.0) - 0.5)) / 180;
-						}
-						else
-						{
-							ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * (CurBurst / (MaxBurst - 1.0) - 0.5)) / 180;
-						}
-
-						pCreateBullet->Velocity = RotateAboutTheAxis(pCreateBullet->Velocity, RotationAxis, ExtraRotate);
+						ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * (CurBurst / (MaxBurst - 1.0) - 0.5)) / 180;
 					}
-				}
-				else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Engrave)
-				{
-					EngraveTrajectory* pTrajectory = static_cast<EngraveTrajectory*>(pBulletExt->Trajectory);
-					pTrajectory->FirepowerMult = this->FirepowerMult;
+
+					pCreateBullet->Velocity = RotateAboutTheAxis(pCreateBullet->Velocity, RotationAxis, ExtraRotate);
 				}
 			}
+			else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Straight)
+			{
+				StraightTrajectory* pTrajectory = static_cast<StraightTrajectory*>(pBulletExt->Trajectory);
+				pTrajectory->FirepowerMult = this->FirepowerMult;
 
-			if (DrawAnim && AnimCounts % 8 == 0)
-				AnimRotate = Math::atan2(pCreateBullet->Velocity.Y , pCreateBullet->Velocity.X);
+				//The straight trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
+				if (pTrajectory->LeadTimeCalculate)
+				{
+					pTrajectory->CurrentBurst = CurBurst;
+					pTrajectory->CountOfBurst = MaxBurst;
+					pTrajectory->UseDisperseBurst = false;
+				}
+				else if (pTrajectory->UseDisperseBurst && pTrajectory->RotateCoord != 0 && MaxBurst > 1)
+				{
+					CoordStruct CreateBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
+					double RotateAngle = Math::atan2(CreateBulletTargetToSource.Y , CreateBulletTargetToSource.X);
+
+					BulletVelocity RotationAxis
+					{
+						pTrajectory->AxisOfRotation.X * Math::cos(RotateAngle) + pTrajectory->AxisOfRotation.Y * Math::sin(RotateAngle),
+						pTrajectory->AxisOfRotation.X * Math::sin(RotateAngle) - pTrajectory->AxisOfRotation.Y * Math::cos(RotateAngle),
+						static_cast<double>(pTrajectory->AxisOfRotation.Z)
+					};
+
+					double ExtraRotate = 0;
+
+					if (pTrajectory->MirrorCoord)
+					{
+						if (CurBurst % 2 == 1)
+							RotationAxis *= -1;
+
+						ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * ((CurBurst / 2) / (MaxBurst - 1.0) - 0.5)) / 180;
+					}
+					else
+					{
+						ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * (CurBurst / (MaxBurst - 1.0) - 0.5)) / 180;
+					}
+
+					pCreateBullet->Velocity = RotateAboutTheAxis(pCreateBullet->Velocity, RotationAxis, ExtraRotate);
+				}
+			}
+			else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Engrave)
+			{
+				EngraveTrajectory* pTrajectory = static_cast<EngraveTrajectory*>(pBulletExt->Trajectory);
+				pTrajectory->FirepowerMult = this->FirepowerMult;
+			}
 		}
-		else if (DrawAnim && AnimCounts % 8 == 0)
+
+		int AnimCounts = pWeapon->Anim.Count;
+
+		if (AnimCounts > 0)
 		{
-			CoordStruct SourceCoord = pBullet->Location;
-			CoordStruct TargetCoord = BulletTarget->GetCoords();
+			int AnimIndex = 0;
 
 			if (AnimCounts % 8 == 0)
-				AnimRotate = Math::atan2(TargetCoord.Y - SourceCoord.Y , TargetCoord.X - SourceCoord.X);
-		}
-
-		if (DrawAnim)
-		{
-			double RotateIndex = AnimRotate + Math::TwoPi + Math::Pi;
-			AnimIndex = static_cast<int>(RotateIndex * AnimCounts / Math::TwoPi - (AnimCounts / 8) + 0.5) % AnimCounts;
+			{
+				if (pBulletExt->Trajectory)
+				{
+					AnimIndex = static_cast<int>((Math::atan2(pCreateBullet->Velocity.Y , pCreateBullet->Velocity.X) + Math::TwoPi + Math::Pi)
+						* AnimCounts / Math::TwoPi - (AnimCounts / 8) + 0.5) % AnimCounts;
+				}
+				else
+				{
+					CoordStruct SourceCoord = pBullet->Location;
+					CoordStruct TargetCoord = pTarget->GetCoords();
+					AnimIndex = static_cast<int>((Math::atan2(TargetCoord.Y - SourceCoord.Y , TargetCoord.X - SourceCoord.X) + Math::TwoPi + Math::Pi)
+						* AnimCounts / Math::TwoPi - (AnimCounts / 8) + 0.5) % AnimCounts;
+				}
+			}
+			else
+			{
+				AnimIndex = ScenarioClass::Instance->Random.RandomRanged(0 , AnimCounts - 1);
+			}
 
 			if (AnimClass* pAnim = GameCreate<AnimClass>(pWeapon->Anim[AnimIndex], pBullet->Location))
 			{
@@ -1182,24 +1185,24 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 		if (pWeapon->IsHouseColor)
 		{
-			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, BulletTarget->GetCoords(),
+			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(),
 				pOwner->LaserColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
 			pLaser->IsHouseColor = true;
 		}
 		else if (pWeaponTypeExt->Laser_IsSingleColor)
 		{
-			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, BulletTarget->GetCoords(),
+			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(),
 				pWeapon->LaserInnerColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
 			pLaser->IsHouseColor = true;
 		}
 		else
 		{
-			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, BulletTarget->GetCoords(),
+			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(),
 				pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
 			pLaser->IsHouseColor = false;
 		}
 
-		pLaser->Thickness = 3;
+		pLaser->Thickness = 3; //TODO Weapon's LaserThickness(Ares)
 		pLaser->IsSupported = false;
 	}
 
@@ -1212,7 +1215,9 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 			else
 				pEBolt->AlternateColor = false;
 
-			pEBolt->Fire(pBullet->Location, BulletTarget->GetCoords(), 0);
+			//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
+			//Although I can reread the Ares tags but how to do with Bolt_Disable1, Bolt_Disable2, Bolt_Disable3, Bolt_Arcs(Phobos)
+			pEBolt->Fire(pBullet->Location, pTarget->GetCoords(), 0);
 		}
 	}
 
@@ -1227,11 +1232,13 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 		if (RadBeam* pRadBeam = RadBeam::Allocate(pRadBeamType))
 		{
 			pRadBeam->SetCoordsSource(pBullet->Location);
-			pRadBeam->SetCoordsTarget(BulletTarget->GetCoords());
-			pRadBeam->Color = pWeapon->Warhead->Temporal ? ColorStruct { 255, 100, 0 } : ColorStruct { 128, 200, 255 };
+			pRadBeam->SetCoordsTarget(pTarget->GetCoords());
+
+			//TODO Weapon's Beam.Color, Beam.Duration, Beam.Amplitude(Ares)
+			pRadBeam->Color = pWeapon->Warhead->Temporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor;
 		}
 	}
 
 	if (ParticleSystemTypeClass* pPSType = pWeapon->AttachedParticleSystem)
-		GameCreate<ParticleSystemClass>(pPSType, pBullet->Location, BulletTarget, pBullet->Owner, BulletTarget->GetCoords(), pOwner);
+		GameCreate<ParticleSystemClass>(pPSType, pBullet->Location, pTarget, pBullet->Owner, pTarget->GetCoords(), pOwner);
 }
