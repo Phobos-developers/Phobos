@@ -522,18 +522,17 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 					Debug::FatalErrorAndExit("Invalid prerequisite %d in AdvAI_Can_Build_Building!!!", prerequisite);
 				}
 
-				bool prerequisiteFound = false;
 				for (const auto prerequisiteIndex : *prerequisites)
 				{
 					if (pHouse->ActiveBuildingTypes.GetItemCount(prerequisiteIndex) > 0)
 					{
-						prerequisiteFound = true;
-						break;
+						goto prerequisiteFound;
 					}
 				}
 
-				if (!prerequisiteFound)
-					return false;
+				return false;
+
+			prerequisiteFound:;
 
 			}
 			else if (prerequisite >= 0 && pHouse->ActiveBuildingTypes.GetItemCount(prerequisite) == 0)
