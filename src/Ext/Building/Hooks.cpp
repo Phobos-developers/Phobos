@@ -437,6 +437,20 @@ DEFINE_HOOK(0x4511D6, BuildingClass_AnimationAI_SellBuildup, 0x7)
 ///	Credits to Rampastring
 ///
 
+// Reconstructed function epilogue for the hook below
+void NAKED BuildingClass_Exit_Object_Seek_Building_Position_Epilogue()
+{
+	_asm
+	{
+		pop edi
+		pop esi
+		pop ebp
+		pop ebx
+		add esp, 130h
+		retn 8
+	}
+}
+
 DEFINE_HOOK(0x444F39, BuildingClass_Exit_Object_Seek_Building_Position, 0x6)
 {
 	GET(BuildingClass*, base, EDI);
@@ -444,16 +458,8 @@ DEFINE_HOOK(0x444F39, BuildingClass_Exit_Object_Seek_Building_Position, 0x6)
 	if (!RulesExt::Global()->IsUseAdvancedAI || base->Type->PowersUpBuilding[0] != '\0')
 		return 0;
 
-	int result = BuildingExt::Exit_Object_Custom_Position(base);
-	switch (result)
-	{
-	case 1:
-		return 0x4440C5;
-	case 2:
-		return 0x4454D4;
-	case 0:
-	default:
-		return 0x445696;
-	}
+	const int result = BuildingExt::Exit_Object_Custom_Position(base);
+	R->EAX(result);
+	return reinterpret_cast<intptr_t>(&BuildingClass_Exit_Object_Seek_Building_Position_Epilogue);
 }
 

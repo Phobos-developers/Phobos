@@ -532,7 +532,8 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 
 				return false;
 
-			prerequisiteFound:;
+			prerequisiteFound:
+				continue;
 
 			}
 			else if (prerequisite >= 0 && pHouse->ActiveBuildingTypes.GetItemCount(prerequisite) == 0)
