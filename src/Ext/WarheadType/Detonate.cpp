@@ -122,7 +122,12 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		else if (pBullet)
 		{
 			if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
-				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+			{
+				// Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
+				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
+				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4)
+					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+			}
 		}
 	}
 }

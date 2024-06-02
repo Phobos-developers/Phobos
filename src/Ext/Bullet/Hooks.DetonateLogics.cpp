@@ -288,7 +288,7 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 				detonate = pWeaponExt->ExtraWarheads_DetonationChances[size - 1] >= ScenarioClass::Instance->Random.RandomDouble();
 
 			if (detonate)
-				WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner);
+				WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
 		}
 	}
 
