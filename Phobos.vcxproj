@@ -151,6 +151,7 @@
     <ClCompile Include="src\Misc\BlittersFix.cpp" />
     <ClCompile Include="src\Misc\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Misc\Selection.cpp" />
+    <ClCompile Include="src\New\Type\TechTreeTypeClass.cpp" />
     <ClCompile Include="src\Utilities\Anchor.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="src\New\Type\Affiliated\PassengerDeletionTypeClass.h" />
     <ClInclude Include="src\New\Entity\LaserTrailClass.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
+    <ClInclude Include="src\New\Type\TechTreeTypeClass.h" />
     <ClInclude Include="src\Utilities\Anchor.h" />
     <ClInclude Include="src\Utilities\Enumerable.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
