@@ -1,5 +1,4 @@
 #include "Body.h"
-#include "Ext/House/Body.h"
 
 #include <BitFont.h>
 
@@ -303,15 +302,15 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 		// I assume you were not launching for real, Morton
 
 		auto launchTheSWHere = [pBuilding](SuperClass* const pSuper, HouseClass* const pHouse)
-			{
-				int oldstart = pSuper->RechargeTimer.StartTime;
-				int oldleft = pSuper->RechargeTimer.TimeLeft;
-				pSuper->SetReadiness(true);
-				pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pHouse->IsCurrentPlayer());
-				pSuper->Reset();
-				pSuper->RechargeTimer.StartTime = oldstart;
-				pSuper->RechargeTimer.TimeLeft = oldleft;
-			};
+		{
+			int oldstart = pSuper->RechargeTimer.StartTime;
+			int oldleft = pSuper->RechargeTimer.TimeLeft;
+			pSuper->SetReadiness(true);
+			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pHouse->IsCurrentPlayer());
+			pSuper->Reset();
+			pSuper->RechargeTimer.StartTime = oldstart;
+			pSuper->RechargeTimer.TimeLeft = oldleft;
+		};
 
 		if (pTypeExt->SpyEffect_VictimSuperWeapon.isset())
 		{
