@@ -18,6 +18,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ext\Building\Body.AdvAI.cpp" />
+    <ClCompile Include="src\Ext\House\Body.AdvAI.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
     <ClCompile Include="src\New\Type\AttachEffectTypeClass.cpp" />
     <ClCompile Include="src\Commands\Commands.cpp" />
