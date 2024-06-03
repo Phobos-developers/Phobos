@@ -1,4 +1,6 @@
 #include "Body.h"
+#include "Ext/House/Body.h"
+
 #include <Ext/Side/Body.h>
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
@@ -40,6 +42,11 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
+	if (!HouseExt::BaseDefensesInitialized)
+	{
+		HouseExt::InitializeBaseDefenses();
+	}
+
 	if (pINI == CCINIClass::INI_Rules)
 		Data->InitializeAfterTypeData(pThis);
 

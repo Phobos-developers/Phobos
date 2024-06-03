@@ -156,6 +156,9 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
+	static void InitializeBaseDefenses();
+	static bool BaseDefensesInitialized;
+
 	static int ActiveHarvesterCount(HouseClass* pThis);
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
@@ -166,8 +169,8 @@ public:
 	static bool AdvAI_House_Search_For_Next_Expansion_Point(HouseClass* pHouse);
 	static bool AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* pBuildingType, bool checkPrereqs);
 	static bool AdvAI_Is_Recently_Attacked(HouseClass* pHouse);
-	static bool AdvAI_Is_Under_Start_Rush_Threat(HouseClass* pHouse, int enemyAircraftCount);
-	static int AdvAI_Calculate_Enemy_Aircraft_Count(HouseClass* pHouse);
+	static bool AdvAI_Is_Under_Start_Rush_Threat(HouseClass* pHouse, int enemyAircraftValue);
+	static int AdvAI_Calculate_Enemy_Aircraft_Value(HouseClass* pHouse);
 	static const BuildingTypeClass* AdvAI_Evaluate_Get_Best_Building(HouseClass* pHouse);
 	static const BuildingTypeClass* AdvAI_Get_Building_To_Build(HouseClass* pHouse);
 	static void AdvAI_Raise_Money(HouseClass* pHouse);
@@ -210,4 +213,6 @@ public:
 	static std::vector<int> AIProduction_Values;
 	static std::vector<int> AIProduction_BestChoices;
 	static std::vector<int> AIProduction_BestChoicesNaval;
+
+	static std::vector<BuildingTypeClass*> BaseDefenses;
 };
