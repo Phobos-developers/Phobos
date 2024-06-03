@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <AircraftClass.h>
+#include <functional>
 #include <TerrainClass.h>
 
 #define TICKS_PER_SECOND    15
@@ -383,51 +384,29 @@ int HouseExt::AdvAI_Calculate_Enemy_Aircraft_Value(HouseClass* pHouse)
 const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* pHouse)
 {
 	const auto houseExt = ExtMap.Find(pHouse);
-
-	const BuildingTypeClass* pOurRefinery = nullptr;
-	int resourceDestinationCount = 0;
-
-	for (const auto pRefinery : RulesClass::Instance->BuildRefinery)
+	TechTreeTypeClass* techTree = houseExt->PrimaryTechTreeType;
+	auto canBuildFunction = [pHouse](auto&& PH1)
 	{
-		if (AdvAI_Can_Build_Building(pHouse, pRefinery, true))
-		{
-			// We would prefer the refinery that matches our faction, but worst case we'd like at least some refinery
-			if (pOurRefinery == nullptr || pRefinery->AIBasePlanningSide == pHouse->SideIndex)
-			{
-				pOurRefinery = pRefinery;
-			}
-		}
+		return AdvAI_Can_Build_Building(pHouse, std::forward<decltype(PH1)>(PH1), true);
+	};
 
-		resourceDestinationCount += pHouse->ActiveBuildingTypes.GetItemCount(pRefinery->ArrayIndex);
+	if (techTree == nullptr)
+	{
+		techTree = TechTreeTypeClass::GetForSide(houseExt->OwnerObject()->SideIndex);
+		houseExt->PrimaryTechTreeType = techTree;
+		houseExt->SecondaryTechTreeType = techTree;
 	}
 
-	// Also count in the slave miners
-	resourceDestinationCount += pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex);
+	const BuildingTypeClass* pOurRefinery = techTree->GetRandomBuildable(TechTreeTypeClass::BuildType::BuildRefinery, canBuildFunction);
 
-	const BuildingTypeClass* pOurPowerPlant = nullptr;
-	const BuildingTypeClass* pOurBasicPowerPlant = nullptr;
-	int bestPowerOutput = INT_MIN;
-	int powerPlantCount = 0;
+	// Count all refineries, including vehicle slave miners
+	size_t refineryCount = houseExt->PrimaryTechTreeType->CountSideOwnedBuildings(pHouse, TechTreeTypeClass::BuildType::BuildRefinery);
+	refineryCount += pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex);
 
-	for (const auto pPower : RulesClass::Instance->BuildPower)
-	{
-		if (AdvAI_Can_Build_Building(pHouse, pPower, true))
-		{
-			// We want the best power plant, but if they are equal, prefer our side's power plant
-			if (pPower->PowerBonus > bestPowerOutput ||
-				(pPower->PowerBonus == bestPowerOutput && pPower->AIBasePlanningSide == pHouse->SideIndex))
-			{
-				pOurBasicPowerPlant = pOurPowerPlant == nullptr ? pPower : pOurPowerPlant;
-				pOurPowerPlant = pPower;
-				bestPowerOutput = pPower->PowerBonus;
-			}
-		}
+	const BuildingTypeClass* pOurPowerPlant = techTree->GetRandomBuildable(TechTreeTypeClass::BuildType::BuildPower, canBuildFunction);
+	const BuildingTypeClass* pOurAdvancedPowerPlant = techTree->GetRandomBuildable(TechTreeTypeClass::BuildType::BuildAdvancedPower, canBuildFunction);
 
-		if (pPower == RulesClass::Instance->NodAdvancedPower)
-			powerPlantCount += pHouse->ActiveBuildingTypes.GetItemCount(pPower->ArrayIndex) * 4;
-		else
-			powerPlantCount += pHouse->ActiveBuildingTypes.GetItemCount(pPower->ArrayIndex);
-	}
+	const size_t powerPlantCount = houseExt->PrimaryTechTreeType->CountSideOwnedBuildings(pHouse, TechTreeTypeClass::BuildType::BuildPower);
 
 	// If we have no power plants yet, then build one
 	if (powerPlantCount == 0 && pOurPowerPlant != nullptr)
@@ -437,25 +416,12 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 	}
 
 	// On Medium and Hard, build a barracks if we do not have any yet
-	const BuildingTypeClass* pOurBarracks = nullptr;
-	int barracksCount = 0;
-
-	for (const auto pBarracks : RulesClass::Instance->BuildBarracks)
-	{
-		if (AdvAI_Can_Build_Building(pHouse, pBarracks, true))
-		{
-			if (pOurBarracks == nullptr || pBarracks->AIBasePlanningSide == pHouse->SideIndex)
-			{
-				pOurBarracks = pBarracks;
-			}
-		}
-
-		barracksCount += pHouse->ActiveBuildingTypes.GetItemCount(pBarracks->ArrayIndex);
-	}
+	const BuildingTypeClass* pOurBarracks = techTree->GetRandomBuildable(TechTreeTypeClass::BuildType::BuildBarracks, canBuildFunction);
+	const size_t barracksCount = houseExt->PrimaryTechTreeType->CountSideOwnedBuildings(pHouse, TechTreeTypeClass::BuildType::BuildBarracks);
 
 	if (pHouse->AIDifficulty < AIDifficulty::Hard && pHouse->Balance >= RulesClass::Instance->AIAlternateProductionCreditCutoff)
 	{
-		if (barracksCount < 0 && pOurBarracks != nullptr)
+		if (barracksCount == 0 && pOurBarracks != nullptr)
 		{
 			Debug::Log("AdvAI: Making AI build %s because it does not have a Barracks at all.\n", pOurBarracks->Name);
 			return pOurBarracks;
@@ -482,24 +448,32 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 	}
 
 	// Build a refinery if we have 0 left
-	if (pOurRefinery != nullptr && resourceDestinationCount == 0)
+	if (pOurRefinery != nullptr && refineryCount == 0)
 	{
 		Debug::Log("AdvAI: Making AI build %s because it has 0 refineries\n", pOurRefinery->Name);
 		return pOurRefinery;
 	}
 
 	// Build power if necessary
+
+
 	if (!isUnderThreat && Unsorted::CurrentFrame > 5000 && pHouse->PowerOutput - pHouse->PowerDrain < 100)
 	{
+		if (pOurAdvancedPowerPlant != nullptr)
+		{
+			Debug::Log("AdvAI: Making AI build %s because it is out of power and can build an adv. power plant\n", pOurAdvancedPowerPlant->Name);
+			return pOurAdvancedPowerPlant;
+		}
+
 		if (pOurPowerPlant != nullptr)
 		{
-			Debug::Log("AdvAI: Making AI build %s because it is out of power\n", pOurPowerPlant->Name);
+			Debug::Log("AdvAI: Making AI build %s because it is out of power and can only build a basic power plant\n", pOurPowerPlant->Name);
 			return pOurPowerPlant;
 		}
 	}
 
 	// If we don't have enough barracks, then build one
-	const int optimalBarracksCount = 1 + (resourceDestinationCount / 3);
+	const size_t optimalBarracksCount = 1 + (refineryCount / 3);
 
 	if (barracksCount < optimalBarracksCount && pOurBarracks != nullptr)
 	{
@@ -523,7 +497,7 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 	int antiVehicleDefenseValue = 0;
 	int antiAirDefenseValue = 0;
 
-	for (const auto pDefense : BaseDefenses)
+	for (const auto pDefense : techTree->GetBuildable(TechTreeTypeClass::BuildType::BuildDefense, canBuildFunction))
 	{
 		if (pDefense->AntiInfantryValue > bestAntiInfantryRating ||
 				(pDefense->AntiInfantryValue == bestAntiInfantryRating && pDefense->AIBasePlanningSide == pHouse->SideIndex))
@@ -539,19 +513,19 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 			ourAntiVehicleDefense = pDefense;
 		}
 
-		if (pDefense->AntiInfantryValue > bestAntiAirRating ||
-				(pDefense->AntiInfantryValue == bestAntiAirRating && pDefense->AIBasePlanningSide == pHouse->SideIndex))
+		if (pDefense->AntiAirValue > bestAntiAirRating ||
+				(pDefense->AntiAirValue == bestAntiAirRating && pDefense->AIBasePlanningSide == pHouse->SideIndex))
 		{
 			bestAntiAirRating = pDefense->AntiAirValue;
 			ourAntiAirDefense = pDefense;
 		}
 
-		antiInfantryDefenseValue += pDefense->AntiInfantryValue;
-		antiVehicleDefenseValue += pDefense->AntiArmorValue;
-		antiAirDefenseValue += pDefense->AntiAirValue;
+		antiInfantryDefenseValue += pDefense->AntiInfantryValue * pHouse->ActiveBuildingTypes.GetItemCount(pDefense->ArrayIndex);
+		antiVehicleDefenseValue += pDefense->AntiArmorValue * pHouse->ActiveBuildingTypes.GetItemCount(pDefense->ArrayIndex);
+		antiAirDefenseValue += pDefense->AntiAirValue * pHouse->ActiveBuildingTypes.GetItemCount(pDefense->ArrayIndex);
 	}
 
-	int optimalDefenseValue = (resourceDestinationCount + powerPlantCount / 4) * 10;
+	int optimalDefenseValue = refineryCount + powerPlantCount / 4;
 	if (houseExt->NextExpansionPointLocation.X > 0 && houseExt->NextExpansionPointLocation.Y > 0)
 	{
 		optimalDefenseValue++;
@@ -602,60 +576,34 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 	// Instead build defenses or tech up so we can get AA ASAP.
 	if (!isUnderThreat || (antiInfDeficiency == 0 && antiAirDeficiency == 0))
 	{
-		// If we don't have enough weapons factory, then build one.
-		const int optimalWfCount = 1 + (resourceDestinationCount / 4);
-		const BuildingTypeClass* pOurWarFactory = nullptr;
-		int wfCount = 0;
+		// If we don't have enough weapons factories, then build one.
+		const BuildingTypeClass* pOurWeaponsFactory = techTree->GetRandomBuildable(TechTreeTypeClass::BuildType::BuildWeapons, canBuildFunction);
+		const size_t weaponsCount = techTree->CountSideOwnedBuildings(pHouse, TechTreeTypeClass::BuildType::BuildWeapons);
+		const size_t optimalWeaponsCount = 1 + (refineryCount / 4);
 
-		for (const auto pWarFactory : RulesClass::Instance->BuildWeapons)
-		{
-			if (AdvAI_Can_Build_Building(pHouse, pWarFactory, true))
-			{
-				if (pOurWarFactory == nullptr || pWarFactory->AIBasePlanningSide == pHouse->SideIndex)
-				{
-					pOurWarFactory = pWarFactory;
-				}
-			}
-
-			wfCount += pHouse->ActiveBuildingTypes.GetItemCount(pWarFactory->ArrayIndex);
-		}
-
-		if (wfCount < optimalWfCount && pOurWarFactory != nullptr)
+		if (weaponsCount < optimalWeaponsCount && pOurWeaponsFactory != nullptr)
 		{
 			Debug::Log("AdvAI: Making AI build %s because it does not have enough Weapons Factories. Wanted: %d, current: %d\n",
-				pOurWarFactory->Name, optimalWfCount, wfCount);
+				pOurWeaponsFactory->Name, optimalWeaponsCount, weaponsCount);
 
-			return pOurWarFactory;
+			return pOurWeaponsFactory;
 		}
 
-		const BuildingTypeClass* pOurNavalYard = nullptr;
-		int navalYardCount = 0;
-
-		for (const auto pNavalYard : RulesClass::Instance->BuildNavalYard)
-		{
-			if (AdvAI_Can_Build_Building(pHouse, pNavalYard, true))
-			{
-				if (pOurNavalYard == nullptr || pNavalYard->AIBasePlanningSide == pHouse->SideIndex)
-				{
-					pOurNavalYard = pNavalYard;
-				}
-			}
-
-			navalYardCount += pHouse->ActiveBuildingTypes.GetItemCount(pNavalYard->ArrayIndex);
-		}
+		const BuildingTypeClass* pOurNavalYard = techTree->GetRandomBuildable(TechTreeTypeClass::BuildType::BuildNavalYard, canBuildFunction);
+		const size_t navalYardCount = techTree->CountSideOwnedBuildings(pHouse, TechTreeTypeClass::BuildType::BuildNavalYard);
 
 		if (navalYardCount < 1 && pOurNavalYard != nullptr)
 		{
 			Debug::Log("AdvAI: Making AI build %s because it does not have a Naval Yard.",
-				pOurWarFactory->Name);
+				pOurWeaponsFactory->Name);
 
-			return pOurWarFactory;
+			return pOurWeaponsFactory;
 		}
 
 		// If we have too few refineries, build enough to match the minimum.
 		// Because this is not for expanding but an emergency situation,
 		// cancel any potential expanding.
-		if (pOurRefinery != nullptr && resourceDestinationCount < RulesExt::Global()->AdvancedAIMinimumRefineryCount)
+		if (pOurRefinery != nullptr && refineryCount < RulesExt::Global()->AdvancedAIMinimumRefineryCount)
 		{
 			houseExt->NextExpansionPointLocation = CellStruct(0, 0);
 			Debug::Log("AdvAI: Making AI build %s because it only has too few refineries\n", pOurRefinery);
@@ -689,21 +637,8 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 
 	// If we have no radar, then build one
 
-	const BuildingTypeClass* pOurRadar = nullptr;
-	int radarCount = 0;
-
-	for (const auto pRadar : RulesClass::Instance->BuildRadar)
-	{
-		if (AdvAI_Can_Build_Building(pHouse, pRadar, true))
-		{
-			if (pOurRadar == nullptr || pRadar->AIBasePlanningSide == pHouse->SideIndex)
-			{
-				pOurRadar = pRadar;
-			}
-		}
-
-		radarCount += pHouse->ActiveBuildingTypes.GetItemCount(pRadar->ArrayIndex);
-	}
+	const BuildingTypeClass* pOurRadar = techTree->GetRandomBuildable(TechTreeTypeClass::BuildType::BuildRadar, canBuildFunction);
+	const size_t radarCount = techTree->CountSideOwnedBuildings(pHouse, TechTreeTypeClass::BuildType::BuildRadar);
 
 	if (radarCount < 1 && pOurRadar != nullptr)
 	{
@@ -714,22 +649,9 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 	}
 
 	// If we don't have enough helipads, then build one
-	const int optimalHelipadCount = 1 + (resourceDestinationCount / 4);
-	const BuildingTypeClass* pOurHelipad = nullptr;
-	int helipadCount = 0;
-
-	for (const auto pHelipad : RulesClass::Instance->BuildHelipad)
-	{
-		if (AdvAI_Can_Build_Building(pHouse, pHelipad, true))
-		{
-			if (pOurHelipad == nullptr || pHelipad->AIBasePlanningSide == pHouse->SideIndex)
-			{
-				pOurHelipad = pHelipad;
-			}
-		}
-
-		helipadCount += pHouse->ActiveBuildingTypes.GetItemCount(pHelipad->ArrayIndex);
-	}
+	const BuildingTypeClass* pOurHelipad = techTree->GetRandomBuildable(TechTreeTypeClass::BuildType::BuildHelipad, canBuildFunction);
+	const size_t helipadCount = techTree->CountSideOwnedBuildings(pHouse, TechTreeTypeClass::BuildType::BuildHelipad);
+	const size_t optimalHelipadCount = 1 + (refineryCount / 4);
 
 	if (helipadCount < optimalHelipadCount && pOurHelipad != nullptr)
 	{
@@ -740,21 +662,8 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 	}
 
 	// If we have no tech center, then build one
-	const BuildingTypeClass* pOurTechCenter = nullptr;
-	int techCenterCount = 0;
-
-	for (const auto pTechCenter : RulesClass::Instance->BuildTech)
-	{
-		if (AdvAI_Can_Build_Building(pHouse, pTechCenter, true))
-		{
-			if (pOurTechCenter == nullptr || pTechCenter->AIBasePlanningSide == pHouse->SideIndex)
-			{
-				pOurTechCenter = pTechCenter;
-			}
-		}
-
-		techCenterCount += pHouse->ActiveBuildingTypes.GetItemCount(pTechCenter->ArrayIndex);
-	}
+	const BuildingTypeClass* pOurTechCenter = techTree->GetRandomBuildable(TechTreeTypeClass::BuildType::BuildTech, canBuildFunction);
+	const size_t techCenterCount = techTree->CountSideOwnedBuildings(pHouse, TechTreeTypeClass::BuildType::BuildTech);
 
 	if (techCenterCount < 1 && pOurTechCenter != nullptr)
 	{
@@ -784,11 +693,11 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 	// Build power by default, but only if we have somewhere to expand towards.
 	if (houseExt->NextExpansionPointLocation.X != 0 && houseExt->NextExpansionPointLocation.Y != 0)
 	{
-		if (pOurBasicPowerPlant != nullptr)
+		if (pOurPowerPlant != nullptr)
 		{
 			Debug::Log("AdvAI: Making AI build %s because the AI is expanding.\n",
-				pOurBasicPowerPlant->Name);
-			return pOurBasicPowerPlant;
+				pOurPowerPlant->Name);
+			return pOurPowerPlant;
 		}
 	}
 

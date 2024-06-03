@@ -44,11 +44,6 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
-	if (!HouseExt::BaseDefensesInitialized)
-	{
-		HouseExt::InitializeBaseDefenses();
-	}
-
 	if (pINI == CCINIClass::INI_Rules)
 		Data->InitializeAfterTypeData(pThis);
 

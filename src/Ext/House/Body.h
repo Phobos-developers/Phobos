@@ -9,6 +9,8 @@
 
 #include <map>
 
+#include "New/Type/TechTreeTypeClass.h"
+
 class HouseExt
 {
 public:
@@ -41,6 +43,9 @@ public:
 
 		int LastBuiltNavalVehicleType;
 		int ProducingNavalUnitTypeIndex;
+
+		TechTreeTypeClass* PrimaryTechTreeType;
+		TechTreeTypeClass* SecondaryTechTreeType;
 
 		/**
 		 *  If we are currently expanding our base towards a resourceful location,
