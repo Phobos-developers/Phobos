@@ -128,7 +128,7 @@ int BuildingExt::Try_Place(BuildingClass* pBuilding, CellStruct cell)
 		// Check if we placed a refinery.
 		// If yes, check if we were expanding. If yes, the expanding is done.
 		// If not, but we're close to an expansion field, then flag us to build a refinery as our next building.
-		if (pBuilding->Type->Refinery)
+		if (pBuilding->Type->ResourceDestination)
 		{
 			if (houseExt->NextExpansionPointLocation.X != 0 && houseExt->NextExpansionPointLocation.Y != 0)
 			{
@@ -942,7 +942,7 @@ CellStruct BuildingExt::Get_Best_Sensor_Placement_Position(BuildingClass* pBuild
 
 CellStruct BuildingExt::Get_Best_Placement_Position(BuildingClass* pBuilding)
 {
-	if (pBuilding->Type->Refinery)
+	if (pBuilding->Type->ResourceDestination)
 	{
 		return Get_Best_Refinery_Placement_Position(pBuilding);
 	}

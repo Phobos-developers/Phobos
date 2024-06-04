@@ -76,7 +76,7 @@ bool HouseExt::AdvAI_House_Search_For_Next_Expansion_Point(HouseClass* pHouse)
 			bool found = false;
 			for (const auto pBuilding : *BuildingClass::Array)
 			{
-				if (!pBuilding->IsAlive || pBuilding->InLimbo || !pBuilding->Type->Refinery)
+				if (!pBuilding->IsAlive || pBuilding->InLimbo || !pBuilding->Type->ResourceDestination)
 				{
 					continue;
 				}
@@ -761,6 +761,11 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 			{
 				if (pHouse->ActiveBuildingTypes.GetItemCount(pBuilding->ArrayIndex) < 1)
 				{
+					// Special case for the slave miner to count its undeployed form
+					if (pBuilding->UndeploysInto == RulesClass::Instance->PrerequisiteProcAlternate &&
+						pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
+						continue;
+
 					Debug::Log("AdvAI: Making AI build %s because it has AIBuildThis=yes and the AI has none.\n",
 						pBuilding->Name);
 					return pBuilding;
@@ -858,6 +863,11 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 		{
 			if (pHouse->ActiveBuildingTypes.GetItemCount(pBuilding->ArrayIndex) < 1)
 			{
+				// Special case for the slave miner to count its undeployed form
+				if (pBuilding->UndeploysInto == RulesClass::Instance->PrerequisiteProcAlternate &&
+					pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
+					continue;
+
 				Debug::Log("AdvAI: Making AI build %s because it has AIBuildThis=yes and the AI has none.\n",
 					pBuilding->Name);
 				return pBuilding;
@@ -910,7 +920,7 @@ const BuildingTypeClass* HouseExt::AdvAI_Get_Building_To_Build(HouseClass* pHous
 
 	//// If our power budget couldn't afford the building, then build a power plant first instead.
 	//// Unless it's a refinery that we're building, those are considered more critical.
-	//if (buildChoice->PowerDrain > 0 && !buildChoice->Refinery && (pHouse->PowerDrain + buildChoice->PowerDrain > pHouse->PowerOutput))
+	//if (buildChoice->PowerDrain > 0 && !buildChoice->ResourceDestination && (pHouse->PowerDrain + buildChoice->PowerDrain > pHouse->PowerOutput))
 	//{
 	//	int bestPowerOutput = INT_MIN;
 	//	const BuildingTypeClass* pBestPowerPlant = nullptr;
