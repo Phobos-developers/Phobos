@@ -2,6 +2,7 @@
 
 #include <AircraftClass.h>
 #include <functional>
+#include <GameOptionsClass.h>
 #include <TerrainClass.h>
 
 #define TICKS_PER_SECOND    15
@@ -169,7 +170,41 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 		return false;
 	}
 
+	// Per-session build limit
+	if (pBuildingType->BuildLimit < 0 &&
+		pHouse->FactoryProducedBuildingTypes.GetItemCount(pBuildingType->ArrayIndex) > -pBuildingType->BuildLimit)
+	{
+		// Debug::Log("Result: false (BuildLimit)\n");
+		return false;
+	}
+
+	// Normal build limit
+	if (pHouse->ActiveBuildingTypes.GetItemCount(pBuildingType->ArrayIndex) >= pBuildingType->BuildLimit)
+	{
+		// Debug::Log("Result: false (BuildLimit)\n");
+		return false;
+	}
+
+	if (pBuildingType->RequiresStolenAlliedTech && !pHouse->Side0TechInfiltrated ||
+		pBuildingType->RequiresStolenSovietTech && !pHouse->Side1TechInfiltrated ||
+		pBuildingType->RequiresStolenThirdTech && !pHouse->Side2TechInfiltrated)
+	{
+		// Debug::Log("Result: false (Stolen Tech)\n");
+		return false;
+	}
+
 	const auto buildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+
+	if (!GameModeOptionsClass::Instance->SWAllowed)
+	{
+		if (pBuildingType->SuperWeapon != static_cast<int>(SpecialWeaponType::None) ||
+			pBuildingType->SuperWeapon2 != static_cast<int>(SpecialWeaponType::None) ||
+			!buildingTypeExt->SuperWeapons.empty())
+		{
+			// Debug::Log("Result: false (SuperWeapon)\n");
+			return false;
+		}
+	}
 
 	if (checkPrereqs && !buildingTypeExt->IsAdvancedAIIgnoresPrerequisites)
 	{
@@ -1002,7 +1037,11 @@ void HouseExt::AdvAI_Raise_Money(HouseClass* pHouse)
 		// Give a lower priority to super-weapon buildings, however.
 		// They'll be expensive to replace later on.
 		int cost = pBuilding->Type->Cost;
-		if (pBuilding->Type->SuperWeapon != static_cast<int>(SpecialWeaponType::None) && pBuilding->Type->SuperWeapon2 != static_cast<int>(SpecialWeaponType::None))
+
+		const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+		if (pBuilding->Type->SuperWeapon != static_cast<int>(SpecialWeaponType::None) ||
+			pBuilding->Type->SuperWeapon2 != static_cast<int>(SpecialWeaponType::None) ||
+			!pBuildingTypeExt->SuperWeapons.empty())
 		{
 			cost = cost / 3;
 		}
