@@ -1,7 +1,8 @@
 #pragma once
 
 #include <functional>
-#include <unordered_set>
+#include <map>
+#include <set>
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
 
@@ -37,39 +38,38 @@ public:
 	ValueableVector<BuildingTypeClass*> BuildDefense;
 	ValueableVector<BuildingTypeClass*> BuildOther;
 	ValueableVector<int> BuildOtherCounts;
+	std::map<BuildingTypeClass*, int> BuildOtherCountMap;
 
 	TechTreeTypeClass(const char* pTitle = NONE_STR) : Enumerable(pTitle) { }
-
-	virtual ~TechTreeTypeClass() override = default;
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 	static TechTreeTypeClass* GetForSide(int sideIndex);
+	static TechTreeTypeClass* GetAnySuitable(HouseClass* pHouse);
 	static size_t CountTotalOwnedBuildings(HouseClass* pHouse, BuildType buildType);
 
-	size_t CountSideOwnedBuildings(HouseClass* pHouse, BuildType buildType);
-	std::vector<BuildingTypeClass*> GetBuildable(BuildType buildType, std::function<bool(BuildingTypeClass*)> const& filter);
-	BuildingTypeClass* GetRandomBuildable(BuildType buildType, std::function<bool(BuildingTypeClass*)> const& filter);
+	bool IsSuitable(HouseClass* pHouse) const;
+	bool IsCompleted(HouseClass* pHouse, std::function<bool(BuildingTypeClass*)> const& filter) const;
+	size_t CountSideOwnedBuildings(HouseClass* pHouse, BuildType buildType) const;
+	std::vector<BuildingTypeClass*> GetBuildable(BuildType buildType, std::function<bool(BuildingTypeClass*)> const& filter) const;
+	BuildingTypeClass* GetRandomBuildable(BuildType buildType, std::function<bool(BuildingTypeClass*)> const& filter) const;
 
-	static struct
-	{
-		std::unordered_set<BuildingTypeClass*> ConstructionYards;
-		std::unordered_set<BuildingTypeClass*> BuildPower;
-		std::unordered_set<BuildingTypeClass*> BuildRefinery;
-		std::unordered_set<BuildingTypeClass*> BuildBarracks;
-		std::unordered_set<BuildingTypeClass*> BuildWeapons;
-		std::unordered_set<BuildingTypeClass*> BuildRadar;
-		std::unordered_set<BuildingTypeClass*> BuildHelipad;
-		std::unordered_set<BuildingTypeClass*> BuildNavalYard;
-		std::unordered_set<BuildingTypeClass*> BuildTech;
-		std::unordered_set<BuildingTypeClass*> BuildAdvancedPower;
-		std::unordered_set<BuildingTypeClass*> BuildDefense;
-		std::unordered_set<BuildingTypeClass*> BuildOther;
-	} Cache;
+	static inline std::set<BuildingTypeClass*> TotalConstructionYards;
+	static inline std::set<BuildingTypeClass*> TotalBuildPower;
+	static inline std::set<BuildingTypeClass*> TotalBuildRefinery;
+	static inline std::set<BuildingTypeClass*> TotalBuildBarracks;
+	static inline std::set<BuildingTypeClass*> TotalBuildWeapons;
+	static inline std::set<BuildingTypeClass*> TotalBuildRadar;
+	static inline std::set<BuildingTypeClass*> TotalBuildHelipad;
+	static inline std::set<BuildingTypeClass*> TotalBuildNavalYard;
+	static inline std::set<BuildingTypeClass*> TotalBuildTech;
+	static inline std::set<BuildingTypeClass*> TotalBuildAdvancedPower;
+	static inline std::set<BuildingTypeClass*> TotalBuildDefense;
+	static inline std::set<BuildingTypeClass*> TotalBuildOther;
 
-	static void InitializeCache();
+	static void CalculateTotals();
 
 private:
 	template <typename T>

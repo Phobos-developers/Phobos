@@ -22,71 +22,86 @@ TechTreeTypeClass* TechTreeTypeClass::GetForSide(int sideIndex)
 	return Array[0].get();
 }
 
-void TechTreeTypeClass::InitializeCache()
+TechTreeTypeClass* TechTreeTypeClass::GetAnySuitable(HouseClass* pHouse)
 {
-	Cache.ConstructionYards.clear();
-	Cache.BuildPower.clear();
-	Cache.BuildRefinery.clear();
-	Cache.BuildBarracks.clear();
-	Cache.BuildWeapons.clear();
-	Cache.BuildRadar.clear();
-	Cache.BuildHelipad.clear();
-	Cache.BuildNavalYard.clear();
-	Cache.BuildTech.clear();
-	Cache.BuildOther.clear();
+	for (const auto& pType : Array)
+	{
+		if (pHouse->ActiveBuildingTypes.GetItemCount(pType->ConstructionYard->ArrayIndex) > 0)
+		{
+			return pType.get();
+		}
+	}
+
+	return nullptr;	
+}
+
+void TechTreeTypeClass::CalculateTotals()
+{
+	TotalConstructionYards.clear();
+	TotalBuildPower.clear();
+	TotalBuildRefinery.clear();
+	TotalBuildBarracks.clear();
+	TotalBuildWeapons.clear();
+	TotalBuildRadar.clear();
+	TotalBuildHelipad.clear();
+	TotalBuildNavalYard.clear();
+	TotalBuildTech.clear();
+	TotalBuildDefense.clear();
+	TotalBuildOther.clear();
 
 	for (const auto& pTree : Array)
 	{
-		Cache.ConstructionYards.insert(pTree->ConstructionYard);
-		Cache.BuildPower.insert(pTree->BuildPower.begin(), pTree->BuildPower.end());
-		Cache.BuildRefinery.insert(pTree->BuildRefinery.begin(), pTree->BuildRefinery.end());
-		Cache.BuildBarracks.insert(pTree->BuildBarracks.begin(), pTree->BuildBarracks.end());
-		Cache.BuildWeapons.insert(pTree->BuildWeapons.begin(), pTree->BuildWeapons.end());
-		Cache.BuildRadar.insert(pTree->BuildRadar.begin(), pTree->BuildRadar.end());
-		Cache.BuildHelipad.insert(pTree->BuildHelipad.begin(), pTree->BuildHelipad.end());
-		Cache.BuildNavalYard.insert(pTree->BuildNavalYard.begin(), pTree->BuildNavalYard.end());
-		Cache.BuildTech.insert(pTree->BuildTech.begin(), pTree->BuildTech.end());
-		Cache.BuildOther.insert(pTree->BuildOther.begin(), pTree->BuildOther.end());
+		TotalConstructionYards.insert(pTree->ConstructionYard);
+		TotalBuildPower.insert(pTree->BuildPower.begin(), pTree->BuildPower.end());
+		TotalBuildRefinery.insert(pTree->BuildRefinery.begin(), pTree->BuildRefinery.end());
+		TotalBuildBarracks.insert(pTree->BuildBarracks.begin(), pTree->BuildBarracks.end());
+		TotalBuildWeapons.insert(pTree->BuildWeapons.begin(), pTree->BuildWeapons.end());
+		TotalBuildRadar.insert(pTree->BuildRadar.begin(), pTree->BuildRadar.end());
+		TotalBuildHelipad.insert(pTree->BuildHelipad.begin(), pTree->BuildHelipad.end());
+		TotalBuildNavalYard.insert(pTree->BuildNavalYard.begin(), pTree->BuildNavalYard.end());
+		TotalBuildTech.insert(pTree->BuildTech.begin(), pTree->BuildTech.end());
+		TotalBuildDefense.insert(pTree->BuildDefense.begin(), pTree->BuildDefense.end());
+		TotalBuildOther.insert(pTree->BuildOther.begin(), pTree->BuildOther.end());
 	}
 }
 
 size_t TechTreeTypeClass::CountTotalOwnedBuildings(HouseClass* pHouse, BuildType buildType)
 {
-	std::unordered_set<BuildingTypeClass*>* typeList;
+	std::set<BuildingTypeClass*>* typeList;
 	switch (buildType)
 	{
 	case BuildType::BuildPower:
-		typeList = &Cache.BuildPower;
+		typeList = &TotalBuildPower;
 		break;
 	case BuildType::BuildRefinery:
-		typeList = &Cache.BuildRefinery;
+		typeList = &TotalBuildRefinery;
 		break;
 	case BuildType::BuildBarracks:
-		typeList = &Cache.BuildBarracks;
+		typeList = &TotalBuildBarracks;
 		break;
 	case BuildType::BuildWeapons:
-		typeList = &Cache.BuildWeapons;
+		typeList = &TotalBuildWeapons;
 		break;
 	case BuildType::BuildRadar:
-		typeList = &Cache.BuildRadar;
+		typeList = &TotalBuildRadar;
 		break;
 	case BuildType::BuildHelipad:
-		typeList = &Cache.BuildHelipad;
+		typeList = &TotalBuildHelipad;
 		break;
 	case BuildType::BuildNavalYard:
-		typeList = &Cache.BuildNavalYard;
+		typeList = &TotalBuildNavalYard;
 		break;
 	case BuildType::BuildTech:
-		typeList = &Cache.BuildTech;
+		typeList = &TotalBuildTech;
 		break;
 	case BuildType::BuildAdvancedPower:
-		typeList = &Cache.BuildAdvancedPower;
+		typeList = &TotalBuildAdvancedPower;
 		break;
 	case BuildType::BuildDefense:
-		typeList = &Cache.BuildDefense;
+		typeList = &TotalBuildDefense;
 		break;
 	case BuildType::BuildOther:
-		typeList = &Cache.BuildOther;
+		typeList = &TotalBuildOther;
 		break;
 	}
 
@@ -99,9 +114,9 @@ size_t TechTreeTypeClass::CountTotalOwnedBuildings(HouseClass* pHouse, BuildType
 	return count;
 }
 
-size_t TechTreeTypeClass::CountSideOwnedBuildings(HouseClass* pHouse, BuildType buildType)
+size_t TechTreeTypeClass::CountSideOwnedBuildings(HouseClass* pHouse, BuildType buildType) const
 {
-	ValueableVector<BuildingTypeClass*>* typeList;
+	const ValueableVector<BuildingTypeClass*>* typeList;
 	switch (buildType)
 	{
 	case BuildType::BuildPower:
@@ -148,9 +163,49 @@ size_t TechTreeTypeClass::CountSideOwnedBuildings(HouseClass* pHouse, BuildType 
 	return count;
 }
 
-std::vector<BuildingTypeClass*> TechTreeTypeClass::GetBuildable(BuildType buildType, std::function<bool(BuildingTypeClass*)> const& filter)
+bool TechTreeTypeClass::IsSuitable(HouseClass* pHouse) const
 {
-	ValueableVector<BuildingTypeClass*>* typeList;
+	return pHouse->ActiveBuildingTypes.GetItemCount(this->ConstructionYard->ArrayIndex) > 0;
+}
+
+bool TechTreeTypeClass::IsCompleted(HouseClass* pHouse, std::function<bool(BuildingTypeClass*)> const& filter) const
+{
+	if (!GetBuildable(BuildType::BuildPower, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildPower) < 1)
+		return false;
+
+	if (!GetBuildable(BuildType::BuildRefinery, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildRefinery) < 1)
+		return false;
+
+	if (!GetBuildable(BuildType::BuildBarracks, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildBarracks) < 1)
+		return false;
+
+	if (!GetBuildable(BuildType::BuildWeapons, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildWeapons) < 1)
+		return false;
+
+	if (!GetBuildable(BuildType::BuildRadar, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildRadar) < 1)
+		return false;
+
+	if (!GetBuildable(BuildType::BuildHelipad, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildHelipad) < 1)
+		return false;
+
+	if (!GetBuildable(BuildType::BuildNavalYard, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildNavalYard) < 1)
+		return false;
+
+	if (!GetBuildable(BuildType::BuildTech, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildTech) < 1)
+		return false;
+
+	for (const auto& buildOtherPair : BuildOtherCountMap)
+	{
+		if (filter(buildOtherPair.first) && CountSideOwnedBuildings(pHouse, BuildType::BuildOther) < buildOtherPair.second)
+			return false;
+	}
+
+	return true;
+}
+
+std::vector<BuildingTypeClass*> TechTreeTypeClass::GetBuildable(BuildType buildType, std::function<bool(BuildingTypeClass*)> const& filter) const
+{
+	const ValueableVector<BuildingTypeClass*>* typeList;
 	switch (buildType)
 	{
 	case BuildType::BuildPower:
@@ -193,7 +248,7 @@ std::vector<BuildingTypeClass*> TechTreeTypeClass::GetBuildable(BuildType buildT
 	return filtered;
 }
 
-BuildingTypeClass* TechTreeTypeClass::GetRandomBuildable(BuildType buildType, std::function<bool(BuildingTypeClass*)> const& filter)
+BuildingTypeClass* TechTreeTypeClass::GetRandomBuildable(BuildType buildType, std::function<bool(BuildingTypeClass*)> const& filter) const
 {
 	std::vector<BuildingTypeClass*> buildable = GetBuildable(buildType, filter);
 	if (buildable.empty())
@@ -230,12 +285,26 @@ void TechTreeTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->BuildDefense.Read(exINI, section, "BuildDefense");
 	this->BuildOther.Read(exINI, section, "BuildOther");
 	this->BuildOtherCounts.Read(exINI, section, "BuildOtherCounts");
+
+	for (size_t i = 0; i < BuildOther.size(); i++)
+	{
+		if (i < BuildOtherCounts.size())
+		{
+			BuildOtherCountMap[BuildOther[i]] = BuildOtherCounts[i];
+		}
+		else
+		{
+			Debug::Log("TechTreeTypeClass::LoadFromINI: BuildOtherCounts is missing count for %s, setting to 0.", BuildOther[i]->Name);
+			BuildOtherCountMap[BuildOther[i]] = 0;
+		}
+	}
 }
 
 template <typename T>
 void TechTreeTypeClass::Serialize(T& Stm)
 {
 	Stm
+		.Process(SideIndex)
 		.Process(ConstructionYard)
 		.Process(BuildPower)
 		.Process(BuildRefinery)
@@ -248,6 +317,7 @@ void TechTreeTypeClass::Serialize(T& Stm)
 		.Process(BuildDefense)
 		.Process(BuildOther)
 		.Process(BuildOtherCounts)
+		.Process(BuildOtherCountMap)
 		;
 }
 

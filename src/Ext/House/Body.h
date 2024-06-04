@@ -177,6 +177,7 @@ public:
 	static bool AdvAI_Is_Under_Start_Rush_Threat(HouseClass* pHouse, int enemyAircraftValue);
 	static int AdvAI_Calculate_Enemy_Aircraft_Value(HouseClass* pHouse);
 	static const BuildingTypeClass* AdvAI_Evaluate_Get_Best_Building(HouseClass* pHouse);
+	static const BuildingTypeClass* AdvAI_BuildAtLeastNOfSideAndMInTotal(HouseClass* pHouse, TechTreeTypeClass* techTree, TechTreeTypeClass::BuildType buildType, int sideBuildingsWanted, int totalBuildingsWanted, int extraCount = 0);
 	static const BuildingTypeClass* AdvAI_Get_Building_To_Build(HouseClass* pHouse);
 	static void AdvAI_Raise_Money(HouseClass* pHouse);
 	static void AdvAI_Economy_Upkeep(HouseClass* pHouse);

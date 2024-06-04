@@ -38,6 +38,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
 	AttachEffectTypeClass::LoadFromINIList(pINI);
 	TechTreeTypeClass::LoadFromINIList(pINI);
+	TechTreeTypeClass::CalculateTotals();
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
