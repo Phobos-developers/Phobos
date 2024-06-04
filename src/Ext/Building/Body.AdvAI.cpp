@@ -947,10 +947,7 @@ CellStruct BuildingExt::Get_Best_Placement_Position(BuildingClass* pBuilding)
 		return Get_Best_Refinery_Placement_Position(pBuilding);
 	}
 
-	const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-	if (pBuilding->Type->SuperWeapon != static_cast<int>(SpecialWeaponType::None) ||
-		pBuilding->Type->SuperWeapon2 != static_cast<int>(SpecialWeaponType::None) ||
-		!pBuildingTypeExt->SuperWeapons.empty())
+	if (BuildingTypeExt::HasDisableableSuperWeapons(pBuilding->Type))
 	{
 		return Get_Best_SuperWeapon_Building_Placement_Position(pBuilding);
 	}

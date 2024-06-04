@@ -198,9 +198,7 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 
 	if (!GameModeOptionsClass::Instance->SWAllowed)
 	{
-		if (pBuildingType->SuperWeapon != static_cast<int>(SpecialWeaponType::None) ||
-			pBuildingType->SuperWeapon2 != static_cast<int>(SpecialWeaponType::None) ||
-			!buildingTypeExt->SuperWeapons.empty())
+		if (BuildingTypeExt::HasDisableableSuperWeapons(pBuildingType))
 		{
 			// Debug::Log("Result: false (SuperWeapon)\n");
 			return false;
@@ -214,7 +212,9 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 			if (prerequisite < 0)
 			{
 				// If we want a refinery, check if we have a slave miner unit
-				if (prerequisite == -6 && pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
+				if (prerequisite == -6 &&
+					RulesClass::Instance->PrerequisiteProcAlternate != nullptr &&
+					pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
 					continue;
 
 				TypeList<int>* prerequisites;
@@ -523,9 +523,10 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 		}
 
 		// Count all refineries, including vehicle slave miners
-		const int slaveMinerCount = pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex);
+		const int slaveMinerCount = RulesClass::Instance->PrerequisiteProcAlternate != nullptr ?
+			pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) : 0;
 		size_t refineryCount = houseExt->PrimaryTechTreeType->CountSideOwnedBuildings(pHouse, TechTreeTypeClass::BuildType::BuildRefinery);
-		refineryCount += pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex);
+		refineryCount += slaveMinerCount;
 
 		// Build a refinery if we have 0 left. Can't use the generic function as we need to also count slave miners
 		const BuildingTypeClass* pRefineryToBuild = AdvAI_BuildAtLeastNOfSideAndMInTotal(pHouse, pPrimaryTechTree, TechTreeTypeClass::BuildType::BuildRefinery, 0, 1, slaveMinerCount);
@@ -539,7 +540,29 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 			TechTreeTypeClass::CountTotalOwnedBuildings(pHouse, TechTreeTypeClass::BuildType::BuildAdvancedPower) * 4;
 
 		// Build power if necessary
-		if (!isUnderThreat && Unsorted::CurrentFrame > 5000 && pHouse->PowerOutput - pHouse->PowerDrain < 100)
+		bool hasUnpoweredBuildings = false;
+		if (!pHouse->PowerBlackoutTimer.HasTimeLeft())
+		{
+			for (const auto pBuilding : *BuildingClass::Array)
+			{
+				if (pBuilding->Owner == pHouse && pBuilding->IsAlive && !pBuilding->InLimbo && !pBuilding->IsUnderEMP() && !pBuilding->HasPower)
+				{
+					hasUnpoweredBuildings = true;
+					break;
+				}
+			}
+		}
+
+		/*for (const auto pBuilding : *BuildingClass::Array)
+		{
+			if (pBuilding->Owner == pHouse && !pBuilding->IsPowerOnline())
+			{
+				hasUnpoweredBuildings = true;
+				break;
+			}
+		}*/
+
+		if (!isUnderThreat && Unsorted::CurrentFrame > 5000 && (pHouse->PowerOutput - pHouse->PowerDrain < 100 || hasUnpoweredBuildings))
 		{
 			const BuildingTypeClass* pOurAdvancedPowerPlant = pPrimaryTechTree->GetRandomBuildable(TechTreeTypeClass::BuildType::BuildAdvancedPower, canBuildFunction);
 			if (pOurAdvancedPowerPlant != nullptr)
@@ -799,7 +822,8 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 				if (pHouse->ActiveBuildingTypes.GetItemCount(pBuilding->ArrayIndex) < 1)
 				{
 					// Special case for the slave miner to count its undeployed form
-					if (pBuilding->UndeploysInto == RulesClass::Instance->PrerequisiteProcAlternate &&
+					if (RulesClass::Instance->PrerequisiteProcAlternate != nullptr &&
+						pBuilding->UndeploysInto == RulesClass::Instance->PrerequisiteProcAlternate &&
 						pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
 						continue;
 
@@ -901,7 +925,8 @@ const BuildingTypeClass* HouseExt::AdvAI_Evaluate_Get_Best_Building(HouseClass* 
 			if (pHouse->ActiveBuildingTypes.GetItemCount(pBuilding->ArrayIndex) < 1)
 			{
 				// Special case for the slave miner to count its undeployed form
-				if (pBuilding->UndeploysInto == RulesClass::Instance->PrerequisiteProcAlternate &&
+				if (RulesClass::Instance->PrerequisiteProcAlternate != nullptr &&
+					pBuilding->UndeploysInto == RulesClass::Instance->PrerequisiteProcAlternate &&
 					pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
 					continue;
 
@@ -1040,10 +1065,7 @@ void HouseExt::AdvAI_Raise_Money(HouseClass* pHouse)
 		// They'll be expensive to replace later on.
 		int cost = pBuilding->Type->Cost;
 
-		const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-		if (pBuilding->Type->SuperWeapon != static_cast<int>(SpecialWeaponType::None) ||
-			pBuilding->Type->SuperWeapon2 != static_cast<int>(SpecialWeaponType::None) ||
-			!pBuildingTypeExt->SuperWeapons.empty())
+		if (BuildingTypeExt::HasDisableableSuperWeapons(pBuilding->Type))
 		{
 			cost = cost / 3;
 		}

@@ -214,6 +214,32 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ZShapePointMove_OnBuildup.Read(exArtINI, pSection, "ZShapePointMove.OnBuildup");
 }
 
+bool BuildingTypeExt::HasDisableableSuperWeapons(BuildingTypeClass* pBuildingType)
+{
+	if (pBuildingType->SuperWeapon != static_cast<int>(SpecialWeaponType::None) &&
+		(*SuperWeaponTypeClass::Array)[pBuildingType->SuperWeapon]->DisableableFromShell)
+	{
+		return true;
+	}
+
+	if (pBuildingType->SuperWeapon2 != static_cast<int>(SpecialWeaponType::None) &&
+		(*SuperWeaponTypeClass::Array)[pBuildingType->SuperWeapon2]->DisableableFromShell)
+	{
+		return true;
+	}
+
+	const auto pExt = ExtMap.Find(pBuildingType);
+	for (const auto pSuperWeapon : pExt->SuperWeapons)
+	{
+		if ((*SuperWeaponTypeClass::Array)[pSuperWeapon]->DisableableFromShell)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void BuildingTypeExt::ExtData::CompleteInitialization()
 {
 	auto const pThis = this->OwnerObject();
