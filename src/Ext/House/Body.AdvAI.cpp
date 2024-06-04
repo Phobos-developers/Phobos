@@ -172,7 +172,7 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 
 	// Per-session build limit
 	if (pBuildingType->BuildLimit < 0 &&
-		pHouse->FactoryProducedBuildingTypes.GetItemCount(pBuildingType->ArrayIndex) > -pBuildingType->BuildLimit)
+		pHouse->FactoryProducedBuildingTypes.GetItemCount(pBuildingType->ArrayIndex) >= -pBuildingType->BuildLimit)
 	{
 		// Debug::Log("Result: false (BuildLimit)\n");
 		return false;
@@ -185,6 +185,7 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 		return false;
 	}
 
+	// This should be expanded to support Ares
 	if (pBuildingType->RequiresStolenAlliedTech && !pHouse->Side0TechInfiltrated ||
 		pBuildingType->RequiresStolenSovietTech && !pHouse->Side1TechInfiltrated ||
 		pBuildingType->RequiresStolenThirdTech && !pHouse->Side2TechInfiltrated)
@@ -293,6 +294,7 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 			}
 
 			found = true;
+			break;
 		}
 
 		if (!found)
