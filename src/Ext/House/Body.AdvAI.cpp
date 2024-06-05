@@ -200,6 +200,14 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 		goto prereqsChecked;
 	}
 
+	for (const auto pPrerequisiteNegative : pExt->PrerequisiteNegatives)
+	{
+		if (pHouse->ActiveBuildingTypes.GetItemCount(pPrerequisiteNegative->ArrayIndex) > 0)
+		{
+			return false;
+		}
+	}
+
 	for (const auto idxPrerequisiteOverride : pBuildingType->PrerequisiteOverride)
 	{
 		if (pHouse->ActiveBuildingTypes.GetItemCount(idxPrerequisiteOverride) > 0)
