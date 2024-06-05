@@ -114,7 +114,7 @@ public:
 			, IsAdvancedAIIgnoresPrerequisites { false }
 			, PrerequisiteLists {}
 			, PrerequisiteNegatives {}
-			, PrerequisiteTheaters {}
+			, PrerequisiteTheaters { 0xFFFFFFFF }
 		{ }
 
 		// Ares 0.A functions
