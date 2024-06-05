@@ -172,6 +172,39 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
+	this->PrerequisiteNegatives.Read(exINI, pSection, "Prerequisite.Negative");
+
+	static constexpr size_t bufferSize = 256;
+	static char buffer[bufferSize];
+
+	if (pINI->ReadString(pSection, "Prerequisite.RequiredTheaters", "", buffer, bufferSize))
+	{
+		this->PrerequisiteTheaters = 0;
+
+		char* context = nullptr;
+		for (const char* theaterToken = strtok_s(buffer, ",", &context); theaterToken; theaterToken = strtok_s(nullptr, ",", &context))
+		{
+			const int idx = Theater::FindIndex(theaterToken);
+			if (idx != -1)
+			{
+				this->PrerequisiteTheaters |= (1 << idx);
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, "Prerequisite.RequiredTheaters", theaterToken);
+			}
+		}
+	}
+
+	const int prerequisiteLists = pINI->ReadInteger(pSection, "Prerequisite.Lists", 0);
+	this->PrerequisiteLists.resize(prerequisiteLists);
+
+	for (size_t i = 0; i < this->PrerequisiteLists.size(); ++i)
+	{
+		_snprintf_s(buffer, bufferSize, "Prerequisite.List%u", i);
+		this->PrerequisiteLists[i].Read(exINI, pSection, buffer);
+	}
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array->Count > 0)

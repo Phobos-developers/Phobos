@@ -64,6 +64,11 @@ public:
 
 		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
 
+		// Ares prerequisites
+		std::vector<ValueableVector<BuildingTypeClass*>> PrerequisiteLists;
+		ValueableVector<BuildingTypeClass*> PrerequisiteNegatives;
+		DWORD PrerequisiteTheaters;
+
 		/**
 		*  Should the Advanced AI ignore prerequisites when considering whether it can build this building?
 		*/
@@ -107,6 +112,9 @@ public:
 			, SellBuildupLength { 23 }
 			, AircraftDockingDirs {}
 			, IsAdvancedAIIgnoresPrerequisites { false }
+			, PrerequisiteLists {}
+			, PrerequisiteNegatives {}
+			, PrerequisiteTheaters {}
 		{ }
 
 		// Ares 0.A functions

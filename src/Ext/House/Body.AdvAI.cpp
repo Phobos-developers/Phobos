@@ -141,60 +141,50 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 	// Debug::Log("Checking if AI %d can build %s. ", house->ArrayIndex, int->Name);
 
 	if (!pBuildingType->AIBuildThis)
-	{
-		// Debug::Log("Result: false (AIBuildThis)\n");
 		return false;
-	}
 
-	if (pBuildingType->TechLevel > pHouse->TechLevel || pBuildingType->TechLevel < 0)
-	{
-		// Debug::Log("Result: false (TechLevel)\n");
+	if (pBuildingType->Unbuildable)
 		return false;
-	}
 
-	if ((pBuildingType->OwnerFlags & 1 << pHouse->Type->ArrayIndex) != (1 << pHouse->Type->ArrayIndex))
-	{
-		// Debug::Log("Result: false (Ownable)\n");
-		return false;
-	}
+	const auto pExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
 
-	if (!(pBuildingType->RequiredHouses & 1 << pHouse->Type->ArrayIndex))
-	{
-		// Debug::Log("Result: false (RequiredHouses)\n");
+	if (!(pExt->PrerequisiteTheaters & (1 << static_cast<int>(ScenarioClass::Instance->Theater))))
 		return false;
-	}
-
-	if (pBuildingType->ForbiddenHouses != -1 && (pBuildingType->ForbiddenHouses & 1 << pHouse->Type->ArrayIndex))
-	{
-		// Debug::Log("Result: false (ForbiddenHouses)\n");
-		return false;
-	}
-
-	// Per-session build limit
-	if (pBuildingType->BuildLimit < 0 &&
-		pHouse->FactoryProducedBuildingTypes.GetItemCount(pBuildingType->ArrayIndex) >= -pBuildingType->BuildLimit)
-	{
-		// Debug::Log("Result: false (BuildLimit)\n");
-		return false;
-	}
-
-	// Normal build limit
-	if (pHouse->ActiveBuildingTypes.GetItemCount(pBuildingType->ArrayIndex) >= pBuildingType->BuildLimit)
-	{
-		// Debug::Log("Result: false (BuildLimit)\n");
-		return false;
-	}
 
 	// This should be expanded to support Ares
 	if (pBuildingType->RequiresStolenAlliedTech && !pHouse->Side0TechInfiltrated ||
 		pBuildingType->RequiresStolenSovietTech && !pHouse->Side1TechInfiltrated ||
 		pBuildingType->RequiresStolenThirdTech && !pHouse->Side2TechInfiltrated)
 	{
-		// Debug::Log("Result: false (Stolen Tech)\n");
 		return false;
 	}
 
-	const auto buildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+	if (pHouse->HasFromSecretLab(pBuildingType))
+		return true;
+
+	if (!(pBuildingType->RequiredHouses & 1 << pHouse->Type->ArrayIndex))
+		return false;
+
+	if (pBuildingType->ForbiddenHouses != -1 && (pBuildingType->ForbiddenHouses & 1 << pHouse->Type->ArrayIndex))
+		return false;
+
+	if ((pBuildingType->OwnerFlags & 1 << pHouse->Type->ArrayIndex) != (1 << pHouse->Type->ArrayIndex))
+		return false;
+
+	if (pBuildingType->TechLevel > pHouse->TechLevel || pBuildingType->TechLevel < 0)
+		return false;
+
+	// Per-session build limit
+	if (pBuildingType->BuildLimit < 0 &&
+		pHouse->FactoryProducedBuildingTypes.GetItemCount(pBuildingType->ArrayIndex) >= -pBuildingType->BuildLimit)
+	{
+		return false;
+	}
+
+	// Normal build limit
+	if (pHouse->ActiveBuildingTypes.GetItemCount(pBuildingType->ArrayIndex) >= pBuildingType->BuildLimit)
+		return false;
+
 
 	if (!GameModeOptionsClass::Instance->SWAllowed)
 	{
@@ -205,64 +195,90 @@ bool HouseExt::AdvAI_Can_Build_Building(HouseClass* pHouse, BuildingTypeClass* p
 		}
 	}
 
-	if (checkPrereqs && !buildingTypeExt->IsAdvancedAIIgnoresPrerequisites)
+	if (!checkPrereqs || pExt->IsAdvancedAIIgnoresPrerequisites)
 	{
-		for (const auto prerequisite : pBuildingType->Prerequisite)
+		goto prereqsChecked;
+	}
+
+	for (const auto idxPrerequisiteOverride : pBuildingType->PrerequisiteOverride)
+	{
+		if (pHouse->ActiveBuildingTypes.GetItemCount(idxPrerequisiteOverride) > 0)
 		{
-			if (prerequisite < 0)
-			{
-				// If we want a refinery, check if we have a slave miner unit
-				if (prerequisite == -6 &&
-					RulesClass::Instance->PrerequisiteProcAlternate != nullptr &&
-					pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
-					continue;
-
-				TypeList<int>* prerequisites;
-				switch (prerequisite)
-				{
-				case -6:
-					prerequisites = &RulesClass::Instance->PrerequisiteProc;
-					break;
-				case -5:
-					prerequisites = &RulesClass::Instance->PrerequisiteTech;
-					break;
-				case -4:
-					prerequisites = &RulesClass::Instance->PrerequisiteRadar;
-					break;
-				case -3:
-					prerequisites = &RulesClass::Instance->PrerequisiteBarracks;
-					break;
-				case -2:
-					prerequisites = &RulesClass::Instance->PrerequisiteFactory;
-					break;
-				case -1:
-					prerequisites = &RulesClass::Instance->PrerequisitePower;
-					break;
-				default:
-					Debug::FatalErrorAndExit("Invalid prerequisite %d in AdvAI_Can_Build_Building!!!", prerequisite);
-				}
-
-				for (const auto prerequisiteIndex : *prerequisites)
-				{
-					if (pHouse->ActiveBuildingTypes.GetItemCount(prerequisiteIndex) > 0)
-					{
-						goto prerequisiteFound;
-					}
-				}
-
-				return false;
-
-			prerequisiteFound:
-				continue;
-
-			}
-			else if (prerequisite >= 0 && pHouse->ActiveBuildingTypes.GetItemCount(prerequisite) == 0)
-			{
-				//Debug::Log("Result: false, building: (Prerequisite: %d %s)\n", prerequisite, (*BuildingTypeClass::Array)[prerequisite]->Name);
-				return false;
-			}
+			goto prereqsChecked;
 		}
 	}
+
+	for (const auto prerequisiteList : pExt->PrerequisiteLists)
+	{
+		bool allSatisfied = true;
+		for (const auto pPrerequisite : prerequisiteList)
+		{
+			if (pHouse->ActiveBuildingTypes.GetItemCount(pPrerequisite->ArrayIndex) < 1)
+			{
+				allSatisfied = false;
+				break;
+			}
+		}
+
+		if (allSatisfied)
+			goto prereqsChecked;
+	}
+
+	for (const auto prerequisite : pBuildingType->Prerequisite)
+	{
+		if (prerequisite < 0)
+		{
+			// If we want a refinery, check if we have a slave miner unit
+			if (prerequisite == -6 &&
+				RulesClass::Instance->PrerequisiteProcAlternate != nullptr &&
+				pHouse->ActiveUnitTypes.GetItemCount(RulesClass::Instance->PrerequisiteProcAlternate->ArrayIndex) > 0)
+				continue;
+
+			TypeList<int>* prerequisites;
+			switch (prerequisite)
+			{
+			case -6:
+				prerequisites = &RulesClass::Instance->PrerequisiteProc;
+				break;
+			case -5:
+				prerequisites = &RulesClass::Instance->PrerequisiteTech;
+				break;
+			case -4:
+				prerequisites = &RulesClass::Instance->PrerequisiteRadar;
+				break;
+			case -3:
+				prerequisites = &RulesClass::Instance->PrerequisiteBarracks;
+				break;
+			case -2:
+				prerequisites = &RulesClass::Instance->PrerequisiteFactory;
+				break;
+			case -1:
+				prerequisites = &RulesClass::Instance->PrerequisitePower;
+				break;
+			default:
+				Debug::FatalErrorAndExit("Invalid prerequisite %d in AdvAI_Can_Build_Building!!!", prerequisite);
+			}
+
+			bool somePrerequisiteFromListFound = false;
+			for (const auto prerequisiteIndex : *prerequisites)
+			{
+				if (pHouse->ActiveBuildingTypes.GetItemCount(prerequisiteIndex) > 0)
+				{
+					somePrerequisiteFromListFound = true;
+					break;
+				}
+			}
+
+			if (!somePrerequisiteFromListFound)
+				return false;
+		}
+		else if (pHouse->ActiveBuildingTypes.GetItemCount(prerequisite) == 0)
+		{
+			return false;
+		}
+	}
+
+	prereqsChecked:
 
 	// If this is an upgrade, do we have a building we could upgrade with it?
 	if (pBuildingType->PowersUpBuilding[0] != '\0')
