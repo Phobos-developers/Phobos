@@ -8,7 +8,7 @@ bool AttachEffectTypeClass::HasTint() const
 	return this->Tint_Intensity != 0.0 || this->Tint_Color.isset();
 }
 
-bool AttachEffectTypeClass::HasGroup(std::string groupID)
+bool AttachEffectTypeClass::HasGroup(const std::string& groupID) const
 {
 	for (auto const& group : this->Groups)
 	{
@@ -19,7 +19,7 @@ bool AttachEffectTypeClass::HasGroup(std::string groupID)
 	return false;
 }
 
-bool AttachEffectTypeClass::HasGroups(std::vector<std::string> groupIDs, bool requireAll)
+bool AttachEffectTypeClass::HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const
 {
 	size_t foundCount = 0;
 
@@ -40,12 +40,12 @@ bool AttachEffectTypeClass::HasGroups(std::vector<std::string> groupIDs, bool re
 	return !requireAll ? false : foundCount >= groupIDs.size();
 }
 
-std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(std::vector<std::string> groupIDs)
+std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(const std::vector<std::string>& groupIDs)
 {
 	std::set<AttachEffectTypeClass*> types;
 	auto const map = &AttachEffectTypeClass::GroupsMap;
 
-	for (auto const group : groupIDs)
+	for (auto const& group : groupIDs)
 	{
 		if (map->contains(group))
 		{
@@ -57,7 +57,7 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(st
 	return std::vector<AttachEffectTypeClass*> (types.begin(), types.end());;
 }
 
-AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount)
+AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount) const
 {
 	if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
 		return nullptr;
@@ -95,7 +95,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
 
-	if (strcmp(pSection, NONE_STR) == 0)
+	if (INIClass::IsBlank(pSection))
 		return;
 
 	INI_EX exINI(pINI);
