@@ -456,6 +456,7 @@ New:
 - Customizing effect of level lighting on air units (by Starkku)
 - Reimplemented `Airburst` & `Splits` logic with more customization options (by Starkku)
 - Buildings considered as destroyable pathfinding obstacles (by Starkku)
+- Animation visibility customization settings (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

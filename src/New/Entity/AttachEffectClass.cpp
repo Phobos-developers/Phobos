@@ -271,16 +271,10 @@ void AttachEffectClass::OnlineCheck()
 void AttachEffectClass::CloakCheck()
 {
 	const auto cloakState = this->Techno->CloakState;
+	this->IsCloaked = cloakState == CloakState::Cloaked || cloakState == CloakState::Cloaking;
 
-	if (cloakState == CloakState::Cloaked || cloakState == CloakState::Cloaking)
-	{
-		this->IsCloaked = true;
+	if (this->IsCloaked && this->Animation && AnimTypeExt::ExtMap.Find(this->Animation->Type)->DetachOnCloak)
 		this->KillAnim();
-	}
-	else
-	{
-		this->IsCloaked = false;
-	}
 }
 
 void AttachEffectClass::CreateAnim()
@@ -302,6 +296,9 @@ void AttachEffectClass::CreateAnim()
 	{
 		pAnimType = this->Type->Animation;
 	}
+
+	if (this->IsCloaked && (!pAnimType || AnimTypeExt::ExtMap.Find(pAnimType)->DetachOnCloak))
+		return;
 
 	if (!this->Animation && pAnimType)
 	{

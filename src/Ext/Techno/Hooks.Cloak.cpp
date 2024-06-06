@@ -95,8 +95,23 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	{
 		pExt->UpdateMindControlAnim();
+
+		if (R->Origin() == 0x703789)
+			pExt->IsAboutToStartCloaking = true;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x703799, TechnoClass_DoCloak_UnsetCloakFlag, 0xA)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		pExt->IsAboutToStartCloaking = false;
 
 	return 0;
 }
