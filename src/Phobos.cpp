@@ -1,7 +1,7 @@
 #include "Phobos.h"
 
 #include <Drawing.h>
-
+#include <SessionClass.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
@@ -197,6 +197,36 @@ DEFINE_HOOK(0x67E44D, LoadGame_SetFlag, 0x5)
 DEFINE_HOOK(0x67E68A, LoadGame_UnsetFlag, 0x5)
 {
 	Phobos::IsLoadingSaveGame = false;
+	return 0;
+}
+
+DEFINE_HOOK(0x48CE6D, MainGame_AfterSpawnerStartGame, 0x6)
+{
+	// Please make sure that Ares or Spawner didn't hook or skip anything in these places
+
+	if (SessionClass::IsMultiplayer())
+	{
+		// Phobos hooks:
+
+		// Commands/FrameByFrame.cpp
+		Patch::Apply_RAW(0x55D871, // Revert MainLoop_FrameStep_End
+			{ 0x81, 0xC4, 0xB4, 0x01, 0x00, 0x00 });
+		Patch::Apply_RAW(0x55DEC1, // Revert MainLoop_FrameStep_End
+			{ 0x81, 0xC4, 0xB4, 0x01, 0x00, 0x00 });
+		Patch::Apply_RAW(0x55DED5, // Revert MainLoop_FrameStep_End
+			{ 0x81, 0xC4, 0xB4, 0x01, 0x00, 0x00 });
+
+		Patch::Apply_RAW(0x55D360, // Revert MainLoop_FrameStep_Begin
+			{ 0xA0,0xA0,0xE9,0xA8,0x00 });
+
+		// Misc/Hooks.Gamespeed.cpp
+		Patch::Apply_RAW(0x55E160, // Revert SyncDelay_Start
+			{ 0x8B, 0x0D, 0x48, 0x73, 0x88, 0x00 });
+		Patch::Apply_RAW(0x55E33B, // Revert SyncDelay_End
+			{ 0xA0,0x94,0xCD,0xAB,0x00 });
+
+	}
+
 	return 0;
 }
 
