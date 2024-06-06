@@ -622,10 +622,6 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		return FinishDrawing;
 
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
-	{
-		auto& arr = shadow_mtx.row;
-		arr[0][2] = arr[1][2] = arr[2][2] = arr[2][1] = arr[2][0] = 0;
-	}
 	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 	if (auto const flyLoco = locomotion_cast<FlyLocomotionClass*>(loco))
@@ -667,6 +663,10 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	}
 
 	shadow_mtx = Matrix3D::VoxelDefaultMatrix() * shadow_mtx;
+	{
+		auto& arr = shadow_mtx.row;
+		arr[0][2] = arr[1][2] = arr[2][2] = arr[2][1] = arr[2][0] = 0;
+	}
 
 	auto const main_vxl = &pThis->Type->MainVoxel;
 	// flor += loco->Shadow_Point(); // no longer needed
@@ -771,8 +771,11 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 	};
 
 
-	const Matrix3D& hvamat = hva->Matrixes[shadow_index_now + hva->LayerCount * ChooseFrame()];
-
+	Matrix3D hvamat = hva->Matrixes[shadow_index_now + hva->LayerCount * ChooseFrame()];
+	{
+		auto& arr = hvamat.row;
+		arr[0][2] = arr[1][2] = arr[2][2] = arr[2][1] = arr[2][0] = arr[2][3] = 0;
+	}
 	matRet = *pMat * hvamat;
 
 	// Recover vanilla instructions
