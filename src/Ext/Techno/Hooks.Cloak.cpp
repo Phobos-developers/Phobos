@@ -84,11 +84,18 @@ DEFINE_HOOK(0x6F7792, TechnoClass_InWeaponRange_DecloakToFire, 0xA)
 	GET(AbstractClass*, pTarget, EBX);
 	GET(int, weaponIndex, EAX);
 
-	if (CloakTemp::IsInReadyToCloak && !pThis->GetWeapon(weaponIndex)->WeaponType->DecloakToFire)
-		R->EAX(0);
-	else
-		R->EAX(pThis->IsCloseEnough(pTarget, weaponIndex));
+	if (CloakTemp::IsInReadyToCloak)
+	{
+		auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
+		if (pWeapon && !pWeapon->DecloakToFire)
+		{
+			R->EAX(0);
+			return SkipGameCode;
+		}
+	}
+
+	R->EAX(pThis->IsCloseEnough(pTarget, weaponIndex));
 	return SkipGameCode;
 }
 
