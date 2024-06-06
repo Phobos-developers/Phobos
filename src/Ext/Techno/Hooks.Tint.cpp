@@ -180,16 +180,12 @@ DEFINE_HOOK(0x423420, AnimClass_Draw_ParentBuildingCheck, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4235D3, AnimClass_Draw_TintColor, 0x6)
+DEFINE_HOOK(0x4234F4, AnimClass_Draw_TintColor, 0x6)
 {
 	GET(AnimClass*, pThis, ESI);
-	GET(int, color, EBP);
+	GET_STACK(BuildingClass*, pBuilding, STACK_OFFSET(0x110, -0xFC));
+	REF_STACK(int, color, STACK_OFFSET(0x110, -0xF4));
 	REF_STACK(int, intensity, STACK_OFFSET(0x110, -0xD8));
-
-	auto const pBuilding = AnimExt::ExtMap.Find(pThis)->ParentBuilding;
-
-	if (!pBuilding)
-		return 0;
 
 	int dummy = 0;
 	TechnoExt::ApplyCustomTintValues(pBuilding, color, !pThis->Type->UseNormalLight ? intensity : dummy);
