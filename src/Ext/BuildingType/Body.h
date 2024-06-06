@@ -64,6 +64,16 @@ public:
 
 		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
 
+		// Ares prerequisites
+		std::vector<ValueableVector<BuildingTypeClass*>> PrerequisiteLists;
+		ValueableVector<BuildingTypeClass*> PrerequisiteNegatives;
+		DWORD PrerequisiteTheaters;
+
+		/**
+		*  Should the Advanced AI ignore prerequisites when considering whether it can build this building?
+		*/
+		Valueable<bool> IsAdvancedAIIgnoresPrerequisites;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -101,6 +111,10 @@ public:
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
 			, AircraftDockingDirs {}
+			, IsAdvancedAIIgnoresPrerequisites { false }
+			, PrerequisiteLists {}
+			, PrerequisiteNegatives {}
+			, PrerequisiteTheaters { 0xFFFFFFFF }
 		{ }
 
 		// Ares 0.A functions
@@ -140,4 +154,5 @@ public:
 	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
+	static bool HasDisableableSuperWeapons(BuildingTypeClass* pBuildingType);
 };

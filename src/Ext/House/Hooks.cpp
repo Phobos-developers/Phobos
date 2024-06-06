@@ -285,3 +285,32 @@ DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
 
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
 }
+
+/**
+ *  Entry point for DTA's custom AI building selection logic.
+ *
+ *  Author: Rampastring
+ */
+DEFINE_HOOK(0x4FE3E9, HouseClass_AI_Building_Intercept, 0x7)
+{
+	GET(HouseClass*, pHouse, EBP);
+
+	/**
+	 *  If our custom AI logic is enabled, transfer control to it and return.
+	 */
+	if (RulesExt::Global()->IsUseAdvancedAI)
+	{
+		HouseExt::Vinifera_HouseClass_AI_Building(pHouse);
+		return 0x4FE3F0;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4FD50D, HouseClass_Expert_AI_Advanced_AI_Intercept, 0x8)
+{
+	GET(HouseClass*, pHouse, EBX);
+	HouseExt::AdvAI_HouseClass_Expert_AI(pHouse);
+
+	return 0;
+}

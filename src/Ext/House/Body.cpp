@@ -161,7 +161,7 @@ bool HouseExt::ExtData::UpdateHarvesterProduction()
 	if (pHarvesterUnit)
 	{
 		auto const harvesters = pThis->CountResourceGatherers;
-		auto maxHarvesters = HouseExt::FindBuildable(
+		auto maxHarvesters = FindBuildable(
 			pThis, idxParentCountry, make_iterator(RulesClass::Instance->BuildRefinery))
 			? RulesClass::Instance->HarvestersPerRefinery[AIDifficulty] * pThis->CountResourceDestinations
 			: RulesClass::Instance->AISlaveMinerNumber[AIDifficulty];
@@ -180,8 +180,7 @@ bool HouseExt::ExtData::UpdateHarvesterProduction()
 
 		if (pThis->CountResourceGatherers < maxHarvesters)
 		{
-			auto const pRefinery = HouseExt::FindBuildable(
-				pThis, idxParentCountry, make_iterator(RulesClass::Instance->BuildRefinery));
+			auto const pRefinery = FindBuildable(pThis, idxParentCountry, make_iterator(RulesClass::Instance->BuildRefinery));
 
 			if (pRefinery)
 			{
@@ -264,7 +263,7 @@ size_t HouseExt::FindBuildableIndex(
 		if (pHouse->CanExpectToBuild(pItem, idxParentCountry))
 		{
 			auto const pBld = abstract_cast<const BuildingTypeClass*>(pItem);
-			if (pBld && HouseExt::IsDisabledFromShell(pHouse, pBld))
+			if (pBld && IsDisabledFromShell(pHouse, pBld))
 				continue;
 
 			return i;
@@ -494,7 +493,6 @@ void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		for (size_t i = 0; i < 3; i++)
 			this->RepairBaseNodes[i] = readBaseNodeRepairInfo[i < nWritten ? i : nWritten - 1];
 	}
-
 }
 
 // =============================

@@ -1,4 +1,6 @@
 #include "Body.h"
+#include "Ext/House/Body.h"
+
 #include <Ext/Side/Body.h>
 #include <Utilities/TemplateDef.h>
 #include <FPSCounter.h>
@@ -9,6 +11,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
+#include "New/Type/TechTreeTypeClass.h"
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -34,6 +37,8 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	ShieldTypeClass::LoadFromINIList(pINI);
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
 	AttachEffectTypeClass::LoadFromINIList(pINI);
+	TechTreeTypeClass::LoadFromINIList(pINI);
+	TechTreeTypeClass::CalculateTotals();
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
@@ -157,6 +162,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	droppod_trailer.Read(exINI, GameStrings::General, "DropPodTrailer");
 	this->DropPodTrailer = droppod_trailer.Get(AnimTypeClass::Find("SMOKEY"));// Ares convention
 	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
+
+	this->IsUseAdvancedAI.Read(exINI, GameStrings::General, "IsUseAdvancedAI");
+	this->IsAdvancedAIMultiConYard.Read(exINI, GameStrings::General, "IsAdvancedAIMultiConYard");
+	this->AdvancedAIMaxExpansionDistance.Read(exINI, GameStrings::General, "AdvancedAIMaxExpansionDistance");
+	this->AdvancedAIMinimumRefineryCount.Read(exINI, GameStrings::General, "AdvancedAIMinimumRefineryCount");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");

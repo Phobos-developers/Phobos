@@ -148,6 +148,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
 
+	this->IsAdvancedAIIgnoresPrerequisites.Read(exINI, pSection, "IsAdvancedAIIgnoresPrerequisites");
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		this->AircraftDockingDirs.clear();
@@ -168,6 +170,39 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			if (nLandingDir.isset())
 				this->AircraftDockingDirs[i] = nLandingDir.Get();
 		}
+	}
+
+	this->PrerequisiteNegatives.Read(exINI, pSection, "Prerequisite.Negative");
+
+	static constexpr size_t bufferSize = 256;
+	static char buffer[bufferSize];
+
+	if (pINI->ReadString(pSection, "Prerequisite.RequiredTheaters", "", buffer, bufferSize))
+	{
+		this->PrerequisiteTheaters = 0;
+
+		char* context = nullptr;
+		for (const char* theaterToken = strtok_s(buffer, ",", &context); theaterToken; theaterToken = strtok_s(nullptr, ",", &context))
+		{
+			const int idx = Theater::FindIndex(theaterToken);
+			if (idx != -1)
+			{
+				this->PrerequisiteTheaters |= (1 << idx);
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, "Prerequisite.RequiredTheaters", theaterToken);
+			}
+		}
+	}
+
+	const int prerequisiteLists = pINI->ReadInteger(pSection, "Prerequisite.Lists", 0);
+	this->PrerequisiteLists.resize(prerequisiteLists);
+
+	for (size_t i = 0; i < this->PrerequisiteLists.size(); ++i)
+	{
+		_snprintf_s(buffer, bufferSize, "Prerequisite.List%u", i);
+		this->PrerequisiteLists[i].Read(exINI, pSection, buffer);
 	}
 
 	// Ares tag
@@ -210,6 +245,32 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Art
 	this->ZShapePointMove_OnBuildup.Read(exArtINI, pSection, "ZShapePointMove.OnBuildup");
+}
+
+bool BuildingTypeExt::HasDisableableSuperWeapons(BuildingTypeClass* pBuildingType)
+{
+	if (pBuildingType->SuperWeapon != static_cast<int>(SpecialWeaponType::None) &&
+		(*SuperWeaponTypeClass::Array)[pBuildingType->SuperWeapon]->DisableableFromShell)
+	{
+		return true;
+	}
+
+	if (pBuildingType->SuperWeapon2 != static_cast<int>(SpecialWeaponType::None) &&
+		(*SuperWeaponTypeClass::Array)[pBuildingType->SuperWeapon2]->DisableableFromShell)
+	{
+		return true;
+	}
+
+	const auto pExt = ExtMap.Find(pBuildingType);
+	for (const auto pSuperWeapon : pExt->SuperWeapons)
+	{
+		if ((*SuperWeaponTypeClass::Array)[pSuperWeapon]->DisableableFromShell)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
