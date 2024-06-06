@@ -52,8 +52,8 @@ public:
 
 		Valueable<int> ShowTimer_Priority;
 
-		Nullable<WarheadTypeClass*> Detonate_Warhead;
-		Nullable<WeaponTypeClass*> Detonate_Weapon;
+		Valueable<WarheadTypeClass*> Detonate_Warhead;
+		Valueable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
 		Valueable<bool> Detonate_AtFirer;
 		Valueable<bool> ShowDesignatorRange;

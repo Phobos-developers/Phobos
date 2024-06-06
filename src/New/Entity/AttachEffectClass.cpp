@@ -266,7 +266,7 @@ void AttachEffectClass::CreateAnim()
 
 	AnimTypeClass* pAnimType = nullptr;
 
-	if (this->Type->Cumulative && this->Type->CumulativeAnimations.HasValue())
+	if (this->Type->Cumulative && this->Type->CumulativeAnimations.size() > 0)
 	{
 		if (!this->IsFirstCumulativeInstance)
 			return;
@@ -276,7 +276,7 @@ void AttachEffectClass::CreateAnim()
 	}
 	else
 	{
-		pAnimType = this->Type->Animation.Get(nullptr);
+		pAnimType = this->Type->Animation;
 	}
 
 	if (!this->Animation && pAnimType)
@@ -654,7 +654,7 @@ int AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, 
 /// <param name="minCounts">Minimum instance counts needed for cumulative types to be removed.</param>
 /// <param name="maxCounts">Maximum instance counts of cumulative types to be removed.</param>
 /// <returns>Number of AttachEffect instances removed.</returns>
-int AttachEffectClass::DetachByGroups(std::vector<const char*> const& groups, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts)
+int AttachEffectClass::DetachByGroups(std::vector<std::string> const& groups, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts)
 {
 	if (groups.size() < 1 || !pTarget)
 		return 0;
@@ -710,7 +710,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		{
 			detachedCount++;
 
-			if (pType->ExpireWeapon.isset() && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
+			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || pTargetExt->GetAttachedEffectCumulativeCount(pType) < 2)
 					attachEffect->ExpireWeapon();

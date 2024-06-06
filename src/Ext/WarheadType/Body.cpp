@@ -58,23 +58,16 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::E
 	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0;
 }
 
-namespace DetonateTemp
-{
-	AbstractClass* pTarget = nullptr;
-}
-
 void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
-	DetonateTemp::pTarget = pTarget;
-	WarheadTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse);
-	DetonateTemp::pTarget = nullptr;
+	WarheadTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse, pTarget);
 }
 
-void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget)
 {
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
-	if (BulletClass* pBullet = pType->CreateBullet(DetonateTemp::pTarget, pOwner,
+	if (BulletClass* pBullet = pType->CreateBullet(pTarget, pOwner,
 		damage, pThis, 0, pThis->Bright))
 	{
 		if (pFiringHouse)

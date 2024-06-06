@@ -288,7 +288,7 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 				detonate = pWeaponExt->ExtraWarheads_DetonationChances[size - 1] >= ScenarioClass::Instance->Random.RandomDouble();
 
 			if (detonate)
-				WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner);
+				WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
 		}
 	}
 
@@ -297,10 +297,8 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 	{
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-		if (pTypeExt->ReturnWeapon.isset())
+		if (auto const pWeapon = pTypeExt->ReturnWeapon)
 		{
-			auto const pWeapon = pTypeExt->ReturnWeapon.Get();
-
 			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pThis->Owner, pThis->Owner,
 				pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
