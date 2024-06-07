@@ -19,7 +19,7 @@ DEFINE_HOOK(0x55E160, SyncDelay_Start, 0x6)
 {
 	constexpr reference<SysTimerClass, 0x887348> FrameTimer;
 	//constexpr reference<SysTimerClass, 0x887328> NFTTimer;
-	if (!Phobos::Misc::CustomGS)
+	if (!Phobos::Misc::CustomGS || SessionClass::IsMultiplayer())
 		return 0;
 	if ((Phobos::Misc::CustomGS_ChangeInterval[FrameTimer->TimeLeft] > 0)
 		&& (GameSpeedTemp::counter % Phobos::Misc::CustomGS_ChangeInterval[FrameTimer->TimeLeft] == 0))
@@ -39,7 +39,7 @@ DEFINE_HOOK(0x55E160, SyncDelay_Start, 0x6)
 DEFINE_HOOK(0x55E33B, SyncDelay_End, 0x6)
 {
 	constexpr reference<SysTimerClass, 0x887348> FrameTimer;
-	if (Phobos::Misc::CustomGS)
+	if (Phobos::Misc::CustomGS && SessionClass::IsSingleplayer())
 		FrameTimer->TimeLeft = GameOptionsClass::Instance->GameSpeed;
 	return 0;
 }
