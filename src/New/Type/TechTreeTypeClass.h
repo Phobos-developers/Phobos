@@ -25,7 +25,7 @@ public:
 	};
 
 	Valueable<int> SideIndex;
-	Valueable<BuildingTypeClass*> ConstructionYard;
+	Valueable<BuildingTypeClass*> BuildConst;
 	ValueableVector<BuildingTypeClass*> BuildPower;
 	ValueableVector<BuildingTypeClass*> BuildRefinery;
 	ValueableVector<BuildingTypeClass*> BuildBarracks;
@@ -56,7 +56,7 @@ public:
 	std::vector<BuildingTypeClass*> GetBuildable(BuildType buildType, std::function<bool(BuildingTypeClass*)> const& filter) const;
 	BuildingTypeClass* GetRandomBuildable(BuildType buildType, std::function<bool(BuildingTypeClass*)> const& filter) const;
 
-	static inline std::set<BuildingTypeClass*> TotalConstructionYards;
+	static inline std::set<BuildingTypeClass*> TotalBuildConst;
 	static inline std::set<BuildingTypeClass*> TotalBuildPower;
 	static inline std::set<BuildingTypeClass*> TotalBuildRefinery;
 	static inline std::set<BuildingTypeClass*> TotalBuildBarracks;

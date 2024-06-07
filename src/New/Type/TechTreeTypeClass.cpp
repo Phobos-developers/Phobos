@@ -26,7 +26,7 @@ TechTreeTypeClass* TechTreeTypeClass::GetAnySuitable(HouseClass* pHouse)
 {
 	for (const auto& pType : Array)
 	{
-		if (pHouse->ActiveBuildingTypes.GetItemCount(pType->ConstructionYard->ArrayIndex) > 0)
+		if (pHouse->ActiveBuildingTypes.GetItemCount(pType->BuildConst->ArrayIndex) > 0)
 		{
 			return pType.get();
 		}
@@ -37,7 +37,7 @@ TechTreeTypeClass* TechTreeTypeClass::GetAnySuitable(HouseClass* pHouse)
 
 void TechTreeTypeClass::CalculateTotals()
 {
-	TotalConstructionYards.clear();
+	TotalBuildConst.clear();
 	TotalBuildPower.clear();
 	TotalBuildRefinery.clear();
 	TotalBuildBarracks.clear();
@@ -51,7 +51,7 @@ void TechTreeTypeClass::CalculateTotals()
 
 	for (const auto& pTree : Array)
 	{
-		TotalConstructionYards.insert(pTree->ConstructionYard);
+		TotalBuildConst.insert(pTree->BuildConst);
 		TotalBuildPower.insert(pTree->BuildPower.begin(), pTree->BuildPower.end());
 		TotalBuildRefinery.insert(pTree->BuildRefinery.begin(), pTree->BuildRefinery.end());
 		TotalBuildBarracks.insert(pTree->BuildBarracks.begin(), pTree->BuildBarracks.end());
@@ -165,34 +165,18 @@ size_t TechTreeTypeClass::CountSideOwnedBuildings(HouseClass* pHouse, BuildType 
 
 bool TechTreeTypeClass::IsSuitable(HouseClass* pHouse) const
 {
-	return pHouse->ActiveBuildingTypes.GetItemCount(this->ConstructionYard->ArrayIndex) > 0;
+	return pHouse->ActiveBuildingTypes.GetItemCount(this->BuildConst->ArrayIndex) > 0;
 }
 
 bool TechTreeTypeClass::IsCompleted(HouseClass* pHouse, std::function<bool(BuildingTypeClass*)> const& filter) const
 {
-	if (!GetBuildable(BuildType::BuildPower, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildPower) < 1)
-		return false;
-
-	if (!GetBuildable(BuildType::BuildRefinery, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildRefinery) < 1)
-		return false;
-
-	if (!GetBuildable(BuildType::BuildBarracks, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildBarracks) < 1)
-		return false;
-
-	if (!GetBuildable(BuildType::BuildWeapons, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildWeapons) < 1)
-		return false;
-
-	if (!GetBuildable(BuildType::BuildRadar, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildRadar) < 1)
-		return false;
-
-	if (!GetBuildable(BuildType::BuildHelipad, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildHelipad) < 1)
-		return false;
-
-	if (!GetBuildable(BuildType::BuildNavalYard, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildNavalYard) < 1)
-		return false;
-
-	if (!GetBuildable(BuildType::BuildTech, filter).empty() && CountSideOwnedBuildings(pHouse, BuildType::BuildTech) < 1)
-		return false;
+	for (BuildType i = BuildType::BuildPower; i < BuildType::BuildOther; i = static_cast<BuildType>(static_cast<int>(i) + 1))
+	{
+		if (!GetBuildable(i, filter).empty() && CountSideOwnedBuildings(pHouse, i) < 1)
+		{
+			return false;
+		}
+	}
 
 	for (const auto& buildOtherPair : BuildOtherCountMap)
 	{
@@ -272,7 +256,7 @@ void TechTreeTypeClass::LoadFromINI(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->SideIndex.Read(exINI, section, "SideIndex");
-	this->ConstructionYard.Read(exINI, section, "ConstructionYard");
+	this->BuildConst.Read(exINI, section, "BuildConst");
 	this->BuildPower.Read(exINI, section, "BuildPower");
 	this->BuildRefinery.Read(exINI, section, "BuildRefinery");
 	this->BuildBarracks.Read(exINI, section, "BuildBarracks");
@@ -305,7 +289,7 @@ void TechTreeTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(SideIndex)
-		.Process(ConstructionYard)
+		.Process(BuildConst)
 		.Process(BuildPower)
 		.Process(BuildRefinery)
 		.Process(BuildBarracks)
