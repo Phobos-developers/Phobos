@@ -274,7 +274,7 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 		}
 	}
 
-	double StraightSpeed = this->GetTrajectorySpeed(pBullet);
+	const double StraightSpeed = this->GetTrajectorySpeed(pBullet);
 	auto const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 
 	if (BulletDetonatePreCheck(pBullet, pOwner, StraightSpeed))
@@ -301,7 +301,7 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 	if (pBullet->WeaponType)
 	{
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pBullet->Target);
-		int Damage = GetTheTrueDamage(pBullet->WeaponType->Damage, pBullet, pTechno, pOwner, true);
+		const int Damage = GetTheTrueDamage(pBullet->WeaponType->Damage, pBullet, pTechno, pOwner, true);
 		pBullet->Construct(pBullet->Type, pBullet->Target, pBullet->Owner, Damage, pBullet->WH, pBullet->Speed, pBullet->Bright);
 	}
 
@@ -315,8 +315,8 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 	if (this->PassThrough || this->TargetSnapDistance <= 0)
 		return;
 
-	auto pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
-	auto pCoords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;
+	const ObjectClass* pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
+	const CoordStruct pCoords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;
 
 	if (pCoords.DistanceFrom(pBullet->Location) <= this->TargetSnapDistance)
 	{
@@ -343,9 +343,9 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBull
 
 void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 {
-	double StraightSpeed = this->GetTrajectorySpeed(pBullet);
 	double RotateAngle = 0.0;
-	ObjectClass* pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
+	const double StraightSpeed = this->GetTrajectorySpeed(pBullet);
+	const ObjectClass* pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
 	CoordStruct TheTargetCoords = pBullet->TargetCoords;
 	CoordStruct TheSourceCoords = pBullet->SourceCoords;
 
@@ -356,27 +356,27 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 
 		if (TheTargetCoords != this->LastTargetCoord)
 		{
-			CoordStruct ExtraOffsetCoord = TheTargetCoords - this->LastTargetCoord;
-			CoordStruct TargetSourceCoord = TheSourceCoords - TheTargetCoords;
-			CoordStruct LastSourceCoord = TheSourceCoords - this->LastTargetCoord;
+			const CoordStruct ExtraOffsetCoord = TheTargetCoords - this->LastTargetCoord;
+			const CoordStruct TargetSourceCoord = TheSourceCoords - TheTargetCoords;
+			const CoordStruct LastSourceCoord = TheSourceCoords - this->LastTargetCoord;
 
-			double TheDistanceSquared = TargetSourceCoord.MagnitudeSquared();
-			double TargetSpeedSquared = ExtraOffsetCoord.MagnitudeSquared();
-			double TargetSpeed = sqrt(TargetSpeedSquared);
+			const double TheDistanceSquared = TargetSourceCoord.MagnitudeSquared();
+			const double TargetSpeedSquared = ExtraOffsetCoord.MagnitudeSquared();
+			const double TargetSpeed = sqrt(TargetSpeedSquared);
 
-			double CrossFactor = LastSourceCoord.CrossProduct(TargetSourceCoord).MagnitudeSquared();
-			double VerticalDistanceSquared = CrossFactor / TargetSpeedSquared;
+			const double CrossFactor = LastSourceCoord.CrossProduct(TargetSourceCoord).MagnitudeSquared();
+			const double VerticalDistanceSquared = CrossFactor / TargetSpeedSquared;
 
-			double HorizonDistanceSquared = TheDistanceSquared - VerticalDistanceSquared;
-			double HorizonDistance = sqrt(HorizonDistanceSquared);
+			const double HorizonDistanceSquared = TheDistanceSquared - VerticalDistanceSquared;
+			const double HorizonDistance = sqrt(HorizonDistanceSquared);
 
-			double StraightSpeedSquared = StraightSpeed * StraightSpeed;
-			double BaseFactor = StraightSpeedSquared - TargetSpeedSquared;
+			const double StraightSpeedSquared = StraightSpeed * StraightSpeed;
+			const double BaseFactor = StraightSpeedSquared - TargetSpeedSquared;
+			const double SquareFactor = BaseFactor * VerticalDistanceSquared + StraightSpeedSquared * HorizonDistanceSquared;
 
-			double SquareFactor = BaseFactor * VerticalDistanceSquared + StraightSpeedSquared * HorizonDistanceSquared;
 			if (SquareFactor > 0)
 			{
-				double MinusFactor = -(HorizonDistance * TargetSpeed);
+				const double MinusFactor = -(HorizonDistance * TargetSpeed);
 				int TravelTime = 0;
 
 				if (BaseFactor == 0)
@@ -386,8 +386,8 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 				}
 				else
 				{
-					int TravelTimeM = static_cast<int>((MinusFactor - sqrt(SquareFactor)) / BaseFactor);
-					int TravelTimeP = static_cast<int>((MinusFactor + sqrt(SquareFactor)) / BaseFactor);
+					const int TravelTimeM = static_cast<int>((MinusFactor - sqrt(SquareFactor)) / BaseFactor);
+					const int TravelTimeP = static_cast<int>((MinusFactor + sqrt(SquareFactor)) / BaseFactor);
 
 					if (TravelTimeM > 0 && TravelTimeP > 0)
 						TravelTime = TravelTimeM < TravelTimeP ? TravelTimeM : TravelTimeP;
@@ -409,7 +409,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 
 	if (!this->LeadTimeCalculate && TheTargetCoords == TheSourceCoords && pBullet->Owner)
 	{
-		CoordStruct TheOwnerCoords = pBullet->Owner->GetCoords();
+		const CoordStruct TheOwnerCoords = pBullet->Owner->GetCoords();
 		RotateAngle = Math::atan2(TheTargetCoords.Y - TheOwnerCoords.Y , TheTargetCoords.X - TheOwnerCoords.X);
 	}
 	else
@@ -428,15 +428,15 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	{
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
 
-		int ScatterDefault = RulesClass::Instance->BallisticScatter;
-		int ScatterMin = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
-		int ScatterMax = pTypeExt->BallisticScatter_Max.Get(Leptons(ScatterDefault));
+		const int ScatterDefault = RulesClass::Instance->BallisticScatter;
+		const int ScatterMin = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
+		const int ScatterMax = pTypeExt->BallisticScatter_Max.Get(Leptons(ScatterDefault));
 
-		double OffsetMult = 0.0004 * TheSourceCoords.DistanceFrom(TheTargetCoords);
-		int OffsetMin = static_cast<int>(OffsetMult * ScatterMin);
-		int OffsetMax = static_cast<int>(OffsetMult * ScatterMax);
+		const double OffsetMult = 0.0004 * TheSourceCoords.DistanceFrom(TheTargetCoords);
+		const int OffsetMin = static_cast<int>(OffsetMult * ScatterMin);
+		const int OffsetMax = static_cast<int>(OffsetMult * ScatterMax);
 
-		int OffsetDistance = ScenarioClass::Instance->Random.RandomRanged(OffsetMin, OffsetMax);
+		const int OffsetDistance = ScenarioClass::Instance->Random.RandomRanged(OffsetMin, OffsetMax);
 		TheTargetCoords = MapClass::GetRandomCoordsNear(TheTargetCoords, OffsetDistance, false);
 	}
 
@@ -473,7 +473,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 			static_cast<double>(this->AxisOfRotation.Z)
 		};
 
-		double RotationAxisLengthSquared = RotationAxis.MagnitudeSquared();
+		const double RotationAxisLengthSquared = RotationAxis.MagnitudeSquared();
 
 		if (RotationAxisLengthSquared != 0)
 		{
@@ -492,7 +492,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 				ExtraRotate = Math::Pi * (this->RotateCoord * (this->CurrentBurst / (this->CountOfBurst - 1.0) - 0.5)) / 180;
 			}
 
-			double CosRotate = Math::cos(ExtraRotate);
+			const double CosRotate = Math::cos(ExtraRotate);
 
 			pBullet->Velocity = (pBullet->Velocity * CosRotate) + (RotationAxis * ((1 - CosRotate) * (pBullet->Velocity * RotationAxis)))
 				+ (RotationAxis.CrossProduct(pBullet->Velocity) * Math::sin(ExtraRotate));
@@ -505,14 +505,14 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 
 int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 {
-	int velocity = static_cast<int>(pBullet->TargetCoords.Z - pBullet->SourceCoords.Z);
+	int BulletVelocity = static_cast<int>(pBullet->TargetCoords.Z - pBullet->SourceCoords.Z);
 
 	if (!this->PassThrough)
-		return velocity;
+		return BulletVelocity;
 
 	if (pBullet->Owner && abs(pBullet->Owner->GetCoords().Z - pBullet->TargetCoords.Z) <= 32)
 	{
-		double DistanceOfTwo = pBullet->SourceCoords.DistanceFrom(pBullet->TargetCoords);
+		const double DistanceOfTwo = pBullet->SourceCoords.DistanceFrom(pBullet->TargetCoords);
 		double TheDistance = this->DetonationDistance;
 
 		if (this->DetonationDistance == 0)
@@ -522,17 +522,17 @@ int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 			TheDistance = DistanceOfTwo - this->DetonationDistance;
 
 		if (TheDistance != 0)
-			velocity = static_cast<int>(velocity * (DistanceOfTwo / TheDistance));
+			BulletVelocity = static_cast<int>(BulletVelocity * (DistanceOfTwo / TheDistance));
 		else
 			return 0;
 	}
 
-	return velocity;
+	return BulletVelocity;
 }
 
 bool StraightTrajectory::CalculateBulletVelocity(BulletClass* pBullet, double StraightSpeed)
 {
-	double VelocityLength = pBullet->Velocity.Magnitude();
+	const double VelocityLength = pBullet->Velocity.Magnitude();
 
 	if (VelocityLength > 0)
 		pBullet->Velocity *= StraightSpeed / VelocityLength;
@@ -546,7 +546,7 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass
 {
 	if (this->ExtraCheck)
 	{
-		pBullet->Target = this->ExtraCheck;
+		pBullet->SetTarget(this->ExtraCheck);
 		pBullet->TargetCoords = this->ExtraCheck->GetCoords();
 
 		return true;
@@ -587,9 +587,9 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 		VelocityCheck = true;
 	}
 
-	bool CheckThrough = (!this->ThroughBuilding || !this->ThroughVehicles);
-	bool CheckSubject = (this->SubjectToGround || pBullet->Type->SubjectToWalls);
-	bool LowSpeedMode = (StraightSpeed < 256.0);
+	const bool CheckThrough = (!this->ThroughBuilding || !this->ThroughVehicles);
+	const bool CheckSubject = (this->SubjectToGround || pBullet->Type->SubjectToWalls);
+	const bool LowSpeedMode = (StraightSpeed < 256.0);
 
 	if (CheckThrough || CheckSubject)
 	{
@@ -610,8 +610,8 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 
 			for (auto const pStrCell : StrCellClass)
 			{
-				double CellDistance = pStrCell->GetCoords().DistanceFrom(pBullet->Location);
-				double BulletHeight = pBullet->Location.Z + CellDistance / StraightSpeed * pBullet->Velocity.Z;
+				const double CellDistance = pStrCell->GetCoords().DistanceFrom(pBullet->Location);
+				const double BulletHeight = pBullet->Location.Z + CellDistance / StraightSpeed * pBullet->Velocity.Z;
 
 				if (this->SubjectToGround && CellDistance < LocationDistance
 					&& MapClass::Instance->GetCellFloorHeight(pStrCell->GetCoords()) >= BulletHeight)
@@ -707,7 +707,7 @@ bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, Cell
 
 	if (pNearest && this->ProximityImpact != 0 && this->ProximityWarhead)
 	{
-		int Damage = GetTheTrueDamage(this->ProximityDamage, pBullet, pNearest, pOwner, false);
+		const int Damage = GetTheTrueDamage(this->ProximityDamage, pBullet, pNearest, pOwner, false);
 		WarheadTypeExt::DetonateAt(this->ProximityWarhead, pNearest->GetCoords(), pBullet->Owner, Damage, pOwner);
 	}
 
@@ -723,7 +723,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 		if (this->PassDetonateLocal)
 			DetonateCoords.Z = MapClass::Instance->GetCellFloorHeight(DetonateCoords);
 
-		int Damage = GetTheTrueDamage(this->PassDetonateDamage, pBullet, nullptr, nullptr, false);
+		const int Damage = GetTheTrueDamage(this->PassDetonateDamage, pBullet, nullptr, nullptr, false);
 		WarheadTypeExt::DetonateAt(this->PassDetonateWarhead, DetonateCoords, pBullet->Owner, Damage, pOwner);
 	}
 
@@ -738,13 +738,13 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 {
 	//Step 1: Find valid targets on the ground within range.
 	std::vector<CellClass*> RecCellClass = GetCellsInProximityRadius(pBullet);
-	size_t CellSize = RecCellClass.size() * 2;
+	const size_t CellSize = RecCellClass.size() * 2;
 	size_t VectSize = CellSize;
 	size_t ThisSize = 0;
 
-	double ProximityRange = this->ProximityRadius * 256.0;
-	int CheckHeight = this->ProximityFlight ? 0 : 200;
-	CoordStruct VelocityCrd
+	const double ProximityRange = this->ProximityRadius * 256.0;
+	const int CheckHeight = this->ProximityFlight ? 0 : 200;
+	const CoordStruct VelocityCrd
 	{
 		static_cast<int>(pBullet->Velocity.X),
 		static_cast<int>(pBullet->Velocity.Y),
@@ -753,7 +753,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 	std::vector<TechnoClass*> ValidTechnos;
 	ValidTechnos.reserve(VectSize);
-	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
+	const TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
 
 	for (auto const pRecCell : RecCellClass)
 	{
@@ -800,9 +800,9 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (this->ProximityAllies == 0 && pOwner->IsAlliedWith(pTechno->Owner) && !(pTargetTechno && pTechno == pTargetTechno))
 				continue;
 
-			CoordStruct DistanceCrd = pTechno->GetCoords() - pBullet->SourceCoords;
-			CoordStruct LocationCrd = (VelocityCrd + (pBullet->Location - pBullet->SourceCoords));
-			CoordStruct TerminalCrd = DistanceCrd - LocationCrd;
+			const CoordStruct DistanceCrd = pTechno->GetCoords() - pBullet->SourceCoords;
+			const CoordStruct LocationCrd = (VelocityCrd + (pBullet->Location - pBullet->SourceCoords));
+			const CoordStruct TerminalCrd = DistanceCrd - LocationCrd;
 			double Distance = LocationCrd.MagnitudeSquared(); //Not true distance yet.
 
 			if (DistanceCrd * VelocityCrd < 0 || TerminalCrd * VelocityCrd > 0)
@@ -850,8 +850,8 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (!this->ThroughVehicles && (TechnoType == AbstractType::Unit || TechnoType == AbstractType::Aircraft))
 				continue;
 
-			CoordStruct DistanceCrd = pTechno->GetCoords() - pBullet->Location;
-			CoordStruct TerminalCrd = DistanceCrd - VelocityCrd;
+			const CoordStruct DistanceCrd = pTechno->GetCoords() - pBullet->Location;
+			const CoordStruct TerminalCrd = DistanceCrd - VelocityCrd;
 			double Distance = VelocityCrd.MagnitudeSquared(); //Not true distance yet.
 
 			if (DistanceCrd * VelocityCrd < 0 || TerminalCrd * VelocityCrd > 0)
@@ -887,17 +887,18 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	}
 
 	//Step 3: Record each target without repetition.
-	size_t i = 0, iMax = this->LastCasualty.size();
-	size_t j = 0, jMax = ValidTechnos.size();
-	size_t Capacity = iMax + jMax;
+	const size_t iMax = this->LastCasualty.size();
+	const size_t jMax = ValidTechnos.size();
+	const size_t Capacity = iMax + jMax;
 
 	std::sort(&ValidTechnos[0], &ValidTechnos[jMax]);
-
 	std::vector<CasualtyData> Casualty;
 	Casualty.reserve(Capacity);
 	std::vector<TechnoClass*> CasualtyChecked;
 	CasualtyChecked.reserve(Capacity);
 
+	size_t i = 0;
+	size_t j = 0;
 	TechnoClass* pThis = nullptr;
 	TechnoClass* pLast = nullptr;
 	int ThisTime = 0;
@@ -965,7 +966,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	this->LastCasualty = Casualty;
 
 	//Step 4: Detonate warheads in sequence based on distance.
-	size_t CasualtySize = CasualtyChecked.size();
+	const size_t CasualtySize = CasualtyChecked.size();
 
 	if (this->ProximityImpact > 0 && static_cast<int>(CasualtySize) > this->ProximityImpact)
 	{
@@ -978,7 +979,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	{
 		if (this->ProximityImpact != 1)
 		{
-			int Damage = GetTheTrueDamage(this->ProximityDamage, pBullet, pTechno, pOwner, false);
+			const int Damage = GetTheTrueDamage(this->ProximityDamage, pBullet, pTechno, pOwner, false);
 			WarheadTypeExt::DetonateAt(this->ProximityWarhead, pTechno->GetCoords(), pBullet->Owner, Damage, pOwner);
 
 			if (this->ProximityImpact > 0)
@@ -986,7 +987,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		}
 		else
 		{
-			int Damage = GetTheTrueDamage(this->ProximityDamage, pBullet, pTechno, pOwner, false);
+			const int Damage = GetTheTrueDamage(this->ProximityDamage, pBullet, pTechno, pOwner, false);
 			WarheadTypeExt::DetonateAt(this->ProximityWarhead, pTechno->GetCoords(), pBullet->Owner, Damage, pOwner);
 			this->ExtraCheck = pTechno;
 			this->ProximityImpact = 0;
@@ -1001,14 +1002,13 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInPassThrough(BulletClass* p
 
 	if (pBullet->Velocity.X != 0 || pBullet->Velocity.Y != 0)
 	{
-		CoordStruct WalkCoord { static_cast<int>(pBullet->Velocity.X), static_cast<int>(pBullet->Velocity.Y), 0 };
-
-		CellStruct ThisCell = CellClass::Coord2Cell(pBullet->Location);
-		CellStruct NextCell = CellClass::Coord2Cell((pBullet->Location + WalkCoord));
+		const CoordStruct WalkCoord { static_cast<int>(pBullet->Velocity.X), static_cast<int>(pBullet->Velocity.Y), 0 };
+		const CellStruct ThisCell = CellClass::Coord2Cell(pBullet->Location);
+		const CellStruct NextCell = CellClass::Coord2Cell((pBullet->Location + WalkCoord));
 
 		std::vector<CellStruct> StaCells = GetCellsInRectangle(ThisCell, ThisCell, NextCell, NextCell);
-
 		StaCellClass.reserve(StaCells.size());
+
 		for (auto const& pCells : StaCells)
 		{
 			if (CellClass* pStaCell = MapClass::Instance->TryGetCellAt(pCells))
@@ -1023,20 +1023,20 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInPassThrough(BulletClass* p
 std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClass* pBullet)
 {
 	//Seems like the y-axis is reversed, but it's okay.
-	CoordStruct WalkCoord { static_cast<int>(pBullet->Velocity.X), static_cast<int>(pBullet->Velocity.Y), 0 };
-	double SideMult = (this->ProximityRadius * 256.0) / WalkCoord.Magnitude();
+	const CoordStruct WalkCoord { static_cast<int>(pBullet->Velocity.X), static_cast<int>(pBullet->Velocity.Y), 0 };
+	const double SideMult = (this->ProximityRadius * 256.0) / WalkCoord.Magnitude();
 
-	CoordStruct Cor1Coord { static_cast<int>(WalkCoord.Y * SideMult), static_cast<int>((-WalkCoord.X) * SideMult), 0 };
-	CoordStruct Cor4Coord { static_cast<int>((-WalkCoord.Y) * SideMult), static_cast<int>(WalkCoord.X * SideMult), 0 };
+	const CoordStruct Cor1Coord { static_cast<int>(WalkCoord.Y * SideMult), static_cast<int>((-WalkCoord.X) * SideMult), 0 };
+	const CoordStruct Cor4Coord { static_cast<int>((-WalkCoord.Y) * SideMult), static_cast<int>(WalkCoord.X * SideMult), 0 };
+	const CellStruct ThisCell = CellClass::Coord2Cell(pBullet->Location);
 
-	CellStruct ThisCell = CellClass::Coord2Cell(pBullet->Location);
 	CellStruct Cor1Cell = CellClass::Coord2Cell((pBullet->Location + Cor1Coord));
 	CellStruct Cor4Cell = CellClass::Coord2Cell((pBullet->Location + Cor4Coord));
 
-	CellStruct Off1Cell = Cor1Cell - ThisCell;
-	CellStruct Off4Cell = Cor4Cell - ThisCell;
+	const CellStruct Off1Cell = Cor1Cell - ThisCell;
+	const CellStruct Off4Cell = Cor4Cell - ThisCell;
+	const CellStruct NextCell = CellClass::Coord2Cell((pBullet->Location + WalkCoord));
 
-	CellStruct NextCell = CellClass::Coord2Cell((pBullet->Location + WalkCoord));
 	CellStruct Cor2Cell = NextCell + Off1Cell;
 	CellStruct Cor3Cell = NextCell + Off4Cell;
 
@@ -1075,35 +1075,36 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClas
 std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaCell, CellStruct lMidCell, CellStruct rMidCell, CellStruct tEndCell)
 {
 	std::vector<CellStruct> RecCells;
-	int CellNums = (abs(tEndCell.Y - bStaCell.Y) + 1) * (abs(rMidCell.X - lMidCell.X) + 1);
+	const int CellNums = (abs(tEndCell.Y - bStaCell.Y) + 1) * (abs(rMidCell.X - lMidCell.X) + 1);
 	RecCells.reserve(CellNums);
 	RecCells.push_back(bStaCell);
 
 	if (bStaCell == lMidCell || bStaCell == rMidCell)
 	{
 		CellStruct mCurCell = bStaCell;
-		CellStruct mTheDist = tEndCell - bStaCell;
-		CellStruct mTheUnit = { static_cast<short>(Math::sgn(mTheDist.X)), static_cast<short>(Math::sgn(mTheDist.Y)) };
-		mTheDist = { static_cast<short>(mTheDist.X * mTheUnit.X), static_cast<short>(mTheDist.Y * mTheUnit.Y) };
-		float mTheCurN = static_cast<float>((mTheDist.Y - mTheDist.X) / 2.0);
+
+		const CellStruct mTheDist = tEndCell - bStaCell;
+		const CellStruct mTheUnit = { static_cast<short>(Math::sgn(mTheDist.X)), static_cast<short>(Math::sgn(mTheDist.Y)) };
+		const CellStruct mThePace = { static_cast<short>(mTheDist.X * mTheUnit.X), static_cast<short>(mTheDist.Y * mTheUnit.Y) };
+		float mTheCurN = static_cast<float>((mThePace.Y - mThePace.X) / 2.0);
 
 		while (mCurCell != tEndCell)
 		{
 			if (mTheCurN > 0)
 			{
-				mTheCurN -= mTheDist.X;
+				mTheCurN -= mThePace.X;
 				mCurCell.Y += mTheUnit.Y;
 				RecCells.push_back(mCurCell);
 			}
 			else if (mTheCurN < 0)
 			{
-				mTheCurN += mTheDist.Y;
+				mTheCurN += mThePace.Y;
 				mCurCell.X += mTheUnit.X;
 				RecCells.push_back(mCurCell);
 			}
 			else
 			{
-				mTheCurN += mTheDist.Y - mTheDist.X;
+				mTheCurN += mThePace.Y - mThePace.X;
 				mCurCell.X += mTheUnit.X;
 				RecCells.push_back(mCurCell);
 				mCurCell.X -= mTheUnit.X;
@@ -1119,27 +1120,33 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 		CellStruct lCurCell = bStaCell;
 		CellStruct rCurCell = bStaCell;
 		CellStruct mCurCell = bStaCell;
-		bool lNext = false, rNext = false, lSkip = false, rSkip = false, lContinue = false, rContinue = false;
 
-		CellStruct l1stDist = lMidCell - bStaCell;
-		CellStruct l1stUnit = { static_cast<short>(Math::sgn(l1stDist.X)), static_cast<short>(Math::sgn(l1stDist.Y)) };
-		l1stDist = { static_cast<short>(l1stDist.X * l1stUnit.X), static_cast<short>(l1stDist.Y * l1stUnit.Y) };
-		float l1stCurN = static_cast<float>((l1stDist.Y - l1stDist.X) / 2.0);
+		bool lNext = false;
+		bool rNext = false;
+		bool lSkip = false;
+		bool rSkip = false;
+		bool lContinue = false;
+		bool rContinue = false;
 
-		CellStruct l2ndDist = tEndCell - lMidCell;
-		CellStruct l2ndUnit = { static_cast<short>(Math::sgn(l2ndDist.X)), static_cast<short>(Math::sgn(l2ndDist.Y)) };
-		l2ndDist = { static_cast<short>(l2ndDist.X * l2ndUnit.X), static_cast<short>(l2ndDist.Y * l2ndUnit.Y) };
-		float l2ndCurN = static_cast<float>((l2ndDist.Y - l2ndDist.X) / 2.0);
+		const CellStruct l1stDist = lMidCell - bStaCell;
+		const CellStruct l1stUnit = { static_cast<short>(Math::sgn(l1stDist.X)), static_cast<short>(Math::sgn(l1stDist.Y)) };
+		const CellStruct l1stPace = { static_cast<short>(l1stDist.X * l1stUnit.X), static_cast<short>(l1stDist.Y * l1stUnit.Y) };
+		float l1stCurN = static_cast<float>((l1stPace.Y - l1stPace.X) / 2.0);
 
-		CellStruct r1stDist = rMidCell - bStaCell;
-		CellStruct r1stUnit = { static_cast<short>(Math::sgn(r1stDist.X)), static_cast<short>(Math::sgn(r1stDist.Y)) };
-		r1stDist = { static_cast<short>(r1stDist.X * r1stUnit.X), static_cast<short>(r1stDist.Y * r1stUnit.Y) };
-		float r1stCurN = static_cast<float>((r1stDist.Y - r1stDist.X) / 2.0);
+		const CellStruct l2ndDist = tEndCell - lMidCell;
+		const CellStruct l2ndUnit = { static_cast<short>(Math::sgn(l2ndDist.X)), static_cast<short>(Math::sgn(l2ndDist.Y)) };
+		const CellStruct l2ndPace = { static_cast<short>(l2ndDist.X * l2ndUnit.X), static_cast<short>(l2ndDist.Y * l2ndUnit.Y) };
+		float l2ndCurN = static_cast<float>((l2ndPace.Y - l2ndPace.X) / 2.0);
 
-		CellStruct r2ndDist = tEndCell - rMidCell;
-		CellStruct r2ndUnit = { static_cast<short>(Math::sgn(r2ndDist.X)), static_cast<short>(Math::sgn(r2ndDist.Y)) };
-		r2ndDist = { static_cast<short>(r2ndDist.X * r2ndUnit.X), static_cast<short>(r2ndDist.Y * r2ndUnit.Y) };
-		float r2ndCurN = static_cast<float>((r2ndDist.Y - r2ndDist.X) / 2.0);
+		const CellStruct r1stDist = rMidCell - bStaCell;
+		const CellStruct r1stUnit = { static_cast<short>(Math::sgn(r1stDist.X)), static_cast<short>(Math::sgn(r1stDist.Y)) };
+		const CellStruct r1stPace = { static_cast<short>(r1stDist.X * r1stUnit.X), static_cast<short>(r1stDist.Y * r1stUnit.Y) };
+		float r1stCurN = static_cast<float>((r1stPace.Y - r1stPace.X) / 2.0);
+
+		const CellStruct r2ndDist = tEndCell - rMidCell;
+		const CellStruct r2ndUnit = { static_cast<short>(Math::sgn(r2ndDist.X)), static_cast<short>(Math::sgn(r2ndDist.Y)) };
+		const CellStruct r2ndPace = { static_cast<short>(r2ndDist.X * r2ndUnit.X), static_cast<short>(r2ndDist.Y * r2ndUnit.Y) };
+		float r2ndCurN = static_cast<float>((r2ndPace.Y - r2ndPace.X) / 2.0);
 
 		while (lCurCell != tEndCell || rCurCell != tEndCell)
 		{
@@ -1149,7 +1156,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 				{
 					if (l1stCurN > 0)
 					{
-						l1stCurN -= l1stDist.X;
+						l1stCurN -= l1stPace.X;
 						lCurCell.Y += l1stUnit.Y;
 
 						if (lCurCell == lMidCell)
@@ -1164,7 +1171,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 					}
 					else
 					{
-						l1stCurN += l1stDist.Y;
+						l1stCurN += l1stPace.Y;
 						lCurCell.X += l1stUnit.X;
 
 						if (lCurCell == lMidCell)
@@ -1181,7 +1188,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 						if (lSkip)
 						{
 							lSkip = false;
-							l2ndCurN -= l2ndDist.X;
+							l2ndCurN -= l2ndPace.X;
 							lCurCell.Y += l2ndUnit.Y;
 						}
 						else
@@ -1192,7 +1199,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 					}
 					else
 					{
-						l2ndCurN += l2ndDist.Y;
+						l2ndCurN += l2ndPace.Y;
 						lCurCell.X += l2ndUnit.X;
 					}
 				}
@@ -1207,7 +1214,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 				{
 					if (r1stCurN > 0)
 					{
-						r1stCurN -= r1stDist.X;
+						r1stCurN -= r1stPace.X;
 						rCurCell.Y += r1stUnit.Y;
 
 						if (rCurCell == rMidCell)
@@ -1222,7 +1229,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 					}
 					else
 					{
-						r1stCurN += r1stDist.Y;
+						r1stCurN += r1stPace.Y;
 						rCurCell.X += r1stUnit.X;
 
 						if (rCurCell == rMidCell)
@@ -1239,7 +1246,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 						if (rSkip)
 						{
 							rSkip = false;
-							r2ndCurN -= r2ndDist.X;
+							r2ndCurN -= r2ndPace.X;
 							rCurCell.Y += r2ndUnit.Y;
 						}
 						else
@@ -1250,7 +1257,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 					}
 					else
 					{
-						r2ndCurN += r2ndDist.Y;
+						r2ndCurN += r2ndPace.Y;
 						rCurCell.X += r2ndUnit.X;
 					}
 				}
@@ -1261,6 +1268,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 
 			mCurCell = lCurCell;
 			mCurCell.X += 1;
+
 			while (mCurCell.X < rCurCell.X) //Center
 			{
 				RecCells.push_back(mCurCell);
@@ -1270,7 +1278,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 			if (lContinue) //Continue Top Left Side
 			{
 				lContinue = false;
-				l2ndCurN -= l2ndDist.X;
+				l2ndCurN -= l2ndPace.X;
 				lCurCell.Y += l2ndUnit.Y;
 				RecCells.push_back(lCurCell);
 			}
@@ -1278,7 +1286,7 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bStaC
 			if (rContinue) //Continue Top Right Side
 			{
 				rContinue = false;
-				r2ndCurN -= r2ndDist.X;
+				r2ndCurN -= r2ndPace.X;
 				rCurCell.Y += r2ndUnit.Y;
 				RecCells.push_back(rCurCell);
 			}
@@ -1295,9 +1303,9 @@ int StraightTrajectory::GetTheTrueDamage(int Damage, BulletClass* pBullet, Techn
 
 	int TrueDamage = Damage;
 
-	if (this->EdgeAttenuation != 1.0 || this->ProximityAllies != 0)
+	if (this->EdgeAttenuation != 1.0 || this->ProximityAllies != 1.0)
 	{
-		double CalculatedDamage = Damage * this->FirepowerMult * GetExtraDamageMultiplier(pBullet, pTechno, pOwner, Self);
+		const double CalculatedDamage = Damage * this->FirepowerMult * GetExtraDamageMultiplier(pBullet, pTechno, pOwner, Self);
 		TrueDamage = static_cast<int>(CalculatedDamage + 0.5);
 
 		if (TrueDamage == 0 && Damage != 0)
@@ -1309,17 +1317,17 @@ int StraightTrajectory::GetTheTrueDamage(int Damage, BulletClass* pBullet, Techn
 
 double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, bool Self)
 {
+	bool CheckAllies = false;
 	double Distance = 0;
 	double DamageMult = 1.0;
-	double AlliesMultiplier = 1.0;
-	double MaxDistance = pBullet->WeaponType ? static_cast<double>(pBullet->WeaponType->Range) : 0;
+	const double MaxDistance = pBullet->WeaponType ? static_cast<double>(pBullet->WeaponType->Range) : 0;
 
 	if (pTechno)
 	{
 		Distance = pTechno->GetCoords().DistanceFrom(pBullet->SourceCoords);
 
-		if (pOwner && pOwner->IsAlliedWith(pTechno->Owner))
-			AlliesMultiplier = this->ProximityAllies;
+		if (pOwner && pOwner->IsAlliedWith(pTechno->Owner) && this->ProximityAllies != 0)
+			CheckAllies = true;
 	}
 	else
 	{
@@ -1332,15 +1340,15 @@ double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, Techno
 	if (Distance > 256.0)
 		DamageMult += (this->EdgeAttenuation - 1.0) * ((Distance - 256.0) / (MaxDistance - 256.0));
 
-	if (!Self)
-		DamageMult *= AlliesMultiplier;
+	if (!Self && CheckAllies)
+		DamageMult *= this->ProximityAllies;
 
 	return DamageMult;
 }
 
 bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet, double StraightSpeed)
 {
-	CoordStruct FutureCoords
+	const CoordStruct FutureCoords
 	{
 		pBullet->Location.X + static_cast<int>(pBullet->Velocity.X),
 		pBullet->Location.Y + static_cast<int>(pBullet->Velocity.Y),
@@ -1350,8 +1358,8 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet, double Str
 	if (auto const pCell = MapClass::Instance->GetCellAt(FutureCoords))
 	{
 		int CheckDifference = MapClass::Instance->GetCellFloorHeight(FutureCoords) - FutureCoords.Z;
-		CoordStruct CellCoords = pCell->GetCoordsWithBridge();
-		int DifferenceOnBridge = CellCoords.Z - FutureCoords.Z;
+		const CoordStruct CellCoords = pCell->GetCoordsWithBridge();
+		const int DifferenceOnBridge = CellCoords.Z - FutureCoords.Z;
 
 		if (abs(DifferenceOnBridge) < abs(CheckDifference))
 			CheckDifference = DifferenceOnBridge;

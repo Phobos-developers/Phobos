@@ -227,7 +227,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 						}
 					}
 
-					const auto pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType());
+					auto const pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType());
 
 					if (WeaponIndex < static_cast<int>(pTransporterTypeExt->AlternateFLHs.size()))
 						this->FLHCoord = pTransporterTypeExt->AlternateFLHs[WeaponIndex];
@@ -245,7 +245,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 			FLHFound = true;
 		}
 
-		int BurstIndex = pBullet->Owner->CurrentBurstIndex;
+		const int BurstIndex = pBullet->Owner->CurrentBurstIndex;
 
 		if (BurstIndex % 2 == 1)
 		{
@@ -263,7 +263,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		TheSourceCoords.Z = 0;
 	}
 
-	double RotateAngle = Math::atan2(TheTargetCoords.Y - TheSourceCoords.Y , TheTargetCoords.X - TheSourceCoords.X);
+	const double RotateAngle = Math::atan2(TheTargetCoords.Y - TheSourceCoords.Y , TheTargetCoords.X - TheSourceCoords.X);
 
 	if (this->SourceCoord.X != 0 || this->SourceCoord.Y != 0)
 	{
@@ -287,7 +287,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 	double StraightSpeed = this->GetTrajectorySpeed(pBullet);
 	StraightSpeed = StraightSpeed > 128.0 ? 128.0 : StraightSpeed;
-	double CoordDistance = pBullet->Velocity.Magnitude();
+	const double CoordDistance = pBullet->Velocity.Magnitude();
 
 	if (CoordDistance > 0)
 		pBullet->Velocity *= StraightSpeed / CoordDistance;
@@ -327,7 +327,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 			BulletCoords.Z + static_cast<int>(pBullet->Velocity.Z)
 		};
 
-		int CheckDifference = GetFloorCoordHeight(FutureCoords) - FutureCoords.Z;
+		const int CheckDifference = GetFloorCoordHeight(FutureCoords) - FutureCoords.Z;
 
 		if (abs(CheckDifference) >= 384)
 		{
@@ -387,7 +387,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 			FireCoord.X += static_cast<int>(this->FLHCoord.X * Math::cos(RotateAngle) + this->FLHCoord.Y * Math::sin(RotateAngle));
 			FireCoord.Y += static_cast<int>(this->FLHCoord.X * Math::sin(RotateAngle) - this->FLHCoord.Y * Math::cos(RotateAngle));
 
-			if (const auto pBuildingType = static_cast<BuildingTypeClass*>(pTechno->GetTechnoType()))
+			if (auto const pBuildingType = static_cast<BuildingTypeClass*>(pTechno->GetTechnoType()))
 				FireCoord.Z += this->FLHCoord.Z + 30 * (pBuildingType->GetFoundationWidth() + pBuildingType->GetFoundationHeight(false) + 2);
 		}
 
@@ -458,8 +458,8 @@ int EngraveTrajectory::GetFloorCoordHeight(CoordStruct Coord)
 	{
 		Difference = MapClass::Instance->GetCellFloorHeight(Coord) - this->SourceHeight;
 
-		CoordStruct CellCoords = pCell->GetCoordsWithBridge();
-		int OnBridge = CellCoords.Z - this->SourceHeight;
+		const CoordStruct CellCoords = pCell->GetCoordsWithBridge();
+		const int OnBridge = CellCoords.Z - this->SourceHeight;
 
 		if (OnBridge < 0 && abs(OnBridge - Difference) > 384)
 			Difference = OnBridge;

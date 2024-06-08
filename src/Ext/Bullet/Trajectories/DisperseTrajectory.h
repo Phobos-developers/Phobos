@@ -120,7 +120,8 @@ public:
 		, WeaponToGround { false }
 		, InStraight { false }
 		, Accelerate { true }
-		, TargetInAir { false }
+		, TargetInTheAir { false }
+		, TargetIsTechno { false }
 		, OriginalDistance { 0 }
 		, CurrentBurst { 0 }
 		, ThisWeaponIndex { 0 }
@@ -166,7 +167,8 @@ public:
 		, WeaponToGround { false }
 		, InStraight { false }
 		, Accelerate { true }
-		, TargetInAir { false }
+		, TargetInTheAir { false }
+		, TargetIsTechno { false }
 		, OriginalDistance { 0 }
 		, CurrentBurst { 0 }
 		, ThisWeaponIndex { 0 }
@@ -221,7 +223,8 @@ public:
 	bool WeaponToGround;
 	bool InStraight;
 	bool Accelerate;
-	bool TargetInAir;
+	bool TargetInTheAir;
+	bool TargetIsTechno;
 	int OriginalDistance;
 	int CurrentBurst;
 	int ThisWeaponIndex;
