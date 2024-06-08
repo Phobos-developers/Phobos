@@ -209,8 +209,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->PassDetonateWarhead = pType->PassDetonateWarhead;
 	this->PassDetonateDamage = pType->PassDetonateDamage;
 	this->PassDetonateDelay = pType->PassDetonateDelay > 0 ? pType->PassDetonateDelay : 1;
-	this->PassDetonateTimer = pType->PassDetonateTimer < this->PassDetonateDelay ?
-		pType->PassDetonateTimer : this->PassDetonateDelay - 1;
+	this->PassDetonateTimer.Start(pType->PassDetonateTimer);
 	this->PassDetonateLocal = pType->PassDetonateLocal;
 	this->LeadTimeCalculate = pType->LeadTimeCalculate;
 	this->OffsetCoord = pType->OffsetCoord;
@@ -235,7 +234,6 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->LastTargetCoord = pBullet->TargetCoords;
 	this->CurrentBurst = 0;
 	this->CountOfBurst = pBullet->WeaponType ? pBullet->WeaponType->Burst : 0;
-	this->WaitOneFrame = 0;
 	this->FirepowerMult = 1.0;
 
 	if (pBullet->Owner)
@@ -253,24 +251,21 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	if (!this->LeadTimeCalculate || (pBullet->Target && pBullet->Target->WhatAmI() == AbstractType::Building))
 		PrepareForOpenFire(pBullet);
 	else
-		this->WaitOneFrame = 2;
+		this->WaitOneFrame.Start(1);
 }
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (this->WaitOneFrame > 0)
+	if (this->WaitOneFrame.IsTicking())
 	{
-		this->WaitOneFrame -= 1;
-
-		//OnAI() not always check after OnUnlimbo() immediately. Looking for better method.
-		if (this->WaitOneFrame == 0 || !pBullet->Target || (pBullet->Target && pBullet->Target->GetCoords() != this->LastTargetCoord))
+		if (this->WaitOneFrame.HasTimeLeft())
 		{
-			PrepareForOpenFire(pBullet);
-			this->WaitOneFrame = 0;
+			return false;
 		}
 		else
 		{
-			return false;
+			PrepareForOpenFire(pBullet);
+			this->WaitOneFrame.Stop();
 		}
 	}
 
@@ -716,8 +711,9 @@ bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, Cell
 
 void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pOwner)
 {
-	if (this->PassDetonateTimer == 0)
+	if (this->PassDetonateTimer.Completed())
 	{
+		this->PassDetonateTimer.Start(this->PassDetonateDelay);
 		CoordStruct DetonateCoords = pBullet->Location;
 
 		if (this->PassDetonateLocal)
@@ -726,11 +722,6 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 		const int Damage = GetTheTrueDamage(this->PassDetonateDamage, pBullet, nullptr, nullptr, false);
 		WarheadTypeExt::DetonateAt(this->PassDetonateWarhead, DetonateCoords, pBullet->Owner, Damage, pOwner);
 	}
-
-	this->PassDetonateTimer += 1;
-
-	if (this->PassDetonateTimer > 0)
-		this->PassDetonateTimer %= this->PassDetonateDelay;
 }
 
 //Select suitable targets and choose the closer targets then attack each target only once.

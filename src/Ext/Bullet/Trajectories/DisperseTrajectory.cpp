@@ -273,7 +273,7 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->WeaponBurst = pType->WeaponBurst;
 	this->WeaponCount = pType->WeaponCount;
 	this->WeaponDelay = pType->WeaponDelay > 0 ? pType->WeaponDelay : 1;
-	this->WeaponTimer = pType->WeaponTimer < this->WeaponDelay ? pType->WeaponTimer : this->WeaponDelay - 1;
+	this->WeaponTimer.Start(pType->WeaponTimer);
 	this->WeaponScope = pType->WeaponScope;
 	this->WeaponSeparate = pType->WeaponSeparate;
 	this->WeaponRetarget = pType->WeaponRetarget;
@@ -325,20 +325,11 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 		this->UseDisperseBurst = false;
 
 		if (this->OriginalDistance < 1280)
-		{
 			this->OriginalDistance = static_cast<int>(this->OriginalDistance * 1.2) + 512;
-			this->SuicideAboveRange = 4 * this->OriginalDistance;
-		}
 		else if (this->OriginalDistance > 3840)
-		{
 			this->OriginalDistance = static_cast<int>(this->OriginalDistance * 0.4) + 512;
-			this->SuicideAboveRange = 2 * this->OriginalDistance;
-		}
 		else
-		{
 			this->OriginalDistance = 2048;
-			this->SuicideAboveRange = 3 * this->OriginalDistance;
-		}
 	}
 	else if (this->PreAimCoord == CoordStruct::Empty)
 	{
@@ -456,25 +447,20 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < (this->UniqueCurve ? 128 : this->TargetSnapDistance))
 		return true;
 
-	if (this->SuicideAboveRange > 0)
-	{
-		double BulletSpeed = this->LaunchSpeed;
-
-		if (this->UniqueCurve)
-			BulletSpeed = pBullet->Velocity.Magnitude();
-
-		this->SuicideAboveRange -= BulletSpeed;
-
-		if (this->SuicideAboveRange <= 0)
-			return true;
-	}
-
 	if (this->UniqueCurve)
 	{
 		if (CurveVelocityChange(pBullet))
 			return true;
 
 		return false;
+	}
+
+	if (this->SuicideAboveRange > 0)
+	{
+		this->SuicideAboveRange -= this->LaunchSpeed;
+
+		if (this->SuicideAboveRange <= 0)
+			return true;
 	}
 
 	bool VelocityUp = false;
@@ -559,7 +545,7 @@ void DisperseTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 	if (this->WeaponScope < 0 && this->WeaponCount != 0)
 	{
 		HouseClass* pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
-		this->WeaponTimer = 0;
+		this->WeaponTimer.StartTime = 0;
 		PrepareDisperseWeapon(pBullet, pOwner);
 	}
 }
@@ -803,12 +789,13 @@ bool DisperseTrajectory::CurveVelocityChange(BulletClass* pBullet)
 	}
 	else
 	{
+		const double TimeMult = TargetLocation.DistanceFrom(pBullet->Location) / 192.0;
+		TargetLocation.Z += static_cast<int>(TimeMult * 64);
+
 		if (CheckValid)
 		{
-			const double TimeMult = TargetLocation.DistanceFrom(pBullet->Location) / 192.0;
 			TargetLocation.X += static_cast<int>(TimeMult * (TargetLocation.X - this->LastTargetCoord.X));
 			TargetLocation.Y += static_cast<int>(TimeMult * (TargetLocation.Y - this->LastTargetCoord.Y));
-			TargetLocation.Z += static_cast<int>(TimeMult * 32);
 		}
 
 		if (ChangeBulletVelocity(pBullet, TargetLocation, 24.0, true))
@@ -964,8 +951,9 @@ BulletVelocity DisperseTrajectory::RotateAboutTheAxis(BulletVelocity TheSpeed, B
 
 bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass* pOwner)
 {
-	if (this->WeaponTimer == 0)
+	if (this->WeaponTimer.Completed())
 	{
+		this->WeaponTimer.Start(this->WeaponDelay);
 		size_t ValidWeapons = 0;
 		const size_t BurstSize = this->WeaponBurst.size();
 
@@ -1106,11 +1094,6 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 			}
 		}
 	}
-
-	this->WeaponTimer += 1;
-
-	if (this->WeaponTimer > 0)
-		this->WeaponTimer %= this->WeaponDelay;
 
 	if(this->SuicideIfNoWeapon && this->WeaponCount == 0)
 		return true;

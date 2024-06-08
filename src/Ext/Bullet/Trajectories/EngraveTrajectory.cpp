@@ -159,8 +159,8 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->LaserDuration = pType->LaserDuration > 0 ? pType->LaserDuration : 1;
 	this->LaserDelay = pType->LaserDelay > 0 ? pType->LaserDelay : 1;
 	this->DamageDelay = pType->DamageDelay > 0 ? pType->DamageDelay : 1;
-	this->LaserTimer = 0;
-	this->DamageTimer = 0;
+	this->LaserTimer.StartTime = 0;
+	this->DamageTimer.StartTime = 0;
 	this->SourceHeight = pBullet->SourceCoords.Z;
 	this->SetItsLocation = false;
 	this->TechnoInLimbo = false;
@@ -352,8 +352,9 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 	TechnoClass* pTechno = pBullet->Owner;
 	auto const pOwner = pBullet->Owner->Owner;
 
-	if (this->IsLaser && this->LaserTimer == 0)
+	if (this->IsLaser && this->LaserTimer.Completed())
 	{
+		this->LaserTimer.Start(this->LaserDelay);
 		LaserDrawClass* pLaser;
 		CoordStruct FireCoord = pTechno->GetCoords();
 
@@ -414,17 +415,12 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 		pLaser->IsSupported = this->IsSupported;
 	}
 
-	if (this->DamageTimer == 0)
+	if (this->DamageTimer.Completed())
 	{
+		this->DamageTimer.Start(this->DamageDelay);
 		int LaserDamage = static_cast<int>(pBullet->WeaponType->Damage * this->FirepowerMult);
 		WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, LaserDamage, pOwner);
 	}
-
-	this->LaserTimer += 1;
-	this->LaserTimer %= this->LaserDelay;
-
-	this->DamageTimer += 1;
-	this->DamageTimer %= this->DamageDelay;
 
 	return false;
 }

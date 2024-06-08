@@ -78,7 +78,7 @@ public:
 		, PassDetonateWarhead {}
 		, PassDetonateDamage { 0 }
 		, PassDetonateDelay { 1 }
-		, PassDetonateTimer { 0 }
+		, PassDetonateTimer {}
 		, PassDetonateLocal { false }
 		, LeadTimeCalculate { false }
 		, OffsetCoord {}
@@ -104,7 +104,7 @@ public:
 		, LastTargetCoord {}
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
-		, WaitOneFrame { 0 }
+		, WaitOneFrame {}
 	{}
 
 	StraightTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
@@ -115,7 +115,7 @@ public:
 		, PassDetonateWarhead {}
 		, PassDetonateDamage { 0 }
 		, PassDetonateDelay { 1 }
-		, PassDetonateTimer { 0 }
+		, PassDetonateTimer {}
 		, PassDetonateLocal { false }
 		, LeadTimeCalculate { false }
 		, OffsetCoord {}
@@ -141,7 +141,7 @@ public:
 		, LastTargetCoord {}
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
-		, WaitOneFrame { 0 }
+		, WaitOneFrame {}
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -167,7 +167,7 @@ public:
 	WarheadTypeClass* PassDetonateWarhead;
 	int PassDetonateDamage;
 	int PassDetonateDelay;
-	int PassDetonateTimer;
+	CDTimerClass PassDetonateTimer;
 	bool PassDetonateLocal;
 	bool LeadTimeCalculate;
 	CoordStruct OffsetCoord;
@@ -193,7 +193,7 @@ public:
 	CoordStruct LastTargetCoord;
 	int CurrentBurst;
 	int CountOfBurst;
-	int WaitOneFrame;
+	CDTimerClass WaitOneFrame;
 
 private:
 	void PrepareForOpenFire(BulletClass* pBullet);

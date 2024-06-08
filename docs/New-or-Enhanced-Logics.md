@@ -643,8 +643,8 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but instead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
   - `Trajectory.Straight.PassDetonate` enables extra detonations when the projectile is traveling.
     - `Trajectory.Straight.PassDetonateWarhead` defined the warhead detonated by `Trajectory.Straight.PassDetonate`, and `Trajectory.Straight.PassDetonateDamage` defined the damage caused by `Trajectory.Straight.PassDetonateWarhead`.
-    - `Trajectory.Straight.PassDetonateDelay` controls the maximum value of the extra detonations timer. When the timer goes back to 0, it will detonate a warhead defined by `Trajectory.Straight.Warhead`.
-    - `Trajectory.Straight.PassDetonateTimer` controls the initial value of the extra detonations timer. It can be set to a negative integer as initial delay.
+    - `Trajectory.Straight.PassDetonateDelay` controls the delay for detonating the warhead defined by `Trajectory.Straight.Warhead`.
+    - `Trajectory.Straight.PassDetonateTimer` controls the initial delay for detonating the warhead defined by `Trajectory.Straight.Warhead`.
     - `Trajectory.Straight.PassDetonateLocal` controls whether `Trajectory.Straight.PassDetonateWarhead` and weapon's `Warhead` are always detonate at ground level. It will also no longer restrict vertical velocity of the projectile when using `Trajectory.Straight.ConfineAtHeight`.
   - `Trajectory.Straight.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target when firing. Note that this will not affect the facing of the turret.
   - `Trajectory.Straight.OffsetCoord` controls the offsets of the target. Projectile will aim at this position to attack. It also supports `Inaccurate=yes` and `Trajectory.Straight.LeadTimeCalculate=true` on this basis.
@@ -738,8 +738,8 @@ Trajectory.Bombard.Height=0.0                   ; double
   - `Trajectory.Disperse.Weapons` defined the dispersal weapons of the projectile.
     - `Trajectory.Disperse.WeaponBurst` defined how many corresponding weapons each time the projectile will fire. When the quantity is lower than `Trajectory.Disperse.Weapons`, it will use the last value.
     - `Trajectory.Disperse.WeaponCount` controls how many times the projectile can spread the weapon. Set to a negative value means unlimited times.
-    - `Trajectory.Disperse.WeaponDelay` controls the maximum value of the weapon dispersing timer. When the timer goes back to 0, it will spread the weapons defined by `Trajectory.Disperse.Weapons`.
-    - `Trajectory.Disperse.WeaponTimer` controls the initial value of the weapon dispersing timer. It can be set to a negative integer as initial delay.
+    - `Trajectory.Disperse.WeaponDelay` controls the delay for dispersing the weapons defined by `Trajectory.Disperse.Weapons`.
+    - `Trajectory.Disperse.WeaponTimer` controls the initial delay for dispersing the weapons defined by `Trajectory.Disperse.Weapons`.
     - `Trajectory.Disperse.WeaponScope` controls the weapon dispersing timer to start counting only within this distance of reaching the target. Set to 0 to disable this function. Set to a negative value means it will only disperse the weapon at most once before detonation.
     - `Trajectory.Disperse.WeaponSeparate` controls whether the projectile no longer fire all the weapons in `Trajectory.Disperse.Weapons` at once and instead fire a group of weapons in the list order, following `Trajectory.Disperse.WeaponBurst`.
     - `Trajectory.Disperse.WeaponRetarget` controls whether the dispersed weapons will find new targets on their own. Using the range of weapons to search new targets.

@@ -110,7 +110,7 @@ public:
 		, WeaponBurst {}
 		, WeaponCount { 0 }
 		, WeaponDelay { 1 }
-		, WeaponTimer { 0 }
+		, WeaponTimer {}
 		, WeaponScope { Leptons(0) }
 		, WeaponSeparate { false }
 		, WeaponRetarget { false }
@@ -157,7 +157,7 @@ public:
 		, WeaponBurst {}
 		, WeaponCount { 0 }
 		, WeaponDelay { 1 }
-		, WeaponTimer { 0 }
+		, WeaponTimer {}
 		, WeaponScope { Leptons(0) }
 		, WeaponSeparate { false }
 		, WeaponRetarget { false }
@@ -213,7 +213,7 @@ public:
 	std::vector<int> WeaponBurst;
 	int WeaponCount;
 	int WeaponDelay;
-	int WeaponTimer;
+	CDTimerClass WeaponTimer;
 	Leptons WeaponScope;
 	bool WeaponSeparate;
 	bool WeaponRetarget;

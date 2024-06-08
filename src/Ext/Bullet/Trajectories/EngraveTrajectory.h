@@ -64,8 +64,8 @@ public:
 		, LaserDuration { 1 }
 		, LaserDelay { 1 }
 		, DamageDelay { 10 }
-		, LaserTimer { 0 }
-		, DamageTimer { 0 }
+		, LaserTimer {}
+		, DamageTimer {}
 		, SourceHeight { 0 }
 		, SetItsLocation { false }
 		, TechnoInLimbo { false }
@@ -90,8 +90,8 @@ public:
 		, LaserDuration { 1 }
 		, LaserDelay { 1 }
 		, DamageDelay { 10 }
-		, LaserTimer { 0 }
-		, DamageTimer { 0 }
+		, LaserTimer {}
+		, DamageTimer {}
 		, SourceHeight { 0 }
 		, SetItsLocation { false }
 		, TechnoInLimbo { false }
@@ -125,8 +125,8 @@ public:
 	int LaserDuration;
 	int LaserDelay;
 	int DamageDelay;
-	int LaserTimer;
-	int DamageTimer;
+	CDTimerClass LaserTimer;
+	CDTimerClass DamageTimer;
 	int SourceHeight;
 	bool SetItsLocation;
 	bool TechnoInLimbo;
