@@ -700,7 +700,7 @@ namespace detail
 				}
 				else if (_strcmpi(cur, "none"))
 				{
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a super weapon target");
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected an affected target");
 					return false;
 				}
 			}
@@ -749,7 +749,7 @@ namespace detail
 				}
 				else if (_strcmpi(cur, "none"))
 				{
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a super weapon affected house");
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected an affected house");
 					return false;
 				}
 			}
@@ -1046,7 +1046,7 @@ namespace detail
 				}
 				else if (_strcmpi(cur, "none"))
 				{
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a chrono sparkle position type");
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a chrono sparkle position type");
 					return false;
 				}
 			}
@@ -1091,7 +1091,7 @@ namespace detail
 				}
 				else
 				{
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a discard condition type");
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");
 					return false;
 				}
 			}
@@ -1136,7 +1136,7 @@ namespace detail
 				}
 				else
 				{
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a expire weapon trigger condition type");
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a expire weapon trigger condition type");
 					return false;
 				}
 			}

@@ -212,7 +212,7 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 		intensity += static_cast<int>(pTypeExt->Tint_Intensity * 1000);
 	}
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	for (auto const& attachEffect : pExt->AttachedEffects)
 	{

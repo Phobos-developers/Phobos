@@ -66,6 +66,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
 		{
 			pWHExt->WasDetonatedOnAllMapObjects = true;
+			auto const originalLocation = pThis->Location;
 			auto const pOriginalTarget = pThis->Target;
 			auto const pExt = BulletExt::ExtMap.Find(pThis);
 			auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
@@ -75,6 +76,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
 				{
 					pThis->Target = pTechno;
+					pThis->Location = pTechno->GetCoords();
 					pThis->Detonate(pTechno->GetCoords());
 				}
 			};
@@ -119,6 +121,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			}
 
 			pThis->Target = pOriginalTarget;
+			pThis->Location = originalLocation;
 			pWHExt->WasDetonatedOnAllMapObjects = false;
 
 			return ReturnFromFunction;
