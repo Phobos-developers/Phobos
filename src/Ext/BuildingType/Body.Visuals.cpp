@@ -42,11 +42,11 @@ void __fastcall TechnoClass_DrawExtraInfo_Wrapper(TechnoClass* pThis)
 			int nColorInt = Drawing::RGB_To_Int(pOwner->Color); //0x63DAD0
 			DSurface::Temp->FillRect(&nIntersect, 0);
 			DSurface::Temp->DrawRectEx(&pRect, &nIntersect, nColorInt);
-			nIntersect.Width += 2;
+			/*nIntersect.Width += 2;
 			nIntersect.Height -= 2;
 			nIntersect.X -= 1;
 			nIntersect.Y += 1;
-			DSurface::Temp->DrawRectEx(&pRect, &nIntersect, nColorInt); //rounded effect for text frame
+			DSurface::Temp->DrawRectEx(&pRect, &nIntersect, nColorInt); //rounded effect for text frame*/
 			DSurface::Temp->DrawTextA(pFormat, &pRect, &pLocation, nColorInt, 0, TextPrintType::Center | TextPrintType::FullShadow | TextPrintType::Efnt);
 		};
 
@@ -91,10 +91,10 @@ void __fastcall TechnoClass_DrawExtraInfo_Wrapper(TechnoClass* pThis)
 					swprintf_s(pOutDrainFormat, pDrainFormat, pOutput, pDrain);
 				else
 				{
-					swprintf_s(pOutDrainFormat, L"Power=%d", pOutput);
+					swprintf_s(pOutDrainFormat, L"Power=%d", pOutput); //needs csf
 					DrawTheStuff(pOutDrainFormat);
 					pLocation.Y += textHeight - 2;
-					swprintf_s(pOutDrainFormat, L"Drain=%d", pDrain);
+					swprintf_s(pOutDrainFormat, L"Drain=%d", pDrain); //needs csf
 				}
 				DrawTheStuff(pOutDrainFormat);
 				pLocation.Y += textHeight;
@@ -112,7 +112,7 @@ void __fastcall TechnoClass_DrawExtraInfo_Wrapper(TechnoClass* pThis)
 
 			if (hasStorage && isUsingStorage)
 			{
-				auto pStorageFormat = L"Storage: %d"; //temp
+				auto pStorageFormat = L"Storage: %d"; //needs csf
 				wchar_t pOutStorageFormat[0x80];
 				auto nStorage = pBuilding->GetStoragePercentage();
 				swprintf_s(pOutStorageFormat, pStorageFormat, nStorage);
