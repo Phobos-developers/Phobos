@@ -92,9 +92,9 @@ public:
 	{};
 
 	bool HasTint() const;
-	bool HasGroup(std::string groupID);
-	bool HasGroups(std::vector<std::string> groupIDs, bool requireAll);
-	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount);
+	bool HasGroup(const std::string& groupID) const;
+	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
+	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
 
 	virtual ~AttachEffectTypeClass() override = default;
 
@@ -107,7 +107,7 @@ public:
 		AttachEffectTypeClass::GroupsMap.clear();
 	}
 
-	static std::vector<AttachEffectTypeClass*> GetTypesFromGroups(std::vector<std::string> groupIDs);
+	static std::vector<AttachEffectTypeClass*> GetTypesFromGroups(const std::vector<std::string>& groupIDs);
 
 private:
 	template <typename T>

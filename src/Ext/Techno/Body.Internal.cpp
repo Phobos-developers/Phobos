@@ -67,14 +67,11 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	// Step 4: apply FLH offset
 	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
 
-	auto result = mtx * Vector3D<float>::Empty;
-
-	// Resulting coords are mirrored along X axis, so we mirror it back
-	result.Y *= -1;
+	auto result = mtx.GetTranslation();
 
 	// Step 5: apply as an offset to global object coords
-	CoordStruct location = pThis->GetCoords();
-	location += { (int)result.X, (int)result.Y, (int)result.Z };
+	// Resulting coords are mirrored along X axis, so we mirror it back
+	auto location = pThis->GetCoords() + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
 
 	return location;
 }

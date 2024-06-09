@@ -87,9 +87,9 @@ public:
 			, AttachEffect_IgnoreFromSameSource { false }
 		{ }
 
-		int GetBurstDelay(int burstIndex);
+		int GetBurstDelay(int burstIndex) const;
 
-		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer);
+		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const;
 
 		virtual ~ExtData() = default;
 
