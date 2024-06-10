@@ -666,7 +666,7 @@ Trajectory.Bombard.Height=0.0  ; double
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]                   ; Projectile
@@ -1167,7 +1167,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]
 Convert.HumanToComputer =   ; TechnoType
-Convert.ComputerToHuman =   ; TechnoType 
+Convert.ComputerToHuman =   ; TechnoType
 ```
 
 ## Terrain
