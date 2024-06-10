@@ -153,6 +153,7 @@
     <ClCompile Include="src\Utilities\Anchor.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
+    <ClCompile Include="src\Ext\BuildingType\Body.Visuals.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />

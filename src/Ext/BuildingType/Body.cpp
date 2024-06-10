@@ -148,6 +148,10 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
 
+	this->ShowPower.Read(exINI, pSection, "ShowPower");
+
+	this->Fake.Read(exINI, pSection, "Fake"); // Ares tag
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		this->AircraftDockingDirs.clear();
@@ -169,6 +173,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 				this->AircraftDockingDirs[i] = nLandingDir.Get();
 		}
 	}
+
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
@@ -234,6 +239,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
 		.Process(this->Refinery_UseStorage)
+		.Process(this->Fake)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)
 		.Process(this->Grinding_AllowTypes)
@@ -259,6 +265,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
 		.Process(this->AircraftDockingDirs)
+		.Process(this->ShowPower)
 		;
 }
 

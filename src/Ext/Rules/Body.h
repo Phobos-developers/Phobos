@@ -121,6 +121,8 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
+		Nullable<SHPStruct*> PrimaryFactoryIndicator;
+		CustomPalette PrimaryFactoryIndicator_Palette;
 		AnimTypeClass* DropPodTrailer;
 		SHPStruct* PodImage;
 
@@ -208,6 +210,8 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, PrimaryFactoryIndicator { }
+			, PrimaryFactoryIndicator_Palette { }
 		{ }
 
 		virtual ~ExtData() = default;

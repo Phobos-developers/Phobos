@@ -484,6 +484,17 @@ SpyEffect.VictimSuperWeapon=      ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
 ```
 
+### Primary building icon
+
+- By default, game is drawing "Primary" text in the box for the Primary selected factories. Now it can be replaced with first frame of image, set in `PrimaryFactoryIndicator`. It is drawn in the most left cell and uses in-game `PALETTE.PAL` palette that can be replaced using `PrimaryFactoryIndicator.Palette`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+PrimaryFactoryIndicator=SOMESHPFILE             ; SHP file
+PrimaryFactoryIndicator.Palette=SOMEPALETTE.PAL ; Palette file with ".pal" extension
+```
+
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed

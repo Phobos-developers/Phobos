@@ -152,6 +152,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
 	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
+	this->PrimaryFactoryIndicator.Read(exINI, GameStrings::AudioVisual, "PrimaryFactoryIndicator");
+	this->PrimaryFactoryIndicator_Palette.LoadFromINI(pINI, GameStrings::AudioVisual, "PrimaryFactoryIndicator.Palette");
 
 	Nullable<AnimTypeClass*> droppod_trailer {};
 	droppod_trailer.Read(exINI, GameStrings::General, "DropPodTrailer");
@@ -311,6 +313,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
 		.Process(this->PodImage)
+		.Process(this->PrimaryFactoryIndicator)
+		.Process(this->PrimaryFactoryIndicator_Palette)
 		;
 }
 
