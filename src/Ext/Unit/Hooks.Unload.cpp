@@ -245,4 +245,17 @@ DEFINE_HOOK(0x513D2C, HoverLocomotionClass_ProcessBobbing_DeployToLand, 0x6)
 	return 0;
 }
 
+// DeployToLand units increment WalkingFramesSoFar on every frame, on hover units this causes weird behaviour with move sounds etc.
+DEFINE_HOOK(0x4DA9C1, FootClass_AI_DeployToLand, 0x6)
+{
+	enum { SkipGameCode = 0x4DAA01 };
+
+	GET(FootClass*, pThis, ESI);
+
+	if (pThis->GetTechnoType()->Locomotor == LocomotionClass::CLSIDs::Hover)
+		return SkipGameCode;
+
+	return 0;
+}
+
 #pragma endregion
