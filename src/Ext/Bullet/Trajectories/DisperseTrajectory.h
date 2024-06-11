@@ -234,12 +234,15 @@ public:
 	double FirepowerMult;
 
 private:
+	void InitializeBulletNotCurve(BulletClass* pBullet);
+	BulletVelocity RotateAboutTheAxis(BulletVelocity TheSpeed, BulletVelocity TheAxis, double TheRadian);
 	bool CalculateBulletVelocity(BulletClass* pBullet, double StraightSpeed);
 	bool BulletRetargetTechno(BulletClass* pBullet, HouseClass* pOwner);
+	bool CheckTechnoIsInvalid(TechnoClass* pTechno);
 	bool CurveVelocityChange(BulletClass* pBullet);
+	bool NotCurveVelocityChange(BulletClass* pBullet, HouseClass* pOwner);
 	bool StandardVelocityChange(BulletClass* pBullet);
 	bool ChangeBulletVelocity(BulletClass* pBullet, CoordStruct TargetLocation, double TurningRadius, bool Curve);
-	BulletVelocity RotateAboutTheAxis(BulletVelocity TheSpeed, BulletVelocity TheAxis, double TheRadian);
 	bool PrepareDisperseWeapon(BulletClass* pBullet, HouseClass* pOwner);
 	std::vector<TechnoClass*> GetValidTechnosInSame(std::vector<TechnoClass*> Technos, HouseClass* pOwner, WarheadTypeClass* pWH, AbstractClass* pTarget);
 	void CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int CurBurst, int MaxBurst);

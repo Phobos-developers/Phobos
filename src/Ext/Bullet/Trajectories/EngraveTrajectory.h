@@ -135,5 +135,11 @@ public:
 	CoordStruct FLHCoord;
 
 private:
+	bool GetTechnoFLHCoord(BulletClass* pBullet);
+	void CheckMirrorCoord(TechnoClass* pTechno, bool Found);
+	void SetEngraveDirection(BulletClass* pBullet, CoordStruct Source, CoordStruct Target);
 	int GetFloorCoordHeight(CoordStruct Coord);
+	void PlaceOnCorrectHeight(BulletClass* pBullet);
+	bool DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
+	void DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
 };

@@ -24,7 +24,7 @@ public:
 		, ProximityImpact { 0 }
 		, ProximityWarhead {}
 		, ProximityDamage { 0 }
-		, ProximityRadius { 0.7 }
+		, ProximityRadius { Leptons(179) }
 		, ProximityAllies { 0.0 }
 		, ProximityFlight { false }
 		, ThroughVehicles { true }
@@ -57,7 +57,7 @@ public:
 	Valueable<int> ProximityImpact;
 	Nullable<WarheadTypeClass*> ProximityWarhead;
 	Valueable<int> ProximityDamage;
-	Valueable<double> ProximityRadius;
+	Valueable<Leptons> ProximityRadius;
 	Valueable<double> ProximityAllies;
 	Valueable<bool> ProximityFlight;
 	Valueable<bool> ThroughVehicles;
@@ -89,7 +89,7 @@ public:
 		, ProximityImpact { 0 }
 		, ProximityWarhead {}
 		, ProximityDamage { 0 }
-		, ProximityRadius { 0.7 }
+		, ProximityRadius { Leptons(179) }
 		, ProximityAllies { 0.0 }
 		, ProximityFlight { false }
 		, ThroughVehicles { true }
@@ -126,7 +126,7 @@ public:
 		, ProximityImpact { 0 }
 		, ProximityWarhead {}
 		, ProximityDamage { 0 }
-		, ProximityRadius { 0.7 }
+		, ProximityRadius { Leptons(179) }
 		, ProximityAllies { 0.0 }
 		, ProximityFlight { false }
 		, ThroughVehicles { true }
@@ -178,7 +178,7 @@ public:
 	int ProximityImpact;
 	WarheadTypeClass* ProximityWarhead;
 	int ProximityDamage;
-	double ProximityRadius;
+	Leptons ProximityRadius;
 	double ProximityAllies;
 	bool ProximityFlight;
 	bool ThroughVehicles;
@@ -199,6 +199,7 @@ private:
 	void PrepareForOpenFire(BulletClass* pBullet);
 	int GetVelocityZ(BulletClass* pBullet);
 	bool CalculateBulletVelocity(BulletClass* pBullet, double StraightSpeed);
+	bool BulletPrepareCheck(BulletClass* pBullet);
 	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed);
 	void BulletDetonateLastCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed);
 	bool CheckThroughAndSubjectInCell(BulletClass* pBullet, CellClass* pCell, double CellDistance, double ThisDistance, HouseClass* pOwner);

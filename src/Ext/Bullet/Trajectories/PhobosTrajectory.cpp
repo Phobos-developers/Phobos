@@ -237,7 +237,8 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 	if (detonate && !pThis->SpawnNextAnim)
 		return Detonate;
 
-	if (pExt && pExt->LaserTrails.size())
+	//Correct positions for trajectory.
+	if (pExt->Trajectory && pExt->LaserTrails.size())
 	{
 		CoordStruct FutureCoords
 		{

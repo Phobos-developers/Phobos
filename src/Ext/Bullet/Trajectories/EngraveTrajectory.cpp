@@ -168,123 +168,25 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->FirepowerMult = 1.0;
 	this->FLHCoord = pBullet->SourceCoords;
 
+	if (!pBullet->WeaponType) //Bullets create from AirburstWeapon have no WeaponType.
+		return;
+
 	CoordStruct TheSourceCoords { pBullet->SourceCoords.X, pBullet->SourceCoords.Y, 0 };
 	CoordStruct TheTargetCoords { pBullet->TargetCoords.X, pBullet->TargetCoords.Y, 0 };
 
 	if (pBullet->Owner)
 	{
+		TheSourceCoords = pBullet->Owner->GetCoords();
 		this->TechnoInLimbo = pBullet->Owner->InLimbo;
 		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
-
-		bool FLHFound = false;
-
-		if (this->IsLaser)
-		{
-			int WeaponIndex = 0;
-
-			if (!this->TechnoInLimbo)
-			{
-				if (!pBullet->WeaponType) //Bullets create from AirburstWeapon have no WeaponType.
-					return;
-				else if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false))
-					this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
-				else if (pBullet->WeaponType == TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true))
-					this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
-				else
-					this->NotMainWeapon = true;
-
-				if (!this->NotMainWeapon)
-				{
-					CoordStruct FLH = TechnoExt::GetBurstFLH(pBullet->Owner, WeaponIndex, FLHFound);
-
-					if (!FLHFound)
-					{
-						if (auto pInfantry = abstract_cast<InfantryClass*>(pBullet->Owner))
-							FLH = TechnoExt::GetSimpleFLH(pInfantry, WeaponIndex, FLHFound);
-					}
-
-					if (FLHFound)
-						this->FLHCoord = FLH;
-				}
-			}
-			else
-			{
-				if (TechnoClass* pTransporter = pBullet->Owner->Transporter)
-				{
-					FootClass* pCurrentPassenger = pTransporter->Passengers.GetFirstPassenger();
-					FootClass* pBulletOwnerFoot = abstract_cast<FootClass*>(pBullet->Owner);
-
-					while (pCurrentPassenger)
-					{
-						if (pBulletOwnerFoot != pCurrentPassenger)
-						{
-							WeaponIndex += 1;
-							pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
-						}
-						else
-						{
-							break;
-						}
-					}
-
-					auto const pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType());
-
-					if (WeaponIndex < static_cast<int>(pTransporterTypeExt->AlternateFLHs.size()))
-						this->FLHCoord = pTransporterTypeExt->AlternateFLHs[WeaponIndex];
-					else
-						this->NotMainWeapon = true;
-				}
-				else
-				{
-					this->NotMainWeapon = true;
-				}
-			}
-		}
-		else
-		{
-			FLHFound = true;
-		}
-
-		const int BurstIndex = pBullet->Owner->CurrentBurstIndex;
-
-		if (BurstIndex % 2 == 1)
-		{
-			if (!FLHFound && !this->TechnoInLimbo)
-				this->FLHCoord.Y = -(this->FLHCoord.Y);
-
-			if (this->MirrorCoord)
-			{
-				this->SourceCoord.Y = -(this->SourceCoord.Y);
-				this->TargetCoord.Y = -(this->TargetCoord.Y);
-			}
-		}
-
-		TheSourceCoords = pBullet->Owner->GetCoords();
-		TheSourceCoords.Z = 0;
+		CheckMirrorCoord(pBullet->Owner, (this->IsLaser ? GetTechnoFLHCoord(pBullet) : true));
 	}
-
-	const double RotateAngle = Math::atan2(TheTargetCoords.Y - TheSourceCoords.Y , TheTargetCoords.X - TheSourceCoords.X);
-
-	if (this->SourceCoord.X != 0 || this->SourceCoord.Y != 0)
+	else
 	{
-		TheSourceCoords = TheTargetCoords;
-		TheSourceCoords.X += static_cast<int>(this->SourceCoord.X * Math::cos(RotateAngle) + this->SourceCoord.Y * Math::sin(RotateAngle));
-		TheSourceCoords.Y += static_cast<int>(this->SourceCoord.X * Math::sin(RotateAngle) - this->SourceCoord.Y * Math::cos(RotateAngle));
+		this->NotMainWeapon = true;
 	}
 
-	TheSourceCoords.Z = GetFloorCoordHeight(TheSourceCoords);
-	pBullet->SetLocation(TheSourceCoords);
-
-	TheTargetCoords.X += static_cast<int>(this->TargetCoord.X * Math::cos(RotateAngle) + this->TargetCoord.Y * Math::sin(RotateAngle));
-	TheTargetCoords.Y += static_cast<int>(this->TargetCoord.X * Math::sin(RotateAngle) - this->TargetCoord.Y * Math::cos(RotateAngle));
-
-	pBullet->SourceCoords = TheSourceCoords;
-	pBullet->TargetCoords = TheTargetCoords;
-
-	pBullet->Velocity.X = TheTargetCoords.X - TheSourceCoords.X;
-	pBullet->Velocity.Y = TheTargetCoords.Y - TheSourceCoords.Y;
-	pBullet->Velocity.Z = 0;
-
+	SetEngraveDirection(pBullet, TheSourceCoords, TheTargetCoords);
 	double StraightSpeed = this->GetTrajectorySpeed(pBullet);
 	StraightSpeed = StraightSpeed > 128.0 ? 128.0 : StraightSpeed;
 	const double CoordDistance = pBullet->Velocity.Magnitude();
@@ -296,139 +198,33 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 	if (this->TheDuration <= 0)
 		this->TheDuration = static_cast<int>(CoordDistance / StraightSpeed) + 1;
-
 }
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (!pBullet->WeaponType || !pBullet->Owner || this->TechnoInLimbo != pBullet->Owner->InLimbo)
+	if (!pBullet->WeaponType || (!pBullet->Owner && !this->NotMainWeapon) || this->TechnoInLimbo != pBullet->Owner->InLimbo)
 		return true;
 
-	this->TheDuration -= 1;
-
-	if (this->TheDuration < 0)
-	{
+	if (--this->TheDuration < 0)
 		return true;
-	}
 	else //SetLocation() seems to work wrong if I put this part into OnAIVelocity().
-	{
-		CoordStruct BulletCoords = pBullet->Location;
+		PlaceOnCorrectHeight(pBullet);
 
-		if (this->SetItsLocation)
-		{
-			BulletCoords.Z = GetFloorCoordHeight(BulletCoords);
-			pBullet->SetLocation(BulletCoords);
-		}
+	TechnoClass* const pTechno = pBullet->Owner;
+	HouseClass* const pOwner = pBullet->Owner->Owner;
 
-		CoordStruct FutureCoords
-		{
-			BulletCoords.X + static_cast<int>(pBullet->Velocity.X),
-			BulletCoords.Y + static_cast<int>(pBullet->Velocity.Y),
-			BulletCoords.Z + static_cast<int>(pBullet->Velocity.Z)
-		};
-
-		const int CheckDifference = GetFloorCoordHeight(FutureCoords) - FutureCoords.Z;
-
-		if (abs(CheckDifference) >= 384)
-		{
-			if (CheckDifference > 0)
-			{
-				BulletCoords.Z += CheckDifference;
-				pBullet->SetLocation(BulletCoords);
-				this->SetItsLocation = false;
-			}
-			else
-			{
-				this->SetItsLocation = true;
-			}
-		}
-		else
-		{
-			pBullet->Velocity.Z += CheckDifference;
-			this->SetItsLocation = false;
-		}
-	}
-
-	TechnoClass* pTechno = pBullet->Owner;
-	auto const pOwner = pBullet->Owner->Owner;
-
-	if (this->IsLaser && this->LaserTimer.Completed())
-	{
-		this->LaserTimer.Start(this->LaserDelay);
-		LaserDrawClass* pLaser;
-		CoordStruct FireCoord = pTechno->GetCoords();
-
-		if (this->NotMainWeapon)
-		{
-			FireCoord = this->FLHCoord;
-		}
-		else if (pTechno->WhatAmI() != AbstractType::Building)
-		{
-			if (this->TechnoInLimbo)
-			{
-				if (TechnoClass* pTransporter = pTechno->Transporter)
-					FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTransporter, this->FLHCoord, pTransporter->HasTurret());
-				else
-					return true;
-			}
-			else
-			{
-				FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
-			}
-		}
-		else //Not accurate, just got the similar FLH.
-		{
-			float RotateAngle = 0.0;
-
-			if (pTechno->HasTurret())
-				RotateAngle = static_cast<float>(-(pTechno->TurretFacing().GetRadian<32>()));
-			else
-				RotateAngle = static_cast<float>(-(pTechno->PrimaryFacing.Current().GetRadian<32>()));
-
-			FireCoord.X += static_cast<int>(this->FLHCoord.X * Math::cos(RotateAngle) + this->FLHCoord.Y * Math::sin(RotateAngle));
-			FireCoord.Y += static_cast<int>(this->FLHCoord.X * Math::sin(RotateAngle) - this->FLHCoord.Y * Math::cos(RotateAngle));
-
-			if (auto const pBuildingType = static_cast<BuildingTypeClass*>(pTechno->GetTechnoType()))
-				FireCoord.Z += this->FLHCoord.Z + 30 * (pBuildingType->GetFoundationWidth() + pBuildingType->GetFoundationHeight(false) + 2);
-		}
-
-		if (this->IsHouseColor)
-		{
-			pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, pOwner->LaserColor,
-				ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
-			pLaser->IsHouseColor = true;
-		}
-		else if (this->IsSingleColor)
-		{
-			pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor,
-				ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
-			pLaser->IsHouseColor = true;
-		}
-		else
-		{
-			pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor,
-				this->LaserOuterColor, this->LaserOuterSpread, this->LaserDuration);
-			pLaser->IsHouseColor = false;
-		}
-
-		pLaser->Thickness = this->LaserThickness;
-		pLaser->IsSupported = this->IsSupported;
-	}
+	if (this->IsLaser && this->LaserTimer.Completed() && DrawEngraveLaser(pBullet, pTechno, pOwner))
+		return true;
 
 	if (this->DamageTimer.Completed())
-	{
-		this->DamageTimer.Start(this->DamageDelay);
-		int LaserDamage = static_cast<int>(pBullet->WeaponType->Damage * this->FirepowerMult);
-		WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, LaserDamage, pOwner);
-	}
+		DetonateLaserWarhead(pBullet, pTechno, pOwner);
 
 	return false;
 }
 
 void EngraveTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
-	//Prevent damage again.
-	pBullet->UnInit();
+	pBullet->UnInit(); //Prevent damage again.
 }
 
 void EngraveTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
@@ -446,11 +242,112 @@ TrajectoryCheckReturnType EngraveTrajectory::OnAITechnoCheck(BulletClass* pBulle
 	return TrajectoryCheckReturnType::SkipGameCheck;
 }
 
+bool EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet)
+{
+	int WeaponIndex = 0;
+	bool AccurateFLHFound = false;
+
+	if (pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false)
+		&& pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true))
+	{
+		this->NotMainWeapon = true;
+		return true;
+	}
+
+	if (!this->TechnoInLimbo)
+	{
+		CoordStruct FLH = TechnoExt::GetBurstFLH(pBullet->Owner, WeaponIndex, AccurateFLHFound);
+
+		if (!AccurateFLHFound)
+		{
+			if (auto pInfantry = abstract_cast<InfantryClass*>(pBullet->Owner))
+				FLH = TechnoExt::GetSimpleFLH(pInfantry, WeaponIndex, AccurateFLHFound);
+		}
+
+		if (AccurateFLHFound)
+			this->FLHCoord = FLH;
+		else
+			this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
+	}
+	else if (TechnoClass* pTransporter = pBullet->Owner->Transporter)
+	{
+		FootClass* pCurrentPassenger = pTransporter->Passengers.GetFirstPassenger();
+		FootClass* pBulletOwnerFoot = abstract_cast<FootClass*>(pBullet->Owner);
+
+		while (pCurrentPassenger)
+		{
+			if (pBulletOwnerFoot != pCurrentPassenger)
+			{
+				WeaponIndex += 1;
+				pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		AccurateFLHFound = true;
+		auto const pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType());
+
+		if (WeaponIndex < static_cast<int>(pTransporterTypeExt->AlternateFLHs.size()))
+			this->FLHCoord = pTransporterTypeExt->AlternateFLHs[WeaponIndex];
+		else
+			this->FLHCoord = pTransporter->GetTechnoType()->Weapon[0].FLH;
+	}
+	else
+	{
+		this->NotMainWeapon = true;
+	}
+
+	return AccurateFLHFound;
+}
+
+void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno, bool Found)
+{
+	if (pTechno->CurrentBurstIndex % 2 == 0)
+		return;
+
+	if (!Found)
+		this->FLHCoord.Y = -(this->FLHCoord.Y);
+
+	if (this->MirrorCoord)
+	{
+		this->SourceCoord.Y = -(this->SourceCoord.Y);
+		this->TargetCoord.Y = -(this->TargetCoord.Y);
+	}
+}
+
+void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct Source, CoordStruct Target)
+{
+	const double RotateAngle = Math::atan2(Target.Y - Source.Y , Target.X - Source.X);
+
+	if (this->SourceCoord.X != 0 || this->SourceCoord.Y != 0)
+	{
+		Source = Target;
+		Source.X += static_cast<int>(this->SourceCoord.X * Math::cos(RotateAngle) + this->SourceCoord.Y * Math::sin(RotateAngle));
+		Source.Y += static_cast<int>(this->SourceCoord.X * Math::sin(RotateAngle) - this->SourceCoord.Y * Math::cos(RotateAngle));
+	}
+
+	Source.Z = GetFloorCoordHeight(Source);
+	pBullet->SetLocation(Source);
+
+	Target.X += static_cast<int>(this->TargetCoord.X * Math::cos(RotateAngle) + this->TargetCoord.Y * Math::sin(RotateAngle));
+	Target.Y += static_cast<int>(this->TargetCoord.X * Math::sin(RotateAngle) - this->TargetCoord.Y * Math::cos(RotateAngle));
+
+	pBullet->SourceCoords = Source;
+	pBullet->TargetCoords = Target;
+
+	pBullet->Velocity.X = Target.X - Source.X;
+	pBullet->Velocity.Y = Target.Y - Source.Y;
+	pBullet->Velocity.Z = 0;
+}
+
 int EngraveTrajectory::GetFloorCoordHeight(CoordStruct Coord)
 {
 	int Difference = 0;
 
-	if (auto const pCell = MapClass::Instance->GetCellAt(Coord))
+	if (CellClass* const pCell = MapClass::Instance->GetCellAt(Coord))
 	{
 		Difference = MapClass::Instance->GetCellFloorHeight(Coord) - this->SourceHeight;
 
@@ -462,4 +359,115 @@ int EngraveTrajectory::GetFloorCoordHeight(CoordStruct Coord)
 	}
 
 	return (this->SourceHeight + Difference);
+}
+
+void EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
+{
+	CoordStruct BulletCoords = pBullet->Location;
+
+	if (this->SetItsLocation)
+	{
+		BulletCoords.Z = GetFloorCoordHeight(BulletCoords);
+		pBullet->SetLocation(BulletCoords);
+	}
+
+	const CoordStruct FutureCoords
+	{
+		BulletCoords.X + static_cast<int>(pBullet->Velocity.X),
+		BulletCoords.Y + static_cast<int>(pBullet->Velocity.Y),
+		BulletCoords.Z + static_cast<int>(pBullet->Velocity.Z)
+	};
+
+	const int CheckDifference = GetFloorCoordHeight(FutureCoords) - FutureCoords.Z;
+
+	if (abs(CheckDifference) >= 384)
+	{
+		if (CheckDifference > 0)
+		{
+			BulletCoords.Z += CheckDifference;
+			pBullet->SetLocation(BulletCoords);
+			this->SetItsLocation = false;
+		}
+		else
+		{
+			this->SetItsLocation = true;
+		}
+	}
+	else
+	{
+		pBullet->Velocity.Z += CheckDifference;
+		this->SetItsLocation = false;
+	}
+}
+
+bool EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
+{
+	this->LaserTimer.Start(this->LaserDelay);
+	LaserDrawClass* pLaser;
+	CoordStruct FireCoord = pTechno->GetCoords();
+
+	if (this->NotMainWeapon)
+	{
+		FireCoord = this->FLHCoord;
+	}
+	else if (pTechno->WhatAmI() != AbstractType::Building)
+	{
+		if (this->TechnoInLimbo)
+		{
+			if (TechnoClass* pTransporter = pTechno->Transporter)
+				FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTransporter, this->FLHCoord, pTransporter->HasTurret());
+			else
+				return true;
+		}
+		else
+		{
+			FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
+		}
+	}
+	else //Not accurate, just got the similar FLH.
+	{
+		float RotateAngle = 0.0;
+
+		if (pTechno->HasTurret())
+			RotateAngle = static_cast<float>(-(pTechno->TurretFacing().GetRadian<32>()));
+		else
+			RotateAngle = static_cast<float>(-(pTechno->PrimaryFacing.Current().GetRadian<32>()));
+
+		FireCoord.X += static_cast<int>(this->FLHCoord.X * Math::cos(RotateAngle) + this->FLHCoord.Y * Math::sin(RotateAngle));
+		FireCoord.Y += static_cast<int>(this->FLHCoord.X * Math::sin(RotateAngle) - this->FLHCoord.Y * Math::cos(RotateAngle));
+
+		if (auto const pBuildingType = static_cast<BuildingTypeClass*>(pTechno->GetTechnoType()))
+			FireCoord.Z += this->FLHCoord.Z + 30 * (pBuildingType->GetFoundationWidth() + pBuildingType->GetFoundationHeight(false) + 2);
+	}
+
+	if (this->IsHouseColor)
+	{
+		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, pOwner->LaserColor,
+			ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
+		pLaser->IsHouseColor = true;
+	}
+	else if (this->IsSingleColor)
+	{
+		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor,
+			ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
+		pLaser->IsHouseColor = true;
+	}
+	else
+	{
+		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor,
+			this->LaserOuterColor, this->LaserOuterSpread, this->LaserDuration);
+		pLaser->IsHouseColor = false;
+	}
+
+	pLaser->Thickness = this->LaserThickness;
+	pLaser->IsSupported = this->IsSupported;
+
+	return false;
+}
+
+void EngraveTrajectory::DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
+{
+	this->DamageTimer.Start(this->DamageDelay);
+	const int LaserDamage = static_cast<int>(pBullet->WeaponType->Damage * this->FirepowerMult);
+	WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, LaserDamage, pOwner);
 }
