@@ -167,7 +167,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 ## Fixes / interactions with other extensions
 
-- `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying.
+- `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely.
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.

@@ -556,7 +556,7 @@ Phobos fixes:
 - Buildings considered vehicles (`ConsideredVehicle=true` or not set in conjunction with `UndeploysInto` & 1x1 foundation) are now considered units by affected target enum checks (by Starkku)
 
 Fixes / interactions with other extensions:
-- `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying (by Starkku)
+- `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely (by Starkku)
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active (by Starkku)
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed (by Starkku)
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)
