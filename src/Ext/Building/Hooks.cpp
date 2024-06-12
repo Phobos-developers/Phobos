@@ -228,9 +228,19 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 	return 0;
 }
 
+const byte old_empty_log[] = { 0xC3 };
+DEFINE_JUMP(CALL, 0x4CA016, GET_OFFSET(old_empty_log));
+
 DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 {
 	GET(FactoryClass*, pFactory, ESI);
+	GET_STACK(void*, calledby, 0x18);
+
+	TechnoClass* pTechno = pFactory->Object;
+
+	// Replace the old log with this to figure out where keeps flushing the stream
+	Debug::LogGame("(%p) : %s is abandoning production of %s[%s]\n",
+		calledby, pFactory->Owner->PlainName, pTechno->GetType()->Name, pTechno->get_ID());
 
 	auto pRulesExt = RulesExt::Global();
 
@@ -238,7 +248,6 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 		return 0;
 
 	auto const pOwnerExt = HouseExt::ExtMap.Find(pFactory->Owner);
-	TechnoClass* pTechno = pFactory->Object;
 
 	switch (pTechno->WhatAmI())
 	{

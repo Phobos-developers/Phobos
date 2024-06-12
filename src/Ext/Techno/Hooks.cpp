@@ -81,23 +81,6 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	return 0;
 }
 
-DEFINE_HOOK(0x4DBF13, FootClass_SetOwningHouse, 0x6)
-{
-	GET(FootClass* const, pThis, ESI);
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	for (auto& trail : pExt->LaserTrails)
-	{
-		if (trail.Type->IsHouseColor)
-			trail.CurrentColor = pThis->Owner->LaserColor;
-	}
-
-	if (pThis->Owner->IsHumanPlayer)
-		TechnoExt::ChangeOwnerMissionFix(pThis);
-
-	return 0;
-}
-
 DEFINE_HOOK_AGAIN(0x7355C0, TechnoClass_Init_InitialStrength, 0x6) // UnitClass_Init
 DEFINE_HOOK_AGAIN(0x517D69, TechnoClass_Init_InitialStrength, 0x6) // InfantryClass_Init
 DEFINE_HOOK_AGAIN(0x442C7B, TechnoClass_Init_InitialStrength, 0x6) // BuildingClass_Init
@@ -286,79 +269,40 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x703789, TechnoClass_CloakUpdateMCAnim, 0x6) // TechnoClass_Do_Cloak
-DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_Cloaking_AI
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
-		pExt->UpdateMindControlAnim();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_CloakVisibility, 0x7)
-{
-	enum { UseShadowyVisual = 0x703A5A, CheckMutualAlliance = 0x703A16 };
-
-	// Allow observers to always see cloaked objects.
-	// Skip IsCampaign check (confirmed being useless from Mental Omega mappers)
-	if (HouseClass::IsCurrentPlayerObserver())
-		return UseShadowyVisual;
-
-	return CheckMutualAlliance;
-}
-
-DEFINE_HOOK(0x45455B, BuildingClass_VisualCharacter_CloakVisibility, 0x5)
-{
-	enum { UseShadowyVisual = 0x45452D, CheckMutualAlliance = 0x454564 };
-
-	if (HouseClass::IsCurrentPlayerObserver())
-		return UseShadowyVisual;
-
-	return CheckMutualAlliance;
-}
-
 DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, EAX);
 	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
+	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 
-	enum { MakeInvunlnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
+	enum { MakeInvulnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
 
 	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
-		return MakeInvunlnerable;
+		return MakeInvulnerable;
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	IronCurtainEffect icEffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics);
+	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
+		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
 
 	switch (icEffect)
 	{
 	case IronCurtainEffect::Ignore:
-	{
 		R->EAX(DamageState::Unaffected);
-	}break;
+		break;
 	case IronCurtainEffect::Invulnerable:
-	{
-		return MakeInvunlnerable;
-	}break;
+		return MakeInvulnerable;
+		break;
 	default:
-	{
-		R->EAX
-		(
-			pThis->ReceiveDamage
-			(
-				&pThis->Health,
-				0,
-				pTypeExt->IronCurtain_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillOrganicsWarhead.Get(RulesClass::Instance->C4Warhead)),
-				nullptr,
-				true,
-				false,
-				pSource
-			)
-		);
-	}break;
+		auto pWH = RulesClass::Instance->C4Warhead;
+
+		if (!isForceShield)
+			pWH = pTypeExt->IronCurtain_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillOrganicsWarhead.Get(pWH));
+		else
+			pWH = pTypeExt->ForceShield_KillWarhead.Get(RulesExt::Global()->ForceShield_KillOrganicsWarhead.Get(pWH));
+
+		R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, pWH, nullptr, true, false, pSource));
+		break;
 	}
 
 	return SkipGameCode;
@@ -517,7 +461,7 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 
 	pThis->IsSelected = true;
 
-	if(RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+	if (RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
 		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
 
 	return 0;
@@ -532,7 +476,7 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 	if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
 	{
 		if (pAircraft->Type->Carryall && pAircraft->HasAnyLink() &&
-			pAircraft->Destination && (pAircraft->Destination->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+			generic_cast<FootClass*>(pAircraft->Destination))
 		{
 			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
 

@@ -57,14 +57,14 @@ public:
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 		std::unique_ptr<DroppodTypeClass> DroppodType;
 
-		Nullable<int> Ammo_AddOnDeploy;
+		Valueable<int> Ammo_AddOnDeploy;
 		Valueable<int> Ammo_AutoDeployMinimumAmount;
 		Valueable<int> Ammo_AutoDeployMaximumAmount;
 		Valueable<int> Ammo_DeployUnlockMinimumAmount;
 		Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
-		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
+		Valueable<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
@@ -93,9 +93,9 @@ public:
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
 
-		Nullable<WeaponTypeClass*> WarpInWeapon;
+		Valueable<WeaponTypeClass*> WarpInWeapon;
 		Nullable<WeaponTypeClass*> WarpInMinRangeWeapon;
-		Nullable<WeaponTypeClass*> WarpOutWeapon;
+		Valueable<WeaponTypeClass*> WarpOutWeapon;
 		Valueable<bool> WarpInWeapon_UseDistanceAsDamage;
 
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
@@ -109,7 +109,7 @@ public:
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
-		Nullable<InfantryTypeClass*> DefaultDisguise;
+		Valueable<InfantryTypeClass*> DefaultDisguise;
 		Valueable<bool> UseDisguiseMovementSpeed;
 
 		Nullable<int> OpenTopped_RangeBonus;
@@ -150,9 +150,11 @@ public:
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
-		Nullable<bool> ForceShield_KeptOnDeploy;
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
+		Nullable<bool> ForceShield_KeptOnDeploy;
+		Nullable<IronCurtainEffect> ForceShield_Effect;
+		Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
 		Valueable<bool> Explodes_DuringBuildup;
 		Nullable<int> DeployFireWeapon;
@@ -200,7 +202,7 @@ public:
 		Valueable<double> Tint_Intensity;
 		Valueable<AffectedHouse> Tint_VisibleToHouses;
 
-		Nullable<WeaponTypeClass*> RevengeWeapon;
+		Valueable<WeaponTypeClass*> RevengeWeapon;
 		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
@@ -308,7 +310,7 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 
-			, Ammo_AddOnDeploy { }
+			, Ammo_AddOnDeploy { 0 }
 			, Ammo_AutoDeployMinimumAmount { -1 }
 			, Ammo_AutoDeployMaximumAmount { -1 }
 			, Ammo_DeployUnlockMinimumAmount { -1 }
@@ -353,9 +355,11 @@ public:
 			, DeployedSecondaryFireFLH {}
 
 			, IronCurtain_KeptOnDeploy {}
-			, ForceShield_KeptOnDeploy {}
 			, IronCurtain_Effect {}
 			, IronCurtain_KillWarhead {}
+			, ForceShield_KeptOnDeploy {}
+			, ForceShield_Effect {}
+			, ForceShield_KillWarhead {}
 
 			, Explodes_KillPassengers { true }
 			, Explodes_DuringBuildup { true }

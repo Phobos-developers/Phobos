@@ -99,9 +99,9 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 		}
 	}
 
-	if (pTypeExt->Weapon.isset())
+	if (pTypeExt->Weapon)
 	{
-		WeaponTypeExt::DetonateAt(pTypeExt->Weapon.Get(), pThis->GetCoords(), pInvoker, appliedDamage, pInvokerHouse);
+		WeaponTypeExt::DetonateAt(pTypeExt->Weapon, pThis->GetCoords(), pInvoker, appliedDamage, pInvokerHouse);
 	}
 	else
 	{
@@ -169,7 +169,7 @@ DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 	auto const nDamage = Game::F2I(pType->Damage);
 	auto const pOwner = AnimExt::GetOwnerHouse(pThis);
 
-	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim.Get(), splashAnims, pOwner, pType->Warhead, nDamage,
+	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim, splashAnims, pOwner, pType->Warhead, nDamage,
 		pThis->GetCell(), pThis->Location, heightFlag, pType->IsMeteor, pTypeExt->Warhead_Detonate, pTypeExt->ExplodeOnWater, pTypeExt->SplashAnims_PickRandom);
 
 	return SkipGameCode;

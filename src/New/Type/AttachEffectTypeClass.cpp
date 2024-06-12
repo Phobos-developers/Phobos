@@ -1,33 +1,33 @@
 #include "AttachEffectTypeClass.h"
 
 // Used to match groups names to AttachEffectTypeClass instances. Do not iterate due to undetermined order being prone to desyncs.
-std::unordered_map<const char*, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
+std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
 
-bool AttachEffectTypeClass::HasTint()
+bool AttachEffectTypeClass::HasTint() const
 {
-	return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
+	return this->Tint_Intensity != 0.0 || this->Tint_Color.isset();
 }
 
-bool AttachEffectTypeClass::HasGroup(const char* pGroupID)
+bool AttachEffectTypeClass::HasGroup(const std::string& groupID) const
 {
-	for (auto const group : this->Groups)
+	for (auto const& group : this->Groups)
 	{
-		if (!strcmp(group, pGroupID))
+		if (!group.compare(groupID))
 			return true;
 	}
 
 	return false;
 }
 
-bool AttachEffectTypeClass::HasGroups(std::vector<const char*> groupIDs, bool requireAll)
+bool AttachEffectTypeClass::HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const
 {
 	size_t foundCount = 0;
 
-	for (auto const group : this->Groups)
+	for (auto const& group : this->Groups)
 	{
-		for (auto const requiredGroup : groupIDs)
+		for (auto const& requiredGroup : groupIDs)
 		{
-			if (!strcmp(group, requiredGroup))
+			if (!group.compare(requiredGroup))
 			{
 				if (!requireAll)
 					return true;
@@ -40,12 +40,12 @@ bool AttachEffectTypeClass::HasGroups(std::vector<const char*> groupIDs, bool re
 	return !requireAll ? false : foundCount >= groupIDs.size();
 }
 
-std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(std::vector<const char*> groupIDs)
+std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(const std::vector<std::string>& groupIDs)
 {
 	std::set<AttachEffectTypeClass*> types;
 	auto const map = &AttachEffectTypeClass::GroupsMap;
 
-	for (auto const group : groupIDs)
+	for (auto const& group : groupIDs)
 	{
 		if (map->contains(group))
 		{
@@ -57,9 +57,9 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(st
 	return std::vector<AttachEffectTypeClass*> (types.begin(), types.end());;
 }
 
-AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount)
+AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount) const
 {
-	if (cumulativeCount < 0 || !this->CumulativeAnimations.HasValue())
+	if (cumulativeCount < 0 || this->CumulativeAnimations.size() < 1)
 		return nullptr;
 
 	int index = static_cast<size_t>(cumulativeCount) >= this->CumulativeAnimations.size() ? this->CumulativeAnimations.size() - 1 : cumulativeCount - 1;
@@ -95,7 +95,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
 
-	if (strcmp(pSection, NONE_STR) == 0)
+	if (INIClass::IsBlank(pSection))
 		return;
 
 	INI_EX exINI(pINI);

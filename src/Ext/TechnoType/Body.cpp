@@ -239,9 +239,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
-	this->ForceShield_KeptOnDeploy.Read(exINI, pSection, "ForceShield.KeptOnDeploy");
 	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
 	this->IronCurtain_KillWarhead.Read(exINI, pSection, "IronCurtain.KillWarhead");
+	this->ForceShield_KeptOnDeploy.Read(exINI, pSection, "ForceShield.KeptOnDeploy");
+	this->ForceShield_Effect.Read(exINI, pSection, "ForceShield.Effect");
+	this->ForceShield_KillWarhead.Read(exINI, pSection, "ForceShield.KillWarhead");
 
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
 	this->Explodes_DuringBuildup.Read(exINI, pSection, "Explodes.DuringBuildup");
@@ -580,9 +582,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
 
 		.Process(this->IronCurtain_KeptOnDeploy)
-		.Process(this->ForceShield_KeptOnDeploy)
 		.Process(this->IronCurtain_Effect)
 		.Process(this->IronCurtain_KillWarhead)
+		.Process(this->ForceShield_KeptOnDeploy)
+		.Process(this->ForceShield_Effect)
+		.Process(this->ForceShield_KillWarhead)
 
 		.Process(this->Explodes_KillPassengers)
 		.Process(this->Explodes_DuringBuildup)

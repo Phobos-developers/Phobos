@@ -38,72 +38,6 @@ DEFINE_HOOK(0x6FE352, TechnoClass_FirepowerMultiplier, 0x8)       // TechnoClass
 	return 0;
 }
 
-bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
-{
-	bool cloak = pThis->Cloakable;
-	TechnoExt::ExtData* pExt = nullptr;
-
-	if (!pThis->Cloakable)
-	{
-		pExt = TechnoExt::ExtMap.Find(pThis);
-		pThis->Cloakable = pExt->AE_Cloakable;
-	}
-
-	bool retVal = pThis->TechnoClass::IsReadyToCloak();
-	pThis->Cloakable = cloak;
-
-	if (retVal)
-	{
-		if (!pExt)
-			pExt = TechnoExt::ExtMap.Find(pThis);
-
-		if (pExt->AE_ForceDecloak)
-			return false;
-	}
-
-	return retVal;
-}
-
-bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
-{
-	bool cloak = pThis->Cloakable;
-	TechnoExt::ExtData* pExt = nullptr;
-
-	if (!pThis->Cloakable)
-	{
-		pExt = TechnoExt::ExtMap.Find(pThis);
-		pThis->Cloakable = pExt->AE_Cloakable;
-	}
-
-	bool retVal = pThis->TechnoClass::ShouldNotBeCloaked();
-	pThis->Cloakable = cloak;
-
-	if (retVal)
-	{
-		if (!pExt)
-			pExt = TechnoExt::ExtMap.Find(pThis);
-
-		if (pExt->AE_ForceDecloak)
-			return true;
-	}
-
-	return retVal;
-}
-
-DEFINE_JUMP(VTABLE, 0x7E2544, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // AircraftClass
-DEFINE_JUMP(VTABLE, 0x7E8F34, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // FootClass
-DEFINE_JUMP(VTABLE, 0x7EB2F8, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // InfantryClass
-DEFINE_JUMP(VTABLE, 0x7F4C00, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // TechnoClass
-DEFINE_JUMP(VTABLE, 0x7F5F10, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // UnitClass
-DEFINE_JUMP(CALL, 0x457779, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper))    // BuildingClass
-
-DEFINE_JUMP(VTABLE, 0x7E2548, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // AircraftClass
-DEFINE_JUMP(VTABLE, 0x7E8F38, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // FootClass
-DEFINE_JUMP(VTABLE, 0x7EB2FC, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // InfantryClass
-DEFINE_JUMP(VTABLE, 0x7F4C04, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // TechnoClass
-DEFINE_JUMP(VTABLE, 0x7F5F14, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // UnitClass
-DEFINE_JUMP(CALL, 0x4578C9, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper));   // BuildingClass
-
 bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
@@ -167,7 +101,7 @@ DEFINE_HOOK(0x702050, TechnoClass_TakeDamage_AttachEffectExpireWeapon, 0x6)
 	{
 		auto const pType = attachEffect->GetType();
 
-		if (pType->ExpireWeapon.isset() && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Death) != ExpireWeaponCondition::None)
+		if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Death) != ExpireWeaponCondition::None)
 		{
 			if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || !cumulativeTypes.contains(pType))
 			{

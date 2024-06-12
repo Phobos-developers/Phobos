@@ -53,7 +53,7 @@ public:
 			AnnounceInvalidPointer(this->Invoker, ptr);
 			AnnounceInvalidPointer(this->InvokerHouse, ptr);
 			AnnounceInvalidPointer(this->AttachedSystem, ptr);
-			AnnounceInvalidPointer(ParentBuilding, ptr);
+			AnnounceInvalidPointer(this->ParentBuilding, ptr);
 		}
 
 		virtual void InitializeConstants() override;

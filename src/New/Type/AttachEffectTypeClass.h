@@ -9,7 +9,7 @@
 
 class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 {
-	static std::unordered_map<const char*, std::set<AttachEffectTypeClass*>> GroupsMap;
+	static std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> GroupsMap;
 
 public:
 	Valueable<int> Duration;
@@ -18,13 +18,13 @@ public:
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
 	Valueable<bool> PenetratesIronCurtain;
-	Nullable<AnimTypeClass*> Animation;
-	NullableVector<AnimTypeClass*> CumulativeAnimations;
+	Valueable<AnimTypeClass*> Animation;
+	ValueableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> Animation_ResetOnReapply;
 	Valueable<AttachedAnimFlag> Animation_OfflineAction;
 	Valueable<AttachedAnimFlag> Animation_TemporalAction;
 	Valueable<bool> Animation_UseInvokerAsOwner;
-	Nullable<WeaponTypeClass*> ExpireWeapon;
+	Valueable<WeaponTypeClass*> ExpireWeapon;
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
 	Nullable<ColorStruct> Tint_Color;
@@ -45,11 +45,11 @@ public:
 	Valueable<double> Crit_ExtraChance;
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
-	Nullable<WeaponTypeClass*> RevengeWeapon;
+	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 	Valueable<bool> DisableWeapons;
 
-	std::vector<const char*> Groups;
+	std::vector<std::string> Groups;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
@@ -91,10 +91,10 @@ public:
 		, Groups {}
 	{};
 
-	bool HasTint();
-	bool HasGroup(const char* pGroupID);
-	bool HasGroups(std::vector<const char*> groupIDs, bool requireAll);
-	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount);
+	bool HasTint() const;
+	bool HasGroup(const std::string& groupID) const;
+	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
+	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
 
 	virtual ~AttachEffectTypeClass() override = default;
 
@@ -107,7 +107,7 @@ public:
 		AttachEffectTypeClass::GroupsMap.clear();
 	}
 
-	static std::vector<AttachEffectTypeClass*> GetTypesFromGroups(std::vector<const char*> groupIDs);
+	static std::vector<AttachEffectTypeClass*> GetTypesFromGroups(const std::vector<std::string>& groupIDs);
 
 private:
 	template <typename T>

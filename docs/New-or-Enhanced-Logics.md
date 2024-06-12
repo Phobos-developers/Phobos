@@ -1095,6 +1095,7 @@ NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 ### Disguise logic additions (disguise-based movement speed, disguise blinking visibility)
 
 - `DisguiseBlinkingVisibility` can be used to customize which players can see disguises blinking on units. This does not affect targeting but does affect veterancy insignia visibility - blinking disguise means the original unit's insignia is visible always instead of disguise's.
+  - Another thing to note is that in singleplayer missions, for purposes of the disguise blinking, disguised objects owned by any player-controlled houses are also considered to be owned by the current player even if they are not allied, meaning players are always able to see their disguises blinking unless `DisguiseBlinkingVisibility` is set to `none` or `enemies`.
 - `UseDisguiseMovementSpeed`, if set, makes disguised unit adjust its movement speed to match that of the disguise, if applicable. Note that this applies even when the disguise is revealed, as long as it has not been removed.
 
 In `rulesmd.ini`:
@@ -1634,6 +1635,7 @@ Burst.FireWithinSequence=false  ; boolean
 - It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
   - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, WeaponType `Damage` is used.
   - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
+  - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
 
 In `rulesmd.ini`:
 ```ini

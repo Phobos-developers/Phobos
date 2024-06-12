@@ -5,7 +5,7 @@
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
-bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer)
+bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const
 {
 	bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
 	bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
@@ -38,7 +38,7 @@ void WeaponTypeExt::ExtData::Initialize()
 	this->RadType = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
-int WeaponTypeExt::ExtData::GetBurstDelay(int burstIndex)
+int WeaponTypeExt::ExtData::GetBurstDelay(int burstIndex) const
 {
 	int burstDelay = -1;
 

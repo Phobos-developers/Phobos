@@ -134,7 +134,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
-	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation.Get();
+	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation;
 
 	// Death if no ammo
 	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
@@ -482,6 +482,33 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
+
+	// Update movement sound if still moving while type changed.
+	if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+	{
+		if (pFoot->Locomotor->Is_Moving_Now() && pFoot->IsMoveSoundPlaying)
+		{
+			if (pCurrentType->MoveSound != pOldType->MoveSound)
+			{
+				// End the old sound.
+				pFoot->MoveSoundAudioController.End();
+
+				if (auto const count = pCurrentType->MoveSound.Count)
+				{
+					// Play a new sound.
+					int soundIndex = pCurrentType->MoveSound[Randomizer::Global->Random() % count];
+					VocClass::PlayAt(soundIndex, pFoot->Location, &pFoot->MoveSoundAudioController);
+					pFoot->IsMoveSoundPlaying = true;
+				}
+				else
+				{
+					pFoot->IsMoveSoundPlaying = false;
+				}
+
+				pFoot->MoveSoundDelay = 0;
+			}
+		}
+	}
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
@@ -796,7 +823,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 
 			this->UpdateCumulativeAttachEffects(attachEffect->GetType());
 
-			if (pType->ExpireWeapon.isset() && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
+			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
 					attachEffect->ExpireWeapon();
@@ -845,7 +872,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 			attachEffect->IsFirstCumulativeInstance = false;
 		}
 
-		if (pAttachEffectType->CumulativeAnimations.HasValue())
+		if (pAttachEffectType->CumulativeAnimations.size() > 0)
 			attachEffect->KillAnim();
 	}
 }
@@ -859,7 +886,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	double armor = 1.0;
 	double speed = 1.0;
 	double ROF = 1.0;
-	bool cloak = pThis->Cloakable;
+	bool cloak = false;
 	bool forceDecloak = false;
 	bool disableWeapons = false;
 
@@ -882,11 +909,10 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	this->AE_ArmorMultiplier = armor;
 	this->AE_SpeedMultiplier = speed;
 	this->AE_ROFMultiplier = ROF;
-	pThis->Cloakable = cloak;
+	this->AE_Cloakable = cloak;
 	this->AE_ForceDecloak = forceDecloak;
 	this->AE_DisableWeapons = disableWeapons;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
 }
-

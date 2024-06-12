@@ -29,9 +29,9 @@ public:
 	Valueable<AttachedAnimFlag> IdleAnim_TemporalAction;
 	Damageable<AnimTypeClass*> IdleAnim;
 	Damageable<AnimTypeClass*> IdleAnimDamaged;
-	Nullable<AnimTypeClass*> BreakAnim;
-	Nullable<AnimTypeClass*> HitAnim;
-	Nullable<WeaponTypeClass*> BreakWeapon;
+	Valueable<AnimTypeClass*> BreakAnim;
+	Valueable<AnimTypeClass*> HitAnim;
+	Valueable<WeaponTypeClass*> BreakWeapon;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
 	Valueable<int> ReceivedDamage_Minimum;
