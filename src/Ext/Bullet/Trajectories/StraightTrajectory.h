@@ -10,7 +10,6 @@ public:
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
 		, PassDetonate { false }
-		, PassDetonateWarhead {}
 		, PassDetonateDamage { 0 }
 		, PassDetonateDelay { 1 }
 		, PassDetonateTimer { 0 }
@@ -22,7 +21,6 @@ public:
 		, UseDisperseBurst { false }
 		, AxisOfRotation { { 0, 0, 1 } }
 		, ProximityImpact { 0 }
-		, ProximityWarhead {}
 		, ProximityDamage { 0 }
 		, ProximityRadius { Leptons(179) }
 		, ProximityAllies { 0.0 }
@@ -43,7 +41,6 @@ public:
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> PassThrough;
 	Valueable<bool> PassDetonate;
-	Nullable<WarheadTypeClass*> PassDetonateWarhead;
 	Valueable<int> PassDetonateDamage;
 	Valueable<int> PassDetonateDelay;
 	Valueable<int> PassDetonateTimer;
@@ -55,7 +52,6 @@ public:
 	Valueable<bool> UseDisperseBurst;
 	Valueable<CoordStruct> AxisOfRotation;
 	Valueable<int> ProximityImpact;
-	Nullable<WarheadTypeClass*> ProximityWarhead;
 	Valueable<int> ProximityDamage;
 	Valueable<Leptons> ProximityRadius;
 	Valueable<double> ProximityAllies;
@@ -75,7 +71,6 @@ public:
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
 		, PassDetonate { false }
-		, PassDetonateWarhead {}
 		, PassDetonateDamage { 0 }
 		, PassDetonateDelay { 1 }
 		, PassDetonateTimer {}
@@ -87,7 +82,6 @@ public:
 		, UseDisperseBurst { false }
 		, AxisOfRotation {}
 		, ProximityImpact { 0 }
-		, ProximityWarhead {}
 		, ProximityDamage { 0 }
 		, ProximityRadius { Leptons(179) }
 		, ProximityAllies { 0.0 }
@@ -112,7 +106,6 @@ public:
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
 		, PassDetonate { false }
-		, PassDetonateWarhead {}
 		, PassDetonateDamage { 0 }
 		, PassDetonateDelay { 1 }
 		, PassDetonateTimer {}
@@ -124,7 +117,6 @@ public:
 		, UseDisperseBurst { false }
 		, AxisOfRotation {}
 		, ProximityImpact { 0 }
-		, ProximityWarhead {}
 		, ProximityDamage { 0 }
 		, ProximityRadius { Leptons(179) }
 		, ProximityAllies { 0.0 }
@@ -164,7 +156,6 @@ public:
 	Leptons TargetSnapDistance;
 	bool PassThrough;
 	bool PassDetonate;
-	WarheadTypeClass* PassDetonateWarhead;
 	int PassDetonateDamage;
 	int PassDetonateDelay;
 	CDTimerClass PassDetonateTimer;
@@ -176,7 +167,6 @@ public:
 	bool UseDisperseBurst;
 	CoordStruct AxisOfRotation;
 	int ProximityImpact;
-	WarheadTypeClass* ProximityWarhead;
 	int ProximityDamage;
 	Leptons ProximityRadius;
 	double ProximityAllies;

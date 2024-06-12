@@ -132,7 +132,9 @@ double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 		return StraightSpeed;
 	}
 	else
+	{
 		return 100.0;
+	}
 }
 
 PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)

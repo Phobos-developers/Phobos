@@ -247,8 +247,7 @@ bool EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet)
 	int WeaponIndex = 0;
 	bool AccurateFLHFound = false;
 
-	if (pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false)
-		&& pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true))
+	if (pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false) && pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true))
 	{
 		this->NotMainWeapon = true;
 		return true;
@@ -424,7 +423,7 @@ bool EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 			FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
 		}
 	}
-	else //Not accurate, just got the similar FLH.
+	else // TODO Not accurate now, just get the similar FLH.
 	{
 		float RotateAngle = 0.0;
 
@@ -442,20 +441,17 @@ bool EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 
 	if (this->IsHouseColor)
 	{
-		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, pOwner->LaserColor,
-			ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
+		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, pOwner->LaserColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
 		pLaser->IsHouseColor = true;
 	}
 	else if (this->IsSingleColor)
 	{
-		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor,
-			ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
+		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
 		pLaser->IsHouseColor = true;
 	}
 	else
 	{
-		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor,
-			this->LaserOuterColor, this->LaserOuterSpread, this->LaserDuration);
+		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor, this->LaserOuterColor, this->LaserOuterSpread, this->LaserDuration);
 		pLaser->IsHouseColor = false;
 	}
 
