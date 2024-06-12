@@ -5,6 +5,8 @@
 #include <ScenarioClass.h>
 
 #include <Ext/House/Body.h>
+#include <Ext/Team/Body.h>
+#include <Ext/Script/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
