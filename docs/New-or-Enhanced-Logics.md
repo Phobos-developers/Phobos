@@ -698,6 +698,7 @@ Trajectory.Straight.ConfineAtHeight=0           ; integer
 ```{note}
 - Make sure you set a low `Trajectory.Straight.ProximityRadius` value unless necessary.
 - Note that if `Trajectory.Straight.ProximityFlight` is true, it will consume more CPU performance.
+- Note that the listed Warheads in `Trajectory.Straight.PassDetonateWarhead` and `Trajectory.Straight.ProximityWarhead` must be listed in `[Warheads]` for them to work.
 ```
 
 #### Bombard trajectory
@@ -789,6 +790,8 @@ Trajectory.Disperse.WeaponToGround=false        ; boolean
 ```{note}
 - Make sure you set a low `Trajectory.Disperse.RetargetRadius` value unless necessary. If you set `Trajectory.Disperse.WeaponRetarget=true`, also make sure you set `Trajectory.Disperse.Weapons` a low `Range` value unless necessary.
 - This does not properly support `Arcing=true` projectiles.
+- Note that the listed Weapons in `Trajectory.Disperse.Weapons` must be listed in `[WeaponTypes]` for them to work.
+- `Trajectory.Disperse.Weapons` now not support customized `LaserThickness`, `Bolt.ColorN`, `Bolt.DisableN`, `Bolt.Arcs`, `Beam.Color`, `Beam.Duration`  and `Beam.Amplitude`.
 ```
 
 #### Engrave trajectory
@@ -832,7 +835,7 @@ Trajectory.Engrave.DamageDelay=10              ; integer
 
 ```{note}
 - It's best not to let it be intercepted.
-- It will not work if it is created by `AirburstWeapon`. Using Disperse trajectory instead.
+- It will not work if it is created by `AirburstWeapon`. You can use Disperse trajectory instead.
 ```
 
 ### Shrapnel enhancements
