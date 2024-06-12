@@ -24,6 +24,9 @@ public:
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 		std::vector<TechnoExt::ExtData*> OwnedAutoDeathObjects;
 		std::vector<TechnoExt::ExtData*> OwnedTransportReloaders; // Objects that can reload ammo in limbo
+		std::vector<TechnoExt::ExtData*> OwnedTimedAutoDeathObjects;
+		bool ForceOnlyTargetHouseEnemy;
+		int ForceOnlyTargetHouseEnemyMode;
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 		CounterClass LimboBuildings; // Currently owned buildings in limbo
@@ -59,6 +62,8 @@ public:
 			, RepairBaseNodes { false,false,false }
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
+			, ForceOnlyTargetHouseEnemy { false }
+			, ForceOnlyTargetHouseEnemyMode { -1 }
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
@@ -113,6 +118,7 @@ public:
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
+	static void ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode);
 
 	static void SetSkirmishHouseName(HouseClass* pHouse);
 
