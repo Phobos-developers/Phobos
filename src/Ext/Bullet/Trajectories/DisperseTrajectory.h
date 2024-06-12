@@ -19,7 +19,7 @@ public:
 		, ROT { 30.0 }
 		, LockDirection { false }
 		, CruiseEnable { false }
-		, CruiseUnableRange { Leptons(128) }
+		, CruiseUnableRange { 5.0 }
 		, LeadTimeCalculate { true }
 		, TargetSnapDistance { Leptons(128) }
 		, RetargetAllies { false }
@@ -58,7 +58,7 @@ public:
 	Valueable<double> ROT;
 	Valueable<bool> LockDirection;
 	Valueable<bool> CruiseEnable;
-	Valueable<Leptons> CruiseUnableRange;
+	Valueable<double> CruiseUnableRange;
 	Valueable<bool> LeadTimeCalculate;
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> RetargetAllies;
@@ -96,11 +96,11 @@ public:
 		, ROT { 30.0 }
 		, LockDirection { false }
 		, CruiseEnable { false }
-		, CruiseUnableRange { Leptons(128) }
+		, CruiseUnableRange { 5.0 }
 		, LeadTimeCalculate { true }
 		, TargetSnapDistance { Leptons(128) }
-		, RetargetAllies { false }
 		, RetargetRadius { 0 }
+		, RetargetAllies { false }
 		, SuicideShortOfROT { true }
 		, SuicideAboveRange { 0 }
 		, SuicideIfNoWeapon { true }
@@ -142,11 +142,11 @@ public:
 		, ROT { 30.0 }
 		, LockDirection { false }
 		, CruiseEnable { false }
-		, CruiseUnableRange { Leptons(128) }
+		, CruiseUnableRange { 5.0 }
 		, LeadTimeCalculate { true }
 		, TargetSnapDistance { Leptons(128) }
-		, RetargetAllies { false }
 		, RetargetRadius { 0 }
+		, RetargetAllies { false }
 		, SuicideShortOfROT { true }
 		, SuicideAboveRange { 0 }
 		, SuicideIfNoWeapon { true }
@@ -197,11 +197,11 @@ public:
 	double ROT;
 	bool LockDirection;
 	bool CruiseEnable;
-	Leptons CruiseUnableRange;
+	double CruiseUnableRange;
 	bool LeadTimeCalculate;
 	Leptons TargetSnapDistance;
-	bool RetargetAllies;
 	double RetargetRadius;
+	bool RetargetAllies;
 	bool SuicideShortOfROT;
 	double SuicideAboveRange;
 	bool SuicideIfNoWeapon;

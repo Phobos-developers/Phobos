@@ -198,7 +198,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->PassDetonate = pType->PassDetonate;
 	this->PassDetonateDamage = pType->PassDetonateDamage;
 	this->PassDetonateDelay = pType->PassDetonateDelay > 0 ? pType->PassDetonateDelay : 1;
-	this->PassDetonateTimer.Start(pType->PassDetonateTimer);
+	this->PassDetonateTimer.Start(pType->PassDetonateTimer > 0 ? pType->PassDetonateTimer : 0);
 	this->PassDetonateLocal = pType->PassDetonateLocal;
 	this->LeadTimeCalculate = pType->LeadTimeCalculate;
 	this->OffsetCoord = pType->OffsetCoord;
@@ -215,7 +215,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->ThroughBuilding = pType->ThroughBuilding;
 	this->SubjectToGround = pType->SubjectToGround;
 	this->ConfineAtHeight = pType->ConfineAtHeight;
-	this->EdgeAttenuation = pType->EdgeAttenuation > 0.0 ? pType->EdgeAttenuation : 1.0;
+	this->EdgeAttenuation = pType->EdgeAttenuation > 0 ? pType->EdgeAttenuation : 0;
 	this->RemainingDistance = 1;
 	this->ExtraCheck = nullptr;
 	this->LastCasualty.reserve(1);
@@ -1244,7 +1244,7 @@ int StraightTrajectory::GetTheTrueDamage(int Damage, BulletClass* pBullet, Techn
 		const double CalculatedDamage = Damage * this->FirepowerMult * GetExtraDamageMultiplier(pBullet, pTechno, pOwner, Self);
 		TrueDamage = static_cast<int>(CalculatedDamage + 0.5);
 
-		if (TrueDamage == 0 && Damage != 0)
+		if (TrueDamage == 0 && Damage != 0 && this->EdgeAttenuation != 0)
 			TrueDamage = Math::sgn(CalculatedDamage);
 	}
 

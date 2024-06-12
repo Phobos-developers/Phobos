@@ -33,8 +33,8 @@ bool DisperseTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 		.Process(this->CruiseUnableRange, false)
 		.Process(this->LeadTimeCalculate, false)
 		.Process(this->TargetSnapDistance, false)
-		.Process(this->RetargetAllies, false)
 		.Process(this->RetargetRadius, false)
+		.Process(this->RetargetAllies, false)
 		.Process(this->SuicideShortOfROT, false)
 		.Process(this->SuicideAboveRange, false)
 		.Process(this->SuicideIfNoWeapon, false)
@@ -75,8 +75,8 @@ bool DisperseTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->CruiseUnableRange)
 		.Process(this->LeadTimeCalculate)
 		.Process(this->TargetSnapDistance)
-		.Process(this->RetargetAllies)
 		.Process(this->RetargetRadius)
+		.Process(this->RetargetAllies)
 		.Process(this->SuicideShortOfROT)
 		.Process(this->SuicideAboveRange)
 		.Process(this->SuicideIfNoWeapon)
@@ -115,8 +115,8 @@ void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->CruiseUnableRange.Read(exINI, pSection, "Trajectory.Disperse.CruiseUnableRange");
 	this->LeadTimeCalculate.Read(exINI, pSection, "Trajectory.Disperse.LeadTimeCalculate");
 	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.Disperse.TargetSnapDistance");
-	this->RetargetAllies.Read(exINI, pSection, "Trajectory.Disperse.RetargetAllies");
 	this->RetargetRadius.Read(exINI, pSection, "Trajectory.Disperse.RetargetRadius");
+	this->RetargetAllies.Read(exINI, pSection, "Trajectory.Disperse.RetargetAllies");
 	this->SuicideShortOfROT.Read(exINI, pSection, "Trajectory.Disperse.SuicideShortOfROT");
 	this->SuicideAboveRange.Read(exINI, pSection, "Trajectory.Disperse.SuicideAboveRange");
 	this->SuicideIfNoWeapon.Read(exINI, pSection, "Trajectory.Disperse.SuicideIfNoWeapon");
@@ -154,8 +154,8 @@ bool DisperseTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->CruiseUnableRange)
 		.Process(this->LeadTimeCalculate)
 		.Process(this->TargetSnapDistance)
-		.Process(this->RetargetAllies)
 		.Process(this->RetargetRadius)
+		.Process(this->RetargetAllies)
 		.Process(this->SuicideShortOfROT)
 		.Process(this->SuicideAboveRange)
 		.Process(this->SuicideIfNoWeapon)
@@ -207,8 +207,8 @@ bool DisperseTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->CruiseUnableRange)
 		.Process(this->LeadTimeCalculate)
 		.Process(this->TargetSnapDistance)
-		.Process(this->RetargetAllies)
 		.Process(this->RetargetRadius)
+		.Process(this->RetargetAllies)
 		.Process(this->SuicideShortOfROT)
 		.Process(this->SuicideAboveRange)
 		.Process(this->SuicideIfNoWeapon)
@@ -256,18 +256,18 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->ROT = pType->ROT > 0.001 ? pType->ROT : 0.001;
 	this->LockDirection = pType->LockDirection;
 	this->CruiseEnable = pType->CruiseEnable;
-	this->CruiseUnableRange = pType->CruiseUnableRange;
+	this->CruiseUnableRange = pType->CruiseUnableRange > 0.25 ? pType->CruiseUnableRange * 256 : 64;
 	this->LeadTimeCalculate = pType->LeadTimeCalculate;
 	this->TargetSnapDistance = pType->TargetSnapDistance;
-	this->RetargetAllies = pType->RetargetAllies;
 	this->RetargetRadius = pType->RetargetRadius;
+	this->RetargetAllies = pType->RetargetAllies;
 	this->SuicideShortOfROT = pType->SuicideShortOfROT;
 	this->SuicideAboveRange = pType->SuicideAboveRange * 256;
 	this->SuicideIfNoWeapon = pType->SuicideIfNoWeapon;
 	this->WeaponBurst = pType->WeaponBurst;
 	this->WeaponCount = pType->WeaponCount;
 	this->WeaponDelay = pType->WeaponDelay > 0 ? pType->WeaponDelay : 1;
-	this->WeaponTimer.Start(pType->WeaponTimer);
+	this->WeaponTimer.Start(pType->WeaponTimer > 0 ? pType->WeaponTimer : 0);
 	this->WeaponScope = pType->WeaponScope;
 	this->WeaponSeparate = pType->WeaponSeparate;
 	this->WeaponRetarget = pType->WeaponRetarget;

@@ -830,7 +830,7 @@ Trajectory.Engrave.LaserOuterSpread=0,0,0      ; integer - Red,Green,Blue
 Trajectory.Engrave.LaserThickness=3            ; integer
 Trajectory.Engrave.LaserDuration=1             ; integer
 Trajectory.Engrave.LaserDelay=1                ; integer
-Trajectory.Engrave.DamageDelay=10              ; integer
+Trajectory.Engrave.DamageDelay=2               ; integer
 ```
 
 ```{note}

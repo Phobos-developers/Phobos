@@ -20,7 +20,7 @@ public:
 		, LaserThickness { 3 }
 		, LaserDuration { 1 }
 		, LaserDelay { 1 }
-		, DamageDelay { 10 }
+		, DamageDelay { 2 }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -63,7 +63,7 @@ public:
 		, LaserThickness { 3 }
 		, LaserDuration { 1 }
 		, LaserDelay { 1 }
-		, DamageDelay { 10 }
+		, DamageDelay { 2 }
 		, LaserTimer {}
 		, DamageTimer {}
 		, SourceHeight { 0 }
@@ -89,7 +89,7 @@ public:
 		, LaserThickness { 3 }
 		, LaserDuration { 1 }
 		, LaserDelay { 1 }
-		, DamageDelay { 10 }
+		, DamageDelay { 2 }
 		, LaserTimer {}
 		, DamageTimer {}
 		, SourceHeight { 0 }
