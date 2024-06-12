@@ -371,6 +371,7 @@ New:
 - Reloading ammo in transports (by Starkku)
 - Dump variables to file on scenario end / hotkey (by Morton)
 - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
+- Offline power plant indicator (by Fryone)
 - Allow toggling `Infantry/UnitsGainSelfHeal` for `MultiplayPassive=true` houses (by Starkku)
 - Customizable straight trajectory detonation & snap distance and pass-through option (by Starkku)
 - Airstrike & spy plane fixed spawn distance & height (by Starkku)
