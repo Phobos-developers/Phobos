@@ -482,6 +482,33 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
+
+	// Update movement sound if still moving while type changed.
+	if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+	{
+		if (pFoot->Locomotor->Is_Moving_Now() && pFoot->IsMoveSoundPlaying)
+		{
+			if (pCurrentType->MoveSound != pOldType->MoveSound)
+			{
+				// End the old sound.
+				pFoot->MoveSoundAudioController.End();
+
+				if (auto const count = pCurrentType->MoveSound.Count)
+				{
+					// Play a new sound.
+					int soundIndex = pCurrentType->MoveSound[Randomizer::Global->Random() % count];
+					VocClass::PlayAt(soundIndex, pFoot->Location, &pFoot->MoveSoundAudioController);
+					pFoot->IsMoveSoundPlaying = true;
+				}
+				else
+				{
+					pFoot->IsMoveSoundPlaying = false;
+				}
+
+				pFoot->MoveSoundDelay = 0;
+			}
+		}
+	}
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
