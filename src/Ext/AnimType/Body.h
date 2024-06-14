@@ -25,6 +25,7 @@ public:
 		Valueable<bool> CreateUnit_RemapAnim;
 		Valueable<bool> CreateUnit_RandomFacing;
 		Valueable<Mission> CreateUnit_Mission;
+		Valueable<Mission> CreateUnit_Mission_AI;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
 		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
@@ -56,6 +57,7 @@ public:
 			, CreateUnit_InheritTurretFacings { false }
 			, CreateUnit_RemapAnim { false }
 			, CreateUnit_Mission { Mission::Guard }
+			, CreateUnit_Mission_AI { Mission::Hunt }
 			, CreateUnit_Owner { OwnerHouseKind::Victim }
 			, CreateUnit_AlwaysSpawnOnGround { false }
 			, CreateUnit_ConsiderPathfinding { false }

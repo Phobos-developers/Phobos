@@ -171,7 +171,12 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 							}
 						}
 
-						pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);
+						auto const mission = decidedOwner->IsControlledByHuman()?
+							pTypeExt->CreateUnit_Mission.Get() : pTypeExt->CreateUnit_Mission_AI.Get();
+						if (mission == detail::Scatter_Not_A_Mission)
+							pTechno->Scatter(CoordStruct::Empty, true, false);
+						else
+							pTechno->QueueMission(mission, false);
 					}
 
 					if (!decidedOwner->Type->MultiplayPassive)

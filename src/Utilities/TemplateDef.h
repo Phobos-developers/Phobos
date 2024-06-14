@@ -532,11 +532,19 @@ namespace detail
 		return false;
 	}
 
+	constexpr Mission Scatter_Not_A_Mission = Mission(888);
+
 	template <>
 	inline bool read<Mission>(Mission &value, INI_EX &parser, const char *pSection, const char *pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
+			if (_strcmpi(parser.value(), "scatter") == 0)
+			{
+				value = Scatter_Not_A_Mission;
+				return true;
+			}
+
 			auto const mission = MissionControlClass::FindIndex(parser.value());
 
 			if (mission != Mission::None)
