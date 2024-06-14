@@ -163,38 +163,34 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->DamageTimer.StartTime = 0;
 	this->SourceHeight = pBullet->SourceCoords.Z;
 	this->SetItsLocation = false;
-	this->TechnoInLimbo = false;
-	this->NotMainWeapon = false;
-	this->FirepowerMult = 1.0;
 	this->FLHCoord = pBullet->SourceCoords;
 
 	if (!pBullet->WeaponType) //Bullets create from AirburstWeapon have no WeaponType.
 		return;
 
 	CoordStruct TheSourceCoords { pBullet->SourceCoords.X, pBullet->SourceCoords.Y, 0 };
-	CoordStruct TheTargetCoords { pBullet->TargetCoords.X, pBullet->TargetCoords.Y, 0 };
+	const CoordStruct TheTargetCoords { pBullet->TargetCoords.X, pBullet->TargetCoords.Y, 0 };
 
 	if (pBullet->Owner)
 	{
 		TheSourceCoords = pBullet->Owner->GetCoords();
 		this->TechnoInLimbo = pBullet->Owner->InLimbo;
+		this->NotMainWeapon = false;
 		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
 		CheckMirrorCoord(pBullet->Owner, (this->IsLaser ? GetTechnoFLHCoord(pBullet) : true));
 	}
 	else
 	{
+		this->TechnoInLimbo = false;
 		this->NotMainWeapon = true;
+		this->FirepowerMult = 1.0;
 	}
 
 	SetEngraveDirection(pBullet, TheSourceCoords, TheTargetCoords);
 	double StraightSpeed = this->GetTrajectorySpeed(pBullet);
 	StraightSpeed = StraightSpeed > 128.0 ? 128.0 : StraightSpeed;
 	const double CoordDistance = pBullet->Velocity.Magnitude();
-
-	if (CoordDistance > 0)
-		pBullet->Velocity *= StraightSpeed / CoordDistance;
-	else
-		pBullet->Velocity *= 0;
+	pBullet->Velocity *= (CoordDistance > 0) ? (StraightSpeed / CoordDistance) : 0;
 
 	if (this->TheDuration <= 0)
 		this->TheDuration = static_cast<int>(CoordDistance / StraightSpeed) + 1;
@@ -259,19 +255,16 @@ bool EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet)
 
 		if (!AccurateFLHFound)
 		{
-			if (auto pInfantry = abstract_cast<InfantryClass*>(pBullet->Owner))
+			if (InfantryClass* const pInfantry = abstract_cast<InfantryClass*>(pBullet->Owner))
 				FLH = TechnoExt::GetSimpleFLH(pInfantry, WeaponIndex, AccurateFLHFound);
 		}
 
-		if (AccurateFLHFound)
-			this->FLHCoord = FLH;
-		else
-			this->FLHCoord = pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
+		this->FLHCoord = AccurateFLHFound ? FLH : pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
 	}
-	else if (TechnoClass* pTransporter = pBullet->Owner->Transporter)
+	else if (const TechnoClass* const pTransporter = pBullet->Owner->Transporter)
 	{
-		FootClass* pCurrentPassenger = pTransporter->Passengers.GetFirstPassenger();
-		FootClass* pBulletOwnerFoot = abstract_cast<FootClass*>(pBullet->Owner);
+		const FootClass* pCurrentPassenger = pTransporter->Passengers.GetFirstPassenger();
+		const FootClass* const pBulletOwnerFoot = abstract_cast<FootClass*>(pBullet->Owner);
 
 		while (pCurrentPassenger)
 		{
@@ -288,11 +281,7 @@ bool EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet)
 
 		AccurateFLHFound = true;
 		auto const pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType());
-
-		if (WeaponIndex < static_cast<int>(pTransporterTypeExt->AlternateFLHs.size()))
-			this->FLHCoord = pTransporterTypeExt->AlternateFLHs[WeaponIndex];
-		else
-			this->FLHCoord = pTransporter->GetTechnoType()->Weapon[0].FLH;
+		this->FLHCoord = (WeaponIndex < static_cast<int>(pTransporterTypeExt->AlternateFLHs.size())) ? pTransporterTypeExt->AlternateFLHs[WeaponIndex] : pTransporter->GetTechnoType()->Weapon[0].FLH;
 	}
 	else
 	{
@@ -346,7 +335,7 @@ int EngraveTrajectory::GetFloorCoordHeight(CoordStruct Coord)
 {
 	int Difference = 0;
 
-	if (CellClass* const pCell = MapClass::Instance->GetCellAt(Coord))
+	if (const CellClass* const pCell = MapClass::Instance->GetCellAt(Coord))
 	{
 		Difference = MapClass::Instance->GetCellFloorHeight(Coord) - this->SourceHeight;
 
@@ -425,17 +414,11 @@ bool EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 	}
 	else // TODO Not accurate now, just get the similar FLH.
 	{
-		float RotateAngle = 0.0;
-
-		if (pTechno->HasTurret())
-			RotateAngle = static_cast<float>(-(pTechno->TurretFacing().GetRadian<32>()));
-		else
-			RotateAngle = static_cast<float>(-(pTechno->PrimaryFacing.Current().GetRadian<32>()));
-
+		const double RotateAngle = pTechno->HasTurret() ? -(pTechno->TurretFacing().GetRadian<32>()) : -(pTechno->PrimaryFacing.Current().GetRadian<32>());
 		FireCoord.X += static_cast<int>(this->FLHCoord.X * Math::cos(RotateAngle) + this->FLHCoord.Y * Math::sin(RotateAngle));
 		FireCoord.Y += static_cast<int>(this->FLHCoord.X * Math::sin(RotateAngle) - this->FLHCoord.Y * Math::cos(RotateAngle));
 
-		if (auto const pBuildingType = static_cast<BuildingTypeClass*>(pTechno->GetTechnoType()))
+		if (const BuildingTypeClass* const pBuildingType = static_cast<BuildingTypeClass*>(pTechno->GetTechnoType()))
 			FireCoord.Z += this->FLHCoord.Z + 30 * (pBuildingType->GetFoundationWidth() + pBuildingType->GetFoundationHeight(false) + 2);
 	}
 

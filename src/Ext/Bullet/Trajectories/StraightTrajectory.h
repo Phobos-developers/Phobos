@@ -192,10 +192,9 @@ private:
 	bool BulletPrepareCheck(BulletClass* pBullet);
 	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed);
 	void BulletDetonateLastCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed);
-	bool CheckThroughAndSubjectInCell(BulletClass* pBullet, CellClass* pCell, double CellDistance, double ThisDistance, HouseClass* pOwner);
+	bool CheckThroughAndSubjectInCell(BulletClass* pBullet, CellClass* pCell, HouseClass* pOwner);
 	void PassWithDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
 	void PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
-	std::vector<CellClass*> GetCellsInPassThrough(BulletClass* pBullet);
 	std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet);
 	std::vector<CellStruct> GetCellsInRectangle(CellStruct bStaCell, CellStruct lMidCell, CellStruct rMidCell, CellStruct tEndCell);
 	int GetTheTrueDamage(int Damage, BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, bool Self);
