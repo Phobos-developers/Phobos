@@ -26,10 +26,9 @@ public:
 	}
 
 	static CellClass* FindFirstObstacle(CoordStruct const& pSourceCoords, CoordStruct const& pTargetCoords, AbstractClass const* const pSource,
-		AbstractClass const* const pTarget, HouseClass* pOwner, BulletTypeClass* pBulletType, bool isTargetingCheck = false)
+		AbstractClass const* const pTarget, HouseClass* pOwner, BulletTypeClass* pBulletType, bool isTargetingCheck = false, bool subjectToGround = false)
 	{
 		BulletTypeExt::ExtData* pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
-		const bool subjectToGround = CheckSubjectToGround(pBulletType, pBulletTypeExt);
 
 		if (SubjectToObstacles(pBulletType, pBulletTypeExt) || subjectToGround)
 		{
@@ -62,10 +61,10 @@ public:
 	}
 
 	static CellClass* FindFirstImpenetrableObstacle(CoordStruct const& pSourceCoords, CoordStruct const& pTargetCoords, AbstractClass const* const pSource,
-		AbstractClass const* const pTarget, HouseClass* pOwner, WeaponTypeClass* pWeapon, bool isTargetingCheck = false)
+		AbstractClass const* const pTarget, HouseClass* pOwner, WeaponTypeClass* pWeapon, bool isTargetingCheck = false, bool subjectToGround = false)
 	{
 		// Does not currently need further checks.
-		return FindFirstObstacle(pSourceCoords, pTargetCoords, pSource, pTarget, pOwner, pWeapon->Projectile, isTargetingCheck);
+		return FindFirstObstacle(pSourceCoords, pTargetCoords, pSource, pTarget, pOwner, pWeapon->Projectile, isTargetingCheck, subjectToGround);
 	}
 
 	static bool SubjectToObstacles(BulletTypeClass* pBulletType, BulletTypeExt::ExtData*& pBulletTypeExt)
@@ -90,7 +89,7 @@ public:
 		return false;
 	}
 
-	static CoordStruct SubjectToGround(const CoordStruct sourceCoords, const CoordStruct targetCoords, TechnoClass* const pTechno, WeaponTypeClass* const pWeapon)
+	static CoordStruct AddFLHToSourceCoords(const CoordStruct sourceCoords, const CoordStruct targetCoords, TechnoClass* const pTechno, WeaponTypeClass* const pWeapon)
 	{
 		int WeaponIndex = 0;
 
@@ -156,8 +155,10 @@ public:
 		return (sourceCoords + CoordStruct { static_cast<int>(resultFLHCoords.X), -static_cast<int>(resultFLHCoords.Y), static_cast<int>(resultFLHCoords.Z) });
 	}
 
-	static bool CheckSubjectToGround(BulletTypeClass* pBulletType, BulletTypeExt::ExtData* pBulletTypeExt)
+	static bool CheckSubjectToGround(BulletTypeClass* pBulletType)
 	{
+		BulletTypeExt::ExtData* pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+
 		if (!pBulletTypeExt->TrajectoryType)
 			return false;
 
@@ -178,7 +179,7 @@ public:
 
 			for (auto const& pWeapon : pBulletTypeExt->Disperse_Weapons)
 			{
-				if (CheckSubjectToGround(pWeapon->Projectile, BulletTypeExt::ExtMap.Find(pWeapon->Projectile)))
+				if (CheckSubjectToGround(pWeapon->Projectile))
 					return true;
 			}
 		}
@@ -200,7 +201,7 @@ DEFINE_HOOK(0x4688A9, BulletClass_Unlimbo_Obstacles, 0x6)
 	if (pThis->Type->Inviso)
 	{
 		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
-		const auto pObstacleCell = BulletObstacleHelper::FindFirstObstacle(*sourceCoords, targetCoords, pThis->Owner, pThis->Target, pOwner, pThis->Type, false);
+		const auto pObstacleCell = BulletObstacleHelper::FindFirstObstacle(*sourceCoords, targetCoords, pThis->Owner, pThis->Target, pOwner, pThis->Type, false, false);
 
 		if (pObstacleCell)
 		{
@@ -237,7 +238,6 @@ DEFINE_HOOK(0x468C86, BulletClass_ShouldExplode_Obstacles, 0xA)
 			return Explode;
 	}
 
-
 	// Restore overridden instructions.
 	R->EAX(pThis->GetHeight());
 	return SkipGameCode;
@@ -270,8 +270,9 @@ DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 
 	if (!pObstacleCell)
 	{
-		const CoordStruct newSourceCoords = BulletObstacleHelper::SubjectToGround(*pSourceCoords, targetCoords, pTechno, pWeapon); //TODO Get FLH simply.
-		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true);
+		const bool subjectToGround = BulletObstacleHelper::CheckSubjectToGround(pWeapon->Projectile);
+		const CoordStruct newSourceCoords = subjectToGround ? BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pWeapon) : *pSourceCoords; //TODO Get FLH simply.
+		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true, subjectToGround);
 	}
 
 	InRangeTemp::Techno = nullptr;
