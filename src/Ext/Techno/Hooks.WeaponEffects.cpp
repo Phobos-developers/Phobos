@@ -210,7 +210,7 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_LaserZap_Obstacles, 0x7)
 DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_TargetSet, 0x6)
 {
 	LEA_STACK(CoordStruct*, pTargetCoords, STACK_OFFSET(0xB0, -0x28));
-	GET(AbstractClass*, pTarget, EDI);
+	GET_BASE(AbstractClass*, pTarget, 0x8);
 
 	FireAtTemp::originalTargetCoords = *pTargetCoords;
 	FireAtTemp::pOriginalTarget = pTarget;
