@@ -96,12 +96,11 @@ bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->DamageDelay)
 		.Process(this->LaserTimer)
 		.Process(this->DamageTimer)
-		.Process(this->SourceHeight)
-		.Process(this->SetItsLocation)
 		.Process(this->TechnoInLimbo)
 		.Process(this->NotMainWeapon)
 		.Process(this->FirepowerMult)
 		.Process(this->FLHCoord)
+		.Process(this->TemporaryCoord)
 		;
 
 	return true;
@@ -129,12 +128,11 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->DamageDelay)
 		.Process(this->LaserTimer)
 		.Process(this->DamageTimer)
-		.Process(this->SourceHeight)
-		.Process(this->SetItsLocation)
 		.Process(this->TechnoInLimbo)
 		.Process(this->NotMainWeapon)
 		.Process(this->FirepowerMult)
 		.Process(this->FLHCoord)
+		.Process(this->TemporaryCoord)
 		;
 
 	return true;
@@ -142,6 +140,9 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
+	if (!pBullet->WeaponType) //Bullets create from AirburstWeapon have no WeaponType.
+		return;
+
 	auto const pType = this->GetTrajectoryType<EngraveTrajectoryType>(pBullet);
 
 	this->SourceCoord = pType->SourceCoord;
@@ -161,32 +162,27 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->DamageDelay = pType->DamageDelay > 0 ? pType->DamageDelay : 1;
 	this->LaserTimer.StartTime = 0;
 	this->DamageTimer.StartTime = 0;
-	this->SourceHeight = pBullet->SourceCoords.Z;
-	this->SetItsLocation = false;
+	this->TemporaryCoord = CoordStruct::Empty;
 	this->FLHCoord = pBullet->SourceCoords;
-
-	if (!pBullet->WeaponType) //Bullets create from AirburstWeapon have no WeaponType.
-		return;
-
-	CoordStruct TheSourceCoords { pBullet->SourceCoords.X, pBullet->SourceCoords.Y, 0 };
-	const CoordStruct TheTargetCoords { pBullet->TargetCoords.X, pBullet->TargetCoords.Y, 0 };
 
 	if (pBullet->Owner)
 	{
-		TheSourceCoords = pBullet->Owner->GetCoords();
 		this->TechnoInLimbo = pBullet->Owner->InLimbo;
 		this->NotMainWeapon = false;
 		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
+
 		CheckMirrorCoord(pBullet->Owner, (this->IsLaser ? GetTechnoFLHCoord(pBullet) : true));
+		SetEngraveDirection(pBullet, pBullet->Owner->GetCoords(), pBullet->TargetCoords);
 	}
 	else
 	{
 		this->TechnoInLimbo = false;
 		this->NotMainWeapon = true;
 		this->FirepowerMult = 1.0;
+
+		SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords);
 	}
 
-	SetEngraveDirection(pBullet, TheSourceCoords, TheTargetCoords);
 	double StraightSpeed = this->GetTrajectorySpeed(pBullet);
 	StraightSpeed = StraightSpeed > 128.0 ? 128.0 : StraightSpeed;
 	const double CoordDistance = pBullet->Velocity.Magnitude();
@@ -203,8 +199,8 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 
 	if (--this->TheDuration < 0)
 		return true;
-	else //SetLocation() seems to work wrong if I put this part into OnAIVelocity().
-		PlaceOnCorrectHeight(pBullet);
+	else if (PlaceOnCorrectHeight(pBullet))
+		return true;
 
 	TechnoClass* const pTechno = pBullet->Owner;
 	HouseClass* const pOwner = pBullet->Owner->Owner;
@@ -317,75 +313,75 @@ void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct So
 		Source.Y += static_cast<int>(this->SourceCoord.X * Math::sin(RotateAngle) - this->SourceCoord.Y * Math::cos(RotateAngle));
 	}
 
-	Source.Z = GetFloorCoordHeight(Source);
+	Source.Z = GetFloorCoordHeight(pBullet, Source);
 	pBullet->SetLocation(Source);
 
 	Target.X += static_cast<int>(this->TargetCoord.X * Math::cos(RotateAngle) + this->TargetCoord.Y * Math::sin(RotateAngle));
 	Target.Y += static_cast<int>(this->TargetCoord.X * Math::sin(RotateAngle) - this->TargetCoord.Y * Math::cos(RotateAngle));
-
-	pBullet->SourceCoords = Source;
-	pBullet->TargetCoords = Target;
 
 	pBullet->Velocity.X = Target.X - Source.X;
 	pBullet->Velocity.Y = Target.Y - Source.Y;
 	pBullet->Velocity.Z = 0;
 }
 
-int EngraveTrajectory::GetFloorCoordHeight(CoordStruct Coord)
+int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, CoordStruct Coord)
 {
-	int Difference = 0;
-
 	if (const CellClass* const pCell = MapClass::Instance->GetCellAt(Coord))
 	{
-		Difference = MapClass::Instance->GetCellFloorHeight(Coord) - this->SourceHeight;
+		const int OnFloor = MapClass::Instance->GetCellFloorHeight(Coord);
+		const int OnBridge = pCell->GetCoordsWithBridge().Z;
 
-		const CoordStruct CellCoords = pCell->GetCoordsWithBridge();
-		const int OnBridge = CellCoords.Z - this->SourceHeight;
+		if (pBullet->SourceCoords.Z >= OnBridge || pBullet->TargetCoords.Z >= OnBridge)
+			return OnBridge;
 
-		if (OnBridge < 0 && abs(OnBridge - Difference) > 384)
-			Difference = OnBridge;
+		return OnFloor;
 	}
 
-	return (this->SourceHeight + Difference);
+	return Coord.Z;
 }
 
-void EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
+bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 {
 	CoordStruct BulletCoords = pBullet->Location;
 
-	if (this->SetItsLocation)
+	if (this->TemporaryCoord != CoordStruct::Empty)
 	{
-		BulletCoords.Z = GetFloorCoordHeight(BulletCoords);
-		pBullet->SetLocation(BulletCoords);
+		pBullet->SetLocation(this->TemporaryCoord);
+		this->TemporaryCoord = CoordStruct::Empty;
 	}
 
-	const CoordStruct FutureCoords
+	CoordStruct FutureCoords
 	{
 		BulletCoords.X + static_cast<int>(pBullet->Velocity.X),
 		BulletCoords.Y + static_cast<int>(pBullet->Velocity.Y),
 		BulletCoords.Z + static_cast<int>(pBullet->Velocity.Z)
 	};
 
-	const int CheckDifference = GetFloorCoordHeight(FutureCoords) - FutureCoords.Z;
+	const int CheckDifference = GetFloorCoordHeight(pBullet, FutureCoords) - FutureCoords.Z;
 
 	if (abs(CheckDifference) >= 384)
 	{
-		if (CheckDifference > 0)
+		if (pBullet->Type->SubjectToCliffs)
+		{
+			return true;
+		}
+		else if (CheckDifference > 0)
 		{
 			BulletCoords.Z += CheckDifference;
 			pBullet->SetLocation(BulletCoords);
-			this->SetItsLocation = false;
 		}
 		else
 		{
-			this->SetItsLocation = true;
+			FutureCoords.Z += CheckDifference;
+			this->TemporaryCoord = FutureCoords;
 		}
 	}
 	else
 	{
 		pBullet->Velocity.Z += CheckDifference;
-		this->SetItsLocation = false;
 	}
+
+	return false;
 }
 
 bool EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
@@ -402,7 +398,7 @@ bool EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 	{
 		if (this->TechnoInLimbo)
 		{
-			if (TechnoClass* pTransporter = pTechno->Transporter)
+			if (TechnoClass* const pTransporter = pTechno->Transporter)
 				FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTransporter, this->FLHCoord, pTransporter->HasTurret());
 			else
 				return true;

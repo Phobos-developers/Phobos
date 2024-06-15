@@ -66,12 +66,11 @@ public:
 		, DamageDelay { 2 }
 		, LaserTimer {}
 		, DamageTimer {}
-		, SourceHeight { 0 }
-		, SetItsLocation { false }
 		, TechnoInLimbo { false }
 		, NotMainWeapon { false }
 		, FirepowerMult { 1.0 }
 		, FLHCoord {}
+		, TemporaryCoord {}
 	{}
 
 	EngraveTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Engrave)
@@ -92,12 +91,11 @@ public:
 		, DamageDelay { 2 }
 		, LaserTimer {}
 		, DamageTimer {}
-		, SourceHeight { 0 }
-		, SetItsLocation { false }
 		, TechnoInLimbo { false }
 		, NotMainWeapon { false }
 		, FirepowerMult { 1.0 }
 		, FLHCoord {}
+		, TemporaryCoord {}
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -127,19 +125,18 @@ public:
 	int DamageDelay;
 	CDTimerClass LaserTimer;
 	CDTimerClass DamageTimer;
-	int SourceHeight;
-	bool SetItsLocation;
 	bool TechnoInLimbo;
 	bool NotMainWeapon;
 	double FirepowerMult;
 	CoordStruct FLHCoord;
+	CoordStruct TemporaryCoord;
 
 private:
 	bool GetTechnoFLHCoord(BulletClass* pBullet);
 	void CheckMirrorCoord(TechnoClass* pTechno, bool Found);
 	void SetEngraveDirection(BulletClass* pBullet, CoordStruct Source, CoordStruct Target);
-	int GetFloorCoordHeight(CoordStruct Coord);
-	void PlaceOnCorrectHeight(BulletClass* pBullet);
+	int GetFloorCoordHeight(BulletClass* pBullet, CoordStruct Coord);
+	bool PlaceOnCorrectHeight(BulletClass* pBullet);
 	bool DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
 	void DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
 };

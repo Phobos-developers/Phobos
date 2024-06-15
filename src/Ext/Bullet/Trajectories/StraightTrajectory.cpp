@@ -1284,7 +1284,7 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet, double Str
 		pBullet->Location.Z + static_cast<int>(pBullet->Velocity.Z)
 	};
 
-	if (CellClass* const pCell = MapClass::Instance->GetCellAt(FutureCoords))
+	if (const CellClass* const pCell = MapClass::Instance->GetCellAt(FutureCoords))
 	{
 		int CheckDifference = MapClass::Instance->GetCellFloorHeight(FutureCoords) - FutureCoords.Z;
 		const CoordStruct CellCoords = pCell->GetCoordsWithBridge();
