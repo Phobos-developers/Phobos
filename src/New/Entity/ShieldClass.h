@@ -74,6 +74,7 @@ private:
 	void OnlineCheck();
 	void TemporalCheck();
 	bool ConvertCheck();
+	void EnabledByCheck();
 
 	void DrawShieldBar_Building(const int length, Point2D* pLocation, RectangleStruct* pBound);
 	void DrawShieldBar_Other(const int length, Point2D* pLocation, RectangleStruct* pBound);
@@ -93,6 +94,7 @@ private:
 	bool Available;
 	bool Attached;
 	bool AreAnimsHidden;
+	bool IsSelfHealingEnabled;
 
 	double SelfHealing_Warhead;
 	int SelfHealing_Rate_Warhead;
