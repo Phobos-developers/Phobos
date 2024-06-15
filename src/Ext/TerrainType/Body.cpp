@@ -21,7 +21,7 @@ int TerrainTypeExt::ExtData::GetCellsPerAnim()
 
 void TerrainTypeExt::ExtData::PlayDestroyEffects(CoordStruct coords)
 {
-	VocClass::PlayIndexAtPos(this->DestroySound.Get(-1), coords);
+	VocClass::PlayIndexAtPos(this->DestroySound, coords);
 
 	if (auto const pAnimType = this->DestroyAnim)
 		GameCreate<AnimClass>(pAnimType, coords);
