@@ -177,6 +177,7 @@ This page lists all the individual contributions to the project by their author.
   - Trailer animation owner inheritance
   - Warhead detonation on all objects on map
   - Animated TerrainTypes extension
+  - TerrainType damage & crumbling frames
   - Exploding unit passenger killing customization
   - Railgun particle target coordinate fix
   - Building target coordinate offset fix
