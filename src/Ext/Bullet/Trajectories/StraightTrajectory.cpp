@@ -795,6 +795,9 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (pTechno->GetHeight() <= 0)
 				continue;
 
+			if (this->ProximityAllies == 0 && pOwner->IsAlliedWith(pTechno->Owner) && !(pTargetTechno && pTechno == pTargetTechno))
+				continue;
+
 			const AbstractType TechnoType = pTechno->WhatAmI();
 
 			if (!this->ThroughVehicles && (TechnoType == AbstractType::Unit || TechnoType == AbstractType::Aircraft))
