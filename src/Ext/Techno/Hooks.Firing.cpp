@@ -334,22 +334,25 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 	return Continue;
 }
 
-DEFINE_HOOK(0x6FC587, TechnoClass_CanFire_OpenTopped, 0x6)
+DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 {
-	enum { DisallowFiring = 0x6FC86A };
+	enum { Illegal = 0x6FC86A, OutOfRange = 0x6FC0DF, Continue = 0x6FC5D5 };
 
 	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pTransport, EAX);
 
-	if (auto const pTransport = pThis->Transporter)
-	{
-		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
-		{
-			if (pTransport->Deactivated && !pExt->OpenTopped_AllowFiringIfDeactivated)
-				return DisallowFiring;
-		}
-	}
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
 
-	return 0;
+	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
+		return Illegal;
+
+	if (pTransport->Transporter)
+		return Illegal;
+
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::ExtMap.Find(pTransport)->AE_DisableWeapons)
+		return OutOfRange;
+
+	return Continue;
 }
 
 DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
@@ -630,6 +633,16 @@ DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
 			return ReturnResult;
 		}
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FCFE0, TechnoClass_RearmDelay_CanCloakDuringRearm, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	TechnoExt::ExtMap.Find(pThis)->CanCloakDuringRearm = !pWeapon->DecloakToFire;
 
 	return 0;
 }
