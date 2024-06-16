@@ -203,13 +203,15 @@ DEFINE_HOOK(0x424CF1, AnimClass_Start_DetachedReport, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x422CAB, AnimClass_DrawIt_XDrawOffset, 0x5)
+// 0x422CD8 is in an alternate code path only used by anims with ID RING1, unused normally but covering it just because
+DEFINE_HOOK_AGAIN(0x422CD8, AnimClass_DrawIt_XDrawOffset, 0x6) 
+DEFINE_HOOK(0x423122, AnimClass_DrawIt_XDrawOffset, 0x6)
 {
-	GET(AnimClass* const, pThis, ECX);
-	GET_STACK(Point2D*, pCoord, STACK_OFFSET(0x100, 0x4));
+	GET(AnimClass* const, pThis, ESI);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x110, 0x4));
 
 	if (auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type))
-		pCoord->X += pTypeExt->XDrawOffset;
+		pLocation->X += pTypeExt->XDrawOffset;
 
 	return 0;
 }
