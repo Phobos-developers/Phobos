@@ -236,32 +236,32 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	}
 
 	if (!this->LeadTimeCalculate || (pBullet->Target && pBullet->Target->WhatAmI() == AbstractType::Building))
-		PrepareForOpenFire(pBullet);
+		this->PrepareForOpenFire(pBullet);
 	else
 		this->WaitOneFrame.Start(1);
 }
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (this->WaitOneFrame.IsTicking() && BulletPrepareCheck(pBullet))
+	if (this->WaitOneFrame.IsTicking() && this->BulletPrepareCheck(pBullet))
 		return false;
 
 	const double StraightSpeed = this->GetTrajectorySpeed(pBullet);
 	HouseClass* const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 
-	if (BulletDetonatePreCheck(pBullet, pOwner, StraightSpeed))
+	if (this->BulletDetonatePreCheck(pBullet, pOwner, StraightSpeed))
 		return true;
 
 	if (this->PassDetonate)
-		PassWithDetonateAt(pBullet, pOwner);
+		this->PassWithDetonateAt(pBullet, pOwner);
 
 	if (this->ProximityImpact != 0 && this->ProximityRadius > 0)
-		PrepareForDetonateAt(pBullet, pOwner);
+		this->PrepareForDetonateAt(pBullet, pOwner);
 
-	if (StraightSpeed < 256.0 && this->ConfineAtHeight > 0 && PassAndConfineAtHeight(pBullet, StraightSpeed))
+	if (StraightSpeed < 256.0 && this->ConfineAtHeight > 0 && this->PassAndConfineAtHeight(pBullet, StraightSpeed))
 		return true;
 
-	BulletDetonateLastCheck(pBullet, pOwner, StraightSpeed);
+	this->BulletDetonateLastCheck(pBullet, pOwner, StraightSpeed);
 
 	return false;
 }
@@ -273,7 +273,7 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 	if (pBullet->WeaponType && this->EdgeAttenuation != 1.0)
 	{
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pBullet->Target);
-		const int Damage = GetTheTrueDamage(pBullet->WeaponType->Damage, pBullet, pTechno, pOwner, true);
+		const int Damage = this->GetTheTrueDamage(pBullet->WeaponType->Damage, pBullet, pTechno, pOwner, true);
 		pBullet->Construct(pBullet->Type, pBullet->Target, pBullet->Owner, Damage, pBullet->WH, pBullet->Speed, pBullet->Bright);
 	}
 
@@ -463,7 +463,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		}
 	}
 
-	if (CalculateBulletVelocity(pBullet, StraightSpeed))
+	if (this->CalculateBulletVelocity(pBullet, StraightSpeed))
 		this->RemainingDistance = 0;
 }
 
@@ -511,7 +511,7 @@ bool StraightTrajectory::BulletPrepareCheck(BulletClass* pBullet)
 	if (this->WaitOneFrame.HasTimeLeft())
 		return true;
 
-	PrepareForOpenFire(pBullet);
+	this->PrepareForOpenFire(pBullet);
 	this->WaitOneFrame.Stop();
 
 	return false;
@@ -569,7 +569,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 		{
 			if (CellClass* const pCell = MapClass::Instance->GetCellAt(pBullet->Location))
 			{
-				if (CheckThroughAndSubjectInCell(pBullet, pCell, pOwner))
+				if (this->CheckThroughAndSubjectInCell(pBullet, pCell, pOwner))
 				{
 					LocationDistance = 0;
 					VelocityCheck = true;
@@ -616,7 +616,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 				if (!CheckThrough)
 					continue;
 
-				if (CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))
+				if (this->CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))
 				{
 					VelocityCheck = true;
 					CellDistance = CurCoord.DistanceFrom(TheSourceCoords);
@@ -676,7 +676,7 @@ bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, Cell
 		if (!pWH)
 			return static_cast<bool>(pNearest);
 
-		const int Damage = GetTheTrueDamage(this->ProximityDamage, pBullet, pNearest, pOwner, false);
+		const int Damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, pNearest, pOwner, false);
 		WarheadTypeExt::DetonateAt(pWH, pNearest->GetCoords(), pBullet->Owner, Damage, pOwner);
 	}
 
@@ -699,7 +699,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 		if (!pWH)
 			return;
 
-		const int Damage = GetTheTrueDamage(this->PassDetonateDamage, pBullet, nullptr, nullptr, false);
+		const int Damage = this->GetTheTrueDamage(this->PassDetonateDamage, pBullet, nullptr, nullptr, false);
 		WarheadTypeExt::DetonateAt(pWH, DetonateCoords, pBullet->Owner, Damage, pOwner);
 	}
 }
@@ -708,7 +708,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner)
 {
 	//Step 1: Find valid targets on the ground within range.
-	std::vector<CellClass*> RecCellClass = GetCellsInProximityRadius(pBullet);
+	std::vector<CellClass*> RecCellClass = this->GetCellsInProximityRadius(pBullet);
 	const size_t CellSize = RecCellClass.size() * 2;
 	size_t VectSize = CellSize;
 	size_t ThisSize = 0;
@@ -935,7 +935,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 	for (auto const& pTechno : CasualtyChecked)
 	{
-		const int Damage = GetTheTrueDamage(this->ProximityDamage, pBullet, pTechno, pOwner, false);
+		const int Damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, pTechno, pOwner, false);
 		WarheadTypeExt::DetonateAt(pWH, pTechno->GetCoords(), pBullet->Owner, Damage, pOwner);
 
 		if (this->ProximityImpact == 1)
@@ -990,7 +990,7 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClas
 	CornerIndex %= 4;
 	Cor4Cell = Corner[CornerIndex];
 
-	std::vector<CellStruct> RecCells = GetCellsInRectangle(Cor1Cell, Cor4Cell, Cor2Cell, Cor3Cell);
+	std::vector<CellStruct> RecCells = this->GetCellsInRectangle(Cor1Cell, Cor4Cell, Cor2Cell, Cor3Cell);
 	std::vector<CellClass*> RecCellClass;
 	RecCellClass.reserve(RecCells.size());
 
@@ -1237,7 +1237,7 @@ int StraightTrajectory::GetTheTrueDamage(int Damage, BulletClass* pBullet, Techn
 
 	if (this->EdgeAttenuation != 1.0 || this->ProximityAllies != 1.0)
 	{
-		const double CalculatedDamage = Damage * this->FirepowerMult * GetExtraDamageMultiplier(pBullet, pTechno, pOwner, Self);
+		const double CalculatedDamage = Damage * this->FirepowerMult * this->GetExtraDamageMultiplier(pBullet, pTechno, pOwner, Self);
 		TrueDamage = static_cast<int>(CalculatedDamage + 0.5);
 
 		if (TrueDamage == 0 && Damage != 0 && this->EdgeAttenuation != 0)
@@ -1300,7 +1300,7 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet, double Str
 		{
 			pBullet->Velocity.Z += static_cast<double>(CheckDifference + this->ConfineAtHeight);
 
-			if (!this->PassDetonateLocal && CalculateBulletVelocity(pBullet, StraightSpeed))
+			if (!this->PassDetonateLocal && this->CalculateBulletVelocity(pBullet, StraightSpeed))
 				return true;
 		}
 		else

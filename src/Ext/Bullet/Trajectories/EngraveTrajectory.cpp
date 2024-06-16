@@ -171,8 +171,8 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		this->NotMainWeapon = false;
 		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
 
-		CheckMirrorCoord(pBullet->Owner, (this->IsLaser ? GetTechnoFLHCoord(pBullet) : true));
-		SetEngraveDirection(pBullet, pBullet->Owner->GetCoords(), pBullet->TargetCoords);
+		this->CheckMirrorCoord(pBullet->Owner, (this->IsLaser ? this->GetTechnoFLHCoord(pBullet) : true));
+		this->SetEngraveDirection(pBullet, pBullet->Owner->GetCoords(), pBullet->TargetCoords);
 	}
 	else
 	{
@@ -180,7 +180,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		this->NotMainWeapon = true;
 		this->FirepowerMult = 1.0;
 
-		SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords);
+		this->SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords);
 	}
 
 	double StraightSpeed = this->GetTrajectorySpeed(pBullet);
@@ -199,17 +199,17 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 
 	if (--this->TheDuration < 0)
 		return true;
-	else if (PlaceOnCorrectHeight(pBullet))
+	else if (this->PlaceOnCorrectHeight(pBullet))
 		return true;
 
 	TechnoClass* const pTechno = pBullet->Owner;
 	HouseClass* const pOwner = pBullet->Owner->Owner;
 
-	if (this->IsLaser && this->LaserTimer.Completed() && DrawEngraveLaser(pBullet, pTechno, pOwner))
+	if (this->IsLaser && this->LaserTimer.Completed() && this->DrawEngraveLaser(pBullet, pTechno, pOwner))
 		return true;
 
 	if (this->DamageTimer.Completed())
-		DetonateLaserWarhead(pBullet, pTechno, pOwner);
+		this->DetonateLaserWarhead(pBullet, pTechno, pOwner);
 
 	return false;
 }
@@ -313,7 +313,7 @@ void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct So
 		Source.Y += static_cast<int>(this->SourceCoord.X * Math::sin(RotateAngle) - this->SourceCoord.Y * Math::cos(RotateAngle));
 	}
 
-	Source.Z = GetFloorCoordHeight(pBullet, Source);
+	Source.Z = this->GetFloorCoordHeight(pBullet, Source);
 	pBullet->SetLocation(Source);
 
 	Target.X += static_cast<int>(this->TargetCoord.X * Math::cos(RotateAngle) + this->TargetCoord.Y * Math::sin(RotateAngle));
@@ -357,7 +357,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 		BulletCoords.Z + static_cast<int>(pBullet->Velocity.Z)
 	};
 
-	const int CheckDifference = GetFloorCoordHeight(pBullet, FutureCoords) - FutureCoords.Z;
+	const int CheckDifference = this->GetFloorCoordHeight(pBullet, FutureCoords) - FutureCoords.Z;
 
 	if (abs(CheckDifference) >= 384)
 	{
