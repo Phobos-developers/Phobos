@@ -39,6 +39,7 @@ public:
 		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 		CDTimerClass DeployFireTimer;
 		bool ForceFullRearmDelay;
+		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
 		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
@@ -75,6 +76,7 @@ public:
 			, HasBeenPlacedOnMap { false }
 			, DeployFireTimer {}
 			, ForceFullRearmDelay { false }
+			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
 			, CanCurrentlyDeployIntoBuilding { false }
 			, AttachedEffects {}

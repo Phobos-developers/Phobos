@@ -634,6 +634,16 @@ DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FCFE0, TechnoClass_RearmDelay_CanCloakDuringRearm, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	TechnoExt::ExtMap.Find(pThis)->CanCloakDuringRearm = !pWeapon->DecloakToFire;
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_ROF, 0x6)
 {
 	enum { SkipGameCode = 0x6FD0BB };
