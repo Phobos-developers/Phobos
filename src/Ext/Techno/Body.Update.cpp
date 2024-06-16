@@ -802,6 +802,7 @@ void TechnoExt::ExtData::UpdateTemporal()
 // Updates state of all AttachEffects on techno.
 void TechnoExt::ExtData::UpdateAttachEffects()
 {
+	bool inTunnel = this->IsInTunnel || this->IsBurrowed;
 	bool markForRedraw = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
@@ -809,7 +810,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	{
 		auto const attachEffect = it->get();
 
-		if (!this->IsInTunnel && !this->IsBurrowed)
+		if (!inTunnel)
 			attachEffect->SetAnimationVisibility(true);
 
 		attachEffect->AI();
