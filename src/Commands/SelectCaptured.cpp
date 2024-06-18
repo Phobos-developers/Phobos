@@ -31,44 +31,45 @@ const wchar_t* SelectCapturedCommandClass::GetUIDescription() const
 
 void SelectCapturedCommandClass::Execute(WWKey eInput) const
 {
-	// Debug::Log("[Phobos] Dummy command runs.\n");
-	// MessageListClass::Instance->PrintMessage(L"[Phobos] Dummy command rums");
-
+	
 	MapClass::Instance->SetTogglePowerMode(0);
 	MapClass::Instance->SetWaypointMode(0, false);
 	MapClass::Instance->SetRepairMode(0);
 	MapClass::Instance->SetSellMode(0);
 
-	auto pObjectToSelect = MapClass::Instance->NextObject(
+	auto pFirstObject = MapClass::Instance->NextObject(
 		ObjectClass::CurrentObjects->Count ? ObjectClass::CurrentObjects->GetItem(0) : nullptr);
 
-	bool idleHarvestersPresent = false;
-	auto pNextObject = pObjectToSelect;
+	bool CapturedPresent = false;
+	auto pCurrentObject = pFirstObject;
 
 	do
 	{
-		if (auto pTechno = abstract_cast<TechnoClass*>(pNextObject))
+		if (auto pTechno = abstract_cast<TechnoClass*>(pCurrentObject))
 		{
-			if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
+			Point2D coordInScreen { 0 , 0 };
+			CoordStruct coordInMap { 0 , 0 , 0 };
+			pTechno->GetCoords( &coordInMap );
+			TacticalClass::Instance->CoordsToScreen( &coordInScreen , &coordInMap );
+			coordInMap -= TacticalClass::Instance->TacticalPos;
+			RectangleStruct screenArea = DSurface::Composite->GetRect();
+			if (screenArea.Width >= coordInScreen.X && screenArea.Height >= coordInScreen.Y && pTechno->IsMindControlled() && pTechno->IsSelectable())
 			{
-				if (pTypeExt->Harvester_Counted.Get() && !TechnoExt::IsHarvesting(pTechno))
+				if (!CapturedPresent)
 				{
-					pObjectToSelect = pNextObject;
-					idleHarvestersPresent = true;
-					break;
+					CapturedPresent = true;
+					MapClass::UnselectAll();
 				}
+				pCurrentObject->Select();
 			}
 		}
 
-		pNextObject = MapClass::Instance->NextObject(pNextObject);
+		pCurrentObject = MapClass::Instance->NextObject(pCurrentObject);
 	}
-	while (pNextObject != pObjectToSelect);
+	while (pCurrentObject != pFirstObject);
 
-	if (idleHarvestersPresent && pObjectToSelect)
+	if (CapturedPresent)
 	{
-		MapClass::UnselectAll();
-		pObjectToSelect->Select();
-		MapClass::Instance->CenterMap();
 		MapClass::Instance->MarkNeedsRedraw(1);
 	}
 	else
