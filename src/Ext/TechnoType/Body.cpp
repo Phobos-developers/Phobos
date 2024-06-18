@@ -213,6 +213,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OpenTopped_AllowFiringIfDeactivated.Read(exINI, pSection, "OpenTopped.AllowFiringIfDeactivated");
 	this->OpenTopped_ShareTransportTarget.Read(exINI, pSection, "OpenTopped.ShareTransportTarget");
 	this->OpenTopped_UseTransportRangeModifiers.Read(exINI, pSection, "OpenTopped.UseTransportRangeModifiers");
+	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, pSection, "OpenTopped.CheckTransportDisableWeapons");
 
 	this->AutoFire.Read(exINI, pSection, "AutoFire");
 	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
@@ -548,6 +549,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OpenTopped_AllowFiringIfDeactivated)
 		.Process(this->OpenTopped_ShareTransportTarget)
 		.Process(this->OpenTopped_UseTransportRangeModifiers)
+		.Process(this->OpenTopped_CheckTransportDisableWeapons)
 
 		.Process(this->AutoFire)
 		.Process(this->AutoFire_TargetSelf)

@@ -486,6 +486,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)
 		.Process(this->ForceFullRearmDelay)
+		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
 		.Process(this->AttachedEffects)
 		.Process(this->AE_FirepowerMultiplier)
@@ -495,6 +496,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AE_Cloakable)
 		.Process(this->AE_ForceDecloak)
 		.Process(this->AE_DisableWeapons)
+		.Process(this->FiringObstacleCell)
 		;
 }
 

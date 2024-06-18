@@ -156,7 +156,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Tint effects are now correctly applied to SHP vehicles and all types of aircraft as well as building animations regardless of their position.
 - Iron Curtained / Force Shielded objects now always use the correct tint color.
 - Objects in invalid map coordinates are no longer used for starting view and AI base center calculations.
-- Units & buildings with `DecloakToFire=false` weapons can now cloak even while having a target in range.
+- Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
+- Units with `Sensors=true` will no longer reveal ally buildings.
 
 ## Fixes / interactions with other extensions
 

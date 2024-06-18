@@ -7,54 +7,44 @@ namespace CloakTemp
 
 bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 {
-	bool cloak = pThis->Cloakable;
-	TechnoExt::ExtData* pExt = nullptr;
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	bool cloakable = pThis->Cloakable;
+	int rearm = -1;
+	pThis->Cloakable |= pExt->AE_Cloakable;
 
-	if (!pThis->Cloakable)
+	if (pExt->CanCloakDuringRearm)
 	{
-		pExt = TechnoExt::ExtMap.Find(pThis);
-		pThis->Cloakable = pExt->AE_Cloakable;
+		rearm = pThis->RearmTimer.GetTimeLeft();
+		pThis->RearmTimer.Stop();
 	}
 
 	CloakTemp::IsInReadyToCloak = true;
 	bool retVal = pThis->TechnoClass::IsReadyToCloak();
 	CloakTemp::IsInReadyToCloak = false;
-	pThis->Cloakable = cloak;
 
-	if (retVal)
-	{
-		if (!pExt)
-			pExt = TechnoExt::ExtMap.Find(pThis);
+	pThis->Cloakable = cloakable;
 
-		if (pExt->AE_ForceDecloak)
-			return false;
-	}
+	if (rearm != -1)
+		pThis->RearmTimer.Start(rearm);
+
+	if (retVal && pExt->AE_ForceDecloak)
+		return false;
 
 	return retVal;
 }
 
 bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 {
-	bool cloak = pThis->Cloakable;
-	TechnoExt::ExtData* pExt = nullptr;
-
-	if (!pThis->Cloakable)
-	{
-		pExt = TechnoExt::ExtMap.Find(pThis);
-		pThis->Cloakable = pExt->AE_Cloakable;
-	}
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	bool cloakable = pThis->Cloakable;
+	pThis->Cloakable |= pExt->AE_Cloakable;
 
 	bool retVal = pThis->TechnoClass::ShouldNotBeCloaked();
-	pThis->Cloakable = cloak;
 
-	if (!retVal)
-	{
-		if (!pExt)
-			pExt = TechnoExt::ExtMap.Find(pThis);
+	pThis->Cloakable = cloakable;
 
-		if (pExt->AE_ForceDecloak)
-			return true;
-	}
+	if (!retVal && pExt->AE_ForceDecloak)
+		return true;
 
 	return retVal;
 }
@@ -74,6 +64,7 @@ DEFINE_JUMP(VTABLE, 0x7EB2FC, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); /
 DEFINE_JUMP(VTABLE, 0x7F4C04, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // TechnoClass
 DEFINE_JUMP(VTABLE, 0x7F5F14, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // UnitClass
 DEFINE_JUMP(CALL, 0x4578C9, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper));   // BuildingClass
+
 
 // Allow units with DecloakToFire=no weapons to cloak even when about to fire on target.
 DEFINE_HOOK(0x6F7792, TechnoClass_InWeaponRange_DecloakToFire, 0xA)
@@ -130,4 +121,30 @@ DEFINE_HOOK(0x45455B, BuildingClass_VisualCharacter_CloakVisibility, 0x5)
 		return UseShadowyVisual;
 
 	return CheckMutualAlliance;
+}
+
+DEFINE_HOOK(0x457855, BuildingClass_IsReadyToCloak_Sensors, 0x6)
+{
+	enum { Skip = 0x457879, Continue = 0x457865 };
+
+	GET(BuildingClass*, pThis, EBP);
+	GET(TechnoClass*, pTechno, EAX);
+
+	if (pThis->Owner->IsAlliedWith(pTechno))
+		return Skip;
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x4579A5, BuildingClass_ShouldNotCloak_Sensors, 0x6)
+{
+	enum { Skip = 0x4579C9, Continue = 0x4579B5 };
+
+	GET(BuildingClass*, pThis, EBP);
+	GET(TechnoClass*, pTechno, EAX);
+
+	if (pThis->Owner->IsAlliedWith(pTechno))
+		return Skip;
+
+	return Continue;
 }

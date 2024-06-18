@@ -102,8 +102,8 @@ void AttachEffectClass::AI()
 		{
 			double ROFModifier = this->Type->ROFMultiplier;
 			auto const pTechno = this->Techno;
-			pTechno->DiskLaserTimer.Start(static_cast<int>(pTechno->DiskLaserTimer.GetTimeLeft() * ROFModifier));
-			pTechno->ROF = static_cast<int>(pTechno->ROF * ROFModifier);
+			pTechno->RearmTimer.Start(static_cast<int>(pTechno->RearmTimer.GetTimeLeft() * ROFModifier));
+			pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
 		}
 
 		if (this->Type->HasTint())
@@ -421,8 +421,8 @@ bool AttachEffectClass::Attach(AttachEffectTypeClass* pType, TechnoClass* pTarge
 		{
 			if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 			{
-				pTarget->DiskLaserTimer.Start(static_cast<int>(pTarget->DiskLaserTimer.GetTimeLeft() * pType->ROFMultiplier));
-				pTarget->ROF = static_cast<int>(pTarget->ROF * pType->ROFMultiplier);
+				pTarget->RearmTimer.Start(static_cast<int>(pTarget->RearmTimer.GetTimeLeft() * pType->ROFMultiplier));
+				pTarget->ChargeTurretDelay = static_cast<int>(pTarget->ChargeTurretDelay * pType->ROFMultiplier);
 			}
 
 			pTargetExt->RecalculateStatMultipliers();
@@ -502,8 +502,8 @@ int AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types, 
 
 	if (ROFModifier != 1.0)
 	{
-		pTarget->DiskLaserTimer.Start(static_cast<int>(pTarget->DiskLaserTimer.GetTimeLeft() * ROFModifier));
-		pTarget->ROF = static_cast<int>(pTarget->ROF * ROFModifier);
+		pTarget->RearmTimer.Start(static_cast<int>(pTarget->RearmTimer.GetTimeLeft() * ROFModifier));
+		pTarget->ChargeTurretDelay = static_cast<int>(pTarget->ChargeTurretDelay * ROFModifier);
 	}
 
 	if (attachedCount > 0)
