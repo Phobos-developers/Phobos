@@ -159,8 +159,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo_DeployUnlockMinimumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMinimumAmount");
 	this->Ammo_DeployUnlockMaximumAmount.Read(exINI, pSection, "Ammo.DeployUnlockMaximumAmount");
 
-	this->VoiceCantDeploy.Read(exINI, pSection, "VoiceCantDeploy");
-
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
 	this->AutoDeath_VanishAnimation.Read(exINI, pSection, "AutoDeath.VanishAnimation");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
@@ -180,6 +178,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
 	this->VoiceCreated.Read(exINI, pSection, "VoiceCreated");
+	this->VoicePickup.Read(exINI, pSection, "VoicePickup");
+
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
 	this->WarpOut.Read(exINI, pSection, "WarpOut");
@@ -212,6 +212,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OpenTopped_IgnoreRangefinding.Read(exINI, pSection, "OpenTopped.IgnoreRangefinding");
 	this->OpenTopped_AllowFiringIfDeactivated.Read(exINI, pSection, "OpenTopped.AllowFiringIfDeactivated");
 	this->OpenTopped_ShareTransportTarget.Read(exINI, pSection, "OpenTopped.ShareTransportTarget");
+	this->OpenTopped_UseTransportRangeModifiers.Read(exINI, pSection, "OpenTopped.UseTransportRangeModifiers");
+	this->OpenTopped_CheckTransportDisableWeapons.Read(exINI, pSection, "OpenTopped.CheckTransportDisableWeapons");
 
 	this->AutoFire.Read(exINI, pSection, "AutoFire");
 	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
@@ -220,6 +222,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoSecondaryWeaponFallback_AllowAA.Read(exINI, pSection, "NoSecondaryWeaponFallback.AllowAA");
 
 	this->JumpjetRotateOnCrash.Read(exINI, pSection, "JumpjetRotateOnCrash");
+	this->ShadowSizeCharacteristicHeight.Read(exINI, pSection, "ShadowSizeCharacteristicHeight");
 
 	this->DeployingAnim_AllowAnyDirection.Read(exINI, pSection, "DeployingAnim.AllowAnyDirection");
 	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
@@ -239,8 +242,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
 	this->IronCurtain_KillWarhead.Read(exINI, pSection, "IronCurtain.KillWarhead");
+	this->ForceShield_KeptOnDeploy.Read(exINI, pSection, "ForceShield.KeptOnDeploy");
+	this->ForceShield_Effect.Read(exINI, pSection, "ForceShield.Effect");
+	this->ForceShield_KillWarhead.Read(exINI, pSection, "ForceShield.KillWarhead");
 
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
+	this->Explodes_DuringBuildup.Read(exINI, pSection, "Explodes.DuringBuildup");
 	this->DeployFireWeapon.Read(exINI, pSection, "DeployFireWeapon");
 	this->TargetZoneScanType.Read(exINI, pSection, "TargetZoneScanType");
 
@@ -273,6 +280,24 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnDistanceFromTarget.Read(exINI, pSection, "SpawnDistanceFromTarget");
 	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
 	this->LandingDir.Read(exINI, pSection, "LandingDir");
+
+	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
+	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
+
+	this->CrateGoodie_RerollChance.Read(exINI, pSection, "CrateGoodie.RerollChance");
+
+	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
+	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
+	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
+
+	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
+	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+
+	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
+	this->AttachEffect_DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
+	this->AttachEffect_Delays.Read(exINI, pSection, "AttachEffect.Delays");
+	this->AttachEffect_InitialDelays.Read(exINI, pSection, "AttachEffect.InitialDelays");
+	this->AttachEffect_RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -323,7 +348,21 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 	this->TurretShadow.Read(exArtINI, pArtSection, "TurretShadow");
-	this->ShadowIndices.Read(exArtINI, pArtSection, "ShadowIndices");
+	ValueableVector<int> shadow_indices;
+	shadow_indices.Read(exArtINI, pArtSection, "ShadowIndices");
+	ValueableVector<int> shadow_indices_frame;
+	shadow_indices_frame.Read(exArtINI, pArtSection, "ShadowIndices.Frame");
+	if (shadow_indices_frame.size() != shadow_indices.size())
+	{
+		if (!shadow_indices_frame.empty())
+			Debug::LogGame("[Developer warning] %s ShadowIndices.Frame size (%d) does not match ShadowIndices size (%d) \n"
+				, pSection, shadow_indices_frame.size(), shadow_indices.size());
+		shadow_indices_frame.resize(shadow_indices.size(), -1);
+	}
+	for (size_t i = 0; i < shadow_indices.size(); i++)
+		this->ShadowIndices[shadow_indices[i]] = shadow_indices_frame[i];
+
+	this->ShadowIndex_Frame.Read(exArtINI, pArtSection, "ShadowIndex.Frame");
 
 	this->LaserTrailData.clear();
 	for (size_t i = 0; ; ++i)
@@ -436,6 +475,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TurretOffset)
 		.Process(this->TurretShadow)
 		.Process(this->ShadowIndices)
+		.Process(this->ShadowIndex_Frame)
 		.Process(this->Spawner_LimitRange)
 		.Process(this->Spawner_ExtraLimitRange)
 		.Process(this->Spawner_DelayFrames)
@@ -455,7 +495,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Ammo_AutoDeployMaximumAmount)
 		.Process(this->Ammo_DeployUnlockMinimumAmount)
 		.Process(this->Ammo_DeployUnlockMaximumAmount)
-		.Process(this->VoiceCantDeploy)
 
 		.Process(this->AutoDeath_Behavior)
 		.Process(this->AutoDeath_VanishAnimation)
@@ -476,6 +515,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EVA_Sold)
 
 		.Process(this->VoiceCreated)
+		.Process(this->VoicePickup)
 
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -508,6 +548,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OpenTopped_IgnoreRangefinding)
 		.Process(this->OpenTopped_AllowFiringIfDeactivated)
 		.Process(this->OpenTopped_ShareTransportTarget)
+		.Process(this->OpenTopped_UseTransportRangeModifiers)
+		.Process(this->OpenTopped_CheckTransportDisableWeapons)
 
 		.Process(this->AutoFire)
 		.Process(this->AutoFire_TargetSelf)
@@ -516,7 +558,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoAmmoWeapon)
 		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetRotateOnCrash)
-
+		.Process(this->ShadowSizeCharacteristicHeight)
 		.Process(this->DeployingAnim_AllowAnyDirection)
 		.Process(this->DeployingAnim_KeepUnitVisible)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
@@ -531,7 +573,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
-		.Process(this->Explodes_KillPassengers)
 
 		.Process(this->PronePrimaryFireFLH)
 		.Process(this->ProneSecondaryFireFLH)
@@ -545,8 +586,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_Effect)
 		.Process(this->IronCurtain_KillWarhead)
+		.Process(this->ForceShield_KeptOnDeploy)
+		.Process(this->ForceShield_Effect)
+		.Process(this->ForceShield_KillWarhead)
 
 		.Process(this->Explodes_KillPassengers)
+		.Process(this->Explodes_DuringBuildup)
 		.Process(this->DeployFireWeapon)
 		.Process(this->TargetZoneScanType)
 
@@ -583,6 +628,23 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnHeight)
 		.Process(this->LandingDir)
 		.Process(this->DroppodType)
+		.Process(this->Convert_HumanToComputer)
+		.Process(this->Convert_ComputerToHuman)
+
+		.Process(this->CrateGoodie_RerollChance)
+
+		.Process(this->Tint_Color)
+		.Process(this->Tint_Intensity)
+		.Process(this->Tint_VisibleToHouses)
+
+		.Process(this->RevengeWeapon)
+		.Process(this->RevengeWeapon_AffectsHouses)
+
+		.Process(this->AttachEffect_AttachTypes)
+		.Process(this->AttachEffect_DurationOverrides)
+		.Process(this->AttachEffect_Delays)
+		.Process(this->AttachEffect_InitialDelays)
+		.Process(this->AttachEffect_RecreationDelays)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

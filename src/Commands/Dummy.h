@@ -3,7 +3,7 @@
 #include "Commands.h"
 
 // The example command class
-class DummyCommandClass : public PhobosCommandClass
+class DummyCommandClass : public CommandClass
 {
 public:
 	// CommandClass

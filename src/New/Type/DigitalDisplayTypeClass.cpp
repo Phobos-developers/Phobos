@@ -137,8 +137,8 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 	}
 	case TextAlign::Center:
 	{
-		position.X -= valueString.length() * spacing.X / 2;
-		position.Y += valueString.length() * spacing.Y / 2;
+		position.X -= static_cast<int>(valueString.length()) * spacing.X / 2;
+		position.Y += static_cast<int>(valueString.length()) * spacing.Y / 2;
 		break;
 	}
 	case TextAlign::Right:

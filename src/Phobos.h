@@ -44,14 +44,15 @@ public:
 		static bool DisableEmptySpawnPositions;
 		static bool ExtendedToolTips;
 		static int MaxToolTipWidth;
-		static bool ShowHarvesterCounter;
+		static bool HarvesterCounter_Show;
 		static double HarvesterCounter_ConditionYellow;
 		static double HarvesterCounter_ConditionRed;
-		static bool ShowProducingProgress;
-		static bool ShowPowerDelta;
+		static bool ProducingProgress_Show;
+		static bool PowerDelta_Show;
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
 		static bool CenterPauseMenuBackground;
+		static bool WeedsCounter_Show;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
@@ -80,6 +81,10 @@ public:
 		static bool ShowDesignatorRange;
 		static bool SaveVariablesOnScenarioEnd;
 		static bool SaveGameOnScenarioStart;
+		static bool ShowBriefing;
+		static bool ShowPowerDelta;
+		static bool ShowHarvesterCounter;
+		static bool ShowWeedsCounter;
 	};
 
 	class Misc

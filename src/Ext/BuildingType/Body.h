@@ -23,7 +23,7 @@ public:
 		ValueableIdxVector<SuperWeaponTypeClass> SuperWeapons;
 
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
-		Nullable<int> PowerPlantEnhancer_Amount;
+		Valueable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 
 		std::vector<Point2D> OccupierMuzzleFlashes;
@@ -34,7 +34,8 @@ public:
 		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
 
 		NullableIdx<VocClass> Grinding_Sound;
-		Nullable<WeaponTypeClass*> Grinding_Weapon;
+		Valueable<WeaponTypeClass*> Grinding_Weapon;
+		Valueable<int> Grinding_Weapon_RequiredCredits;
 		ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
 		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
 		Valueable<bool> Grinding_AllowAllies;
@@ -67,8 +68,8 @@ public:
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
 			, PowerPlantEnhancer_Buildings {}
-			, PowerPlantEnhancer_Amount {}
-			, PowerPlantEnhancer_Factor {}
+			, PowerPlantEnhancer_Amount { 0 }
+			, PowerPlantEnhancer_Factor { 1.0 }
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
 			, AllowAirstrike {}
@@ -82,6 +83,7 @@ public:
 			, Grinding_Sound {}
 			, Grinding_PlayDieSound { true }
 			, Grinding_Weapon {}
+			, Grinding_Weapon_RequiredCredits { 0 }
 			, DisplayIncome { }
 			, DisplayIncome_Houses { }
 			, DisplayIncome_Offset { { 0,0 } }

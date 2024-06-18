@@ -7,6 +7,7 @@
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
@@ -38,7 +39,8 @@ public:
 
 		Valueable<PartialVector3D<int>> TurretOffset;
 		Nullable<bool> TurretShadow;
-		ValueableVector<int> ShadowIndices;
+		Valueable<int> ShadowIndex_Frame;
+		std::map<int, int> ShadowIndices;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
@@ -55,15 +57,14 @@ public:
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 		std::unique_ptr<DroppodTypeClass> DroppodType;
 
-		Nullable<int> Ammo_AddOnDeploy;
+		Valueable<int> Ammo_AddOnDeploy;
 		Valueable<int> Ammo_AutoDeployMinimumAmount;
 		Valueable<int> Ammo_AutoDeployMaximumAmount;
 		Valueable<int> Ammo_DeployUnlockMinimumAmount;
 		Valueable<int> Ammo_DeployUnlockMaximumAmount;
-		NullableIdx<VocClass> VoiceCantDeploy;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
-		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
+		Valueable<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
@@ -81,6 +82,7 @@ public:
 		NullableIdx<VoxClass> EVA_Sold;
 
 		NullableIdx<VocClass> VoiceCreated;
+		NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
 
 		Nullable<AnimTypeClass*> WarpOut;
 		Nullable<AnimTypeClass*> WarpIn;
@@ -91,9 +93,9 @@ public:
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
 
-		Nullable<WeaponTypeClass*> WarpInWeapon;
+		Valueable<WeaponTypeClass*> WarpInWeapon;
 		Nullable<WeaponTypeClass*> WarpInMinRangeWeapon;
-		Nullable<WeaponTypeClass*> WarpOutWeapon;
+		Valueable<WeaponTypeClass*> WarpOutWeapon;
 		Valueable<bool> WarpInWeapon_UseDistanceAsDamage;
 
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
@@ -107,7 +109,7 @@ public:
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
-		Nullable<InfantryTypeClass*> DefaultDisguise;
+		Valueable<InfantryTypeClass*> DefaultDisguise;
 		Valueable<bool> UseDisguiseMovementSpeed;
 
 		Nullable<int> OpenTopped_RangeBonus;
@@ -116,6 +118,8 @@ public:
 		Valueable<bool> OpenTopped_IgnoreRangefinding;
 		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
 		Valueable<bool> OpenTopped_ShareTransportTarget;
+		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
+		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
 
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;
@@ -127,6 +131,7 @@ public:
 		Valueable<int> NoAmmoAmount;
 
 		Valueable<bool> JumpjetRotateOnCrash;
+		Nullable<int> ShadowSizeCharacteristicHeight;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -148,7 +153,11 @@ public:
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
+		Nullable<bool> ForceShield_KeptOnDeploy;
+		Nullable<IronCurtainEffect> ForceShield_Effect;
+		Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
+		Valueable<bool> Explodes_DuringBuildup;
 		Nullable<int> DeployFireWeapon;
 		Valueable<TargetZoneScanType> TargetZoneScanType;
 
@@ -184,6 +193,24 @@ public:
 		Nullable<Leptons> SpawnDistanceFromTarget;
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
+
+		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
+		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
+
+		Valueable<double> CrateGoodie_RerollChance;
+
+		Nullable<ColorStruct> Tint_Color;
+		Valueable<double> Tint_Intensity;
+		Valueable<AffectedHouse> Tint_VisibleToHouses;
+
+		Valueable<WeaponTypeClass*> RevengeWeapon;
+		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
+		ValueableVector<int> AttachEffect_DurationOverrides;
+		ValueableVector<int> AttachEffect_Delays;
+		ValueableVector<int> AttachEffect_InitialDelays;
+		NullableVector<int> AttachEffect_RecreationDelays;
 
 		struct LaserTrailDataEntry
 		{
@@ -225,6 +252,7 @@ public:
 			, TurretOffset { { 0, 0, 0 } }
 			, TurretShadow { }
 			, ShadowIndices { }
+			, ShadowIndex_Frame { 0 }
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}
@@ -268,6 +296,8 @@ public:
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
 			, OpenTopped_ShareTransportTarget { true }
+			, OpenTopped_UseTransportRangeModifiers { false }
+			, OpenTopped_CheckTransportDisableWeapons { false }
 
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
@@ -276,13 +306,13 @@ public:
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetRotateOnCrash { true }
-
+			, ShadowSizeCharacteristicHeight { }
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 
-			, Ammo_AddOnDeploy { }
+			, Ammo_AddOnDeploy { 0 }
 			, Ammo_AutoDeployMinimumAmount { -1 }
 			, Ammo_AutoDeployMaximumAmount { -1 }
 			, Ammo_DeployUnlockMinimumAmount { -1 }
@@ -307,6 +337,9 @@ public:
 			, EVA_Sold {}
 			, EnemyUIName {}
 
+			, VoiceCreated {}
+			, VoicePickup {}
+
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
@@ -326,8 +359,12 @@ public:
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
 			, IronCurtain_KillWarhead {}
+			, ForceShield_KeptOnDeploy {}
+			, ForceShield_Effect {}
+			, ForceShield_KillWarhead {}
 
 			, Explodes_KillPassengers { true }
+			, Explodes_DuringBuildup { true }
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
 
@@ -364,6 +401,23 @@ public:
 			, SpawnHeight {}
 			, LandingDir {}
 			, DroppodType {}
+			, Convert_HumanToComputer { }
+			, Convert_ComputerToHuman { }
+
+			, CrateGoodie_RerollChance { 0.0 }
+
+			, Tint_Color {}
+			, Tint_Intensity { 0.0 }
+			, Tint_VisibleToHouses { AffectedHouse::All }
+
+			, RevengeWeapon {}
+			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+
+			, AttachEffect_AttachTypes {}
+			, AttachEffect_DurationOverrides {}
+			, AttachEffect_Delays {}
+			, AttachEffect_InitialDelays {}
+			, AttachEffect_RecreationDelays {}
 		{ }
 
 		virtual ~ExtData() = default;

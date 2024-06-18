@@ -47,6 +47,8 @@ public:
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 
+		Nullable<WarheadTypeClass*> VeinholeWarhead;
+
 		PhobosFixedString<32u> MissingCameo;
 
 		TranslucencyLevel PlacementGrid_Translucency;
@@ -70,9 +72,15 @@ public:
 		Valueable<Point2D> Pips_Generic_Buildings_Size;
 		Valueable<Point2D> Pips_Ammo_Size;
 		Valueable<Point2D> Pips_Ammo_Buildings_Size;
-		Valueable<int> Pips_Tiberiums_EmptyFrame;
 		ValueableVector<int> Pips_Tiberiums_Frames;
+		Valueable<int> Pips_Tiberiums_EmptyFrame;
 		ValueableVector<int> Pips_Tiberiums_DisplayOrder;
+		Valueable<int> Pips_Tiberiums_WeedFrame;
+		Valueable<int> Pips_Tiberiums_WeedEmptyFrame;
+
+		Valueable<bool> HeightShadowScaling;
+		Valueable<double> HeightShadowScaling_MinScale;
+		double AirShadowBaseScale_log;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -88,6 +96,9 @@ public:
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
+		Valueable<bool> ForceShield_KeptOnDeploy;
+		Valueable<IronCurtainEffect> ForceShield_EffectOnOrganics;
+		Nullable<WarheadTypeClass*> ForceShield_KillOrganicsWarhead;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -95,6 +106,8 @@ public:
 		Valueable<float> ToolTip_Background_BlurSize;
 
 		Valueable<bool> CrateOnlyOnLand;
+		Valueable<int> UnitCrateVehicleCap;
+		Valueable<int> FreeMCV_CreditsThreshold;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
 		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
@@ -127,6 +140,7 @@ public:
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
+			, VeinholeWarhead {}
 			, MissingCameo { GameStrings::XXICON_SHP() }
 
 			, PlacementGrid_Translucency { 0 }
@@ -149,9 +163,16 @@ public:
 			, Pips_Generic_Buildings_Size { { 4, 2 } }
 			, Pips_Ammo_Size { { 4, 0 } }
 			, Pips_Ammo_Buildings_Size { { 4, 2 } }
-			, Pips_Tiberiums_EmptyFrame { 0 }
 			, Pips_Tiberiums_Frames {}
+			, Pips_Tiberiums_EmptyFrame { 0 }
 			, Pips_Tiberiums_DisplayOrder {}
+			, Pips_Tiberiums_WeedFrame { 1 }
+			, Pips_Tiberiums_WeedEmptyFrame { 0 }
+
+			, HeightShadowScaling { false }
+			, HeightShadowScaling_MinScale { 0.0 }
+			, AirShadowBaseScale_log { 0.693376137 }
+
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
@@ -161,6 +182,9 @@ public:
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
+			, ForceShield_KeptOnDeploy { false }
+			, ForceShield_EffectOnOrganics { IronCurtainEffect::Kill }
+			, ForceShield_KillOrganicsWarhead { }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
@@ -169,6 +193,8 @@ public:
 			, DisplayIncome_AllowAI { true }
 			, DisplayIncome_Houses { AffectedHouse::All }
 			, CrateOnlyOnLand { false }
+			, UnitCrateVehicleCap { 50 }
+			, FreeMCV_CreditsThreshold { 1500 }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }

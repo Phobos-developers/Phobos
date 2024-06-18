@@ -45,6 +45,10 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->UseWeeds)
+		.Process(this->UseWeeds_Amount)
+		.Process(this->UseWeeds_StorageTimer)
+		.Process(this->UseWeeds_ReadinessAnimationPercentage)
 		;
 }
 
@@ -144,6 +148,11 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::Owner);
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
+
+	this->UseWeeds.Read(exINI, pSection, "UseWeeds");
+	this->UseWeeds_Amount.Read(exINI, pSection, "UseWeeds.Amount");
+	this->UseWeeds_StorageTimer.Read(exINI, pSection, "UseWeeds.StorageTimer");
+	this->UseWeeds_ReadinessAnimationPercentage.Read(exINI, pSection, "UseWeeds.ReadinessAnimationPercentage");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

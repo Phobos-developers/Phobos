@@ -29,9 +29,9 @@ public:
 	Valueable<AttachedAnimFlag> IdleAnim_TemporalAction;
 	Damageable<AnimTypeClass*> IdleAnim;
 	Damageable<AnimTypeClass*> IdleAnimDamaged;
-	Nullable<AnimTypeClass*> BreakAnim;
-	Nullable<AnimTypeClass*> HitAnim;
-	Nullable<WeaponTypeClass*> BreakWeapon;
+	Valueable<AnimTypeClass*> BreakAnim;
+	Valueable<AnimTypeClass*> HitAnim;
+	Valueable<WeaponTypeClass*> BreakWeapon;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
 	Valueable<int> ReceivedDamage_Minimum;
@@ -45,6 +45,10 @@ public:
 	Nullable<int> Pips_Building_Empty;
 	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
+
+	Nullable<ColorStruct> Tint_Color;
+	Valueable<double> Tint_Intensity;
+	Valueable<AffectedHouse> Tint_VisibleToHouses;
 
 public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle)
@@ -81,6 +85,9 @@ public:
 		, Pips_Building_Empty { }
 		, ImmuneToBerserk { false }
 		, ImmuneToCrit { false }
+		, Tint_Color {}
+		, Tint_Intensity { 0.0 }
+		, Tint_VisibleToHouses { AffectedHouse::All }
 	{ };
 
 	virtual ~ShieldTypeClass() override = default;

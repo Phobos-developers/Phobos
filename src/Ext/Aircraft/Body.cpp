@@ -66,8 +66,6 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 	if (auto pOwner = pThis->SpawnOwner)
 		return pOwner->PrimaryFacing.Current().GetDir();
 
-	bool isAirportBound = true;
-
 	if (pDock || pThis->HasAnyLink())
 	{
 		auto pLink = pThis->GetNthLink(0);
@@ -89,18 +87,12 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 		else if (!pThis->Type->AirportBound)
 			return pLink->PrimaryFacing.Current().GetDir();
 	}
-	else if (!pThis->Type->AirportBound)
-	{
-		isAirportBound = false;
-	}
 
-	int landingDir = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->LandingDir.Get((int)poseDir);
+	int landingDir = TechnoTypeExt::ExtMap.Find(pThis->Type)->LandingDir.Get((int)poseDir);
 
-	if (isAirportBound)
-		return static_cast<DirType>(Math::clamp(landingDir, 0, 255));
-	else if (landingDir < 0)
+	if (!pThis->Type->AirportBound && landingDir < 0)
 		return pThis->PrimaryFacing.Current().GetDir();
 
-	return poseDir;
+	return static_cast<DirType>(Math::clamp(landingDir, 0, 255));
 }
 

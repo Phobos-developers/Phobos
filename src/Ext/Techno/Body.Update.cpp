@@ -22,7 +22,14 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
 		this->UpdateTypeData(pType);
 
-	this->IsInTunnel = false; // TechnoClass::AI is only called when not in tunnel.
+	// Update tunnel state on exit, TechnoClass::AI is only called when not in tunnel.
+	if (this->IsInTunnel)
+	{
+		this->IsInTunnel = false;
+
+		if (const auto pShieldData = this->Shield.get())
+			pShieldData->SetAnimationVisibility(true);
+	}
 
 	if (this->CheckDeathConditions())
 		return;
@@ -127,7 +134,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
-	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation.Get();
+	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation;
 
 	// Death if no ammo
 	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
@@ -475,6 +482,33 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
+
+	// Update movement sound if still moving while type changed.
+	if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+	{
+		if (pFoot->Locomotor->Is_Moving_Now() && pFoot->IsMoveSoundPlaying)
+		{
+			if (pCurrentType->MoveSound != pOldType->MoveSound)
+			{
+				// End the old sound.
+				pFoot->MoveSoundAudioController.End();
+
+				if (auto const count = pCurrentType->MoveSound.Count)
+				{
+					// Play a new sound.
+					int soundIndex = pCurrentType->MoveSound[Randomizer::Global->Random() % count];
+					VocClass::PlayAt(soundIndex, pFoot->Location, &pFoot->MoveSoundAudioController);
+					pFoot->IsMoveSoundPlaying = true;
+				}
+				else
+				{
+					pFoot->IsMoveSoundPlaying = false;
+				}
+
+				pFoot->MoveSoundDelay = 0;
+			}
+		}
+	}
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
@@ -640,6 +674,13 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 {
 	if (isInLimbo)
 	{
+		// Remove parasite units first before deleting them.
+		if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+		{
+			if (pFoot->ParasiteImUsing && pFoot->ParasiteImUsing->Victim)
+				pFoot->ParasiteImUsing->ExitUnit();
+		}
+
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
 		return;
@@ -744,4 +785,135 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 			}
 		}
 	}
+}
+
+void TechnoExt::ExtData::UpdateTemporal()
+{
+	if (const auto pShieldData = this->Shield.get())
+	{
+		if (pShieldData->IsAvailable())
+			pShieldData->AI_Temporal();
+	}
+
+	for (auto const& ae : this->AttachedEffects)
+		ae->AI_Temporal();
+}
+
+// Updates state of all AttachEffects on techno.
+void TechnoExt::ExtData::UpdateAttachEffects()
+{
+	bool inTunnel = this->IsInTunnel || this->IsBurrowed;
+	bool markForRedraw = false;
+	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
+
+	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
+	{
+		auto const attachEffect = it->get();
+
+		if (!inTunnel)
+			attachEffect->SetAnimationVisibility(true);
+
+		attachEffect->AI();
+
+		if (attachEffect->HasExpired() || (attachEffect->IsActive() && !attachEffect->AllowedToBeActive()))
+		{
+			auto const pType = attachEffect->GetType();
+
+			if (pType->HasTint())
+				markForRedraw = true;
+
+			this->UpdateCumulativeAttachEffects(attachEffect->GetType());
+
+			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
+			{
+				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
+					attachEffect->ExpireWeapon();
+			}
+
+			if (!attachEffect->AllowedToBeActive() && attachEffect->ResetIfRecreatable())
+			{
+				++it;
+				continue;
+			}
+
+			it = this->AttachedEffects.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	this->RecalculateStatMultipliers();
+
+	if (markForRedraw)
+		this->OwnerObject()->MarkForRedraw();
+}
+
+// Updates state of AttachEffects of same cumulative type on techno, (which one is first active instance existing, if any), kills animations if needed.
+void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType)
+{
+	if (!pAttachEffectType || !pAttachEffectType->Cumulative)
+		return;
+
+	bool foundFirst = false;
+
+	for (auto const& attachEffect : this->AttachedEffects)
+	{
+		if (attachEffect->GetType() != pAttachEffectType || !attachEffect->IsActive())
+			continue;
+
+		if (!foundFirst)
+		{
+			foundFirst = true;
+			attachEffect->IsFirstCumulativeInstance = true;
+		}
+		else
+		{
+			attachEffect->IsFirstCumulativeInstance = false;
+		}
+
+		if (pAttachEffectType->CumulativeAnimations.size() > 0)
+			attachEffect->KillAnim();
+	}
+}
+
+// Recalculates AttachEffect stat multipliers and other bonuses.
+void TechnoExt::ExtData::RecalculateStatMultipliers()
+{
+	auto const pThis = this->OwnerObject();
+
+	double firepower = 1.0;
+	double armor = 1.0;
+	double speed = 1.0;
+	double ROF = 1.0;
+	bool cloak = false;
+	bool forceDecloak = false;
+	bool disableWeapons = false;
+
+	for (const auto& attachEffect : this->AttachedEffects)
+	{
+		if (!attachEffect->IsActive())
+			continue;
+
+		auto const type = attachEffect->GetType();
+		firepower *= type->FirepowerMultiplier;
+		speed *= type->SpeedMultiplier;
+		armor *= type->ArmorMultiplier;
+		ROF *= type->ROFMultiplier;
+		cloak |= type->Cloakable;
+		forceDecloak |= type->ForceDecloak;
+		disableWeapons |= type->DisableWeapons;
+	}
+
+	this->AE_FirepowerMultiplier = firepower;
+	this->AE_ArmorMultiplier = armor;
+	this->AE_SpeedMultiplier = speed;
+	this->AE_ROFMultiplier = ROF;
+	this->AE_Cloakable = cloak;
+	this->AE_ForceDecloak = forceDecloak;
+	this->AE_DisableWeapons = disableWeapons;
+
+	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
+		pThis->Uncloak(true);
 }

@@ -1,6 +1,8 @@
 #include "Body.h"
 #include <Ext/Anim/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
 
 #include <ScenarioClass.h>
@@ -202,19 +204,64 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 {
 	enum { Shrapnel = 0x46A40C, Skip = 0x46ADCD };
 
-	GET(BulletClass*, pBullet, EDI);
+	GET(BulletClass*, pThis, EDI);
 
-	auto const pData = BulletTypeExt::ExtMap.Find(pBullet->Type);
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-	if (auto const pObject = pBullet->GetCell()->FirstObject)
+	if (auto const pObject = pThis->GetCell()->FirstObject)
 	{
-		if (pObject->WhatAmI() != AbstractType::Building || pData->Shrapnel_AffectsBuildings)
+		if (pObject->WhatAmI() != AbstractType::Building || pTypeExt->Shrapnel_AffectsBuildings)
 			return Shrapnel;
 	}
-	else if (pData->Shrapnel_AffectsGround)
+	else if (pTypeExt->Shrapnel_AffectsGround)
+	{
 		return Shrapnel;
+	}
 
 	return Skip;
+}
+
+DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
+{
+	enum { SkipObject = 0x46A8EA, Continue = 0x46A50F };
+
+	GET(BulletClass*, pThis, EDI);
+	GET(ObjectClass*, pObject, EBP);
+	GET(TechnoClass*, pSource, EAX);
+	GET(WeaponTypeClass*, pShrapnelWeapon, ESI);
+
+	auto const pOwner = pSource->Owner;
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->Shrapnel_UseWeaponTargeting)
+	{
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pShrapnelWeapon);
+		auto const pType = pObject->GetType();
+
+		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pShrapnelWeapon->Warhead, pType->Armor) == 0.0)
+			return SkipObject;
+		else if (!EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
+			return SkipObject;
+
+		if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
+		{
+			if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
+				return SkipObject;
+
+			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
+				return SkipObject;
+
+			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
+				return SkipObject;
+		}
+
+	}
+	else if (pOwner->IsAlliedWith(pObject))
+	{
+		return SkipObject;
+	}
+
+	return Continue;
 }
 
 DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
@@ -225,8 +272,8 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 	GET_STACK(CoordStruct, origCoords, STACK_OFFSET(0x3C, -0x30));
 
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-	int min = pTypeExt->ClusterScatter_Min.Get(Leptons(256));
-	int max = pTypeExt->ClusterScatter_Max.Get(Leptons(512));
+	int min = pTypeExt->ClusterScatter_Min.Get();
+	int max = pTypeExt->ClusterScatter_Max.Get();
 	auto coords = origCoords;
 
 	for (int i = 0; i < pThis->Type->Cluster; i++)

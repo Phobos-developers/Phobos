@@ -25,6 +25,7 @@ public:
 		TechnoClass* Invoker;
 		HouseClass* InvokerHouse;
 		ParticleSystemClass* AttachedSystem;
+		BuildingClass* ParentBuilding; // Only set on building anims, used for tinting the anims etc. especially when not on same cell as building
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
@@ -34,6 +35,7 @@ public:
 			, Invoker {}
 			, InvokerHouse {}
 			, AttachedSystem {}
+			, ParentBuilding {}
 		{ }
 
 		void SetInvoker(TechnoClass* pInvoker);
@@ -51,6 +53,7 @@ public:
 			AnnounceInvalidPointer(this->Invoker, ptr);
 			AnnounceInvalidPointer(this->InvokerHouse, ptr);
 			AnnounceInvalidPointer(this->AttachedSystem, ptr);
+			AnnounceInvalidPointer(this->ParentBuilding, ptr);
 		}
 
 		virtual void InitializeConstants() override;
@@ -92,6 +95,8 @@ public:
 
 	static bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner = true, bool defaultToInvokerOwner = false);
 	static HouseClass* GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner = nullptr);
+
+	static void VeinAttackAI(AnimClass* pAnim);
 
 	static void HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
 	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom);

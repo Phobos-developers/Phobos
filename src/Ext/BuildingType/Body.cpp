@@ -52,8 +52,8 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 	{
 		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
-			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor.Get(1.0f), static_cast<float>(nCount));
-			nAmount += pExt->PowerPlantEnhancer_Amount.Get(0) * nCount;
+			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
+			nAmount += pExt->PowerPlantEnhancer_Amount * nCount;
 		}
 	}
 
@@ -139,6 +139,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
 	this->Grinding_PlayDieSound.Read(exINI, pSection, "Grinding.PlayDieSound");
 	this->Grinding_Weapon.Read<true>(exINI, pSection, "Grinding.Weapon");
+	this->Grinding_Weapon_RequiredCredits.Read(exINI, pSection, "Grinding.Weapon.RequiredCredits");
 
 	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
@@ -240,6 +241,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_Sound)
 		.Process(this->Grinding_PlayDieSound)
 		.Process(this->Grinding_Weapon)
+		.Process(this->Grinding_Weapon_RequiredCredits)
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_Houses)
 		.Process(this->DisplayIncome_Offset)

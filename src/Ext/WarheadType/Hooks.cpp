@@ -99,7 +99,7 @@ DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt && pWHExt->HasCrit && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
+	if (pWHExt && pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
 	{
 		GET(int, nDamage, ECX);
 		int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
@@ -183,16 +183,50 @@ DEFINE_HOOK(0x48A4F3, SelectDamageAnimation_NegativeZeroDamage, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x4891AF, GetTotalDamage_NegativeDamageModifiers, 0x6)
+#pragma region NegativeDamageModifiers
+
+namespace NegativeDamageTemp
+{
+	bool ApplyNegativeDamageModifiers = false;
+}
+
+DEFINE_HOOK(0x4891AF, GetTotalDamage_NegativeDamageModifiers1, 0x6)
 {
 	enum { ApplyModifiers = 0x4891C6 };
 
 	GET(WarheadTypeClass* const, pWarhead, EDI);
+	GET(int, damage, ESI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
-	if (pWHExt->ApplyModifiersOnNegativeDamage)
+	if (damage < 0 && pWHExt->ApplyModifiersOnNegativeDamage)
+	{
+		NegativeDamageTemp::ApplyNegativeDamageModifiers = true;
 		return ApplyModifiers;
+	}
 
 	return 0;
 }
+
+DEFINE_HOOK(0x48922D, GetTotalDamage_NegativeDamageModifiers2, 0x5)
+{
+	enum { SkipGameCode = 0x489235 };
+
+	GET(int, damage, ESI);
+
+	if (NegativeDamageTemp::ApplyNegativeDamageModifiers)
+	{
+		NegativeDamageTemp::ApplyNegativeDamageModifiers = false;
+		R->ECX(damage);
+
+	}
+	else
+	{
+		R->ECX(damage < 0 ? 0 : damage);
+	}
+
+
+	return SkipGameCode;
+}
+
+#pragma endregion

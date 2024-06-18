@@ -245,12 +245,15 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 		auto const pTypeExt = pExt->TypeExtData;
 
 		pExt->AccumulatedIncome += refund;
+		pExt->GrindingWeapon_AccumulatedCredits += refund;
 
-		if (pTypeExt->Grinding_Weapon.isset()
-			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF)
+		if (pTypeExt->Grinding_Weapon &&
+			Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon->ROF &&
+			pExt->GrindingWeapon_AccumulatedCredits >= pTypeExt->Grinding_Weapon_RequiredCredits)
 		{
-			TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon.Get());
+			TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon);
 			pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;
+			pExt->GrindingWeapon_AccumulatedCredits = 0;
 		}
 
 		if (pTypeExt->Grinding_Sound.isset())
@@ -338,6 +341,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsCreatedFromMapFile)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
+		.Process(this->GrindingWeapon_AccumulatedCredits)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedIncome)
 		.Process(this->CurrentLaserWeaponIndex)
@@ -413,7 +417,7 @@ DEFINE_HOOK(0x453E20, BuildingClass_SaveLoad_Prefix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x454174, BuildingClass_Load, 0xA)
+DEFINE_HOOK(0x454174, BuildingClass_Load_LightSource, 0xA)
 {
 	GET(BuildingClass*, pThis, EDI);
 

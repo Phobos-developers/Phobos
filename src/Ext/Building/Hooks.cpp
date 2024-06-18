@@ -4,6 +4,7 @@
 #include <UnitClass.h>
 #include <SuperClass.h>
 #include <GameOptionsClass.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <TacticalClass.h>
@@ -53,10 +54,9 @@ DEFINE_HOOK(0x4403D4, BuildingClass_AI_ChronoSparkle, 0x6)
 				if (!((Unsorted::CurrentFrame + i) % RulesExt::Global()->ChronoSparkleDisplayDelay))
 				{
 					auto muzzleOffset = pType->MaxNumberOccupants <= 10 ? pType->MuzzleFlash[i] : BuildingTypeExt::ExtMap.Find(pType)->OccupierMuzzleFlashes.at(i);
-					auto offset = Point2D::Empty;
 					auto coords = CoordStruct::Empty;
 					auto const renderCoords = pThis->GetRenderCoords();
-					offset = *TacticalClass::Instance->ApplyMatrix_Pixel(&offset, &muzzleOffset);
+					auto offset = TacticalClass::Instance->ApplyMatrix_Pixel(muzzleOffset);
 					coords.X += offset.X;
 					coords.Y += offset.Y;
 					coords += renderCoords;
@@ -192,11 +192,7 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 			break;
 		}
 
-		if (!currFactory)
-		{
-			Game::RaiseError(E_POINTER);
-		}
-		else if (!*currFactory)
+		if (!*currFactory)
 		{
 			*currFactory = pThis;
 			return 0;
@@ -232,9 +228,19 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 	return 0;
 }
 
+const byte old_empty_log[] = { 0xC3 };
+DEFINE_JUMP(CALL, 0x4CA016, GET_OFFSET(old_empty_log));
+
 DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 {
 	GET(FactoryClass*, pFactory, ESI);
+	GET_STACK(void*, calledby, 0x18);
+
+	TechnoClass* pTechno = pFactory->Object;
+
+	// Replace the old log with this to figure out where keeps flushing the stream
+	Debug::LogGame("(%p) : %s is abandoning production of %s[%s]\n",
+		calledby, pFactory->Owner->PlainName, pTechno->GetType()->Name, pTechno->get_ID());
 
 	auto pRulesExt = RulesExt::Global();
 
@@ -242,7 +248,6 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 		return 0;
 
 	auto const pOwnerExt = HouseExt::ExtMap.Find(pFactory->Owner);
-	TechnoClass* pTechno = pFactory->Object;
 
 	switch (pTechno->WhatAmI())
 	{
@@ -396,6 +401,17 @@ DEFINE_HOOK(0x4575A2, BuildingClass_Infiltrate_AfterAres, 0xE)
 	GET(BuildingClass*, pBuilding, ECX);
 
 	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);
+	return 0;
+}
+
+DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(AnimClass*, pAnim, EBP);
+
+	auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+	pAnimExt->ParentBuilding = pThis;
+
 	return 0;
 }
 

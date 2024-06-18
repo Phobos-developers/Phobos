@@ -96,8 +96,23 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	auto const pExt = RecalcCenterTemp::pExtData;
 
-	if (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding))
+	if (!MapClass::Instance->CoordinatesLegal(pBuilding->GetMapCoords())
+		|| (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding)))
+	{
 		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
+{
+	enum { SkipTechno = 0x4AC55B };
+
+	GET(TechnoClass* const, pTechno, ECX);
+
+	if (!MapClass::Instance->CoordinatesLegal(pTechno->GetMapCoords()))
+		return SkipTechno;
 
 	return 0;
 }
@@ -220,6 +235,26 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		auto& vec = pOwnerExt->OwnedTransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
 		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+	}
+
+	if (auto pMe = generic_cast<FootClass*>(pThis))
+	{
+		bool I_am_human = pThis->Owner->IsControlledByHuman();
+		bool You_are_human = pNewOwner->IsControlledByHuman();
+		auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
+			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_ComputerToHuman.Get() : nullptr;
+
+		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
+			TechnoExt::ConvertToType(pMe, pConvertTo);
+
+		for (auto& trail : pExt->LaserTrails)
+		{
+			if (trail.Type->IsHouseColor)
+				trail.CurrentColor = pNewOwner->LaserColor;
+		}
+
+		if (!I_am_human && You_are_human)
+			TechnoExt::ChangeOwnerMissionFix(pMe);
 	}
 
 	return 0;

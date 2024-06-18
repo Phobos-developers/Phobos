@@ -31,6 +31,7 @@ public:
 		bool IsCreatedFromMapFile;
 		int LimboID;
 		int GrindingWeapon_LastFiredFrame;
+		int GrindingWeapon_AccumulatedCredits;
 		BuildingClass* CurrentAirFactory;
 		int AccumulatedIncome;
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
@@ -42,6 +43,7 @@ public:
 			, IsCreatedFromMapFile { false }
 			, LimboID { -1 }
 			, GrindingWeapon_LastFiredFrame { 0 }
+			, GrindingWeapon_AccumulatedCredits { 0 }
 			, CurrentAirFactory { nullptr }
 			, AccumulatedIncome { 0 }
 			, CurrentLaserWeaponIndex {}
