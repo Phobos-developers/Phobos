@@ -1,4 +1,4 @@
-#include "NextIdleHarvester.h"
+#include "SelectCaptured.h"
 
 #include <BuildingTypeClass.h>
 #include <MessageListClass.h>
@@ -9,27 +9,27 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 
-const char* NextIdleHarvesterCommandClass::GetName() const
+const char* SelectCapturedCommandClass::GetName() const
 {
-	return "Next Idle Harvester";
+	return "Select Captured Units";
 }
 
-const wchar_t* NextIdleHarvesterCommandClass::GetUIName() const
+const wchar_t* SelectCapturedCommandClass::GetUIName() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_NEXT_IDLE_HARVESTER", L"Next Idle Harvester");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_SELECT_CAPTURED", L"Select Captured Units");
 }
 
-const wchar_t* NextIdleHarvesterCommandClass::GetUICategory() const
+const wchar_t* SelectCapturedCommandClass::GetUICategory() const
 {
 	return CATEGORY_SELECTION;
 }
 
-const wchar_t* NextIdleHarvesterCommandClass::GetUIDescription() const
+const wchar_t* SelectCapturedCommandClass::GetUIDescription() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_NEXT_IDLE_HARVESTER_DESC", L"Select the next harvester that is idle (not harvesting).");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_SELECT_CAPTURED_DESC", L"Select the captured units in the current screen.");
 }
 
-void NextIdleHarvesterCommandClass::Execute(WWKey eInput) const
+void SelectCapturedCommandClass::Execute(WWKey eInput) const
 {
 	// Debug::Log("[Phobos] Dummy command runs.\n");
 	// MessageListClass::Instance->PrintMessage(L"[Phobos] Dummy command rums");
