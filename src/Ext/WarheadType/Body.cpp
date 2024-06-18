@@ -148,6 +148,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 	this->ApplyModifiersOnNegativeDamage.Read(exINI, pSection, "ApplyModifiersOnNegativeDamage");
+	this->Rocker_Damage.Read(exINI, pSection, "Rocker.Damage");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -339,6 +340,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
 		.Process(this->ApplyModifiersOnNegativeDamage)
+		.Process(this->Rocker_Damage)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)

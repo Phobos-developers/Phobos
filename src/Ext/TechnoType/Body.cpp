@@ -92,6 +92,19 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 	}
 }
 
+AnimTypeClass* TechnoTypeExt::GetWakeAnim(LocomotionClass* pLoco)
+{
+	const auto pThis = pLoco->LinkedTo;
+	if (!pThis)
+		return nullptr;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (!pTypeExt || !pTypeExt->Wake.isset())
+		return nullptr;
+
+	return pTypeExt->Wake.Get(nullptr);
+}
+
 //TODO: YRpp this with proper casting
 TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 {
@@ -298,6 +311,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_Delays.Read(exINI, pSection, "AttachEffect.Delays");
 	this->AttachEffect_InitialDelays.Read(exINI, pSection, "AttachEffect.InitialDelays");
 	this->AttachEffect_RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
+
+	this->Wake.Read(exINI, pSection, "Wake");
+	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
+	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -645,6 +662,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_Delays)
 		.Process(this->AttachEffect_InitialDelays)
 		.Process(this->AttachEffect_RecreationDelays)
+
+		.Process(this->Wake)
+		.Process(this->Wake_Grapple)
+		.Process(this->Wake_Sinking)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
