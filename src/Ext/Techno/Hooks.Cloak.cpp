@@ -65,6 +65,7 @@ DEFINE_JUMP(VTABLE, 0x7F4C04, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); /
 DEFINE_JUMP(VTABLE, 0x7F5F14, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // UnitClass
 DEFINE_JUMP(CALL, 0x4578C9, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper));   // BuildingClass
 
+
 // Allow units with DecloakToFire=no weapons to cloak even when about to fire on target.
 DEFINE_HOOK(0x6F7792, TechnoClass_InWeaponRange_DecloakToFire, 0xA)
 {

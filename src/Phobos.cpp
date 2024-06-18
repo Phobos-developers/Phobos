@@ -1,7 +1,7 @@
 #include "Phobos.h"
 
 #include <Drawing.h>
-#include <SessionClass.h>
+
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
