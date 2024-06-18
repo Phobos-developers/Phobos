@@ -4,6 +4,7 @@
 #include <MessageListClass.h>
 #include <MapClass.h>
 #include <ObjectClass.h>
+#include <TacticalClass.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Debug.h>
 #include <Ext/Techno/Body.h>
@@ -51,9 +52,10 @@ void SelectCapturedCommandClass::Execute(WWKey eInput) const
 			CoordStruct coordInMap { 0 , 0 , 0 };
 			pTechno->GetCoords( &coordInMap );
 			TacticalClass::Instance->CoordsToScreen( &coordInScreen , &coordInMap );
-			coordInMap -= TacticalClass::Instance->TacticalPos;
+			coordInScreen -= TacticalClass::Instance->TacticalPos;
 			RectangleStruct screenArea = DSurface::Composite->GetRect();
-			if (screenArea.Width >= coordInScreen.X && screenArea.Height >= coordInScreen.Y && pTechno->IsMindControlled() && pTechno->IsSelectable())
+			if (screenArea.Width >= coordInScreen.X && screenArea.Height >= coordInScreen.Y && coordInScreen.X >=0 && coordInScreen.Y >= 0 && // the unit is in the current screen
+				pTechno->IsMindControlled() && pTechno->IsSelectable() && !pTechno->MindControlledByAUnit) // the unit is mc by non-perma mc, and selectable.
 			{
 				if (!CapturedPresent)
 				{
@@ -71,6 +73,7 @@ void SelectCapturedCommandClass::Execute(WWKey eInput) const
 	if (CapturedPresent)
 	{
 		MapClass::Instance->MarkNeedsRedraw(1);
+		MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:SelectCaptured", L"Captured units selected."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	}
 	else
 	{
