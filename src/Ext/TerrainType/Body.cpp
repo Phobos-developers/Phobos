@@ -19,7 +19,7 @@ int TerrainTypeExt::ExtData::GetCellsPerAnim()
 	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_CellsPerAnim.Get());
 }
 
-void TerrainTypeExt::ExtData::PlayDestroyEffects(CoordStruct coords)
+void TerrainTypeExt::ExtData::PlayDestroyEffects(const CoordStruct& coords)
 {
 	VocClass::PlayIndexAtPos(this->DestroySound, coords);
 
@@ -98,6 +98,9 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->PaletteFile.Read(pArtINI, pArtSection, "Palette");
 	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
+
+	if (GeneralUtils::IsValidString(this->PaletteFile) && !this->Palette)
+		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, this->PaletteFile);
 }
 
 void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

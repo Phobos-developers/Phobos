@@ -28,7 +28,7 @@ public:
 		Valueable<bool> CanBeBuiltOn;
 		Valueable<bool> HasDamagedFrames;
 		Valueable<bool> HasCrumblingFrames;
-		NullableIdx<VocClass> CrumblingSound;
+		ValueableIdx<VocClass> CrumblingSound;
 		Nullable<int> AnimationLength;
 
 		PhobosFixedString<32u> PaletteFile;
@@ -63,7 +63,7 @@ public:
 
 		int GetTiberiumGrowthStage();
 		int GetCellsPerAnim();
-		void PlayDestroyEffects(CoordStruct coords);
+		void PlayDestroyEffects(const CoordStruct& coords);
 
 	private:
 		template <typename T>
