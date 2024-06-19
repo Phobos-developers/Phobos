@@ -19,7 +19,7 @@ int TerrainTypeExt::ExtData::GetCellsPerAnim()
 	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_CellsPerAnim.Get());
 }
 
-void TerrainTypeExt::ExtData::PlayDestroyEffects(CoordStruct coords)
+void TerrainTypeExt::ExtData::PlayDestroyEffects(const CoordStruct& coords)
 {
 	VocClass::PlayIndexAtPos(this->DestroySound, coords);
 
