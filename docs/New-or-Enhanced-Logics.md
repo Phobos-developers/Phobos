@@ -80,7 +80,7 @@ Animation.OfflineAction=Hides                  ; AttachedAnimFlag (None, Hides, 
 Animation.TemporalAction=None                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.UseInvokerAsOwner=false              ; boolean
 CumulativeAnimations=                          ; list of animations
-ExpireWeapon=                                  
+ExpireWeapon=
 ExpireWeapon.TriggerOn=expire                  ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
 ExpireWeapon.CumulativeOnlyOnce=false          ; boolean
 Tint.Color=                                    ; integer - R,G,B
@@ -105,7 +105,7 @@ RevengeWeapon=                                 ; WeaponType
 RevengeWeapon.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisableWeapons=false                           ; boolean
 Groups=                                        ; comma-separated list of strings (group IDs)
-                                               
+
 [SOMETECHNO]                                   ; TechnoType
 AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
 AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
@@ -125,8 +125,8 @@ AttachEffect.RequiredMaxCounts=                ; integer - maximum required inst
 AttachEffect.DisallowedMinCounts=              ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.DisallowedMaxCounts=              ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.IgnoreFromSameSource=false        ; boolean
-                                               
-[SOMEWARHEAD]                                  
+
+[SOMEWARHEAD]
 AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
 AttachEffect.RemoveTypes=                      ; List of AttachEffectTypes
 AttachEffect.RemoveGroups=                     ; comma-separated list of strings (group IDs)
@@ -837,7 +837,6 @@ Trajectory.Engrave.DamageDelay=2               ; integer
 
 ```{note}
 - It's best not to let it be intercepted.
-- It will not work if it is created by `AirburstWeapon`. You can use Disperse trajectory instead.
 ```
 
 ### Shrapnel enhancements

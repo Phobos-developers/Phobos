@@ -140,9 +140,6 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	if (!pBullet->WeaponType) //Bullets create from AirburstWeapon have no WeaponType.
-		return;
-
 	auto const pType = this->GetTrajectoryType<EngraveTrajectoryType>(pBullet);
 
 	this->SourceCoord = pType->SourceCoord;
@@ -194,7 +191,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (!pBullet->WeaponType || (!pBullet->Owner && !this->NotMainWeapon) || this->TechnoInLimbo != pBullet->Owner->InLimbo)
+	if ((!pBullet->Owner && !this->NotMainWeapon) || this->TechnoInLimbo != pBullet->Owner->InLimbo)
 		return true;
 
 	if (--this->TheDuration < 0)
@@ -239,7 +236,7 @@ bool EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet)
 	int WeaponIndex = 0;
 	bool AccurateFLHFound = false;
 
-	if (pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false) && pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true))
+	if (!pBullet->WeaponType || (pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false) && pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true)))
 	{
 		this->NotMainWeapon = true;
 		return true;
@@ -443,6 +440,5 @@ bool EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 void EngraveTrajectory::DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
 	this->DamageTimer.Start(this->DamageDelay);
-	const int LaserDamage = static_cast<int>(pBullet->WeaponType->Damage * this->FirepowerMult);
-	WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, LaserDamage, pOwner);
+	WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, static_cast<int>(pBullet->Health * this->FirepowerMult), pOwner);
 }

@@ -269,13 +269,8 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
 	HouseClass* const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
-
-	if (pBullet->WeaponType && this->EdgeAttenuation != 1.0)
-	{
-		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pBullet->Target);
-		const int Damage = this->GetTheTrueDamage(pBullet->WeaponType->Damage, pBullet, pTechno, pOwner, true);
-		pBullet->Construct(pBullet->Type, pBullet->Target, pBullet->Owner, Damage, pBullet->WH, pBullet->Speed, pBullet->Bright);
-	}
+	TechnoClass* pTechno = abstract_cast<TechnoClass*>(pBullet->Target);
+	pBullet->Health = this->GetTheTrueDamage(pBullet->Health, pBullet, pTechno, pOwner, true);
 
 	if (this->PassDetonateLocal)
 	{
@@ -1238,10 +1233,11 @@ int StraightTrajectory::GetTheTrueDamage(int Damage, BulletClass* pBullet, Techn
 	if (this->EdgeAttenuation != 1.0 || this->ProximityAllies != 1.0)
 	{
 		const double CalculatedDamage = Damage * this->FirepowerMult * this->GetExtraDamageMultiplier(pBullet, pTechno, pOwner, Self);
-		TrueDamage = static_cast<int>(CalculatedDamage + 0.5);
+		const int Signal = Math::sgn(CalculatedDamage);
+		TrueDamage = static_cast<int>(CalculatedDamage + ((Signal < 0) ? -0.5 : 0.5));
 
-		if (TrueDamage == 0 && Damage != 0 && this->EdgeAttenuation != 0)
-			TrueDamage = Math::sgn(CalculatedDamage);
+		if (TrueDamage == 0 && this->EdgeAttenuation != 0)
+			TrueDamage = Signal;
 	}
 
 	return TrueDamage;
