@@ -40,6 +40,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplySpawnLimitRange();
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
+	this->UpdateAttachEffects();
 }
 
 
@@ -476,7 +477,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 				// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
 				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
-				MapClass::Logics->RemoveObject(pPassenger);
+				LogicClass::Instance->RemoveObject(pPassenger);
 			}
 
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
