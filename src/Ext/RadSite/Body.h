@@ -17,6 +17,7 @@ public:
 
 	static constexpr DWORD Canary = 0x88446622;
 	static constexpr size_t ExtPointerOffset = 0x18;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<RadSiteClass>
 	{

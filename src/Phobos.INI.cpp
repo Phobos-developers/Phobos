@@ -1,7 +1,10 @@
 #include "Phobos.h"
 
-#include <GameStrings.h>
 #include <CCINIClass.h>
+#include <ScenarioClass.h>
+#include <SessionClass.h>
+#include <MessageListClass.h>
+#include <HouseClass.h>
 
 #include <Utilities/Parser.h>
 #include <Utilities/GeneralUtils.h>
@@ -199,7 +202,54 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x55DBF5, MainLoop_SaveGame, 0xA)
+bool Phobos::ShouldQuickSave = false;
+std::wstring Phobos::CustomGameSaveDescription {};
+
+void Phobos::PassiveSaveGame()
 {
-	return Phobos::Config::SaveGameOnScenarioStart ? 0 : 0x55DC99;
+	auto PrintMessage = [](const wchar_t* pMessage)
+	{
+		MessageListClass::Instance->PrintMessage(
+			pMessage,
+			RulesClass::Instance->MessageDelay,
+			HouseClass::CurrentPlayer->ColorSchemeIndex,
+			true
+		);
+	};
+
+	PrintMessage(StringTable::LoadString(GameStrings::TXT_SAVING_GAME));
+	char fName[0x80];
+
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
+		time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
+
+	if (ScenarioClass::SaveGame(fName, Phobos::CustomGameSaveDescription.c_str()))
+		PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
+	else
+		PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
+}
+
+DEFINE_HOOK(0x55DBCD, MainLoop_SaveGame, 0x6)
+{
+	// This happens right before LogicClass::Update()
+	enum { SkipSave = 0x55DC99, InitialSave = 0x55DBE6 };
+
+	bool& scenario_saved = *reinterpret_cast<bool*>(0xABCE08);
+	if (SessionClass::IsSingleplayer() && !scenario_saved)
+	{
+		scenario_saved = true;
+		if (Phobos::ShouldQuickSave)
+		{
+			Phobos::PassiveSaveGame();
+			Phobos::ShouldQuickSave = false;
+			Phobos::CustomGameSaveDescription.clear();
+		}
+		else if (Phobos::Config::SaveGameOnScenarioStart && SessionClass::IsCampaign())
+			return InitialSave;
+	}
+
+	return SkipSave;
 }

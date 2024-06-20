@@ -81,7 +81,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 		pThis->Accum = 0.0;
 	}
 
-	if (appliedDamage <= 0 || pThis->IsPlaying)
+	if (appliedDamage <= 0 || pThis->IsInert)
 		return SkipDamage;
 
 	TechnoClass* pInvoker = nullptr;
