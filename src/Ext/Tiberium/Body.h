@@ -1,10 +1,10 @@
 #pragma once
 #include <TiberiumClass.h>
+#include <OverlayTypeClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 
 class TiberiumExt
@@ -20,11 +20,18 @@ public:
 	public:
 		Nullable<ColorStruct> MinimapColor;
 
+		ValueableVector<OverlayTypeClass*> Overlays;
+		Valueable<bool> Overlays_UseSlopes;
+		Valueable<int> Overlays_FrameCount;
+
 		ExtData(TiberiumClass* OwnerObject) : Extension<TiberiumClass>(OwnerObject)
 			, MinimapColor {}
+			, Overlays {}
+			, Overlays_UseSlopes { false }
+			, Overlays_FrameCount { 12 }
 		{ }
 
-		virtual ~ExtData() = default;
+		virtual ~ExtData() override = default;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
