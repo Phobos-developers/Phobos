@@ -491,8 +491,8 @@ SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-PrimaryFactoryIndicator=SOMESHPFILE             ; SHP file
-PrimaryFactoryIndicator.Palette=SOMEPALETTE.PAL ; Palette file with ".pal" extension
+PrimaryFactoryIndicator=                     ; SHP filename without ".shp" extension
+PrimaryFactoryIndicator.Palette=PALETTE.PAL  ; Palette filename with ".pal" extension
 ```
 
 ## Infantry
