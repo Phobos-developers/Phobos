@@ -1,6 +1,5 @@
 #include "Body.h"
 #include "Trajectories\StraightTrajectory.h"
-#include "Trajectories\EngraveTrajectory.h"
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Macro.h>
