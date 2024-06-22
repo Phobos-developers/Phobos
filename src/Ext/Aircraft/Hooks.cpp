@@ -3,6 +3,7 @@
 
 
 #include <Ext/Aircraft/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
@@ -11,9 +12,12 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
 
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
 	if (pThis->MissionStatus < (int)AirAttackStatus::FireAtTarget2_Strafe
 		|| pThis->MissionStatus >(int)AirAttackStatus::FireAtTarget5_Strafe)
 	{
+		pExt->Strafe_BombsDroppedThisRound = 0;
 		return 0;
 	}
 
@@ -21,6 +25,16 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(weaponIndex)->WeaponType);
 	int fireCount = pThis->MissionStatus - 4;
 
+	if (pWeaponExt->Strafing_Shots > 5)
+	{
+		if (pThis->MissionStatus == (int)AirAttackStatus::FireAtTarget3_Strafe)
+		{
+			int remain = pWeaponExt->Strafing_Shots - 3 - pExt->Strafe_BombsDroppedThisRound;
+			if (remain > 0)
+				pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget2_Strafe;
+		}
+	}
+	else
 	if (fireCount > 1 && pWeaponExt->Strafing_Shots < fireCount)
 	{
 		if (!pThis->Ammo)
@@ -28,6 +42,37 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 
 		pThis->MissionStatus = (int)AirAttackStatus::ReturnToBase;
 	}
+
+	return 0;
+}
+
+__forceinline bool AircraftCanStrafeWithWeapon(WeaponTypeClass const* pWeapon)
+{
+	return pWeapon && WeaponTypeExt::ExtMap.Find(pWeapon)->Strafing
+		.Get(pWeapon->Projectile->ROT <= 1 && !pWeapon->Projectile->Inviso);
+}
+
+long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly)
+{
+	__assume(ifly != nullptr);
+	auto pThis = static_cast<AircraftClass const*>(ifly);
+
+	if (!pThis->Target || pThis->Target->IsInAir())
+		return FALSE;
+
+	const int zero = pThis->SelectWeapon(pThis->Target);
+	return (long)AircraftCanStrafeWithWeapon(pThis->GetWeapon(zero)->WeaponType);
+}
+DEFINE_JUMP(VTABLE, 0x7E2268, GET_OFFSET(AircraftClass_IFlyControl_IsStrafe));
+
+DEFINE_HOOK(0x415F25, AircraftClass_Fire, 0x6)
+{
+	GET(AircraftClass*, pThis, EDI);
+	GET(BulletClass*, pTraj, ESI);
+	__assume(pThis != nullptr);
+
+	if (AircraftCanStrafeWithWeapon(pTraj->WeaponType))
+		TechnoExt::ExtMap.Find(pThis)->Strafe_BombsDroppedThisRound++;
 
 	return 0;
 }

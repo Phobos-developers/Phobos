@@ -512,6 +512,7 @@ Phobos fixes:
 - Phobos Warhead effects combined with `CellSpread` now correctly apply to buildings if any of the foundation cells are hit (by Starkku)
 - Phobos Warhead effects on zero-`CellSpread` Warheads no longer apply to target if projectile detonates prematurely, far-away from target (by Starkku)
 - Fixed radiation site damage not taking the radiation level reduction into accord (by Starkku)
+- `Strafing.Shots` can be greater than 5, and aircrafts can strafe regardless of `ROT` (by Trsdy)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed (by Starkku)
