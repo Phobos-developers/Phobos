@@ -383,6 +383,7 @@ New:
 - Allow setting default singleplayer map loading screen and briefing offsets (by Starkku)
 - Allow toggling whether or not fire particle systems adjust target coordinates when firer rotates (by Starkku)
 - `AmbientDamage` warhead & main target ignore customization (by Starkku)
+- Grant new superweapons in superweapons (by FS-21).
 - Flashing Technos on selecting (by Fryone)
 - Customizable DropPod properties on a per-InfantryType basis (by Trsdy)
 - Projectile return weapon (by Starkku)
