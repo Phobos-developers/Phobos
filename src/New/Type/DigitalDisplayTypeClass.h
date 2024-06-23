@@ -18,6 +18,7 @@ public:
 	Valueable<SHPStruct*> Shape;
 	CustomPalette Palette;
 	Nullable<Vector2D<int>> Shape_Spacing;
+	Valueable<bool> Shape_PercentageFrame;
 	Valueable<bool> Percentage;
 	Nullable<bool> HideMaxValue;
 	Valueable<bool> VisibleToHouses_Observer;
@@ -35,6 +36,7 @@ public:
 		, Shape(nullptr)
 		, Palette()
 		, Shape_Spacing()
+		, Shape_PercentageFrame(false)
 		, Percentage(false)
 		, HideMaxValue()
 		, VisibleToHouses_Observer(true)
