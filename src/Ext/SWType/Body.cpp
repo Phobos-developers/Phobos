@@ -139,7 +139,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
 	}
 
-	this->Detonate_Warhead.Read(exINI, pSection, "Detonate.Warhead");
+	this->Detonate_Warhead.Read<true>(exINI, pSection, "Detonate.Warhead");
 	this->Detonate_Weapon.Read<true>(exINI, pSection, "Detonate.Weapon");
 	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
 	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");

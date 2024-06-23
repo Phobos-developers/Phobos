@@ -32,7 +32,7 @@ void RadTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->LightFactor.Read(exINI, section, "RadLightFactor");
 	this->TintFactor.Read(exINI, section, "RadTintFactor");
 	this->Color.Read(exINI, section, "RadColor");
-	this->SiteWarhead.Read(exINI, section, "RadSiteWarhead");
+	this->SiteWarhead.Read<true>(exINI, section, "RadSiteWarhead");
 	this->SiteWarhead_Detonate.Read(exINI, section, "RadSiteWarhead.Detonate");
 	this->HasOwner.Read(exINI, section, "RadHasOwner");
 	this->HasInvoker.Read(exINI, section, "RadHasInvoker");
