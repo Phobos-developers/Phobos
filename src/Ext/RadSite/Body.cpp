@@ -46,6 +46,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	if (pWeaponExt->RadType->GetHasInvoker() && pRadExt->RadInvoker != pInvoker)
 		pRadExt->RadInvoker = pInvoker;
 
+	pRadExt->CreationFrame = Unsorted::CurrentFrame;
 	pRadExt->Weapon = pWeaponExt->OwnerObject();
 	pRadExt->Type = pWeaponExt->RadType;
 	pRadSite->SetBaseCell(&location);
@@ -138,14 +139,21 @@ double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) const
 	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
 	const auto max = static_cast<double>(pThis->SpreadInLeptons);
 	const auto dist = coords.DistanceFrom(base);
+	double radLevel = pThis->RadLevel;
 
 	//  will produce `-nan(ind)` result if both dist and max is zero
 	// and used on formula below this check
 	// ,.. -Otamaa
-	if(!dist && !max)
-		return pThis->RadLevel;
+	if (dist && max)
+		radLevel = (dist > max) ? 0.0 : (max - dist) / max * pThis->RadLevel;
 
-	return (dist > max) ? 0.0 : (max - dist) / max * pThis->RadLevel;
+	// Vanilla YR stores & updates the decremented RadLevel on CellClass.
+	// Because we're not storing multiple radiation site data on CellClass (yet?)
+	// we need to fully recalculate this stuff every time we need the radiation level for a cell coord - Starkku
+	int stepCount = (Unsorted::CurrentFrame - this->CreationFrame) / this->Type->GetLevelDelay();
+	radLevel -= (radLevel / pThis->LevelSteps) * stepCount;
+
+	return radLevel;
 }
 
 // =============================
@@ -155,6 +163,7 @@ template <typename T>
 void RadSiteExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->CreationFrame)
 		.Process(this->Weapon)
 		.Process(this->RadHouse)
 		.Process(this->RadInvoker)

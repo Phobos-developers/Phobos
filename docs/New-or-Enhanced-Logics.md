@@ -142,7 +142,7 @@ AttachEffect.DurationOverrides=                ; integer - duration overrides (c
 
 - Any weapon can now have a custom radiation type. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
 - There are several new properties available to all radiation types.
-  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings.
+  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings. How many times a single radiation site can deal this damage to same building (every cell of the foundation is hit by all radiation sites on a cell) can be customized with `RadBuildingDamageMaxCount`, negative values mean no limit.
   - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
   - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
   - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker. Note that if the invoker dies at any point during the radiation's lifetime it continues to behave as if not having an invoker.
@@ -163,6 +163,7 @@ RadType=Radiation                  ; RadType to use instead of default of [Radia
 RadDurationMultiple=1              ; integer
 RadApplicationDelay=16             ; integer
 RadApplicationDelay.Building=0     ; integer
+RadBuildingDamageMaxCount=-1       ; integer
 RadLevelMax=500                    ; integer
 RadLevelDelay=90                   ; integer
 RadLightDelay=90                   ; integer

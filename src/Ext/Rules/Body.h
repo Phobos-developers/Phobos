@@ -41,7 +41,8 @@ public:
 		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
-		Valueable<bool> RadWarhead_Detonate;
+		Valueable<int> RadBuildingDamageMaxCount;
+		Valueable<bool> RadSiteWarhead_Detonate;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
@@ -135,7 +136,8 @@ public:
 			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
-			, RadWarhead_Detonate { false }
+			, RadBuildingDamageMaxCount { -1 }
+			, RadSiteWarhead_Detonate { false }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }

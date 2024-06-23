@@ -408,6 +408,7 @@ New:
 - AttachEffect types with new features like custom tint and weapon range modifier (by Starkku)
 - Force shield effect sync on deploy & vs. organic targets effect customization to complement the Iron Curtain ones (by Starkku)
 - Map trigger action 41 (Play animation at waypoint) now uses additional parameter to determine if animation can play sound, deal damage etc. (by Starkku)
+- Allow restricting how many times per frame a single radiation site can damage a building (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -509,6 +510,7 @@ Phobos fixes:
 - Fixed `AutoDeath` causing crashes when used to kill a parasite unit inside an another unit (by Starkku)
 - Phobos Warhead effects combined with `CellSpread` now correctly apply to buildings if any of the foundation cells are hit (by Starkku)
 - Phobos Warhead effects on zero-`CellSpread` Warheads no longer apply to target if projectile detonates prematurely, far-away from target (by Starkku)
+- Fixed radiation site damage not taking the radiation level reduction into accord (by Starkku)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed (by Starkku)
