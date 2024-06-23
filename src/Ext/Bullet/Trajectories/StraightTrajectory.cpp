@@ -1232,7 +1232,8 @@ int StraightTrajectory::GetTheTrueDamage(int Damage, BulletClass* pBullet, Techn
 
 	if (this->EdgeAttenuation != 1.0 || this->ProximityAllies != 1.0)
 	{
-		const double CalculatedDamage = Damage * this->FirepowerMult * this->GetExtraDamageMultiplier(pBullet, pTechno, pOwner, Self);
+		const double DamageMultiplier = this->GetExtraDamageMultiplier(pBullet, pTechno, pOwner, Self);
+		const double CalculatedDamage = Self ? Damage * DamageMultiplier : Damage * this->FirepowerMult * DamageMultiplier;
 		const int Signal = Math::sgn(CalculatedDamage);
 		TrueDamage = static_cast<int>(CalculatedDamage + ((Signal < 0) ? -0.5 : 0.5));
 
