@@ -109,23 +109,25 @@ void __fastcall TechnoClass_DrawExtraInfo_Wrapper(TechnoClass* pThis)
 				pLocation.Y += textHeight;
 			}
 
-			if (hasStorage && !isUsingStorage)
+			if (hasStorage)
 			{
-				auto pMoneyFormat = StringTable::LoadString(GameStrings::TXT_MONEY_FORMAT_1());
-				wchar_t pOutMoneyFormat[0x80];
-				auto nMoney = pOwner->Available_Money();
-				swprintf_s(pOutMoneyFormat, pMoneyFormat, nMoney);
-				DrawTheStuff(pOutMoneyFormat);
-				pLocation.Y += textHeight;
-			}
-
-			if (hasStorage && isUsingStorage)
-			{
-				auto pStorageFormat = L"Storage: %d"; //needs csf
-				wchar_t pOutStorageFormat[0x80];
-				auto nStorage = pBuilding->GetStoragePercentage();
-				swprintf_s(pOutStorageFormat, pStorageFormat, nStorage);
-				DrawTheStuff(pOutStorageFormat);
+				if (!isUsingStorage)
+				{
+					auto pMoneyFormat = StringTable::LoadString(GameStrings::TXT_MONEY_FORMAT_1());
+					wchar_t pOutMoneyFormat[0x80];
+					auto nMoney = pOwner->Available_Money();
+					swprintf_s(pOutMoneyFormat, pMoneyFormat, nMoney);
+					DrawTheStuff(pOutMoneyFormat);
+					pLocation.Y += textHeight;
+				}
+				else
+				{
+					auto pStorageFormat = L"Storage: %d"; //needs csf
+					wchar_t pOutStorageFormat[0x80];
+					auto nStorage = pBuilding->GetStoragePercentage();
+					swprintf_s(pOutStorageFormat, pStorageFormat, nStorage);
+					DrawTheStuff(pOutStorageFormat);
+				}
 			}
 		}
 	}
