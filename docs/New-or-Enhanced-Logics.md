@@ -80,7 +80,7 @@ Animation.OfflineAction=Hides                  ; AttachedAnimFlag (None, Hides, 
 Animation.TemporalAction=None                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.UseInvokerAsOwner=false              ; boolean
 CumulativeAnimations=                          ; list of animations
-ExpireWeapon=                                  
+ExpireWeapon=
 ExpireWeapon.TriggerOn=expire                  ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
 ExpireWeapon.CumulativeOnlyOnce=false          ; boolean
 Tint.Color=                                    ; integer - R,G,B
@@ -105,7 +105,7 @@ RevengeWeapon=                                 ; WeaponType
 RevengeWeapon.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisableWeapons=false                           ; boolean
 Groups=                                        ; comma-separated list of strings (group IDs)
-                                               
+
 [SOMETECHNO]                                   ; TechnoType
 AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
 AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
@@ -125,8 +125,8 @@ AttachEffect.RequiredMaxCounts=                ; integer - maximum required inst
 AttachEffect.DisallowedMinCounts=              ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.DisallowedMaxCounts=              ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.IgnoreFromSameSource=false        ; boolean
-                                               
-[SOMEWARHEAD]                                  
+
+[SOMEWARHEAD]
 AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
 AttachEffect.RemoveTypes=                      ; List of AttachEffectTypes
 AttachEffect.RemoveGroups=                     ; comma-separated list of strings (group IDs)
@@ -1517,4 +1517,19 @@ In `rulesmd.ini`:
 [SOMEWEAPON]         ; WeaponType
 CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+### Keep Range After Firing
+
+- Technos will maintain a suitable distance after firing if `KeepRange` is not set to 0.
+  - `KeepRange` controls how long the distance to maintain when the techno's ROF timer is ticking. What is actually read is its absolute value. If it is a positive value, it will be stayed outside this distance, just like it has a special `MinimumRange` after firing. If it is a negative value, it will be kept as close as possible to this distance, just like it has a special `Range` after firing. In addition, if the effective range section is too small, it will be considered unable to fire. It is best to have an effective range of 1.0, and 2.0 is best for Infantry.
+    - `KeepRange.AllowAI` controls whether this function is effective for computer.
+    - `KeepRange.AllowPlayer` controls whether this function is effective for human.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                 ; WeaponType
+KeepRange=0                  ; floating point value
+KeepRange.AllowAI=false      ; boolean
+KeepRange.AllowPlayer=false  ; boolean
 ```

@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
 // Ares reimplements the bullet obstacle logic so need to get creative to add any new functionality for that in Phobos.
@@ -152,6 +153,25 @@ DEFINE_HOOK(0x6F7261, TechnoClass_InRange_SetContext, 0x5)
 	InRangeTemp::Techno = pThis;
 
 	return 0;
+}
+
+DEFINE_HOOK(0x6F737F, TechnoClass_InRange_WeaponMinimumRange, 0x5)
+{
+	enum { SkipGameCode = 0x6F7385 };
+
+	GET(WeaponTypeClass*, pWeapon, EDX);
+
+	auto pTechno = InRangeTemp::Techno;
+	int minimumRange = pWeapon->MinimumRange;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const int keepRange = pWeaponExt->KeepRange.Get();
+
+	if (keepRange > 0 && pWeaponExt->CheckTechnoKeepRange(pTechno))
+		minimumRange = keepRange;
+
+	R->ECX(minimumRange);
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
