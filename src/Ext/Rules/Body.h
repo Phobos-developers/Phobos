@@ -50,6 +50,7 @@ public:
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<int> RadBuildingDamageMaxCount;
 		Valueable<bool> RadSiteWarhead_Detonate;
+		Valueable<bool> RadSiteWarhead_Detonate_Full;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
@@ -166,6 +167,7 @@ public:
 			, RadApplicationDelay_Building { 0 }
 			, RadBuildingDamageMaxCount { -1 }
 			, RadSiteWarhead_Detonate { false }
+			, RadSiteWarhead_Detonate_Full { true }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }

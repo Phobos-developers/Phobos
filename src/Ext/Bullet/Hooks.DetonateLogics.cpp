@@ -53,83 +53,100 @@ DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 	return 0;
 }
 
+#pragma region DetonateOnAllMapObjects
+
+static __forceinline void TryDetonateFull(BulletClass* pThis, TechnoClass* pTechno, WarheadTypeExt::ExtData* pWHExt, HouseClass* pOwner)
+{
+	if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
+	{
+		pThis->Target = pTechno;
+		pThis->Location = pTechno->GetCoords();
+		pThis->Detonate(pTechno->GetCoords());
+	}
+}
+
+static __forceinline void TryDetonateDamageArea(BulletClass* pThis, TechnoClass* pTechno, WarheadTypeExt::ExtData* pWHExt, HouseClass* pOwner)
+{
+	if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
+	{
+		int damage = (pThis->Health * pThis->DamageMultiplier) >> 8;
+		pWHExt->DamageAreaWithTarget(pTechno->GetCoords(), damage, pThis->Owner, pThis->WH, true, pOwner, pTechno);
+	}
+}
+
 DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 {
 	enum { ReturnFromFunction = 0x46A2FB };
 
 	GET(BulletClass*, pThis, ESI);
 
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
+
+	if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects &&
+		pWHExt->DetonateOnAllMapObjects_AffectTargets != AffectedTarget::None &&
+		pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
 	{
-		if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects &&
-			pWHExt->DetonateOnAllMapObjects_AffectTargets != AffectedTarget::None &&
-			pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
+		pWHExt->WasDetonatedOnAllMapObjects = true;
+		auto const originalLocation = pThis->Location;
+		auto const pOriginalTarget = pThis->Target;
+		auto const pExt = BulletExt::ExtMap.Find(pThis);
+		auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+
+		auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
 		{
-			pWHExt->WasDetonatedOnAllMapObjects = true;
-			auto const originalLocation = pThis->Location;
-			auto const pOriginalTarget = pThis->Target;
-			auto const pExt = BulletExt::ExtMap.Find(pThis);
-			auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+			std::vector<T> vec(dvc.Count);
+			std::copy(dvc.begin(), dvc.end(), vec.begin());
+			return vec;
+		};
 
-			auto tryDetonate = [pThis, pWHExt, pOwner](TechnoClass* pTechno)
-			{
-				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
-				{
-					pThis->Target = pTechno;
-					pThis->Location = pTechno->GetCoords();
-					pThis->Detonate(pTechno->GetCoords());
-				}
-			};
+		void (*tryDetonate)(BulletClass*, TechnoClass*, WarheadTypeExt::ExtData*, HouseClass*) = TryDetonateFull;
 
-			auto copy_dvc = []<typename T>(const DynamicVectorClass<T>& dvc)
-			{
-				std::vector<T> vec(dvc.Count);
-				std::copy(dvc.begin(), dvc.end(), vec.begin());
-				return vec;
-			};
+		if (!pWHExt->DetonateOnAllMapObjects_Full)
+			tryDetonate = TryDetonateDamageArea;
 
-			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
-			{
-				auto const aircraft = copy_dvc(*AircraftClass::Array);
+		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
+		{
+			auto const aircraft = copy_dvc(*AircraftClass::Array);
 
-				for (auto pAircraft : aircraft)
-					tryDetonate(pAircraft);
-			}
-
-			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
-			{
-				auto const buildings = copy_dvc(*BuildingClass::Array);
-
-				for (auto pBuilding : buildings)
-					tryDetonate(pBuilding);
-			}
-
-			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
-			{
-				auto const infantry = copy_dvc(*InfantryClass::Array);
-
-				for (auto pInf : infantry)
-					tryDetonate(pInf);
-			}
-
-			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
-			{
-				auto const units = copy_dvc(*UnitClass::Array);
-
-				for (auto const pUnit : units)
-					tryDetonate(pUnit);
-			}
-
-			pThis->Target = pOriginalTarget;
-			pThis->Location = originalLocation;
-			pWHExt->WasDetonatedOnAllMapObjects = false;
-
-			return ReturnFromFunction;
+			for (auto pAircraft : aircraft)
+				tryDetonate(pThis, pAircraft, pWHExt, pOwner);
 		}
+
+		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
+		{
+			auto const buildings = copy_dvc(*BuildingClass::Array);
+
+			for (auto pBuilding : buildings)
+				tryDetonate(pThis, pBuilding, pWHExt, pOwner);
+		}
+
+		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
+		{
+			auto const infantry = copy_dvc(*InfantryClass::Array);
+
+			for (auto pInf : infantry)
+				tryDetonate(pThis, pInf, pWHExt, pOwner);
+		}
+
+		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
+		{
+			auto const units = copy_dvc(*UnitClass::Array);
+
+			for (auto const pUnit : units)
+				tryDetonate(pThis, pUnit, pWHExt, pOwner);
+		}
+
+		pThis->Target = pOriginalTarget;
+		pThis->Location = originalLocation;
+		pWHExt->WasDetonatedOnAllMapObjects = false;
+
+		return ReturnFromFunction;
 	}
 
 	return 0;
 }
+
+#pragma endregion
 
 DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris_Checks, 0x6)
 {
@@ -302,8 +319,26 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 			if (size > 0)
 				detonate = pWeaponExt->ExtraWarheads_DetonationChances[size - 1] >= ScenarioClass::Instance->Random.RandomDouble();
 
+			bool isFull = true;
+			size = pWeaponExt->ExtraWarheads_FullDetonation.size();
+
+			if (size > i)
+				isFull = pWeaponExt->ExtraWarheads_FullDetonation[i];
+			if (size > 0)
+				isFull = pWeaponExt->ExtraWarheads_DetonationChances[size - 1];
+
 			if (detonate)
-				WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
+			{
+				if (isFull)
+				{
+					WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
+				}
+				else
+				{
+					auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+					pWHExt->DamageAreaWithTarget(*coords, damage, pThis->Owner, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
+				}
+			}
 		}
 	}
 
@@ -319,7 +354,7 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 			{
 				pBullet->WeaponType = pWeapon;
 				auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-				pBulletExt->FirerHouse = BulletExt::ExtMap.Find(pThis)->FirerHouse;
+				pBulletExt->FirerHouse = pBulletExt->FirerHouse;
 
 				pBullet->MoveTo(pThis->Location, BulletVelocity::Empty);
 			}
