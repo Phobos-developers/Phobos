@@ -46,6 +46,7 @@ public:
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
 		Valueable<WeaponTypeClass*> ReturnWeapon;
 
+		Valueable<bool> SubjectToGround;
 		//If put these part into Trajectory theirselves, firing these bullets will crash the game after load the saved games.
 		Valueable<WarheadTypeClass*> Straight_PassDetonateWarhead;
 		Valueable<WarheadTypeClass*> Straight_ProximityWarhead;
@@ -78,6 +79,7 @@ public:
 			, AAOnly { false }
 			, Arcing_AllowElevationInaccuracy { true }
 			, ReturnWeapon {}
+			, SubjectToGround { false }
 			, Straight_PassDetonateWarhead {}
 			, Straight_ProximityWarhead {}
 			, Disperse_Weapons {}

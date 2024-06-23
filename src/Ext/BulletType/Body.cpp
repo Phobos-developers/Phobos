@@ -54,6 +54,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, pSection, "Arcing.AllowElevationInaccuracy");
 	this->ReturnWeapon.Read<true>(exINI, pSection, "ReturnWeapon");
 
+	this->SubjectToGround.Read(exINI, pSection, "SubjectToGround");
 	this->Straight_PassDetonateWarhead.Read<true>(exINI, pSection, "Trajectory.Straight.PassDetonateWarhead");
 	this->Straight_ProximityWarhead.Read<true>(exINI, pSection, "Trajectory.Straight.ProximityWarhead");
 	this->Disperse_Weapons.Read(exINI, pSection, "Trajectory.Disperse.Weapons");
@@ -131,6 +132,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AAOnly)
 		.Process(this->Arcing_AllowElevationInaccuracy)
 		.Process(this->ReturnWeapon)
+		.Process(this->SubjectToGround)
 		.Process(this->Straight_PassDetonateWarhead)
 		.Process(this->Straight_ProximityWarhead)
 		.Process(this->Disperse_Weapons)

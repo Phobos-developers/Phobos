@@ -1,5 +1,4 @@
 #include "Body.h"
-#include "Trajectories\StraightTrajectory.h"
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Macro.h>
@@ -124,35 +123,6 @@ public:
 
 		return (sourceCoords + CoordStruct { static_cast<int>(resultFLHCoords.X), -static_cast<int>(resultFLHCoords.Y), static_cast<int>(resultFLHCoords.Z) + extraHeight });
 	}
-
-	static bool CheckSubjectToGround(BulletTypeClass* pBulletType)
-	{
-		BulletTypeExt::ExtData* pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
-
-		if (!pBulletTypeExt->TrajectoryType)
-			return false;
-
-		const TrajectoryFlag bulletFlag = pBulletTypeExt->TrajectoryType->Flag;
-
-		if (bulletFlag == TrajectoryFlag::Straight)
-			return static_cast<StraightTrajectoryType*>(BulletTypeExt::ExtMap.Find(pBulletType)->TrajectoryType)->SubjectToGround;
-
-		if (bulletFlag == TrajectoryFlag::Disperse)
-		{
-			const size_t weaponSize = pBulletTypeExt->Disperse_Weapons.size();
-
-			if (weaponSize == 0)
-				return false;
-
-			for (auto const& pWeapon : pBulletTypeExt->Disperse_Weapons)
-			{
-				if (CheckSubjectToGround(pWeapon->Projectile))
-					return true;
-			}
-		}
-
-		return false;
-	}
 };
 
 // Hooks
@@ -237,7 +207,7 @@ DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 
 	if (!pObstacleCell)
 	{
-		bool subjectToGround = BulletObstacleHelper::CheckSubjectToGround(pWeapon->Projectile);
+		bool subjectToGround = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->SubjectToGround; //Only make AI search for suitable attack locations.
 		const CoordStruct newSourceCoords = BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pWeapon, subjectToGround);
 		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true, subjectToGround);
 	}
