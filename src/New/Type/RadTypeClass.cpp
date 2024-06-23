@@ -35,6 +35,7 @@ void RadTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->TintFactor.Read(exINI, section, "RadTintFactor");
 	this->RadHasOwner.Read(exINI, section, "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, section, "RadHasInvoker");
+	this->DecreasingRadDamage.Read(exINI, section, "DecreasingRadDamage");
 }
 
 template <typename T>
@@ -55,6 +56,7 @@ void RadTypeClass::Serialize(T& Stm)
 		.Process(this->RadWarhead_Detonate)
 		.Process(this->RadHasOwner)
 		.Process(this->RadHasInvoker)
+		.Process(this->DecreasingRadDamage)
 		;
 };
 

@@ -157,7 +157,8 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 			if (pRadExt->GetRadLevelAt(nCurrentCoord) <= 0.0 || !pType->GetWarhead())
 				continue;
 
-			auto damage = Game::F2I((pRadExt->GetRadLevelAt(nCurrentCoord) / 2) * pType->GetLevelFactor());
+			double damageFactor = pType->GetDecreasingRadDamage() ? pRadSite->GetEffectPercentage() : 1.0;
+			auto damage = Game::F2I((pRadExt->GetRadLevelAt(nCurrentCoord) / 2) * pType->GetLevelFactor() * damageFactor);
 
 			if (pBuilding->IsAlive) // simple fix for previous issues
 			{
@@ -213,7 +214,8 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 			if (nRadLevel <= 0.0 || !pType->GetWarhead())
 				continue;
 
-			int damage = Game::F2I(nRadLevel * pType->GetLevelFactor());
+			double damageFactor = pType->GetDecreasingRadDamage() ? pRadSite->GetEffectPercentage() : 1.0;
+			int damage = Game::F2I(nRadLevel * pType->GetLevelFactor() * damageFactor);
 
 			if (pFoot->IsAlive || !pFoot->IsSinking)
 			{

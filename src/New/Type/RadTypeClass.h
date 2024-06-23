@@ -24,6 +24,7 @@ private:
 	Nullable<double> TintFactor;
 	Nullable<bool> RadHasOwner;
 	Nullable<bool> RadHasInvoker;
+	Nullable<bool> DecreasingRadDamage;
 
 public:
 
@@ -42,6 +43,7 @@ public:
 		, BuildingApplicationDelay { }
 		, RadHasOwner { }
 		, RadHasInvoker { }
+		, DecreasingRadDamage { }
 	{ }
 
 	virtual ~RadTypeClass() override = default;
@@ -116,6 +118,11 @@ public:
 	bool GetHasInvoker() const
 	{
 		return this->RadHasInvoker.Get(RulesExt::Global()->RadHasInvoker);
+	}
+
+	bool GetDecreasingRadDamage() const
+	{
+		return this->DecreasingRadDamage.Get(RulesExt::Global()->DecreasingRadDamage);
 	}
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;

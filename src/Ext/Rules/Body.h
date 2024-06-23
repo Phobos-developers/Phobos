@@ -44,6 +44,7 @@ public:
 		Valueable<bool> RadWarhead_Detonate;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
+		Valueable<bool> DecreasingRadDamage;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 
@@ -138,6 +139,7 @@ public:
 			, RadWarhead_Detonate { false }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
+			, DecreasingRadDamage { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, VeinholeWarhead {}
