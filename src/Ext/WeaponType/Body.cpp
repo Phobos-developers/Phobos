@@ -2,6 +2,7 @@
 #include <GameStrings.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
+#include <SpawnManagerClass.h>
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
@@ -52,6 +53,32 @@ int WeaponTypeExt::ExtData::GetBurstDelay(int burstIndex) const
 	return burstDelay;
 }
 
+bool WeaponTypeExt::ExtData::CheckTechnoKeepRange(TechnoClass* pFirer) const
+{
+	if (pFirer->Owner && pFirer->Owner->IsControlledByHuman())
+	{
+		if (!this->KeepRange_AllowPlayer)
+			return false;
+	}
+	else if (!this->KeepRange_AllowAI)
+	{
+		return false;
+	}
+
+	if (pFirer->RearmTimer.InProgress())
+		return true;
+	else if (!pFirer->SpawnManager || pFirer->SpawnManager->Status != SpawnManagerStatus::CoolDown)
+		return false;
+
+	for (int i = 0; i < pFirer->GetTechnoType()->SpawnsNumber; i++)
+	{
+		if (pFirer->SpawnManager->SpawnedNodes[i]->Status == SpawnNodeStatus::Returning)
+			return false;
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 
@@ -100,6 +127,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_DisallowedMinCounts.Read(exINI, pSection, "AttachEffect.DisallowedMinCounts");
 	this->AttachEffect_DisallowedMaxCounts.Read(exINI, pSection, "AttachEffect.DisallowedMaxCounts");
 	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
+	this->KeepRange.Read(exINI, pSection, "KeepRange");
+	this->KeepRange_AllowAI.Read(exINI, pSection, "KeepRange.AllowAI");
+	this->KeepRange_AllowPlayer.Read(exINI, pSection, "KeepRange.AllowPlayer");
 }
 
 template <typename T>
@@ -137,6 +167,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_DisallowedMinCounts)
 		.Process(this->AttachEffect_DisallowedMaxCounts)
 		.Process(this->AttachEffect_IgnoreFromSameSource)
+		.Process(this->KeepRange)
+		.Process(this->KeepRange_AllowAI)
+		.Process(this->KeepRange_AllowPlayer)
 		;
 };
 

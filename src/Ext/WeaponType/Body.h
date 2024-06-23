@@ -52,6 +52,9 @@ public:
 		ValueableVector<int> AttachEffect_DisallowedMinCounts;
 		ValueableVector<int> AttachEffect_DisallowedMaxCounts;
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
+		Valueable<Leptons> KeepRange;
+		Valueable<bool> KeepRange_AllowAI;
+		Valueable<bool> KeepRange_AllowPlayer;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -85,11 +88,16 @@ public:
 			, AttachEffect_DisallowedMinCounts {}
 			, AttachEffect_DisallowedMaxCounts {}
 			, AttachEffect_IgnoreFromSameSource { false }
+			, KeepRange { Leptons(0) }
+			, KeepRange_AllowAI { false }
+			, KeepRange_AllowPlayer { false }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
 
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const;
+
+		bool CheckTechnoKeepRange(TechnoClass* pFirer) const;
 
 		virtual ~ExtData() = default;
 

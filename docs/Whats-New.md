@@ -408,6 +408,7 @@ New:
 - AttachEffect types with new features like custom tint and weapon range modifier (by Starkku)
 - Force shield effect sync on deploy & vs. organic targets effect customization to complement the Iron Curtain ones (by Starkku)
 - Map trigger action 41 (Play animation at waypoint) now uses additional parameter to determine if animation can play sound, deal damage etc. (by Starkku)
+- Technos will maintain a suitable distance after firing (by CrimRecya)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
