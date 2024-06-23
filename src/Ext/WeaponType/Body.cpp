@@ -169,38 +169,22 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 
 void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)
 {
-	WeaponTypeExt::DetonateAt(pThis, pTarget, pOwner, pThis->Damage, pFiringHouse);
+	WeaponTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, pThis->Damage, pFiringHouse, pTarget);
 }
 
 void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
+	WeaponTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse, pTarget);
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse, AbstractClass* pTarget)
+{
+	WeaponTypeExt::DetonateAt(pThis, coords, pOwner, pThis->Damage, pFiringHouse, pTarget);
+}
+
+void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget)
+{
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
-		damage, pThis->Warhead, 0, pThis->Bright))
-	{
-		const CoordStruct& coords = pTarget->GetCoords();
-
-		if (pFiringHouse)
-		{
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			pBulletExt->FirerHouse = pFiringHouse;
-		}
-
-		pBullet->SetWeaponType(pThis);
-		pBullet->Limbo();
-		pBullet->SetLocation(coords);
-		pBullet->Explode(true);
-		pBullet->UnInit();
-	}
-}
-
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse)
-{
-	WeaponTypeExt::DetonateAt(pThis, coords, pOwner, pThis->Damage, pFiringHouse);
-}
-
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
-{
-	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(nullptr, pOwner,
 		damage, pThis->Warhead, 0, pThis->Bright))
 	{
 		if (pFiringHouse)
