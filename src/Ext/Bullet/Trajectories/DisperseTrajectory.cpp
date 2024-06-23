@@ -1,9 +1,11 @@
 #include "DisperseTrajectory.h"
 #include "StraightTrajectory.h"
 #include "EngraveTrajectory.h"
+//#include "ParabolaTrajectory.h"
+//#include "TracingTrajectory.h"
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
-#include "Ext/WeaponType/Body.h"
+#include <Ext/WeaponType/Body.h>
 #include <AnimClass.h>
 #include <LaserDrawClass.h>
 #include <EBolt.h>
@@ -1134,6 +1136,47 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				EngraveTrajectory* const pTrajectory = static_cast<EngraveTrajectory*>(pBulletExt->Trajectory);
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 			}
+			/* TODO Complete it when merged.
+			else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Parabola)
+			{
+				ParabolaTrajectory* const pTrajectory = static_cast<ParabolaTrajectory*>(pBulletExt->Trajectory);
+				pTrajectory->FirepowerMult = this->FirepowerMult;
+
+				if (pTrajectory->UseDisperseBurst && pTrajectory->RotateCoord != 0 && MaxBurst > 1)
+				{
+					const CoordStruct CreateBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
+					const double RotateAngle = Math::atan2(CreateBulletTargetToSource.Y , CreateBulletTargetToSource.X);
+
+					BulletVelocity RotationAxis
+					{
+						pTrajectory->AxisOfRotation.X * Math::cos(RotateAngle) + pTrajectory->AxisOfRotation.Y * Math::sin(RotateAngle),
+						pTrajectory->AxisOfRotation.X * Math::sin(RotateAngle) - pTrajectory->AxisOfRotation.Y * Math::cos(RotateAngle),
+						static_cast<double>(pTrajectory->AxisOfRotation.Z)
+					};
+
+					double ExtraRotate = 0;
+
+					if (pTrajectory->MirrorCoord)
+					{
+						if (CurBurst % 2 == 1)
+							RotationAxis *= -1;
+
+						ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * ((CurBurst / 2) / (MaxBurst - 1.0) - 0.5)) / 180;
+					}
+					else
+					{
+						ExtraRotate = Math::Pi * (pTrajectory->RotateCoord * (CurBurst / (MaxBurst - 1.0) - 0.5)) / 180;
+					}
+
+					pCreateBullet->Velocity = this->RotateAboutTheAxis(pCreateBullet->Velocity, RotationAxis, ExtraRotate);
+				}
+			}
+			else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Tracing)
+			{
+				TracingTrajectory* const pTrajectory = static_cast<TracingTrajectory*>(pBulletExt->Trajectory);
+				pTrajectory->FirepowerMult = this->FirepowerMult;
+			}
+			*/
 		}
 
 		const int AnimCounts = pWeapon->Anim.Count;
