@@ -132,8 +132,8 @@ public:
 	CoordStruct TemporaryCoord;
 
 private:
-	bool GetTechnoFLHCoord(BulletClass* pBullet);
-	void CheckMirrorCoord(TechnoClass* pTechno, bool Found);
+	void GetTechnoFLHCoord(BulletClass* pBullet);
+	void CheckMirrorCoord(TechnoClass* pTechno);
 	void SetEngraveDirection(BulletClass* pBullet, CoordStruct Source, CoordStruct Target);
 	int GetFloorCoordHeight(BulletClass* pBullet, CoordStruct Coord);
 	bool PlaceOnCorrectHeight(BulletClass* pBullet);

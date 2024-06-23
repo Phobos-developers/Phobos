@@ -168,7 +168,8 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		this->NotMainWeapon = false;
 		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
 
-		this->CheckMirrorCoord(pBullet->Owner, (this->IsLaser ? this->GetTechnoFLHCoord(pBullet) : true));
+		this->GetTechnoFLHCoord(pBullet);
+		this->CheckMirrorCoord(pBullet->Owner);
 		this->SetEngraveDirection(pBullet, pBullet->Owner->GetCoords(), pBullet->TargetCoords);
 	}
 	else
@@ -231,66 +232,21 @@ TrajectoryCheckReturnType EngraveTrajectory::OnAITechnoCheck(BulletClass* pBulle
 	return TrajectoryCheckReturnType::SkipGameCheck;
 }
 
-bool EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet)
+void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet)
 {
-	int WeaponIndex = 0;
-	bool AccurateFLHFound = false;
+	auto const pExt = TechnoExt::ExtMap.Find(pBullet->Owner);
+	auto const pWeaponStruct = pBullet->Owner->GetWeapon(pExt->LastWeaponIdx);
 
-	if (!pBullet->WeaponType || (pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, false) && pBullet->WeaponType != TechnoExt::GetCurrentWeapon(pBullet->Owner, WeaponIndex, true)))
-	{
+	if (!pExt || !pWeaponStruct || !pWeaponStruct->WeaponType || pWeaponStruct->WeaponType->Projectile != pBullet->Type)
 		this->NotMainWeapon = true;
-		return true;
-	}
-
-	if (!this->TechnoInLimbo)
-	{
-		CoordStruct FLH = TechnoExt::GetBurstFLH(pBullet->Owner, WeaponIndex, AccurateFLHFound);
-
-		if (!AccurateFLHFound)
-		{
-			if (InfantryClass* const pInfantry = abstract_cast<InfantryClass*>(pBullet->Owner))
-				FLH = TechnoExt::GetSimpleFLH(pInfantry, WeaponIndex, AccurateFLHFound);
-		}
-
-		this->FLHCoord = AccurateFLHFound ? FLH : pBullet->Owner->GetWeapon(WeaponIndex)->FLH;
-	}
-	else if (const TechnoClass* const pTransporter = pBullet->Owner->Transporter)
-	{
-		const FootClass* pCurrentPassenger = pTransporter->Passengers.GetFirstPassenger();
-		const FootClass* const pBulletOwnerFoot = abstract_cast<FootClass*>(pBullet->Owner);
-
-		while (pCurrentPassenger)
-		{
-			if (pBulletOwnerFoot != pCurrentPassenger)
-			{
-				WeaponIndex += 1;
-				pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		AccurateFLHFound = true;
-		auto const pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType());
-		this->FLHCoord = (WeaponIndex < static_cast<int>(pTransporterTypeExt->AlternateFLHs.size())) ? pTransporterTypeExt->AlternateFLHs[WeaponIndex] : pTransporter->GetTechnoType()->Weapon[0].FLH;
-	}
 	else
-	{
-		this->NotMainWeapon = true;
-	}
-
-	return AccurateFLHFound;
+		this->FLHCoord = pExt->LastWeaponFLH;
 }
 
-void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno, bool Found)
+void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno)
 {
 	if (pTechno->CurrentBurstIndex % 2 == 0)
 		return;
-
-	if (!Found)
-		this->FLHCoord.Y = -(this->FLHCoord.Y);
 
 	if (this->MirrorCoord)
 	{

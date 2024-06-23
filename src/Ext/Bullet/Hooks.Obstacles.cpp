@@ -93,56 +93,20 @@ public:
 		if (!subjectToGround)
 			return sourceCoords;
 
-		int WeaponIndex = 0;
 		const int extraHeight = pTechno->GetHeight();
 
-		if (extraHeight > 200 || pWeapon != TechnoExt::GetCurrentWeapon(pTechno, WeaponIndex, false) && pWeapon != TechnoExt::GetCurrentWeapon(pTechno, WeaponIndex, true))
+		if (extraHeight > 200)
 		{
 			subjectToGround = false;
 			return sourceCoords;
 		}
 
-		CoordStruct offsetCoords { 0, 0, 0 };
-		bool AccurateFLHFound = false;
+		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 
-		if (!pTechno->InLimbo)
-		{
-			CoordStruct FLH = TechnoExt::GetBurstFLH(pTechno, WeaponIndex, AccurateFLHFound);
+		if (!pExt)
+			return sourceCoords;
 
-			if (!AccurateFLHFound)
-			{
-				if (InfantryClass* const pInfantry = abstract_cast<InfantryClass*>(pTechno))
-					FLH = TechnoExt::GetSimpleFLH(pInfantry, WeaponIndex, AccurateFLHFound);
-			}
-
-			offsetCoords = AccurateFLHFound ? FLH : pTechno->GetWeapon(WeaponIndex)->FLH;
-		}
-		else if (const TechnoClass* const pTransporter = pTechno->Transporter)
-		{
-			const FootClass* pCurrentPassenger = pTransporter->Passengers.GetFirstPassenger();
-			const FootClass* const pBulletOwnerFoot = abstract_cast<FootClass*>(pTechno);
-
-			while (pCurrentPassenger)
-			{
-				if (pBulletOwnerFoot != pCurrentPassenger)
-				{
-					WeaponIndex += 1;
-					pCurrentPassenger = abstract_cast<FootClass*>(pCurrentPassenger->NextObject);
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			AccurateFLHFound = true;
-			auto const pTransporterTypeExt = TechnoTypeExt::ExtMap.Find(pTransporter->GetTechnoType());
-			offsetCoords = (WeaponIndex < static_cast<int>(pTransporterTypeExt->AlternateFLHs.size())) ? pTransporterTypeExt->AlternateFLHs[WeaponIndex] : pTransporter->GetTechnoType()->Weapon[0].FLH;
-		}
-
-		if (!AccurateFLHFound && pTechno->CurrentBurstIndex % 2 == 1)
-			offsetCoords.Y = -(offsetCoords.Y);
-
+		CoordStruct offsetCoords = pExt->LastWeaponFLH;
 		FootClass* const pFoot = abstract_cast<FootClass*>(pTechno);
 		Matrix3D matrixFLH;
 
@@ -152,7 +116,7 @@ public:
 			matrixFLH.MakeIdentity();
 
 		if (pTechno->HasTurret())
-			TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->ApplyTurretOffset(&matrixFLH);
+			pExt->TypeExtData->ApplyTurretOffset(&matrixFLH);
 
 		matrixFLH.RotateZ(static_cast<float>(Math::atan2(targetCoords.Y - sourceCoords.Y , targetCoords.X - sourceCoords.X) - pTechno->PrimaryFacing.Current().GetRadian<32>()));
 		matrixFLH.Translate(static_cast<float>(offsetCoords.X), static_cast<float>(offsetCoords.Y), static_cast<float>(offsetCoords.Z));
@@ -169,9 +133,6 @@ public:
 			return false;
 
 		const TrajectoryFlag bulletFlag = pBulletTypeExt->TrajectoryType->Flag;
-
-		if (bulletFlag == TrajectoryFlag::Engrave)
-			return true;
 
 		if (bulletFlag == TrajectoryFlag::Straight)
 			return static_cast<StraightTrajectoryType*>(BulletTypeExt::ExtMap.Find(pBulletType)->TrajectoryType)->SubjectToGround;
@@ -277,7 +238,7 @@ DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 	if (!pObstacleCell)
 	{
 		bool subjectToGround = BulletObstacleHelper::CheckSubjectToGround(pWeapon->Projectile);
-		const CoordStruct newSourceCoords = BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pWeapon, subjectToGround); //TODO Get FLH simply.
+		const CoordStruct newSourceCoords = BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pWeapon, subjectToGround);
 		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true, subjectToGround);
 	}
 

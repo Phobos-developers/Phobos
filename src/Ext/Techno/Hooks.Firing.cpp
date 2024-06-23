@@ -338,7 +338,6 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 {
 	enum { Illegal = 0x6FC86A, OutOfRange = 0x6FC0DF, Continue = 0x6FC5D5 };
 
-//	GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTransport, EAX);
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
@@ -575,7 +574,23 @@ namespace BurstFLHTemp
 DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 {
 	GET(TechnoClass*, pThis, EBX);
+	GET(int, OriginalX, ECX);
+	GET(int, OriginalY, EBP);
+	GET(int, OriginalZ, EAX);
 	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (!pExt)
+		return 0;
+
+	auto const pTypeExt = pExt->TypeExtData;
+	pExt->LastWeaponFLH = { OriginalX, OriginalY, OriginalZ };
+
+	if (pThis->CurrentBurstIndex % 2 == 1)
+		pExt->LastWeaponFLH.Y = -pExt->LastWeaponFLH.Y;
+
+	pExt->LastWeaponIdx = weaponIndex;
 
 	if (weaponIndex < 0)
 		return 0;
@@ -583,17 +598,19 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 	bool FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+	FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound, pTypeExt);
 	BurstFLHTemp::FLHFound = FLHFound;
 
 	if (!FLHFound)
 	{
 		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
-			FLH = TechnoExt::GetSimpleFLH(pInf, weaponIndex, FLHFound);
+			FLH = TechnoExt::GetSimpleFLH(pInf, weaponIndex, FLHFound, pTypeExt);
 	}
 
 	if (FLHFound)
 	{
+		pExt->LastWeaponFLH = FLH;
+
 		R->ECX(FLH.X);
 		R->EBP(FLH.Y);
 		R->EAX(FLH.Z);
