@@ -12,6 +12,7 @@
 
 class AnimTypeClass;
 class MouseCursor;
+class SuperWeaponTypeClass;
 class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
@@ -39,6 +40,8 @@ public:
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
 		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
+		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
+		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<int> RadBuildingDamageMaxCount;
@@ -134,6 +137,8 @@ public:
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
 			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
+			, AIChronoSphereSW {}
+			, AIChronoWarpSW {}
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadBuildingDamageMaxCount { -1 }

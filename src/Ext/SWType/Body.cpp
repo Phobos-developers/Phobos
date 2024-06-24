@@ -23,6 +23,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_AuxBuildings)
 		.Process(this->SW_NegBuildings)
 		.Process(this->SW_InitialReady)
+		.Process(this->SW_PostDependent)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
@@ -77,6 +78,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_AuxBuildings.Read(exINI, pSection, "SW.AuxBuildings");
 	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
 	this->SW_InitialReady.Read(exINI, pSection, "SW.InitialReady");
+	this->SW_PostDependent.Read(exINI, pSection, "SW.PostDependent");
 
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");

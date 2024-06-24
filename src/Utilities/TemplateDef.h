@@ -46,6 +46,7 @@
 #include <UnitTypeClass.h>
 #include <BuildingTypeClass.h>
 #include <WarheadTypeClass.h>
+#include <SuperWeaponTypeClass.h>
 #include <FootClass.h>
 #include <Powerups.h>
 #include <VocClass.h>
