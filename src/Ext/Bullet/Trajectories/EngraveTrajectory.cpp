@@ -235,9 +235,8 @@ TrajectoryCheckReturnType EngraveTrajectory::OnAITechnoCheck(BulletClass* pBulle
 void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pBullet->Owner);
-	auto const pWeaponStruct = pBullet->Owner->GetWeapon(pExt->LastWeaponIdx);
 
-	if (!pExt || !pWeaponStruct || !pWeaponStruct->WeaponType || pWeaponStruct->WeaponType->Projectile != pBullet->Type)
+	if (!pExt || !pExt->LastWeaponStruct || !pExt->LastWeaponStruct->WeaponType || pExt->LastWeaponStruct->WeaponType->Projectile != pBullet->Type)
 		this->NotMainWeapon = true;
 	else
 		this->FLHCoord = pExt->LastWeaponFLH;

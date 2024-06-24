@@ -585,12 +585,14 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 		return 0;
 
 	auto const pTypeExt = pExt->TypeExtData;
+	auto const pWeaponStruct = pThis->GetWeapon(weaponIndex);
+
 	pExt->LastWeaponFLH = { OriginalX, OriginalY, OriginalZ };
 
-	if (pThis->CurrentBurstIndex % 2 == 1)
-		pExt->LastWeaponFLH.Y = -pExt->LastWeaponFLH.Y;
+	if (pThis->CurrentBurstIndex % 2 == 1 && weaponIndex >= 0)
+		pExt->LastWeaponFLH.Y = -OriginalY;
 
-	pExt->LastWeaponIdx = weaponIndex;
+	pExt->LastWeaponStruct = pWeaponStruct;
 
 	if (weaponIndex < 0)
 		return 0;
