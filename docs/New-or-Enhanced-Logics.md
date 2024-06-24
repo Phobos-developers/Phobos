@@ -1496,15 +1496,17 @@ FeedbackWeapon=  ; WeaponType
 
 - Some of the behavior of strafing aircraft weapons can now be customized.
   - `Strafing` controls if the aircraft can strafe when firing at the target. Default to `true` if the projectile's `ROT` < 2 and `Inviso=false`, otherwise `false`.
-  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired. Default to 5.
-  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
-
+  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired.
+  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined.
+  - `Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour of only deducting ammo after a strafing run and instead doing it after each individual shot.
+  
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                  ; WeaponType
-Strafing=                     ; boolean
-Strafing.Shots=5              ; integer
-Strafing.SimulateBurst=false  ; boolean
+[SOMEWEAPON]                   ; WeaponType
+Strafing=                      ; boolean
+Strafing.Shots=5               ; integer
+Strafing.SimulateBurst=false   ; boolean
+Strafing.UseAmmoPerShot=false  ; boolean
 ```
 
 ### Weapon targeting filter

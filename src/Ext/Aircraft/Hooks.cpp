@@ -71,12 +71,20 @@ DEFINE_JUMP(VTABLE, 0x7E2268, GET_OFFSET(AircraftClass_IFlyControl_IsStrafe));
 DEFINE_HOOK(0x415F25, AircraftClass_Fire, 0x6)
 {
 	GET(AircraftClass*, pThis, EDI);
-	GET(BulletClass*, pTraj, ESI);
+	GET(BulletClass*, pBullet, ESI);
 
 	__assume(pThis != nullptr);
 
-	if (AircraftCanStrafeWithWeapon(pTraj->WeaponType))
+	if (AircraftCanStrafeWithWeapon(pBullet->WeaponType))
+	{
 		TechnoExt::ExtMap.Find(pThis)->Strafe_BombsDroppedThisRound++;
+
+		if (WeaponTypeExt::ExtMap.Find(pBullet->WeaponType)->Strafing_UseAmmoPerShot)
+		{
+			pThis->ShouldLoseAmmo = false;
+			pThis->Ammo--;
+		}
+	}
 
 	return 0;
 }
