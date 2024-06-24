@@ -1237,16 +1237,10 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 
 	if (!pSuperChronosphere->IsReady || (pSuperChronosphere->IsPowered() && !pOwner->Is_Powered()))
 	{
-		if (pSuperChronosphere->IsPresent)
+		if (pSuperChronosphere->IsPresent && 1.0 - RulesClass::Instance->AIMinorSuperReadyPercent < pSuperChronosphere->RechargeTimer.GetTimeLeft() / pSuperChronosphere->GetRechargeTime())
 		{
-			int rechargeTime = pSuperChronosphere->GetRechargeTime();
-			int timeLeft = pSuperChronosphere->RechargeTimer.GetTimeLeft();
-
-			if (1.0 - RulesClass::Instance->AIMinorSuperReadyPercent < timeLeft / rechargeTime)
-			{
-				ScriptExt::Log(logTextBase, "Chronosphere superweapon charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet");
-				return;
-			}
+			ScriptExt::Log(logTextBase, "Chronosphere superweapon charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet");
+			return;
 		}
 		else
 		{
