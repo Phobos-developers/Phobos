@@ -8,6 +8,8 @@
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
+#pragma region Strafing
+
 DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
@@ -29,16 +31,16 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 	{
 		if (pThis->MissionStatus == (int)AirAttackStatus::FireAtTarget3_Strafe)
 		{
-			int remain = pWeaponExt->Strafing_Shots - 3 - pExt->Strafe_BombsDroppedThisRound;
-			if (remain > 0)
+			int remainingShots = pWeaponExt->Strafing_Shots - 3 - pExt->Strafe_BombsDroppedThisRound;
+
+			if (remainingShots > 0)
 				pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget2_Strafe;
 		}
 	}
-	else
-	if (fireCount > 1 && pWeaponExt->Strafing_Shots < fireCount)
+	else if (fireCount > 1 && pWeaponExt->Strafing_Shots < fireCount)
 	{
 		if (!pThis->Ammo)
-			pThis->unknown_bool_6D2 = false;
+			pThis->IsLocked = false;
 
 		pThis->MissionStatus = (int)AirAttackStatus::ReturnToBase;
 	}
@@ -58,17 +60,19 @@ long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly)
 	auto pThis = static_cast<AircraftClass const*>(ifly);
 
 	if (!pThis->Target || pThis->Target->IsInAir())
-		return FALSE;
+		return false;
 
-	const int zero = pThis->SelectWeapon(pThis->Target);
-	return (long)AircraftCanStrafeWithWeapon(pThis->GetWeapon(zero)->WeaponType);
+	int weaponIndex = pThis->SelectWeapon(pThis->Target);
+	return (long)AircraftCanStrafeWithWeapon(pThis->GetWeapon(weaponIndex)->WeaponType);
 }
+
 DEFINE_JUMP(VTABLE, 0x7E2268, GET_OFFSET(AircraftClass_IFlyControl_IsStrafe));
 
 DEFINE_HOOK(0x415F25, AircraftClass_Fire, 0x6)
 {
 	GET(AircraftClass*, pThis, EDI);
 	GET(BulletClass*, pTraj, ESI);
+
 	__assume(pThis != nullptr);
 
 	if (AircraftCanStrafeWithWeapon(pTraj->WeaponType))
@@ -81,7 +85,7 @@ DEFINE_HOOK(0x418403, AircraftClass_Mission_Attack_FireAtTarget_BurstFix, 0x8)
 {
 	GET(AircraftClass*, pThis, ESI);
 
-	pThis->unknown_bool_6C8 = true;
+	pThis->ShouldLoseAmmo = true;
 
 	AircraftExt::FireBurst(pThis, pThis->Target, 0);
 
@@ -132,6 +136,8 @@ DEFINE_HOOK(0x418B1F, AircraftClass_Mission_Attack_FireAtTarget5Strafe_BurstFix,
 
 	return 0x418B40;
 }
+
+#pragma endregion
 
 DEFINE_HOOK(0x414F10, AircraftClass_AI_Trailer, 0x5)
 {
