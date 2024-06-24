@@ -35,6 +35,7 @@ public:
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
+		int Strafe_BombsDroppedThisRound;
 		bool IsInTunnel;
 		bool IsBurrowed;
 		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
@@ -88,6 +89,7 @@ public:
 			, AE_Cloakable { false }
 			, AE_ForceDecloak { false }
 			, AE_DisableWeapons { false }
+			, Strafe_BombsDroppedThisRound { 0 }
 			, FiringObstacleCell {}
 		{ }
 

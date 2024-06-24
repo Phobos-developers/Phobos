@@ -27,6 +27,7 @@ public:
 		Valueable<bool> Bolt_Disable2;
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Bolt_Arcs;
+		Nullable<bool> Strafing;
 		Valueable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
 		Valueable<AffectedTarget> CanTarget;
@@ -60,6 +61,7 @@ public:
 			, Bolt_Disable2 { false }
 			, Bolt_Disable3 { false }
 			, Bolt_Arcs { 8 }
+			, Strafing { }
 			, Strafing_Shots { 5 }
 			, Strafing_SimulateBurst { false }
 			, CanTarget { AffectedTarget::All }
