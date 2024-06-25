@@ -22,12 +22,14 @@ public:
 	class ExtData final : public Extension<RadSiteClass>
 	{
 	public:
+		int LastUpdateFrame;
 		WeaponTypeClass* Weapon;
 		RadTypeClass* Type;
 		HouseClass* RadHouse;
 		TechnoClass* RadInvoker;
 
 		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject)
+			, LastUpdateFrame { -1 }
 			, RadHouse { nullptr }
 			, RadInvoker { nullptr }
 			, Type {}
