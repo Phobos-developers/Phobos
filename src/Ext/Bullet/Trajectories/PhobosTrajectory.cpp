@@ -9,6 +9,7 @@
 
 #include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
+#include "DisperseTrajectory.h"
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -34,6 +35,8 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 		pNewType = DLLCreate<StraightTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Bombard") == 0)
 		pNewType = DLLCreate<BombardTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Disperse") == 0)
+		pNewType = DLLCreate<DisperseTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -64,6 +67,9 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 			break;
 		case TrajectoryFlag::Bombard:
 			pType = DLLCreate<BombardTrajectoryType>();
+			break;
+		case TrajectoryFlag::Disperse:
+			pType = DLLCreate<DisperseTrajectoryType>();
 			break;
 		default:
 			return nullptr;
@@ -114,9 +120,15 @@ bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 {
 	if (auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
-		return pBulletTypeExt->Trajectory_Speed;
+	{
+		double StraightSpeed = pBulletTypeExt->Trajectory_Speed;
+		StraightSpeed = StraightSpeed > 0.001 ? StraightSpeed : 0.001 ;
+		return StraightSpeed;
+	}
 	else
+	{
 		return 100.0;
+	}
 }
 
 PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
@@ -131,6 +143,10 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 
 	case TrajectoryFlag::Bombard:
 		pRet = DLLCreate<BombardTrajectory>(pType);
+		break;
+
+	case TrajectoryFlag::Disperse:
+		pRet = DLLCreate<DisperseTrajectory>(pType);
 		break;
 	}
 
@@ -157,6 +173,9 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 			break;
 		case TrajectoryFlag::Bombard:
 			pTraj = DLLCreate<BombardTrajectory>();
+			break;
+		case TrajectoryFlag::Disperse:
+			pTraj = DLLCreate<DisperseTrajectory>();
 			break;
 		default:
 			return nullptr;
@@ -206,6 +225,25 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 
 	if (detonate && !pThis->SpawnNextAnim)
 		return Detonate;
+
+	//Correct positions for trajectory.
+	if (pExt->Trajectory && pExt->LaserTrails.size())
+	{
+		CoordStruct FutureCoords
+		{
+			pThis->Location.X + static_cast<int>(pThis->Velocity.X),
+			pThis->Location.Y + static_cast<int>(pThis->Velocity.Y),
+			pThis->Location.Z + static_cast<int>(pThis->Velocity.Z)
+		};
+
+		for (auto& trail : pExt->LaserTrails)
+		{
+			if (!trail.LastLocation.isset())
+				trail.LastLocation = pThis->Location;
+
+			trail.Update(FutureCoords);
+		}
+	}
 
 	return 0;
 }

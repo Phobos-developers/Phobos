@@ -46,6 +46,9 @@ public:
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
 		Valueable<WeaponTypeClass*> ReturnWeapon;
 
+		//If simply put these part into Trajectory theirselves, firing these bullets will crash the game after load the saved games.
+		ValueableVector<WeaponTypeClass*> Disperse_Weapons;
+
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
@@ -73,6 +76,7 @@ public:
 			, AAOnly { false }
 			, Arcing_AllowElevationInaccuracy { true }
 			, ReturnWeapon {}
+			, Disperse_Weapons {}
 		{ }
 
 		virtual ~ExtData() = default;

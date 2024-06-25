@@ -64,6 +64,12 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		}
 	}
 
+	//Because the laser trails will be drawn before the calculation of changing the velocity direction in each frame.
+	//This will cause the laser trails to be drawn in the wrong position too early, resulting in a visual appearance resembling a "bouncing".
+	//Let trajectories draw their own laser trails after the Trajectory‘s OnAI() to avoid predicting incorrect positions or pass through targets.
+	if (pBulletExt->Trajectory)
+		return 0;
+
 	// LaserTrails update routine is in BulletClass::AI hook because BulletClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
 	if (pBulletExt && pBulletExt->LaserTrails.size())
@@ -306,7 +312,8 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 	{
 		if (pExt->Trajectory)
 		{
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight
+				|| pExt->Trajectory->Flag == TrajectoryFlag::Disperse)
 			{
 				R->EAX(pThis->Type);
 				return SkipChecks;
@@ -335,7 +342,9 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	}
 	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
+		if (pExt->Trajectory && !pExt->SnappedToTarget
+			&& (pExt->Trajectory->Flag == TrajectoryFlag::Straight
+			|| pExt->Trajectory->Flag == TrajectoryFlag::Disperse))
 		{
 			R->EAX(pThis->Type);
 			return SkipChecks;
@@ -366,8 +375,12 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	// Fixes issues with walls etc.
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
+		if (pExt->Trajectory && !pExt->SnappedToTarget
+			&& (pExt->Trajectory->Flag == TrajectoryFlag::Straight
+			|| pExt->Trajectory->Flag == TrajectoryFlag::Disperse))
+		{
 			return SkipSetCoordinate;
+		}
 	}
 
 	return 0;
@@ -381,8 +394,11 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+		if (pExt->Trajectory && (pExt->Trajectory->Flag == TrajectoryFlag::Straight
+			|| pExt->Trajectory->Flag == TrajectoryFlag::Disperse))
+		{
 			return SkipCheck;
+		}
 	}
 
 	return 0;
