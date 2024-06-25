@@ -89,7 +89,9 @@ DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
 	if (weaponIndex < 0)
 		weaponIndex = pThis->SelectWeapon(pTarget);
 
-	if (pThis->GetFireError(pTarget, weaponIndex, false) != FireError::OK)
+	auto fireError = pThis->GetFireError(pTarget, weaponIndex, false);
+
+	if (fireError == FireError::ILLEGAL || fireError == FireError::CANT)
 		return 0;
 
 	R->EAX(MapClass::Instance->GetCellAt(pObject->GetCoords()));
