@@ -412,6 +412,7 @@ New:
 - Allow explicitly setting the superweapons AI uses for Chronoshift script actions (by Starkku)
 - Allow customizing Aircraft weapon strafing regardless of `ROT` and `Strafing.Shots` values beyond 5 (by Trsdy)
 - Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
+- Projectile subject to ground check before firing (by CrimRecya)
 - Allow setting which houses can see `CloakVisible=true` laser trails (by Starkku)
 
 Vanilla fixes:
