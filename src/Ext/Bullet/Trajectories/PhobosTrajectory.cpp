@@ -120,9 +120,15 @@ bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 {
 	if (auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
-		return pBulletTypeExt->Trajectory_Speed;
+	{
+		double StraightSpeed = pBulletTypeExt->Trajectory_Speed;
+		StraightSpeed = StraightSpeed > 0.001 ? StraightSpeed : 0.001 ;
+		return StraightSpeed;
+	}
 	else
+	{
 		return 100.0;
+	}
 }
 
 PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
