@@ -119,12 +119,17 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		Nullable<int> CombatLightDetailLevel;
+		Valueable<double> CombatLightChance;
+		Nullable<bool> Particle_AlphaImageIsLightFlash;
+
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RemoveTypes;
 		std::vector<std::string> AttachEffect_RemoveGroups;
 		ValueableVector<int> AttachEffect_CumulativeRemoveMinCounts;
 		ValueableVector<int> AttachEffect_CumulativeRemoveMaxCounts;
 		ValueableVector<int> AttachEffect_DurationOverrides;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -242,6 +247,10 @@ public:
 
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
+
+			, CombatLightDetailLevel {}
+			, CombatLightChance { 1.0 }
+			, Particle_AlphaImageIsLightFlash {}
 
 			, AttachEffect_AttachTypes {}
 			, AttachEffect_RemoveTypes {}
