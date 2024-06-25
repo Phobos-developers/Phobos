@@ -24,6 +24,7 @@ void LaserTrailTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->IgnoreVertical.Read(exINI, section, "IgnoreVertical");
 	this->IsIntense.Read(exINI, section, "IsIntense");
 	this->CloakVisible.Read(exINI, section, "CloakVisible");
+	this->CloakVisible_Houses.Read(exINI, section, "CloakVisible.Houses");
 	this->DroppodOnly.Read(exINI, section, "DropPodOnly");
 }
 
@@ -39,6 +40,7 @@ void LaserTrailTypeClass::Serialize(T& Stm)
 		.Process(this->IgnoreVertical)
 		.Process(this->IsIntense)
 		.Process(this->CloakVisible)
+		.Process(this->CloakVisible_Houses)
 		.Process(this->DroppodOnly)
 		;
 }
