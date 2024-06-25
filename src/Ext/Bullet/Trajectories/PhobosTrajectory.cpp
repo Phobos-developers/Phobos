@@ -9,6 +9,7 @@
 
 #include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
+#include "EngraveTrajectory.h"
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -34,6 +35,8 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 		pNewType = DLLCreate<StraightTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Bombard") == 0)
 		pNewType = DLLCreate<BombardTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Engrave") == 0)
+		pNewType = DLLCreate<EngraveTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -64,6 +67,9 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 			break;
 		case TrajectoryFlag::Bombard:
 			pType = DLLCreate<BombardTrajectoryType>();
+			break;
+		case TrajectoryFlag::Engrave:
+			pType = DLLCreate<EngraveTrajectoryType>();
 			break;
 		default:
 			return nullptr;
@@ -132,6 +138,10 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 	case TrajectoryFlag::Bombard:
 		pRet = DLLCreate<BombardTrajectory>(pType);
 		break;
+
+	case TrajectoryFlag::Engrave:
+		pRet = DLLCreate<EngraveTrajectory>(pType);
+		break;
 	}
 
 	if (pRet)
@@ -157,6 +167,9 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 			break;
 		case TrajectoryFlag::Bombard:
 			pTraj = DLLCreate<BombardTrajectory>();
+			break;
+		case TrajectoryFlag::Engrave:
+			pTraj = DLLCreate<EngraveTrajectory>();
 			break;
 		default:
 			return nullptr;
@@ -206,6 +219,25 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 
 	if (detonate && !pThis->SpawnNextAnim)
 		return Detonate;
+
+	//Correct positions for trajectory.
+	if (pExt->Trajectory && pExt->LaserTrails.size())
+	{
+		CoordStruct FutureCoords
+		{
+			pThis->Location.X + static_cast<int>(pThis->Velocity.X),
+			pThis->Location.Y + static_cast<int>(pThis->Velocity.Y),
+			pThis->Location.Z + static_cast<int>(pThis->Velocity.Z)
+		};
+
+		for (auto& trail : pExt->LaserTrails)
+		{
+			if (!trail.LastLocation.isset())
+				trail.LastLocation = pThis->Location;
+
+			trail.Update(FutureCoords);
+		}
+	}
 
 	return 0;
 }
