@@ -212,6 +212,8 @@ public:
 		ValueableVector<int> AttachEffect_InitialDelays;
 		NullableVector<int> AttachEffect_RecreationDelays;
 
+		Nullable<bool> RecountBurst;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -418,6 +420,8 @@ public:
 			, AttachEffect_Delays {}
 			, AttachEffect_InitialDelays {}
 			, AttachEffect_RecreationDelays {}
+
+			, RecountBurst {}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -577,6 +577,19 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 	GET(TechnoClass*, pThis, EBX);
 	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
 
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (!pExt)
+		return 0;
+
+	auto const pTypeExt = pExt->TypeExtData;
+	auto const pWeaponStruct = pThis->GetWeapon(weaponIndex);
+
+	if (pTypeExt->RecountBurst.Get(RulesExt::Global()->RecountBurst) && pWeaponStruct != pExt->LastWeaponStruct)
+		pThis->CurrentBurstIndex = 0;
+
+	pExt->LastWeaponStruct = pWeaponStruct;
+
 	if (weaponIndex < 0)
 		return 0;
 

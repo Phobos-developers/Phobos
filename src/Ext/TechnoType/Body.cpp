@@ -299,6 +299,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_InitialDelays.Read(exINI, pSection, "AttachEffect.InitialDelays");
 	this->AttachEffect_RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
 
+	this->RecountBurst.Read(exINI, pSection, "RecountBurst");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -645,6 +647,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_Delays)
 		.Process(this->AttachEffect_InitialDelays)
 		.Process(this->AttachEffect_RecreationDelays)
+
+		.Process(this->RecountBurst)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
