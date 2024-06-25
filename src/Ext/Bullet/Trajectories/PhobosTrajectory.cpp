@@ -114,9 +114,15 @@ bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 {
 	if (auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
-		return pBulletTypeExt->Trajectory_Speed;
+	{
+		double StraightSpeed = pBulletTypeExt->Trajectory_Speed;
+		StraightSpeed = StraightSpeed > 0.001 ? StraightSpeed : 0.001 ;
+		return StraightSpeed;
+	}
 	else
+	{
 		return 100.0;
+	}
 }
 
 PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
@@ -206,6 +212,25 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 
 	if (detonate && !pThis->SpawnNextAnim)
 		return Detonate;
+
+	//Correct positions for trajectory.
+	if (pExt->Trajectory && pExt->LaserTrails.size())
+	{
+		CoordStruct FutureCoords
+		{
+			pThis->Location.X + static_cast<int>(pThis->Velocity.X),
+			pThis->Location.Y + static_cast<int>(pThis->Velocity.Y),
+			pThis->Location.Z + static_cast<int>(pThis->Velocity.Z)
+		};
+
+		for (auto& trail : pExt->LaserTrails)
+		{
+			if (!trail.LastLocation.isset())
+				trail.LastLocation = pThis->Location;
+
+			trail.Update(FutureCoords);
+		}
+	}
 
 	return 0;
 }

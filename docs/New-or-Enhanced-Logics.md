@@ -80,7 +80,7 @@ Animation.OfflineAction=Hides                  ; AttachedAnimFlag (None, Hides, 
 Animation.TemporalAction=None                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.UseInvokerAsOwner=false              ; boolean
 CumulativeAnimations=                          ; list of animations
-ExpireWeapon=                                  
+ExpireWeapon=
 ExpireWeapon.TriggerOn=expire                  ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
 ExpireWeapon.CumulativeOnlyOnce=false          ; boolean
 Tint.Color=                                    ; integer - R,G,B
@@ -105,7 +105,7 @@ RevengeWeapon=                                 ; WeaponType
 RevengeWeapon.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisableWeapons=false                           ; boolean
 Groups=                                        ; comma-separated list of strings (group IDs)
-                                               
+
 [SOMETECHNO]                                   ; TechnoType
 AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
 AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
@@ -125,8 +125,8 @@ AttachEffect.RequiredMaxCounts=                ; integer - maximum required inst
 AttachEffect.DisallowedMinCounts=              ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.DisallowedMaxCounts=              ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.IgnoreFromSameSource=false        ; boolean
-                                               
-[SOMEWARHEAD]                                  
+
+[SOMEWARHEAD]
 AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
 AttachEffect.RemoveTypes=                      ; List of AttachEffectTypes
 AttachEffect.RemoveGroups=                     ; comma-separated list of strings (group IDs)
@@ -638,17 +638,67 @@ Trajectory.Speed=100.0  ; floating point value
 *Straight trajectory used to make blasters in a private mod by @brsajo#9745*
 
 - Self-explanatory, is a straight-shot trajectory.
-  - `Trajectory.Straight.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation (note that this can cause the projectile to overshoot the target).
+  - `Trajectory.Straight.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation (note that this can cause the projectile to overshoot the target). By setting `Trajectory.Straight.PassThrough=true`, it refers to the distance that projectile should travel from itself when it above 0, and the distance that projectile should move behind the target when it below 0 (use the absolute value).
   - `Trajectory.Straight.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
-  - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but ínstead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
+  - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but instead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
+  - `Trajectory.Straight.PassDetonate` enables extra detonations when the projectile is traveling.
+    - `Trajectory.Straight.PassDetonateWarhead` defined the warhead detonated by `Trajectory.Straight.PassDetonate`, and `Trajectory.Straight.PassDetonateDamage` defined the damage caused by `Trajectory.Straight.PassDetonateWarhead`.
+    - `Trajectory.Straight.PassDetonateDelay` controls the delay for detonating the warhead defined by `Trajectory.Straight.Warhead`.
+    - `Trajectory.Straight.PassDetonateTimer` controls the initial delay for detonating the warhead defined by `Trajectory.Straight.Warhead`.
+    - `Trajectory.Straight.PassDetonateLocal` controls whether `Trajectory.Straight.PassDetonateWarhead` and weapon's `Warhead` are always detonate at ground level. It will also no longer restrict vertical velocity of the projectile when using `Trajectory.Straight.ConfineAtHeight`.
+  - `Trajectory.Straight.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target when firing. Note that this will not affect the facing of the turret.
+  - `Trajectory.Straight.OffsetCoord` controls the offsets of the target. Projectile will aim at this position to attack. It also supports `Inaccurate=yes` and `Trajectory.Straight.LeadTimeCalculate=true` on this basis.
+    - `Trajectory.Straight.RotateCoord` controls whether to rotate the projectile's firing direction within the angle bisector of `Trajectory.Straight.OffsetCoord` according to the weapon's `Burst`. Set to 0 to disable this function.
+    - `Trajectory.Straight.MirrorCoord` controls whether `Trajectory.Straight.OffsetCoord` need to mirror the lateral value to adapt to the current burst index. At the same time, the rotation direction calculated by `Trajectory.Straight.RotateCoord` will also be reversed, and the rotation angle between each adjacent projectile on each side will not change as a result.
+    - `Trajectory.Straight.UseDisperseBurst` controls whether the calculation of `Trajectory.Straight.RotateCoord` is based on its superior's `Trajectory.Disperse.WeaponBurst` of the dispersed trajectory, rather than `Burst` of the weapon. If this value is not appropriate, it will result in unsatisfactory visual displays.
+    - `Trajectory.Straight.AxisOfRotation` controls the rotation axis when calculating `Trajectory.Straight.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position.
+  - `Trajectory.Straight.ProximityImpact` controls the initial proximity fuse times. When there are enough remaining times and the projectile approaches another valid target, it will detonate a warhead defined by `Trajectory.Straight.Warhead` on it. If the times is about to run out, it will also detonate itself at its location. This function can be cancelled by setting to 0. A negative integer means unlimited times. By the way, you can use the weapon's `Warhead` with low versus only to aim at the target, and use the `Trajectory.Straight.ProximityWarhead` to causing actual harm.
+    - `Trajectory.Straight.ProximityWarhead` defined the warhead detonated by `Trajectory.Straight.ProximityImpact`, and `Trajectory.Straight.ProximityDamage` defined the damage caused by `Trajectory.Straight.ProximityWarhead`.
+    - `Trajectory.Straight.ProximityRadius` controls the range of proximity fuse. It can NOT be set as a negative integer.
+    - `Trajectory.Straight.ProximityAllies` controls the damage ratio if the target of proximity fuse is ally. It will not detonate at allies by setting as 0. Note that this is not related to whether the warhead itself affect allies.
+    - `Trajectory.Straight.ProximityFlight` controls whether to count units in the air.
+  - `Trajectory.Straight.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircrafts on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
+  - `Trajectory.Straight.ThroughBuilding` controls whether the projectile will not be obstructed by buildings. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
+  - `Trajectory.Straight.EdgeAttenuation` controls the edge attenuation ratio of projectile damage, includes `Trajectory.Straight.Damage`. Can NOT be set to a negative integer.
+  - `Trajectory.Straight.SubjectToGround` controls whether the projectile should explode when it hits the ground. Note that this will not make AI search for suitable attack locations.
+  - `Trajectory.Straight.ConfineAtHeight` controls the height above ground that projectile will try to travel as it can. It can not move down from the cliff by setting `SubjectToCliffs=yes`. It can be cancelled by setting as a non positive integer. It will be forcibly cancelled by setting `Trajectory.Speed` above 256.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]                            ; Projectile
-Trajectory=Straight                         ; Trajectory type
-Trajectory.Straight.DetonationDistance=0.4  ; floating point value
-Trajectory.Straight.TargetSnapDistance=0.5  ; floating point value
-Trajectory.Straight.PassThrough=false       ; boolean
+[SOMEPROJECTILE]                                ; Projectile
+Trajectory=Straight                             ; Trajectory type
+Trajectory.Straight.DetonationDistance=0.4      ; floating point value
+Trajectory.Straight.TargetSnapDistance=0.5      ; floating point value
+Trajectory.Straight.PassThrough=false           ; boolean
+Trajectory.Straight.PassDetonate=false          ; boolean
+Trajectory.Straight.PassDetonateWarhead=        ; WarheadType
+Trajectory.Straight.PassDetonateDamage=0        ; integer
+Trajectory.Straight.PassDetonateDelay=1         ; integer
+Trajectory.Straight.PassDetonateTimer=0         ; integer
+Trajectory.Straight.PassDetonateLocal=false     ; boolean
+Trajectory.Straight.LeadTimeCalculate=false     ; boolean
+Trajectory.Straight.OffsetCoord=0,0,0           ; integer - Forward,Lateral,Height
+Trajectory.Straight.RotateCoord=0               ; floating point value
+Trajectory.Straight.MirrorCoord=true            ; boolean
+Trajectory.Straight.UseDisperseBurst=false      ; boolean
+Trajectory.Straight.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Height
+Trajectory.Straight.ProximityImpact=0           ; integer
+Trajectory.Straight.ProximityWarhead=           ; WarheadType
+Trajectory.Straight.ProximityDamage=0           ; integer
+Trajectory.Straight.ProximityRadius=0.7         ; floating point value
+Trajectory.Straight.ProximityAllies=0           ; floating point value
+Trajectory.Straight.ProximityFlight=false       ; boolean
+Trajectory.Straight.ThroughVehicles=true        ; boolean
+Trajectory.Straight.ThroughBuilding=true        ; boolean
+Trajectory.Straight.EdgeAttenuation=1.0         ; floating point value
+Trajectory.Straight.SubjectToGround=false       ; boolean
+Trajectory.Straight.ConfineAtHeight=0           ; integer
+```
+
+```{note}
+- Make sure you set a low `Trajectory.Straight.ProximityRadius` value unless necessary.
+- Note that if `Trajectory.Straight.ProximityFlight` is true, it will consume more CPU performance.
+- Note that the listed Warheads in `Trajectory.Straight.PassDetonateWarhead` and `Trajectory.Straight.ProximityWarhead` must be listed in `[Warheads]` for them to work.
 ```
 
 #### Bombard trajectory
@@ -1500,7 +1550,7 @@ FeedbackWeapon=  ; WeaponType
   - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired.
   - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined.
   - `Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour of only deducting ammo after a strafing run and instead doing it after each individual shot.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]                   ; WeaponType

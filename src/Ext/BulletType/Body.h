@@ -46,6 +46,10 @@ public:
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
 		Valueable<WeaponTypeClass*> ReturnWeapon;
 
+		//If simply put these part into Trajectory theirselves, firing these bullets will crash the game after load the saved games.
+		Valueable<WarheadTypeClass*> Straight_PassDetonateWarhead;
+		Valueable<WarheadTypeClass*> Straight_ProximityWarhead;
+
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
@@ -73,6 +77,8 @@ public:
 			, AAOnly { false }
 			, Arcing_AllowElevationInaccuracy { true }
 			, ReturnWeapon {}
+			, Straight_PassDetonateWarhead {}
+			, Straight_ProximityWarhead {}
 		{ }
 
 		virtual ~ExtData() = default;

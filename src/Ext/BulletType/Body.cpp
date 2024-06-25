@@ -54,6 +54,9 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, pSection, "Arcing.AllowElevationInaccuracy");
 	this->ReturnWeapon.Read<true>(exINI, pSection, "ReturnWeapon");
 
+	this->Straight_PassDetonateWarhead.Read<true>(exINI, pSection, "Trajectory.Straight.PassDetonateWarhead");
+	this->Straight_ProximityWarhead.Read<true>(exINI, pSection, "Trajectory.Straight.ProximityWarhead");
+
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
 	this->BallisticScatter_Max.Read(exINI, pSection, "BallisticScatter.Max");
@@ -127,6 +130,8 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AAOnly)
 		.Process(this->Arcing_AllowElevationInaccuracy)
 		.Process(this->ReturnWeapon)
+		.Process(this->Straight_PassDetonateWarhead)
+		.Process(this->Straight_ProximityWarhead)
 		;
 
 	this->TrajectoryType = PhobosTrajectoryType::ProcessFromStream(Stm, this->TrajectoryType);
