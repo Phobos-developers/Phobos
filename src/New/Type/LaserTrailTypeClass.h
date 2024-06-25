@@ -14,6 +14,7 @@ public:
 	Valueable<bool> IgnoreVertical;
 	Valueable<bool> IsIntense;
 	Valueable<bool> CloakVisible;
+	Valueable<AffectedHouse> CloakVisible_Houses;
 	Valueable<bool> DroppodOnly;
 
 	LaserTrailTypeClass(const char* pTitle = NONE_STR) : Enumerable<LaserTrailTypeClass>(pTitle)
@@ -25,6 +26,7 @@ public:
 		, IgnoreVertical { false }
 		, IsIntense { false }
 		, CloakVisible { false }
+		, CloakVisible_Houses { AffectedHouse::All }
 		, DroppodOnly { false }
 	{ }
 

@@ -516,6 +516,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 void TechnoExt::ExtData::UpdateLaserTrails()
 {
 	auto const pThis = generic_cast<FootClass*>(this->OwnerObject());
+
 	if (!pThis)
 		return;
 
@@ -527,13 +528,23 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 		if (VTable::Get(pThis->Locomotor.GetInterfacePtr()) != 0x7E8278 && trail.Type->DroppodOnly)
 			continue;
 
-		if (pThis->CloakState == CloakState::Cloaked && !trail.Type->CloakVisible)
-			continue;
+		if (pThis->CloakState == CloakState::Cloaked)
+		{
+			if (trail.Type->CloakVisible && EnumFunctions::CanTargetHouse(trail.Type->CloakVisible_Houses, pThis->Owner, HouseClass::CurrentPlayer))
+				trail.Cloaked = false;
+			else
+				trail.Cloaked = true;
+		}
+		else
+		{
+			trail.Cloaked = false;
+		}
 
 		if (!this->IsInTunnel)
 			trail.Visible = true;
 
 		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail.FLH, trail.IsOnTurret);
+
 		if (pThis->CloakState == CloakState::Uncloaking && !trail.Type->CloakVisible)
 			trail.LastLocation = trailLoc;
 		else
