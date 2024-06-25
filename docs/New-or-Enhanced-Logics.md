@@ -80,7 +80,7 @@ Animation.OfflineAction=Hides                  ; AttachedAnimFlag (None, Hides, 
 Animation.TemporalAction=None                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.UseInvokerAsOwner=false              ; boolean
 CumulativeAnimations=                          ; list of animations
-ExpireWeapon=                                  
+ExpireWeapon=
 ExpireWeapon.TriggerOn=expire                  ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
 ExpireWeapon.CumulativeOnlyOnce=false          ; boolean
 Tint.Color=                                    ; integer - R,G,B
@@ -105,7 +105,7 @@ RevengeWeapon=                                 ; WeaponType
 RevengeWeapon.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisableWeapons=false                           ; boolean
 Groups=                                        ; comma-separated list of strings (group IDs)
-                                               
+
 [SOMETECHNO]                                   ; TechnoType
 AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
 AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
@@ -125,8 +125,8 @@ AttachEffect.RequiredMaxCounts=                ; integer - maximum required inst
 AttachEffect.DisallowedMinCounts=              ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.DisallowedMaxCounts=              ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.IgnoreFromSameSource=false        ; boolean
-                                               
-[SOMEWARHEAD]                                  
+
+[SOMEWARHEAD]
 AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
 AttachEffect.RemoveTypes=                      ; List of AttachEffectTypes
 AttachEffect.RemoveGroups=                     ; comma-separated list of strings (group IDs)
@@ -624,7 +624,10 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
 
 - Projectiles can now have customizable trajectories.
   - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT`, `Vertical` or `Inviso`). Attempt to do so will result in the other logics being disabled and a warning being written to log file.
-  - Initial speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
+  - The speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
+    - In `Trajectory=Straight`, it refers to the whole distance speed of the projectile and it has no restrictions.
+    - In `Trajectory=Bombard`, it refers to the initial speed of the projectile and it has no restrictions.
+    - In `Trajectory=Disperse`, it refers to the maximum speed of the projectile and it cannot exceed 256. `Trajectory.Speed` will be fixed at 192 by setting `Trajectory.Disperse.UniqueCurve=true`.
 
   In `rulesmd.ini`:
 ```ini
@@ -660,6 +663,88 @@ In `rulesmd.ini`:
 [SOMEPROJECTILE]               ; Projectile
 Trajectory=Bombard             ; Trajectory type
 Trajectory.Bombard.Height=0.0  ; double
+```
+
+#### Disperse trajectory
+
+- Its trajectory looks a bit like a `ROT`, but its settings are more flexible. It also has a unique trajectory. And as its name suggests, it can even spread out more weapons.
+  - `Trajectory.Disperse.UniqueCurve` controls whether to enable simulated Qian Xuesen trajectory. After enabling this, it will NOT respect the following 19 items and `Trajectory.Speed`.
+  - `Trajectory.Disperse.PreAimCoord` controls the initial flight direction of the projectile, and after reaching this coordinate, it will begin to turn towards the target direction. When it is set to 0,0,0 , it will directly face the target.
+    - `Trajectory.Disperse.RotateCoord` controls whether to rotate the projectile's firing direction within the angle bisector of `Trajectory.Disperse.PreAimCoord` according to the weapon's `Burst`. Set to 0 to disable this function.
+    - `Trajectory.Disperse.MirrorCoord` controls whether `Trajectory.Disperse.PreAimCoord` need to mirror the lateral value to adapt to the current burst index. At the same time, the rotation direction calculated by `Trajectory.Disperse.RotateCoord` will also be reversed, and the rotation angle between each adjacent projectile on each side will not change as a result.
+    - `Trajectory.Disperse.FacingCoord` controls whether the forward direction in `Trajectory.Disperse.PreAimCoord` is depending on the orientation of the firer. By default, it will depend on the vector between the firer and the target.
+    - `Trajectory.Disperse.ReduceCoord` controls whether `Trajectory.Disperse.PreAimCoord` defines the initial movement coordinates when the attack distance is 10 cells, and the actual initial movement coordinates will change with the length of the attack distance. It can be simply understood as an optimization term aimed at ensuring hits at close range.
+    - `Trajectory.Disperse.UseDisperseBurst` controls whether the calculation of `Trajectory.Disperse.RotateCoord` is based on its superior's `Trajectory.Disperse.WeaponBurst` of the dispersed trajectory, rather than `Burst` of the weapon. If this value is not appropriate, it will result in unsatisfactory visual displays.
+    - `Trajectory.Disperse.AxisOfRotation` controls the rotation axis when calculating `Trajectory.Disperse.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position.
+  - `Trajectory.Disperse.LaunchSpeed` controls the initial flight speed of the projectile, it will be directly reduced to this value if it exceeds `Trajectory.Speed`.
+  - `Trajectory.Disperse.Acceleration` controls the acceleration of the projectile's flight speed, increasing the speed per frame according to this value, the final speed will not exceed `Trajectory.Speed`.
+  - `Trajectory.Disperse.ROT` controls the turning speed of the projectile and can determine the turning radius of the projectile. The turning speed will increase with the increase of speed.
+  - `Trajectory.Disperse.LockDirection` controls whether after reaching `Trajectory.Disperse.PreAimCoord` and completing the first turn, the projectile will lock the direction of motion without further adjustment.
+  - `Trajectory.Disperse.CruiseEnable` controls whether after reaching `Trajectory.Disperse.PreAimCoord` and completing the first turn, the projectile will maintain altitude while moving towards the target.
+    - `Trajectory.Disperse.CruiseUnableRange` controls how far away it is from the target to end the cruise phase, no longer maintaining the cruise altitude, and begins to move directly towards the target. If the distance is already below this value by the time `Trajectory.Disperse.PreAimCoord` is reached, the cruise phase will be skipped.
+  - `Trajectory.Disperse.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target during motion.
+  - `Trajectory.Disperse.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
+  - `Trajectory.Disperse.RetargetRadius` controls the radius of the projectile to search for a new target after losing its original target. If it hasn't arrived `Trajectory.Disperse.PreAimCoord` yet, the last coordinate of the original target is taken as the center of the searching circle. Otherwise, the coordinate of the distance in front of the projectile is taken as the center of the circle. Set to 0 indicates that this function is not enabled, and it will still attempt to attack the original target's location. If it is set to a negative value, it will directly self explode in place.
+    - `Trajectory.Disperse.RetargetAllies` controls whether the projectile chooses allies as its target when searching for new targets after losing its original target.
+  - `Trajectory.Disperse.SuicideShortOfROT` controls whether the projectile will explode when it detected its insufficient turning ability.
+  - `Trajectory.Disperse.SuicideAboveRange` controls the projectile to self destruct directly after reaching the flight distance. Set to 0 to disable suicide.
+  - `Trajectory.Disperse.SuicideIfNoWeapon` controls whether the projectile will self destruct after the number of times it spreads the weapon has been exhausted. If `Trajectory.Disperse.WeaponCount` set to 0, this will not be enabled.
+  - `Trajectory.Disperse.Weapons` defined the dispersal weapons of the projectile.
+    - `Trajectory.Disperse.WeaponBurst` defined how many corresponding weapons each time the projectile will fire. When the quantity is lower than `Trajectory.Disperse.Weapons`, it will use the last value.
+    - `Trajectory.Disperse.WeaponCount` controls how many times the projectile can spread the weapon. Set to a negative value means unlimited times.
+    - `Trajectory.Disperse.WeaponDelay` controls the delay for dispersing the weapons defined by `Trajectory.Disperse.Weapons`.
+    - `Trajectory.Disperse.WeaponTimer` controls the initial delay for dispersing the weapons defined by `Trajectory.Disperse.Weapons`.
+    - `Trajectory.Disperse.WeaponScope` controls the weapon dispersing timer to start counting only within this distance of reaching the target. Set to 0 to disable this function. Set to a negative value means it will only disperse the weapon at most once before detonation.
+    - `Trajectory.Disperse.WeaponSeparate` controls whether the projectile no longer fire all the weapons in `Trajectory.Disperse.Weapons` at once and instead fire a group of weapons in the list order, following `Trajectory.Disperse.WeaponBurst`.
+    - `Trajectory.Disperse.WeaponRetarget` controls whether the dispersed weapons will find new targets on their own. Using the range of weapons to search new targets.
+    - `Trajectory.Disperse.WeaponLocation` controls whether the dispersed weapons will search for new targets at the center of the spreading position, otherwise they will focus on the original target. If a suitable target cannot be found, it will randomly attack the ground.
+    - `Trajectory.Disperse.WeaponTendency` controls whether the dispersed weapons will choose the original target as the first new target in each group of weapons.
+    - `Trajectory.Disperse.WeaponToAllies` controls whether the dispersed weapons will choose allies as targets when searching for new targets.
+    - `Trajectory.Disperse.WeaponToGround` controls whether the dispersed weapons will only choose the ground as their targets.
+
+In `rulesmd.ini`:
+```ini
+Trajectory=Disperse                             ; Trajectory type
+Trajectory.Disperse.UniqueCurve=false           ; boolean
+Trajectory.Disperse.PreAimCoord=0,0,0           ; integer - Forward,Lateral,Height
+Trajectory.Disperse.RotateCoord=0               ; floating point value
+Trajectory.Disperse.MirrorCoord=true            ; boolean
+Trajectory.Disperse.FacingCoord=false           ; boolean
+Trajectory.Disperse.ReduceCoord=true            ; boolean
+Trajectory.Disperse.UseDisperseBurst=false      ; boolean
+Trajectory.Disperse.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Height
+Trajectory.Disperse.LaunchSpeed=0               ; floating point value
+Trajectory.Disperse.Acceleration=10.0           ; floating point value
+Trajectory.Disperse.ROT=30.0                    ; floating point value
+Trajectory.Disperse.LockDirection=false         ; boolean
+Trajectory.Disperse.CruiseEnable=false          ; boolean
+Trajectory.Disperse.CruiseUnableRange=5         ; floating point value
+Trajectory.Disperse.LeadTimeCalculate=true      ; boolean
+Trajectory.Disperse.TargetSnapDistance=0.5      ; floating point value
+Trajectory.Disperse.RetargetRadius=0            ; floating point value
+Trajectory.Disperse.RetargetAllies=false        ; boolean
+Trajectory.Disperse.SuicideShortOfROT=true      ; boolean
+Trajectory.Disperse.SuicideAboveRange=0         ; floating point value
+Trajectory.Disperse.SuicideIfNoWeapon=true      ; boolean
+Trajectory.Disperse.Weapons=                    ; list of WeaponTypes
+Trajectory.Disperse.WeaponBurst=                ; list of integers
+Trajectory.Disperse.WeaponCount=0               ; integer
+Trajectory.Disperse.WeaponDelay=1               ; integer
+Trajectory.Disperse.WeaponTimer=0               ; integer
+Trajectory.Disperse.WeaponScope=0               ; floating point value
+Trajectory.Disperse.WeaponSeparate=false        ; boolean
+Trajectory.Disperse.WeaponRetarget=false        ; boolean
+Trajectory.Disperse.WeaponLocation=false        ; boolean
+Trajectory.Disperse.WeaponTendency=false        ; boolean
+Trajectory.Disperse.WeaponToAllies=false        ; boolean
+Trajectory.Disperse.WeaponToGround=false        ; boolean
+```
+
+```{note}
+- Make sure you set a low `Trajectory.Disperse.RetargetRadius` value unless necessary. If you set `Trajectory.Disperse.WeaponRetarget=true`, also make sure you set `Trajectory.Disperse.Weapons` a low `Range` value unless necessary.
+- This does not properly support `Arcing=true` projectiles.
+- Note that the listed Weapons in `Trajectory.Disperse.Weapons` must be listed in `[WeaponTypes]` for them to work.
+- `Trajectory.Disperse.Weapons` now not support customized `LaserThickness`, `Bolt.ColorN`, `Bolt.DisableN`, `Bolt.Arcs`, `Beam.Color`, `Beam.Duration`  and `Beam.Amplitude`.
 ```
 
 ### Shrapnel enhancements
@@ -1500,7 +1585,7 @@ FeedbackWeapon=  ; WeaponType
   - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired.
   - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined.
   - `Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour of only deducting ammo after a strafing run and instead doing it after each individual shot.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]                   ; WeaponType
