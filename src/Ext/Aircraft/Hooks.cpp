@@ -69,6 +69,36 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 	return 0;
 }
 
+// If strafing weapon target is in air, consider the cell it is on as the firing position instead of the object itself if can fire at it.
+DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
+{
+	GET(AircraftClass*, pThis, EDI);
+	GET(AbstractClass*, pTarget, EAX);
+
+	if (!pTarget)
+		return 0;
+
+	auto const pObject = abstract_cast<ObjectClass*>(pTarget);
+
+	if (!pObject || !pObject->IsInAir())
+		return 0;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	int weaponIndex = pExt->CurrentAircraftWeaponIndex;
+
+	if (weaponIndex < 0)
+		weaponIndex = pThis->SelectWeapon(pTarget);
+
+	auto fireError = pThis->GetFireError(pTarget, weaponIndex, false);
+
+	if (fireError == FireError::ILLEGAL || fireError == FireError::CANT)
+		return 0;
+
+	R->EAX(MapClass::Instance->GetCellAt(pObject->GetCoords()));
+
+	return 0;
+}
+
 long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly)
 {
 	__assume(ifly != nullptr);
