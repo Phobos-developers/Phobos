@@ -37,7 +37,6 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
-		void BuildPalette();
 	};
 
 	class ExtContainer final : public Container<OverlayTypeExt>
