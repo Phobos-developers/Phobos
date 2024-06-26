@@ -243,6 +243,7 @@ This page lists all the individual contributions to the project by their author.
   - Forbidding parallel AI queues for specific TechnoTypes
   - Nonprovocative Warheads
   - Customizing effect of level lighting on air units
+  - Reimplemented `Airburst` & `Splits` logic with more customization options
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
