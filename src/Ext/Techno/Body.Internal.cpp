@@ -148,6 +148,30 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	return FLH;
 }
 
+void TechnoExt::ExtData::InitializeDisplayInfo()
+{
+	auto const pThis = this->OwnerObject();
+	auto const pType = pThis->GetTechnoType();
+	auto const pPrimary = pThis->GetWeapon(0);
+	auto const pSecondary = pThis->GetWeapon(1);
+
+	if (pPrimary && pPrimary->WeaponType && pType->LandTargeting != LandTargetingType::Land_Not_OK)
+		pThis->ChargeTurretDelay = pPrimary->WeaponType->ROF;
+	else if (pSecondary && pSecondary->WeaponType)
+		pThis->ChargeTurretDelay = pSecondary->WeaponType->ROF;
+
+	if (pType->Ammo > 0)
+		pThis->ReloadTimer.TimeLeft = pType->Reload;
+
+	if (auto pTypeExt = this->TypeExtData)
+	{
+		auto pDelType = pTypeExt->PassengerDeletionType.get();
+
+		if (pDelType && !pThis->Passengers.GetFirstPassenger())
+			this->PassengerDeletionTimer.TimeLeft = pDelType->Rate;
+	}
+}
+
 void TechnoExt::ExtData::InitializeAttachEffects()
 {
 	if (auto pTypeExt = this->TypeExtData)
