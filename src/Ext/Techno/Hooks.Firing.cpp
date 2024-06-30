@@ -583,15 +583,31 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 		return 0;
 
 	auto const pTypeExt = pExt->TypeExtData;
-	auto const pWeaponStruct = pThis->GetWeapon(weaponIndex);
-
-	if (pTypeExt->RecountBurst.Get(RulesExt::Global()->RecountBurst) && pWeaponStruct != pExt->LastWeaponStruct)
-		pThis->CurrentBurstIndex = 0;
-
-	pExt->LastWeaponStruct = pWeaponStruct;
 
 	if (weaponIndex < 0)
+	{
+		FootClass* currentPassenger = pThis->Passengers.FirstPassenger;
+		const int passengerIndex = -weaponIndex - 1;
+
+		for (int i = 0; i < passengerIndex && currentPassenger; i++)
+			currentPassenger = abstract_cast<FootClass*>(currentPassenger->NextObject);
+
+		if (auto const pPassengerExt = TechnoExt::ExtMap.Find(currentPassenger))
+		{
+			pPassengerExt->LastWeaponStruct = nullptr;
+		}
+
 		return 0;
+	}
+	else
+	{
+		auto const pWeaponStruct = pThis->GetWeapon(weaponIndex);
+
+		if (pTypeExt->RecountBurst.Get(RulesExt::Global()->RecountBurst) && pExt->LastWeaponStruct && pWeaponStruct != pExt->LastWeaponStruct)
+			pThis->CurrentBurstIndex = 0;
+
+		pExt->LastWeaponStruct = pWeaponStruct;
+	}
 
 	bool FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
