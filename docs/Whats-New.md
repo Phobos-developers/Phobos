@@ -480,6 +480,9 @@ Vanilla fixes:
 - Units & buildings with `DecloakToFire=false` weapons can now cloak while targeting & reloading (by Starkku)
 - Units with `Sensors=true` will no longer reveal ally buildings (by Starkku)
 
+Ares fixes:
+- Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
+
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)

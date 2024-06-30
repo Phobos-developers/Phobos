@@ -311,6 +311,7 @@ This page lists all the individual contributions to the project by their author.
 - **NetsuNegi**
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
+   - Taking over Ares' AlphaImage respawn logic to reduce lags from it
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons
