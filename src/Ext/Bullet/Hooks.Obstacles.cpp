@@ -104,8 +104,7 @@ public:
 		if (!pExt)
 			return sourceCoords;
 
-		CoordStruct offsetCoords = pExt->LastWeaponFLH;
-		FootClass* const pFoot = abstract_cast<FootClass*>(pTechno);
+		auto const pFoot = abstract_cast<FootClass*>(pTechno);
 		Matrix3D matrixFLH;
 
 		if (pFoot && pFoot->Locomotor)
@@ -117,10 +116,10 @@ public:
 			pExt->TypeExtData->ApplyTurretOffset(&matrixFLH);
 
 		matrixFLH.RotateZ(static_cast<float>(Math::atan2(targetCoords.Y - sourceCoords.Y , targetCoords.X - sourceCoords.X) - pTechno->PrimaryFacing.Current().GetRadian<32>()));
-		matrixFLH.Translate(static_cast<float>(offsetCoords.X), static_cast<float>(offsetCoords.Y), static_cast<float>(offsetCoords.Z));
+		matrixFLH.Translate(static_cast<float>(pExt->LastWeaponFLH.X), static_cast<float>(0), static_cast<float>(pExt->LastWeaponFLH.Z));
 		auto const resultFLHCoords = matrixFLH.GetTranslation();
 
-		return (sourceCoords + CoordStruct { static_cast<int>(resultFLHCoords.X), -static_cast<int>(resultFLHCoords.Y), static_cast<int>(resultFLHCoords.Z) + extraHeight });
+		return (sourceCoords + CoordStruct { static_cast<int>(resultFLHCoords.X), 0, static_cast<int>(resultFLHCoords.Z) + extraHeight });
 	}
 };
 
