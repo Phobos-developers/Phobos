@@ -70,6 +70,7 @@ public:
 		, NotMainWeapon { false }
 		, FirepowerMult { 1.0 }
 		, FLHCoord {}
+		, BuildingCoord {}
 		, TemporaryCoord {}
 	{}
 
@@ -95,6 +96,7 @@ public:
 		, NotMainWeapon { false }
 		, FirepowerMult { 1.0 }
 		, FLHCoord {}
+		, BuildingCoord {}
 		, TemporaryCoord {}
 	{}
 
@@ -129,14 +131,15 @@ public:
 	bool NotMainWeapon;
 	double FirepowerMult;
 	CoordStruct FLHCoord;
+	CoordStruct BuildingCoord;
 	CoordStruct TemporaryCoord;
 
 private:
-	void GetTechnoFLHCoord(BulletClass* pBullet);
+	void GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno);
 	void CheckMirrorCoord(TechnoClass* pTechno);
 	void SetEngraveDirection(BulletClass* pBullet, CoordStruct Source, CoordStruct Target);
 	int GetFloorCoordHeight(BulletClass* pBullet, CoordStruct Coord);
 	bool PlaceOnCorrectHeight(BulletClass* pBullet);
-	bool DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
+	void DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
 	void DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
 };

@@ -2,6 +2,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <TacticalClass.h>
 #include <LaserDrawClass.h>
 
 bool EngraveTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -100,6 +101,7 @@ bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->NotMainWeapon)
 		.Process(this->FirepowerMult)
 		.Process(this->FLHCoord)
+		.Process(this->BuildingCoord)
 		.Process(this->TemporaryCoord)
 		;
 
@@ -132,6 +134,7 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->NotMainWeapon)
 		.Process(this->FirepowerMult)
 		.Process(this->FLHCoord)
+		.Process(this->BuildingCoord)
 		.Process(this->TemporaryCoord)
 		;
 
@@ -159,16 +162,17 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->DamageDelay = pType->DamageDelay > 0 ? pType->DamageDelay : 1;
 	this->LaserTimer.StartTime = 0;
 	this->DamageTimer.StartTime = 0;
-	this->TemporaryCoord = CoordStruct::Empty;
 	this->FLHCoord = pBullet->SourceCoords;
+	this->BuildingCoord = CoordStruct::Empty;
+	this->TemporaryCoord = CoordStruct::Empty;
 
 	if (pBullet->Owner)
 	{
-		this->TechnoInLimbo = pBullet->Owner->InLimbo;
+		this->TechnoInLimbo = static_cast<bool>(pBullet->Owner->Transporter);
 		this->NotMainWeapon = false;
 		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
 
-		this->GetTechnoFLHCoord(pBullet);
+		this->GetTechnoFLHCoord(pBullet, pBullet->Owner);
 		this->CheckMirrorCoord(pBullet->Owner);
 		this->SetEngraveDirection(pBullet, pBullet->Owner->GetCoords(), pBullet->TargetCoords);
 	}
@@ -192,7 +196,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 {
-	if ((!pBullet->Owner && !this->NotMainWeapon) || this->TechnoInLimbo != pBullet->Owner->InLimbo)
+	if ((!pBullet->Owner && !this->NotMainWeapon) || this->TechnoInLimbo != static_cast<bool>(pBullet->Owner->Transporter))
 		return true;
 
 	if (--this->TheDuration < 0)
@@ -203,8 +207,8 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 	TechnoClass* const pTechno = pBullet->Owner;
 	HouseClass* const pOwner = pBullet->Owner->Owner;
 
-	if (this->IsLaser && this->LaserTimer.Completed() && this->DrawEngraveLaser(pBullet, pTechno, pOwner))
-		return true;
+	if (this->IsLaser && this->LaserTimer.Completed())
+		this->DrawEngraveLaser(pBullet, pTechno, pOwner);
 
 	if (this->DamageTimer.Completed())
 		this->DetonateLaserWarhead(pBullet, pTechno, pOwner);
@@ -232,14 +236,33 @@ TrajectoryCheckReturnType EngraveTrajectory::OnAITechnoCheck(BulletClass* pBulle
 	return TrajectoryCheckReturnType::SkipGameCheck;
 }
 
-void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet)
+void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pBullet->Owner);
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pTechno);
 
-	if (!pExt || !pExt->LastWeaponStruct || !pExt->LastWeaponStruct->WeaponType || pExt->LastWeaponStruct->WeaponType->Projectile != pBullet->Type)
+	if (!pExt || (pExt->LastWeaponStruct && (!pExt->LastWeaponStruct->WeaponType || pExt->LastWeaponStruct->WeaponType->Projectile != pBullet->Type)))
+	{
 		this->NotMainWeapon = true;
-	else
-		this->FLHCoord = pExt->LastWeaponFLH;
+		return;
+	}
+	else if (pTechno->WhatAmI() == AbstractType::Building)
+	{
+		const BuildingClass* const pBuilding = static_cast<BuildingClass*>(pTechno);
+		Matrix3D mtx;
+		mtx.MakeIdentity();
+
+		if (pTechno->HasTurret())
+		{
+			TechnoTypeExt::ApplyTurretOffset(pBuilding->Type, &mtx);
+			mtx.RotateZ(static_cast<float>(pTechno->TurretFacing().GetRadian<32>()));
+		}
+
+		mtx.Translate(static_cast<float>(pExt->LastWeaponFLH.X), static_cast<float>(pExt->LastWeaponFLH.Y), static_cast<float>(pExt->LastWeaponFLH.Z));
+		auto const result = mtx.GetTranslation();
+		this->BuildingCoord = pBullet->SourceCoords - pBuilding->GetCoords() - CoordStruct { static_cast<int>(result.X), -static_cast<int>(result.Y), static_cast<int>(result.Z) };
+	}
+
+	this->FLHCoord = pExt->LastWeaponFLH;
 }
 
 void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno)
@@ -336,7 +359,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 	return false;
 }
 
-bool EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
+void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
 	this->LaserTimer.Start(this->LaserDelay);
 	LaserDrawClass* pLaser;
@@ -349,25 +372,25 @@ bool EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 	else if (pTechno->WhatAmI() != AbstractType::Building)
 	{
 		if (this->TechnoInLimbo)
-		{
-			if (TechnoClass* const pTransporter = pTechno->Transporter)
-				FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTransporter, this->FLHCoord, pTransporter->HasTurret());
-			else
-				return true;
-		}
+			FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno->Transporter, this->FLHCoord, pTechno->Transporter->HasTurret());
 		else
-		{
 			FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
-		}
 	}
-	else // TODO Not accurate now, just get the similar FLH.
+	else
 	{
-		const double RotateAngle = pTechno->HasTurret() ? -(pTechno->TurretFacing().GetRadian<32>()) : -(pTechno->PrimaryFacing.Current().GetRadian<32>());
-		FireCoord.X += static_cast<int>(this->FLHCoord.X * Math::cos(RotateAngle) + this->FLHCoord.Y * Math::sin(RotateAngle));
-		FireCoord.Y += static_cast<int>(this->FLHCoord.X * Math::sin(RotateAngle) - this->FLHCoord.Y * Math::cos(RotateAngle));
+		const BuildingClass* const pBuilding = static_cast<BuildingClass*>(pTechno);
+		Matrix3D mtx;
+		mtx.MakeIdentity();
 
-		if (const BuildingTypeClass* const pBuildingType = static_cast<BuildingTypeClass*>(pTechno->GetTechnoType()))
-			FireCoord.Z += this->FLHCoord.Z + 30 * (pBuildingType->GetFoundationWidth() + pBuildingType->GetFoundationHeight(false) + 2);
+		if (pTechno->HasTurret())
+		{
+			TechnoTypeExt::ApplyTurretOffset(pBuilding->Type, &mtx);
+			mtx.RotateZ(static_cast<float>(pTechno->TurretFacing().GetRadian<32>()));
+		}
+
+		mtx.Translate(static_cast<float>(this->FLHCoord.X), static_cast<float>(this->FLHCoord.Y), static_cast<float>(this->FLHCoord.Z));
+		auto const result = mtx.GetTranslation();
+		FireCoord = pBuilding->GetCoords() + this->BuildingCoord + CoordStruct { static_cast<int>(result.X), -static_cast<int>(result.Y), static_cast<int>(result.Z) };
 	}
 
 	if (this->IsHouseColor)
@@ -388,8 +411,6 @@ bool EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 
 	pLaser->Thickness = this->LaserThickness;
 	pLaser->IsSupported = this->IsSupported;
-
-	return false;
 }
 
 void EngraveTrajectory::DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
