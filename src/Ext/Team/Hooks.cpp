@@ -1,5 +1,13 @@
 #include "Body.h"
 
+// Ares InitialPayload fix: Man, what can I say
+DEFINE_HOOK(0x65DE21, TeamTypeClass_CreateMembers_MutexOut, 0x6)
+{
+	GET(TeamClass*, pTeam, EBP);
+	GET(TechnoTypeClass*, pType, EDI);
+	R->ESI(pType->CreateObject(pTeam->Owner));
+	return 0x65DE53;
+}
 
 // Bugfix: TAction 7,80,107.
 DEFINE_HOOK(0x65DF81, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x7)
