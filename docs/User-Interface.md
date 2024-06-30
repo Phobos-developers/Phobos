@@ -40,7 +40,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - `CanSee` and `CanSee.Observer` can limit visibility to specific players.
   - The digits can be either a custom shape (.shp) or text drawn using the game font. This depends on whether `Shape` is set.
     - `Text.Color`, `Text.Color.ConditionYellow` and `Text.Color.ConditionRed` allow customization of the font color. `Text.Background=yes` will additionally draw a black rectangle background.
-    - When using shapes, a custom palette can be specified with `Palette`. `Shape.Spacing` controls pixel buffer between characters.
+    - When using shapes, a custom palette can be specified with `Palette`. `Shape.Spacing` controls pixel buffer between characters. If `Shape.PercentageFrame` set to true, it will only draw one frame that corresponds to total frames by percentage.
     - Frames 0-9 will be used as digits when the owner's health bar is green, 10-19 when yellow, 20-29 when red. For `/` and `%` characters, frame numbers are 30-31, 32-33, 34-35, respectively.
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
@@ -58,7 +58,7 @@ Aircraft.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
 
 [SOMEDIGITALDISPLAYTYPE]                ; DigitalDisplayType
 ; Generic
-InfoType=Health                         ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage)
+InfoType=Health                         ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage|ROF|Reload|SpawnTimer|GattlingTimer|ProduceCash|PassengerKill|AutoDeath|SuperWeapon)
 Offset=0,0                              ; integers - horizontal, vertical
 Offset.ShieldDelta=                     ; integers - horizontal, vertical
 Align=right                             ; Text alignment enumeration (left|right|center/centre)
@@ -78,6 +78,7 @@ Text.Background=false                   ; boolean
 Shape=                                  ; filename with .shp extension, if not present, game-drawn text will be used instead
 Palette=palette.pal                     ; filename with .pal extension
 Shape.Spacing=                          ; integers - horizontal, vertical spacing between digits
+Shape.PercentageFrame=false             ; boolean
 
 [SOMETECHNOTYPE]
 DigitalDisplay.Disable=false            ; boolean

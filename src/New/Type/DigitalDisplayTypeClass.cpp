@@ -29,6 +29,7 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Shape.Read(exINI, section, "Shape");
 	this->Palette.LoadFromINI(pINI, section, "Palette");
 	this->Shape_Spacing.Read(exINI, section, "Shape.Spacing");
+	this->Shape_PercentageFrame.Read(exINI, section, "Shape.PercentageFrame");
 	this->Percentage.Read(exINI, section, "Percentage");
 	this->HideMaxValue.Read(exINI, section, "HideMaxValue");
 	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
@@ -71,10 +72,11 @@ void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int 
 void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
 	wchar_t text[0x20];
+	double ratio = static_cast<double>(value) / maxValue;
 
 	if (Percentage.Get())
 	{
-		swprintf_s(text, L"%d", static_cast<int>((static_cast<double>(value) / maxValue) * 100));
+		swprintf_s(text, L"%d", static_cast<int>(ratio * 100));
 		wcscat_s(text, L"%%");
 	}
 	else if (HideMaxValue.Get(isInfantry))
@@ -86,7 +88,6 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 		swprintf_s(text, L"%d/%d", value, maxValue);
 	}
 
-	double ratio = static_cast<double>(value) / maxValue;
 	COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
 	RectangleStruct rect = { 0, 0, 0, 0 };
 	DSurface::Composite->GetRect(&rect);
@@ -106,8 +107,9 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 
 void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
+	double ratio = static_cast<double>(value) / maxValue;
 	std::string valueString(std::move(Percentage ?
-		GeneralUtils::IntToDigits(static_cast<int>(static_cast<double>(value) / maxValue * 100)) :
+		GeneralUtils::IntToDigits(static_cast<int>(ratio * 100)) :
 		GeneralUtils::IntToDigits(value)
 	));
 	std::string maxValueString(!Percentage && !HideMaxValue.Get(isInfantry) ?
@@ -137,13 +139,25 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 	}
 	case TextAlign::Center:
 	{
-		position.X -= static_cast<int>(valueString.length()) * spacing.X / 2;
-		position.Y += static_cast<int>(valueString.length()) * spacing.Y / 2;
+		if (Shape_PercentageFrame)
+		{
+			position.X -= static_cast<int>(Shape->Width) / 2;
+		}
+		else
+		{
+			position.X -= static_cast<int>(valueString.length()) * spacing.X / 2;
+			position.Y += static_cast<int>(valueString.length()) * spacing.Y / 2;
+		}
+
 		break;
 	}
 	case TextAlign::Right:
 	{
-		position.X -= spacing.X;
+		if (Shape_PercentageFrame)
+			position.X -= static_cast<int>(Shape->Width);
+		else
+			position.X -= spacing.X;
+
 		break;
 	}
 	}
@@ -156,7 +170,6 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 	const int redExtraFrame = 34;
 	int numberBaseFrame = greenBaseFrame;
 	int extraBaseFrame = greenExtraFrame;
-	double ratio = static_cast<double>(value) / maxValue;
 
 	if (ratio > RulesClass::Instance->ConditionYellow)
 		numberBaseFrame = greenBaseFrame;
@@ -188,7 +201,20 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 	RectangleStruct rect = DSurface::Composite->GetRect();
 	rect.Height -= 32; // account for bottom bar
 
-	ShapeTextPrinter::PrintShape(valueString.c_str(), shapeTextPrintData, position, rect, DSurface::Composite);
+	if (Shape_PercentageFrame)
+	{
+		DSurface::Composite->DrawSHP
+		(
+			const_cast<ConvertClass*>(Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL)),
+			const_cast<SHPStruct*>(Shape.Get()),
+			static_cast<int>(Math::clamp(ratio, 0, 1) * (Shape->Frames - 1) + 0.5),
+			&position, &rect, BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0
+		);
+	}
+	else
+	{
+		ShapeTextPrinter::PrintShape(valueString.c_str(), shapeTextPrintData, position, rect, DSurface::Composite);
+	}
 }
 
 
@@ -206,6 +232,7 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->Shape)
 		.Process(this->Palette)
 		.Process(this->Shape_Spacing)
+		.Process(this->Shape_PercentageFrame)
 		.Process(this->Percentage)
 		.Process(this->HideMaxValue)
 		.Process(this->VisibleToHouses_Observer)
