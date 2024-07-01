@@ -27,8 +27,10 @@ public:
 		Valueable<bool> Bolt_Disable2;
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Bolt_Arcs;
+		Nullable<bool> Strafing;
 		Valueable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
+		Valueable<bool> Strafing_UseAmmoPerShot;
 		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
 		ValueableVector<int> Burst_Delays;
@@ -60,8 +62,10 @@ public:
 			, Bolt_Disable2 { false }
 			, Bolt_Disable3 { false }
 			, Bolt_Arcs { 8 }
+			, Strafing { }
 			, Strafing_Shots { 5 }
 			, Strafing_SimulateBurst { false }
+			, Strafing_UseAmmoPerShot { false }
 			, CanTarget { AffectedTarget::All }
 			, CanTargetHouses { AffectedHouse::All }
 			, Burst_Delays {}
@@ -123,7 +127,7 @@ public:
 
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
-	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
-	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
+	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
+	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
 };

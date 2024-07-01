@@ -19,6 +19,7 @@ public:
 
 	static constexpr DWORD Canary = 0x55555555;
 	static constexpr size_t ExtPointerOffset = 0x34C;
+	static constexpr bool ShouldConsiderInvalidatePointer = true; // Not sure if techno lives longer than house on this one
 
 	class ExtData final : public Extension<TechnoClass>
 	{
@@ -34,6 +35,8 @@ public:
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
+		int Strafe_BombsDroppedThisRound;
+		int CurrentAircraftWeaponIndex;
 		bool IsInTunnel;
 		bool IsBurrowed;
 		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
@@ -70,6 +73,8 @@ public:
 			, AutoDeathTimer {}
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
+			, Strafe_BombsDroppedThisRound { 0 }
+			, CurrentAircraftWeaponIndex {}
 			, OriginalPassengerOwner {}
 			, IsInTunnel { false }
 			, IsBurrowed { false }

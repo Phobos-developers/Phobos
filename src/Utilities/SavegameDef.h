@@ -79,7 +79,7 @@ namespace Savegame
 
 			if (Savegame::ReadPhobosStream(Stm, *ptrNew, RegisterForChange))
 			{
-				PhobosSwizzle::Instance.RegisterChange(ptrOld, ptrNew.get());
+				PhobosSwizzle::RegisterChange(ptrOld, ptrNew.get());
 				return ptrNew.release();
 			}
 		}

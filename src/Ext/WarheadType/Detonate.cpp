@@ -145,7 +145,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	this->ApplyShieldModifiers(pTarget, pTargetExt);
 
 	if (this->RemoveDisguise)
-		this->ApplyRemoveDisguiseToInf(pHouse, pTarget);
+		this->ApplyRemoveDisguise(pHouse, pTarget);
 
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pHouse, pTarget);
@@ -263,12 +263,13 @@ void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoC
 		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
 }
 
-void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget)
+void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (auto pInf = abstract_cast<InfantryClass*>(pTarget))
+	auto const rtti = pTarget->WhatAmI();
+	if (rtti == AbstractType::Infantry || rtti == AbstractType::Unit)
 	{
-		if (pInf->IsDisguised())
-			pInf->Disguised = false;
+		if (pTarget->IsDisguised())
+			pTarget->ClearDisguise();
 	}
 }
 

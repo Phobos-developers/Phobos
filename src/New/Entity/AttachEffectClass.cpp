@@ -6,6 +6,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -387,11 +388,6 @@ AttachEffectTypeClass* AttachEffectClass::GetType() const
 	return this->Type;
 }
 
-void AttachEffectClass::ExpireWeapon() const
-{
-	TechnoExt::FireWeaponAtSelf(this->Techno, this->Type->ExpireWeapon.Get());
-}
-
 #pragma region StaticFunctions_AttachDetachTransfer
 
 /// <summary>
@@ -698,6 +694,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 	auto const targetAEs = &pTargetExt->AttachedEffects;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
+	std::vector<WeaponTypeClass*> expireWeapons;
 
 	for (it = targetAEs->begin(); it != targetAEs->end(); )
 	{
@@ -713,7 +710,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || pTargetExt->GetAttachedEffectCumulativeCount(pType) < 2)
-					attachEffect->ExpireWeapon();
+					expireWeapons.push_back(pType->ExpireWeapon);
 			}
 
 			if (attachEffect->ResetIfRecreatable())
@@ -728,6 +725,15 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		{
 			++it;
 		}
+	}
+
+
+	auto const coords = pTarget->GetCoords();
+	auto const pOwner = pTarget->Owner;
+
+	for (auto const& pWeapon : expireWeapons)
+	{
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pTarget, pOwner, pTarget);
 	}
 
 	return detachedCount;
@@ -779,7 +785,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		}
 		else if (!type->Cumulative && currentTypeCount > 0 && match)
 		{
-			match->Duration = Math::max(sourceMatch->Duration, attachEffect->Duration);
+			match->Duration = Math::max(match->Duration, attachEffect->Duration);
 		}
 		else
 		{
