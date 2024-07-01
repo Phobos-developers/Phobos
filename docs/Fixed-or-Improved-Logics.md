@@ -156,9 +156,12 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Tint effects are now correctly applied to SHP vehicles and all types of aircraft as well as building animations regardless of their position.
 - Iron Curtained / Force Shielded objects now always use the correct tint color.
 - Objects in invalid map coordinates are no longer used for starting view and AI base center calculations.
+- Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
+- Units with `Sensors=true` will no longer reveal ally buildings.
 
 ## Fixes / interactions with other extensions
 
+- All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
 
@@ -922,7 +925,7 @@ Ammo.AddOnDeploy=0      ; integer
 
 - Veinhole monsters now work like they used to in Tiberian Sun.
 - Their core parameters are still loaded from `[General]`
-- The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to be properly listed under `[Warheads]` as well. The warhead has to have `Veinhole=yes` set.
+- The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to have `Veinhole=yes` set.
 - Veinholes are hardcoded to use several overlay types.
 - The vein attack animation specified under `[AudioVisual]` is what deals the damage. The animation has to be properly listed under `[Animations]` as well.
 - Units can be made immune to veins the same way as in Tiberian Sun.

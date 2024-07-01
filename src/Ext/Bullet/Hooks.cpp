@@ -64,9 +64,10 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		}
 	}
 
-	// LaserTrails update routine is in BulletClass::AI hook because BulletClass::Draw
-	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
-	if (pBulletExt && pBulletExt->LaserTrails.size())
+	//Because the laser trails will be drawn before the calculation of changing the velocity direction in each frame.
+	//This will cause the laser trails to be drawn in the wrong position too early, resulting in a visual appearance resembling a "bouncing".
+	//Let trajectories draw their own laser trails after the Trajectory's OnAI() to avoid predicting incorrect positions or pass through targets.
+	if (!pBulletExt->Trajectory && pBulletExt->LaserTrails.size())
 	{
 		CoordStruct location = pThis->GetCoords();
 		const BulletVelocity& velocity = pThis->Velocity;
@@ -272,8 +273,8 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 	GET_STACK(CoordStruct, origCoords, STACK_OFFSET(0x3C, -0x30));
 
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-	int min = pTypeExt->ClusterScatter_Min.Get(Leptons(256));
-	int max = pTypeExt->ClusterScatter_Max.Get(Leptons(512));
+	int min = pTypeExt->ClusterScatter_Min.Get();
+	int max = pTypeExt->ClusterScatter_Max.Get();
 	auto coords = origCoords;
 
 	for (int i = 0; i < pThis->Type->Cluster; i++)

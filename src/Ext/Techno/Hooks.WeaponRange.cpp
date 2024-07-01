@@ -23,9 +23,9 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 		if (pThis->GetTechnoType()->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
 		{
 			int smallestRange = INT32_MAX;
-			auto pPassenger = pThis->Passengers.FirstPassenger;
+			auto pPassenger = abstract_cast<FootClass*>(pThis->Passengers.FirstPassenger);
 
-			while (pPassenger && (pPassenger->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+			while (pPassenger)
 			{
 				int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
 				int tWeaponIndex = 0;

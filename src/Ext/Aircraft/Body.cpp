@@ -3,28 +3,37 @@
 #include <BuildingClass.h>
 
 #include <Ext/BuildingType/Body.h>
-#include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 // TODO: Implement proper extended AircraftClass.
 
-void AircraftExt::FireBurst(AircraftClass* pThis, AbstractClass* pTarget, int shotNumber = 0)
+void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget, int shotNumber = 0)
 {
-	if (!pTarget) return;
-	int weaponIndex = pThis->SelectWeapon(pTarget);
-	auto weaponType = pThis->GetWeapon(weaponIndex)->WeaponType;
-	auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(weaponType);
+	if (!pTarget)
+		return;
 
-	if (weaponType->Burst > 0)
+	auto weaponIndex = TechnoExt::ExtMap.Find(pThis)->CurrentAircraftWeaponIndex;
+
+	if (weaponIndex < 0)
+		weaponIndex = pThis->SelectWeapon(pTarget);
+
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeapon->Burst > 0)
 	{
-		for (int i = 0; i < weaponType->Burst; i++)
+		for (int i = 0; i < pWeapon->Burst; i++)
 		{
-			if (weaponType->Burst < 2 && pWeaponTypeExt->Strafing_SimulateBurst)
+			if (pWeapon->Burst < 2 && pWeaponExt->Strafing_SimulateBurst)
 				pThis->CurrentBurstIndex = shotNumber;
 
 			pThis->Fire(pTarget, weaponIndex);
 		}
 	}
+
+	if (pThis->Is_Strafe())
+		TechnoExt::ExtMap.Find(pThis)->Strafe_BombsDroppedThisRound++;
 }
 
 // Spy plane, airstrike etc.

@@ -12,6 +12,7 @@
 
 class AnimTypeClass;
 class MouseCursor;
+class SuperWeaponTypeClass;
 class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
@@ -39,9 +40,12 @@ public:
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
 		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
+		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
+		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
-		Valueable<bool> RadWarhead_Detonate;
+		Valueable<int> RadBuildingDamageMaxCount;
+		Valueable<bool> RadSiteWarhead_Detonate;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
@@ -133,9 +137,12 @@ public:
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
 			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
+			, AIChronoSphereSW {}
+			, AIChronoWarpSW {}
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
-			, RadWarhead_Detonate { false }
+			, RadBuildingDamageMaxCount { -1 }
+			, RadSiteWarhead_Detonate { false }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }

@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/SWType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 
@@ -323,6 +324,41 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	cellStruct = MapClass::Instance->NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
 
 	return MapClass::Instance->TryGetCellAt(cellStruct);
+}
+
+// Gets the superweapons used by AI for Chronoshift script actions.
+void HouseExt::GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSphere, SuperClass*& pSuperCWarp)
+{
+	int idxCS = RulesExt::Global()->AIChronoSphereSW;
+	int idxCW = RulesExt::Global()->AIChronoWarpSW;
+
+	if (idxCS >= 0)
+	{
+		pSuperCSphere = pThis->Supers[idxCS];
+
+		if (idxCW < 0)
+		{
+			auto const pSWTypeExt = SWTypeExt::ExtMap.Find(pSuperCSphere->Type);
+
+			if (pSWTypeExt->SW_PostDependent >= 0)
+				pSuperCWarp = pThis->Supers[pSWTypeExt->SW_PostDependent];
+		}
+	}
+
+	if (idxCW >= 0)
+		pSuperCWarp = pThis->Supers[idxCW];
+
+	if (pSuperCSphere && pSuperCWarp)
+		return;
+
+	for (auto const pSuper : pThis->Supers)
+	{
+		if (pSuper->Type->Type == SuperWeaponType::ChronoSphere)
+			pSuperCSphere = pSuper;
+
+		if (pSuper->Type->Type == SuperWeaponType::ChronoWarp)
+			pSuperCWarp = pSuper;
+	}
 }
 
 // Gives player houses names based on their spawning spot

@@ -21,6 +21,7 @@ public:
 
 	static constexpr DWORD Canary = 0x87654321;
 	static constexpr size_t ExtPointerOffset = 0x6FC;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<BuildingClass>
 	{

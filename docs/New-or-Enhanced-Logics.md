@@ -39,6 +39,7 @@ This page describes all the engine features that are either new and introduced b
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
+    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
 
@@ -66,71 +67,72 @@ In `rulesmd.ini`:
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
 
-[SOMEATTACHEFFECT]                           ; AttachEffectType
-Duration=0                                   ; integer - game frames or negative value for indefinite duration
-Cumulative=false                             ; boolean
-Cumulative.MaxCount=-1                       ; integer
-Powered=false                                ; boolean
-DiscardOn=none                               ; list of discard condition enumeration (none|entry|move|stationary|drain)
-PenetratesIronCurtain=false                  ; boolean
-Animation=                                   ; Animation
-Animation.ResetOnReapply=false               ; boolean
-Animation.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-Animation.TemporalAction=None                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-Animation.UseInvokerAsOwner=false            ; boolean
-CumulativeAnimations=                        ; list of animations
+[SOMEATTACHEFFECT]                             ; AttachEffectType
+Duration=0                                     ; integer - game frames or negative value for indefinite duration
+Cumulative=false                               ; boolean
+Cumulative.MaxCount=-1                         ; integer
+Powered=false                                  ; boolean
+DiscardOn=none                                 ; list of discard condition enumeration (none|entry|move|stationary|drain)
+PenetratesIronCurtain=false                    ; boolean
+Animation=                                     ; Animation
+Animation.ResetOnReapply=false                 ; boolean
+Animation.OfflineAction=Hides                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.TemporalAction=None                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.UseInvokerAsOwner=false              ; boolean
+CumulativeAnimations=                          ; list of animations
 ExpireWeapon=
-ExpireWeapon.TriggerOn=expire                ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
-ExpireWeapon.CumulativeOnlyOnce=false        ; boolean
-Tint.Color=                                  ; integer - R,G,B
-Tint.Intensity=                              ; floating point value
-Tint.VisibleToHouses=all                     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-FirepowerMultiplier=1.0                      ; floating point value
-ArmorMultiplier=1.0                          ; floating point value
-SpeedMultiplier=1.0                          ; floating point value
-ROFMultiplier=1.0                            ; floating point value
-ROFMultiplier.ApplyOnCurrentTimer=true       ; boolean
-Cloakable=false                              ; boolean
-ForceDecloak=false                           ; boolean
-WeaponRange.Multiplier=1.0                   ; floating point value
-WeaponRange.ExtraRange=0.0                   ; floating point value
-WeaponRange.AllowWeapons=                    ; list of WeaponTypes
-WeaponRange.DisallowWeapons=                 ; list of WeaponTypes
-Crit.Multiplier=1.0                          ; floating point value
-Crit.ExtraChance=0.0                         ; floating point value
-Crit.AllowWarheads=                          ; list of WarheadTypes
-Crit.DisallowWarheads=                       ; list of WarheadTypes
-RevengeWeapon=                               ; WeaponType
-RevengeWeapon.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-DisableWeapons=false                         ; boolean
-Groups=                                      ; comma-separated list of strings (group IDs)
+ExpireWeapon.TriggerOn=expire                  ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
+ExpireWeapon.CumulativeOnlyOnce=false          ; boolean
+Tint.Color=                                    ; integer - R,G,B
+Tint.Intensity=                                ; floating point value
+Tint.VisibleToHouses=all                       ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+FirepowerMultiplier=1.0                        ; floating point value
+ArmorMultiplier=1.0                            ; floating point value
+SpeedMultiplier=1.0                            ; floating point value
+ROFMultiplier=1.0                              ; floating point value
+ROFMultiplier.ApplyOnCurrentTimer=true         ; boolean
+Cloakable=false                                ; boolean
+ForceDecloak=false                             ; boolean
+WeaponRange.Multiplier=1.0                     ; floating point value
+WeaponRange.ExtraRange=0.0                     ; floating point value
+WeaponRange.AllowWeapons=                      ; list of WeaponTypes
+WeaponRange.DisallowWeapons=                   ; list of WeaponTypes
+Crit.Multiplier=1.0                            ; floating point value
+Crit.ExtraChance=0.0                           ; floating point value
+Crit.AllowWarheads=                            ; list of WarheadTypes
+Crit.DisallowWarheads=                         ; list of WarheadTypes
+RevengeWeapon=                                 ; WeaponType
+RevengeWeapon.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisableWeapons=false                           ; boolean
+Groups=                                        ; comma-separated list of strings (group IDs)
 
-[SOMETECHNO]                                 ; TechnoType
-AttachEffect.AttachTypes=                    ; List of AttachEffectTypes
-AttachEffect.DurationOverrides=              ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Delays=                         ; integer - delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.InitialDelays=                  ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.RecreationDelays=               ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
-OpenTopped.UseTransportRangeModifiers=false  ; boolean
+[SOMETECHNO]                                   ; TechnoType
+AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
+AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.Delays=                           ; integer - delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.InitialDelays=                    ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.RecreationDelays=                 ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
+OpenTopped.UseTransportRangeModifiers=false    ; boolean
+OpenTopped.CheckTransportDisableWeapons=false  ; boolean
 
-[SOMEWEAPON]                                 ; WeaponType
-AttachEffect.RequiredTypes=                  ; List of AttachEffectTypes
-AttachEffect.DisallowedTypes=                ; List of AttachEffectTypes
-AttachEffect.RequiredGroups=                 ; comma-separated list of strings (group IDs)
-AttachEffect.DisallowedGroups=               ; comma-separated list of strings (group IDs)
-AttachEffect.RequiredMinCounts=              ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.RequiredMaxCounts=              ; integer - maximum required instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.DisallowedMinCounts=            ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.DisallowedMaxCounts=            ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.IgnoreFromSameSource=false      ; boolean
+[SOMEWEAPON]                                   ; WeaponType
+AttachEffect.RequiredTypes=                    ; List of AttachEffectTypes
+AttachEffect.DisallowedTypes=                  ; List of AttachEffectTypes
+AttachEffect.RequiredGroups=                   ; comma-separated list of strings (group IDs)
+AttachEffect.DisallowedGroups=                 ; comma-separated list of strings (group IDs)
+AttachEffect.RequiredMinCounts=                ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.RequiredMaxCounts=                ; integer - maximum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMinCounts=              ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMaxCounts=              ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.IgnoreFromSameSource=false        ; boolean
 
 [SOMEWARHEAD]
-AttachEffect.AttachTypes=                    ; List of AttachEffectTypes
-AttachEffect.RemoveTypes=                    ; List of AttachEffectTypes
-AttachEffect.RemoveGroups=                   ; comma-separated list of strings (group IDs)
-AttachEffect.CumulativeRemoveMinCounts=      ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.CumulativeRemoveMaxCounts=      ; integer - maximum removed instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.DurationOverrides=              ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
+AttachEffect.RemoveTypes=                      ; List of AttachEffectTypes
+AttachEffect.RemoveGroups=                     ; comma-separated list of strings (group IDs)
+AttachEffect.CumulativeRemoveMinCounts=        ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.CumulativeRemoveMaxCounts=        ; integer - maximum removed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
 ```
 
 ### Custom Radiation Types
@@ -140,7 +142,7 @@ AttachEffect.DurationOverrides=              ; integer - duration overrides (com
 
 - Any weapon can now have a custom radiation type. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
 - There are several new properties available to all radiation types.
-  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings.
+  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings. How many times a single radiation site can deal this damage to same building (every cell of the foundation is hit by all radiation sites on a cell) can be customized with `RadBuildingDamageMaxCount`, negative values mean no limit.
   - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
   - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
   - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker. Note that if the invoker dies at any point during the radiation's lifetime it continues to behave as if not having an invoker.
@@ -161,6 +163,7 @@ RadType=Radiation                  ; RadType to use instead of default of [Radia
 RadDurationMultiple=1              ; integer
 RadApplicationDelay=16             ; integer
 RadApplicationDelay.Building=0     ; integer
+RadBuildingDamageMaxCount=-1       ; integer
 RadLevelMax=500                    ; integer
 RadLevelDelay=90                   ; integer
 RadLightDelay=90                   ; integer
@@ -194,23 +197,24 @@ In `artmd.ini`:
 [LaserTrailTypes]
 0=SOMETRAIL
 
-[SOMETRAIL]                   ; LaserTrailType name
-IsHouseColor=false            ; boolean
-Color=255,0,0                 ; integer - R,G,B
-FadeDuration=64               ; integer
-Thickness=4                   ; integer
-SegmentLength=128             ; integer, minimal length of each trail segment
-IgnoreVertical=false          ; boolean, whether the trail won't be drawn on vertical movement
-IsIntense=false               ; boolean, whether the laser is "supported" (AKA prism forwarding)
-CloakVisible=false            ; boolean, whether the laser is visible when the attached unit is cloaked
+[SOMETRAIL]                      ; LaserTrailType name
+IsHouseColor=false               ; boolean
+Color=255,0,0                    ; integer - R,G,B
+FadeDuration=64                  ; integer
+Thickness=4                      ; integer
+SegmentLength=128                ; integer, minimal length of each trail segment
+IgnoreVertical=false             ; boolean, whether the trail won't be drawn on vertical movement
+IsIntense=false                  ; boolean, whether the laser is "supported" (AKA prism forwarding)
+CloakVisible=false               ; boolean, whether the laser is visible when the attached unit is cloaked
+CloakVisible.DetectedOnly=false  ; boolean, whether CloakVisible=true laser is visible only to those who can detect the attached unit
 
-[SOMEPROJECTILE]              ; BulletType Image
-LaserTrail.Types=SOMETRAIL    ; list of LaserTrailTypes
+[SOMEPROJECTILE]                 ; BulletType Image
+LaserTrail.Types=SOMETRAIL       ; list of LaserTrailTypes
 
-[SOMETECHNO]                  ; TechnoType Image
-LaserTrailN.Type=SOMETRAIL    ; LaserTrailType
-LaserTrailN.FLH=0,0,0         ; integer - Forward,Lateral,Height
-LaserTrailN.IsOnTurret=false  ; boolean, whether the trail origin is turret
+[SOMETECHNO]                     ; TechnoType Image
+LaserTrailN.Type=SOMETRAIL       ; LaserTrailType
+LaserTrailN.FLH=0,0,0            ; integer - Forward,Lateral,Height
+LaserTrailN.IsOnTurret=false     ; boolean, whether the trail origin is turret
 ; where N = 0, 1, 2, ...
 ```
 
@@ -649,13 +653,30 @@ Trajectory.Straight.PassThrough=false       ; boolean
 
 #### Bombard trajectory
 
-- Similar trajectory to `Straight`, but targets a coordinate above the intended target (height determined by `Trajectory.Bombard.Height`). When the projectile approaches that coordinate, it will free fall and explodes when it hits the target or ground.
+- Similar trajectory to `Straight`, but targets a coordinate between the attacker and intended target first. When the projectile approaches that turning point, it'll turn to the intended target and explodes when it hits the target or ground.
+  - `Trajectory.Bombard.Height` controls the height of the turning point.
+  - `Trajectory.Bombard.FallPercent` controls the distance of the turning point by its percentage of the total distance between attacker and intended target. If set to 0%, then it'll fly up vertically. If set to 100%, then it'll travel to the top of the intended target.
+    - For each launch the turning point percentage could add or minus a random value, which is not greater than `Trajectory.Bombard.FallPercentShift`. If set to 0%, random shift will be disabled.
+    - You can also makes the turning point scatter randomly in a circle with `Trajectory.Bombard.FallScatterRange` as its radius. If set to 0, random scatter will be disabled.
+  - `Trajectory.Bombard.FreeFallOnTarget` controls how it'll hit the intended target. If set to true, the projectile will be respawned above the intended target and free fall. If set to false, the projectile will travel to the intended target from the turning point.
+  - `Trajectory.Bombard.NoLaunch` controls whether the attacker will fire the projectile by itself. If set to true, projectile will directly fall from the turning point.
+  - `Trajectory.Bombard.FallSpeed` controls the initial speed of the projectile after it turns. If set to 0.0, then it'll use `Trajectory.Speed`. Can't work together with `Trajectory.Bombard.FreeFallOnTarget=true`.
+  - `Trajectory.Bombard.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
+  - `Trajectory.Bombard.TurningPointAnim`, if set, will play an anim when the projectile reaches the turning point. If `Trajectory.Bombard.FreeFallOnTarget` is set to true, it'll be spawned above the target with the projectile together. If `Trajectory.Bombard.NoLaunch` is set to true, it'll be played at where the projectile falls, no matter if it's free fall or not.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]               ; Projectile
-Trajectory=Bombard             ; Trajectory type
-Trajectory.Bombard.Height=0.0  ; double
+[SOMEPROJECTILE]                          ; Projectile
+Trajectory=Bombard                        ; Trajectory type
+Trajectory.Bombard.Height=0.0             ; double
+Trajectory.Bombard.FallPercent=1.0        ; double
+Trajectory.Bombard.FallPercentShift=0.0   ; double
+Trajectory.Bombard.FallScatterRange=0.0   ; floating point value
+Trajectory.Bombard.FreeFallOnTarget=true  ; boolean
+Trajectory.Bombard.NoLaunch=false         ; boolean
+Trajectory.Bombard.FallSpeed=0.0          ; double
+Trajectory.Bombard.TargetSnapDistance=0.5 ; floating point value
+Trajectory.Bombard.TurningPointAnim=      ; Animation
 ```
 
 ### Shrapnel enhancements
@@ -666,7 +687,7 @@ Trajectory.Bombard.Height=0.0  ; double
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
   - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]                   ; Projectile
@@ -918,6 +939,7 @@ NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 ### Disguise logic additions (disguise-based movement speed, disguise blinking visibility)
 
 - `DisguiseBlinkingVisibility` can be used to customize which players can see disguises blinking on units. This does not affect targeting but does affect veterancy insignia visibility - blinking disguise means the original unit's insignia is visible always instead of disguise's.
+  - Another thing to note is that in singleplayer missions, for purposes of the disguise blinking, disguised objects owned by any player-controlled houses are also considered to be owned by the current player even if they are not allied, meaning players are always able to see their disguises blinking unless `DisguiseBlinkingVisibility` is set to `none` or `enemies`.
 - `UseDisguiseMovementSpeed`, if set, makes disguised unit adjust its movement speed to match that of the disguise, if applicable. Note that this applies even when the disguise is revealed, as long as it has not been removed.
 
 In `rulesmd.ini`:
@@ -1166,7 +1188,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]
 Convert.HumanToComputer =   ; TechnoType
-Convert.ComputerToHuman =   ; TechnoType 
+Convert.ComputerToHuman =   ; TechnoType
 ```
 
 ## Terrain
@@ -1368,7 +1390,7 @@ LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 
 ### Remove disguise on impact
 
-- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
+- Warheads can now remove disguise from disguised spies or mirage tanks. This will work even if the disguised was acquired by default through `PermaDisguise`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1457,6 +1479,7 @@ Burst.FireWithinSequence=false  ; boolean
 - It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
   - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, WeaponType `Damage` is used.
   - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
+  - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
 
 In `rulesmd.ini`:
 ```ini
@@ -1489,15 +1512,19 @@ FeedbackWeapon=  ; WeaponType
 ![image](_static/images/strafing-01.gif)
 *Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
-- Some of the behavior of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.
-  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired. Valid values range from 1 to 5, any values smaller or larger are effectively treated same as either 1 or 5, respectively. Defaults to 5.
-  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
+- Some of the behavior of strafing aircraft weapons can now be customized.
+  - `Strafing` controls if the aircraft can strafe when firing at the target. Default to `true` if the projectile's `ROT` < 2 and `Inviso=false`, otherwise `false`.
+  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired.
+  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined.
+  - `Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour of only deducting ammo after a strafing run and instead doing it after each individual shot.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                  ; WeaponType
-Strafing.Shots=5              ; integer
-Strafing.SimulateBurst=false  ; boolean
+[SOMEWEAPON]                   ; WeaponType
+Strafing=                      ; boolean
+Strafing.Shots=5               ; integer
+Strafing.SimulateBurst=false   ; boolean
+Strafing.UseAmmoPerShot=false  ; boolean
 ```
 
 ### Weapon targeting filter

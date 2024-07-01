@@ -6,6 +6,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -102,8 +103,8 @@ void AttachEffectClass::AI()
 		{
 			double ROFModifier = this->Type->ROFMultiplier;
 			auto const pTechno = this->Techno;
-			pTechno->DiskLaserTimer.Start(static_cast<int>(pTechno->DiskLaserTimer.GetTimeLeft() * ROFModifier));
-			pTechno->ROF = static_cast<int>(pTechno->ROF * ROFModifier);
+			pTechno->RearmTimer.Start(static_cast<int>(pTechno->RearmTimer.GetTimeLeft() * ROFModifier));
+			pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
 		}
 
 		if (this->Type->HasTint())
@@ -266,7 +267,7 @@ void AttachEffectClass::CreateAnim()
 
 	AnimTypeClass* pAnimType = nullptr;
 
-	if (this->Type->Cumulative && this->Type->CumulativeAnimations.HasValue())
+	if (this->Type->Cumulative && this->Type->CumulativeAnimations.size() > 0)
 	{
 		if (!this->IsFirstCumulativeInstance)
 			return;
@@ -276,7 +277,7 @@ void AttachEffectClass::CreateAnim()
 	}
 	else
 	{
-		pAnimType = this->Type->Animation.Get(nullptr);
+		pAnimType = this->Type->Animation;
 	}
 
 	if (!this->Animation && pAnimType)
@@ -387,11 +388,6 @@ AttachEffectTypeClass* AttachEffectClass::GetType() const
 	return this->Type;
 }
 
-void AttachEffectClass::ExpireWeapon() const
-{
-	TechnoExt::FireWeaponAtSelf(this->Techno, this->Type->ExpireWeapon.Get());
-}
-
 #pragma region StaticFunctions_AttachDetachTransfer
 
 /// <summary>
@@ -421,8 +417,8 @@ bool AttachEffectClass::Attach(AttachEffectTypeClass* pType, TechnoClass* pTarge
 		{
 			if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 			{
-				pTarget->DiskLaserTimer.Start(static_cast<int>(pTarget->DiskLaserTimer.GetTimeLeft() * pType->ROFMultiplier));
-				pTarget->ROF = static_cast<int>(pTarget->ROF * pType->ROFMultiplier);
+				pTarget->RearmTimer.Start(static_cast<int>(pTarget->RearmTimer.GetTimeLeft() * pType->ROFMultiplier));
+				pTarget->ChargeTurretDelay = static_cast<int>(pTarget->ChargeTurretDelay * pType->ROFMultiplier);
 			}
 
 			pTargetExt->RecalculateStatMultipliers();
@@ -502,8 +498,8 @@ int AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types, 
 
 	if (ROFModifier != 1.0)
 	{
-		pTarget->DiskLaserTimer.Start(static_cast<int>(pTarget->DiskLaserTimer.GetTimeLeft() * ROFModifier));
-		pTarget->ROF = static_cast<int>(pTarget->ROF * ROFModifier);
+		pTarget->RearmTimer.Start(static_cast<int>(pTarget->RearmTimer.GetTimeLeft() * ROFModifier));
+		pTarget->ChargeTurretDelay = static_cast<int>(pTarget->ChargeTurretDelay * ROFModifier);
 	}
 
 	if (attachedCount > 0)
@@ -654,7 +650,7 @@ int AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, 
 /// <param name="minCounts">Minimum instance counts needed for cumulative types to be removed.</param>
 /// <param name="maxCounts">Maximum instance counts of cumulative types to be removed.</param>
 /// <returns>Number of AttachEffect instances removed.</returns>
-int AttachEffectClass::DetachByGroups(std::vector<const char*> const& groups, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts)
+int AttachEffectClass::DetachByGroups(std::vector<std::string> const& groups, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts)
 {
 	if (groups.size() < 1 || !pTarget)
 		return 0;
@@ -698,6 +694,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 	auto const targetAEs = &pTargetExt->AttachedEffects;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
+	std::vector<WeaponTypeClass*> expireWeapons;
 
 	for (it = targetAEs->begin(); it != targetAEs->end(); )
 	{
@@ -710,10 +707,10 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		{
 			detachedCount++;
 
-			if (pType->ExpireWeapon.isset() && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
+			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || pTargetExt->GetAttachedEffectCumulativeCount(pType) < 2)
-					attachEffect->ExpireWeapon();
+					expireWeapons.push_back(pType->ExpireWeapon);
 			}
 
 			if (attachEffect->ResetIfRecreatable())
@@ -728,6 +725,15 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		{
 			++it;
 		}
+	}
+
+
+	auto const coords = pTarget->GetCoords();
+	auto const pOwner = pTarget->Owner;
+
+	for (auto const& pWeapon : expireWeapons)
+	{
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pTarget, pOwner, pTarget);
 	}
 
 	return detachedCount;
@@ -779,7 +785,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		}
 		else if (!type->Cumulative && currentTypeCount > 0 && match)
 		{
-			match->Duration = Math::max(sourceMatch->Duration, attachEffect->Duration);
+			match->Duration = Math::max(match->Duration, attachEffect->Duration);
 		}
 		else
 		{

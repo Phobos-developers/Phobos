@@ -13,6 +13,7 @@ class LaserTrailClass
 public:
 	LaserTrailTypeClass* Type;
 	bool Visible;
+	bool Cloaked;
 	CoordStruct FLH;
 	bool IsOnTurret;
 	ColorStruct CurrentColor;
@@ -22,6 +23,7 @@ public:
 		CoordStruct flh = { 0, 0, 0 }, bool isOnTurret = false) :
 		Type { pTrailType }
 		, Visible { true }
+		, Cloaked { false }
 		, FLH { flh }
 		, IsOnTurret { isOnTurret }
 		, CurrentColor { pTrailType->Color }
@@ -34,6 +36,7 @@ public:
 	LaserTrailClass() :
 		Type {},
 		Visible {},
+		Cloaked {},
 		FLH {},
 		IsOnTurret {},
 		CurrentColor {},

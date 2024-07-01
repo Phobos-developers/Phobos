@@ -125,10 +125,8 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 				{
 					auto const loc = pTechno->Location;
 
-					if (pTypeExt->CreateUnit_SpawnAnim.isset())
+					if (auto const pAnimType = pTypeExt->CreateUnit_SpawnAnim)
 					{
-						const auto pAnimType = pTypeExt->CreateUnit_SpawnAnim.Get();
-
 						if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
 						{
 							AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);

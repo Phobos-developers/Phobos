@@ -14,6 +14,7 @@ public:
 
 	static constexpr DWORD Canary = 0xAAAAAAAA;
 	static constexpr size_t ExtPointerOffset = 0xD0;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<AnimClass>
 	{
@@ -53,7 +54,7 @@ public:
 			AnnounceInvalidPointer(this->Invoker, ptr);
 			AnnounceInvalidPointer(this->InvokerHouse, ptr);
 			AnnounceInvalidPointer(this->AttachedSystem, ptr);
-			AnnounceInvalidPointer(ParentBuilding, ptr);
+			AnnounceInvalidPointer(this->ParentBuilding, ptr);
 		}
 
 		virtual void InitializeConstants() override;
