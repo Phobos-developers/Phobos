@@ -413,6 +413,8 @@ New:
 - Allow customizing Aircraft weapon strafing regardless of `ROT` and `Strafing.Shots` values beyond 5 (by Trsdy)
 - Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
 - Allow `CloakVisible=true` laser trails optinally be seen only if unit is detected (by Starkku)
+- Allow trajectory projectiles to use `Inaccurate` & `BallisticScatter` keys (by NaotoYuuki)
+- Enhance bombard trajectory with vertical and meteor trajectory (by NaotoYuuki & Ollerus)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
