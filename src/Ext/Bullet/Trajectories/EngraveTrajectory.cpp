@@ -240,7 +240,7 @@ void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTe
 {
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pTechno);
 
-	if (!pExt || (pExt->LastWeaponStruct && (!pExt->LastWeaponStruct->WeaponType || pExt->LastWeaponStruct->WeaponType->Projectile != pBullet->Type)))
+	if (!pExt || !pExt->LastWeaponStruct || !pExt->LastWeaponStruct->WeaponType || pExt->LastWeaponStruct->WeaponType->Projectile != pBullet->Type)
 	{
 		this->NotMainWeapon = true;
 		return;
