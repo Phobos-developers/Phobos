@@ -592,21 +592,13 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 		FootClass* currentPassenger = pThis->Passengers.FirstPassenger;
 		const int passengerIndex = -weaponIndex - 1;
 
-		for (int i = 0; i < passengerIndex && currentPassenger; i++)
+		for (int i = 0; i < passengerIndex; i++)
 			currentPassenger = abstract_cast<FootClass*>(currentPassenger->NextObject);
 
 		if (auto const pPassengerExt = TechnoExt::ExtMap.Find(currentPassenger))
-		{
 			pPassengerExt->LastWeaponFLH = { OriginalX, OriginalY, OriginalZ };
-		}
 
 		return 0;
-	}
-	else
-	{
-		auto const pWeaponStruct = pThis->GetWeapon(weaponIndex);
-
-		pExt->LastWeaponFLH = { OriginalX, ((pThis->CurrentBurstIndex % 2 == 1) ? -OriginalY : OriginalY), OriginalZ };
 	}
 
 	bool FLHFound = false;
@@ -628,6 +620,10 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 		R->ECX(FLH.X);
 		R->EBP(FLH.Y);
 		R->EAX(FLH.Z);
+	}
+	else
+	{
+		pExt->LastWeaponFLH = { OriginalX, ((pThis->CurrentBurstIndex % 2 == 1) ? -OriginalY : OriginalY), OriginalZ };
 	}
 
 	return 0;
