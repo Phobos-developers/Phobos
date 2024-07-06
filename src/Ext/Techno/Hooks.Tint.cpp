@@ -188,6 +188,7 @@ DEFINE_HOOK(0x4234F4, AnimClass_Draw_TintColor, 0x6)
 	REF_STACK(int, intensity, STACK_OFFSET(0x110, -0xD8));
 
 	int dummy = 0;
+	if (pBuilding && VTable::Get(pBuilding) == BuildingClass::AbsVTable)//TODO fix it correctly
 	TechnoExt::ApplyCustomTintValues(pBuilding, color, !pThis->Type->UseNormalLight ? intensity : dummy);
 	R->EBP(color);
 
