@@ -1116,6 +1116,16 @@ ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
 ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
 ```
 
+### Customizing whether passengers are kicked out when an aircraft fires
+
+- You can now customize whether aircraft will forcefully eject passengers (vanilla behavior) or fire its weapon when attempting to fire.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+KickOutPassengers=true  ; boolean
+```
+
 ### Single-color lasers
 
 ![image](_static/images/issinglecolor.gif)
