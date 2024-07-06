@@ -55,6 +55,11 @@ bool EngraveTrajectoryType::Save(PhobosStreamWriter& Stm) const
 	return true;
 }
 
+PhobosTrajectory* EngraveTrajectoryType::CreateInstance() const
+{
+	return new EngraveTrajectory(this);
+}
+
 void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
