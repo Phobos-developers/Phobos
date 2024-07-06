@@ -39,7 +39,6 @@ public:
 		{ }
 
 		virtual ~ExtData() = default;
-		virtual size_t Size() const { return sizeof(*this); }
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
