@@ -61,6 +61,7 @@ public:
 		Valueable<bool> Shield_Break;
 		Valueable<AnimTypeClass*> Shield_BreakAnim;
 		Valueable<AnimTypeClass*> Shield_HitAnim;
+		Valueable<bool> Shield_HitFlash;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
 
 		Nullable<double> Shield_AbsorbPercent;
@@ -185,6 +186,7 @@ public:
 			, Shield_Break { false }
 			, Shield_BreakAnim {}
 			, Shield_HitAnim {}
+			, Shield_HitFlash { true }
 			, Shield_BreakWeapon {}
 			, Shield_AbsorbPercent {}
 			, Shield_PassPercent {}

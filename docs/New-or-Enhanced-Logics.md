@@ -272,6 +272,12 @@ IdleAnim.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Tem
 IdleAnim.TemporalAction=Hides               ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 BreakAnim=                                  ; Animation
 HitAnim=                                    ; Animation
+HitFlash=false                              ; boolean
+HitFlash.FixedSize=                         ; integer
+HitFlash.Red=true                           ; boolean
+HitFlash.Green=true                         ; boolean
+HitFlash.Blue=true                          ; boolean
+HitFlash.Black=false                        ; boolean
 BreakWeapon=                                ; WeaponType
 AbsorbPercent=1.0                           ; floating point value
 PassPercent=0.0                             ; floating point value
@@ -292,6 +298,7 @@ Shield.Penetrate=false                      ; boolean
 Shield.Break=false                          ; boolean
 Shield.BreakAnim=                           ; Animation
 Shield.HitAnim=                             ; Animation
+Shield.HitFlash=true                        ; boolean
 Shield.BreakWeapon=                         ; WeaponType
 Shield.AbsorbPercent=                       ; floating point value
 Shield.PassPercent=                         ; floating point value
@@ -344,6 +351,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
 - `BreakAnim`, if set, will be played when the shield has been broken.
 - `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
+- `HitFlash`, if set to true, makes it so that a light flash is generated when the shield is attacked by a Warhead unless it has `Shield.HitFlash=false`. Size of the flash is determined by damage dealt, unless `HitFlash.FixedSize` is set to a number, in which case that value is used instead (range of values that produces visible effect are increments of 4 from 81 to 252, anything higher or below does not have effect). Color can be customized via `HitFlash.Red/Green/Blue`. If `HitFlash.Black` is set to true, the generated flash will be black regardless of other color settings.
 - `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
