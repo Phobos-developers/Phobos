@@ -197,7 +197,7 @@ DEFINE_HOOK(0x424CF1, AnimClass_Start_DetachedReport, 0x6)
 
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTypeExt->DetachedReport.isset())
+	if (pTypeExt->DetachedReport >= 0)
 		VocClass::PlayAt(pTypeExt->DetachedReport.Get(), pThis->GetCoords());
 
 	return 0;

@@ -37,7 +37,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(CoordStruct, coord, STACK_OFFSET(0x24, -0x18));
 
-	bool bPlayBuildUp = pThis->Param3 || pBldType->LoadBuildup();
+	bool bPlayBuildUp = pBldType->LoadBuildup();
 	//Param3 can be used for other purposes in the future
 	bool bCreated = false;
 	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))

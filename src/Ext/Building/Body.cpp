@@ -256,9 +256,9 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 			pExt->GrindingWeapon_AccumulatedCredits = 0;
 		}
 
-		if (pTypeExt->Grinding_Sound.isset())
+		if (pTypeExt->Grinding_Sound >= 0)
 		{
-			VocClass::PlayAt(pTypeExt->Grinding_Sound.Get(), pTechno->GetCoords());
+			VocClass::PlayAt(pTypeExt->Grinding_Sound, pTechno->GetCoords());
 			return true;
 		}
 	}
@@ -291,7 +291,7 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 
 bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse)
 {
-	BuildingTypeExt::ExtData* pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+	BuildingTypeExt::ExtData const* pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
 
 	if (!pTypeExt->SpyEffect_Custom)
 		return false;
@@ -311,18 +311,13 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			pSuper->RechargeTimer.StartTime = oldstart;
 			pSuper->RechargeTimer.TimeLeft = oldleft;
 		};
-
-		if (pTypeExt->SpyEffect_VictimSuperWeapon.isset())
-		{
-			if (const auto pSuper = pVictimHouse->Supers.GetItem(pTypeExt->SpyEffect_VictimSuperWeapon.Get()))
-				launchTheSWHere(pSuper, pVictimHouse);
-		}
-
-		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon.isset())
-		{
-			if (const auto pSuper = pInfiltratorHouse->Supers.GetItem(pTypeExt->SpyEffect_InfiltratorSuperWeapon.Get()))
-				launchTheSWHere(pSuper, pInfiltratorHouse);
-		}
+		int idx = pTypeExt->SpyEffect_VictimSuperWeapon;
+		if (idx >= 0)
+			launchTheSWHere(pVictimHouse->Supers.Items[idx], pVictimHouse);
+		
+		idx = pTypeExt->SpyEffect_InfiltratorSuperWeapon;
+		if (idx >= 0)
+			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx], pInfiltratorHouse);
 	}
 
 	return true;

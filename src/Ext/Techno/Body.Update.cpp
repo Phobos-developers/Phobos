@@ -280,17 +280,14 @@ void TechnoExt::ExtData::EatPassengers()
 
 				if (auto const pPassengerType = pPassenger->GetTechnoType())
 				{
-					if (pDelType->ReportSound.isset())
+					if (pDelType->ReportSound >= 0)
 						VocClass::PlayAt(pDelType->ReportSound.Get(), pThis->GetCoords(), nullptr);
 
-					if (pDelType->Anim.isset())
+					if (const auto pAnimType = pDelType->Anim.Get())
 					{
-						const auto pAnimType = pDelType->Anim.Get();
-						if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location))
-						{
-							pAnim->SetOwnerObject(pThis);
-							pAnim->Owner = pThis->Owner;
-						}
+						auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
+						pAnim->SetOwnerObject(pThis);
+						pAnim->Owner = pThis->Owner;
 					}
 
 					// Check if there is money refund
