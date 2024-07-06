@@ -4,6 +4,7 @@
 #include <HouseClass.h>
 #include <ScenarioClass.h>
 
+#include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
 
 #include <Utilities/AresFunctions.h>
@@ -30,6 +31,8 @@ TechnoExt::ExtData::~ExtData()
 		auto& vec = pOwnerExt->OwnedTransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
+
+	AnimExt::InvalidateTechnoPointers(pThis);
 }
 
 bool TechnoExt::IsActive(TechnoClass* pThis)
