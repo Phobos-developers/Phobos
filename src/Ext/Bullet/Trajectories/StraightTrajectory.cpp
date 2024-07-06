@@ -39,11 +39,6 @@ bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 	return true;
 }
 
-PhobosTrajectory* StraightTrajectoryType::CreateInstance() const
-{
-	return new StraightTrajectory(this);
-}
-
 bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectoryType::Save(Stm);
@@ -78,6 +73,10 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 	return true;
 }
 
+PhobosTrajectory* StraightTrajectoryType::CreateInstance() const
+{
+	return new StraightTrajectory(this);
+}
 
 void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
