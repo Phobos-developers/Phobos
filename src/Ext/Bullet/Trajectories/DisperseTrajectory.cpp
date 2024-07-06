@@ -96,6 +96,11 @@ bool DisperseTrajectoryType::Save(PhobosStreamWriter& Stm) const
 	return true;
 }
 
+PhobosTrajectory* DisperseTrajectoryType::CreateInstance() const
+{
+	return new DisperseTrajectory(this);
+}
+
 void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);

@@ -42,7 +42,7 @@ public:
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-
+	virtual PhobosTrajectory* CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	Valueable<bool> UniqueCurve;
@@ -128,7 +128,7 @@ public:
 		, FirepowerMult { 1.0 }
 	{}
 
-	DisperseTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Disperse)
+	DisperseTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Disperse)
 		, UniqueCurve { false }
 		, PreAimCoord {}
 		, RotateCoord { 0 }
