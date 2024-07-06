@@ -197,24 +197,24 @@ In `artmd.ini`:
 [LaserTrailTypes]
 0=SOMETRAIL
 
-[SOMETRAIL]                   ; LaserTrailType name
-IsHouseColor=false            ; boolean
-Color=255,0,0                 ; integer - R,G,B
-FadeDuration=64               ; integer
-Thickness=4                   ; integer
-SegmentLength=128             ; integer, minimal length of each trail segment
-IgnoreVertical=false          ; boolean, whether the trail won't be drawn on vertical movement
-IsIntense=false               ; boolean, whether the laser is "supported" (AKA prism forwarding)
-CloakVisible=false            ; boolean, whether the laser is visible when the attached unit is cloaked
-CloakVisible.Houses=all       ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), who can see cloak-visible trails
+[SOMETRAIL]                      ; LaserTrailType name
+IsHouseColor=false               ; boolean
+Color=255,0,0                    ; integer - R,G,B
+FadeDuration=64                  ; integer
+Thickness=4                      ; integer
+SegmentLength=128                ; integer, minimal length of each trail segment
+IgnoreVertical=false             ; boolean, whether the trail won't be drawn on vertical movement
+IsIntense=false                  ; boolean, whether the laser is "supported" (AKA prism forwarding)
+CloakVisible=false               ; boolean, whether the laser is visible when the attached unit is cloaked
+CloakVisible.DetectedOnly=false  ; boolean, whether CloakVisible=true laser is visible only to those who can detect the attached unit
 
-[SOMEPROJECTILE]              ; BulletType Image
-LaserTrail.Types=SOMETRAIL    ; list of LaserTrailTypes
+[SOMEPROJECTILE]                 ; BulletType Image
+LaserTrail.Types=SOMETRAIL       ; list of LaserTrailTypes
 
-[SOMETECHNO]                  ; TechnoType Image
-LaserTrailN.Type=SOMETRAIL    ; LaserTrailType
-LaserTrailN.FLH=0,0,0         ; integer - Forward,Lateral,Height
-LaserTrailN.IsOnTurret=false  ; boolean, whether the trail origin is turret
+[SOMETECHNO]                     ; TechnoType Image
+LaserTrailN.Type=SOMETRAIL       ; LaserTrailType
+LaserTrailN.FLH=0,0,0            ; integer - Forward,Lateral,Height
+LaserTrailN.IsOnTurret=false     ; boolean, whether the trail origin is turret
 ; where N = 0, 1, 2, ...
 ```
 
@@ -1423,7 +1423,7 @@ LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 
 ### Remove disguise on impact
 
-- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
+- Warheads can now remove disguise from disguised spies or mirage tanks. This will work even if the disguised was acquired by default through `PermaDisguise`.
 
 In `rulesmd.ini`:
 ```ini

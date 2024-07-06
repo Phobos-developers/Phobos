@@ -74,11 +74,6 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 		for (auto pEffect : AttachEffectClass::Array)
 			AnnounceInvalidPointer(pEffect->Invoker, ptr);
 	}
-	else if (absType == AbstractType::House)
-	{
-		for (auto pEffect : AttachEffectClass::Array)
-			AnnounceInvalidPointer(pEffect->InvokerHouse, ptr);
-	}
 }
 
 // =============================

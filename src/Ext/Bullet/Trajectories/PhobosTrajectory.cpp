@@ -125,27 +125,6 @@ double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 	}
 }
 
-PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
-{
-	PhobosTrajectory* pRet = nullptr;
-
-	switch (pType->Flag)
-	{
-	case TrajectoryFlag::Straight:
-		pRet = DLLCreate<StraightTrajectory>(pType);
-		break;
-
-	case TrajectoryFlag::Bombard:
-		pRet = DLLCreate<BombardTrajectory>(pType);
-		break;
-	}
-
-	if (pRet)
-		pRet->OnUnlimbo(pBullet, pCoord, pVelocity);
-
-	return pRet;
-}
-
 PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 {
 	PhobosTrajectory* pTraj = nullptr;
@@ -213,10 +192,9 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 	if (detonate && !pThis->SpawnNextAnim)
 		return Detonate;
 
-	//Correct positions for trajectory.
 	if (pExt->Trajectory && pExt->LaserTrails.size())
 	{
-		CoordStruct FutureCoords
+		CoordStruct futureCoords
 		{
 			pThis->Location.X + static_cast<int>(pThis->Velocity.X),
 			pThis->Location.Y + static_cast<int>(pThis->Velocity.Y),
@@ -228,7 +206,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 			if (!trail.LastLocation.isset())
 				trail.LastLocation = pThis->Location;
 
-			trail.Update(FutureCoords);
+			trail.Update(futureCoords);
 		}
 	}
 
@@ -327,7 +305,10 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	auto const pTypeExt = pExt->TypeExtData;
 
 	if (pTypeExt && pTypeExt->TrajectoryType)
-		pExt->Trajectory = PhobosTrajectory::CreateInstance(pTypeExt->TrajectoryType, pThis, pCoord, pVelocity);
+	{
+		pExt->Trajectory = pTypeExt->TrajectoryType->CreateInstance();
+		pExt->Trajectory->OnUnlimbo(pThis, pCoord, pVelocity);
+	}
 
 	return 0;
 }

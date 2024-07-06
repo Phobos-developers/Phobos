@@ -52,7 +52,6 @@ public:
 		virtual void InvalidatePointer(void* const ptr, bool bRemoved) override
 		{
 			AnnounceInvalidPointer(this->Invoker, ptr);
-			AnnounceInvalidPointer(this->InvokerHouse, ptr);
 			AnnounceInvalidPointer(this->AttachedSystem, ptr);
 			AnnounceInvalidPointer(this->ParentBuilding, ptr);
 		}
@@ -84,7 +83,6 @@ public:
 			case AbstractType::Unit:
 			case AbstractType::Aircraft:
 			case AbstractType::ParticleSystem:
-			case AbstractType::House:
 				return false;
 			}
 
