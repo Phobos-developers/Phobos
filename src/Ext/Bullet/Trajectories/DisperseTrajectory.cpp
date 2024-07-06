@@ -38,6 +38,7 @@ bool DisperseTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 		.Process(this->SuicideShortOfROT, false)
 		.Process(this->SuicideAboveRange, false)
 		.Process(this->SuicideIfNoWeapon, false)
+		.Process(this->Weapons)
 		.Process(this->WeaponBurst, false)
 		.Process(this->WeaponCount, false)
 		.Process(this->WeaponDelay, false)
@@ -80,6 +81,7 @@ bool DisperseTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->SuicideShortOfROT)
 		.Process(this->SuicideAboveRange)
 		.Process(this->SuicideIfNoWeapon)
+		.Process(this->Weapons)
 		.Process(this->WeaponBurst)
 		.Process(this->WeaponCount)
 		.Process(this->WeaponDelay)
@@ -125,6 +127,7 @@ void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->SuicideShortOfROT.Read(exINI, pSection, "Trajectory.Disperse.SuicideShortOfROT");
 	this->SuicideAboveRange.Read(exINI, pSection, "Trajectory.Disperse.SuicideAboveRange");
 	this->SuicideIfNoWeapon.Read(exINI, pSection, "Trajectory.Disperse.SuicideIfNoWeapon");
+	this->Weapons.Read(exINI, pSection, "Trajectory.Disperse.Weapons");
 	this->WeaponBurst.Read(exINI, pSection, "Trajectory.Disperse.WeaponBurst");
 	this->WeaponCount.Read(exINI, pSection, "Trajectory.Disperse.WeaponCount");
 	this->WeaponDelay.Read(exINI, pSection, "Trajectory.Disperse.WeaponDelay");
@@ -164,6 +167,7 @@ bool DisperseTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->SuicideShortOfROT)
 		.Process(this->SuicideAboveRange)
 		.Process(this->SuicideIfNoWeapon)
+		.Process(this->Weapons)
 		.Process(this->WeaponBurst)
 		.Process(this->WeaponCount)
 		.Process(this->WeaponDelay)
@@ -217,6 +221,7 @@ bool DisperseTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->SuicideShortOfROT)
 		.Process(this->SuicideAboveRange)
 		.Process(this->SuicideIfNoWeapon)
+		.Process(this->Weapons)
 		.Process(this->WeaponBurst)
 		.Process(this->WeaponCount)
 		.Process(this->WeaponDelay)
@@ -269,6 +274,7 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->SuicideShortOfROT = pType->SuicideShortOfROT;
 	this->SuicideAboveRange = pType->SuicideAboveRange * 256;
 	this->SuicideIfNoWeapon = pType->SuicideIfNoWeapon;
+	this->Weapons = pType->Weapons;
 	this->WeaponBurst = pType->WeaponBurst;
 	this->WeaponCount = pType->WeaponCount;
 	this->WeaponDelay = pType->WeaponDelay > 0 ? pType->WeaponDelay : 1;
@@ -869,11 +875,10 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 	{
 		this->WeaponTimer.Start(this->WeaponDelay);
 		size_t ValidWeapons = 0;
-		const size_t BurstSize = this->WeaponBurst.size();
-		auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+		const size_t BurstSize = this->WeaponBurst.size();\
 
 		if (BurstSize > 0)
-			ValidWeapons = pBulletTypeExt->Disperse_Weapons.size();
+			ValidWeapons = this->Weapons.size();
 
 		if (ValidWeapons == 0)
 			return this->SuicideIfNoWeapon;
@@ -905,7 +910,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 				this->ThisWeaponIndex %= ValidWeapons;
 			}
 
-			WeaponTypeClass* const pWeapon = pBulletTypeExt->Disperse_Weapons[CurIndex];
+			WeaponTypeClass* const pWeapon = this->Weapons[CurIndex];
 
 			if (!this->WeaponRetarget)
 			{

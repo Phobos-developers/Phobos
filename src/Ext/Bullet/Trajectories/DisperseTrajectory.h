@@ -27,6 +27,7 @@ public:
 		, SuicideShortOfROT { true }
 		, SuicideAboveRange { 0 }
 		, SuicideIfNoWeapon { true }
+		, Weapons {}
 		, WeaponBurst {}
 		, WeaponCount { 0 }
 		, WeaponDelay { 1 }
@@ -66,6 +67,7 @@ public:
 	Valueable<bool> SuicideShortOfROT;
 	Valueable<double> SuicideAboveRange;
 	Valueable<bool> SuicideIfNoWeapon;
+	ValueableVector<WeaponTypeClass*> Weapons;
 	ValueableVector<int> WeaponBurst;
 	Valueable<int> WeaponCount;
 	Valueable<int> WeaponDelay;
@@ -104,6 +106,7 @@ public:
 		, SuicideShortOfROT { true }
 		, SuicideAboveRange { 0 }
 		, SuicideIfNoWeapon { true }
+		, Weapons {}
 		, WeaponBurst {}
 		, WeaponCount { 0 }
 		, WeaponDelay { 1 }
@@ -150,6 +153,7 @@ public:
 		, SuicideShortOfROT { true }
 		, SuicideAboveRange { 0 }
 		, SuicideIfNoWeapon { true }
+		, Weapons {}
 		, WeaponBurst {}
 		, WeaponCount { 0 }
 		, WeaponDelay { 1 }
@@ -205,6 +209,7 @@ public:
 	bool SuicideShortOfROT;
 	double SuicideAboveRange;
 	bool SuicideIfNoWeapon;
+	std::vector<WeaponTypeClass*> Weapons;
 	std::vector<int> WeaponBurst;
 	int WeaponCount;
 	int WeaponDelay;
