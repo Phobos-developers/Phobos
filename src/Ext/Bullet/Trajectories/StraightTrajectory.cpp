@@ -14,6 +14,7 @@ bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 		.Process(this->TargetSnapDistance, false)
 		.Process(this->PassThrough, false)
 		.Process(this->PassDetonate, false)
+		.Process(this->PassDetonateWarhead)
 		.Process(this->PassDetonateDamage, false)
 		.Process(this->PassDetonateDelay, false)
 		.Process(this->PassDetonateTimer, false)
@@ -25,6 +26,7 @@ bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 		.Process(this->UseDisperseBurst, false)
 		.Process(this->AxisOfRotation, false)
 		.Process(this->ProximityImpact, false)
+		.Process(this->ProximityWarhead)
 		.Process(this->ProximityDamage, false)
 		.Process(this->ProximityRadius, false)
 		.Process(this->ProximityAllies, false)
@@ -48,6 +50,7 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->TargetSnapDistance)
 		.Process(this->PassThrough)
 		.Process(this->PassDetonate)
+		.Process(this->PassDetonateWarhead)
 		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateDelay)
 		.Process(this->PassDetonateTimer)
@@ -59,6 +62,7 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->UseDisperseBurst)
 		.Process(this->AxisOfRotation)
 		.Process(this->ProximityImpact)
+		.Process(this->ProximityWarhead)
 		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityAllies)
@@ -86,6 +90,7 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.Straight.TargetSnapDistance");
 	this->PassThrough.Read(exINI, pSection, "Trajectory.Straight.PassThrough");
 	this->PassDetonate.Read(exINI, pSection, "Trajectory.Straight.PassDetonate");
+	this->PassDetonateWarhead.Read<true>(exINI, pSection, "Trajectory.Straight.PassDetonateWarhead");
 	this->PassDetonateDamage.Read(exINI, pSection, "Trajectory.Straight.PassDetonateDamage");
 	this->PassDetonateDelay.Read(exINI, pSection, "Trajectory.Straight.PassDetonateDelay");
 	this->PassDetonateTimer.Read(exINI, pSection, "Trajectory.Straight.PassDetonateTimer");
@@ -97,6 +102,7 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->UseDisperseBurst.Read(exINI, pSection, "Trajectory.Straight.UseDisperseBurst");
 	this->AxisOfRotation.Read(exINI, pSection, "Trajectory.Straight.AxisOfRotation");
 	this->ProximityImpact.Read(exINI, pSection, "Trajectory.Straight.ProximityImpact");
+	this->ProximityWarhead.Read<true>(exINI, pSection, "Trajectory.Straight.ProximityWarhead");
 	this->ProximityDamage.Read(exINI, pSection, "Trajectory.Straight.ProximityDamage");
 	this->ProximityRadius.Read(exINI, pSection, "Trajectory.Straight.ProximityRadius");
 	this->ProximityAllies.Read(exINI, pSection, "Trajectory.Straight.ProximityAllies");
@@ -117,6 +123,7 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->TargetSnapDistance)
 		.Process(this->PassThrough)
 		.Process(this->PassDetonate)
+		.Process(this->PassDetonateWarhead)
 		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateDelay)
 		.Process(this->PassDetonateTimer)
@@ -128,6 +135,7 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->UseDisperseBurst)
 		.Process(this->AxisOfRotation)
 		.Process(this->ProximityImpact)
+		.Process(this->ProximityWarhead)
 		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityAllies)
@@ -159,6 +167,7 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->TargetSnapDistance)
 		.Process(this->PassThrough)
 		.Process(this->PassDetonate)
+		.Process(this->PassDetonateWarhead)
 		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateDelay)
 		.Process(this->PassDetonateTimer)
@@ -170,6 +179,7 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->UseDisperseBurst)
 		.Process(this->AxisOfRotation)
 		.Process(this->ProximityImpact)
+		.Process(this->ProximityWarhead)
 		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityAllies)
@@ -200,6 +210,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->TargetSnapDistance = pType->TargetSnapDistance;
 	this->PassThrough = pType->PassThrough;
 	this->PassDetonate = pType->PassDetonate;
+	this->PassDetonateWarhead = pType->PassDetonateWarhead;
 	this->PassDetonateDamage = pType->PassDetonateDamage;
 	this->PassDetonateDelay = pType->PassDetonateDelay > 0 ? pType->PassDetonateDelay : 1;
 	this->PassDetonateTimer.Start(pType->PassDetonateTimer > 0 ? pType->PassDetonateTimer : 0);
@@ -211,6 +222,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->UseDisperseBurst = pType->UseDisperseBurst;
 	this->AxisOfRotation = pType->AxisOfRotation;
 	this->ProximityImpact = pType->ProximityImpact;
+	this->ProximityWarhead = pType->ProximityWarhead;
 	this->ProximityDamage = pType->ProximityDamage;
 	this->ProximityRadius = pType->ProximityRadius;
 	this->ProximityAllies = pType->ProximityAllies;
@@ -669,8 +681,7 @@ bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, Cell
 
 	if (pNearest && this->ProximityImpact != 0)
 	{
-		auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
-		WarheadTypeClass* pWH = pBulletTypeExt->Straight_ProximityWarhead;
+		WarheadTypeClass* pWH = this->ProximityWarhead;
 
 		if (!pWH)
 			return static_cast<bool>(pNearest);
@@ -692,8 +703,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 		if (this->PassDetonateLocal)
 			DetonateCoords.Z = MapClass::Instance->GetCellFloorHeight(DetonateCoords);
 
-		auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
-		WarheadTypeClass* pWH = pBulletTypeExt->Straight_PassDetonateWarhead;
+		WarheadTypeClass* pWH = this->PassDetonateWarhead;
 
 		if (!pWH)
 			return;
@@ -926,8 +936,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		});
 	}
 
-	auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
-	WarheadTypeClass* pWH = pBulletTypeExt->Straight_ProximityWarhead;
+	WarheadTypeClass* pWH = this->ProximityWarhead;
 
 	if (!pWH)
 		return;
