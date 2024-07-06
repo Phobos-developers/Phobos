@@ -592,7 +592,7 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 		FootClass* currentPassenger = pThis->Passengers.FirstPassenger;
 		const int passengerIndex = -weaponIndex - 1;
 
-		for (int i = 0; i < passengerIndex; i++)
+		for (int i = 0; i < passengerIndex && currentPassenger; i++)
 			currentPassenger = abstract_cast<FootClass*>(currentPassenger->NextObject);
 
 		if (auto const pPassengerExt = TechnoExt::ExtMap.Find(currentPassenger))
