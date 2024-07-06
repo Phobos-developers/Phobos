@@ -108,7 +108,6 @@
     <ClCompile Include="src\Ext\Script\Mission.Move.cpp" />
     <ClCompile Include="src\Ext\Rules\Body.cpp" />
     <ClCompile Include="src\Ext\Rules\Hooks.Image.cpp" />
-    <ClCompile Include="src\Ext\Rules\Hooks.INIClass.cpp" />
     <ClCompile Include="src\Ext\SWType\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Body.cpp" />
     <ClCompile Include="src\Ext\Side\Hooks.cpp" />

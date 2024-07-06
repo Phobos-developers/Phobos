@@ -57,26 +57,18 @@ DEFINE_HOOK(0x6FF189, TechnoClass_FireAt_SparkFireTargetSet, 0x5)
 }
 
 // Fix fire particle target coordinates potentially differing from actual target coords.
-DEFINE_HOOK(0x62FA20, ParticleSystemClass_FireAI_TargetCoords, 0x6)
+DEFINE_HOOK(0x62FA41, ParticleSystemClass_FireAI_TargetCoords, 0x6)
 {
-	enum { SkipGameCode = 0x62FA51, Continue = 0x62FBAF };
+	enum { SkipGameCode = 0x62FBAF };
 
 	GET(ParticleSystemClass*, pThis, ESI);
-	GET(TechnoClass*, pOwner, EBX);
 
-	if (pOwner->PrimaryFacing.IsRotating())
-	{
-		auto const pTypeExt = ParticleSystemTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = ParticleSystemTypeExt::ExtMap.Find(pThis->Type);
 
-		if (!pTypeExt->AdjustTargetCoordsOnRotation)
-			return Continue;
-
-		auto coords = pThis->TargetCoords;
-		R->EAX(&coords);
+	if (!pTypeExt->AdjustTargetCoordsOnRotation)
 		return SkipGameCode;
-	}
 
-	return Continue;
+	return 0;
 }
 
 // Fix fire particles being disallowed from going upwards.
