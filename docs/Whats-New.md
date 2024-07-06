@@ -413,6 +413,7 @@ New:
 - Allow customizing Aircraft weapon strafing regardless of `ROT` and `Strafing.Shots` values beyond 5 (by Trsdy)
 - Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
 - Allow `CloakVisible=true` laser trails optinally be seen only if unit is detected (by Starkku)
+- Customizing whether passengers are kicked out when an aircraft fires (by ststl)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -530,7 +531,6 @@ Fixes / interactions with other extensions:
 
 New:
 - Additional sync logging in case of desync errors occuring (by Starkku)
-- Customizing whether passengers are kicked out when an aircraft fires (by ststl)
 
 Phobos fixes:
 - `AutoDeath` support for objects in limbo (by Trsdy)
