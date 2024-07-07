@@ -563,6 +563,7 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
 		return 0;
 
 	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
+	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 
 	if ((mission == Mission::Move)
 		&& TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->KeepTargetOnMove
@@ -571,8 +572,12 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
 		auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
 		pTechno->SetDestination(pDestination, true);
 
+		pExt->KeepTargetOnMove = true;
+
 		return SkipGameCode;
 	}
+
+	pExt->KeepTargetOnMove = false;
 
 	return 0;
 }
@@ -586,7 +591,8 @@ DEFINE_HOOK(0x736480, UnitClass_AI_KeepTargetOnMove, 0x6)
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTypeExt->KeepTargetOnMove && pThis->Target && pThis->CurrentMission == Mission::Move)
+	if (pTypeExt->KeepTargetOnMove && pThis->Target
+		&& pThis->CurrentMission == Mission::Move && TechnoExt::ExtMap.Find(pThis)->KeepTargetOnMove)
 	{
 		int weaponIndex = pThis->SelectWeapon(pThis->Target);
 
