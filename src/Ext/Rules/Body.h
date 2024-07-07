@@ -124,7 +124,6 @@ public:
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
-		Valueable<AffectedHouse> Promote_AnimationVisibility;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -202,7 +201,6 @@ public:
 			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
-			, Promote_AnimationVisibility { AffectedHouse::All }
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
