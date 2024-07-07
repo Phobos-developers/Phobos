@@ -418,6 +418,16 @@ In `rulesmd.ini`:
 ; ...
 ```
 
+### `16005` Jump Back To Previous Script
+
+- Used in a Random Script picked by action 94. It can jump back to the previous script, and continue in the line after x=94,n.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16005,0
+```
+
 ### `18000-18999` Variable Manipulation
 
 #### `18000-18023` Edit Variable

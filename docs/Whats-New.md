@@ -418,6 +418,7 @@ New:
 - Shield hit flash (by Starkku)
 - Option to scatter `Anim/SplashList` animations around impact coordinates (by Starkku)
 - Customizable wake anim (by TwinkleStar)
+- AI script action to jump back to previous script after picking a random script (by handama)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
