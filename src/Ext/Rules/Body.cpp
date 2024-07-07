@@ -74,12 +74,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisguiseBlinkingVisibility.Read(exINI, GameStrings::General, "DisguiseBlinkingVisibility");
 	this->ChronoSparkleDisplayDelay.Read(exINI, GameStrings::General, "ChronoSparkleDisplayDelay");
 	this->ChronoSparkleBuildingDisplayPositions.Read(exINI, GameStrings::General, "ChronoSparkleBuildingDisplayPositions");
+	this->AIChronoSphereSW.Read(exINI, GameStrings::General, "AIChronoSphereSW");
+	this->AIChronoWarpSW.Read(exINI, GameStrings::General, "AIChronoWarpSW");
 	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
 	this->RadApplicationDelay_Building.Read(exINI, GameStrings::Radiation, "RadApplicationDelay.Building");
-	this->RadWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
+	this->RadBuildingDamageMaxCount.Read(exINI, GameStrings::Radiation, "RadBuildingDamageMaxCount");
+	this->RadSiteWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
 	this->RadHasOwner.Read(exINI, GameStrings::Radiation, "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
-	this->VeinholeWarhead.Read(exINI, GameStrings::CombatDamage, "VeinholeWarhead");
+	this->VeinholeWarhead.Read<true>(exINI, GameStrings::CombatDamage, "VeinholeWarhead");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
 
 	this->PlacementGrid_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.Translucency");
@@ -135,10 +138,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "IronCurtain.EffectOnOrganics");
-	this->IronCurtain_KillOrganicsWarhead.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
+	this->IronCurtain_KillOrganicsWarhead.Read<true>(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
 	this->ForceShield_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "ForceShield.KeptOnDeploy");
 	this->ForceShield_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "ForceShield.EffectOnOrganics");
-	this->ForceShield_KillOrganicsWarhead.Read(exINI, GameStrings::CombatDamage, "ForceShield.KillOrganicsWarhead");
+	this->ForceShield_KillOrganicsWarhead.Read<true>(exINI, GameStrings::CombatDamage, "ForceShield.KillOrganicsWarhead");
 
 	this->CrateOnlyOnLand.Read(exINI, GameStrings::CrateRules, "CrateOnlyOnLand");
 	this->UnitCrateVehicleCap.Read(exINI, GameStrings::CrateRules, "UnitCrateVehicleCap");
@@ -239,9 +242,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisguiseBlinkingVisibility)
 		.Process(this->ChronoSparkleDisplayDelay)
 		.Process(this->ChronoSparkleBuildingDisplayPositions)
+		.Process(this->AIChronoSphereSW)
+		.Process(this->AIChronoWarpSW)
 		.Process(this->UseGlobalRadApplicationDelay)
 		.Process(this->RadApplicationDelay_Building)
-		.Process(this->RadWarhead_Detonate)
+		.Process(this->RadBuildingDamageMaxCount)
+		.Process(this->RadSiteWarhead_Detonate)
 		.Process(this->RadHasOwner)
 		.Process(this->RadHasInvoker)
 		.Process(this->JumpjetCrash)
@@ -438,3 +444,42 @@ DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 
 	return 0;
 }
+
+// Reenable obsolete [JumpjetControls] in RA2/YR
+// Author: Uranusian
+DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
+{
+	GET(TechnoTypeClass*, pThis, ESI);
+	auto pRules = RulesClass::Instance();
+	auto pRulesExt = RulesExt::Global();
+
+	pThis->JumpjetTurnRate = pRules->TurnRate;
+	pThis->JumpjetSpeed = pRules->Speed;
+	pThis->JumpjetClimb = static_cast<float>(pRules->Climb);
+	pThis->JumpjetCrash = static_cast<float>(pRulesExt->JumpjetCrash);
+	pThis->JumpjetHeight = pRules->CruiseHeight;
+	pThis->JumpjetAccel = static_cast<float>(pRules->Acceleration);
+	pThis->JumpjetWobbles = static_cast<float>(pRules->WobblesPerSecond);
+	pThis->JumpjetNoWobbles = pRulesExt->JumpjetNoWobbles;
+	pThis->JumpjetDeviation = pRules->WobbleDeviation;
+
+	return 0x711601;
+}
+
+DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
+{
+	auto pRulesExt = RulesExt::Global();
+	if (!pRulesExt)
+		return 0;
+
+	GET(CCINIClass*, pINI, EDI);
+	INI_EX exINI(pINI);
+
+	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
+	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
+
+	return 0;
+}
+
+// skip vanilla JumpjetControls and make it earlier load
+// DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls // Really necessary? won't hurt to read again

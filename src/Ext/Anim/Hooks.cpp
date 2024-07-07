@@ -81,7 +81,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 		pThis->Accum = 0.0;
 	}
 
-	if (appliedDamage <= 0 || pThis->IsPlaying)
+	if (appliedDamage <= 0 || pThis->IsInert)
 		return SkipDamage;
 
 	TechnoClass* pInvoker = nullptr;
@@ -153,6 +153,15 @@ DEFINE_HOOK(0x423939, AnimClass_BounceAI_AttachedSystem, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x62E08B, ParticleSystemClass_DTOR_DetachAttachedSystem, 0x7)
+{
+	GET(ParticleSystemClass*, pParticleSystem, EDI);
+
+	AnimExt::InvalidateParticleSystemPointers(pParticleSystem);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 {
 	enum { SkipGameCode = 0x423EFD };
@@ -197,7 +206,7 @@ DEFINE_HOOK(0x424CF1, AnimClass_Start_DetachedReport, 0x6)
 
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTypeExt->DetachedReport.isset())
+	if (pTypeExt->DetachedReport >= 0)
 		VocClass::PlayAt(pTypeExt->DetachedReport.Get(), pThis->GetCoords());
 
 	return 0;

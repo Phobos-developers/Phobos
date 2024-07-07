@@ -241,10 +241,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
-	this->IronCurtain_KillWarhead.Read(exINI, pSection, "IronCurtain.KillWarhead");
+	this->IronCurtain_KillWarhead.Read<true>(exINI, pSection, "IronCurtain.KillWarhead");
 	this->ForceShield_KeptOnDeploy.Read(exINI, pSection, "ForceShield.KeptOnDeploy");
 	this->ForceShield_Effect.Read(exINI, pSection, "ForceShield.Effect");
-	this->ForceShield_KillWarhead.Read(exINI, pSection, "ForceShield.KillWarhead");
+	this->ForceShield_KillWarhead.Read<true>(exINI, pSection, "ForceShield.KillWarhead");
 
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
 	this->Explodes_DuringBuildup.Read(exINI, pSection, "Explodes.DuringBuildup");

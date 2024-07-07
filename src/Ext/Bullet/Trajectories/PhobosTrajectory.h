@@ -22,7 +22,7 @@ enum class TrajectoryCheckReturnType : int
 	SatisfyGameCheck = 2,
 	Detonate = 3
 };
-
+class PhobosTrajectory;
 class PhobosTrajectoryType
 {
 public:
@@ -35,7 +35,7 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 
 	virtual void Read(CCINIClass* const pINI, const char* pSection) = 0;
-
+	virtual PhobosTrajectory* CreateInstance() const = 0;
 	static void CreateType(PhobosTrajectoryType*& pType, CCINIClass* const pINI, const char* pSection, const char* pKey);
 
 	static PhobosTrajectoryType* LoadFromStream(PhobosStreamReader& Stm);
@@ -70,8 +70,6 @@ public:
 		return static_cast<T*>(BulletTypeExt::ExtMap.Find(pBullet->Type)->TrajectoryType);
 	}
 	double GetTrajectorySpeed(BulletClass* pBullet) const;
-
-	static PhobosTrajectory* CreateInstance(PhobosTrajectoryType* pType, BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity);
 
 	static PhobosTrajectory* LoadFromStream(PhobosStreamReader& Stm);
 	static void WriteToStream(PhobosStreamWriter& Stm, PhobosTrajectory* pTraj);

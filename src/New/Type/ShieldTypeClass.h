@@ -31,6 +31,12 @@ public:
 	Damageable<AnimTypeClass*> IdleAnimDamaged;
 	Valueable<AnimTypeClass*> BreakAnim;
 	Valueable<AnimTypeClass*> HitAnim;
+	Valueable<bool> HitFlash;
+	Nullable<int> HitFlash_FixedSize;
+	Valueable<bool> HitFlash_Red;
+	Valueable<bool> HitFlash_Green;
+	Valueable<bool> HitFlash_Blue;
+	Valueable<bool> HitFlash_Black;
 	Valueable<WeaponTypeClass*> BreakWeapon;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
@@ -73,6 +79,12 @@ public:
 		, IdleAnimDamaged { }
 		, BreakAnim { }
 		, HitAnim { }
+		, HitFlash { false }
+		, HitFlash_FixedSize {}
+		, HitFlash_Red { true }
+		, HitFlash_Green { true }
+		, HitFlash_Blue { true }
+		, HitFlash_Black { false }
 		, BreakWeapon { }
 		, AbsorbPercent { 1.0 }
 		, PassPercent { 0.0 }

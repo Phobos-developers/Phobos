@@ -34,6 +34,8 @@ public:
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
+		int Strafe_BombsDroppedThisRound;
+		int CurrentAircraftWeaponIndex;
 		bool IsInTunnel;
 		bool IsBurrowed;
 		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
@@ -70,6 +72,8 @@ public:
 			, AutoDeathTimer {}
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
+			, Strafe_BombsDroppedThisRound { 0 }
+			, CurrentAircraftWeaponIndex {}
 			, OriginalPassengerOwner {}
 			, IsInTunnel { false }
 			, IsBurrowed { false }
@@ -112,12 +116,7 @@ public:
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 
 		virtual ~ExtData() override;
-
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			AnnounceInvalidPointer(OriginalPassengerOwner, ptr);
-		}
-
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -131,19 +130,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-			switch (abs)
-			{
-			case AbstractType::House:
-				return false;
-			}
-
-			return true;
-		}
 	};
 
 	static ExtContainer ExtMap;

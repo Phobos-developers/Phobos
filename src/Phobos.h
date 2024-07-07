@@ -2,6 +2,8 @@
 #include <Phobos.version.h>
 #include <Windows.h>
 
+#include <string>
+
 #define CAN_USE_ARES 1
 
 class CCINIClass;
@@ -33,7 +35,9 @@ public:
 	static const wchar_t* VersionDescription;
 	static bool DisplayDamageNumbers;
 	static bool IsLoadingSaveGame;
-
+	static bool ShouldQuickSave;
+	static std::wstring CustomGameSaveDescription;
+	static void PassiveSaveGame();
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif
@@ -53,6 +57,7 @@ public:
 		static double PowerDelta_ConditionRed;
 		static bool CenterPauseMenuBackground;
 		static bool WeedsCounter_Show;
+		static bool AnchoredToolTips;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;

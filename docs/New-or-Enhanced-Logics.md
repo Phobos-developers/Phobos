@@ -15,6 +15,8 @@ This page describes all the engine features that are either new and introduced b
     - `move`: Discard when the object the effect is attached on moves. Ignored if the object is a building.
     - `stationary`: Discard when the object the effect is attached on stops moving. Ignored if the object is a building.
     - `drain`: Discard when the object is being affected by a weapon with `DrainWeapon=true`.
+    - `inrange`: Discard if within weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
+    - `outofrange`: Discard if outside weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects (Iron Curtain / Force Shield).
   - `Animation` defines animation to play in an indefinite loop for as long as the effect is active on the object it is attached to.
     - If `Animation.ResetOnReapply` is set to true, the animation playback is reset every time the effect is applied if `Cumulative=false`.
@@ -72,7 +74,8 @@ Duration=0                                     ; integer - game frames or negati
 Cumulative=false                               ; boolean
 Cumulative.MaxCount=-1                         ; integer
 Powered=false                                  ; boolean
-DiscardOn=none                                 ; list of discard condition enumeration (none|entry|move|stationary|drain)
+DiscardOn=none                                 ; list of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
+DiscardOn.RangeOverride=                       ; floating point value, distance in cells
 PenetratesIronCurtain=false                    ; boolean
 Animation=                                     ; Animation
 Animation.ResetOnReapply=false                 ; boolean
@@ -80,7 +83,7 @@ Animation.OfflineAction=Hides                  ; AttachedAnimFlag (None, Hides, 
 Animation.TemporalAction=None                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.UseInvokerAsOwner=false              ; boolean
 CumulativeAnimations=                          ; list of animations
-ExpireWeapon=                                  
+ExpireWeapon=
 ExpireWeapon.TriggerOn=expire                  ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
 ExpireWeapon.CumulativeOnlyOnce=false          ; boolean
 Tint.Color=                                    ; integer - R,G,B
@@ -105,7 +108,7 @@ RevengeWeapon=                                 ; WeaponType
 RevengeWeapon.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisableWeapons=false                           ; boolean
 Groups=                                        ; comma-separated list of strings (group IDs)
-                                               
+
 [SOMETECHNO]                                   ; TechnoType
 AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
 AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
@@ -125,8 +128,8 @@ AttachEffect.RequiredMaxCounts=                ; integer - maximum required inst
 AttachEffect.DisallowedMinCounts=              ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.DisallowedMaxCounts=              ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.IgnoreFromSameSource=false        ; boolean
-                                               
-[SOMEWARHEAD]                                  
+
+[SOMEWARHEAD]
 AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
 AttachEffect.RemoveTypes=                      ; List of AttachEffectTypes
 AttachEffect.RemoveGroups=                     ; comma-separated list of strings (group IDs)
@@ -142,7 +145,7 @@ AttachEffect.DurationOverrides=                ; integer - duration overrides (c
 
 - Any weapon can now have a custom radiation type. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
 - There are several new properties available to all radiation types.
-  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings.
+  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings. How many times a single radiation site can deal this damage to same building (every cell of the foundation is hit by all radiation sites on a cell) can be customized with `RadBuildingDamageMaxCount`, negative values mean no limit.
   - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
   - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
   - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker. Note that if the invoker dies at any point during the radiation's lifetime it continues to behave as if not having an invoker.
@@ -163,6 +166,7 @@ RadType=Radiation                  ; RadType to use instead of default of [Radia
 RadDurationMultiple=1              ; integer
 RadApplicationDelay=16             ; integer
 RadApplicationDelay.Building=0     ; integer
+RadBuildingDamageMaxCount=-1       ; integer
 RadLevelMax=500                    ; integer
 RadLevelDelay=90                   ; integer
 RadLightDelay=90                   ; integer
@@ -196,23 +200,24 @@ In `artmd.ini`:
 [LaserTrailTypes]
 0=SOMETRAIL
 
-[SOMETRAIL]                   ; LaserTrailType name
-IsHouseColor=false            ; boolean
-Color=255,0,0                 ; integer - R,G,B
-FadeDuration=64               ; integer
-Thickness=4                   ; integer
-SegmentLength=128             ; integer, minimal length of each trail segment
-IgnoreVertical=false          ; boolean, whether the trail won't be drawn on vertical movement
-IsIntense=false               ; boolean, whether the laser is "supported" (AKA prism forwarding)
-CloakVisible=false            ; boolean, whether the laser is visible when the attached unit is cloaked
+[SOMETRAIL]                      ; LaserTrailType name
+IsHouseColor=false               ; boolean
+Color=255,0,0                    ; integer - R,G,B
+FadeDuration=64                  ; integer
+Thickness=4                      ; integer
+SegmentLength=128                ; integer, minimal length of each trail segment
+IgnoreVertical=false             ; boolean, whether the trail won't be drawn on vertical movement
+IsIntense=false                  ; boolean, whether the laser is "supported" (AKA prism forwarding)
+CloakVisible=false               ; boolean, whether the laser is visible when the attached unit is cloaked
+CloakVisible.DetectedOnly=false  ; boolean, whether CloakVisible=true laser is visible only to those who can detect the attached unit
 
-[SOMEPROJECTILE]              ; BulletType Image
-LaserTrail.Types=SOMETRAIL    ; list of LaserTrailTypes
+[SOMEPROJECTILE]                 ; BulletType Image
+LaserTrail.Types=SOMETRAIL       ; list of LaserTrailTypes
 
-[SOMETECHNO]                  ; TechnoType Image
-LaserTrailN.Type=SOMETRAIL    ; LaserTrailType
-LaserTrailN.FLH=0,0,0         ; integer - Forward,Lateral,Height
-LaserTrailN.IsOnTurret=false  ; boolean, whether the trail origin is turret
+[SOMETECHNO]                     ; TechnoType Image
+LaserTrailN.Type=SOMETRAIL       ; LaserTrailType
+LaserTrailN.FLH=0,0,0            ; integer - Forward,Lateral,Height
+LaserTrailN.IsOnTurret=false     ; boolean, whether the trail origin is turret
 ; where N = 0, 1, 2, ...
 ```
 
@@ -270,6 +275,12 @@ IdleAnim.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Tem
 IdleAnim.TemporalAction=Hides               ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 BreakAnim=                                  ; Animation
 HitAnim=                                    ; Animation
+HitFlash=false                              ; boolean
+HitFlash.FixedSize=                         ; integer
+HitFlash.Red=true                           ; boolean
+HitFlash.Green=true                         ; boolean
+HitFlash.Blue=true                          ; boolean
+HitFlash.Black=false                        ; boolean
 BreakWeapon=                                ; WeaponType
 AbsorbPercent=1.0                           ; floating point value
 PassPercent=0.0                             ; floating point value
@@ -290,6 +301,7 @@ Shield.Penetrate=false                      ; boolean
 Shield.Break=false                          ; boolean
 Shield.BreakAnim=                           ; Animation
 Shield.HitAnim=                             ; Animation
+Shield.HitFlash=true                        ; boolean
 Shield.BreakWeapon=                         ; WeaponType
 Shield.AbsorbPercent=                       ; floating point value
 Shield.PassPercent=                         ; floating point value
@@ -342,6 +354,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
 - `BreakAnim`, if set, will be played when the shield has been broken.
 - `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
+- `HitFlash`, if set to true, makes it so that a light flash is generated when the shield is attacked by a Warhead unless it has `Shield.HitFlash=false`. Size of the flash is determined by damage dealt, unless `HitFlash.FixedSize` is set to a number, in which case that value is used instead (range of values that produces visible effect are increments of 4 from 81 to 252, anything higher or below does not have effect). Color can be customized via `HitFlash.Red/Green/Blue`. If `HitFlash.Black` is set to true, the generated flash will be black regardless of other color settings.
 - `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
@@ -1371,7 +1384,7 @@ LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 
 ### Remove disguise on impact
 
-- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
+- Warheads can now remove disguise from disguised spies or mirage tanks. This will work even if the disguised was acquired by default through `PermaDisguise`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1493,15 +1506,19 @@ FeedbackWeapon=  ; WeaponType
 ![image](_static/images/strafing-01.gif)
 *Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
-- Some of the behavior of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.
-  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired. Valid values range from 1 to 5, any values smaller or larger are effectively treated same as either 1 or 5, respectively. Defaults to 5.
-  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
+- Some of the behavior of strafing aircraft weapons can now be customized.
+  - `Strafing` controls if the aircraft can strafe when firing at the target. Default to `true` if the projectile's `ROT` < 2 and `Inviso=false`, otherwise `false`.
+  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired.
+  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined.
+  - `Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour of only deducting ammo after a strafing run and instead doing it after each individual shot.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                  ; WeaponType
-Strafing.Shots=5              ; integer
-Strafing.SimulateBurst=false  ; boolean
+[SOMEWEAPON]                   ; WeaponType
+Strafing=                      ; boolean
+Strafing.Shots=5               ; integer
+Strafing.SimulateBurst=false   ; boolean
+Strafing.UseAmmoPerShot=false  ; boolean
 ```
 
 ### Weapon targeting filter

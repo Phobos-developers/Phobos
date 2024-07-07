@@ -13,7 +13,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `[CrateRules]` -> `FreeMCV` now controls whether or not player is forced to receive unit from `[General]` -> `BaseUnit` from goodie crate if they own no buildings or any existing `BaseUnit` vehicles and own more than `[CrateRules]` -> `FreeMCV.CreditsThreshold` (defaults to 1500) credits.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
-- - The obsolete `[General] WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
+- The obsolete `[General]` -> `WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
 - Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
 
 ### From older Phobos versions
@@ -105,6 +105,7 @@ SaveGameOnScenarioStart=true     ; boolean
   60=Operate var index,0
   65=Campaign AI Repairable,0
   68=House,1,2
+  69=Non-inert,10
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -148,6 +149,7 @@ SaveGameOnScenarioStart=true     ; boolean
   602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1
 
   [ActionsRA2]
+  41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
   125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125
   500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1
   501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1
@@ -405,6 +407,15 @@ New:
 - Revenge weapon (by Starkku)
 - AttachEffect types with new features like custom tint and weapon range modifier (by Starkku)
 - Force shield effect sync on deploy & vs. organic targets effect customization to complement the Iron Curtain ones (by Starkku)
+- Map trigger action 41 (Play animation at waypoint) now uses additional parameter to determine if animation can play sound, deal damage etc. (by Starkku)
+- Allow restricting how many times per frame a single radiation site can damage a building (by Starkku)
+- Allow explicitly setting the superweapons AI uses for Chronoshift script actions (by Starkku)
+- Allow customizing Aircraft weapon strafing regardless of `ROT` and `Strafing.Shots` values beyond 5 (by Trsdy)
+- Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
+- Allow `CloakVisible=true` laser trails optinally be seen only if unit is detected (by Starkku)
+- Customizing whether passengers are kicked out when an aircraft fires (by ststl)
+- Shield hit flash (by Starkku)
+- Option to scatter `Anim/SplashList` animations around impact coordinates (by Starkku)
 - Customizable wake anim (by TwinkleStar)
 
 Vanilla fixes:
@@ -472,6 +483,7 @@ Vanilla fixes:
 - Objects in invalid map coordinates are no longer used for starting view and AI base center calculations (by Starkku)
 - Units & buildings with `DecloakToFire=false` weapons can now cloak while targeting & reloading (by Starkku)
 - Units with `Sensors=true` will no longer reveal ally buildings (by Starkku)
+- Waypoint path is drawn for all units under player control or `DebugKeysEnabled=yes` (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -507,6 +519,8 @@ Phobos fixes:
 - Fixed `AutoDeath` causing crashes when used to kill a parasite unit inside an another unit (by Starkku)
 - Phobos Warhead effects combined with `CellSpread` now correctly apply to buildings if any of the foundation cells are hit (by Starkku)
 - Phobos Warhead effects on zero-`CellSpread` Warheads no longer apply to target if projectile detonates prematurely, far-away from target (by Starkku)
+- Fixed radiation site damage not taking the radiation level reduction into accord (by Starkku)
+- Correctly update laser trail position while techno is cloaked even if trail is not drawn (by Starkku)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed (by Starkku)
