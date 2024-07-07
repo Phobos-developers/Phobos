@@ -299,7 +299,6 @@ New:
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
-- Repair Legless Cyborgs In Transports (by FS-21)
 - Customizable ROF random delay (by Starkku)
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 - Toggleable DieSound when grinding (by Trsdy)
@@ -393,7 +392,7 @@ New:
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
-- Fixed bug that restored cyborg legs when the soldier leave transports (by FS-21)
+- Fixed the bug that restored cyborg legs when the soldier left transport (by FS-21)
 - Allow usage of `AlternateFLH%d` of vehicles in `OpenTopped` transport. (by Trsdy)
 - Improved the statistic distribution of the spawned crates over the visible area of the map. (by Trsdy, based on TwinkleStar's work)
 - Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` logic normally (by Trsdy)
