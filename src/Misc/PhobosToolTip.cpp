@@ -95,7 +95,7 @@ void PhobosToolTip::HelpText(BuildType& cameo)
 		this->HelpText(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
 }
 
-inline int tickTimeToSeconds(int tickTime)
+inline static int TickTimeToSeconds(int tickTime)
 {
 	if (!Phobos::Config::RealTimeTimers)
 		return tickTime / 15;
@@ -118,8 +118,8 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
 
 	int nBuildTime = this->GetBuildTime(pType);
-	int nSec = tickTimeToSeconds(nBuildTime) % 60;
-	int nMin = tickTimeToSeconds(nBuildTime) / 60 /* % 60*/;
+	int nSec = TickTimeToSeconds(nBuildTime) % 60;
+	int nMin = TickTimeToSeconds(nBuildTime) / 60 /* % 60*/;
 	// int nHour = tickTimeToSeconds(nBuildTime) / 60 / 60;
 
 	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
@@ -171,8 +171,8 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 		if (!showCost)
 			oss << L"\n";
 
-		int nSec = tickTimeToSeconds(pType->RechargeTime) % 60;
-		int nMin = tickTimeToSeconds(pType->RechargeTime) / 60 /* % 60*/;
+		int nSec = TickTimeToSeconds(pType->RechargeTime) % 60;
+		int nMin = TickTimeToSeconds(pType->RechargeTime) / 60 /* % 60*/;
 		// int nHour = tickTimeToSeconds(pType->RechargeTime) / 60 / 60;
 
 		oss << (showCost ? L" " : L"") << Phobos::UI::TimeLabel
@@ -308,7 +308,8 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	{
 		GET(SurfaceExt*, pThis, ESI);
 		LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
-		if (Phobos::UI::AnchoredToolTips)
+
+		if (Phobos::UI::AnchoredToolTips && PhobosToolTip::Instance.IsEnabled() && Phobos::Config::ToolTipDescriptions)
 		{
 			LEA_STACK(LTRBStruct*, a2, STACK_OFFSET(0x44, -0x20));
 			auto x = DSurface::SidebarBounds->X - pRect->Width - 2;
@@ -317,6 +318,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 			pRect->Y -= 40;
 			a2->Top -= 40;
 		}
+
 		// Should we make some SideExt items as static to improve the effeciency?
 		// Though it might not be a big improvement... - secsome
 		const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
