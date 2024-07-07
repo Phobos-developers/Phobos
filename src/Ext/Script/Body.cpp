@@ -1164,19 +1164,18 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
 
 void ScriptExt::JumpBackToPreviousScript(TeamClass* pTeam)
 {
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
 
 	if (!pTeamData->PreviousScriptList.empty())
 	{
-		pTeam->CurrentScript = nullptr;
 		pTeam->CurrentScript = pTeamData->PreviousScriptList.back();
 		pTeamData->PreviousScriptList.pop_back();
 		pTeam->StepCompleted = true;
 	}
 	else
 	{
-		auto pScript = pTeam->CurrentScript;
-		Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d): Can't find the previous script! This script action must be used after PickRandomScript.\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
+		auto const pScript = pTeam->CurrentScript;
+		ScriptExt::Log("AI Scripts - JumpBackToPreviousScript: [%s] [%s](line: %d = %d,%d): Can't find the previous script! This script action must be used after PickRandomScript.\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
 		pTeam->StepCompleted = true;
 	}
 }
