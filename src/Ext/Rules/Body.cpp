@@ -129,6 +129,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		this->HeightShadowScaling = false;
 	this->HeightShadowScaling_MinScale.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling.MinScale");
 
+	this->DrawPowerOffline.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline");
+	this->DrawPowerOffline_Offset.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline.Offset");
+	this->DrawPowerOffline_Shape.Read(exINI, GameStrings::AudioVisual, "DrawPowerOffline.Shape");
+	this->DrawPowerOffline_Palette.LoadFromINI(pINI, GameStrings::AudioVisual, "DrawPowerOffline.Palette");
+
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
 	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Aircraft");
 	this->ForbidParallelAIQueues_Building.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Building");
@@ -308,6 +313,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DrawTurretShadow)
 		.Process(this->IsVoiceCreatedGlobal)
 		.Process(this->SelectionFlashDuration)
+		.Process(this->DrawPowerOffline)
+		.Process(this->DrawPowerOffline_Offset)
+		.Process(this->DrawPowerOffline_Shape)
+		.Process(this->DrawPowerOffline_Palette)
 		.Process(this->AnimRemapDefaultColorScheme)
 		.Process(this->TimerBlinkColorScheme)
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)

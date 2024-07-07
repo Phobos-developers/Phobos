@@ -117,6 +117,11 @@ public:
 		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
 		ValueableIdx<ColorScheme> TimerBlinkColorScheme;
 
+		Valueable<bool> DrawPowerOffline;
+		Valueable<Point2D> DrawPowerOffline_Offset;
+		Nullable<SHPStruct*> DrawPowerOffline_Shape;
+		CustomPalette DrawPowerOffline_Palette;
+
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
@@ -206,6 +211,10 @@ public:
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
+			, DrawPowerOffline { false }
+			, DrawPowerOffline_Offset { { 0, 0 } }
+			, DrawPowerOffline_Shape { }
+			, DrawPowerOffline_Palette { }
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}

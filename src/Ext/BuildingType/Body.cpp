@@ -147,6 +147,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
+	this->DisablePowerOfflineIcon.Read(exINI, pSection, "DisablePowerOfflineIcon");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -259,6 +260,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
 		.Process(this->AircraftDockingDirs)
+		.Process(this->DisablePowerOfflineIcon)
 		;
 }
 
