@@ -308,7 +308,15 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	{
 		GET(SurfaceExt*, pThis, ESI);
 		LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
-
+		if (Phobos::UI::AnchoredToolTips)
+		{
+			LEA_STACK(LTRBStruct*, a2, STACK_OFFSET(0x44, -0x20));
+			auto x = DSurface::SidebarBounds->X - pRect->Width - 2;
+			pRect->X = x;
+			a2->Left = x;
+			pRect->Y -= 40;
+			a2->Top -= 40;
+		}
 		// Should we make some SideExt items as static to improve the effeciency?
 		// Though it might not be a big improvement... - secsome
 		const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;

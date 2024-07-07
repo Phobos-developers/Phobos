@@ -492,11 +492,13 @@ Sidebar.GDIPositions=  ; boolean
 - Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default.
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
+- `AnchoredToolTips` positions the tooltip always to the left of sidebar.
 
 In `uimd.ini`:
 ```ini
 [ToolTips]
 ExtendedToolTips=false     ; boolean
+AnchoredToolTips=false     ; boolean
 CostLabel=<none>           ; CSF entry key
 PowerLabel=<none>          ; CSF entry key
 PowerBlackoutLabel=<none>  ; CSF entry key
