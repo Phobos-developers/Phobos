@@ -574,6 +574,19 @@ In `rulesmd.ini`:
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
+### Customizable wake anim
+
+- You can now specify the `Wake` anim per TechnoType to override default rules value.
+  - `Wake.Grapple` and `Wake.Sinking` can be used to further customize wake anim when the techno is being parasited or sunken.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]         ; TechnoType
+Wake=                ; Anim (played when Techno moving on the water), default to [General]->Wake
+Wake.Grapple=        ; Anim (played when Techno being parasited on the water), defaults to [SOMETECHNO]->Wake
+Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [SOMETECHNO]->Wake
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.

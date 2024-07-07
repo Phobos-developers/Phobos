@@ -787,3 +787,56 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 
 	return 0x707331;
 }
+
+DEFINE_HOOK_AGAIN(0x69FEDC, Locomotion_Process_Wake, 0x6)
+DEFINE_HOOK_AGAIN(0x4B0814, Locomotion_Process_Wake, 0x6)
+DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)
+{
+	GET(ILocomotion* const, pILoco, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(static_cast<LocomotionClass*>(pILoco)->LinkedTo->GetTechnoType());
+	R->EDX(pTypeExt->Wake.Get(RulesClass::Instance->Wake));
+
+	return R->Origin() + 0xC;
+}
+
+namespace GrappleUpdateTemp
+{
+	TechnoClass* pThis;
+}
+
+DEFINE_HOOK(0x629E9B, ParasiteClass_GrappleUpdate_MakeWake_SetContext, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GrappleUpdateTemp::pThis = pThis;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x629FA3, ParasiteClass_GrappleUpdate_MakeWake, 0x6)
+{
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(GrappleUpdateTemp::pThis->GetTechnoType());
+	R->EDX(pTypeExt->Wake_Grapple.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+
+	return 0x629FA9;
+}
+
+DEFINE_HOOK(0x7365AD, UnitClass_Update_SinkingWake, 0x6)
+{
+	GET(UnitClass* const, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+
+	return 0x7365B3;
+}
+
+DEFINE_HOOK(0x737F05, UnitClass_ReceiveDamage_SinkingWake, 0x6)
+{
+	GET(UnitClass* const, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+
+	return 0x737F0B;
+}
