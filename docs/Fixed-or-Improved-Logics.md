@@ -1096,6 +1096,17 @@ In `rulesmd.ini`:
 ShakeIsLocal=false  ; boolean
 ```
 
+### Customizable rocker amplitude
+
+- The rocker amplitude of warheads with `Rocker=yes` used to be determined by `Damage` value of the weapon. You can now override it with another fixed value or add a mutiplier to it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]       ; WarheadType
+Rocker.AmplitudeOverride=         ; integer
+Rocker.AmplitudeMultiplier=1.0    ; double
+```
+
 ## Weapons
 
 ### AmbientDamage customizations

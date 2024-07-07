@@ -46,6 +46,8 @@ public:
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
+		Valueable<double> Rocker_AmplitudeMultiplier;
+		Nullable<int> Rocker_AmplitudeOverride;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -175,6 +177,8 @@ public:
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
+			, Rocker_AmplitudeMultiplier { 1.0 }
+			, Rocker_AmplitudeOverride { }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
