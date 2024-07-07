@@ -301,7 +301,7 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 	{
 		// I assume you were not launching for real, Morton
 
-		CoordStruct pLaunchLocation = pTypeExt->SpyEffect_SWTargetCenter.Get() ? pBuilding->GetCenterCoords() : pBuilding->Location;
+		CoordStruct pLaunchLocation = pBuilding->GetCenterCoords();
 		auto launchTheSWHere = [pBuilding](SuperClass* const pSuper, HouseClass* const pHouse, CoordStruct pLocation)
 		{
 			int oldstart = pSuper->RechargeTimer.StartTime;
