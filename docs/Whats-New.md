@@ -416,6 +416,7 @@ New:
 - Customizing whether passengers are kicked out when an aircraft fires (by ststl)
 - Shield hit flash (by Starkku)
 - Option to scatter `Anim/SplashList` animations around impact coordinates (by Starkku)
+- Customizable wake anim (by TwinkleStar)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
