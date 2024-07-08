@@ -496,15 +496,15 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	if(!RulesExt::Global()->Promote_VeteranAnimation && !RulesExt::Global()->Promote_EliteAnimation)
+	if (!RulesExt::Global()->Promote_VeteranAnimation && !RulesExt::Global()->Promote_EliteAnimation)
 		goto hook_return;
 
 	if (pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
 	{
-		if (pThis->Veterancy.GetRemainingLevel() == Rank::Elite && RulesExt::Global()->Promote_EliteAnimation)
-			GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCoords());
-		else
+		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && RulesExt::Global()->Promote_VeteranAnimation)
 			GameCreate<AnimClass>(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCoords());
+		else if (RulesExt::Global()->Promote_EliteAnimation)
+			GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCoords());
 	}
 
 hook_return:  // Stolen code
