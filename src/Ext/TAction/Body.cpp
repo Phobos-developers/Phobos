@@ -448,7 +448,7 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 		return true;
 	// Example:
 	// ID=ActionCount,[Action1],507,4,[CSFKey],[HouseIndex],[AIHousesLists Index],[AITargetTypes Index],[MesageDelay],A,[ActionX]
-	std::vector<HouseClass*> pHousesList;
+	std::vector<HouseClass*> housesList;
 
 	// Obtain houses
 	int param3 = pThis->Param3;
@@ -471,7 +471,7 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 
 	if (param3 >= 0)
 	{
-		pHousesList.push_back(HouseClass::Array->GetItem(param3));
+		housesList.push_back(HouseClass::Array->GetItem(param3));
 	}
 	else
 	{
@@ -485,28 +485,28 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 			return true;
 		}
 
-		std::vector<HouseTypeClass*> housesList;
+		std::vector<HouseTypeClass*> housesTypeList;
 
 		if (listIdx >= 0)
-			housesList = RulesExt::Global()->AIHousesLists.at(listIdx);
+			housesTypeList = RulesExt::Global()->AIHousesLists.at(listIdx);
 
-		if (housesList.size() == 0)
+		if (housesTypeList.size() == 0)
 		{
 			Debug::Log("Map action %d: List [AIHousesList](%d) is empty. This action will be skipped.\n", (int)pThis->ActionKind, listIdx);
 			return true;
 		}
 
-		for (const auto pHouseType : housesList)
+		for (const auto pHouseType : housesTypeList)
 		{
-			for (auto pHouse : *HouseClass::Array)
+			for (auto pItem : *HouseClass::Array)
 			{
-				if (pHouse->Type == pHouseType && !pHouse->Defeated && !pHouse->IsObserver())
-					pHousesList.push_back(pHouse);
+				if (pItem->Type == pHouseType && !pItem->Defeated && !pItem->IsObserver())
+					housesList.push_back(pItem);
 			}
 		}
 
 		// Nothing to check
-		if (pHousesList.size() == 0)
+		if (housesList.size() == 0)
 			return true;
 	}
 
@@ -535,9 +535,9 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 			if (!ScriptExt::IsUnitAvailable(pTechno, false) || pTechno->GetTechnoType() != pType)
 				continue;
 
-			for (const auto pHouse : pHousesList)
+			for (const auto pItem : housesList)
 			{
-				if (pTechno->Owner == pHouse)
+				if (pTechno->Owner == pItem)
 				{
 					globalRemaining++;
 					nRemaining++;
@@ -549,7 +549,7 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 	}
 
 	bool textToShow = false;
-	float messageDelay = pThis->Param6 <= 0 ? RulesClass::Instance->MessageDelay : pThis->Param6 / 60.0; // seconds / 60 = message delay in minutes
+	double messageDelay = pThis->Param6 <= 0 ? RulesClass::Instance->MessageDelay : pThis->Param6 / 60.0; // seconds / 60 = message delay in minutes
 	wchar_t message[2048] = { 0 };
 	wcscpy_s(message, StringTable::TryFetchString(pThis->Text, L"Remaining: "));
 
@@ -567,7 +567,7 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 	{
 		wcscat_s(message, L"\n");
 
-		for (int i = 0; i < technosRemaining.size(); i++)
+		for (std::size_t i = 0; i < technosRemaining.size(); i++)
 		{
 			if (technosRemaining[i] == 0)
 				continue;
