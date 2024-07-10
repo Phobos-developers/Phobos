@@ -453,7 +453,7 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 	// Obtain houses
 	int param3 = pThis->Param3;
 
-	if (pThis->Param3 - HouseClass::PlayerAtA >= 0 && pThis->Param3 - HouseClass::PlayerAtA < 8997)
+	if (pThis->Param3 >= HouseClass::PlayerAtA && pThis->Param3 <= HouseClass::PlayerAtH)
 	{
 		// Multiplayer house index (Player@A - Player@H)
 		param3 = pThis->Param3 - HouseClass::PlayerAtA;
