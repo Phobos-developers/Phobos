@@ -541,6 +541,7 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 				{
 					globalRemaining++;
 					nRemaining++;
+					break;
 				}
 			}
 		}

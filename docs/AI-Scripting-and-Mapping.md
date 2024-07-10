@@ -571,7 +571,7 @@ ID=ActionCount,[Action1],506,0,0,[SuperWeaponTypesIndex],[HouseIndex],[WaypointI
 ```
 
 ### `507` Printing a message with the remaining map objects
-- A message will be printed with a list of alive map objects.
+- A message will be printed with a list of alive map objects. If there are 0 remaining objects no message will be printed.
 - If no `CSFKey` is mentioned (value `0`) it will use the default header text `Remaining: `.
 - `HouseIndex` points to any house index of the map. Multiplayer 4475-4482 & 8997 indexes are valid.
 - If `HouseIndex` is set `-1` then `[AIHousesListsIndex]` will be used as index of a list of countries in the `[AIHousesList]` section located in `rulesmd.ini`. If any map object match the ownership with one of the list it will be counted.
