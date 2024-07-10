@@ -259,6 +259,7 @@ This page lists all the individual contributions to the project by their author.
       - Allow to tilt regardless of TiltCrashJumpjet
       - Forbid firing when crashing
    - OmniFire.TurnToTarget
+   - RecoilForce
    - Strafing aircraft weapon customization
    - Object Self-destruction logic
    - Misc vanilla suicidal behavior fix

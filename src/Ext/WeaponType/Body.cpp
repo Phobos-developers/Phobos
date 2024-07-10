@@ -93,6 +93,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
 	this->AmbientDamage_Warhead.Read<true>(exINI, pSection, "AmbientDamage.Warhead");
 	this->AmbientDamage_IgnoreTarget.Read(exINI, pSection, "AmbientDamage.IgnoreTarget");
+	this->RecoilForce.Read(exINI, pSection, "RecoilForce");
 	this->AttachEffect_RequiredTypes.Read(exINI, pSection, "AttachEffect.RequiredTypes");
 	this->AttachEffect_DisallowedTypes.Read(exINI, pSection, "AttachEffect.DisallowedTypes");
 	exINI.ParseStringList(this->AttachEffect_RequiredGroups, pSection, "AttachEffect.RequiredGroups");
@@ -133,6 +134,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraWarheads_DetonationChances)
 		.Process(this->AmbientDamage_Warhead)
 		.Process(this->AmbientDamage_IgnoreTarget)
+		.Process(this->RecoilForce)
 		.Process(this->AttachEffect_RequiredTypes)
 		.Process(this->AttachEffect_DisallowedTypes)
 		.Process(this->AttachEffect_RequiredGroups)

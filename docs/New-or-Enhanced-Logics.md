@@ -1538,6 +1538,17 @@ In `rulesmd.ini`:
 FeedbackWeapon=  ; WeaponType
 ```
 
+### Recoil force
+
+- You can now tilt a voxel unit after firing to simulate the recoil force.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]  ; WeaponType
+RecoilForce=  ; floating point value, any value below 0.002 is considered 0
+```
+
+
 ### Radiation enhancements
 
 - In addition to allowing custom radiation types, several enhancements are also available to the default radiation type defined in `[Radiation]`, such as ability to set owner & invoker or deal damage against buildings. See [Custom Radiation Types](#custom-radiation-types) for more details.

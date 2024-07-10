@@ -389,6 +389,7 @@ New:
 - Projectile return weapon (by Starkku)
 - Allow customizing aircraft landing direction per aircraft or per dock (by Starkku)
 - Allow animations to play sounds detached from audio event handler (by Starkku)
+- Voxel unit weapon recoil force (by Trsdy)
 - Game save option when starting campaigns (by Trsdy)
 - Carryall pickup voice (by Starkku)
 - Option to have `Grinding.Weapon` require accumulated credits from grinding (by Starkku)

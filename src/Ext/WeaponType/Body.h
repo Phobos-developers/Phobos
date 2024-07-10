@@ -45,6 +45,7 @@ public:
 		ValueableVector<double> ExtraWarheads_DetonationChances;
 		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 		Valueable<bool> AmbientDamage_IgnoreTarget;
+		Valueable<double> RecoilForce;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
 		std::vector<std::string> AttachEffect_RequiredGroups;
@@ -81,6 +82,7 @@ public:
 			, ExtraWarheads_DetonationChances {}
 			, AmbientDamage_Warhead {}
 			, AmbientDamage_IgnoreTarget { false }
+			, RecoilForce { 0 }
 			, AttachEffect_RequiredTypes {}
 			, AttachEffect_DisallowedTypes {}
 			, AttachEffect_RequiredGroups {}
