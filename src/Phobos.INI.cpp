@@ -1,7 +1,10 @@
 #include "Phobos.h"
 
-#include <GameStrings.h>
 #include <CCINIClass.h>
+#include <ScenarioClass.h>
+#include <SessionClass.h>
+#include <MessageListClass.h>
+#include <HouseClass.h>
 
 #include <Utilities/Parser.h>
 #include <Utilities/GeneralUtils.h>
@@ -29,6 +32,7 @@ double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 bool Phobos::UI::CenterPauseMenuBackground = false;
 bool Phobos::UI::WeedsCounter_Show = false;
+bool Phobos::UI::AnchoredToolTips = false;
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
@@ -69,6 +73,22 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ShowHarvesterCounter = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowHarvesterCounter", true);
 	Phobos::Config::ShowWeedsCounter = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowWeedsCounter", true);
 
+	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
+	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD->ReadInteger("Phobos", "CampaignDefaultGameSpeed", 4);
+	if (Phobos::Config::CampaignDefaultGameSpeed > 6 || Phobos::Config::CampaignDefaultGameSpeed < 0)
+	{
+		Phobos::Config::CampaignDefaultGameSpeed = 2;
+	}
+
+	{
+		const byte temp = (byte)Phobos::Config::CampaignDefaultGameSpeed;
+
+		Patch::Apply_RAW(0x55D77A, { temp }); // We overwrite the instructions that force GameSpeed to 2 (GS4)
+		Patch::Apply_RAW(0x55D78D, { temp }); // when speed control is off. Doesn't need a hook.
+	}
+
+	Phobos::Config::ShowDesignatorRange = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowDesignatorRange", false);
+
 	CCINIClass* pINI_UIMD = CCINIClass::LoadINIFile(GameStrings::UIMD_INI);
 
 	// LoadingScreen
@@ -81,6 +101,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	{
 		Phobos::UI::ExtendedToolTips =
 			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
+
+		Phobos::UI::AnchoredToolTips =
+			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "AnchoredToolTips", false);
 
 		Phobos::UI::MaxToolTipWidth =
 			pINI_UIMD->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
@@ -142,25 +165,17 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	CCINIClass::UnloadINIFile(pINI_UIMD);
 
-	CCINIClass* pINI_RULESMD = CCINIClass::LoadINIFile(GameStrings::RULESMD_INI);
+	return 0;
+}
+
+DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
+{
+	CCINIClass* const pINI_RULESMD = CCINIClass::INI_Rules;
+
+	RulesClass::Instance->Read_JumpjetControls(pINI_RULESMD);
 
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
 
-	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
-	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD->ReadInteger("Phobos", "CampaignDefaultGameSpeed", 4);
-	if (Phobos::Config::CampaignDefaultGameSpeed > 6 || Phobos::Config::CampaignDefaultGameSpeed < 0)
-	{
-		Phobos::Config::CampaignDefaultGameSpeed = 2;
-	}
-
-	{
-		const byte temp = (byte)Phobos::Config::CampaignDefaultGameSpeed;
-
-		Patch::Apply_RAW(0x55D77A, { temp }); // We overwrite the instructions that force GameSpeed to 2 (GS4)
-		Patch::Apply_RAW(0x55D78D, { temp }); // when speed control is off. Doesn't need a hook.
-	}
-
-	Phobos::Config::ShowDesignatorRange = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowDesignatorRange", false);
 
 	Phobos::Misc::CustomGS = pINI_RULESMD->ReadBool(GameStrings::General, "CustomGS", false);
 
@@ -193,13 +208,61 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		Patch::Apply_RAW(0x69A310, { 0x8B, 0x44, 0x24, 0x04, 0xD1, 0xE0, 0x40 });
 
 	Phobos::Config::SaveVariablesOnScenarioEnd = pINI_RULESMD->ReadBool(GameStrings::General, "SaveVariablesOnScenarioEnd", false);
-
-	CCINIClass::UnloadINIFile(pINI_RULESMD);
-
+#ifndef DEBUG
+	Phobos::Config::DevelopmentCommands = pINI_RULESMD->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
+#endif
 	return 0;
 }
 
-DEFINE_HOOK(0x55DBF5, MainLoop_SaveGame, 0xA)
+
+bool Phobos::ShouldQuickSave = false;
+std::wstring Phobos::CustomGameSaveDescription {};
+
+void Phobos::PassiveSaveGame()
 {
-	return Phobos::Config::SaveGameOnScenarioStart ? 0 : 0x55DC99;
+	auto PrintMessage = [](const wchar_t* pMessage)
+	{
+		MessageListClass::Instance->PrintMessage(
+			pMessage,
+			RulesClass::Instance->MessageDelay,
+			HouseClass::CurrentPlayer->ColorSchemeIndex,
+			true
+		);
+	};
+
+	PrintMessage(StringTable::LoadString(GameStrings::TXT_SAVING_GAME));
+	char fName[0x80];
+
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
+		time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
+
+	if (ScenarioClass::SaveGame(fName, Phobos::CustomGameSaveDescription.c_str()))
+		PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
+	else
+		PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
+}
+
+DEFINE_HOOK(0x55DBCD, MainLoop_SaveGame, 0x6)
+{
+	// This happens right before LogicClass::Update()
+	enum { SkipSave = 0x55DC99, InitialSave = 0x55DBE6 };
+
+	bool& scenario_saved = *reinterpret_cast<bool*>(0xABCE08);
+	if (SessionClass::IsSingleplayer() && !scenario_saved)
+	{
+		scenario_saved = true;
+		if (Phobos::ShouldQuickSave)
+		{
+			Phobos::PassiveSaveGame();
+			Phobos::ShouldQuickSave = false;
+			Phobos::CustomGameSaveDescription.clear();
+		}
+		else if (Phobos::Config::SaveGameOnScenarioStart && SessionClass::IsCampaign())
+			return InitialSave;
+	}
+
+	return SkipSave;
 }

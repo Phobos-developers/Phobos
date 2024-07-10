@@ -81,7 +81,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 		pThis->Accum = 0.0;
 	}
 
-	if (appliedDamage <= 0 || pThis->IsPlaying)
+	if (appliedDamage <= 0 || pThis->IsInert)
 		return SkipDamage;
 
 	TechnoClass* pInvoker = nullptr;
@@ -99,9 +99,9 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 		}
 	}
 
-	if (pTypeExt->Weapon.isset())
+	if (pTypeExt->Weapon)
 	{
-		WeaponTypeExt::DetonateAt(pTypeExt->Weapon.Get(), pThis->GetCoords(), pInvoker, appliedDamage, pInvokerHouse);
+		WeaponTypeExt::DetonateAt(pTypeExt->Weapon, pThis->GetCoords(), pInvoker, appliedDamage, pInvokerHouse);
 	}
 	else
 	{
@@ -153,6 +153,15 @@ DEFINE_HOOK(0x423939, AnimClass_BounceAI_AttachedSystem, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x62E08B, ParticleSystemClass_DTOR_DetachAttachedSystem, 0x7)
+{
+	GET(ParticleSystemClass*, pParticleSystem, EDI);
+
+	AnimExt::InvalidateParticleSystemPointers(pParticleSystem);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 {
 	enum { SkipGameCode = 0x423EFD };
@@ -169,7 +178,7 @@ DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 	auto const nDamage = Game::F2I(pType->Damage);
 	auto const pOwner = AnimExt::GetOwnerHouse(pThis);
 
-	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim.Get(), splashAnims, pOwner, pType->Warhead, nDamage,
+	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim, splashAnims, pOwner, pType->Warhead, nDamage,
 		pThis->GetCell(), pThis->Location, heightFlag, pType->IsMeteor, pTypeExt->Warhead_Detonate, pTypeExt->ExplodeOnWater, pTypeExt->SplashAnims_PickRandom);
 
 	return SkipGameCode;
@@ -197,19 +206,21 @@ DEFINE_HOOK(0x424CF1, AnimClass_Start_DetachedReport, 0x6)
 
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTypeExt->DetachedReport.isset())
+	if (pTypeExt->DetachedReport >= 0)
 		VocClass::PlayAt(pTypeExt->DetachedReport.Get(), pThis->GetCoords());
 
 	return 0;
 }
 
-DEFINE_HOOK(0x422CAB, AnimClass_DrawIt_XDrawOffset, 0x5)
+// 0x422CD8 is in an alternate code path only used by anims with ID RING1, unused normally but covering it just because
+DEFINE_HOOK_AGAIN(0x422CD8, AnimClass_DrawIt_XDrawOffset, 0x6) 
+DEFINE_HOOK(0x423122, AnimClass_DrawIt_XDrawOffset, 0x6)
 {
-	GET(AnimClass* const, pThis, ECX);
-	GET_STACK(Point2D*, pCoord, STACK_OFFSET(0x100, 0x4));
+	GET(AnimClass* const, pThis, ESI);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x110, 0x4));
 
 	if (auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type))
-		pCoord->X += pTypeExt->XDrawOffset;
+		pLocation->X += pTypeExt->XDrawOffset;
 
 	return 0;
 }
