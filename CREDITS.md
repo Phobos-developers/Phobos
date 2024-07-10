@@ -329,6 +329,7 @@ This page lists all the individual contributions to the project by their author.
   - Sound entry on unit's creation
   - Auto-deploy/Deploy block on ammo change
   - Flashing Technos on selecting
+  - Promotion animation
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
   - Re-enable the Veinhole Monster and Weeds from TS

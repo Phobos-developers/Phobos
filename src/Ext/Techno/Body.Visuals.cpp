@@ -178,13 +178,17 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	if (frameIndex != -1 && pShapeFile)
 	{
-		offset.X += 5;
-		offset.Y += 2;
-
-		if (pThis->WhatAmI() != AbstractType::Infantry)
+		switch (pThis->WhatAmI())
 		{
-			offset.X += 5;
-			offset.Y += 4;
+		case AbstractType::Infantry:
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Infantry.Get();
+			break;
+		case AbstractType::Building:
+			offset = GetBuildingSelectBracketPosition(pThis, RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor.Get()) + RulesExt::Global()->DrawInsignia_AdjustPos_Buildings.Get();
+			break;
+		default:
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units.Get();
+			break;
 		}
 
 		DSurface::Temp->DrawSHP(

@@ -466,32 +466,43 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
     - A shorthand `InsigniaFrames` can be used to list them in order from rookie, veteran and elite instead as well. `InsigniaFrame(.Rookie|Veteran|Elite)` takes priority over this.
   - Normal insignia can be overridden for specific weapon modes of `Gunner=true` units by setting `Insignia(.Frame/.Frames).WeaponN` where `N` stands for 1-based weapon mode index. If not set, defaults to non-mode specific insignia settings.
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true.
+  - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
+  - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
+  - `DrawInsignia.AdjustPos.BuildingsAnchor` sets the anchor point from which the insignia offset is calculated, relative to building's center.
+
 
 In `rulesmd.ini`:
 ```ini
 [General]
-EnemyInsignia=true                ; boolean
+EnemyInsignia=true                             ; boolean
 
-[SOMETECHNO]                      ; TechnoType
-Insignia=                         ; filename - excluding the .shp extension
-Insignia.Rookie=                  ; filename - excluding the .shp extension
-Insignia.Veteran=                 ; filename - excluding the .shp extension
-Insignia.Elite=                   ; filename - excluding the .shp extension
-InsigniaFrame=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Rookie=-1           ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Veteran=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Elite=-1            ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames=-1,-1,-1           ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.WeaponN=                 ; filename - excluding the .shp extension
-Insignia.WeaponN.Rookie=          ; filename - excluding the .shp extension
-Insignia.WeaponN.Veteran=         ; filename - excluding the .shp extension
-Insignia.WeaponN.Elite=           ; filename - excluding the .shp extension
-InsigniaFrame.WeaponN=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Rookie=-1   ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Veteran=-1  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Elite=-1    ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames.WeaponN=-1,-1,-1   ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.ShowEnemy=               ; boolean
+[AudioVisual]
+DrawInsignia.OnlyOnSelected=false              ; boolean
+DrawInsignia.AdjustPos.Infantry=5,2            ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Units=10,6              ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Buildings=10,6          ; X,Y, position offset from default
+DrawInsignia.AdjustPos.BuildingsAnchor=bottom  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+
+[SOMETECHNO]                                   ; TechnoType
+Insignia=                                      ; filename - excluding the .shp extension
+Insignia.Rookie=                               ; filename - excluding the .shp extension
+Insignia.Veteran=                              ; filename - excluding the .shp extension
+Insignia.Elite=                                ; filename - excluding the .shp extension
+InsigniaFrame=-1                               ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                        ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                       ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames=-1,-1,-1                        ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.WeaponN=                              ; filename - excluding the .shp extension
+Insignia.WeaponN.Rookie=                       ; filename - excluding the .shp extension
+Insignia.WeaponN.Veteran=                      ; filename - excluding the .shp extension
+Insignia.WeaponN.Elite=                        ; filename - excluding the .shp extension
+InsigniaFrame.WeaponN=-1                       ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Rookie=-1                ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Veteran=-1               ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Elite=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames.WeaponN=-1,-1,-1                ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.ShowEnemy=                            ; boolean
 ```
 
 ```{note}
