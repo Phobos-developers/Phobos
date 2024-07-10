@@ -512,7 +512,7 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 
 	// Read the ID list of technos
 	int listIdx = std::abs(pThis->Param5);
-	bool isGlobalCount = pThis->Param5 < 0 ? true : false;
+	bool isGlobalCount = pThis->Param5 < 0;
 
 	if (RulesExt::Global()->AITargetTypesLists.size() == 0
 		|| RulesExt::Global()->AITargetTypesLists[listIdx].size() == 0)
