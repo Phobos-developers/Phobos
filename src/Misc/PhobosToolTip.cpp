@@ -90,7 +90,7 @@ inline const wchar_t* PhobosToolTip::GetBuffer() const
 void PhobosToolTip::HelpText(BuildType& cameo)
 {
 	if (cameo.ItemType == AbstractType::Special)
-		this->HelpText(SuperWeaponTypeClass::Array->GetItem(cameo.ItemIndex));
+		this->HelpText(HouseClass::CurrentPlayer->Supers.Items[cameo.ItemIndex]);
 	else
 		this->HelpText(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
 }
@@ -117,10 +117,9 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
 
-	int nBuildTime = this->GetBuildTime(pType);
-	int nSec = TickTimeToSeconds(nBuildTime) % 60;
-	int nMin = TickTimeToSeconds(nBuildTime) / 60 /* % 60*/;
-	// int nHour = tickTimeToSeconds(nBuildTime) / 60 / 60;
+	int nBuildTime = TickTimeToSeconds(this->GetBuildTime(pType));
+	int nSec = nBuildTime % 60;
+	int nMin = nBuildTime / 60;
 
 	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
 
@@ -129,7 +128,6 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 		<< (cost < 0 ? L"+" : L"")
 		<< Phobos::UI::CostLabel << std::abs(cost) << L" "
 		<< Phobos::UI::TimeLabel
-		// << std::setw(2) << std::setfill(L'0') << nHour << L":"
 		<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 		<< std::setw(2) << std::setfill(L'0') << nSec;
 
@@ -147,12 +145,12 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 	this->TextBuffer = oss.str();
 }
 
-void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
+void PhobosToolTip::HelpText(SuperClass* pSuper)
 {
-	auto const pData = SWTypeExt::ExtMap.Find(pType);
+	auto const pData = SWTypeExt::ExtMap.Find(pSuper->Type);
 
 	std::wostringstream oss;
-	oss << pType->UIName;
+	oss << pSuper->Type->UIName;
 	bool showCost = false;
 
 	if (int nCost = std::abs(pData->Money_Amount))
@@ -166,17 +164,16 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 		showCost = true;
 	}
 
-	if (pType->RechargeTime > 0)
+	int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());
+	if (rechargeTime > 0)
 	{
 		if (!showCost)
 			oss << L"\n";
 
-		int nSec = TickTimeToSeconds(pType->RechargeTime) % 60;
-		int nMin = TickTimeToSeconds(pType->RechargeTime) / 60 /* % 60*/;
-		// int nHour = tickTimeToSeconds(pType->RechargeTime) / 60 / 60;
+		int nSec = rechargeTime % 60;
+		int nMin = rechargeTime / 60;
 
 		oss << (showCost ? L" " : L"") << Phobos::UI::TimeLabel
-			// << std::setw(2) << std::setfill(L'0') << nHour << L":"
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 			<< std::setw(2) << std::setfill(L'0') << nSec;
 	}
