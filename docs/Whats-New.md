@@ -393,7 +393,7 @@ New:
 - Toggle for `Explodes=true` BuildingTypes to not explode during buildup or being sold (by Starkku)
 - Toggleable height-based shadow scaling for voxel air units (by Trsdy & Starkku)
 - User setting toggles for harvester counter & power delta indicator (by Starkku)
-- Insignias visibility and position adjustments (by Fryone, Kerbiter)
+- Insignias visibility and position adjustments (by Fryone)
 - Promotion animation (by Fryone)
 
 Vanilla fixes:
