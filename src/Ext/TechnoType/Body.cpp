@@ -299,6 +299,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_InitialDelays.Read(exINI, pSection, "AttachEffect.InitialDelays");
 	this->AttachEffect_RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
 
+	this->BuildLimitGroup_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
+	this->BuildLimitGroup_Nums.Read(exINI, pSection, "BuildLimitGroup.Nums");
+	this->BuildLimitGroup_Factor.Read(exINI, pSection, "BuildLimitGroup.Factor");
+	this->BuildLimitGroup_ContentIfAnyMatch.Read(exINI, pSection, "BuildLimitGroup.ContentIfAnyMatch");
+	this->BuildLimitGroup_NotBuildableIfQueueMatch.Read(exINI, pSection, "BuildLimitGroup.NotBuildableIfQueueMatch");
+	this->BuildLimitGroup_ExtraLimit_Types.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.Types");
+	this->BuildLimitGroup_ExtraLimit_Nums.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.Nums");
+	this->BuildLimitGroup_ExtraLimit_MaxCount.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxCount");
+	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
@@ -632,6 +641,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnHeight)
 		.Process(this->LandingDir)
 		.Process(this->DroppodType)
+
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
 
@@ -649,6 +659,16 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_Delays)
 		.Process(this->AttachEffect_InitialDelays)
 		.Process(this->AttachEffect_RecreationDelays)
+
+		.Process(this->BuildLimitGroup_Types)
+		.Process(this->BuildLimitGroup_Nums)
+		.Process(this->BuildLimitGroup_Factor)
+		.Process(this->BuildLimitGroup_ContentIfAnyMatch)
+		.Process(this->BuildLimitGroup_NotBuildableIfQueueMatch)
+		.Process(this->BuildLimitGroup_ExtraLimit_Types)
+		.Process(this->BuildLimitGroup_ExtraLimit_Nums)
+		.Process(this->BuildLimitGroup_ExtraLimit_MaxCount)
+		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
