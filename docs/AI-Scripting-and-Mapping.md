@@ -588,6 +588,10 @@ ID=ActionCount,[Action1],507,4,[CSFKey],[HouseIndex],[AIHousesListsIndex],[AITar
 ...
 ```
 
+```{warning}
+- Don't write multiple times the same object ID in the `[AITargetTypes]` list.
+```
+
 ### `510` Toggle MCV redeployablility
 
 - Force MCV's redeployablility by setting the third parameter.
