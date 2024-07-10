@@ -458,7 +458,7 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 		// Multiplayer house index (Player@A - Player@H)
 		param3 = pThis->Param3 - HouseClass::PlayerAtA;
 	}
-	else if (pThis->Param3 - 8997 == 0)
+	else if (pThis->Param3 == 8997)
 	{
 		// House specified in Trigger
 		param3 = pThis->TeamType ? pThis->TeamType->Owner->ArrayIndex : pHouse->ArrayIndex;
