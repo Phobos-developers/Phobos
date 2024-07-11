@@ -37,7 +37,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(CoordStruct, coord, STACK_OFFSET(0x24, -0x18));
 
-	bool bPlayBuildUp = pThis->Param3 || pBldType->LoadBuildup();
+	bool bPlayBuildUp = pBldType->LoadBuildup();
 	//Param3 can be used for other purposes in the future
 	bool bCreated = false;
 	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
@@ -127,11 +127,14 @@ DEFINE_HOOK(0x6D4455, Tactical_Render_UpdateLightSources, 0x8)
 
 DEFINE_HOOK(0x6E2368, TActionClass_PlayAnimAt, 0x7)
 {
+	enum { SkipGameCode = 0x6E236F };
+
+	GET(TActionClass*, pThis, ESI);
 	GET(AnimClass*, pAnim, EAX);
 	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x18, 0x4));
 
-	if (pAnim)
-		AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
+	AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
+	pAnim->IsInert = !pThis->Param3;
 
-	return 0;
+	return SkipGameCode;
 }

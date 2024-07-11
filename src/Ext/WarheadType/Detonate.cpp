@@ -122,7 +122,12 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		else if (pBullet)
 		{
 			if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
-				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+			{
+				// Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
+				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
+				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4)
+					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+			}
 		}
 	}
 }
@@ -140,7 +145,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	this->ApplyShieldModifiers(pTarget, pTargetExt);
 
 	if (this->RemoveDisguise)
-		this->ApplyRemoveDisguiseToInf(pHouse, pTarget);
+		this->ApplyRemoveDisguise(pHouse, pTarget);
 
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pHouse, pTarget);
@@ -235,7 +240,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 				};
 
 			if (this->Shield_Break && pTargetExt->Shield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
-				pTargetExt->Shield->BreakShield(this->Shield_BreakAnim.Get(nullptr), this->Shield_BreakWeapon.Get(nullptr));
+				pTargetExt->Shield->BreakShield(this->Shield_BreakAnim, this->Shield_BreakWeapon);
 
 			if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
 				pTargetExt->Shield->SetRespawn(this->Shield_Respawn_Duration, this->Shield_Respawn_Amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
@@ -258,12 +263,14 @@ void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoC
 		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
 }
 
-void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget)
+void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (auto pInf = abstract_cast<InfantryClass*>(pTarget))
+	if (pTarget->IsDisguised())
 	{
-		if (pInf->IsDisguised())
-			pInf->Disguised = false;
+		if (auto pSpy = specific_cast<InfantryClass*>(pTarget))
+			pSpy->Disguised = false;
+		else if (auto pMirage = specific_cast<UnitClass*>(pTarget))
+			pMirage->ClearDisguise();
 	}
 }
 
@@ -318,8 +325,8 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 
 	auto damage = this->Crit_ExtraDamage.Get();
 
-	if (this->Crit_Warhead.isset())
-		WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTarget, pOwner, damage);
+	if (this->Crit_Warhead)
+		WarheadTypeExt::DetonateAt(this->Crit_Warhead, pTarget, pOwner, damage);
 	else
 		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }

@@ -67,14 +67,11 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	// Step 4: apply FLH offset
 	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
 
-	auto result = mtx * Vector3D<float>::Empty;
-
-	// Resulting coords are mirrored along X axis, so we mirror it back
-	result.Y *= -1;
+	auto result = mtx.GetTranslation();
 
 	// Step 5: apply as an offset to global object coords
-	CoordStruct location = pThis->GetCoords();
-	location += { (int)result.X, (int)result.Y, (int)result.Z };
+	// Resulting coords are mirrored along X axis, so we mirror it back
+	auto location = pThis->GetCoords() + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
 
 	return location;
 }
@@ -211,11 +208,11 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 
 	if ((pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity != 0.0) && EnumFunctions::CanTargetHouse(pTypeExt->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
 	{
-		color |= Drawing::RGB_To_Int(pTypeExt->Tint_Color.Get(ColorStruct { 0,0,0 }));
+		color |= Drawing::RGB_To_Int(pTypeExt->Tint_Color);
 		intensity += static_cast<int>(pTypeExt->Tint_Intensity * 1000);
 	}
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	for (auto const& attachEffect : pExt->AttachedEffects)
 	{
@@ -227,7 +224,7 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 		if (!EnumFunctions::CanTargetHouse(type->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
 			continue;
 
-		color |= Drawing::RGB_To_Int(type->Tint_Color.Get(ColorStruct { 0,0,0 }));
+		color |= Drawing::RGB_To_Int(type->Tint_Color);
 		intensity += static_cast<int>(type->Tint_Intensity * 1000);
 	}
 

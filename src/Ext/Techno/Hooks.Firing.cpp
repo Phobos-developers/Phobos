@@ -334,22 +334,25 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 	return Continue;
 }
 
-DEFINE_HOOK(0x6FC587, TechnoClass_CanFire_OpenTopped, 0x6)
+DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 {
-	enum { DisallowFiring = 0x6FC86A };
+	enum { Illegal = 0x6FC86A, OutOfRange = 0x6FC0DF, Continue = 0x6FC5D5 };
 
-	GET(TechnoClass*, pThis, ESI);
+//	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pTransport, EAX);
 
-	if (auto const pTransport = pThis->Transporter)
-	{
-		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
-		{
-			if (pTransport->Deactivated && !pExt->OpenTopped_AllowFiringIfDeactivated)
-				return DisallowFiring;
-		}
-	}
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
 
-	return 0;
+	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
+		return Illegal;
+
+	if (pTransport->Transporter)
+		return Illegal;
+
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::ExtMap.Find(pTransport)->AE_DisableWeapons)
+		return OutOfRange;
+
+	return Continue;
 }
 
 DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
@@ -479,10 +482,8 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 
 	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
-		if (pWeaponExt->FeedbackWeapon.isset())
+		if (auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon)
 		{
-			auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon.Get();
-
 			if (pThis->InOpenToppedTransport && !pWeaponFeedback->FireInTransport)
 				return 0;
 
@@ -636,6 +637,16 @@ DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FCFE0, TechnoClass_RearmDelay_CanCloakDuringRearm, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	TechnoExt::ExtMap.Find(pThis)->CanCloakDuringRearm = !pWeapon->DecloakToFire;
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_ROF, 0x6)
 {
 	enum { SkipGameCode = 0x6FD0BB };
@@ -708,25 +719,35 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x5209A7, InfantryClass_FiringAI_BurstDelays, 0x8)
+namespace FiringAITemp
+{
+	int weaponIndex;
+}
+
+DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
+{
+	GET(int, weaponIndex, EDI);
+
+	FiringAITemp::weaponIndex = weaponIndex;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 {
 	enum { Continue = 0x5209CD, ReturnFromFunction = 0x520AD9 };
 
 	GET(InfantryClass*, pThis, EBP);
 	GET(int, firingFrame, EDX);
 
-	int weaponIndex = pThis->SelectWeapon(pThis->Target);
-	const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-	if (!pWeapon)
-		return ReturnFromFunction;
-
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	int cumulativeDelay = 0;
 	int projectedDelay = 0;
+	int weaponIndex = FiringAITemp::weaponIndex;
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
-	if (pWeaponExt->Burst_FireWithinSequence)
+	if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
 	{
 		for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
 		{
@@ -749,16 +770,16 @@ DEFINE_HOOK(0x5209A7, InfantryClass_FiringAI_BurstDelays, 0x8)
 		}
 	}
 
-	if (pThis->IsFiring && pThis->Animation.Value == firingFrame + cumulativeDelay)
+	if (pThis->Animation.Value == firingFrame + cumulativeDelay)
 	{
-		if (pWeaponExt->Burst_FireWithinSequence)
+		if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
 		{
 			int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
 
 			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
 			if (firingFrame + projectedDelay > frameCount)
 			{
-				const auto pExt = TechnoExt::ExtMap.Find(pThis);
+				auto const pExt = TechnoExt::ExtMap.Find(pThis);
 				pExt->ForceFullRearmDelay = true;
 			}
 		}
