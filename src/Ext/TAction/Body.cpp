@@ -460,22 +460,17 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 
 		const int listIdx = pThis->Param4;
 
-		if (RulesExt::Global()->AIHousesLists.size() == 0)
+		if (listIdx < 0
+		|| RulesExt::Global()->AIHousesLists.size() == 0
+		|| RulesExt::Global()->AIHousesLists.size() <= listIdx
+		|| RulesExt::Global()->AIHousesLists[listIdx].size() == 0)
 		{
-			Debug::Log("Map action %d: [AIHousesList] is empty. This action will be skipped.\n", (int)pThis->ActionKind);
+			Debug::Log("Map action %d: List [AIHousesList](%d) is empty or invalid. This action will be skipped.\n", (int)pThis->ActionKind, listIdx);
 			return true;
 		}
 
 		std::vector<HouseTypeClass*> housesTypeList;
-
-		if (listIdx >= 0)
-			housesTypeList = RulesExt::Global()->AIHousesLists.at(listIdx);
-
-		if (housesTypeList.size() == 0)
-		{
-			Debug::Log("Map action %d: List [AIHousesList](%d) is empty. This action will be skipped.\n", (int)pThis->ActionKind, listIdx);
-			return true;
-		}
+		housesTypeList = RulesExt::Global()->AIHousesLists.at(listIdx);
 
 		for (const auto pHouseType : housesTypeList)
 		{
