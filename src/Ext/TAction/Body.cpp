@@ -453,30 +453,11 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 	// Obtain houses
 	int param3 = pThis->Param3;
 
-	if (pThis->Param3 >= HouseClass::PlayerAtA && pThis->Param3 <= HouseClass::PlayerAtH)
-	{
-		// Multiplayer house index (Player@A - Player@H)
-		param3 = pThis->Param3 - HouseClass::PlayerAtA;
-	}
-	else if (pThis->Param3 == 8997)
-	{
-		// House specified in Trigger
-		param3 = pThis->TeamType ? pThis->TeamType->Owner->ArrayIndex : pHouse->ArrayIndex;
-	}
-	else if (pThis->Param3 > 8997)
-	{
-		Debug::Log("Map action %d: Invalid house index '%d'. This action will be skipped.\n", (int)pThis->ActionKind, pThis->Param3);
-		return true;
-	}
-
-	if (param3 >= 0)
-	{
-		housesList.push_back(HouseClass::Array->GetItem(param3));
-	}
-	else
+	if (param3 < 0)
 	{
 		// Pick a group of countries from [AIHousesList].
 		// Any house of the same type of the listed at [AIHousesList] will be included here
+
 		const int listIdx = pThis->Param4;
 
 		if (RulesExt::Global()->AIHousesLists.size() == 0)
@@ -509,13 +490,37 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 		if (housesList.size() == 0)
 			return true;
 	}
+	else
+	{
+		// Check index of a single house.
+
+		if (param3 >= HouseClass::PlayerAtA && param3 <= HouseClass::PlayerAtH)
+		{
+			// Is a multiplayer house index (Player@A - Player@H) ?
+			param3 = pThis->Param3 - HouseClass::PlayerAtA;
+		}
+		else if (param3 == 8997)
+		{
+			// Is the owner of the trigger ?
+			param3 = pThis->TeamType ? pThis->TeamType->Owner->ArrayIndex : pHouse->ArrayIndex;
+		}
+		else if (param3 > 8997 || HouseClass::Array()->Count <= param3)
+		{
+			// Is a invalid index value ?
+			Debug::Log("Map action %d: Invalid house index '%d'. This action will be skipped.\n", (int)pThis->ActionKind, pThis->Param3);
+			return true;
+		}
+
+		housesList.push_back(HouseClass::Array->GetItem(param3));
+	}
 
 	// Read the ID list of technos
 	int listIdx = std::abs(pThis->Param5);
 	bool isGlobalCount = pThis->Param5 < 0;
 
 	if (RulesExt::Global()->AITargetTypesLists.size() == 0
-		|| RulesExt::Global()->AITargetTypesLists[listIdx].size() == 0)
+		|| RulesExt::Global()->AITargetTypesLists[listIdx].size() == 0
+		|| RulesExt::Global()->AITargetTypesLists.size() <= listIdx)
 	{
 		Debug::Log("Map action %d: List [AITargetTypes](%d) is empty. This action will be skipped.\n", (int)pThis->ActionKind, listIdx);
 		return true;
