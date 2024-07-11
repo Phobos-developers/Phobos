@@ -326,7 +326,7 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse,int mo
 			int oldstart = pSuper->RechargeTimer.StartTime;
 			int oldleft = pSuper->RechargeTimer.TimeLeft;
 			pSuper->SetReadiness(true);
-			pSuper->Launch(CellClass::Coord2Cell(this->OwnerObject()->GetRenderCoords()), pHouse->IsCurrentPlayer());
+			pSuper->Launch(CellClass::Coord2Cell(this->OwnerObject()->GetCenterCoords()), pHouse->IsCurrentPlayer());
 			pSuper->Reset();
 			pSuper->RechargeTimer.StartTime = oldstart;
 			pSuper->RechargeTimer.TimeLeft = oldleft;
