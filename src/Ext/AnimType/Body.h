@@ -51,6 +51,16 @@ public:
 		Valueable<bool> VisibleTo_ConsiderInvokerAsOwner;
 		Valueable<bool> RestrictVisibilityIfCloaked;
 		Valueable<bool> DetachOnCloak;
+		Nullable<int> Translucency_Cloaked;
+		Valueable<double> Translucent_Stage1_Percent;
+		Nullable<int> Translucent_Stage1_Frame;
+		Valueable<TranslucencyLevel> Translucent_Stage1_Translucency;
+		Valueable<double> Translucent_Stage2_Percent;
+		Nullable<int> Translucent_Stage2_Frame;
+		Valueable<TranslucencyLevel> Translucent_Stage2_Translucency;
+		Valueable<double> Translucent_Stage3_Percent;
+		Nullable<int> Translucent_Stage3_Frame;
+		Valueable<TranslucencyLevel> Translucent_Stage3_Translucency;
 		Valueable<bool> ConstrainFireAnimsToCellSpots;
 		Nullable<LandTypeFlags> FireAnimDisallowedLandTypes;
 		Nullable<bool> AttachFireAnimsToParent;
@@ -90,6 +100,16 @@ public:
 			, VisibleTo_ConsiderInvokerAsOwner { false }
 			, RestrictVisibilityIfCloaked { false }
 			, DetachOnCloak { true }
+			, Translucency_Cloaked {}
+			, Translucent_Stage1_Percent { 0.2 }
+			, Translucent_Stage1_Frame {}
+			, Translucent_Stage1_Translucency { 25 }
+			, Translucent_Stage2_Percent { 0.4 }
+			, Translucent_Stage2_Frame {}
+			, Translucent_Stage2_Translucency { 50 }
+			, Translucent_Stage3_Percent { 0.6 }
+			, Translucent_Stage3_Frame {}
+			, Translucent_Stage3_Translucency { 75 }
 			, ConstrainFireAnimsToCellSpots { true }
 			, FireAnimDisallowedLandTypes {}
 			, AttachFireAnimsToParent {}

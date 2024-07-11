@@ -490,14 +490,14 @@ public:
 		return *this;
 	}
 
-	operator BlitterFlags()
+	operator BlitterFlags() const
 	{
 		return this->value;
 	}
 
-	BlitterFlags GetBlitterFlags()
+	BlitterFlags GetBlitterFlags() const
 	{
-		return *this;
+		return this->value;
 	}
 
 	bool Read(INI_EX& parser, const char* pSection, const char* pKey);

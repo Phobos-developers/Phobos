@@ -468,6 +468,86 @@ DEFINE_HOOK(0x423061, AnimClass_DrawIt_Visibility, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x42308D, AnimClass_DrawIt_Transparency, 0x6)
+{
+	enum { SkipGameCode = 0x4230FE, ReturnFromFunction = 0x4238A3 };
+
+	GET(AnimClass*, pThis, ESI);
+	GET(BlitterFlags, flags, EBX);
+
+	auto const pType = pThis->Type;
+	int translucencyLevel = pThis->TranslucencyLevel; // Used by building animations when building needs to be drawn partially transparent.
+
+	if (!pType->Translucent)
+	{
+		auto translucency = pThis->Type->Translucency;
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt->Translucency_Cloaked.isset())
+		{
+			if (auto const pTechno = abstract_cast<TechnoClass*>(pThis->OwnerObject))
+			{
+				if (pTechno->CloakState == CloakState::Cloaked || pTechno->CloakState == CloakState::Cloaking)
+					translucency = pTypeExt->Translucency_Cloaked.Get();
+			}
+		}
+
+		if (translucency <= 0)
+		{
+			if (translucencyLevel)
+			{
+				if (translucencyLevel > 15)
+					return ReturnFromFunction;
+				else if (translucencyLevel > 10)
+					flags |= BlitterFlags::TransLucent50;
+				else if (translucencyLevel > 5)
+					flags |= BlitterFlags::TransLucent50;
+				else
+					flags |= BlitterFlags::TransLucent25;
+			}
+		}
+		else
+		{
+			if (translucencyLevel >= 15)
+				return ReturnFromFunction;
+			else if (translucency == 75)
+				flags |= BlitterFlags::TransLucent75;
+			else if (translucency == 50)
+				flags |= BlitterFlags::TransLucent50;
+			else if (translucency == 25)
+				flags |= BlitterFlags::TransLucent25;
+		}
+	}
+	else
+	{
+		if (translucencyLevel >= 15)
+			return ReturnFromFunction;
+
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+		int currentFrame = pThis->Animation.Value;
+		int frames = pType->End;
+
+		if ((pTypeExt->Translucent_Stage3_Frame.isset() && currentFrame >= pTypeExt->Translucent_Stage3_Frame.Get())
+			|| currentFrame >= frames * pTypeExt->Translucent_Stage3_Percent)
+		{
+			flags |= pTypeExt->Translucent_Stage3_Translucency.Get();
+		}
+		else if ((pTypeExt->Translucent_Stage2_Frame.isset() && currentFrame >= pTypeExt->Translucent_Stage2_Frame.Get())
+			|| currentFrame >= frames * pTypeExt->Translucent_Stage2_Percent)
+		{
+			flags |= pTypeExt->Translucent_Stage2_Translucency.Get();
+		}
+		else if ((pTypeExt->Translucent_Stage1_Frame.isset() && currentFrame >= pTypeExt->Translucent_Stage1_Frame.Get())
+			|| currentFrame >= frames * pTypeExt->Translucent_Stage1_Percent)
+		{
+			flags |= pTypeExt->Translucent_Stage1_Translucency.Get();
+		}
+	}
+
+	R->EBX(flags);
+	return SkipGameCode;
+}
+
 #pragma region AltPalette
 
 // Fix AltPalette anims not using owner color scheme.
