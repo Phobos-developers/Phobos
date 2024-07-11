@@ -79,6 +79,8 @@ public:
 	static void HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
 	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom);
 
+	static void SpawnFireAnims(AnimClass* pThis);
+
 	static void InvalidateTechnoPointers(TechnoClass* pTechno);
 	static void InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem);
 };

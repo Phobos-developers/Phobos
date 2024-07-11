@@ -249,6 +249,7 @@ This page lists all the individual contributions to the project by their author.
   - Light effect customizations
   - Building unit repair customizations
   - Build area customizations
+  - `Scorch` / `Flamer` fire animation customization
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

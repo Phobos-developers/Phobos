@@ -54,6 +54,17 @@ public:
 		Valueable<bool> VisibleTo_ConsiderInvokerAsOwner;
 		Valueable<bool> RestrictVisibilityIfCloaked;
 		Valueable<bool> DetachOnCloak;
+		Valueable<bool> ConstrainFireAnimsToCellSpots;
+		Nullable<LandTypeFlags> FireAnimDisallowedLandTypes;
+		Nullable<bool> AttachFireAnimsToParent;
+		Nullable<int> SmallFireCount;
+		ValueableVector<AnimTypeClass*> SmallFireAnims;
+		ValueableVector<double> SmallFireChances;
+		ValueableVector<double> SmallFireDistances;
+		Valueable<int> LargeFireCount;
+		ValueableVector<AnimTypeClass*> LargeFireAnims;
+		ValueableVector<double> LargeFireChances;
+		ValueableVector<double> LargeFireDistances;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -92,6 +103,17 @@ public:
 			, VisibleTo_ConsiderInvokerAsOwner { false }
 			, RestrictVisibilityIfCloaked { false }
 			, DetachOnCloak { true }
+			, ConstrainFireAnimsToCellSpots { true }
+			, FireAnimDisallowedLandTypes {}
+			, AttachFireAnimsToParent { false }
+			, SmallFireCount {}
+			, SmallFireAnims {}
+			, SmallFireChances {}
+			, SmallFireDistances {}
+			, LargeFireCount { 1 }
+			, LargeFireAnims {}
+			, LargeFireChances {}
+			, LargeFireDistances {}
 		{ }
 
 		virtual ~ExtData() = default;

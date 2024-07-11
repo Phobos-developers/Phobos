@@ -634,6 +634,37 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<LandTypeFlags>(LandTypeFlags& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = LandTypeFlags::None;
+			auto str = parser.value();
+			char* context = nullptr;
+
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				auto const landType = GroundType::GetLandTypeFromName(parser.value());
+
+				if (landType >= LandType::Clear && landType <= LandType::Weeds)
+				{
+					parsed |= (LandTypeFlags)(1 << (char)landType);
+				}
+				else
+				{
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a land type name");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<SuperWeaponAITargetingMode>(SuperWeaponAITargetingMode& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
