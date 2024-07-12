@@ -24,7 +24,7 @@ void DroppodTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->Trailer.Read(exINI, pSection, "DropPod.Trailer");
 	this->Trailer_SpawnDelay.Read(exINI, pSection, "DropPod.Trailer.SpawnDelay");
 	this->Trailer_Attached.Read(exINI, pSection, "DropPod.Trailer.Attached");
-	this->Weapon.Read(exINI, pSection, "DropPod.Weapon");
+	this->Weapon.Read<true>(exINI, pSection, "DropPod.Weapon");
 	this->Weapon_HitLandOnly.Read(exINI, pSection, "DropPod.Weapon.HitLandOnly");
 }
 
