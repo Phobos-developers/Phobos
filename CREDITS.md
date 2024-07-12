@@ -240,6 +240,7 @@ This page lists all the individual contributions to the project by their author.
   - Disabling `MultipleFactory` bonus from specific BuildingType
   - Customizable ChronoSphere teleport delays for units
   - Allowed and disallowed types for `FactoryPlant`
+  - Forbidding parallel AI queues for specific TechnoTypes
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
