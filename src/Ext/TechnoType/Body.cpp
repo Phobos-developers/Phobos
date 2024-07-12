@@ -241,7 +241,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
 	this->IronCurtain_KillWarhead.Read(exINI, pSection, "IronCurtain.KillWarhead");
 
-	this->CanRepairCyborgLegs.Read(exINI, pSection, "CanRepairCyborgLegs");
+	this->Transporter_FixCyborgLegs.Read(exINI, pSection, "Transporter.FixCyborgLegs");
 
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
 	this->Explodes_DuringBuildup.Read(exINI, pSection, "Explodes.DuringBuildup");
@@ -567,7 +567,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_Effect)
 		.Process(this->IronCurtain_KillWarhead)
 
-		.Process(this->CanRepairCyborgLegs)
 		.Process(this->Explodes_KillPassengers)
 		.Process(this->Explodes_DuringBuildup)
 		.Process(this->DeployFireWeapon)
@@ -608,6 +607,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DroppodType)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
+		.Process(this->Transporter_FixCyborgLegs)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

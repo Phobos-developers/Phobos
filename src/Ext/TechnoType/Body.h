@@ -216,7 +216,7 @@ public:
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
-		Valueable<bool> CanRepairCyborgLegs;
+		Valueable<bool> Transporter_FixCyborgLegs;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -338,7 +338,6 @@ public:
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
 			, IronCurtain_KillWarhead {}
-			, CanRepairCyborgLegs { false }
 			, Explodes_KillPassengers { true }
 			, Explodes_DuringBuildup { true }
 			, DeployFireWeapon {}
@@ -379,6 +378,7 @@ public:
 			, DroppodType {}
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+			, Transporter_FixCyborgLegs { false }
 		{ }
 
 		virtual ~ExtData() = default;

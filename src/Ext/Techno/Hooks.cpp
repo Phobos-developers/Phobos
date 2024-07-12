@@ -231,6 +231,35 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x51A3A2, InfantryClass_PerCellProcess_CyborgLegsCheck, 0x5)
+{
+	GET(TechnoClass*, pTechno, ESI);
+	GET(TechnoClass*, pTransport, EDI);
+
+	if (pTechno->WhatAmI() == AbstractType::Infantry)
+	{
+		auto const pInf = static_cast<InfantryClass*>(pTechno);
+
+		// "SequenceAnim" and "Crawling" values will suffer a reset before entering into transports
+		// The Cyborg legs state will be saved for the unlimbo case
+		if (pInf->Type->Cyborg
+			&& pInf->Crawling
+			&& (pInf->SequenceAnim == Sequence::Prone || pInf->SequenceAnim == Sequence::Crawl))
+		{
+			auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+			pTechnoExt->IsLeggedCyborg = true;
+
+			if (auto const pTransportTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+			{
+				if (pTransportTypeExt->Transporter_FixCyborgLegs)
+					pTechnoExt->IsLeggedCyborg = false;
+			}
+		}
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 {
 	GET(TechnoClass*, pTechno, EDI);
@@ -244,43 +273,6 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 			trail.Visible = false;
 			trail.LastLocation = { };
 		}
-
-		if (pTechno->WhatAmI() == AbstractType::Infantry)
-		{
-			auto const pInf = static_cast<InfantryClass*>(pTechno);
-			auto const pInfType = static_cast<InfantryTypeClass*>(pTechno->GetTechnoType());
-
-			if (pInfType->Cyborg && pInf->Crawling)
-				pTechnoExt->IsLeggedCyborg = true;
-		}
-
-		if (pTechno->Transporter)
-		{
-			if (auto const pTransportTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->Transporter->GetTechnoType()))
-			{
-				if (pTransportTypeExt->CanRepairCyborgLegs)
-					pTechnoExt->IsLeggedCyborg = false;
-			}
-		}
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x518047, TechnoClass_Destroyed_IsCyborg, 0x5)
-{
-	GET(InfantryClass*, pInf, ESI);
-	GET(DamageState, eDamageState, EAX);
-
-	if (pInf
-		&& eDamageState != DamageState::PostMortem
-		&& pInf->Type->Cyborg
-		&& pInf->Crawling == true)
-	{
-		auto pTechnoExt = TechnoExt::ExtMap.Find(pInf);
-
-		if (pTechnoExt && !pTechnoExt->IsLeggedCyborg)
-			pTechnoExt->IsLeggedCyborg = true;
 	}
 
 	return 0;
@@ -302,10 +294,11 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 		// Fix legless Cyborgs when leave transports
 		if (pTechnoExt->IsLeggedCyborg)
 		{
-			InfantryClass* soldier = static_cast<InfantryClass*>(pTechno);
+			InfantryClass* pInf = static_cast<InfantryClass*>(pTechno);
 
-			soldier->SequenceAnim = Sequence::Prone;
-			soldier->Crawling = true;
+			pInf->SequenceAnim = Sequence::Prone;
+			pInf->Crawling = true;
+			pTechnoExt->IsLeggedCyborg = false;
 		}
 	}
 
