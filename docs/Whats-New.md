@@ -422,6 +422,7 @@ New:
 - Insignias visibility and position adjustments (by Fryone)
 - Promotion animation (by Fryone)
 - Allow different technos to share build limit in a group (by ststl & Ollerus)
+- Map events `604-605` for checking if a specific Techno enters in a cell (by FS-21)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
