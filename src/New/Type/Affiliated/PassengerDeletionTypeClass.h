@@ -27,8 +27,8 @@ public:
 	Valueable<bool> DisplaySoylent;
 	Valueable<AffectedHouse> DisplaySoylentToHouses;
 	Valueable<Point2D> DisplaySoylentOffset;
-	NullableIdx<VocClass> ReportSound;
-	Nullable<AnimTypeClass*> Anim;
+	ValueableIdx<VocClass> ReportSound;
+	Valueable<AnimTypeClass*> Anim;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);

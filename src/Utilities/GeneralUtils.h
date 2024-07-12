@@ -36,6 +36,7 @@ public:
 	static int CountDigitsInNumber(int number);
 	static CoordStruct CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance);
 	static void DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset);
+	static int GetColorFromColorAdd(int colorIndex);
 
 	template<typename T>
 	static constexpr T FastPow(T x, size_t n)
