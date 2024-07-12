@@ -86,7 +86,7 @@ Credits
 - **Belonit (Gluk-v48)** - project author
 - **Kerbiter (Metadorius)** - project co-author, BDFL, maintainer (semi-active for the time being; [Patreon](https://www.patreon.com/kerbiter), PM me for PayPal to avoid fees)
 - **Starkku** - co-maintainer, developer ([Patreon](https://www.patreon.com/Starkku))
-- **Uranusian (Thrifinesma)** - retired developer, CN community ambassador ([Patreon](https://www.patreon.com/uranusian), [AliPay](http://tiebapic.baidu.com/forum/w%3D580/sign=4b04b953307f9e2f70351d002f31e962/b3f89909b3de9c823bd7f23a7b81800a18d84371.jpg))
+- **Uranusian (Thrifinesma)** - retired developer, CN community ambassador
 - **secsome (SEC-SOME)** - developer
 - **Otamaa (Fahroni, BoredEXE)** - developer ([PayPal](https://paypal.me/GeneralOtama))
 - **FS-21** - developer

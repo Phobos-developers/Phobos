@@ -202,6 +202,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->Invoker)
 		.Process(this->InvokerHouse)
 		.Process(this->AttachedSystem)
+		.Process(this->ParentBuilding)
 		;
 }
 
@@ -222,6 +223,31 @@ void AnimExt::ExtData::InitializeConstants()
 	// Something about creating this in constructor messes with debris anims, so it has to be done for them later.
 	if (!this->OwnerObject()->HasExtras)
 		CreateAttachedSystem();
+}
+
+void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
+{
+	for (auto const& pAnim : *AnimClass::Array)
+	{
+		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+
+		if (pExt->Invoker == pTechno)
+			pExt->Invoker = nullptr;
+
+		if ((TechnoClass*)pExt->ParentBuilding == pTechno)
+			pExt->ParentBuilding = nullptr;
+	}
+}
+
+void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem)
+{
+	for (auto const& pAnim : *AnimClass::Array)
+	{
+		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+
+		if (pExt->AttachedSystem == pParticleSystem)
+			pExt->AttachedSystem = nullptr;
+	}
 }
 
 // =============================

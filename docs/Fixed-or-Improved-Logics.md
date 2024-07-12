@@ -151,9 +151,17 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Spawned aircraft now align with the spawner's facing when landing.
 - Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers EnteredBy event by executing capture mission.
 - `PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys.
+- Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units.
+- Skipped drawing rally point line when undeploying a factory.
+- Tint effects are now correctly applied to SHP vehicles and all types of aircraft as well as building animations regardless of their position.
+- Iron Curtained / Force Shielded objects now always use the correct tint color.
+- Objects in invalid map coordinates are no longer used for starting view and AI base center calculations.
+- Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
+- Units with `Sensors=true` will no longer reveal ally buildings.
 
 ## Fixes / interactions with other extensions
 
+- All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
 
@@ -379,8 +387,8 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
-ClusterScatter.Min=1.0  ; float, distance in cells
-ClusterScatter.Max=2.0  ; float, distance in cells
+ClusterScatter.Min=1.0  ; floating point value, distance in cells
+ClusterScatter.Max=2.0  ; floating point value, distance in cells
 ```
 
 ### Customizable projectile gravity
@@ -401,8 +409,8 @@ Gravity=6.0             ; floating point value
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]      ; Projectile
-BallisticScatter.Min= ; float, distance in cells
-BallisticScatter.Max= ; float, distance in cells
+BallisticScatter.Min= ; floating point value, distance in cells
+BallisticScatter.Max= ; floating point value, distance in cells
 ```
 
 ## Technos
@@ -458,32 +466,43 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
     - A shorthand `InsigniaFrames` can be used to list them in order from rookie, veteran and elite instead as well. `InsigniaFrame(.Rookie|Veteran|Elite)` takes priority over this.
   - Normal insignia can be overridden for specific weapon modes of `Gunner=true` units by setting `Insignia(.Frame/.Frames).WeaponN` where `N` stands for 1-based weapon mode index. If not set, defaults to non-mode specific insignia settings.
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true.
+  - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
+  - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
+  - `DrawInsignia.AdjustPos.BuildingsAnchor` sets the anchor point from which the insignia offset is calculated, relative to building's center.
+
 
 In `rulesmd.ini`:
 ```ini
 [General]
-EnemyInsignia=true                ; boolean
+EnemyInsignia=true                             ; boolean
 
-[SOMETECHNO]                      ; TechnoType
-Insignia=                         ; filename - excluding the .shp extension
-Insignia.Rookie=                  ; filename - excluding the .shp extension
-Insignia.Veteran=                 ; filename - excluding the .shp extension
-Insignia.Elite=                   ; filename - excluding the .shp extension
-InsigniaFrame=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Rookie=-1           ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Veteran=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Elite=-1            ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames=-1,-1,-1           ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.WeaponN=                 ; filename - excluding the .shp extension
-Insignia.WeaponN.Rookie=          ; filename - excluding the .shp extension
-Insignia.WeaponN.Veteran=         ; filename - excluding the .shp extension
-Insignia.WeaponN.Elite=           ; filename - excluding the .shp extension
-InsigniaFrame.WeaponN=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Rookie=-1   ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Veteran=-1  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Elite=-1    ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames.WeaponN=-1,-1,-1   ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.ShowEnemy=               ; boolean
+[AudioVisual]
+DrawInsignia.OnlyOnSelected=false              ; boolean
+DrawInsignia.AdjustPos.Infantry=5,2            ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Units=10,6              ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Buildings=10,6          ; X,Y, position offset from default
+DrawInsignia.AdjustPos.BuildingsAnchor=bottom  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+
+[SOMETECHNO]                                   ; TechnoType
+Insignia=                                      ; filename - excluding the .shp extension
+Insignia.Rookie=                               ; filename - excluding the .shp extension
+Insignia.Veteran=                              ; filename - excluding the .shp extension
+Insignia.Elite=                                ; filename - excluding the .shp extension
+InsigniaFrame=-1                               ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                        ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                       ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames=-1,-1,-1                        ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.WeaponN=                              ; filename - excluding the .shp extension
+Insignia.WeaponN.Rookie=                       ; filename - excluding the .shp extension
+Insignia.WeaponN.Veteran=                      ; filename - excluding the .shp extension
+Insignia.WeaponN.Elite=                        ; filename - excluding the .shp extension
+InsigniaFrame.WeaponN=-1                       ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Rookie=-1                ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Veteran=-1               ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Elite=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames.WeaponN=-1,-1,-1                ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.ShowEnemy=                            ; boolean
 ```
 
 ```{note}
@@ -566,6 +585,19 @@ In `rulesmd.ini`:
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
+### Customizable wake anim
+
+- You can now specify the `Wake` anim per TechnoType to override default rules value.
+  - `Wake.Grapple` and `Wake.Sinking` can be used to further customize wake anim when the techno is being parasited or sunken.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]         ; TechnoType
+Wake=                ; Anim (played when Techno moving on the water), default to [General]->Wake
+Wake.Grapple=        ; Anim (played when Techno being parasited on the water), defaults to [SOMETECHNO]->Wake
+Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [SOMETECHNO]->Wake
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
@@ -580,21 +612,28 @@ Explodes.KillPassengers=true ; boolean
 Explodes.DuringBuildup=true  ; boolean
 ```
 
-### IronCurtain effects on organics customization
-- In vanilla game, when iron-curtain is applied on organic units like infantries and squids, they could only get killed instantly by C4Warhead. This behavior is now dehardcoded, and the effect under iron-curtain can now be chosen among
-  - `kill` : Iron-Curtain kills the organic object with a specifc warhead.
-  - `invulnerable` : Iron-Curtain makes the organic object invulnerable like buildings and vehicles.
-  - `ignore` : Iron-Curtain doesn't give any effect on the organic object.
+### Iron Curtain & Force Shield effects on organics customization
+
+- In vanilla game, when Iron Curtain is applied on `Organic=true` units like squids or infantry, they could only get killed instantly by `C4Warhead`. This behavior is now unhardcoded and can be set with `IronCurtain.EffectOnOrganics` globally and on per-TechnoType basis with `IronCurtain.Effect`. Following values are respected:
+  - `kill` : Iron Curtain kills the organic object with a specifc warhead. This is the default value for `Organic=true` units and infantry if not otherwise specified.
+  - `invulnerable` : Iron Curtain makes the organic object invulnerable like buildings and vehicles.
+  - `ignore` : Iron Curtain doesn't give any effect on the organic object.
+- `IronCurtain.KillOrganicsWarhead` and `IronCurtain.KillWarhead` can be used to customize the Warhead used to kill units, globally or per TechnoType-basis respectively, with latter defaulting to former and former defaulting to `[CombatDamage]` -> `C4Warhead`.
+- Identical controls are available for Force Shield as well.
 
 In `rulesmd.ini`
 ```ini
 [CombatDamage]
-IronCurtain.EffectOnOrganics=kill  ; IronCurtain effect Enumeration (kill | invulnerable | ignore), IronCurtain to Infantry and Techno with Organic=yes
-IronCurtain.KillOrganicsWarhead=   ; IronCurtain uses this warhead to kill organics, default to [CombatDamage]->C4Warhead
+IronCurtain.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
+IronCurtain.KillOrganicsWarhead=   ; Warhead
+ForceShield.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
+ForceShield.KillOrganicsWarhead=   ; Warhead
 
-[SOMETECHNO]                       ; InfantryType or Organic TechnoType
-IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore), default to [CombatDamage]-> IronCurtain.EffectOnOrganics
-IronCurtain.KillWarhead=           ; IronCurtain uses this warhead to kill this organic, default to [CombatDamage]->IronCurtain.KillWarhead
+[SOMETECHNO]                       ; InfantryType or Organic=true TechnoType
+IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
+IronCurtain.KillWarhead=           ; Warhead
+ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
+ForceShield.KillWarhead=           ; Warhead
 ```
 
 ### Jumpjet rotating on crashing toggle
@@ -832,22 +871,24 @@ DeployingAnim.ReverseForUndeploy=true  ; boolean
 DeployingAnim.UseUnitDrawer=true       ; boolean
 ```
 
-### Preserve Iron Curtain status on type conversion
+### Preserve Iron Curtain / Force Shield status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
 *Bugfix in action*
 
-- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`.
-  - This behavior can be turned off per-TechnoType and global basis.
-  - `IronCurtain.Modifier` is re-applied upon type conversion.
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. Force Shield status preservation is turned off by default.
+  - This behavior can be turned on/off per-TechnoType and on global basis.
+  - `IronCurtain.Modifier` / `ForceShield.Modifier` (whichever is applicable) is re-applied upon type conversion.
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-IronCurtain.KeptOnDeploy=yes ; boolean
+IronCurtain.KeptOnDeploy=true   ; boolean
+ForceShield.KeptOnDeploy=false  ; boolean
 
-[SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
-IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
+[SOMETECHNO]                    ; VehicleType with DeploysInto or BuildingType with UndeploysInto
+IronCurtain.KeptOnDeploy=       ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
+ForceShield.KeptOnDeploy=       ; boolean, default to [CombatDamage]->ForceShield.KeptOnDeploy
 ```
 
 ### Stationary vehicles
@@ -908,7 +949,7 @@ Ammo.AddOnDeploy=0      ; integer
 
 - Veinhole monsters now work like they used to in Tiberian Sun.
 - Their core parameters are still loaded from `[General]`
-- The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to be properly listed under `[Warheads]` as well. The warhead has to have `Veinhole=yes` set.
+- The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to have `Veinhole=yes` set.
 - Veinholes are hardcoded to use several overlay types.
 - The vein attack animation specified under `[AudioVisual]` is what deals the damage. The animation has to be properly listed under `[Animations]` as well.
 - Units can be made immune to veins the same way as in Tiberian Sun.
@@ -967,6 +1008,7 @@ In `rulesmd.ini`:
 - Weeds are not stored in a building's storage, but rather in a House's storage. The weed capacity is listed under `[General]->WeedCapacity`.
 - Weeders now show the ore gathering animation. It can be customized the same way as for harvesters.
 - Weeders can use the Teleport locomotor like chrono miners.
+- Total amount of weeds in storage can be displayed on sidebar, see [Weeds counter](User-Interface.md#weeds-counter).
 
 ### Weed-consuming superweapons
 
@@ -998,9 +1040,10 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 - It is possible to make game play random animation from `AnimList` by setting `AnimList.PickRandom` to true. The result is similar to what `EMEffect=true` produces, however it comes with no side-effects (`EMEffect=true` prevents `Inviso=true` projectiles from snapping on targets, making them miss moving targets).
 - If `AnimList.CreateAll` is set to true, all animations from `AnimList` are created, instead of a single anim based on damage or random if  `AnimList.PickRandom` is set to true.
 - If `AnimList.CreationInterval` is set to a value higher than 0, there will be that number of detonations of the Warhead before animations from `AnimList` will be created again. If the Warhead had a TechnoType firing it, this number is remembered by the TechnoType across all Warheads fired by it, otherwise it is shared between all detonations of same WarheadType period. This can be useful for things like `Airburst` with large spread where one might want uniform distribution of animations to appear but not on every detonation.
+- `AnimList.ScatterMin` & `AnimList.ScatterMax` can be used to set a range in cells around which any created animations will randomly scatter around from the impact point.
 - `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage]` -> `SplashList` are used.
-  - `SplashList.PickRandom`, `SplashList.CreateAll` and `SplashList.CreationInterval` apply to these animations in same manner as the `AnimList` equivalents.
-- `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
+  - `SplashList.PickRandom`, `SplashList.CreateAll`, `SplashList.CreationInterval` and `SplashList.ScatterMin/Max` apply to these animations in same manner as the `AnimList` equivalents.
+- - `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
 - Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land.
 
 In `rulesmd.ini`:
@@ -1009,10 +1052,14 @@ In `rulesmd.ini`:
 AnimList.PickRandom=false       ; boolean
 AnimList.CreateAll=false        ; boolean
 AnimList.CreationInterval=0     ; integer
+AnimList.ScatterMin=0.0         ; floating point value, distance in cells
+AnimList.ScatterMax=0.0         ; floating point value, distance in cells
 SplashList=                     ; List of animations
 SplashList.PickRandom=false     ; boolean
 SplashList.CreateAll=false      ; boolean
 SplashList.CreationInterval=0   ; integer
+SplashList.ScatterMin=0.0       ; floating point value, distance in cells
+SplashList.ScatterMax=0.0       ; floating point value, distance in cells
 CreateAnimsOnZeroDamage=false   ; boolean
 Conventional.IgnoreUnits=false  ; boolean
 ```
@@ -1098,6 +1145,16 @@ ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
 ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
 ```
 
+### Customizing whether passengers are kicked out when an aircraft fires
+
+- You can now customize whether aircraft will forcefully eject passengers (vanilla behavior) or fire its weapon when attempting to fire.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+KickOutPassengers=true  ; boolean
+```
+
 ### Single-color lasers
 
 ![image](_static/images/issinglecolor.gif)
@@ -1155,15 +1212,26 @@ In `rulesmd.ini`:
 RadialIndicatorVisibility=allies  ; list of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
 ```
 
-## Crate generation
+## Crate improvements
 
-The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
-- You can now limit the crates' spawn region to land only.
+There are some improvements on goodie crate logic:
+- The statistic distribution of the randomly generated crates is now more uniform within the visible map region by using an optimized sampling procedure.
+- You can now limit the crates' spawn region to land only by setting `[CrateRules]` -> `CreateOnlyOnLand` to true.
+- The limit of vehicles a player can own before unit crates start giving money instead can now be customized by setting `UnitCrateVehicleCap`. Negative numbers disable the cap entirely.
+- `FreeMCV` setting is now actually respected and can be used to disable the forced unit selected from `[General]` -> `BaseUnit` that is given if player picks a crate and has enough credits but no existing buildings or `BaseUnit` vehicles.
+  - The previously hardcoded credits threshold that must be passed can also now be customized via `FreeMCV.CreditsThreshold`.
+- It is possible to influence weighting of units given from crates (`CrateGoodie=true`) via `CrateGoodie.RerollChance`, which determines the chance that if this type of unit is rolled, it will reroll again for another type of unit.
 
 In `rulesmd.ini`:
 ```ini
 [CrateRules]
-CrateOnlyOnLand=no  ; boolean
+CrateOnlyOnLand=false          ; boolean
+UnitCrateVehicleCap=50         ; integer
+FreeMCV=true                   ; boolean
+FreeMCV.CreditsThreshold=1500  ; integer
+
+[SOMEVEHICLE]                  ; VehicleType
+CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0-1.0)
 ```
 
 ## DropPod
