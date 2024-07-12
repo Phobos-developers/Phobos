@@ -8,7 +8,8 @@ public:
 	enum class ExitCode : int
 	{
 		Undefined = -1,
-		SLFail = 114514
+		SLFail = 114514,
+		BadINIUsage = 1919810,
 	};
 
 	static char StringBuffer[0x1000];

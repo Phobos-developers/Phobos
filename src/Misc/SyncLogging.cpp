@@ -8,6 +8,7 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/AresHelper.h>
 
 bool SyncLogger::HooksDisabled = false;
 int SyncLogger::AnimCreations_HighestX = 0;
@@ -21,8 +22,20 @@ SyncLogEventBuffer<TargetChangeSyncLogEvent, DestinationChanges_Size> SyncLogger
 SyncLogEventBuffer<MissionOverrideSyncLogEvent, MissionOverrides_Size> SyncLogger::MissionOverrides;
 SyncLogEventBuffer<AnimCreationSyncLogEvent, AnimCreations_Size> SyncLogger::AnimCreations;
 
+
+void __forceinline MakeCallerRelative(unsigned int& caller)
+{
+	// B for Bobos
+	if (caller > AresHelper::PhobosBaseAddress && caller < (AresHelper::PhobosBaseAddress + 0x100000))
+		caller = caller - AresHelper::PhobosBaseAddress + 0xB0000000;
+	// A for Ares
+	else if (caller > AresHelper::AresBaseAddress && caller < (AresHelper::AresBaseAddress + 0x100000))
+		caller = caller - AresHelper::AresBaseAddress + 0xA0000000;
+}
+
 void SyncLogger::AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsigned int callerAddress, int min, int max)
 {
+	MakeCallerRelative(callerAddress);
 	// Don't log non-critical RNG calls.
 	if (pRandomizer == &ScenarioClass::Instance->Random)
 		SyncLogger::RNGCalls.Add(RNGCallSyncLogEvent(type, true, pRandomizer->Next1, pRandomizer->Next2, callerAddress, Unsorted::CurrentFrame, min, max));
@@ -30,6 +43,7 @@ void SyncLogger::AddRNGCallSyncLogEvent(Randomizer* pRandomizer, int type, unsig
 
 void SyncLogger::AddFacingChangeSyncLogEvent(unsigned short facing, unsigned int callerAddress)
 {
+	MakeCallerRelative(callerAddress);
 	SyncLogger::FacingChanges.Add(FacingChangeSyncLogEvent(facing, callerAddress, Unsorted::CurrentFrame));
 }
 
@@ -38,6 +52,7 @@ void SyncLogger::AddTargetChangeSyncLogEvent(AbstractClass* pObject, AbstractCla
 	if (!pObject)
 		return;
 
+	MakeCallerRelative(callerAddress);
 	auto targetRTTI = AbstractType::None;
 	unsigned int targetID = 0;
 
@@ -55,6 +70,7 @@ void SyncLogger::AddDestinationChangeSyncLogEvent(AbstractClass* pObject, Abstra
 	if (!pObject)
 		return;
 
+	MakeCallerRelative(callerAddress);
 	auto targetRTTI = AbstractType::None;
 	unsigned int targetID = 0;
 
@@ -72,6 +88,7 @@ void SyncLogger::AddMissionOverrideSyncLogEvent(AbstractClass* pObject, int miss
 	if (!pObject)
 		return;
 
+	MakeCallerRelative(callerAddress);
 	SyncLogger::MissionOverrides.Add(MissionOverrideSyncLogEvent(pObject->WhatAmI(), pObject->UniqueID, mission, callerAddress, Unsorted::CurrentFrame));
 }
 
@@ -86,6 +103,7 @@ void SyncLogger::AddAnimCreationSyncLogEvent(const CoordStruct& coords, unsigned
 	if (coords.Z > SyncLogger::AnimCreations_HighestZ)
 		SyncLogger::AnimCreations_HighestZ = coords.Z;
 
+	MakeCallerRelative(callerAddress);
 	if (SyncLogger::AnimCreations.Add(AnimCreationSyncLogEvent(coords, callerAddress, Unsorted::CurrentFrame)))
 	{
 		SyncLogger::AnimCreations_HighestX = 0;
@@ -444,7 +462,13 @@ DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
 // Disable sync logging hooks in non-MP games
 DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 {
-	if (SessionClass::IsMultiplayer() || SyncLogger::HooksDisabled)
+	if (SessionClass::IsMultiplayer())
+	{
+		Patch::Apply_LJMP(0x55DBCD, 0x55DC99); // Disable MainLoop_SaveGame
+		return 0;
+	}
+
+	if (SyncLogger::HooksDisabled)
 		return 0;
 
 	SyncLogger::HooksDisabled = true;
