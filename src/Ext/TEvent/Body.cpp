@@ -199,7 +199,9 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 
 	if (RulesExt::Global()->AITargetTypesLists.size() == 0
 		|| RulesExt::Global()->AITargetTypesLists[desiredListIdx].size() == 0)
+	{
 		return false;
+	}
 
 	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
 	if (!pTechno)
