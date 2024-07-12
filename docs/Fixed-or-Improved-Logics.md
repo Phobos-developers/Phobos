@@ -158,6 +158,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Objects in invalid map coordinates are no longer used for starting view and AI base center calculations.
 - Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
 - Units with `Sensors=true` will no longer reveal ally buildings.
+- Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
 
 ## Fixes / interactions with other extensions
 

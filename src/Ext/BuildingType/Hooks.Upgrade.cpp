@@ -135,28 +135,97 @@ DEFINE_HOOK(0x4F7877, HouseClass_CanBuild_UpgradesInteraction_WithoutAres, 0x5)
 
 #pragma region UpgradeAnimLogic
 
-// Parse Powered(Light|Effect|Special) keys for upgrade anims.
-DEFINE_HOOK(0x4648B3, BuildingTypeClass_ReadINI_PowerUpAnims, 0x5)
+// Always parse all info for PowerUp anims if building can have even one upgrade, including power settings.
+DEFINE_HOOK(0x464749, BuildingTypeClass_ReadINI_PowerUpAnims, 0x6)
 {
+	enum { SkipGameCode = 0x46492E };
+
 	GET(BuildingTypeClass*, pThis, EBP);
-	GET(int, index, EBX);
 
 	auto const pINI = &CCINIClass::INI_Art();
-	auto const animData = &pThis->BuildingAnim[index - 1];
 
+	int index = 1;
 	char buffer[0x20];
 
-	sprintf_s(buffer, "PowerUp%01dPowered", index);
-	animData->Powered = pINI->ReadBool(pThis->ImageFile, buffer, animData->Powered);
+	while (index - 1 < 3)
+	{
+		auto const animData = &pThis->BuildingAnim[index - 1];
 
-	sprintf_s(buffer, "PowerUp%01dPoweredLight", index);
-	animData->PoweredLight = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredLight);
+		sprintf_s(buffer, "PowerUp%01dAnim", index);
+		pINI->GetString(pThis->ImageFile, buffer, animData->Anim);
 
-	sprintf_s(buffer, "PowerUp%01dPoweredEffect", index);
-	animData->PoweredEffect = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredEffect);
+		sprintf_s(buffer, "PowerUp%01dDamagedAnim", index);
+		pINI->GetString(pThis->ImageFile, buffer, animData->Damaged);
 
-	sprintf_s(buffer, "PowerUp%01dPoweredSpecial", index);
-	animData->PoweredSpecial = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredSpecial);
+		sprintf_s(buffer, "PowerUp%01dLocXX", index);
+		animData->Position.X = pINI->ReadInteger(pThis->ImageFile, buffer, animData->Position.X);
+
+		sprintf_s(buffer, "PowerUp%01dLocYY", index);
+		animData->Position.Y = pINI->ReadInteger(pThis->ImageFile, buffer, animData->Position.Y);
+
+		sprintf_s(buffer, "PowerUp%01dLocZZ", index);
+		animData->ZAdjust = pINI->ReadInteger(pThis->ImageFile, buffer, animData->ZAdjust);
+
+		sprintf_s(buffer, "PowerUp%01dYSort", index);
+		animData->YSort = pINI->ReadInteger(pThis->ImageFile, buffer, animData->YSort);
+
+		sprintf_s(buffer, "PowerUp%01dPowered", index);
+		animData->Powered = pINI->ReadBool(pThis->ImageFile, buffer, animData->Powered);
+
+		sprintf_s(buffer, "PowerUp%01dPoweredLight", index);
+		animData->PoweredLight = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredLight);
+
+		sprintf_s(buffer, "PowerUp%01dPoweredEffect", index);
+		animData->PoweredEffect = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredEffect);
+
+		sprintf_s(buffer, "PowerUp%01dPoweredSpecial", index);
+		animData->PoweredSpecial = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredSpecial);
+
+		index++;
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x440988, BuildingClass_Unlimbo_UpgradeAnims, 0x7)
+{
+	enum { SkipGameCode = 0x4409C7 };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET(BuildingClass*, pTarget, EDI);
+
+	auto const pTargetExt = BuildingExt::ExtMap.Find(pTarget);
+	pTargetExt->PoweredUpToLevel = pTarget->UpgradeLevel + 1;
+	int animIndex = pTarget->UpgradeLevel;
+
+	if (pThis->Type->PowersUpToLevel > 0)
+	{
+		pTargetExt->PoweredUpToLevel = pThis->Type->PowersUpToLevel;
+		animIndex = pTargetExt->PoweredUpToLevel - 1;
+	}
+
+	auto const animData = &pTarget->Type->BuildingAnim[animIndex];
+
+	// Only copy image name to BuildingType anim struct if it is not already set.
+	if (!GeneralUtils::IsValidString(animData->Anim))
+		strncpy(animData->Anim, pThis->Type->ImageFile, 16u);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x451630, BuildingClass_CreateUpgradeAnims_AnimIndex, 0x7)
+{
+	enum { SkipGameCode = 0x451638 };
+
+	GET(BuildingClass*, pThis, EBP);
+
+	int animIndex = BuildingExt::ExtMap.Find(pThis)->PoweredUpToLevel - 1;
+
+	if (animIndex)
+	{
+		R->EAX(animIndex);
+		return SkipGameCode;
+	}
 
 	return 0;
 }
@@ -168,9 +237,9 @@ static __forceinline bool AllowUpgradeAnim(BuildingClass* pBuilding, BuildingAni
 
 	if (pType->Upgrades != 0 && anim >= BuildingAnimSlot::Upgrade1 && anim <= BuildingAnimSlot::Upgrade3 && !pBuilding->Anims[int(anim)])
 	{
-		int upgradeLevel = pBuilding->UpgradeLevel - 1;
+		int animIndex = BuildingExt::ExtMap.Find(pBuilding)->PoweredUpToLevel - 1;
 
-		if (upgradeLevel < 0 || (int)anim != upgradeLevel)
+		if (animIndex < 0 || (int)anim != animIndex)
 			return false;
 
 		auto const animData = pType->BuildingAnim[int(anim)];
