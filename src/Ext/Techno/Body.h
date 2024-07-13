@@ -32,7 +32,7 @@ public:
 		int LastWarpDistance;
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
-		bool IsLeggedCyborg;
+		bool IsLeglessCyborg;
 		int DamageNumberOffset;
 		bool IsInTunnel;
 		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
@@ -57,7 +57,7 @@ public:
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
 			, OriginalPassengerOwner {}
-			, IsLeggedCyborg { false }
+			, IsLeglessCyborg { false }
 			, IsInTunnel { false }
 			, HasBeenPlacedOnMap { false }
 			, DeployFireTimer {}

@@ -263,13 +263,13 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 		}
 
 		// Fix legless Cyborgs when leave transports
-		if (pTechnoExt->IsLeggedCyborg)
+		if (pTechnoExt->IsLeglessCyborg)
 		{
 			InfantryClass* pInf = static_cast<InfantryClass*>(pTechno);
 
 			pInf->SequenceAnim = Sequence::Prone;
 			pInf->Crawling = true;
-			pTechnoExt->IsLeggedCyborg = false;
+			pTechnoExt->IsLeglessCyborg = false;
 		}
 	}
 
