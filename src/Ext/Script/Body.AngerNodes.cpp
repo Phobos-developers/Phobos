@@ -287,10 +287,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	}
 
 	// Note regarding "mode": 1 is used for ">" comparisons and 0 for "<"
-	if (mode <= 0)
-		mode = 0;
-	else
-		mode = 1;
+	mode = mode <= 0 ? 0 : 1;
 
 	// Find the Team Leader
 	FootClass* pLeaderUnit = FindTheTeamLeader(pTeam);
