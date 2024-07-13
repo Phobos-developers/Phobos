@@ -15,13 +15,13 @@ DEFINE_HOOK(0x51A3A2, InfantryClass_PerCellProcess_CyborgLegsCheck, 0x5)
 	// The Cyborg legs state will be saved for the unlimbo case
 	if (pThis->Type->Cyborg && pThis->Crawling)
 	{
-		auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-		pTechnoExt->IsLeglessCyborg = true;
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->IsLeglessCyborg = true;
 
 		if (auto const pTransportTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
 		{
 			if (pTransportTypeExt->Transporter_FixCyborgLegs)
-				pTechnoExt->IsLeglessCyborg = false;
+				pExt->IsLeglessCyborg = false;
 		}
 	}
 
