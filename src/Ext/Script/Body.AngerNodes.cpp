@@ -302,8 +302,8 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	bool currentMission = pTeam->CurrentScript->CurrentMission;
 	HouseClass* enemyHouse = nullptr;
 	int initialValue = -1;
-	double objectDistance = -1;
-	double enemyDistance = -1;
+	double objectDistance = initialValue;
+	double enemyDistance = initialValue;
 	int currentNavalUnits = 0;
 
 	if (mask <= -2 && mask >= -10)
@@ -447,7 +447,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 				else
 					isValidCandidate = objectDistance > enemyDistance; // The house with the farthest enemy unit
 
-				if (isValidCandidate || enemyDistance == -1)
+				if (isValidCandidate || enemyDistance == initialValue)
 				{
 						enemyDistance = objectDistance;
 						enemyHouse = pHouse;
@@ -457,7 +457,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 
 		if (mask > 0) // Pick the house with major thread
 		{
-			double enemyThreat = -1;
+			double enemyThreat = initialValue;
 
 			for (std::size_t i = 0; i < nHouses; i++)
 			{
@@ -473,7 +473,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 				else
 					isValidCandidate = enemyThreatValue[i] > enemyThreat; // The house with the farthest enemy unit
 	
-				if (isValidCandidate || enemyThreat < 0)
+				if (isValidCandidate || enemyThreat == initialValue)
 				{
 					enemyThreat = enemyThreatValue[i];
 					enemyHouse = pHouse;
@@ -484,12 +484,14 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 
 	if (enemyHouse)
 	{
-		ScriptExt::Log("[%s][%s] (line: %d = %d,%d) - AngerNodes: Selected house [%s] (index: %d).\n",
+		ScriptExt::Log("[%s][%s] (line: %d = %d,%d) - AngerNodes: [%s] (index: %d) picked [%s] (index: %d).\n",
 			pTeam->Type->ID,
 			pTeam->CurrentScript->Type->ID,
 			currentMission,
 			pTeam->CurrentScript->Type->ScriptActions[currentMission].Action,
 			pTeam->CurrentScript->Type->ScriptActions[currentMission].Argument,
+			pTeam->Owner->Type->ID,
+			pTeam->Owner->ArrayIndex,
 			enemyHouse->Type->ID,
 			enemyHouse->ArrayIndex);
 	}
