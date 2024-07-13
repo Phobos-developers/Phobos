@@ -227,7 +227,6 @@ public:
 	static void OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode);
 	static void AggroHouse(TeamClass* pTeam, int index);
 	static HouseClass* GetTheMostHatedHouse(TeamClass* pTeam, int mask, int mode);
-	static void DebugAngerNodesData();
 
 	static bool IsExtVariableAction(int action);
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);

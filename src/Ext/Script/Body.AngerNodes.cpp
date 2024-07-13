@@ -4,17 +4,12 @@
 
 void ScriptExt::ResetAngerAgainstHouses(TeamClass* pTeam)
 {
-	// Invalid team
-	if (!pTeam)
-		return;
-
 	for (auto& angerNode : pTeam->Owner->AngerNodes)
 	{
 		angerNode.AngerLevel = 0;
 	}
 
 	pTeam->Owner->EnemyHouseIndex = -1;
-	ScriptExt::DebugAngerNodesData(); // Remove this line before merging into develop branch!
 
 	// This action finished
 	pTeam->StepCompleted = true; // This action finished - FS-21
@@ -22,9 +17,6 @@ void ScriptExt::ResetAngerAgainstHouses(TeamClass* pTeam)
 
 void ScriptExt::SetHouseAngerModifier(TeamClass* pTeam, int modifier = 0)
 {
-	if (!pTeam)
-		return;
-
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
 	{
@@ -47,9 +39,6 @@ void ScriptExt::SetHouseAngerModifier(TeamClass* pTeam, int modifier = 0)
 
 void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 {
-	if (!pTeam)
-		return;
-
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
 	{
@@ -93,7 +82,7 @@ void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 		int currentMission = pTeam->CurrentScript->CurrentMission;
 
 		pTeam->StepCompleted = true;
-		ScriptExt::Log("[%s][%s] (line: %d = %d,%d): Failed to modify AngerNode values against other houses.\n",
+		ScriptExt::Log("[%s][%s] (line: %d = %d,%d) - AngerNodes: Failed to modify AngerNode values against other houses.\n",
 			pTeam->Type->ID,
 			pTeam->CurrentScript->Type->ID,
 			pTeam->CurrentScript->CurrentMission,
@@ -102,7 +91,6 @@ void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 	}
 
 	ScriptExt::UpdateEnemyHouseIndex(pTeam->Owner);
-	ScriptExt::DebugAngerNodesData(); // Remove this line before merging into develop branch!
 
 	// This action finished
 	pTeam->StepCompleted = true;
@@ -110,10 +98,8 @@ void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 
 void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList = -1)
 {
-	if (!pTeam)
-		return;
-
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
 	if (!pTeamData || pTeamData->AngerNodeModifier == 0)
 	{
 		// This action finished
@@ -132,7 +118,7 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 		{
 			// This action finished
 			pTeam->StepCompleted = true;
-			ScriptExt::Log("[%s][%s] (line: %d = %d,%d): Invalid [AIHousesLists] index for modifying randomly AngerNode values.\n",
+			ScriptExt::Log("[%s][%s] (line: %d = %d,%d) - AngerNodes: Invalid [AIHousesLists] index for modifying randomly anger values.\n",
 			pTeam->Type->ID,
 			pTeam->CurrentScript->Type->ID,
 			pTeam->CurrentScript->CurrentMission,
@@ -168,11 +154,10 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 	if (changes > 0)
 	{
 		ScriptExt::UpdateEnemyHouseIndex(pTeam->Owner);
-		ScriptExt::DebugAngerNodesData(); // Remove this line before merging into develop branch!
 	}
 	else
 	{
-		ScriptExt::Log("[%s][%s] (line: %d = %d,%d): No AngerNode values were modified.\n",
+		ScriptExt::Log("[%s][%s] (line: %d = %d,%d) - AngerNodes: No anger values were modified.\n",
 			pTeam->Type->ID,
 			pTeam->CurrentScript->Type->ID,
 			pTeam->CurrentScript->CurrentMission,
@@ -186,9 +171,6 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 
 void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 1, bool random = false)
 {
-	if (!pTeam)
-		return;
-
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
 	{
@@ -267,7 +249,7 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 
 			if (angerNode.House == selectedHouse)
 			{
 				angerNode.AngerLevel = newHateLevel;
-				ScriptExt::Log("[%s][%s] (line: %d = %d,%d): Picked a new house as enemy [%s]\n",
+				ScriptExt::Log("[%s][%s] (line: %d = %d,%d) - AngerNodes: Picked a new house as enemy [%s]\n",
 					pTeam->Type->ID,
 					pTeam->CurrentScript->Type->ID,
 					pTeam->CurrentScript->CurrentMission,
@@ -281,7 +263,12 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 
 	}
 	else
 	{
-		ScriptExt::Log("DEBUG: [%s] [%s] (line: %d = %d,%d): Failed to pick a new hated house\n", pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->CurrentMission, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument);
+		ScriptExt::Log("[%s][%s] (line: %d = %d,%d) - AngerNodes: Failed to pick a new hated house.\n",
+			pTeam->Type->ID,
+			pTeam->CurrentScript->Type->ID,
+			pTeam->CurrentScript->CurrentMission,
+			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action,
+			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument);
 	}
 
 	// This action finished
@@ -290,10 +277,8 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 
 
 HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 1)
 {
-	if (!pTeam)
-		return nullptr;
-
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
 	if (!pTeamData || mask == 0)
 	{
 		// This action finished
@@ -320,20 +305,20 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	bool currentMission = pTeam->CurrentScript->CurrentMission;
 	double objectDistance = -1;
 	double enemyDistance = -1;
-	int nHouses = HouseClass::Array->Count;
-	std::vector<double> enemyThreatValue = std::vector<double>(nHouses);
-	enemyThreatValue[nHouses] = { 0.0 };
+	int currentNavalUnits = 0;
 	HouseClass* enemyHouse = nullptr;
 	double const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
-	long houseMoney = -1;
-	int enemyPower = -1000000000;
-	int enemyKills = -1;
-	int enemyAirDocks = -1;
-	int enemyStructures = -1;
-	int enemyNavalUnits = -1;
+	int initialValue = -1;
 
-	if (mask == -2) // Based on House economy
+	if (mask <= -2 && mask >= -10)
 	{
+		int currentValue = 0;
+		int selectedValue = initialValue;
+
+		// Is a house power check? It uses a different initial value that can't be reached in-game
+		if (mask == -4 || mask == -5 || mask == -6)
+			initialValue = -1000000000;
+
 		for (const auto& pHouse : *HouseClass::Array)
 		{
 			if (pLeaderUnit->Owner == pHouse
@@ -345,273 +330,113 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 				continue;
 			}
 
+			if (mask == -3 && !pHouse->IsControlledByHuman()) // Only human players are valid here
+				continue;
+
 			bool isValidCandidate = false;
+			currentValue = 0;
+
+			switch (mask)
+			{
+				case -2: // Based on House economy
+					currentValue = pHouse->Available_Money();
+				break;
+
+				case -3: // Based on human controlled check
+					CoordStruct houseLocation;
+					houseLocation.X = pHouse->BaseSpawnCell.X;
+					houseLocation.Y = pHouse->BaseSpawnCell.Y;
+					houseLocation.Z = 0;
+					objectDistance = pLeaderUnit->Location.DistanceFrom(houseLocation); // Note: distance is in leptons (*256)
+					currentValue = objectDistance; // Note: distance is in leptons (*256)
+					break;
+
+				case -4: // Related to the house's total power demand
+					currentValue = pHouse->Power_Drain();
+					break;
+
+				case -5: // Related to the house's total produced power
+					currentValue = pHouse->PowerOutput;
+					break;
+
+				case -6: // Related to the house's unused power
+					currentValue = pHouse->PowerOutput - pHouse->Power_Drain();
+					break;
+
+				case -7: // Based on house's kills
+					currentValue = pHouse->TotalKilledBuildings + pHouse->TotalKilledUnits;
+					break;
+
+				case -8: // Based on number of house's naval units
+					currentNavalUnits = 0;
+
+					for (const auto& pUnit : *TechnoClass::Array)
+					{
+						if (ScriptExt::IsUnitAvailable(pUnit, false)
+							&& pUnit->Owner == pHouse
+							&& ScriptExt::EvaluateObjectWithMask(pUnit, 31, -1, -1, nullptr))
+						{
+							currentNavalUnits++;
+						}
+					}
+
+					currentValue = currentNavalUnits;
+					break;
+
+				case -9: // Based on number of House aircraft docks
+					currentValue = pHouse->AirportDocks;
+					break;
+
+				case -10: // Based on number of house's factories (except aircraft factories)
+					currentValue = pHouse->NumWarFactories + pHouse->NumConYards + pHouse->NumShipyards + pHouse->NumBarracks;
+					break;
+	
+				default:
+					break;
+			}
 
 			if (mode == 0)
-				isValidCandidate = pHouse->Available_Money() < houseMoney; // The poorest is selected
+				isValidCandidate = currentValue < selectedValue; // The lowest is selected
 			else
-				isValidCandidate = pHouse->Available_Money() > houseMoney; // The richest is selected
+				isValidCandidate = currentValue > selectedValue; // The big one is selected
 
-			if (isValidCandidate || houseMoney < 0)
+			if (isValidCandidate || selectedValue == initialValue)
 			{
-				houseMoney = pHouse->Available_Money();
+				selectedValue = currentValue;
 				enemyHouse = pHouse;
 			}
 		}
-
-		if (enemyHouse)
-		{
-			ScriptExt::Log("[%s][%s] (line: %d = %d,%d): Selected house [%s] (index: %d).\n",
-				pTeam->Type->ID,
-				pTeam->CurrentScript->Type->ID,
-				currentMission,
-				pTeam->CurrentScript->Type->ScriptActions[currentMission].Action,
-				pTeam->CurrentScript->Type->ScriptActions[currentMission].Argument,
-				enemyHouse->Type->ID,
-				enemyHouse->ArrayIndex);
-		}
-
-		return enemyHouse;
 	}
-
-	if (mask == -3) // Based on human controlled check
+	else if (mask == -1 || mask > 0)
 	{
-		for (const auto& pHouse : *HouseClass::Array)
+		// Other cases: Check all the technos and depending of the mode compare what house will be selected as the most hated
+		int nHouses = HouseClass::Array->Count;
+		std::vector<double> enemyThreatValue = std::vector<double>(nHouses);
+		enemyThreatValue[nHouses] = { 0.0 };
+
+		for (auto pTechno : *TechnoClass::Array)
 		{
-			if (pLeaderUnit->Owner == pHouse
-				|| !pHouse->IsControlledByHuman()
-				|| pHouse->IsObserver()
+			HouseClass* pHouse = pTechno->Owner;
+
+			if (!ScriptExt::IsUnitAvailable(pTechno, false)
 				|| pHouse->Defeated
-				|| pHouse->Type->MultiplayPassive
-				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
+				|| pHouse == pTeam->Owner
+				|| pHouse->IsAlliedWith(pTeam->Owner)
+				|| pHouse->Type->MultiplayPassive)
 			{
 				continue;
 			}
 
-			CoordStruct houseLocation;
-			houseLocation.X = pHouse->BaseSpawnCell.X;
-			houseLocation.Y = pHouse->BaseSpawnCell.Y;
-			houseLocation.Z = 0;
-			objectDistance = pLeaderUnit->Location.DistanceFrom(houseLocation); // Note: distance is in leptons (*256)
-			bool isValidCandidate = false;
-
-			if (mode == 0)
-				isValidCandidate = objectDistance < enemyDistance; // Based in nearest human enemy unit
-			else
-				isValidCandidate = objectDistance > enemyDistance; // Based in farthest human enemy unit
-
-			if (isValidCandidate || enemyDistance < 0)
-			{
-				enemyDistance = objectDistance;
-				enemyHouse = pHouse;
-			}
-		}
-	}
-
-	if (mask == -4 || mask == -5 || mask == -6) // House power check
-	{
-		int checkedHousePower;
-
-		for (const auto& pHouse : *HouseClass::Array)
-		{
-			if (pLeaderUnit->Owner == pHouse
-				|| pHouse->Defeated
-				|| pHouse->IsObserver()
-				|| pHouse->Type->MultiplayPassive
-				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
-			{
-				continue;
-			}
-
-			if (mask == -4) // Related to the house's total power demand
-				checkedHousePower = pHouse->Power_Drain();
-
-			if (mask == -5) // Related to the house's total produced power
-				checkedHousePower = pHouse->PowerOutput;
-
-			if (mask == -6) // Related to the house's unused power
-				checkedHousePower = pHouse->PowerOutput - pHouse->Power_Drain();
-
-			bool isValidCandidate = false;
-
-			if (mode == 0)
-				isValidCandidate = checkedHousePower < enemyPower; // Selection based in lower value power in house
-			else
-				isValidCandidate = checkedHousePower > enemyPower; // Selection based in higher value power in house
-
-			if (isValidCandidate || enemyPower == -10000000000)
-			{
-				enemyPower = checkedHousePower;
-				enemyHouse = pHouse;
-			}
-		}
-	}
-
-	if (mask == -7) // Based on house's kills
-	{
-		for (const auto& pHouse : *HouseClass::Array)
-		{
-			if (pLeaderUnit->Owner == pHouse
-				|| pHouse->IsObserver()
-				|| pHouse->Defeated
-				|| pHouse->Type->MultiplayPassive
-				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
-			{
-				continue;
-			}
-
-			int currentKills = pHouse->TotalKilledBuildings + pHouse->TotalKilledUnits;
-			bool isValidCandidate = false;
-
-			if (mode == 0)
-				isValidCandidate = currentKills < enemyKills; // The pacifist is selected
-			else
-				isValidCandidate = currentKills > enemyKills; // The major mass murder is selected
-
-			if (isValidCandidate || enemyKills < 0)
-			{
-				enemyKills = currentKills;
-				enemyHouse = pHouse;
-			}
-		}
-	}
-
-	if (mask == -8) // Based on number of house's naval units
-	{
-		for (const auto& pHouse : *HouseClass::Array)
-		{
-			if (pLeaderUnit->Owner == pHouse
-				|| pHouse->IsObserver()
-				|| pHouse->Defeated
-				|| pHouse->Type->MultiplayPassive
-				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
-			{
-				continue;
-			}
-
-			int currentNavalUnits = 0;
-
-			for (const auto& pUnit : *TechnoClass::Array)
-			{
-				if (pUnit->IsAlive
-					&& pUnit->Health > 0
-					&& pUnit->Owner == pHouse
-					&& !pUnit->InLimbo
-					&& pUnit->IsOnMap
-					&& ScriptExt::EvaluateObjectWithMask(pUnit, 31, -1, -1, nullptr))
-				{
-					currentNavalUnits++;
-				}
-			}
-
-			bool isValidCandidate = false;
-
-			if (mode == 0)
-				isValidCandidate = currentNavalUnits < enemyNavalUnits; // The house with less naval units is selected
-			else
-				isValidCandidate = currentNavalUnits > enemyNavalUnits; // The house with more naval units is selected
-
-			if (isValidCandidate || enemyNavalUnits < 0)
-			{
-				enemyNavalUnits = currentNavalUnits;
-				enemyHouse = pHouse;
-			}
-		}
-	}
-
-	if (mask == -9) // Based on number of House aircraft docks
-	{
-		for (const auto& pHouse : *HouseClass::Array)
-		{
-			if (pLeaderUnit->Owner == pHouse
-				|| pHouse->IsObserver()
-				|| pHouse->Defeated
-				|| pHouse->Type->MultiplayPassive
-				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
-			{
-				continue;
-			}
-
-			int currentAirDocks = pHouse->AirportDocks;
-			bool isValidCandidate = false;
-
-			if (mode == 0)
-				isValidCandidate = currentAirDocks < enemyAirDocks; // The house with less aircraft docks is selected
-			else
-				isValidCandidate = currentAirDocks > enemyAirDocks; // The house with more aircraft docks is selected
-
-			if (isValidCandidate || enemyAirDocks < 0)
-			{
-				enemyAirDocks = currentAirDocks;
-				enemyHouse = pHouse;
-			}
-		}
-	}
-
-	if (mask == -10) // Based on number of house's factories (except aircraft factories)
-	{
-		for (const auto& pHouse : *HouseClass::Array)
-		{
-			if (pLeaderUnit->Owner == pHouse
-				|| pHouse->IsObserver()
-				|| pHouse->Defeated
-				|| pHouse->Type->MultiplayPassive
-				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
-			{
-				continue;
-			}
-
-			int currentFactories = pHouse->NumWarFactories + pHouse->NumConYards + pHouse->NumShipyards + pHouse->NumBarracks;
-			bool isValidCandidate = false;
-
-			if (mode == 0)
-				isValidCandidate = currentFactories < enemyStructures; // The house with less factories is selected
-			else
-				isValidCandidate = currentFactories > enemyStructures; // The house with more factories is selected
-
-			if (isValidCandidate || enemyStructures < 0)
-			{
-				enemyStructures = currentFactories;
-				enemyHouse = pHouse;
-			}
-		}
-	}
-
-	if (enemyHouse)
-	{
-		ScriptExt::Log("[%s][%s] (line: %d = %d,%d): Selected house [%s] (index: %d).\n",
-			pTeam->Type->ID,
-			pTeam->CurrentScript->Type->ID,
-			currentMission,
-			pTeam->CurrentScript->Type->ScriptActions[currentMission].Action,
-			pTeam->CurrentScript->Type->ScriptActions[currentMission].Argument,
-			enemyHouse->Type->ID,
-			enemyHouse->ArrayIndex);
-
-		return enemyHouse;
-	}
-
-	// Other cases: Check all the technos and depending of the mode compare what house will be selected as the most hated
-	for (auto pTechno : *TechnoClass::Array)
-	{
-		if (!pTechno->Owner->Defeated
-			&& pTechno->Owner != pTeam->Owner
-			&& pTechno->IsAlive
-			&& !pTechno->InLimbo
-			&& pTechno->IsOnMap
-			&& !pTechno->Owner->IsAlliedWith(pTeam->Owner)
-			&& !pTechno->Owner->Type->MultiplayPassive)
-		{
-			if (mask > 0) // Threat based on the new attack types of the new attack actions
+			if (mask > 0) // Threat based on the new attack types (or "quarry") used by the new attack actions
 			{
 				if (ScriptExt::EvaluateObjectWithMask(pTechno, mask, -1, -1, pLeaderUnit)) // Check if the object type is valid
 				{
 					if (auto const pTechnoType = pTechno->GetTechnoType())
 					{
-						enemyThreatValue[pTechno->Owner->ArrayIndex] += pTechnoType->ThreatPosed;
+						enemyThreatValue[pHouse->ArrayIndex] += pTechnoType->ThreatPosed;
 
 						if (pTechnoType->SpecialThreatValue > 0)
-							enemyThreatValue[pTechno->Owner->ArrayIndex] += pTechnoType->SpecialThreatValue * TargetSpecialThreatCoefficientDefault;
+							enemyThreatValue[pHouse->ArrayIndex] += pTechnoType->SpecialThreatValue * TargetSpecialThreatCoefficientDefault;
 					}
 				}
 			}
@@ -627,42 +452,42 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 
 				if (isValidCandidate || enemyDistance == -1)
 				{
-					enemyDistance = objectDistance;
-					enemyHouse = pTechno->Owner;
+						enemyDistance = objectDistance;
+						enemyHouse = pHouse;
 				}
 			}
 		}
-	}
 
-	if (mask > 0) // Pick the house with major thread
-	{
-		double enemyThreat = -1;
-
-		for (int i = 0; i < nHouses; i++)
+		if (mask > 0) // Pick the house with major thread
 		{
-			auto const pHouse = HouseClass::Array->GetItem(i);
+			double enemyThreat = -1;
 
-			if (pHouse->Defeated || pHouse->Type->MultiplayPassive || pHouse->IsObserver())
-				continue;
-
-			bool isValidCandidate = false;
-
-			if (mode == 0)
-				isValidCandidate = enemyThreatValue[i] < enemyThreat; // The house with the nearest enemy unit
-			else
-				isValidCandidate = enemyThreatValue[i] > enemyThreat; // The house with the farthest enemy unit
-
-			if (isValidCandidate || enemyThreat < 0)
+			for (std::size_t i = 0; i < nHouses; i++)
 			{
-				enemyThreat = enemyThreatValue[i];
-				enemyHouse = pHouse;
+				auto const pHouse = HouseClass::Array->GetItem(i);
+
+				if (pHouse->Defeated || pHouse->Type->MultiplayPassive || pHouse->IsObserver())
+					continue;
+
+				bool isValidCandidate = false;
+
+				if (mode == 0)
+					isValidCandidate = enemyThreatValue[i] < enemyThreat; // The house with the nearest enemy unit
+				else
+					isValidCandidate = enemyThreatValue[i] > enemyThreat; // The house with the farthest enemy unit
+	
+				if (isValidCandidate || enemyThreat < 0)
+				{
+					enemyThreat = enemyThreatValue[i];
+					enemyHouse = pHouse;
+				}
 			}
 		}
 	}
 
 	if (enemyHouse)
 	{
-		ScriptExt::Log("[%s][%s] (line: %d = %d,%d): Selected house [%s] (index: %d).\n",
+		ScriptExt::Log("[%s][%s] (line: %d = %d,%d) - AngerNodes: Selected house [%s] (index: %d).\n",
 			pTeam->Type->ID,
 			pTeam->CurrentScript->Type->ID,
 			currentMission,
@@ -683,9 +508,6 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 // Note: only works for new Phobos script actions, not the original ones
 void ScriptExt::OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
 {
-	if (!pTeam)
-		return;
-
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
 	{
@@ -723,7 +545,7 @@ void ScriptExt::OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
 	}
 
 	int currentMission = pTeam->CurrentScript->CurrentMission;
-	ScriptExt::Log("[%s][%s] (line: %d = %d,%d): Team's 'OnlyTargetHouseEnemy' value overwrited. Now is '%d'.\n",
+	ScriptExt::Log("[%s][%s] (line: %d = %d,%d) - AngerNodes: Team's 'OnlyTargetHouseEnemy' value overwrited. Now is '%d'.\n",
 		pTeam->Type->ID,
 		pTeam->CurrentScript->Type->ID,
 		currentMission,
@@ -737,10 +559,8 @@ void ScriptExt::OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
 
 void ScriptExt::ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse = -1)
 {
-	if (!pTeam)
-		return;
-
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+
 	if (!pTeamData || pTeamData->AngerNodeModifier == 0)
 	{
 		// This action finished
@@ -767,7 +587,7 @@ void ScriptExt::ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse = -1)
 			&& !angerNode.House->IsObserver())
 		{
 			angerNode.AngerLevel += pTeamData->AngerNodeModifier;
-			ScriptExt::Log("[%s][%s] (line: %d = %d,%d): Modified AngerNode level of [%s](index: %d) against house [%s](index: %d). Current hate value: %d\n",
+			ScriptExt::Log("[%s][%s] (line: %d = %d,%d) - AngerNodes: Modified AngerNode level of [%s](index: %d) against house [%s](index: %d). Current hate value: %d\n",
 				pTeam->Type->ID,
 				pTeam->CurrentScript->Type->ID,
 				currentMission,
@@ -782,7 +602,6 @@ void ScriptExt::ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse = -1)
 	}
 
 	ScriptExt::UpdateEnemyHouseIndex(pTeam->Owner);
-	ScriptExt::DebugAngerNodesData(); // Remove this line before merging into develop branch!
 
 	// This action finished
 	pTeam->StepCompleted = true;
@@ -791,9 +610,6 @@ void ScriptExt::ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse = -1)
 // The selected house will become the most hated of the map (the effects are only visible if the other houses are enemy of the selected house)
 void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 {
-	if (!pTeam)
-		return;
-
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
 	{
@@ -856,7 +672,7 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 
 	if (objectsList.size() == 0)
 	{
-		ScriptExt::Log("[%s][%s] (line: %d = %d,%d): [%s](index: %d) failed to pick a new house as main enemy using index '%d'.\n",
+		ScriptExt::Log("[%s][%s] (line: %d = %d,%d) - AngerNodes: [%s](index: %d) failed to pick a new house as main enemy using index '%d'.\n",
 			pTeam->Type->ID,
 			pTeam->CurrentScript->Type->ID,
 			currentMission,
@@ -910,8 +726,6 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 		ScriptExt::UpdateEnemyHouseIndex(pHouse);
 	}
 
-	ScriptExt::DebugAngerNodesData(); // Remove this line before merging into develop branch!
-
 	// This action finished
 	pTeam->StepCompleted = true;
 }
@@ -938,35 +752,4 @@ void ScriptExt::UpdateEnemyHouseIndex(HouseClass* pHouse)
 	}
 
 	pHouse->EnemyHouseIndex = index;
-}
-
-void ScriptExt::DebugAngerNodesData()
-{
-	ScriptExt::Log("Updated AngerNodes lists of every playable House:\n");
-
-	for (auto pHouse : *HouseClass::Array)
-	{
-		if (pHouse->IsObserver())
-			ScriptExt::Log("Player %d [Observer] ", pHouse->ArrayIndex);
-		else
-			ScriptExt::Log("Player %d [%s]: ", pHouse->ArrayIndex, pHouse->Type->ID);
-
-		int i = 0;
-
-		for (auto& angerNode : pHouse->AngerNodes)
-		{
-			if (!pHouse->IsObserver())
-				ScriptExt::Log("%d:%d", angerNode.House->ArrayIndex, angerNode.AngerLevel);
-
-			if (i < HouseClass::Array->Count - 2 && !pHouse->IsObserver())
-				ScriptExt::Log(", ");
-
-			i++;
-		}
-
-		if (!pHouse->IsObserver())
-			ScriptExt::Log(" -> Main Enemy House: %d\n", pHouse->EnemyHouseIndex);
-		else
-			ScriptExt::Log("\n");
-	}
 }
