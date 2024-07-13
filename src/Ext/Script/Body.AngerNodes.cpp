@@ -5,9 +5,7 @@
 void ScriptExt::ResetAngerAgainstHouses(TeamClass* pTeam)
 {
 	for (auto& angerNode : pTeam->Owner->AngerNodes)
-	{
 		angerNode.AngerLevel = 0;
-	}
 
 	pTeam->Owner->EnemyHouseIndex = -1;
 
