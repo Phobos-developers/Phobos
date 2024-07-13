@@ -27,3 +27,19 @@ DEFINE_HOOK(0x51A3A2, InfantryClass_PerCellProcess_CyborgLegsCheck, 0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x518047, InfantryClass_TakeDamage_CyborgLegsCheck, 0x5)
+{
+	GET(InfantryClass*, pInf, ESI);
+	GET(DamageState, eDamageState, EAX);
+
+	if (pInf->Type->Cyborg
+		&& eDamageState != DamageState::PostMortem
+		&& pInf->Crawling == true)
+	{
+		if (auto pExt = TechnoExt::ExtMap.Find(pInf))
+			pExt->IsLeglessCyborg = true;
+	}
+
+	return 0;
+}
