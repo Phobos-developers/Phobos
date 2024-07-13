@@ -300,12 +300,11 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	}
 
 	bool currentMission = pTeam->CurrentScript->CurrentMission;
+	HouseClass* enemyHouse = nullptr;
+	int initialValue = -1;
 	double objectDistance = -1;
 	double enemyDistance = -1;
 	int currentNavalUnits = 0;
-	HouseClass* enemyHouse = nullptr;
-	double const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
-	int initialValue = -1;
 
 	if (mask <= -2 && mask >= -10)
 	{
@@ -410,6 +409,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 		int nHouses = HouseClass::Array->Count;
 		std::vector<double> enemyThreatValue = std::vector<double>(nHouses);
 		enemyThreatValue[nHouses] = { 0.0 };
+		double const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
 
 		for (auto pTechno : *TechnoClass::Array)
 		{
