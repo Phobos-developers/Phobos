@@ -28,25 +28,25 @@ public:
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
 		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
-		Nullable<AnimTypeClass*> CreateUnit_SpawnAnim;
+		Valueable<AnimTypeClass*> CreateUnit_SpawnAnim;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
 		Valueable<bool> UseCenterCoordsIfAttached;
-		Nullable<WeaponTypeClass*> Weapon;
+		Valueable<WeaponTypeClass*> Weapon;
 		Valueable<int> Damage_Delay;
 		Valueable<bool> Damage_DealtByInvoker;
 		Valueable<bool> Damage_ApplyOncePerLoop;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
-		Nullable<AnimTypeClass*> WakeAnim;
+		Valueable<AnimTypeClass*> WakeAnim;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
 		Valueable<bool> AltPalette_ApplyLighting;
 		Valueable<OwnerHouseKind> MakeInfantryOwner;
 		Valueable<bool> ExtraShadow;
-		NullableIdx<VocClass> DetachedReport;
+		ValueableIdx<VocClass> DetachedReport;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }

@@ -183,9 +183,14 @@ DEFINE_HOOK(0x465D40, BuildingTypeClass_IsVehicle, 0x6)
 	GET(BuildingTypeClass*, pThis, ECX);
 
 	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis);
-	R->EAX(pExt->ConsideredVehicle.Get(pThis->UndeploysInto && pThis->Foundation == Foundation::_1x1));
 
-	return ReturnFromFunction;
+	if (pExt->ConsideredVehicle.isset())
+	{
+		R->EAX(pExt->ConsideredVehicle.Get());
+		return ReturnFromFunction;
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x5F5416, ObjectClass_ReceiveDamage_CanC4DamageRounding, 0x6)

@@ -16,6 +16,7 @@ public:
 
 	static constexpr DWORD Canary = 0x11111111;
 	static constexpr size_t ExtPointerOffset = 0x16098;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<HouseClass>
 	{
@@ -113,7 +114,7 @@ public:
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
-
+	static void GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSphere, SuperClass*& pSuperCWarp);
 	static void SetSkirmishHouseName(HouseClass* pHouse);
 
 	static bool IsDisabledFromShell(
@@ -149,4 +150,7 @@ public:
 	static std::vector<int> AIProduction_Values;
 	static std::vector<int> AIProduction_BestChoices;
 	static std::vector<int> AIProduction_BestChoicesNaval;
+
+	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
+	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
 };

@@ -7,6 +7,7 @@
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
@@ -56,14 +57,14 @@ public:
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 		std::unique_ptr<DroppodTypeClass> DroppodType;
 
-		Nullable<int> Ammo_AddOnDeploy;
+		Valueable<int> Ammo_AddOnDeploy;
 		Valueable<int> Ammo_AutoDeployMinimumAmount;
 		Valueable<int> Ammo_AutoDeployMaximumAmount;
 		Valueable<int> Ammo_DeployUnlockMinimumAmount;
 		Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
-		Nullable<AnimTypeClass*> AutoDeath_VanishAnimation;
+		Valueable<AnimTypeClass*> AutoDeath_VanishAnimation;
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
@@ -92,9 +93,9 @@ public:
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
 
-		Nullable<WeaponTypeClass*> WarpInWeapon;
+		Valueable<WeaponTypeClass*> WarpInWeapon;
 		Nullable<WeaponTypeClass*> WarpInMinRangeWeapon;
-		Nullable<WeaponTypeClass*> WarpOutWeapon;
+		Valueable<WeaponTypeClass*> WarpOutWeapon;
 		Valueable<bool> WarpInWeapon_UseDistanceAsDamage;
 
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
@@ -108,7 +109,7 @@ public:
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
-		Nullable<InfantryTypeClass*> DefaultDisguise;
+		Valueable<InfantryTypeClass*> DefaultDisguise;
 		Valueable<bool> UseDisguiseMovementSpeed;
 
 		Nullable<int> OpenTopped_RangeBonus;
@@ -117,6 +118,8 @@ public:
 		Valueable<bool> OpenTopped_IgnoreRangefinding;
 		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
 		Valueable<bool> OpenTopped_ShareTransportTarget;
+		Valueable<bool> OpenTopped_UseTransportRangeModifiers;
+		Valueable<bool> OpenTopped_CheckTransportDisableWeapons;
 
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;
@@ -150,6 +153,9 @@ public:
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
+		Nullable<bool> ForceShield_KeptOnDeploy;
+		Nullable<IronCurtainEffect> ForceShield_Effect;
+		Nullable<WarheadTypeClass*> ForceShield_KillWarhead;
 		Valueable<bool> Explodes_KillPassengers;
 		Valueable<bool> Explodes_DuringBuildup;
 		Nullable<int> DeployFireWeapon;
@@ -190,6 +196,35 @@ public:
 
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
+
+		Valueable<double> CrateGoodie_RerollChance;
+
+		Nullable<ColorStruct> Tint_Color;
+		Valueable<double> Tint_Intensity;
+		Valueable<AffectedHouse> Tint_VisibleToHouses;
+
+		Valueable<WeaponTypeClass*> RevengeWeapon;
+		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
+		ValueableVector<int> AttachEffect_DurationOverrides;
+		ValueableVector<int> AttachEffect_Delays;
+		ValueableVector<int> AttachEffect_InitialDelays;
+		NullableVector<int> AttachEffect_RecreationDelays;
+
+		ValueableVector<TechnoTypeClass*> BuildLimitGroup_Types;
+		ValueableVector<int> BuildLimitGroup_Nums;
+		Valueable<int> BuildLimitGroup_Factor;
+		Valueable<bool> BuildLimitGroup_ContentIfAnyMatch;
+		Valueable<bool> BuildLimitGroup_NotBuildableIfQueueMatch;
+		ValueableVector<TechnoTypeClass*> BuildLimitGroup_ExtraLimit_Types;
+		ValueableVector<int> BuildLimitGroup_ExtraLimit_Nums;
+		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
+		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
+
+		Nullable<AnimTypeClass*> Wake;
+		Nullable<AnimTypeClass*> Wake_Grapple;
+		Nullable<AnimTypeClass*> Wake_Sinking;
 
 		struct LaserTrailDataEntry
 		{
@@ -277,6 +312,8 @@ public:
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
 			, OpenTopped_ShareTransportTarget { true }
+			, OpenTopped_UseTransportRangeModifiers { false }
+			, OpenTopped_CheckTransportDisableWeapons { false }
 
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
@@ -291,7 +328,7 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 
-			, Ammo_AddOnDeploy { }
+			, Ammo_AddOnDeploy { 0 }
 			, Ammo_AutoDeployMinimumAmount { -1 }
 			, Ammo_AutoDeployMaximumAmount { -1 }
 			, Ammo_DeployUnlockMinimumAmount { -1 }
@@ -338,6 +375,10 @@ public:
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
 			, IronCurtain_KillWarhead {}
+			, ForceShield_KeptOnDeploy {}
+			, ForceShield_Effect {}
+			, ForceShield_KillWarhead {}
+
 			, Explodes_KillPassengers { true }
 			, Explodes_DuringBuildup { true }
 			, DeployFireWeapon {}
@@ -376,8 +417,38 @@ public:
 			, SpawnHeight {}
 			, LandingDir {}
 			, DroppodType {}
+
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+
+			, CrateGoodie_RerollChance { 0.0 }
+
+			, Tint_Color {}
+			, Tint_Intensity { 0.0 }
+			, Tint_VisibleToHouses { AffectedHouse::All }
+
+			, RevengeWeapon {}
+			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+
+			, AttachEffect_AttachTypes {}
+			, AttachEffect_DurationOverrides {}
+			, AttachEffect_Delays {}
+			, AttachEffect_InitialDelays {}
+			, AttachEffect_RecreationDelays {}
+
+			, BuildLimitGroup_Types {}
+			, BuildLimitGroup_Nums {}
+			, BuildLimitGroup_Factor { 1 }
+			, BuildLimitGroup_ContentIfAnyMatch { false }
+			, BuildLimitGroup_NotBuildableIfQueueMatch { false }
+			, BuildLimitGroup_ExtraLimit_Types {}
+			, BuildLimitGroup_ExtraLimit_Nums {}
+			, BuildLimitGroup_ExtraLimit_MaxCount {}
+			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
+
+			, Wake { }
+			, Wake_Grapple { }
+			, Wake_Sinking { }
 			, Transporter_FixCyborgLegs { false }
 		{ }
 
