@@ -50,8 +50,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt && pTypeExt->InterceptorType && !pThis->Target &&
-		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
+	if (pTypeExt && pTypeExt->InterceptorType && !pThis->Target && !this->IsBurrowed)
 	{
 		BulletClass* pTargetBullet = nullptr;
 
@@ -105,7 +104,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
 	auto const pThis = specific_cast<UnitClass*>(this->OwnerObject());
-	if (!pThis || (pThis->Type->Ammo <= 0) ||!pThis->Type->IsSimpleDeployer)
+	if (!pThis || (pThis->Type->Ammo <= 0) || !pThis->Type->IsSimpleDeployer)
 		return;
 
 	auto const pTypeExt = this->TypeExtData;
@@ -160,23 +159,23 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	}
 
 	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
-	{
-		auto existSingleType = [pThis, affectedHouse, allowLimbo](TechnoTypeClass* pType)
 		{
-			for (HouseClass* pHouse : *HouseClass::Array)
-			{
-				if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
-					&& (allowLimbo ? HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
-					return true;
-			}
+			auto existSingleType = [pThis, affectedHouse, allowLimbo](TechnoTypeClass* pType)
+				{
+					for (HouseClass* pHouse : *HouseClass::Array)
+					{
+						if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
+							&& (allowLimbo ? HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
+							return true;
+					}
 
-			return false;
+					return false;
+				};
+
+			return any
+				? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
+				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
 		};
-
-		return any
-			? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
-			: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
-	};
 
 	// death if listed technos don't exist
 	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
@@ -280,17 +279,14 @@ void TechnoExt::ExtData::EatPassengers()
 
 				if (auto const pPassengerType = pPassenger->GetTechnoType())
 				{
-					if (pDelType->ReportSound.isset())
+					if (pDelType->ReportSound >= 0)
 						VocClass::PlayAt(pDelType->ReportSound.Get(), pThis->GetCoords(), nullptr);
 
-					if (pDelType->Anim.isset())
+					if (const auto pAnimType = pDelType->Anim.Get())
 					{
-						const auto pAnimType = pDelType->Anim.Get();
-						if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location))
-						{
-							pAnim->SetOwnerObject(pThis);
-							pAnim->Owner = pThis->Owner;
-						}
+						auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
+						pAnim->SetOwnerObject(pThis);
+						pAnim->Owner = pThis->Owner;
 					}
 
 					// Check if there is money refund
@@ -392,10 +388,10 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 			int weaponRangeExtra = pTypeExt->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
 
 			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
-			{
-				if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
-					weaponRange = pWeaponType->Range;
-			};
+				{
+					if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
+						weaponRange = pWeaponType->Range;
+				};
 
 			setWeaponRange(pTechnoType->Weapon[0].WeaponType);
 			setWeaponRange(pTechnoType->Weapon[1].WeaponType);
@@ -516,6 +512,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 void TechnoExt::ExtData::UpdateLaserTrails()
 {
 	auto const pThis = generic_cast<FootClass*>(this->OwnerObject());
+
 	if (!pThis)
 		return;
 
@@ -527,13 +524,26 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 		if (VTable::Get(pThis->Locomotor.GetInterfacePtr()) != 0x7E8278 && trail.Type->DroppodOnly)
 			continue;
 
-		if (pThis->CloakState == CloakState::Cloaked && !trail.Type->CloakVisible)
-			continue;
+		trail.Cloaked = false;
+
+		if (pThis->CloakState == CloakState::Cloaked)
+		{
+			if (trail.Type->CloakVisible && trail.Type->CloakVisible_DetectedOnly && !HouseClass::IsCurrentPlayerObserver() && !pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
+			{
+				auto const pCell = pThis->GetCell();
+				trail.Cloaked = !pCell || !pCell->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
+			}
+			else if (!trail.Type->CloakVisible)
+			{
+				trail.Cloaked = true;
+			}
+		}
 
 		if (!this->IsInTunnel)
 			trail.Visible = true;
 
 		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail.FLH, trail.IsOnTurret);
+
 		if (pThis->CloakState == CloakState::Uncloaking && !trail.Type->CloakVisible)
 			trail.LastLocation = trailLoc;
 		else

@@ -35,19 +35,20 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
 	this->VisibleToHouses.Read(exINI, section, "VisibleToHouses");
 	this->InfoType.Read(exINI, section, "InfoType");
+	this->ValueScaleDivisor.Read(exINI, section, "ValueScaleDivisor");
 }
 
 void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
 	position.X += Offset.Get().X;
-	position.Y -= Offset.Get().Y;
+	position.Y += Offset.Get().Y;
 
 	if (hasShield)
 	{
 		if (Offset_ShieldDelta.isset())
 		{
 			position.X += Offset_ShieldDelta.Get().X;
-			position.Y -= Offset_ShieldDelta.Get().Y;
+			position.Y += Offset_ShieldDelta.Get().Y;
 		}
 		else if (InfoType == DisplayInfoType::Shield)
 		{
@@ -238,6 +239,7 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->VisibleToHouses_Observer)
 		.Process(this->VisibleToHouses)
 		.Process(this->InfoType)
+		.Process(this->ValueScaleDivisor)
 		;
 }
 

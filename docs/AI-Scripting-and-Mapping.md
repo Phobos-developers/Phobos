@@ -71,7 +71,7 @@ Ranking.OverParMessage=   ; CSF entry key
 
 ### Show briefing dialog on startup
 
-- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available). This can be disabled by user by setting `ShowBriefing` to false in `Ra2MD.ini`. 
+- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available). This can be disabled by user by setting `ShowBriefing` to false in `Ra2MD.ini`.
   - `BriefingTheme` (In order of precedence from highest to lowest: `missionmd.ini`, map file, side entry in `rulesmd.ini`) can be used to define a custom theme to play on this briefing screen. If not set, the loading screen theme will keep playing until the scenario starts properly.
   - String labels for the startup briefing dialog screen's resume button as well as the button's status bar text can be customized by setting `ShowBriefingResumeButtonLabel` and `ShowBriefingResumeButtonStatusLabel` respectively. They default to the same labels used by the briefing screen dialog when opened otherwise.
 
@@ -418,6 +418,16 @@ In `rulesmd.ini`:
 ; ...
 ```
 
+### `16005` Jump Back To Previous Script
+
+- Used in a Random Script picked by action 94. It can jump back to the previous script, and continue in the line after x=94,n.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16005,0
+```
+
 ### `18000-18999` Variable Manipulation
 
 #### `18000-18023` Edit Variable
@@ -690,3 +700,23 @@ In `mycampaign.map`:
 ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 ...
 ```
+
+### `604-605` Checking if a specific Techno enters in a cell
+- 604: Checks if the techno that entered in the cell has the same ID specified in the event.
+- 605: Checks if the techno that entered in the cell appears in the selected list in `AITargetTypes`.
+- `HouseIndex` can be customized to focus in a specified house.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...
+ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...
+...
+```
+
+| *House Index* | *Description*                              |
+| :-----------: | :----------------------------------------: |
+| >= 0          | The index of the current House in the map  |
+| -1            | This value is ignored (any house is valid) |
+| -2            | Pick the owner of the map trigger          |

@@ -4,6 +4,7 @@
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
@@ -65,6 +66,36 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 
 		pThis->MissionStatus = (int)AirAttackStatus::ReturnToBase;
 	}
+
+	return 0;
+}
+
+// If strafing weapon target is in air, consider the cell it is on as the firing position instead of the object itself if can fire at it.
+DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
+{
+	GET(AircraftClass*, pThis, EDI);
+	GET(AbstractClass*, pTarget, EAX);
+
+	if (!pTarget)
+		return 0;
+
+	auto const pObject = abstract_cast<ObjectClass*>(pTarget);
+
+	if (!pObject || !pObject->IsInAir())
+		return 0;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	int weaponIndex = pExt->CurrentAircraftWeaponIndex;
+
+	if (weaponIndex < 0)
+		weaponIndex = pThis->SelectWeapon(pTarget);
+
+	auto fireError = pThis->GetFireError(pTarget, weaponIndex, false);
+
+	if (fireError == FireError::ILLEGAL || fireError == FireError::CANT)
+		return 0;
+
+	R->EAX(MapClass::Instance->GetCellAt(pObject->GetCoords()));
 
 	return 0;
 }
@@ -277,4 +308,24 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
+{
+	enum { SkipKickOutPassengers = 0x415F08 };
+
+	GET(AircraftClass*, pThis, EDI);
+	GET_BASE(int, weaponIdx, 0xC);
+
+	auto const pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
+
+	if (!pWeapon)
+		return 0;
+
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeaponExt->KickOutPassengers)
+		return 0;
+
+	return SkipKickOutPassengers;
 }

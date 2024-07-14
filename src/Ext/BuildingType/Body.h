@@ -33,7 +33,7 @@ public:
 		Valueable<bool> Refinery_UseStorage;
 		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
 
-		NullableIdx<VocClass> Grinding_Sound;
+		ValueableIdx<VocClass> Grinding_Sound;
 		Valueable<WeaponTypeClass*> Grinding_Weapon;
 		Valueable<int> Grinding_Weapon_RequiredCredits;
 		ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
@@ -55,8 +55,8 @@ public:
 		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
 		Valueable<bool> SpyEffect_Custom;
-		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
-		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
+		ValueableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
+		ValueableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
 
 		Nullable<bool> ConsideredVehicle;
 		Valueable<bool> ZShapePointMove_OnBuildup;

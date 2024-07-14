@@ -58,11 +58,6 @@
 
 namespace detail
 {
-	template<typename T>
-	concept HasFindOrAllocate = requires(const char* arg){
-		{ T::FindOrAllocate(arg) }->std::same_as<T*>;
-	};
-
 	template <typename T, bool allocate = false>
 	inline bool read(T &value, INI_EX &parser, const char *pSection, const char *pKey)
 	{
@@ -71,7 +66,7 @@ namespace detail
 			using base_type = std::remove_pointer_t<T>;
 			auto const pValue = parser.value();
 			T parsed;
-			if constexpr (HasFindOrAllocate<base_type> && allocate)
+			if constexpr (allocate)
 				parsed = base_type::FindOrAllocate(pValue);
 			else
 				parsed = base_type::Find(pValue);
@@ -1089,6 +1084,14 @@ namespace detail
 				else if (!_strcmpi(cur, "drain"))
 				{
 					parsed |= DiscardCondition::Drain;
+				}
+				else if (!_strcmpi(cur, "inrange"))
+				{
+					parsed |= DiscardCondition::InRange;
+				}
+				else if (!_strcmpi(cur, "outofrange"))
+				{
+					parsed |= DiscardCondition::OutOfRange;
 				}
 				else
 				{

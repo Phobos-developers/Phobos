@@ -64,9 +64,10 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		}
 	}
 
-	// LaserTrails update routine is in BulletClass::AI hook because BulletClass::Draw
-	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
-	if (pBulletExt && pBulletExt->LaserTrails.size())
+	//Because the laser trails will be drawn before the calculation of changing the velocity direction in each frame.
+	//This will cause the laser trails to be drawn in the wrong position too early, resulting in a visual appearance resembling a "bouncing".
+	//Let trajectories draw their own laser trails after the Trajectory's OnAI() to avoid predicting incorrect positions or pass through targets.
+	if (!pBulletExt->Trajectory && pBulletExt->LaserTrails.size())
 	{
 		CoordStruct location = pThis->GetCoords();
 		const BulletVelocity& velocity = pThis->Velocity;

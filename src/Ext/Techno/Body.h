@@ -19,7 +19,6 @@ public:
 
 	static constexpr DWORD Canary = 0x55555555;
 	static constexpr size_t ExtPointerOffset = 0x34C;
-	static constexpr bool ShouldConsiderInvalidatePointer = true; // Not sure if techno lives longer than house on this one
 
 	class ExtData final : public Extension<TechnoClass>
 	{
@@ -118,12 +117,7 @@ public:
 		void InitializeDisplayInfo();
 
 		virtual ~ExtData() override;
-
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			AnnounceInvalidPointer(OriginalPassengerOwner, ptr);
-		}
-
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -137,19 +131,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-			switch (abs)
-			{
-			case AbstractType::House:
-				return false;
-			}
-
-			return true;
-		}
 	};
 
 	static ExtContainer ExtMap;
