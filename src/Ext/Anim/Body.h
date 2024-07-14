@@ -14,7 +14,7 @@ public:
 
 	static constexpr DWORD Canary = 0xAAAAAAAA;
 	static constexpr size_t ExtPointerOffset = 0xD0;
-	static constexpr bool ShouldConsiderInvalidatePointer = true;
+	static constexpr bool ShouldConsiderInvalidatePointer = false; // Sheer volume of animations in an average game makes a bespoke solution for pointer invalidation worthwhile.
 
 	class ExtData final : public Extension<AnimClass>
 	{
@@ -49,12 +49,7 @@ public:
 			this->DeleteAttachedSystem();
 		}
 
-		virtual void InvalidatePointer(void* const ptr, bool bRemoved) override
-		{
-			AnnounceInvalidPointer(this->Invoker, ptr);
-			AnnounceInvalidPointer(this->AttachedSystem, ptr);
-			AnnounceInvalidPointer(this->ParentBuilding, ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void InitializeConstants() override;
 
@@ -71,23 +66,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-			switch (abs)
-			{
-			case AbstractType::Building:
-			case AbstractType::Infantry:
-			case AbstractType::Unit:
-			case AbstractType::Aircraft:
-			case AbstractType::ParticleSystem:
-				return false;
-			}
-
-			return true;
-		}
 	};
 
 	static ExtContainer ExtMap;
@@ -99,4 +77,7 @@ public:
 
 	static void HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
 	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom);
+
+	static void InvalidateTechnoPointers(TechnoClass* pTechno);
+	static void InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem);
 };

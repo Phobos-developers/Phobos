@@ -130,6 +130,7 @@ This page lists all the individual contributions to the project by their author.
   - Shared ammo logic
   - Customizable FLH when infantry is prone or deployed
   - Initial strength for cloned infantry
+  - Map Events 604 & 605 for checking if a specific Techno enters in a cell
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -227,6 +228,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom tint effects
   - Revenge weapons
   - AttachEffect
+  - Air unit tracking fix for large range / `CellSpread`
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -317,16 +319,20 @@ This page lists all the individual contributions to the project by their author.
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
    - Unlimited `AlternateFLH` entries
+   - Build limit group
+   - Customizing whether passengers are kicked out when an aircraft fires
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control
   - Vehicle voxel turret shadows & body multi-section shadows
   - `TurretOffset` support for SHP vehicles
+  - Customizable wake anim
 - **Fryone**
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
   - Auto-deploy/Deploy block on ammo change
   - Flashing Technos on selecting
+  - Promotion animation
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
   - Re-enable the Veinhole Monster and Weeds from TS
@@ -334,6 +340,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow to change the speed of gas particles
 - **CrimRecya**
   - New Disperse trajectory
+- **handama** - AI script action to jump back to previous script
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
@@ -345,6 +352,7 @@ This page lists all the individual contributions to the project by their author.
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
+- **Ollerus** - Build limit group enhancement
 - **Chasheen (Chasheenburg)** - CN docs help
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation

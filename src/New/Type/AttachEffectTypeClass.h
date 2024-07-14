@@ -17,6 +17,7 @@ public:
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
+	Nullable<Leptons> DiscardOn_RangeOverride;
 	Valueable<bool> PenetratesIronCurtain;
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
@@ -57,6 +58,7 @@ public:
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
+		, DiscardOn_RangeOverride {}
 		, PenetratesIronCurtain { false }
 		, Animation {}
 		, CumulativeAnimations {}
