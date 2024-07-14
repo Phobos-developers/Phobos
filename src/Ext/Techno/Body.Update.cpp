@@ -50,8 +50,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt && pTypeExt->InterceptorType && !pThis->Target &&
-		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
+	if (pTypeExt && pTypeExt->InterceptorType && !pThis->Target && !this->IsBurrowed)
 	{
 		BulletClass* pTargetBullet = nullptr;
 
@@ -280,17 +279,14 @@ void TechnoExt::ExtData::EatPassengers()
 
 				if (auto const pPassengerType = pPassenger->GetTechnoType())
 				{
-					if (pDelType->ReportSound.isset())
+					if (pDelType->ReportSound >= 0)
 						VocClass::PlayAt(pDelType->ReportSound.Get(), pThis->GetCoords(), nullptr);
 
-					if (pDelType->Anim.isset())
+					if (const auto pAnimType = pDelType->Anim.Get())
 					{
-						const auto pAnimType = pDelType->Anim.Get();
-						if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location))
-						{
-							pAnim->SetOwnerObject(pThis);
-							pAnim->Owner = pThis->Owner;
-						}
+						auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
+						pAnim->SetOwnerObject(pThis);
+						pAnim->Owner = pThis->Owner;
 					}
 
 					// Check if there is money refund

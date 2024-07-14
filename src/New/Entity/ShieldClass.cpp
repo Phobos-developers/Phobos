@@ -235,6 +235,28 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		}
 		else
 		{
+			if (this->Type->HitFlash && pWHExt->Shield_HitFlash)
+			{
+				int size = this->Type->HitFlash_FixedSize.Get((shieldDamage * 2));
+				SpotlightFlags flags = SpotlightFlags::NoColor;
+
+				if (this->Type->HitFlash_Black)
+				{
+					flags = SpotlightFlags::NoColor;
+				}
+				else
+				{
+					if (!this->Type->HitFlash_Red)
+						flags = SpotlightFlags::NoRed;
+					if (!this->Type->HitFlash_Green)
+						flags |= SpotlightFlags::NoGreen;
+					if (!this->Type->HitFlash_Blue)
+						flags |= SpotlightFlags::NoBlue;
+				}
+
+				MapClass::FlashbangWarheadAt(size, args->WH, this->Techno->Location, true, flags);
+			}
+
 			this->WeaponNullifyAnim(pWHExt->Shield_HitAnim);
 			this->HP = -residueDamage;
 

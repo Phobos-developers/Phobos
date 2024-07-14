@@ -20,6 +20,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Digital display `Offset` and `Offset.ShieldDelta` Y-axis coordinates now work in inverted fashion (negative goes up, positive goes down) to be consistent with how pixel offsets work elsewhere in the game.
 - Phobos Warhead effects combined with `CellSpread` now correctly apply to buildings if any of the foundation cells are hit instead of only the top-left most cell (cell #0).
 - `ExtraWarheads.DamageOverrides` now falls back to last listed value if list is shorter than `ExtraWarheads` for all Warhead detonations exceeding the length.
 - Air and Top layer contents are no longer sorted, animations in these layers no longer respect `YSortAdjust`. Animations attached to flying units now get their layer updated immediately after parent unit, if they are on same layer they will draw above the parent unit.
@@ -95,7 +96,6 @@ SaveGameOnScenarioStart=true     ; boolean
   ```ini
   [ParamTypes]
   47=Structures,28
-
   54=Use GlobalVar,10
   55=Operation,0
   56=Variable index,0
@@ -106,6 +106,7 @@ SaveGameOnScenarioStart=true     ; boolean
   65=Campaign AI Repairable,0
   68=House,1,2
   69=Non-inert,10
+  70=AITargetTypes index,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -147,6 +148,8 @@ SaveGameOnScenarioStart=true     ; boolean
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
   601=House owns Techno Type,68,46,0,0,[LONG DESC],0,1,601,1
   602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1
+  604=Techno Type Entered Cell,68,46,0,0,[LONG DESC],0,1,604,1
+  605=AI Target Type Entered Cell,68,70,0,0,[LONG DESC],0,1,605,1
 
   [ActionsRA2]
   41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
@@ -414,6 +417,17 @@ New:
 - Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
 - Allow `CloakVisible=true` laser trails optinally be seen only if unit is detected (by Starkku)
 - Enhanced Straight trajectory (by CrimRecya)
+- Customizing whether passengers are kicked out when an aircraft fires (by ststl)
+- Shield hit flash (by Starkku)
+- Option to scatter `Anim/SplashList` animations around impact coordinates (by Starkku)
+- Customizable wake anim (by TwinkleStar)
+- AI script action to jump back to previous script after picking a random script (by handama)
+- Insignias visibility and position adjustments (by Fryone)
+- Promotion animation (by Fryone)
+- Allow different technos to share build limit in a group (by ststl & Ollerus)
+- Map events `604-605` for checking if a specific Techno enters in a cell (by FS-21)
+- Waypoint path is drawn for all units, even those not under player control if `DebugKeysEnabled=yes` (by Trsdy)
+- `RemoveDisguise` now works on vehicle disguises (by Trsdy)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -480,6 +494,7 @@ Vanilla fixes:
 - Objects in invalid map coordinates are no longer used for starting view and AI base center calculations (by Starkku)
 - Units & buildings with `DecloakToFire=false` weapons can now cloak while targeting & reloading (by Starkku)
 - Units with `Sensors=true` will no longer reveal ally buildings (by Starkku)
+- Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread` (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
