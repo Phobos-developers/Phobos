@@ -30,9 +30,15 @@ public:
 	Valueable<AttachedAnimFlag> IdleAnim_TemporalAction;
 	Damageable<AnimTypeClass*> IdleAnim;
 	Damageable<AnimTypeClass*> IdleAnimDamaged;
-	Nullable<AnimTypeClass*> BreakAnim;
-	Nullable<AnimTypeClass*> HitAnim;
-	Nullable<WeaponTypeClass*> BreakWeapon;
+	Valueable<AnimTypeClass*> BreakAnim;
+	Valueable<AnimTypeClass*> HitAnim;
+	Valueable<bool> HitFlash;
+	Nullable<int> HitFlash_FixedSize;
+	Valueable<bool> HitFlash_Red;
+	Valueable<bool> HitFlash_Green;
+	Valueable<bool> HitFlash_Blue;
+	Valueable<bool> HitFlash_Black;
+	Valueable<WeaponTypeClass*> BreakWeapon;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
 	Valueable<int> ReceivedDamage_Minimum;
@@ -47,6 +53,10 @@ public:
 	Valueable<bool> Pips_HideIfNoStrength;
 	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
+
+	Nullable<ColorStruct> Tint_Color;
+	Valueable<double> Tint_Intensity;
+	Valueable<AffectedHouse> Tint_VisibleToHouses;
 
 public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle)
@@ -72,6 +82,12 @@ public:
 		, IdleAnimDamaged { }
 		, BreakAnim { }
 		, HitAnim { }
+		, HitFlash { false }
+		, HitFlash_FixedSize {}
+		, HitFlash_Red { true }
+		, HitFlash_Green { true }
+		, HitFlash_Blue { true }
+		, HitFlash_Black { false }
 		, BreakWeapon { }
 		, AbsorbPercent { 1.0 }
 		, PassPercent { 0.0 }
@@ -85,6 +101,9 @@ public:
 		, Pips_HideIfNoStrength { false }
 		, ImmuneToBerserk { false }
 		, ImmuneToCrit { false }
+		, Tint_Color {}
+		, Tint_Intensity { 0.0 }
+		, Tint_VisibleToHouses { AffectedHouse::All }
 	{ };
 
 	virtual ~ShieldTypeClass() override = default;

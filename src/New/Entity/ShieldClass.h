@@ -81,6 +81,8 @@ private:
 	int DrawShieldBar_Pip(const bool isBuilding) const;
 	int DrawShieldBar_PipAmount(const int length) const;
 
+	void UpdateTint();
+
 	/// Properties ///
 	TechnoClass* Techno;
 	TechnoTypeClass* TechnoID;

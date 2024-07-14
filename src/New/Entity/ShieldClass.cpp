@@ -231,13 +231,35 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			int actualResidueDamage = Math::max(0, int((double)(originalShieldDamage - this->HP) /
 				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetArmorType()))); //only absord percentage damage
 
-			this->BreakShield(pWHExt->Shield_BreakAnim.Get(nullptr), pWHExt->Shield_BreakWeapon.Get(nullptr));
+			this->BreakShield(pWHExt->Shield_BreakAnim, pWHExt->Shield_BreakWeapon.Get(nullptr));
 
 			return this->Type->AbsorbOverDamage ? healthDamage : actualResidueDamage + healthDamage;
 		}
 		else
 		{
-			this->WeaponNullifyAnim(pWHExt->Shield_HitAnim.Get(nullptr));
+			if (this->Type->HitFlash && pWHExt->Shield_HitFlash)
+			{
+				int size = this->Type->HitFlash_FixedSize.Get((shieldDamage * 2));
+				SpotlightFlags flags = SpotlightFlags::NoColor;
+
+				if (this->Type->HitFlash_Black)
+				{
+					flags = SpotlightFlags::NoColor;
+				}
+				else
+				{
+					if (!this->Type->HitFlash_Red)
+						flags = SpotlightFlags::NoRed;
+					if (!this->Type->HitFlash_Green)
+						flags |= SpotlightFlags::NoGreen;
+					if (!this->Type->HitFlash_Blue)
+						flags |= SpotlightFlags::NoBlue;
+				}
+
+				MapClass::FlashbangWarheadAt(size, args->WH, this->Techno->Location, true, flags);
+			}
+
+			this->WeaponNullifyAnim(pWHExt->Shield_HitAnim);
 			this->HP = -residueDamage;
 
 			this->UpdateIdleAnim();
@@ -300,7 +322,7 @@ void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 	if (this->AreAnimsHidden)
 		return;
 
-	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim.Get(nullptr);
+	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
 
 	if (pAnimType)
 		GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
@@ -395,6 +417,7 @@ void ShieldClass::AI()
 		return;
 
 	this->TemporalCheck();
+
 	if (this->Temporal)
 		return;
 
@@ -483,6 +506,9 @@ void ShieldClass::OnlineCheck()
 
 	if (!isActive)
 	{
+		if (this->Online)
+			this->UpdateTint();
+
 		this->Online = false;
 		timer->Pause();
 
@@ -511,6 +537,9 @@ void ShieldClass::OnlineCheck()
 	}
 	else
 	{
+		if (!this->Online)
+			this->UpdateTint();
+
 		this->Online = true;
 		timer->Resume();
 
@@ -558,6 +587,7 @@ bool ShieldClass::ConvertCheck()
 		this->KillAnim();
 		pTechnoExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
 		pTechnoExt->Shield = nullptr;
+		this->UpdateTint();
 
 		return true;
 	}
@@ -600,6 +630,7 @@ bool ShieldClass::ConvertCheck()
 	}
 
 	this->TechnoID = newID;
+	this->UpdateTint();
 
 	return false;
 }
@@ -675,12 +706,11 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 		this->Timers.Respawn.Start(Timers.Respawn_WHModifier.InProgress() ? Respawn_Rate_Warhead : this->Type->Respawn_Rate);
 
 	this->Timers.SelfHealing.Stop();
-
 	this->KillAnim();
 
 	if (!this->AreAnimsHidden)
 	{
-		const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim.Get(nullptr);
+		const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim;
 
 		if (pAnimType)
 		{
@@ -692,9 +722,9 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 		}
 	}
 
-	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon.Get(nullptr);
-
+	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon;
 	this->LastBreakFrame = Unsorted::CurrentFrame;
+	this->UpdateTint();
 
 	if (pWeaponType)
 		TechnoExt::FireWeaponAtSelf(this->Techno, pWeaponType);
@@ -710,6 +740,7 @@ void ShieldClass::RespawnShield()
 		timer->Stop();
 		double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
 		this->HP = this->GetPercentageAmount(amount);
+		this->UpdateTint();
 	}
 	else if (timerWHModifier->Completed() && timer->InProgress())
 	{
@@ -796,6 +827,12 @@ void ShieldClass::UpdateIdleAnim()
 		this->KillAnim();
 		this->CreateAnim();
 	}
+}
+
+void ShieldClass::UpdateTint()
+{
+	if (this->Type->Tint_Color.isset() || this->Type->Tint_Intensity != 0.0)
+		this->Techno->MarkForRedraw();
 }
 
 AnimTypeClass* ShieldClass::GetIdleAnimType()
