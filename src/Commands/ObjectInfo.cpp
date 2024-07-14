@@ -107,10 +107,23 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 			append("\n");
 		}
 
-		auto pTarget = abstract_cast<TechnoClass*>(pFoot->Target);
-		if (pTarget)
+		if (pFoot->Target)
 		{
-			append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pFoot) / Unsorted::LeptonsPerCell), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
+			auto mapCoords = CellStruct::Empty;
+			auto ID = "N/A";
+
+			if (auto const pObject = abstract_cast<ObjectClass*>(pFoot->Target))
+			{
+				mapCoords = pObject->GetMapCoords();
+				ID = pObject->GetType()->get_ID();
+			}
+			else if (auto const pCell = abstract_cast<CellClass*>(pFoot->Target))
+			{
+				mapCoords = pCell->MapCoords;
+				ID = "Cell";
+			}
+
+			append("Target = %s, Distance = %d, Location = (%d, %d)\n", ID, (pFoot->DistanceFrom(pFoot->Target) / Unsorted::LeptonsPerCell), mapCoords.X, mapCoords.Y);
 		}
 
 		append("Current HP = (%d / %d)", pFoot->Health, pType->Strength);
@@ -172,10 +185,23 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		if (pBuilding->Type->Ammo > 0)
 			append("Ammo = (%d / %d)\n", pBuilding->Ammo, pBuilding->Type->Ammo);
 
-		auto pTarget = abstract_cast<TechnoClass*>(pBuilding->Target);
-		if (pTarget)
+		if (pBuilding->Target)
 		{
-			append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pBuilding) / Unsorted::LeptonsPerCell), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
+			auto mapCoords = CellStruct::Empty;
+			auto ID = "N/A";
+
+			if (auto const pObject = abstract_cast<ObjectClass*>(pBuilding->Target))
+			{
+				mapCoords = pObject->GetMapCoords();
+				ID = pObject->GetType()->get_ID();
+			}
+			else if (auto const pCell = abstract_cast<CellClass*>(pBuilding->Target))
+			{
+				mapCoords = pCell->MapCoords;
+				ID = "Cell";
+			}
+
+			append("Target = %s, Distance = %d, Location = (%d, %d)\n", ID, (pBuilding->DistanceFrom(pBuilding->Target) / Unsorted::LeptonsPerCell), mapCoords.X, mapCoords.Y);
 		}
 
 		append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);

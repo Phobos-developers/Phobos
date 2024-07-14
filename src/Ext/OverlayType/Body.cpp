@@ -35,6 +35,9 @@ void OverlayTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PaletteFile.Read(pArtINI, pArtSection, "Palette");
 
 	BuildPalette();
+
+	if (GeneralUtils::IsValidString(this->PaletteFile) && !this->Palette)
+		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, this->PaletteFile);
 }
 
 void OverlayTypeExt::ExtData::BuildPalette()

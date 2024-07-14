@@ -4,6 +4,140 @@ This page describes all the engine features that are either new and introduced b
 
 ## New types / ingame entities
 
+### Attached effects
+
+- Similar (but not identical) to Ares' AttachEffect, but with some differences and new features. The largest difference is that here attached effects are explicitly defined types.
+  - `Duration` determines how long the effect lasts for. It can be overriden by `DurationOverrides` on TechnoTypes and Warheads.
+  - `Cumulative`, if set to true, allows the same type of effect to be applied on same object multiple times, up to `Cumulative.MaxCount` number or with no limit if `Cumulative.MaxCount` is a negative number.
+  - `Powered` controls whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power. What happens to animation is controlled by `Animation.OfflineAction`.
+  - `DiscardOn` accepts a list of values corresponding to conditions where the attached effect should be discarded. Defaults to `none`, meaning it is never discarded.
+    - `entry`: Discard on exiting the map when entering transports or buildings etc.
+    - `move`: Discard when the object the effect is attached on moves. Ignored if the object is a building.
+    - `stationary`: Discard when the object the effect is attached on stops moving. Ignored if the object is a building.
+    - `drain`: Discard when the object is being affected by a weapon with `DrainWeapon=true`.
+    - `inrange`: Discard if within weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
+    - `outofrange`: Discard if outside weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
+  - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects (Iron Curtain / Force Shield).
+  - `Animation` defines animation to play in an indefinite loop for as long as the effect is active on the object it is attached to.
+    - If `Animation.ResetOnReapply` is set to true, the animation playback is reset every time the effect is applied if `Cumulative=false`.
+    - `Animation.OfflineAction` determines what happens to the animation when the attached object is deactivated or not powered. Only applies if `Powered=true`.
+    - `Animation.TemporalAction` determines what happens to the animation when the attached object is under effect of `Temporal=true` Warhead.
+    - `Animation.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the animation's owner & invoker instead of the object the effect is attached to.
+  - `CumulativeAnimations` can be used to declare a list of animations used for `Cumulative=true` types instead of `Animation`. An animation is picked from the list in order matching the number of active instances of the type on the object, with last listed animation used if number is higher than the number of listed animations. This animation is only displayed once, on the first active instance of the effect found attached and is updated and restarted if the number of active instances changed.
+  - Attached effect can fire off a weapon when expired / removed / object dies by setting `ExpireWeapon`.
+    - `ExpireWeapon.TriggerOn` determines the exact conditions upon which the weapon is fired, defaults to `expire` which means only if the effect naturally expires.
+    - `ExpireWeapon.CumulativeOnlyOnce`, if set to true, makes it so that `Cumulative=true` attached effects only detonate the weapon once period, instead of once per active instance. On `remove` and `expire` condition this means it will only detonate after last instance has expired or been removed.
+  - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
+    - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
+  - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
+    - If `ROFMultiplier.ApplyOnCurrentTimer` is set to true, `ROFMultiplier` is applied on currently running reload timer (if any) when the effect is first applied.
+  - If `Cloakable` is set to true, the object the effect is attached to is granted ability to cloak itself for duration of the effect.
+  - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
+  - `WeaponRange.Multiplier` and `WeaponRange.ExtraRange` can be used to multiply the weapon firing range of the object the effect is attached to, or give it an increase / decrease (measured in cells), respectively. `ExtraRange` is cumulatively applied from all attached effects after all `Multiplier` values have been applied.
+    - `WeaponRange.AllowWeapons` can be used to list only weapons that can benefit from this range bonus and `WeaponRange.DisallowWeapons` weapons that are not allowed to, respectively.
+    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
+  - `Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
+    - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
+  - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
+    - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
+  - `DisableWeapons` can be used to disable ability to fire any and all weapons.
+    - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
+  - It is possible to set groups for attach effect types by defining strings in `Groups`.
+    - Groups can be used instead of types for removing effects and weapon filters.
+
+- AttachEffectTypes can be attached to TechnoTypes using `AttachEffect.AttachTypes`.
+  - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
+  - `AttachEffect.Delays` can be used to set the delays for recreating the effects on the TechnoType after they expire. Defaults to 0 (immediately), negative values mean the effects are not recreated. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+  - `AttachEffect.InitialDelays` can be used to set the delays before first creating the effects on TechnoType. Defaults to 0 (immediately). Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+  - `AttachEffect.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+
+- AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
+  - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
+  - Attached effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes` or `AttachEffect.RemoveGroups`.
+    - `AttachEffect.CumulativeRemoveMinCounts` sets minimum number of active instaces per `RemoveTypes`/`RemoveGroups` required for `Cumulative=true` types to be removed.
+    - `AttachEffect.CumulativeRemoveMaxCounts` sets maximum number of active instaces per `RemoveTypes`/`RemoveGroups` for `Cumulative=true` that are removed at once by this Warhead.
+
+- Weapons can require attached effects on target to fire, or be prevented by firing if specific attached effects are applied.
+  - `AttachEffect.RequiredTypes` can be used to list attached effects required to be on target to fire, all listed effect types must be present to allow firing.
+  - `AttachEffect.DisallowedTypes` can be used to list attached effects that when present prevent the weapon from firing, any of the listed effect types will prevent firing if present.
+  - `AttachEffect.Required/DisallowedGroups` have the same effect except applied with/to all types that have one of the listed groups in their `Groups` listing.
+  - `AttachEffect.(Required|Disallowed)MinCounts & (Required|Disallowed)MaxCounts` can be used to set the minimum and maximum number of instances required / disallowed to be on the Techno for `Cumulative=true` types (ignored for other types) respectively.
+  - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead.
+
+In `rulesmd.ini`:
+```ini
+[AttachEffectTypes]
+0=SOMEATTACHEFFECT
+
+[SOMEATTACHEFFECT]                             ; AttachEffectType
+Duration=0                                     ; integer - game frames or negative value for indefinite duration
+Cumulative=false                               ; boolean
+Cumulative.MaxCount=-1                         ; integer
+Powered=false                                  ; boolean
+DiscardOn=none                                 ; list of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
+DiscardOn.RangeOverride=                       ; floating point value, distance in cells
+PenetratesIronCurtain=false                    ; boolean
+Animation=                                     ; Animation
+Animation.ResetOnReapply=false                 ; boolean
+Animation.OfflineAction=Hides                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.TemporalAction=None                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.UseInvokerAsOwner=false              ; boolean
+CumulativeAnimations=                          ; list of animations
+ExpireWeapon=
+ExpireWeapon.TriggerOn=expire                  ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
+ExpireWeapon.CumulativeOnlyOnce=false          ; boolean
+Tint.Color=                                    ; integer - R,G,B
+Tint.Intensity=                                ; floating point value
+Tint.VisibleToHouses=all                       ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+FirepowerMultiplier=1.0                        ; floating point value
+ArmorMultiplier=1.0                            ; floating point value
+SpeedMultiplier=1.0                            ; floating point value
+ROFMultiplier=1.0                              ; floating point value
+ROFMultiplier.ApplyOnCurrentTimer=true         ; boolean
+Cloakable=false                                ; boolean
+ForceDecloak=false                             ; boolean
+WeaponRange.Multiplier=1.0                     ; floating point value
+WeaponRange.ExtraRange=0.0                     ; floating point value
+WeaponRange.AllowWeapons=                      ; list of WeaponTypes
+WeaponRange.DisallowWeapons=                   ; list of WeaponTypes
+Crit.Multiplier=1.0                            ; floating point value
+Crit.ExtraChance=0.0                           ; floating point value
+Crit.AllowWarheads=                            ; list of WarheadTypes
+Crit.DisallowWarheads=                         ; list of WarheadTypes
+RevengeWeapon=                                 ; WeaponType
+RevengeWeapon.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisableWeapons=false                           ; boolean
+Groups=                                        ; comma-separated list of strings (group IDs)
+
+[SOMETECHNO]                                   ; TechnoType
+AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
+AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.Delays=                           ; integer - delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.InitialDelays=                    ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.RecreationDelays=                 ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
+OpenTopped.UseTransportRangeModifiers=false    ; boolean
+OpenTopped.CheckTransportDisableWeapons=false  ; boolean
+
+[SOMEWEAPON]                                   ; WeaponType
+AttachEffect.RequiredTypes=                    ; List of AttachEffectTypes
+AttachEffect.DisallowedTypes=                  ; List of AttachEffectTypes
+AttachEffect.RequiredGroups=                   ; comma-separated list of strings (group IDs)
+AttachEffect.DisallowedGroups=                 ; comma-separated list of strings (group IDs)
+AttachEffect.RequiredMinCounts=                ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.RequiredMaxCounts=                ; integer - maximum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMinCounts=              ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMaxCounts=              ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.IgnoreFromSameSource=false        ; boolean
+
+[SOMEWARHEAD]
+AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
+AttachEffect.RemoveTypes=                      ; List of AttachEffectTypes
+AttachEffect.RemoveGroups=                     ; comma-separated list of strings (group IDs)
+AttachEffect.CumulativeRemoveMinCounts=        ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.CumulativeRemoveMaxCounts=        ; integer - maximum removed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+```
+
 ### Custom Radiation Types
 
 ![image](_static/images/radtype-01.png)
@@ -11,7 +145,7 @@ This page describes all the engine features that are either new and introduced b
 
 - Any weapon can now have a custom radiation type. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
 - There are several new properties available to all radiation types.
-  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings.
+  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings. How many times a single radiation site can deal this damage to same building (every cell of the foundation is hit by all radiation sites on a cell) can be customized with `RadBuildingDamageMaxCount`, negative values mean no limit.
   - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
   - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
   - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker. Note that if the invoker dies at any point during the radiation's lifetime it continues to behave as if not having an invoker.
@@ -32,13 +166,14 @@ RadType=Radiation                  ; RadType to use instead of default of [Radia
 RadDurationMultiple=1              ; integer
 RadApplicationDelay=16             ; integer
 RadApplicationDelay.Building=0     ; integer
+RadBuildingDamageMaxCount=-1       ; integer
 RadLevelMax=500                    ; integer
 RadLevelDelay=90                   ; integer
 RadLightDelay=90                   ; integer
 RadLevelFactor=0.2                 ; floating point value
 RadLightFactor=0.1                 ; floating point value
 RadTintFactor=1.0                  ; floating point value
-RadColor=0,255,0                   ; integer - Red,Green,Blue
+RadColor=0,255,0                   ; integer - R,G,B
 RadSiteWarhead=RadSite             ; WarheadType
 RadSiteWarhead.Detonate=false      ; boolean
 RadHasOwner=false                  ; boolean
@@ -65,23 +200,24 @@ In `artmd.ini`:
 [LaserTrailTypes]
 0=SOMETRAIL
 
-[SOMETRAIL]                   ; LaserTrailType name
-IsHouseColor=false            ; boolean
-Color=255,0,0                 ; integer - Red,Green,Blue
-FadeDuration=64               ; integer
-Thickness=4                   ; integer
-SegmentLength=128             ; integer, minimal length of each trail segment
-IgnoreVertical=false          ; boolean, whether the trail won't be drawn on vertical movement
-IsIntense=false               ; boolean, whether the laser is "supported" (AKA prism forwarding)
-CloakVisible=false            ; boolean, whether the laser is visible when the attached unit is cloaked
+[SOMETRAIL]                      ; LaserTrailType name
+IsHouseColor=false               ; boolean
+Color=255,0,0                    ; integer - R,G,B
+FadeDuration=64                  ; integer
+Thickness=4                      ; integer
+SegmentLength=128                ; integer, minimal length of each trail segment
+IgnoreVertical=false             ; boolean, whether the trail won't be drawn on vertical movement
+IsIntense=false                  ; boolean, whether the laser is "supported" (AKA prism forwarding)
+CloakVisible=false               ; boolean, whether the laser is visible when the attached unit is cloaked
+CloakVisible.DetectedOnly=false  ; boolean, whether CloakVisible=true laser is visible only to those who can detect the attached unit
 
-[SOMEPROJECTILE]              ; BulletType Image
-LaserTrail.Types=SOMETRAIL    ; list of LaserTrailTypes
+[SOMEPROJECTILE]                 ; BulletType Image
+LaserTrail.Types=SOMETRAIL       ; list of LaserTrailTypes
 
-[SOMETECHNO]                  ; TechnoType Image
-LaserTrailN.Type=SOMETRAIL    ; LaserTrailType
-LaserTrailN.FLH=0,0,0         ; integer - Forward,Lateral,Height
-LaserTrailN.IsOnTurret=false  ; boolean, whether the trail origin is turret
+[SOMETECHNO]                     ; TechnoType Image
+LaserTrailN.Type=SOMETRAIL       ; LaserTrailType
+LaserTrailN.FLH=0,0,0            ; integer - Forward,Lateral,Height
+LaserTrailN.IsOnTurret=false     ; boolean, whether the trail origin is turret
 ; where N = 0, 1, 2, ...
 ```
 
@@ -139,6 +275,12 @@ IdleAnim.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Tem
 IdleAnim.TemporalAction=Hides               ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 BreakAnim=                                  ; Animation
 HitAnim=                                    ; Animation
+HitFlash=false                              ; boolean
+HitFlash.FixedSize=                         ; integer
+HitFlash.Red=true                           ; boolean
+HitFlash.Green=true                         ; boolean
+HitFlash.Blue=true                          ; boolean
+HitFlash.Black=false                        ; boolean
 BreakWeapon=                                ; WeaponType
 AbsorbPercent=1.0                           ; floating point value
 PassPercent=0.0                             ; floating point value
@@ -147,6 +289,9 @@ ReceivedDamage.Maximum=2147483647           ; integer
 AllowTransfer=                              ; boolean
 ImmuneToBerserk=no                          ; boolean
 ImmuneToCrit=no                             ; boolean
+Tint.Color=                                 ; integer - R,G,B
+Tint.Intensity=0.0                          ; floating point value
+Tint.VisibleToHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
 [SOMETECHNO]                                ; TechnoType
 ShieldType=SOMESHIELDTYPE                   ; ShieldType; none by default
@@ -156,6 +301,7 @@ Shield.Penetrate=false                      ; boolean
 Shield.Break=false                          ; boolean
 Shield.BreakAnim=                           ; Animation
 Shield.HitAnim=                             ; Animation
+Shield.HitFlash=true                        ; boolean
 Shield.BreakWeapon=                         ; WeaponType
 Shield.AbsorbPercent=                       ; floating point value
 Shield.PassPercent=                         ; floating point value
@@ -208,12 +354,16 @@ Shield.InheritStateOnReplace=false          ; boolean
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
 - `BreakAnim`, if set, will be played when the shield has been broken.
 - `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
+- `HitFlash`, if set to true, makes it so that a light flash is generated when the shield is attacked by a Warhead unless it has `Shield.HitFlash=false`. Size of the flash is determined by damage dealt, unless `HitFlash.FixedSize` is set to a number, in which case that value is used instead (range of values that produces visible effect are increments of 4 from 81 to 252, anything higher or below does not have effect). Color can be customized via `HitFlash.Red/Green/Blue`. If `HitFlash.Black` is set to true, the generated flash will be black regardless of other color settings.
 - `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `ReceivedDamage.Minimum` & `ReceivedDamage.Maximum` control the minimum and maximum amount of damage that can be dealt to shield in a single hit. This is applied after armor type and `AbsorbPercent` adjustments. If `AbsorbOverDamage=false`, the residual damage dealt to the TechnoType is still based on the original damage before the clamping to the range.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
 - `ImmuneToBerserk` gives the immunity against `Psychedelic=yes` warhead. Otherwise the berserk effect penetrates shields by default. Note that this shouldn't prevent the unit from targeting at the shielded object. `Versus.shieldArmor=0%` is still required in this case.
+- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to to TechnoTypes with shields by setting `Tint.Color` and/or `Tint Intensity`.
+  - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
+  - `Tint.VisibleToHouses` can be used to customize which houses can see the tint effect.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable. Several customizations are available for the shield strength pips.
   - By default, buildings use the 6th frame of `pips.shp` to display the shield strength while others use the 17th frame.
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
@@ -221,7 +371,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Pips.Shield.Building.Empty` can be used to set the frame of `pips.shp` displayed for empty building strength pips, defaults to 1st frame of `pips.shp`.
   - The above customizations are also available on per ShieldType basis, e.g `[ShieldType]`->`Pips` instead of `[AudioVisual]`->`Pips.Shield` and so on. ShieldType settings take precedence over the global ones, but will fall back to them if not set.
   - `BracketDelta` can be used as additional vertical offset (negative shifts it up) for shield strength bar. Much like `PixelSelectionBracketDelta`, it is not applied on buildings.
-- Warheads have new options that interact with shields.
+- Warheads have new options that interact with shields. Note that all of these that do not by their very nature require ability to target the shield (such as modifiers like `Shield.Break` or removing / attaching) still require Warhead `Verses` to affect the target unless `EffectsRequireVerses` is set to false on the Warhead.
   - `Shield.Penetrate` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield doesn't exist.
   - `Shield.Break` allows the warhead to always break shields of TechnoTypes. This is done before damage is dealt.
   - `Shield.BreakAnim` will be displayed instead of ShieldType `BreakAnim` if the shield is broken by the Warhead, either through damage or `Shield.Break`.
@@ -523,18 +673,21 @@ Trajectory=Bombard             ; Trajectory type
 Trajectory.Bombard.Height=0.0  ; double
 ```
 
-### Shrapnel enhancement
+### Shrapnel enhancements
 
 ![image](_static/images/shrapnel.gif)
 *Shrapnel appearing against ground & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
 
-- Shrapnel behavior can be triggered on the ground and buildings.
+- `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
+- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
+  - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]                 ; Projectile
-Shrapnel.AffectsGround=false     ; boolean
-Shrapnel.AffectsBuildings=false  ; boolean
+[SOMEPROJECTILE]                   ; Projectile
+Shrapnel.AffectsGround=false       ; boolean
+Shrapnel.AffectsBuildings=false    ; boolean
+Shrapnel.UseWeaponTargeting=false  ; boolean
 ```
 
 ### Projectiles blocked by land or water
@@ -741,6 +894,34 @@ AutoFire=false             ; boolean
 AutoFire.TargetSelf=false  ; boolean
 ```
 
+### Build limit group
+- You can now make different technos share build limit in a group.
+- `BuildLimitGroup.Types` determines the technos that'll be used for build limit conditions of the selected techno. Note that the limit won't be applied to technos in the list. To do this, you'll have to manually define the limit per techno.
+- `BuildLimitGroup.Nums` determines the amount of technos that would reach the build limit. If using a single integer, it'll use the sum of all technos in the group to calculate build limit. If using a list of integers with the same size of `BuildLimitGroup.Types`, it'll calculate build limit per techno with value matching the position in `BuildLimitGroup.Types` is used for that type.
+- `BuildLimitGroup.Factor` determines each of this techno instance will count as what value when calculating build limit.
+  - This is only used by BuildLimitGroup. No other place will use it when counting owned objects, including `BuildLimitGroup.ExtraLimit`.
+- `BuildLimitGroup.ContentIfAnyMatch` determines the rule of calculating build limit per techno. If set to true, build limit will be content if the amount of any techno in the group reaches its `BuildLimitGroup.Nums` value. If set to false, then it'll only be content if the amount of all technos in the group reached.
+- `BuildLimitGroup.NotBuildableIfQueueMatch` determines the moment to stop the techno's production. If set to true, its production will be stopped once the condition is content by the sum of real technos and technos in production queue. If set to false, it'll only be stopped when the condition is content by real technos.
+- You can also add an extra value into `BuildLimitGroup.Nums`, determined by the amount of specific technos owned by its house.
+  - `BuildLimitGroup.ExtraLimit.Types` determines the technos that'll be used for extra value calculation.
+  - `BuildLimitGroup.ExtraLimit.Nums` determines the actual value of increment. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. For each of these technos, it'll increase the extra value by its amount * corresponding value from the list.
+  - `BuildLimitGroup.ExtraLimit.MaxCount` determines the maximum amount of technos being counted into the extra value calculation. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. If not set or set to a value below 1, it'll be considered as no maximum count.
+  - `BuildLimitGroup.ExtraLimit.MaxNum` determines the maximum of values in `BuildLimitGroup.Nums` after extra limit calculation. If not set or set to a value below 1, it'll be considered as no maximum value.
+
+  In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                                    ; TechnoType
+BuildLimitGroup.Types=                          ; list of TechnoType names
+BuildLimitGroup.Nums=                           ; integer, or a list of integers
+BuildLimitGroup.Factor=1                        ; integer
+BuildLimitGroup.ContentIfAnyMatch=false         ; boolean
+BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
+BuildLimitGroup.ExtraLimit.Types=               ; list of TechnoType names
+BuildLimitGroup.ExtraLimit.Nums=                ; list of integers
+BuildLimitGroup.ExtraLimit.MaxCount=            ; list of integers
+BuildLimitGroup.ExtraLimit.MaxNum=0             ; integer
+```
+
 ### Customizable OpenTopped properties
 
 - You can now override global `OpenTopped` transport properties per TechnoType.
@@ -780,6 +961,7 @@ NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 ### Disguise logic additions (disguise-based movement speed, disguise blinking visibility)
 
 - `DisguiseBlinkingVisibility` can be used to customize which players can see disguises blinking on units. This does not affect targeting but does affect veterancy insignia visibility - blinking disguise means the original unit's insignia is visible always instead of disguise's.
+  - Another thing to note is that in singleplayer missions, for purposes of the disguise blinking, disguised objects owned by any player-controlled houses are also considered to be owned by the current player even if they are not allied, meaning players are always able to see their disguises blinking unless `DisguiseBlinkingVisibility` is set to `none` or `enemies`.
 - `UseDisguiseMovementSpeed`, if set, makes disguised unit adjust its movement speed to match that of the disguise, if applicable. Note that this applies even when the disguise is revealed, as long as it has not been removed.
 
 In `rulesmd.ini`:
@@ -935,6 +1117,19 @@ In `rulesmd.ini`:
 Promote.IncludeSpawns=false  ; boolean
 ```
 
+### Revenge weapon
+
+- Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
+  - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
+  - It is possible to grant revenge weapons through [attached effects](#attached-effects) as well.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+RevengeWeapon=                  ; WeaponType
+RevengeWeapon.AffectsHouses=all ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ### Spawner pursuit range & spawn delay customization
 
 ![image](_static/images/spawnrange-01.gif)
@@ -967,10 +1162,23 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Custom tint on TechnoTypes
+
+- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint Intensity`.
+  - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
+  - `Tint.VisibleToHouses` can be used to customize which houses can see the tint effect.
+  - Tint effects can also be applied by [attached effects](#attached-effects) and on shields.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]              ; TechnoType
+Tint.Color=               ; integer - R,G,B
+Tint.Intensity=0.0        ; floating point value
+Tint.VisibleToHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
 ### Customize EVA voice and `SellSound` when selling units
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
-
   - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
   - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual]->SellSound`. Note that vanilla game played vehicles' SellSound globally. This has been changed in consistency with buildings' SellSound.
 
@@ -995,6 +1203,19 @@ IsVoiceCreatedGlobal=false   ; boolean
 VoiceCreated=                ; sound entry
 ```
 
+### Promotion animation
+
+- You can now specify an animation on the unit or structure promotion.
+  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran.
+  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+Promote.VeteranAnimation=         ; Animation
+Promote.EliteAnimation=           ; Animation
+```
+
 ### Convert TechnoType on owner house change
 - You can now change a unit's type when changing ownership from human to computer or from computer to human.
 
@@ -1002,7 +1223,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]
 Convert.HumanToComputer =   ; TechnoType
-Convert.ComputerToHuman =   ; TechnoType 
+Convert.ComputerToHuman =   ; TechnoType
 ```
 
 ## Terrain
@@ -1021,9 +1242,10 @@ DestroySound=      ; Sound
 ## Warheads
 
 ```{hint}
-All new warhead effects
-- can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
-- cannot be used with `MindControl.Permanent=yes` of Ares.
+All new Warhead effects
+- Can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
+- Cannot be used with `MindControl.Permanent=yes` of Ares.
+- Respect `Verses` where applicable unless `EffectsRequireVerses` is set to false. If target has an active shield, its armor type is used instead unless warhead can penetrate the shield.
 ```
 
 ### Break Mind Control on impact
@@ -1203,7 +1425,7 @@ LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 
 ### Remove disguise on impact
 
-- Warheads can now remove disguise from disguised infantry such as spies. This will work even if the disguised was acquired by default through `PermaDisguise`.
+- Warheads can now remove disguise from disguised spies or mirage tanks. This will work even if the disguised was acquired by default through `PermaDisguise`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1231,6 +1453,20 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; Warhead
 BigGap=false   ; boolean
+```
+
+### Spawn powerup crate
+
+- Warheads can now spawn powerup crates of specified type(s) on their impact cells (if free, or nearby cells if occupied something other than a crate) akin to map trigger action 108 ('Create Crate').
+  - `SpawnsCrateN` where N is a number starting from 0, parsed until no key is found can be used to define the type of crate spawned.
+  - `SpawnsCrateN.Weight` is a number that determines relative weighting of spawning corresponding crate type vs. other listed ones (0 is no chance, higher means higher probability) defaulting to 1 if not defined.
+  - `SpawnsCrate.Type/Weight` is an alias for `SpawnsCrate0.Type/Weight` if latter is not set.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; Warhead
+SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
+SpawnsCrate(N).Weight=1  ; integer
 ```
 
 ### Trigger specific NotHuman infantry Death anim sequence
@@ -1278,6 +1514,7 @@ Burst.FireWithinSequence=false  ; boolean
 - It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
   - `ExtraWarheads.DamageOverrides` can be used to override the weapon's `Damage` for the extra Warhead detonations. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, WeaponType `Damage` is used.
   - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
+  - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
 
 In `rulesmd.ini`:
 ```ini
@@ -1313,15 +1550,19 @@ FeedbackWeapon=  ; WeaponType
 ![image](_static/images/strafing-01.gif)
 *Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
-- Some of the behavior of strafing aircraft weapons (weapon projectile has `ROT` below 2) can now be customized.
-  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired. Valid values range from 1 to 5, any values smaller or larger are effectively treated same as either 1 or 5, respectively. Defaults to 5.
-  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined. Defaults to false.
+- Some of the behavior of strafing aircraft weapons can now be customized.
+  - `Strafing` controls if the aircraft can strafe when firing at the target. Default to `true` if the projectile's `ROT` < 2 and `Inviso=false`, otherwise `false`.
+  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired.
+  - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined.
+  - `Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour of only deducting ammo after a strafing run and instead doing it after each individual shot.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                  ; WeaponType
-Strafing.Shots=5              ; integer
-Strafing.SimulateBurst=false  ; boolean
+[SOMEWEAPON]                   ; WeaponType
+Strafing=                      ; boolean
+Strafing.Shots=5               ; integer
+Strafing.SimulateBurst=false   ; boolean
+Strafing.UseAmmoPerShot=false  ; boolean
 ```
 
 ### Weapon targeting filter

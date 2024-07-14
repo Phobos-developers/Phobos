@@ -1,4 +1,5 @@
 #include <AircraftClass.h>
+#include <AircraftTrackerClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
 #include <TechnoClass.h>
@@ -193,11 +194,30 @@ DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
 	enum { IsNaval = 0x4438BC, NotNaval = 0x4438C9 };
 
 	GET(BuildingTypeClass*, pBuildingType, EAX);
+	GET_STACK(bool, playEVA, STACK_OFFSET(0xA4, 0x8));
+	REF_STACK(SpeedType, spdtp, STACK_OFFSET(0xA4, -0x84));
+	if (!playEVA)// assuming the hook above is the only place where it's set to false when UndeploysInto
+	{
+		if (auto pInto = pBuildingType->UndeploysInto)// r u sure this is not too OP?
+		{
+			R->ESI(pInto->MovementZone);
+			spdtp = pInto->SpeedType;
+			return NotNaval;
+		}
+	}
 
 	if (pBuildingType->Naval || pBuildingType->SpeedType == SpeedType::Float)
 		return IsNaval;
 
 	return NotNaval;
+}
+
+DEFINE_HOOK(0x6DAAB2, TacticalClass_DrawRallyPointLines_NoUndeployBlyat, 0x6)
+{
+	GET(BuildingClass*, pBld, EDI);
+	if (pBld->Focus && pBld->CurrentMission != Mission::Selling)
+		return 0x6DAAC0;
+	return 0x6DAD45;
 }
 
 // bugfix: DeathWeapon not properly detonates
@@ -550,37 +570,6 @@ DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
-{
-	enum { SpawnCrate = 0x56BE7B, SkipSpawn = 0x56BE91 };
-
-	int XP = 2 * MapClass::Instance->VisibleRect.X - MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Width);
-	int YP = 2 * MapClass::Instance->VisibleRect.Y + MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Height + 2);
-	CellStruct candidate { (short)((XP + YP) / 2),(short)((YP - XP) / 2) };
-
-	auto pCell = MapClass::Instance->TryGetCellAt(candidate);
-	if (!pCell)
-		return SkipSpawn;
-
-	if (!MapClass::Instance->IsWithinUsableArea(pCell, true))
-		return SkipSpawn;
-
-	bool isWater = pCell->LandType == LandType::Water;
-	if (isWater && RulesExt::Global()->CrateOnlyOnLand.Get())
-		return SkipSpawn;
-
-	REF_STACK(CellStruct, cell, STACK_OFFSET(0x28, -0x18));
-	cell = MapClass::Instance->NearByLocation(pCell->MapCoords,
-		isWater ? SpeedType::Float : SpeedType::Track,
-		-1, MovementZone::Normal, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
-
-	R->EAX(&cell);
-
-	return SpawnCrate;
-}
-
 // Fixes C4=no amphibious infantry being killed in water if Chronoshifted/Paradropped there.
 DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 {
@@ -688,7 +677,7 @@ DEFINE_HOOK(0x53AD85, IonStormClass_AdjustLighting_ColorSchemes, 0x5)
 	if (paletteCount > 0)
 	{
 		int schemeCount = ColorScheme::GetNumberOfSchemes();
-		Debug::Log("Recalculated %d extra palettes across %d color schemes (total: %d).\n", paletteCount, schemeCount, schemeCount* paletteCount);
+		Debug::Log("Recalculated %d extra palettes across %d color schemes (total: %d).\n", paletteCount, schemeCount, schemeCount * paletteCount);
 	}
 
 	return SkipGameCode;
@@ -804,8 +793,55 @@ DEFINE_HOOK(0x689EB0, ScenarioClass_ReadMap_SkipHeaderInCampaign, 0x6)
 	return SessionClass::IsCampaign() ? 0x689FC0 : 0;
 }
 
+#pragma region save_load
+
 //Skip incorrect load ctor call in various LocomotionClass_Load
 DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Teleport, notorious CLEG frozen state removal on loading game
 DEFINE_JUMP(LJMP, 0x72A16A, 0x72A186);//Tunnel, not a big deal
 DEFINE_JUMP(LJMP, 0x663428, 0x663445);//Rocket, not a big deal
 DEFINE_JUMP(LJMP, 0x5170CE, 0x5170E0);//Hover, not a big deal
+
+// Save GameModeOptions in campaign modes
+DEFINE_JUMP(LJMP, 0x67E3BD, 0x67E3D3); // Save
+DEFINE_JUMP(LJMP, 0x67F72E, 0x67F744); // Load
+
+#pragma endregion save_load
+
+// An attempt to fix an issue where the ATC->CurrentVector does not contain every air Techno in given range that increases in frequency as the range goes up.
+// Real talk: I have absolutely no clue how the original function works besides doing vector looping and manipulation, as far as I can tell it never even explicitly
+// clears CurrentVector but somehow it only contains applicable items afterwards anyway. It is possible this one does not achieve everything the original does functionality and/or
+// performance-wise but it does work and produces results with greater accuracy than the original for large ranges. - Starkku
+DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
+{
+	enum { SkipGameCode = 0x413482 };
+
+	GET(AircraftTrackerClass*, pThis, ECX);
+	GET_STACK(CellClass*, pCell, 0x4);
+	GET_STACK(int, range, 0x8);
+
+	pThis->CurrentVector.Clear();
+
+	if (range < 1)
+		range = 1;
+
+	auto const bounds = MapClass::Instance->MapCoordBounds;
+	auto const mapCoords = pCell->MapCoords;
+	int sectorWidth = bounds.Right / 20;
+	int sectorHeight = bounds.Bottom / 20;
+	int sectorIndexXStart = Math::clamp((mapCoords.X - range) / sectorWidth, 0, 19);
+	int sectorIndexYStart = Math::clamp((mapCoords.Y - range) / sectorHeight, 0, 19);
+	int sectorIndexXEnd = Math::clamp((mapCoords.X + range) / sectorWidth, 0, 19);
+	int sectorIndexYEnd = Math::clamp((mapCoords.Y + range) / sectorHeight, 0, 19);
+
+	for (int y = sectorIndexYStart; y <= sectorIndexYEnd; y++)
+	{
+		for (int x = sectorIndexXStart; x <= sectorIndexXEnd; x++)
+		{
+			for (auto const pTechno : pThis->TrackerVectors[y][x])
+				pThis->CurrentVector.AddItem(pTechno);
+		}
+	}
+
+	R->EAX(0); // The original function returns some number, hell if I know what (it is 0 most of the time though and never actually used for anything).
+	return SkipGameCode;
+}
