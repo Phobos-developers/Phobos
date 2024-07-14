@@ -215,7 +215,7 @@ namespace Helpers {
 			if (includeInAir)
 			{
 				auto const airTracker = &AircraftTrackerClass::Instance.get();
-				airTracker->SetArea(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
+				airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
 
 				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 				{
