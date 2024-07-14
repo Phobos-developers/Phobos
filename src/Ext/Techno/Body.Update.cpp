@@ -50,8 +50,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt && pTypeExt->InterceptorType && !pThis->Target &&
-		!(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
+	if (pTypeExt && pTypeExt->InterceptorType && !pThis->Target && !this->IsBurrowed)
 	{
 		BulletClass* pTargetBullet = nullptr;
 
