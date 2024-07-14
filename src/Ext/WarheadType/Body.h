@@ -130,6 +130,11 @@ public:
 		ValueableVector<int> AttachEffect_CumulativeRemoveMinCounts;
 		ValueableVector<int> AttachEffect_CumulativeRemoveMaxCounts;
 		ValueableVector<int> AttachEffect_DurationOverrides;
+
+		Nullable<double> DamageOwnerMultiplier;
+		Nullable<double> DamageAlliesMultiplier;
+		Nullable<double> DamageEnemiesMultiplier;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -259,6 +264,10 @@ public:
 			, AttachEffect_CumulativeRemoveMinCounts {}
 			, AttachEffect_CumulativeRemoveMaxCounts {}
 			, AttachEffect_DurationOverrides {}
+
+			, DamageOwnerMultiplier {}
+			, DamageAlliesMultiplier {}
+			, DamageEnemiesMultiplier {}
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
