@@ -226,6 +226,9 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
+		Nullable<bool> UnitIdleRotateTurret;
+		Nullable<bool> UnitIdlePointToMouse;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -447,6 +450,9 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+
+			, UnitIdleRotateTurret {}
+			, UnitIdlePointToMouse {}
 		{ }
 
 		virtual ~ExtData() = default;
