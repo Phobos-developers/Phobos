@@ -131,7 +131,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable FLH when infantry is prone or deployed
   - Initial strength for cloned infantry
   - Map Events 604 & 605 for checking if a specific Techno enters in a cell
-  - Cyborg legs being restored when the soldier left transport bugfix
+  - Allow cyborg legs to be repaired when they enter into transports or structures
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -229,6 +229,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom tint effects
   - Revenge weapons
   - AttachEffect
+  - Cyborg legs being restored when the soldier enters into transports or structures
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

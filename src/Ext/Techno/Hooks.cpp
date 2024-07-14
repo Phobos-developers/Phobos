@@ -262,16 +262,6 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo, 0x6)
 			trail.LastLocation = { };
 			trail.Visible = true;
 		}
-
-		// Fix legless Cyborgs when leave transports
-		if (pTechnoExt->IsLeglessCyborg)
-		{
-			InfantryClass* pInf = static_cast<InfantryClass*>(pTechno);
-
-			pInf->SequenceAnim = Sequence::Prone;
-			pInf->Crawling = true;
-			pTechnoExt->IsLeglessCyborg = false;
-		}
 	}
 
 	return 0;

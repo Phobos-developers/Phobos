@@ -33,7 +33,6 @@ public:
 		int LastWarpDistance;
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
-		bool IsLeglessCyborg;
 		int DamageNumberOffset;
 		int Strafe_BombsDroppedThisRound;
 		int CurrentAircraftWeaponIndex;
@@ -76,7 +75,6 @@ public:
 			, Strafe_BombsDroppedThisRound { 0 }
 			, CurrentAircraftWeaponIndex {}
 			, OriginalPassengerOwner {}
-			, IsLeglessCyborg { false }
 			, IsInTunnel { false }
 			, IsBurrowed { false }
 			, HasBeenPlacedOnMap { false }
