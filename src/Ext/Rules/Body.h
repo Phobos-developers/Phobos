@@ -136,6 +136,9 @@ public:
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Valueable<bool> FactoryProgressDisplay;
+		Valueable<bool> MainSWProgressDisplay;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -230,6 +233,8 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, FactoryProgressDisplay { false }
+			, MainSWProgressDisplay { false }
 		{ }
 
 		virtual ~ExtData() = default;

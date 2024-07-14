@@ -427,6 +427,7 @@ New:
 - Map events `604-605` for checking if a specific Techno enters in a cell (by FS-21)
 - Waypoint path is drawn for all units, even those not under player control if `DebugKeysEnabled=yes` (by Trsdy)
 - `RemoveDisguise` now works on vehicle disguises (by Trsdy)
+- Display Factories and superweapons progress on buildings (by CrimRecya)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

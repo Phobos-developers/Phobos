@@ -173,6 +173,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
 	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
+	this->FactoryProgressDisplay.Read(exINI, GameStrings::AudioVisual, "FactoryProgressDisplay");
+	this->MainSWProgressDisplay.Read(exINI, GameStrings::AudioVisual, "MainSWProgressDisplay");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -331,6 +334,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
 		.Process(this->PodImage)
+		.Process(this->FactoryProgressDisplay)
+		.Process(this->MainSWProgressDisplay)
 		;
 }
 

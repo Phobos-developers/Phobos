@@ -45,7 +45,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1.
-  
+
 In `rulesmd.ini`:
 ```ini
 [DigitalDisplayTypes]
@@ -251,6 +251,19 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 SelectionFlashDuration=0  ; integer, number of frames
+```
+
+### Show Some Progress
+
+- You can now let the buildings with factories draw an extra bar below HP bar to show the progress of production by setting `FactoryProgressDisplay=true`, and buildings with main superweapon to show the progress of the superweapon by setting `MainSWProgressDisplay=true`.
+  - `FactoryProgressDisplay` draw the pips with frame 4 from `pips.shp`.
+  - `MainSWProgressDisplay` draw the pips with frame 6 from `pips.shp`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+FactoryProgressDisplay=false  ; boolean
+MainSWProgressDisplay=false   ; boolean
 ```
 
 ## Hotkey Commands
