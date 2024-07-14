@@ -490,6 +490,7 @@ Vanilla fixes:
 - Units & buildings with `DecloakToFire=false` weapons can now cloak while targeting & reloading (by Starkku)
 - Units with `Sensors=true` will no longer reveal ally buildings (by Starkku)
 - Waypoint path is drawn for all units under player control or `DebugKeysEnabled=yes` (by Trsdy)
+- Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread` (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
