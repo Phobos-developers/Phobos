@@ -29,6 +29,7 @@ bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 		.Process(this->ProximityWarhead)
 		.Process(this->ProximityDamage, false)
 		.Process(this->ProximityRadius, false)
+		.Process(this->ProximityDirect, false)
 		.Process(this->ProximityAllies, false)
 		.Process(this->ProximityFlight, false)
 		.Process(this->ThroughVehicles, false)
@@ -65,6 +66,7 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->ProximityWarhead)
 		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
+		.Process(this->ProximityDirect)
 		.Process(this->ProximityAllies)
 		.Process(this->ProximityFlight)
 		.Process(this->ThroughVehicles)
@@ -105,6 +107,7 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->ProximityWarhead.Read<true>(exINI, pSection, "Trajectory.Straight.ProximityWarhead");
 	this->ProximityDamage.Read(exINI, pSection, "Trajectory.Straight.ProximityDamage");
 	this->ProximityRadius.Read(exINI, pSection, "Trajectory.Straight.ProximityRadius");
+	this->ProximityDirect.Read(exINI, pSection, "Trajectory.Straight.ProximityDirect");
 	this->ProximityAllies.Read(exINI, pSection, "Trajectory.Straight.ProximityAllies");
 	this->ProximityFlight.Read(exINI, pSection, "Trajectory.Straight.ProximityFlight");
 	this->ThroughVehicles.Read(exINI, pSection, "Trajectory.Straight.ThroughVehicles");
@@ -138,6 +141,7 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->ProximityWarhead)
 		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
+		.Process(this->ProximityDirect)
 		.Process(this->ProximityAllies)
 		.Process(this->ProximityFlight)
 		.Process(this->ThroughVehicles)
@@ -182,6 +186,7 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->ProximityWarhead)
 		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
+		.Process(this->ProximityDirect)
 		.Process(this->ProximityAllies)
 		.Process(this->ProximityFlight)
 		.Process(this->ThroughVehicles)
@@ -225,6 +230,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->ProximityWarhead = pType->ProximityWarhead;
 	this->ProximityDamage = pType->ProximityDamage;
 	this->ProximityRadius = pType->ProximityRadius;
+	this->ProximityDirect = pType->ProximityDirect;
 	this->ProximityAllies = pType->ProximityAllies;
 	this->ProximityFlight = pType->ProximityFlight;
 	this->ThroughVehicles = pType->ThroughVehicles;
@@ -686,8 +692,12 @@ bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, Cell
 		if (!pWH)
 			return static_cast<bool>(pNearest);
 
-		const int Damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, pNearest, pOwner, false);
-		WarheadTypeExt::DetonateAt(pWH, pNearest->GetCoords(), pBullet->Owner, Damage, pOwner);
+		int Damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, pNearest, pOwner, false);
+
+		if (this->ProximityDirect)
+			pNearest->ReceiveDamage(&Damage, 0, pWH, pBullet->Owner, false, false, pOwner);
+		else
+			WarheadTypeExt::DetonateAt(pWH, pNearest->GetCoords(), pBullet->Owner, Damage, pOwner, pNearest);
 	}
 
 	return static_cast<bool>(pNearest);
@@ -759,7 +769,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (!this->ThroughVehicles && (TechnoType == AbstractType::Unit || TechnoType == AbstractType::Aircraft))
 				continue;
 
-			if (this->ProximityAllies == 0 && pOwner->IsAlliedWith(pTechno->Owner) && !(pTargetTechno && pTechno == pTargetTechno))
+			if (!this->ProximityAllies && pOwner->IsAlliedWith(pTechno->Owner) && !(pTargetTechno && pTechno == pTargetTechno))
 				continue;
 
 			const CoordStruct DistanceCrd = pTechno->GetCoords() - pBullet->SourceCoords;
@@ -804,7 +814,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (pTechno->GetHeight() <= 0)
 				continue;
 
-			if (this->ProximityAllies == 0 && pOwner->IsAlliedWith(pTechno->Owner) && !(pTargetTechno && pTechno == pTargetTechno))
+			if (!this->ProximityAllies && pOwner->IsAlliedWith(pTechno->Owner) && !(pTargetTechno && pTechno == pTargetTechno))
 				continue;
 
 			const AbstractType TechnoType = pTechno->WhatAmI();
@@ -943,8 +953,12 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 	for (auto const& pTechno : CasualtyChecked)
 	{
-		const int Damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, pTechno, pOwner, false);
-		WarheadTypeExt::DetonateAt(pWH, pTechno->GetCoords(), pBullet->Owner, Damage, pOwner);
+		int Damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, pTechno, pOwner, false);
+
+		if (this->ProximityDirect)
+			pTechno->ReceiveDamage(&Damage, 0, pWH, pBullet->Owner, false, false, pOwner);
+		else
+			WarheadTypeExt::DetonateAt(pWH, pTechno->GetCoords(), pBullet->Owner, Damage, pOwner, pTechno);
 
 		if (this->ProximityImpact == 1)
 		{
@@ -1241,23 +1255,21 @@ int StraightTrajectory::GetTheTrueDamage(int Damage, BulletClass* pBullet, Techn
 	if (Damage == 0)
 		return 0;
 
-	int TrueDamage = Damage;
-
-	if (this->EdgeAttenuation != 1.0 || this->ProximityAllies != 1.0)
+	if (this->EdgeAttenuation != 1.0)
 	{
-		const double DamageMultiplier = this->GetExtraDamageMultiplier(pBullet, pTechno, pOwner, Self);
+		const double DamageMultiplier = this->GetExtraDamageMultiplier(pBullet, pTechno, pOwner);
 		const double CalculatedDamage = Self ? Damage * DamageMultiplier : Damage * this->FirepowerMult * DamageMultiplier;
 		const int Signal = Math::sgn(CalculatedDamage);
-		TrueDamage = static_cast<int>(CalculatedDamage + ((Signal < 0) ? -0.5 : 0.5));
+		Damage = static_cast<int>(CalculatedDamage);
 
-		if (TrueDamage == 0 && this->EdgeAttenuation != 0)
-			TrueDamage = Signal;
+		if (Damage == 0 && this->EdgeAttenuation != 0)
+			Damage = Signal;
 	}
 
-	return TrueDamage;
+	return Damage;
 }
 
-double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, bool Self)
+double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
 	bool CheckAllies = false;
 	double Distance = 0;
@@ -1265,25 +1277,15 @@ double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, Techno
 	const double MaxDistance = pBullet->WeaponType ? static_cast<double>(pBullet->WeaponType->Range) : 0;
 
 	if (pTechno)
-	{
 		Distance = pTechno->GetCoords().DistanceFrom(pBullet->SourceCoords);
-
-		if (pOwner && pOwner->IsAlliedWith(pTechno->Owner) && this->ProximityAllies != 0)
-			CheckAllies = true;
-	}
 	else
-	{
 		Distance = pBullet->Location.DistanceFrom(pBullet->SourceCoords);
-	}
 
 	if (MaxDistance < Distance)
 		return this->EdgeAttenuation;
 
 	if (Distance > 256.0)
 		DamageMult += (this->EdgeAttenuation - 1.0) * ((Distance - 256.0) / (MaxDistance - 256.0));
-
-	if (!Self && CheckAllies)
-		DamageMult *= this->ProximityAllies;
 
 	return DamageMult;
 }

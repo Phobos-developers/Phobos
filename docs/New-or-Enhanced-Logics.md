@@ -666,7 +666,8 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.ProximityImpact` controls the initial proximity fuse times. When there are enough remaining times and the projectile approaches another valid target, it will detonate a warhead defined by `Trajectory.Straight.Warhead` on it. If the times is about to run out, it will also detonate itself at its location. This function can be cancelled by setting to 0. A negative integer means unlimited times. By the way, you can use the weapon's `Warhead` with low versus only to aim at the target, and use the `Trajectory.Straight.ProximityWarhead` to causing actual harm.
     - `Trajectory.Straight.ProximityWarhead` defined the warhead detonated by `Trajectory.Straight.ProximityImpact`, and `Trajectory.Straight.ProximityDamage` defined the damage caused by `Trajectory.Straight.ProximityWarhead`.
     - `Trajectory.Straight.ProximityRadius` controls the range of proximity fuse. It can NOT be set as a negative integer.
-    - `Trajectory.Straight.ProximityAllies` controls the damage ratio if the target of proximity fuse is ally. It will not detonate at allies by setting as 0. Note that this is not related to whether the warhead itself affect allies.
+    - `Trajectory.Straight.ProximityDirect` controls whether let the target receive damage instead of detonating the warhead.
+    - `Trajectory.Straight.ProximityAllies` controls whether allies will also trigger the proximity fuse.
     - `Trajectory.Straight.ProximityFlight` controls whether to count units in the air.
   - `Trajectory.Straight.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircrafts on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
   - `Trajectory.Straight.ThroughBuilding` controls whether the projectile will not be obstructed by buildings. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
@@ -697,7 +698,8 @@ Trajectory.Straight.ProximityImpact=0           ; integer
 Trajectory.Straight.ProximityWarhead=           ; WarheadType
 Trajectory.Straight.ProximityDamage=0           ; integer
 Trajectory.Straight.ProximityRadius=0.7         ; floating point value
-Trajectory.Straight.ProximityAllies=0           ; floating point value
+Trajectory.Straight.ProximityDirect=false       ; boolean
+Trajectory.Straight.ProximityAllies=false       ; boolean
 Trajectory.Straight.ProximityFlight=false       ; boolean
 Trajectory.Straight.ThroughVehicles=true        ; boolean
 Trajectory.Straight.ThroughBuilding=true        ; boolean

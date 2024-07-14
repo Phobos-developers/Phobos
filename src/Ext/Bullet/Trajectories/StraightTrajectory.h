@@ -25,7 +25,8 @@ public:
 		, ProximityWarhead {}
 		, ProximityDamage { 0 }
 		, ProximityRadius { Leptons(179) }
-		, ProximityAllies { 0.0 }
+		, ProximityDirect { false }
+		, ProximityAllies { false }
 		, ProximityFlight { false }
 		, ThroughVehicles { true }
 		, ThroughBuilding { true }
@@ -58,7 +59,8 @@ public:
 	Valueable<WarheadTypeClass*> ProximityWarhead;
 	Valueable<int> ProximityDamage;
 	Valueable<Leptons> ProximityRadius;
-	Valueable<double> ProximityAllies;
+	Valueable<bool> ProximityDirect;
+	Valueable<bool> ProximityAllies;
 	Valueable<bool> ProximityFlight;
 	Valueable<bool> ThroughVehicles;
 	Valueable<bool> ThroughBuilding;
@@ -90,7 +92,8 @@ public:
 		, ProximityWarhead {}
 		, ProximityDamage { 0 }
 		, ProximityRadius { Leptons(179) }
-		, ProximityAllies { 0.0 }
+		, ProximityDirect { false }
+		, ProximityAllies { false }
 		, ProximityFlight { false }
 		, ThroughVehicles { true }
 		, ThroughBuilding { true }
@@ -127,7 +130,8 @@ public:
 		, ProximityWarhead {}
 		, ProximityDamage { 0 }
 		, ProximityRadius { Leptons(179) }
-		, ProximityAllies { 0.0 }
+		, ProximityDirect { false }
+		, ProximityAllies { false }
 		, ProximityFlight { false }
 		, ThroughVehicles { true }
 		, ThroughBuilding { true }
@@ -179,7 +183,8 @@ public:
 	WarheadTypeClass* ProximityWarhead;
 	int ProximityDamage;
 	Leptons ProximityRadius;
-	double ProximityAllies;
+	bool ProximityDirect;
+	bool ProximityAllies;
 	bool ProximityFlight;
 	bool ThroughVehicles;
 	bool ThroughBuilding;
@@ -208,6 +213,6 @@ private:
 	std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet);
 	std::vector<CellStruct> GetCellsInRectangle(CellStruct bStaCell, CellStruct lMidCell, CellStruct rMidCell, CellStruct tEndCell);
 	int GetTheTrueDamage(int Damage, BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, bool Self);
-	double GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, bool Self);
+	double GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
 	bool PassAndConfineAtHeight(BulletClass* pBullet, double StraightSpeed);
 };
