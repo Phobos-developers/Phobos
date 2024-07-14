@@ -349,7 +349,12 @@ DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
 	GET(RectangleStruct*, pBounds, ESI);
 
 	if (pThis->VisualCharacter(false, nullptr) != VisualType::Hidden)
-		TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
+	{
+		if (RulesExt::Global()->DrawInsignia_OnlyOnSelected.Get() && !pThis->IsSelected && !pThis->IsMouseHovering)
+			return SkipGameCode;
+		else
+			TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
+	}
 
 	return SkipGameCode;
 }
@@ -502,3 +507,26 @@ FireError __fastcall TechnoClass_TargetSomethingNearby_CanFire_Wrapper(TechnoCla
 }
 
 DEFINE_JUMP(CALL6, 0x7098E6, GET_OFFSET(TechnoClass_TargetSomethingNearby_CanFire_Wrapper));
+
+// Can't hook where unit promotion happens in vanilla because of Ares - Fryone, Kerbiter
+DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	auto aresProcess = [pThis]() { return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054; };
+
+	if (!RulesExt::Global()->Promote_VeteranAnimation && !RulesExt::Global()->Promote_EliteAnimation)
+		return aresProcess();
+
+	if (pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
+	{
+		AnimClass* promAnim = nullptr;
+		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && RulesExt::Global()->Promote_VeteranAnimation)
+			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCenterCoords());
+		else if (RulesExt::Global()->Promote_EliteAnimation)
+			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords());
+		promAnim->SetOwnerObject(pThis);
+	}
+
+	return aresProcess();
+}

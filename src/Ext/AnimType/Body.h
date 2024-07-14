@@ -46,7 +46,7 @@ public:
 		Valueable<bool> AltPalette_ApplyLighting;
 		Valueable<OwnerHouseKind> MakeInfantryOwner;
 		Valueable<bool> ExtraShadow;
-		NullableIdx<VocClass> DetachedReport;
+		ValueableIdx<VocClass> DetachedReport;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }

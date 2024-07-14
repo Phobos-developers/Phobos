@@ -387,8 +387,8 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
-ClusterScatter.Min=1.0  ; float, distance in cells
-ClusterScatter.Max=2.0  ; float, distance in cells
+ClusterScatter.Min=1.0  ; floating point value, distance in cells
+ClusterScatter.Max=2.0  ; floating point value, distance in cells
 ```
 
 ### Customizable projectile gravity
@@ -409,8 +409,8 @@ Gravity=6.0             ; floating point value
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]      ; Projectile
-BallisticScatter.Min= ; float, distance in cells
-BallisticScatter.Max= ; float, distance in cells
+BallisticScatter.Min= ; floating point value, distance in cells
+BallisticScatter.Max= ; floating point value, distance in cells
 ```
 
 ## Technos
@@ -466,32 +466,43 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
     - A shorthand `InsigniaFrames` can be used to list them in order from rookie, veteran and elite instead as well. `InsigniaFrame(.Rookie|Veteran|Elite)` takes priority over this.
   - Normal insignia can be overridden for specific weapon modes of `Gunner=true` units by setting `Insignia(.Frame/.Frames).WeaponN` where `N` stands for 1-based weapon mode index. If not set, defaults to non-mode specific insignia settings.
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true.
+  - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
+  - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
+  - `DrawInsignia.AdjustPos.BuildingsAnchor` sets the anchor point from which the insignia offset is calculated, relative to building's center.
+
 
 In `rulesmd.ini`:
 ```ini
 [General]
-EnemyInsignia=true                ; boolean
+EnemyInsignia=true                             ; boolean
 
-[SOMETECHNO]                      ; TechnoType
-Insignia=                         ; filename - excluding the .shp extension
-Insignia.Rookie=                  ; filename - excluding the .shp extension
-Insignia.Veteran=                 ; filename - excluding the .shp extension
-Insignia.Elite=                   ; filename - excluding the .shp extension
-InsigniaFrame=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Rookie=-1           ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Veteran=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Elite=-1            ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames=-1,-1,-1           ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.WeaponN=                 ; filename - excluding the .shp extension
-Insignia.WeaponN.Rookie=          ; filename - excluding the .shp extension
-Insignia.WeaponN.Veteran=         ; filename - excluding the .shp extension
-Insignia.WeaponN.Elite=           ; filename - excluding the .shp extension
-InsigniaFrame.WeaponN=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Rookie=-1   ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Veteran=-1  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Elite=-1    ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames.WeaponN=-1,-1,-1   ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.ShowEnemy=               ; boolean
+[AudioVisual]
+DrawInsignia.OnlyOnSelected=false              ; boolean
+DrawInsignia.AdjustPos.Infantry=5,2            ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Units=10,6              ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Buildings=10,6          ; X,Y, position offset from default
+DrawInsignia.AdjustPos.BuildingsAnchor=bottom  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+
+[SOMETECHNO]                                   ; TechnoType
+Insignia=                                      ; filename - excluding the .shp extension
+Insignia.Rookie=                               ; filename - excluding the .shp extension
+Insignia.Veteran=                              ; filename - excluding the .shp extension
+Insignia.Elite=                                ; filename - excluding the .shp extension
+InsigniaFrame=-1                               ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                        ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                       ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames=-1,-1,-1                        ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.WeaponN=                              ; filename - excluding the .shp extension
+Insignia.WeaponN.Rookie=                       ; filename - excluding the .shp extension
+Insignia.WeaponN.Veteran=                      ; filename - excluding the .shp extension
+Insignia.WeaponN.Elite=                        ; filename - excluding the .shp extension
+InsigniaFrame.WeaponN=-1                       ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Rookie=-1                ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Veteran=-1               ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Elite=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames.WeaponN=-1,-1,-1                ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.ShowEnemy=                            ; boolean
 ```
 
 ```{note}
@@ -572,6 +583,19 @@ In `rulesmd.ini`:
 ```ini
 [General]
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
+```
+
+### Customizable wake anim
+
+- You can now specify the `Wake` anim per TechnoType to override default rules value.
+  - `Wake.Grapple` and `Wake.Sinking` can be used to further customize wake anim when the techno is being parasited or sunken.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]         ; TechnoType
+Wake=                ; Anim (played when Techno moving on the water), default to [General]->Wake
+Wake.Grapple=        ; Anim (played when Techno being parasited on the water), defaults to [SOMETECHNO]->Wake
+Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [SOMETECHNO]->Wake
 ```
 
 ### Exploding object customizations
@@ -925,7 +949,7 @@ Ammo.AddOnDeploy=0      ; integer
 
 - Veinhole monsters now work like they used to in Tiberian Sun.
 - Their core parameters are still loaded from `[General]`
-- The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to be properly listed under `[Warheads]` as well. The warhead has to have `Veinhole=yes` set.
+- The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to have `Veinhole=yes` set.
 - Veinholes are hardcoded to use several overlay types.
 - The vein attack animation specified under `[AudioVisual]` is what deals the damage. The animation has to be properly listed under `[Animations]` as well.
 - Units can be made immune to veins the same way as in Tiberian Sun.
@@ -1016,9 +1040,10 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 - It is possible to make game play random animation from `AnimList` by setting `AnimList.PickRandom` to true. The result is similar to what `EMEffect=true` produces, however it comes with no side-effects (`EMEffect=true` prevents `Inviso=true` projectiles from snapping on targets, making them miss moving targets).
 - If `AnimList.CreateAll` is set to true, all animations from `AnimList` are created, instead of a single anim based on damage or random if  `AnimList.PickRandom` is set to true.
 - If `AnimList.CreationInterval` is set to a value higher than 0, there will be that number of detonations of the Warhead before animations from `AnimList` will be created again. If the Warhead had a TechnoType firing it, this number is remembered by the TechnoType across all Warheads fired by it, otherwise it is shared between all detonations of same WarheadType period. This can be useful for things like `Airburst` with large spread where one might want uniform distribution of animations to appear but not on every detonation.
+- `AnimList.ScatterMin` & `AnimList.ScatterMax` can be used to set a range in cells around which any created animations will randomly scatter around from the impact point.
 - `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage]` -> `SplashList` are used.
-  - `SplashList.PickRandom`, `SplashList.CreateAll` and `SplashList.CreationInterval` apply to these animations in same manner as the `AnimList` equivalents.
-- `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
+  - `SplashList.PickRandom`, `SplashList.CreateAll`, `SplashList.CreationInterval` and `SplashList.ScatterMin/Max` apply to these animations in same manner as the `AnimList` equivalents.
+- - `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
 - Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land.
 
 In `rulesmd.ini`:
@@ -1027,10 +1052,14 @@ In `rulesmd.ini`:
 AnimList.PickRandom=false       ; boolean
 AnimList.CreateAll=false        ; boolean
 AnimList.CreationInterval=0     ; integer
+AnimList.ScatterMin=0.0         ; floating point value, distance in cells
+AnimList.ScatterMax=0.0         ; floating point value, distance in cells
 SplashList=                     ; List of animations
 SplashList.PickRandom=false     ; boolean
 SplashList.CreateAll=false      ; boolean
 SplashList.CreationInterval=0   ; integer
+SplashList.ScatterMin=0.0       ; floating point value, distance in cells
+SplashList.ScatterMax=0.0       ; floating point value, distance in cells
 CreateAnimsOnZeroDamage=false   ; boolean
 Conventional.IgnoreUnits=false  ; boolean
 ```
@@ -1114,6 +1143,16 @@ ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
 
 [SOMEWEAPON]         ; WeaponType
 ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
+```
+
+### Customizing whether passengers are kicked out when an aircraft fires
+
+- You can now customize whether aircraft will forcefully eject passengers (vanilla behavior) or fire its weapon when attempting to fire.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+KickOutPassengers=true  ; boolean
 ```
 
 ### Single-color lasers

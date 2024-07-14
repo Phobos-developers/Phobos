@@ -6,6 +6,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -72,11 +73,6 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 	{
 		for (auto pEffect : AttachEffectClass::Array)
 			AnnounceInvalidPointer(pEffect->Invoker, ptr);
-	}
-	else if (absType == AbstractType::House)
-	{
-		for (auto pEffect : AttachEffectClass::Array)
-			AnnounceInvalidPointer(pEffect->InvokerHouse, ptr);
 	}
 }
 
@@ -352,19 +348,50 @@ bool AttachEffectClass::HasExpired() const
 
 bool AttachEffectClass::AllowedToBeActive() const
 {
-	if (auto const pFoot = abstract_cast<FootClass*>(this->Techno))
+	auto const pTechno = this->Techno;
+
+	if (auto const pFoot = abstract_cast<FootClass*>(pTechno))
 	{
 		bool isMoving = pFoot->Locomotor->Is_Moving();
 
-		if (isMoving && (Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
+		if (isMoving && (this->Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
 			return false;
 
-		if (!isMoving && (Type->DiscardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+		if (!isMoving && (this->Type->DiscardOn & DiscardCondition::Stationary) != DiscardCondition::None)
 			return false;
 	}
 
-	if (this->Techno->DrainingMe && (Type->DiscardOn & DiscardCondition::Drain) != DiscardCondition::None)
+	if (pTechno->DrainingMe && (this->Type->DiscardOn & DiscardCondition::Drain) != DiscardCondition::None)
 		return false;
+
+	if (pTechno->Target)
+	{
+		bool inRange = (this->Type->DiscardOn & DiscardCondition::InRange) != DiscardCondition::None;
+		bool outOfRange = (this->Type->DiscardOn & DiscardCondition::OutOfRange) != DiscardCondition::None;
+
+		if (inRange || outOfRange)
+		{
+			int distance = -1;
+
+			if (this->Type->DiscardOn_RangeOverride.isset())
+			{
+				distance = this->Type->DiscardOn_RangeOverride.Get();
+			}
+			else
+			{
+				int weaponIndex = pTechno->SelectWeapon(pTechno->Target);
+				auto const pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
+
+				if (pWeapon)
+					distance = pWeapon->Range;
+			}
+
+			int distanceFromTgt = pTechno->DistanceFrom(pTechno->Target);
+
+			if ((inRange && distanceFromTgt <= distance) || (outOfRange && distanceFromTgt >= distance))
+				return false;
+		}
+	}
 
 	return true;
 }
@@ -385,11 +412,6 @@ bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSour
 AttachEffectTypeClass* AttachEffectClass::GetType() const
 {
 	return this->Type;
-}
-
-void AttachEffectClass::ExpireWeapon() const
-{
-	TechnoExt::FireWeaponAtSelf(this->Techno, this->Type->ExpireWeapon.Get());
 }
 
 #pragma region StaticFunctions_AttachDetachTransfer
@@ -698,6 +720,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 	auto const targetAEs = &pTargetExt->AttachedEffects;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
+	std::vector<WeaponTypeClass*> expireWeapons;
 
 	for (it = targetAEs->begin(); it != targetAEs->end(); )
 	{
@@ -713,7 +736,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || pTargetExt->GetAttachedEffectCumulativeCount(pType) < 2)
-					attachEffect->ExpireWeapon();
+					expireWeapons.push_back(pType->ExpireWeapon);
 			}
 
 			if (attachEffect->ResetIfRecreatable())
@@ -728,6 +751,15 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		{
 			++it;
 		}
+	}
+
+
+	auto const coords = pTarget->GetCoords();
+	auto const pOwner = pTarget->Owner;
+
+	for (auto const& pWeapon : expireWeapons)
+	{
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pTarget, pOwner, pTarget);
 	}
 
 	return detachedCount;
@@ -779,7 +811,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		}
 		else if (!type->Cumulative && currentTypeCount > 0 && match)
 		{
-			match->Duration = Math::max(sourceMatch->Duration, attachEffect->Duration);
+			match->Duration = Math::max(match->Duration, attachEffect->Duration);
 		}
 		else
 		{

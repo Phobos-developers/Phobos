@@ -2,21 +2,33 @@
 
 #include <Utilities/EnumFunctions.h>
 
-DEFINE_HOOK_AGAIN(0x522790, TechnoClass_DefaultDisguise, 0x6) // InfantryClass_SetDisguise_DefaultDisguise
-DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDisguise
+DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
+{
+	GET(InfantryClass*, pThis, ECX);
+	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pExt->DefaultDisguise)
+	{
+		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->Disguised = true;
+		return 0x5227BF;
+	}
+
+	pThis->Disguised = false;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-
-	enum { SetDisguise = 0x5227BF, DefaultDisguise = 0x6F4277 };
-
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	// mirage is not here yet
+	if (pThis->WhatAmI() == AbstractType::Infantry && pExt->DefaultDisguise)
 	{
-		if (pExt->DefaultDisguise)
-		{
-			pThis->Disguise = pExt->DefaultDisguise;
-			pThis->Disguised = true;
-			return R->Origin() == 0x522790 ? SetDisguise : DefaultDisguise;
-		}
+		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->Disguised = true;
+		return 0x6F4277;
 	}
 
 	pThis->Disguised = false;
@@ -73,4 +85,18 @@ DEFINE_HOOK(0x7060A9, TechnoClass_TechnoClass_DrawObject_DisguisePalette, 0x6)
 	R->EBX(convert);
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+	// Remove mirage disguise if under emp or being flipped, approximately 15 deg
+	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
+	{
+		pThis->ClearDisguise();
+		R->EAX(pThis->MindControlRingAnim);
+		return 0x746AA5;
+	}
+
+	return 0x746931;
 }

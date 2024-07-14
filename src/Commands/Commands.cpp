@@ -21,9 +21,6 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
 	MakeCommand<SelectCapturedCommandClass>();
-#ifndef DEBUG
-	Phobos::Config::DevelopmentCommands = CCINIClass::INI_Rules->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
-#endif
 	if (Phobos::Config::DevelopmentCommands)
 	{
 		MakeCommand<DamageDisplayCommandClass>();
