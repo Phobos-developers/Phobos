@@ -130,6 +130,7 @@ This page lists all the individual contributions to the project by their author.
   - Shared ammo logic
   - Customizable FLH when infantry is prone or deployed
   - Initial strength for cloned infantry
+  - Map Events 604 & 605 for checking if a specific Techno enters in a cell
   - Script action for repairing destroyed bridges
 - **Starkku**:
   - Misc. minor bugfixes & improvements
@@ -228,6 +229,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom tint effects
   - Revenge weapons
   - AttachEffect
+  - Air unit tracking fix for large range / `CellSpread`
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
