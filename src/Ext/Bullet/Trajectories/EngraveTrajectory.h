@@ -68,7 +68,6 @@ public:
 		, DamageTimer {}
 		, TechnoInLimbo { false }
 		, NotMainWeapon { false }
-		, FirepowerMult { 1.0 }
 		, FLHCoord {}
 		, BuildingCoord {}
 		, TemporaryCoord {}
@@ -94,7 +93,6 @@ public:
 		, DamageTimer {}
 		, TechnoInLimbo { false }
 		, NotMainWeapon { false }
-		, FirepowerMult { 1.0 }
 		, FLHCoord {}
 		, BuildingCoord {}
 		, TemporaryCoord {}
@@ -129,7 +127,6 @@ public:
 	CDTimerClass DamageTimer;
 	bool TechnoInLimbo;
 	bool NotMainWeapon;
-	double FirepowerMult;
 	CoordStruct FLHCoord;
 	CoordStruct BuildingCoord;
 	CoordStruct TemporaryCoord;

@@ -104,7 +104,6 @@ bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->DamageTimer)
 		.Process(this->TechnoInLimbo)
 		.Process(this->NotMainWeapon)
-		.Process(this->FirepowerMult)
 		.Process(this->FLHCoord)
 		.Process(this->BuildingCoord)
 		.Process(this->TemporaryCoord)
@@ -137,7 +136,6 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->DamageTimer)
 		.Process(this->TechnoInLimbo)
 		.Process(this->NotMainWeapon)
-		.Process(this->FirepowerMult)
 		.Process(this->FLHCoord)
 		.Process(this->BuildingCoord)
 		.Process(this->TemporaryCoord)
@@ -175,7 +173,6 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	{
 		this->TechnoInLimbo = static_cast<bool>(pBullet->Owner->Transporter);
 		this->NotMainWeapon = false;
-		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
 
 		this->GetTechnoFLHCoord(pBullet, pBullet->Owner);
 		this->CheckMirrorCoord(pBullet->Owner);
@@ -185,7 +182,6 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	{
 		this->TechnoInLimbo = false;
 		this->NotMainWeapon = true;
-		this->FirepowerMult = 1.0;
 
 		this->SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords);
 	}
@@ -421,5 +417,5 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 void EngraveTrajectory::DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
 	this->DamageTimer.Start(this->DamageDelay);
-	WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, static_cast<int>(pBullet->Health * this->FirepowerMult), pOwner);
+	WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, pBullet->Health, pOwner);
 }
