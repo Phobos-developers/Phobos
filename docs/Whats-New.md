@@ -425,6 +425,8 @@ New:
 - Promotion animation (by Fryone)
 - Allow different technos to share build limit in a group (by ststl & Ollerus)
 - Map events `604-605` for checking if a specific Techno enters in a cell (by FS-21)
+- Waypoint path is drawn for all units, even those not under player control if `DebugKeysEnabled=yes` (by Trsdy)
+- `RemoveDisguise` now works on vehicle disguises (by Trsdy)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -491,7 +493,6 @@ Vanilla fixes:
 - Objects in invalid map coordinates are no longer used for starting view and AI base center calculations (by Starkku)
 - Units & buildings with `DecloakToFire=false` weapons can now cloak while targeting & reloading (by Starkku)
 - Units with `Sensors=true` will no longer reveal ally buildings (by Starkku)
-- Waypoint path is drawn for all units under player control or `DebugKeysEnabled=yes` (by Trsdy)
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread` (by Starkku)
 
 Phobos fixes:
