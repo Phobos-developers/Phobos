@@ -136,6 +136,13 @@ public:
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Valueable<bool> UnitIdleRotateTurret;
+		Valueable<bool> UnitIdlePointToMouse;
+		Valueable<int> UnitIdleActionRestartMin;
+		Valueable<int> UnitIdleActionRestartMax;
+		Valueable<int> UnitIdleActionIntervalMin;
+		Valueable<int> UnitIdleActionIntervalMax;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -230,6 +237,12 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, UnitIdleRotateTurret { false }
+			, UnitIdlePointToMouse { false }
+			, UnitIdleActionRestartMin { 150 }
+			, UnitIdleActionRestartMax { 300 }
+			, UnitIdleActionIntervalMin { 150 }
+			, UnitIdleActionIntervalMax { 450 }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -502,6 +502,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AE_ForceDecloak)
 		.Process(this->AE_DisableWeapons)
 		.Process(this->FiringObstacleCell)
+		.Process(this->UnitIdleAction)
+		.Process(this->UnitIdleActionSelected)
+		.Process(this->UnitIdleIsSelected)
+		.Process(this->UnitIdleTurretROT)
+		.Process(this->UnitIdleActionTimer)
+		.Process(this->UnitIdleActionGapTimer)
 		;
 }
 

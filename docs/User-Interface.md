@@ -45,7 +45,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1.
-  
+
 In `rulesmd.ini`:
 ```ini
 [DigitalDisplayTypes]
@@ -251,6 +251,29 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 SelectionFlashDuration=0  ; integer, number of frames
+```
+
+### Units Rotate Turret When in Idle Action
+
+- Now unit with turret without `TurretSpins=true` can looks more vivid when it is in idle.
+  - `UnitIdleRotateTurret` controls whether units can rotate their turrets when in idle. Defaults to `[AudioVisual]` -> `UnitIdleRotateTurret`.
+  - `UnitIdlePointToMouse` controls whether units will turn their turrets to your mouse when in idle. Defaults to `[AudioVisual]` -> `UnitIdlePointToMouse`.
+  - `UnitIdleActionRestartMin` and `UnitIdleActionRestartMax` control the delay from idle to action occurrence together.
+  - `UnitIdleActionIntervalMin` and `UnitIdleActionIntervalMax` control the delay between every idle actions together.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+UnitIdleRotateTurret=false      ; boolean
+UnitIdlePointToMouse=false      ; boolean
+UnitIdleActionRestartMin=150    ; integer, number of frames
+UnitIdleActionRestartMax=300    ; integer, number of frames
+UnitIdleActionIntervalMin=150   ; integer, number of frames
+UnitIdleActionIntervalMax=450   ; integer, number of frames
+
+[SOMETECHNO]                    ; TechnoType
+UnitIdleRotateTurret=           ; boolean
+UnitIdlePointToMouse=           ; boolean
 ```
 
 ## Hotkey Commands
