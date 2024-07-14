@@ -359,6 +359,17 @@ DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x6F5EE3, TechnoClass_DrawExtras_DrawAboveHealth, 0x9)
+{
+	GET(TechnoClass*, pThis, EBP);
+	GET_STACK(RectangleStruct*, pBounds, STACK_OFFSET(0x98, 0x8));
+
+	TechnoExt::DrawFactoryProgress(pThis, pBounds);
+	TechnoExt::DrawSuperProgress(pThis, pBounds);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 {
 	enum { SkipGameCode = 0x70EFF2 };
