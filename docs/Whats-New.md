@@ -96,7 +96,6 @@ SaveGameOnScenarioStart=true     ; boolean
   ```ini
   [ParamTypes]
   47=Structures,28
-
   54=Use GlobalVar,10
   55=Operation,0
   56=Variable index,0
@@ -107,6 +106,7 @@ SaveGameOnScenarioStart=true     ; boolean
   65=Campaign AI Repairable,0
   68=House,1,2
   69=Non-inert,10
+  70=AITargetTypes index,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -148,6 +148,8 @@ SaveGameOnScenarioStart=true     ; boolean
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
   601=House owns Techno Type,68,46,0,0,[LONG DESC],0,1,601,1
   602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1
+  604=Techno Type Entered Cell,68,46,0,0,[LONG DESC],0,1,604,1
+  605=AI Target Type Entered Cell,68,70,0,0,[LONG DESC],0,1,605,1
 
   [ActionsRA2]
   41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
@@ -313,7 +315,7 @@ New:
 - New AI teams selector (by FS-21)
 - Toggleable DieSound when grinding (by Trsdy)
 - Shields can inherit Techno ArmorType (by Starkku)
-- Income money flying-string display when harvesters or slaves are docking to refineries (by Trsdy)
+- Income money flying-string display when harvesters or slaves are docking to refineries or when spies steal credits (by Trsdy)
 - Allow random crates to be generated only on lands (by Trsdy)
 - Iron-curtain effects on infantries and organic units (by ststl)
 - Custom `SlavesFreeSound` (by TwinkleStar)
@@ -423,6 +425,10 @@ New:
 - Insignias visibility and position adjustments (by Fryone)
 - Promotion animation (by Fryone)
 - Allow different technos to share build limit in a group (by ststl & Ollerus)
+- Map events `604-605` for checking if a specific Techno enters in a cell (by FS-21)
+- Waypoint path is drawn for all units, even those not under player control if `DebugKeysEnabled=yes` (by Trsdy)
+- `RemoveDisguise` now works on vehicle disguises (by Trsdy)
+- Allow anchoring extended tooltips to the left side of the sidebar (by Trsdy)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -489,7 +495,7 @@ Vanilla fixes:
 - Objects in invalid map coordinates are no longer used for starting view and AI base center calculations (by Starkku)
 - Units & buildings with `DecloakToFire=false` weapons can now cloak while targeting & reloading (by Starkku)
 - Units with `Sensors=true` will no longer reveal ally buildings (by Starkku)
-- Waypoint path is drawn for all units under player control or `DebugKeysEnabled=yes` (by Trsdy)
+- Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread` (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
