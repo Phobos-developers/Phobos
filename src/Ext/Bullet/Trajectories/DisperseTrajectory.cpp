@@ -1142,7 +1142,6 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 /*			else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Engrave) //TODO If merge
 			{
 				EngraveTrajectory* const pTrajectory = static_cast<EngraveTrajectory*>(pBulletExt->Trajectory);
-				pTrajectory->FirepowerMult = this->FirepowerMult;
 			}*/
 		}
 
