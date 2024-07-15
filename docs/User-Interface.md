@@ -255,15 +255,17 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 ### Show Some Progress
 
-- You can now let the buildings with factories draw an extra bar below HP bar to show the progress of production by setting `FactoryProgressDisplay=true`, and buildings with main superweapon to show the progress of the superweapon by setting `MainSWProgressDisplay=true`.
+- You can now let the buildings with factories draw an extra bar below HP bar to show the progress of production by setting `FactoryProgressDisplay=true`, and buildings with main superweapon to show the progress of the superweapon by setting `MainSWProgressDisplay=true`. Besides, you can also let the technos draw its invulnerable timer when Iron Curtain or Force Shield is applied on.
   - `FactoryProgressDisplay` draw the pips with frame 4 from `pips.shp`.
   - `MainSWProgressDisplay` draw the pips with frame 6 from `pips.shp`.
+  - `InvulnerableDisplay` draw the pips with frames from `pips.shp`.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 FactoryProgressDisplay=false  ; boolean
 MainSWProgressDisplay=false   ; boolean
+InvulnerableDisplay=false     ; boolean
 ```
 
 ## Hotkey Commands
