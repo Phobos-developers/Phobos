@@ -138,6 +138,7 @@ public:
 
 		Valueable<bool> FactoryProgressDisplay;
 		Valueable<bool> MainSWProgressDisplay;
+		Valueable<bool> InvulnerableDisplay;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -235,6 +236,7 @@ public:
 			, PodImage { }
 			, FactoryProgressDisplay { false }
 			, MainSWProgressDisplay { false }
+			, InvulnerableDisplay { false }
 		{ }
 
 		virtual ~ExtData() = default;

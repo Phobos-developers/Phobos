@@ -132,6 +132,13 @@ public:
 		~ExtContainer();
 	};
 
+	struct DrawFrameStruct
+	{
+		int Frame;
+		SHPStruct* SHP;
+		ConvertClass* Palette;
+	};
+
 	static ExtContainer ExtMap;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
@@ -144,8 +151,8 @@ public:
 
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
 
-	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
-	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
+	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound, TechnoTypeExt::ExtData* pTypeExt = nullptr);
+	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound, TechnoTypeExt::ExtData* pTypeExt = nullptr);
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo = false);
@@ -180,6 +187,9 @@ public:
 
 	static void DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds);
 	static void DrawSuperProgress(TechnoClass* pThis, RectangleStruct* pBounds);
+	static void DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBounds);
+	static void DrawVanillaStyleFootBar(int curLength, int maxLength, DrawFrameStruct* pips, DrawFrameStruct* background, Point2D* pLocation, RectangleStruct* pBounds);
+	static void DrawVanillaStyleBuildingBar(int curLength, int maxLength, DrawFrameStruct* filled, DrawFrameStruct* empty, Point2D* pLocation, RectangleStruct* pBounds);
 	static Point2D GetScreenLocation(TechnoClass* pThis);
 	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
