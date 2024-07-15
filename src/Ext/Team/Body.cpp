@@ -21,6 +21,7 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceJump_InitialCountdown)
 		.Process(this->ForceJump_RepeatMode)
 		.Process(this->TeamLeader)
+		.Process(this->PreviousScriptList)
 		.Process(this->TriggersSideIdx)
 		.Process(this->TriggersHouseIdx)
 		;

@@ -209,6 +209,9 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
 		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
 		break;
+	case PhobosScripts::JumpBackToPreviousScript:
+		ScriptExt::JumpBackToPreviousScript(pTeam);
+		break;
 	case PhobosScripts::ChronoshiftToEnemyBase:
 		// Chronoshift to enemy base, argument is additional distance modifier
 		ScriptExt::ChronoshiftToEnemyBase(pTeam, argument);
@@ -671,6 +674,7 @@ void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
 				if (pNewScript->ActionsCount > 0)
 				{
 					changeFailed = false;
+					TeamExt::ExtMap.Find(pTeam)->PreviousScriptList.push_back(pTeam->CurrentScript);
 					pTeam->CurrentScript = nullptr;
 					pTeam->CurrentScript = GameCreate<ScriptClass>(pNewScript);
 
@@ -1181,6 +1185,24 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
 	ScriptExt::Log("AI Scripts - StopForceJumpCountdown: [%s] [%s](line: %d = %d,%d): Stopped Timed Jump\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
 }
 
+void ScriptExt::JumpBackToPreviousScript(TeamClass* pTeam)
+{
+	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (!pTeamData->PreviousScriptList.empty())
+	{
+		pTeam->CurrentScript = pTeamData->PreviousScriptList.back();
+		pTeamData->PreviousScriptList.pop_back();
+		pTeam->StepCompleted = true;
+	}
+	else
+	{
+		auto const pScript = pTeam->CurrentScript;
+		ScriptExt::Log("AI Scripts - JumpBackToPreviousScript: [%s] [%s](line: %d = %d,%d): Can't find the previous script! This script action must be used after PickRandomScript.\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument);
+		pTeam->StepCompleted = true;
+	}
+}
+
 void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 {
 	if (!pTeam)
@@ -1228,20 +1250,10 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 
 	auto pScript = pTeam->CurrentScript;
 	HouseClass* pOwner = pTeamLeader->Owner;
-	SuperClass* pSuperChronosphere = nullptr;
-	SuperClass* pSuperChronowarp = nullptr;
+	SuperClass* pSuperCSphere = nullptr;
+	SuperClass* pSuperCWarp = nullptr;
 
-	for (auto const pSuper : pOwner->Supers)
-	{
-		if (!pSuperChronosphere && pSuper->Type->Type == SuperWeaponType::ChronoSphere)
-			pSuperChronosphere = pSuper;
-
-		if (!pSuperChronowarp && pSuper->Type->Type == SuperWeaponType::ChronoWarp)
-			pSuperChronowarp = pSuper;
-
-		if (pSuperChronosphere && pSuperChronowarp)
-			break;
-	}
+	HouseExt::GetAIChronoshiftSupers(pOwner, pSuperCSphere, pSuperCWarp);
 
 	char logTextBase[1024];
 	char logTextJump[1024];
@@ -1251,29 +1263,23 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 	sprintf_s(logTextBase, "AI Scripts - ChronoshiftTeamToTarget: [%s] [%s] (line: %d = %d,%d) %s\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, "%s");
 	sprintf_s(logTextJump, logTextBase, jump);
 
-	if (!pSuperChronosphere || !pSuperChronowarp)
+	if (!pSuperCSphere || !pSuperCWarp)
 	{
-		ScriptExt::Log(logTextJump, "No Chronosphere or ChronoWarp superweapon found");
+		ScriptExt::Log(logTextJump, "No ChronoSphere or ChronoWarp superweapon found");
 		pTeam->StepCompleted = true;
 		return;
 	}
 
-	if (!pSuperChronosphere->IsReady || (pSuperChronosphere->IsPowered() && !pOwner->Is_Powered()))
+	if (!pSuperCSphere->IsReady || (pSuperCSphere->IsPowered() && !pOwner->Is_Powered()))
 	{
-		if (pSuperChronosphere->IsPresent)
+		if (pSuperCSphere->IsPresent && 1.0 - RulesClass::Instance->AIMinorSuperReadyPercent < pSuperCSphere->RechargeTimer.GetTimeLeft() / pSuperCSphere->GetRechargeTime())
 		{
-			int rechargeTime = pSuperChronosphere->GetRechargeTime();
-			int timeLeft = pSuperChronosphere->RechargeTimer.GetTimeLeft();
-
-			if (1.0 - RulesClass::Instance->AIMinorSuperReadyPercent < timeLeft / rechargeTime)
-			{
-				ScriptExt::Log(logTextBase, "Chronosphere superweapon charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet");
-				return;
-			}
+			ScriptExt::Log(logTextBase, "ChronoSphere superweapon [%s] charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet", pSuperCSphere->Type->get_ID());
+			return;
 		}
 		else
 		{
-			ScriptExt::Log(logTextJump, "Chronosphere superweapon is not available");
+			ScriptExt::Log(logTextJump, "ChronoSphere superweapon [%s] is not available", pSuperCSphere->Type->get_ID());
 			pTeam->StepCompleted = true;
 			return;
 		}
@@ -1283,8 +1289,8 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 
 	if (pTargetCell)
 	{
-		pOwner->Fire_SW(pSuperChronosphere->Type->ArrayIndex, pTeam->SpawnCell->MapCoords);
-		pOwner->Fire_SW(pSuperChronowarp->Type->ArrayIndex, pTargetCell->MapCoords);
+		pOwner->Fire_SW(pSuperCSphere->Type->ArrayIndex, pTeam->SpawnCell->MapCoords);
+		pOwner->Fire_SW(pSuperCWarp->Type->ArrayIndex, pTargetCell->MapCoords);
 		pTeam->AssignMissionTarget(pTargetCell);
 		ScriptExt::Log(logTextJump, "Finished successfully");
 	}

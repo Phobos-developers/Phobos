@@ -77,6 +77,7 @@ enum class PhobosScripts : unsigned int
 	StopForceJumpCountdown = 16002,
 	RandomSkipNextAction = 16003,
 	PickRandomScript = 16004,
+	JumpBackToPreviousScript = 16005,
 	SetHouseIdxForManagingTriggers = 16006,
 	ManageAllAITriggers = 16007,
 	EnableTriggersFromList = 16008,
@@ -214,6 +215,7 @@ public:
 	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
 	static void Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine, int count);
 	static void Stop_ForceJump_Countdown(TeamClass* pTeam);
+	static void JumpBackToPreviousScript(TeamClass* pTeam);
 	static void ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance);
 	static void ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType, bool isEnabled);
 	static void ManageAllTriggersFromHouse(TeamClass* pTeam, HouseClass* pHouse, int sideIdx, int houseIdx, bool isEnabled);
@@ -230,7 +232,6 @@ public:
 	static void ManageAITriggers(TeamClass* pTeam, int enabled);
 	static void ManageTriggersWithObjects(TeamClass* pTeam, int idxAITargetType, bool isEnabled);
 	static void Log(const char* pFormat, ...);
-
 	// Mission.Attack.cpp
 	static void Mission_Attack(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType, int IdxAITargetTypeItem);
 	static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode);

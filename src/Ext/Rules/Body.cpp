@@ -8,6 +8,7 @@
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -32,6 +33,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	RadTypeClass::LoadFromINIList(pINI);
 	ShieldTypeClass::LoadFromINIList(pINI);
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
+	AttachEffectTypeClass::LoadFromINIList(pINI);
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
@@ -62,10 +64,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (!pData)
 		return;
 
-	const char* sectionAITargetTypes = "AITargetTypes";
-	const char* sectionAIScriptsList = "AIScriptsList";
-	const char* sectionAITriggersList = "AITriggersList";
-
 	INI_EX exINI(pINI);
 
 	this->Storage_TiberiumIndex.Read(exINI, GameStrings::General, "Storage.TiberiumIndex");
@@ -76,12 +74,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisguiseBlinkingVisibility.Read(exINI, GameStrings::General, "DisguiseBlinkingVisibility");
 	this->ChronoSparkleDisplayDelay.Read(exINI, GameStrings::General, "ChronoSparkleDisplayDelay");
 	this->ChronoSparkleBuildingDisplayPositions.Read(exINI, GameStrings::General, "ChronoSparkleBuildingDisplayPositions");
+	this->AIChronoSphereSW.Read(exINI, GameStrings::General, "AIChronoSphereSW");
+	this->AIChronoWarpSW.Read(exINI, GameStrings::General, "AIChronoWarpSW");
 	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
 	this->RadApplicationDelay_Building.Read(exINI, GameStrings::Radiation, "RadApplicationDelay.Building");
-	this->RadWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
+	this->RadBuildingDamageMaxCount.Read(exINI, GameStrings::Radiation, "RadBuildingDamageMaxCount");
+	this->RadSiteWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
 	this->RadHasOwner.Read(exINI, GameStrings::Radiation, "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
-	this->VeinholeWarhead.Read(exINI, GameStrings::CombatDamage, "VeinholeWarhead");
+	this->VeinholeWarhead.Read<true>(exINI, GameStrings::CombatDamage, "VeinholeWarhead");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
 
 	this->PlacementGrid_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.Translucency");
@@ -124,10 +125,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		this->AirShadowBaseScale_log = -std::log(std::min(AirShadowBaseScale.Get(), 1.0));
 
 	this->HeightShadowScaling.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling");
+	if (AirShadowBaseScale.isset() && AirShadowBaseScale.Get() > 0.98 && this->HeightShadowScaling.Get())
+		this->HeightShadowScaling = false;
 	this->HeightShadowScaling_MinScale.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling.MinScale");
 
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
-	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Aircraft");
 	this->ForbidParallelAIQueues_Building.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Building");
 	this->ForbidParallelAIQueues_Infantry.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
 	this->ForbidParallelAIQueues_Navy.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Navy");
@@ -135,9 +138,14 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "IronCurtain.EffectOnOrganics");
-	this->IronCurtain_KillOrganicsWarhead.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
+	this->IronCurtain_KillOrganicsWarhead.Read<true>(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
+	this->ForceShield_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "ForceShield.KeptOnDeploy");
+	this->ForceShield_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "ForceShield.EffectOnOrganics");
+	this->ForceShield_KillOrganicsWarhead.Read<true>(exINI, GameStrings::CombatDamage, "ForceShield.KillOrganicsWarhead");
 
 	this->CrateOnlyOnLand.Read(exINI, GameStrings::CrateRules, "CrateOnlyOnLand");
+	this->UnitCrateVehicleCap.Read(exINI, GameStrings::CrateRules, "UnitCrateVehicleCap");
+	this->FreeMCV_CreditsThreshold.Read(exINI, GameStrings::CrateRules, "FreeMCV.CreditsThreshold");
 
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
 
@@ -147,6 +155,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
 	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
+	this->DrawInsignia_OnlyOnSelected.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.OnlyOnSelected");
+	this->DrawInsignia_AdjustPos_Infantry.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Infantry");
+	this->DrawInsignia_AdjustPos_Buildings.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Buildings");
+	this->DrawInsignia_AdjustPos_BuildingsAnchor.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.BuildingsAnchor");
+	this->DrawInsignia_AdjustPos_Units.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Units");
+	this->Promote_VeteranAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.VeteranAnimation");
+	this->Promote_EliteAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.EliteAnimation");
 
 	Nullable<AnimTypeClass*> droppod_trailer {};
 	droppod_trailer.Read(exINI, GameStrings::General, "DropPodTrailer");
@@ -159,12 +174,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
 	// Section AITargetTypes
-	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
+	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
 	{
 		std::vector<TechnoTypeClass*> objectsList;
 		char* context = nullptr;
-		pINI->ReadString(sectionAITargetTypes, pINI->GetKeyName(sectionAITargetTypes, i), "", Phobos::readBuffer);
+		pINI->ReadString("AITargetTypes", pINI->GetKeyName("AITargetTypes", i), "", Phobos::readBuffer);
 
 		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
@@ -179,13 +194,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	}
 
 	// Section AIScriptsList
-	int scriptitemsCount = pINI->GetKeyCount(sectionAIScriptsList);
+	int scriptitemsCount = pINI->GetKeyCount("AIScriptsList");
 	for (int i = 0; i < scriptitemsCount; ++i)
 	{
 		std::vector<ScriptTypeClass*> objectsList;
 
 		char* context = nullptr;
-		pINI->ReadString(sectionAIScriptsList, pINI->GetKeyName(sectionAIScriptsList, i), "", Phobos::readBuffer);
+		pINI->ReadString("AIScriptsList", pINI->GetKeyName("AIScriptsList", i), "", Phobos::readBuffer);
 
 		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
@@ -197,13 +212,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	}
 
 	// Section AITriggersList
-	int triggerItemsCount = pINI->GetKeyCount(sectionAITriggersList);
+	int triggerItemsCount = pINI->GetKeyCount("AITriggersList");
 	for (int i = 0; i < triggerItemsCount; ++i)
 	{
 		std::vector<AITriggerTypeClass*> objectsList;
 
 		char* context = nullptr;
-		pINI->ReadString(sectionAITriggersList, pINI->GetKeyName(sectionAITriggersList, i), "", Phobos::readBuffer);
+		pINI->ReadString("AITriggersList", pINI->GetKeyName("AITriggersList", i), "", Phobos::readBuffer);
 
 		for (char *cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
@@ -253,9 +268,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisguiseBlinkingVisibility)
 		.Process(this->ChronoSparkleDisplayDelay)
 		.Process(this->ChronoSparkleBuildingDisplayPositions)
+		.Process(this->AIChronoSphereSW)
+		.Process(this->AIChronoWarpSW)
 		.Process(this->UseGlobalRadApplicationDelay)
 		.Process(this->RadApplicationDelay_Building)
-		.Process(this->RadWarhead_Detonate)
+		.Process(this->RadBuildingDamageMaxCount)
+		.Process(this->RadSiteWarhead_Detonate)
 		.Process(this->RadHasOwner)
 		.Process(this->RadHasInvoker)
 		.Process(this->JumpjetCrash)
@@ -296,9 +314,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForbidParallelAIQueues_Infantry)
 		.Process(this->ForbidParallelAIQueues_Navy)
 		.Process(this->ForbidParallelAIQueues_Vehicle)
+		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_EffectOnOrganics)
 		.Process(this->IronCurtain_KillOrganicsWarhead)
-		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->ForceShield_KeptOnDeploy)
+		.Process(this->ForceShield_EffectOnOrganics)
+		.Process(this->ForceShield_KillOrganicsWarhead)
 		.Process(this->ROF_RandomDelay)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
@@ -307,10 +328,19 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisplayIncome_AllowAI)
 		.Process(this->DisplayIncome_Houses)
 		.Process(this->CrateOnlyOnLand)
+		.Process(this->UnitCrateVehicleCap)
+		.Process(this->FreeMCV_CreditsThreshold)
 		.Process(this->RadialIndicatorVisibility)
 		.Process(this->DrawTurretShadow)
 		.Process(this->IsVoiceCreatedGlobal)
 		.Process(this->SelectionFlashDuration)
+		.Process(this->DrawInsignia_OnlyOnSelected)
+		.Process(this->DrawInsignia_AdjustPos_Infantry)
+		.Process(this->DrawInsignia_AdjustPos_Buildings)
+		.Process(this->DrawInsignia_AdjustPos_BuildingsAnchor)
+		.Process(this->DrawInsignia_AdjustPos_Units)
+		.Process(this->Promote_VeteranAnimation)
+		.Process(this->Promote_EliteAnimation)
 		.Process(this->AnimRemapDefaultColorScheme)
 		.Process(this->TimerBlinkColorScheme)
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)
@@ -447,3 +477,42 @@ DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 
 	return 0;
 }
+
+// Reenable obsolete [JumpjetControls] in RA2/YR
+// Author: Uranusian
+DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
+{
+	GET(TechnoTypeClass*, pThis, ESI);
+	auto pRules = RulesClass::Instance();
+	auto pRulesExt = RulesExt::Global();
+
+	pThis->JumpjetTurnRate = pRules->TurnRate;
+	pThis->JumpjetSpeed = pRules->Speed;
+	pThis->JumpjetClimb = static_cast<float>(pRules->Climb);
+	pThis->JumpjetCrash = static_cast<float>(pRulesExt->JumpjetCrash);
+	pThis->JumpjetHeight = pRules->CruiseHeight;
+	pThis->JumpjetAccel = static_cast<float>(pRules->Acceleration);
+	pThis->JumpjetWobbles = static_cast<float>(pRules->WobblesPerSecond);
+	pThis->JumpjetNoWobbles = pRulesExt->JumpjetNoWobbles;
+	pThis->JumpjetDeviation = pRules->WobbleDeviation;
+
+	return 0x711601;
+}
+
+DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
+{
+	auto pRulesExt = RulesExt::Global();
+	if (!pRulesExt)
+		return 0;
+
+	GET(CCINIClass*, pINI, EDI);
+	INI_EX exINI(pINI);
+
+	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
+	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
+
+	return 0;
+}
+
+// skip vanilla JumpjetControls and make it earlier load
+// DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls // Really necessary? won't hurt to read again
