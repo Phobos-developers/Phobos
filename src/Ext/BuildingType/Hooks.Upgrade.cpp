@@ -200,7 +200,7 @@ DEFINE_HOOK(0x440988, BuildingClass_Unlimbo_UpgradeAnims, 0x7)
 
 	if (pThis->Type->PowersUpToLevel > 0)
 	{
-		pTargetExt->PoweredUpToLevel = pThis->Type->PowersUpToLevel;
+		pTargetExt->PoweredUpToLevel = Math::max(pThis->Type->PowersUpToLevel, pTargetExt->PoweredUpToLevel);
 		animIndex = pTargetExt->PoweredUpToLevel - 1;
 	}
 
