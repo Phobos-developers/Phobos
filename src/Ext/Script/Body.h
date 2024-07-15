@@ -79,6 +79,7 @@ enum class PhobosScripts : unsigned int
 	StopForceJumpCountdown = 16002,
 	RandomSkipNextAction = 16003,
 	PickRandomScript = 16004,
+	JumpBackToPreviousScript = 16005,
 	ConditionalJumpResetVariables = 16012,
 	ConditionalJumpManageResetIfJump = 16013,
 	AbortActionAfterSuccessKill = 16014,
@@ -224,6 +225,7 @@ public:
 	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
 	static void Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine, int count);
 	static void Stop_ForceJump_Countdown(TeamClass* pTeam);
+	static void JumpBackToPreviousScript(TeamClass* pTeam);
 	static void ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance);
 
 	static bool IsExtVariableAction(int action);

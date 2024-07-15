@@ -84,7 +84,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 	RectangleStruct vRect = DSurface::Sidebar->GetRect();
 
-	if (Phobos::UI::ShowHarvesterCounter)
+	if (Phobos::UI::HarvesterCounter_Show && Phobos::Config::ShowHarvesterCounter)
 	{
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
@@ -107,7 +107,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 	}
 
-	if (Phobos::UI::ShowPowerDelta && pPlayer->Buildings.Count)
+	if (Phobos::UI::PowerDelta_Show && Phobos::Config::ShowPowerDelta && pPlayer->Buildings.Count)
 	{
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
@@ -143,6 +143,23 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 				| static_cast<int>(pSideExt->Sidebar_PowerDelta_Align.Get()));
 
 		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
+	}
+
+	if (Phobos::UI::WeedsCounter_Show && Phobos::Config::ShowWeedsCounter)
+	{
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
+		wchar_t counter[0x20];
+		ColorStruct clrToolTip = pSideExt->Sidebar_WeedsCounter_Color.Get(Drawing::TooltipColor());
+
+		swprintf_s(counter, L"%d", static_cast<int>(pPlayer->OwnedWeed.GetTotalAmount()));
+
+		Point2D vPos = {
+			DSurface::Sidebar->GetWidth() / 2 + 50 + pSideExt->Sidebar_WeedsCounter_Offset.Get().X,
+			2 + pSideExt->Sidebar_WeedsCounter_Offset.Get().Y
+		};
+
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0,
+			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 	}
 
 	return 0;
@@ -357,3 +374,16 @@ DEFINE_HOOK(0x604985, GetDialogUIStatusLabels_ShowBriefing, 0x5)
 }
 
 #pragma endregion
+
+bool __fastcall Fake_HouseIsAlliedWith(HouseClass* pThis, void*, HouseClass* CurrentPlayer)
+{
+	return Phobos::Config::DevelopmentCommands
+		|| pThis->IsControlledByCurrentPlayer()
+		|| pThis->IsAlliedWith(CurrentPlayer);
+}
+
+DEFINE_JUMP(CALL, 0x63B136, GET_OFFSET(Fake_HouseIsAlliedWith));
+DEFINE_JUMP(CALL, 0x63B100, GET_OFFSET(Fake_HouseIsAlliedWith));
+DEFINE_JUMP(CALL, 0x63B17F, GET_OFFSET(Fake_HouseIsAlliedWith));
+DEFINE_JUMP(CALL, 0x63B1BA, GET_OFFSET(Fake_HouseIsAlliedWith));
+DEFINE_JUMP(CALL, 0x63B2CE, GET_OFFSET(Fake_HouseIsAlliedWith));
