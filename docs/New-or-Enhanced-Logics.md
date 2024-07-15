@@ -1223,7 +1223,7 @@ Promote.EliteAnimation=           ; Animation
   - You can disable this logic on specific techno by setting `[SOMETECHNO]->CombatAlert` to `false`. You may hope to disable it on insignificant technos, like spawns or slaves.
   - `[AudioVisual]->CombatAlert.IgnoreBuilding` will turn the logic off on buildings. You can override it for specific building by setting `[SOMETECHNO]->CombatAlert.NotBuilding` to true. You may hope to use it on veh-buildings.
   - `[AudioVisual]->CombatAlert.EVA` decides whether to send an EVA at the same time. The EVA is default to `EVA_UnitsInCombat`, and can be specified through `[SOMETECHNO]->EVA.Combat`.
-  - `[AudioVisual]->SuppressIfInScreen` decides whether to disable the logic for the units in the current screen.
+  - `[AudioVisual]->CombatAlert.SuppressIfInScreen` decides whether to disable the logic for the units in the current screen.
   - `[AudioVisual]->CombatAlert.Interval` decides the time interval (in frames) between alerts, to prevent the alert from being anonying. It is default to 150 frames.
 
 In `rulesmd.ini`:
