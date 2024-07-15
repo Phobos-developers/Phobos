@@ -1271,7 +1271,6 @@ int StraightTrajectory::GetTheTrueDamage(int Damage, BulletClass* pBullet, Techn
 
 double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
-	bool CheckAllies = false;
 	double Distance = 0;
 	double DamageMult = 1.0;
 	const double MaxDistance = pBullet->WeaponType ? static_cast<double>(pBullet->WeaponType->Range) : 0;
