@@ -923,7 +923,7 @@ bool TechnoExt::Techno2TechnoPropertiesTransfer(TechnoClass* pOld, TechnoClass* 
 		pNew->SetTarget(pOldExt->Convert_UniversalDeploy_RememberTarget);
 
 	// Transfer Iron Courtain effect, if applied
-	TechnoExt::SyncIronCurtainStatus(pOld, pNew);
+	TechnoExt::SyncInvulnerability(pOld, pNew);
 
 	// Transfer passengers/garrisoned units from old object to the new, if possible
 	TechnoExt::PassengersTransfer(pOld, pNew);

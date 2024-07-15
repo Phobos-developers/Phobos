@@ -480,15 +480,9 @@ public:
 		this->SavingStream = nullptr;
 	}
 
-	decltype(auto) begin() const
-	{
-		return this->Items.begin();
-	}
+	decltype(auto) begin() const = delete;
 
-	decltype(auto) end() const
-	{
-		return this->Items.end();
-	}
+	decltype(auto) end() const = delete;
 
 	size_t size() const
 	{

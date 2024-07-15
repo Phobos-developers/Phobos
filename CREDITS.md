@@ -130,6 +130,7 @@ This page lists all the individual contributions to the project by their author.
   - Shared ammo logic
   - Customizable FLH when infantry is prone or deployed
   - Initial strength for cloned infantry
+  - Map Events 604 & 605 for checking if a specific Techno enters in a cell
   - Universal deploy from any techno into any techno
 - **Starkku**:
   - Misc. minor bugfixes & improvements
@@ -223,6 +224,12 @@ This page lists all the individual contributions to the project by their author.
   - `AmbientDamage` warhead & main target ignore customization
   - Projectile return weapon
   - Aircraft landing / docking direction
+  - `DeploysInto` cursor desync fix
+  - Minor crate logic improvements
+  - Custom tint effects
+  - Revenge weapons
+  - AttachEffect
+  - Air unit tracking fix for large range / `CellSpread`
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -255,6 +262,7 @@ This page lists all the individual contributions to the project by their author.
       - Allow to tilt regardless of TiltCrashJumpjet
       - Forbid firing when crashing
    - OmniFire.TurnToTarget
+   - Strafing aircraft weapon customization
    - Object Self-destruction logic
    - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
@@ -298,6 +306,7 @@ This page lists all the individual contributions to the project by their author.
    - Droppod properties dehardcode
    - Waypoint entering building together with engineer/agent bug fix
    - Skippable game save on scenario start
+   - Skip rally point line drawing when undeploying a building
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -311,21 +320,26 @@ This page lists all the individual contributions to the project by their author.
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
    - Unlimited `AlternateFLH` entries
+   - Build limit group
+   - Customizing whether passengers are kicked out when an aircraft fires
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control
   - Vehicle voxel turret shadows & body multi-section shadows
   - `TurretOffset` support for SHP vehicles
+  - Customizable wake anim
 - **Fryone**
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
   - Auto-deploy/Deploy block on ammo change
   - Flashing Technos on selecting
+  - Promotion animation
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
+- **handama** - AI script action to jump back to previous script
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
@@ -337,6 +351,7 @@ This page lists all the individual contributions to the project by their author.
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
+- **Ollerus** - Build limit group enhancement
 - **Chasheen (Chasheenburg)** - CN docs help
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation

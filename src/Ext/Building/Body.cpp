@@ -136,7 +136,11 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 				pBuilding->IsPrimaryFactory = false;
 
 				if (pBuilding->Factory)
+				{
+					auto const* prodType = pBuilding->Factory->Object->GetType();
 					pBuilding->Factory->AbandonProduction();
+					Debug::Log("%s is not CurrentAirFactory of %s, production of %s aborted\n", pBuilding->Type->ID, pOwner->PlainName, prodType->ID);
+				}
 			}
 		}
 
@@ -167,7 +171,11 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 		pBuilding->IsPrimaryFactory = false;
 
 		if (pBuilding->Factory)
+		{
+			auto const* prodType = pBuilding->Factory->Object->GetType();
 			pBuilding->Factory->AbandonProduction();
+			Debug::Log("%s of %s abandonded production of %s due to redundancies\n", pBuilding->Type->ID, pOwner->PlainName, prodType->ID);
+		}
 	}
 
 	return;
@@ -247,18 +255,18 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 		pExt->AccumulatedIncome += refund;
 		pExt->GrindingWeapon_AccumulatedCredits += refund;
 
-		if (pTypeExt->Grinding_Weapon.isset() &&
-			Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon.Get()->ROF &&
+		if (pTypeExt->Grinding_Weapon &&
+			Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon->ROF &&
 			pExt->GrindingWeapon_AccumulatedCredits >= pTypeExt->Grinding_Weapon_RequiredCredits)
 		{
-			TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon.Get());
+			TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon);
 			pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;
 			pExt->GrindingWeapon_AccumulatedCredits = 0;
 		}
 
-		if (pTypeExt->Grinding_Sound.isset())
+		if (pTypeExt->Grinding_Sound >= 0)
 		{
-			VocClass::PlayAt(pTypeExt->Grinding_Sound.Get(), pTechno->GetCoords());
+			VocClass::PlayAt(pTypeExt->Grinding_Sound, pTechno->GetCoords());
 			return true;
 		}
 	}
@@ -289,40 +297,47 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 	}
 }
 
-bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse)
+bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse,int moneybefore)
 {
-	BuildingTypeExt::ExtData* pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+	auto pVictimHouse = this->OwnerObject()->Owner;
+	this->AccumulatedIncome += pVictimHouse->Available_Money() - moneybefore;
 
-	if (!pTypeExt->SpyEffect_Custom)
+	if (!pVictimHouse->IsControlledByHuman() && !RulesExt::Global()->DisplayIncome_AllowAI)
+	{
+		// TODO there should be a better way...
+		FlyingStrings::AddMoneyString(
+				this->AccumulatedIncome,
+				pVictimHouse,
+				this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
+				this->OwnerObject()->GetRenderCoords(),
+				this->TypeExtData->DisplayIncome_Offset
+		);
+	}
+
+	if (!this->TypeExtData->SpyEffect_Custom)
 		return false;
 
-	auto pVictimHouse = pBuilding->Owner;
 	if (pInfiltratorHouse != pVictimHouse)
 	{
 		// I assume you were not launching for real, Morton
 
-		auto launchTheSWHere = [pBuilding](SuperClass* const pSuper, HouseClass* const pHouse)
+		auto launchTheSWHere = [this](SuperClass* const pSuper, HouseClass* const pHouse)
 		{
 			int oldstart = pSuper->RechargeTimer.StartTime;
 			int oldleft = pSuper->RechargeTimer.TimeLeft;
 			pSuper->SetReadiness(true);
-			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pHouse->IsCurrentPlayer());
+			pSuper->Launch(CellClass::Coord2Cell(this->OwnerObject()->GetCenterCoords()), pHouse->IsCurrentPlayer());
 			pSuper->Reset();
 			pSuper->RechargeTimer.StartTime = oldstart;
 			pSuper->RechargeTimer.TimeLeft = oldleft;
 		};
-
-		if (pTypeExt->SpyEffect_VictimSuperWeapon.isset())
-		{
-			if (const auto pSuper = pVictimHouse->Supers.GetItem(pTypeExt->SpyEffect_VictimSuperWeapon.Get()))
-				launchTheSWHere(pSuper, pVictimHouse);
-		}
-
-		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon.isset())
-		{
-			if (const auto pSuper = pInfiltratorHouse->Supers.GetItem(pTypeExt->SpyEffect_InfiltratorSuperWeapon.Get()))
-				launchTheSWHere(pSuper, pInfiltratorHouse);
-		}
+		int idx = this->TypeExtData->SpyEffect_VictimSuperWeapon;
+		if (idx >= 0)
+			launchTheSWHere(pVictimHouse->Supers.Items[idx], pVictimHouse);
+		
+		idx = this->TypeExtData->SpyEffect_InfiltratorSuperWeapon;
+		if (idx >= 0)
+			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx], pInfiltratorHouse);
 	}
 
 	return true;
@@ -474,3 +489,15 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 
 // Removes setting otherwise unused field (0x6FC) in BuildingClass when building has airstrike applied on it so that it can safely be used to store BuildingExt pointer.
 DEFINE_JUMP(LJMP, 0x41D9FB, 0x41DA05);
+
+
+void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*, HouseClass* pInfiltratorHouse)
+{
+	int oldBalance = pThis->Owner->Available_Money();
+	// explicitly call because Ares rewrote it
+	reinterpret_cast<void(__thiscall*)(BuildingClass*, HouseClass*)>(0x4571E0)(pThis, pInfiltratorHouse);
+
+	BuildingExt::ExtMap.Find(pThis)->HandleInfiltrate(pInfiltratorHouse, oldBalance);
+}
+
+DEFINE_JUMP(CALL, 0x51A00B, GET_OFFSET(BuildingClass_InfiltratedBy_Wrapper));

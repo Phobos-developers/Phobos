@@ -21,6 +21,7 @@ public:
 
 	static constexpr DWORD Canary = 0x87654321;
 	static constexpr size_t ExtPointerOffset = 0x6FC;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<BuildingClass>
 	{
@@ -52,7 +53,7 @@ public:
 		void DisplayIncomeString();
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
-
+		bool HandleInfiltrate(HouseClass* pInfiltratorHouse , int moneybefore);
 		void UpdatePrimaryFactoryAI();
 		virtual ~ExtData() = default;
 
@@ -102,7 +103,6 @@ public:
 	static bool HasFreeDocks(BuildingClass* pBuilding);
 	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
-	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
 	static bool CanUndeployOnSell(BuildingClass* pThis);
 	static void HideBuildingAnimations(BuildingClass* pThis = nullptr);
 	static void UnhideBuildingAnimations(BuildingClass* pThis = nullptr);
