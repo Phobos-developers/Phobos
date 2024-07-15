@@ -83,9 +83,6 @@ void ScriptExt::SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx = 
 
 	houseIdx = HouseExt::GetHouseIndex(houseIdx, pTeam, nullptr);
 
-	if (houseIdx < -1)
-		houseIdx = -1;
-
 	if (auto pTeamData = TeamExt::ExtMap.Find(pTeam))
 		pTeamData->TriggersHouseIdx = houseIdx;
 
