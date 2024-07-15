@@ -6,13 +6,15 @@ This page describes all AI scripting and mapping related additions and changes i
 
 - Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)
 - The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
+- Map trigger action `41 Play Animation At...` can now create 'non-inert' animations which can play sounds, deal damage and apply `TiberiumChainReaction` if a parameter is set (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally. `InitialPayload` logic from Ares is not supported yet.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
+- Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General]` -> `AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
 
-## Singleplayer Misssion Maps
+## Singleplayer Mission Maps
 
 ### Base node repairing
 
@@ -69,7 +71,7 @@ Ranking.OverParMessage=   ; CSF entry key
 
 ### Show briefing dialog on startup
 
-- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available). This can be disabled by user by setting `ShowBriefing` to false in `Ra2MD.ini`. 
+- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available). This can be disabled by user by setting `ShowBriefing` to false in `Ra2MD.ini`.
   - `BriefingTheme` (In order of precedence from highest to lowest: `missionmd.ini`, map file, side entry in `rulesmd.ini`) can be used to define a custom theme to play on this briefing screen. If not set, the loading screen theme will keep playing until the scenario starts properly.
   - String labels for the startup briefing dialog screen's resume button as well as the button's status bar text can be customized by setting `ShowBriefingResumeButtonLabel` and `ShowBriefingResumeButtonStatusLabel` respectively. They default to the same labels used by the briefing screen dialog when opened otherwise.
 
@@ -435,6 +437,16 @@ In `rulesmd.ini`:
 ; ...
 ```
 
+### `16005` Jump Back To Previous Script
+
+- Used in a Random Script picked by action 94. It can jump back to the previous script, and continue in the line after x=94,n.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16005,0
+```
+
 ### `18000-18999` Variable Manipulation
 
 #### `18000-18023` Edit Variable
@@ -707,3 +719,23 @@ In `mycampaign.map`:
 ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 ...
 ```
+
+### `604-605` Checking if a specific Techno enters in a cell
+- 604: Checks if the techno that entered in the cell has the same ID specified in the event.
+- 605: Checks if the techno that entered in the cell appears in the selected list in `AITargetTypes`.
+- `HouseIndex` can be customized to focus in a specified house.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...
+ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...
+...
+```
+
+| *House Index* | *Description*                              |
+| :-----------: | :----------------------------------------: |
+| >= 0          | The index of the current House in the map  |
+| -1            | This value is ignored (any house is valid) |
+| -2            | Pick the owner of the map trigger          |

@@ -1,6 +1,5 @@
 #include <AnimClass.h>
 #include <UnitClass.h>
-#include <AnimClass.h>
 #include <InfantryClass.h>
 #include <BuildingClass.h>
 #include <ScenarioClass.h>
@@ -13,7 +12,8 @@
 #include <Ext/AnimType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
-
+#include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
 #include <Utilities/AresHelper.h>
 #include <JumpjetLocomotionClass.h>
@@ -284,7 +284,7 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 {
 	enum { SetUIName = 0x4AE678 };
 
-	GET(ObjectClass* , pObject, ECX);
+	GET(ObjectClass*, pObject, ECX);
 
 	auto pDecidedUIName = pObject->GetUIName();
 	auto pFoot = generic_cast<FootClass*>(pObject);
@@ -337,6 +337,40 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 	return 0x6B0C65;
 }
 
+DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+
+	if (pSource)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		auto const pTypeExt = pExt->TypeExtData;
+
+		if (pTypeExt && pTypeExt->RevengeWeapon &&
+			EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		{
+			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
+		}
+
+		for (auto& attachEffect : pExt->AttachedEffects)
+		{
+			if (!attachEffect->IsActive())
+				continue;
+
+			auto const pType = attachEffect->GetType();
+
+			if (!pType->RevengeWeapon)
+				continue;
+
+			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
+		}
+	}
+
+	return 0;
+}
+
 // 2nd order Pade approximant just in case someone complains about performance
 constexpr double Pade2_2(double in)
 {
@@ -380,17 +414,17 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
 
 				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
-					vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);
+					vxl_index_key.Invalidate();
 			}
 		}
 		else
 		{
 			const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(RulesClass::Instance->CruiseHeight);
 
-			if (cHeight > 0)
+			if (cHeight > 0 && height > 208)
 			{
-				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
-				vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);
+				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale));
+				vxl_index_key.Invalidate();
 			}
 		}
 	}
@@ -416,7 +450,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		{
 			if (CAN_USE_ARES && AresHelper::CanUseAres)
 			{
-				vxl_index_key = std::bit_cast<VoxelIndexKey>(-1);// I'd just assume most of the time we have spawn
+				vxl_index_key.Invalidate();// I'd just assume most of the time we have spawn
 				return &reinterpret_cast<DummyExtHere*>(pType->align_2FC)->NoSpawnAltVXL;
 			}
 			return &pType->TurretVoxel;
@@ -438,7 +472,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	// lazy, don't want to hook inside Shadow_Matrix
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
-		// index key is already invalid
+		// index key should have been already invalid, so it won't hurt to invalidate again
+		vxl_index_key.Invalidate();
 		shadow_matrix.TranslateX(float(Math::sgn(arf) * pType->VoxelScaleX * (1 - Math::cos(arf))));
 		shadow_matrix.TranslateY(float(Math::sgn(-ars) * pType->VoxelScaleY * (1 - Math::cos(ars))));
 		shadow_matrix.ScaleX((float)Math::cos(arf));
@@ -446,6 +481,10 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	}
 
 	auto mtx = Matrix3D::VoxelDefaultMatrix() * shadow_matrix;
+	{
+		auto& arr = mtx.row;
+		arr[0][2] = arr[1][2] = arr[2][2] = arr[2][1] = arr[2][0] = 0;
+	}
 	if (height > 0)
 		shadow_point.Y += 1;
 
@@ -471,12 +510,12 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			pThis->DrawVoxelShadow(
 				   main_vxl,
 				   index,
-				   vxl_index_key,
+				   index == pType->ShadowIndex ? vxl_index_key : std::bit_cast<VoxelIndexKey>(-1),
 				   &pType->VoxelShadowCache,
 				   bounding,
 				   &why,
 				   &mtx,
-				   true,
+				   index == pType->ShadowIndex,
 				   surface,
 				   shadow_point
 			);
@@ -524,7 +563,10 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	uTypeExt->ApplyTurretOffset(&rot, Pixel_Per_Lepton);
 	rot.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
 	auto tur_mtx = mtx * rot; // unfortunately we won't have TurretVoxelScaleX/Y given the amount of work
-
+	{
+		auto& arr = tur_mtx.row;
+		arr[0][2] = arr[1][2] = arr[2][2] = arr[2][1] = arr[2][0] = 0;
+	}
 	auto tur = GetTurretVoxel(pThis->CurrentTurretNumber);
 
 	// sorry but you're fucked
@@ -589,12 +631,13 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		if (RulesExt::Global()->HeightShadowScaling)
 		{
 			const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
-			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(flyLoco->FlightLevel);
+			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pThis->Type->GetFlightLevel());
 
 			if (cHeight > 0)
 			{
 				shadow_mtx.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
-				key = std::bit_cast<VoxelIndexKey>(-1); // I'm sorry
+				if (flyLoco->FlightLevel > 0 || height > 0)
+					key.Invalidate();
 			}
 		}
 		else if (pThis->Type->ConsideredAircraft)
@@ -602,26 +645,31 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 			shadow_mtx.Scale((float)Pade2_2(baseScale_log));
 		}
 
-		if (pThis->IsCrashing)
-		{
-			double arf = pThis->AngleRotatedForwards;
-			if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
-				arf += pThis->Type->PitchAngle;
-			shadow_mtx.ScaleY((float)Math::cos(pThis->AngleRotatedSideways));
-			shadow_mtx.ScaleX((float)Math::cos(arf));
-		}
+		double arf = pThis->AngleRotatedForwards;
+		if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
+			arf += pThis->Type->PitchAngle;
+		double ars = pThis->AngleRotatedSideways;
+		if (key.Is_Valid_Key() && (std::abs(arf) > 0.005 || std::abs(ars) > 0.005))
+			key.Invalidate();
+
+		shadow_mtx.ScaleY((float)Math::cos(ars));
+		shadow_mtx.ScaleX((float)Math::cos(arf));
 	}
 	else if (height > 0)
 	{
 		// You must be Rocket, otherwise GO FUCK YOURSELF
 		shadow_mtx.ScaleX((float)Math::cos(static_cast<RocketLocomotionClass*>(loco)->CurrentPitch));
-		key = std::bit_cast<VoxelIndexKey>(-1);
+		key.Invalidate();
 	}
 
 	shadow_mtx = Matrix3D::VoxelDefaultMatrix() * shadow_mtx;
+	{
+		auto& arr = shadow_mtx.row;
+		arr[0][2] = arr[1][2] = arr[2][2] = arr[2][1] = arr[2][0] = 0;
+	}
 
 	auto const main_vxl = &pThis->Type->MainVoxel;
-
+	// flor += loco->Shadow_Point(); // no longer needed
 	if (aTypeExt->ShadowIndices.empty())
 	{
 		auto const shadow_index = pThis->Type->ShadowIndex;
@@ -643,12 +691,12 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		for (auto& [index, _] : aTypeExt->ShadowIndices)
 			pThis->DrawVoxelShadow(main_vxl,
 				index,
-				key,
+				index == pThis->Type->ShadowIndex ? key : std::bit_cast<VoxelIndexKey>(-1),
 				&pThis->Type->VoxelShadowCache,
 				bound,
 				&flor,
 				&shadow_mtx,
-				true,
+				index == pThis->Type->ShadowIndex,
 				nullptr,
 				{ 0, 0 }
 		);
@@ -658,8 +706,13 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 }
 
 // Shadow_Point of RocketLoco was forgotten to be set to {0,0}. It was an oversight.
-// Anyway we don't need to call it from Fly or Rocket loco anymore
-// DEFINE_JUMP(VTABLE, 0x7F0B4C, 0x4CF940);
+DEFINE_JUMP(VTABLE, 0x7F0B4C, 0x4CF940);
+/*
+//TO TEST AND EXPLAIN: why resetting height when drawing aircrafts?
+DEFINE_JUMP(CALL6, 0x4147D5, 0x5F4300);
+DEFINE_JUMP(CALL6, 0x4148AB, 0x5F4300);
+DEFINE_JUMP(CALL6, 0x4147F3, 0x5F4300);
+*/
 
 DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 {
@@ -719,15 +772,10 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 
 
 	Matrix3D hvamat = hva->Matrixes[shadow_index_now + hva->LayerCount * ChooseFrame()];
-
-	// A nasty temporary backward compatibility option
-	if (hva->LayerCount > 1 || pType->Turret)
-	// NEEDS IMPROVEMENT : Choose the proper Z offset to shift the sections to the same level
-		hvamat.TranslateZ(
-			-hvamat.GetZVal()
-			- pVXL->VXL->TailerData->Bounds[0].Z
-		);
-
+	{
+		auto& arr = hvamat.row;
+		arr[0][2] = arr[1][2] = arr[2][2] = arr[2][1] = arr[2][0] = arr[2][3] = 0;
+	}
 	matRet = *pMat * hvamat;
 
 	// Recover vanilla instructions
@@ -738,4 +786,57 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 	b.MakeIdentity();// we don't do scaling here anymore
 
 	return 0x707331;
+}
+
+DEFINE_HOOK_AGAIN(0x69FEDC, Locomotion_Process_Wake, 0x6)  // Ship
+DEFINE_HOOK_AGAIN(0x4B0814, Locomotion_Process_Wake, 0x6)  // Drive
+DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)  // Hover
+{
+	GET(ILocomotion* const, pILoco, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(static_cast<LocomotionClass*>(pILoco)->LinkedTo->GetTechnoType());
+	R->EDX(pTypeExt->Wake.Get(RulesClass::Instance->Wake));
+
+	return R->Origin() + 0xC;
+}
+
+namespace GrappleUpdateTemp
+{
+	TechnoClass* pThis;
+}
+
+DEFINE_HOOK(0x629E9B, ParasiteClass_GrappleUpdate_MakeWake_SetContext, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GrappleUpdateTemp::pThis = pThis;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x629FA3, ParasiteClass_GrappleUpdate_MakeWake, 0x6)
+{
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(GrappleUpdateTemp::pThis->GetTechnoType());
+	R->EDX(pTypeExt->Wake_Grapple.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+
+	return 0x629FA9;
+}
+
+DEFINE_HOOK(0x7365AD, UnitClass_Update_SinkingWake, 0x6)
+{
+	GET(UnitClass* const, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+
+	return 0x7365B3;
+}
+
+DEFINE_HOOK(0x737F05, UnitClass_ReceiveDamage_SinkingWake, 0x6)
+{
+	GET(UnitClass* const, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+
+	return 0x737F0B;
 }

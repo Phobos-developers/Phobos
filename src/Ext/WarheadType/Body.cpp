@@ -30,23 +30,44 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-namespace DetonateTemp
+bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr)
 {
-	AbstractClass* pTarget = nullptr;
+	if (!pTarget)
+		return false;
+
+	if (!this->EffectsRequireVerses)
+		return true;
+
+	auto armorType = pTarget->GetTechnoType()->Armor;
+
+	if (!pTargetExt)
+		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	if (pTargetExt)
+	{
+		if (const auto pShieldData = pTargetExt->Shield.get())
+		{
+			if (pShieldData->IsActive())
+			{
+				if (!pShieldData->CanBePenetrated(this->OwnerObject()))
+					armorType = pShieldData->GetArmorType();
+			}
+		}
+	}
+
+	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0;
 }
 
 void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
-	DetonateTemp::pTarget = pTarget;
-	WarheadTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse);
-	DetonateTemp::pTarget = nullptr;
+	WarheadTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse, pTarget);
 }
 
-void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget)
 {
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
-	if (BulletClass* pBullet = pType->CreateBullet(DetonateTemp::pTarget, pOwner,
+	if (BulletClass* pBullet = pType->CreateBullet(pTarget, pOwner,
 		damage, pThis, 0, pThis->Bright))
 	{
 		if (pFiringHouse)
@@ -117,9 +138,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->SplashList_CreateAll.Read(exINI, pSection, "SplashList.CreateAll");
 	this->SplashList_CreationInterval.Read(exINI, pSection, "SplashList.CreationInterval");
+	this->SplashList_ScatterMin.Read(exINI, pSection, "SplashList.ScatterMin");
+	this->SplashList_ScatterMax.Read(exINI, pSection, "SplashList.ScatterMax");
 	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
 	this->AnimList_CreateAll.Read(exINI, pSection, "AnimList.CreateAll");
 	this->AnimList_CreationInterval.Read(exINI, pSection, "AnimList.CreationInterval");
+	this->AnimList_ScatterMin.Read(exINI, pSection, "AnimList.ScatterMin");
+	this->AnimList_ScatterMax.Read(exINI, pSection, "AnimList.ScatterMax");
 	this->CreateAnimsOnZeroDamage.Read(exINI, pSection, "CreateAnimsOnZeroDamage");
 	this->Conventional_IgnoreUnits.Read(exINI, pSection, "Conventional.IgnoreUnits");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
@@ -132,7 +157,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
 	this->Crit_ApplyChancePerTarget.Read(exINI, pSection, "Crit.ApplyChancePerTarget");
 	this->Crit_ExtraDamage.Read(exINI, pSection, "Crit.ExtraDamage");
-	this->Crit_Warhead.Read(exINI, pSection, "Crit.Warhead");
+	this->Crit_Warhead.Read<true>(exINI, pSection, "Crit.Warhead");
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
 	this->Crit_AffectsHouses.Read(exINI, pSection, "Crit.AffectsHouses");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
@@ -148,6 +173,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_Break.Read(exINI, pSection, "Shield.Break");
 	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
 	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
+	this->Shield_HitFlash.Read(exINI, pSection, "Shield.HitFlash");
 	this->Shield_BreakWeapon.Read<true>(exINI, pSection, "Shield.BreakWeapon");
 	this->Shield_AbsorbPercent.Read(exINI, pSection, "Shield.AbsorbPercent");
 	this->Shield_PassPercent.Read(exINI, pSection, "Shield.PassPercent");
@@ -197,6 +223,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
+	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
+	this->AttachEffect_RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
+	exINI.ParseStringList(this->AttachEffect_RemoveGroups, pSection, "AttachEffect.RemoveGroups");
+	this->AttachEffect_CumulativeRemoveMinCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMinCounts");
+	this->AttachEffect_CumulativeRemoveMaxCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMaxCounts");
+	this->AttachEffect_DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -227,13 +260,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
+	this->EffectsRequireVerses.Read(exINI, pSection, "EffectsRequireVerses");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::ExtData::Detonate
 	this->PossibleCellSpreadDetonate = (
 		this->RemoveDisguise
 		|| this->RemoveMindControl
-		|| this->Crit_Chance
 		|| this->Shield_Break
 		|| this->Shield_Respawn_Duration > 0
 		|| this->Shield_SelfHealing_Duration > 0
@@ -242,7 +275,48 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Convert_Pairs.size() > 0
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
+		|| this->AttachEffect_AttachTypes.size() > 0
+		|| this->AttachEffect_RemoveTypes.size() > 0
+		|| this->AttachEffect_RemoveGroups.size() > 0
 	);
+
+	char tempBuffer[32];
+	Nullable<Powerup> crateType;
+	Nullable<int> weight;
+
+	for (size_t i = 0; ; i++)
+	{
+		crateType.Reset();
+		weight.Reset();
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SpawnsCrate%u.Type", i);
+		crateType.Read(exINI, pSection, tempBuffer);
+
+		if (i == 0 && !crateType.isset())
+			crateType.Read(exINI, pSection, "SpawnsCrate.Type");
+
+		if (!crateType.isset())
+			break;
+
+		if (this->SpawnsCrate_Types.size() < i)
+			this->SpawnsCrate_Types[i] = crateType;
+		else
+			this->SpawnsCrate_Types.push_back(crateType);
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SpawnsCrate%u.Weight", i);
+		weight.Read(exINI, pSection, tempBuffer);
+
+		if (i == 0 && !weight.isset())
+			weight.Read(exINI, pSection, "SpawnsCrate.Weight");
+
+		if (!weight.isset())
+			weight = 1;
+
+		if (this->SpawnsCrate_Weights.size() < i)
+			this->SpawnsCrate_Weights[i] = weight;
+		else
+			this->SpawnsCrate_Weights.push_back(weight);
+	}
 }
 
 template <typename T>
@@ -260,9 +334,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SplashList_PickRandom)
 		.Process(this->SplashList_CreateAll)
 		.Process(this->SplashList_CreationInterval)
+		.Process(this->SplashList_ScatterMin)
+		.Process(this->SplashList_ScatterMax)
 		.Process(this->AnimList_PickRandom)
 		.Process(this->AnimList_CreateAll)
 		.Process(this->AnimList_CreationInterval)
+		.Process(this->AnimList_ScatterMin)
+		.Process(this->AnimList_ScatterMax)
 		.Process(this->CreateAnimsOnZeroDamage)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->RemoveDisguise)
@@ -316,6 +394,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_Respawn_Types)
 		.Process(this->Shield_SelfHealing_Types)
 
+		.Process(this->SpawnsCrate_Types)
+		.Process(this->SpawnsCrate_Weights)
+
 		.Process(this->NotHuman_DeathSequence)
 		.Process(this->LaunchSW)
 		.Process(this->LaunchSW_RealLaunch)
@@ -338,12 +419,20 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Convert_Pairs)
 
+		.Process(this->AttachEffect_AttachTypes)
+		.Process(this->AttachEffect_RemoveTypes)
+		.Process(this->AttachEffect_RemoveGroups)
+		.Process(this->AttachEffect_CumulativeRemoveMinCounts)
+		.Process(this->AttachEffect_CumulativeRemoveMaxCounts)
+		.Process(this->AttachEffect_DurationOverrides)
+
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
+		.Process(this->EffectsRequireVerses)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
 		.Process(this->RemainingAnimCreationInterval)
