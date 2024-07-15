@@ -80,7 +80,6 @@ enum class PhobosScripts : unsigned int
 	RandomSkipNextAction = 16003,
 	PickRandomScript = 16004,
 	JumpBackToPreviousScript = 16005,
-	ConditionalJumpResetVariables = 16012,
 	ConditionalJumpManageResetIfJump = 16013,
 	AbortActionAfterSuccessKill = 16014,
 	ConditionalJumpManageKillsCounter = 16015,
@@ -95,6 +94,7 @@ enum class PhobosScripts : unsigned int
 	ConditionalJumpCheckAliveHumans = 16024,
 	ConditionalJumpCheckObjects = 16025,
 	ConditionalJumpCheckHumanIsMostHated = 16026,
+	ConditionalJumpResetVariables = 16027,
 
 	// Range 18000-18999 are variable actions
 	LocalVariableSet = 18000,

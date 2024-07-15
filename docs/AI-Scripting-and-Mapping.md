@@ -418,19 +418,21 @@ In `rulesmd.ini`:
 ; ...
 
 ```
-### `16012` Conditional Jump, Clear Variables
-- Reset all variables related to conditional jumps.
+
+### `16005` Jump Back To Previous Script
+
+- Used in a Random Script picked by action 94. It can jump back to the previous script, and continue in the line after x=94,n.
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16012,0
+x=16005,0
 ```
 
 ### `16013` Conditional Jump, Manage Variables Reset If The Jump Is Successful
 - By default the conditional jump variables are cleaned after a successful jump.
 - This action enables the ability to retain variables value after the jump.
-- This action behavior isn't affected by the action `16012` "Clear Variables".
+- This action behavior isn't affected by the action `16027` "Clear Variables".
 
 In `aimd.ini`:
 ```ini
@@ -586,14 +588,13 @@ In `aimd.ini`:
 x=16026,0
 ```
 
-### `16005` Jump Back To Previous Script
-
-- Used in a Random Script picked by action 94. It can jump back to the previous script, and continue in the line after x=94,n.
+### `16027` Conditional Jump, Clear Variables
+- Reset all variables related to conditional jumps.
 
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16005,0
+x=16027,0
 ```
 
 ### `18000-18999` Variable Manipulation
