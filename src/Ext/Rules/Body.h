@@ -136,6 +136,12 @@ public:
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Nullable<bool> CombatAlert;
+		Nullable<bool> CombatAlert_IgnoreBuilding;
+		Nullable<bool> CombatAlert_EVA;
+		Nullable<bool> CombatAlert_SuppressIfInScreen;
+		Nullable<int> CombatAlert_Interval;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -230,6 +236,12 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+
+			, CombatAlert { false }
+			, CombatAlert_IgnoreBuilding { true }
+			, CombatAlert_EVA { true }
+			, CombatAlert_SuppressIfInScreen { true }
+			, CombatAlert_Interval { 150 }
 		{ }
 
 		virtual ~ExtData() = default;

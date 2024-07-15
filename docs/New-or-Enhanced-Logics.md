@@ -1216,6 +1216,31 @@ Promote.VeteranAnimation=         ; Animation
 Promote.EliteAnimation=           ; Animation
 ```
 
+### Raise alert when technos are taking damage
+
+- In Vanilla, non-building technos will not generate radar events or EVA when attacked, so players will can hardly notice them until they are destroyed. You can now receive a radar event (and optionally an EVA) when your units is attacked, so that you can respond to combats in time.
+  - `[AudioVisual]->CombatAlert` is a global switch, set it to `true` to enable the entire logic. Setting it to `false` will make all the following flags ignored.
+  - You can disable this logic on specific techno by setting `[SOMETECHNO]->CombatAlert` to `false`. You may hope to disable it on insignificant technos, like spawns or slaves.
+  - `[AudioVisual]->CombatAlert.IgnoreBuilding` will turn the logic off on buildings. You can override it for specific building by setting `[SOMETECHNO]->CombatAlert.NotBuilding` to true. You may hope to use it on veh-buildings.
+  - `[AudioVisual]->CombatAlert.EVA` decides whether to send an EVA at the same time. The EVA is default to `EVA_UnitsInCombat`, and can be specified through `[SOMETECHNO]->EVA.Combat`.
+  - `[AudioVisual]->SuppressIfInScreen` decides whether to disable the logic for the units in the current screen.
+  - `[AudioVisual]->CombatAlert.Interval` decides the time interval (in frames) between alerts, to prevent the alert from being anonying. It is default to 150 frames.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+CombatAlert=false                      ;boolean
+CombatAlert.IgnoreBuilding=true        ;boolean
+CombatAlert.EVA=true                   ;boolean
+CombatAlert.SuppressIfInScreen=true    ;boolean
+CombatAlert.Interval=150               ;integer, game frames
+
+[SOMETECHNO]
+EVA.Combat=EVA_UnitsInCombat    ;EVA entry
+CombatAlert=true                ;boolean
+CombatAlert.NotBuilding=false   ;boolean
+```
+
 ### Convert TechnoType on owner house change
 - You can now change a unit's type when changing ownership from human to computer or from computer to human.
 

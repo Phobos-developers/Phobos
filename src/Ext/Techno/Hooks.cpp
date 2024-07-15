@@ -1,4 +1,7 @@
 #include <AircraftClass.h>
+#include <VoxClass.h>
+#include <RadarEventClass.h>
+#include <TacticalClass.h>
 #include "Body.h"
 
 #include <ScenarioClass.h>
@@ -8,6 +11,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -153,6 +157,38 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
 	GET(TechnoClass* const, pThis, ESI);
 	GET(int* const, pDamage, EBX);
+
+	const auto pHouse = pThis->Owner;
+	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	if (pThis && pThis->IsOwnedByCurrentPlayer && *pDamage>=1 && pHouse && pHouse->IsInPlayerControl &&
+		pHouseExt && !pHouseExt->CombatAlertTimer.HasTimeLeft() && RulesExt::Global()->CombatAlert && pThis->IsInPlayfield)
+	{
+		const auto pType = pThis->GetTechnoType();
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		if (pTypeExt && pTypeExt->CombatAlert &&
+			((pThis->WhatAmI() != AbstractType::Building || pTypeExt->CombatAlert_NotBuilding) || !RulesExt::Global()->CombatAlert_IgnoreBuilding))
+		{
+			CoordStruct coordInMap { 0 , 0 , 0 };
+			pThis->GetCoords(&coordInMap);
+			bool suppressedByScreen = false;
+			if (RulesExt::Global()->CombatAlert_SuppressIfInScreen)
+			{
+				Point2D coordInScreen { 0 , 0 };
+				TacticalClass::Instance->CoordsToScreen(&coordInScreen, &coordInMap);
+				coordInScreen -= TacticalClass::Instance->TacticalPos;
+				RectangleStruct screenArea = DSurface::Composite->GetRect();
+				if (screenArea.Width >= coordInScreen.X && screenArea.Height >= coordInScreen.Y && coordInScreen.X >= 0 && coordInScreen.Y >= 0) // check if the unit is in screen
+					suppressedByScreen = true;
+			}
+			if (!suppressedByScreen)
+			{
+				pHouseExt->CombatAlertTimer.Start(RulesExt::Global()->CombatAlert_Interval);
+				RadarEventClass::Create(RadarEventType::Combat, CellClass::Coord2Cell(coordInMap));
+				if (RulesExt::Global()->CombatAlert_EVA)
+					VoxClass::PlayIndex(pTypeExt->EVA_Combat.Get(VoxClass::FindIndex((const char*)"EVA_UnitsInCombat")));
+			}
+		}
+	}
 
 	if (Phobos::DisplayDamageNumbers && *pDamage)
 		GeneralUtils::DisplayDamageNumberString(*pDamage, DamageDisplayType::Regular, pThis->GetRenderCoords(), TechnoExt::ExtMap.Find(pThis)->DamageNumberOffset);

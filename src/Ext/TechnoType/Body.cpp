@@ -177,6 +177,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
+	this->EVA_Combat.Read(exINI, pSection, "EVA.Combat");
+	this->CombatAlert.Read(exINI, pSection, "CombatAlert");
+	this->CombatAlert_NotBuilding.Read(exINI, pSection, "CombatAlert.NotBuilding");
+
 	this->VoiceCreated.Read(exINI, pSection, "VoiceCreated");
 	this->VoicePickup.Read(exINI, pSection, "VoicePickup");
 
@@ -529,6 +533,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SlavesFreeSound)
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
+
+		.Process(this->EVA_Combat)
+		.Process(this->CombatAlert)
+		.Process(this->CombatAlert_NotBuilding)
 
 		.Process(this->VoiceCreated)
 		.Process(this->VoicePickup)

@@ -81,6 +81,10 @@ public:
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
 
+		NullableIdx<VoxClass> EVA_Combat;
+		Nullable<bool> CombatAlert;
+		Nullable<bool> CombatAlert_NotBuilding;
+
 		NullableIdx<VocClass> VoiceCreated;
 		NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
 
@@ -349,6 +353,11 @@ public:
 			, SlavesFreeSound {}
 			, SellSound {}
 			, EVA_Sold {}
+
+			, EVA_Combat {}
+			, CombatAlert { true }
+			, CombatAlert_NotBuilding { false }
+
 			, EnemyUIName {}
 
 			, VoiceCreated {}
