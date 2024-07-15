@@ -2,25 +2,28 @@
 
 void ScriptExt::ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType = -1, bool isEnabled = false)
 {
-	if (!pTeam)
-		return;
-
 	auto pScript = pTeam->CurrentScript;
 
 	if (idxAITriggerType < 0)
 		idxAITriggerType = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
 
-	if (idxAITriggerType < 0)
-		return;
+	if (idxAITriggerType < 0 || RulesExt::Global()->AITriggersLists.size() <= 0)
+	{
+		pTeam->StepCompleted = true;
+		ScriptExt::Log("AI Scripts - ManageTriggersFromList: [%s] [%s] (line: %d = %d,%d) Aborting script action because the [AITriggersLists] index %d is invalid.\n",
+			pTeam->Type->ID,
+			pScript->Type->ID,
+			pScript->CurrentMission,
+			pScript->Type->ScriptActions[pScript->CurrentMission].Action,
+			pScript->Type->ScriptActions[pScript->CurrentMission].Argument,
+			idxAITriggerType);
 
-	if (RulesExt::Global()->AITriggersLists.size() <= 0)
 		return;
+	}
 
 	DynamicVectorClass<AITriggerTypeClass*> objectsList;
 	for (auto obj : RulesExt::Global()->AITriggersLists[idxAITriggerType])
-	{
 		objectsList.AddUnique(obj);
-	}
 
 	for (auto pTrigger : *AITriggerTypeClass::Array)
 	{
@@ -34,9 +37,6 @@ void ScriptExt::ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType = 
 
 void ScriptExt::ManageAllTriggersFromHouse(TeamClass* pTeam, HouseClass* pHouse = nullptr, int sideIdx = -1, int houseIdx = -1, bool isEnabled = true)
 {
-	if (!pTeam)
-		return;
-
 	// if pHouse is set then it overwrites any argument
 	if (pHouse)
 	{
@@ -59,9 +59,6 @@ void ScriptExt::ManageAllTriggersFromHouse(TeamClass* pTeam, HouseClass* pHouse 
 
 void ScriptExt::SetSideIdxForManagingTriggers(TeamClass* pTeam, int sideIdx = -1)
 {
-	if (!pTeam)
-		return;
-
 	auto pScript = pTeam->CurrentScript;
 
 	if (sideIdx < 0)
@@ -79,9 +76,6 @@ void ScriptExt::SetSideIdxForManagingTriggers(TeamClass* pTeam, int sideIdx = -1
 
 void ScriptExt::SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx = 1000000)
 {
-	if (!pTeam)
-		return;
-
 	auto pScript = pTeam->CurrentScript;
 
 	if (houseIdx == 1000000)
@@ -101,14 +95,12 @@ void ScriptExt::SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx = 
 
 void ScriptExt::ManageAITriggers(TeamClass* pTeam, int enabled = -1)
 {
-	if (!pTeam)
-		return;
-
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
 	{
 		// This action finished
 		pTeam->StepCompleted = true;
+		return;
 	}
 
 	int sideIdx = pTeamData->TriggersSideIdx;
@@ -120,8 +112,7 @@ void ScriptExt::ManageAITriggers(TeamClass* pTeam, int enabled = -1)
 
 	if (enabled < 0)
 		enabled = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
-
-	if (enabled >= 1)
+	else
 		isEnabled = true;
 
 	ScriptExt::ManageAllTriggersFromHouse(pTeam, nullptr, sideIdx, houseIdx, isEnabled);
@@ -132,60 +123,60 @@ void ScriptExt::ManageAITriggers(TeamClass* pTeam, int enabled = -1)
 
 void ScriptExt::ManageTriggersWithObjects(TeamClass* pTeam, int idxAITargetType = -1, bool isEnabled = false)
 {
-	if (!pTeam)
-		return;
-
 	auto pScript = pTeam->CurrentScript;
 
 	if (idxAITargetType < 0)
 		idxAITargetType = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
 
-	if (idxAITargetType < 0)
-		return;
+	if (idxAITargetType < 0 || RulesExt::Global()->AITargetTypesLists.size() <= 0)
+	{
+		pTeam->StepCompleted = true;
+		ScriptExt::Log("AI Scripts - ManageTriggersWithObjects: [%s] [%s] (line: %d = %d,%d) Aborting script action because the [AITargetTypes] index %d is invalid.\n",
+			pTeam->Type->ID,
+			pScript->Type->ID,
+			pScript->CurrentMission,
+			pScript->Type->ScriptActions[pScript->CurrentMission].Action,
+			pScript->Type->ScriptActions[pScript->CurrentMission].Argument,
+			idxAITargetType);
 
-	if (RulesExt::Global()->AITargetTypesLists.size() <= 0)
 		return;
+	}
 
 	DynamicVectorClass<TechnoTypeClass*> objectsList;
 	for (auto obj : RulesExt::Global()->AITargetTypesLists[idxAITargetType])
-	{
 		objectsList.AddUnique(obj);
-	}
 
 	if (objectsList.Count == 0)
+	{
+		pTeam->StepCompleted = true;
 		return;
+	}
+
+	auto AddTechnosFromTeam = [&](DynamicVectorClass<TechnoTypeClass*>& entriesList, TeamTypeClass* pTeam)
+	{
+		if (pTeam)
+		{
+			for (auto entry : pTeam->TaskForce->Entries)
+			{
+				if (entry.Amount > 0)
+					entriesList.AddItem(entry.Type);
+			}
+		}
+	};
 
 	for (auto pTrigger : *AITriggerTypeClass::Array)
 	{
 		DynamicVectorClass<TechnoTypeClass*> entriesList;
 
-		if (pTrigger->Team1)
-		{
-			for (auto entry : pTrigger->Team1->TaskForce->Entries)
-			{
-				if (entry.Amount > 0)
-					entriesList.AddItem(entry.Type);
-			}
-		}
+		AddTechnosFromTeam(entriesList, pTrigger->Team1);
+		AddTechnosFromTeam(entriesList, pTrigger->Team2);
 
-		if (pTrigger->Team2)
+		for (auto entry : entriesList)
 		{
-			for (auto entry : pTrigger->Team2->TaskForce->Entries)
+			if (objectsList.FindItemIndex(entry) >= 0)
 			{
-				if (entry.Amount > 0)
-					entriesList.AddItem(entry.Type);
-			}
-		}
-
-		if (entriesList.Count > 0)
-		{
-			for (auto entry : entriesList)
-			{
-				if (objectsList.FindItemIndex(entry) >= 0)
-				{
-					pTrigger->IsEnabled = isEnabled;
-					break;
-				}
+				pTrigger->IsEnabled = isEnabled;
+				break;
 			}
 		}
 	}

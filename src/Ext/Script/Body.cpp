@@ -705,15 +705,17 @@ void ScriptExt::SetCloseEnoughDistance(TeamClass* pTeam, double distance = -1)
 	if (distance <= 0)
 		distance = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
-
-	if (pTeamData)
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
 	{
-		if (distance > 0)
-			pTeamData->CloseEnough = distance;
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
 	}
 
-	if (distance <= 0)
+	if (distance > 0)
+		pTeamData->CloseEnough = distance;
+	else
 		pTeamData->CloseEnough = RulesClass::Instance->CloseEnough / 256.0;
 
 	// This action finished
