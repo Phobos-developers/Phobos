@@ -77,13 +77,13 @@ enum class PhobosScripts : unsigned int
 	StopForceJumpCountdown = 16002,
 	RandomSkipNextAction = 16003,
 	PickRandomScript = 16004,
-	SetSideIdxForManagingTriggers = 16005,
 	SetHouseIdxForManagingTriggers = 16006,
 	ManageAllAITriggers = 16007,
 	EnableTriggersFromList = 16008,
 	DisableTriggersFromList = 16009,
 	DisableTriggersWithObjects = 16010,
 	EnableTriggersWithObjects = 16011,
+	SetSideIdxForManagingTriggers = 16012,
 
 	// Range 18000-18999 are variable actions
 	LocalVariableSet = 18000,

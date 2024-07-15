@@ -416,17 +416,6 @@ In `rulesmd.ini`:
 ; ...
 ```
 
-### `16005` Set Side Index For Managing AI Triggers
-
-- Set the side index for enabling and disabling triggers.
-0 means any side.
-
-In `aimd.ini`:
-```ini
-[SOMESCRIPTTYPE]  ; ScriptType
-x=16005,n           ; integer, where 0 > n, default -1
-```
-
 ### `16006` Set House Index For Managing AI Triggers
 
 - Set the house index for enabling and disabling triggers. The indexes aren't the ones used in [Countries], these are internal in-game House indexes.
@@ -451,7 +440,7 @@ x=16006,n           ; integer
 ### `16007` Enable Or Disable All AI Triggers
 
 - All AI triggers will be enabled or disabled.
-You must set the affected side with action `16005` and house with action `16006`.
+You must set the affected side with action `16012` and house with action `16006`.
 
 In `aimd.ini`:
 ```ini
@@ -494,7 +483,18 @@ In `rulesmd.ini`:
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=132,n
+x=16011,n
+```
+
+### `16012` Set Side Index For Managing AI Triggers
+
+- Set the side index for enabling and disabling triggers.
+0 means any side.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=16012,n           ; integer, where 0 > n, default -1
 ```
 
 ### `18000-18999` Variable Manipulation
