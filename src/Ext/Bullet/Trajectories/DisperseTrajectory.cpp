@@ -1139,10 +1139,6 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					pCreateBullet->Velocity = this->RotateAboutTheAxis(pCreateBullet->Velocity, RotationAxis, ExtraRotate);
 				}
 			}*/
-/*			else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Engrave) //TODO If merge
-			{
-				EngraveTrajectory* const pTrajectory = static_cast<EngraveTrajectory*>(pBulletExt->Trajectory);
-			}*/
 		}
 
 		const int AnimCounts = pWeapon->Anim.Count;
