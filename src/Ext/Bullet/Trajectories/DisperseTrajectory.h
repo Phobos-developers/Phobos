@@ -235,15 +235,15 @@ public:
 
 private:
 	void InitializeBulletNotCurve(BulletClass* pBullet);
-	BulletVelocity RotateAboutTheAxis(BulletVelocity TheSpeed, BulletVelocity TheAxis, double TheRadian);
-	bool CalculateBulletVelocity(BulletClass* pBullet, double StraightSpeed);
+	BulletVelocity RotateAboutTheAxis(BulletVelocity theSpeed, BulletVelocity theAxis, double theRadian);
+	bool CalculateBulletVelocity(BulletClass* pBullet, double trajectorySpeed);
 	bool BulletRetargetTechno(BulletClass* pBullet, HouseClass* pOwner);
 	bool CheckTechnoIsInvalid(TechnoClass* pTechno);
 	bool CurveVelocityChange(BulletClass* pBullet);
 	bool NotCurveVelocityChange(BulletClass* pBullet, HouseClass* pOwner);
 	bool StandardVelocityChange(BulletClass* pBullet);
-	bool ChangeBulletVelocity(BulletClass* pBullet, CoordStruct TargetLocation, double TurningRadius, bool Curve);
+	bool ChangeBulletVelocity(BulletClass* pBullet, CoordStruct targetLocation, double turningRadius, bool curve);
 	bool PrepareDisperseWeapon(BulletClass* pBullet, HouseClass* pOwner);
-	std::vector<TechnoClass*> GetValidTechnosInSame(std::vector<TechnoClass*> Technos, HouseClass* pOwner, WarheadTypeClass* pWH, AbstractClass* pTarget);
-	void CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int CurBurst, int MaxBurst);
+	std::vector<TechnoClass*> GetValidTechnosInSame(std::vector<TechnoClass*> technos, HouseClass* pOwner, WarheadTypeClass* pWH, AbstractClass* pTarget);
+	void CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst);
 };
