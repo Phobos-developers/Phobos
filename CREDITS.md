@@ -303,6 +303,7 @@ This page lists all the individual contributions to the project by their author.
    - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
    - Skip units' turret rotation and jumpjets' wobbling under EMP
    - Droppod properties dehardcode
+   - `Deployer = yes->no` infantry conversion sequence fix
    - Waypoint entering building together with engineer/agent bug fix
    - Skippable game save on scenario start
    - Skip rally point line drawing when undeploying a building
