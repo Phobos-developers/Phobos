@@ -134,8 +134,8 @@ public:
 private:
 	void GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno);
 	void CheckMirrorCoord(TechnoClass* pTechno);
-	void SetEngraveDirection(BulletClass* pBullet, CoordStruct Source, CoordStruct Target);
-	int GetFloorCoordHeight(BulletClass* pBullet, CoordStruct Coord);
+	void SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget);
+	int GetFloorCoordHeight(BulletClass* pBullet, CoordStruct coord);
 	bool PlaceOnCorrectHeight(BulletClass* pBullet);
 	void DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
 	void DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);

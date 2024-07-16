@@ -186,13 +186,13 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		this->SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords);
 	}
 
-	double StraightSpeed = this->GetTrajectorySpeed(pBullet);
-	StraightSpeed = StraightSpeed > 128.0 ? 128.0 : StraightSpeed;
-	const double CoordDistance = pBullet->Velocity.Magnitude();
-	pBullet->Velocity *= (CoordDistance > 0) ? (StraightSpeed / CoordDistance) : 0;
+	double straightSpeed = this->GetTrajectorySpeed(pBullet);
+	straightSpeed = straightSpeed > 128.0 ? 128.0 : straightSpeed;
+	const double coordDistance = pBullet->Velocity.Magnitude();
+	pBullet->Velocity *= (coordDistance > 0) ? (straightSpeed / coordDistance) : 0;
 
 	if (this->TheDuration <= 0)
-		this->TheDuration = static_cast<int>(CoordDistance / StraightSpeed) + 1;
+		this->TheDuration = static_cast<int>(coordDistance / straightSpeed) + 1;
 }
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
@@ -278,47 +278,47 @@ void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno)
 	}
 }
 
-void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct Source, CoordStruct Target)
+void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget)
 {
-	const double RotateAngle = Math::atan2(Target.Y - Source.Y , Target.X - Source.X);
+	const double rotateAngle = Math::atan2(theTarget.Y - theSource.Y , theTarget.X - theSource.X);
 
 	if (this->SourceCoord.X != 0 || this->SourceCoord.Y != 0)
 	{
-		Source = Target;
-		Source.X += static_cast<int>(this->SourceCoord.X * Math::cos(RotateAngle) + this->SourceCoord.Y * Math::sin(RotateAngle));
-		Source.Y += static_cast<int>(this->SourceCoord.X * Math::sin(RotateAngle) - this->SourceCoord.Y * Math::cos(RotateAngle));
+		theSource = theTarget;
+		theSource.X += static_cast<int>(this->SourceCoord.X * Math::cos(rotateAngle) + this->SourceCoord.Y * Math::sin(rotateAngle));
+		theSource.Y += static_cast<int>(this->SourceCoord.X * Math::sin(rotateAngle) - this->SourceCoord.Y * Math::cos(rotateAngle));
 	}
 
-	Source.Z = this->GetFloorCoordHeight(pBullet, Source);
-	pBullet->SetLocation(Source);
+	theSource.Z = this->GetFloorCoordHeight(pBullet, theSource);
+	pBullet->SetLocation(theSource);
 
-	Target.X += static_cast<int>(this->TargetCoord.X * Math::cos(RotateAngle) + this->TargetCoord.Y * Math::sin(RotateAngle));
-	Target.Y += static_cast<int>(this->TargetCoord.X * Math::sin(RotateAngle) - this->TargetCoord.Y * Math::cos(RotateAngle));
+	theTarget.X += static_cast<int>(this->TargetCoord.X * Math::cos(rotateAngle) + this->TargetCoord.Y * Math::sin(rotateAngle));
+	theTarget.Y += static_cast<int>(this->TargetCoord.X * Math::sin(rotateAngle) - this->TargetCoord.Y * Math::cos(rotateAngle));
 
-	pBullet->Velocity.X = Target.X - Source.X;
-	pBullet->Velocity.Y = Target.Y - Source.Y;
+	pBullet->Velocity.X = theTarget.X - theSource.X;
+	pBullet->Velocity.Y = theTarget.Y - theSource.Y;
 	pBullet->Velocity.Z = 0;
 }
 
-int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, CoordStruct Coord)
+int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, CoordStruct coord)
 {
-	if (const CellClass* const pCell = MapClass::Instance->GetCellAt(Coord))
+	if (const CellClass* const pCell = MapClass::Instance->GetCellAt(coord))
 	{
-		const int OnFloor = MapClass::Instance->GetCellFloorHeight(Coord);
-		const int OnBridge = pCell->GetCoordsWithBridge().Z;
+		const int onFloor = MapClass::Instance->GetCellFloorHeight(coord);
+		const int onBridge = pCell->GetCoordsWithBridge().Z;
 
-		if (pBullet->SourceCoords.Z >= OnBridge || pBullet->TargetCoords.Z >= OnBridge)
-			return OnBridge;
+		if (pBullet->SourceCoords.Z >= onBridge || pBullet->TargetCoords.Z >= onBridge)
+			return onBridge;
 
-		return OnFloor;
+		return onFloor;
 	}
 
-	return Coord.Z;
+	return coord.Z;
 }
 
 bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 {
-	CoordStruct BulletCoords = pBullet->Location;
+	CoordStruct bulletCoords = pBullet->Location;
 
 	if (this->TemporaryCoord != CoordStruct::Empty)
 	{
@@ -326,35 +326,35 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 		this->TemporaryCoord = CoordStruct::Empty;
 	}
 
-	CoordStruct FutureCoords
+	CoordStruct futureCoords
 	{
-		BulletCoords.X + static_cast<int>(pBullet->Velocity.X),
-		BulletCoords.Y + static_cast<int>(pBullet->Velocity.Y),
-		BulletCoords.Z + static_cast<int>(pBullet->Velocity.Z)
+		bulletCoords.X + static_cast<int>(pBullet->Velocity.X),
+		bulletCoords.Y + static_cast<int>(pBullet->Velocity.Y),
+		bulletCoords.Z + static_cast<int>(pBullet->Velocity.Z)
 	};
 
-	const int CheckDifference = this->GetFloorCoordHeight(pBullet, FutureCoords) - FutureCoords.Z;
+	const int checkDifference = this->GetFloorCoordHeight(pBullet, futureCoords) - futureCoords.Z;
 
-	if (abs(CheckDifference) >= 384)
+	if (abs(checkDifference) >= 384)
 	{
 		if (pBullet->Type->SubjectToCliffs)
 		{
 			return true;
 		}
-		else if (CheckDifference > 0)
+		else if (checkDifference > 0)
 		{
-			BulletCoords.Z += CheckDifference;
-			pBullet->SetLocation(BulletCoords);
+			bulletCoords.Z += checkDifference;
+			pBullet->SetLocation(bulletCoords);
 		}
 		else
 		{
-			FutureCoords.Z += CheckDifference;
-			this->TemporaryCoord = FutureCoords;
+			futureCoords.Z += checkDifference;
+			this->TemporaryCoord = futureCoords;
 		}
 	}
 	else
 	{
-		pBullet->Velocity.Z += CheckDifference;
+		pBullet->Velocity.Z += checkDifference;
 	}
 
 	return false;
@@ -364,18 +364,18 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 {
 	this->LaserTimer.Start(this->LaserDelay);
 	LaserDrawClass* pLaser;
-	CoordStruct FireCoord = pTechno->GetCoords();
+	CoordStruct fireCoord = pTechno->GetCoords();
 
 	if (this->NotMainWeapon)
 	{
-		FireCoord = this->FLHCoord;
+		fireCoord = this->FLHCoord;
 	}
 	else if (pTechno->WhatAmI() != AbstractType::Building)
 	{
 		if (this->TechnoInLimbo)
-			FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno->Transporter, this->FLHCoord, pTechno->Transporter->HasTurret());
+			fireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno->Transporter, this->FLHCoord, pTechno->Transporter->HasTurret());
 		else
-			FireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
+			fireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
 	}
 	else
 	{
@@ -391,22 +391,22 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 
 		mtx.Translate(static_cast<float>(this->FLHCoord.X), static_cast<float>(this->FLHCoord.Y), static_cast<float>(this->FLHCoord.Z));
 		auto const result = mtx.GetTranslation();
-		FireCoord = pBuilding->GetCoords() + this->BuildingCoord + CoordStruct { static_cast<int>(result.X), -static_cast<int>(result.Y), static_cast<int>(result.Z) };
+		fireCoord = pBuilding->GetCoords() + this->BuildingCoord + CoordStruct { static_cast<int>(result.X), -static_cast<int>(result.Y), static_cast<int>(result.Z) };
 	}
 
 	if (this->IsHouseColor)
 	{
-		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, pOwner->LaserColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
+		pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, pOwner->LaserColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
 		pLaser->IsHouseColor = true;
 	}
 	else if (this->IsSingleColor)
 	{
-		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
+		pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, this->LaserInnerColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
 		pLaser->IsHouseColor = true;
 	}
 	else
 	{
-		pLaser = GameCreate<LaserDrawClass>(FireCoord, pBullet->Location, this->LaserInnerColor, this->LaserOuterColor, this->LaserOuterSpread, this->LaserDuration);
+		pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, this->LaserInnerColor, this->LaserOuterColor, this->LaserOuterSpread, this->LaserDuration);
 		pLaser->IsHouseColor = false;
 	}
 
