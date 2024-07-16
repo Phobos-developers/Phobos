@@ -238,6 +238,7 @@ This page lists all the individual contributions to the project by their author.
   - AI superweapon delay timer customization
   - Disabling `MultipleFactory` bonus from specific BuildingType
   - Customizable ChronoSphere teleport delays for units
+  - Allowed and disallowed types for `FactoryPlant`
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

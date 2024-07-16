@@ -303,6 +303,18 @@ In `rulesmd.ini`:
 AllowAirstrike=  ; boolean
 ```
 
+### Allowed / disallowed types for FactoryPlant
+
+- It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
+  - `FactoryPlant.Multiplier` (Ares feature) is still applied on the bonuses if they are in effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]               ; BuildingType
+FactoryPlant.AllowTypes=     ; List of TechnoTypes
+FactoryPlant.DisallowTypes=  ; List of TechnoTypes
+```
+
 ### Apply ZShapePointMove during buildups
 
 - By default buildings do not apply `ZShapePointMove` (which offsets the 'z shape' applied on buildings which is used to adjust them in depth buffer and is used to fix issues related to that such as corners of buildings getting cut off when drawn) when buildup is being displayed. This behaviour can now be toggled by setting `ZShapePointMove.OnBuildup`.

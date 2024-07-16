@@ -396,3 +396,70 @@ DEFINE_HOOK(0x4511D6, BuildingClass_AnimationAI_SellBuildup, 0x7)
 
 	return pTypeExt->SellBuildupLength == pThis->Animation.Value ? Continue : Skip;
 }
+
+#pragma region FactoryPlant
+
+DEFINE_HOOK(0x441501, BuildingClass_Unlimbo_FactoryPlant, 0x6)
+{
+	enum { Skip = 0x441553 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->FactoryPlant_AllowTypes.size() > 0 || pTypeExt->FactoryPlant_DisallowTypes.size() > 0)
+	{
+		auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
+		pHouseExt->RestrictedFactoryPlants.push_back(pThis);
+
+		return Skip;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x448A31, BuildingClass_Captured_FactoryPlant1, 0x6)
+{
+	enum { Skip = 0x448A78 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->FactoryPlant_AllowTypes.size() > 0 || pTypeExt->FactoryPlant_DisallowTypes.size() > 0)
+	{
+		auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
+
+		if (!pHouseExt->RestrictedFactoryPlants.empty())
+		{
+			auto& vec = pHouseExt->RestrictedFactoryPlants;
+			vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+		}
+
+		return Skip;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x449149, BuildingClass_Captured_FactoryPlant2, 0x6)
+{
+	enum { Skip = 0x449197 };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET(HouseClass*, pNewOwner, EBP);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->FactoryPlant_AllowTypes.size() > 0 || pTypeExt->FactoryPlant_DisallowTypes.size() > 0)
+	{
+		auto const pHouseExt = HouseExt::ExtMap.Find(pNewOwner);
+		pHouseExt->RestrictedFactoryPlants.push_back(pThis);
+
+		return Skip;
+	}
+
+	return 0;
+}
+
+#pragma endregion

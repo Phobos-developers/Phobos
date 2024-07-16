@@ -40,6 +40,9 @@ public:
 		//Read from INI
 		bool RepairBaseNodes[3];
 
+		// FactoryPlants with Allow/DisallowTypes set.
+		std::vector<BuildingClass*> RestrictedFactoryPlants;
+
 		int LastBuiltNavalVehicleType;
 		int ProducingNavalUnitTypeIndex;
 
@@ -64,6 +67,7 @@ public:
 			, Factory_AircraftType { nullptr }
 			, AISuperWeaponDelayTimer {}
 			, RepairBaseNodes { false,false,false }
+			, RestrictedFactoryPlants {}
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
 			, NumAirpads_NonMFB { 0 }
@@ -79,6 +83,7 @@ public:
 		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);
 		void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
 		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval);
+		float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
 
 		virtual ~ExtData() = default;
 

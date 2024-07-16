@@ -33,6 +33,7 @@ public:
 		Valueable<int> RadarJamRadius;
 		Nullable<int> InhibitorRange;
 		Nullable<int> DesignatorRange;
+		Valueable<float> FactoryPlant_Multiplier;
 		Valueable<Leptons> MindControlRangeLimit;
 
 		std::unique_ptr<InterceptorTypeClass> InterceptorType;
@@ -264,6 +265,7 @@ public:
 			, RadarJamRadius { 0 }
 			, InhibitorRange {}
 			, DesignatorRange { }
+			, FactoryPlant_Multiplier { 1.0 }
 			, MindControlRangeLimit {}
 
 			, InterceptorType { nullptr }
