@@ -141,6 +141,7 @@ public:
 		Nullable<bool> CombatAlert_EVA;
 		Nullable<bool> CombatAlert_SuppressIfInScreen;
 		Nullable<int> CombatAlert_Interval;
+		Nullable<bool> CombatAlert_SuppressIfAllyDamage;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -242,6 +243,7 @@ public:
 			, CombatAlert_EVA { true }
 			, CombatAlert_SuppressIfInScreen { true }
 			, CombatAlert_Interval { 150 }
+			, CombatAlert_SuppressIfAllyDamage { true }
 		{ }
 
 		virtual ~ExtData() = default;

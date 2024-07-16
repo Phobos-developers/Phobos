@@ -1225,6 +1225,8 @@ Promote.EliteAnimation=           ; Animation
   - `[AudioVisual]->CombatAlert.EVA` decides whether to send an EVA at the same time. The EVA is default to `EVA_UnitsInCombat`, and can be specified through `[SOMETECHNO]->EVA.Combat`.
   - `[AudioVisual]->CombatAlert.SuppressIfInScreen` decides whether to disable the logic for the units in the current screen.
   - `[AudioVisual]->CombatAlert.Interval` decides the time interval (in frames) between alerts, to prevent the alert from being anonying. It is default to 150 frames.
+  - `[AudioVisual]->CombatAlert.SuppressIfAllyDamage` decides whether to disable the logic for the damage from allys.
+  - Technos hitted by a warhead with `[SOMEWARHEAD]->CombatAlert.Suppress` setted to `true` will not raise a radar event or EVA. This flag is default to the inverse value of ares flag `[SOMEWARHEAD]->Malicious`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1234,11 +1236,15 @@ CombatAlert.IgnoreBuilding=true        ;boolean
 CombatAlert.EVA=true                   ;boolean
 CombatAlert.SuppressIfInScreen=true    ;boolean
 CombatAlert.Interval=150               ;integer, game frames
+CombatAlert.SuppressIfAllyDamage=true  ;boolean
 
 [SOMETECHNO]
 EVA.Combat=EVA_UnitsInCombat    ;EVA entry
 CombatAlert=true                ;boolean
 CombatAlert.NotBuilding=false   ;boolean
+
+[SOMEWARHEAD]
+CombatAlert.Suppress=   ;boolean
 ```
 
 ### Convert TechnoType on owner house change

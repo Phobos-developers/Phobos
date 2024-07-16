@@ -178,6 +178,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CombatAlert_EVA.Read(exINI, GameStrings::AudioVisual, "CombatAlert.EVA");
 	this->CombatAlert_SuppressIfInScreen.Read(exINI, GameStrings::AudioVisual, "CombatAlert.SuppressIfInScreen");
 	this->CombatAlert_Interval.Read(exINI, GameStrings::AudioVisual, "CombatAlert.Interval");
+	this->CombatAlert_SuppressIfAllyDamage.Read(exINI, GameStrings::AudioVisual, "CombatAlert.SuppressIfAllyDamage");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -342,6 +343,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatAlert_EVA)
 		.Process(this->CombatAlert_SuppressIfInScreen)
 		.Process(this->CombatAlert_Interval)
+		.Process(this->CombatAlert_SuppressIfAllyDamage)
 		;
 }
 

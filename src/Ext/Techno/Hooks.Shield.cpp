@@ -6,6 +6,10 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/TEvent/Body.h>
+#include <VoxClass.h>
+#include <RadarEventClass.h>
+#include <TacticalClass.h>
+#include <Ext/House/Body.h>
 
 namespace RD
 {
@@ -16,6 +20,48 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
+	
+	const auto pHouse = pThis->Owner;
+	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	const auto pWH = args->WH;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	const auto pSourceHouse = args->SourceHouse;
+
+	if (pThis && pThis->IsOwnedByCurrentPlayer && 
+		*args->Damage>1 &&
+		pHouse && pHouse->IsInPlayerControl &&
+		pHouseExt && !pHouseExt->CombatAlertTimer.HasTimeLeft() &&
+		!(RulesExt::Global()->CombatAlert_SuppressIfAllyDamage && pHouse->IsAlliedWith(pSourceHouse)) &&
+		RulesExt::Global()->CombatAlert && 
+		pWHExt && !pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious.Get(true)) &&
+		pThis->IsInPlayfield)
+	{
+		const auto pType = pThis->GetTechnoType();
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		if (pTypeExt && pTypeExt->CombatAlert &&
+			((pThis->WhatAmI() != AbstractType::Building || pTypeExt->CombatAlert_NotBuilding) || !RulesExt::Global()->CombatAlert_IgnoreBuilding))
+		{
+			CoordStruct coordInMap { 0 , 0 , 0 };
+			pThis->GetCoords(&coordInMap);
+			bool suppressedByScreen = false;
+			if (RulesExt::Global()->CombatAlert_SuppressIfInScreen)
+			{
+				Point2D coordInScreen { 0 , 0 };
+				TacticalClass::Instance->CoordsToScreen(&coordInScreen, &coordInMap);
+				coordInScreen -= TacticalClass::Instance->TacticalPos;
+				RectangleStruct screenArea = DSurface::Composite->GetRect();
+				if (screenArea.Width >= coordInScreen.X && screenArea.Height >= coordInScreen.Y && coordInScreen.X >= 0 && coordInScreen.Y >= 0) // check if the unit is in screen
+					suppressedByScreen = true;
+			}
+			if (!suppressedByScreen)
+			{
+				pHouseExt->CombatAlertTimer.Start(RulesExt::Global()->CombatAlert_Interval);
+				RadarEventClass::Create(RadarEventType::Combat, CellClass::Coord2Cell(coordInMap));
+				if (RulesExt::Global()->CombatAlert_EVA)
+					VoxClass::PlayIndex(pTypeExt->EVA_Combat.Get(VoxClass::FindIndex((const char*)"EVA_UnitsInCombat")));
+			}
+		}
+	}
 
 	if (!args->IgnoreDefenses)
 	{
