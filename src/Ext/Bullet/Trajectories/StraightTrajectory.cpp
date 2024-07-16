@@ -665,7 +665,7 @@ bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, Cell
 		TechnoClass* const pTechno = abstract_cast<TechnoClass*>(pObject);
 		pObject = pObject->NextObject;
 
-		if (!pTechno || pOwner->IsAlliedWith(pTechno->Owner))
+		if (!pTechno || (pOwner->IsAlliedWith(pTechno->Owner) && pTechno != abstract_cast<TechnoClass*>(pBullet->Target)))
 			continue;
 
 		const AbstractType technoType = pTechno->WhatAmI();
