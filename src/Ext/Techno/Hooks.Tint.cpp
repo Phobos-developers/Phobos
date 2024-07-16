@@ -92,10 +92,9 @@ DEFINE_HOOK(0x7067E4, TechnoClass_DrawVoxel_TintColor, 0x8)
 {
 	GET(TechnoClass*, pThis, EBP);
 	GET(int, intensity, EDI);
-	REF_STACK(int, color, STACK_OFFSET(0x50, 0x24));
-
-	color |= TechnoExt::GetTintColor(pThis, true, false, true);
-	TechnoExt::ApplyCustomTintValues(pThis, color, intensity);
+	
+	int dontTintAgainSvp = 0;
+	TechnoExt::ApplyCustomTintValues(pThis, dontTintAgainSvp, intensity);
 	R->EDI(intensity);
 
 	return 0;
