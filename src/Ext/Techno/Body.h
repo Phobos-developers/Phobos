@@ -134,9 +134,17 @@ public:
 
 	struct DrawFrameStruct
 	{
-		int Frame;
-		SHPStruct* SHP;
+		int TopLength;
+		int TopFrame;
+		int MidLength;
+		int MidFrame;
+		int MaxLength;
+		int BrdFrame;
+		SHPStruct* PipSHP;
+		SHPStruct* BrdSHP;
 		ConvertClass* Palette;
+		Point2D* Location;
+		RectangleStruct* Bounds;
 	};
 
 	static ExtContainer ExtMap;
@@ -188,8 +196,8 @@ public:
 	static void DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds);
 	static void DrawSuperProgress(TechnoClass* pThis, RectangleStruct* pBounds);
 	static void DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBounds);
-	static void DrawVanillaStyleFootBar(int curLength, int maxLength, DrawFrameStruct* pips, DrawFrameStruct* background, Point2D* pLocation, RectangleStruct* pBounds);
-	static void DrawVanillaStyleBuildingBar(int curLength, int maxLength, DrawFrameStruct* filled, DrawFrameStruct* empty, Point2D* pLocation, RectangleStruct* pBounds);
+	static void DrawVanillaStyleFootBar(DrawFrameStruct* pDraw);
+	static void DrawVanillaStyleBuildingBar(DrawFrameStruct* pDraw);
 	static Point2D GetScreenLocation(TechnoClass* pThis);
 	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);

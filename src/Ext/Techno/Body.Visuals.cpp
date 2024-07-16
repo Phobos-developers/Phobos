@@ -255,20 +255,46 @@ void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds
 
 	if (havePrimary)
 	{
-		const int curLength = Math::clamp(static_cast<int>((static_cast<double>(pPrimaryFactory->GetProgress()) / 54) * maxLength), 0, maxLength);
 		Point2D position = location;
-		DrawFrameStruct filled { 3, FileSystem::PIPS_SHP , FileSystem::PALETTE_PAL };
-		DrawFrameStruct empty { 0, FileSystem::PIPS_SHP , FileSystem::PALETTE_PAL };
-		TechnoExt::DrawVanillaStyleBuildingBar(curLength, maxLength, &filled, &empty, &position, pBounds);
+
+		DrawFrameStruct pDraw
+		{
+			Math::clamp(static_cast<int>((static_cast<double>(pPrimaryFactory->GetProgress()) / 54) * maxLength), 0, maxLength),
+			3,
+			0,
+			-1,
+			maxLength,
+			0,
+			FileSystem::PIPS_SHP,
+			FileSystem::PIPS_SHP,
+			FileSystem::PALETTE_PAL,
+			&position,
+			pBounds
+		};
+
+		TechnoExt::DrawVanillaStyleBuildingBar(&pDraw);
 	}
 
 	if (haveSecondary)
 	{
-		const int curLength = Math::clamp(static_cast<int>((static_cast<double>(pSecondaryFactory->GetProgress()) / 54) * maxLength), 0, maxLength);
 		Point2D position = havePrimary ? location + Point2D { 6, 3 } : location;
-		DrawFrameStruct filled { 3, FileSystem::PIPS_SHP , FileSystem::PALETTE_PAL };
-		DrawFrameStruct empty { 0, FileSystem::PIPS_SHP , FileSystem::PALETTE_PAL };
-		TechnoExt::DrawVanillaStyleBuildingBar(curLength, maxLength, &filled, &empty, &position, pBounds);
+
+		DrawFrameStruct pDraw
+		{
+			Math::clamp(static_cast<int>((static_cast<double>(pSecondaryFactory->GetProgress()) / 54) * maxLength), 0, maxLength),
+			3,
+			0,
+			-1,
+			maxLength,
+			0,
+			FileSystem::PIPS_SHP,
+			FileSystem::PIPS_SHP,
+			FileSystem::PALETTE_PAL,
+			&position,
+			pBounds
+		};
+
+		TechnoExt::DrawVanillaStyleBuildingBar(&pDraw);
 	}
 }
 
@@ -281,21 +307,35 @@ void TechnoExt::DrawSuperProgress(TechnoClass* pThis, RectangleStruct* pBounds)
 	BuildingTypeClass* const pBuildingType = pBuilding->Type;
 	const int superIndex = pBuildingType->SuperWeapon;
 	SuperClass* const pSuper = (superIndex != -1) ? pThis->Owner->Supers.GetItem(superIndex) : nullptr;
+	const int timeLeft = pSuper->RechargeTimer.TimeLeft;
 
-	if (!pSuper || !SWTypeExt::ExtMap.Find(pSuper->Type)->IsAvailable(pThis->Owner))
+	if (!pSuper || !timeLeft || !SWTypeExt::ExtMap.Find(pSuper->Type)->IsAvailable(pThis->Owner))
 		return;
 
 	const int maxLength = pBuildingType->GetFoundationHeight(false) * 15 >> 1;
-	const int curLength = Math::clamp(static_cast<int>((static_cast<double>(pSuper->RechargeTimer.TimeLeft - pSuper->RechargeTimer.GetTimeLeft()) / pSuper->RechargeTimer.TimeLeft) * maxLength), 0, maxLength);
 	Point2D position = TechnoExt::GetBuildingSelectBracketPosition(pBuilding, BuildingSelectBracketPosition::Top) + Point2D { 5, 3 + pBuildingType->PixelSelectionBracketDelta };
-	DrawFrameStruct filled { 5, FileSystem::PIPS_SHP , FileSystem::PALETTE_PAL };
-	DrawFrameStruct empty { 0, FileSystem::PIPS_SHP , FileSystem::PALETTE_PAL };
-	TechnoExt::DrawVanillaStyleBuildingBar(curLength, maxLength, &filled, &empty, &position, pBounds);
+
+	DrawFrameStruct pDraw
+	{
+		Math::clamp(static_cast<int>((static_cast<double>(timeLeft - pSuper->RechargeTimer.GetTimeLeft()) / timeLeft) * maxLength), 0, maxLength),
+		5,
+		0,
+		-1,
+		maxLength,
+		0,
+		FileSystem::PIPS_SHP,
+		FileSystem::PIPS_SHP,
+		FileSystem::PALETTE_PAL,
+		&position,
+		pBounds
+	};
+
+	TechnoExt::DrawVanillaStyleBuildingBar(&pDraw);
 }
 
 void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBounds)
 {
-	if (!pThis->IsIronCurtained() || !RulesExt::Global()->InvulnerableDisplay)
+	if (!pThis->IsIronCurtained() || !RulesExt::Global()->InvulnerableDisplay || !pThis->IronCurtainTimer.TimeLeft)
 		return;
 
 	if (pThis->WhatAmI() == AbstractType::Building)
@@ -303,55 +343,108 @@ void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBo
 		BuildingClass* const pBuilding = abstract_cast<BuildingClass*>(pThis);
 		BuildingTypeClass* const pBuildingType = pBuilding->Type;
 		const int maxLength = pBuildingType->GetFoundationHeight(false) * 15 >> 1;
-		const int curLength = Math::clamp(static_cast<int>((static_cast<double>(pThis->IronCurtainTimer.GetTimeLeft()) / pThis->IronCurtainTimer.TimeLeft) * maxLength), 0, maxLength);
-
+		const HealthState healthStatus = pBuilding->GetHealthStatus();
 		Point2D position = TechnoExt::GetBuildingSelectBracketPosition(pBuilding, BuildingSelectBracketPosition::Top) + Point2D{ -1, pBuildingType->PixelSelectionBracketDelta };
-		DrawFrameStruct filled { (pThis->ForceShielded ? 5 : 4), FileSystem::PIPS_SHP , FileSystem::PALETTE_PAL };
-		DrawFrameStruct empty { -1, FileSystem::PIPS_SHP , FileSystem::PALETTE_PAL };
-		TechnoExt::DrawVanillaStyleBuildingBar(curLength, maxLength, &filled, &empty, &position, pBounds);
+
+		DrawFrameStruct pDraw
+		{
+			Math::clamp(static_cast<int>((static_cast<double>(pThis->IronCurtainTimer.GetTimeLeft()) / pThis->IronCurtainTimer.TimeLeft) * maxLength), 0, maxLength),
+			(pThis->ForceShielded ? 5 : 4),
+			Math::clamp(static_cast<int>(pBuilding->GetHealthPercentage() * maxLength), 0, maxLength),
+			(healthStatus == HealthState::Green ? 1 : (healthStatus == HealthState::Yellow ? 2 : 4)),
+			maxLength,
+			0,
+			FileSystem::PIPS_SHP,
+			FileSystem::PIPS_SHP,
+			FileSystem::PALETTE_PAL,
+			&position,
+			pBounds
+		};
+
+		TechnoExt::DrawVanillaStyleBuildingBar(&pDraw);
 	}
 	else
 	{
 		const int maxLength = pThis->WhatAmI() != AbstractType::Infantry ? 17 : 8;
-		const int curLength = Math::clamp(static_cast<int>((static_cast<double>(pThis->IronCurtainTimer.GetTimeLeft()) / pThis->IronCurtainTimer.TimeLeft) * maxLength), 0, maxLength);
-
 		Point2D position = TechnoExt::GetFootSelectBracketPosition(pThis, Anchor(HorizontalPosition::Left, VerticalPosition::Top)) + Point2D{ -1, pThis->GetTechnoType()->PixelSelectionBracketDelta + 2 };
-		DrawFrameStruct pips { (pThis->ForceShielded ? 17 : 18), FileSystem::PIPS_SHP , FileSystem::PALETTE_PAL };
-		DrawFrameStruct background { -1, FileSystem::PIPBRD_SHP , FileSystem::PALETTE_PAL };
-		TechnoExt::DrawVanillaStyleFootBar(curLength, maxLength, &pips, &background, &position, pBounds);
+
+		DrawFrameStruct pDraw
+		{
+			Math::clamp(static_cast<int>((static_cast<double>(pThis->IronCurtainTimer.GetTimeLeft()) / pThis->IronCurtainTimer.TimeLeft) * maxLength), 0, maxLength),
+			(pThis->ForceShielded ? 17 : 18),
+			0,
+			-1,
+			maxLength,
+			-1,
+			FileSystem::PIPS_SHP,
+			FileSystem::PIPBRD_SHP,
+			FileSystem::PALETTE_PAL,
+			&position,
+			pBounds
+		};
+
+		TechnoExt::DrawVanillaStyleFootBar(&pDraw);
 	}
 }
 
-void TechnoExt::DrawVanillaStyleFootBar(int curLength, int maxLength, DrawFrameStruct* pips, DrawFrameStruct* background, Point2D* pLocation, RectangleStruct* pBounds)
+void TechnoExt::DrawVanillaStyleFootBar(DrawFrameStruct* pDraw)
 {
-	if (background->Frame >= 0)
+	Point2D* pLocation = pDraw->Location;
+
+	if (pDraw->BrdFrame >= 0)
 	{
-		const Point2D position = *pLocation + Point2D{ 18, 0 };
-		DSurface::Temp->DrawSHP(background->Palette, background->SHP, background->Frame, &position, pBounds, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		pLocation->X += 18;
+		DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->BrdSHP, pDraw->BrdFrame, pLocation, pDraw->Bounds, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		pLocation->X -= 16;
+	}
+	else
+	{
+		pLocation->X += 2;
 	}
 
-	pLocation->X += 2;
 	pLocation->Y += 1;
+	int length = pDraw->TopLength;
 
-	if (pips->Frame >= 0)
+	if (pDraw->TopFrame >= 0)
 	{
-		for (int drawIdx = curLength; drawIdx > 0 ; --drawIdx, pLocation->X += 2)
-			DSurface::Temp->DrawSHP(pips->Palette, pips->SHP, pips->Frame, pLocation, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		for (int drawIdx = length; drawIdx > 0 ; --drawIdx, pLocation->X += 2)
+			DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->PipSHP, pDraw->TopFrame, pLocation, pDraw->Bounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+
+	length = pDraw->MidLength - length;
+
+	if (pDraw->MidFrame >= 0)
+	{
+		for (int drawIdx = length; drawIdx > 0 ; --drawIdx, pLocation->X += 2)
+			DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->PipSHP, pDraw->MidFrame, pLocation, pDraw->Bounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
-void TechnoExt::DrawVanillaStyleBuildingBar(int curLength, int maxLength, DrawFrameStruct* filled, DrawFrameStruct* empty, Point2D* pLocation, RectangleStruct* pBounds)
+void TechnoExt::DrawVanillaStyleBuildingBar(DrawFrameStruct* pDraw)
 {
-	if (filled->Frame >= 0)
+	Point2D* pLocation = pDraw->Location;
+	int length = pDraw->TopLength;
+
+	if (pDraw->TopFrame >= 0)
 	{
-		for (int drawIdx = curLength; drawIdx > 0 ; --drawIdx, pLocation->X -= 4, pLocation->Y += 2)
-			DSurface::Temp->DrawSHP(filled->Palette, filled->SHP, filled->Frame, pLocation, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		for (int drawIdx = length; drawIdx > 0 ; --drawIdx, pLocation->X -= 4, pLocation->Y += 2)
+			DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->PipSHP, pDraw->TopFrame, pLocation, pDraw->Bounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
-	if (empty->Frame >= 0)
+	length = pDraw->MidLength - length;
+
+	if (pDraw->MidFrame >= 0)
 	{
-		for (int drawIdx = maxLength - curLength; drawIdx > 0 ; --drawIdx, pLocation->X -= 4, pLocation->Y += 2)
-			DSurface::Temp->DrawSHP(empty->Palette, empty->SHP, empty->Frame, pLocation, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		for (int drawIdx = length; drawIdx > 0 ; --drawIdx, pLocation->X -= 4, pLocation->Y += 2)
+			DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->BrdSHP, pDraw->MidFrame, pLocation, pDraw->Bounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+
+	length = length >= 0 ? pDraw->MaxLength - pDraw->TopLength - length : pDraw->MaxLength - pDraw->TopLength;
+
+	if (pDraw->BrdFrame >= 0)
+	{
+		for (int drawIdx = length; drawIdx > 0 ; --drawIdx, pLocation->X -= 4, pLocation->Y += 2)
+			DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->BrdSHP, pDraw->BrdFrame, pLocation, pDraw->Bounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
