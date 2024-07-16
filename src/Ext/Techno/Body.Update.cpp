@@ -912,6 +912,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool cloak = false;
 	bool forceDecloak = false;
 	bool disableWeapons = false;
+	bool hasTint = false;
 
 	for (const auto& attachEffect : this->AttachedEffects)
 	{
@@ -926,6 +927,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		cloak |= type->Cloakable;
 		forceDecloak |= type->ForceDecloak;
 		disableWeapons |= type->DisableWeapons;
+		hasTint |= type->HasTint();
 	}
 
 	this->AE_FirepowerMultiplier = firepower;
@@ -935,6 +937,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	this->AE_Cloakable = cloak;
 	this->AE_ForceDecloak = forceDecloak;
 	this->AE_DisableWeapons = disableWeapons;
+	this->AE_HasTint = hasTint;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
