@@ -131,10 +131,10 @@ public:
 		Valueable<bool> DrawInsignia_OnlyOnSelected;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Infantry;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
-		Valueable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
+		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
-		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
-		Nullable<AnimTypeClass*> Promote_EliteAnimation;
+		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
+		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -217,7 +217,7 @@ public:
 			, DrawInsignia_OnlyOnSelected { false }
 			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }
 			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
-			, DrawInsignia_AdjustPos_BuildingsAnchor { BuildingSelectBracketPosition::Bottom }
+			, DrawInsignia_AdjustPos_BuildingsAnchor {}
 			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
