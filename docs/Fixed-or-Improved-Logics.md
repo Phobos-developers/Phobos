@@ -741,7 +741,7 @@ ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
 ### Voxel shadow scaling in air
 
 - It is now possible to adjust how voxel air units (`VehicleType` & `AircraftType`) shadows scale in air. By default the shadows scale by `AirShadowBaseScale` (defaults to 0.5) amount if unit is `ConsideredAircraft=true`.
-  - If `HeightShadowScaling=true`, the shadow is scaled by amount that is determined by following formula: `Max(AirShadowBaseScale ^ (currentHeight / ShadowSizeCharacteristicHeight), HeightShadowScaling.MinScale)`, where `currentHeight` is unit's current height in leptons, `ShadowSizeCharacteristicHeight` overrideable value that defaults to the maximum cruise height (`JumpjetHeight`, `FlightLevel` etc) and `HeightShadowScaling.MinScale` sets a floor for the scale.
+  - If `HeightShadowScaling=true`, the shadow is scaled by amount that is determined by following formula: $\mathtt{max}\left\{\exp\left(\ln(\mathtt{AirShadowBaseScale})  \dfrac{\mathrm{currentHeight}}{\mathtt{ShadowSizeCharacteristicHeight}}\right), \mathtt{HeightShadowScaling.MinScale}\right\}$, where `currentHeight` is unit's current height in leptons, `ShadowSizeCharacteristicHeight` overrideable value that defaults to the maximum cruise height (`JumpjetHeight`, `FlightLevel` etc) and `HeightShadowScaling.MinScale` sets a floor for the scale.
 
 In `rulesmd.ini`:
 ```ini
