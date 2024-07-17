@@ -429,6 +429,7 @@ New:
 - `RemoveDisguise` now works on vehicle disguises (by Trsdy)
 - Allow anchoring extended tooltips to the left side of the sidebar (by Trsdy)
 - Toggle to allow spawned aircraft to attack immediately after being spawned (by Starkku)
+- `ZAdjust` for OverlayTypes (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

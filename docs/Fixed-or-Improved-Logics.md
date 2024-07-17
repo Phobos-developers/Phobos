@@ -159,6 +159,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
 - Units with `Sensors=true` will no longer reveal ally buildings.
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
+- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
 
 ## Fixes / interactions with other extensions
 
