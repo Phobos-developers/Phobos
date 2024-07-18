@@ -1,1 +1,1 @@
-本项目为Sovietianqi基于Phobos引擎开发，现已遵循Phobos许可证的相关要求进行开源并已停工
+本项目为Sovietianqi基于Phobos引擎开发(虽然压根就没公开分发过)，现已遵循Phobos许可证的相关要求进行开源并已停工
