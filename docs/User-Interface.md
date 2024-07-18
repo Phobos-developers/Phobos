@@ -44,7 +44,8 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
     - Frames 0-9 will be used as digits when the owner's health bar is green, 10-19 when yellow, 20-29 when red. For `/` and `%` characters, frame numbers are 30-31, 32-33, 34-35, respectively.
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
-
+  - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1.
+  
 In `rulesmd.ini`:
 ```ini
 [DigitalDisplayTypes]
@@ -69,6 +70,7 @@ Percentage=false                        ; boolean
 HideMaxValue=false                      ; boolean
 VisibleToHouses=owner                   ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true           ; boolean
+ValueScaleDivisor=1                     ; integer
 ; Text
 Text.Color=0,255,0                      ; integers - Red, Green, Blue
 Text.Color.ConditionYellow=255,255,0    ; integers - Red, Green, Blue
@@ -492,11 +494,13 @@ Sidebar.GDIPositions=  ; boolean
 - Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default.
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
+- `AnchoredToolTips` positions the tooltip always to the left of sidebar, only applies to if `ExtendedToolTips` is set to true and they are enabled in user settings.
 
 In `uimd.ini`:
 ```ini
 [ToolTips]
 ExtendedToolTips=false     ; boolean
+AnchoredToolTips=false     ; boolean
 CostLabel=<none>           ; CSF entry key
 PowerLabel=<none>          ; CSF entry key
 PowerBlackoutLabel=<none>  ; CSF entry key

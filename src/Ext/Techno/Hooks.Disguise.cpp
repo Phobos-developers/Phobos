@@ -2,21 +2,33 @@
 
 #include <Utilities/EnumFunctions.h>
 
-DEFINE_HOOK_AGAIN(0x522790, TechnoClass_DefaultDisguise, 0x6) // InfantryClass_SetDisguise_DefaultDisguise
-DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDisguise
+DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
+{
+	GET(InfantryClass*, pThis, ECX);
+	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pExt->DefaultDisguise)
+	{
+		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->Disguised = true;
+		return 0x5227BF;
+	}
+
+	pThis->Disguised = false;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-
-	enum { SetDisguise = 0x5227BF, DefaultDisguise = 0x6F4277 };
-
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	// mirage is not here yet
+	if (pThis->WhatAmI() == AbstractType::Infantry && pExt->DefaultDisguise)
 	{
-		if (pExt->DefaultDisguise)
-		{
-			pThis->Disguise = pExt->DefaultDisguise;
-			pThis->Disguised = true;
-			return R->Origin() == 0x522790 ? SetDisguise : DefaultDisguise;
-		}
+		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->Disguised = true;
+		return 0x6F4277;
 	}
 
 	pThis->Disguised = false;

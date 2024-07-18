@@ -4,6 +4,7 @@
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
@@ -307,4 +308,24 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
+{
+	enum { SkipKickOutPassengers = 0x415F08 };
+
+	GET(AircraftClass*, pThis, EDI);
+	GET_BASE(int, weaponIdx, 0xC);
+
+	auto const pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
+
+	if (!pWeapon)
+		return 0;
+
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeaponExt->KickOutPassengers)
+		return 0;
+
+	return SkipKickOutPassengers;
 }

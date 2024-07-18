@@ -9,6 +9,7 @@
 #include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Debug.h>
+#include <Utilities/Anchor.h>
 
 class AnimTypeClass;
 class MouseCursor;
@@ -127,6 +128,13 @@ public:
 		Valueable<int> SelectionFlashDuration;
 		AnimTypeClass* DropPodTrailer;
 		SHPStruct* PodImage;
+		Valueable<bool> DrawInsignia_OnlyOnSelected;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Infantry;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
+		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
+		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
+		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -206,6 +214,13 @@ public:
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
+			, DrawInsignia_OnlyOnSelected { false }
+			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }
+			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
+			, DrawInsignia_AdjustPos_BuildingsAnchor {}
+			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
+			, Promote_VeteranAnimation {}
+			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}

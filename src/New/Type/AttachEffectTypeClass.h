@@ -17,6 +17,7 @@ public:
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
+	Nullable<Leptons> DiscardOn_RangeOverride;
 	Valueable<bool> PenetratesIronCurtain;
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
@@ -57,6 +58,7 @@ public:
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
+		, DiscardOn_RangeOverride {}
 		, PenetratesIronCurtain { false }
 		, Animation {}
 		, CumulativeAnimations {}
@@ -91,7 +93,11 @@ public:
 		, Groups {}
 	{};
 
-	bool HasTint() const;
+	bool HasTint() const
+	{
+		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
+	}
+
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
