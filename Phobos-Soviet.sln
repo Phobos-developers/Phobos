@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2019
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Phobos-Soviet", "Phobos-Soviet.vcproj", "{9E2828AA-5773-4C5F-9FFA-B249872961F6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E2828AA-5773-4C5F-9FFA-B249872961F6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9E2828AA-5773-4C5F-9FFA-B249872961F6}.Debug|Win32.Build.0 = Debug|Win32
+		{9E2828AA-5773-4C5F-9FFA-B249872961F6}.Release|Win32.ActiveCfg = Release|Win32
+		{9E2828AA-5773-4C5F-9FFA-B249872961F6}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
