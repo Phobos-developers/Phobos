@@ -53,32 +53,6 @@ int WeaponTypeExt::ExtData::GetBurstDelay(int burstIndex) const
 	return burstDelay;
 }
 
-bool WeaponTypeExt::ExtData::CheckTechnoKeepRange(TechnoClass* pFirer) const
-{
-	if (pFirer->Owner && pFirer->Owner->IsControlledByHuman())
-	{
-		if (!this->KeepRange_AllowPlayer)
-			return false;
-	}
-	else if (!this->KeepRange_AllowAI)
-	{
-		return false;
-	}
-
-	if (pFirer->RearmTimer.InProgress())
-		return true;
-	else if (!pFirer->SpawnManager || pFirer->SpawnManager->Status != SpawnManagerStatus::CoolDown)
-		return false;
-
-	for (int i = 0; i < pFirer->GetTechnoType()->SpawnsNumber; i++)
-	{
-		if (pFirer->SpawnManager->SpawnedNodes[i]->Status == SpawnNodeStatus::Returning)
-			return false;
-	}
-
-	return true;
-}
-
 // =============================
 // load / save
 
@@ -294,6 +268,56 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 	}
 
 	return Math::max(range, 0);
+}
+
+int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool mode)
+{
+	if (!pThis || !pFirer)
+		return 0;
+
+	WeaponTypeExt::ExtData* const pExt = WeaponTypeExt::ExtMap.Find(pThis);
+	int keepRange = pExt->KeepRange.Get();
+
+	if (keepRange > 0)
+	{
+		if (!mode)
+			return 0;
+	}
+	else if (keepRange < 0)
+	{
+		if (mode)
+			return 0;
+
+		keepRange = -keepRange;
+	}
+	else
+	{
+		return 0;
+	}
+
+	if (pFirer->Owner && pFirer->Owner->IsControlledByHuman())
+	{
+		if (!pExt->KeepRange_AllowPlayer)
+			return 0;
+	}
+	else if (!pExt->KeepRange_AllowAI)
+	{
+		return 0;
+	}
+
+	if (!pFirer->RearmTimer.InProgress())
+	{
+		if (!pFirer->SpawnManager || pFirer->SpawnManager->Status != SpawnManagerStatus::CoolDown)
+			return 0;
+
+		for (int i = 0; i < pFirer->GetTechnoType()->SpawnsNumber; i++)
+		{
+			if (pFirer->SpawnManager->SpawnedNodes[i]->Status == SpawnNodeStatus::Returning)
+				return 0;
+		}
+	}
+
+	return keepRange;
 }
 
 // =============================

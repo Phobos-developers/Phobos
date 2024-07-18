@@ -155,21 +155,18 @@ DEFINE_HOOK(0x6F7261, TechnoClass_InRange_SetContext, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x6F737F, TechnoClass_InRange_WeaponMinimumRange, 0x5)
+DEFINE_HOOK(0x6F737F, TechnoClass_InRange_WeaponMinimumRange, 0x6)
 {
 	enum { SkipGameCode = 0x6F7385 };
 
 	GET(WeaponTypeClass*, pWeapon, EDX);
 
 	auto pTechno = InRangeTemp::Techno;
-	int minimumRange = pWeapon->MinimumRange;
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	const int keepRange = pWeaponExt->KeepRange.Get();
 
-	if (keepRange > 0 && pWeaponExt->CheckTechnoKeepRange(pTechno))
-		minimumRange = keepRange;
-
-	R->ECX(minimumRange);
+	if (const int keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pTechno, true))
+		R->ECX(keepRange);
+	else
+		return 0;
 
 	return SkipGameCode;
 }
