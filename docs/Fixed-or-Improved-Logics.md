@@ -477,14 +477,14 @@ In `rulesmd.ini`:
 ```ini
 [General]
 EnemyInsignia=true                       ; boolean
-                                         
-[AudioVisual]                            
+
+[AudioVisual]
 DrawInsignia.OnlyOnSelected=false        ; boolean
 DrawInsignia.AdjustPos.Infantry=5,2      ; X,Y, position offset from default
 DrawInsignia.AdjustPos.Units=10,6        ; X,Y, position offset from default
 DrawInsignia.AdjustPos.Buildings=10,6    ; X,Y, position offset from default
 DrawInsignia.AdjustPos.BuildingsAnchor=  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
-                                         
+
 [SOMETECHNO]                             ; TechnoType
 Insignia=                                ; filename - excluding the .shp extension
 Insignia.Rookie=                         ; filename - excluding the .shp extension
@@ -770,6 +770,17 @@ ForbidParallelAIQueues.Vehicle=no   ; boolean
 ForbidParallelAIQueues.Navy=no      ; boolean
 ForbidParallelAIQueues.Aircraft=no  ; boolean
 ForbidParallelAIQueues.Building=no  ; boolean
+```
+
+### Jumpjet Climbing Logic Enhancement
+
+- You can now let the jumpjets increase their height earlier by set `JumpjetClimbPredictHeight` to true or simply let them skip the stop check by set `JumpjetClimbWithoutCutOut` to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+JumpjetClimbPredictHeight=false  ; boolean
+JumpjetClimbWithoutCutOut=false  ; boolean
 ```
 
 ## Terrains

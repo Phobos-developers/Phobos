@@ -1,5 +1,6 @@
 #include <JumpjetLocomotionClass.h>
 #include <UnitClass.h>
+#include <BuildingClass.h>
 #include <Utilities/Macro.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -260,3 +261,111 @@ void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 }
 
 DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))
+
+// Let the jumpjet increase their height earlier or simply skip the stop check
+namespace JumpjetRushHelpers
+{
+	bool Skip = false;
+	int GetJumpjetHeightWithOccupyTechno(Point2D location); // Replace sub_485080
+	int JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* pThis); // Replace sub_54D820
+}
+
+int JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(Point2D location)
+{
+	CellClass* const pCell = MapClass::Instance->GetTargetCell(location);
+
+	if (!pCell)
+		return -1;
+
+	int height = pCell->GetFloorHeight(Point2D{ location.X & 0xFF, location.Y & 0xFF });
+	ObjectClass* pObject = pCell->FirstObject;
+
+	while (pObject && pObject->WhatAmI() != AbstractType::Building)
+		pObject = pObject->NextObject;
+
+	if (pObject && pObject->WhatAmI() == AbstractType::Building)
+	{
+		BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pObject);
+		CoordStruct dim2 = CoordStruct::Empty;
+		pBuilding->Type->Dimension2(&dim2);
+		return dim2.Z + height;
+	}
+
+	if (pCell->FindTechnoNearestTo(Point2D::Empty, false))
+		height += 85;
+
+	if (pCell->Flags & CellFlags::BridgeHead)
+		height += CellClass::BridgeHeight;
+
+	return height;
+}
+
+int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* pThis)
+{
+	FootClass* const pFoot = pThis->LinkedTo;
+	const CoordStruct location = pFoot->Location;
+	const int curHeight = location.Z - pFoot->GetTechnoType()->JumpjetHeight;
+	Point2D curCoord = { location.X, location.Y };
+	int maxHeight = JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(curCoord);
+
+	if (pThis->State == JumpjetLocomotionClass::State::Cruising)
+	{
+		const double checkLength = CellClass::BridgeHeight / pThis->Climb * pThis->CurrentSpeed;
+		const double angle = -pThis->LocomotionFacing.Current().GetRadian<32>();
+		Point2D stepCoord { static_cast<int>(checkLength * cos(angle)), static_cast<int>(checkLength * sin(angle)) };
+		const int largeStep = Math::max(abs(stepCoord.X), abs(stepCoord.Y));
+
+		if (largeStep)
+		{
+			const double stepMult = static_cast<double>(Unsorted::LeptonsPerCell / 2) / largeStep;
+			stepCoord = { static_cast<int>(stepCoord.X * stepMult), static_cast<int>(stepCoord.Y * stepMult) };
+
+			curCoord += stepCoord;
+			int height = JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(curCoord);
+
+			if (height > maxHeight)
+				maxHeight = height;
+			else
+				JumpjetRushHelpers::Skip = true;
+
+			if (maxHeight <= curHeight)
+				JumpjetRushHelpers::Skip = true;
+
+			const int checkStep = (largeStep >> 7) + ((largeStep & 0x7F) ? 2 : 1);
+
+			for (int i = 0; i < checkStep && height >= 0; ++i)
+			{
+				curCoord += stepCoord;
+				height = JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(curCoord);
+
+				if (height > maxHeight)
+					maxHeight = height;
+			}
+		}
+	}
+
+	return maxHeight >= 0 ? maxHeight : curHeight;
+}
+
+DEFINE_HOOK(0x54D827, JumpjetLocomotionClass_sub_54D820_PredictHeight, 0x8)
+{
+	GET(JumpjetLocomotionClass*, pThis, ESI);
+
+	if (!RulesExt::Global()->JumpjetClimbPredictHeight)
+		return 0;
+
+	R->EAX(JumpjetRushHelpers::JumpjetLocomotionPredictHeight(pThis));
+
+	return 0x54D928; // Completely skip the original calculate
+}
+
+DEFINE_HOOK(0x54D4C0, JumpjetLocomotionClass_sub_54D0F0_NoStuck, 0x6)
+{
+	if (RulesExt::Global()->JumpjetClimbWithoutCutOut || JumpjetRushHelpers::Skip)
+	{
+		JumpjetRushHelpers::Skip = false;
+		return 0x54D52F; // Skip the original check
+	}
+
+	return 0;
+}
