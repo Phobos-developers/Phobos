@@ -39,7 +39,6 @@ void* __stdcall Soviet_RVA(DWORD rvaAddr);
 
 
 #pragma once
-#include "targetver.h"
 #include <stdio.h>
 #include <tchar.h>
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some CString constructors will be explicit
