@@ -22,12 +22,14 @@ public:
 	class ExtData final : public Extension<RadSiteClass>
 	{
 	public:
+		int LastUpdateFrame;
 		WeaponTypeClass* Weapon;
 		RadTypeClass* Type;
 		HouseClass* RadHouse;
 		TechnoClass* RadInvoker;
 
 		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject)
+			, LastUpdateFrame { -1 }
 			, RadHouse { nullptr }
 			, RadInvoker { nullptr }
 			, Type {}
@@ -35,11 +37,6 @@ public:
 		{ }
 
 		virtual ~ExtData() = default;
-
-		virtual size_t Size() const
-		{
-			return sizeof(*this);
-		}
 
 		bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance);
 		void Add(int amount);
@@ -53,7 +50,6 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			AnnounceInvalidPointer(RadHouse, ptr);
 			AnnounceInvalidPointer(RadInvoker, ptr);
 		}
 
@@ -79,7 +75,6 @@ public:
 			case AbstractType::Building:
 			case AbstractType::Infantry:
 			case AbstractType::Unit:
-			case AbstractType::House:
 				return false;
 			default:
 				return true;

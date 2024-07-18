@@ -35,6 +35,7 @@ public:
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
 		Valueable<bool> SW_InitialReady;
+		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -81,6 +82,7 @@ public:
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
 			, SW_InitialReady { false }
+			, SW_PostDependent {}
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}

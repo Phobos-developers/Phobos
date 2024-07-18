@@ -228,19 +228,19 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 	return 0;
 }
 
-const byte old_empty_log[] = { 0xC3 };
-DEFINE_JUMP(CALL, 0x4CA016, GET_OFFSET(old_empty_log));
+//const byte old_empty_log[] = { 0xC3 };
+DEFINE_JUMP(CALL, 0x4CA016, 0x4CA19F); // randomly chosen 0xC3
 
 DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 {
 	GET(FactoryClass*, pFactory, ESI);
-	GET_STACK(void*, calledby, 0x18);
+	GET_STACK(DWORD const, calledby, 0x18);
 
 	TechnoClass* pTechno = pFactory->Object;
-
+	if(calledby<0x7F0000)
 	// Replace the old log with this to figure out where keeps flushing the stream
-	Debug::LogGame("(%p) : %s is abandoning production of %s[%s]\n",
-		calledby, pFactory->Owner->PlainName, pTechno->GetType()->Name, pTechno->get_ID());
+	Debug::LogGame("(%08x) : %s is abandoning production of %s[%s]\n",
+		calledby-5, pFactory->Owner->PlainName, pTechno->GetType()->Name, pTechno->get_ID());
 
 	auto pRulesExt = RulesExt::Global();
 
@@ -359,49 +359,6 @@ DEFINE_HOOK(0x440EBB, BuildingClass_Unlimbo_NaturalParticleSystem_CampaignSkip, 
 	enum { DoNotCreateParticle = 0x440F61 };
 	GET(BuildingClass* const, pThis, ESI);
 	return BuildingExt::ExtMap.Find(pThis)->IsCreatedFromMapFile ? DoNotCreateParticle : 0;
-}
-
-// Note:
-/*
-Ares has a hook at 0x4571E0 (the beginning of BuildingClass::Infiltrate) and completely overwrites the function.
-Our logic has to be executed at the end (0x4575A2). The hook there assumes that registers have the exact content
-they had in the beginning (when Ares hook started, executed, and jumped) in order to work when Ares logic is used.
-
-However, this will fail if Ares is not involved (either DLL not included or with SpyEffect.Custom=no on BuildingType),
-because by the time we reach our hook, the registers will be different and we'll be reading garbage. That's why
-there is a second hook at 0x45759D, which is only executed when Ares doesn't jump over this function. There,
-we execute our custom logic and then use EAX (which isn't used later, so it's safe to write to it) to "mark"
-that we're done with 0x77777777. This way, when we reach the other hook, we check for this very specific value
-to prevent spy effects from happening twice.
-
-The value itself doesn't matter, it just needs to be unique enough to not be accidentally produced by the game there.
-*/
-constexpr int INFILTRATE_HOOK_MAGIC = 0x77777777;
-
-DEFINE_HOOK(0x45759D, BuildingClass_Infiltrate_NoAres, 0x5)
-{
-	GET_STACK(HouseClass*, pInfiltratorHouse, STACK_OFFSET(0x14, -0x4));
-	GET(BuildingClass*, pBuilding, EBP);
-
-	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);
-	R->EAX<int>(INFILTRATE_HOOK_MAGIC);
-	return 0;
-}
-
-DEFINE_HOOK(0x4575A2, BuildingClass_Infiltrate_AfterAres, 0xE)
-{
-	// Check if we've handled it already
-	if (R->EAX<int>() == INFILTRATE_HOOK_MAGIC)
-	{
-		R->EAX<int>(0);
-		return 0;
-	}
-
-	GET_STACK(HouseClass*, pInfiltratorHouse, -0x4);
-	GET(BuildingClass*, pBuilding, ECX);
-
-	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);
-	return 0;
 }
 
 DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)

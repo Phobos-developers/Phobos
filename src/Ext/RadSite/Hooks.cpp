@@ -130,6 +130,8 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 	}
 
 	auto const buildingCoords = pBuilding->GetMapCoords();
+	std::unordered_map<RadSiteClass*, int> damageCounts;
+
 	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
 		CellStruct nCurrentCoord = buildingCoords + *pFoundation;
@@ -137,8 +139,11 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 		for (auto const pRadSite : *RadSiteClass::Array)
 		{
 			auto const pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
-
 			RadTypeClass* pType = pRadExt->Type;
+			int maxDamageCount = pType->GetBuildingDamageMaxCount();
+
+			if (maxDamageCount > 0 && damageCounts[pRadSite] >= maxDamageCount)
+				continue;
 
 			// Check the distance, if not in range, just skip this one
 			double orDistance = pRadSite->BaseCell.DistanceFrom(nCurrentCoord);
@@ -154,13 +159,18 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 					continue;
 			}
 
-			if (pRadExt->GetRadLevelAt(nCurrentCoord) <= 0.0 || !pType->GetWarhead())
-				continue;
+			double radLevel = pRadExt->GetRadLevelAt(nCurrentCoord);
 
-			auto damage = Game::F2I((pRadExt->GetRadLevelAt(nCurrentCoord) / 2) * pType->GetLevelFactor());
+			if (radLevel <= 0.0 || !pType->GetWarhead())
+				continue;
 
 			if (pBuilding->IsAlive) // simple fix for previous issues
 			{
+				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
+
+				if (maxDamageCount > 0)
+					damageCounts[pRadSite]++;
+
 				if (!pRadExt->ApplyRadiationDamage(pBuilding, damage, Game::F2I(orDistance)))
 					break;
 			}
@@ -180,10 +190,8 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 
 	GET(FootClass* const, pFoot, ESI);
 
-	int radDelay = RulesClass::Instance->RadApplicationDelay;
-
 	if (!pFoot->IsIronCurtained() && pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe &&
-		(!RulesExt::Global()->UseGlobalRadApplicationDelay || Unsorted::CurrentFrame % radDelay == 0))
+		(!RulesExt::Global()->UseGlobalRadApplicationDelay || Unsorted::CurrentFrame % RulesClass::Instance->RadApplicationDelay == 0))
 	{
 		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;
 
@@ -208,15 +216,15 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 			}
 
 			// for more precise dmg calculation
-			double nRadLevel = pRadExt->GetRadLevelAt(CurrentCoord);
+			double radLevel = pRadExt->GetRadLevelAt(CurrentCoord);
 
-			if (nRadLevel <= 0.0 || !pType->GetWarhead())
+			if (radLevel <= 0.0 || !pType->GetWarhead())
 				continue;
-
-			int damage = Game::F2I(nRadLevel * pType->GetLevelFactor());
 
 			if (pFoot->IsAlive || !pFoot->IsSinking)
 			{
+				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
+
 				if (!pRadExt->ApplyRadiationDamage(pFoot, damage, Game::F2I(orDistance)))
 					break;
 			}

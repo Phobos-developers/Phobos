@@ -32,9 +32,13 @@ public:
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> SplashList_CreateAll;
 		Valueable<int> SplashList_CreationInterval;
+		Valueable<Leptons> SplashList_ScatterMin;
+		Valueable<Leptons> SplashList_ScatterMax;
 		Valueable<bool> AnimList_PickRandom;
 		Valueable<bool> AnimList_CreateAll;
 		Valueable<int> AnimList_CreationInterval;
+		Valueable<Leptons> AnimList_ScatterMin;
+		Valueable<Leptons> AnimList_ScatterMax;
 		Valueable<bool> CreateAnimsOnZeroDamage;
 		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
@@ -61,6 +65,7 @@ public:
 		Valueable<bool> Shield_Break;
 		Valueable<AnimTypeClass*> Shield_BreakAnim;
 		Valueable<AnimTypeClass*> Shield_HitAnim;
+		Valueable<bool> Shield_HitFlash;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
 
 		Nullable<double> Shield_AbsorbPercent;
@@ -156,9 +161,13 @@ public:
 			, SplashList_PickRandom { false }
 			, SplashList_CreateAll { false }
 			, SplashList_CreationInterval { 0 }
+			, SplashList_ScatterMin { Leptons(0) }
+			, SplashList_ScatterMax { Leptons(0) }
 			, AnimList_PickRandom { false }
 			, AnimList_CreateAll { false }
 			, AnimList_CreationInterval { 0 }
+			, AnimList_ScatterMin { Leptons(0) }
+			, AnimList_ScatterMax { Leptons(0) }
 			, CreateAnimsOnZeroDamage { false }
 			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
@@ -185,6 +194,7 @@ public:
 			, Shield_Break { false }
 			, Shield_BreakAnim {}
 			, Shield_HitAnim {}
+			, Shield_HitFlash { true }
 			, Shield_BreakWeapon {}
 			, Shield_AbsorbPercent {}
 			, Shield_PassPercent {}
@@ -287,7 +297,7 @@ public:
 		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
 	private:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
-		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
 		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);

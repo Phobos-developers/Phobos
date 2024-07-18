@@ -9,9 +9,11 @@
 #include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Debug.h>
+#include <Utilities/Anchor.h>
 
 class AnimTypeClass;
 class MouseCursor;
+class SuperWeaponTypeClass;
 class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
@@ -39,9 +41,12 @@ public:
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
 		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
+		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
+		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
-		Valueable<bool> RadWarhead_Detonate;
+		Valueable<int> RadBuildingDamageMaxCount;
+		Valueable<bool> RadSiteWarhead_Detonate;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
@@ -123,6 +128,13 @@ public:
 		Valueable<int> SelectionFlashDuration;
 		AnimTypeClass* DropPodTrailer;
 		SHPStruct* PodImage;
+		Valueable<bool> DrawInsignia_OnlyOnSelected;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Infantry;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
+		Valueable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
+		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
+		Nullable<AnimTypeClass*> Promote_EliteAnimation;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -133,9 +145,12 @@ public:
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
 			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
+			, AIChronoSphereSW {}
+			, AIChronoWarpSW {}
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
-			, RadWarhead_Detonate { false }
+			, RadBuildingDamageMaxCount { -1 }
+			, RadSiteWarhead_Detonate { false }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
@@ -199,6 +214,13 @@ public:
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
+			, DrawInsignia_OnlyOnSelected { false }
+			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }
+			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
+			, DrawInsignia_AdjustPos_BuildingsAnchor { BuildingSelectBracketPosition::Bottom }
+			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
+			, Promote_VeteranAnimation {}
+			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}

@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/WeaponType/Body.h>
+
 DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
@@ -96,6 +98,7 @@ DEFINE_HOOK(0x702050, TechnoClass_TakeDamage_AttachEffectExpireWeapon, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	std::set<AttachEffectTypeClass*> cumulativeTypes;
+	std::vector<WeaponTypeClass*> expireWeapons;
 
 	for (auto const& attachEffect : pExt->AttachedEffects)
 	{
@@ -108,9 +111,17 @@ DEFINE_HOOK(0x702050, TechnoClass_TakeDamage_AttachEffectExpireWeapon, 0x6)
 				if (pType->Cumulative && pType->ExpireWeapon_CumulativeOnlyOnce)
 					cumulativeTypes.insert(pType);
 
-				attachEffect->ExpireWeapon();
+				expireWeapons.push_back(pType->ExpireWeapon);
 			}
 		}
+	}
+
+	auto const coords = pThis->GetCoords();
+	auto const pOwner = pThis->Owner;
+
+	for (auto const& pWeapon : expireWeapons)
+	{
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
 	}
 
 	return 0;
