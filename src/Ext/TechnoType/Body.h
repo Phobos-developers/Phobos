@@ -44,6 +44,7 @@ public:
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
+		Valueable<bool> Spawner_AttackImmediately;
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
@@ -214,6 +215,20 @@ public:
 
 		Nullable<bool> RecountBurst;
 
+		ValueableVector<TechnoTypeClass*> BuildLimitGroup_Types;
+		ValueableVector<int> BuildLimitGroup_Nums;
+		Valueable<int> BuildLimitGroup_Factor;
+		Valueable<bool> BuildLimitGroup_ContentIfAnyMatch;
+		Valueable<bool> BuildLimitGroup_NotBuildableIfQueueMatch;
+		ValueableVector<TechnoTypeClass*> BuildLimitGroup_ExtraLimit_Types;
+		ValueableVector<int> BuildLimitGroup_ExtraLimit_Nums;
+		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
+		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
+
+		Nullable<AnimTypeClass*> Wake;
+		Nullable<AnimTypeClass*> Wake_Grapple;
+		Nullable<AnimTypeClass*> Wake_Sinking;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -258,6 +273,7 @@ public:
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}
+			, Spawner_AttackImmediately { false }
 			, Harvester_Counted {}
 			, Promote_IncludeSpawns { false }
 			, ImmuneToCrit { false }
@@ -403,6 +419,7 @@ public:
 			, SpawnHeight {}
 			, LandingDir {}
 			, DroppodType {}
+
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
 
@@ -422,6 +439,20 @@ public:
 			, AttachEffect_RecreationDelays {}
 
 			, RecountBurst {}
+
+			, BuildLimitGroup_Types {}
+			, BuildLimitGroup_Nums {}
+			, BuildLimitGroup_Factor { 1 }
+			, BuildLimitGroup_ContentIfAnyMatch { false }
+			, BuildLimitGroup_NotBuildableIfQueueMatch { false }
+			, BuildLimitGroup_ExtraLimit_Types {}
+			, BuildLimitGroup_ExtraLimit_Nums {}
+			, BuildLimitGroup_ExtraLimit_MaxCount {}
+			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
+
+			, Wake { }
+			, Wake_Grapple { }
+			, Wake_Sinking { }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -348,19 +348,50 @@ bool AttachEffectClass::HasExpired() const
 
 bool AttachEffectClass::AllowedToBeActive() const
 {
-	if (auto const pFoot = abstract_cast<FootClass*>(this->Techno))
+	auto const pTechno = this->Techno;
+
+	if (auto const pFoot = abstract_cast<FootClass*>(pTechno))
 	{
 		bool isMoving = pFoot->Locomotor->Is_Moving();
 
-		if (isMoving && (Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
+		if (isMoving && (this->Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
 			return false;
 
-		if (!isMoving && (Type->DiscardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+		if (!isMoving && (this->Type->DiscardOn & DiscardCondition::Stationary) != DiscardCondition::None)
 			return false;
 	}
 
-	if (this->Techno->DrainingMe && (Type->DiscardOn & DiscardCondition::Drain) != DiscardCondition::None)
+	if (pTechno->DrainingMe && (this->Type->DiscardOn & DiscardCondition::Drain) != DiscardCondition::None)
 		return false;
+
+	if (pTechno->Target)
+	{
+		bool inRange = (this->Type->DiscardOn & DiscardCondition::InRange) != DiscardCondition::None;
+		bool outOfRange = (this->Type->DiscardOn & DiscardCondition::OutOfRange) != DiscardCondition::None;
+
+		if (inRange || outOfRange)
+		{
+			int distance = -1;
+
+			if (this->Type->DiscardOn_RangeOverride.isset())
+			{
+				distance = this->Type->DiscardOn_RangeOverride.Get();
+			}
+			else
+			{
+				int weaponIndex = pTechno->SelectWeapon(pTechno->Target);
+				auto const pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
+
+				if (pWeapon)
+					distance = pWeapon->Range;
+			}
+
+			int distanceFromTgt = pTechno->DistanceFrom(pTechno->Target);
+
+			if ((inRange && distanceFromTgt <= distance) || (outOfRange && distanceFromTgt >= distance))
+				return false;
+		}
+	}
 
 	return true;
 }

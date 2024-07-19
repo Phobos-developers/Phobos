@@ -178,13 +178,20 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	if (frameIndex != -1 && pShapeFile)
 	{
-		offset.X += 5;
-		offset.Y += 2;
-
-		if (pThis->WhatAmI() != AbstractType::Infantry)
+		switch (pThis->WhatAmI())
 		{
-			offset.X += 5;
-			offset.Y += 4;
+		case AbstractType::Infantry:
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Infantry;
+			break;
+		case AbstractType::Building:
+			if (RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor.isset())
+				offset = GetBuildingSelectBracketPosition(pThis, RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor) + RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
+			else
+				offset += RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
+			break;
+		default:
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units;
+			break;
 		}
 
 		DSurface::Temp->DrawSHP(
@@ -335,6 +342,12 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 
 		if (value == -1 || maxValue == -1)
 			continue;
+
+		if (pDisplayType->ValueScaleDivisor > 1)
+		{
+			value = Math::max(value / pDisplayType->ValueScaleDivisor, value != 0 ? 1 : 0);
+			maxValue = Math::max(maxValue / pDisplayType->ValueScaleDivisor, maxValue != 0 ? 1 : 0);
+		}
 
 		const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
 		const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;

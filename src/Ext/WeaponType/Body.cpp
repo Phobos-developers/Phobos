@@ -102,6 +102,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_DisallowedMinCounts.Read(exINI, pSection, "AttachEffect.DisallowedMinCounts");
 	this->AttachEffect_DisallowedMaxCounts.Read(exINI, pSection, "AttachEffect.DisallowedMaxCounts");
 	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
+	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
 }
 
 template <typename T>
@@ -141,6 +142,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_DisallowedMinCounts)
 		.Process(this->AttachEffect_DisallowedMaxCounts)
 		.Process(this->AttachEffect_IgnoreFromSameSource)
+		.Process(this->KickOutPassengers)
 		;
 };
 

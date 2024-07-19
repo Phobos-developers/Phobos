@@ -234,7 +234,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	{
 		auto& vec = pOwnerExt->OwnedTransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
-		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+		pNewOwnerExt->OwnedTransportReloaders.push_back(pExt);
 	}
 
 	if (auto pMe = generic_cast<FootClass*>(pThis))
@@ -284,4 +284,19 @@ DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
 	bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
 
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
+}
+
+DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
+{
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(TechnoTypeClass*, pType, 0x4);
+	GET(bool, aresDisable, EAX);
+
+	if (aresDisable || !pType)
+		return 0;
+
+	if (HouseExt::ReachedBuildLimit(pThis, pType, false))
+		R->EAX(true);
+
+	return 0;
 }

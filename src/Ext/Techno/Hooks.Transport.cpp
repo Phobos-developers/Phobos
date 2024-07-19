@@ -94,10 +94,10 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x4DE67B, FootClass_LeaveTransport, 0x8)
+DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(FootClass*, pPassenger, EBX);
+	GET(FootClass*, pPassenger, EAX);
 
 	if (pThis && pPassenger)
 	{

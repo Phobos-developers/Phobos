@@ -3,11 +3,6 @@
 // Used to match groups names to AttachEffectTypeClass instances. Do not iterate due to undetermined order being prone to desyncs.
 std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
 
-bool AttachEffectTypeClass::HasTint() const
-{
-	return this->Tint_Intensity != 0.0 || this->Tint_Color.isset();
-}
-
 bool AttachEffectTypeClass::HasGroup(const std::string& groupID) const
 {
 	for (auto const& group : this->Groups)
@@ -105,6 +100,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Cumulative_MaxCount.Read(exINI, pSection, "Cumulative.MaxCount");
 	this->Powered.Read(exINI, pSection, "Powered");
 	this->DiscardOn.Read(exINI, pSection, "DiscardOn");
+	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 
 	this->Animation.Read(exINI, pSection, "Animation");
@@ -160,6 +156,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Cumulative_MaxCount)
 		.Process(this->Powered)
 		.Process(this->DiscardOn)
+		.Process(this->DiscardOn_RangeOverride)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->Animation)
 		.Process(this->CumulativeAnimations)
