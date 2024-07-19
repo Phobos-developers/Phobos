@@ -45,7 +45,7 @@ public:
 		int WHAnimRemainingCreationInterval;
 		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
-		WeaponStruct* LastWeaponStruct;
+		WeaponTypeClass* LastWeaponType;
 		CoordStruct LastWeaponFLH;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 
@@ -95,7 +95,7 @@ public:
 			, AE_ForceDecloak { false }
 			, AE_DisableWeapons { false }
 			, AE_HasTint { false }
-			, LastWeaponStruct {}
+			, LastWeaponType {}
 			, LastWeaponFLH {}
 			, FiringObstacleCell {}
 		{ }

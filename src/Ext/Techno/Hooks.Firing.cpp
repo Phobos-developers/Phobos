@@ -395,13 +395,13 @@ DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
 #pragma endregion
 
 #pragma region TechnoClass_Fire
-DEFINE_HOOK(0x6FDD6F, TechnoClass_FireAt_UpdateWeaponStruct, 0x8)
+DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
 {
-	GET(WeaponStruct* const, pWeaponStruct, EAX);
+	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET(TechnoClass* const, pThis, ESI);
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->LastWeaponStruct = pWeaponStruct;
+	pExt->LastWeaponType = pWeapon;
 
 	return 0;
 }
