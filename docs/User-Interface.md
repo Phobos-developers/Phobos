@@ -255,17 +255,24 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 ### Show Some Progress
 
-- You can now let the buildings with factories draw an extra bar below HP bar to show the progress of production by setting `FactoryProgressDisplay=true`, and buildings with main superweapon to show the progress of the superweapon by setting `MainSWProgressDisplay=true`. Besides, you can also let the technos draw its invulnerable timer when Iron Curtain or Force Shield is applied on.
-  - `FactoryProgressDisplay` draw the pips with frame 4 from `pips.shp`.
-  - `MainSWProgressDisplay` draw the pips with frame 6 from `pips.shp`.
-  - `InvulnerableDisplay` draw the pips with frames from `pips.shp`.
+- You can now let the buildings with factories draw an extra bar below HP bar to show the progress of production by setting `FactoryProgressDisplay=true`, and buildings with main superweapon to show the progress of the superweapon by setting `MainSWProgressDisplay=true`. Besides, you can also let the technos draw its invulnerable timer when Iron Curtain or Force Shield is applied on by setting `InvulnerableDisplay=true`. Note that though you can select a SHP file for these displays to draw the pips, the background of the non-buildings' bar and the buildings' empty pip will always draw like the vanilla game, and the palette is always use the PALETTE.pal .
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-FactoryProgressDisplay=false  ; boolean
-MainSWProgressDisplay=false   ; boolean
-InvulnerableDisplay=false     ; boolean
+FactoryProgressDisplay=false                  ; boolean
+FactoryProgressDisplay.Offset=0,0             ; integers - horizontal, vertical
+FactoryProgressDisplay.Pips=3                 ; integer, zero-based frame index
+MainSWProgressDisplay=false                   ; boolean
+MainSWProgressDisplay.Offset=0,0              ; integers - horizontal, vertical
+MainSWProgressDisplay.Pips=5                  ; integer, zero-based frame index
+InvulnerableDisplay=false                     ; boolean
+InvulnerableDisplay.Others.Offset=0,0         ; integers - horizontal, vertical
+InvulnerableDisplay.Buildings.Offset=0,0      ; integers - horizontal, vertical
+InvulnerableDisplay.Others.Pips=17,18         ; integer, zero-based frame index used for displaying non-buildings' ForceShield or IronCurtain remaining time
+InvulnerableDisplay.Buildings.Pips=5,4        ; integer, zero-based frame index used for displaying buildings' ForceShield or IronCurtain remaining time
+ProgressDisplay.Others.PipsShape=PIPS.shp     ; filename - including the .shp extension
+ProgressDisplay.Buildings.PipsShape=PIPS.shp  ; filename - including the .shp extension
 ```
 
 ## Hotkey Commands

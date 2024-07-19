@@ -203,7 +203,12 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds)
 {
-	if (pThis->WhatAmI() != AbstractType::Building || !RulesExt::Global()->FactoryProgressDisplay)
+	if (pThis->WhatAmI() != AbstractType::Building)
+		return;
+
+	RulesExt::ExtData* const pRulesExt = RulesExt::Global();
+
+	if (!pRulesExt->FactoryProgressDisplay)
 		return;
 
 	BuildingClass* const pBuilding = abstract_cast<BuildingClass*>(pThis);
@@ -251,7 +256,10 @@ void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds
 		return;
 
 	const int maxLength = pBuildingType->GetFoundationHeight(false) * 15 >> 1;
-	const Point2D location = TechnoExt::GetBuildingSelectBracketPosition(pBuilding, BuildingSelectBracketPosition::Top) + Point2D { 5, 3 + pBuildingType->PixelSelectionBracketDelta };
+	const Point2D location =
+		TechnoExt::GetBuildingSelectBracketPosition(pBuilding, BuildingSelectBracketPosition::Top)
+		+ Point2D { 5, (3 + pBuildingType->PixelSelectionBracketDelta) }
+		+ pRulesExt->FactoryProgressDisplay_Offset.Get();
 
 	if (havePrimary)
 	{
@@ -260,12 +268,12 @@ void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds
 		DrawFrameStruct pDraw
 		{
 			Math::clamp(static_cast<int>((static_cast<double>(pPrimaryFactory->GetProgress()) / 54) * maxLength), 0, maxLength),
-			3,
+			pRulesExt->FactoryProgressDisplay_Pips,
 			0,
 			-1,
 			maxLength,
 			0,
-			FileSystem::PIPS_SHP,
+			pRulesExt->ProgressDisplay_Buildings_PipsShape.Get(),
 			FileSystem::PIPS_SHP,
 			FileSystem::PALETTE_PAL,
 			&position,
@@ -282,12 +290,12 @@ void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds
 		DrawFrameStruct pDraw
 		{
 			Math::clamp(static_cast<int>((static_cast<double>(pSecondaryFactory->GetProgress()) / 54) * maxLength), 0, maxLength),
-			3,
+			pRulesExt->FactoryProgressDisplay_Pips,
 			0,
 			-1,
 			maxLength,
 			0,
-			FileSystem::PIPS_SHP,
+			pRulesExt->ProgressDisplay_Buildings_PipsShape.Get(),
 			FileSystem::PIPS_SHP,
 			FileSystem::PALETTE_PAL,
 			&position,
@@ -300,7 +308,12 @@ void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds
 
 void TechnoExt::DrawSuperProgress(TechnoClass* pThis, RectangleStruct* pBounds)
 {
-	if (pThis->WhatAmI() != AbstractType::Building || !RulesExt::Global()->MainSWProgressDisplay)
+	if (pThis->WhatAmI() != AbstractType::Building)
+		return;
+
+	RulesExt::ExtData* const pRulesExt = RulesExt::Global();
+
+	if (!pRulesExt->MainSWProgressDisplay)
 		return;
 
 	HouseClass* const pOwner = pThis->Owner;
@@ -319,16 +332,17 @@ void TechnoExt::DrawSuperProgress(TechnoClass* pThis, RectangleStruct* pBounds)
 
 	const int maxLength = pBuildingType->GetFoundationHeight(false) * 15 >> 1;
 	Point2D position = TechnoExt::GetBuildingSelectBracketPosition(pBuilding, BuildingSelectBracketPosition::Top) + Point2D { 5, 3 + pBuildingType->PixelSelectionBracketDelta };
+	position += pRulesExt->MainSWProgressDisplay_Offset.Get();
 
 	DrawFrameStruct pDraw
 	{
 		Math::clamp(static_cast<int>((static_cast<double>(timeLeft - pSuper->RechargeTimer.GetTimeLeft()) / timeLeft) * maxLength), 0, maxLength),
-		5,
+		pRulesExt->MainSWProgressDisplay_Pips,
 		0,
 		-1,
 		maxLength,
 		0,
-		FileSystem::PIPS_SHP,
+		pRulesExt->ProgressDisplay_Buildings_PipsShape.Get(),
 		FileSystem::PIPS_SHP,
 		FileSystem::PALETTE_PAL,
 		&position,
@@ -340,7 +354,12 @@ void TechnoExt::DrawSuperProgress(TechnoClass* pThis, RectangleStruct* pBounds)
 
 void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBounds)
 {
-	if (!pThis->IsIronCurtained() || !RulesExt::Global()->InvulnerableDisplay || !pThis->IronCurtainTimer.TimeLeft)
+	if (!pThis->IsIronCurtained() || !pThis->IronCurtainTimer.TimeLeft)
+		return;
+
+	RulesExt::ExtData* const pRulesExt = RulesExt::Global();
+
+	if (!pRulesExt->InvulnerableDisplay)
 		return;
 
 	if (pThis->WhatAmI() == AbstractType::Building)
@@ -350,16 +369,17 @@ void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBo
 		const int maxLength = pBuildingType->GetFoundationHeight(false) * 15 >> 1;
 		const HealthState healthStatus = pBuilding->GetHealthStatus();
 		Point2D position = TechnoExt::GetBuildingSelectBracketPosition(pBuilding, BuildingSelectBracketPosition::Top) + Point2D{ -1, pBuildingType->PixelSelectionBracketDelta };
+		position += pRulesExt->InvulnerableDisplay_Buildings_Offset.Get();
 
 		DrawFrameStruct pDraw
 		{
 			Math::clamp(static_cast<int>((static_cast<double>(pThis->IronCurtainTimer.GetTimeLeft()) / pThis->IronCurtainTimer.TimeLeft) * maxLength), 0, maxLength),
-			(pThis->ForceShielded ? 5 : 4),
+			(pThis->ForceShielded ? pRulesExt->InvulnerableDisplay_Buildings_Pips.Get().X : pRulesExt->InvulnerableDisplay_Buildings_Pips.Get().Y),
 			Math::clamp(static_cast<int>(pBuilding->GetHealthPercentage() * maxLength), 0, maxLength),
 			((pThis->IsSelected || pThis->IsMouseHovering) ? (healthStatus == HealthState::Green ? 1 : (healthStatus == HealthState::Yellow ? 2 : 4)) : 0),
 			maxLength,
 			0,
-			FileSystem::PIPS_SHP,
+			pRulesExt->ProgressDisplay_Buildings_PipsShape.Get(),
 			FileSystem::PIPS_SHP,
 			FileSystem::PALETTE_PAL,
 			&position,
@@ -372,16 +392,17 @@ void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBo
 	{
 		const int maxLength = pThis->WhatAmI() != AbstractType::Infantry ? 17 : 8;
 		Point2D position = TechnoExt::GetFootSelectBracketPosition(pThis, Anchor(HorizontalPosition::Left, VerticalPosition::Top)) + Point2D{ -1, pThis->GetTechnoType()->PixelSelectionBracketDelta + 2 };
+		position += pRulesExt->InvulnerableDisplay_Others_Offset.Get();
 
 		DrawFrameStruct pDraw
 		{
 			Math::clamp(static_cast<int>((static_cast<double>(pThis->IronCurtainTimer.GetTimeLeft()) / pThis->IronCurtainTimer.TimeLeft) * maxLength), 0, maxLength),
-			(pThis->ForceShielded ? 17 : 18),
+			(pThis->ForceShielded ? pRulesExt->InvulnerableDisplay_Others_Pips.Get().X : pRulesExt->InvulnerableDisplay_Others_Pips.Get().Y),
 			0,
 			-1,
 			maxLength,
 			-1,
-			FileSystem::PIPS_SHP,
+			pRulesExt->ProgressDisplay_Others_PipsShape.Get(),
 			FileSystem::PIPBRD_SHP,
 			FileSystem::PALETTE_PAL,
 			&position,
