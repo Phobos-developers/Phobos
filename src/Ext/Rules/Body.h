@@ -136,12 +136,12 @@ public:
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
 
-		Nullable<bool> CombatAlert;
-		Nullable<bool> CombatAlert_IgnoreBuilding;
-		Nullable<bool> CombatAlert_EVA;
-		Nullable<bool> CombatAlert_SuppressIfInScreen;
-		Nullable<int> CombatAlert_Interval;
-		Nullable<bool> CombatAlert_SuppressIfAllyDamage;
+		Valueable<bool> CombatAlert;
+		Valueable<bool> CombatAlert_IgnoreBuilding;
+		Valueable<bool> CombatAlert_EVA;
+		Valueable<bool> CombatAlert_SuppressIfInScreen;
+		Valueable<int> CombatAlert_Interval;
+		Valueable<bool> CombatAlert_SuppressIfAllyDamage;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }

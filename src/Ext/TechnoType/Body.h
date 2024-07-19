@@ -82,8 +82,8 @@ public:
 		NullableIdx<VoxClass> EVA_Sold;
 
 		NullableIdx<VoxClass> EVA_Combat;
-		Nullable<bool> CombatAlert;
-		Nullable<bool> CombatAlert_NotBuilding;
+		Valueable<bool> CombatAlert;
+		Valueable<bool> CombatAlert_NotBuilding;
 
 		NullableIdx<VocClass> VoiceCreated;
 		NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
