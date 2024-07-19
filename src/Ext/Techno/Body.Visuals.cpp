@@ -303,6 +303,11 @@ void TechnoExt::DrawSuperProgress(TechnoClass* pThis, RectangleStruct* pBounds)
 	if (pThis->WhatAmI() != AbstractType::Building || !RulesExt::Global()->MainSWProgressDisplay)
 		return;
 
+	HouseClass* const pOwner = pThis->Owner;
+
+	if (pOwner == HouseClass::FindSpecial() || pOwner == HouseClass::FindNeutral() || pOwner == HouseClass::FindCivilianSide())
+		return;
+
 	BuildingClass* const pBuilding = abstract_cast<BuildingClass*>(pThis);
 	BuildingTypeClass* const pBuildingType = pBuilding->Type;
 	const int superIndex = pBuildingType->SuperWeapon;
@@ -351,7 +356,7 @@ void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBo
 			Math::clamp(static_cast<int>((static_cast<double>(pThis->IronCurtainTimer.GetTimeLeft()) / pThis->IronCurtainTimer.TimeLeft) * maxLength), 0, maxLength),
 			(pThis->ForceShielded ? 5 : 4),
 			Math::clamp(static_cast<int>(pBuilding->GetHealthPercentage() * maxLength), 0, maxLength),
-			(healthStatus == HealthState::Green ? 1 : (healthStatus == HealthState::Yellow ? 2 : 4)),
+			((pThis->IsSelected || pThis->IsMouseHovering) ? (healthStatus == HealthState::Green ? 1 : (healthStatus == HealthState::Yellow ? 2 : 4)) : 0),
 			maxLength,
 			0,
 			FileSystem::PIPS_SHP,
