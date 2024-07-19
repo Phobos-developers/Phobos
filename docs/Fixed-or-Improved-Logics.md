@@ -160,6 +160,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Units with `Sensors=true` will no longer reveal ally buildings.
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
 - OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
+- Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
 
 ## Fixes / interactions with other extensions
 
@@ -636,6 +637,17 @@ IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invu
 IronCurtain.KillWarhead=           ; Warhead
 ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
 ForceShield.KillWarhead=           ; Warhead
+```
+
+### Iron Curtain & Force Shield extra tint intensity
+
+- It is now possible to specify additional tint intensity applied to Iron Curtained and Force Shielded units.
+
+In `rulesmd.ini`
+```ini
+[AudioVisual]
+IronCurtain.ExtraTintIntensity=0.0  ; floating point value
+ForceShield.ExtraTintIntensity=0.0  ; floating point value
 ```
 
 ### Jumpjet rotating on crashing toggle
