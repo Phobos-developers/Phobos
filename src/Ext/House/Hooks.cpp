@@ -234,7 +234,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	{
 		auto& vec = pOwnerExt->OwnedTransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
-		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+		pNewOwnerExt->OwnedTransportReloaders.push_back(pExt);
 	}
 
 	if (auto pMe = generic_cast<FootClass*>(pThis))

@@ -61,6 +61,7 @@ public:
 		bool AE_Cloakable;
 		bool AE_ForceDecloak;
 		bool AE_DisableWeapons;
+		bool AE_HasTint;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -93,6 +94,7 @@ public:
 			, AE_Cloakable { false }
 			, AE_ForceDecloak { false }
 			, AE_DisableWeapons { false }
+			, AE_HasTint { false }
 			, LastWeaponStruct {}
 			, LastWeaponFLH {}
 			, FiringObstacleCell {}

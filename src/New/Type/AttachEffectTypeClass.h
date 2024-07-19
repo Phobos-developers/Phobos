@@ -93,7 +93,11 @@ public:
 		, Groups {}
 	{};
 
-	bool HasTint() const;
+	bool HasTint() const
+	{
+		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
+	}
+
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;

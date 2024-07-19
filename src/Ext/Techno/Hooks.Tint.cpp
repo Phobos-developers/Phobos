@@ -1,3 +1,4 @@
+#include <AircraftClass.h>
 #include <InfantryClass.h>
 
 #include "Body.h"
@@ -69,11 +70,11 @@ DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 	GET(int, intensity, EBP);
 	REF_STACK(int, color, STACK_OFFSET(0x54, 0x2C));
 
-	bool isVehicle = pThis->WhatAmI() == AbstractType::Unit;
-	bool isAircraft = pThis->WhatAmI() == AbstractType::Aircraft;
+	auto const rtti = pThis->WhatAmI();
+	bool isAircraft = rtti == AbstractType::Aircraft;
 
 	// SHP vehicles and aircraft
-	if (isVehicle || isAircraft)
+	if (rtti == AbstractType::Unit || isAircraft)
 	{
 		color |= TechnoExt::GetTintColor(pThis, true, false, !isAircraft);
 		TechnoExt::ApplyCustomTintValues(pThis, color, intensity);
@@ -88,15 +89,25 @@ DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x7067E4, TechnoClass_DrawVoxel_TintColor, 0x8)
+DEFINE_HOOK(0x706786, TechnoClass_DrawVoxel_TintColor, 0x5)
 {
+	enum { SkipTint = 0x7067E4 };
+
 	GET(TechnoClass*, pThis, EBP);
-	GET(int, intensity, EDI);
+
+	auto const rtti = pThis->WhatAmI();
+
+	// Vehicles already have had tint intensity as well as custom tints applied, no need to do it twice.
+	if (rtti == AbstractType::Unit)
+		return SkipTint;
+
+	GET(int, intensity, EAX);
 	REF_STACK(int, color, STACK_OFFSET(0x50, 0x24));
 
-	color |= TechnoExt::GetTintColor(pThis, true, false, true);
-	TechnoExt::ApplyCustomTintValues(pThis, color, intensity);
-	R->EDI(intensity);
+	// Non-aircraft voxels do not need custom tint color applied again, discard that component for them.
+	int discardColor = 0;
+	TechnoExt::ApplyCustomTintValues(pThis, rtti == AbstractType::Aircraft ? color : discardColor, intensity);
+	R->EAX(intensity);
 
 	return 0;
 }

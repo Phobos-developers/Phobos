@@ -879,6 +879,25 @@ Detonate.AtFirer=false  ; boolean
 
 ## Technos
 
+### Aircraft spawner customizations
+
+![image](_static/images/spawnrange-01.gif)
+*Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
+
+- If `Spawner.LimitRange` is set, the spawned units will abort their pursuit if the enemy is out of the range of the largest weapon `Range` of a `Spawner=true` weapon of the spawner.
+  - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
+- `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 9 frames for missiles and 20 for everything else.
+- If `Spawner.AttackImmediately` is set to true, spawned aircraft will assume attack mission immediately after being spawned instead of waiting for the remaining aircraft to spawn first.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType
+Spawner.LimitRange=false         ; boolean
+Spawner.ExtraLimitRange=0        ; integer, range in cells
+Spawner.DelayFrames=             ; integer, game frames
+Spawner.AttackImmediately=false  ; boolean
+```
+
 ### Automatic passenger deletion
 
 - Transports can erase passengers over time. Passengers are deleted in order of entering the transport, from first to last.
@@ -1174,23 +1193,6 @@ In `rulesmd.ini`:
 [SOMETECHNO]                    ; TechnoType
 RevengeWeapon=                  ; WeaponType
 RevengeWeapon.AffectsHouses=all ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-```
-
-### Spawner pursuit range & spawn delay customization
-
-![image](_static/images/spawnrange-01.gif)
-*Limited pursue range for spawns in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
-
-- If `Spawner.LimitRange` is set, the spawned units will abort their pursuit if the enemy is out of the range of the largest weapon `Range` of a `Spawner=true` weapon of the spawner.
-  - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
-- `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 9 frames for missiles and 20 for everything else.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]               ; TechnoType
-Spawner.LimitRange=false   ; boolean
-Spawner.ExtraLimitRange=0  ; integer, range in cells
-Spawner.DelayFrames=       ; integer, game frames
 ```
 
 ### Weapons fired on warping in / out

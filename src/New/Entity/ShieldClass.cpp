@@ -797,7 +797,7 @@ void ShieldClass::UpdateIdleAnim()
 
 void ShieldClass::UpdateTint()
 {
-	if (this->Type->Tint_Color.isset() || this->Type->Tint_Intensity != 0.0)
+	if (this->Type->HasTint())
 		this->Techno->MarkForRedraw();
 }
 

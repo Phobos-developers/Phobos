@@ -3,11 +3,6 @@
 // Used to match groups names to AttachEffectTypeClass instances. Do not iterate due to undetermined order being prone to desyncs.
 std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> AttachEffectTypeClass::GroupsMap;
 
-bool AttachEffectTypeClass::HasTint() const
-{
-	return this->Tint_Intensity != 0.0 || this->Tint_Color.isset();
-}
-
 bool AttachEffectTypeClass::HasGroup(const std::string& groupID) const
 {
 	for (auto const& group : this->Groups)
