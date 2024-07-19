@@ -825,7 +825,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		auto const attachEffect = it->get();
 
 		if (!inTunnel)
-			attachEffect->SetAnimationVisibility(true);
+			attachEffect->SetAnimationTunnelState(true);
 
 		attachEffect->AI();
 

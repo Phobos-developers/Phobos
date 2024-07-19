@@ -30,6 +30,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, CurrentDelay { 0 }
 	, Animation { nullptr }
 	, IsAnimHidden { false }
+	, IsInTunnel { false }
 	, IsUnderTemporal { false }
 	, IsOnline { true }
 	, IsCloaked { false }
@@ -153,8 +154,10 @@ void AttachEffectClass::AI()
 	this->CloakCheck();
 	this->OnlineCheck();
 
-	if (!this->Animation && !this->IsUnderTemporal && this->IsOnline && !this->IsCloaked && !this->IsAnimHidden)
+	if (!this->Animation && !this->IsUnderTemporal && this->IsOnline && !this->IsCloaked && !this->IsInTunnel && !this->IsAnimHidden)
 		this->CreateAnim();
+
+	this->AnimCheck();
 }
 
 void AttachEffectClass::AI_Temporal()
@@ -165,7 +168,7 @@ void AttachEffectClass::AI_Temporal()
 
 		this->CloakCheck();
 
-		if (!this->Animation && this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides && this->IsOnline && !this->IsCloaked && !this->IsAnimHidden)
+		if (!this->Animation && this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides && this->IsOnline && !this->IsCloaked && !this->IsInTunnel && !this->IsAnimHidden)
 			this->CreateAnim();
 
 		if (this->Animation)
@@ -188,6 +191,29 @@ void AttachEffectClass::AI_Temporal()
 				this->Animation->UnderTemporal = true;
 				break;
 			}
+		}
+
+		this->AnimCheck();
+	}
+}
+
+void AttachEffectClass::AnimCheck()
+{
+	if (this->Type->Animation_HideIfAttachedWith.size() > 0)
+	{
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+
+		if (pTechnoExt->HasAttachedEffects(this->Type->Animation_HideIfAttachedWith, false, false, nullptr, nullptr, nullptr, nullptr))
+		{
+			this->KillAnim();
+			this->IsAnimHidden = true;
+		}
+		else
+		{
+			this->IsAnimHidden = false;
+
+			if (!this->Animation && (!this->IsUnderTemporal || this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides))
+				this->CreateAnim();
 		}
 	}
 }
@@ -302,12 +328,12 @@ void AttachEffectClass::KillAnim()
 	}
 }
 
-void AttachEffectClass::SetAnimationVisibility(bool visible)
+void AttachEffectClass::SetAnimationTunnelState(bool visible)
 {
-	if (!this->IsAnimHidden && !visible)
+	if (!this->IsInTunnel && !visible)
 		this->KillAnim();
 
-	this->IsAnimHidden = !visible;
+	this->IsInTunnel = !visible;
 }
 
 void AttachEffectClass::RefreshDuration(int durationOverride)
@@ -845,6 +871,7 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->Source)
 		.Process(this->Animation)
 		.Process(this->IsAnimHidden)
+		.Process(this->IsInTunnel)
 		.Process(this->IsUnderTemporal)
 		.Process(this->IsOnline)
 		.Process(this->IsCloaked)
