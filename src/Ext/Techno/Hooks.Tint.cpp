@@ -47,6 +47,7 @@ DEFINE_HOOK(0x73BF95, UnitClass_DrawAsVoxel_Tint, 0x7)
 		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
 
 	int color = TechnoExt::GetTintColor(pThis, isInvulnerable, false, pThis->Berzerk);
+	color |= TechnoExt::GetCustomTintColor(pThis);
 
 	R->ESI(color);
 	return SkipGameCode;
