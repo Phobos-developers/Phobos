@@ -482,4 +482,93 @@ public:
 	size_t ValueCount;
 };
 
+// Designates that the type can read it's value from multiple flags.
+template<typename T>
+concept MultiflagReadable = requires(T obj, INI_EX& const parser, const char* const pSection, const char* const pBaseFlag)
+{
+    { obj.Read(parser, pSection, pBaseFlag) } -> std::same_as<bool>;
+};
 
+template<MultiflagReadable T>
+class MultiflagValueableVector : public ValueableVector<T>
+{
+	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag);
+};
+
+template<MultiflagReadable T>
+class MultiflagNullableVector : public NullableVector<T>
+{
+	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag);
+};
+
+// Need multiple args or multiple return values? Use std::tuple - Kerbiter
+// template<typename TArg, typename TValue>
+// class Calculatable
+// {
+// public:
+
+// 	virtual TValue Get(TArg const arg) const noexcept = 0;
+
+// 	virtual void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag) = 0;
+
+// 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) = 0;
+
+// 	virtual bool Save(PhobosStreamWriter& Stm) const = 0;
+// };
+
+// template<typename TArg>
+// class ArgBoundable
+// {
+// public:
+
+// 	virtual Vector2D<TArg> GetArgBounds() const noexcept = 0;
+// };
+
+// template<typename TValue>
+// class ValueBoundable
+// {
+// public:
+
+// 	virtual Vector2D<TValue> GetValueBounds() const noexcept = 0;
+// };
+
+
+template<typename TValue>
+class Animatable // : public Calculatable<double, TValue> //, public ArgBoundable<int>
+{
+public:
+	class KeyframeDataEntry
+	{
+	public:
+		Valueable<double> Percentage;
+		Nullable<int> Frame;
+
+		Valueable<TValue> Value;
+
+		inline bool Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag);
+
+		inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+
+		inline bool Save(PhobosStreamWriter& Stm) const;
+	};
+
+	MultiflagValueableVector<KeyframeDataEntry> KeyframeData;
+
+	// TODO ctors and stuff
+
+	inline TValue Get(double const percentage) const noexcept;
+
+	// inline TValue Get(int const frame) const noexcept;
+
+	// Vector2D<TArg> GetArgBounds() const noexcept override;
+
+	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag);
+
+	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+
+	inline bool Save(PhobosStreamWriter& Stm) const;
+};
+
+static_assert(Savegame::ImplementsSaveLoad<Animatable<std::monostate>::KeyframeDataEntry>);
+
+static_assert(Savegame::ImplementsSaveLoad<Animatable<std::monostate>>);

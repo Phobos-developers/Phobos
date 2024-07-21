@@ -1391,6 +1391,8 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 				Debug::INIParseFailed(pSection, pKey, pCur);
 		}
 	}
+
+	// TODO detail::interpolate
 }
 
 
@@ -1746,4 +1748,119 @@ bool Damageable<T>::Save(PhobosStreamWriter& Stm) const
 	return Savegame::WritePhobosStream(Stm, this->BaseValue)
 		&& Savegame::WritePhobosStream(Stm, this->ConditionYellow)
 		&& Savegame::WritePhobosStream(Stm, this->ConditionRed);
+}
+
+// MultiflagValueableVector
+
+template <MultiflagReadable T>
+void __declspec(noinline) MultiflagValueableVector<T>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag)
+{
+	char flagName[0x40];
+	for (size_t i = 0; ; ++i)
+	{
+		T dataEntry {};
+
+		// we expect %d for array number then %s for the subflag name, so we replace %s with itself (but escaped)
+		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%%s");
+
+		if (!dataEntry.Read(parser, pSection, flagName))
+			break;
+
+		this->push_back(dataEntry);
+	}
+}
+
+// MultiflagNullableVector
+
+template <MultiflagReadable T>
+void __declspec(noinline) MultiflagNullableVector<T>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag)
+{
+	char flagName[0x40];
+	for (size_t i = 0; ; ++i)
+	{
+		T dataEntry {};
+
+		// we expect %d for array number then %s for the subflag name, so we replace %s with itself (but escaped)
+		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%%s");
+
+		if (!dataEntry.Read(parser, pSection, flagName))
+			break;
+
+		this->push_back(dataEntry);
+		this->hasValue = true;
+	}
+}
+
+// Animatable
+
+// Animatable::KeyframeDataEntry
+
+template <typename TValue>
+bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag)
+{
+	char flagName[0x40];
+
+	Nullable<double> percentageTemp {};
+
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Frame");
+	this->Frame.Read(parser, pSection, flagName);
+
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Percentage");
+	percentageTemp.Read(parser, pSection, flagName);
+
+	if (!this->Frame.HasValue && !percentageTemp.HasValue)
+		return false;
+
+	this->Percentage.Value = percentageTemp.Value;
+
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Value");
+	this->Value.Read(parser, pSection, flagName);
+
+	return true;
+};
+
+template <typename TValue>
+bool Animatable<TValue>::KeyframeDataEntry::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Savegame::ReadPhobosStream(Stm, this->Percentage, RegisterForChange)
+		&& Savegame::ReadPhobosStream(Stm, this->Frame, RegisterForChange)
+		&& Savegame::ReadPhobosStream(Stm, this->Value, RegisterForChange);
+}
+
+template <typename TValue>
+bool Animatable<TValue>::KeyframeDataEntry::Save(PhobosStreamWriter& Stm) const
+{
+	return Savegame::WritePhobosStream(Stm, this->Percentage)
+		&& Savegame::WritePhobosStream(Stm, this->Frame)
+		&& Savegame::WritePhobosStream(Stm, this->Value);
+}
+
+
+template <typename TValue>
+TValue Animatable<TValue>::Get(double const percentage) const noexcept
+{
+	return detail::interpolate<TValue>(percentage);  // TODO
+}
+
+template <typename TValue>
+void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag)
+{
+	char flagName[0x40];
+
+	// we expect "BaseFlagName.%s" here
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Keyframe%%d.%%s");
+
+	this->KeyframeData.Read(parser, pSection, flagName);
+};
+
+template <typename TValue>
+bool Animatable<TValue>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Savegame::ReadPhobosStream(Stm, this->KeyframeData, RegisterForChange);
+}
+
+template <typename TValue>
+bool Animatable<TValue>::Save(PhobosStreamWriter& Stm) const
+{
+	return Savegame::WritePhobosStream(Stm, this->KeyframeData);
 }
