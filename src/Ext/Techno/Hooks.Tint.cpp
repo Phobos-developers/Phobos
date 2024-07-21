@@ -5,64 +5,102 @@
 
 #include <Ext/Anim/Body.h>
 
-#pragma region ICColorBugFix
-
-DEFINE_HOOK(0x43D442, BuildingClass_Draw_ICFSColor, 0x7)
+DEFINE_HOOK(0x43D386, BuildingClass_Draw_TintColor, 0x6)
 {
-	enum { SkipGameCode = 0x43D45B };
+	enum { SkipGameCode = 0x43D4EB };
 
 	GET(BuildingClass*, pThis, ESI);
 
-	RulesClass* rules = RulesClass::Instance;
-
-	R->ECX(rules);
-	R->EAX(pThis->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
+	int color = TechnoExt::GetTintColor(pThis, pThis->IsIronCurtained(), pThis->Airstrike, false);
+	color |= TechnoExt::GetCustomTintColor(pThis);
+	R->EDI(color);
 
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x43DCE1, BuildingClass_Draw2_ICFSColor, 0x7)
+DEFINE_HOOK(0x43DC1C, BuildingClass_Draw2_TintColor, 0x6)
 {
-	enum { SkipGameCode = 0x43DCFA };
+	enum { SkipGameCode = 0x43DD8E };
 
 	GET(BuildingClass*, pThis, EBP);
+	REF_STACK(int, color, STACK_OFFSET(0x12C, -0x110));
 
-	RulesClass* rules = RulesClass::Instance;
-
-	R->ECX(rules);
-	R->EAX(pThis->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
+	color = TechnoExt::GetTintColor(pThis, pThis->IsIronCurtained(), pThis->Airstrike, false);
+	color |= TechnoExt::GetCustomTintColor(pThis);
 
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x73BFBF, UnitClass_DrawAsVoxel_ICFSColor, 0x6)
+DEFINE_HOOK(0x73BF95, UnitClass_DrawAsVoxel_Tint, 0x7)
 {
-	enum { SkipGameCode = 0x73BFC5 };
+	enum { SkipGameCode = 0x73C141 };
 
 	GET(UnitClass*, pThis, EBP);
+	GET(int, flashIntensity, ESI);
+	REF_STACK(int, intensity, STACK_OFFSET(0x1D0, 0x10));
 
-	RulesClass* rules = RulesClass::Instance;
+	intensity = flashIntensity;
 
-	R->EAX(pThis->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
+	bool isInvulnerable = pThis->IsIronCurtained();
 
+	if (isInvulnerable)
+		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
+
+	int color = TechnoExt::GetTintColor(pThis, isInvulnerable, false, pThis->Berzerk);
+	color |= TechnoExt::GetCustomTintColor(pThis);
+
+	R->ESI(color);
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x42350C, AnimClass_Draw_ICFSColor, 0x7)
+DEFINE_HOOK(0x518FC8, InfantryClass_Draw_TintColor, 0x6)
 {
-	enum { SkipGameCode = 0x423525 };
+	enum { SkipGameCode = 0x519082 };
 
-	GET(BuildingClass*, pBuilding, ECX);
+	GET(InfantryClass*, pThis, EBP);
+	REF_STACK(int, color, STACK_OFFSET(0x54, -0x40));
 
-	RulesClass* rules = RulesClass::Instance;
-
-	R->ECX(rules);
-	R->EAX(pBuilding->ForceShielded ? rules->ForceShieldColor : rules->IronCurtainColor);
+	color = 0;
+	color |= TechnoExt::GetTintColor(pThis, pThis->IsIronCurtained(), false, pThis->Berzerk);
+	color |= TechnoExt::GetCustomTintColor(pThis);
 
 	return SkipGameCode;
 }
 
-#pragma endregion
+DEFINE_HOOK(0x51946D, InfantryClass_Draw_TintIntensity, 0x6)
+{
+	GET(InfantryClass*, pThis, EBP);
+	GET(int, intensity, ESI);
+
+	intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
+	intensity += TechnoExt::GetCustomTintIntensity(pThis);
+	R->ESI(intensity);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x423420, AnimClass_Draw_TintColor, 0x6)
+{
+	enum { SkipGameCode = 0x4235D3 };
+
+	GET(AnimClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EAX);
+	REF_STACK(int, color, STACK_OFFSET(0x110, -0xF4));
+	REF_STACK(int, intensity, STACK_OFFSET(0x110, -0xD8));
+
+	if (!pBuilding)
+		pBuilding = AnimExt::ExtMap.Find(pThis)->ParentBuilding;
+
+	if (pBuilding)
+	{
+		int discard = 0;
+		color |= TechnoExt::GetTintColor(pBuilding, pBuilding->IsIronCurtained(), pBuilding->Airstrike, false);
+		TechnoExt::ApplyCustomTintValues(pBuilding, color, pThis->Type->UseNormalLight ? discard : intensity);
+	}
+
+	R->EBP(color);
+	return SkipGameCode;
+}
 
 DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 {
@@ -104,31 +142,13 @@ DEFINE_HOOK(0x706786, TechnoClass_DrawVoxel_TintColor, 0x5)
 	GET(int, intensity, EAX);
 	REF_STACK(int, color, STACK_OFFSET(0x50, 0x24));
 
+	if (rtti == AbstractType::Aircraft)
+		color = TechnoExt::GetTintColor(pThis, true, false, false);
+
 	// Non-aircraft voxels do not need custom tint color applied again, discard that component for them.
 	int discardColor = 0;
 	TechnoExt::ApplyCustomTintValues(pThis, rtti == AbstractType::Aircraft ? color : discardColor, intensity);
 	R->EAX(intensity);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x43D4EB, BuildingClass_Draw_TintColor, 0x6)
-{
-	GET(BuildingClass*, pThis, ESI);
-	GET(int, color, EDI);
-
-	color |= TechnoExt::GetCustomTintColor(pThis);
-	R->EDI(color);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x43DD8E, BuildingClass_Draw2_TintColor, 0xA)
-{
-	GET(BuildingClass*, pThis, EBP);
-	REF_STACK(int, color, STACK_OFFSET(0x12C, -0x110));
-
-	color |= TechnoExt::GetCustomTintColor(pThis);
 
 	return 0;
 }
@@ -144,64 +164,32 @@ DEFINE_HOOK(0x43FA19, BuildingClass_Mark_TintIntensity, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x519082, InfantryClass_Draw_TintColor, 0x7)
+namespace ICTintTemp
 {
-	GET(InfantryClass*, pThis, EBP);
-	REF_STACK(int, color, STACK_OFFSET(0x54, -0x40));
+	bool IsForceShield = false;
+}
 
-	color |= TechnoExt::GetTintColor(pThis, true, false, false);
-	color |= TechnoExt::GetCustomTintColor(pThis);
+DEFINE_HOOK(0x70E380, TechnoClass_InvulnerabilityIntensity_SetContext, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	ICTintTemp::IsForceShield = pThis->ForceShielded;
 
 	return 0;
 }
 
-DEFINE_HOOK(0x51946D, InfantryClass_Draw_TintIntensity, 0x6)
+DEFINE_HOOK(0x70E475, TechnoClass_InvulnerabilityIntensity_Adjust, 0x5)
 {
-	GET(InfantryClass*, pThis, EBP);
-	GET(int, intensity, ESI);
+	enum { SkipGameCode = 0x70E488 };
 
-	intensity = pThis->GetEffectTintIntensity(intensity);
-	intensity += TechnoExt::GetCustomTintIntensity(pThis);
-	R->ESI(intensity);
+	GET(int, intensity, EAX);
 
-	return 0;
-}
+	if (intensity > 2000)
+		intensity = 2000;
 
-DEFINE_HOOK(0x73C083, UnitClass_DrawAsVoxel_TintColor, 0x6)
-{
-	GET(UnitClass*, pThis, EBP);
-	GET(int, color, ESI);
-	REF_STACK(int, intensity, STACK_OFFSET(0x1D0, 0x10));
+	auto const& rules = RulesExt::Global();
+	int max = static_cast<int>((ICTintTemp::IsForceShield ? rules->ForceShield_ExtraTintIntensity : rules->IronCurtain_ExtraTintIntensity) * 1000);
 
-	TechnoExt::ApplyCustomTintValues(pThis, color, intensity);
-
-	R->ESI(color);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x423420, AnimClass_Draw_ParentBuildingCheck, 0x6)
-{
-	GET(AnimClass*, pThis, ESI);
-	GET(BuildingClass*, pBuilding, EAX);
-
-	if (!pBuilding)
-		R->EAX(AnimExt::ExtMap.Find(pThis)->ParentBuilding);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4234F4, AnimClass_Draw_TintColor, 0x6)
-{
-	GET(AnimClass*, pThis, ESI);
-	GET_STACK(BuildingClass*, pBuilding, STACK_OFFSET(0x110, -0xFC));
-	REF_STACK(int, color, STACK_OFFSET(0x110, -0xF4));
-	REF_STACK(int, intensity, STACK_OFFSET(0x110, -0xD8));
-
-	int dummy = 0;
-	if (pBuilding && VTable::Get(pBuilding) == BuildingClass::AbsVTable)//TODO fix it correctly
-	TechnoExt::ApplyCustomTintValues(pBuilding, color, !pThis->Type->UseNormalLight ? intensity : dummy);
-	R->EBP(color);
-
-	return 0;
+	R->EAX(intensity + max);
+	return SkipGameCode;
 }

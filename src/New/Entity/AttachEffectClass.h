@@ -17,7 +17,7 @@ public:
 	void AI();
 	void AI_Temporal();
 	void KillAnim();
-	void SetAnimationVisibility(bool visible);
+	void SetAnimationTunnelState(bool visible);
 	AttachEffectTypeClass* GetType() const;
 	void RefreshDuration(int durationOverride = 0);
 	bool ResetIfRecreatable();
@@ -45,6 +45,7 @@ public:
 private:
 	void OnlineCheck();
 	void CloakCheck();
+	void AnimCheck();
 	void CreateAnim();
 
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
@@ -68,6 +69,7 @@ private:
 	AbstractClass* Source;
 	AnimClass* Animation;
 	bool IsAnimHidden;
+	bool IsInTunnel;
 	bool IsUnderTemporal;
 	bool IsOnline;
 	bool IsCloaked;

@@ -430,6 +430,8 @@ New:
 - Allow anchoring extended tooltips to the left side of the sidebar (by Trsdy)
 - Toggle to allow spawned aircraft to attack immediately after being spawned (by Starkku)
 - `ZAdjust` for OverlayTypes (by Starkku)
+- Allow customizing extra tint intensity for Iron Curtain & Force Shield (by Starkku)
+- Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565 (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -738,6 +740,7 @@ Phobos fixes:
 - Fixed an issue where `FireOnce=yes` deploy weapons on vehicles would still fire multiple times if deploy command is issued repeatedly or when not idle (by Starkku)
 - Fixed a game crash when checking BuildLimit if Phobos is running without Ares (by Belonit)
 - Corrected the misinterpretation in the definition of `DiskLaser.Radius` (by Trsdy)
+- Fixed GlobalVariables failed working among scenarios (by Trsdy)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)

@@ -383,7 +383,7 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 /// <param name="pSource">Source AbstractClass instance used for same source check.</param>
 /// <returns>True if techno has active AttachEffects that satisfy the source, false if not.</returns>
 bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource,
-	TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const& minCounts, std::vector<int> const& maxCounts) const
+	TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const
 {
 	unsigned int foundCount = 0;
 	unsigned int typeCounter = 1;
@@ -397,8 +397,8 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
 					continue;
 
-				unsigned int minSize = minCounts.size();
-				unsigned int maxSize = maxCounts.size();
+				unsigned int minSize = minCounts ? minCounts->size() : 0;
+				unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
 
 				if (type->Cumulative && (minSize > 0 || maxSize > 0))
 				{
@@ -406,12 +406,12 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 
 					if (minSize > 0)
 					{
-						if (cumulativeCount < minCounts.at(typeCounter-1 >= minSize ? minSize - 1 : typeCounter - 1))
+						if (cumulativeCount < minCounts->at(typeCounter-1 >= minSize ? minSize - 1 : typeCounter - 1))
 							continue;
 					}
 					if (maxSize > 0)
 					{
-						if (cumulativeCount > maxCounts.at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
+						if (cumulativeCount > maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
 							continue;
 					}
 				}
