@@ -362,7 +362,7 @@ bool AttachEffectClass::CanShowAnim() const
 {
 	return (!this->IsUnderTemporal || this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides)
 		&& (this->IsOnline || this->Type->Animation_OfflineAction != AttachedAnimFlag::Hides)
-		&& !this->IsCloaked && !this->IsInTunnel && !this->IsAnimHidden;
+		&& !this->IsInTunnel && !this->IsAnimHidden;
 }
 
 void AttachEffectClass::SetAnimationTunnelState(bool visible)
