@@ -93,6 +93,28 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 	Data->LoadFromINI(pINI);
 }
 
+void ScenarioExt::ExtData::UpdateAutoDeathObjectsInLimbo()
+{
+	for (auto const pExt : this->AutoDeathObjects)
+	{
+		auto const pTechno = pExt->OwnerObject();
+
+		if (!pTechno->IsInLogic && pTechno->IsAlive)
+			pExt->CheckDeathConditions(true);
+	}
+}
+
+void ScenarioExt::ExtData::UpdateTransportReloaders()
+{
+	for (auto const pExt : this->TransportReloaders)
+	{
+		auto const pTechno = pExt->OwnerObject();
+
+		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
+			pTechno->Reload();
+	}
+}
+
 // =============================
 // load / save
 
@@ -136,6 +158,8 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->Variables[1])
 		.Process(this->ShowBriefing)
 		.Process(this->BriefingTheme)
+		.Process(this->AutoDeathObjects)
+		.Process(this->TransportReloaders)
 		;
 }
 
@@ -241,6 +265,9 @@ DEFINE_HOOK(0x68AD2F, ScenarioClass_LoadFromINI, 0x5)
 DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
 {
 	VeinholeMonsterClass::UpdateAllVeinholes();
+
+	ScenarioExt::Global()->UpdateAutoDeathObjectsInLimbo();
+	ScenarioExt::Global()->UpdateTransportReloaders();
 
 	return 0;
 }
