@@ -8,6 +8,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
@@ -438,17 +439,16 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	// Remove from tracked AutoDeath objects if no longer has AutoDeath
 	if (pOldTypeExt->AutoDeath_Behavior.isset() && !this->TypeExtData->AutoDeath_Behavior.isset())
 	{
-		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedAutoDeathObjects;
+		auto& vec = ScenarioExt::Global()->AutoDeathObjects;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
 	auto const rtti = pOldType->WhatAmI();
 
 	// Remove from limbo reloaders if no longer applicable
-	if (rtti != AbstractType::AircraftType && rtti != AbstractType::BuildingType
-		&& pOldType->Ammo > 0 && pOldTypeExt->ReloadInTransport && !this->TypeExtData->ReloadInTransport)
+	if (pOldType->Ammo > 0 && pOldTypeExt->ReloadInTransport && !this->TypeExtData->ReloadInTransport)
 	{
-		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedTransportReloaders;
+		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
