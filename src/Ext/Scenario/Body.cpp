@@ -177,13 +177,11 @@ void ScenarioExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 
 bool ScenarioExt::LoadGlobals(PhobosStreamReader& Stm)
 {
-	// I am not sure if this will cause data overflow, if there is a more convenient way, please point out.
 	return Stm.Success();
 }
 
 bool ScenarioExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
-	// I am not sure if this will cause data overflow, if there is a more convenient way, please point out.
 	return Stm.Success();
 }
 
