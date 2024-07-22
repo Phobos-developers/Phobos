@@ -48,6 +48,8 @@ public:
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
 		void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
 		void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
+		void SaveVariables();
+		void LoadVariables();
 		static void SaveVariablesToFile(bool isGlobal);
 
 		virtual ~ExtData() = default;
@@ -73,6 +75,7 @@ public:
 	static IStream* g_pStm;
 
 	static bool CellParsed;
+	static std::map<int, ExtendedVariable> GlobalVariables;
 
 	static void Allocate(ScenarioClass* pThis);
 	static void Remove(ScenarioClass* pThis);

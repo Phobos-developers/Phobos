@@ -115,6 +115,58 @@ DEFINE_HOOK(0x685EB1, PhobosSaveVariables, 0x5)//Lose
 		ScenarioExt::ExtData::SaveVariablesToFile(true);
 	}
 
+	if (R->Origin() == 0x6857EA)
+		ScenarioExt::Global()->SaveVariables();
+
 	return 0;
 }
 
+DEFINE_HOOK(0x4C6217, ScenarioClass_LoadGlobalVariables, 0x5)
+{
+	ScenarioExt::Global()->LoadVariables();
+	return 0x4C622F;
+}
+
+DEFINE_HOOK(0x685A38, ScenarioClass_sub_685670_SetNextScenario, 0x6)
+{
+	enum { AltNextScenario = 0x685A4C, NextScenario = 0x685A59, Continue = 0x685A63 };
+
+	if (ScenarioClass::Instance->SkipMapSelect)
+	{
+		if (strcmp(ScenarioClass::Instance->AltNextScenario, ""))
+		{
+			auto const& LocalVariables = ScenarioExt::Global()->Variables[false];
+			auto const& GlobalVariables = ScenarioExt::Global()->Variables[true];
+
+			if (!LocalVariables.empty())
+			{
+				for (auto const& itr : LocalVariables)
+				{
+					if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
+						continue;
+
+					return AltNextScenario;
+				}
+			}
+
+			if (!GlobalVariables.empty())
+			{
+				for (auto const& itr : GlobalVariables)
+				{
+					if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
+						continue;
+
+					return AltNextScenario;
+				}
+
+				if (GlobalVariables.contains(1) && GlobalVariables.find(1)->second.Value > 0)
+					return AltNextScenario;
+			}
+		}
+
+		if (strcmp(ScenarioClass::Instance->NextScenario, ""))
+			return NextScenario;
+	}
+
+	return Continue;
+}
