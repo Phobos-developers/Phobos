@@ -115,16 +115,7 @@ DEFINE_HOOK(0x685EB1, PhobosSaveVariables, 0x5)//Lose
 		ScenarioExt::ExtData::SaveVariablesToFile(true);
 	}
 
-	if (R->Origin() == 0x6857EA)
-		ScenarioExt::Global()->SaveVariables();
-
 	return 0;
-}
-
-DEFINE_HOOK(0x4C6217, ScenarioClass_LoadGlobalVariables, 0x5)
-{
-	ScenarioExt::Global()->LoadVariables();
-	return 0x4C622F;
 }
 
 DEFINE_HOOK(0x685A38, ScenarioClass_sub_685670_SetNextScenario, 0x6)

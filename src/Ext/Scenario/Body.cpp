@@ -6,7 +6,6 @@
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
 bool ScenarioExt::CellParsed = false;
-std::map<int, ExtendedVariable> ScenarioExt::GlobalVariables;
 
 void ScenarioExt::ExtData::SetVariableToByID(bool bIsGlobal, int nIndex, char bState)
 {
@@ -77,36 +76,6 @@ void ScenarioExt::ExtData::SaveVariablesToFile(bool isGlobal)
 
 	pINI->WriteCCFile(pFile);
 	pFile->Close();
-}
-
-void ScenarioExt::ExtData::SaveVariables()
-{
-	if (!SessionClass::Instance->IsCampaign())
-		return;
-
-	ScenarioExt::GlobalVariables.clear();
-	auto& globalVariables = ScenarioExt::Global()->Variables[true];
-
-	for (auto const& itr : globalVariables)
-	{
-		if (itr.second.Value <= 0)
-			continue;
-
-		ScenarioExt::GlobalVariables[itr.first] = itr.second;
-	}
-}
-
-void ScenarioExt::ExtData::LoadVariables()
-{
-	if (!SessionClass::Instance->IsCampaign())
-		return;
-
-	auto& globalVariables = ScenarioExt::Global()->Variables[true];
-
-	for (auto const& itr : ScenarioExt::GlobalVariables)
-	{
-		globalVariables[itr.first] = itr.second;
-	}
 }
 
 void ScenarioExt::Allocate(ScenarioClass* pThis)
@@ -209,17 +178,13 @@ void ScenarioExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 bool ScenarioExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	// I am not sure if this will cause data overflow, if there is a more convenient way, please point out.
-	return Stm
-		.Process(ScenarioExt::GlobalVariables)
-		.Success();
+	return Stm.Success();
 }
 
 bool ScenarioExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	// I am not sure if this will cause data overflow, if there is a more convenient way, please point out.
-	return Stm
-		.Process(ScenarioExt::GlobalVariables)
-		.Success();
+	return Stm.Success();
 }
 
 
