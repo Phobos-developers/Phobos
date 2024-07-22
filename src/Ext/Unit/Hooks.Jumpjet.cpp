@@ -125,9 +125,6 @@ DEFINE_HOOK(0x736AEA, UnitClass_UpdateRotation_TurretFacing_Idle, 0x6)
 	GET(UnitClass* const, pThis, ESI);
 	enum { SkipFacingForward = 0x736BE2 };
 
-	if (!SessionClass::IsSingleplayer()) //Only for single player
-		return 0;
-
 	if (!pThis->Type->TurretSpins)
 		pThis->unknown_bool_6AF = pThis->SecondaryFacing.IsRotating();
 

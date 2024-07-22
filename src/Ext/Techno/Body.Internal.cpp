@@ -163,10 +163,13 @@ void TechnoExt::ExtData::InitializeUnitIdleAction()
 	if (this->TypeExtData->UnitIdleRotateTurret.Get(RulesExt::Global()->UnitIdleRotateTurret))
 		this->UnitIdleAction = true;
 
+	this->UnitIdleTurretROT = static_cast<int>(pThis->SecondaryFacing.ROT.GetDir());
+
+	if (!SessionClass::IsSingleplayer())
+		return;
+
 	if (this->TypeExtData->UnitIdlePointToMouse.Get(RulesExt::Global()->UnitIdlePointToMouse))
 		this->UnitIdleActionSelected = true;
-
-	this->UnitIdleTurretROT = static_cast<int>(pThis->SecondaryFacing.ROT.GetDir());
 }
 
 void TechnoExt::ExtData::InitializeAttachEffects()
