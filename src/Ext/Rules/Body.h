@@ -2,7 +2,6 @@
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
-#include <GameStrings.h>
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>

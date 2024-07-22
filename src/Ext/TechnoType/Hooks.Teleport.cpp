@@ -46,8 +46,18 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	}
 	pLocomotor->Timer.Start(duree);
 
-	R->EDI(&pLocomotor->Timer);
-	return 0x719576;
+	pLinked->WarpingOut = true;
+
+	if (auto pUnit = specific_cast<UnitClass*>(pLinked))
+	{
+		if (pUnit->Type->Harvester || pUnit->Type->Weeder)
+		{
+			pLocomotor->Timer.Start(0);
+			pLinked->WarpingOut = false;
+		}
+	}
+
+	return 0x7195BC;
 }
 
 DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x5)

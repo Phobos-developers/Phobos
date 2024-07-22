@@ -563,8 +563,7 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 		else if (!pThis->MindControlRingAnim && this->MindControlRingAnimType &&
 			pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive)
 		{
-			auto coords = CoordStruct::Empty;
-			coords = *pThis->GetCoords(&coords);
+			auto coords = pThis->GetCoords();
 			int offset = 0;
 
 			if (const auto pBuilding = specific_cast<BuildingClass*>(pThis))

@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <GameStrings.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 

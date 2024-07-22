@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <SessionClass.h>
-#include <GameStrings.h>
+#include <VeinholeMonsterClass.h>
 
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -235,5 +235,12 @@ DEFINE_HOOK(0x68AD2F, ScenarioClass_LoadFromINI, 0x5)
 	GET(CCINIClass*, pINI, EDI);
 
 	ScenarioExt::LoadFromINIFile(pItem, pINI);
+	return 0;
+}
+
+DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
+{
+	VeinholeMonsterClass::UpdateAllVeinholes();
+
 	return 0;
 }
