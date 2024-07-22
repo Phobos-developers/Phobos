@@ -10,6 +10,7 @@
 #include <RadarEventClass.h>
 #include <TacticalClass.h>
 #include <Ext/House/Body.h>
+#include <ScenarioClass.h>
 
 namespace RD
 {
@@ -20,19 +21,19 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
-	
+
 	const auto pHouse = pThis->Owner;
 	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 	const auto pWH = args->WH;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	const auto pSourceHouse = args->SourceHouse;
 
-	if (pThis && pThis->IsOwnedByCurrentPlayer && 
+	if (pThis && pThis->IsOwnedByCurrentPlayer &&
 		*args->Damage>1 &&
 		pHouse && pHouse->IsInPlayerControl &&
 		pHouseExt && !pHouseExt->CombatAlertTimer.HasTimeLeft() &&
 		!(RulesExt::Global()->CombatAlert_SuppressIfAllyDamage && pHouse->IsAlliedWith(pSourceHouse)) &&
-		RulesExt::Global()->CombatAlert && 
+		RulesExt::Global()->CombatAlert &&
 		pWHExt && !pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious.Get(true)) &&
 		pThis->IsInPlayfield)
 	{
@@ -57,8 +58,24 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			{
 				pHouseExt->CombatAlertTimer.Start(RulesExt::Global()->CombatAlert_Interval);
 				RadarEventClass::Create(RadarEventType::Combat, CellClass::Coord2Cell(coordInMap));
-				if (RulesExt::Global()->CombatAlert_EVA)
-					VoxClass::PlayIndex(pTypeExt->EVA_Combat.Get(VoxClass::FindIndex((const char*)"EVA_UnitsInCombat")));
+				if (RulesExt::Global()->CombatAlert_MakeAVoice)
+				{// No one want to play two sound at a time, I guess?
+					int index = -1;
+					if (RulesExt::Global()->CombatAlert_UseFeedbackVoice && pType->VoiceFeedback.Count > 0)
+					{// Use VoiceFeedback first
+						index = pType->VoiceFeedback.GetItem(0);
+						VocClass::PlayGlobal(index, 0x2000, 1.0);
+					}
+					else if (RulesExt::Global()->CombatAlert_UseAttackVoice && pType->VoiceAttack.Count > 0)
+					{// Use VoiceAttack then
+						index = pType->VoiceAttack.GetItem(0);
+						VocClass::PlayGlobal(index, 0x2000, 1.0);
+					}
+					else if (RulesExt::Global()->CombatAlert_UseEVA && (index = pTypeExt->CombatAlert_EVA.Get(VoxClass::FindIndex((const char*)"EVA_UnitsInCombat")), index != -1))
+					{// Use Eva finally
+						VoxClass::PlayIndex(index);
+					}
+				}
 			}
 		}
 	}

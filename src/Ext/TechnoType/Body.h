@@ -81,8 +81,8 @@ public:
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
 
-		NullableIdx<VoxClass> EVA_Combat;
 		Valueable<bool> CombatAlert;
+		NullableIdx<VoxClass> CombatAlert_EVA;
 		Valueable<bool> CombatAlert_NotBuilding;
 
 		NullableIdx<VocClass> VoiceCreated;
@@ -354,8 +354,8 @@ public:
 			, SellSound {}
 			, EVA_Sold {}
 
-			, EVA_Combat {}
 			, CombatAlert { true }
+			, CombatAlert_EVA {}
 			, CombatAlert_NotBuilding { false }
 
 			, EnemyUIName {}
