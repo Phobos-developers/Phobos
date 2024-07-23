@@ -431,18 +431,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	auto [canParse, resetValue] = PassengerDeletionTypeClass::CanParse(exINI, pSection);
 
-	if (canParse)
-	{
-		if (this->PassengerDeletionType == nullptr)
-			this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
+	if (canParse && !this->PassengerDeletionType)
+		this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
 
-		this->PassengerDeletionType->LoadFromINI(pINI, pSection);
-	}
-	else if (resetValue)
+	if (this->PassengerDeletionType)
 	{
-		this->PassengerDeletionType.reset();
+		if (resetValue)
+			this->PassengerDeletionType.reset();
+		else
+			this->PassengerDeletionType->LoadFromINI(pINI, pSection);
 	}
-
 
 	Nullable<bool> isInterceptor;
 	isInterceptor.Read(exINI, pSection, "Interceptor");
