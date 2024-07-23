@@ -113,9 +113,7 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 	if (pIndex && pIndex->Is_Valid_Key())
 		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
 
-	*ret = pThis->LocomotionClass::Draw_Matrix(pIndex);
-	if (slope_idx && pIndex && pIndex->Is_Valid_Key())
-		*ret = Matrix3D::VoxelRampMatrix[slope_idx] * *ret;
+	*ret = Matrix3D::VoxelRampMatrix[slope_idx] * pThis->LocomotionClass::Draw_Matrix(pIndex);
 
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;

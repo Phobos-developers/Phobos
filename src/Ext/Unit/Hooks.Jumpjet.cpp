@@ -182,16 +182,14 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iloco);
 	auto linked = pThis->LinkedTo;
 	// no more TiltCrashJumpjet, do that above svp
-	bool&& onGround = pThis->State == JumpjetLocomotionClass::State::Grounded;
+	bool const onGround = pThis->State == JumpjetLocomotionClass::State::Grounded;
 	// Man, what can I say, you don't want to stick your rotor into the ground
 	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
 
 	if (onGround && pIndex && pIndex->Is_Valid_Key())
 		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
 
-	*ret = pThis->LocomotionClass::Draw_Matrix(pIndex);
-	if (onGround && slope_idx && pIndex && pIndex->Is_Valid_Key())
-		*ret = Matrix3D::VoxelRampMatrix[slope_idx] * *ret;
+	*ret = Matrix3D::VoxelRampMatrix[onGround ? slope_idx : 0] * pThis->LocomotionClass::Draw_Matrix(pIndex);
 
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
