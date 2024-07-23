@@ -5,7 +5,7 @@
 #include <ScenarioClass.h>
 
 #include <Ext/Anim/Body.h>
-#include <Ext/House/Body.h>
+#include <Ext/Scenario/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -19,16 +19,14 @@ TechnoExt::ExtData::~ExtData()
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto& vec = pOwnerExt->OwnedAutoDeathObjects;
+		auto& vec = ScenarioExt::Global()->AutoDeathObjects;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	if (pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
+	if (pThis->Transporter && pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
 		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
 	{
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto& vec = pOwnerExt->OwnedTransportReloaders;
+		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 

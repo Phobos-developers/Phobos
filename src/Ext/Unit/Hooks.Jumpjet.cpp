@@ -245,6 +245,7 @@ DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 
 	pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
 	pThis->LocomotionFacing.SetDesired(pThis->LinkedTo->PrimaryFacing.Desired());
+	pThis->LinkedTo->PrimaryFacing.SetROT(pThis->TurnRate);
 
 	return 0;
 }
@@ -260,3 +261,20 @@ void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 }
 
 DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))
+
+DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
+{
+	GET(FootClass*, pLinked, EAX);
+	auto const* pType = pLinked->GetTechnoType();
+
+	pLinked->PrimaryFacing.SetROT(pType->ROT);
+
+	if (pType->SensorsSight)
+	{
+		pLinked->RemoveSensorsAt(pLinked->LastFlightMapCoords);
+		pLinked->RemoveSensorsAt(pLinked->GetMapCoords());
+		pLinked->AddSensorsAt(pLinked->GetMapCoords());
+	}
+
+	return 0;
+}
