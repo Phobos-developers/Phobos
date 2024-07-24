@@ -1,8 +1,9 @@
 #include <AnimClass.h>
 #include <UnitClass.h>
 #include <TechnoClass.h>
+#include <TunnelLocomotionClass.h>
 
-#include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Macro.h>
@@ -127,6 +128,23 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 
 		if (pTypeExt->DeployingAnim_KeepUnitVisible)
 			return KeepUnitVisible;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73D6E6, UnitClass_Unload_Subterranean, 0x6)
+{
+	enum { ReturnFromFunction = 0x73DFB0 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Tunnel)
+	{
+		auto const pLoco = static_cast<TunnelLocomotionClass*>(pThis->Locomotor.GetInterfacePtr());
+
+		if (pLoco->State != TunnelLocomotionClass::State::Idle)
+			return ReturnFromFunction;
 	}
 
 	return 0;
