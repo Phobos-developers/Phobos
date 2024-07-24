@@ -49,6 +49,11 @@ public:
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+	Valueable<bool> ReflectDamage;
+	Nullable<WarheadTypeClass*> ReflectDamage_Warhead;
+	Valueable<bool> ReflectDamage_Warhead_Detonate;
+	Valueable<double> ReflectDamage_Multiplier;
+	Valueable<AffectedHouse> ReflectDamage_AffectsHouses;
 	Valueable<bool> DisableWeapons;
 
 	std::vector<std::string> Groups;
@@ -91,6 +96,11 @@ public:
 		, Crit_DisallowWarheads {}
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouses{ AffectedHouse::All }
+		, ReflectDamage { false }
+		, ReflectDamage_Warhead {}
+		, ReflectDamage_Warhead_Detonate { false }
+		, ReflectDamage_Multiplier { 1.0 }
+		, ReflectDamage_AffectsHouses { AffectedHouse::All }
 		, DisableWeapons { false }
 		, Groups {}
 	{};
