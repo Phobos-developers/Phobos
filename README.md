@@ -1,16 +1,3 @@
-# 由于本人GitHub账号认证问题，这个仓库在PR合并后会立即删除
-
----
-
-# Due to some issues with my GitHub account, this repository will be immediately deleted after the PR merge
-
----
-# .
-# .
-# .
-# .
-# .
----
 ![Phobos YR Engine Extension](logo.png)
 
 [![Github All Releases](https://img.shields.io/github/downloads/Phobos-developers/Phobos/total.svg)](https://github.com/Phobos-developers/Phobos/releases)
