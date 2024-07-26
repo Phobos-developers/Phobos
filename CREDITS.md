@@ -267,6 +267,7 @@ This page lists all the individual contributions to the project by their author.
   - `IsSonic` wave drawing crash fix
   - Customizable electric bolt duration and electric bolt-related fixes
   - Airstrike flare visual customizations & fixes
+  - Delayed fire weapons
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

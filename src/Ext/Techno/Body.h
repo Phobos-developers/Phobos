@@ -68,6 +68,10 @@ public:
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
 		CDTimerClass TiberiumEater_Timer;
+		bool FiringSequencePaused;
+		int DelayedFireWeaponIndex;
+		CDTimerClass DelayedFireTimer;
+		AnimClass* CurrentDelayedFireAnim;
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
@@ -118,6 +122,10 @@ public:
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
 			, FiringAnimationTimer {}
+			, FiringSequencePaused { false }
+			, DelayedFireWeaponIndex { -1 }
+			, DelayedFireTimer {}
+			, CurrentDelayedFireAnim { nullptr }
 		{ }
 
 		void OnEarlyUpdate();
@@ -153,6 +161,7 @@ public:
 		void InitializeDisplayInfo();
 		void ApplyMindControlRangeLimit();
 		int ApplyForceWeaponInRange(AbstractClass* pTarget);
+		void ResetDelayedFireTimer();
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 
@@ -231,6 +240,8 @@ public:
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
 	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
+	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
+	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weaponIndex, int firingFrame);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

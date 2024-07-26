@@ -393,6 +393,7 @@ New:
 - [Several new Infotypes, no display in specific status and a new single frame display method](User-Interface.md#digital-display) (by CrimRecya)
 - Targeting limitation for berzerk technos (by TaranDahl)
 - Allowed faking digital display for `InfoType=Health` at disguise (by Ollerus)
+- [Delayed fire weapons](New-or-Enhanced-Logics.md#delayed-firing) (by Starkku)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

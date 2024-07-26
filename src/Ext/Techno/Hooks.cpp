@@ -985,7 +985,24 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	pThis->Target = pTarget;
 	pExt->UpdateGattlingRateDownReset();
 
+	if (!pThis->Target)
+		pExt->ResetDelayedFireTimer();
+
 	return 0x6FCF44;
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x6FABC4, TechnoClass_AI_AnimationPaused, 0x6)
+{
+	enum { SkipGameCode = 0x6FAC31 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->FiringSequencePaused)
+		return SkipGameCode;
+
+	return 0;
+}
