@@ -43,7 +43,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		}
 	}
 
-	if (pExt->AE_ReflectDamage && nDamageLeft > 0 && args->Attacker)
+	if (pExt->AE.ReflectDamage && nDamageLeft > 0 && args->Attacker)
 	{
 		for (auto& attachEffect : pExt->AttachedEffects)
 		{

@@ -37,7 +37,7 @@ public:
 	static int Attach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 		AbstractClass* pSource, std::vector<int>& durationOverrides, std::vector<int> const& delays, std::vector<int> const& initialDelays, std::vector<int> const& recreationDelays);
 
-	static int Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget,int minCount = -1, int maxCount = -1);
+	static int Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount = -1, int maxCount = -1);
 	static int Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts);
 	static int DetachByGroups(std::vector<std::string> const& groups, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
@@ -96,3 +96,36 @@ public:
 	bool IsFirstCumulativeInstance;
 };
 
+// Container for TechnoClass-specific AttachEffect fields.
+class AttachEffectTechnoProperties
+{
+public:
+	double FirepowerMultiplier;
+	double ArmorMultiplier;
+	double SpeedMultiplier;
+	double ROFMultiplier;
+	bool Cloakable;
+	bool ForceDecloak;
+	bool DisableWeapons;
+	bool HasTint;
+	bool ReflectDamage;
+
+	AttachEffectTechnoProperties() :
+		FirepowerMultiplier { 1.0 }
+		, ArmorMultiplier { 1.0 }
+		, SpeedMultiplier { 1.0 }
+		, ROFMultiplier { 1.0 }
+		, Cloakable { false }
+		, ForceDecloak { false }
+		, DisableWeapons { false }
+		, HasTint { false }
+		, ReflectDamage { false }
+	{}
+
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+	bool Save(PhobosStreamWriter& Stm) const;
+
+private:
+	template <typename T>
+	bool Serialize(T& Stm);
+};

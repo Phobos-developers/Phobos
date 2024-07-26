@@ -564,10 +564,10 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 FireError __fastcall TechnoClass_TargetSomethingNearby_CanFire_Wrapper(TechnoClass* pThis, void* _, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	bool disableWeapons = pExt->AE_DisableWeapons;
-	pExt->AE_DisableWeapons = false;
+	bool disableWeapons = pExt->AE.DisableWeapons;
+	pExt->AE.DisableWeapons = false;
 	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
-	pExt->AE_DisableWeapons = disableWeapons;
+	pExt->AE.DisableWeapons = disableWeapons;
 	return fireError;
 }
 

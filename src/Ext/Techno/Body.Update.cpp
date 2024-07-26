@@ -1010,15 +1010,15 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		reflectsDamage |= type->ReflectDamage;
 	}
 
-	this->AE_FirepowerMultiplier = firepower;
-	this->AE_ArmorMultiplier = armor;
-	this->AE_SpeedMultiplier = speed;
-	this->AE_ROFMultiplier = ROF;
-	this->AE_Cloakable = cloak;
-	this->AE_ForceDecloak = forceDecloak;
-	this->AE_DisableWeapons = disableWeapons;
-	this->AE_HasTint = hasTint;
-	this->AE_ReflectDamage = reflectsDamage;
+	this->AE.FirepowerMultiplier = firepower;
+	this->AE.ArmorMultiplier = armor;
+	this->AE.SpeedMultiplier = speed;
+	this->AE.ROFMultiplier = ROF;
+	this->AE.Cloakable = cloak;
+	this->AE.ForceDecloak = forceDecloak;
+	this->AE.DisableWeapons = disableWeapons;
+	this->AE.HasTint = hasTint;
+	this->AE.ReflectDamage = reflectsDamage;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
