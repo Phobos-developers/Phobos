@@ -418,6 +418,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
 
+	this->UpdateSelfOwnedAttachEffects();
+
 	// Recreate Laser Trails
 	for (auto const& entry : this->TypeExtData->LaserTrailData)
 	{
@@ -869,6 +871,83 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	{
 		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
 	}
+}
+
+// Updates self-owned (defined on TechnoType) AttachEffects, called on type conversion.
+void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
+{
+	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = this->TypeExtData;
+	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
+	std::vector<WeaponTypeClass*> expireWeapons;
+	std::vector<AttachEffectTypeClass*> existingTypes;
+	bool markForRedraw = false;
+
+	// Delete ones on old type and not on current.
+	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
+	{
+		auto const attachEffect = it->get();
+		auto const pType = attachEffect->GetType();
+		bool selfOwned = attachEffect->IsSelfOwned();
+		bool remove = selfOwned && !pTypeExt->AttachEffect_AttachTypes.Contains(pType);
+
+		if (remove)
+		{
+			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
+			{
+				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
+					expireWeapons.push_back(pType->ExpireWeapon);
+			}
+
+			markForRedraw |= pType->HasTint();
+			it = this->AttachedEffects.erase(it);
+		}
+		else
+		{
+			if (selfOwned)
+				existingTypes.push_back(pType);
+
+			it++;
+		}
+	}
+
+	auto const coords = pThis->GetCoords();
+	auto const pOwner = pThis->Owner;
+
+	for (auto const& pWeapon : expireWeapons)
+	{
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+	}
+
+	bool attached = false;
+	bool hasTint = false;
+
+	// Add new ones.
+	for (size_t i = 0; i < pTypeExt->AttachEffect_AttachTypes.size(); i++)
+	{
+		auto const pAEType = pTypeExt->AttachEffect_AttachTypes[i];
+
+		// Skip ones that are already there.
+		if (count(existingTypes.begin(), existingTypes.end(), pAEType))
+			continue;
+
+		int durationOverride = 0;
+		int delay = 0;
+		int initialDelay = 0;
+		int recreationDelay = -1;
+
+		AttachEffectClass::SetValuesHelper(i, pTypeExt->AttachEffect_DurationOverrides, pTypeExt->AttachEffect_Delays, pTypeExt->AttachEffect_InitialDelays, pTypeExt->AttachEffect_RecreationDelays, durationOverride, delay, initialDelay, recreationDelay);
+		bool wasAttached = AttachEffectClass::Attach(pAEType, pThis, pThis->Owner, pThis, pThis, durationOverride, delay, initialDelay, recreationDelay);
+
+		attached |= initialDelay <= 0 && wasAttached;
+		hasTint |= wasAttached && pAEType->HasTint();
+	}
+
+	if (!attached)
+		this->RecalculateStatMultipliers();
+
+	if (markForRedraw && !hasTint)
+		pThis->MarkForRedraw();
 }
 
 // Updates state of AttachEffects of same cumulative type on techno, (which one is first active instance existing, if any), kills animations if needed.
