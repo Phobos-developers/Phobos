@@ -518,17 +518,7 @@ int AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types, 
 		int initialDelay = 0;
 		int recreationDelay = -1;
 
-		if (durationOverrides.size() > 0)
-			durationOverride = durationOverrides[durationOverrides.size() > i ? i : durationOverrides.size() - 1];
-
-		if (delays.size() > 0)
-			delay = delays[delays.size() > i ? i : delays.size() - 1];
-
-		if (initialDelays.size() > 0)
-			initialDelay = initialDelays[initialDelays.size() > i ? i : initialDelays.size() - 1];
-
-		if (recreationDelays.size() > 0)
-			recreationDelay = recreationDelays[recreationDelays.size() > i ? i : recreationDelays.size() - 1];
+		AttachEffectClass::SetValuesHelper(i, durationOverrides, delays, initialDelays, recreationDelays, durationOverride, delay, initialDelay, recreationDelay);
 
 		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay))
 		{
@@ -889,3 +879,30 @@ bool AttachEffectClass::Save(PhobosStreamWriter& Stm) const
 	return const_cast<AttachEffectClass*>(this)->Serialize(Stm);
 }
 
+// AttachEffectTechnoProperties
+
+template <typename T>
+bool AttachEffectTechnoProperties::Serialize(T& Stm)
+{
+	return Stm
+		.Process(this->FirepowerMultiplier)
+		.Process(this->ArmorMultiplier)
+		.Process(this->SpeedMultiplier)
+		.Process(this->ROFMultiplier)
+		.Process(this->Cloakable)
+		.Process(this->ForceDecloak)
+		.Process(this->DisableWeapons)
+		.Process(this->HasTint)
+		.Process(this->ReflectDamage)
+		.Success();
+}
+
+bool AttachEffectTechnoProperties::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Serialize(Stm);
+}
+
+bool AttachEffectTechnoProperties::Save(PhobosStreamWriter& Stm) const
+{
+	return const_cast<AttachEffectTechnoProperties*>(this)->Serialize(Stm);
+}
