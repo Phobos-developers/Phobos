@@ -879,30 +879,3 @@ bool AttachEffectClass::Save(PhobosStreamWriter& Stm) const
 	return const_cast<AttachEffectClass*>(this)->Serialize(Stm);
 }
 
-// AttachEffectTechnoProperties
-
-template <typename T>
-bool AttachEffectTechnoProperties::Serialize(T& Stm)
-{
-	return Stm
-		.Process(this->FirepowerMultiplier)
-		.Process(this->ArmorMultiplier)
-		.Process(this->SpeedMultiplier)
-		.Process(this->ROFMultiplier)
-		.Process(this->Cloakable)
-		.Process(this->ForceDecloak)
-		.Process(this->DisableWeapons)
-		.Process(this->HasTint)
-		.Process(this->ReflectDamage)
-		.Success();
-}
-
-bool AttachEffectTechnoProperties::Load(PhobosStreamReader& Stm, bool RegisterForChange)
-{
-	return Serialize(Stm);
-}
-
-bool AttachEffectTechnoProperties::Save(PhobosStreamWriter& Stm) const
-{
-	return const_cast<AttachEffectTechnoProperties*>(this)->Serialize(Stm);
-}
