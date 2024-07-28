@@ -413,10 +413,11 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `CreateUnit.Facing` determines the initial facing of created VehicleType.
     - `CreateUnit.RandomFacing`, if set to true, makes it so that a random facing is picked instead.
     - `CreateUnit.InheritFacings` and `CreateUnit.InheritTurretFacings` inherit facings for vehicle body and turret respectively from the destroyed vehicle if the animation is a vehicle destroy animation. `InheritTurretFacings` does not work with jumpjet vehicles due to technical constraints.
-  - `CreateUnit.AlwaysSpawnOnGround`, if set to true, ensures the vehicle will be created on the cell at ground level even if animation is in air.
+  - `CreateUnit.AlwaysSpawnOnGround`, if set to true, ensures the vehicle will be created on the cell at ground level even if animation is in air. If set to false, jumpjet units spawned on ground will take off automatically after being spawned regardless.
   - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles if possible.
   - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
-
+  - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit. Ignored if `CreateUnit.AlwaysSpawnOnGround` is set to true.
+  
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                             ; AnimationType
@@ -431,6 +432,7 @@ CreateUnit.InheritTurretFacings=false  ; boolean
 CreateUnit.AlwaysSpawnOnGround=false   ; boolean
 CreateUnit.ConsiderPathfinding=false   ; boolean
 CreateUnit.SpawnAnim=                  ; Animation
+CreareUnit.SpawnHeight=                ; integer, height in leptons
 ```
 
 ```{note}
