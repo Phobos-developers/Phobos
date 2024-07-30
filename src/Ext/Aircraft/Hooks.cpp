@@ -253,15 +253,26 @@ DEFINE_HOOK(0x4CF31C, FlyLocomotionClass_FlightUpdate_LandingDir, 0x9)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x446F6C, BuildingClass_GrandOpening_PoseDir, 0x9)
+namespace SeparateAircraftTemp
+{
+	BuildingClass* pBuilding = nullptr;
+}
+
+DEFINE_HOOK(0x446F57, BuildingClass_GrandOpening_PoseDir_SetContext, 0x6)
 {
 	GET(BuildingClass*, pThis, EBP);
-	GET(AircraftClass*, pAircraft, ESI);
 
-	R->EAX(AircraftExt::GetLandingDir(pAircraft, pThis));
+	SeparateAircraftTemp::pBuilding = pThis;
 
 	return 0;
 }
+
+DirType _fastcall AircraftClass_PoseDir_Wrapper(AircraftClass* pThis)
+{
+	return AircraftExt::GetLandingDir(pThis, SeparateAircraftTemp::pBuilding);
+}
+
+DEFINE_JUMP(CALL, 0x446F67, GET_OFFSET(AircraftClass_PoseDir_Wrapper)); // BuildingClass_GrandOpening
 
 DEFINE_HOOK(0x443FC7, BuildingClass_ExitObject_PoseDir1, 0x8)
 {
