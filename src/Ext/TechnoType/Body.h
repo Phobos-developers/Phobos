@@ -227,6 +227,11 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
+		Valueable<int> Spawner_RecycleRange;
+		Valueable<CoordStruct> Spawner_RecycleFLH;
+		Valueable<bool> Spawner_RecycleOnTurret;
+		Valueable<AnimTypeClass*> Spawner_RecycleAnim;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -449,6 +454,11 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+
+			, Spawner_RecycleRange { -1 }
+			, Spawner_RecycleFLH { {0,0,0} }
+			, Spawner_RecycleOnTurret { false }
+			, Spawner_RecycleAnim { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;
