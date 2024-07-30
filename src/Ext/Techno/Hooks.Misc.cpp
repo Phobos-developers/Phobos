@@ -134,7 +134,7 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 	int RecycleRange = pSpawnerExt->Spawner_RecycleRange;
 	if (RecycleRange == -1)
 	{
-		if (DeltaCrd.X == 0 && DeltaCrd.Y == 0 && DeltaCrd.Z < 20)
+		if (DeltaCrd.X <= 182 && DeltaCrd.Y <= 182 && DeltaCrd.Z < 20)
 		{
 			bShouldRecycleSpawned = true;
 		}
