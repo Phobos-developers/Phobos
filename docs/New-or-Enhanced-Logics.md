@@ -1274,6 +1274,21 @@ In `rulesmd.ini`:
 RemoveMindControl=false  ; boolean
 ```
 
+### CellSpread enhancement
+
+- In vanilla, the damage area of an AOE warhead is spherical. In some case, e.g. you want to make a warhead superweapon buff all units in an area, the affectted range for air units is always smaller than ground units. Now you can use a new flag `CellSpread.Cylinder` to overcome this problem.
+- `AffectsInAir` allow you to make a warhead only damage the units with height more than 208.
+- `AffectsOnFloor` allow you to make a warhead only damage the units with height less than 208.
+- Noting that these features work independently with the ares flag `DamageAirThreshold`. A warhead with `CellSpread.Cylinder` detonating on floor will not affect units in air, unless it has `DamageAirThreshold = -1`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]              ; Warhead
+CellSpread.Cylinder=false  ; boolean
+AffectsInAir=true          ; boolean
+AffectsOnFloor=true        ; boolean
+```
+
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
