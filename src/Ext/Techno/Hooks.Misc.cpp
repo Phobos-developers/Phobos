@@ -139,7 +139,7 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 		{
 			bShouldRecycleSpawned = true;
 		}
-		if (pSpawner->WhatAmI() != AbstractType::Building && pSpawnedMapCrd.X == pSpawnerMapCrd->X && pSpawnedMapCrd.Y == pSpawnerMapCrd->Y && pSpawnedMapCrd.Z < 20)
+		if (pSpawner->WhatAmI() != AbstractType::Building && pSpawnedMapCrd.X == pSpawnerMapCrd->X && pSpawnedMapCrd.Y == pSpawnerMapCrd->Y && DeltaCrd.Z < 20)
 		{
 			bShouldRecycleSpawned = true;
 		}
