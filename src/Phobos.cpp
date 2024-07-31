@@ -118,7 +118,7 @@ void Phobos::PhobosCheckUpdate()
     if (handle == nullptr)
         return;
 
-    constexpr auto api_url = TEXT("https://api.github.com/repos/Phobos-developers/Phobos/tags"); // This is the API URL
+    constexpr auto api_url = TEXT("https://api.github.com/repos/Phobos-developers/Phobos/tags"); // API URL
 
     const scoped_handle request = InternetOpenUrl(handle, api_url, nullptr, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_PRAGMA_NOCACHE | INTERNET_FLAG_NO_CACHE_WRITE, 0);
     if (request == nullptr)
