@@ -22,6 +22,7 @@ const char* Phobos::AppIconPath = nullptr;
 
 bool Phobos::DisplayDamageNumbers = false;
 bool Phobos::IsLoadingSaveGame = false;
+unsigned int Phobos::Phobos_latest_Version[4] = {};
 
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
@@ -30,6 +31,17 @@ const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(B
 #else
 //const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
 #endif
+
+struct scoped_handle
+{
+    scoped_handle(HINTERNET handle) : handle(handle) {}
+    ~scoped_handle() { InternetCloseHandle(handle); }
+
+    operator HINTERNET() const { return handle; }
+
+private:
+    HINTERNET handle;
+};
 
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
@@ -137,6 +149,58 @@ void Phobos::ExeRun()
 #endif
 }
 
+void Phobos::PhobosCheckUpdate()
+{
+    const scoped_handle handle = InternetOpen(TEXT("Phobos"), INTERNET_OPEN_TYPE_PRECONFIG, nullptr, nullptr, 0);
+    if (handle == nullptr)
+        return;
+
+    constexpr auto api_url = TEXT("https://api.github.com/repos/Phobos-developers/Phobos/tags"); // 替换为实际的API URL
+
+    const scoped_handle request = InternetOpenUrl(handle, api_url, nullptr, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_PRAGMA_NOCACHE | INTERNET_FLAG_NO_CACHE_WRITE, 0);
+    if (request == nullptr)
+        return;
+    DWORD timeout = 2000;
+    InternetSetOption(request, INTERNET_OPTION_CONNECT_TIMEOUT, &timeout, sizeof(timeout));
+    InternetSetOption(request, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout));
+
+    char response_data[128];
+    if (DWORD len = 0; InternetReadFile(request, response_data, sizeof(response_data) - 1, &len) && len > 0)
+    {
+        response_data[len] = '\0';
+
+        const char *version_major_offset = std::strchr(response_data, 'v');
+        if (version_major_offset == nullptr) return; else version_major_offset++;
+        const char *version_minor_offset = std::strchr(version_major_offset, '.');
+        if (version_minor_offset == nullptr) return; else version_minor_offset++;
+        const char *version_revision_offset = std::strchr(version_minor_offset, '.');
+        if (version_revision_offset == nullptr) return; else version_revision_offset++;
+        const char *version_patch_offset = std::strchr(version_revision_offset, '.');
+        if (version_patch_offset == nullptr) return; else version_patch_offset++;
+
+        Phobos_latest_Version[0] = static_cast<unsigned int>(std::strtoul(version_major_offset, nullptr, 10));
+        Phobos_latest_Version[1] = static_cast<unsigned int>(std::strtoul(version_minor_offset, nullptr, 10));
+        Phobos_latest_Version[2] = static_cast<unsigned int>(std::strtoul(version_revision_offset, nullptr, 10));
+        Phobos_latest_Version[3] = static_cast<unsigned int>(std::strtoul(version_patch_offset, nullptr, 10));
+    }
+        Phobos::PhobosUpdateLog();
+}
+
+void Phobos::PhobosUpdateLog()
+{
+if ((Phobos_latest_Version[0] > VERSION_MAJOR) ||
+    (Phobos_latest_Version[0] == VERSION_MAJOR && Phobos_latest_Version[1] > VERSION_MINOR) ||
+    (Phobos_latest_Version[0] == VERSION_MAJOR && Phobos_latest_Version[1] == VERSION_MINOR && Phobos_latest_Version[2] > VERSION_REVISION) ||
+    (Phobos_latest_Version[0] == VERSION_MAJOR && Phobos_latest_Version[1] == VERSION_MINOR && Phobos_latest_Version[2] == VERSION_REVISION && Phobos_latest_Version[3] > VERSION_PATCH))
+{
+   Debug::Log("A new version is available for you to update. You can access the 'https://github.com/Phobos-developers/Phobos/releases' for the update.\n");
+}
+else
+{
+   Debug::Log("Your version is already the latest version, and you can also use other build versions by visiting 'https://github.com/Phobos-developers/Phobos/releases'.\n");
+}   
+} 
+
 void Phobos::ExeTerminate()
 {
 	Console::Release();
@@ -158,7 +222,10 @@ DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
 	Phobos::ExeRun();
 	AresHelper::Init();
-
+            if (Phobos::Config::CheckUpdate_Enable) 
+            {
+            Phobos::PhobosCheckUpdate();
+            }
 	return 0;
 }
 // Avoid confusing the profiler unless really necessary

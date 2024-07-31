@@ -52,6 +52,7 @@ bool Phobos::Config::ShowBriefing = true;
 bool Phobos::Config::ShowHarvesterCounter = false;
 bool Phobos::Config::ShowPowerDelta = true;
 bool Phobos::Config::ShowWeedsCounter = false;
+bool Phobos::Config::CheckUpdate_Enable = false;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -60,158 +61,159 @@ int Phobos::Misc::CustomGS_DefaultDelay[7] = { 0, 1, 2, 3, 4, 5, 6 };
 
 DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
-	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
-	Phobos::Config::ToolTipBlur = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipBlur", false);
-	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
-	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPlacementPreview", true);
-	Phobos::Config::RealTimeTimers = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers", false);
-	Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers.Adaptive", false);
-	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD->ReadBool("Phobos", "DigitalDisplay.Enable", false);
-	Phobos::Config::SaveGameOnScenarioStart = CCINIClass::INI_RA2MD->ReadBool("Phobos", "SaveGameOnScenarioStart", true);
-	Phobos::Config::ShowBriefing = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBriefing", true);
-	Phobos::Config::ShowPowerDelta = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPowerDelta", true);
-	Phobos::Config::ShowHarvesterCounter = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowHarvesterCounter", true);
-	Phobos::Config::ShowWeedsCounter = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowWeedsCounter", true);
+        Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
+        Phobos::Config::ToolTipBlur = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipBlur", false);
+        Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
+        Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPlacementPreview", true);
+        Phobos::Config::RealTimeTimers = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers", false);
+        Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD->ReadBool("Phobos", "RealTimeTimers.Adaptive", false);
+        Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD->ReadBool("Phobos", "DigitalDisplay.Enable", false);
+        Phobos::Config::SaveGameOnScenarioStart = CCINIClass::INI_RA2MD->ReadBool("Phobos", "SaveGameOnScenarioStart", true);
+        Phobos::Config::ShowBriefing = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBriefing", true);
+        Phobos::Config::ShowPowerDelta = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPowerDelta", true);
+        Phobos::Config::ShowHarvesterCounter = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowHarvesterCounter", true);
+        Phobos::Config::ShowWeedsCounter = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowWeedsCounter", true);
+        Phobos::Config::CheckUpdate_Enable = CCINIClass::INI_RA2MD->ReadBool("Phobos", "CheckUpdate.Enable", false);
 
-	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
-	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD->ReadInteger("Phobos", "CampaignDefaultGameSpeed", 4);
-	if (Phobos::Config::CampaignDefaultGameSpeed > 6 || Phobos::Config::CampaignDefaultGameSpeed < 0)
-	{
-		Phobos::Config::CampaignDefaultGameSpeed = 2;
-	}
+        // Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
+        Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD->ReadInteger("Phobos", "CampaignDefaultGameSpeed", 4);
+        if (Phobos::Config::CampaignDefaultGameSpeed > 6 || Phobos::Config::CampaignDefaultGameSpeed < 0)
+        {
+                Phobos::Config::CampaignDefaultGameSpeed = 2;
+        }
 
-	{
-		const byte temp = (byte)Phobos::Config::CampaignDefaultGameSpeed;
+        {
+                const byte temp = (byte)Phobos::Config::CampaignDefaultGameSpeed;
 
-		Patch::Apply_RAW(0x55D77A, { temp }); // We overwrite the instructions that force GameSpeed to 2 (GS4)
-		Patch::Apply_RAW(0x55D78D, { temp }); // when speed control is off. Doesn't need a hook.
-	}
+                Patch::Apply_RAW(0x55D77A, { temp }); // We overwrite the instructions that force GameSpeed to 2 (GS4)
+                Patch::Apply_RAW(0x55D78D, { temp }); // when speed control is off. Doesn't need a hook.
+        }
 
-	Phobos::Config::ShowDesignatorRange = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowDesignatorRange", false);
+        Phobos::Config::ShowDesignatorRange = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowDesignatorRange", false);
 
-	CCINIClass* pINI_UIMD = CCINIClass::LoadINIFile(GameStrings::UIMD_INI);
+        CCINIClass* pINI_UIMD = CCINIClass::LoadINIFile(GameStrings::UIMD_INI);
 
-	// LoadingScreen
-	{
-		Phobos::UI::DisableEmptySpawnPositions =
-			pINI_UIMD->ReadBool("LoadingScreen", "DisableEmptySpawnPositions", false);
-	}
+        // LoadingScreen
+        {
+                Phobos::UI::DisableEmptySpawnPositions =
+                        pINI_UIMD->ReadBool("LoadingScreen", "DisableEmptySpawnPositions", false);
+        }
 
-	// ToolTips
-	{
-		Phobos::UI::ExtendedToolTips =
-			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
+        // ToolTips
+        {
+                Phobos::UI::ExtendedToolTips =
+                        pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
 
-		Phobos::UI::AnchoredToolTips =
-			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "AnchoredToolTips", false);
+                Phobos::UI::AnchoredToolTips =
+                        pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "AnchoredToolTips", false);
 
-		Phobos::UI::MaxToolTipWidth =
-			pINI_UIMD->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
+                Phobos::UI::MaxToolTipWidth =
+                        pINI_UIMD->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::CostLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"$");
+                pINI_UIMD->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
+                Phobos::UI::CostLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"$");
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1"); // ⚡
+                pINI_UIMD->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
+                Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1"); // ⚡
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "PowerBlackoutLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::PowerBlackoutLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1\u274c"); // ⚡❌
+                pINI_UIMD->ReadString(TOOLTIPS_SECTION, "PowerBlackoutLabel", NONE_STR, Phobos::readBuffer);
+                Phobos::UI::PowerBlackoutLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1\u274c"); // ⚡❌
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u231a"); // ⌚
-	}
+                pINI_UIMD->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
+                Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u231a"); // ⌚
+        }
 
-	// Sidebar
-	{
-		Phobos::UI::HarvesterCounter_Show =
-			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
+        // Sidebar
+        {
+                Phobos::UI::HarvesterCounter_Show =
+                        pINI_UIMD->ReadBool(SIDEBAR_SECTION, "HarvesterCounter.Show", false);
 
-		pINI_UIMD->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
-		Phobos::UI::HarvesterLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26cf"); // ⛏
+                pINI_UIMD->ReadString(SIDEBAR_SECTION, "HarvesterCounter.Label", NONE_STR, Phobos::readBuffer);
+                Phobos::UI::HarvesterLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26cf"); // ⛏
 
-		Phobos::UI::HarvesterCounter_ConditionYellow =
-			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
+                Phobos::UI::HarvesterCounter_ConditionYellow =
+                        pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionYellow", Phobos::UI::HarvesterCounter_ConditionYellow);
 
-		Phobos::UI::HarvesterCounter_ConditionRed =
-			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
+                Phobos::UI::HarvesterCounter_ConditionRed =
+                        pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
 
-		Phobos::UI::WeedsCounter_Show =
-			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "WeedsCounter.Show", false);
+                Phobos::UI::WeedsCounter_Show =
+                        pINI_UIMD->ReadBool(SIDEBAR_SECTION, "WeedsCounter.Show", false);
 
-		Phobos::UI::ProducingProgress_Show =
-			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
+                Phobos::UI::ProducingProgress_Show =
+                        pINI_UIMD->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);
 
-		Phobos::UI::PowerDelta_Show =
-			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "PowerDelta.Show", false);
+                Phobos::UI::PowerDelta_Show =
+                        pINI_UIMD->ReadBool(SIDEBAR_SECTION, "PowerDelta.Show", false);
 
-		Phobos::UI::PowerDelta_ConditionYellow =
-			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionYellow", Phobos::UI::PowerDelta_ConditionYellow);
+                Phobos::UI::PowerDelta_ConditionYellow =
+                        pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionYellow", Phobos::UI::PowerDelta_ConditionYellow);
 
-		Phobos::UI::PowerDelta_ConditionRed =
-			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionRed", Phobos::UI::PowerDelta_ConditionRed);
+                Phobos::UI::PowerDelta_ConditionRed =
+                        pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "PowerDelta.ConditionRed", Phobos::UI::PowerDelta_ConditionRed);
 
-		Phobos::UI::CenterPauseMenuBackground =
-			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "CenterPauseMenuBackground", Phobos::UI::CenterPauseMenuBackground);
-	}
+                Phobos::UI::CenterPauseMenuBackground =
+                        pINI_UIMD->ReadBool(SIDEBAR_SECTION, "CenterPauseMenuBackground", Phobos::UI::CenterPauseMenuBackground);
+        }
 
-	// UISettings
-	{
-		pINI_UIMD->ReadString(UISETTINGS_SECTION, "ShowBriefingResumeButtonLabel", "GUI:Resume", Phobos::readBuffer);
-		Phobos::UI::ShowBriefingResumeButtonLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"");
+        // UISettings
+        {
+                pINI_UIMD->ReadString(UISETTINGS_SECTION, "ShowBriefingResumeButtonLabel", "GUI:Resume", Phobos::readBuffer);
+                Phobos::UI::ShowBriefingResumeButtonLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"");
 
-		pINI_UIMD->ReadString(UISETTINGS_SECTION, "ShowBriefingResumeButtonStatusLabel", "STT:BriefingButtonReturn", Phobos::readBuffer);
-		strcpy_s(Phobos::UI::ShowBriefingResumeButtonStatusLabel, Phobos::readBuffer);
-	}
+                pINI_UIMD->ReadString(UISETTINGS_SECTION, "ShowBriefingResumeButtonStatusLabel", "STT:BriefingButtonReturn", Phobos::readBuffer);
+                strcpy_s(Phobos::UI::ShowBriefingResumeButtonStatusLabel, Phobos::readBuffer);
+        }
 
-	CCINIClass::UnloadINIFile(pINI_UIMD);
+        CCINIClass::UnloadINIFile(pINI_UIMD);
 
-	return 0;
+        return 0;
 }
 
 DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 {
-	CCINIClass* const pINI_RULESMD = CCINIClass::INI_Rules;
+        CCINIClass* const pINI_RULESMD = CCINIClass::INI_Rules;
 
-	RulesClass::Instance->Read_JumpjetControls(pINI_RULESMD);
+        RulesClass::Instance->Read_JumpjetControls(pINI_RULESMD);
 
-	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
+        Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
 
 
-	Phobos::Misc::CustomGS = pINI_RULESMD->ReadBool(GameStrings::General, "CustomGS", false);
+        Phobos::Misc::CustomGS = pINI_RULESMD->ReadBool(GameStrings::General, "CustomGS", false);
 
-	char tempBuffer[26];
-	for (size_t i = 0; i <= 6; ++i)
-	{
-		int temp;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.ChangeDelay", 6 - i);
-		temp = pINI_RULESMD->ReadInteger(GameStrings::General, tempBuffer, -1);
-		if (temp >= 0 && temp <= 6)
-			Phobos::Misc::CustomGS_ChangeDelay[i] = 6 - temp;
+        char tempBuffer[26];
+        for (size_t i = 0; i <= 6; ++i)
+        {
+                int temp;
+                _snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.ChangeDelay", 6 - i);
+                temp = pINI_RULESMD->ReadInteger(GameStrings::General, tempBuffer, -1);
+                if (temp >= 0 && temp <= 6)
+                        Phobos::Misc::CustomGS_ChangeDelay[i] = 6 - temp;
 
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.DefaultDelay", 6 - i);
-		temp = pINI_RULESMD->ReadInteger(GameStrings::General, tempBuffer, -1);
-		if (temp >= 1)
-			Phobos::Misc::CustomGS_DefaultDelay[i] = 6 - temp;
+                _snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.DefaultDelay", 6 - i);
+                temp = pINI_RULESMD->ReadInteger(GameStrings::General, tempBuffer, -1);
+                if (temp >= 1)
+                        Phobos::Misc::CustomGS_DefaultDelay[i] = 6 - temp;
 
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.ChangeInterval", 6 - i);
-		temp = pINI_RULESMD->ReadInteger(GameStrings::General, tempBuffer, -1);
-		if (temp >= 1)
-			Phobos::Misc::CustomGS_ChangeInterval[i] = temp;
-	}
+                _snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomGS%d.ChangeInterval", 6 - i);
+                temp = pINI_RULESMD->ReadInteger(GameStrings::General, tempBuffer, -1);
+                if (temp >= 1)
+                        Phobos::Misc::CustomGS_ChangeInterval[i] = temp;
+        }
 
-	if (pINI_RULESMD->ReadBool(GameStrings::General, "FixTransparencyBlitters", true))
-		BlittersFix::Apply();
+        if (pINI_RULESMD->ReadBool(GameStrings::General, "FixTransparencyBlitters", true))
+                BlittersFix::Apply();
 
-	Phobos::Config::SkirmishUnlimitedColors = pINI_RULESMD->ReadBool(GameStrings::General, "SkirmishUnlimitedColors", false);
-	// Disable Ares hook at this address so that our logic can run.
-	if (Phobos::Config::SkirmishUnlimitedColors)
-		Patch::Apply_RAW(0x69A310, { 0x8B, 0x44, 0x24, 0x04, 0xD1, 0xE0, 0x40 });
+        Phobos::Config::SkirmishUnlimitedColors = pINI_RULESMD->ReadBool(GameStrings::General, "SkirmishUnlimitedColors", false);
+        // Disable Ares hook at this address so that our logic can run.
+        if (Phobos::Config::SkirmishUnlimitedColors)
+                Patch::Apply_RAW(0x69A310, { 0x8B, 0x44, 0x24, 0x04, 0xD1, 0xE0, 0x40 });
 
-	Phobos::Config::SaveVariablesOnScenarioEnd = pINI_RULESMD->ReadBool(GameStrings::General, "SaveVariablesOnScenarioEnd", false);
+        Phobos::Config::SaveVariablesOnScenarioEnd = pINI_RULESMD->ReadBool(GameStrings::General, "SaveVariablesOnScenarioEnd", false);
 #ifndef DEBUG
-	Phobos::Config::DevelopmentCommands = pINI_RULESMD->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
+        Phobos::Config::DevelopmentCommands = pINI_RULESMD->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 #endif
-	return 0;
+        return 0;
 }
 
 
@@ -220,49 +222,49 @@ std::wstring Phobos::CustomGameSaveDescription {};
 
 void Phobos::PassiveSaveGame()
 {
-	auto PrintMessage = [](const wchar_t* pMessage)
-	{
-		MessageListClass::Instance->PrintMessage(
-			pMessage,
-			RulesClass::Instance->MessageDelay,
-			HouseClass::CurrentPlayer->ColorSchemeIndex,
-			true
-		);
-	};
+        auto PrintMessage = [](const wchar_t* pMessage)
+        {
+                MessageListClass::Instance->PrintMessage(
+                        pMessage,
+                        RulesClass::Instance->MessageDelay,
+                        HouseClass::CurrentPlayer->ColorSchemeIndex,
+                        true
+                );
+        };
 
-	PrintMessage(StringTable::LoadString(GameStrings::TXT_SAVING_GAME));
-	char fName[0x80];
+        PrintMessage(StringTable::LoadString(GameStrings::TXT_SAVING_GAME));
+        char fName[0x80];
 
-	SYSTEMTIME time;
-	GetLocalTime(&time);
+        SYSTEMTIME time;
+        GetLocalTime(&time);
 
-	_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
-		time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
+        _snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
+                time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
 
-	if (ScenarioClass::SaveGame(fName, Phobos::CustomGameSaveDescription.c_str()))
-		PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
-	else
-		PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
+        if (ScenarioClass::SaveGame(fName, Phobos::CustomGameSaveDescription.c_str()))
+                PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
+        else
+                PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
 }
 
 DEFINE_HOOK(0x55DBCD, MainLoop_SaveGame, 0x6)
 {
-	// This happens right before LogicClass::Update()
-	enum { SkipSave = 0x55DC99, InitialSave = 0x55DBE6 };
+        // This happens right before LogicClass::Update()
+        enum { SkipSave = 0x55DC99, InitialSave = 0x55DBE6 };
 
-	bool& scenario_saved = *reinterpret_cast<bool*>(0xABCE08);
-	if (SessionClass::IsSingleplayer() && !scenario_saved)
-	{
-		scenario_saved = true;
-		if (Phobos::ShouldQuickSave)
-		{
-			Phobos::PassiveSaveGame();
-			Phobos::ShouldQuickSave = false;
-			Phobos::CustomGameSaveDescription.clear();
-		}
-		else if (Phobos::Config::SaveGameOnScenarioStart && SessionClass::IsCampaign())
-			return InitialSave;
-	}
+        bool& scenario_saved = *reinterpret_cast<bool*>(0xABCE08);
+        if (SessionClass::IsSingleplayer() && !scenario_saved)
+        {
+                scenario_saved = true;
+                if (Phobos::ShouldQuickSave)
+                {
+                        Phobos::PassiveSaveGame();
+                        Phobos::ShouldQuickSave = false;
+                        Phobos::CustomGameSaveDescription.clear();
+                }
+                else if (Phobos::Config::SaveGameOnScenarioStart && SessionClass::IsCampaign())
+                        return InitialSave;
+        }
 
-	return SkipSave;
+        return SkipSave;
 }
