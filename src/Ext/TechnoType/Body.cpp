@@ -197,6 +197,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WarpOutWeapon.Read<true>(exINI, pSection, "WarpOutWeapon");
 	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
 
+	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
+
 	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
 	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
 	this->OreGathering_FramesPerDir.Read(exINI, pSection, "OreGathering.FramesPerDir");
@@ -436,18 +438,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	auto [canParse, resetValue] = PassengerDeletionTypeClass::CanParse(exINI, pSection);
 
-	if (canParse)
-	{
-		if (this->PassengerDeletionType == nullptr)
-			this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
+	if (canParse && !this->PassengerDeletionType)
+		this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
 
-		this->PassengerDeletionType->LoadFromINI(pINI, pSection);
-	}
-	else if (resetValue)
+	if (this->PassengerDeletionType)
 	{
-		this->PassengerDeletionType.reset();
+		if (resetValue)
+			this->PassengerDeletionType.reset();
+		else
+			this->PassengerDeletionType->LoadFromINI(pINI, pSection);
 	}
-
 
 	Nullable<bool> isInterceptor;
 	isInterceptor.Read(exINI, pSection, "Interceptor");
@@ -552,6 +552,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarpInMinRangeWeapon)
 		.Process(this->WarpOutWeapon)
 		.Process(this->WarpInWeapon_UseDistanceAsDamage)
+
+		.Process(this->SubterraneanHeight)
 
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)

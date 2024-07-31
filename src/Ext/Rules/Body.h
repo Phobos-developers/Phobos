@@ -2,7 +2,6 @@
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
-#include <GameStrings.h>
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
@@ -43,6 +42,7 @@ public:
 		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
+		Valueable<int> SubterraneanHeight;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<int> RadBuildingDamageMaxCount;
@@ -151,6 +151,7 @@ public:
 			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
 			, AIChronoSphereSW {}
 			, AIChronoWarpSW {}
+			, SubterraneanHeight { -256 }
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadBuildingDamageMaxCount { -1 }

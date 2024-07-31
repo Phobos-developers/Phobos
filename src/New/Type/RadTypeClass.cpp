@@ -1,7 +1,6 @@
 #include "RadTypeClass.h"
 
 #include <Utilities/TemplateDef.h>
-#include <GameStrings.h>
 #include <WarheadTypeClass.h>
 
 template<>

@@ -740,6 +740,23 @@ NoWobbles=false  ; boolean
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
 ```
 
+### Subterranean unit travel height
+
+- It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
+
+[SOMETECHNO]             ; TechnoType
+SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
+```
+
+```{warning}
+This expects negative values to be used and may behave erratically if set to above -50.
+```
+
 ### Voxel body multi-section shadows
 
 - It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.

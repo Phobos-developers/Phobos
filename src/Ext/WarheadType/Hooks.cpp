@@ -72,7 +72,7 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	GET(int, nDamage, ECX);
+	GET(int, nDamage, EDI);
 
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 	pWHExt->Splashed = true;

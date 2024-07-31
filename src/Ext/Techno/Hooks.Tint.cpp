@@ -86,14 +86,16 @@ DEFINE_HOOK(0x423420, AnimClass_Draw_TintColor, 0x6)
 	GET(AnimClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EAX);
 	REF_STACK(int, color, STACK_OFFSET(0x110, -0xF4));
+	REF_STACK(int, intensity, STACK_OFFSET(0x110, -0xD8));
 
 	if (!pBuilding)
 		pBuilding = AnimExt::ExtMap.Find(pThis)->ParentBuilding;
 
 	if (pBuilding)
 	{
+		int discard = 0;
 		color |= TechnoExt::GetTintColor(pBuilding, pBuilding->IsIronCurtained(), pBuilding->Airstrike, false);
-		color |= TechnoExt::GetCustomTintColor(pBuilding);
+		TechnoExt::ApplyCustomTintValues(pBuilding, color, pThis->Type->UseNormalLight ? discard : intensity);
 	}
 
 	R->EBP(color);
