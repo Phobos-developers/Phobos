@@ -81,15 +81,15 @@ std::vector<std::pair<int, int>> CarryOverGlobalsBuffer {};
 
 DEFINE_HOOK(0x4C6217, EvadeClass_DoShit_Globals, 0x0)
 {
-	for (auto&& [idx, var] : CarryOverGlobalsBuffer)
-		ScenarioExt::Global()->SetVariableToByID(true, idx, var);
+	for (auto const& [idx, var] : CarryOverGlobalsBuffer)
+		ScenarioExt::Global()->SetVariableToByID(true, idx, static_cast<char>(var));
 	return 0x4C622F;
 }
 
 DEFINE_HOOK(0x4C6185, EvadeClass_CarryOverShit_Globals, 0x0)
 {
 	CarryOverGlobalsBuffer.clear();
-	for (auto&& [idx, var] : ScenarioExt::Global()->Variables[1])
+	for (auto const& [idx, var] : ScenarioExt::Global()->Variables[1])
 		CarryOverGlobalsBuffer.emplace_back(idx, var.Value);
 	return 0x4C61A3;
 }

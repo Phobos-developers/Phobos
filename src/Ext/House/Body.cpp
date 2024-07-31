@@ -416,28 +416,6 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 	}
 }
 
-void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
-{
-	for (auto const pExt : this->OwnedAutoDeathObjects)
-	{
-		auto const pTechno = pExt->OwnerObject();
-
-		if (!pTechno->IsInLogic && pTechno->IsAlive)
-			pExt->CheckDeathConditions(true);
-	}
-}
-
-void HouseExt::ExtData::UpdateTransportReloaders()
-{
-	for (auto const pExt : this->OwnedTransportReloaders)
-	{
-		auto const pTechno = pExt->OwnerObject();
-
-		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
-			pTechno->Reload();
-	}
-}
-
 void HouseExt::ExtData::AddToLimboTracking(TechnoTypeClass* pTechnoType)
 {
 	if (pTechnoType)
@@ -542,8 +520,6 @@ void HouseExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->PowerPlantEnhancers)
 		.Process(this->OwnedLimboDeliveredBuildings)
-		.Process(this->OwnedAutoDeathObjects)
-		.Process(this->OwnedTransportReloaders)
 		.Process(this->LimboAircraft)
 		.Process(this->LimboBuildings)
 		.Process(this->LimboInfantry)
@@ -684,7 +660,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 			auto pTmpType = pItemExt->BuildLimitGroup_ExtraLimit_Types[i];
 			auto const pBuildingType = abstract_cast<BuildingTypeClass*>(pTmpType);
 
-			if (pBuildingType && (pBuildingType->PowersUpBuilding || BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0))
+			if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
 				count = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pThis));
 			else
 				count = pThis->CountOwnedNow(pTmpType);
@@ -716,7 +692,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
 			int ownedNow = 0;
 
-			if (pBuildingType && (pBuildingType->PowersUpBuilding || BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0))
+			if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
 				ownedNow = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pThis));
 			else
 				ownedNow = CountOwnedIncludeDeploy(pThis, pType);
@@ -742,7 +718,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 				const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
 				int owned = 0;
 
-				if (pBuildingType && (pBuildingType->PowersUpBuilding || BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0))
+				if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
 					owned = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pThis));
 				else
 					owned = CountOwnedIncludeDeploy(pThis, pType);
@@ -769,7 +745,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 				const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
 				int ownedNow = 0;
 
-				if (pBuildingType && (pBuildingType->PowersUpBuilding || BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0))
+				if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
 					ownedNow = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pThis));
 				else
 					ownedNow = CountOwnedIncludeDeploy(pThis, pType);
@@ -842,7 +818,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTmpType);
 			int count = 0;
 
-			if (pBuildingType && (pBuildingType->PowersUpBuilding || BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0))
+			if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
 				count = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pHouse));
 			else
 				count = pHouse->CountOwnedNow(pTmpType);
@@ -879,7 +855,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 			int owned = 0;
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTmpType);
 
-			if (pBuildingType && (pBuildingType->PowersUpBuilding || BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0))
+			if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
 				owned = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pHouse));
 			else
 				owned = pHouse->CountOwnedNow(pTmpType);
@@ -916,7 +892,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 			int num = 0;
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTmpType);
 
-			if (pBuildingType && (pBuildingType->PowersUpBuilding || BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0))
+			if (pBuildingType && (BuildingTypeExt::ExtMap.Find(pBuildingType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pBuildingType->PowersUpBuilding)))
 				num = BuildingTypeExt::GetUpgradesAmount(pBuildingType, const_cast<HouseClass*>(pHouse));
 			else
 				num = pHouse->CountOwnedNow(pTmpType);

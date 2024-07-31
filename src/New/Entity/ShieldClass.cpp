@@ -7,7 +7,6 @@
 #include <Ext/WarheadType/Body.h>
 
 #include <Utilities/GeneralUtils.h>
-#include <GameStrings.h>
 #include <AnimClass.h>
 #include <HouseClass.h>
 #include <RadarEventClass.h>
