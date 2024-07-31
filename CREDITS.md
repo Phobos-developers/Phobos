@@ -341,6 +341,10 @@ This page lists all the individual contributions to the project by their author.
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
 - **handama** - AI script action to jump back to previous script
+- **航味麻酱**
+  - `Spawner.RecycleRange`
+  - `Spawner.RecycleAnim`
+  - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

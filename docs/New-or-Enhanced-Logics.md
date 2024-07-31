@@ -844,6 +844,8 @@ Detonate.AtFirer=false  ; boolean
   - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
 - `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 9 frames for missiles and 20 for everything else.
 - If `Spawner.AttackImmediately` is set to true, spawned aircraft will assume attack mission immediately after being spawned instead of waiting for the remaining aircraft to spawn first.
+- `Spawner.RecycleRange` defines the range (in lepton) that the spawned is considered close enough to the spawner to be recycled.
+- `Spawner.RecycleAnim` can be used to play an anim on the spawned location when it is recycled.
 
 In `rulesmd.ini`:
 ```ini
@@ -852,6 +854,8 @@ Spawner.LimitRange=false         ; boolean
 Spawner.ExtraLimitRange=0        ; integer, range in cells
 Spawner.DelayFrames=             ; integer, game frames
 Spawner.AttackImmediately=false  ; boolean
+Spawner.RecycleRange=-1          ; integer, range in lepton
+Spawner.RecycleAnim=             ; Animation
 ```
 
 ### Automatic passenger deletion

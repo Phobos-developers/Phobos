@@ -161,6 +161,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
 - OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
 - Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
+- Buildings with foundation bigger than 1x1 can now recycle spawned correctly.
 
 ## Fixes / interactions with other extensions
 
@@ -478,14 +479,14 @@ In `rulesmd.ini`:
 ```ini
 [General]
 EnemyInsignia=true                       ; boolean
-                                         
-[AudioVisual]                            
+
+[AudioVisual]
 DrawInsignia.OnlyOnSelected=false        ; boolean
 DrawInsignia.AdjustPos.Infantry=5,2      ; X,Y, position offset from default
 DrawInsignia.AdjustPos.Units=10,6        ; X,Y, position offset from default
 DrawInsignia.AdjustPos.Buildings=10,6    ; X,Y, position offset from default
 DrawInsignia.AdjustPos.BuildingsAnchor=  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
-                                         
+
 [SOMETECHNO]                             ; TechnoType
 Insignia=                                ; filename - excluding the .shp extension
 Insignia.Rookie=                         ; filename - excluding the .shp extension

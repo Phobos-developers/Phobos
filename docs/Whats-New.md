@@ -677,6 +677,8 @@ New:
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for Explodes=true units (by Starkku)
 - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist (by FlyStar)
+- Recycle spawned in long-range (by 航味麻酱)
+- Play an anim when recycling a spawned (by 航味麻酱)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -712,6 +714,7 @@ Vanilla fixes:
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges (by Starkku)
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines (by Starkku)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
+- Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by 航味麻酱)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

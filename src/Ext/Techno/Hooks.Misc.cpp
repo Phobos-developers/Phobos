@@ -117,6 +117,7 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 		return 0;
 	}
 	auto const pSpawnerType = pSpawner->GetTechnoType();
+	auto pSpawnedMapCrd = pSpawned->GetMapCoords();
 	if (!pSpawnerType)
 	{
 		return 0;
@@ -134,7 +135,11 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 	int RecycleRange = pSpawnerExt->Spawner_RecycleRange;
 	if (RecycleRange == -1)
 	{
-		if (DeltaCrd.X <= 182 && DeltaCrd.Y <= 182 && DeltaCrd.Z < 20)
+		if (pSpawner->WhatAmI() == AbstractType::Building && DeltaCrd.X <= 182 && DeltaCrd.Y <= 182 && DeltaCrd.Z < 20)
+		{
+			bShouldRecycleSpawned = true;
+		}
+		if (pSpawner->WhatAmI() != AbstractType::Building && pSpawnedMapCrd.X == pSpawnerMapCrd->X && pSpawnedMapCrd.Y == pSpawnerMapCrd->Y && pSpawnedMapCrd.Z < 20)
 		{
 			bShouldRecycleSpawned = true;
 		}
