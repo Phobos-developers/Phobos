@@ -184,13 +184,16 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 		switch (pThis->WhatAmI())
 		{
 		case AbstractType::Infantry:
-			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Infantry.Get();
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Infantry;
 			break;
 		case AbstractType::Building:
-			offset = GetBuildingSelectBracketPosition(pThis, RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor.Get()) + RulesExt::Global()->DrawInsignia_AdjustPos_Buildings.Get();
+			if (RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor.isset())
+				offset = GetBuildingSelectBracketPosition(pThis, RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor) + RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
+			else
+				offset += RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
 			break;
 		default:
-			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units.Get();
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units;
 			break;
 		}
 

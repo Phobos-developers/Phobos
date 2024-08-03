@@ -11,6 +11,7 @@
 #include "Ext/House/Body.h"
 #include "Ext/WarheadType/Body.h"
 #include "Ext/WeaponType/Body.h"
+#include <Ext/Scenario/Body.h>
 
 // ============= New SuperWeapon Effects================
 
@@ -110,7 +111,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 
 		if (pTechnoTypeExt->AutoDeath_Behavior.isset())
 		{
-			pOwnerExt->OwnedAutoDeathObjects.push_back(pTechnoExt);
+			ScenarioExt::Global()->AutoDeathObjects.push_back(pTechnoExt);
 
 			if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
 				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
