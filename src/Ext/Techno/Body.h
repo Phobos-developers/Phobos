@@ -146,8 +146,8 @@ public:
 
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
 
-	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound, TechnoTypeExt::ExtData* pTypeExt = nullptr);
-	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound, TechnoTypeExt::ExtData* pTypeExt = nullptr);
+	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
+	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo = false);
