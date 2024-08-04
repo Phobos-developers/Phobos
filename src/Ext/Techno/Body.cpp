@@ -493,6 +493,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
 		.Process(this->FiringObstacleCell)
+		.Process(this->UnitAutoDeployTimer)
 		.Process(this->OriginalPassengerOwner)
 		;
 }

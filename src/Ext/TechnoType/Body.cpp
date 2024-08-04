@@ -311,6 +311,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimitGroup_ExtraLimit_Nums.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.Nums");
 	this->BuildLimitGroup_ExtraLimit_MaxCount.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxCount");
 	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
+
+	this->CanBeBuiltOn.Read(exINI, pSection, "CanBeBuiltOn");
+	this->UnitBaseNormal.Read(exINI, pSection, "UnitBaseNormal");
+	this->AlwaysExistTheCameo.Read(exINI, pSection, "AlwaysExistTheCameo");
+	this->PrerequisiteForCameo.Read(exINI, pSection, "PrerequisiteForCameo");
+	this->UnitBaseForAllyBuilding.Read(exINI, pSection, "UnitBaseForAllyBuilding");
+	this->UIExtraDescription.Read(exINI, pSection, "UIExtraDescription");
+
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
@@ -676,6 +684,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimitGroup_ExtraLimit_Nums)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxCount)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
+
+		.Process(this->CanBeBuiltOn)
+		.Process(this->UnitBaseNormal)
+		.Process(this->UnitBaseForAllyBuilding)
+		.Process(this->AlwaysExistTheCameo)
+		.Process(this->PrerequisiteForCameo)
+		.Process(this->UIExtraDescription)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)

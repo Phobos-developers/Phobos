@@ -61,6 +61,13 @@ public:
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
 
+		Valueable<bool> CheckUnitBaseNormal;
+		Valueable<bool> AlwaysExistTheCameo;
+		Valueable<bool> ExpandBuildingPlace;
+		Valueable<bool> CheckExpandPlaceGrid;
+		Valueable<Vector3D<int>> ExpandLandGridFrames;
+		Valueable<Vector3D<int>> ExpandWaterGridFrames;
+
 		Nullable<double> Shield_ConditionYellow;
 		Nullable<double> Shield_ConditionRed;
 		Valueable<Vector3D<int>> Pips_Shield;
@@ -167,6 +174,13 @@ public:
 			, PlacementGrid_TranslucencyWithPreview { }
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
+
+			, CheckUnitBaseNormal { false }
+			, AlwaysExistTheCameo { false }
+			, ExpandBuildingPlace { false }
+			, CheckExpandPlaceGrid { false }
+			, ExpandLandGridFrames { { 1, 0, 0 } }
+			, ExpandWaterGridFrames { { 1, 0, 0 } }
 
 			, Shield_ConditionYellow { }
 			, Shield_ConditionRed { }

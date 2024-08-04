@@ -17,6 +17,7 @@
 
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>
+#include <Ext/House/Body.h>
 
 #include <sstream>
 #include <iomanip>
@@ -39,6 +40,13 @@ inline const wchar_t* PhobosToolTip::GetUIDescription(SWTypeExt::ExtData* pData)
 {
 	return Phobos::Config::ToolTipDescriptions && !pData->UIDescription.Get().empty()
 		? pData->UIDescription.Get().Text
+		: nullptr;
+}
+
+inline const wchar_t* PhobosToolTip::GetUIExtraDescription(TechnoTypeExt::ExtData* pData) const
+{
+	return Phobos::Config::ToolTipDescriptions && !pData->UIExtraDescription.Get().empty()
+		? pData->UIExtraDescription.Get().Text
 		: nullptr;
 }
 
@@ -116,12 +124,13 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 		return;
 
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
+	HouseClass* const pHouse = HouseClass::CurrentPlayer;
 
 	int nBuildTime = TickTimeToSeconds(this->GetBuildTime(pType));
 	int nSec = nBuildTime % 60;
 	int nMin = nBuildTime / 60;
 
-	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
+	int cost = pType->GetActualCost(pHouse);
 
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n"
@@ -141,6 +150,17 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 
 	if (auto pDesc = this->GetUIDescription(pData))
 		oss << L"\n" << pDesc;
+
+	if (pData->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo) && pHouse)
+	{
+		auto& vec = HouseExt::ExtMap.Find(pHouse)->OwnedExistCameoTechnoTypes;
+
+		if (std::find(vec.begin(), vec.end(), pData) != vec.end())
+		{
+			if (auto pExDesc = this->GetUIExtraDescription(pData))
+				oss << L"\n" << pExDesc;
+		}
+	}
 
 	this->TextBuffer = oss.str();
 }

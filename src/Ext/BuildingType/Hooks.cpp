@@ -115,7 +115,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 			).first;
 			nPoint.X += offset.X;
 			nPoint.Y += offset.Y;
-		
+
 
 		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRules->PlacementPreview_Translucency) |
 			BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;

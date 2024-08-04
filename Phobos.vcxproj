@@ -165,6 +165,7 @@
     <ClCompile Include="src\Misc\Hooks.SkirmishColors.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TypeConvertGroup.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
+    <ClCompile Include="src\Ext\BuildingType\Hooks.Placing.cpp" />
     <ClCompile Include="src\Phobos.COM.cpp" />
     <ClCompile Include="src\Phobos.CRT.cpp" />
     <ClCompile Include="src\Phobos.Ext.cpp" />

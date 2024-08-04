@@ -74,17 +74,15 @@ int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const*
 		return -BuildLimit - pHouse->CountOwnedEver(pItem);
 }
 
-int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* const pItem, bool const includeQueued)
+CanBuildResult CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* const pItem, bool const includeQueued)
 {
-	enum { NotReached = 1, ReachedPermanently = -1, ReachedTemporarily = 0 };
-
 	int BuildLimit = pItem->BuildLimit;
 	int Remaining = BuildLimitRemaining(pHouse, pItem);
 
 	if (BuildLimit >= 0 && Remaining <= 0)
-		return (includeQueued && FactoryClass::FindByOwnerAndProduct(pHouse, pItem)) ? NotReached : ReachedPermanently;
+		return (includeQueued && FactoryClass::FindByOwnerAndProduct(pHouse, pItem)) ? CanBuildResult::Buildable : CanBuildResult::Unbuildable;
 
-	return Remaining > 0 ? NotReached : ReachedTemporarily;
+	return Remaining > 0 ? CanBuildResult::Buildable : CanBuildResult::TemporarilyUnbuildable;
 
 }
 
@@ -96,23 +94,32 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 	GET_STACK(bool const, includeInProduction, 0xC);
 	GET(CanBuildResult const, resultOfAres, EAX);
 
-	if (auto const pBuilding = abstract_cast<BuildingTypeClass const* const>(pItem))
+	CanBuildResult canBuild = resultOfAres;
+
+	if (canBuild == CanBuildResult::Buildable)
 	{
-		if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
+		if (auto const pBuilding = abstract_cast<BuildingTypeClass const* const>(pItem))
 		{
-			if (pBuildingExt->PowersUp_Buildings.size() > 0 && resultOfAres == CanBuildResult::Buildable)
-				R->EAX(CheckBuildLimit(pThis, pBuilding, includeInProduction));
+			if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
+			{
+				if (pBuildingExt->PowersUp_Buildings.size() > 0)
+					canBuild = CheckBuildLimit(pThis, pBuilding, includeInProduction);
+			}
 		}
 	}
 
-	if (resultOfAres == CanBuildResult::Buildable)
+	if (canBuild == CanBuildResult::Buildable)
 	{
-		R->EAX(HouseExt::BuildLimitGroupCheck(pThis, pItem, buildLimitOnly, includeInProduction));
+		canBuild = HouseExt::BuildLimitGroupCheck(pThis, pItem, buildLimitOnly, includeInProduction);
 
 		if (HouseExt::ReachedBuildLimit(pThis, pItem, true))
-			R->EAX(CanBuildResult::TemporarilyUnbuildable);
+			canBuild = CanBuildResult::TemporarilyUnbuildable;
 	}
 
+	if (!buildLimitOnly && includeInProduction && pThis->IsControlledByHuman()) // Eliminate any non-producible calls to change the list safely
+		canBuild = BuildingTypeExt::CheckAlwaysExistCameo(pThis, pItem, canBuild);
+
+	R->EAX(canBuild);
 	return 0;
 }
 

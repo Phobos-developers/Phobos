@@ -257,17 +257,35 @@ DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
 }
 
-DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
+DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoTypeClass*, pType, 0x4);
-	GET(bool, aresDisable, EAX);
+	GET(bool, needDisable, EAX);
 
-	if (aresDisable || !pType)
+	if (!pType)
 		return 0;
 
-	if (HouseExt::ReachedBuildLimit(pThis, pType, false))
-		R->EAX(true);
+	if (!needDisable && HouseExt::ReachedBuildLimit(pThis, pType, false))
+		needDisable = true;
+
+	if (!needDisable) // The types exist in the list means that they are not buildable now
+	{
+		TechnoTypeExt::ExtData* const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt && pTypeExt->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
+		{
+			if (auto const pHouseExt = HouseExt::ExtMap.Find(pThis))
+			{
+				auto& vec = pHouseExt->OwnedExistCameoTechnoTypes;
+
+				if (std::find(vec.begin(), vec.end(), pTypeExt) != vec.end())
+					needDisable = true;
+			}
+		}
+	}
+
+	R->EAX(needDisable);
 
 	return 0;
 }
