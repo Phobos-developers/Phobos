@@ -159,6 +159,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
 - Units with `Sensors=true` will no longer reveal ally buildings.
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
+- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
+- Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
 
 ## Fixes / interactions with other extensions
 
@@ -469,41 +471,41 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true.
   - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
   - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
-  - `DrawInsignia.AdjustPos.BuildingsAnchor` sets the anchor point from which the insignia offset is calculated, relative to building's center.
+  - `DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to anchor the insignia position relative to the building's selection bracket. By default the insignia position is not anchored to the selection bracket.
 
 
 In `rulesmd.ini`:
 ```ini
 [General]
-EnemyInsignia=true                             ; boolean
-
-[AudioVisual]
-DrawInsignia.OnlyOnSelected=false              ; boolean
-DrawInsignia.AdjustPos.Infantry=5,2            ; X,Y, position offset from default
-DrawInsignia.AdjustPos.Units=10,6              ; X,Y, position offset from default
-DrawInsignia.AdjustPos.Buildings=10,6          ; X,Y, position offset from default
-DrawInsignia.AdjustPos.BuildingsAnchor=bottom  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
-
-[SOMETECHNO]                                   ; TechnoType
-Insignia=                                      ; filename - excluding the .shp extension
-Insignia.Rookie=                               ; filename - excluding the .shp extension
-Insignia.Veteran=                              ; filename - excluding the .shp extension
-Insignia.Elite=                                ; filename - excluding the .shp extension
-InsigniaFrame=-1                               ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Rookie=-1                        ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Veteran=-1                       ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Elite=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames=-1,-1,-1                        ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.WeaponN=                              ; filename - excluding the .shp extension
-Insignia.WeaponN.Rookie=                       ; filename - excluding the .shp extension
-Insignia.WeaponN.Veteran=                      ; filename - excluding the .shp extension
-Insignia.WeaponN.Elite=                        ; filename - excluding the .shp extension
-InsigniaFrame.WeaponN=-1                       ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Rookie=-1                ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Veteran=-1               ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Elite=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames.WeaponN=-1,-1,-1                ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.ShowEnemy=                            ; boolean
+EnemyInsignia=true                       ; boolean
+                                         
+[AudioVisual]                            
+DrawInsignia.OnlyOnSelected=false        ; boolean
+DrawInsignia.AdjustPos.Infantry=5,2      ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Units=10,6        ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Buildings=10,6    ; X,Y, position offset from default
+DrawInsignia.AdjustPos.BuildingsAnchor=  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+                                         
+[SOMETECHNO]                             ; TechnoType
+Insignia=                                ; filename - excluding the .shp extension
+Insignia.Rookie=                         ; filename - excluding the .shp extension
+Insignia.Veteran=                        ; filename - excluding the .shp extension
+Insignia.Elite=                          ; filename - excluding the .shp extension
+InsigniaFrame=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames=-1,-1,-1                  ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.WeaponN=                        ; filename - excluding the .shp extension
+Insignia.WeaponN.Rookie=                 ; filename - excluding the .shp extension
+Insignia.WeaponN.Veteran=                ; filename - excluding the .shp extension
+Insignia.WeaponN.Elite=                  ; filename - excluding the .shp extension
+InsigniaFrame.WeaponN=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Rookie=-1          ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Veteran=-1         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Elite=-1           ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames.WeaponN=-1,-1,-1          ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.ShowEnemy=                      ; boolean
 ```
 
 ```{note}
@@ -637,6 +639,17 @@ ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invu
 ForceShield.KillWarhead=           ; Warhead
 ```
 
+### Iron Curtain & Force Shield extra tint intensity
+
+- It is now possible to specify additional tint intensity applied to Iron Curtained and Force Shielded units.
+
+In `rulesmd.ini`
+```ini
+[AudioVisual]
+IronCurtain.ExtraTintIntensity=0.0  ; floating point value
+ForceShield.ExtraTintIntensity=0.0  ; floating point value
+```
+
 ### Jumpjet rotating on crashing toggle
 
 - Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
@@ -724,6 +737,23 @@ NoWobbles=false  ; boolean
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Subterranean unit travel height
+
+- It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
+
+[SOMETECHNO]             ; TechnoType
+SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
+```
+
+```{warning}
+This expects negative values to be used and may behave erratically if set to above -50.
 ```
 
 ### Voxel body multi-section shadows

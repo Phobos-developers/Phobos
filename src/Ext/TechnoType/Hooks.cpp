@@ -793,7 +793,7 @@ DEFINE_HOOK_AGAIN(0x4B0814, Locomotion_Process_Wake, 0x6)  // Drive
 DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)  // Hover
 {
 	GET(ILocomotion* const, pILoco, ESI);
-
+	__assume(pILoco != nullptr);
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(static_cast<LocomotionClass*>(pILoco)->LinkedTo->GetTechnoType());
 	R->EDX(pTypeExt->Wake.Get(RulesClass::Instance->Wake));
 

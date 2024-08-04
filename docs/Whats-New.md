@@ -20,6 +20,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- If `CreateUnit.AlwaysSpawnOnGround` is set to false, jumpjet vehicles created will now automatically take off instead of staying on ground. Set to true to force spawn on ground.
 - Digital display `Offset` and `Offset.ShieldDelta` Y-axis coordinates now work in inverted fashion (negative goes up, positive goes down) to be consistent with how pixel offsets work elsewhere in the game.
 - Phobos Warhead effects combined with `CellSpread` now correctly apply to buildings if any of the foundation cells are hit instead of only the top-left most cell (cell #0).
 - `ExtraWarheads.DamageOverrides` now falls back to last listed value if list is shorter than `ExtraWarheads` for all Warhead detonations exceeding the length.
@@ -314,7 +315,7 @@ New:
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 - Toggleable DieSound when grinding (by Trsdy)
 - Shields can inherit Techno ArmorType (by Starkku)
-- Income money flying-string display when harvesters or slaves are docking to refineries (by Trsdy)
+- Income money flying-string display when harvesters or slaves are docking to refineries or when spies steal credits (by Trsdy)
 - Allow random crates to be generated only on lands (by Trsdy)
 - Iron-curtain effects on infantries and organic units (by ststl)
 - Custom `SlavesFreeSound` (by TwinkleStar)
@@ -428,6 +429,12 @@ New:
 - Map events `604-605` for checking if a specific Techno enters in a cell (by FS-21)
 - Waypoint path is drawn for all units, even those not under player control if `DebugKeysEnabled=yes` (by Trsdy)
 - `RemoveDisguise` now works on vehicle disguises (by Trsdy)
+- Allow anchoring extended tooltips to the left side of the sidebar (by Trsdy)
+- Toggle to allow spawned aircraft to attack immediately after being spawned (by Starkku)
+- `ZAdjust` for OverlayTypes (by Starkku)
+- Allow customizing extra tint intensity for Iron Curtain & Force Shield (by Starkku)
+- Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565 (by Starkku)
+- Customizing height at which subterranean units travel (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -736,6 +743,7 @@ Phobos fixes:
 - Fixed an issue where `FireOnce=yes` deploy weapons on vehicles would still fire multiple times if deploy command is issued repeatedly or when not idle (by Starkku)
 - Fixed a game crash when checking BuildLimit if Phobos is running without Ares (by Belonit)
 - Corrected the misinterpretation in the definition of `DiskLaser.Radius` (by Trsdy)
+- Fixed GlobalVariables failed working among scenarios (by Trsdy)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)

@@ -17,16 +17,19 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	int nDamageLeft = *args->Damage;
+
 	if (!args->IgnoreDefenses)
 	{
-		const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (!pShieldData->IsActive())
 				return 0;
 
-			const int nDamageLeft = pShieldData->ReceiveDamage(args);
+			nDamageLeft = pShieldData->ReceiveDamage(args);
+
 			if (nDamageLeft >= 0)
 			{
 				*args->Damage = nDamageLeft;
@@ -39,6 +42,32 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				RD::SkipLowDamageCheck = true;
 		}
 	}
+
+	if (pExt->AE.ReflectDamage && nDamageLeft > 0 && args->Attacker)
+	{
+		for (auto& attachEffect : pExt->AttachedEffects)
+		{
+			if (!attachEffect->IsActive())
+				continue;
+
+			auto const pType = attachEffect->GetType();
+
+			if (!pType->ReflectDamage)
+				continue;
+
+			int damage = static_cast<int>(nDamageLeft * pType->ReflectDamage_Multiplier);
+			auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
+
+			if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, args->SourceHouse))
+			{
+				if (pType->ReflectDamage_Warhead_Detonate)
+					WarheadTypeExt::DetonateAt(pWH, args->Attacker, pThis, damage, pThis->Owner);
+				else
+					args->Attacker->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pThis->Owner);
+			}
+		}
+	}
+
 	return 0;
 }
 
