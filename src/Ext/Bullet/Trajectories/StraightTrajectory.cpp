@@ -216,10 +216,6 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	auto const pType = this->GetTrajectoryType<StraightTrajectoryType>(pBullet);
 
 	this->DetonationDistance = pType->DetonationDistance;
-
-	if (pType->ApplyRangeModifiers)
-		this->DetonationDistance = Leptons(WeaponTypeExt::GetRangeWithModifiers(pBullet->WeaponType, pBullet->Owner, this->DetonationDistance));
-
 	this->TargetSnapDistance = pType->TargetSnapDistance;
 	this->PassThrough = pType->PassThrough;
 	this->PassDetonate = pType->PassDetonate;
@@ -250,9 +246,20 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->ExtraCheck = nullptr;
 	this->LastCasualty.reserve(1);
 	this->FirepowerMult = 1.0;
+	this->AttenuationRange = pBullet->WeaponType ? pBullet->WeaponType->Range : 0;
 	this->LastTargetCoord = pBullet->TargetCoords;
 	this->CurrentBurst = 0;
 	this->CountOfBurst = pBullet->WeaponType ? pBullet->WeaponType->Burst : 0;
+
+	if (pType->ApplyRangeModifiers)
+	{
+		if (this->DetonationDistance >= 0)
+			this->DetonationDistance = Leptons(WeaponTypeExt::GetRangeWithModifiers(pBullet->WeaponType, pBullet->Owner, this->DetonationDistance));
+		else
+			this->DetonationDistance = Leptons(-WeaponTypeExt::GetRangeWithModifiers(pBullet->WeaponType, pBullet->Owner, -this->DetonationDistance));
+
+		this->AttenuationRange = WeaponTypeExt::GetRangeWithModifiers(pBullet->WeaponType, pBullet->Owner);
+	}
 
 	if (pBullet->Owner)
 	{
@@ -1281,18 +1288,17 @@ double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, Techno
 {
 	double distance = 0;
 	double damageMult = 1.0;
-	const double maxDistance = pBullet->WeaponType ? static_cast<double>(pBullet->WeaponType->Range) : 0;
 
 	if (pTechno)
 		distance = pTechno->GetCoords().DistanceFrom(pBullet->SourceCoords);
 	else
 		distance = pBullet->Location.DistanceFrom(pBullet->SourceCoords);
 
-	if (maxDistance < distance)
+	if (this->AttenuationRange < static_cast<int>(distance))
 		return this->EdgeAttenuation;
 
 	if (distance > 256.0)
-		damageMult += (this->EdgeAttenuation - 1.0) * ((distance - 256.0) / (maxDistance - 256.0));
+		damageMult += (this->EdgeAttenuation - 1.0) * ((distance - 256.0) / (static_cast<double>(this->AttenuationRange - 256)));
 
 	return damageMult;
 }

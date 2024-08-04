@@ -6,8 +6,8 @@ class StraightTrajectoryType final : public PhobosTrajectoryType
 {
 public:
 	StraightTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Straight)
-		, DetonationDistance { Leptons(102) }
 		, ApplyRangeModifiers { false }
+		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
 		, PassDetonate { false }
@@ -41,8 +41,8 @@ public:
 	virtual PhobosTrajectory* CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
-	Valueable<Leptons> DetonationDistance;
 	Valueable<bool> ApplyRangeModifiers;
+	Valueable<Leptons> DetonationDistance;
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> PassThrough;
 	Valueable<bool> PassDetonate;
@@ -106,6 +106,7 @@ public:
 		, ExtraCheck { nullptr }
 		, LastCasualty {}
 		, FirepowerMult { 1.0 }
+		, AttenuationRange { 0 }
 		, LastTargetCoord {}
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
@@ -144,6 +145,7 @@ public:
 		, ExtraCheck { nullptr }
 		, LastCasualty {}
 		, FirepowerMult { 1.0 }
+		, AttenuationRange { 0 }
 		, LastTargetCoord {}
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
@@ -197,6 +199,7 @@ public:
 	TechnoClass* ExtraCheck;
 	std::vector<CasualtyData> LastCasualty;
 	double FirepowerMult;
+	int AttenuationRange;
 	CoordStruct LastTargetCoord;
 	int CurrentBurst;
 	int CountOfBurst;
