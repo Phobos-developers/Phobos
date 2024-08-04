@@ -2,6 +2,18 @@
 
 #include <HouseClass.h>
 
+DEFINE_HOOK(0x47F71D, CellClass_DrawOverlay_ZAdjust, 0x5)
+{
+	GET(int, zAdjust, EDI);
+	GET_STACK(OverlayTypeClass*, pOverlayType, STACK_OFFSET(0x24, -0x14));
+
+	auto const pTypeExt = OverlayTypeExt::ExtMap.Find(pOverlayType);
+
+	if (pTypeExt->ZAdjust != 0)
+		R->EDI(zAdjust - pTypeExt->ZAdjust);
+
+	return 0;
+}
 
 // Replaces an Ares hook at 0x47F9A4
 DEFINE_HOOK(0x47F974, CellClass_DrawOverlay_Walls, 0x5)

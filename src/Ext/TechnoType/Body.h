@@ -99,6 +99,8 @@ public:
 		Valueable<WeaponTypeClass*> WarpOutWeapon;
 		Valueable<bool> WarpInWeapon_UseDistanceAsDamage;
 
+		Nullable<int> SubterraneanHeight;
+
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
 		ValueableVector<int> OreGathering_Tiberiums;
 		ValueableVector<int> OreGathering_FramesPerDir;
@@ -295,6 +297,8 @@ public:
 			, WarpInMinRangeWeapon {}
 			, WarpOutWeapon {}
 			, WarpInWeapon_UseDistanceAsDamage { false }
+
+			, SubterraneanHeight {}
 
 			, OreGathering_Anims {}
 			, OreGathering_Tiberiums {}

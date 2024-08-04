@@ -23,6 +23,7 @@ This page describes all the engine features that are either new and introduced b
     - `Animation.OfflineAction` determines what happens to the animation when the attached object is deactivated or not powered. Only applies if `Powered=true`.
     - `Animation.TemporalAction` determines what happens to the animation when the attached object is under effect of `Temporal=true` Warhead.
     - `Animation.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the animation's owner & invoker instead of the object the effect is attached to.
+    - `Animation.HideIfAttachedWith` contains list of other AttachEffectTypes that if attached to same techno as the current one, will hide this effect's animation.
   - `CumulativeAnimations` can be used to declare a list of animations used for `Cumulative=true` types instead of `Animation`. An animation is picked from the list in order matching the number of active instances of the type on the object, with last listed animation used if number is higher than the number of listed animations. This animation is only displayed once, on the first active instance of the effect found attached and is updated and restarted if the number of active instances changed.
   - Attached effect can fire off a weapon when expired / removed / object dies by setting `ExpireWeapon`.
     - `ExpireWeapon.TriggerOn` determines the exact conditions upon which the weapon is fired, defaults to `expire` which means only if the effect naturally expires.
@@ -40,6 +41,7 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
+  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage]`->`C4Warhead`. If `ReflectDamage.Warhead` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
@@ -82,8 +84,9 @@ Animation.ResetOnReapply=false                 ; boolean
 Animation.OfflineAction=Hides                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.TemporalAction=None                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.UseInvokerAsOwner=false              ; boolean
+Animation.HideIfAttachedWith=                  ; List of AttachEffectTypes
 CumulativeAnimations=                          ; list of animations
-ExpireWeapon=
+ExpireWeapon=                                  ; WeaponType
 ExpireWeapon.TriggerOn=expire                  ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
 ExpireWeapon.CumulativeOnlyOnce=false          ; boolean
 Tint.Color=                                    ; integer - R,G,B
@@ -106,6 +109,11 @@ Crit.AllowWarheads=                            ; list of WarheadTypes
 Crit.DisallowWarheads=                         ; list of WarheadTypes
 RevengeWeapon=                                 ; WeaponType
 RevengeWeapon.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage=false                            ; boolean
+ReflectDamage.Warhead=                         ; WarheadType
+ReflectDamage.Warhead.Detonate=false           ; WarheadType
+ReflectDamage.Multiplier=1.0                   ; floating point value, percents or absolute
+ReflectDamage.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisableWeapons=false                           ; boolean
 Groups=                                        ; comma-separated list of strings (group IDs)
 
@@ -405,10 +413,11 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `CreateUnit.Facing` determines the initial facing of created VehicleType.
     - `CreateUnit.RandomFacing`, if set to true, makes it so that a random facing is picked instead.
     - `CreateUnit.InheritFacings` and `CreateUnit.InheritTurretFacings` inherit facings for vehicle body and turret respectively from the destroyed vehicle if the animation is a vehicle destroy animation. `InheritTurretFacings` does not work with jumpjet vehicles due to technical constraints.
-  - `CreateUnit.AlwaysSpawnOnGround`, if set to true, ensures the vehicle will be created on the cell at ground level even if animation is in air.
+  - `CreateUnit.AlwaysSpawnOnGround`, if set to true, ensures the vehicle will be created on the cell at ground level even if animation is in air. If set to false, jumpjet units spawned on ground will take off automatically after being spawned regardless.
   - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles if possible.
   - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
-
+  - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit. Ignored if `CreateUnit.AlwaysSpawnOnGround` is set to true.
+  
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                             ; AnimationType
@@ -423,6 +432,7 @@ CreateUnit.InheritTurretFacings=false  ; boolean
 CreateUnit.AlwaysSpawnOnGround=false   ; boolean
 CreateUnit.ConsiderPathfinding=false   ; boolean
 CreateUnit.SpawnAnim=                  ; Animation
+CreareUnit.SpawnHeight=                ; integer, height in leptons
 ```
 
 ```{note}
@@ -649,17 +659,18 @@ Trajectory.Speed=100.0  ; floating point value
 *Straight trajectory used to make blasters in a private mod by @brsajo#9745*
 
 - Self-explanatory, is a straight-shot trajectory.
-  - `Trajectory.Straight.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation (note that this can cause the projectile to overshoot the target).
+  - `Trajectory.Straight.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation (note that this can cause the projectile to overshoot the target). If `Trajectory.Straight.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied here as well.
   - `Trajectory.Straight.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
   - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but ínstead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
 
 In `rulesmd.ini`:
-```ini
-[SOMEPROJECTILE]                            ; Projectile
-Trajectory=Straight                         ; Trajectory type
-Trajectory.Straight.DetonationDistance=0.4  ; floating point value
-Trajectory.Straight.TargetSnapDistance=0.5  ; floating point value
-Trajectory.Straight.PassThrough=false       ; boolean
+```ini                                         
+[SOMEPROJECTILE]                               ; Projectile
+Trajectory=Straight                            ; Trajectory type
+Trajectory.Straight.DetonationDistance=0.4     ; floating point value
+Trajectory.Straight.ApplyRangeModifiers=false  ; boolean
+Trajectory.Straight.TargetSnapDistance=0.5     ; floating point value
+Trajectory.Straight.PassThrough=false          ; boolean
 ```
 
 #### Bombard trajectory

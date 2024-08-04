@@ -76,6 +76,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ChronoSparkleBuildingDisplayPositions.Read(exINI, GameStrings::General, "ChronoSparkleBuildingDisplayPositions");
 	this->AIChronoSphereSW.Read(exINI, GameStrings::General, "AIChronoSphereSW");
 	this->AIChronoWarpSW.Read(exINI, GameStrings::General, "AIChronoWarpSW");
+	this->SubterraneanHeight.Read(exINI, GameStrings::General, "SubterraneanHeight");
 	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
 	this->RadApplicationDelay_Building.Read(exINI, GameStrings::Radiation, "RadApplicationDelay.Building");
 	this->RadBuildingDamageMaxCount.Read(exINI, GameStrings::Radiation, "RadBuildingDamageMaxCount");
@@ -142,6 +143,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ForceShield_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "ForceShield.KeptOnDeploy");
 	this->ForceShield_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "ForceShield.EffectOnOrganics");
 	this->ForceShield_KillOrganicsWarhead.Read<true>(exINI, GameStrings::CombatDamage, "ForceShield.KillOrganicsWarhead");
+
+	this->IronCurtain_ExtraTintIntensity.Read(exINI, GameStrings::AudioVisual, "IronCurtain.ExtraTintIntensity");
+	this->ForceShield_ExtraTintIntensity.Read(exINI, GameStrings::AudioVisual, "ForceShield.ExtraTintIntensity");
+	this->ColorAddUse8BitRGB.Read(exINI, GameStrings::AudioVisual, "ColorAddUse8BitRGB");
 
 	this->CrateOnlyOnLand.Read(exINI, GameStrings::CrateRules, "CrateOnlyOnLand");
 	this->UnitCrateVehicleCap.Read(exINI, GameStrings::CrateRules, "UnitCrateVehicleCap");
@@ -251,6 +256,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoSparkleBuildingDisplayPositions)
 		.Process(this->AIChronoSphereSW)
 		.Process(this->AIChronoWarpSW)
+		.Process(this->SubterraneanHeight)
 		.Process(this->UseGlobalRadApplicationDelay)
 		.Process(this->RadApplicationDelay_Building)
 		.Process(this->RadBuildingDamageMaxCount)
@@ -301,6 +307,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceShield_KeptOnDeploy)
 		.Process(this->ForceShield_EffectOnOrganics)
 		.Process(this->ForceShield_KillOrganicsWarhead)
+		.Process(this->IronCurtain_ExtraTintIntensity)
+		.Process(this->ForceShield_ExtraTintIntensity)
+		.Process(this->ColorAddUse8BitRGB)
 		.Process(this->ROF_RandomDelay)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)

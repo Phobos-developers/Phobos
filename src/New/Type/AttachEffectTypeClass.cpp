@@ -109,6 +109,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Animation_OfflineAction.Read(exINI, pSection, "Animation.OfflineAction");
 	this->Animation_TemporalAction.Read(exINI, pSection, "Animation.TemporalAction");
 	this->Animation_UseInvokerAsOwner.Read(exINI, pSection, "Animation.UseInvokerAsOwner");
+	this->Animation_HideIfAttachedWith.Read(exINI, pSection, "Animation.HideIfAttachedWith");
 
 	this->ExpireWeapon.Read<true>(exINI, pSection, "ExpireWeapon");
 	this->ExpireWeapon_TriggerOn.Read(exINI, pSection, "ExpireWeapon.TriggerOn");
@@ -140,6 +141,12 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 
+	this->ReflectDamage.Read(exINI, pSection, "ReflectDamage");
+	this->ReflectDamage_Warhead.Read(exINI, pSection, "ReflectDamage.Warhead");
+	this->ReflectDamage_Warhead_Detonate.Read(exINI, pSection, "ReflectDamage.Warhead.Detonate");
+	this->ReflectDamage_Multiplier.Read(exINI, pSection, "ReflectDamage.Multiplier");
+	this->ReflectDamage_AffectsHouses.Read(exINI, pSection, "ReflectDamage.AffectsHouses");
+
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
 
 	// Groups
@@ -164,6 +171,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Animation_OfflineAction)
 		.Process(this->Animation_TemporalAction)
 		.Process(this->Animation_UseInvokerAsOwner)
+		.Process(this->Animation_HideIfAttachedWith)
 		.Process(this->ExpireWeapon)
 		.Process(this->ExpireWeapon_TriggerOn)
 		.Process(this->ExpireWeapon_CumulativeOnlyOnce)
@@ -187,6 +195,11 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Crit_DisallowWarheads)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
+		.Process(this->ReflectDamage)
+		.Process(this->ReflectDamage_Warhead)
+		.Process(this->ReflectDamage_Warhead_Detonate)
+		.Process(this->ReflectDamage_Multiplier)
+		.Process(this->ReflectDamage_AffectsHouses)
 		.Process(this->DisableWeapons)
 		.Process(this->Groups)
 		;
