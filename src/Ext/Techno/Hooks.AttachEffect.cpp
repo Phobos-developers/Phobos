@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
@@ -92,7 +93,7 @@ DEFINE_JUMP(VTABLE, 0x7F4A34, GET_OFFSET(TechnoClass_Limbo_Wrapper)); // TechnoC
 DEFINE_JUMP(CALL, 0x4DB3B1, GET_OFFSET(TechnoClass_Limbo_Wrapper));   // FootClass
 DEFINE_JUMP(CALL, 0x445DDA, GET_OFFSET(TechnoClass_Limbo_Wrapper))    // BuildingClass
 
-DEFINE_HOOK(0x702050, TechnoClass_TakeDamage_AttachEffectExpireWeapon, 0x6)
+DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
@@ -122,6 +123,48 @@ DEFINE_HOOK(0x702050, TechnoClass_TakeDamage_AttachEffectExpireWeapon, 0x6)
 	for (auto const& pWeapon : expireWeapons)
 	{
 		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(int*, pDamage, EBX);
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x18));
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (pExt->AE.ReflectDamage && pSource && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || pWHExt->SuppressReflectDamage_Types.size() > 0))
+	{
+		for (auto& attachEffect : pExt->AttachedEffects)
+		{
+			if (!attachEffect->IsActive())
+				continue;
+
+			auto const pType = attachEffect->GetType();
+
+			if (!pType->ReflectDamage)
+				continue;
+
+			if (pWHExt->SuppressReflectDamage && pWHExt->SuppressReflectDamage_Types.Contains(pType))
+				continue;
+
+			auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
+			int damage = static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier);
+
+			if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
+			{
+				if (pType->ReflectDamage_Warhead_Detonate)
+					WarheadTypeExt::DetonateAt(pWH, pSource, pThis, damage, pThis->Owner);
+				else
+					pSource->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pThis->Owner);
+			}
+		}
 	}
 
 	return 0;

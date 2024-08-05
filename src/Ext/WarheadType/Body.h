@@ -133,6 +133,12 @@ public:
 		ValueableVector<int> AttachEffect_CumulativeRemoveMinCounts;
 		ValueableVector<int> AttachEffect_CumulativeRemoveMaxCounts;
 		ValueableVector<int> AttachEffect_DurationOverrides;
+
+		Valueable<bool> SuppressRevengeWeapons;
+		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
+		Valueable<bool> SuppressReflectDamage;
+		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -265,6 +271,11 @@ public:
 			, AttachEffect_CumulativeRemoveMinCounts {}
 			, AttachEffect_CumulativeRemoveMaxCounts {}
 			, AttachEffect_DurationOverrides {}
+
+			, SuppressRevengeWeapons { false }
+			, SuppressRevengeWeapons_Types {}
+			, SuppressReflectDamage { false }
+			, SuppressReflectDamage_Types {}
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
