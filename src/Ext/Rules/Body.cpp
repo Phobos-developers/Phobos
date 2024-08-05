@@ -178,6 +178,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
 	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
+	this->VoxelLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelLightSource");
+	this->VoxelShadowLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelShadowLightSource");
+
+	this->ReplaceVoxelLightSources();
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -340,6 +345,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
 		.Process(this->PodImage)
+		.Process(this->VoxelLightSource)
+		.Process(this->VoxelShadowLightSource)
 		;
 }
 
@@ -347,6 +354,8 @@ void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<RulesClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	this->ReplaceVoxelLightSources();
 }
 
 void RulesExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
@@ -354,6 +363,27 @@ void RulesExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	Extension<RulesClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
+
+void RulesExt::ExtData::ReplaceVoxelLightSources()
+{
+	bool needCacheFlush = false;
+
+	if (this->VoxelLightSource.isset())
+	{
+		needCacheFlush = true;
+		Game::VoxelLightSource = this->VoxelLightSource;
+	}
+
+	if (this->VoxelShadowLightSource.isset())
+	{
+		needCacheFlush = true;
+		Game::VoxelShadowLightSource = this->VoxelShadowLightSource;
+	}
+
+	if (needCacheFlush)
+		Game::DestroyVoxelCaches();
+}
+
 
 bool RulesExt::LoadGlobals(PhobosStreamReader& Stm)
 {
