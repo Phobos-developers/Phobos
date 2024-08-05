@@ -45,7 +45,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1.
-  
+
 In `rulesmd.ini`:
 ```ini
 [DigitalDisplayTypes]
@@ -253,6 +253,20 @@ In `rulesmd.ini`:
 SelectionFlashDuration=0  ; integer, number of frames
 ```
 
+### More display styles for placing grids
+
+- This feature is highly compatible with `ExpandBuildingPlace`. If set `CheckExpandPlaceGrid` to true, it will display the placing grids with `place.shp` and following corresponding frame number.
+  - `ExpandLandGridFrames` controls the placing grids frames on non-water cell. The three numbers respectively represent "Some technos that can command departure have occupied this area", "This cell is actually beyond the scope, but there is still at least one cell inside the entire region" and "Here is no problem, everything is OK".
+  - `ExpandWaterGridFrames` controls the placing grids frames on water cell. Each item corresponds to the same as above.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+CheckExpandPlaceGrid=false     ; boolean
+ExpandLandGridFrames=1,0,0     ; integer, zero-based frame index - have technos, near boundary, is normal
+ExpandWaterGridFrames=1,0,0    ; integer, zero-based frame index - have technos, near boundary, is normal
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers
@@ -333,6 +347,24 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
+```
+
+### Show cameo when unbuildable
+
+- A setting that allows you to preview information. This feature can be used as before, playing "new construction options" and clearing the specific production queue when prerequisites loss.
+  - `AlwaysExistTheCameo` controls whether you can see the cameo when the prerequisite have not satisfied (`TechnoLevel`, `Owner`, `RequiredHouses` and `ForbiddenHouses` should be satisfied). Defaults to `[General]` -> `AlwaysExistTheCameo`.
+  - If `PrerequisiteForCameo` is not set, the grey cameo will only show when `AIBasePlanningSide` is satisfied. If set a techno type, the grey cameo will show if you have a techno in this type or this type's `TechnoLevel`, `Owner`, `RequiredHouses` and `ForbiddenHouses` is satisfied.
+  - The `UIExtraDescription` is like `UIDescription`, but this only appearing when the techno is truly unbuildable.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AlwaysExistTheCameo=false     ; boolean
+
+[SOMETECHNO]                  ; TechnoType
+AlwaysExistTheCameo=          ; boolean
+PrerequisiteForCameo=         ; TechnoType
+UIExtraDescription=           ; CSF entry key
 ```
 
 ### Harvester counter

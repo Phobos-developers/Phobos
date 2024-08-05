@@ -357,6 +357,16 @@ In `rulesmd.ini`:
 SellBuildupLength=23  ; integer, number of buildup frames to play
 ```
 
+### Building placing and deploying logic enhancement
+
+- In vanilla games, buildings are always cannot placing or deploying on the cells that other infantries or units on. Now this can be  changed by setting `ExpandBuildingPlace` to true, when you try to place the building on these cells, it will check whether the occupiers can be scatter by yourself (include your own technos and allies non-player technos) and whether there are enough spaces to scatter. If can, it will record which building you are placing and show a preview to you and your allies, then start a timer to record this placement and order the occupiers to leave this building area. When the area is cleared, the building will be truly place down and the production queue will be restored to original state. But when the timer expires or an unexpected situation has occurred which make the building impossible be constructed here anymore, it will stop the action and play "cannot deploy here", then you should re-place or re-deploy the building in a valid space. Note that when the building has been recorded and is trying to place, unless the production queue has vanished (such as construction yard is no longer exist), it will continue to function normally until the conditions are not met.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExpandBuildingPlace=false      ; boolean
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
@@ -478,14 +488,14 @@ In `rulesmd.ini`:
 ```ini
 [General]
 EnemyInsignia=true                       ; boolean
-                                         
-[AudioVisual]                            
+
+[AudioVisual]
 DrawInsignia.OnlyOnSelected=false        ; boolean
 DrawInsignia.AdjustPos.Infantry=5,2      ; X,Y, position offset from default
 DrawInsignia.AdjustPos.Units=10,6        ; X,Y, position offset from default
 DrawInsignia.AdjustPos.Buildings=10,6    ; X,Y, position offset from default
 DrawInsignia.AdjustPos.BuildingsAnchor=  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
-                                         
+
 [SOMETECHNO]                             ; TechnoType
 Insignia=                                ; filename - excluding the .shp extension
 Insignia.Rookie=                         ; filename - excluding the .shp extension
@@ -799,6 +809,32 @@ ForbidParallelAIQueues.Vehicle=no   ; boolean
 ForbidParallelAIQueues.Navy=no      ; boolean
 ForbidParallelAIQueues.Aircraft=no  ; boolean
 ForbidParallelAIQueues.Building=no  ; boolean
+```
+
+### Check building adjacent by using units
+
+- You can now set `CheckUnitBaseNormal` to true to use units to expand the construction scope of the base.
+  - `UnitBaseNormal` controls whether our own buildings can be place around it like vanilla `BaseNormal` do.
+  - `UnitBaseForAllyBuilding` controls whether ally buildings can be place around it like vanilla `EligibileForAllyBuilding` do.
+
+In `rulesmd.ini`:
+```ini
+[General]
+CheckUnitBaseNormal=false      ; boolean
+
+[SOMEUNIT]                     ; UnitType
+UnitBaseNormal=false           ; boolean
+UnitBaseForAllyBuilding=false  ; boolean
+```
+
+### Buildable-upon TechnoTypes
+
+- Now technos have `CanBeBuiltOn=true` can simply removed when building is placed on them.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]         ; TechnoType
+CanBeBuiltOn=false   ; boolean
 ```
 
 ## Terrains

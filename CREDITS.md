@@ -342,6 +342,8 @@ This page lists all the individual contributions to the project by their author.
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
 - **handama** - AI script action to jump back to previous script
+- **CrimRecya**
+  - Building placing and deploying logic enhancement, unit base normal, new placing grids and grey cameo preview
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
