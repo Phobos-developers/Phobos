@@ -371,13 +371,13 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 	if (this->VoxelLightSource.isset())
 	{
 		needCacheFlush = true;
-		Game::VoxelLightSource = this->VoxelLightSource;
+		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix.get() * this->VoxelLightSource;
 	}
 
 	if (this->VoxelShadowLightSource.isset())
 	{
 		needCacheFlush = true;
-		Game::VoxelShadowLightSource = this->VoxelShadowLightSource;
+		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix.get() * this->VoxelShadowLightSource;
 	}
 
 	if (needCacheFlush)
