@@ -205,6 +205,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_AttachTypes.Read(exINI, pSection, "Shield.AttachTypes");
 	this->Shield_RemoveTypes.Read(exINI, pSection, "Shield.RemoveTypes");
 	this->Shield_ReplaceOnly.Read(exINI, pSection, "Shield.ReplaceOnly");
+	this->Shield_RemoveAll.Read(exINI, pSection, "Shield.RemoveAll");
 	this->Shield_ReplaceNonRespawning.Read(exINI, pSection, "Shield.ReplaceNonRespawning");
 	this->Shield_InheritStateOnReplace.Read(exINI, pSection, "Shield.InheritStateOnReplace");
 	this->Shield_MinimumReplaceDelay.Read(exINI, pSection, "Shield.MinimumReplaceDelay");
@@ -283,6 +284,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Shield_SelfHealing_Duration > 0
 		|| this->Shield_AttachTypes.size() > 0
 		|| this->Shield_RemoveTypes.size() > 0
+		|| this->Shield_RemoveAll
 		|| this->Convert_Pairs.size() > 0
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
@@ -397,6 +399,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_SelfHealing_RestartTimer)
 		.Process(this->Shield_AttachTypes)
 		.Process(this->Shield_RemoveTypes)
+		.Process(this->Shield_RemoveAll)
 		.Process(this->Shield_ReplaceOnly)
 		.Process(this->Shield_ReplaceNonRespawning)
 		.Process(this->Shield_InheritStateOnReplace)

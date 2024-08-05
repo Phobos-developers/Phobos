@@ -334,6 +334,7 @@ Shield.Respawn.Types=                       ; List of ShieldType names
 Shield.SelfHealing.Types=                   ; List of ShieldType names
 Shield.AttachTypes=                         ; List of ShieldType names
 Shield.RemoveTypes=                         ; List of ShieldType names
+Shield.RemoveAll=false                      ; boolean
 Shield.ReplaceOnly=false                    ; boolean
 Shield.ReplaceNonRespawning=false           ; boolean
 Shield.MinimumReplaceDelay=0                ; integer, game frames
@@ -398,6 +399,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Shield.AttachTypes` & `Shield.RemoveTypes` allows listing ShieldTypes that are attached or removed, respectively from any targets affected by the warhead (positive `Verses` values). Normally only first listed ShieldType in `Shield.AttachTypes` is applied.
     - If `Shield.ReplaceOnly` is set, shields from `Shield.AttachTypes` are only applied to affected targets from which shields were simultaneously removed, matching the order listed in `Shield.RemoveTypes`. If `Shield.AttachTypes` contains less items than `Shield.RemoveTypes`, last item from the former is used for any remaining removed shields.
     - If `Shield.ReplaceNonRespawning` is set, shield from `Shield.AttachTypes` replaces existing shields that have been broken and cannot respawn on their own.
+    - If `Shield.RemoveAll` is set, all shield types are removed from the affected targets, even those that are not listed in `Shield.RemoveTypes`. If `Shield.ReplaceOnly` is set, first type listed in `Shield.AttachTypes` is used to replace any removed types not listed in `Shield.RemoveTypes`.
     - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 

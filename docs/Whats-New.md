@@ -435,6 +435,7 @@ New:
 - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565 (by Starkku)
 - Customizing height at which subterranean units travel (by Starkku)
 - Option for Warhead damage to penetrate Iron Curtain or Force Shield (by Starkku)
+- Option for Warhead to remove all shield types at once (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
