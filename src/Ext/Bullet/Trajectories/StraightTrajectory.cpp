@@ -251,24 +251,27 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->CurrentBurst = 0;
 	this->CountOfBurst = pBullet->WeaponType ? pBullet->WeaponType->Burst : 0;
 
-	if (pType->ApplyRangeModifiers)
+	auto const pWeapon = pBullet->WeaponType;
+	auto const pOwner = pBullet->Owner;
+
+	if (pType->ApplyRangeModifiers && pWeapon && pOwner)
 	{
 		if (this->DetonationDistance >= 0)
-			this->DetonationDistance = Leptons(WeaponTypeExt::GetRangeWithModifiers(pBullet->WeaponType, pBullet->Owner, this->DetonationDistance));
+			this->DetonationDistance = Leptons(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner, this->DetonationDistance));
 		else
-			this->DetonationDistance = Leptons(-WeaponTypeExt::GetRangeWithModifiers(pBullet->WeaponType, pBullet->Owner, -this->DetonationDistance));
+			this->DetonationDistance = Leptons(-WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner, -this->DetonationDistance));
 
-		this->AttenuationRange = WeaponTypeExt::GetRangeWithModifiers(pBullet->WeaponType, pBullet->Owner);
+		this->AttenuationRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner);
 	}
 
-	if (pBullet->Owner)
+	if (pOwner)
 	{
-		const CasualtyData TheOwner {pBullet->Owner, 20};
+		const CasualtyData TheOwner {pOwner, 20};
 		this->LastCasualty.push_back(TheOwner);
-		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
-		this->CurrentBurst = pBullet->Owner->CurrentBurstIndex;
+		this->FirepowerMult = pOwner->FirepowerMultiplier;
+		this->CurrentBurst = pOwner->CurrentBurstIndex;
 
-		if (this->MirrorCoord && pBullet->Owner->CurrentBurstIndex % 2 == 1)
+		if (this->MirrorCoord && pOwner->CurrentBurstIndex % 2 == 1)
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
 	}
 
