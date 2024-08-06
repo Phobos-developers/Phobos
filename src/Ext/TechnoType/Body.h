@@ -83,7 +83,7 @@ public:
 
 		Valueable<bool> CombatAlert;
 		NullableIdx<VoxClass> CombatAlert_EVA;
-		Valueable<bool> CombatAlert_NotBuilding;
+		Nullable<bool> CombatAlert_NotBuilding;
 
 		NullableIdx<VocClass> VoiceCreated;
 		NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
@@ -356,7 +356,7 @@ public:
 
 			, CombatAlert { true }
 			, CombatAlert_EVA {}
-			, CombatAlert_NotBuilding { false }
+			, CombatAlert_NotBuilding {}
 
 			, EnemyUIName {}
 

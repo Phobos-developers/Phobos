@@ -138,7 +138,7 @@ public:
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> EffectsRequireVerses;
-		Nullable<bool> Malicious;
+		Valueable<bool> Malicious;
 
 		double Crit_RandomBuffer;
 		double Crit_CurrentChance;
