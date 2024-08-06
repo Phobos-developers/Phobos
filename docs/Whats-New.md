@@ -434,6 +434,7 @@ New:
 - Allow customizing extra tint intensity for Iron Curtain & Force Shield (by Starkku)
 - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565 (by Starkku)
 - Customizing height at which subterranean units travel (by Starkku)
+- Allow customizing voxel light source position (by Kerbiter, Morton, based on knowledge of thomassnedon)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
