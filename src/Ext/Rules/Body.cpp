@@ -179,7 +179,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
 	this->VoxelLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelLightSource");
-	this->VoxelShadowLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelShadowLightSource");
+	// this->VoxelShadowLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelShadowLightSource");
 
 	this->ReplaceVoxelLightSources();
 
@@ -346,7 +346,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropPodTrailer)
 		.Process(this->PodImage)
 		.Process(this->VoxelLightSource)
-		.Process(this->VoxelShadowLightSource)
+		// .Process(this->VoxelShadowLightSource)
 		;
 }
 
@@ -375,12 +375,15 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix.get() * source;
 	}
 
+	/*
+	// doesn't really impact anything from my testing - Kerbiter
 	if (this->VoxelShadowLightSource.isset())
 	{
 		needCacheFlush = true;
 		auto source = this->VoxelShadowLightSource.Get().Normalized();
 		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix.get() * source;
 	}
+	*/
 
 	if (needCacheFlush)
 		Game::DestroyVoxelCaches();

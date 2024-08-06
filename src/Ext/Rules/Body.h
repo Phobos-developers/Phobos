@@ -141,7 +141,7 @@ public:
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
 		Nullable<Vector3D<float>> VoxelLightSource;
-		Nullable<Vector3D<float>> VoxelShadowLightSource;
+		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -242,7 +242,7 @@ public:
 			, DropPodTrailer { }
 			, PodImage { }
 			, VoxelLightSource { }
-			, VoxelShadowLightSource { }
+			// , VoxelShadowLightSource { }
 		{ }
 
 		virtual ~ExtData() = default;
