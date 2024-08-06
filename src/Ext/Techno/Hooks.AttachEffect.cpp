@@ -133,7 +133,7 @@ DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 	GET(TechnoClass*, pThis, ESI);
 	GET(int*, pDamage, EBX);
 	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
-	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x18));
+	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
