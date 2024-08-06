@@ -12,6 +12,7 @@
 #include <Ext/AnimType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
@@ -341,16 +342,19 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	if (pSource)
 	{
 		auto const pExt = TechnoExt::ExtMap.Find(pThis);
 		auto const pTypeExt = pExt->TypeExtData;
+		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+		bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
 
-		if (pTypeExt && pTypeExt->RevengeWeapon &&
-			EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		if (pTypeExt && pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 		{
-			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
+			if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
+				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
 		}
 
 		for (auto& attachEffect : pExt->AttachedEffects)
@@ -361,6 +365,9 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 			auto const pType = attachEffect->GetType();
 
 			if (!pType->RevengeWeapon)
+				continue;
+
+			if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
 				continue;
 
 			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
