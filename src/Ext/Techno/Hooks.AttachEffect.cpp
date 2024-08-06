@@ -128,7 +128,7 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
+DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(int*, pDamage, EBX);
@@ -142,7 +142,7 @@ DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 	if (pWHExt->Reflected)
 		return 0;
 
-	if (pExt->AE.ReflectDamage && pSource && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || pWHExt->SuppressReflectDamage_Types.size() > 0))
+	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || pWHExt->SuppressReflectDamage_Types.size() > 0))
 	{
 		for (auto& attachEffect : pExt->AttachedEffects)
 		{
