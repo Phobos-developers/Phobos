@@ -785,7 +785,7 @@ VoxelLightSource= ; X,Y,Z - position of the light
 ```
 
 ```{hint}
-In order to easily preview the light source settings use the [VXL Viewer and VXL Generator tool by thomassneddon](TODO).
+In order to easily preview the light source settings use the [VXL Viewer and VPL Generator tool by thomassneddon](https://github.com/ThomasSneddon/vxl-renderer/releases). To use the tool unpack it somewhere, then drag the main VXL file of a voxel that you will use to preview onto it (auxilliary VXL and HVA files must be in the same folder).
 ```
 
 ### Voxel shadow scaling in air
