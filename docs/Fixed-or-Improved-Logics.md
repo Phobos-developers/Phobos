@@ -781,7 +781,7 @@ ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-VoxelLightSource= ; X,Y,Z - position of the light
+VoxelLightSource=  ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
 ```
 
 ```{hint}
