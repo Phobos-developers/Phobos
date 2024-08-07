@@ -1229,10 +1229,10 @@ Promote.EliteAnimation=           ; Animation
   - Technos hitted by a warhead with `[SOMEWARHEAD]->CombatAlert.Suppress` setted to `true` will not raise a radar event or EVA. This flag is default to the inverse value of ares flag `[SOMEWARHEAD]->Malicious`.
 - And the following flags controlls the effect of a combat alert.
   - `[AudioVisual]->CombatAlert.MakeAVoice` decides whether to play some sound effect with the combat alert. Set it to `true` will enable the following flags, otherwise they will be ignored.
-  - `[AudioVisual]->CombatAlert.UseFeedbackVoice` decides whether to use the sound defined by `VoiceFeedback`.
-  - `[AudioVisual]->CombatAlert.UseAttackVoice` decides whether to use the sound defined by `VoiceAttack`.
-  - `[AudioVisual]->CombatAlert.UseEVA` decides whether to play an EVA. The EVA is default to `EVA_UnitsInCombat`, and can be specified through `[SOMETECHNO]->CombatAlert.EVA`.
-  - The sound effect is taken at order, feedback first, attack then, eva finally. The flags in `[AudioVisual]` controlls whether to check it.
+  - `[SOMETECHNO]->CombatAlert.UseFeedbackVoice` decides whether to use the sound defined by `VoiceFeedback`. Default to `[AudioVisual]->CombatAlert.UseFeedbackVoice`.
+  - `[SOMETECHNO]->CombatAlert.UseAttackVoice` decides whether to use the sound defined by `VoiceAttack`. Default to `[AudioVisual]->CombatAlert.UseAttackVoice`.
+  - `[SOMETECHNO]->CombatAlert.UseEVA` decides whether to play an EVA. Default to `[AudioVisual]->CombatAlert.UseEVA`. The EVA to play is default to `EVA_UnitsInCombat`, and can be specified through `[SOMETECHNO]->CombatAlert.EVA`.
+  - The sound effect is taken **at order**, feedback first, attack then, eva finally. The flags in `[AudioVisual]` controlls whether to check it globally, and can be specify per techno.
   - An example: You set `CombatAlert.UseFeedbackVoice` and `CombatAlert.UseEVA` to `true` and `CombatAlert.UseAttackVoice` to `false`. A unit with `VoiceFeedback` `VoiceAttack` and `CombatAlert.EVA` are all set will play `VoiceFeedback`. A unit with `VoiceAttack` set will play `EVA_UnitsInCombat`.
 
 In `rulesmd.ini`:
@@ -1250,8 +1250,11 @@ CombatAlert.UseEVA=true                ;boolean
 
 [SOMETECHNO]
 CombatAlert=true                     ;boolean
-CombatAlert.EVA=EVA_UnitsInCombat    ;EVA entry
 CombatAlert.NotBuilding=false        ;boolean
+CombatAlert.UseFeedbackVoice=true      ;boolean
+CombatAlert.UseAttackVoice=true        ;boolean
+CombatAlert.UseEVA=true                ;boolean
+CombatAlert.EVA=EVA_UnitsInCombat    ;EVA entry
 
 [SOMEWARHEAD]
 CombatAlert.Suppress=   ;boolean
