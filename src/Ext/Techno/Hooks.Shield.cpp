@@ -35,7 +35,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		{
 			const auto pHouse = pThis->Owner;
 
-			if (!pHouse || !pThis->IsOwnedByCurrentPlayer || !pThis->IsInPlayfield)
+			if (!pHouse || (!pThis->IsOwnedByCurrentPlayer && !pHouse->IsInPlayerControl) || !pThis->IsInPlayfield)
 				break;
 
 			const auto pSourceHouse = args->SourceHouse;
