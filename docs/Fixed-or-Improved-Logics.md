@@ -161,6 +161,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
 - OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
 - Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
+- Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
 
 ## Fixes / interactions with other extensions
 
@@ -478,14 +479,14 @@ In `rulesmd.ini`:
 ```ini
 [General]
 EnemyInsignia=true                       ; boolean
-                                         
-[AudioVisual]                            
+
+[AudioVisual]
 DrawInsignia.OnlyOnSelected=false        ; boolean
 DrawInsignia.AdjustPos.Infantry=5,2      ; X,Y, position offset from default
 DrawInsignia.AdjustPos.Units=10,6        ; X,Y, position offset from default
 DrawInsignia.AdjustPos.Buildings=10,6    ; X,Y, position offset from default
 DrawInsignia.AdjustPos.BuildingsAnchor=  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
-                                         
+
 [SOMETECHNO]                             ; TechnoType
 Insignia=                                ; filename - excluding the .shp extension
 Insignia.Rookie=                         ; filename - excluding the .shp extension
@@ -767,6 +768,24 @@ In `artmd.ini`:
 ShadowIndices=        ; list of integers (voxel section indices)
 ShadowIndex.Frame=0   ; integer (HVA animation frame index)
 ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
+```
+
+### Voxel light source position customization
+
+![image](_static/images/VoxelLightSourceComparison.png)
+*New lighting with `VoxelLightSource=0.02,-0.69,0.36` vs default lighting, Prism Tank voxel by [CCS_qkl](https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index)*
+
+- It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
+  - Only the direction of the light is accounted, the distance to the voxel is not accounted.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+VoxelLightSource=  ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
+```
+
+```{hint}
+In order to easily preview the light source settings use the [VXL Viewer and VPL Generator tool by thomassneddon](https://github.com/ThomasSneddon/vxl-renderer/releases). To use the tool unpack it somewhere, then drag the main VXL file of a voxel that you will use to preview onto it (auxilliary VXL and HVA files must be in the same folder).
 ```
 
 ### Voxel shadow scaling in air

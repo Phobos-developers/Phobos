@@ -392,6 +392,19 @@ DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
 	return 0;
 }
 
+// Skips bridge-related coord checks to allow AA to target air units while both are on a bridge.
+DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
+{
+	enum { SkipChecks = 0x6FCCBD };
+
+	GET(TechnoClass*, pTarget, EBP);
+
+	if (pTarget->IsInAir())
+		return SkipChecks;
+
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region TechnoClass_Fire
