@@ -183,6 +183,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ReplaceVoxelLightSources();
 
+	this->UseFixedVoxelLighting.Read(exINI, GameStrings::AudioVisual, "UseFixedVoxelLighting");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -347,6 +349,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PodImage)
 		.Process(this->VoxelLightSource)
 		// .Process(this->VoxelShadowLightSource)
+		.Process(this->UseFixedVoxelLighting)
 		;
 }
 
@@ -371,7 +374,7 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 	if (this->VoxelLightSource.isset())
 	{
 		needCacheFlush = true;
-		auto source = this->VoxelLightSource.Get().Normalized();
+		auto source = this->VoxelLightSource.Get();
 		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix.get() * source;
 	}
 
