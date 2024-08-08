@@ -98,3 +98,31 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 
 	return R->Origin() == 0x6B7600 ? SkipGameCode1 : SkipGameCode2;
 }
+
+DEFINE_HOOK(0x465910, BuildingTypeClass_CanUseWaypoint, 0x5)
+{
+	if (RulesExt::Global()->BuildingWaypoint)
+	{
+		R->AL(true);
+	}
+	else
+	{
+		R->AL(false);
+	}
+	Patch::Apply_RAW(0x465915, { 0xC3 });
+	return 0x465915;
+}
+
+DEFINE_HOOK(0x41CB50, AircraftTypeClass_CanUseWaypoint, 0x5)
+{
+	if (RulesExt::Global()->AircraftWaypoint)
+	{
+		R->AL(true);
+	}
+	else
+	{
+		R->AL(false);
+	}
+	Patch::Apply_RAW(0x41CB55, { 0xC3 });
+	return 0x41CB55;
+}

@@ -1251,6 +1251,18 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### Waypoint for buildings and aircrafts
+
+- In vanilla, buildings and aircrafts is forbiddened to use waypoint. Now you can turn it on by the following flags.
+- P.S.: We have no idea about the reason why ww turn this off. In fact this has **not** been tested throughly. So, use it with caution.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingWaypoint = false    ; boolean
+AircraftWaypoint = false    ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound
