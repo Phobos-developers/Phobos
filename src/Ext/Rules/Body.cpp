@@ -181,14 +181,19 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->FactoryProgressDisplay.Read(exINI, GameStrings::AudioVisual, "FactoryProgressDisplay");
 	this->MainSWProgressDisplay.Read(exINI, GameStrings::AudioVisual, "MainSWProgressDisplay");
 	this->InvulnerableDisplay.Read(exINI, GameStrings::AudioVisual, "InvulnerableDisplay");
+	this->TemporalLifeDisplay.Read(exINI, GameStrings::AudioVisual, "TemporalLifeDisplay");
 	this->FactoryProgressDisplay_Offset.Read(exINI, GameStrings::AudioVisual, "FactoryProgressDisplay.Offset");
 	this->MainSWProgressDisplay_Offset.Read(exINI, GameStrings::AudioVisual, "MainSWProgressDisplay.Offset");
 	this->InvulnerableDisplay_Others_Offset.Read(exINI, GameStrings::AudioVisual, "InvulnerableDisplay.Others.Offset");
 	this->InvulnerableDisplay_Buildings_Offset.Read(exINI, GameStrings::AudioVisual, "InvulnerableDisplay.Buildings.Offset");
+	this->TemporalLifeDisplay_Others_Offset.Read(exINI, GameStrings::AudioVisual, "TemporalLifeDisplay.Others.Offset");
+	this->TemporalLifeDisplay_Buildings_Offset.Read(exINI, GameStrings::AudioVisual, "TemporalLifeDisplay.Buildings.Offset");
 	this->FactoryProgressDisplay_Pips.Read(exINI, GameStrings::AudioVisual, "FactoryProgressDisplay.Pips");
 	this->MainSWProgressDisplay_Pips.Read(exINI, GameStrings::AudioVisual, "MainSWProgressDisplay.Pips");
 	this->InvulnerableDisplay_Others_Pips.Read(exINI, GameStrings::AudioVisual, "InvulnerableDisplay.Others.Pips");
 	this->InvulnerableDisplay_Buildings_Pips.Read(exINI, GameStrings::AudioVisual, "InvulnerableDisplay.Buildings.Pips");
+	this->TemporalLifeDisplay_Others_Pips.Read(exINI, GameStrings::AudioVisual, "TemporalLifeDisplay.Others.Pips");
+	this->TemporalLifeDisplay_Buildings_Pips.Read(exINI, GameStrings::AudioVisual, "TemporalLifeDisplay.Buildings.Pips");
 	this->ProgressDisplay_Others_PipsShape.Read(exINI, GameStrings::AudioVisual, "ProgressDisplay.Others.PipsShape");
 	this->ProgressDisplay_Buildings_PipsShape.Read(exINI, GameStrings::AudioVisual, "ProgressDisplay.Buildings.PipsShape");
 
@@ -362,14 +367,19 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->FactoryProgressDisplay)
 		.Process(this->MainSWProgressDisplay)
 		.Process(this->InvulnerableDisplay)
+		.Process(this->TemporalLifeDisplay)
 		.Process(this->FactoryProgressDisplay_Offset)
 		.Process(this->MainSWProgressDisplay_Offset)
 		.Process(this->InvulnerableDisplay_Others_Offset)
 		.Process(this->InvulnerableDisplay_Buildings_Offset)
+		.Process(this->TemporalLifeDisplay_Others_Offset)
+		.Process(this->TemporalLifeDisplay_Buildings_Offset)
 		.Process(this->FactoryProgressDisplay_Pips)
 		.Process(this->MainSWProgressDisplay_Pips)
 		.Process(this->InvulnerableDisplay_Others_Pips)
 		.Process(this->InvulnerableDisplay_Buildings_Pips)
+		.Process(this->TemporalLifeDisplay_Others_Pips)
+		.Process(this->TemporalLifeDisplay_Buildings_Pips)
 		.Process(this->ProgressDisplay_Others_PipsShape)
 		.Process(this->ProgressDisplay_Buildings_PipsShape)
 		.Process(this->VoxelLightSource)

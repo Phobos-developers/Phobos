@@ -204,28 +204,24 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	return;
 }
 
-void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds)
+void TechnoExt::DrawFactoryProgress(BuildingClass* pThis, RectangleStruct* pBounds, Point2D basePosition)
 {
-	if (pThis->WhatAmI() != AbstractType::Building)
-		return;
-
-	RulesExt::ExtData* const pRulesExt = RulesExt::Global();
+	const RulesExt::ExtData* const pRulesExt = RulesExt::Global();
 
 	if (!pRulesExt->FactoryProgressDisplay)
 		return;
 
-	BuildingClass* const pBuilding = abstract_cast<BuildingClass*>(pThis);
-	BuildingTypeClass* const pBuildingType = pBuilding->Type;
-	HouseClass* const pHouse = pBuilding->Owner;
+	const BuildingTypeClass* const pType = pThis->Type;
+	const HouseClass* const pHouse = pThis->Owner;
 	FactoryClass* pPrimaryFactory = nullptr;
 	FactoryClass* pSecondaryFactory = nullptr;
 
 	if (pHouse->IsControlledByHuman())
 	{
-		if (!pBuilding->IsPrimaryFactory)
+		if (!pThis->IsPrimaryFactory)
 			return;
 
-		switch (pBuildingType->Factory)
+		switch (pType->Factory)
 		{
 		case AbstractType::BuildingType:
 			pPrimaryFactory = pHouse->GetPrimaryFactory(AbstractType::BuildingType, false, BuildCat::DontCare);
@@ -235,7 +231,7 @@ void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds
 			pPrimaryFactory = pHouse->GetPrimaryFactory(AbstractType::InfantryType, false, BuildCat::Combat);
 			break;
 		case AbstractType::UnitType:
-			pPrimaryFactory = pHouse->GetPrimaryFactory(AbstractType::UnitType, pBuildingType->Naval, BuildCat::Combat);
+			pPrimaryFactory = pHouse->GetPrimaryFactory(AbstractType::UnitType, pType->Naval, BuildCat::Combat);
 			break;
 		case AbstractType::AircraftType:
 			pPrimaryFactory = pHouse->GetPrimaryFactory(AbstractType::AircraftType, false, BuildCat::Combat);
@@ -246,7 +242,7 @@ void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds
 	}
 	else // AIs have no Primary factories
 	{
-		pPrimaryFactory = pBuilding->Factory;
+		pPrimaryFactory = pThis->Factory;
 
 		if (!pPrimaryFactory)
 			return;
@@ -258,11 +254,8 @@ void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds
 	if (!havePrimary && !haveSecondary)
 		return;
 
-	const int maxLength = pBuildingType->GetFoundationHeight(false) * 15 >> 1;
-	const Point2D location =
-		TechnoExt::GetBuildingSelectBracketPosition(pBuilding, BuildingSelectBracketPosition::Top)
-		+ Point2D { 5, (3 + pBuildingType->PixelSelectionBracketDelta) }
-		+ pRulesExt->FactoryProgressDisplay_Offset.Get();
+	const int maxLength = pType->GetFoundationHeight(false) * 15 >> 1;
+	const Point2D location = basePosition + Point2D { 5, (3 + pType->PixelSelectionBracketDelta) } + pRulesExt->FactoryProgressDisplay_Offset.Get();
 
 	if (havePrimary)
 	{
@@ -270,15 +263,13 @@ void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds
 
 		DrawFrameStruct pDraw
 		{
-			Math::clamp(static_cast<int>((static_cast<double>(pPrimaryFactory->GetProgress()) / 54) * maxLength), 0, maxLength),
+			static_cast<int>((static_cast<double>(pPrimaryFactory->GetProgress()) / 54) * maxLength),
 			pRulesExt->FactoryProgressDisplay_Pips,
 			0,
 			-1,
 			maxLength,
 			0,
 			pRulesExt->ProgressDisplay_Buildings_PipsShape.Get(),
-			FileSystem::PIPS_SHP,
-			FileSystem::PALETTE_PAL,
 			&position,
 			pBounds
 		};
@@ -292,15 +283,13 @@ void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds
 
 		DrawFrameStruct pDraw
 		{
-			Math::clamp(static_cast<int>((static_cast<double>(pSecondaryFactory->GetProgress()) / 54) * maxLength), 0, maxLength),
+			static_cast<int>((static_cast<double>(pSecondaryFactory->GetProgress()) / 54) * maxLength),
 			pRulesExt->FactoryProgressDisplay_Pips,
 			0,
 			-1,
 			maxLength,
 			0,
 			pRulesExt->ProgressDisplay_Buildings_PipsShape.Get(),
-			FileSystem::PIPS_SHP,
-			FileSystem::PALETTE_PAL,
 			&position,
 			pBounds
 		};
@@ -309,45 +298,33 @@ void TechnoExt::DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds
 	}
 }
 
-void TechnoExt::DrawSuperProgress(TechnoClass* pThis, RectangleStruct* pBounds)
+void TechnoExt::DrawSuperProgress(BuildingClass* pThis, RectangleStruct* pBounds, Point2D basePosition)
 {
-	if (pThis->WhatAmI() != AbstractType::Building)
-		return;
-
-	RulesExt::ExtData* const pRulesExt = RulesExt::Global();
+	const RulesExt::ExtData* const pRulesExt = RulesExt::Global();
 
 	if (!pRulesExt->MainSWProgressDisplay)
 		return;
 
+	const BuildingTypeClass* const pType = pThis->Type;
 	HouseClass* const pOwner = pThis->Owner;
+	const int superIndex = pType->SuperWeapon;
+	const SuperClass* const pSuper = (superIndex != -1) ? pOwner->Supers.GetItem(superIndex) : nullptr;
 
-	if (pOwner == HouseClass::FindSpecial() || pOwner == HouseClass::FindNeutral() || pOwner == HouseClass::FindCivilianSide())
+	if (!pSuper || !SWTypeExt::ExtMap.Find(pSuper->Type)->IsAvailable(pOwner))
 		return;
 
-	BuildingClass* const pBuilding = abstract_cast<BuildingClass*>(pThis);
-	BuildingTypeClass* const pBuildingType = pBuilding->Type;
-	const int superIndex = pBuildingType->SuperWeapon;
-	SuperClass* const pSuper = (superIndex != -1) ? pThis->Owner->Supers.GetItem(superIndex) : nullptr;
-	const int timeLeft = pSuper->RechargeTimer.TimeLeft;
-
-	if (!pSuper || !timeLeft || !SWTypeExt::ExtMap.Find(pSuper->Type)->IsAvailable(pThis->Owner))
-		return;
-
-	const int maxLength = pBuildingType->GetFoundationHeight(false) * 15 >> 1;
-	Point2D position = TechnoExt::GetBuildingSelectBracketPosition(pBuilding, BuildingSelectBracketPosition::Top) + Point2D { 5, 3 + pBuildingType->PixelSelectionBracketDelta };
-	position += pRulesExt->MainSWProgressDisplay_Offset.Get();
+	const int maxLength = pType->GetFoundationHeight(false) * 15 >> 1;
+	Point2D position = basePosition + Point2D { 5, 3 + pType->PixelSelectionBracketDelta } + pRulesExt->MainSWProgressDisplay_Offset.Get();
 
 	DrawFrameStruct pDraw
 	{
-		Math::clamp(static_cast<int>((static_cast<double>(timeLeft - pSuper->RechargeTimer.GetTimeLeft()) / timeLeft) * maxLength), 0, maxLength),
+		static_cast<int>((static_cast<double>(pSuper->AnimStage()) / 54) * maxLength),
 		pRulesExt->MainSWProgressDisplay_Pips,
 		0,
 		-1,
 		maxLength,
 		0,
 		pRulesExt->ProgressDisplay_Buildings_PipsShape.Get(),
-		FileSystem::PIPS_SHP,
-		FileSystem::PALETTE_PAL,
 		&position,
 		pBounds
 	};
@@ -355,59 +332,141 @@ void TechnoExt::DrawSuperProgress(TechnoClass* pThis, RectangleStruct* pBounds)
 	TechnoExt::DrawVanillaStyleBuildingBar(&pDraw);
 }
 
-void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBounds)
+void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBounds, Point2D basePosition, bool isBuilding, bool isInfantry)
 {
-	if (!pThis->IsIronCurtained() || !pThis->IronCurtainTimer.TimeLeft)
+	if (!pThis->IsIronCurtained())
 		return;
 
-	RulesExt::ExtData* const pRulesExt = RulesExt::Global();
+	const RulesExt::ExtData* const pRulesExt = RulesExt::Global();
 
 	if (!pRulesExt->InvulnerableDisplay)
 		return;
 
-	if (pThis->WhatAmI() == AbstractType::Building)
+	const CDTimerClass* const timer = &pThis->IronCurtainTimer;
+
+	if (isBuilding)
 	{
-		BuildingClass* const pBuilding = abstract_cast<BuildingClass*>(pThis);
-		BuildingTypeClass* const pBuildingType = pBuilding->Type;
-		const int maxLength = pBuildingType->GetFoundationHeight(false) * 15 >> 1;
-		const HealthState healthStatus = pBuilding->GetHealthStatus();
-		Point2D position = TechnoExt::GetBuildingSelectBracketPosition(pBuilding, BuildingSelectBracketPosition::Top) + Point2D{ -1, pBuildingType->PixelSelectionBracketDelta };
-		position += pRulesExt->InvulnerableDisplay_Buildings_Offset.Get();
+		const BuildingClass* const pBuilding = static_cast<BuildingClass*>(pThis);
+		const BuildingTypeClass* const pType = pBuilding->Type;
+		const int maxLength = pType->GetFoundationHeight(false) * 15 >> 1;
+		const Point2D offset = pRulesExt->InvulnerableDisplay_Buildings_Offset.Get();
+		Point2D position = basePosition + Point2D{ -1, pType->PixelSelectionBracketDelta } + offset;
 
 		DrawFrameStruct pDraw
 		{
-			Math::clamp(static_cast<int>((static_cast<double>(pThis->IronCurtainTimer.GetTimeLeft()) / pThis->IronCurtainTimer.TimeLeft) * maxLength), 0, maxLength),
+			static_cast<int>((static_cast<double>(timer->GetTimeLeft()) / timer->TimeLeft) * maxLength),
 			(pThis->ForceShielded ? pRulesExt->InvulnerableDisplay_Buildings_Pips.Get().X : pRulesExt->InvulnerableDisplay_Buildings_Pips.Get().Y),
-			Math::clamp(static_cast<int>(pBuilding->GetHealthPercentage() * maxLength), 0, maxLength),
-			((pThis->IsSelected || pThis->IsMouseHovering) ? (healthStatus == HealthState::Green ? 1 : (healthStatus == HealthState::Yellow ? 2 : 4)) : 0),
-			maxLength,
 			0,
+			-1,
+			maxLength,
+			-1,
 			pRulesExt->ProgressDisplay_Buildings_PipsShape.Get(),
-			FileSystem::PIPS_SHP,
-			FileSystem::PALETTE_PAL,
 			&position,
 			pBounds
 		};
+
+		if (offset == Point2D::Empty) // Layer fix
+		{
+			RulesClass* const pRules = RulesClass::Instance;
+			const double ratio = pBuilding->GetHealthPercentage();
+
+			pDraw.MidLength = static_cast<int>(ratio * maxLength);
+
+			if (pThis->IsSelected || pThis->IsMouseHovering)
+			{
+				pDraw.MidFrame = ratio > pRules->ConditionYellow ? 1 : (ratio > pRules->ConditionRed ? 2 : 4);
+				pDraw.BrdFrame = 0;
+			}
+		}
 
 		TechnoExt::DrawVanillaStyleBuildingBar(&pDraw);
 	}
 	else
 	{
-		const int maxLength = pThis->WhatAmI() != AbstractType::Infantry ? 17 : 8;
-		Point2D position = TechnoExt::GetFootSelectBracketPosition(pThis, Anchor(HorizontalPosition::Left, VerticalPosition::Top)) + Point2D{ -1, pThis->GetTechnoType()->PixelSelectionBracketDelta + 2 };
-		position += pRulesExt->InvulnerableDisplay_Others_Offset.Get();
+		const int maxLength = isInfantry ? 8 : 17;
+		Point2D position = basePosition + Point2D{ -1, pThis->GetTechnoType()->PixelSelectionBracketDelta + 2 } + pRulesExt->InvulnerableDisplay_Others_Offset.Get();
 
 		DrawFrameStruct pDraw
 		{
-			Math::clamp(static_cast<int>((static_cast<double>(pThis->IronCurtainTimer.GetTimeLeft()) / pThis->IronCurtainTimer.TimeLeft) * maxLength), 0, maxLength),
+			static_cast<int>((static_cast<double>(timer->GetTimeLeft()) / timer->TimeLeft) * maxLength),
 			(pThis->ForceShielded ? pRulesExt->InvulnerableDisplay_Others_Pips.Get().X : pRulesExt->InvulnerableDisplay_Others_Pips.Get().Y),
 			0,
 			-1,
 			maxLength,
 			-1,
 			pRulesExt->ProgressDisplay_Others_PipsShape.Get(),
-			FileSystem::PIPBRD_SHP,
-			FileSystem::PALETTE_PAL,
+			&position,
+			pBounds
+		};
+
+		TechnoExt::DrawVanillaStyleFootBar(&pDraw);
+	}
+}
+
+void TechnoExt::DrawTemporalProgress(TechnoClass* pThis, RectangleStruct* pBounds, Point2D basePosition, bool isBuilding, bool isInfantry)
+{
+	const TemporalClass* const pTemporal = pThis->TemporalTargetingMe;
+
+	if (!pTemporal)
+		return;
+
+	const RulesExt::ExtData* const pRulesExt = RulesExt::Global();
+
+	if (!pRulesExt->TemporalLifeDisplay)
+		return;
+
+	if (isBuilding)
+	{
+		const BuildingClass* const pBuilding = static_cast<BuildingClass*>(pThis);
+		const BuildingTypeClass* const pType = pBuilding->Type;
+		const int maxLength = pType->GetFoundationHeight(false) * 15 >> 1;
+		const Point2D offset = pRulesExt->TemporalLifeDisplay_Buildings_Offset.Get();
+		Point2D position = basePosition + Point2D{ -1, pType->PixelSelectionBracketDelta } + offset;
+
+		DrawFrameStruct pDraw
+		{
+			static_cast<int>((static_cast<double>(pTemporal->WarpRemaining) / (pType->Strength * 10)) * maxLength),
+			pRulesExt->TemporalLifeDisplay_Buildings_Pips,
+			0,
+			-1,
+			maxLength,
+			-1,
+			pRulesExt->ProgressDisplay_Buildings_PipsShape.Get(),
+			&position,
+			pBounds
+		};
+
+		if (offset == Point2D::Empty) // Layer fix
+		{
+			RulesClass* const pRules = RulesClass::Instance;
+			const double ratio = pBuilding->GetHealthPercentage();
+
+			pDraw.MidLength = static_cast<int>(ratio * maxLength);
+
+			if (pThis->IsSelected || pThis->IsMouseHovering)
+			{
+				pDraw.MidFrame = ratio > pRules->ConditionYellow ? 1 : (ratio > pRules->ConditionRed ? 2 : 4);
+				pDraw.BrdFrame = 0;
+			}
+		}
+
+		TechnoExt::DrawVanillaStyleBuildingBar(&pDraw);
+	}
+	else
+	{
+		const int maxLength = isInfantry ? 8 : 17;
+		const TechnoTypeClass* const pType = pThis->GetTechnoType();
+		Point2D position = basePosition + Point2D{ -1, pType->PixelSelectionBracketDelta + 2 } + pRulesExt->TemporalLifeDisplay_Others_Offset.Get();
+
+		DrawFrameStruct pDraw
+		{
+			static_cast<int>((static_cast<double>(pTemporal->WarpRemaining) / (pType->Strength * 10)) * maxLength),
+			pRulesExt->TemporalLifeDisplay_Buildings_Pips,
+			0,
+			-1,
+			maxLength,
+			-1,
+			pRulesExt->ProgressDisplay_Others_PipsShape.Get(),
 			&position,
 			pBounds
 		};
@@ -419,11 +478,13 @@ void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBo
 void TechnoExt::DrawVanillaStyleFootBar(DrawFrameStruct* pDraw)
 {
 	Point2D* pLocation = pDraw->Location;
+	SHPStruct* const pipSHP = pDraw->PipSHP;
+	const RectangleStruct* const pBounds = pDraw->Bounds;
 
 	if (pDraw->BrdFrame >= 0)
 	{
 		pLocation->X += 18;
-		DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->BrdSHP, pDraw->BrdFrame, pLocation, pDraw->Bounds, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP, pDraw->BrdFrame, pLocation, pBounds, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		pLocation->X -= 16;
 	}
 	else
@@ -431,49 +492,64 @@ void TechnoExt::DrawVanillaStyleFootBar(DrawFrameStruct* pDraw)
 		pLocation->X += 2;
 	}
 
+	if (!pipSHP)
+		return;
+
 	pLocation->Y += 1;
-	int length = pDraw->TopLength;
+
+	const int topLength = pDraw->TopLength;
+	const int midLength = pDraw->MidLength;
+	const int maxLength = pDraw->MaxLength;
+
+	int length = topLength > maxLength ? maxLength : topLength;
 
 	if (pDraw->TopFrame >= 0)
 	{
 		for (int drawIdx = length; drawIdx > 0 ; --drawIdx, pLocation->X += 2)
-			DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->PipSHP, pDraw->TopFrame, pLocation, pDraw->Bounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipSHP, pDraw->TopFrame, pLocation, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
-	length = pDraw->MidLength - length;
+	length = midLength > maxLength ? maxLength - length : midLength - length;
 
 	if (pDraw->MidFrame >= 0)
 	{
 		for (int drawIdx = length; drawIdx > 0 ; --drawIdx, pLocation->X += 2)
-			DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->PipSHP, pDraw->MidFrame, pLocation, pDraw->Bounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipSHP, pDraw->MidFrame, pLocation, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
 void TechnoExt::DrawVanillaStyleBuildingBar(DrawFrameStruct* pDraw)
 {
 	Point2D* pLocation = pDraw->Location;
-	int length = pDraw->TopLength;
+	SHPStruct* const pipSHP = pDraw->PipSHP;
+	const RectangleStruct* const pBounds = pDraw->Bounds;
 
-	if (pDraw->TopFrame >= 0)
+	const int topLength = pDraw->TopLength;
+	const int midLength = pDraw->MidLength;
+	const int maxLength = pDraw->MaxLength;
+
+	int length = topLength > maxLength ? maxLength : topLength;
+
+	if (pDraw->TopFrame >= 0 && pipSHP)
 	{
 		for (int drawIdx = length; drawIdx > 0 ; --drawIdx, pLocation->X -= 4, pLocation->Y += 2)
-			DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->PipSHP, pDraw->TopFrame, pLocation, pDraw->Bounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipSHP, pDraw->TopFrame, pLocation, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
-	length = pDraw->MidLength - length;
+	length = midLength > maxLength ? maxLength - length : midLength - length;
 
-	if (pDraw->MidFrame >= 0)
+	if (pDraw->MidFrame >= 0 && pipSHP)
 	{
 		for (int drawIdx = length; drawIdx > 0 ; --drawIdx, pLocation->X -= 4, pLocation->Y += 2)
-			DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->BrdSHP, pDraw->MidFrame, pLocation, pDraw->Bounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipSHP, pDraw->MidFrame, pLocation, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
-	length = length >= 0 ? pDraw->MaxLength - pDraw->TopLength - length : pDraw->MaxLength - pDraw->TopLength;
+	length = length >= 0 ? maxLength - midLength : maxLength - topLength;
 
 	if (pDraw->BrdFrame >= 0)
 	{
 		for (int drawIdx = length; drawIdx > 0 ; --drawIdx, pLocation->X -= 4, pLocation->Y += 2)
-			DSurface::Temp->DrawSHP(pDraw->Palette, pDraw->BrdSHP, pDraw->BrdFrame, pLocation, pDraw->Bounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP, pDraw->BrdFrame, pLocation, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 

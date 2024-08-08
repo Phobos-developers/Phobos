@@ -128,8 +128,6 @@ public:
 		int MaxLength;
 		int BrdFrame;
 		SHPStruct* PipSHP;
-		SHPStruct* BrdSHP;
-		ConvertClass* Palette;
 		Point2D* Location;
 		RectangleStruct* Bounds;
 	};
@@ -180,9 +178,10 @@ public:
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
 
-	static void DrawFactoryProgress(TechnoClass* pThis, RectangleStruct* pBounds);
-	static void DrawSuperProgress(TechnoClass* pThis, RectangleStruct* pBounds);
-	static void DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBounds);
+	static void DrawFactoryProgress(BuildingClass* pThis, RectangleStruct* pBounds, Point2D basePosition);
+	static void DrawSuperProgress(BuildingClass* pThis, RectangleStruct* pBounds, Point2D basePosition);
+	static void DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBounds, Point2D basePosition, bool isBuilding, bool isInfantry);
+	static void DrawTemporalProgress(TechnoClass* pThis, RectangleStruct* pBounds, Point2D basePosition, bool isBuilding, bool isInfantry);
 	static void DrawVanillaStyleFootBar(DrawFrameStruct* pDraw);
 	static void DrawVanillaStyleBuildingBar(DrawFrameStruct* pDraw);
 	static Point2D GetScreenLocation(TechnoClass* pThis);
