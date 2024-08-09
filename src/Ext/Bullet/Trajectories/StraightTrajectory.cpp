@@ -11,8 +11,8 @@ bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 	this->PhobosTrajectoryType::Load(Stm, false);
 
 	Stm
-		.Process(this->DetonationDistance, false)
 		.Process(this->ApplyRangeModifiers, false)
+		.Process(this->DetonationDistance, false)
 		.Process(this->TargetSnapDistance, false)
 		.Process(this->PassThrough, false)
 		.Process(this->PassDetonate, false)
@@ -49,8 +49,8 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 	this->PhobosTrajectoryType::Save(Stm);
 
 	Stm
-		.Process(this->DetonationDistance)
 		.Process(this->ApplyRangeModifiers)
+		.Process(this->DetonationDistance)
 		.Process(this->TargetSnapDistance)
 		.Process(this->PassThrough)
 		.Process(this->PassDetonate)
@@ -91,8 +91,8 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
 
-	this->DetonationDistance.Read(exINI, pSection, "Trajectory.Straight.DetonationDistance");
 	this->ApplyRangeModifiers.Read(exINI, pSection, "Trajectory.Straight.ApplyRangeModifiers");
+	this->DetonationDistance.Read(exINI, pSection, "Trajectory.Straight.DetonationDistance");
 	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.Straight.TargetSnapDistance");
 	this->PassThrough.Read(exINI, pSection, "Trajectory.Straight.PassThrough");
 	this->PassDetonate.Read(exINI, pSection, "Trajectory.Straight.PassDetonate");
@@ -242,26 +242,32 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->SubjectToGround = pType->SubjectToGround;
 	this->ConfineAtHeight = pType->ConfineAtHeight;
 	this->EdgeAttenuation = pType->EdgeAttenuation > 0.0 ? pType->EdgeAttenuation : 0.0;
+	this->AttenuationRange = 0;
 	this->RemainingDistance = 1;
 	this->ExtraCheck = nullptr;
 	this->LastCasualty.reserve(1);
 	this->FirepowerMult = 1.0;
-	this->AttenuationRange = pBullet->WeaponType ? pBullet->WeaponType->Range : 0;
 	this->LastTargetCoord = pBullet->TargetCoords;
 	this->CurrentBurst = 0;
-	this->CountOfBurst = pBullet->WeaponType ? pBullet->WeaponType->Burst : 0;
+	this->CountOfBurst = 0;
 
-	auto const pWeapon = pBullet->WeaponType;
-	auto const pOwner = pBullet->Owner;
+	TechnoClass* const pOwner = pBullet->Owner;
+	WeaponTypeClass* const pWeapon = pBullet->WeaponType;
 
-	if (pType->ApplyRangeModifiers && pWeapon && pOwner)
+	if (pWeapon)
 	{
-		if (this->DetonationDistance >= 0)
-			this->DetonationDistance = Leptons(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner, this->DetonationDistance));
-		else
-			this->DetonationDistance = Leptons(-WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner, -this->DetonationDistance));
+		this->AttenuationRange = pWeapon->Range;
+		this->CountOfBurst = pWeapon->Burst;
 
-		this->AttenuationRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner);
+		if (pType->ApplyRangeModifiers && pOwner)
+		{
+			if (this->DetonationDistance >= 0)
+				this->DetonationDistance = Leptons(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner, this->DetonationDistance));
+			else
+				this->DetonationDistance = Leptons(-WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner, -this->DetonationDistance));
+
+			this->AttenuationRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner);
+		}
 	}
 
 	if (pOwner)
