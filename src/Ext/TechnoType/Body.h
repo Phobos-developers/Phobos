@@ -12,6 +12,7 @@
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
+#include <New/Type/Affiliated/ConditionGroup.h>
 
 class Matrix3D;
 
@@ -65,17 +66,9 @@ public:
 		Valueable<int> Ammo_DeployUnlockMaximumAmount;
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		Valueable<TechnoTypeClass*> Convert_AutoDeath;
 		Valueable<AnimTypeClass*> AutoDeath_VanishAnimation;
-		Valueable<bool> AutoDeath_OnAmmoDepletion;
-		Valueable<int> AutoDeath_AfterDelay;
-		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosDontExist;
-		Valueable<bool> AutoDeath_TechnosDontExist_Any;
-		Valueable<bool> AutoDeath_TechnosDontExist_AllowLimboed;
-		Valueable<AffectedHouse> AutoDeath_TechnosDontExist_Houses;
-		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosExist;
-		Valueable<bool> AutoDeath_TechnosExist_Any;
-		Valueable<bool> AutoDeath_TechnosExist_AllowLimboed;
-		Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
+		ConditionGroup AutoDeath_Condition;
 
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
 		NullableIdx<VocClass> SlavesFreeSound;
@@ -339,17 +332,9 @@ public:
 			, Ammo_DeployUnlockMaximumAmount { -1 }
 
 			, AutoDeath_Behavior { }
+			, Convert_AutoDeath { }
 			, AutoDeath_VanishAnimation {}
-			, AutoDeath_OnAmmoDepletion { false }
-			, AutoDeath_AfterDelay { 0 }
-			, AutoDeath_TechnosDontExist {}
-			, AutoDeath_TechnosDontExist_Any { false }
-			, AutoDeath_TechnosDontExist_AllowLimboed { false }
-			, AutoDeath_TechnosDontExist_Houses { AffectedHouse::Owner }
-			, AutoDeath_TechnosExist {}
-			, AutoDeath_TechnosExist_Any { true }
-			, AutoDeath_TechnosExist_AllowLimboed { true }
-			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
+			, AutoDeath_Condition {}
 
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 			, SlavesFreeSound {}

@@ -113,8 +113,10 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		{
 			ScenarioExt::Global()->AutoDeathObjects.push_back(pTechnoExt);
 
-			if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
-				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
+			auto const pCondition = pTechnoTypeExt->AutoDeath_Condition;
+
+			if (pCondition.AfterDelay > 0)
+				pTechnoExt->AutoDeathTimer.Start(pCondition.AfterDelay);
 		}
 
 	}
