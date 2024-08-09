@@ -185,7 +185,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 			const auto shieldType = pTargetExt->Shield->GetType();
 			shieldIndex = this->Shield_RemoveTypes.IndexOf(shieldType);
 
-			if (shieldIndex >= 0)
+			if (shieldIndex >= 0 || this->Shield_RemoveAll)
 			{
 				ratio = pTargetExt->Shield->GetHealthRatio();
 				pTargetExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
@@ -203,10 +203,12 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 			{
 				if (shieldIndex >= 0)
 					shieldType = Shield_AttachTypes[Math::min(shieldIndex, (signed)Shield_AttachTypes.size() - 1)];
+				else if (this->Shield_RemoveAll)
+					shieldType = Shield_AttachTypes[0];
 			}
 			else
 			{
-				shieldType = Shield_AttachTypes.size() > 0 ? Shield_AttachTypes[0] : nullptr;
+				shieldType = Shield_AttachTypes[0];
 			}
 
 			if (shieldType)
