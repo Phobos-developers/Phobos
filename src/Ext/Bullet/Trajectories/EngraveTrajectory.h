@@ -6,6 +6,7 @@ class EngraveTrajectoryType final : public PhobosTrajectoryType
 {
 public:
 	EngraveTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Engrave)
+		, ApplyRangeModifiers { false }
 		, SourceCoord { { 0, 0 } }
 		, TargetCoord { { 0, 0 } }
 		, MirrorCoord { true }
@@ -28,6 +29,7 @@ public:
 	virtual PhobosTrajectory* CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
+	Valueable<bool> ApplyRangeModifiers;
 	Valueable<Point2D> SourceCoord;
 	Valueable<Point2D> TargetCoord;
 	Valueable<bool> MirrorCoord;
