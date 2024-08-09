@@ -264,28 +264,17 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 	std::vector<CellClass*> optionalCells;
 	optionalCells.reserve(24);
 
-	for (auto const& pCheckedCell : checkedCells)
+	for (auto pFoundation = pBuildingType->FoundationOutside; *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
-		CellStruct searchCell = pCheckedCell->MapCoords - CellStruct { 1, 1 };
+		CellStruct searchCell = topLeftCell + *pFoundation;
 
-		for (int i = 0; i < 4; ++i)
+		if (CellClass* const pSearchCell = MapClass::Instance->GetCellAt(searchCell))
 		{
-			for (int j = 0; j < 2; ++j)
+			if (std::find(checkedCells.begin(), checkedCells.end(), pSearchCell) == checkedCells.end() // TODO If there is a cellflag that can be used …
+				&& !pSearchCell->GetBuilding()
+				&& pSearchCell->IsClearToMove(SpeedType::Amphibious, true, true, -1, MovementZone::Amphibious, -1, false))
 			{
-				if (CellClass* const pSearchCell = MapClass::Instance->GetCellAt(searchCell))
-				{
-					if (std::find(checkedCells.begin(), checkedCells.end(), pSearchCell) == checkedCells.end() // TODO If there is a cellflag that can be used …
-						&& !pSearchCell->GetBuilding()
-						&& pSearchCell->IsClearToMove(SpeedType::Amphibious, true, true, -1, MovementZone::Amphibious, -1, false))
-					{
-						optionalCells.push_back(pSearchCell);
-					}
-				}
-
-				if (i % 2)
-					searchCell.Y += static_cast<short>((i / 2) ? -1 : 1);
-				else
-					searchCell.X += static_cast<short>((i / 2) ? -1 : 1);
+				optionalCells.push_back(pSearchCell);
 			}
 		}
 	}
