@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <SpawnManagerClass.h>
+#include <Ext/WeaponType/Body.h>
 
 DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 {
@@ -97,4 +98,28 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 	}
 
 	return R->Origin() == 0x6B7600 ? SkipGameCode1 : SkipGameCode2;
+}
+
+DEFINE_HOOK(0x6F7891, TechnoClass_IsCloseEnough_CylinderRangefinding, 0x7)
+{
+	enum { ret = 0x6F789A };
+
+	GET(WeaponTypeClass* const, pWeaponType, EDI);
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+	bool bAlwaysCylinderRangefinding = RulesExt::Global()->AlwaysCylinderRangefinding;
+	if (pWeaponExt)
+	{
+		bAlwaysCylinderRangefinding = pWeaponExt->AlwaysCylinderRangefinding.Get(bAlwaysCylinderRangefinding);
+	}
+	if (bAlwaysCylinderRangefinding)
+	{
+		R->AL(true);
+	}
+	else
+	{
+		R->AL(pThis->IsInAir()); // vanilla check
+	}
+	return ret;
 }
