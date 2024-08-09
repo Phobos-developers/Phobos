@@ -211,7 +211,7 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 	bool hasShieldTint = pExt->Shield && pExt->Shield->IsActive() && pExt->Shield->GetType()->HasTint();
 
 	// Bail out early if no custom tint is applied.
-	if (!hasTechnoTint && !pExt->AE_HasTint && !hasShieldTint)
+	if (!hasTechnoTint && !pExt->AE.HasTint && !hasShieldTint)
 		return;
 
 	if (hasTechnoTint && EnumFunctions::CanTargetHouse(pTypeExt->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
@@ -220,7 +220,7 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 		intensity += static_cast<int>(pTypeExt->Tint_Intensity * 1000);
 	}
 
-	if (pExt->AE_HasTint)
+	if (pExt->AE.HasTint)
 	{
 		for (auto const& attachEffect : pExt->AttachedEffects)
 		{

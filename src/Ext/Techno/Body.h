@@ -26,6 +26,8 @@ public:
 		TechnoTypeExt::ExtData* TypeExtData;
 		std::unique_ptr<ShieldClass> Shield;
 		std::vector<LaserTrailClass> LaserTrails;
+		std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
+		AttachEffectTechnoProperties AE;
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
 		CDTimerClass PassengerDeletionTimer;
@@ -44,7 +46,6 @@ public:
 		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
 		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
-		std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
 		WeaponTypeClass* LastWeaponType;
 		CoordStruct LastWeaponFLH;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
@@ -53,20 +54,12 @@ public:
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
 
-		// AttachEffect stuff.
-		double AE_FirepowerMultiplier;
-		double AE_ArmorMultiplier;
-		double AE_SpeedMultiplier;
-		double AE_ROFMultiplier;
-		bool AE_Cloakable;
-		bool AE_ForceDecloak;
-		bool AE_DisableWeapons;
-		bool AE_HasTint;
-
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
 			, LaserTrails {}
+			, AttachedEffects {}
+			, AE {}
 			, ReceiveDamage { false }
 			, LastKillWasTeamTarget { false }
 			, PassengerDeletionTimer {}
@@ -77,7 +70,6 @@ public:
 			, DamageNumberOffset { INT32_MIN }
 			, Strafe_BombsDroppedThisRound { 0 }
 			, CurrentAircraftWeaponIndex {}
-			, OriginalPassengerOwner {}
 			, IsInTunnel { false }
 			, IsBurrowed { false }
 			, HasBeenPlacedOnMap { false }
@@ -86,18 +78,10 @@ public:
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
 			, CanCurrentlyDeployIntoBuilding { false }
-			, AttachedEffects {}
-			, AE_FirepowerMultiplier { 1.0 }
-			, AE_ArmorMultiplier { 1.0 }
-			, AE_SpeedMultiplier { 1.0 }
-			, AE_ROFMultiplier { 1.0 }
-			, AE_Cloakable { false }
-			, AE_ForceDecloak { false }
-			, AE_DisableWeapons { false }
-			, AE_HasTint { false }
 			, LastWeaponType {}
 			, LastWeaponFLH {}
 			, FiringObstacleCell {}
+			, OriginalPassengerOwner {}
 		{ }
 
 		void OnEarlyUpdate();
@@ -118,7 +102,8 @@ public:
 		void UpdateMindControlAnim();
 		void InitializeLaserTrails();
 		void InitializeAttachEffects();
-		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const& minCounts, std::vector<int> const& maxCounts) const;
+		void UpdateSelfOwnedAttachEffects();
+		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 
 		virtual ~ExtData() override;

@@ -29,6 +29,7 @@ public:
 		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
 		Valueable<AnimTypeClass*> CreateUnit_SpawnAnim;
+		Nullable<int> CreateUnit_SpawnHeight;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
@@ -60,6 +61,7 @@ public:
 			, CreateUnit_AlwaysSpawnOnGround { false }
 			, CreateUnit_ConsiderPathfinding { false }
 			, CreateUnit_SpawnAnim {}
+			, CreateUnit_SpawnHeight {}
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
