@@ -46,7 +46,9 @@
 #include <UnitTypeClass.h>
 #include <BuildingTypeClass.h>
 #include <WarheadTypeClass.h>
+#include <SuperWeaponTypeClass.h>
 #include <FootClass.h>
+#include <Powerups.h>
 #include <VocClass.h>
 #include <VoxClass.h>
 #include <CRT.h>
@@ -56,11 +58,6 @@
 
 namespace detail
 {
-	template<typename T>
-	concept HasFindOrAllocate = requires(const char* arg){
-		{ T::FindOrAllocate(arg) }->std::same_as<T*>;
-	};
-
 	template <typename T, bool allocate = false>
 	inline bool read(T &value, INI_EX &parser, const char *pSection, const char *pKey)
 	{
@@ -69,7 +66,7 @@ namespace detail
 			using base_type = std::remove_pointer_t<T>;
 			auto const pValue = parser.value();
 			T parsed;
-			if constexpr (HasFindOrAllocate<base_type> && allocate)
+			if constexpr (allocate)
 				parsed = base_type::FindOrAllocate(pValue);
 			else
 				parsed = base_type::Find(pValue);
@@ -233,6 +230,15 @@ namespace detail
 	inline bool read<Vector2D<double>>(Vector2D<double> &value, INI_EX &parser, const char *pSection, const char *pKey)
 	{
 		if (parser.Read2Doubles(pSection, pKey, (double*)&value))
+			return true;
+
+		return false;
+	}
+
+	template <>
+	inline bool read<Vector3D<float>>(Vector3D<float> &value, INI_EX &parser, const char *pSection, const char *pKey)
+	{
+		if (parser.Read<float, 3>(pSection, pKey, (float*)&value))
 			return true;
 
 		return false;
@@ -595,6 +601,39 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Powerup>(Powerup& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto const& powerupNames = Powerups::Effects;
+			int index = -1;
+
+			for (size_t i = 0; i < powerupNames.size(); i++)
+			{
+				if (!_strcmpi(parser.value(), powerupNames[i]))
+				{
+					index = static_cast<int>(i);
+					break;
+				}
+			}
+
+			if (index >= 0)
+			{
+				value = Powerup(index);
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a powerup crate type");
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<SuperWeaponAITargetingMode>(SuperWeaponAITargetingMode &value, INI_EX &parser, const char *pSection, const char *pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -666,7 +705,7 @@ namespace detail
 				}
 				else if (_strcmpi(cur, "none"))
 				{
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a super weapon target");
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected an affected target");
 					return false;
 				}
 			}
@@ -715,7 +754,7 @@ namespace detail
 				}
 				else if (_strcmpi(cur, "none"))
 				{
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a super weapon affected house");
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected an affected house");
 					return false;
 				}
 			}
@@ -866,6 +905,10 @@ namespace detail
 			{
 				value = AutoDeathBehavior::Vanish;
 			}
+			else if (_strcmpi(parser.value(), "convert") == 0)
+			{
+				value = AutoDeathBehavior::Convert;
+			}
 			else
 			{
 				if (_strcmpi(parser.value(), "kill") != 0)
@@ -1012,7 +1055,105 @@ namespace detail
 				}
 				else if (_strcmpi(cur, "none"))
 				{
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a chrono sparkle position type");
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a chrono sparkle position type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<DiscardCondition>(DiscardCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = DiscardCondition::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "none"))
+				{
+					parsed |= DiscardCondition::None;
+				}
+				else if (!_strcmpi(cur, "entry"))
+				{
+					parsed |= DiscardCondition::Entry;
+				}
+				else if (!_strcmpi(cur, "move"))
+				{
+					parsed |= DiscardCondition::Move;
+				}
+				else if (!_strcmpi(cur, "stationary"))
+				{
+					parsed |= DiscardCondition::Stationary;
+				}
+				else if (!_strcmpi(cur, "drain"))
+				{
+					parsed |= DiscardCondition::Drain;
+				}
+				else if (!_strcmpi(cur, "inrange"))
+				{
+					parsed |= DiscardCondition::InRange;
+				}
+				else if (!_strcmpi(cur, "outofrange"))
+				{
+					parsed |= DiscardCondition::OutOfRange;
+				}
+				else
+				{
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<ExpireWeaponCondition>(ExpireWeaponCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = ExpireWeaponCondition::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "none"))
+				{
+					parsed |= ExpireWeaponCondition::None;
+				}
+				else if (!_strcmpi(cur, "expire"))
+				{
+					parsed |= ExpireWeaponCondition::Expire;
+				}
+				else if (!_strcmpi(cur, "remove"))
+				{
+					parsed |= ExpireWeaponCondition::Remove;
+				}
+				else if (!_strcmpi(cur, "death"))
+				{
+					parsed |= ExpireWeaponCondition::Death;
+				}
+				else if (!_strcmpi(cur, "all"))
+				{
+					parsed |= ExpireWeaponCondition::All;
+				}
+				else
+				{
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a expire weapon trigger condition type");
 					return false;
 				}
 			}

@@ -35,6 +35,7 @@ public:
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
 		Valueable<bool> SW_InitialReady;
+		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -52,8 +53,8 @@ public:
 
 		Valueable<int> ShowTimer_Priority;
 
-		Nullable<WarheadTypeClass*> Detonate_Warhead;
-		Nullable<WeaponTypeClass*> Detonate_Weapon;
+		Valueable<WarheadTypeClass*> Detonate_Warhead;
+		Valueable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
 		Valueable<bool> Detonate_AtFirer;
 		Valueable<bool> ShowDesignatorRange;
@@ -62,6 +63,11 @@ public:
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
+
+		Valueable<bool> UseWeeds;
+		Valueable<int> UseWeeds_Amount;
+		Valueable<bool> UseWeeds_StorageTimer;
+		Valueable<double> UseWeeds_ReadinessAnimationPercentage;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
@@ -76,6 +82,7 @@ public:
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
 			, SW_InitialReady { false }
+			, SW_PostDependent {}
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -98,6 +105,10 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+			, UseWeeds { false }
+			, UseWeeds_Amount { RulesClass::Instance->WeedCapacity }
+			, UseWeeds_StorageTimer { false }
+			, UseWeeds_ReadinessAnimationPercentage { 0.9 }
 		{ }
 
 		// Ares 0.A functions

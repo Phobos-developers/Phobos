@@ -97,6 +97,39 @@ HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 		return  pTechnoOwner ? pTechnoOwner : pDefaultOwner;
 }
 
+void AnimExt::VeinAttackAI(AnimClass* pAnim)
+{
+	CellStruct pCoordinates = pAnim->GetMapCoords();
+	CellClass* pCell = MapClass::Instance->GetCellAt(pCoordinates);
+	ObjectClass* pOccupier = pCell->FirstObject;
+	constexpr unsigned char fullyFlownWeedStart = 0x30; // Weeds starting from this overlay frame are fully grown
+	constexpr unsigned int weedOverlayIndex = 126;
+
+	if (!pOccupier || pOccupier->GetHeight() > 0 || pCell->OverlayTypeIndex != weedOverlayIndex
+		|| pCell->OverlayData < fullyFlownWeedStart || pCell->SlopeIndex)
+	{
+		pAnim->UnableToContinue = true;
+	}
+
+	if (Unsorted::CurrentFrame % 2 == 0)
+	{
+		while (pOccupier != nullptr)
+		{
+			ObjectClass* pNext = pOccupier->NextObject;
+			int damage = RulesClass::Instance->VeinDamage;
+			TechnoClass* pTechno = abstract_cast<TechnoClass*>(pOccupier);
+
+			if (pTechno && !pTechno->GetTechnoType()->ImmuneToVeins && !pTechno->HasAbility(Ability::VeinProof)
+				&& pTechno->Health > 0 && pTechno->IsAlive && pTechno->GetHeight() <= 5)
+			{
+				pTechno->ReceiveDamage(&damage, 0, RulesExt::Global()->VeinholeWarhead, nullptr, false, false, nullptr);
+			}
+
+			pOccupier = pNext;
+		}
+	}
+}
+
 void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
 	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom)
 {
@@ -132,13 +165,14 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 		if (pWakeAnim)
 			pWakeAnimToUse = pWakeAnim;
 
-		if (splashAnims.size() > 0)
+		if (!splashAnims.empty())
 		{
-			auto nIndexR = (splashAnims.size() - 1);
-			auto nIndex = splashAnimsPickRandom ?
-				ScenarioClass::Instance->Random.RandomRanged(0, nIndexR) : 0;
+			auto const lastIndex = (splashAnims.size() - 1);
+			auto const defaultIndex = isMeteor ? lastIndex : 0;
+			auto const animIndex = splashAnimsPickRandom ?
+				ScenarioClass::Instance->Random.RandomRanged(0, lastIndex) : defaultIndex;
 
-			pSplashAnimToUse = splashAnims.at(nIndex);
+			pSplashAnimToUse = splashAnims.at(animIndex);
 		}
 	}
 
@@ -169,6 +203,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->Invoker)
 		.Process(this->InvokerHouse)
 		.Process(this->AttachedSystem)
+		.Process(this->ParentBuilding)
 		;
 }
 
@@ -189,6 +224,31 @@ void AnimExt::ExtData::InitializeConstants()
 	// Something about creating this in constructor messes with debris anims, so it has to be done for them later.
 	if (!this->OwnerObject()->HasExtras)
 		CreateAttachedSystem();
+}
+
+void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
+{
+	for (auto const& pAnim : *AnimClass::Array)
+	{
+		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+
+		if (pExt->Invoker == pTechno)
+			pExt->Invoker = nullptr;
+
+		if ((TechnoClass*)pExt->ParentBuilding == pTechno)
+			pExt->ParentBuilding = nullptr;
+	}
+}
+
+void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem)
+{
+	for (auto const& pAnim : *AnimClass::Array)
+	{
+		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+
+		if (pExt->AttachedSystem == pParticleSystem)
+			pExt->AttachedSystem = nullptr;
+	}
 }
 
 // =============================

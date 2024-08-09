@@ -1,7 +1,6 @@
 #include "RadTypeClass.h"
 
 #include <Utilities/TemplateDef.h>
-#include <GameStrings.h>
 #include <WarheadTypeClass.h>
 
 template<>
@@ -21,20 +20,21 @@ void RadTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	this->RadWarhead.Read(exINI, section, "RadSiteWarhead");
-	this->RadWarhead_Detonate.Read(exINI, section, "RadSiteWarhead.Detonate");
-	this->RadSiteColor.Read(exINI, section, "RadColor");
 	this->DurationMultiple.Read(exINI, section, "RadDurationMultiple");
 	this->ApplicationDelay.Read(exINI, section, "RadApplicationDelay");
-	this->BuildingApplicationDelay.Read(exINI, section, "RadApplicationDelay.Building");
+	this->ApplicationDelay_Building.Read(exINI, section, "RadApplicationDelay.Building");
+	this->BuildingDamageMaxCount.Read(exINI, section, "RadBuildingDamageMaxCount");
 	this->LevelMax.Read(exINI, section, "RadLevelMax");
 	this->LevelDelay.Read(exINI, section, "RadLevelDelay");
 	this->LightDelay.Read(exINI, section, "RadLightDelay");
 	this->LevelFactor.Read(exINI, section, "RadLevelFactor");
 	this->LightFactor.Read(exINI, section, "RadLightFactor");
 	this->TintFactor.Read(exINI, section, "RadTintFactor");
-	this->RadHasOwner.Read(exINI, section, "RadHasOwner");
-	this->RadHasInvoker.Read(exINI, section, "RadHasInvoker");
+	this->Color.Read(exINI, section, "RadColor");
+	this->SiteWarhead.Read<true>(exINI, section, "RadSiteWarhead");
+	this->SiteWarhead_Detonate.Read(exINI, section, "RadSiteWarhead.Detonate");
+	this->HasOwner.Read(exINI, section, "RadHasOwner");
+	this->HasInvoker.Read(exINI, section, "RadHasInvoker");
 }
 
 template <typename T>
@@ -43,18 +43,19 @@ void RadTypeClass::Serialize(T& Stm)
 	Stm
 		.Process(this->DurationMultiple)
 		.Process(this->ApplicationDelay)
+		.Process(this->ApplicationDelay_Building)
+		.Process(this->BuildingDamageMaxCount)
 		.Process(this->LevelMax)
 		.Process(this->LevelDelay)
 		.Process(this->LightDelay)
-		.Process(this->BuildingApplicationDelay)
 		.Process(this->LevelFactor)
 		.Process(this->LightFactor)
 		.Process(this->TintFactor)
-		.Process(this->RadSiteColor)
-		.Process(this->RadWarhead)
-		.Process(this->RadWarhead_Detonate)
-		.Process(this->RadHasOwner)
-		.Process(this->RadHasInvoker)
+		.Process(this->Color)
+		.Process(this->SiteWarhead)
+		.Process(this->SiteWarhead_Detonate)
+		.Process(this->HasOwner)
+		.Process(this->HasInvoker)
 		;
 };
 

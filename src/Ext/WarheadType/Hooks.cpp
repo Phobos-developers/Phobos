@@ -72,7 +72,7 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	GET(int, nDamage, ECX);
+	GET(int, nDamage, EDI);
 
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 	pWHExt->Splashed = true;
@@ -99,7 +99,7 @@ DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt && pWHExt->HasCrit && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
+	if (pWHExt && pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
 	{
 		GET(int, nDamage, ECX);
 		int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
@@ -183,16 +183,76 @@ DEFINE_HOOK(0x48A4F3, SelectDamageAnimation_NegativeZeroDamage, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x4891AF, GetTotalDamage_NegativeDamageModifiers, 0x6)
+#pragma region NegativeDamageModifiers
+
+namespace NegativeDamageTemp
+{
+	bool ApplyNegativeDamageModifiers = false;
+}
+
+DEFINE_HOOK(0x4891AF, GetTotalDamage_NegativeDamageModifiers1, 0x6)
 {
 	enum { ApplyModifiers = 0x4891C6 };
 
 	GET(WarheadTypeClass* const, pWarhead, EDI);
+	GET(int, damage, ESI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
-	if (pWHExt->ApplyModifiersOnNegativeDamage)
+	if (damage < 0 && pWHExt->ApplyModifiersOnNegativeDamage)
+	{
+		NegativeDamageTemp::ApplyNegativeDamageModifiers = true;
 		return ApplyModifiers;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x48922D, GetTotalDamage_NegativeDamageModifiers2, 0x5)
+{
+	enum { SkipGameCode = 0x489235 };
+
+	GET(int, damage, ESI);
+
+	if (NegativeDamageTemp::ApplyNegativeDamageModifiers)
+	{
+		NegativeDamageTemp::ApplyNegativeDamageModifiers = false;
+		R->ECX(damage);
+
+	}
+	else
+	{
+		R->ECX(damage < 0 ? 0 : damage);
+	}
+
+
+	return SkipGameCode;
+}
+
+#pragma endregion
+
+
+DEFINE_HOOK(0x701A54, TechnoClass_ReceiveDamage_PenetratesIronCurtain, 0x6)
+{
+	enum { AllowDamage = 0x701AAD };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->CanAffectInvulnerable(pThis))
+		return AllowDamage;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x489968, Explosion_Damage_PenetratesIronCurtain, 0x5)
+{
+	enum { BypassInvulnerability = 0x48996D };
+
+	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
+
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->PenetratesIronCurtain)
+		return BypassInvulnerability;
 
 	return 0;
 }

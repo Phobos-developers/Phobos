@@ -31,9 +31,6 @@ const wchar_t* FrameByFrameCommandClass::GetUIDescription() const
 
 void FrameByFrameCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
-		return;
-
 	if (!SessionClass::IsSingleplayer())
 		return;
 

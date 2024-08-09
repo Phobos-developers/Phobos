@@ -148,6 +148,13 @@ enum class AutoDeathBehavior
 	Kill = 0,     // default death option
 	Vanish = 1,
 	Sell = 2,     // buildings only
+	Convert = 3,  // units only
+};
+
+enum class ConditionGroupType
+{
+	AutoDeath = 0,
+	SW = 1,
 };
 
 enum class SelfHealGainType
@@ -213,6 +220,31 @@ enum class ChronoSparkleDisplayPosition : unsigned char
 };
 
 MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
+
+enum class DiscardCondition : unsigned char
+{
+	None = 0x0,
+	Entry = 0x1,
+	Move = 0x2,
+	Stationary = 0x4,
+	Drain = 0x8,
+	InRange = 0x10,
+	OutOfRange = 0x20
+};
+
+MAKE_ENUM_FLAGS(DiscardCondition);
+
+enum class ExpireWeaponCondition : unsigned char
+{
+	None = 0x0,
+	Expire = 0x1,
+	Remove = 0x2,
+	Death = 0x4,
+
+	All = 0xFF,
+};
+
+MAKE_ENUM_FLAGS(ExpireWeaponCondition);
 
 enum class HorizontalPosition : BYTE
 {

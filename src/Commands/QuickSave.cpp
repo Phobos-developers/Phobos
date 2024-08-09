@@ -39,31 +39,18 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 
 	if (SessionClass::IsSingleplayer())
 	{
-		char fName[0x80];
+		*reinterpret_cast<bool*>(0xABCE08) = false;
+		Phobos::ShouldQuickSave = true;
 
-		SYSTEMTIME time;
-		GetLocalTime(&time);
-
-		_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
-			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
-
-		PrintMessage(StringTable::LoadString(GameStrings::TXT_SAVING_GAME));
-
-		wchar_t fDescription[0x80] = { 0 };
 		if (SessionClass::IsCampaign())
-			wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
+			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->UINameLoaded;
 		else
-			wcscpy_s(fDescription, ScenarioClass::Instance->Name);
-		wcscat_s(fDescription, L" - ");
-		wcscat_s(fDescription, GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved"));
-
-		if (ScenarioClass::SaveGame(fName, fDescription))
-			PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
-		else
-			PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
+			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->Name;
+		Phobos::CustomGameSaveDescription += L" - ";
+		Phobos::CustomGameSaveDescription += GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved");		
 	}
 	else
 	{
-		PrintMessage(StringTable::LoadString("MSG:NotAvailableInMultiplayer"));
+		PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:NotAvailableInMultiplayer", L"QuickSave is not available in multiplayer"));
 	}
 }
