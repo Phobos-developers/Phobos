@@ -165,7 +165,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_VanishAnimation.Read(exINI, pSection, "AutoDeath.VanishAnimation");
 
 	// AutoDeath conditions
-	ConditionGroup::ParseAutoDeath(AutoDeath_Condition, exINI, pSection);
+	ConditionGroup::ParseAutoDeath(this->AutoDeath_Condition, exINI, pSection);
 
 	this->Slaved_OwnerWhenMasterKilled.Read(exINI, pSection, "Slaved.OwnerWhenMasterKilled");
 	this->SlavesFreeSound.Read(exINI, pSection, "SlavesFreeSound");

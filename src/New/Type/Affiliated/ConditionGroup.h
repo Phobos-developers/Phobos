@@ -7,7 +7,10 @@
 class ConditionGroup
 {
 public:
-	Valueable<bool> OnAmmoDepletion;
+	Valueable<bool> PowerOn;
+	Valueable<bool> PowerOff;
+	Valueable<int> AmmoExceed;
+	Valueable<int> AmmoBelow;
 	Valueable<int> AfterDelay;
 	Valueable<bool> OwnedByPlayer;
 	Valueable<bool> OwnedByAI;
@@ -18,8 +21,18 @@ public:
 	Valueable<int> TechLevel;
 	DWORD RequiredHouses;
 	DWORD ForbiddenHouses;
+	Nullable<double> AbovePercent;
+	Nullable<double> BelowPercent;
 	Valueable<int> PassengersExceed;
 	Valueable<int> PassengersBelow;
+	Valueable<bool> ShieldActive;
+	Valueable<bool> ShieldInactive;
+	Nullable<double> ShieldAbovePercent;
+	Nullable<double> ShieldBelowPercent;
+	Valueable<bool> IsMoving;
+	Valueable<bool> IsStationary;
+	Valueable<bool> IsDrained;
+	Valueable<bool> IsCloaked;
 	ValueableVector<TechnoTypeClass*> TechnosDontExist;
 	Valueable<bool> TechnosDontExist_Any;
 	Valueable<bool> TechnosDontExist_AllowLimboed;
@@ -36,7 +49,8 @@ public:
 	bool Save(PhobosStreamWriter& stm) const;
 
 	static bool CheckHouseConditions(HouseClass* pOwner, const ConditionGroup condition);
-	static bool CheckTechnoConditions(const TechnoClass* pTechno, const ConditionGroup condition, CDTimerClass& Timer);
+	static bool CheckTechnoConditions(TechnoClass* pTechno, const ConditionGroup condition);
+	static bool CheckTechnoConditionsWithTimer(TechnoClass* pTechno, const ConditionGroup condition, CDTimerClass& Timer);
 	static bool BatchCheckTechnoExist(HouseClass* pOwner, const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo);
 	static void ParseAutoDeath(ConditionGroup& condition, INI_EX& exINI, const char* section);
 

@@ -424,7 +424,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles if possible.
   - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
   - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit. Ignored if `CreateUnit.AlwaysSpawnOnGround` is set to true.
-  
+
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                             ; AnimationType
@@ -671,7 +671,7 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but ínstead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
 
 In `rulesmd.ini`:
-```ini                                         
+```ini
 [SOMEPROJECTILE]                               ; Projectile
 Trajectory=Straight                            ; Trajectory type
 Trajectory.Straight.DetonationDistance=0.4     ; floating point value
@@ -1079,6 +1079,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `OwnedByPlayer` / `OwnedByAI`: The object will die if its owner house is / isn't a human player.
   - `MoneyExceed` / `MoneyBelow`: The object will die if its owner house has credits greater / smaller than (or equal to) set value.
   - `LowPower` / `FullPower`: The object will die if its owner house is in low / full power.
+  - `AbovePercent` / `BelowPercent`: The object will die if its current health percentage is greater / smaller than (or equal to) set value.
   - `PassengersExceed` / `PassengersBelow`: The object will die if its current passenger amount is greater / smaller than (or equal to) set value.
   - `TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes exist or do not exist, respectively.
     - `Technos(Dont)Exist.Any` controls whether or not a single listed TechnoType is enough to satisfy the requirement or if all are required.
@@ -1103,8 +1104,8 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell | convert), default not set
-AutoDeath.VanishAnimation                      ; Animation
-AutoDeath.OnAmmoDepletion=no                   ; boolean
+AutoDeath.VanishAnimation=                     ; Animation
+AutoDeath.OnAmmoDepletion=false                ; boolean
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.OwnedByPlayer=false                  ; boolean
 AutoDeath.OwnedByAI=false                      ; boolean
@@ -1112,6 +1113,8 @@ AutoDeath.MoneyExceed=-1                       ; integer
 AutoDeath.MoneyBelow=-1                        ; integer
 AutoDeath.LowPower=false                       ; boolean
 AutoDeath.FullPower=false                      ; boolean
+AutoDeath.AbovePercent=                        ; floating point value, percents or absolute (0.0-1.0)
+AutoDeath.BelowPercent=                        ; floating point value, percents or absolute (0.0-1.0)
 AutoDeath.PassengersExceed=-1                  ; integer
 AutoDeath.PassengersBelow=-1                   ; integer
 AutoDeath.TechnosDontExist=                    ; list of TechnoType names

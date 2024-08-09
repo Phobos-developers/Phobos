@@ -129,7 +129,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	auto const pTypeExt = this->TypeExtData;
 	auto const pThis = this->OwnerObject();
 
-	if (!pTypeExt->AutoDeath_Behavior.isset() || !ConditionGroup::CheckTechnoConditions(pThis, pTypeExt->AutoDeath_Condition, this->AutoDeathTimer))
+	if (!pTypeExt->AutoDeath_Behavior.isset() || !ConditionGroup::CheckTechnoConditionsWithTimer(pThis, pTypeExt->AutoDeath_Condition, this->AutoDeathTimer))
 		return false;
 
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
