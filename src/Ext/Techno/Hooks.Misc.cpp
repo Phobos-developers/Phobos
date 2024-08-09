@@ -101,18 +101,12 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 
 DEFINE_HOOK(0x465912, BuildingTypeClass_CanUseWaypoint, 0x5)
 {
-	if (RulesExt::Global()->BuildingWaypoint)
-	{
-		R->AL(true);
-	}
+	R->AL(RulesExt::Global()->BuildingWaypoint);
 	return 0;
 }
 
 DEFINE_HOOK(0x41CB52, AircraftTypeClass_CanUseWaypoint, 0x5)
 {
-	if (RulesExt::Global()->AircraftWaypoint)
-	{
-		R->AL(true);
-	}
+	R->AL(RulesExt::Global()->AircraftWaypoint);
 	return 0;
 }
