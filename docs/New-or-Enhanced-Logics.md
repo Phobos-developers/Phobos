@@ -1259,8 +1259,8 @@ Convert.ComputerToHuman =   ; TechnoType
 In `rulesmd.ini`:
 ```ini
 [General]
-BuildingWaypoint = false    ; boolean
-AircraftWaypoint = false    ; boolean
+BuildingWaypoint=false    ; boolean
+AircraftWaypoint=false    ; boolean
 ```
 
 ## Terrain
