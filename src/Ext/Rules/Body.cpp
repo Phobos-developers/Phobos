@@ -350,6 +350,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PodImage)
 		.Process(this->VoxelLightSource)
 		// .Process(this->VoxelShadowLightSource)
+		.Process(this->AircraftWaypoint)
+		.Process(this->BuildingWaypoint)
 		;
 }
 
