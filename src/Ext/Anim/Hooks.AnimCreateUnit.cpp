@@ -3,6 +3,7 @@
 
 #include "Body.h"
 
+#include <AircraftTrackerClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
 #include <JumpjetLocomotionClass.h>
@@ -161,6 +162,7 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 									pJJLoco->IsMoving = true;
 									pJJLoco->DestinationCoords = location;
 									pJJLoco->CurrentHeight = pType->JumpjetHeight;
+									AircraftTrackerClass::Instance->Add(pTechno);
 								}
 								else if (inAir)
 								{
