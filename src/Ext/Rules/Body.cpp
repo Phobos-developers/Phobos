@@ -182,6 +182,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	// this->VoxelShadowLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelShadowLightSource");
 
 	this->ReplaceVoxelLightSources();
+	this->RegroupWhenMCVDeploy.Read(exINI, GameStrings::General, "RegroupWhenMCVDeploy");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -347,6 +348,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PodImage)
 		.Process(this->VoxelLightSource)
 		// .Process(this->VoxelShadowLightSource)
+		.Process(this->RegroupWhenMCVDeploy)
 		;
 }
 

@@ -143,6 +143,8 @@ public:
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 
+		Valueable<bool> RegroupWhenMCVDeploy;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -243,6 +245,7 @@ public:
 			, PodImage { }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
+			, RegroupWhenMCVDeploy { true }
 		{ }
 
 		virtual ~ExtData() = default;
