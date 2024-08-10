@@ -27,9 +27,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	const auto pWH = args->WH;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	const auto pSourceHouse = args->SourceHouse;
-	auto const pRules = RulesExt::Global();
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pRules = RulesExt::Global();
 
-	if (pRules->CombatAlert && *args->Damage > 1)
+	int nDamageLeft = *args->Damage;
+
+	if (pRules->CombatAlert && nDamageLeft > 1)
 	{
 		do
 		{
@@ -98,14 +101,13 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	if (!args->IgnoreDefenses)
 	{
-		const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (!pShieldData->IsActive())
 				return 0;
 
-			const int nDamageLeft = pShieldData->ReceiveDamage(args);
+			nDamageLeft = pShieldData->ReceiveDamage(args);
+
 			if (nDamageLeft >= 0)
 			{
 				*args->Damage = nDamageLeft;
@@ -118,6 +120,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				RD::SkipLowDamageCheck = true;
 		}
 	}
+
 	return 0;
 }
 

@@ -44,6 +44,7 @@ public:
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
+		Valueable<bool> Spawner_AttackImmediately;
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
@@ -104,6 +105,8 @@ public:
 		Nullable<WeaponTypeClass*> WarpInMinRangeWeapon;
 		Valueable<WeaponTypeClass*> WarpOutWeapon;
 		Valueable<bool> WarpInWeapon_UseDistanceAsDamage;
+
+		Nullable<int> SubterraneanHeight;
 
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
 		ValueableVector<int> OreGathering_Tiberiums;
@@ -277,6 +280,7 @@ public:
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}
+			, Spawner_AttackImmediately { false }
 			, Harvester_Counted {}
 			, Promote_IncludeSpawns { false }
 			, ImmuneToCrit { false }
@@ -300,6 +304,8 @@ public:
 			, WarpInMinRangeWeapon {}
 			, WarpOutWeapon {}
 			, WarpInWeapon_UseDistanceAsDamage { false }
+
+			, SubterraneanHeight {}
 
 			, OreGathering_Anims {}
 			, OreGathering_Tiberiums {}

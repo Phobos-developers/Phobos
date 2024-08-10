@@ -46,6 +46,8 @@ public:
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
+		Valueable<bool> PenetratesIronCurtain;
+		Nullable<bool> PenetratesForceShield;
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -89,6 +91,7 @@ public:
 
 		ValueableVector<ShieldTypeClass*> Shield_AttachTypes;
 		ValueableVector<ShieldTypeClass*> Shield_RemoveTypes;
+		Valueable<bool> Shield_RemoveAll;
 		Valueable<bool> Shield_ReplaceOnly;
 		Valueable<bool> Shield_ReplaceNonRespawning;
 		Valueable<bool> Shield_InheritStateOnReplace;
@@ -131,6 +134,11 @@ public:
 		ValueableVector<int> AttachEffect_CumulativeRemoveMaxCounts;
 		ValueableVector<int> AttachEffect_DurationOverrides;
 
+		Valueable<bool> SuppressRevengeWeapons;
+		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
+		Valueable<bool> SuppressReflectDamage;
+		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
+
 		Nullable<bool> CombatAlert_Suppress;
 
 		// Ares tags
@@ -145,6 +153,7 @@ public:
 		bool Crit_Active;
 		bool WasDetonatedOnAllMapObjects;
 		bool Splashed;
+		bool Reflected;
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 
@@ -179,6 +188,8 @@ public:
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
+			, PenetratesIronCurtain { false }
+			, PenetratesForceShield {}
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
@@ -219,6 +230,7 @@ public:
 			, Shield_SelfHealing_RestartTimer { false }
 			, Shield_AttachTypes {}
 			, Shield_RemoveTypes {}
+			, Shield_RemoveAll { false }
 			, Shield_ReplaceOnly { false }
 			, Shield_ReplaceNonRespawning { false }
 			, Shield_InheritStateOnReplace { false }
@@ -264,6 +276,11 @@ public:
 			, AttachEffect_CumulativeRemoveMaxCounts {}
 			, AttachEffect_DurationOverrides {}
 
+			, SuppressRevengeWeapons { false }
+			, SuppressRevengeWeapons_Types {}
+			, SuppressReflectDamage { false }
+			, SuppressReflectDamage_Types {}
+
 			, CombatAlert_Suppress {}
 
 			, AffectsEnemies { true }
@@ -276,6 +293,7 @@ public:
 			, Crit_Active { false }
 			, WasDetonatedOnAllMapObjects { false }
 			, Splashed { false }
+			, Reflected { false }
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate {false}
 		{ }
@@ -284,9 +302,10 @@ public:
 		void ApplyLocomotorInfliction(TechnoClass* pTarget);
 		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
 	public:
-		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
-		bool CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
-		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner);
+		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
+		bool CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt) const;
+		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
+		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const;
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

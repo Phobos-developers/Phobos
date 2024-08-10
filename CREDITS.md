@@ -45,6 +45,7 @@ This page lists all the individual contributions to the project by their author.
   - Code style
   - Customizable ElectricBolt Arcs
   - Ability to disable shadow for debris & meteor animations
+  - Voxel light source position customization
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -229,6 +230,9 @@ This page lists all the individual contributions to the project by their author.
   - Revenge weapons
   - AttachEffect
   - Air unit tracking fix for large range / `CellSpread`
+  - Extra tint intensity for Iron Curtain & Force Shield
+  - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565
+  - Customizing height at which subterranean units travel
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -247,6 +251,7 @@ This page lists all the individual contributions to the project by their author.
   - Dump variables to file on scenario end / hotkey
   - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
   - Help with docs
+  - Voxel light source position customization
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
    - Interceptor logic prototype
@@ -363,7 +368,7 @@ This page lists all the individual contributions to the project by their author.
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
 - **4SG** - help with docs
-- **thomassneddon** - general assistance
+- **thomassneddon** - general assistance, knowledge about voxel lighting model
 - **Xkein** - general assistance, YRpp edits
 - **mevitar** - honorary shield tester *triple* award
 - **Damfoos** - extensive and thorough testing
