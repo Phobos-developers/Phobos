@@ -373,3 +373,4 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
+- **航味麻酱** - New hotkey to select the units within the current screen that are captured by non-permanent mind-controller
