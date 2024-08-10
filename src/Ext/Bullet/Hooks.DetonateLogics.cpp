@@ -66,6 +66,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
 		{
 			pWHExt->WasDetonatedOnAllMapObjects = true;
+			auto const originalLocation = pThis->Location;
 			auto const pOriginalTarget = pThis->Target;
 			auto const pExt = BulletExt::ExtMap.Find(pThis);
 			auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
@@ -75,6 +76,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
 				{
 					pThis->Target = pTechno;
+					pThis->Location = pTechno->GetCoords();
 					pThis->Detonate(pTechno->GetCoords());
 				}
 			};
@@ -119,6 +121,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			}
 
 			pThis->Target = pOriginalTarget;
+			pThis->Location = originalLocation;
 			pWHExt->WasDetonatedOnAllMapObjects = false;
 
 			return ReturnFromFunction;
@@ -203,6 +206,9 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 		int creationInterval = pWHExt->Splashed ? pWHExt->SplashList_CreationInterval : pWHExt->AnimList_CreationInterval;
 		int* remainingInterval = &pWHExt->RemainingAnimCreationInterval;
+		int scatterMin = pWHExt->Splashed ? pWHExt->SplashList_ScatterMin.Get() : pWHExt->AnimList_ScatterMin.Get();
+		int scatterMax = pWHExt->Splashed ? pWHExt->SplashList_ScatterMax.Get() : pWHExt->AnimList_ScatterMax.Get();
+		bool allowScatter = scatterMax != 0 || scatterMin != 0;
 
 		if (creationInterval > 0 && pThis->Owner)
 			remainingInterval = &TechnoExt::ExtMap.Find(pThis->Owner)->WHAnimRemainingCreationInterval;
@@ -229,7 +235,15 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 				if (!pType)
 					continue;
 
-				if (auto const pAnim = GameCreate<AnimClass>(pType, *coords, 0, 1, 0x2600, -15, false))
+				auto animCoords = *coords;
+
+				if (allowScatter)
+				{
+					int distance = ScenarioClass::Instance->Random.RandomRanged(scatterMin, scatterMax);
+					animCoords = MapClass::GetRandomCoordsNear(animCoords, distance, false);
+				}
+
+				if (auto const pAnim = GameCreate<AnimClass>(pType, animCoords, 0, 1, 0x2600, -15, false))
 				{
 					createdAnim = true;
 
@@ -256,6 +270,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK_AGAIN(0x46A2FB, BulletClass_Logics_Extras, 0x5)
 DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 {
 	GET(BulletClass*, pThis, ESI);
@@ -272,11 +287,23 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 			auto const pWH = pWeaponExt->ExtraWarheads[i];
 			auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 			int damage = defaultDamage;
+			size_t size = pWeaponExt->ExtraWarheads_DamageOverrides.size();
 
-			if (pWeaponExt->ExtraWarheads_DamageOverrides.size() > i)
+			if (size > i)
 				damage = pWeaponExt->ExtraWarheads_DamageOverrides[i];
+			else if (size > 0)
+				damage = pWeaponExt->ExtraWarheads_DamageOverrides[size - 1];
 
-			WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner);
+			bool detonate = true;
+			size = pWeaponExt->ExtraWarheads_DetonationChances.size();
+
+			if (size > i)
+				detonate = pWeaponExt->ExtraWarheads_DetonationChances[i] >= ScenarioClass::Instance->Random.RandomDouble();
+			if (size > 0)
+				detonate = pWeaponExt->ExtraWarheads_DetonationChances[size - 1] >= ScenarioClass::Instance->Random.RandomDouble();
+
+			if (detonate)
+				WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
 		}
 	}
 
@@ -285,10 +312,8 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 	{
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-		if (pTypeExt->ReturnWeapon.isset())
+		if (auto const pWeapon = pTypeExt->ReturnWeapon)
 		{
-			auto const pWeapon = pTypeExt->ReturnWeapon.Get();
-
 			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pThis->Owner, pThis->Owner,
 				pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{

@@ -24,7 +24,7 @@ public:
 		Nullable<ArmorType> Armor;
 		Valueable<bool> Interceptable;
 		Valueable<bool> Interceptable_DeleteOnIntercept;
-		Nullable<WeaponTypeClass*> Interceptable_WeaponOverride;
+		Valueable<WeaponTypeClass*> Interceptable_WeaponOverride;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
 
@@ -33,17 +33,18 @@ public:
 
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
+		Valueable<bool> Shrapnel_UseWeaponTargeting;
 		Nullable<bool> SubjectToLand;
 		Valueable<bool> SubjectToLand_Detonate;
 		Nullable<bool> SubjectToWater;
 		Valueable<bool> SubjectToWater_Detonate;
 
-		Nullable<Leptons> ClusterScatter_Min;
-		Nullable<Leptons> ClusterScatter_Max;
+		Valueable<Leptons> ClusterScatter_Min;
+		Valueable<Leptons> ClusterScatter_Max;
 
 		Valueable<bool> AAOnly;
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
-		Nullable<WeaponTypeClass*> ReturnWeapon;
+		Valueable<WeaponTypeClass*> ReturnWeapon;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -60,8 +61,9 @@ public:
 			, Trajectory_Speed { 100.0 }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
-			, ClusterScatter_Min {}
-			, ClusterScatter_Max {}
+			, Shrapnel_UseWeaponTargeting { false }
+			, ClusterScatter_Min { Leptons(256) }
+			, ClusterScatter_Max { Leptons(512) }
 			, BallisticScatter_Min {}
 			, BallisticScatter_Max {}
 			, SubjectToLand {}
@@ -86,6 +88,8 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+
+		void TrajectoryValidation() const;
 	};
 
 	class ExtContainer final : public Container<BulletTypeExt> {

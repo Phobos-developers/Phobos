@@ -24,7 +24,7 @@ void DroppodTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->Trailer.Read(exINI, pSection, "DropPod.Trailer");
 	this->Trailer_SpawnDelay.Read(exINI, pSection, "DropPod.Trailer.SpawnDelay");
 	this->Trailer_Attached.Read(exINI, pSection, "DropPod.Trailer.Attached");
-	this->Weapon.Read(exINI, pSection, "DropPod.Weapon");
+	this->Weapon.Read<true>(exINI, pSection, "DropPod.Weapon");
 	this->Weapon_HitLandOnly.Read(exINI, pSection, "DropPod.Weapon.HitLandOnly");
 }
 
@@ -70,7 +70,11 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 	__assume(iloco != nullptr);
 	auto const lThis = static_cast<DropPodLocomotionClass*>(iloco);
 	auto const pLinked = lThis->LinkedTo;
-	const auto podType = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType())->DroppodType.get();
+	auto const linkedExt = TechnoExt::ExtMap.Find(pLinked);
+	const auto podType = linkedExt->TypeExtData->DroppodType.get();
+
+	if (!podType)
+		return 0;//You're not welcome
 
 	CoordStruct oldLoc = pLinked->Location;
 
@@ -137,6 +141,10 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 			if (dWpn && podType->Weapon_HitLandOnly)
 				WeaponTypeExt::DetonateAt(dWpn, pLinked->Location, pLinked, pLinked->Owner);
 
+			auto& vec = linkedExt->LaserTrails;
+			if (!vec.empty())
+				vec.erase(std::remove_if(vec.begin(), vec.end(), [](auto& trail) { return trail.Type->DroppodOnly; }));
+
 			pLinked->Mark(MarkType::Down);
 			pLinked->SetHeight(0);
 			pLinked->EnterIdleMode(false, true);
@@ -162,13 +170,17 @@ DEFINE_HOOK(0x4B607D, DroppodLocomotionClass_ILoco_MoveTo, 0x8)
 	GET(ILocomotion*, iloco, EDI);
 	REF_STACK(CoordStruct, to, STACK_OFFSET(0x1C, 0x8));
 	__assume(iloco != nullptr);
+
 	auto const lThis = static_cast<DropPodLocomotionClass*>(iloco);
 	auto const pLinked = lThis->LinkedTo;
+	const auto podType= TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType())->DroppodType.get();
+
+	if (!podType)
+		return 0;
 
 	lThis->DestinationCoords = to;
 	lThis->DestinationCoords.Z = MapClass::Instance->GetCellFloorHeight(to);
 
-	const auto podType = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType())->DroppodType.get();
 	const int height = podType->Height.Get(RulesClass::Instance->DropPodHeight);
 	const double angle = podType->Angle.Get(RulesClass::Instance->DropPodAngle);
 

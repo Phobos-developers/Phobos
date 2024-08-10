@@ -4,9 +4,10 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-// Bugfix: Jumpjet turn to target when attacking
-
-// Jumpjets stuck at FireError::FACING because WW didn't use a correct facing
+// Misc jumpjet facing, turning, drawing fix -- Author: Trsdy
+// Jumpjets stuck at FireError::FACING because Jumpjet has its own facing just for JumpjetTurnRate
+// We should not touch the linked unit's PrimaryFacing when it's moving and just let the loco sync this shit in 54D692
+// The body facing never actually turns, it just syncs
 DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
@@ -79,6 +80,17 @@ DEFINE_HOOK(0x736EE9, UnitClass_UpdateFiring_FireErrorIsOK, 0x6)
 	return 0;
 }
 
+void __stdcall JumpjetLocomotionClass_DoTurn(ILocomotion* iloco, DirStruct dir)
+{
+	__assume(iloco != nullptr);
+	// This seems to be used only when unloading shit on the ground
+	// Rewrite just in case
+	auto pThis = static_cast<JumpjetLocomotionClass*>(iloco);
+	pThis->LocomotionFacing.SetDesired(dir);
+	pThis->LinkedTo->PrimaryFacing.SetDesired(dir);
+}
+DEFINE_JUMP(VTABLE, 0x7ECDB4, GET_OFFSET(JumpjetLocomotionClass_DoTurn))
+
 DEFINE_HOOK(0x54D326, JumpjetLocomotionClass_MovementAI_CrashSpeedFix, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
@@ -115,10 +127,9 @@ DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_Jumpjet, 0x6)
 	// When jumpjets arrived at their FootClass::Destination, they seems stuck at the Move mission
 	// and therefore the turret facing was set to DirStruct{atan2(0,0)}==DirType::East at 0x736BBB
 	// that's why they will come back to normal when giving stop command explicitly
-	auto pType = pThis->Type;
 	// so the best way is to fix the Mission if necessary, but I don't know how to do it
-	// so I skipped jumpjets check temporarily, and in most cases Jumpjet/BallonHover should cover most of it
-	if (!pType->TurretSpins && (pType->JumpJet || pType->BalloonHover))
+	// so I skipped jumpjets check temporarily
+	if (!pThis->Type->TurretSpins && locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 		return SkipCheckDestination;
 
 	return 0;
@@ -153,30 +164,64 @@ DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 	return pTypeExt->JumpjetRotateOnCrash ? 0 : 0x54CB3E;
 }
 
-
-// These are subject to changes if someone wants to properly implement jumpjet tilting
-DEFINE_HOOK(0x54DCCF, JumpjetLocomotionClass_DrawMatrix_TiltCrashJumpjet, 0x5)
+// We no longer explicitly check TiltCrashJumpjet when drawing, do it when crashing
+DEFINE_HOOK(0x70B649, TechnoClass_RigidBodyDynamics_NoTiltCrashBlyat, 0x6)
 {
-	GET(ILocomotion*, iloco, ESI);
-	__assume(iloco != nullptr);
-	//if (static_cast<JumpjetLocomotionClass*>(iloco)->State < JumpjetLocomotionClass::State::Crashing)
-	if (static_cast<JumpjetLocomotionClass*>(iloco)->State == JumpjetLocomotionClass::State::Grounded)
-		return 0x54DCE8;
+	GET(FootClass*, pThis, ESI);
+
+	if (locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor) && !pThis->GetTechnoType()->TiltCrashJumpjet)
+		return 0x70BCA4;
 
 	return 0;
 }
 
-/*
-DEFINE_HOOK(0x54DD3D, JumpjetLocomotionClass_DrawMatrix_AxisCenterInAir, 0x5)
+// Just rewrite this completely to avoid headache
+Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
 {
-	GET(ILocomotion*, iloco, ESI);
 	__assume(iloco != nullptr);
-	auto state = static_cast<JumpjetLocomotionClass*>(iloco)->State;
-	if (state && state < JumpjetLocomotionClass::State::Crashing)
-		return  0x54DE88;
-	return 0;
+	auto const pThis = static_cast<JumpjetLocomotionClass*>(iloco);
+	auto linked = pThis->LinkedTo;
+	// no more TiltCrashJumpjet, do that above svp
+	bool const onGround = pThis->State == JumpjetLocomotionClass::State::Grounded;
+	// Man, what can I say, you don't want to stick your rotor into the ground
+	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
+
+	if (onGround && pIndex && pIndex->Is_Valid_Key())
+		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
+
+	*ret = Matrix3D::VoxelRampMatrix[onGround ? slope_idx : 0] * pThis->LocomotionClass::Draw_Matrix(pIndex);
+
+	float arf = linked->AngleRotatedForwards;
+	float ars = linked->AngleRotatedSideways;
+
+	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	{
+		if (pIndex)
+			pIndex->Invalidate();
+
+		if (onGround)
+		{
+			double scalex = linked->GetTechnoType()->VoxelScaleX;
+			double scaley = linked->GetTechnoType()->VoxelScaleY;
+			Matrix3D pre = Matrix3D::GetIdentity();
+			pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
+			ret->TranslateX(float(Math::sgn(arf) * (scaley * (1 - Math::cos(arf)))));
+			ret->TranslateY(float(Math::sgn(-ars) * (scalex * (1 - Math::cos(ars)))));
+			ret->RotateX(ars);
+			ret->RotateY(arf);
+			*ret = pre * *ret;
+		}
+		else
+		{
+			// No more translation because I don't like it
+			ret->RotateX(ars);
+			ret->RotateY(arf);
+		}
+	}
+	return ret;
 }
-*/
+
+DEFINE_JUMP(VTABLE, 0x7ECD8C, GET_OFFSET(JumpjetLocomotionClass_Draw_Matrix));
 
 FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
 {
@@ -198,6 +243,7 @@ DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 
 	pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
 	pThis->LocomotionFacing.SetDesired(pThis->LinkedTo->PrimaryFacing.Desired());
+	pThis->LinkedTo->PrimaryFacing.SetROT(pThis->TurnRate);
 
 	return 0;
 }
@@ -214,57 +260,19 @@ void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 
 DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))
 
-
-// Visual bugfix : Teleport loco vxls could not tilt
-Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
+DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
 {
-	__assume(iloco != nullptr);
-	auto const pThis = static_cast<LocomotionClass*>(iloco);
-	auto linked = pThis->LinkedTo;
-	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
+	GET(FootClass*, pLinked, EAX);
+	auto const* pType = pLinked->GetTechnoType();
 
-	if (pIndex && pIndex->Is_Valid_Key())
-		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
+	pLinked->PrimaryFacing.SetROT(pType->ROT);
 
-	if (slope_idx && pIndex && pIndex->Is_Valid_Key())
-		*ret = Matrix3D::VoxelRampMatrix[slope_idx] * pThis->LocomotionClass::Draw_Matrix(pIndex);
-	else
-		*ret = pThis->LocomotionClass::Draw_Matrix(pIndex);
-
-	float arf = linked->AngleRotatedForwards;
-	float ars = linked->AngleRotatedSideways;
-
-	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	if (pType->SensorsSight)
 	{
-		if (pIndex)// just forget it bro, no one cares
-			*(int*)pIndex = -1;
-
-		double scalex = linked->GetTechnoType()->VoxelScaleX;
-		double scaley = linked->GetTechnoType()->VoxelScaleY;
-
-		Matrix3D pre = Matrix3D::GetIdentity();
-		pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
-		ret->TranslateX(float(Math::sgn(arf) * (scaley * (1 - Math::cos(arf)))));
-		ret->TranslateY(float(Math::sgn(-ars) * (scalex * (1 - Math::cos(ars)))));
-		ret->RotateX(ars);
-		ret->RotateY(arf);
-
-		*ret = pre * *ret;
+		pLinked->RemoveSensorsAt(pLinked->LastFlightMapCoords);
+		pLinked->RemoveSensorsAt(pLinked->GetMapCoords());
+		pLinked->AddSensorsAt(pLinked->GetMapCoords());
 	}
-	return ret;
+
+	return 0;
 }
-
-DEFINE_JUMP(VTABLE, 0x7F5024, GET_OFFSET(TeleportLocomotionClass_Draw_Matrix));
-DEFINE_JUMP(VTABLE, 0x7F5028, 0x5142A0);//TeleportLocomotionClass_Shadow_Matrix : just use hover's to save my time
-
-// Visual bugfix: Tunnel loco could not tilt when being flipped
-DEFINE_HOOK(0x729B5D, TunnelLocomotionClass_DrawMatrix_Tilt, 0x8)
-{
-	GET(ILocomotion*, iloco, ESI);
-	GET_BASE(VoxelIndexKey*, pIndex, 0x10);
-	GET_BASE(Matrix3D*, ret, 0xC);
-	R->EAX(TeleportLocomotionClass_Draw_Matrix(iloco, ret, pIndex));
-	return 0x729C09;
-}
-
-DEFINE_JUMP(VTABLE, 0x7F5A4C, 0x5142A0);//TunnelLocomotionClass_Shadow_Matrix : just use hover's to save my time

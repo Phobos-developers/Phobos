@@ -25,9 +25,6 @@ const wchar_t* SaveVariablesToFileCommandClass::GetUIDescription() const
 
 void SaveVariablesToFileCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
-		return;
-
 	MessageListClass::Instance->PrintMessage(
 		L"Variables saved.",
 		RulesClass::Instance->MessageDelay,

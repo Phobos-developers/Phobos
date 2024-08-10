@@ -6,6 +6,7 @@
 #include "Body.h"
 #include <Ext/TechnoType/Body.h>
 #include <FactoryClass.h>
+#include <Ext/House/Body.h>
 
 bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner)
 {
@@ -91,6 +92,7 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 {
 	GET(HouseClass const* const, pThis, ECX);
 	GET_STACK(TechnoTypeClass const* const, pItem, 0x4);
+	GET_STACK(bool, buildLimitOnly, 0x8);
 	GET_STACK(bool const, includeInProduction, 0xC);
 	GET(CanBuildResult const, resultOfAres, EAX);
 
@@ -101,6 +103,14 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 			if (pBuildingExt->PowersUp_Buildings.size() > 0 && resultOfAres == CanBuildResult::Buildable)
 				R->EAX(CheckBuildLimit(pThis, pBuilding, includeInProduction));
 		}
+	}
+
+	if (resultOfAres == CanBuildResult::Buildable)
+	{
+		R->EAX(HouseExt::BuildLimitGroupCheck(pThis, pItem, buildLimitOnly, includeInProduction));
+
+		if (HouseExt::ReachedBuildLimit(pThis, pItem, true))
+			R->EAX(CanBuildResult::TemporarilyUnbuildable);
 	}
 
 	return 0;
@@ -117,6 +127,74 @@ DEFINE_HOOK(0x4F7877, HouseClass_CanBuild_UpgradesInteraction_WithoutAres, 0x5)
 	Patch::Apply_RAW(0x4F7877, // Disable this hook
 		{ 0x53, 0x55, 0x8B, 0xE9, 0x56 }
 	);
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region UpgradeAnimLogic
+
+// Parse Powered(Light|Effect|Special) keys for upgrade anims.
+DEFINE_HOOK(0x4648B3, BuildingTypeClass_ReadINI_PowerUpAnims, 0x5)
+{
+	GET(BuildingTypeClass*, pThis, EBP);
+	GET(int, index, EBX);
+
+	auto const pINI = &CCINIClass::INI_Art();
+	auto const animData = &pThis->BuildingAnim[index - 1];
+
+	char buffer[0x20];
+
+	sprintf_s(buffer, "PowerUp%01dPowered", index);
+	animData->Powered = pINI->ReadBool(pThis->ImageFile, buffer, animData->Powered);
+
+	sprintf_s(buffer, "PowerUp%01dPoweredLight", index);
+	animData->PoweredLight = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredLight);
+
+	sprintf_s(buffer, "PowerUp%01dPoweredEffect", index);
+	animData->PoweredEffect = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredEffect);
+
+	sprintf_s(buffer, "PowerUp%01dPoweredSpecial", index);
+	animData->PoweredSpecial = pINI->ReadBool(pThis->ImageFile, buffer, animData->PoweredSpecial);
+
+	return 0;
+}
+
+// Don't allow upgrade anims to be created if building is not upgraded or they require power to be shown and the building isn't powered.
+static __forceinline bool AllowUpgradeAnim(BuildingClass* pBuilding, BuildingAnimSlot anim)
+{
+	auto const pType = pBuilding->Type;
+
+	if (pType->Upgrades != 0 && anim >= BuildingAnimSlot::Upgrade1 && anim <= BuildingAnimSlot::Upgrade3 && !pBuilding->Anims[int(anim)])
+	{
+		int upgradeLevel = pBuilding->UpgradeLevel - 1;
+
+		if (upgradeLevel < 0 || (int)anim != upgradeLevel)
+			return false;
+
+		auto const animData = pType->BuildingAnim[int(anim)];
+
+		if (((pType->Powered && pType->PowerDrain > 0 && (animData.PoweredLight || animData.PoweredEffect)) ||
+			(pType->PoweredSpecial && animData.PoweredSpecial)) &&
+			!(pBuilding->CurrentMission != Mission::Construction && pBuilding->CurrentMission != Mission::Selling && pBuilding->IsPowerOnline()))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+DEFINE_HOOK(0x45189D, BuildingClass_AnimUpdate_Upgrades, 0x6)
+{
+	enum { SkipAnim = 0x451B2C };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET_STACK(BuildingAnimSlot, anim, STACK_OFFSET(0x34, 0x8));
+
+	if (!AllowUpgradeAnim(pThis, anim))
+		return SkipAnim;
 
 	return 0;
 }

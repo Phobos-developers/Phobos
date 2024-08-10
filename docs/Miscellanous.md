@@ -10,7 +10,6 @@ This page describes every change in Phobos that wasn't categorized into a proper
 - This feature must be enabled with `SkirmishUnlimitedColors=true` in `[General]` section of game rules.
 - When enabled, the game will treat color indices passed from spawner as indices for `[Colors]` section entries.
   - In example, with original rules, index 6 will correspond to color `Orange=25,230,255`.
-- Phobos writes additional information to the `SYNC#.txt` log files when a desynchronization occurs such as calls to random number generator functions, facing / target / destination changes etc.
 
 ```{note}
 This feature should only be used if you use a spawner/outside client (i.e. CNCNet client). Using it in the original YR launcher will produce undesireable effects.
@@ -106,7 +105,7 @@ CustomGSN.DefaultDelay=N    ; integer between 0 and 6
 ; where N = 0, 1, 2, 3, 4, 5, 6
 ```
 
-In `ra2md.ini`:
+In `RA2MD.ini`:
 ```ini
 [Phobos]
 CampaignDefaultGameSpeed=4  ; integer

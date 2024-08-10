@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/Techno/Body.h>
 #include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class WarheadTypeExt
@@ -31,9 +32,13 @@ public:
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> SplashList_CreateAll;
 		Valueable<int> SplashList_CreationInterval;
+		Valueable<Leptons> SplashList_ScatterMin;
+		Valueable<Leptons> SplashList_ScatterMax;
 		Valueable<bool> AnimList_PickRandom;
 		Valueable<bool> AnimList_CreateAll;
 		Valueable<int> AnimList_CreationInterval;
+		Valueable<Leptons> AnimList_ScatterMin;
+		Valueable<Leptons> AnimList_ScatterMax;
 		Valueable<bool> CreateAnimsOnZeroDamage;
 		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
@@ -41,25 +46,28 @@ public:
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
+		Valueable<bool> PenetratesIronCurtain;
+		Nullable<bool> PenetratesForceShield;
 
-		Valueable<double> Crit_Chance;
+		ValueableVector<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
-		Valueable<int> Crit_ExtraDamage;
+		ValueableVector<int> Crit_ExtraDamage;
 		Nullable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<AffectedTarget> Crit_Affects;
 		Valueable<AffectedHouse> Crit_AffectsHouses;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
 		Nullable<bool> Crit_AnimList_PickRandom;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
-		Valueable<double> Crit_AffectBelowPercent;
+		ValueableVector<double> Crit_AffectBelowPercent;
 		Valueable<bool> Crit_SuppressWhenIntercepted;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
 
 		Valueable<bool> Shield_Penetrate;
 		Valueable<bool> Shield_Break;
-		Nullable<AnimTypeClass*> Shield_BreakAnim;
-		Nullable<AnimTypeClass*> Shield_HitAnim;
+		Valueable<AnimTypeClass*> Shield_BreakAnim;
+		Valueable<AnimTypeClass*> Shield_HitAnim;
+		Valueable<bool> Shield_HitFlash;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
 
 		Nullable<double> Shield_AbsorbPercent;
@@ -78,8 +86,12 @@ public:
 		Valueable<int> Shield_SelfHealing_RestartInCombatDelay;
 		Valueable<bool> Shield_SelfHealing_RestartTimer;
 
+		std::vector<Powerup> SpawnsCrate_Types;
+		std::vector<int> SpawnsCrate_Weights;
+
 		ValueableVector<ShieldTypeClass*> Shield_AttachTypes;
 		ValueableVector<ShieldTypeClass*> Shield_RemoveTypes;
+		Valueable<bool> Shield_RemoveAll;
 		Valueable<bool> Shield_ReplaceOnly;
 		Valueable<bool> Shield_ReplaceNonRespawning;
 		Valueable<bool> Shield_InheritStateOnReplace;
@@ -115,16 +127,31 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_RemoveTypes;
+		std::vector<std::string> AttachEffect_RemoveGroups;
+		ValueableVector<int> AttachEffect_CumulativeRemoveMinCounts;
+		ValueableVector<int> AttachEffect_CumulativeRemoveMaxCounts;
+		ValueableVector<int> AttachEffect_DurationOverrides;
+
+		Valueable<bool> SuppressRevengeWeapons;
+		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
+		Valueable<bool> SuppressReflectDamage;
+		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
+		Valueable<bool> EffectsRequireVerses;
 
 		double Crit_RandomBuffer;
-		bool HasCrit;
+		std::vector<double> Crit_CurrentChance;
+		std::vector<int> Crit_CurrentExtraDamage;
+		bool Crit_Active;
 		bool WasDetonatedOnAllMapObjects;
 		bool Splashed;
+		bool Reflected;
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 
@@ -145,9 +172,13 @@ public:
 			, SplashList_PickRandom { false }
 			, SplashList_CreateAll { false }
 			, SplashList_CreationInterval { 0 }
+			, SplashList_ScatterMin { Leptons(0) }
+			, SplashList_ScatterMax { Leptons(0) }
 			, AnimList_PickRandom { false }
 			, AnimList_CreateAll { false }
 			, AnimList_CreationInterval { 0 }
+			, AnimList_ScatterMin { Leptons(0) }
+			, AnimList_ScatterMax { Leptons(0) }
 			, CreateAnimsOnZeroDamage { false }
 			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
@@ -155,17 +186,19 @@ public:
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
+			, PenetratesIronCurtain { false }
+			, PenetratesForceShield {}
 
-			, Crit_Chance { 0.0 }
+			, Crit_Chance {}
 			, Crit_ApplyChancePerTarget { false }
-			, Crit_ExtraDamage { 0 }
+			, Crit_ExtraDamage {}
 			, Crit_Warhead {}
 			, Crit_Affects { AffectedTarget::All }
 			, Crit_AffectsHouses { AffectedHouse::All }
 			, Crit_AnimList {}
 			, Crit_AnimList_PickRandom {}
 			, Crit_AnimOnAffectedTargets { false }
-			, Crit_AffectBelowPercent { 1.0 }
+			, Crit_AffectBelowPercent {}
 			, Crit_SuppressWhenIntercepted { false }
 
 			, MindControl_Anim {}
@@ -174,6 +207,7 @@ public:
 			, Shield_Break { false }
 			, Shield_BreakAnim {}
 			, Shield_HitAnim {}
+			, Shield_HitFlash { true }
 			, Shield_BreakWeapon {}
 			, Shield_AbsorbPercent {}
 			, Shield_PassPercent {}
@@ -194,6 +228,7 @@ public:
 			, Shield_SelfHealing_RestartTimer { false }
 			, Shield_AttachTypes {}
 			, Shield_RemoveTypes {}
+			, Shield_RemoveAll { false }
 			, Shield_ReplaceOnly { false }
 			, Shield_ReplaceNonRespawning { false }
 			, Shield_InheritStateOnReplace { false }
@@ -203,6 +238,9 @@ public:
 			, Shield_Break_Types {}
 			, Shield_Respawn_Types {}
 			, Shield_SelfHealing_Types {}
+
+			, SpawnsCrate_Types {}
+			, SpawnsCrate_Weights {}
 
 			, NotHuman_DeathSequence { -1 }
 			, LaunchSW {}
@@ -229,33 +267,41 @@ public:
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
 
+			, AttachEffect_AttachTypes {}
+			, AttachEffect_RemoveTypes {}
+			, AttachEffect_RemoveGroups {}
+			, AttachEffect_CumulativeRemoveMinCounts {}
+			, AttachEffect_CumulativeRemoveMaxCounts {}
+			, AttachEffect_DurationOverrides {}
+
+			, SuppressRevengeWeapons { false }
+			, SuppressRevengeWeapons_Types {}
+			, SuppressReflectDamage { false }
+			, SuppressReflectDamage_Types {}
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
+			, EffectsRequireVerses { true }
 
 			, Crit_RandomBuffer { 0.0 }
-			, HasCrit { false }
+			, Crit_CurrentChance {}
+			, Crit_CurrentExtraDamage {}
+			, Crit_Active { false }
 			, WasDetonatedOnAllMapObjects { false }
 			, Splashed { false }
+			, Reflected { false }
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate {false}
 		{ }
 
-	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
-
-		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
-		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyLocomotorInfliction(TechnoClass* pTarget);
 		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
-
 	public:
-		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
-		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
-		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
-		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner);
+		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
+		bool CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt) const;
+		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
+		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const;
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -266,6 +312,19 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+
+	public:
+		// Detonate.cpp
+		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
+		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
+	private:
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
+		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
+		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
+		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
+		std::pair<std::vector<double>, std::vector<int>> GetCritChanceAndExtraDamage(TechnoClass* pFirer) const;
 	};
 
 	class ExtContainer final : public Container<WarheadTypeExt>
@@ -280,5 +339,5 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static void DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
-	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
+	static void DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
 };

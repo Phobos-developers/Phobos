@@ -1,8 +1,9 @@
-#include <Helpers/Macro.h>
-
 #include "Body.h"
 
 #include <MapClass.h>
+
+#include <Ext/House/Body.h>
+#include <Helpers/Macro.h>
 
 DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8) {
 	GET(TeamClass *, pTeam, ESI);
@@ -79,4 +80,33 @@ DEFINE_HOOK(0x6E95B3, TeamClass_AI_MoveToCell, 0x6)
 
 	R->EAX(MapClass::Instance->GetCellAt(cell));
 	return 0x6E959C;
+}
+
+DEFINE_HOOK(0x6EFEFB, TMission_ChronoShiftToBuilding_SuperWeapons, 0x6)
+{
+	enum { SkipGameCode = 0x6EFF22 };
+
+	GET(HouseClass*, pHouse, EBP);
+
+	SuperClass* pSuperCSphere = nullptr;
+	SuperClass* pSuperCWarp = nullptr;
+	HouseExt::GetAIChronoshiftSupers(pHouse, pSuperCSphere, pSuperCWarp);
+	R->ESI(pSuperCSphere);
+	R->EBX(pSuperCWarp);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x6F01B0, TMission_ChronoShiftToTarget_SuperWeapons, 0x6)
+{
+	enum { SkipGameCode = 0x6F01D9 };
+
+	GET(HouseClass*, pHouse, EDI);
+	REF_STACK(SuperClass*, pSuperCWarp, STACK_OFFSET(0x30, -0x1C));
+
+	SuperClass* pSuperCSphere = nullptr;
+	HouseExt::GetAIChronoshiftSupers(pHouse, pSuperCSphere, pSuperCWarp);
+	R->EBX(pSuperCSphere);
+
+	return SkipGameCode;
 }
