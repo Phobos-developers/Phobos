@@ -638,7 +638,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 			CellClass* pCurCell = MapClass::Instance->GetCellAt(sourceCell);
 			double cellDistance = locationDistance;
 
-			for (size_t i = 0; i < largePace; i++)
+			for (size_t i = 0; i < largePace; ++i)
 			{
 				if (this->SubjectToGround && (curCoord.Z + 15) < MapClass::Instance->GetCellFloorHeight(curCoord))
 				{
@@ -809,23 +809,13 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (technoType != AbstractType::Building && distance > this->ProximityRadius)
 				continue;
 
-			if (thisSize < vectSize)
+			if (thisSize >= vectSize)
 			{
-				validTechnos.push_back(pTechno);
-			}
-			else
-			{
-				std::vector<TechnoClass*> validTechnosBuffer;
 				vectSize += cellSize;
-				validTechnosBuffer.reserve(vectSize);
-
-				for (auto const& pTechnoBuffer : validTechnos)
-					validTechnosBuffer.push_back(pTechnoBuffer);
-
-				validTechnos = validTechnosBuffer;
-				validTechnos.push_back(pTechno);
+				validTechnos.reserve(vectSize);
 			}
 
+			validTechnos.push_back(pTechno);
 			thisSize += 1;
 		}
 	}
@@ -858,23 +848,13 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (distance > this->ProximityRadius)
 				continue;
 
-			if (thisSize < vectSize)
+			if (thisSize >= vectSize)
 			{
-				validTechnos.push_back(pTechno);
-			}
-			else
-			{
-				std::vector<TechnoClass*> validTechnosBuffer;
 				vectSize += cellSize;
-				validTechnosBuffer.reserve(vectSize);
-
-				for (auto const& pTechnoBuffer : validTechnos)
-					validTechnosBuffer.push_back(pTechnoBuffer);
-
-				validTechnos = validTechnosBuffer;
-				validTechnos.push_back(pTechno);
+				validTechnos.reserve(vectSize);
 			}
 
+			validTechnos.push_back(pTechno);
 			thisSize += 1;
 		}
 	}
@@ -897,58 +877,58 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	int thisTime = 0;
 	bool check = false;
 
-	for (size_t k = 0; k < capacity; k++) //Merge
+	for (size_t k = 0; k < capacity; ++k) //Merge, and avoid using wild pointers
 	{
 		if (i < iMax && j < jMax)
 		{
 			if (this->LastCasualty[i].pCasualty < validTechnos[j])
 			{
-				check = false;
+				check = false; // Don't know whether wild
 				pThis = this->LastCasualty[i].pCasualty;
 				thisTime = this->LastCasualty[i].RemainTime;
-				i += 1;
+				++i;
 			}
 			else if (this->LastCasualty[i].pCasualty > validTechnos[j])
 			{
-				check = true;
+				check = true; // Not duplicated and not wild
 				pThis = validTechnos[j];
 				thisTime = 20;
-				j += 1;
+				++j;
 			}
-			else
+			else // this->LastCasualty[i].pCasualty == validTechnos[j]
 			{
-				check = false;
-				pThis = this->LastCasualty[i].pCasualty;
+				check = false; // Duplicated and not wild
+				pThis = validTechnos[j];
 				thisTime = 20;
-				i += 1;
-				j += 1;
+				++i;
+				++j;
 			}
 		}
 		else if (i < iMax)
 		{
-			check = false;
+			check = false; // Don't know whether wild
 			pThis = this->LastCasualty[i].pCasualty;
 			thisTime = this->LastCasualty[i].RemainTime;
-			i += 1;
+			++i;
 		}
 		else if (j < jMax)
 		{
-			check = true;
+			check = true; // Not duplicated and not wild
 			pThis = validTechnos[j];
 			thisTime = 20;
-			j += 1;
+			++j;
 		}
 		else
 		{
-			break;
+			break; // No technos left
 		}
 
 		if (pThis && pThis != pLast)
 		{
-			if (check)
+			if (check) // Not duplicated pointer, and not wild pointer
 				casualtyChecked.push_back(pThis);
 
-			if (--thisTime > 0)
+			if (--thisTime > 0) // Record 20 frames
 			{
 				const CasualtyData thisCasualty {pThis, thisTime};
 				casualty.push_back(thisCasualty);
@@ -958,7 +938,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		}
 	}
 
-	this->LastCasualty = casualty;
+	this->LastCasualty = casualty; // Record vector for next check
 
 	//Step 4: Detonate warheads in sequence based on distance.
 	const size_t casualtySize = casualtyChecked.size();
@@ -992,7 +972,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		}
 		else if (this->ProximityImpact > 0)
 		{
-			this->ProximityImpact--;
+			--this->ProximityImpact;
 		}
 	}
 }
@@ -1022,18 +1002,18 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClas
 	int cornerIndex = 0;
 	CellStruct corner[4] = {cor1Cell, cor2Cell, cor3Cell, cor4Cell};
 
-	for (int i = 1; i < 4; i++)
+	for (int i = 1; i < 4; ++i)
 	{
 		if (corner[cornerIndex].Y > corner[i].Y)
 			cornerIndex = i;
 	}
 
-	cor1Cell = corner[cornerIndex++];
-	cornerIndex %= 4;
-	cor2Cell = corner[cornerIndex++];
-	cornerIndex %= 4;
-	cor3Cell = corner[cornerIndex++];
-	cornerIndex %= 4;
+	cor1Cell = corner[cornerIndex];
+	++cornerIndex %= 4;
+	cor2Cell = corner[cornerIndex];
+	++cornerIndex %= 4;
+	cor3Cell = corner[cornerIndex];
+	++cornerIndex %= 4;
 	cor4Cell = corner[cornerIndex];
 
 	std::vector<CellStruct> recCells = this->GetCellsInRectangle(cor1Cell, cor4Cell, cor2Cell, cor3Cell);
