@@ -328,7 +328,7 @@ DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->AE_DisableWeapons)
+	if (pExt->AE.DisableWeapons)
 		return OutOfRange;
 
 	return Continue;
@@ -349,7 +349,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 	if (pTransport->Transporter)
 		return Illegal;
 
-	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::ExtMap.Find(pTransport)->AE_DisableWeapons)
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::ExtMap.Find(pTransport)->AE.DisableWeapons)
 		return OutOfRange;
 
 	return Continue;
@@ -388,6 +388,19 @@ DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
 			return DisallowFiring;
 		}
 	}
+
+	return 0;
+}
+
+// Skips bridge-related coord checks to allow AA to target air units while both are on a bridge.
+DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
+{
+	enum { SkipChecks = 0x6FCCBD };
+
+	GET(TechnoClass*, pTarget, EBP);
+
+	if (pTarget->IsInAir())
+		return SkipChecks;
 
 	return 0;
 }
@@ -657,7 +670,7 @@ DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_ROF, 0x6)
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis);
 	auto range = pWeaponExt->ROF_RandomDelay.Get(RulesExt::Global()->ROF_RandomDelay);
-	double rof = pWeapon->ROF * pTechnoExt->AE_ROFMultiplier;
+	double rof = pWeapon->ROF * pTechnoExt->AE.ROFMultiplier;
 
 	R->EAX(GeneralUtils::GetRangedRandomOrSingleValue(range));
 	__asm { fld rof };

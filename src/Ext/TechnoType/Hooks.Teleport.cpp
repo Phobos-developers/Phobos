@@ -46,8 +46,18 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	}
 	pLocomotor->Timer.Start(duree);
 
-	R->EDI(&pLocomotor->Timer);
-	return 0x719576;
+	pLinked->WarpingOut = true;
+
+	if (auto pUnit = specific_cast<UnitClass*>(pLinked))
+	{
+		if (pUnit->Type->Harvester || pUnit->Type->Weeder)
+		{
+			pLocomotor->Timer.Start(0);
+			pLinked->WarpingOut = false;
+		}
+	}
+
+	return 0x7195BC;
 }
 
 DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x5)
@@ -103,9 +113,7 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 	if (pIndex && pIndex->Is_Valid_Key())
 		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
 
-	*ret = pThis->LocomotionClass::Draw_Matrix(pIndex);
-	if (slope_idx && pIndex && pIndex->Is_Valid_Key())
-		*ret = Matrix3D::VoxelRampMatrix[slope_idx] * *ret;
+	*ret = Matrix3D::VoxelRampMatrix[slope_idx] * pThis->LocomotionClass::Draw_Matrix(pIndex);
 
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
