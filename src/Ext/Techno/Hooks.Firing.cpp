@@ -397,7 +397,7 @@ DEFINE_HOOK(0x51C9B8, InfantryClass_CanFire_HitAndRun1, 0x17)
 	enum { CheckPass = 0x51C9CF, CheckNotPass = 0x51CAFA };
 
 	GET(InfantryClass*, pThis, EBX);
-	
+
 	const auto pType = pThis->GetTechnoType();
 	if ((pThis->CanAttackOnTheMove() && pType && pType->OpportunityFire)
 		|| pThis->SpeedPercentage <= 0.1 ) // vanilla check
@@ -426,6 +426,19 @@ DEFINE_HOOK(0x51CAAC, InfantryClass_CanFire_HitAndRun2, 0x13)
 	{
 		return CheckNotPass;
 	}
+}
+
+// Skips bridge-related coord checks to allow AA to target air units while both are on a bridge.
+DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
+{
+	enum { SkipChecks = 0x6FCCBD };
+
+	GET(TechnoClass*, pTarget, EBP);
+
+	if (pTarget->IsInAir())
+		return SkipChecks;
+
+	return 0;
 }
 
 #pragma endregion
