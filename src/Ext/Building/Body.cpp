@@ -362,8 +362,6 @@ void BuildingExt::ExtData::KickOutStuckUnits()
 
 	if (CellClass* const pCell = MapClass::Instance->GetCellAt(cell))
 	{
-		TechnoClass* const pTechno = pCell->FindTechnoNearestTo(Point2D::Empty, false);
-
 		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
 			if (pObject->WhatAmI() == AbstractType::Unit)
