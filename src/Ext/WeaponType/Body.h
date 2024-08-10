@@ -55,6 +55,7 @@ public:
 		ValueableVector<int> AttachEffect_DisallowedMaxCounts;
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
 		Valueable<bool> KickOutPassengers;
+		Nullable<bool> AlwaysCylinderRangefinding;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -91,6 +92,7 @@ public:
 			, AttachEffect_DisallowedMaxCounts {}
 			, AttachEffect_IgnoreFromSameSource { false }
 			, KickOutPassengers { true }
+			, AlwaysCylinderRangefinding {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
