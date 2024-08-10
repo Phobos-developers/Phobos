@@ -135,6 +135,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Crit_Multiplier.Read(exINI, pSection, "Crit.Multiplier");
 	this->Crit_ExtraChance.Read(exINI, pSection, "Crit.ExtraChance");
+	this->Crit_ExtraDamage_Multiplier.Read(exINI, pSection, "Crit.ExtraDamage.Multiplier");
+	this->Crit_ExtraDamage_Bonus.Read(exINI, pSection, "Crit.ExtraDamage.Bonus");
 	this->Crit_AllowWarheads.Read(exINI, pSection, "Crit.AllowWarheads");
 	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
 
@@ -191,6 +193,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->WeaponRange_DisallowWeapons)
 		.Process(this->Crit_Multiplier)
 		.Process(this->Crit_ExtraChance)
+		.Process(this->Crit_ExtraDamage_Multiplier)
+		.Process(this->Crit_ExtraDamage_Bonus)
 		.Process(this->Crit_AllowWarheads)
 		.Process(this->Crit_DisallowWarheads)
 		.Process(this->RevengeWeapon)

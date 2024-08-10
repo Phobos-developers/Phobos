@@ -46,6 +46,8 @@ public:
 	ValueableVector<WeaponTypeClass*> WeaponRange_DisallowWeapons;
 	Valueable<double> Crit_Multiplier;
 	Valueable<double> Crit_ExtraChance;
+	Valueable<double> Crit_ExtraDamage_Multiplier;
+	Valueable<int> Crit_ExtraDamage_Bonus;
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
 	Valueable<WeaponTypeClass*> RevengeWeapon;
@@ -94,6 +96,8 @@ public:
 		, WeaponRange_DisallowWeapons {}
 		, Crit_Multiplier { 1.0 }
 		, Crit_ExtraChance { 0.0 }
+		, Crit_ExtraDamage_Multiplier { 1.0 }
+		, Crit_ExtraDamage_Bonus { 0 }
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
 		, RevengeWeapon {}

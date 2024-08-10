@@ -39,7 +39,8 @@ This page describes all the engine features that are either new and introduced b
     - `WeaponRange.AllowWeapons` can be used to list only weapons that can benefit from this range bonus and `WeaponRange.DisallowWeapons` weapons that are not allowed to, respectively.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
   - `Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
-    - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
+    - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from these critical multipliers and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
+  - `Crit.ExtraDamage.Multiplier` and `Crit.ExtraDamage.Bonus` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) extra damage or grant a fixed bonus to it for the object the effect is attached to, respectively. They also respect `Crit.AllowWarheads` and `Crit.DisallowWarheads`.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
   - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage]`->`C4Warhead`. If `ReflectDamage.Warhead` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
@@ -72,7 +73,6 @@ In `rulesmd.ini`:
 ```ini
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
-
 [SOMEATTACHEFFECT]                             ; AttachEffectType
 Duration=0                                     ; integer - game frames or negative value for indefinite duration
 Cumulative=false                               ; boolean
@@ -108,6 +108,8 @@ WeaponRange.AllowWeapons=                      ; list of WeaponTypes
 WeaponRange.DisallowWeapons=                   ; list of WeaponTypes
 Crit.Multiplier=1.0                            ; floating point value
 Crit.ExtraChance=0.0                           ; floating point value
+Crit.ExtraDamage.Multiplier=1.0                ; floating point value
+Crit.ExtraDamage.Bonus=0                       ; integer
 Crit.AllowWarheads=                            ; list of WarheadTypes
 Crit.DisallowWarheads=                         ; list of WarheadTypes
 RevengeWeapon=                                 ; WeaponType
@@ -1289,11 +1291,12 @@ RemoveMindControl=false  ; boolean
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
-  - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
-  - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
+  - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target. Can be set to a single value for all conditions, or a list of values which would work when target health is below certain percentage. Value from position matching the position from `Crit.AffectBelowPercent` is used if found, or 0.0 if not found.
+  - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings. Can be set to a single value for all conditions, or a list of values which would work when target health is below certain percentage. Value from position matching the position from `Crit.AffectBelowPercent` is used if found, or 0 if not found.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
-  - `Crit.AffectBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
+  - `Crit.AffectBelowPercent`, if set to a single value, determines minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit. If set to a list of values, it'll further determine `Crit.Chance` and `Crit.ExtraDamage` when target health is below the certain percentage listed here.
+    - Health percentage values in the list should be in descending order, or the health check could go wrong.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
   - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
@@ -1302,13 +1305,13 @@ RemoveMindControl=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                       ; Warhead
-Crit.Chance=0.0                     ; floating point value, percents or absolute (0.0-1.0)
+Crit.Chance=                        ; list of floating-point values (percentage or absolute) (0.0-1.0)
 Crit.ApplyChancePerTarget=false     ; boolean
-Crit.ExtraDamage=0                  ; integer
+Crit.ExtraDamage=                   ; list of integers
 Crit.Warhead=                       ; Warhead
 Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
 Crit.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
+Crit.AffectBelowPercent=            ; list of floating-point values (percentage or absolute) (0.0-1.0)
 Crit.AnimList=                      ; list of animations
 Crit.AnimList.PickRandom=           ; boolean
 Crit.AnimOnAffectedTargets=false    ; boolean

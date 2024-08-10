@@ -102,9 +102,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 	}
 
-	this->Crit_CurrentChance = this->GetCritChance(pOwner);
+	std::pair<std::vector<double>, std::vector<int>> critPair = this->GetCritChanceAndExtraDamage(pOwner);
+	this->Crit_CurrentChance = critPair.first;
+	this->Crit_CurrentExtraDamage = critPair.second;
 
-	if (this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0)
+	if (this->PossibleCellSpreadDetonate || (this->Crit_CurrentChance.size() == 1 && this->Crit_CurrentChance[0] > 0.0) || this->Crit_CurrentChance.size() > 1)
 	{
 		this->Crit_Active = false;
 
@@ -150,7 +152,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pHouse, pTarget);
 
-	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
+	if (this->Crit_CurrentChance.size() > 0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner, pTargetExt);
 
 	if (this->Convert_Pairs.size() > 0)
@@ -278,16 +280,6 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClas
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, TechnoExt::ExtData* pTargetExt = nullptr)
 {
-	double dice;
-
-	if (this->Crit_ApplyChancePerTarget)
-		dice = ScenarioClass::Instance->Random.RandomDouble();
-	else
-		dice = this->Crit_RandomBuffer;
-
-	if (this->Crit_CurrentChance < dice)
-		return;
-
 	if (!pTargetExt)
 		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 
@@ -302,8 +294,36 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 			return;
 
-		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
+		if (this->Crit_AffectBelowPercent.size() > 0 && pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent[0])
 			return;
+	}
+
+	unsigned int level = 0;
+
+	if (this->Crit_AffectBelowPercent.size() > 0)
+	{
+		for (; level < this->Crit_AffectBelowPercent.size() - 1; level ++)
+		{
+			if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent[level + 1])
+				break;
+		}
+	}
+
+	double dice;
+
+	if (this->Crit_ApplyChancePerTarget)
+		dice = ScenarioClass::Instance->Random.RandomDouble();
+	else
+		dice = this->Crit_RandomBuffer;
+
+	if (this->Crit_CurrentChance.size() == 1)
+	{
+		if (this->Crit_CurrentChance[0] < dice)
+			return;
+	}
+	else if (this->Crit_CurrentChance.size() <= level || this->Crit_CurrentChance[level] < dice)
+	{
+		return;
 	}
 
 	if (pHouse && !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouses, pHouse, pTarget->Owner))
@@ -325,10 +345,15 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
 	}
 
-	auto damage = this->Crit_ExtraDamage.Get();
+	int damage = 0;
 
-	if (this->Crit_Warhead)
-		WarheadTypeExt::DetonateAt(this->Crit_Warhead, pTarget, pOwner, damage);
+	if (this->Crit_CurrentExtraDamage.size() == 1)
+		damage = Crit_CurrentExtraDamage[0];
+	else if (this->Crit_CurrentExtraDamage.size() > level)
+		damage = Crit_CurrentExtraDamage[level];
+	
+	if (this->Crit_Warhead.isset())
+		WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTarget, pOwner, damage);
 	else
 		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }
@@ -439,15 +464,23 @@ void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pTarget, HouseClas
 	AttachEffectClass::DetachByGroups(this->AttachEffect_RemoveGroups, pTarget, this->AttachEffect_CumulativeRemoveMinCounts, this->AttachEffect_CumulativeRemoveMaxCounts);
 }
 
-double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
+std::pair<std::vector<double>, std::vector<int>> WarheadTypeExt::ExtData::GetCritChanceAndExtraDamage(TechnoClass* pFirer) const
 {
-	double critChance = this->Crit_Chance;
+	std::vector<double> critChance = this->Crit_Chance;
+	std::vector<int> critExtraDamage = this->Crit_ExtraDamage;
 
 	if (!pFirer)
-		return critChance;
+		return std::pair<std::vector<double>, std::vector<int>>(critChance, critExtraDamage);
+
+	if (critChance.size() == 0)
+		critChance.push_back(0.0);
+
+	if (critExtraDamage.size() == 0)
+		critExtraDamage.push_back(0);
 
 	auto const pExt = TechnoExt::ExtMap.Find(pFirer);
 	double extraChance = 0.0;
+	int extraDamageBonus = 0;
 
 	for (auto& attachEffect : pExt->AttachedEffects)
 	{
@@ -465,10 +498,30 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 		if (pType->Crit_DisallowWarheads.size() > 0 && pType->Crit_DisallowWarheads.Contains(this->OwnerObject()))
 			continue;
 
-		critChance = critChance * Math::max(pType->Crit_Multiplier, 0);
+		for (auto& chance : critChance)
+		{
+			chance = chance * Math::max(pType->Crit_Multiplier, 0);
+		}
+
+		for (auto& extraDamage : critExtraDamage)
+		{
+			extraDamage = static_cast<int>(extraDamage * pType->Crit_ExtraDamage_Multiplier);
+		}
+
 		extraChance += pType->Crit_ExtraChance;
+		extraDamageBonus += pType->Crit_ExtraDamage_Bonus;
 	}
 
-	return critChance + extraChance;
+	for (auto& chance : critChance)
+	{
+		chance += extraChance;
+	}
+
+	for (auto& extraDamage : critExtraDamage)
+	{
+		extraDamage += extraDamageBonus;
+	}
+
+	return std::pair<std::vector<double>, std::vector<int>>(critChance, critExtraDamage);
 }
 
