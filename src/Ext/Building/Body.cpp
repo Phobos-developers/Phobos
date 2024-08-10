@@ -362,13 +362,20 @@ void BuildingExt::ExtData::KickOutStuckUnits()
 
 	if (CellClass* const pCell = MapClass::Instance->GetCellAt(cell))
 	{
+		TechnoClass* const pTechno = pCell->FindTechnoNearestTo(Point2D::Empty, false);
+
 		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
 			if (pObject->WhatAmI() == AbstractType::Unit)
 			{
 				UnitClass* const pUnit = static_cast<UnitClass*>(pObject);
 
-				if (pUnit->Destination || pUnit->GetHeight() || pThis->Owner != pUnit->Owner)
+				if (pUnit->Destination || pThis->Owner != pUnit->Owner)
+					continue;
+
+				const int height = pUnit->GetHeight();
+
+				if (height < 0 || height > 208)
 					continue;
 
 				if (pUnit->unknown_int_120 > 0 && (Unsorted::CurrentFrame - pUnit->unknown_int_120) > 120) // Unable to kick out
