@@ -334,13 +334,63 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse,int mo
 		int idx = this->TypeExtData->SpyEffect_VictimSuperWeapon;
 		if (idx >= 0)
 			launchTheSWHere(pVictimHouse->Supers.Items[idx], pVictimHouse);
-		
+
 		idx = this->TypeExtData->SpyEffect_InfiltratorSuperWeapon;
 		if (idx >= 0)
 			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx], pInfiltratorHouse);
 	}
 
 	return true;
+}
+
+void BuildingExt::ExtData::KickOutStuckUnits()
+{
+	if (Unsorted::CurrentFrame % 15)
+		return;
+
+	BuildingClass* const pThis = this->OwnerObject();
+
+	if (pThis->GetCurrentMission() == Mission::Unload)
+		return;
+
+	BuildingTypeClass* const pType = pThis->Type;
+
+	if (pType->Factory != AbstractType::UnitType)
+		return;
+
+	CellStruct cell = CellClass::Coord2Cell(pThis->GetCenterCoords());
+
+	if (CellClass* const pCell = MapClass::Instance->GetCellAt(cell))
+	{
+		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (pObject->WhatAmI() == AbstractType::Unit)
+			{
+				UnitClass* const pUnit = static_cast<UnitClass*>(pObject);
+
+				if (pUnit->Destination || pUnit->GetHeight() || pThis->Owner != pUnit->Owner)
+					continue;
+
+				if (pUnit->unknown_int_120 > 0 && (Unsorted::CurrentFrame - pUnit->unknown_int_120) > 120) // Unable to kick out
+				{
+					if (HouseClass* const pOwner = pUnit->Owner)
+						pOwner->GiveMoney(pUnit->Type->GetActualCost(pOwner));
+
+					pUnit->KillPassengers(nullptr);
+					pUnit->Stun();
+					pUnit->Limbo();
+					pUnit->UnInit();
+					continue;
+				}
+
+				pUnit->unknown_int_120 = Unsorted::CurrentFrame;
+				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
+				pThis->SendCommand(RadioCommand::RequestTether, pUnit);
+				pThis->QueueMission(Mission::Unload, false);
+				break;
+			}
+		}
+	}
 }
 
 // =============================
