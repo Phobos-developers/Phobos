@@ -475,6 +475,9 @@ std::pair<std::vector<double>, std::vector<int>> WarheadTypeExt::ExtData::GetCri
 	if (critChance.size() == 0)
 		critChance.push_back(0.0);
 
+	if (critExtraDamage.size() == 0)
+		critExtraDamage.push_back(0);
+
 	auto const pExt = TechnoExt::ExtMap.Find(pFirer);
 	double extraChance = 0.0;
 	int extraDamageBonus = 0;
