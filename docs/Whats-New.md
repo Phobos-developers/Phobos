@@ -543,6 +543,7 @@ Phobos fixes:
 - Phobos Warhead effects on zero-`CellSpread` Warheads no longer apply to target if projectile detonates prematurely, far-away from target (by Starkku)
 - Fixed radiation site damage not taking the radiation level reduction into accord (by Starkku)
 - Correctly update laser trail position while techno is cloaked even if trail is not drawn (by Starkku)
+- Fixed `Shield.Respawn.Amount` not defaulting to shield type default if not set (by Starkku)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed (by Starkku)
