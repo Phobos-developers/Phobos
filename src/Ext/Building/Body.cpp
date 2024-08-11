@@ -343,24 +343,9 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse,int mo
 	return true;
 }
 
-void BuildingExt::ExtData::KickOutStuckUnits()
+void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
-	if (Unsorted::CurrentFrame % 15)
-		return;
-
-	BuildingClass* const pThis = this->OwnerObject();
-
-	if (pThis->GetCurrentMission() == Mission::Unload)
-		return;
-
-	BuildingTypeClass* const pType = pThis->Type;
-
-	if (pType->Factory != AbstractType::UnitType)
-		return;
-
-	CellStruct cell = CellClass::Coord2Cell(pThis->GetCenterCoords());
-
-	if (CellClass* const pCell = MapClass::Instance->GetCellAt(cell))
+	if (CellClass* const pCell = MapClass::Instance->GetCellAt(pThis->GetCenterCoords()))
 	{
 		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
@@ -368,7 +353,7 @@ void BuildingExt::ExtData::KickOutStuckUnits()
 			{
 				UnitClass* const pUnit = static_cast<UnitClass*>(pObject);
 
-				if (pUnit->Destination || pThis->Owner != pUnit->Owner)
+				if (pThis->Owner != pUnit->Owner)
 					continue;
 
 				const int height = pUnit->GetHeight();
@@ -376,23 +361,10 @@ void BuildingExt::ExtData::KickOutStuckUnits()
 				if (height < 0 || height > 208)
 					continue;
 
-				if (pUnit->unknown_int_120 > 0 && (Unsorted::CurrentFrame - pUnit->unknown_int_120) > 120) // Unable to kick out
-				{
-					if (HouseClass* const pOwner = pUnit->Owner)
-						pOwner->GiveMoney(pUnit->Type->GetActualCost(pOwner));
-
-					pUnit->KillPassengers(nullptr);
-					pUnit->Stun();
-					pUnit->Limbo();
-					pUnit->UnInit();
-					continue;
-				}
-
-				pUnit->unknown_int_120 = Unsorted::CurrentFrame;
 				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
 				pThis->SendCommand(RadioCommand::RequestTether, pUnit);
 				pThis->QueueMission(Mission::Unload, false);
-				break;
+				break; // one after another
 			}
 		}
 	}

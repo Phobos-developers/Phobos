@@ -27,7 +27,6 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 
 	pExt->DisplayIncomeString();
 	pExt->ApplyPoweredKillSpawns();
-	pExt->KickOutStuckUnits();
 
 	return 0;
 }
@@ -321,6 +320,17 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 	GET(HouseClass*, pHouse, EDX);
 
 	HouseExt::ExtMap.Find(pHouse)->Factory_AircraftType = nullptr;
+
+	return 0;
+}
+
+// Kick out stuck units when the factory building is not busy
+DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	if (!(Unsorted::CurrentFrame % 15) && pThis->GetCurrentMission() == Mission::Guard && pThis->Type->Factory == AbstractType::UnitType)
+		BuildingExt::KickOutStuckUnits(pThis);
 
 	return 0;
 }

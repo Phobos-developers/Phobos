@@ -55,7 +55,6 @@ public:
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
 		bool HandleInfiltrate(HouseClass* pInfiltratorHouse , int moneybefore);
 		void UpdatePrimaryFactoryAI();
-		void KickOutStuckUnits();
 		virtual ~ExtData() = default;
 
 		// virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -105,4 +104,5 @@ public:
 	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
 	static bool CanUndeployOnSell(BuildingClass* pThis);
+	static void KickOutStuckUnits(BuildingClass* pThis);
 };
