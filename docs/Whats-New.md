@@ -20,6 +20,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- If `CreateUnit.AlwaysSpawnOnGround` is set to false, jumpjet vehicles created will now automatically take off instead of staying on ground. Set to true to force spawn on ground.
+- Digital display `Offset` and `Offset.ShieldDelta` Y-axis coordinates now work in inverted fashion (negative goes up, positive goes down) to be consistent with how pixel offsets work elsewhere in the game.
 - Phobos Warhead effects combined with `CellSpread` now correctly apply to buildings if any of the foundation cells are hit instead of only the top-left most cell (cell #0).
 - `ExtraWarheads.DamageOverrides` now falls back to last listed value if list is shorter than `ExtraWarheads` for all Warhead detonations exceeding the length.
 - Air and Top layer contents are no longer sorted, animations in these layers no longer respect `YSortAdjust`. Animations attached to flying units now get their layer updated immediately after parent unit, if they are on same layer they will draw above the parent unit.
@@ -95,7 +97,6 @@ SaveGameOnScenarioStart=true     ; boolean
   ```ini
   [ParamTypes]
   47=Structures,28
-
   54=Use GlobalVar,10
   55=Operation,0
   56=Variable index,0
@@ -106,6 +107,7 @@ SaveGameOnScenarioStart=true     ; boolean
   65=Campaign AI Repairable,0
   68=House,1,2
   69=Non-inert,10
+  70=AITargetTypes index,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -147,6 +149,8 @@ SaveGameOnScenarioStart=true     ; boolean
   600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1
   601=House owns Techno Type,68,46,0,0,[LONG DESC],0,1,601,1
   602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1
+  604=Techno Type Entered Cell,68,46,0,0,[LONG DESC],0,1,604,1
+  605=AI Target Type Entered Cell,68,70,0,0,[LONG DESC],0,1,605,1
 
   [ActionsRA2]
   41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
@@ -311,7 +315,7 @@ New:
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 - Toggleable DieSound when grinding (by Trsdy)
 - Shields can inherit Techno ArmorType (by Starkku)
-- Income money flying-string display when harvesters or slaves are docking to refineries (by Trsdy)
+- Income money flying-string display when harvesters or slaves are docking to refineries or when spies steal credits (by Trsdy)
 - Allow random crates to be generated only on lands (by Trsdy)
 - Iron-curtain effects on infantries and organic units (by ststl)
 - Custom `SlavesFreeSound` (by TwinkleStar)
@@ -418,6 +422,22 @@ New:
 - Option to scatter `Anim/SplashList` animations around impact coordinates (by Starkku)
 - Customizable wake anim (by TwinkleStar)
 - Customizable rocker amplitude (by TwinkleStar, Ollerus)
+- AI script action to jump back to previous script after picking a random script (by handama)
+- Insignias visibility and position adjustments (by Fryone)
+- Promotion animation (by Fryone)
+- Allow different technos to share build limit in a group (by ststl & Ollerus)
+- Map events `604-605` for checking if a specific Techno enters in a cell (by FS-21)
+- Waypoint path is drawn for all units, even those not under player control if `DebugKeysEnabled=yes` (by Trsdy)
+- `RemoveDisguise` now works on vehicle disguises (by Trsdy)
+- Allow anchoring extended tooltips to the left side of the sidebar (by Trsdy)
+- Toggle to allow spawned aircraft to attack immediately after being spawned (by Starkku)
+- `ZAdjust` for OverlayTypes (by Starkku)
+- Allow customizing extra tint intensity for Iron Curtain & Force Shield (by Starkku)
+- Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565 (by Starkku)
+- Customizing height at which subterranean units travel (by Starkku)
+- Option for Warhead damage to penetrate Iron Curtain or Force Shield (by Starkku)
+- Option for Warhead to remove all shield types at once (by Starkku)
+- Allow customizing voxel light source position (by Kerbiter, Morton, based on knowledge of thomassnedon)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -484,7 +504,8 @@ Vanilla fixes:
 - Objects in invalid map coordinates are no longer used for starting view and AI base center calculations (by Starkku)
 - Units & buildings with `DecloakToFire=false` weapons can now cloak while targeting & reloading (by Starkku)
 - Units with `Sensors=true` will no longer reveal ally buildings (by Starkku)
-- Waypoint path is drawn for all units under player control or `DebugKeysEnabled=yes` (by Trsdy)
+- Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread` (by Starkku)
+- Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -726,6 +747,7 @@ Phobos fixes:
 - Fixed an issue where `FireOnce=yes` deploy weapons on vehicles would still fire multiple times if deploy command is issued repeatedly or when not idle (by Starkku)
 - Fixed a game crash when checking BuildLimit if Phobos is running without Ares (by Belonit)
 - Corrected the misinterpretation in the definition of `DiskLaser.Radius` (by Trsdy)
+- Fixed GlobalVariables failed working among scenarios (by Trsdy)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)

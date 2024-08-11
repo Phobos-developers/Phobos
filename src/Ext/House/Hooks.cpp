@@ -1,21 +1,10 @@
 #include "Body.h"
 
 #include <Ext/Aircraft/Body.h>
+#include <Ext/Scenario/Body.h>
 #include "Ext/Techno/Body.h"
 #include "Ext/Building/Body.h"
 #include <unordered_map>
-
-DEFINE_HOOK(0x4F8440, HouseClass_Update_Beginning, 0x5)
-{
-	GET(HouseClass* const, pThis, ECX);
-
-	auto pExt = HouseExt::ExtMap.Find(pThis);
-
-	pExt->UpdateAutoDeathObjectsInLimbo();
-	pExt->UpdateTransportReloaders();
-
-	return 0;
-}
 
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 {
@@ -197,10 +186,7 @@ DEFINE_HOOK(0x6F6D85, TechnoClass_Unlimbo_RemoveTracking, 0x6)
 		pExt->HasBeenPlacedOnMap = true;
 
 		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
-		{
-			auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
-			pOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
-		}
+			ScenarioExt::Global()->AutoDeathObjects.push_back(pExt);
 	}
 
 	return 0;
@@ -220,21 +206,6 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	{
 		pOwnerExt->RemoveFromLimboTracking(pType);
 		pNewOwnerExt->AddToLimboTracking(pType);
-	}
-
-	if (pExt->TypeExtData->AutoDeath_Behavior.isset())
-	{
-		auto& vec = pOwnerExt->OwnedAutoDeathObjects;
-		vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
-		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
-	}
-
-	if (pThis->Transporter && pThis->WhatAmI() != AbstractType::Aircraft
-		&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
-	{
-		auto& vec = pOwnerExt->OwnedTransportReloaders;
-		vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
-		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
 	}
 
 	if (auto pMe = generic_cast<FootClass*>(pThis))
@@ -284,4 +255,19 @@ DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
 	bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
 
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
+}
+
+DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
+{
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(TechnoTypeClass*, pType, 0x4);
+	GET(bool, aresDisable, EAX);
+
+	if (aresDisable || !pType)
+		return 0;
+
+	if (HouseExt::ReachedBuildLimit(pThis, pType, false))
+		R->EAX(true);
+
+	return 0;
 }

@@ -158,6 +158,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Objects in invalid map coordinates are no longer used for starting view and AI base center calculations.
 - Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
 - Units with `Sensors=true` will no longer reveal ally buildings.
+- Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
+- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
+- Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
+- Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
 
 ## Fixes / interactions with other extensions
 
@@ -466,32 +470,43 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
     - A shorthand `InsigniaFrames` can be used to list them in order from rookie, veteran and elite instead as well. `InsigniaFrame(.Rookie|Veteran|Elite)` takes priority over this.
   - Normal insignia can be overridden for specific weapon modes of `Gunner=true` units by setting `Insignia(.Frame/.Frames).WeaponN` where `N` stands for 1-based weapon mode index. If not set, defaults to non-mode specific insignia settings.
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true.
+  - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
+  - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
+  - `DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to anchor the insignia position relative to the building's selection bracket. By default the insignia position is not anchored to the selection bracket.
+
 
 In `rulesmd.ini`:
 ```ini
 [General]
-EnemyInsignia=true                ; boolean
+EnemyInsignia=true                       ; boolean
 
-[SOMETECHNO]                      ; TechnoType
-Insignia=                         ; filename - excluding the .shp extension
-Insignia.Rookie=                  ; filename - excluding the .shp extension
-Insignia.Veteran=                 ; filename - excluding the .shp extension
-Insignia.Elite=                   ; filename - excluding the .shp extension
-InsigniaFrame=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Rookie=-1           ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Veteran=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Elite=-1            ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames=-1,-1,-1           ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.WeaponN=                 ; filename - excluding the .shp extension
-Insignia.WeaponN.Rookie=          ; filename - excluding the .shp extension
-Insignia.WeaponN.Veteran=         ; filename - excluding the .shp extension
-Insignia.WeaponN.Elite=           ; filename - excluding the .shp extension
-InsigniaFrame.WeaponN=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Rookie=-1   ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Veteran=-1  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Elite=-1    ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames.WeaponN=-1,-1,-1   ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.ShowEnemy=               ; boolean
+[AudioVisual]
+DrawInsignia.OnlyOnSelected=false        ; boolean
+DrawInsignia.AdjustPos.Infantry=5,2      ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Units=10,6        ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Buildings=10,6    ; X,Y, position offset from default
+DrawInsignia.AdjustPos.BuildingsAnchor=  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+
+[SOMETECHNO]                             ; TechnoType
+Insignia=                                ; filename - excluding the .shp extension
+Insignia.Rookie=                         ; filename - excluding the .shp extension
+Insignia.Veteran=                        ; filename - excluding the .shp extension
+Insignia.Elite=                          ; filename - excluding the .shp extension
+InsigniaFrame=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames=-1,-1,-1                  ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.WeaponN=                        ; filename - excluding the .shp extension
+Insignia.WeaponN.Rookie=                 ; filename - excluding the .shp extension
+Insignia.WeaponN.Veteran=                ; filename - excluding the .shp extension
+Insignia.WeaponN.Elite=                  ; filename - excluding the .shp extension
+InsigniaFrame.WeaponN=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Rookie=-1          ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Veteran=-1         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Elite=-1           ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames.WeaponN=-1,-1,-1          ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.ShowEnemy=                      ; boolean
 ```
 
 ```{note}
@@ -625,6 +640,17 @@ ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invu
 ForceShield.KillWarhead=           ; Warhead
 ```
 
+### Iron Curtain & Force Shield extra tint intensity
+
+- It is now possible to specify additional tint intensity applied to Iron Curtained and Force Shielded units.
+
+In `rulesmd.ini`
+```ini
+[AudioVisual]
+IronCurtain.ExtraTintIntensity=0.0  ; floating point value
+ForceShield.ExtraTintIntensity=0.0  ; floating point value
+```
+
 ### Jumpjet rotating on crashing toggle
 
 - Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
@@ -714,6 +740,23 @@ NoWobbles=false  ; boolean
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
 ```
 
+### Subterranean unit travel height
+
+- It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
+
+[SOMETECHNO]             ; TechnoType
+SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
+```
+
+```{warning}
+This expects negative values to be used and may behave erratically if set to above -50.
+```
+
 ### Voxel body multi-section shadows
 
 - It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
@@ -725,6 +768,24 @@ In `artmd.ini`:
 ShadowIndices=        ; list of integers (voxel section indices)
 ShadowIndex.Frame=0   ; integer (HVA animation frame index)
 ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
+```
+
+### Voxel light source position customization
+
+![image](_static/images/VoxelLightSourceComparison.png)
+*New lighting with `VoxelLightSource=0.02,-0.69,0.36` vs default lighting, Prism Tank voxel by [CCS_qkl](https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index)*
+
+- It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
+  - Only the direction of the light is accounted, the distance to the voxel is not accounted.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+VoxelLightSource=  ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
+```
+
+```{hint}
+In order to easily preview the light source settings use the [VXL Viewer and VPL Generator tool by thomassneddon](https://github.com/ThomasSneddon/vxl-renderer/releases). To use the tool unpack it somewhere, then drag the main VXL file of a voxel that you will use to preview onto it (auxilliary VXL and HVA files must be in the same folder).
 ```
 
 ### Voxel shadow scaling in air

@@ -4,6 +4,7 @@
 #include <ScenarioClass.h>
 #include <BitFont.h>
 
+#include <Ext/Rules/Body.h>
 #include <Misc/FlyingStrings.h>
 
 bool GeneralUtils::IsValidString(const char* str)
@@ -227,6 +228,10 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 		return colorValue;
 
 	auto const& color = colorAdd[colorIndex];
+
+	if (RulesExt::Global()->ColorAddUse8BitRGB)
+		return Drawing::RGB_To_Int(color);
+
 	int red = color.R;
 	int green = color.G;
 	int blue = color.B;
