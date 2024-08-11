@@ -331,6 +331,7 @@ This page lists all the individual contributions to the project by their author.
   - Jumpjet crash rotation control
   - Vehicle voxel turret shadows & body multi-section shadows
   - `TurretOffset` support for SHP vehicles
+  - Customizable rocker amplitude
   - Customizable wake anim
 - **Fryone**
   - Customizable ElectricBolt Arcs
@@ -343,6 +344,9 @@ This page lists all the individual contributions to the project by their author.
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
+- **Ollerus**
+  - Build limit group enhancement
+  - Customizable rocker amplitude
 - **handama** - AI script action to jump back to previous script
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
@@ -355,7 +359,6 @@ This page lists all the individual contributions to the project by their author.
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
-- **Ollerus** - Build limit group enhancement
 - **Chasheen (Chasheenburg)** - CN docs help
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation

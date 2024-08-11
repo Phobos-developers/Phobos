@@ -231,7 +231,6 @@ DEFINE_HOOK(0x48922D, GetTotalDamage_NegativeDamageModifiers2, 0x5)
 
 #pragma endregion
 
-
 DEFINE_HOOK(0x701A54, TechnoClass_ReceiveDamage_PenetratesIronCurtain, 0x6)
 {
 	enum { AllowDamage = 0x701AAD };
@@ -255,4 +254,18 @@ DEFINE_HOOK(0x489968, Explosion_Damage_PenetratesIronCurtain, 0x5)
 		return BypassInvulnerability;
 
 	return 0;
+}
+
+DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
+{
+	GET_BASE(WarheadTypeClass*, pWH, 0xC);
+	GET_STACK(int, damage, STACK_OFFSET(0xE0, -0xBC));
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	double rocker = pWHExt->Rocker_AmplitudeOverride.Get(damage);
+	rocker *= 0.01 * pWHExt->Rocker_AmplitudeMultiplier;
+
+	_asm fld rocker
+
+	return 0x489B53;
 }

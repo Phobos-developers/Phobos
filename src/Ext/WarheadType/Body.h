@@ -48,6 +48,9 @@ public:
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
 		Valueable<bool> PenetratesIronCurtain;
 		Nullable<bool> PenetratesForceShield;
+		Valueable<double> Rocker_AmplitudeMultiplier;
+		Nullable<int> Rocker_AmplitudeOverride;
+
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -187,6 +190,8 @@ public:
 			, ApplyModifiersOnNegativeDamage { false }
 			, PenetratesIronCurtain { false }
 			, PenetratesForceShield {}
+			, Rocker_AmplitudeMultiplier { 1.0 }
+			, Rocker_AmplitudeOverride { }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
