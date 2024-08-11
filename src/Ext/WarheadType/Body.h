@@ -79,7 +79,7 @@ public:
 		Nullable<int> Shield_ReceivedDamage_Maximum;
 
 		Valueable<int> Shield_Respawn_Duration;
-		Valueable<double> Shield_Respawn_Amount;
+		Nullable<double> Shield_Respawn_Amount;
 		Valueable<int> Shield_Respawn_Rate;
 		Valueable<bool> Shield_Respawn_RestartTimer;
 		Valueable<int> Shield_SelfHealing_Duration;
