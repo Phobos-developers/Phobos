@@ -776,8 +776,14 @@ ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
 *New lighting with `VoxelLightSource=0.02,-0.69,0.36` vs default lighting, Prism Tank voxel by [CCS_qkl](https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index)*
 
 - Vanilla game applies some weird unnecessary math which resulted in the voxel light source being "nudged" up by a bit and light being applied incorrectly on tilted voxels. It is now possible to fix that.
+
+```{note}
+Please note that enabling this will remove the vertical offset vanilla engine applies to the light source position. Assuming vanilla lighting this will make the light shine even more from below the ground than it was before, so it is recommended to turn the Z value up in value of `VoxelLightSource`.
+```
+
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
+  - Vanilla light (assuming `UseFixedVoxelLighting=false`) is located roughly at `0.201,-0.907,-0.362`.
 
 In `rulesmd.ini`:
 ```ini
@@ -788,6 +794,8 @@ VoxelLightSource=           ; X,Y,Z - position of the light in the world relativ
 
 ```{hint}
 In order to easily preview the light source settings use the [VXL Viewer and VPL Generator tool by thomassneddon](https://github.com/ThomasSneddon/vxl-renderer/releases). To use the tool unpack it somewhere, then drag the main VXL file of a voxel that you will use to preview onto it (auxilliary VXL and HVA files must be in the same folder).
+
+Keep in mind that the tool doesn't account for `UseFixedVoxelLighting=true` as of yet, so the values shown in tool need to be offset when putting in the game with with fixed voxel lighting.
 ```
 
 ### Voxel shadow scaling in air
