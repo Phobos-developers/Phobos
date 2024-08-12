@@ -789,8 +789,8 @@ Please note that enabling this will remove the vertical offset vanilla engine ap
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-UseFixedVoxelLighting=false ; boolean, whether to fix the lighting
-VoxelLightSource=           ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
+UseFixedVoxelLighting=false  ; boolean, whether to fix the lighting
+VoxelLightSource=            ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
 ```
 
 ```{hint}
