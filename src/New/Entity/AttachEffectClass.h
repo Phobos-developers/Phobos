@@ -97,9 +97,8 @@ public:
 };
 
 // Container for TechnoClass-specific AttachEffect fields.
-class AttachEffectTechnoProperties
+struct AttachEffectTechnoProperties
 {
-public:
 	double FirepowerMultiplier;
 	double ArmorMultiplier;
 	double SpeedMultiplier;
@@ -107,6 +106,7 @@ public:
 	bool Cloakable;
 	bool ForceDecloak;
 	bool DisableWeapons;
+	bool HasRangeModifier;
 	bool HasTint;
 	bool ReflectDamage;
 
@@ -118,14 +118,8 @@ public:
 		, Cloakable { false }
 		, ForceDecloak { false }
 		, DisableWeapons { false }
+		, HasRangeModifier { false }
 		, HasTint { false }
 		, ReflectDamage { false }
 	{}
-
-	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
-	bool Save(PhobosStreamWriter& Stm) const;
-
-private:
-	template <typename T>
-	bool Serialize(T& Stm);
 };

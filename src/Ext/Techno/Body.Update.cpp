@@ -508,6 +508,9 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				pFoot->MoveSoundDelay = 0;
 			}
 		}
+
+		if (pOldType->Locomotor == LocomotionClass::CLSIDs::Teleport && pCurrentType->Locomotor != LocomotionClass::CLSIDs::Teleport && pThis->WarpingOut)
+			this->HasCarryoverWarpInDelay = true;
 	}
 }
 
@@ -990,6 +993,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool cloak = false;
 	bool forceDecloak = false;
 	bool disableWeapons = false;
+	bool hasRangeModifier = false;
 	bool hasTint = false;
 	bool reflectsDamage = false;
 
@@ -1006,6 +1010,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		cloak |= type->Cloakable;
 		forceDecloak |= type->ForceDecloak;
 		disableWeapons |= type->DisableWeapons;
+		hasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
 	}
@@ -1017,6 +1022,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	this->AE.Cloakable = cloak;
 	this->AE.ForceDecloak = forceDecloak;
 	this->AE.DisableWeapons = disableWeapons;
+	this->AE.HasRangeModifier = hasRangeModifier;
 	this->AE.HasTint = hasTint;
 	this->AE.ReflectDamage = reflectsDamage;
 
