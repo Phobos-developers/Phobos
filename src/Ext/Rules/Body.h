@@ -144,6 +144,11 @@ public:
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 
 		Valueable<bool> RegroupWhenMCVDeploy;
+		Valueable<bool> AISellAllOnLastLegs;
+		Valueable<int> AISellAllDelay;
+		Valueable<bool> AIAllInOnLastLegs;
+
+		ValueableVector<bool> RepairBaseNodes;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -246,6 +251,10 @@ public:
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
 			, RegroupWhenMCVDeploy { true }
+			, AISellAllOnLastLegs { true }
+			, AISellAllDelay { 0 }
+			, AIAllInOnLastLegs { true }
+			, RepairBaseNodes {}
 		{ }
 
 		virtual ~ExtData() = default;

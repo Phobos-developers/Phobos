@@ -18,12 +18,19 @@ This page describes all AI scripting and mapping related additions and changes i
 
 ### Base node repairing
 
-- In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW (Ares) by setting `RepairBaseNodes`.
+- In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW (Ares).
+  - You can control it globally by setting `[General]->RepairBaseNodes` in rulesmd.ini, or locally by setting the flag with same name in `[Some House]` in certain map file. The global one will be overriden if the local one is set.
+
+In rulesmd.ini:
+```ini
+[General]
+RepairBaseNodes=false,false,false  ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
+```
 
 In map file:
 ```ini
 [Country House]
-RepairBaseNodes=false,false,false  ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
+RepairBaseNodes=                   ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
 ```
 
 ### Default loading screen and briefing offsets

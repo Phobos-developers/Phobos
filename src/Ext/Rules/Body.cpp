@@ -182,7 +182,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	// this->VoxelShadowLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelShadowLightSource");
 
 	this->ReplaceVoxelLightSources();
+
 	this->RegroupWhenMCVDeploy.Read(exINI, GameStrings::General, "RegroupWhenMCVDeploy");
+	this->AISellAllOnLastLegs.Read(exINI, GameStrings::General, "AISellAllOnLastLegs");
+	this->AISellAllDelay.Read(exINI, GameStrings::General, "AISellAllDelay");
+	this->AIAllInOnLastLegs.Read(exINI, GameStrings::General, "AIAllInOnLastLegs");
+
+	this->RepairBaseNodes.Read(exINI, GameStrings::General, "RepairBaseNodes");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -349,6 +355,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->VoxelLightSource)
 		// .Process(this->VoxelShadowLightSource)
 		.Process(this->RegroupWhenMCVDeploy)
+		.Process(this->AISellAllOnLastLegs)
+		.Process(this->AISellAllDelay)
+		.Process(this->AIAllInOnLastLegs)
+		.Process(this->RepairBaseNodes)
 		;
 }
 

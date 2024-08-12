@@ -271,3 +271,29 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
 
 	return 0;
 }
+
+// Sell all and all in.
+DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
+{
+	enum { ret = 0x4FD907 };
+
+	GET(HouseClass*, pThis, EBX);
+
+	auto const pRules = RulesExt::Global();
+	auto const pExt = HouseExt::ExtMap.Find(pThis);
+	if (pRules->AISellAllOnLastLegs)
+	{
+		if (pRules->AISellAllDelay <= 0 || !pExt ||
+			pExt->AISellAllDelayTimer.Completed())
+		{
+			pThis->Fire_Sale();
+		}
+		else if (!pExt->AISellAllDelayTimer.HasStarted())
+		{
+			pExt->AISellAllDelayTimer.Start(pRules->AISellAllDelay);
+		}
+	}		
+	if (pRules->AIAllInOnLastLegs)
+		pThis->All_To_Hunt();
+	return ret;
+}
