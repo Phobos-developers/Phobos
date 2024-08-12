@@ -421,6 +421,7 @@ New:
 - Shield hit flash (by Starkku)
 - Option to scatter `Anim/SplashList` animations around impact coordinates (by Starkku)
 - Customizable wake anim (by TwinkleStar)
+- Customizable rocker amplitude (by TwinkleStar, Ollerus)
 - AI script action to jump back to previous script after picking a random script (by handama)
 - Insignias visibility and position adjustments (by Fryone)
 - Promotion animation (by Fryone)
@@ -543,8 +544,10 @@ Phobos fixes:
 - Phobos Warhead effects on zero-`CellSpread` Warheads no longer apply to target if projectile detonates prematurely, far-away from target (by Starkku)
 - Fixed radiation site damage not taking the radiation level reduction into accord (by Starkku)
 - Correctly update laser trail position while techno is cloaked even if trail is not drawn (by Starkku)
+- Fixed `Shield.Respawn.Amount` not defaulting to shield type default if not set (by Starkku)
 
 Fixes / interactions with other extensions:
+- All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active (by Starkku)
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed (by Starkku)
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)

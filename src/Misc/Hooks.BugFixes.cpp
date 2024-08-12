@@ -14,6 +14,7 @@
 #include <HouseClass.h>
 #include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
+#include <TeleportLocomotionClass.h>
 #include <BombClass.h>
 #include <ParticleSystemClass.h>
 #include <WarheadTypeClass.h>
@@ -845,6 +846,43 @@ DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
 	R->EAX(0); // The original function returns some number, hell if I know what (it is 0 most of the time though and never actually used for anything).
 	return SkipGameCode;
 }
+
+#pragma region WarpInDelayFix
+
+DEFINE_HOOK(0x7195BF, TeleportLocomotionClass_Process_WarpInDelay, 0x6)
+{
+	GET(ILocomotion*, pThis, ESI);
+	GET(FootClass*, pLinkedTo, ECX);
+
+	auto const pLoco = static_cast<TeleportLocomotionClass*>(pThis);
+	TechnoExt::ExtMap.Find(pLinkedTo)->LastWarpInDelay = pLoco->Timer.GetTimeLeft();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->HasCarryoverWarpInDelay)
+	{
+		if (pExt->LastWarpInDelay)
+		{
+			pExt->LastWarpInDelay--;
+		}
+		else
+		{
+			pExt->HasCarryoverWarpInDelay = false;
+			pThis->WarpingOut = false;
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
 
 // this fella was { 0, 0, 1 } before and somehow it also breaks both the light position a bit and how the lighting is applied when voxels rotate - Kerbiter
 DEFINE_HOOK(0x753D86, VoxelCalcNormals_NullAdditionalVector, 0x0)
