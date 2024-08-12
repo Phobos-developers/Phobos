@@ -358,7 +358,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 
 				const int height = pUnit->GetHeight();
 
-				if (height < 0 || height > 208)
+				if (height < 0 || height > Unsorted::CellHeight)
 					continue;
 
 				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
