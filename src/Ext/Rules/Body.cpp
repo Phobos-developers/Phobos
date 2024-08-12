@@ -183,11 +183,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ReplaceVoxelLightSources();
 
+	this->UseFixedVoxelLighting.Read(exINI, GameStrings::AudioVisual, "UseFixedVoxelLighting");
+
 	this->RegroupWhenMCVDeploy.Read(exINI, GameStrings::General, "RegroupWhenMCVDeploy");
 	this->AISellAllOnLastLegs.Read(exINI, GameStrings::General, "AISellAllOnLastLegs");
 	this->AISellAllDelay.Read(exINI, GameStrings::General, "AISellAllDelay");
 	this->AIAllInOnLastLegs.Read(exINI, GameStrings::General, "AIAllInOnLastLegs");
-
 	this->RepairBaseNodes.Read(exINI, GameStrings::General, "RepairBaseNodes");
 
 	// Section AITargetTypes
@@ -354,6 +355,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PodImage)
 		.Process(this->VoxelLightSource)
 		// .Process(this->VoxelShadowLightSource)
+		.Process(this->UseFixedVoxelLighting)
 		.Process(this->RegroupWhenMCVDeploy)
 		.Process(this->AISellAllOnLastLegs)
 		.Process(this->AISellAllDelay)

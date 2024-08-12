@@ -112,7 +112,15 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 				auto resultingFacing = pTypeExt->CreateUnit_InheritDeathFacings && pExt->FromDeathUnit ? pExt->DeathUnitFacing : facing;
 				pTechno->OnBridge = isBridge;
 
-				if (!pCell->GetBuilding() || !pTypeExt->CreateUnit_ConsiderPathfinding)
+				bool inAir = pThis->IsOnMap && location.Z >= Unsorted::CellHeight * 2;
+				bool parachuted = false;
+
+				if (pTypeExt->CreateUnit_SpawnParachutedInAir && !pTypeExt->CreateUnit_AlwaysSpawnOnGround && inAir)
+				{
+					parachuted = true;
+					success = pTechno->SpawnParachuted(location);
+				}
+				else if (!pCell->GetBuilding() || !pTypeExt->CreateUnit_ConsiderPathfinding)
 				{
 					++Unsorted::IKnowWhatImDoing;
 					success = pTechno->Unlimbo(location, resultingFacing);
@@ -125,8 +133,6 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 				if (success)
 				{
-					auto const loc = pTechno->Location;
-
 					if (auto const pAnimType = pTypeExt->CreateUnit_SpawnAnim)
 					{
 						if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
@@ -148,8 +154,6 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 					{
 						if (!pTypeExt->CreateUnit_AlwaysSpawnOnGround)
 						{
-							bool inAir = pThis->IsOnMap && location.Z >= Unsorted::CellHeight * 2;
-
 							if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pTechno->Locomotor))
 							{
 								auto const pType = pTechno->GetTechnoType();
@@ -170,13 +174,18 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 									pJJLoco->Move_To(location);
 								}
 							}
-							else if (inAir)
+							else if (inAir && !parachuted)
 							{
 								pTechno->IsFallingDown = true;
 							}
 						}
 
-						pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);
+						auto mission = pTypeExt->CreateUnit_Mission;
+
+						if (!decidedOwner->IsControlledByHuman())
+							mission = pTypeExt->CreateUnit_AIMission.Get(mission);
+
+						pTechno->QueueMission(mission, false);
 					}
 
 					if (!decidedOwner->Type->MultiplayPassive)

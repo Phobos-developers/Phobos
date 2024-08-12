@@ -142,12 +142,12 @@ public:
 
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
+		Valueable<bool> UseFixedVoxelLighting;
 
 		Valueable<bool> RegroupWhenMCVDeploy;
 		Valueable<bool> AISellAllOnLastLegs;
 		Valueable<int> AISellAllDelay;
 		Valueable<bool> AIAllInOnLastLegs;
-
 		ValueableVector<bool> RepairBaseNodes;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -250,6 +250,7 @@ public:
 			, PodImage { }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
+			, UseFixedVoxelLighting { false }
 			, RegroupWhenMCVDeploy { true }
 			, AISellAllOnLastLegs { true }
 			, AISellAllDelay { 0 }
