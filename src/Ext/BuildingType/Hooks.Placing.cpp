@@ -668,7 +668,7 @@ DEFINE_HOOK(0x4CA05B, FactoryClass_AbandonProduction_AbandonCurrentBuilding, 0x5
 // Buildable-upon TechnoTypes Hook #6 -> sub_443C60 - Try to clean up the building space when AI is building
 DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 {
-	enum { CanBuild = 0x4452F0, TemporarilyCanNotBuild = 0x445237, CanNotBuild = 0x445228, ContinueCheck = 0x4454E6 };
+	enum { CanBuild = 0x4452F0, TemporarilyCanNotBuild = 0x445237, CanNotBuild = 0x4454E6 };
 
 	GET(BuildingClass* const, pBuilding, EDI);
 	GET(BuildingClass* const, pFactory, ESI);
@@ -763,7 +763,7 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 	if (pBuilding->Unlimbo(CoordStruct{ (topLeftCell.X << 8) + 128, (topLeftCell.Y << 8) + 128, 0 }, DirType::North))
 		return CanBuild;
 
-	return ContinueCheck;
+	return CanNotBuild;
 }
 
 // Laser fence use GetBuilding to check whether can build and draw, so no need to change
