@@ -163,6 +163,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ApplyModifiersOnNegativeDamage.Read(exINI, pSection, "ApplyModifiersOnNegativeDamage");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
+	this->Rocker_AmplitudeMultiplier.Read(exINI, pSection, "Rocker.AmplitudeMultiplier");
+	this->Rocker_AmplitudeOverride.Read(exINI, pSection, "Rocker.AmplitudeOverride");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -368,6 +370,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ApplyModifiersOnNegativeDamage)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->PenetratesForceShield)
+		.Process(this->Rocker_AmplitudeMultiplier)
+		.Process(this->Rocker_AmplitudeOverride)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)
