@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PhobosTrajectory.h"
+#include <Ext/WeaponType/Body.h>
 
 class DisperseTrajectoryType final : public PhobosTrajectoryType
 {
@@ -239,11 +240,12 @@ private:
 	bool CalculateBulletVelocity(BulletClass* pBullet, double trajectorySpeed);
 	bool BulletRetargetTechno(BulletClass* pBullet, HouseClass* pOwner);
 	bool CheckTechnoIsInvalid(TechnoClass* pTechno);
+	bool CheckWeaponCanTarget(WeaponTypeExt::ExtData* pWeaponExt, TechnoClass* pFirer, TechnoClass* pTarget, HouseClass* pFirerHouse, HouseClass* pTargetHouse);
 	bool CurveVelocityChange(BulletClass* pBullet);
 	bool NotCurveVelocityChange(BulletClass* pBullet, HouseClass* pOwner);
 	bool StandardVelocityChange(BulletClass* pBullet);
 	bool ChangeBulletVelocity(BulletClass* pBullet, CoordStruct targetLocation, double turningRadius, bool curve);
 	bool PrepareDisperseWeapon(BulletClass* pBullet, HouseClass* pOwner);
-	std::vector<TechnoClass*> GetValidTechnosInSame(std::vector<TechnoClass*> technos, HouseClass* pOwner, WarheadTypeClass* pWH, AbstractClass* pTarget);
+	std::vector<TechnoClass*> GetValidTechnosInSame(std::vector<TechnoClass*> technos, TechnoClass* pFirer, HouseClass* pOwner, WeaponTypeClass* pWeapon, AbstractClass* pTarget);
 	void CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst);
 };
