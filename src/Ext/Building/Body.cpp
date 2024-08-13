@@ -345,10 +345,18 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse,int mo
 
 void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
-	if (pThis->GetNthLink())
+	if (TechnoClass* const pTechno = pThis->GetNthLink())
 	{
-		pThis->QueueMission(Mission::Unload, false);
-		return;
+		if (UnitClass* const pUnit = abstract_cast<UnitClass*>(pTechno))
+		{
+			if (TeamClass* const pTeam = pUnit->Team)
+				pTeam->LiberateMember(pUnit);
+
+			pUnit->SetDestination(nullptr, false);
+			pUnit->ForceMission(Mission::Guard);
+			pThis->QueueMission(Mission::Unload, false);
+			return;
+		}
 	}
 
 	BuildingTypeClass* const pType = pThis->Type;
@@ -379,6 +387,8 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 						if (TeamClass* const pTeam = pUnit->Team)
 							pTeam->LiberateMember(pUnit);
 
+						pUnit->SetDestination(nullptr, false);
+						pUnit->ForceMission(Mission::Guard);
 						pThis->SendCommand(RadioCommand::RequestLink, pUnit);
 						pThis->QueueMission(Mission::Unload, false);
 						break; // one after another
