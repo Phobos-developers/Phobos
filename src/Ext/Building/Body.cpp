@@ -345,36 +345,27 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse,int mo
 
 void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
-	BuildingTypeClass* const pType = pThis->Type;
-	const CellStruct foundation { pType->GetFoundationWidth(), pType->GetFoundationHeight(false) };
-	const CellStruct topLeft = pThis->GetMapCoords() + CellStruct { 1, 1 };
-	const CellStruct bottomRight = topLeft + foundation - CellStruct { 1, 1 };
+	const CellStruct cell = pThis->GetMapCoords();
 
-	for (short curX = topLeft.X; curX < bottomRight.X; ++curX)
+	if (CellClass* const pCell = MapClass::Instance->GetCellAt(cell))
 	{
-		for (short curY = topLeft.Y; curY < bottomRight.Y; ++curY)
+		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
-			if (CellClass* const pCell = MapClass::Instance->GetCellAt(CellStruct{ curX, curY }))
+			if (pObject->WhatAmI() == AbstractType::Unit)
 			{
-				for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
-				{
-					if (pObject->WhatAmI() == AbstractType::Unit)
-					{
-						UnitClass* const pUnit = static_cast<UnitClass*>(pObject);
+				UnitClass* const pUnit = static_cast<UnitClass*>(pObject);
 
-						if (pThis->Owner != pUnit->Owner)
-							continue;
+				if (pThis->Owner != pUnit->Owner)
+					continue;
 
-						const int height = pUnit->GetHeight();
+				const int height = pUnit->GetHeight();
 
-						if (height < 0 || height > Unsorted::CellHeight)
-							continue;
+				if (height < 0 || height > Unsorted::CellHeight)
+					continue;
 
-						pUnit->Limbo();
-						pUnit->Unlimbo(CellClass::Cell2Coord(CellStruct{ curX, ++curY }), DirType::East);
-						break; // one after another
-					}
-				}
+				pUnit->Limbo();
+				pUnit->Unlimbo(CellClass::Cell2Coord(CellStruct{ static_cast<short>(cell.X + 2), cell.Y }), DirType::East);
+				break; // one after another
 			}
 		}
 	}
