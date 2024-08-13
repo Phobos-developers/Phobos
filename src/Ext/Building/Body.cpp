@@ -376,20 +376,11 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 						if (height < 0 || height > Unsorted::CellHeight)
 							continue;
 
-						pUnit->Limbo();
+						if (TeamClass* const pTeam = pUnit->Team)
+							pTeam->LiberateMember(pUnit);
 
-						if (!pUnit->Unlimbo(CellClass::Cell2Coord(CellStruct{ bottomRight.X, curY }), DirType::East))
-						{
-							if (HouseClass* const pOwner = pUnit->Owner)
-								pOwner->GiveMoney(pUnit->Type->GetActualCost(pOwner));
-
-							pUnit->KillPassengers(nullptr);
-							pUnit->Stun();
-							pUnit->Limbo();
-							pUnit->UnInit();
-							continue;
-						}
-
+						pThis->SendCommand(RadioCommand::RequestLink, pUnit);
+						pThis->QueueMission(Mission::Unload, false);
 						break; // one after another
 					}
 				}
