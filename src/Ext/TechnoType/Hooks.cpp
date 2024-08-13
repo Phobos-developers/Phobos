@@ -847,3 +847,15 @@ DEFINE_HOOK(0x737F05, UnitClass_ReceiveDamage_SinkingWake, 0x6)
 
 	return 0x737F0B;
 }
+
+//Allow Aircraft and Building use planningmode
+//Author : NetsuNegi
+DEFINE_HOOK(0x639DCC, TechnoClass_CanUseWaypoint, 0xA)
+{
+	enum { CanUse = 0x639DDA, CannotUse = 0x639DE1 };
+
+	GET(TechnoClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	return pTypeExt->CanUsePlanningMode.Get(pThis->CanUseWaypoint()) ? CanUse : CannotUse;
+}
