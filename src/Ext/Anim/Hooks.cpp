@@ -528,17 +528,17 @@ DEFINE_HOOK(0x42308D, AnimClass_DrawIt_Transparency, 0x6)
 		int frames = pType->End;
 
 		if ((pTypeExt->Translucent_Stage3_Frame.isset() && currentFrame >= pTypeExt->Translucent_Stage3_Frame.Get())
-			|| currentFrame >= frames * pTypeExt->Translucent_Stage3_Percent)
+			|| (!pTypeExt->Translucent_Stage3_Frame.isset() && currentFrame >= frames * pTypeExt->Translucent_Stage3_Percent))
 		{
 			flags |= pTypeExt->Translucent_Stage3_Translucency.Get();
 		}
 		else if ((pTypeExt->Translucent_Stage2_Frame.isset() && currentFrame >= pTypeExt->Translucent_Stage2_Frame.Get())
-			|| currentFrame >= frames * pTypeExt->Translucent_Stage2_Percent)
+			|| (!pTypeExt->Translucent_Stage2_Frame.isset() && currentFrame >= frames * pTypeExt->Translucent_Stage2_Percent))
 		{
 			flags |= pTypeExt->Translucent_Stage2_Translucency.Get();
 		}
 		else if ((pTypeExt->Translucent_Stage1_Frame.isset() && currentFrame >= pTypeExt->Translucent_Stage1_Frame.Get())
-			|| currentFrame >= frames * pTypeExt->Translucent_Stage1_Percent)
+			|| (!pTypeExt->Translucent_Stage1_Frame.isset() && currentFrame >= frames * pTypeExt->Translucent_Stage1_Percent))
 		{
 			flags |= pTypeExt->Translucent_Stage1_Translucency.Get();
 		}
