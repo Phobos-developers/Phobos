@@ -117,7 +117,7 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 		return 0;
 	}
 	auto const pSpawnerType = pSpawner->GetTechnoType();
-	auto pSpawnedMapCrd = pSpawned->GetMapCoords();
+	auto spawnedMapCrd = pSpawned->GetMapCoords();
 	if (!pSpawnerType)
 	{
 		return 0;
@@ -127,31 +127,31 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 	{
 		return 0;
 	}
-	auto SpawnerCrd = pSpawner->GetCoords();
-	auto SpawnedCrd = pSpawned->GetCoords();
-	auto RecycleCrd = SpawnerCrd;
-	auto DeltaCrd = SpawnedCrd - RecycleCrd;
-	bool bShouldRecycleSpawned = false;
-	int RecycleRange = pSpawnerExt->Spawner_RecycleRange;
-	if (RecycleRange == -1)
+	auto spawnerCrd = pSpawner->GetCoords();
+	auto spawnedCrd = pSpawned->GetCoords();
+	auto recycleCrd = spawnerCrd;
+	auto deltaCrd = spawnedCrd - recycleCrd;
+	bool shouldRecycleSpawned = false;
+	int recycleRange = pSpawnerExt->Spawner_RecycleRange;
+	if (recycleRange < 0)
 	{
-		if (pSpawner->WhatAmI() == AbstractType::Building && DeltaCrd.X <= 182 && DeltaCrd.Y <= 182 && DeltaCrd.Z < 20)
+		if (pSpawner->WhatAmI() == AbstractType::Building && deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
 		{
-			bShouldRecycleSpawned = true;
+			shouldRecycleSpawned = true;
 		}
-		if (pSpawner->WhatAmI() != AbstractType::Building && pSpawnedMapCrd.X == pSpawnerMapCrd->X && pSpawnedMapCrd.Y == pSpawnerMapCrd->Y && DeltaCrd.Z < 20)
+		if (pSpawner->WhatAmI() != AbstractType::Building && spawnedMapCrd == *pSpawnerMapCrd && deltaCrd.Z < 20)
 		{
-			bShouldRecycleSpawned = true;
+			shouldRecycleSpawned = true;
 		}
 	}
 	else
 	{
-		if (Math::sqrt(DeltaCrd.X * DeltaCrd.X + DeltaCrd.Y * DeltaCrd.Y + DeltaCrd.Z * DeltaCrd.Z) <= RecycleRange)
+		if (deltaCrd.Magnitude() <= recycleRange)
 		{
-			bShouldRecycleSpawned = true;
+			shouldRecycleSpawned = true;
 		}
 	}
-	if (!bShouldRecycleSpawned)
+	if (!shouldRecycleSpawned)
 	{
 		return 0;
 	}
@@ -159,9 +159,9 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 	{
 		if (pSpawnerExt->Spawner_RecycleAnim)
 		{
-			GameCreate<AnimClass>(pSpawnerExt->Spawner_RecycleAnim, SpawnedCrd);
+			GameCreate<AnimClass>(pSpawnerExt->Spawner_RecycleAnim, spawnedCrd);
 		}
-		pSpawned->SetLocation(SpawnerCrd);
+		pSpawned->SetLocation(spawnerCrd);
 		R->EAX(pSpawnerMapCrd);
 		return 0;
 	}
