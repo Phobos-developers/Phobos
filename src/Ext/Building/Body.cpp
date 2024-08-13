@@ -345,26 +345,41 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse,int mo
 
 void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
-	if (CellClass* const pCell = MapClass::Instance->GetCellAt(pThis->GetCenterCoords()))
+	BuildingTypeClass* const pType = pThis->Type;
+	const CellStruct foundation { pType->GetFoundationWidth(), pType->GetFoundationHeight(false) };
+	const CellStruct topLeft = pThis->GetMapCoords() + CellStruct { 1, 1 };
+	const CellStruct bottomRight = topLeft + foundation - CellStruct { 1, 1 };
+
+	for (short curX = topLeft.X; curX < bottomRight.X; ++curX)
 	{
-		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		for (short curY = topLeft.Y; curY < bottomRight.Y; ++curY)
 		{
-			if (pObject->WhatAmI() == AbstractType::Unit)
+			if (CellClass* const pCell = MapClass::Instance->GetCellAt(CellStruct{ curX, curY }))
 			{
-				UnitClass* const pUnit = static_cast<UnitClass*>(pObject);
+				for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+				{
+					if (pObject->WhatAmI() == AbstractType::Unit)
+					{
+						UnitClass* const pUnit = static_cast<UnitClass*>(pObject);
 
-				if (pThis->Owner != pUnit->Owner)
-					continue;
+						if (pThis->Owner != pUnit->Owner)
+							continue;
 
-				const int height = pUnit->GetHeight();
+						const int height = pUnit->GetHeight();
 
-				if (height < 0 || height > Unsorted::CellHeight)
-					continue;
+						if (height < 0 || height > Unsorted::CellHeight)
+							continue;
 
-				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
-				pThis->SendCommand(RadioCommand::RequestTether, pUnit);
-				pThis->QueueMission(Mission::Unload, false);
-				break; // one after another
+						if (!pThis->ContainsLink(pUnit))
+						{
+							pThis->SendCommand(RadioCommand::RequestLink, pUnit);
+							pThis->SendCommand(RadioCommand::RequestTether, pUnit);
+						}
+
+						pThis->QueueMission(Mission::Unload, false);
+						break; // one after another
+					}
+				}
 			}
 		}
 	}
