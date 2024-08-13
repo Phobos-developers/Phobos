@@ -399,7 +399,8 @@ DEFINE_HOOK(0x51C9B8, InfantryClass_CanFire_HitAndRun1, 0x17)
 	GET(InfantryClass*, pThis, EBX);
 
 	const auto pType = pThis->GetTechnoType();
-	if ((pThis->CanAttackOnTheMove() && pType && pType->OpportunityFire)
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	if (pTypeExt && pTypeExt->FiringByPassMovingCheck
 		|| pThis->SpeedPercentage <= 0.1 ) // vanilla check
 	{
 		return CheckPass;
@@ -417,7 +418,8 @@ DEFINE_HOOK(0x51CAAC, InfantryClass_CanFire_HitAndRun2, 0x13)
 	GET(InfantryClass*, pThis, EBX);
 
 	const auto pType = pThis->GetTechnoType();
-	if ((pThis->CanAttackOnTheMove() && pType && pType->OpportunityFire)
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	if (pTypeExt && pTypeExt->FiringByPassMovingCheck
 		|| !pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now() ) // vanilla check
 	{
 		return CheckPass;

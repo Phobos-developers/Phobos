@@ -162,7 +162,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
 - Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
-- Infantries with `OpportunityFire=yes` now can fire while moving correctly. Mind that they are still restricted by their sequence. The walking infantries can only fire in the frames that they are in the cell they are heading to. The flying infantries have no such restriction.
 
 ## Fixes / interactions with other extensions
 
@@ -615,6 +614,17 @@ Explodes.KillPassengers=true ; boolean
 
 [SOMEBUILDING]               ; BuildingType
 Explodes.DuringBuildup=true  ; boolean
+```
+
+### Infantry firing while moving
+- In vanilla, there is a hardcoded behavior that the infantries can not fire until they stop, even they have `OpportunityFire=yes` set. Now you can by pass this restriction by using the following flag.
+  - Mind that you still need `OpportunityFire=yes` to make them acquire target when moving.
+  - Addtionally, the behavior that "rocketeers can not fire when they have buildings beneath them" is also caused by this hardcode. You can use the flag to by pass this behavior as well.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                 ; InfantryType
+FiringByPassMovingCheck=true ; boolean
 ```
 
 ### Iron Curtain & Force Shield effects on organics customization
