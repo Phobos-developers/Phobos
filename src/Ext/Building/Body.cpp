@@ -370,12 +370,6 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 						if (height < 0 || height > Unsorted::CellHeight)
 							continue;
 
-						if (!pThis->ContainsLink(pUnit))
-						{
-							pThis->SendCommand(RadioCommand::RequestLink, pUnit);
-							pThis->SendCommand(RadioCommand::RequestTether, pUnit);
-						}
-
 						pThis->QueueMission(Mission::Unload, false);
 						break; // one after another
 					}
