@@ -354,7 +354,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 	BuildingTypeClass* const pType = pThis->Type;
 	const CellStruct foundation { pType->GetFoundationWidth(), pType->GetFoundationHeight(false) };
 	const CellStruct topLeft = pThis->GetMapCoords() + CellStruct { 1, 1 };
-	const CellStruct bottomRight = topLeft + foundation - CellStruct { 1, 1 };
+	const CellStruct bottomRight = topLeft + foundation - CellStruct { 2, 2 };
 
 	for (short curX = topLeft.X; curX < bottomRight.X; ++curX)
 	{
