@@ -55,6 +55,8 @@ public:
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
 	Valueable<double> ReflectDamage_Multiplier;
 	Valueable<AffectedHouse> ReflectDamage_AffectsHouses;
+	Valueable<double> ReflectDamage_Chance;
+	Nullable<int> ReflectDamage_Override;
 	Valueable<bool> DisableWeapons;
 
 	std::vector<std::string> Groups;
@@ -103,6 +105,8 @@ public:
 		, ReflectDamage_Warhead_Detonate { false }
 		, ReflectDamage_Multiplier { 1.0 }
 		, ReflectDamage_AffectsHouses { AffectedHouse::All }
+		, ReflectDamage_Chance { 1.0 }
+		, ReflectDamage_Override {}
 		, DisableWeapons { false }
 		, Groups {}
 	{};

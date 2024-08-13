@@ -141,6 +141,7 @@ public:
 		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
 		Valueable<bool> SuppressReflectDamage;
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
+		std::vector<std::string> SuppressReflectDamage_Groups;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -282,6 +283,7 @@ public:
 			, SuppressRevengeWeapons_Types {}
 			, SuppressReflectDamage { false }
 			, SuppressReflectDamage_Types {}
+			, SuppressReflectDamage_Groups {}
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
