@@ -22,12 +22,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
-	const auto pHouse = pThis->Owner;
-	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-	const auto pWH = args->WH;
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	const auto pSourceHouse = args->SourceHouse;
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pRules = RulesExt::Global();
 
 	int nDamageLeft = *args->Damage;
@@ -98,6 +92,8 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		}
 		while (false);
 	}
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (!args->IgnoreDefenses)
 	{
