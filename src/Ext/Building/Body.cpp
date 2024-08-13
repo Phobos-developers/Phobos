@@ -370,7 +370,8 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 						if (height < 0 || height > Unsorted::CellHeight)
 							continue;
 
-						pThis->QueueMission(Mission::Unload, false);
+						pUnit->Limbo();
+						pUnit->Unlimbo(CellClass::Cell2Coord(CellStruct{ curX, ++curY }), DirType::East);
 						break; // one after another
 					}
 				}
