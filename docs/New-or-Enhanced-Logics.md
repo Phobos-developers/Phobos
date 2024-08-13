@@ -1254,6 +1254,15 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### Customize Planning Mode
+- It is possible to control who can use planning mode now. You can disallow a unit to use planning mode or allow an aircraft to use it.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]
+CanUsePlanningMode=     ; boolean (default to true for infantry and unit, false for aircraft and building)
+```
+
 ## Terrain
 
 ### Destroy animation & sound
