@@ -41,25 +41,22 @@ void SelectCapturedCommandClass::Execute(WWKey eInput) const
 	auto pFirstObject = MapClass::Instance->NextObject(
 		ObjectClass::CurrentObjects->Count ? ObjectClass::CurrentObjects->GetItem(0) : nullptr);
 
-	bool CapturedPresent = false;
+	bool capturedPresent = false;
 	auto pCurrentObject = pFirstObject;
 
 	do
 	{
 		if (auto pTechno = abstract_cast<TechnoClass*>(pCurrentObject))
 		{
-			Point2D coordInScreen { 0 , 0 };
-			CoordStruct coordInMap { 0 , 0 , 0 };
-			pTechno->GetCoords( &coordInMap );
-			TacticalClass::Instance->CoordsToScreen( &coordInScreen , &coordInMap );
-			coordInScreen -= TacticalClass::Instance->TacticalPos;
+			TacticalClass* const pTactical = TacticalClass::Instance;
+			const Point2D coordInScreen = pTactical->CoordsToScreen(pTechno->GetCoords()) - pTactical->TacticalPos;
 			RectangleStruct screenArea = DSurface::Composite->GetRect();
 			if (screenArea.Width >= coordInScreen.X && screenArea.Height >= coordInScreen.Y && coordInScreen.X >=0 && coordInScreen.Y >= 0 && // the unit is in the current screen
 				pTechno->IsMindControlled() && pTechno->IsSelectable() && !pTechno->MindControlledByAUnit) // the unit is mc by non-perma mc, and selectable.
 			{
-				if (!CapturedPresent)
+				if (!capturedPresent)
 				{
-					CapturedPresent = true;
+					capturedPresent = true;
 					MapClass::UnselectAll();
 				}
 				pCurrentObject->Select();
@@ -70,7 +67,7 @@ void SelectCapturedCommandClass::Execute(WWKey eInput) const
 	}
 	while (pCurrentObject != pFirstObject);
 
-	if (CapturedPresent)
+	if (capturedPresent)
 	{
 		MapClass::Instance->MarkNeedsRedraw(1);
 		MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:SelectCaptured", L"Captured units selected."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
