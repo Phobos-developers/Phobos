@@ -352,7 +352,7 @@ This page lists all the individual contributions to the project by their author.
 - **航味麻酱**
   - Skirmish AI "sell all and all in" behavior dehardcode
   - Skirmish AI "regroup when mcv deploy" behavior dehardcode
-  - Global value of `RepairBaseNodes`
+  - Global value of `RepairBaseNodes` and `MCVRedeploys`
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

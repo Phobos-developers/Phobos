@@ -149,6 +149,7 @@ public:
 		Valueable<int> AISellAllDelay;
 		Valueable<bool> AIAllInOnLastLegs;
 		ValueableVector<bool> RepairBaseNodes;
+		Valueable<bool> MCVRedeploysInCampaign;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -256,6 +257,7 @@ public:
 			, AISellAllDelay { 0 }
 			, AIAllInOnLastLegs { true }
 			, RepairBaseNodes {}
+			, MCVRedeploysInCampaign { false }
 		{ }
 
 		virtual ~ExtData() = default;

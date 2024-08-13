@@ -190,6 +190,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AISellAllDelay.Read(exINI, GameStrings::General, "AISellAllDelay");
 	this->AIAllInOnLastLegs.Read(exINI, GameStrings::General, "AIAllInOnLastLegs");
 	this->RepairBaseNodes.Read(exINI, GameStrings::General, "RepairBaseNodes");
+	this->MCVRedeploysInCampaign.Read(exINI, GameStrings::General, "MCVRedeploysInCampaign");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -361,6 +362,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AISellAllDelay)
 		.Process(this->AIAllInOnLastLegs)
 		.Process(this->RepairBaseNodes)
+		.Process(this->MCVRedeploysInCampaign)
 		;
 }
 

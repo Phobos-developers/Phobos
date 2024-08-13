@@ -52,12 +52,18 @@ DefaultLS800BkgdPal=     ; filename - including the .pal extension
 
 ### MCV redeploying
 
-- You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `MCVRedeploys`. Overrides `[MultiplayerDialogSettings]`->`MCVRedeploys` only in singleplayer campaign missions.
+- You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `[Basic]->MCVRedeploys` in map file. Overrides `[MultiplayerDialogSettings]`->`MCVRedeploys` only in singleplayer campaign missions. You can also define this globally by setting `[General]->MCVRedeploysInCampaign` in rulesmd.ini. The flag defined in map file has higher priority.
+
+In rulesmd.ini:
+```ini
+[General]
+MCVRedeploysInCampaign=false  ; boolean
+```
 
 In map file:
 ```ini
 [Basic]
-MCVRedeploys=false  ; boolean
+MCVRedeploys=                 ; boolean
 ```
 
 ### Set par times and related string labels in missionmd.ini
