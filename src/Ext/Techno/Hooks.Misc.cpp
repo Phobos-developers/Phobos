@@ -99,14 +99,15 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 	return R->Origin() == 0x6B7600 ? SkipGameCode1 : SkipGameCode2;
 }
 
-DEFINE_HOOK(0x465912, BuildingTypeClass_CanUseWaypoint, 0x5)
+bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
 {
-	R->AL(RulesExt::Global()->BuildingWaypoint);
-	return 0;
+	return RulesExt::Global()->BuildingWaypoint;
 }
 
-DEFINE_HOOK(0x41CB52, AircraftTypeClass_CanUseWaypoint, 0x5)
+bool __fastcall AircraftTypeClass_CanUseWaypoint(AircraftTypeClass* pThis)
 {
-	R->AL(RulesExt::Global()->AircraftWaypoint);
-	return 0;
+	return RulesExt::Global()->AircraftWaypoint;
 }
+
+DEFINE_JUMP(VTABLE, 0x7E4610, GET_OFFSET(BuildingTypeClass_CanUseWaypoint))
+DEFINE_JUMP(VTABLE, 0x7E2908, GET_OFFSET(AircraftTypeClass_CanUseWaypoint))
