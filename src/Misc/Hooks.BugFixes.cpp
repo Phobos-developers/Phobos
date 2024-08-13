@@ -330,8 +330,12 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 	{
 		if (const auto pLocomotor = static_cast<FlyLocomotionClass*>(pThis->Locomotor.GetInterfacePtr()))
 		{
-			double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
-				TechnoExt::GetCurrentSpeedMultiplier(pThis);
+			auto const pExt = TechnoExt::ExtMap.Find(pThis);
+			auto const pType = pThis->GetTechnoType();
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+			double currentSpeed = Math::clamp((pType->Speed * TechnoExt::GetCurrentSpeedMultiplier(pThis) +
+					pExt->AE.SpeedBonus), Math::max(pTypeExt->Speed_Minimum, pExt->AE.Speed_Minimum),
+					Math::min(pTypeExt->Speed_Maximum, pExt->AE.Speed_Maximum)) * pLocomotor->CurrentSpeed;
 
 			R->EAX(static_cast<int>(currentSpeed));
 		}
@@ -344,8 +348,12 @@ DEFINE_HOOK(0x4CDA78, FlyLocomotionClass_MovementAI_SpeedModifiers, 0x6)
 {
 	GET(FlyLocomotionClass*, pThis, ESI);
 
-	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
+	auto const pType = pThis->LinkedTo->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	double currentSpeed = Math::clamp((pType->Speed * TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo) +
+			pExt->AE.SpeedBonus), Math::max(pTypeExt->Speed_Minimum, pExt->AE.Speed_Minimum),
+			Math::min(pTypeExt->Speed_Maximum, pExt->AE.Speed_Maximum)) * pThis->CurrentSpeed;
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -356,8 +364,12 @@ DEFINE_HOOK(0x4CE4BF, FlyLocomotionClass_4CE4B0_SpeedModifiers, 0x6)
 {
 	GET(FlyLocomotionClass*, pThis, ECX);
 
-	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
+	auto const pType = pThis->LinkedTo->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	double currentSpeed = Math::clamp((pType->Speed * TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo) +
+			pExt->AE.SpeedBonus), Math::max(pTypeExt->Speed_Minimum, pExt->AE.Speed_Minimum),
+			Math::min(pTypeExt->Speed_Maximum, pExt->AE.Speed_Maximum)) * pThis->CurrentSpeed;
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -368,8 +380,12 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 {
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
-	double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
-	pThis->Speed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
+	auto const pType = pThis->LinkedTo->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	pThis->Speed = static_cast<int>(Math::clamp(pType->JumpjetSpeed * TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo) +
+			pExt->AE.SpeedBonus, Math::max(pTypeExt->Speed_Minimum, pExt->AE.Speed_Minimum),
+			Math::min(pTypeExt->Speed_Maximum, pExt->AE.Speed_Maximum)));
 
 	return 0;
 }

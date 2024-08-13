@@ -33,6 +33,16 @@ This page describes all the engine features that are either new and introduced b
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
     - If `ROFMultiplier.ApplyOnCurrentTimer` is set to true, `ROFMultiplier` is applied on currently running reload timer (if any) when the effect is first applied.
+  - `FirepowerBonus`, `ArmorBonus`, `SpeedBonus` and `ROFBonus` can also be used to modify the object's stats, but in the way of increasing/decreasing a fixed value to them. Will be calculated after all sort of multipliers.
+    - `FirepowerBonus` and `SpeedBonus` add a value to the object's firepower and speed, respectively.
+    - `ArmorBonus` can be set on both techno and attached effect. It decreases the damage taken by a fixed value. This is applied before armor type.
+    - `ROFBonus` decreases weapon reload rate by a fixed value. Can't be reduced to value below 1.
+  - `ReceivedDamage.Minimum` and `ReceivedDamage.Maximum` control the minimum and maximum amount of damage that can be dealt to object in a single hit. This is applied after armor type.
+    - If the object has `ReceivedDamage.Minimum` by itself or is affected by multiple attached effects with `ReceivedDamage.Minimum`, the maximum  of these values would be used.
+    - If the object has `ReceivedDamage.Maximum` by itself or is affected by multiple attached effects with `ReceivedDamage.Maximum`, the minimum  of these values would be used.
+  - `Speed.Minimum` and `Speed.Maximum` control the minimum and maximum speed that the object could have.
+    - If the object has `Speed.Minimum` by itself or is affected by multiple attached effects with `Speed.Minimum`, the maximum of these values would be used.
+    - If the object has `Speed.Maximum` by itself or is affected by multiple attached effects with `Speed.Maximum`, the minimum of these values would be used.
   - If `Cloakable` is set to true, the object the effect is attached to is granted ability to cloak itself for duration of the effect.
   - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
   - `WeaponRange.Multiplier` and `WeaponRange.ExtraRange` can be used to multiply the weapon firing range of the object the effect is attached to, or give it an increase / decrease (measured in cells), respectively. `ExtraRange` is cumulatively applied from all attached effects after all `Multiplier` values have been applied.
@@ -100,6 +110,14 @@ ArmorMultiplier=1.0                            ; floating point value
 SpeedMultiplier=1.0                            ; floating point value
 ROFMultiplier=1.0                              ; floating point value
 ROFMultiplier.ApplyOnCurrentTimer=true         ; boolean
+FirepowerBonus=0                               ; integer
+ArmorBonus=0                                   ; integer
+SpeedBonus=0.0                                 ; floating point value
+ROFBonus=0                                     ; integer
+ReceivedDamage.Minimum=-2147483648             ; integer
+ReceivedDamage.Maximum=2147483647              ; integer
+Speed.Minimum=0.0                              ; floating point value
+Speed.Maximum=2147483647.0                     ; floating point value
 Cloakable=false                                ; boolean
 ForceDecloak=false                             ; boolean
 WeaponRange.Multiplier=1.0                     ; floating point value
@@ -126,6 +144,11 @@ AttachEffect.DurationOverrides=                ; integer - duration overrides (c
 AttachEffect.Delays=                           ; integer - delays (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.InitialDelays=                    ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
 AttachEffect.RecreationDelays=                 ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
+ArmorBonus=0                                   ; integer
+ReceivedDamage.Minimum=-2147483648             ; integer
+ReceivedDamage.Maximum=2147483647              ; integer
+Speed.Minimum=0.0                              ; floating point value
+Speed.Maximum=2147483647.0                     ; floating point value
 OpenTopped.UseTransportRangeModifiers=false    ; boolean
 OpenTopped.CheckTransportDisableWeapons=false  ; boolean
 
@@ -425,7 +448,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles if possible.
   - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
   - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
-  
+
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                             ; AnimationType
@@ -674,7 +697,7 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but ínstead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
 
 In `rulesmd.ini`:
-```ini                                         
+```ini
 [SOMEPROJECTILE]                               ; Projectile
 Trajectory=Straight                            ; Trajectory type
 Trajectory.Straight.DetonationDistance=0.4     ; floating point value

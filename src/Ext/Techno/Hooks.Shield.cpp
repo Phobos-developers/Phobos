@@ -18,11 +18,14 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	int nDamageLeft = *args->Damage;
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (!args->IgnoreDefenses)
 	{
+		*args->Damage = Math::clamp(*args->Damage, Math::max(pTypeExt->ReceivedDamage_Minimum, pExt->AE.ReceivedDamage_Minimum),
+			Math::min(pTypeExt->ReceivedDamage_Maximum, pExt->AE.ReceivedDamage_Maximum));
+		int nDamageLeft = *args->Damage;
+
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (!pShieldData->IsActive())

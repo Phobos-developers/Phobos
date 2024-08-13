@@ -120,10 +120,18 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
 
 	this->FirepowerMultiplier.Read(exINI, pSection, "FirepowerMultiplier");
+	this->FirepowerBonus.Read(exINI, pSection, "FirepowerBonus");
 	this->ArmorMultiplier.Read(exINI, pSection, "ArmorMultiplier");
+	this->ArmorBonus.Read(exINI, pSection, "ArmorBonus");
 	this->SpeedMultiplier.Read(exINI, pSection, "SpeedMultiplier");
+	this->SpeedBonus.Read(exINI, pSection, "SpeedBonus");
 	this->ROFMultiplier.Read(exINI, pSection, "ROFMultiplier");
 	this->ROFMultiplier_ApplyOnCurrentTimer.Read(exINI, pSection, "ROFMultiplier.ApplyOnCurrentTimer");
+	this->ROFBonus.Read(exINI, pSection, "ROFBonus");
+	this->ReceivedDamage_Minimum.Read(exINI, pSection, "ReceivedDamage.Minimum");
+	this->ReceivedDamage_Maximum.Read(exINI, pSection, "ReceivedDamage.Maximum");
+	this->Speed_Minimum.Read(exINI, pSection, "Speed.Minimum");
+	this->Speed_Maximum.Read(exINI, pSection, "Speed.Maximum");
 
 	this->Cloakable.Read(exINI, pSection, "Cloakable");
 	this->ForceDecloak.Read(exINI, pSection, "ForceDecloak");
@@ -179,10 +187,18 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)
 		.Process(this->FirepowerMultiplier)
+		.Process(this->FirepowerBonus)
 		.Process(this->ArmorMultiplier)
+		.Process(this->ArmorBonus)
 		.Process(this->SpeedMultiplier)
+		.Process(this->SpeedBonus)
 		.Process(this->ROFMultiplier)
 		.Process(this->ROFMultiplier_ApplyOnCurrentTimer)
+		.Process(this->ROFBonus)
+		.Process(this->ReceivedDamage_Minimum)
+		.Process(this->ReceivedDamage_Maximum)
+		.Process(this->Speed_Minimum)
+		.Process(this->Speed_Maximum)
 		.Process(this->Cloakable)
 		.Process(this->ForceDecloak)
 		.Process(this->WeaponRange_Multiplier)

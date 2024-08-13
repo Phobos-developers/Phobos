@@ -315,6 +315,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 
+	this->ArmorBonus.Read(exINI, pSection, "ReceivedDamage.ArmorBonus");
+	this->ReceivedDamage_Minimum.Read(exINI, pSection, "ReceivedDamage.Minimum");
+	this->ReceivedDamage_Maximum.Read(exINI, pSection, "ReceivedDamage.Maximum");
+	this->Speed_Minimum.Read(exINI, pSection, "Speed.Minimum");
+	this->Speed_Maximum.Read(exINI, pSection, "Speed.Maximum");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -680,6 +686,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
+
+		.Process(this->ArmorBonus)
+		.Process(this->ReceivedDamage_Minimum)
+		.Process(this->ReceivedDamage_Maximum)
+		.Process(this->Speed_Minimum)
+		.Process(this->Speed_Maximum)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

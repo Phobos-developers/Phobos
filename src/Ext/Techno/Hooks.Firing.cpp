@@ -670,7 +670,7 @@ DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_ROF, 0x6)
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis);
 	auto range = pWeaponExt->ROF_RandomDelay.Get(RulesExt::Global()->ROF_RandomDelay);
-	double rof = pWeapon->ROF * pTechnoExt->AE.ROFMultiplier;
+	double rof = Math::max(pWeapon->ROF * pTechnoExt->AE.ROFMultiplier - pTechnoExt->AE.ROFBonus, 1);
 
 	R->EAX(GeneralUtils::GetRangedRandomOrSingleValue(range));
 	__asm { fld rof };
