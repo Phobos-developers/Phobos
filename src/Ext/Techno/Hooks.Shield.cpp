@@ -41,28 +41,22 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	//Shield Receive Damage
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	int nDamageLeft = *args->Damage;
-
-	if (!args->IgnoreDefenses)
+	if (const auto pShieldData = pExt->Shield.get())
 	{
-		if (const auto pShieldData = pExt->Shield.get())
+		if (!pShieldData->IsActive())
+			return 0;
+
+		const int nDamageLeft = pShieldData->ReceiveDamage(args);
+		if (nDamageLeft >= 0)
 		{
-			if (!pShieldData->IsActive())
-				return 0;
+			*args->Damage = nDamageLeft;
 
-			nDamageLeft = pShieldData->ReceiveDamage(args);
-
-			if (nDamageLeft >= 0)
-			{
-				*args->Damage = nDamageLeft;
-
-				if (auto pTag = pThis->AttachedTag)
-					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
-			}
-
-			if (nDamageLeft == 0)
-				RD::SkipLowDamageCheck = true;
+			if (auto pTag = pThis->AttachedTag)
+				pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
 		}
+
+		if (nDamageLeft == 0)
+			RD::SkipLowDamageCheck = true;
 	}
 
 	return 0;
