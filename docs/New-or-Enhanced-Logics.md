@@ -424,7 +424,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles if possible.
   - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
   - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit. Ignored if `CreateUnit.AlwaysSpawnOnGround` is set to true.
-  
+
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                             ; AnimationType
@@ -671,7 +671,7 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but ínstead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
 
 In `rulesmd.ini`:
-```ini                                         
+```ini
 [SOMEPROJECTILE]                               ; Projectile
 Trajectory=Straight                            ; Trajectory type
 Trajectory.Straight.DetonationDistance=0.4     ; floating point value
@@ -1246,7 +1246,7 @@ Promote.EliteAnimation=           ; Animation
 - In Vanilla, non-building technos will not generate radar events or EVAs when attacked, so players can hardly notice them until they are destroyed. You can now receive a radar event (and optionally a sound effect) when your units is attacked, so you can respond to the combats in time.
 - `[AudioVisual]->CombatAlert` is a global switch, set it to `true` to enable the entire logic.
 - These flags controlls when to trigger a combat alert.
-  - You can disable this logic on specific techno by setting `[SOMETECHNO]->CombatAlert` to `false`. You may hope to disable it on insignificant technos, like the spawns or slaves.
+  - You can disable this logic on specific techno by setting `[SOMETECHNO]->CombatAlert` to `false`. It is defaultly disabled for technos with `Insignificant=yes` or `Spawned=yes`.
   - `[AudioVisual]->CombatAlert.IgnoreBuilding` will turn the logic off on buildings. You can override it for specific building by setting `[SOMETECHNO]->CombatAlert.NotBuilding` to true. You may hope to use it on veh-buildings.
   - `[AudioVisual]->CombatAlert.SuppressIfInScreen` decides whether to disable the logic for the units in the current screen.
   - `[AudioVisual]->CombatAlert.Interval` decides the time interval (in frames) between alerts, to prevent the alert from being anonying. It is default to 150 frames.
@@ -1274,12 +1274,12 @@ CombatAlert.UseAttackVoice=true        ;boolean
 CombatAlert.UseEVA=true                ;boolean
 
 [SOMETECHNO]
-CombatAlert=true                     ;boolean
-CombatAlert.NotBuilding=false        ;boolean
+CombatAlert=                           ;boolean
+CombatAlert.NotBuilding=false          ;boolean
 CombatAlert.UseFeedbackVoice=true      ;boolean
 CombatAlert.UseAttackVoice=true        ;boolean
 CombatAlert.UseEVA=true                ;boolean
-CombatAlert.EVA=EVA_UnitsInCombat    ;EVA entry
+CombatAlert.EVA=EVA_UnitsInCombat      ;EVA entry
 
 [SOMEWARHEAD]
 CombatAlert.Suppress=   ;boolean
