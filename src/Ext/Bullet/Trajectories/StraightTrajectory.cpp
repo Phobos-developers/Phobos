@@ -32,6 +32,7 @@ bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 		.Process(this->ProximityDamage, false)
 		.Process(this->ProximityRadius, false)
 		.Process(this->ProximityDirect, false)
+		.Process(this->ProximityMedial, false)
 		.Process(this->ProximityAllies, false)
 		.Process(this->ProximityFlight, false)
 		.Process(this->ThroughVehicles, false)
@@ -70,6 +71,7 @@ bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityDirect)
+		.Process(this->ProximityMedial)
 		.Process(this->ProximityAllies)
 		.Process(this->ProximityFlight)
 		.Process(this->ThroughVehicles)
@@ -112,6 +114,7 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->ProximityDamage.Read(exINI, pSection, "Trajectory.Straight.ProximityDamage");
 	this->ProximityRadius.Read(exINI, pSection, "Trajectory.Straight.ProximityRadius");
 	this->ProximityDirect.Read(exINI, pSection, "Trajectory.Straight.ProximityDirect");
+	this->ProximityMedial.Read(exINI, pSection, "Trajectory.Straight.ProximityMedial");
 	this->ProximityAllies.Read(exINI, pSection, "Trajectory.Straight.ProximityAllies");
 	this->ProximityFlight.Read(exINI, pSection, "Trajectory.Straight.ProximityFlight");
 	this->ThroughVehicles.Read(exINI, pSection, "Trajectory.Straight.ThroughVehicles");
@@ -146,6 +149,7 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityDirect)
+		.Process(this->ProximityMedial)
 		.Process(this->ProximityAllies)
 		.Process(this->ProximityFlight)
 		.Process(this->ThroughVehicles)
@@ -191,6 +195,7 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->ProximityDamage)
 		.Process(this->ProximityRadius)
 		.Process(this->ProximityDirect)
+		.Process(this->ProximityMedial)
 		.Process(this->ProximityAllies)
 		.Process(this->ProximityFlight)
 		.Process(this->ThroughVehicles)
@@ -235,6 +240,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->ProximityDamage = pType->ProximityDamage;
 	this->ProximityRadius = pType->ProximityRadius;
 	this->ProximityDirect = pType->ProximityDirect;
+	this->ProximityMedial = pType->ProximityMedial;
 	this->ProximityAllies = pType->ProximityAllies;
 	this->ProximityFlight = pType->ProximityFlight;
 	this->ThroughVehicles = pType->ThroughVehicles;
@@ -316,7 +322,7 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
 	HouseClass* const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 	TechnoClass* pTechno = abstract_cast<TechnoClass*>(pBullet->Target);
-	pBullet->Health = this->GetTheTrueDamage(pBullet->Health, pBullet, pTechno, pOwner, true);
+	pBullet->Health = this->GetTheTrueDamage(pBullet->Health, pBullet, pTechno, true);
 
 	if (this->PassDetonateLocal)
 	{
@@ -716,12 +722,12 @@ bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, Cell
 		if (!pWH)
 			return static_cast<bool>(pNearest);
 
-		int damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, pNearest, pOwner, false);
+		int damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, this->ProximityMedial ? nullptr : pNearest, false);
 
 		if (this->ProximityDirect)
 			pNearest->ReceiveDamage(&damage, 0, pWH, pBullet->Owner, false, false, pOwner);
 		else
-			WarheadTypeExt::DetonateAt(pWH, pNearest->GetCoords(), pBullet->Owner, damage, pOwner, pNearest);
+			WarheadTypeExt::DetonateAt(pWH, this->ProximityMedial ? pBullet->Location : pNearest->GetCoords(), pBullet->Owner, damage, pOwner, pNearest);
 	}
 
 	return static_cast<bool>(pNearest);
@@ -742,7 +748,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 		if (!pWH)
 			return;
 
-		const int damage = this->GetTheTrueDamage(this->PassDetonateDamage, pBullet, nullptr, nullptr, false);
+		const int damage = this->GetTheTrueDamage(this->PassDetonateDamage, pBullet, nullptr, false);
 		WarheadTypeExt::DetonateAt(pWH, detonateCoords, pBullet->Owner, damage, pOwner);
 	}
 }
@@ -957,12 +963,12 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 	for (auto const& pTechno : casualtyChecked)
 	{
-		int damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, pTechno, pOwner, false);
+		int damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, this->ProximityMedial ? nullptr : pTechno, false);
 
 		if (this->ProximityDirect)
 			pTechno->ReceiveDamage(&damage, 0, pWH, pBullet->Owner, false, false, pOwner);
 		else
-			WarheadTypeExt::DetonateAt(pWH, pTechno->GetCoords(), pBullet->Owner, damage, pOwner, pTechno);
+			WarheadTypeExt::DetonateAt(pWH, this->ProximityMedial ? pBullet->Location : pTechno->GetCoords(), pBullet->Owner, damage, pOwner, pTechno);
 
 		if (this->ProximityImpact == 1)
 		{
@@ -1254,14 +1260,14 @@ std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct botto
 	return recCells;
 }
 
-int StraightTrajectory::GetTheTrueDamage(int damage, BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, bool self)
+int StraightTrajectory::GetTheTrueDamage(int damage, BulletClass* pBullet, TechnoClass* pTechno, bool self)
 {
 	if (damage == 0)
 		return 0;
 
 	if (this->EdgeAttenuation != 1.0)
 	{
-		const double damageMultiplier = this->GetExtraDamageMultiplier(pBullet, pTechno, pOwner);
+		const double damageMultiplier = this->GetExtraDamageMultiplier(pBullet, pTechno);
 		const double calculatedDamage = self ? damage * damageMultiplier : damage * this->FirepowerMult * damageMultiplier;
 		const int signal = Math::sgn(calculatedDamage);
 		damage = static_cast<int>(calculatedDamage);
@@ -1273,7 +1279,7 @@ int StraightTrajectory::GetTheTrueDamage(int damage, BulletClass* pBullet, Techn
 	return damage;
 }
 
-double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
+double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno)
 {
 	double distance = 0;
 	double damageMult = 1.0;

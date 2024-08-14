@@ -27,6 +27,7 @@ public:
 		, ProximityDamage { 0 }
 		, ProximityRadius { Leptons(179) }
 		, ProximityDirect { false }
+		, ProximityMedial { false }
 		, ProximityAllies { false }
 		, ProximityFlight { false }
 		, ThroughVehicles { true }
@@ -62,6 +63,7 @@ public:
 	Valueable<int> ProximityDamage;
 	Valueable<Leptons> ProximityRadius;
 	Valueable<bool> ProximityDirect;
+	Valueable<bool> ProximityMedial;
 	Valueable<bool> ProximityAllies;
 	Valueable<bool> ProximityFlight;
 	Valueable<bool> ThroughVehicles;
@@ -95,6 +97,7 @@ public:
 		, ProximityDamage { 0 }
 		, ProximityRadius { Leptons(179) }
 		, ProximityDirect { false }
+		, ProximityMedial { false }
 		, ProximityAllies { false }
 		, ProximityFlight { false }
 		, ThroughVehicles { true }
@@ -134,6 +137,7 @@ public:
 		, ProximityDamage { 0 }
 		, ProximityRadius { Leptons(179) }
 		, ProximityDirect { false }
+		, ProximityMedial { false }
 		, ProximityAllies { false }
 		, ProximityFlight { false }
 		, ThroughVehicles { true }
@@ -188,6 +192,7 @@ public:
 	int ProximityDamage;
 	Leptons ProximityRadius;
 	bool ProximityDirect;
+	bool ProximityMedial;
 	bool ProximityAllies;
 	bool ProximityFlight;
 	bool ThroughVehicles;
@@ -217,7 +222,7 @@ private:
 	void PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
 	std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet);
 	std::vector<CellStruct> GetCellsInRectangle(CellStruct bottomStaCell, CellStruct leftMidCell, CellStruct rightMidCell, CellStruct topEndCell);
-	int GetTheTrueDamage(int damage, BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, bool self);
-	double GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
+	int GetTheTrueDamage(int damage, BulletClass* pBullet, TechnoClass* pTechno, bool self);
+	double GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno);
 	bool PassAndConfineAtHeight(BulletClass* pBullet, double straightSpeed);
 };
