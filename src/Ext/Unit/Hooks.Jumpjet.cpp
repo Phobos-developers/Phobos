@@ -292,7 +292,7 @@ int JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(Point2D location)
 	}
 
 	if (pCell->FindTechnoNearestTo(Point2D::Empty, false))
-		height += 85;
+		height += 85; // Vanilla
 
 	if (pCell->Flags & CellFlags::BridgeHead)
 		height += CellClass::BridgeHeight;
@@ -331,7 +331,7 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 			if (maxHeight <= curHeight)
 				JumpjetRushHelpers::Skip = true;
 
-			const int checkStep = (largeStep >> 7) + ((largeStep & 0x7F) ? 2 : 1);
+			const int checkStep = (largeStep >> 7) + ((largeStep & 0x7F) ? 2 : 1); // Math::ceil(largeStep / (Unsorted::LeptonsPerCell / 2)) + 1
 
 			for (int i = 0; i < checkStep && height >= 0; ++i)
 			{
