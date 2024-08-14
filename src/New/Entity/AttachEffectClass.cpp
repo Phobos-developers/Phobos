@@ -376,6 +376,12 @@ bool AttachEffectClass::AllowedToBeActive() const
 {
 	auto const pTechno = this->Techno;
 
+	if (this->Type->DiscardOn_AbovePercent.isset() && pTechno->GetHealthPercentage() >= this->Type->DiscardOn_AbovePercent.Get())
+		return false;
+
+	if (this->Type->DiscardOn_BelowPercent.isset() && pTechno->GetHealthPercentage() <= this->Type->DiscardOn_BelowPercent.Get())
+		return false;
+
 	if (auto const pFoot = abstract_cast<FootClass*>(pTechno))
 	{
 		bool isMoving = pFoot->Locomotor->Is_Moving();
@@ -571,6 +577,12 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, int durationOverride, int delay, int initialDelay, int recreationDelay)
 {
 	if (!pType || !pTarget)
+		return nullptr;
+
+	if (pType->AffectAbovePercent.isset() && pTarget->GetHealthPercentage() < pType->AffectAbovePercent.Get())
+		return nullptr;
+
+	if (pType->AffectBelowPercent.isset() && pTarget->GetHealthPercentage() > pType->AffectBelowPercent.Get())
 		return nullptr;
 
 	if (pTarget->IsIronCurtained())

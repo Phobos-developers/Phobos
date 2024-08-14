@@ -17,6 +17,8 @@ This page describes all the engine features that are either new and introduced b
     - `drain`: Discard when the object is being affected by a weapon with `DrainWeapon=true`.
     - `inrange`: Discard if within weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `outofrange`: Discard if outside weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
+  - If `DiscardOn.AbovePercent` or `DiscardOn.BelowPercent` is set, the effect is discarded when the object's health percentage is above/below that value.
+  - If `AffectAbovePercent` or `AffectBelowPercent` is set, the effect can be applied only when the object's health percentage is above/below that value.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.
   - `Animation` defines animation to play in an indefinite loop for as long as the effect is active on the object it is attached to.
@@ -80,6 +82,10 @@ Cumulative.MaxCount=-1                         ; integer
 Powered=false                                  ; boolean
 DiscardOn=none                                 ; list of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
 DiscardOn.RangeOverride=                       ; floating point value, distance in cells
+DiscardOn.AbovePercent=                        ; floating point value, percents or absolute (0.0-1.0)
+DiscardOn.BelowPercent=                        ; floating point value, percents or absolute (0.0-1.0)
+AffectAbovePercent=                            ; floating point value, percents or absolute (0.0-1.0)
+AffectBelowPercent=                            ; floating point value, percents or absolute (0.0-1.0)
 PenetratesIronCurtain=false                    ; boolean
 PenetratesForceShield=                         ; boolean
 Animation=                                     ; Animation

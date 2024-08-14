@@ -18,6 +18,10 @@ public:
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
 	Nullable<Leptons> DiscardOn_RangeOverride;
+	Nullable<double> DiscardOn_AbovePercent;
+	Nullable<double> DiscardOn_BelowPercent;
+	Nullable<double> AffectAbovePercent;
+	Nullable<double> AffectBelowPercent;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	Valueable<AnimTypeClass*> Animation;
@@ -66,6 +70,10 @@ public:
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
+		, DiscardOn_AbovePercent {}
+		, DiscardOn_BelowPercent {}
+		, AffectAbovePercent {}
+		, AffectBelowPercent {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, Animation {}

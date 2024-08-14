@@ -101,6 +101,10 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Powered.Read(exINI, pSection, "Powered");
 	this->DiscardOn.Read(exINI, pSection, "DiscardOn");
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
+	this->DiscardOn_AbovePercent.Read(exINI, pSection, "DiscardOn.AbovePercent");
+	this->DiscardOn_BelowPercent.Read(exINI, pSection, "DiscardOn.BelowPercent");
+	this->AffectAbovePercent.Read(exINI, pSection, "AffectAbovePercent");
+	this->AffectBelowPercent.Read(exINI, pSection, "AffectBelowPercent");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 
 	this->Animation.Read(exINI, pSection, "Animation");
@@ -164,6 +168,10 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Powered)
 		.Process(this->DiscardOn)
 		.Process(this->DiscardOn_RangeOverride)
+		.Process(this->DiscardOn_AbovePercent)
+		.Process(this->DiscardOn_BelowPercent)
+		.Process(this->AffectAbovePercent)
+		.Process(this->AffectBelowPercent)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->Animation)
 		.Process(this->CumulativeAnimations)
