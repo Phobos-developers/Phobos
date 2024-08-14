@@ -320,7 +320,6 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 
 void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
-	HouseClass* const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 	TechnoClass* pTechno = abstract_cast<TechnoClass*>(pBullet->Target);
 	pBullet->Health = this->GetTheTrueDamage(pBullet->Health, pBullet, pTechno, true);
 
