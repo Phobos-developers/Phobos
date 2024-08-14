@@ -617,9 +617,10 @@ Explodes.DuringBuildup=true  ; boolean
 ```
 
 ### Infantry firing while moving
-- In vanilla, there is a hardcoded behavior that the infantries can not fire until they stop, even they have `OpportunityFire=yes` set. Now you can by pass this restriction by using the following flag.
-  - Mind that you still need `OpportunityFire=yes` to make them acquire target when moving.
-  - Addtionally, the behavior that "rocketeers can not fire when they have buildings beneath them" is also caused by this hardcode. You can use the flag to by pass this behavior as well.
+- In vanilla, there is a hardcoded behavior that the infantries can not fire until they stop, even if they have `OpportunityFire=yes` set. Now you can bypass this restriction by using the following flag.
+  - Mind that you still need `OpportunityFire=yes` to make them acquire target when moving. However, if `OpportunityFire=yes` is set, they can still do that if you use the "ctrl+shift" command, just like the units on the ground do.
+  - Additionally, the behavior that "rocketeers can not fire when they have buildings beneath them" is also caused by this hardcode. You can use the flag to bypass this behavior as well.
+  - The vanilla flag `JumpJetTurn` will affect the visual behavior when the infantry is firing while moving. You need to set it to **no** if you want to make the infantry always facing the target during the attack.
 
 In `rulesmd.ini`:
 ```ini
