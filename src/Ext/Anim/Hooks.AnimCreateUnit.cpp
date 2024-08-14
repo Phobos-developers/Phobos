@@ -3,6 +3,7 @@
 
 #include "Body.h"
 
+#include <AircraftTrackerClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
 #include <JumpjetLocomotionClass.h>
@@ -94,8 +95,9 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 		{
 			isBridge = allowBridges && pCell->ContainsBridge();
 			int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
-			int z = pTypeExt->CreateUnit_AlwaysSpawnOnGround ? INT32_MIN : pThis->GetCoords().Z;
-			location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location) + bridgeZ, z);
+			int baseHeight = pTypeExt->CreateUnit_SpawnHeight.isset() ? pTypeExt->CreateUnit_SpawnHeight : pThis->GetCoords().Z;
+			int zCoord = pTypeExt->CreateUnit_AlwaysSpawnOnGround ? INT32_MIN : baseHeight;
+			location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location) + bridgeZ, zCoord);
 
 			if (auto pTechno = static_cast<FootClass*>(unit->CreateObject(decidedOwner)))
 			{
@@ -110,7 +112,15 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 				auto resultingFacing = pTypeExt->CreateUnit_InheritDeathFacings && pExt->FromDeathUnit ? pExt->DeathUnitFacing : facing;
 				pTechno->OnBridge = isBridge;
 
-				if (!pCell->GetBuilding())
+				bool inAir = pThis->IsOnMap && location.Z >= Unsorted::CellHeight * 2;
+				bool parachuted = false;
+
+				if (pTypeExt->CreateUnit_SpawnParachutedInAir && !pTypeExt->CreateUnit_AlwaysSpawnOnGround && inAir)
+				{
+					parachuted = true;
+					success = pTechno->SpawnParachuted(location);
+				}
+				else if (!pCell->GetBuilding() || !pTypeExt->CreateUnit_ConsiderPathfinding)
 				{
 					++Unsorted::IKnowWhatImDoing;
 					success = pTechno->Unlimbo(location, resultingFacing);
@@ -123,8 +133,6 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 				if (success)
 				{
-					auto const loc = pTechno->Location;
-
 					if (auto const pAnimType = pTypeExt->CreateUnit_SpawnAnim)
 					{
 						if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
@@ -144,7 +152,7 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 					if (!pTechno->InLimbo)
 					{
-						if (pThis->IsInAir() && !pTypeExt->CreateUnit_AlwaysSpawnOnGround)
+						if (!pTypeExt->CreateUnit_AlwaysSpawnOnGround)
 						{
 							if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pTechno->Locomotor))
 							{
@@ -158,20 +166,26 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 									pJJLoco->IsMoving = true;
 									pJJLoco->DestinationCoords = location;
 									pJJLoco->CurrentHeight = pType->JumpjetHeight;
+									AircraftTrackerClass::Instance->Add(pTechno);
 								}
-								else
+								else if (inAir)
 								{
 									// Order non-BalloonHover jumpjets to land.
 									pJJLoco->Move_To(location);
 								}
 							}
-							else
+							else if (inAir && !parachuted)
 							{
 								pTechno->IsFallingDown = true;
 							}
 						}
 
-						pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);
+						auto mission = pTypeExt->CreateUnit_Mission;
+
+						if (!decidedOwner->IsControlledByHuman())
+							mission = pTypeExt->CreateUnit_AIMission.Get(mission);
+
+						pTechno->QueueMission(mission, false);
 					}
 
 					if (!decidedOwner->Type->MultiplayPassive)

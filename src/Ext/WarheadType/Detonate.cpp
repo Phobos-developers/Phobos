@@ -185,7 +185,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 			const auto shieldType = pTargetExt->Shield->GetType();
 			shieldIndex = this->Shield_RemoveTypes.IndexOf(shieldType);
 
-			if (shieldIndex >= 0)
+			if (shieldIndex >= 0 || this->Shield_RemoveAll)
 			{
 				ratio = pTargetExt->Shield->GetHealthRatio();
 				pTargetExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
@@ -203,10 +203,12 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 			{
 				if (shieldIndex >= 0)
 					shieldType = Shield_AttachTypes[Math::min(shieldIndex, (signed)Shield_AttachTypes.size() - 1)];
+				else if (this->Shield_RemoveAll)
+					shieldType = Shield_AttachTypes[0];
 			}
 			else
 			{
-				shieldType = Shield_AttachTypes.size() > 0 ? Shield_AttachTypes[0] : nullptr;
+				shieldType = Shield_AttachTypes[0];
 			}
 
 			if (shieldType)
@@ -243,7 +245,10 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 				pTargetExt->Shield->BreakShield(this->Shield_BreakAnim, this->Shield_BreakWeapon);
 
 			if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
-				pTargetExt->Shield->SetRespawn(this->Shield_Respawn_Duration, this->Shield_Respawn_Amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
+			{
+				double amount = this->Shield_Respawn_Amount.Get(pTargetExt->Shield->GetType()->Respawn);
+				pTargetExt->Shield->SetRespawn(this->Shield_Respawn_Duration, amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
+			}
 
 			if (this->Shield_SelfHealing_Duration > 0 && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
 			{

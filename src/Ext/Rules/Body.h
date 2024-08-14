@@ -2,7 +2,6 @@
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
-#include <GameStrings.h>
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
@@ -43,6 +42,7 @@ public:
 		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
+		Valueable<int> SubterraneanHeight;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<int> RadBuildingDamageMaxCount;
@@ -105,6 +105,10 @@ public:
 		Valueable<IronCurtainEffect> ForceShield_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> ForceShield_KillOrganicsWarhead;
 
+		Valueable<double> IronCurtain_ExtraTintIntensity;
+		Valueable<double> ForceShield_ExtraTintIntensity;
+		Valueable<bool> ColorAddUse8BitRGB;
+
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
 		Valueable<int> ToolTip_Background_Opacity;
@@ -139,6 +143,10 @@ public:
 		Valueable<bool> JumpjetClimbPredictHeight;
 		Valueable<bool> JumpjetClimbWithoutCutOut;
 
+		Nullable<Vector3D<float>> VoxelLightSource;
+		// Nullable<Vector3D<float>> VoxelShadowLightSource;
+		Valueable<bool> UseFixedVoxelLighting;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -150,6 +158,7 @@ public:
 			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
 			, AIChronoSphereSW {}
 			, AIChronoWarpSW {}
+			, SubterraneanHeight { -256 }
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadBuildingDamageMaxCount { -1 }
@@ -203,6 +212,9 @@ public:
 			, ForceShield_KeptOnDeploy { false }
 			, ForceShield_EffectOnOrganics { IronCurtainEffect::Kill }
 			, ForceShield_KillOrganicsWarhead { }
+			, IronCurtain_ExtraTintIntensity { 0.0 }
+			, ForceShield_ExtraTintIntensity { 0.0 }
+			, ColorAddUse8BitRGB { false }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
@@ -235,6 +247,9 @@ public:
 			, PodImage { }
 			, JumpjetClimbPredictHeight { false }
 			, JumpjetClimbWithoutCutOut { false }
+			, VoxelLightSource { }
+			// , VoxelShadowLightSource { }
+			, UseFixedVoxelLighting { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -249,6 +264,8 @@ public:
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+		void ReplaceVoxelLightSources();
 
 	private:
 		template <typename T>
