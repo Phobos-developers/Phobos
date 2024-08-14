@@ -98,3 +98,71 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 
 	return R->Origin() == 0x6B7600 ? SkipGameCode1 : SkipGameCode2;
 }
+
+DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
+{
+	//enum { RecycleIsOk = 0x6B77FF, RecycleIsNotOk = 0x6B7838 };
+
+	GET(SpawnManagerClass* const, pThis, ESI);
+	GET(AircraftClass* const, pSpawned, EDI);
+	GET(CellStruct* const, pSpawnerMapCrd, EBP);
+
+	if (!pThis)
+	{
+		return 0;
+	}
+	auto pSpawner = pThis->Owner;
+	if (!pSpawner || !pSpawned)
+	{
+		return 0;
+	}
+	auto const pSpawnerType = pSpawner->GetTechnoType();
+	auto spawnedMapCrd = pSpawned->GetMapCoords();
+	if (!pSpawnerType)
+	{
+		return 0;
+	}
+	auto const pSpawnerExt = TechnoTypeExt::ExtMap.Find(pSpawnerType);
+	if (!pSpawnerExt)
+	{
+		return 0;
+	}
+	auto spawnerCrd = pSpawner->GetCoords();
+	auto spawnedCrd = pSpawned->GetCoords();
+	auto recycleCrd = spawnerCrd;
+	auto deltaCrd = spawnedCrd - recycleCrd;
+	bool shouldRecycleSpawned = false;
+	int recycleRange = pSpawnerExt->Spawner_RecycleRange;
+	if (recycleRange < 0)
+	{
+		if (pSpawner->WhatAmI() == AbstractType::Building && deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
+		{
+			shouldRecycleSpawned = true;
+		}
+		if (pSpawner->WhatAmI() != AbstractType::Building && spawnedMapCrd == *pSpawnerMapCrd && deltaCrd.Z < 20)
+		{
+			shouldRecycleSpawned = true;
+		}
+	}
+	else
+	{
+		if (deltaCrd.Magnitude() <= recycleRange)
+		{
+			shouldRecycleSpawned = true;
+		}
+	}
+	if (!shouldRecycleSpawned)
+	{
+		return 0;
+	}
+	else
+	{
+		if (pSpawnerExt->Spawner_RecycleAnim)
+		{
+			GameCreate<AnimClass>(pSpawnerExt->Spawner_RecycleAnim, spawnedCrd);
+		}
+		pSpawned->SetLocation(spawnerCrd);
+		R->EAX(pSpawnerMapCrd);
+		return 0;
+	}
+}
