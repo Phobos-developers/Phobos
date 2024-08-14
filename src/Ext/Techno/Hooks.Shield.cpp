@@ -39,16 +39,19 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	}
 
 	//Shield Receive Damage
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	int nDamageLeft = *args->Damage;
+
 	if (!args->IgnoreDefenses)
 	{
-		const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (!pShieldData->IsActive())
 				return 0;
 
-			const int nDamageLeft = pShieldData->ReceiveDamage(args);
+			nDamageLeft = pShieldData->ReceiveDamage(args);
+
 			if (nDamageLeft >= 0)
 			{
 				*args->Damage = nDamageLeft;
@@ -61,6 +64,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 				RD::SkipLowDamageCheck = true;
 		}
 	}
+
 	return 0;
 }
 
