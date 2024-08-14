@@ -346,7 +346,7 @@ This page lists all the individual contributions to the project by their author.
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
 - **CrimRecya**
-  - Extra warhead multiplier for different houses
+  - Damage multiplier for different houses
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
