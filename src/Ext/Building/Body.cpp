@@ -349,16 +349,21 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 	{
 		if (UnitClass* const pUnit = abstract_cast<UnitClass*>(pTechno))
 		{
-			if (TeamClass* const pTeam = pUnit->Team)
-				pTeam->LiberateMember(pUnit);
+			if (pUnit->CurrentMission != Mission::Enter)
+			{
+				if (TeamClass* const pTeam = pUnit->Team)
+					pTeam->LiberateMember(pUnit);
 
-			pUnit->SetDestination(nullptr, false);
-			pUnit->ForceMission(Mission::Guard);
-			pThis->QueueMission(Mission::Unload, false);
-			return;
+				pUnit->SetDestination(nullptr, false);
+				pUnit->ForceMission(Mission::Guard);
+				pThis->QueueMission(Mission::Unload, false);
+				return; // one after another
+			}
 		}
 	}
 
+//	CoordStruct buffer = CoordStruct::Empty;
+//	CellClass* const pCell = MapClass::Instance->GetCellAt(*pThis->GetExitCoords(&buffer, 0));
 	BuildingTypeClass* const pType = pThis->Type;
 	const CellStruct foundation { pType->GetFoundationWidth(), pType->GetFoundationHeight(false) };
 	const CellStruct topLeft = pThis->GetMapCoords() + CellStruct { 1, 1 };
@@ -372,11 +377,9 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 			{
 				for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 				{
-					if (pObject->WhatAmI() == AbstractType::Unit)
+					if (UnitClass* const pUnit = abstract_cast<UnitClass*>(pObject))
 					{
-						UnitClass* const pUnit = static_cast<UnitClass*>(pObject);
-
-						if (pThis->Owner != pUnit->Owner)
+						if (pThis->Owner != pUnit->Owner || pUnit->CurrentMission == Mission::Enter)
 							continue;
 
 						const int height = pUnit->GetHeight();
@@ -391,7 +394,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 						pUnit->ForceMission(Mission::Guard);
 						pThis->SendCommand(RadioCommand::RequestLink, pUnit);
 						pThis->QueueMission(Mission::Unload, false);
-						break; // one after another
+						return; // one after another
 					}
 				}
 			}

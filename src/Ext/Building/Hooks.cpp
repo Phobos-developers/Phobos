@@ -329,11 +329,11 @@ DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	if (!(Unsorted::CurrentFrame % 15) && pThis->GetCurrentMission() == Mission::Guard)
+	if (!(Unsorted::CurrentFrame % 15) && pThis->CurrentMission == Mission::Guard)
 	{
 		BuildingTypeClass* const pType = pThis->Type;
 
-		if (pType->Factory == AbstractType::UnitType && pType->WeaponsFactory)
+		if (pType->Factory == AbstractType::UnitType && pType->WeaponsFactory && !pType->Naval)
 			BuildingExt::KickOutStuckUnits(pThis);
 	}
 
