@@ -901,7 +901,7 @@ DEFINE_HOOK(0x705D74, TechnoClass_GetRemapColour_DisguisePalette, 0x8)
 {
 	enum { SkipGameCode = 0x705D7C };
 
-	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass* const, pThis, ESI);
 
 	auto pTechnoType = pThis->GetTechnoType();
 
