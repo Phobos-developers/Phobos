@@ -1,5 +1,7 @@
 #include <AircraftClass.h>
 #include <InfantryClass.h>
+#include <JumpjetLocomotionClass.h>
+#include <SuperClass.h>
 
 #include "Body.h"
 
@@ -193,3 +195,96 @@ DEFINE_HOOK(0x70E475, TechnoClass_InvulnerabilityIntensity_Adjust, 0x5)
 	R->EAX(intensity + max);
 	return SkipGameCode;
 }
+
+#pragma region LevelLighting
+
+static bool __forceinline IsOnBridge(FootClass* pUnit)
+{
+	auto const pCell = MapClass::Instance->GetCellAt(pUnit->GetCoords());
+	auto const pCellAjd = pCell->GetNeighbourCell(FacingType::North);
+	bool containsBridge = pCell->ContainsBridge();
+	bool containsBridgeDir = static_cast<bool>(pCell->Flags & CellFlags::BridgeDir);
+
+	if ((containsBridge || containsBridgeDir || pCellAjd->ContainsBridge()) && (!containsBridge || pCell->GetNeighbourCell(FacingType::West)->ContainsBridge()))
+		return true;
+
+	return false;
+}
+
+DEFINE_HOOK(0x4148F4, AircraftClass_DrawIt_LevelIntensity, 0x5)
+{
+	enum { SkipGameCode = 0x41493E };
+
+	GET(AircraftClass*, pThis, EBP);
+	GET(int, level, EDI);
+
+	if (PsyDom::Active())
+		level = ScenarioClass::Instance->DominatorLighting.Level;
+	else if (NukeFlash::IsFadingIn())
+		level = ScenarioClass::Instance->NukeLighting.Level;
+
+	auto const pRulesExt = RulesExt::Global();
+	int levelIntensity = 0;
+	int cellIntensity = 1000;
+	TechnoExt::GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->AircraftLevelLightMultiplier, pRulesExt->AircraftCellLightLevelMultiplier);
+
+	R->ESI(levelIntensity);
+	R->EBX(cellIntensity);
+	R->EAX(pThis->Locomotor); // Restore overridden instruction
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x51933B, InfantryClass_DrawIt_LevelIntensity, 0x6)
+{
+	enum { SkipGameCode = 0x51944D };
+
+	GET(InfantryClass*, pThis, EBP);
+	GET(int, level, EBX);
+
+	if (locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+	{
+		auto const pRulesExt = RulesExt::Global();
+		int levelIntensity = 0;
+		int cellIntensity = 1000;
+		bool applyBridgeBonus = pRulesExt->JumpjetCellLightApplyBridgeHeight ? IsOnBridge(pThis) : false;
+		TechnoExt::GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->JumpjetLevelLightMultiplier, pRulesExt->JumpjetCellLightLevelMultiplier, applyBridgeBonus);
+
+		R->ESI(levelIntensity + cellIntensity);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73CFA7, UnitClass_DrawIt_LevelIntensity, 0x6)
+{
+	enum { SkipGameCode = 0x73D0C3 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+	{
+		int level = ScenarioClass::Instance->NormalLighting.Level;
+
+		if (LightningStorm::Active())
+			level = ScenarioClass::Instance->IonLighting.Level;
+		else if (PsyDom::Active())
+			level = ScenarioClass::Instance->DominatorLighting.Level;
+		else if (NukeFlash::IsFadingIn())
+			level = ScenarioClass::Instance->NukeLighting.Level;
+
+		auto const pRulesExt = RulesExt::Global();
+		int levelIntensity = 0;
+		int cellIntensity = 1000;
+		bool applyBridgeHeightBonus = pRulesExt->JumpjetCellLightApplyBridgeHeight ? IsOnBridge(pThis) : false;
+		TechnoExt::GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->JumpjetLevelLightMultiplier, pRulesExt->JumpjetCellLightLevelMultiplier, applyBridgeHeightBonus);
+
+		R->EBP(levelIntensity + cellIntensity);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+#pragma endregion
