@@ -655,9 +655,10 @@ Trajectory.Straight.PassThrough=false       ; boolean
 
 - Similar trajectory to `Straight`, but targets a coordinate between the attacker and intended target first. When the projectile approaches that turning point, it'll turn to the intended target and explodes when it hits the target or ground.
   - `Trajectory.Bombard.Height` controls the height of the turning point.
+    - For each launch the height could add or minus a random value, which is not greater than `Trajectory.Bombard.HeightShift`. If set to 0, random shift will be disabled.
   - `Trajectory.Bombard.FallPercent` controls the distance of the turning point by its percentage of the total distance between attacker and intended target. If set to 0%, then it'll fly up vertically. If set to 100%, then it'll travel to the top of the intended target.
     - For each launch the turning point percentage could add or minus a random value, which is not greater than `Trajectory.Bombard.FallPercentShift`. If set to 0%, random shift will be disabled.
-    - You can also makes the turning point scatter randomly in a circle with `Trajectory.Bombard.FallScatterRange` as its radius. If set to 0, random scatter will be disabled.
+    - You can also makes the turning point scatter randomly in a circle with `Trajectory.Bombard.FallScatter.Max` as its radius. If set to 0, random scatter will be disabled. `Trajectory.Bombard.FallScatter.Min` can be used to determine the minimum radius of the circle.
   - `Trajectory.Bombard.FreeFallOnTarget` controls how it'll hit the intended target. If set to true, the projectile will be respawned above the intended target and free fall. If set to false, the projectile will travel to the intended target from the turning point.
   - `Trajectory.Bombard.NoLaunch` controls whether the attacker will fire the projectile by itself. If set to true, projectile will directly fall from the turning point.
   - `Trajectory.Bombard.FallSpeed` controls the initial speed of the projectile after it turns. If set to 0.0, then it'll use `Trajectory.Speed`. Can't work together with `Trajectory.Bombard.FreeFallOnTarget=true`.
@@ -669,9 +670,11 @@ In `rulesmd.ini`:
 [SOMEPROJECTILE]                          ; Projectile
 Trajectory=Bombard                        ; Trajectory type
 Trajectory.Bombard.Height=0.0             ; double
+Trajectory.Bombard.HeightShift=0.0        ; double
 Trajectory.Bombard.FallPercent=1.0        ; double
 Trajectory.Bombard.FallPercentShift=0.0   ; double
-Trajectory.Bombard.FallScatterRange=0.0   ; floating point value
+Trajectory.Bombard.FallScatter.Max=0.0    ; floating point value
+Trajectory.Bombard.FallScatter.Min=0.0    ; floating point value
 Trajectory.Bombard.FreeFallOnTarget=true  ; boolean
 Trajectory.Bombard.NoLaunch=false         ; boolean
 Trajectory.Bombard.FallSpeed=0.0          ; double

@@ -7,9 +7,11 @@ class BombardTrajectoryType final : public PhobosTrajectoryType
 public:
 	BombardTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Bombard)
 		, Height { 0.0 }
+		, HeightShift { 0.0 }
 		, FallPercent { 1.0 }
 		, FallPercentShift { 0.0 }
-		, FallScatterRange { Leptons(0) }
+		, FallScatter_Max { Leptons(0) }
+		, FallScatter_Min { Leptons(0) }
 		, FallSpeed { 0.0 }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
@@ -24,9 +26,11 @@ public:
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	Valueable<double> Height;
+	Valueable<double> HeightShift;
 	Valueable<double> FallPercent;
 	Valueable<double> FallPercentShift;
-	Valueable<Leptons> FallScatterRange;
+	Valueable<Leptons> FallScatter_Max;
+	Valueable<Leptons> FallScatter_Min;
 	Valueable<double> FallSpeed;
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> FreeFallOnTarget;
@@ -42,12 +46,9 @@ public:
 		, Height { 0.0 }
 		, RemainingDistance { 1 }
 		, FallPercent { 1.0 }
-		, FallPercentShift { 0.0 }
-		, FallScatterRange { Leptons(0) }
 		, FallSpeed { 0.0 }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
-		, NoLaunch { false }
 	{}
 
 	BombardTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Bombard)
@@ -55,12 +56,9 @@ public:
 		, Height { 0.0 }
 		, RemainingDistance { 1 }
 		, FallPercent { 1.0 }
-		, FallPercentShift { 0.0 }
-		, FallScatterRange { Leptons(0) }
 		, FallSpeed { 0.0 }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
-		, NoLaunch { false }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -77,12 +75,9 @@ public:
 	double Height;
 	int RemainingDistance;
 	double FallPercent;
-	double FallPercentShift;
-	Leptons FallScatterRange;
 	double FallSpeed;
 	Leptons TargetSnapDistance;
 	bool FreeFallOnTarget;
-	bool NoLaunch;
 
 private:
 	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed);
