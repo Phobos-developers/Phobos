@@ -518,17 +518,7 @@ int AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types, 
 		int initialDelay = 0;
 		int recreationDelay = -1;
 
-		if (durationOverrides.size() > 0)
-			durationOverride = durationOverrides[durationOverrides.size() > i ? i : durationOverrides.size() - 1];
-
-		if (delays.size() > 0)
-			delay = delays[delays.size() > i ? i : delays.size() - 1];
-
-		if (initialDelays.size() > 0)
-			initialDelay = initialDelays[initialDelays.size() > i ? i : initialDelays.size() - 1];
-
-		if (recreationDelays.size() > 0)
-			recreationDelay = recreationDelays[recreationDelays.size() > i ? i : recreationDelays.size() - 1];
+		AttachEffectClass::SetValuesHelper(i, durationOverrides, delays, initialDelays, recreationDelays, durationOverride, delay, initialDelay, recreationDelay);
 
 		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay))
 		{
@@ -583,8 +573,13 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	if (!pType || !pTarget)
 		return nullptr;
 
-	if (!pType->PenetratesIronCurtain && pTarget->IsIronCurtained())
-		return nullptr;
+	if (pTarget->IsIronCurtained())
+	{
+		bool penetrates = pTarget->ForceShielded ? pType->PenetratesForceShield.Get(pType->PenetratesIronCurtain) : pType->PenetratesIronCurtain;
+
+		if (!penetrates)
+			return nullptr;
+	}
 
 	int currentTypeCount = 0;
 	AttachEffectClass* match = nullptr;

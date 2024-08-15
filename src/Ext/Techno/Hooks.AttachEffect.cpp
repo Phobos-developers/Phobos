@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
@@ -8,7 +9,7 @@ DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
 	GET(int, speed, EAX);
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	speed = static_cast<int>(speed * pExt->AE_SpeedMultiplier);
+	speed = static_cast<int>(speed * pExt->AE.SpeedMultiplier);
 	R->EAX(speed);
 
 	return 0;
@@ -21,7 +22,7 @@ DEFINE_HOOK(0x701966, TechnoClass_ArmorMultiplier, 0x6)       // TechnoClass_Rec
 	GET(int, damage, EAX);
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	damage = static_cast<int>(damage / pExt->AE_ArmorMultiplier);
+	damage = static_cast<int>(damage / pExt->AE.ArmorMultiplier);
 	R->EAX(damage);
 
 	return 0;
@@ -34,7 +35,7 @@ DEFINE_HOOK(0x6FE352, TechnoClass_FirepowerMultiplier, 0x8)       // TechnoClass
 	GET(int, damage, EAX);
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	damage = static_cast<int>(damage * pExt->AE_FirepowerMultiplier);
+	damage = static_cast<int>(damage * pExt->AE.FirepowerMultiplier);
 	R->EAX(damage);
 
 	return 0;
@@ -92,7 +93,7 @@ DEFINE_JUMP(VTABLE, 0x7F4A34, GET_OFFSET(TechnoClass_Limbo_Wrapper)); // TechnoC
 DEFINE_JUMP(CALL, 0x4DB3B1, GET_OFFSET(TechnoClass_Limbo_Wrapper));   // FootClass
 DEFINE_JUMP(CALL, 0x445DDA, GET_OFFSET(TechnoClass_Limbo_Wrapper))    // BuildingClass
 
-DEFINE_HOOK(0x702050, TechnoClass_TakeDamage_AttachEffectExpireWeapon, 0x6)
+DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
@@ -122,6 +123,56 @@ DEFINE_HOOK(0x702050, TechnoClass_TakeDamage_AttachEffectExpireWeapon, 0x6)
 	for (auto const& pWeapon : expireWeapons)
 	{
 		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(int*, pDamage, EBX);
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (pWHExt->Reflected)
+		return 0;
+
+	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || pWHExt->SuppressReflectDamage_Types.size() > 0))
+	{
+		for (auto& attachEffect : pExt->AttachedEffects)
+		{
+			if (!attachEffect->IsActive())
+				continue;
+
+			auto const pType = attachEffect->GetType();
+
+			if (!pType->ReflectDamage)
+				continue;
+
+			if (pWHExt->SuppressReflectDamage && pWHExt->SuppressReflectDamage_Types.Contains(pType))
+				continue;
+
+			auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
+			int damage = static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier);
+
+			if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
+			{
+				auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
+				pWHExtRef->Reflected = true;
+
+				if (pType->ReflectDamage_Warhead_Detonate)
+					WarheadTypeExt::DetonateAt(pWH, pSource, pThis, damage, pThis->Owner);
+				else
+					pSource->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pThis->Owner);
+
+				pWHExtRef->Reflected = false;
+			}
+		}
 	}
 
 	return 0;

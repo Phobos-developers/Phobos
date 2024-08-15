@@ -140,6 +140,10 @@ public:
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Nullable<Vector3D<float>> VoxelLightSource;
+		// Nullable<Vector3D<float>> VoxelShadowLightSource;
+		Valueable<bool> UseFixedVoxelLighting;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -238,6 +242,9 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, VoxelLightSource { }
+			// , VoxelShadowLightSource { }
+			, UseFixedVoxelLighting { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -252,6 +259,8 @@ public:
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+		void ReplaceVoxelLightSources();
 
 	private:
 		template <typename T>
