@@ -32,9 +32,13 @@ public:
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> SplashList_CreateAll;
 		Valueable<int> SplashList_CreationInterval;
+		Valueable<Leptons> SplashList_ScatterMin;
+		Valueable<Leptons> SplashList_ScatterMax;
 		Valueable<bool> AnimList_PickRandom;
 		Valueable<bool> AnimList_CreateAll;
 		Valueable<int> AnimList_CreationInterval;
+		Valueable<Leptons> AnimList_ScatterMin;
+		Valueable<Leptons> AnimList_ScatterMax;
 		Valueable<bool> CreateAnimsOnZeroDamage;
 		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
@@ -42,6 +46,11 @@ public:
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
+		Valueable<bool> PenetratesIronCurtain;
+		Nullable<bool> PenetratesForceShield;
+		Valueable<double> Rocker_AmplitudeMultiplier;
+		Nullable<int> Rocker_AmplitudeOverride;
+
 
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
@@ -61,6 +70,7 @@ public:
 		Valueable<bool> Shield_Break;
 		Valueable<AnimTypeClass*> Shield_BreakAnim;
 		Valueable<AnimTypeClass*> Shield_HitAnim;
+		Valueable<bool> Shield_HitFlash;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
 
 		Nullable<double> Shield_AbsorbPercent;
@@ -69,7 +79,7 @@ public:
 		Nullable<int> Shield_ReceivedDamage_Maximum;
 
 		Valueable<int> Shield_Respawn_Duration;
-		Valueable<double> Shield_Respawn_Amount;
+		Nullable<double> Shield_Respawn_Amount;
 		Valueable<int> Shield_Respawn_Rate;
 		Valueable<bool> Shield_Respawn_RestartTimer;
 		Valueable<int> Shield_SelfHealing_Duration;
@@ -84,6 +94,7 @@ public:
 
 		ValueableVector<ShieldTypeClass*> Shield_AttachTypes;
 		ValueableVector<ShieldTypeClass*> Shield_RemoveTypes;
+		Valueable<bool> Shield_RemoveAll;
 		Valueable<bool> Shield_ReplaceOnly;
 		Valueable<bool> Shield_ReplaceNonRespawning;
 		Valueable<bool> Shield_InheritStateOnReplace;
@@ -125,6 +136,12 @@ public:
 		ValueableVector<int> AttachEffect_CumulativeRemoveMinCounts;
 		ValueableVector<int> AttachEffect_CumulativeRemoveMaxCounts;
 		ValueableVector<int> AttachEffect_DurationOverrides;
+
+		Valueable<bool> SuppressRevengeWeapons;
+		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
+		Valueable<bool> SuppressReflectDamage;
+		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -136,6 +153,7 @@ public:
 		bool Crit_Active;
 		bool WasDetonatedOnAllMapObjects;
 		bool Splashed;
+		bool Reflected;
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 
@@ -156,9 +174,13 @@ public:
 			, SplashList_PickRandom { false }
 			, SplashList_CreateAll { false }
 			, SplashList_CreationInterval { 0 }
+			, SplashList_ScatterMin { Leptons(0) }
+			, SplashList_ScatterMax { Leptons(0) }
 			, AnimList_PickRandom { false }
 			, AnimList_CreateAll { false }
 			, AnimList_CreationInterval { 0 }
+			, AnimList_ScatterMin { Leptons(0) }
+			, AnimList_ScatterMax { Leptons(0) }
 			, CreateAnimsOnZeroDamage { false }
 			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
@@ -166,6 +188,10 @@ public:
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
+			, PenetratesIronCurtain { false }
+			, PenetratesForceShield {}
+			, Rocker_AmplitudeMultiplier { 1.0 }
+			, Rocker_AmplitudeOverride { }
 
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
@@ -185,6 +211,7 @@ public:
 			, Shield_Break { false }
 			, Shield_BreakAnim {}
 			, Shield_HitAnim {}
+			, Shield_HitFlash { true }
 			, Shield_BreakWeapon {}
 			, Shield_AbsorbPercent {}
 			, Shield_PassPercent {}
@@ -205,6 +232,7 @@ public:
 			, Shield_SelfHealing_RestartTimer { false }
 			, Shield_AttachTypes {}
 			, Shield_RemoveTypes {}
+			, Shield_RemoveAll { false }
 			, Shield_ReplaceOnly { false }
 			, Shield_ReplaceNonRespawning { false }
 			, Shield_InheritStateOnReplace { false }
@@ -250,6 +278,11 @@ public:
 			, AttachEffect_CumulativeRemoveMaxCounts {}
 			, AttachEffect_DurationOverrides {}
 
+			, SuppressRevengeWeapons { false }
+			, SuppressRevengeWeapons_Types {}
+			, SuppressReflectDamage { false }
+			, SuppressReflectDamage_Types {}
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 			, EffectsRequireVerses { true }
@@ -259,6 +292,7 @@ public:
 			, Crit_Active { false }
 			, WasDetonatedOnAllMapObjects { false }
 			, Splashed { false }
+			, Reflected { false }
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate {false}
 		{ }
@@ -267,9 +301,10 @@ public:
 		void ApplyLocomotorInfliction(TechnoClass* pTarget);
 		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
 	public:
-		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
-		bool CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
-		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner);
+		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
+		bool CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt) const;
+		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
+		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const;
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

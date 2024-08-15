@@ -158,9 +158,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Objects in invalid map coordinates are no longer used for starting view and AI base center calculations.
 - Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
 - Units with `Sensors=true` will no longer reveal ally buildings.
+- Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
+- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
+- Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
+- Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
+- Fixed disguised units not using the correct palette if target has custom palette.
 
 ## Fixes / interactions with other extensions
 
+- All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
@@ -387,8 +393,8 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
-ClusterScatter.Min=1.0  ; float, distance in cells
-ClusterScatter.Max=2.0  ; float, distance in cells
+ClusterScatter.Min=1.0  ; floating point value, distance in cells
+ClusterScatter.Max=2.0  ; floating point value, distance in cells
 ```
 
 ### Customizable projectile gravity
@@ -409,8 +415,8 @@ Gravity=6.0             ; floating point value
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]      ; Projectile
-BallisticScatter.Min= ; float, distance in cells
-BallisticScatter.Max= ; float, distance in cells
+BallisticScatter.Min= ; floating point value, distance in cells
+BallisticScatter.Max= ; floating point value, distance in cells
 ```
 
 ## Technos
@@ -466,32 +472,43 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
     - A shorthand `InsigniaFrames` can be used to list them in order from rookie, veteran and elite instead as well. `InsigniaFrame(.Rookie|Veteran|Elite)` takes priority over this.
   - Normal insignia can be overridden for specific weapon modes of `Gunner=true` units by setting `Insignia(.Frame/.Frames).WeaponN` where `N` stands for 1-based weapon mode index. If not set, defaults to non-mode specific insignia settings.
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true.
+  - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
+  - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
+  - `DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to anchor the insignia position relative to the building's selection bracket. By default the insignia position is not anchored to the selection bracket.
+
 
 In `rulesmd.ini`:
 ```ini
 [General]
-EnemyInsignia=true                ; boolean
+EnemyInsignia=true                       ; boolean
 
-[SOMETECHNO]                      ; TechnoType
-Insignia=                         ; filename - excluding the .shp extension
-Insignia.Rookie=                  ; filename - excluding the .shp extension
-Insignia.Veteran=                 ; filename - excluding the .shp extension
-Insignia.Elite=                   ; filename - excluding the .shp extension
-InsigniaFrame=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Rookie=-1           ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Veteran=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Elite=-1            ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames=-1,-1,-1           ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.WeaponN=                 ; filename - excluding the .shp extension
-Insignia.WeaponN.Rookie=          ; filename - excluding the .shp extension
-Insignia.WeaponN.Veteran=         ; filename - excluding the .shp extension
-Insignia.WeaponN.Elite=           ; filename - excluding the .shp extension
-InsigniaFrame.WeaponN=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Rookie=-1   ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Veteran=-1  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Elite=-1    ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames.WeaponN=-1,-1,-1   ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.ShowEnemy=               ; boolean
+[AudioVisual]
+DrawInsignia.OnlyOnSelected=false        ; boolean
+DrawInsignia.AdjustPos.Infantry=5,2      ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Units=10,6        ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Buildings=10,6    ; X,Y, position offset from default
+DrawInsignia.AdjustPos.BuildingsAnchor=  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+
+[SOMETECHNO]                             ; TechnoType
+Insignia=                                ; filename - excluding the .shp extension
+Insignia.Rookie=                         ; filename - excluding the .shp extension
+Insignia.Veteran=                        ; filename - excluding the .shp extension
+Insignia.Elite=                          ; filename - excluding the .shp extension
+InsigniaFrame=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames=-1,-1,-1                  ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.WeaponN=                        ; filename - excluding the .shp extension
+Insignia.WeaponN.Rookie=                 ; filename - excluding the .shp extension
+Insignia.WeaponN.Veteran=                ; filename - excluding the .shp extension
+Insignia.WeaponN.Elite=                  ; filename - excluding the .shp extension
+InsigniaFrame.WeaponN=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Rookie=-1          ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Veteran=-1         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Elite=-1           ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames.WeaponN=-1,-1,-1          ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.ShowEnemy=                      ; boolean
 ```
 
 ```{note}
@@ -574,6 +591,19 @@ In `rulesmd.ini`:
 Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
+### Customizable wake anim
+
+- You can now specify the `Wake` anim per TechnoType to override default rules value.
+  - `Wake.Grapple` and `Wake.Sinking` can be used to further customize wake anim when the techno is being parasited or sunken.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]         ; TechnoType
+Wake=                ; Anim (played when Techno moving on the water), default to [General]->Wake
+Wake.Grapple=        ; Anim (played when Techno being parasited on the water), defaults to [SOMETECHNO]->Wake
+Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [SOMETECHNO]->Wake
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
@@ -610,6 +640,17 @@ IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invu
 IronCurtain.KillWarhead=           ; Warhead
 ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
 ForceShield.KillWarhead=           ; Warhead
+```
+
+### Iron Curtain & Force Shield extra tint intensity
+
+- It is now possible to specify additional tint intensity applied to Iron Curtained and Force Shielded units.
+
+In `rulesmd.ini`
+```ini
+[AudioVisual]
+IronCurtain.ExtraTintIntensity=0.0  ; floating point value
+ForceShield.ExtraTintIntensity=0.0  ; floating point value
 ```
 
 ### Jumpjet rotating on crashing toggle
@@ -701,6 +742,23 @@ NoWobbles=false  ; boolean
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
 ```
 
+### Subterranean unit travel height
+
+- It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
+
+[SOMETECHNO]             ; TechnoType
+SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
+```
+
+```{warning}
+This expects negative values to be used and may behave erratically if set to above -50.
+```
+
 ### Voxel body multi-section shadows
 
 - It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
@@ -712,6 +770,34 @@ In `artmd.ini`:
 ShadowIndices=        ; list of integers (voxel section indices)
 ShadowIndex.Frame=0   ; integer (HVA animation frame index)
 ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
+```
+
+### Voxel light source customization
+
+- Vanilla game applies some weird unnecessary math which resulted in the voxel light source being "nudged" up by a bit and light being applied incorrectly on tilted voxels. It is now possible to fix that.
+
+```{note}
+Please note that enabling this will remove the vertical offset vanilla engine applies to the light source position. Assuming vanilla lighting this will make the light shine even more from below the ground than it was before, so it is recommended to turn the Z value up in value of `VoxelLightSource`.
+```
+
+![image](_static/images/VoxelLightSourceComparison.png)
+*Applying `VoxelLightSource=0.02,-0.69,0.36` (assuming `UseFixedVoxelLighting=false`) vs default lighting, Prism Tank voxel by [CCS_qkl](https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index)*
+
+- It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
+  - Only the direction of the light is accounted, the distance to the voxel is not accounted.
+  - Vanilla light (assuming `UseFixedVoxelLighting=false`) is located roughly at `VoxelLightSource=0.201,-0.907,-0.362`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+UseFixedVoxelLighting=false  ; boolean, whether to fix the lighting
+VoxelLightSource=            ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
+```
+
+```{hint}
+In order to easily preview the light source settings use the [VXL Viewer and VPL Generator tool by thomassneddon](https://github.com/ThomasSneddon/vxl-renderer/releases). To use the tool unpack it somewhere, then drag the main VXL file of a voxel that you will use to preview onto it (auxilliary VXL and HVA files must be in the same folder).
+
+Keep in mind that the tool doesn't account for `UseFixedVoxelLighting=true` as of yet, so the values shown in tool need to be offset when putting in the game with with fixed voxel lighting.
 ```
 
 ### Voxel shadow scaling in air
@@ -1016,9 +1102,10 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 - It is possible to make game play random animation from `AnimList` by setting `AnimList.PickRandom` to true. The result is similar to what `EMEffect=true` produces, however it comes with no side-effects (`EMEffect=true` prevents `Inviso=true` projectiles from snapping on targets, making them miss moving targets).
 - If `AnimList.CreateAll` is set to true, all animations from `AnimList` are created, instead of a single anim based on damage or random if  `AnimList.PickRandom` is set to true.
 - If `AnimList.CreationInterval` is set to a value higher than 0, there will be that number of detonations of the Warhead before animations from `AnimList` will be created again. If the Warhead had a TechnoType firing it, this number is remembered by the TechnoType across all Warheads fired by it, otherwise it is shared between all detonations of same WarheadType period. This can be useful for things like `Airburst` with large spread where one might want uniform distribution of animations to appear but not on every detonation.
+- `AnimList.ScatterMin` & `AnimList.ScatterMax` can be used to set a range in cells around which any created animations will randomly scatter around from the impact point.
 - `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage]` -> `SplashList` are used.
-  - `SplashList.PickRandom`, `SplashList.CreateAll` and `SplashList.CreationInterval` apply to these animations in same manner as the `AnimList` equivalents.
-- `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
+  - `SplashList.PickRandom`, `SplashList.CreateAll`, `SplashList.CreationInterval` and `SplashList.ScatterMin/Max` apply to these animations in same manner as the `AnimList` equivalents.
+- - `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
 - Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land.
 
 In `rulesmd.ini`:
@@ -1027,10 +1114,14 @@ In `rulesmd.ini`:
 AnimList.PickRandom=false       ; boolean
 AnimList.CreateAll=false        ; boolean
 AnimList.CreationInterval=0     ; integer
+AnimList.ScatterMin=0.0         ; floating point value, distance in cells
+AnimList.ScatterMax=0.0         ; floating point value, distance in cells
 SplashList=                     ; List of animations
 SplashList.PickRandom=false     ; boolean
 SplashList.CreateAll=false      ; boolean
 SplashList.CreationInterval=0   ; integer
+SplashList.ScatterMin=0.0       ; floating point value, distance in cells
+SplashList.ScatterMax=0.0       ; floating point value, distance in cells
 CreateAnimsOnZeroDamage=false   ; boolean
 Conventional.IgnoreUnits=false  ; boolean
 ```
@@ -1078,6 +1169,18 @@ In `rulesmd.ini`:
 ShakeIsLocal=false  ; boolean
 ```
 
+### Customizable rocker amplitude
+
+- The rocker amplitude of warheads with `Rocker=yes` used to be determined by `Damage` value of the weapon. You can now override it with fixed value and add a multiplier to it.
+  - When both multiplier and override values are set - both are used.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; WarheadType
+Rocker.AmplitudeMultiplier=1.0  ; double
+Rocker.AmplitudeOverride=       ; integer
+```
+
 ## Weapons
 
 ### AmbientDamage customizations
@@ -1114,6 +1217,16 @@ ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
 
 [SOMEWEAPON]         ; WeaponType
 ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
+```
+
+### Customizing whether passengers are kicked out when an aircraft fires
+
+- You can now customize whether aircraft will forcefully eject passengers (vanilla behavior) or fire its weapon when attempting to fire.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+KickOutPassengers=true  ; boolean
 ```
 
 ### Single-color lasers

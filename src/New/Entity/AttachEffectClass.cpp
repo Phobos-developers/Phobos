@@ -30,6 +30,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, CurrentDelay { 0 }
 	, Animation { nullptr }
 	, IsAnimHidden { false }
+	, IsInTunnel { false }
 	, IsUnderTemporal { false }
 	, IsOnline { true }
 	, IsCloaked { false }
@@ -153,8 +154,10 @@ void AttachEffectClass::AI()
 	this->CloakCheck();
 	this->OnlineCheck();
 
-	if (!this->Animation && !this->IsUnderTemporal && this->IsOnline && !this->IsCloaked && !this->IsAnimHidden)
+	if (!this->Animation && !this->IsUnderTemporal && this->IsOnline && !this->IsCloaked && !this->IsInTunnel && !this->IsAnimHidden)
 		this->CreateAnim();
+
+	this->AnimCheck();
 }
 
 void AttachEffectClass::AI_Temporal()
@@ -165,7 +168,7 @@ void AttachEffectClass::AI_Temporal()
 
 		this->CloakCheck();
 
-		if (!this->Animation && this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides && this->IsOnline && !this->IsCloaked && !this->IsAnimHidden)
+		if (!this->Animation && this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides && this->IsOnline && !this->IsCloaked && !this->IsInTunnel && !this->IsAnimHidden)
 			this->CreateAnim();
 
 		if (this->Animation)
@@ -188,6 +191,29 @@ void AttachEffectClass::AI_Temporal()
 				this->Animation->UnderTemporal = true;
 				break;
 			}
+		}
+
+		this->AnimCheck();
+	}
+}
+
+void AttachEffectClass::AnimCheck()
+{
+	if (this->Type->Animation_HideIfAttachedWith.size() > 0)
+	{
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+
+		if (pTechnoExt->HasAttachedEffects(this->Type->Animation_HideIfAttachedWith, false, false, nullptr, nullptr, nullptr, nullptr))
+		{
+			this->KillAnim();
+			this->IsAnimHidden = true;
+		}
+		else
+		{
+			this->IsAnimHidden = false;
+
+			if (!this->Animation && (!this->IsUnderTemporal || this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides))
+				this->CreateAnim();
 		}
 	}
 }
@@ -302,12 +328,12 @@ void AttachEffectClass::KillAnim()
 	}
 }
 
-void AttachEffectClass::SetAnimationVisibility(bool visible)
+void AttachEffectClass::SetAnimationTunnelState(bool visible)
 {
-	if (!this->IsAnimHidden && !visible)
+	if (!this->IsInTunnel && !visible)
 		this->KillAnim();
 
-	this->IsAnimHidden = !visible;
+	this->IsInTunnel = !visible;
 }
 
 void AttachEffectClass::RefreshDuration(int durationOverride)
@@ -348,19 +374,50 @@ bool AttachEffectClass::HasExpired() const
 
 bool AttachEffectClass::AllowedToBeActive() const
 {
-	if (auto const pFoot = abstract_cast<FootClass*>(this->Techno))
+	auto const pTechno = this->Techno;
+
+	if (auto const pFoot = abstract_cast<FootClass*>(pTechno))
 	{
 		bool isMoving = pFoot->Locomotor->Is_Moving();
 
-		if (isMoving && (Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
+		if (isMoving && (this->Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
 			return false;
 
-		if (!isMoving && (Type->DiscardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+		if (!isMoving && (this->Type->DiscardOn & DiscardCondition::Stationary) != DiscardCondition::None)
 			return false;
 	}
 
-	if (this->Techno->DrainingMe && (Type->DiscardOn & DiscardCondition::Drain) != DiscardCondition::None)
+	if (pTechno->DrainingMe && (this->Type->DiscardOn & DiscardCondition::Drain) != DiscardCondition::None)
 		return false;
+
+	if (pTechno->Target)
+	{
+		bool inRange = (this->Type->DiscardOn & DiscardCondition::InRange) != DiscardCondition::None;
+		bool outOfRange = (this->Type->DiscardOn & DiscardCondition::OutOfRange) != DiscardCondition::None;
+
+		if (inRange || outOfRange)
+		{
+			int distance = -1;
+
+			if (this->Type->DiscardOn_RangeOverride.isset())
+			{
+				distance = this->Type->DiscardOn_RangeOverride.Get();
+			}
+			else
+			{
+				int weaponIndex = pTechno->SelectWeapon(pTechno->Target);
+				auto const pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
+
+				if (pWeapon)
+					distance = pWeapon->Range;
+			}
+
+			int distanceFromTgt = pTechno->DistanceFrom(pTechno->Target);
+
+			if ((inRange && distanceFromTgt <= distance) || (outOfRange && distanceFromTgt >= distance))
+				return false;
+		}
+	}
 
 	return true;
 }
@@ -461,17 +518,7 @@ int AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types, 
 		int initialDelay = 0;
 		int recreationDelay = -1;
 
-		if (durationOverrides.size() > 0)
-			durationOverride = durationOverrides[durationOverrides.size() > i ? i : durationOverrides.size() - 1];
-
-		if (delays.size() > 0)
-			delay = delays[delays.size() > i ? i : delays.size() - 1];
-
-		if (initialDelays.size() > 0)
-			initialDelay = initialDelays[initialDelays.size() > i ? i : initialDelays.size() - 1];
-
-		if (recreationDelays.size() > 0)
-			recreationDelay = recreationDelays[recreationDelays.size() > i ? i : recreationDelays.size() - 1];
+		AttachEffectClass::SetValuesHelper(i, durationOverrides, delays, initialDelays, recreationDelays, durationOverride, delay, initialDelay, recreationDelay);
 
 		if (auto const pAE = AttachEffectClass::CreateAndAttach(pType, pTarget, pTargetExt->AttachedEffects, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay))
 		{
@@ -526,8 +573,13 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	if (!pType || !pTarget)
 		return nullptr;
 
-	if (!pType->PenetratesIronCurtain && pTarget->IsIronCurtained())
-		return nullptr;
+	if (pTarget->IsIronCurtained())
+	{
+		bool penetrates = pTarget->ForceShielded ? pType->PenetratesForceShield.Get(pType->PenetratesIronCurtain) : pType->PenetratesIronCurtain;
+
+		if (!penetrates)
+			return nullptr;
+	}
 
 	int currentTypeCount = 0;
 	AttachEffectClass* match = nullptr;
@@ -814,6 +866,7 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->Source)
 		.Process(this->Animation)
 		.Process(this->IsAnimHidden)
+		.Process(this->IsInTunnel)
 		.Process(this->IsUnderTemporal)
 		.Process(this->IsOnline)
 		.Process(this->IsCloaked)

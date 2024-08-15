@@ -54,6 +54,7 @@ public:
 		ValueableVector<int> AttachEffect_DisallowedMinCounts;
 		ValueableVector<int> AttachEffect_DisallowedMaxCounts;
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
+		Valueable<bool> KickOutPassengers;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -89,6 +90,7 @@ public:
 			, AttachEffect_DisallowedMinCounts {}
 			, AttachEffect_DisallowedMaxCounts {}
 			, AttachEffect_IgnoreFromSameSource { false }
+			, KickOutPassengers { true }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
@@ -130,4 +132,5 @@ public:
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
+	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range);
 };

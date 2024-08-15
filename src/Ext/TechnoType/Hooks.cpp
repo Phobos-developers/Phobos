@@ -12,6 +12,7 @@
 #include <Ext/AnimType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
@@ -341,16 +342,19 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	if (pSource)
 	{
 		auto const pExt = TechnoExt::ExtMap.Find(pThis);
 		auto const pTypeExt = pExt->TypeExtData;
+		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+		bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
 
-		if (pTypeExt && pTypeExt->RevengeWeapon &&
-			EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		if (pTypeExt && pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 		{
-			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
+			if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
+				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
 		}
 
 		for (auto& attachEffect : pExt->AttachedEffects)
@@ -361,6 +365,9 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 			auto const pType = attachEffect->GetType();
 
 			if (!pType->RevengeWeapon)
+				continue;
+
+			if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
 				continue;
 
 			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
@@ -786,4 +793,57 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 	b.MakeIdentity();// we don't do scaling here anymore
 
 	return 0x707331;
+}
+
+DEFINE_HOOK_AGAIN(0x69FEDC, Locomotion_Process_Wake, 0x6)  // Ship
+DEFINE_HOOK_AGAIN(0x4B0814, Locomotion_Process_Wake, 0x6)  // Drive
+DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)  // Hover
+{
+	GET(ILocomotion* const, pILoco, ESI);
+	__assume(pILoco != nullptr);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(static_cast<LocomotionClass*>(pILoco)->LinkedTo->GetTechnoType());
+	R->EDX(pTypeExt->Wake.Get(RulesClass::Instance->Wake));
+
+	return R->Origin() + 0xC;
+}
+
+namespace GrappleUpdateTemp
+{
+	TechnoClass* pThis;
+}
+
+DEFINE_HOOK(0x629E9B, ParasiteClass_GrappleUpdate_MakeWake_SetContext, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GrappleUpdateTemp::pThis = pThis;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x629FA3, ParasiteClass_GrappleUpdate_MakeWake, 0x6)
+{
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(GrappleUpdateTemp::pThis->GetTechnoType());
+	R->EDX(pTypeExt->Wake_Grapple.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+
+	return 0x629FA9;
+}
+
+DEFINE_HOOK(0x7365AD, UnitClass_Update_SinkingWake, 0x6)
+{
+	GET(UnitClass* const, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+
+	return 0x7365B3;
+}
+
+DEFINE_HOOK(0x737F05, UnitClass_ReceiveDamage_SinkingWake, 0x6)
+{
+	GET(UnitClass* const, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
+
+	return 0x737F0B;
 }

@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <GameStrings.h>
 #include <New/Type/RadTypeClass.h>
 #include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>

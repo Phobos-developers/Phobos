@@ -167,11 +167,12 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 
 		if (!splashAnims.empty())
 		{
-			auto nIndexR = (splashAnims.size() - 1);
-			auto nIndex = splashAnimsPickRandom ?
-				ScenarioClass::Instance->Random.RandomRanged(0, nIndexR) : 0;
+			auto const lastIndex = (splashAnims.size() - 1);
+			auto const defaultIndex = isMeteor ? lastIndex : 0;
+			auto const animIndex = splashAnimsPickRandom ?
+				ScenarioClass::Instance->Random.RandomRanged(0, lastIndex) : defaultIndex;
 
-			pSplashAnimToUse = splashAnims.at(nIndex);
+			pSplashAnimToUse = splashAnims.at(animIndex);
 		}
 	}
 
@@ -223,6 +224,31 @@ void AnimExt::ExtData::InitializeConstants()
 	// Something about creating this in constructor messes with debris anims, so it has to be done for them later.
 	if (!this->OwnerObject()->HasExtras)
 		CreateAttachedSystem();
+}
+
+void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
+{
+	for (auto const& pAnim : *AnimClass::Array)
+	{
+		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+
+		if (pExt->Invoker == pTechno)
+			pExt->Invoker = nullptr;
+
+		if ((TechnoClass*)pExt->ParentBuilding == pTechno)
+			pExt->ParentBuilding = nullptr;
+	}
+}
+
+void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem)
+{
+	for (auto const& pAnim : *AnimClass::Array)
+	{
+		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+
+		if (pExt->AttachedSystem == pParticleSystem)
+			pExt->AttachedSystem = nullptr;
+	}
 }
 
 // =============================

@@ -135,6 +135,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
 	this->Spawner_DelayFrames.Read(exINI, pSection, "Spawner.DelayFrames");
+	this->Spawner_AttackImmediately.Read(exINI, pSection, "Spawner.AttackImmediately");
 
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	if (!this->Harvester_Counted.isset() && pThis->Enslaves)
@@ -195,6 +196,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WarpInMinRangeWeapon.Read<true>(exINI, pSection, "WarpInMinRangeWeapon");
 	this->WarpOutWeapon.Read<true>(exINI, pSection, "WarpOutWeapon");
 	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
+
+	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
 
 	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
 	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
@@ -298,6 +301,19 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_Delays.Read(exINI, pSection, "AttachEffect.Delays");
 	this->AttachEffect_InitialDelays.Read(exINI, pSection, "AttachEffect.InitialDelays");
 	this->AttachEffect_RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
+
+	this->BuildLimitGroup_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
+	this->BuildLimitGroup_Nums.Read(exINI, pSection, "BuildLimitGroup.Nums");
+	this->BuildLimitGroup_Factor.Read(exINI, pSection, "BuildLimitGroup.Factor");
+	this->BuildLimitGroup_ContentIfAnyMatch.Read(exINI, pSection, "BuildLimitGroup.ContentIfAnyMatch");
+	this->BuildLimitGroup_NotBuildableIfQueueMatch.Read(exINI, pSection, "BuildLimitGroup.NotBuildableIfQueueMatch");
+	this->BuildLimitGroup_ExtraLimit_Types.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.Types");
+	this->BuildLimitGroup_ExtraLimit_Nums.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.Nums");
+	this->BuildLimitGroup_ExtraLimit_MaxCount.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxCount");
+	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
+	this->Wake.Read(exINI, pSection, "Wake");
+	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
+	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -417,18 +433,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	auto [canParse, resetValue] = PassengerDeletionTypeClass::CanParse(exINI, pSection);
 
-	if (canParse)
-	{
-		if (this->PassengerDeletionType == nullptr)
-			this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
+	if (canParse && !this->PassengerDeletionType)
+		this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
 
-		this->PassengerDeletionType->LoadFromINI(pINI, pSection);
-	}
-	else if (resetValue)
+	if (this->PassengerDeletionType)
 	{
-		this->PassengerDeletionType.reset();
+		if (resetValue)
+			this->PassengerDeletionType.reset();
+		else
+			this->PassengerDeletionType->LoadFromINI(pINI, pSection);
 	}
-
 
 	Nullable<bool> isInterceptor;
 	isInterceptor.Read(exINI, pSection, "Interceptor");
@@ -455,6 +469,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		this->DroppodType.reset();
 	}
+
+	if (GeneralUtils::IsValidString(pThis->PaletteFile) && !pThis->Palette)
+		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, pThis->PaletteFile);
 }
 
 template <typename T>
@@ -479,6 +496,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Spawner_LimitRange)
 		.Process(this->Spawner_ExtraLimitRange)
 		.Process(this->Spawner_DelayFrames)
+		.Process(this->Spawner_AttackImmediately)
 		.Process(this->Harvester_Counted)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
@@ -529,6 +547,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarpInMinRangeWeapon)
 		.Process(this->WarpOutWeapon)
 		.Process(this->WarpInWeapon_UseDistanceAsDamage)
+
+		.Process(this->SubterraneanHeight)
 
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)
@@ -628,6 +648,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnHeight)
 		.Process(this->LandingDir)
 		.Process(this->DroppodType)
+
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
 
@@ -645,6 +666,20 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_Delays)
 		.Process(this->AttachEffect_InitialDelays)
 		.Process(this->AttachEffect_RecreationDelays)
+
+		.Process(this->BuildLimitGroup_Types)
+		.Process(this->BuildLimitGroup_Nums)
+		.Process(this->BuildLimitGroup_Factor)
+		.Process(this->BuildLimitGroup_ContentIfAnyMatch)
+		.Process(this->BuildLimitGroup_NotBuildableIfQueueMatch)
+		.Process(this->BuildLimitGroup_ExtraLimit_Types)
+		.Process(this->BuildLimitGroup_ExtraLimit_Nums)
+		.Process(this->BuildLimitGroup_ExtraLimit_MaxCount)
+		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
+
+		.Process(this->Wake)
+		.Process(this->Wake_Grapple)
+		.Process(this->Wake_Sinking)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

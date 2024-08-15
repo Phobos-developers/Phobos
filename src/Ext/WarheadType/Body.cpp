@@ -9,7 +9,7 @@
 
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 
-bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget)
+bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget) const
 {
 	if (pHouse && pTarget)
 	{
@@ -30,7 +30,7 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr)
+bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr) const
 {
 	if (!pTarget)
 		return false;
@@ -58,6 +58,15 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::E
 	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0;
 }
 
+// Checks if Warhead can affect target that might or might be currently invulnerable.
+bool WarheadTypeExt::ExtData::CanAffectInvulnerable(TechnoClass* pTarget) const
+{
+	if (!pTarget->IsIronCurtained())
+		return true;
+
+	return pTarget->ForceShielded ? this->PenetratesForceShield.Get(this->PenetratesIronCurtain) : this->PenetratesIronCurtain;
+}
+
 void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	WarheadTypeExt::DetonateAt(pThis, pTarget->GetCoords(), pOwner, damage, pFiringHouse, pTarget);
@@ -83,7 +92,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 	}
 }
 
-bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner)
+bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const
 {
 	if (!pTechno || !pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking)
 		return false;
@@ -138,9 +147,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->SplashList_CreateAll.Read(exINI, pSection, "SplashList.CreateAll");
 	this->SplashList_CreationInterval.Read(exINI, pSection, "SplashList.CreationInterval");
+	this->SplashList_ScatterMin.Read(exINI, pSection, "SplashList.ScatterMin");
+	this->SplashList_ScatterMax.Read(exINI, pSection, "SplashList.ScatterMax");
 	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
 	this->AnimList_CreateAll.Read(exINI, pSection, "AnimList.CreateAll");
 	this->AnimList_CreationInterval.Read(exINI, pSection, "AnimList.CreationInterval");
+	this->AnimList_ScatterMin.Read(exINI, pSection, "AnimList.ScatterMin");
+	this->AnimList_ScatterMax.Read(exINI, pSection, "AnimList.ScatterMax");
 	this->CreateAnimsOnZeroDamage.Read(exINI, pSection, "CreateAnimsOnZeroDamage");
 	this->Conventional_IgnoreUnits.Read(exINI, pSection, "Conventional.IgnoreUnits");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
@@ -148,6 +161,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 	this->ApplyModifiersOnNegativeDamage.Read(exINI, pSection, "ApplyModifiersOnNegativeDamage");
+	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
+	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
+	this->Rocker_AmplitudeMultiplier.Read(exINI, pSection, "Rocker.AmplitudeMultiplier");
+	this->Rocker_AmplitudeOverride.Read(exINI, pSection, "Rocker.AmplitudeOverride");
 
 	// Crits
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
@@ -169,6 +186,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_Break.Read(exINI, pSection, "Shield.Break");
 	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
 	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
+	this->Shield_HitFlash.Read(exINI, pSection, "Shield.HitFlash");
 	this->Shield_BreakWeapon.Read<true>(exINI, pSection, "Shield.BreakWeapon");
 	this->Shield_AbsorbPercent.Read(exINI, pSection, "Shield.AbsorbPercent");
 	this->Shield_PassPercent.Read(exINI, pSection, "Shield.PassPercent");
@@ -189,6 +207,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_AttachTypes.Read(exINI, pSection, "Shield.AttachTypes");
 	this->Shield_RemoveTypes.Read(exINI, pSection, "Shield.RemoveTypes");
 	this->Shield_ReplaceOnly.Read(exINI, pSection, "Shield.ReplaceOnly");
+	this->Shield_RemoveAll.Read(exINI, pSection, "Shield.RemoveAll");
 	this->Shield_ReplaceNonRespawning.Read(exINI, pSection, "Shield.ReplaceNonRespawning");
 	this->Shield_InheritStateOnReplace.Read(exINI, pSection, "Shield.InheritStateOnReplace");
 	this->Shield_MinimumReplaceDelay.Read(exINI, pSection, "Shield.MinimumReplaceDelay");
@@ -224,6 +243,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_CumulativeRemoveMinCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMinCounts");
 	this->AttachEffect_CumulativeRemoveMaxCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMaxCounts");
 	this->AttachEffect_DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
+
+	this->SuppressRevengeWeapons.Read(exINI, pSection, "SuppressRevengeWeapons");
+	this->SuppressRevengeWeapons_Types.Read(exINI, pSection, "SuppressRevengeWeapons.Types");
+	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
+	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -267,6 +291,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Shield_SelfHealing_Duration > 0
 		|| this->Shield_AttachTypes.size() > 0
 		|| this->Shield_RemoveTypes.size() > 0
+		|| this->Shield_RemoveAll
 		|| this->Convert_Pairs.size() > 0
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
@@ -329,9 +354,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SplashList_PickRandom)
 		.Process(this->SplashList_CreateAll)
 		.Process(this->SplashList_CreationInterval)
+		.Process(this->SplashList_ScatterMin)
+		.Process(this->SplashList_ScatterMax)
 		.Process(this->AnimList_PickRandom)
 		.Process(this->AnimList_CreateAll)
 		.Process(this->AnimList_CreationInterval)
+		.Process(this->AnimList_ScatterMin)
+		.Process(this->AnimList_ScatterMax)
 		.Process(this->CreateAnimsOnZeroDamage)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->RemoveDisguise)
@@ -339,6 +368,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
 		.Process(this->ApplyModifiersOnNegativeDamage)
+		.Process(this->PenetratesIronCurtain)
+		.Process(this->PenetratesForceShield)
+		.Process(this->Rocker_AmplitudeMultiplier)
+		.Process(this->Rocker_AmplitudeOverride)
 
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)
@@ -375,6 +408,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_SelfHealing_RestartTimer)
 		.Process(this->Shield_AttachTypes)
 		.Process(this->Shield_RemoveTypes)
+		.Process(this->Shield_RemoveAll)
 		.Process(this->Shield_ReplaceOnly)
 		.Process(this->Shield_ReplaceNonRespawning)
 		.Process(this->Shield_InheritStateOnReplace)
@@ -417,6 +451,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_CumulativeRemoveMaxCounts)
 		.Process(this->AttachEffect_DurationOverrides)
 
+		.Process(this->SuppressRevengeWeapons)
+		.Process(this->SuppressRevengeWeapons_Types)
+		.Process(this->SuppressReflectDamage)
+		.Process(this->SuppressReflectDamage_Types)
+
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
 
@@ -428,6 +467,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WasDetonatedOnAllMapObjects)
 		.Process(this->RemainingAnimCreationInterval)
 		.Process(this->PossibleCellSpreadDetonate)
+		.Process(this->Reflected)
 		;
 }
 

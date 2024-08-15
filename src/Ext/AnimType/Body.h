@@ -25,10 +25,13 @@ public:
 		Valueable<bool> CreateUnit_RemapAnim;
 		Valueable<bool> CreateUnit_RandomFacing;
 		Valueable<Mission> CreateUnit_Mission;
+		Nullable<Mission> CreateUnit_AIMission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
 		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
+		Valueable<bool> CreateUnit_SpawnParachutedInAir;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
 		Valueable<AnimTypeClass*> CreateUnit_SpawnAnim;
+		Nullable<int> CreateUnit_SpawnHeight;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
@@ -46,7 +49,7 @@ public:
 		Valueable<bool> AltPalette_ApplyLighting;
 		Valueable<OwnerHouseKind> MakeInfantryOwner;
 		Valueable<bool> ExtraShadow;
-		NullableIdx<VocClass> DetachedReport;
+		ValueableIdx<VocClass> DetachedReport;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -56,10 +59,13 @@ public:
 			, CreateUnit_InheritTurretFacings { false }
 			, CreateUnit_RemapAnim { false }
 			, CreateUnit_Mission { Mission::Guard }
+			, CreateUnit_AIMission {}
 			, CreateUnit_Owner { OwnerHouseKind::Victim }
 			, CreateUnit_AlwaysSpawnOnGround { false }
+			, CreateUnit_SpawnParachutedInAir { false }
 			, CreateUnit_ConsiderPathfinding { false }
 			, CreateUnit_SpawnAnim {}
+			, CreateUnit_SpawnHeight {}
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
