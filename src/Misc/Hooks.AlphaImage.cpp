@@ -6,6 +6,8 @@
 #include <TacticalClass.h>
 #include <TechnoClass.h>
 
+#include <Ext/Building/Body.h>
+
 #include <Utilities/Macro.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/TemplateDef.h>
@@ -14,6 +16,9 @@ DEFINE_PATCH(0x5F3E70, 0x83, 0xEC, 0x10, 0x55, 0x56) // Disbale Ares::ObjectClas
 
 void UpdateAlphaShape(ObjectClass* pSource)
 {
+	if (!pSource || !pSource->IsAlive)
+		return;
+
 	const auto pSourceType = pSource->GetType();
 
 	if (!pSourceType)
@@ -24,9 +29,6 @@ void UpdateAlphaShape(ObjectClass* pSource)
 	if (!pImage)
 		return;
 
-	const Point2D* tacticalPos = &TacticalClass::Instance->TacticalPos;
-	const Point2D off = { tacticalPos->X - (pImage->Width / 2), tacticalPos->Y - (pImage->Height / 2) };
-
 	// for animations attached to the owner object, consider
 	// the owner object as source, so the display is refreshed
 	// whenever the owner object moves.
@@ -35,6 +37,9 @@ void UpdateAlphaShape(ObjectClass* pSource)
 
 	if (pAnim && pAnim->OwnerObject)
 		pOwner = pAnim->OwnerObject;
+
+	const Point2D* tacticalPos = &TacticalClass::Instance->TacticalPos;
+	const Point2D off = { tacticalPos->X - ((pImage->Width + 1) / 2), tacticalPos->Y - ((pImage->Height + 1) / 2) };
 
 	if (const auto pFoot = abstract_cast<FootClass*>(pOwner))
 	{
@@ -66,7 +71,15 @@ void UpdateAlphaShape(ObjectClass* pSource)
 	bool inactive = pSource->InLimbo;
 
 	if (const auto pTechno = abstract_cast<TechnoClass*>(pSource))
-		inactive |= pTechno->Deactivated;
+	{
+		inactive |= pTechno->Deactivated || pTechno->CloakState == CloakState::Cloaked || pTechno->GetHeight() < -10;
+
+		if (!inactive && pTechno->IsDisguised())
+		{
+			const auto pDisguise = pTechno->GetDisguise(true);
+			inactive |= pDisguise && pDisguise->WhatAmI() == AbstractType::TerrainType;
+		}
+	}
 
 	const auto pBuilding = abstract_cast<BuildingClass*>(pSource);
 
@@ -75,7 +88,7 @@ void UpdateAlphaShape(ObjectClass* pSource)
 		const auto currMission = pBuilding->GetCurrentMission();
 
 		if (currMission != Mission::Construction && currMission != Mission::Selling)
-			inactive |= !pBuilding->IsPowerOnline();
+			inactive |= !pBuilding->IsPowerOnline() || BuildingExt::ExtMap.Find(pBuilding)->LimboID != -1;
 	}
 
 	auto& alphaExt = Make_Global<PhobosMap<ObjectClass*, AlphaShapeClass*>>(AresHelper::AresFunctionOffsetsFinal["TechnoExt_AlphaExt"]);
@@ -83,10 +96,8 @@ void UpdateAlphaShape(ObjectClass* pSource)
 	if (inactive)
 	{
 		if (auto pAlpha = alphaExt.get_or_default(pSource))
-		{
 			GameDelete(pAlpha);
-			// pSource is erased from map
-		}
+
 		return;
 	}
 
