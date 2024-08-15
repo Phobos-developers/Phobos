@@ -328,3 +328,86 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 
 	return 0;
 }
+
+// todo1 : fix this hook to replace the TEST one.
+// todo2 : flag AU on projectile.
+/*
+DEFINE_HOOK(0x70023E, TechnoClass_MouseOverObject_AttackUnderGround, 0x8)
+{
+	enum { FireIsOK = 0x700246, FireIsNotOK = 0x70056C };
+
+	//GET(ObjectClass*, pObject, EDI);
+	GET(int, isSurfaced, EAX);
+
+	Debug::LogAndMessage("%d\n", isSurfaced);
+	if (!((bool)isSurfaced) || pWpType->Projectile->AU)
+	{
+		return FireIsNotOK;
+	}
+	else
+	{
+		return FireIsOK;
+	}
+}*/
+
+DEFINE_HOOK(0x70023B, TEST, 0x5)
+{
+	return 0x700246;
+}
+
+// todo3 : ares changed the layer check of temporal wh, handle this.
+/*
+DEFINE_HOOK(, BulletClass_Logics_TemporalUnderGround, )
+{
+
+}
+*/
+
+// todo4 : auto target related impl.
+// todo5 : overwrite bHitted in the vanilla function.
+DEFINE_HOOK(0x4899DA, MapClass_DamageArea_DamageUnderGround, 0x7)
+{
+	GET_STACK(bool, isNullified, STACK_OFFSET(0xE0, -0xC9));
+	GET_STACK(int, damage, STACK_OFFSET(0xE0, -0xBC));
+	GET_STACK(CoordStruct*, pCrd, STACK_OFFSET(0xE0, -0xB8));
+	GET_BASE(WarheadTypeClass*, pWH, 0xC);
+	GET_BASE(TechnoClass*, pSrcTechno, 0x8);
+	GET_BASE(HouseClass*, pSrcHouse, 0x14);
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (isNullified || !pWHExt || false)//!pWHExt->AffectsUnderground)
+	{
+		return 0;
+	}
+
+	bool cylinder = pWHExt->CellSpread_Cylinder;
+	int spread = pWH->CellSpread;
+	for (auto const& pTechno : *TechnoClass::Array)
+	{
+		if (pTechno->InWhichLayer() == Layer::Underground && // Layer.
+			pTechno->IsAlive && !pTechno->IsIronCurtained() &&
+			!pTechno->IsOnMap && // Underground is not on map.
+			!pTechno->InLimbo)
+		{
+			int dist = 0;
+			auto technoCoords = pTechno->GetCoords();
+			if (cylinder)
+			{
+				dist = Math::sqrt(technoCoords.X - pCrd->X + technoCoords.Y - pCrd->Y);
+			}
+			else
+			{
+				dist = technoCoords.DistanceFrom(*pCrd);
+			}
+			if (dist <= spread * 256)
+			{
+				pTechno->ReceiveDamage(&damage, dist, pWH, pSrcTechno, false, false, pSrcHouse);
+				//hitted = true;
+			}
+		}
+	}
+
+	return 0;
+}
+
