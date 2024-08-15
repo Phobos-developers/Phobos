@@ -126,12 +126,12 @@ DEFINE_HOOK(0x685A38, ScenarioClass_sub_685670_SetNextScenario, 0x6)
 	{
 		if (strcmp(ScenarioClass::Instance->AltNextScenario, ""))
 		{
-			auto const& LocalVariables = ScenarioExt::Global()->Variables[false];
-			auto const& GlobalVariables = ScenarioExt::Global()->Variables[true];
+			auto const LocalVariables = ScenarioExt::Global()->Variables[false];
+			auto const GlobalVariables = ScenarioExt::Global()->Variables[true];
 
 			if (!LocalVariables.empty())
 			{
-				for (auto const& itr : LocalVariables)
+				for (auto const itr : LocalVariables)
 				{
 					if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
 						continue;
@@ -142,7 +142,7 @@ DEFINE_HOOK(0x685A38, ScenarioClass_sub_685670_SetNextScenario, 0x6)
 
 			if (!GlobalVariables.empty())
 			{
-				for (auto const& itr : GlobalVariables)
+				for (auto const itr : GlobalVariables)
 				{
 					if (strcmp(itr.second.Name, "<Alternate Next Scenario>") || itr.second.Value <= 0)
 						continue;
