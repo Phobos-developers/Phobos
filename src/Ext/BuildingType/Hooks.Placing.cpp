@@ -117,12 +117,16 @@ When the left mouse button release, move the CurrentBuildingType to here and cle
 unknown_1198 -> CurrentBuildingTypeArrayIndexCopy
 When the left mouse button release, move the unknown_11AC to here and clear the unknown_11AC, and move itself back to unknown_11AC if place failed
 
-unknown_11AC -> CurrentBuildingOwnerHouseArrayIndex
-When the building type cameo clicked, this record the ArrayIndex of the owner house of the building product
+unknown_11AC -> CurrentBuildingTypeArrayIndex
+When the building type cameo clicked, this record the ArrayIndex of the building type product
 
 CellClass:
 AltFlags = AltCellFlags::Unknown_4 -> InBuildingProcess
 Vanilla only between AddPlaceEvent and RespondToEvent
+
+BuildingClass:
+unknown_timer_550 -> KickOutBusyTimer
+Only start when factory update's kick out result is busy, and only check in factory update
 */
 
 // BaseNormal for units Hook #1 -> sub_4A8EB0 - Rewrite and add functions in
