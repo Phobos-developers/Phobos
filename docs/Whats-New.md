@@ -42,7 +42,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `[JumpjetControls]->TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
 - Buildings delivered by trigger action 125 will now **always** play buildup anim as long as it exists. `[ParamTypes]->53` is deprecated.
 - `Shadow` for debris & meteor animations is changed to `ExtraShadow`.
-- 
 
 #### From pre-0.3 devbuilds
 
