@@ -508,6 +508,9 @@ Vanilla fixes:
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread` (by Starkku)
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge (by Starkku)
 
+Ares fixes:
+- Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
+
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
