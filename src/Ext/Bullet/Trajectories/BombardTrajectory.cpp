@@ -14,12 +14,14 @@ bool BombardTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange
 		.Process(this->Height, false)
 		.Process(this->FallPercent, false)
 		.Process(this->FallPercentShift, false)
-		.Process(this->FallScatterRange, false)
+		.Process(this->FallScatter_Max, false)
+		.Process(this->FallScatter_Min, false)
 		.Process(this->FallSpeed, false)
+		.Process(this->DetonationDistance, false)
 		.Process(this->TargetSnapDistance, false)
 		.Process(this->FreeFallOnTarget, false)
 		.Process(this->NoLaunch, false)
-		.Process(this->TurningPointAnim, false)
+		.Process(this->TurningPointAnims, false)
 		;
 
 	return true;
@@ -32,12 +34,14 @@ bool BombardTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->Height)
 		.Process(this->FallPercent)
 		.Process(this->FallPercentShift)
-		.Process(this->FallScatterRange)
+		.Process(this->FallScatter_Max)
+		.Process(this->FallScatter_Min)
 		.Process(this->FallSpeed)
+		.Process(this->DetonationDistance)
 		.Process(this->TargetSnapDistance)
 		.Process(this->FreeFallOnTarget)
 		.Process(this->NoLaunch)
-		.Process(this->TurningPointAnim)
+		.Process(this->TurningPointAnims)
 		;
 
 	return true;
@@ -50,12 +54,14 @@ void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->Height.Read(exINI, pSection, "Trajectory.Bombard.Height");
 	this->FallPercent.Read(exINI, pSection, "Trajectory.Bombard.FallPercent");
 	this->FallPercentShift.Read(exINI, pSection, "Trajectory.Bombard.FallPercentShift");
-	this->FallScatterRange.Read(exINI, pSection, "Trajectory.Bombard.FallScatterRange");
+	this->FallScatter_Max.Read(exINI, pSection, "Trajectory.Bombard.FallScatter.Max");
+	this->FallScatter_Min.Read(exINI, pSection, "Trajectory.Bombard.FallScatter.Min");
 	this->FallSpeed.Read(exINI, pSection, "Trajectory.Bombard.FallSpeed");
+	this->DetonationDistance.Read(exINI, pSection, "Trajectory.Bombard.DetonationDistance");
 	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.Bombard.TargetSnapDistance");
 	this->FreeFallOnTarget.Read(exINI, pSection, "Trajectory.Bombard.FreeFallOnTarget");
 	this->NoLaunch.Read(exINI, pSection, "Trajectory.Bombard.NoLaunch");
-	this->TurningPointAnim.Read(exINI, pSection, "Trajectory.Bombard.TurningPointAnim");
+	this->TurningPointAnims.Read(exINI, pSection, "Trajectory.Bombard.TurningPointAnims");
 }
 
 bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -67,12 +73,10 @@ bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->Height)
 		.Process(this->RemainingDistance)
 		.Process(this->FallPercent)
-		.Process(this->FallPercentShift)
-		.Process(this->FallScatterRange)
 		.Process(this->FallSpeed)
+		.Process(this->DetonationDistance)
 		.Process(this->TargetSnapDistance)
 		.Process(this->FreeFallOnTarget)
-		.Process(this->NoLaunch)
 		;
 
 	return true;
@@ -87,12 +91,10 @@ bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->Height)
 		.Process(this->RemainingDistance)
 		.Process(this->FallPercent)
-		.Process(this->FallPercentShift)
-		.Process(this->FallScatterRange)
 		.Process(this->FallSpeed)
+		.Process(this->DetonationDistance)
 		.Process(this->TargetSnapDistance)
 		.Process(this->FreeFallOnTarget)
-		.Process(this->NoLaunch)
 		;
 
 	return true;
@@ -101,40 +103,18 @@ bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
 	auto const pType = this->GetTrajectoryType<BombardTrajectoryType>(pBullet);
-	this->Height = pType->Height + pBullet->TargetCoords.Z;
 
 	// use scaling since RandomRanged only support int
-	this->FallPercentShift = pType->FallPercentShift;
-	double fallPercentShift = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(200 * this->FallPercentShift)) / 100.0;
-	this->FallPercent = pType->FallPercent - this->FallPercentShift + fallPercentShift;
+	this->Height = pType->Height + pBullet->TargetCoords.Z;
+	double fallPercentShift = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(200 * pType->FallPercentShift)) / 100.0;
+	this->FallPercent = pType->FallPercent - pType->FallPercentShift + fallPercentShift;
 
-	this->FallScatterRange = pType->FallScatterRange;
 	this->FallSpeed = pType->FallSpeed ? pType->FallSpeed : this->GetTrajectorySpeed(pBullet);
+	this->DetonationDistance = pType->DetonationDistance;
 	this->TargetSnapDistance = pType->TargetSnapDistance;
 	this->FreeFallOnTarget = pType->FreeFallOnTarget;
-	this->NoLaunch = pType->NoLaunch;
 
-	if (pBullet->Type->Inaccurate)
-	{
-		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
-
-		int ballisticScatter = RulesClass::Instance->BallisticScatter;
-		int scatterMax = (int)(pTypeExt->BallisticScatter_Max.Get(Leptons { ballisticScatter }));
-		int scatterMin = (int)(pTypeExt->BallisticScatter_Min.Get(Leptons { scatterMax / 2 }));
-
-		double random = ScenarioClass::Instance->Random.RandomRanged(scatterMin, scatterMax);
-		double theta = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
-
-		CoordStruct offset
-		{
-			static_cast<int>(random * Math::cos(theta)),
-			static_cast<int>(random * Math::sin(theta)),
-			0
-		};
-		pBullet->TargetCoords += offset;
-	}
-
-	if (!this->NoLaunch)
+	if (!pType->NoLaunch)
 	{
 		pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X) * this->FallPercent;
 		pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y) * this->FallPercent;
@@ -146,9 +126,8 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		this->IsFalling = true;
 		CoordStruct SourceLocation;
 		SourceLocation.Z = static_cast<int>(this->Height - pBullet->SourceCoords.Z);
-		int scatterRange = static_cast<int>(this->FallScatterRange);
 		double angel = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
-		double length = ScenarioClass::Instance->Random.RandomRanged(-scatterRange, scatterRange);
+		double length = ScenarioClass::Instance->Random.RandomRanged(Leptons { pType->FallScatter_Min }, Leptons { pType->FallScatter_Max });
 		int scatterX = static_cast<int>(length * Math::cos(angel));
 		int scatterY = static_cast<int>(length * Math::sin(angel));
 
@@ -175,11 +154,13 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		}
 
 		this->RemainingDistance = static_cast<int>(pBullet->TargetCoords.DistanceFrom(SourceLocation) + this->FallSpeed);
-		if (auto turningPointAnim = pType->TurningPointAnim.Get())
+		if (!pType->TurningPointAnims.empty())
 		{
-			auto const pAnim = GameCreate<AnimClass>(turningPointAnim, SourceLocation);
-			pAnim->SetOwnerObject(pBullet->Owner);
-			pAnim->Owner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+			if (auto const pAnim = GameCreate<AnimClass>(pType->TurningPointAnims[ScenarioClass::Instance->Random.RandomRanged(0, pType->TurningPointAnims.size() - 1)], SourceLocation))
+			{
+				pAnim->SetOwnerObject(pBullet->Owner);
+				pAnim->Owner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+			}
 		}
 	}
 }
@@ -187,7 +168,7 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 bool BombardTrajectory::OnAI(BulletClass* pBullet)
 {
 	// Close enough
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100) // This value maybe adjusted?
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
 		return true;
 
 	// Extra check for trajectory falling

@@ -9,12 +9,14 @@ public:
 		, Height { 0.0 }
 		, FallPercent { 1.0 }
 		, FallPercentShift { 0.0 }
-		, FallScatterRange { Leptons(0) }
+		, FallScatter_Max { Leptons(0) }
+		, FallScatter_Min { Leptons(0) }
 		, FallSpeed { 0.0 }
+		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
 		, NoLaunch { false }
-		, TurningPointAnim {}
+		, TurningPointAnims {}
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -26,12 +28,14 @@ public:
 	Valueable<double> Height;
 	Valueable<double> FallPercent;
 	Valueable<double> FallPercentShift;
-	Valueable<Leptons> FallScatterRange;
+	Valueable<Leptons> FallScatter_Max;
+	Valueable<Leptons> FallScatter_Min;
 	Valueable<double> FallSpeed;
+	Valueable<Leptons> DetonationDistance;
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> FreeFallOnTarget;
 	Valueable<bool> NoLaunch;
-	Valueable<AnimTypeClass*> TurningPointAnim;
+	ValueableVector<AnimTypeClass*> TurningPointAnims;
 };
 
 class BombardTrajectory final : public PhobosTrajectory
@@ -42,12 +46,10 @@ public:
 		, Height { 0.0 }
 		, RemainingDistance { 1 }
 		, FallPercent { 1.0 }
-		, FallPercentShift { 0.0 }
-		, FallScatterRange { Leptons(0) }
 		, FallSpeed { 0.0 }
+		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
-		, NoLaunch { false }
 	{}
 
 	BombardTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Bombard)
@@ -55,12 +57,10 @@ public:
 		, Height { 0.0 }
 		, RemainingDistance { 1 }
 		, FallPercent { 1.0 }
-		, FallPercentShift { 0.0 }
-		, FallScatterRange { Leptons(0) }
 		, FallSpeed { 0.0 }
+		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
-		, NoLaunch { false }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -77,13 +77,12 @@ public:
 	double Height;
 	int RemainingDistance;
 	double FallPercent;
-	double FallPercentShift;
-	Leptons FallScatterRange;
 	double FallSpeed;
+	Leptons DetonationDistance;
 	Leptons TargetSnapDistance;
 	bool FreeFallOnTarget;
-	bool NoLaunch;
 
 private:
+	void PrepareForOpenFire(BulletClass* pBullet);
 	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed);
 };

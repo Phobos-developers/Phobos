@@ -81,26 +81,6 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->FirerZPosition = this->GetFirerZPosition(pBullet);
 	this->TargetZPosition = this->GetTargetZPosition(pBullet);
 
-	if (pBullet->Type->Inaccurate)
-	{
-		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
-
-		int ballisticScatter = RulesClass::Instance->BallisticScatter;
-		int scatterMax = (int)(pTypeExt->BallisticScatter_Max.Get(Leptons { ballisticScatter }));
-		int scatterMin = (int)(pTypeExt->BallisticScatter_Min.Get(Leptons { scatterMax / 2 }));
-
-		double random = ScenarioClass::Instance->Random.RandomRanged(scatterMin, scatterMax);
-		double theta = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
-
-		CoordStruct offset
-		{
-			static_cast<int>(random * Math::cos(theta)),
-			static_cast<int>(random * Math::sin(theta)),
-			0
-		};
-		pBullet->TargetCoords += offset;
-	}
-
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
 	pBullet->Velocity.Z = this->GetVelocityZ(pBullet);
