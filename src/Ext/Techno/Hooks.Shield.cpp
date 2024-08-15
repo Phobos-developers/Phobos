@@ -17,25 +17,28 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
-	if (!*args->Damage || args->IgnoreDefenses)
+	if (args->IgnoreDefenses)
 		return 0;
 
 	//Calculate Damage Multiplier
-	if (const auto pHouse = pThis->Owner)
+	if (!*args->Damage)
 	{
-		auto const pRules = RulesExt::Global();
-		const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-		const int sgnDamage = *args->Damage > 0 ? 1 : -1;
-		int calculateDamage = *args->Damage;
+		if (const auto pHouse = pThis->Owner)
+		{
+			auto const pRules = RulesExt::Global();
+			const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+			const int sgnDamage = *args->Damage > 0 ? 1 : -1;
+			int calculateDamage = *args->Damage;
 
-		if (pHouse == args->SourceHouse)
-			calculateDamage = static_cast<int>(*args->Damage * pWHExt->DamageOwnerMultiplier.Get(pRules->DamageOwnerMultiplier));
-		else if (pHouse->IsAlliedWith(args->SourceHouse))
-			calculateDamage = static_cast<int>(*args->Damage * pWHExt->DamageAlliesMultiplier.Get(pRules->DamageAlliesMultiplier));
-		else
-			calculateDamage = static_cast<int>(*args->Damage * pWHExt->DamageEnemiesMultiplier.Get(pRules->DamageEnemiesMultiplier));
+			if (pHouse == args->SourceHouse)
+				calculateDamage = static_cast<int>(*args->Damage * pWHExt->DamageOwnerMultiplier.Get(pRules->DamageOwnerMultiplier));
+			else if (pHouse->IsAlliedWith(args->SourceHouse))
+				calculateDamage = static_cast<int>(*args->Damage * pWHExt->DamageAlliesMultiplier.Get(pRules->DamageAlliesMultiplier));
+			else
+				calculateDamage = static_cast<int>(*args->Damage * pWHExt->DamageEnemiesMultiplier.Get(pRules->DamageEnemiesMultiplier));
 
-		*args->Damage = calculateDamage ? calculateDamage : sgnDamage;
+			*args->Damage = calculateDamage ? calculateDamage : sgnDamage;
+		}
 	}
 
 	//Shield Receive Damage
