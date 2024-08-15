@@ -545,6 +545,7 @@ Phobos fixes:
 - Fixed radiation site damage not taking the radiation level reduction into accord (by Starkku)
 - Correctly update laser trail position while techno is cloaked even if trail is not drawn (by Starkku)
 - Fixed `Shield.Respawn.Amount` not defaulting to shield type default if not set (by Starkku)
+- Fixed frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` instead of `TXT_DISPLAY_DAMAGE_DESC` (by DeathFishAtEase)
 
 Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active (by Starkku)
