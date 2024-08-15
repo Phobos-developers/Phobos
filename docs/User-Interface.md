@@ -293,9 +293,7 @@ SelectionFlashDuration=0  ; integer, number of frames
 ### `[ ]` Toggle Frame By Frame Mode
 - Switches on/off [frame by frame mode](Miscellanous.html#frame-step-in).
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
-```{warning}
-In versions up to and including build43, there was actually an erroneous reading of TXT_DISPLAY_DAMAGE_DESC which should not have been used here, as it was intended for Display Damage Numbers.
-```
+
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.
