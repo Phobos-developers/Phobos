@@ -350,8 +350,8 @@ This page lists all the individual contributions to the project by their author.
   - Customizable rocker amplitude
 - **handama** - AI script action to jump back to previous script
 - **航味麻酱**
-  - Skirmish AI "sell all and all in" behavior dehardcode
-  - Skirmish AI "regroup when mcv deploy" behavior dehardcode
+  - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
+  - Skirmish AI "gather when mcv deploy" behavior dehardcode
   - Global value of `RepairBaseNodes` and `MCVRedeploys`
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares

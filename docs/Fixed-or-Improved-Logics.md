@@ -744,19 +744,19 @@ NoWobbles=false  ; boolean
 ### Skirmish AI behavior dehardcode
 
 - In vanilla, there is a hardcoded behavior that when an skirmish AI player has no factory and has not taken damage for a while, it will sell its buildings and set its units to hunt. This can be customized now.
-  - `[General]->AISellAllOnLastLegs` and `[General]->AIAllInOnLastLegs` control whether the AI will act selling and hunting respectively.
-  - `[General]->AISellAllDelay` defines a timer, it will only work if `[General]->AISellAllOnLastLegs` is set to `true`. When the first time the AI reaches the trigger condition of vanilla behavior, the timer starts and prevents the selling behavior from happening until the timer is expired.
+  - `[General]->AIFireSale` and `[General]->AIAllToHunt` control whether the AI will act selling and hunting respectively.
+  - `[General]->AIFireSaleDelay` defines a timer, it will only work if `[General]->AIFireSale` is set to `true`. When the first time the AI reaches the trigger condition of vanilla behavior, the timer starts and prevents the selling behavior from happening until the timer is expired.
   - You can use these flags to make the AIs "all in" before they are defeated.
-- Another hardcoded behavior is that, when the AI deploys a MCV, it will regroup all of its forces to that place. This can be toggle off now.
-  - `[General]->RegroupWhenMCVDeploy` controls this behavior.
+- Another hardcoded behavior is that, when the AI deploys a MCV, it will gather all of its forces to that place. This can be toggle off now.
+  - `[General]->GatherWhenMCVDeploy` controls this behavior.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-AISellAllOnLastLegs=true   ; boolean
-AISellAllDelay=0           ; integer, number of frames
-AIAllInOnLastLegs=true     ; boolean
-RegroupWhenMCVDeploy=true  ; boolean
+AIFireSale=true           ; boolean
+AIFireSaleDelay=0         ; integer, number of frames
+AIAllToHunt=true          ; boolean
+GatherWhenMCVDeploy=true  ; boolean
 ```
 
 ### Subterranean unit travel height
