@@ -102,42 +102,36 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 DEFINE_HOOK(0x41847E, AircraftClass_MissionAttack_ScatterCell1, 0x6)
 {
 	enum { SkipScatter = 0x4184C2, Scatter = 0 };
-
 	return false ? Scatter : SkipScatter;
 }
 
 DEFINE_HOOK(0x4186DD, AircraftClass_MissionAttack_ScatterCell2, 0x6)
 {
 	enum { SkipScatter = 0x418720, Scatter = 0 };
-
 	return false ? Scatter : SkipScatter;
 }
 
 DEFINE_HOOK(0x41882C, AircraftClass_MissionAttack_ScatterCell3, 0x6)
 {
 	enum { SkipScatter = 0x418870, Scatter = 0 };
-
 	return false ? Scatter : SkipScatter;
 }
 
 DEFINE_HOOK(0x41893B, AircraftClass_MissionAttack_ScatterCell4, 0x6)
 {
 	enum { SkipScatter = 0x41897F, Scatter = 0 };
-
 	return false ? Scatter : SkipScatter;
 }
 
 DEFINE_HOOK(0x418A4A, AircraftClass_MissionAttack_ScatterCell5, 0x6)
 {
 	enum { SkipScatter = 0x418A8E, Scatter = 0 };
-
 	return false ? Scatter : SkipScatter;
 }
 
 DEFINE_HOOK(0x418B46, AircraftClass_MissionAttack_ScatterCell6, 0x6)
 {
 	enum { SkipScatter = 0x418B8A, Scatter = 0 };
-
 	return false ? Scatter : SkipScatter;
 }
 
@@ -157,14 +151,14 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Fix1, 0x6)
 }
 
 // delete the second one 'ignoreDestination'
-DEFINE_HOOK(0x481780, CellClass_ScatterContent_Fix1, 0x6)
+DEFINE_HOOK(0x481780, CellClass_ScatterContent_Fix2, 0x6)
 {
 	R->AL(false);
 	return 0;
 }
 
 // fix the third one 'RulesClass::Instance->PlayerScatter'
-DEFINE_HOOK(0x481788, CellClass_ScatterContent_Fix2, 0x5)
+DEFINE_HOOK(0x481788, CellClass_ScatterContent_Fix3, 0x5)
 {
 	enum { ret = 0x481793 };
 	GET(ObjectClass*, pObject, ESI);
@@ -176,3 +170,16 @@ DEFINE_HOOK(0x481788, CellClass_ScatterContent_Fix2, 0x5)
 
 	return ret;
 }
+
+// 航味麻酱: No idea about why these did not works. Not important though.
+// 
+//DEFINE_HOOK(0x418484, AircraftClass_MissionAttack_ScatterIgnoreMission1, 0x6)
+//DEFINE_HOOK(0x4186E2, AircraftClass_MissionAttack_ScatterIgnoreMission2, 0xA)
+//DEFINE_HOOK(0x418832, AircraftClass_MissionAttack_ScatterIgnoreMission3, 0xC)
+//DEFINE_HOOK(0x418941, AircraftClass_MissionAttack_ScatterIgnoreMission4, 0x6)
+//DEFINE_HOOK(0x418A50, AircraftClass_MissionAttack_ScatterIgnoreMission5, 0x6)
+//DEFINE_HOOK(0x0418B4C, AircraftClass_MissionAttack_ScatterIgnoreMission6, 0xA)
+//{
+//	R->Stack8(false);
+//	return 0;
+//}
