@@ -281,6 +281,7 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 
 	auto const pRules = RulesExt::Global();
 	auto const pExt = HouseExt::ExtMap.Find(pThis);
+
 	if (pRules->AISellAllOnLastLegs)
 	{
 		if (pRules->AISellAllDelay <= 0 || !pExt ||
@@ -293,7 +294,11 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 			pExt->AISellAllDelayTimer.Start(pRules->AISellAllDelay);
 		}
 	}		
+
 	if (pRules->AIAllInOnLastLegs)
+	{
 		pThis->All_To_Hunt();
+	}
+
 	return ret;
 }

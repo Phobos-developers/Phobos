@@ -507,14 +507,18 @@ void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if ( nWrittenGlobal > 0)
 	{
 		for (size_t i = 0; i < 3; i++)
+		{
 			this->RepairBaseNodes[i] = RulesExt::Global()->RepairBaseNodes[i < nWrittenGlobal ? i : nWrittenGlobal - 1];
+		}
 	}
+
 	if (nWritten > 0)
 	{
 		for (size_t i = 0; i < 3; i++)
+		{
 			this->RepairBaseNodes[i] = readBaseNodeRepairInfo[i < nWritten ? i : nWritten - 1];
+		}
 	}
-
 }
 
 // =============================
