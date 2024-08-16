@@ -186,9 +186,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->UseFixedVoxelLighting.Read(exINI, GameStrings::AudioVisual, "UseFixedVoxelLighting");
 
 	this->RegroupWhenMCVDeploy.Read(exINI, GameStrings::General, "RegroupWhenMCVDeploy");
-	this->AISellAllOnLastLegs.Read(exINI, GameStrings::General, "AISellAllOnLastLegs");
-	this->AISellAllDelay.Read(exINI, GameStrings::General, "AISellAllDelay");
-	this->AIAllInOnLastLegs.Read(exINI, GameStrings::General, "AIAllInOnLastLegs");
+	this->AIFireSale.Read(exINI, GameStrings::General, "AIFireSale");
+	this->AIFireSaleDelay.Read(exINI, GameStrings::General, "AIFireSaleDelay");
+	this->AIAllToHunt.Read(exINI, GameStrings::General, "AIAllToHunt");
 	this->RepairBaseNodes.Read(exINI, GameStrings::General, "RepairBaseNodes");
 	this->MCVRedeploysInCampaign.Read(exINI, GameStrings::General, "MCVRedeploysInCampaign");
 
@@ -358,9 +358,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		// .Process(this->VoxelShadowLightSource)
 		.Process(this->UseFixedVoxelLighting)
 		.Process(this->RegroupWhenMCVDeploy)
-		.Process(this->AISellAllOnLastLegs)
-		.Process(this->AISellAllDelay)
-		.Process(this->AIAllInOnLastLegs)
+		.Process(this->AIFireSale)
+		.Process(this->AIFireSaleDelay)
+		.Process(this->AIAllToHunt)
 		.Process(this->RepairBaseNodes)
 		.Process(this->MCVRedeploysInCampaign)
 		;

@@ -145,9 +145,9 @@ public:
 		Valueable<bool> UseFixedVoxelLighting;
 
 		Valueable<bool> RegroupWhenMCVDeploy;
-		Valueable<bool> AISellAllOnLastLegs;
-		Valueable<int> AISellAllDelay;
-		Valueable<bool> AIAllInOnLastLegs;
+		Valueable<bool> AIFireSale;
+		Valueable<int> AIFireSaleDelay;
+		Valueable<bool> AIAllToHunt;
 		ValueableVector<bool> RepairBaseNodes;
 		Valueable<bool> MCVRedeploysInCampaign;
 
@@ -253,9 +253,9 @@ public:
 			// , VoxelShadowLightSource { }
 			, UseFixedVoxelLighting { false }
 			, RegroupWhenMCVDeploy { true }
-			, AISellAllOnLastLegs { true }
-			, AISellAllDelay { 0 }
-			, AIAllInOnLastLegs { true }
+			, AIFireSale { true }
+			, AIFireSaleDelay { 0 }
+			, AIAllToHunt { true }
 			, RepairBaseNodes {}
 			, MCVRedeploysInCampaign { false }
 		{ }

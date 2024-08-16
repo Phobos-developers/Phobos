@@ -282,20 +282,20 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 	auto const pRules = RulesExt::Global();
 	auto const pExt = HouseExt::ExtMap.Find(pThis);
 
-	if (pRules->AISellAllOnLastLegs)
+	if (pRules->AIFireSale)
 	{
-		if (pRules->AISellAllDelay <= 0 || !pExt ||
-			pExt->AISellAllDelayTimer.Completed())
+		if (pRules->AIFireSaleDelay <= 0 || !pExt ||
+			pExt->AIFireSaleDelayTimer.Completed())
 		{
 			pThis->Fire_Sale();
 		}
-		else if (!pExt->AISellAllDelayTimer.HasStarted())
+		else if (!pExt->AIFireSaleDelayTimer.HasStarted())
 		{
-			pExt->AISellAllDelayTimer.Start(pRules->AISellAllDelay);
+			pExt->AIFireSaleDelayTimer.Start(pRules->AIFireSaleDelay);
 		}
 	}		
 
-	if (pRules->AIAllInOnLastLegs)
+	if (pRules->AIAllToHunt)
 	{
 		pThis->All_To_Hunt();
 	}
