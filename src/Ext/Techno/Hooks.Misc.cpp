@@ -108,12 +108,14 @@ DEFINE_HOOK(0x6F7891, TechnoClass_IsCloseEnough_CylinderRangefinding, 0x7)
 	GET(TechnoClass* const, pThis, ESI);
 
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
-	bool bAlwaysCylinderRangefinding = RulesExt::Global()->AlwaysCylinderRangefinding;
+	bool cylinder = RulesExt::Global()->CylinderRangefinding;
+
 	if (pWeaponExt)
 	{
-		bAlwaysCylinderRangefinding = pWeaponExt->AlwaysCylinderRangefinding.Get(bAlwaysCylinderRangefinding);
+		cylinder = pWeaponExt->CylinderRangefinding.Get(cylinder);
 	}
-	if (bAlwaysCylinderRangefinding)
+
+	if (cylinder)
 	{
 		R->AL(true);
 	}
@@ -121,5 +123,6 @@ DEFINE_HOOK(0x6F7891, TechnoClass_IsCloseEnough_CylinderRangefinding, 0x7)
 	{
 		R->AL(pThis->IsInAir()); // vanilla check
 	}
+
 	return ret;
 }

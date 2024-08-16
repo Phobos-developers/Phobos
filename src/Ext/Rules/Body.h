@@ -143,7 +143,7 @@ public:
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 
-		Valueable<bool> AlwaysCylinderRangefinding;
+		Valueable<bool> CylinderRangefinding;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -245,7 +245,7 @@ public:
 			, PodImage { }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
-			, AlwaysCylinderRangefinding { false }
+			, CylinderRangefinding { false }
 		{ }
 
 		virtual ~ExtData() = default;

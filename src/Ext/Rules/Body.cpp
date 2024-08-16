@@ -183,7 +183,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ReplaceVoxelLightSources();
 
-	this->AlwaysCylinderRangefinding.Read(exINI, GameStrings::General, "AlwaysCylinderRangefinding");
+	this->CylinderRangefinding.Read(exINI, GameStrings::General, "CylinderRangefinding");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -349,7 +349,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PodImage)
 		.Process(this->VoxelLightSource)
 		// .Process(this->VoxelShadowLightSource)
-		.Process(this->AlwaysCylinderRangefinding)
+		.Process(this->CylinderRangefinding)
 		;
 }
 

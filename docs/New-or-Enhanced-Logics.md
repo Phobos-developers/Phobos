@@ -1582,16 +1582,16 @@ FeedbackWeapon=  ; WeaponType
 ### Range finding in cylinder
 
 - In vanilla, technos in air will ignore the distance in Z axis when checking if the target is in range. Now you can use the following flags to make technos always range finding like that.
-- `[General]->AlwaysCylinderRangefinding` controls this globally, and can be customized per weapon type.
+- `[General]->CylinderRangefinding` controls this globally, and can be customized per weapon type.
 - Mind that set the flags to `false` meaning "use default" rather than "disable". Technos in air will always range finding in cylinder like vanilla, despite what you set.
 
 In `rulesmd.ini`:
 ```ini
 [General]                         ; WeaponType
-AlwaysCylinderRangefinding=false  ; boolean
+CylinderRangefinding=false  ; boolean
 
 [SOMEWEAPON]                      ; WeaponType
-AlwaysCylinderRangefinding=       ; boolean
+CylinderRangefinding=       ; boolean
 ```
 
 ### Strafing aircraft weapon customization
