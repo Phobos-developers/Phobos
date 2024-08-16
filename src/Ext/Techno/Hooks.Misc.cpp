@@ -140,3 +140,39 @@ DEFINE_HOOK(0x418B46, AircraftClass_MissionAttack_ScatterCell6, 0x6)
 
 	return false ? Scatter : SkipScatter;
 }
+
+// 航味麻酱: These are WW's bullshit checks.
+// 
+//if (  bHasAElite
+//   || ignoreDestination
+//   || RulesClass::Instance->PlayerScatter
+//   || pTechnoToScatter && (FootClass::HasAbility(pTechnoToScatter, Ability::Scatter)
+//   || pTechnoToScatter->Owner->IQLevel2 >= RulesClass::Instance->Scatter) )
+
+// delete the first one 'bHasAElite'
+DEFINE_HOOK(0x481778, CellClass_ScatterContent_Fix1, 0x6)
+{
+	R->AL(false);
+	return 0;
+}
+
+// delete the second one 'ignoreDestination'
+DEFINE_HOOK(0x481780, CellClass_ScatterContent_Fix1, 0x6)
+{
+	R->AL(false);
+	return 0;
+}
+
+// fix the third one 'RulesClass::Instance->PlayerScatter'
+DEFINE_HOOK(0x481788, CellClass_ScatterContent_Fix2, 0x5)
+{
+	enum { ret = 0x481793 };
+	GET(ObjectClass*, pObject, ESI);
+
+	auto pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (RulesClass::Instance()->PlayerScatter && pTechno && pTechno->Owner->IsHumanPlayer)
+		R->CL(true);
+
+	return ret;
+}
