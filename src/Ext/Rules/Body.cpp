@@ -185,7 +185,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->UseFixedVoxelLighting.Read(exINI, GameStrings::AudioVisual, "UseFixedVoxelLighting");
 
-	this->RegroupWhenMCVDeploy.Read(exINI, GameStrings::General, "RegroupWhenMCVDeploy");
+	this->GatherWhenMCVDeploy.Read(exINI, GameStrings::General, "GatherWhenMCVDeploy");
 	this->AIFireSale.Read(exINI, GameStrings::General, "AIFireSale");
 	this->AIFireSaleDelay.Read(exINI, GameStrings::General, "AIFireSaleDelay");
 	this->AIAllToHunt.Read(exINI, GameStrings::General, "AIAllToHunt");
@@ -357,7 +357,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->VoxelLightSource)
 		// .Process(this->VoxelShadowLightSource)
 		.Process(this->UseFixedVoxelLighting)
-		.Process(this->RegroupWhenMCVDeploy)
+		.Process(this->GatherWhenMCVDeploy)
 		.Process(this->AIFireSale)
 		.Process(this->AIFireSaleDelay)
 		.Process(this->AIAllToHunt)
