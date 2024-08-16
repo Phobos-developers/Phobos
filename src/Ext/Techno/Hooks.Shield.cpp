@@ -37,7 +37,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		if (multiplier != 1.0)
 		{
 			const int sgnDamage = *args->Damage > 0 ? 1 : -1;
-			const int calculateDamage = *args->Damage * multiplier;
+			const int calculateDamage = static_cast<int>(*args->Damage * multiplier);
 			*args->Damage = calculateDamage ? calculateDamage : sgnDamage;
 		}
 	}
