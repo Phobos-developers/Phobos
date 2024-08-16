@@ -9,6 +9,8 @@
 #include <RadSiteClass.h>
 #include <VocClass.h>
 #include <ScenarioClass.h>
+#include <MessageListClass.h>
+#include <StringTable.h>
 
 #include <Utilities/Macro.h>
 
@@ -114,5 +116,39 @@ DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
 		}
 	}
 
+	return 0;
+}
+
+DEFINE_HOOK(0x55D377, Main_Loop_ProcessTActionPendingSaveGame, 0x5)
+{
+	if (TActionExt::PendingSaveGameByTrigger.has_value())
+	{
+		auto PrintMessage = [](const wchar_t* pMessage)
+		{
+			MessageListClass::Instance->PrintMessage(
+				pMessage,
+				RulesClass::Instance->MessageDelay,
+				HouseClass::Player->ColorSchemeIndex,
+				true
+			);
+		};
+
+		char fName[0x80];
+
+		SYSTEMTIME time;
+		GetLocalTime(&time);
+
+		_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
+			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
+
+		PrintMessage(StringTable::LoadString("TXT_SAVING_GAME"));
+
+		if (ScenarioClass::Instance->SaveGame(fName, TActionExt::PendingSaveGameByTrigger.value().c_str()))
+			PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
+		else
+			PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
+
+		TActionExt::PendingSaveGameByTrigger.reset();
+	}
 	return 0;
 }

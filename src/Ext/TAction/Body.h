@@ -7,6 +7,9 @@
 
 #include <TActionClass.h>
 
+#include <string>
+#include <optional>
+
 class HouseClass;
 
 enum class PhobosTriggerAction : unsigned int
@@ -58,6 +61,8 @@ public:
 
 #undef ACTION_FUNC
 #pragma pop_macro("ACTION_FUNC")
+
+	static std::optional<std::wstring> PendingSaveGameByTrigger;
 
 	class ExtContainer final : public Container<TActionExt>
 	{

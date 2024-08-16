@@ -9,6 +9,8 @@
 
 #include <Ext/Scenario/Body.h>
 
+std::optional<std::wstring> TActionExt::PendingSaveGameByTrigger;
+
 //Static init
 template<> const DWORD Extension<TActionClass>::Canary = 0x91919191;
 TActionExt::ExtContainer TActionExt::ExtMap;
@@ -92,37 +94,13 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 
 bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
+	PendingSaveGameByTrigger.reset();
 	if (SessionClass::Instance->GameMode == GameMode::Campaign || SessionClass::Instance->GameMode == GameMode::Skirmish)
 	{
-		auto PrintMessage = [](const wchar_t* pMessage)
-		{
-			MessageListClass::Instance->PrintMessage(
-				pMessage,
-				RulesClass::Instance->MessageDelay,
-				HouseClass::Player->ColorSchemeIndex,
-				true
-			);
-		};
-
-		char fName[0x80];
-
-		SYSTEMTIME time;
-		GetLocalTime(&time);
-
-		_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
-			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
-
-		PrintMessage(StringTable::LoadString("TXT_SAVING_GAME"));
-
-		wchar_t fDescription[0x80] = { 0 };
-		wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
-		wcscat_s(fDescription, L" - ");
-		wcscat_s(fDescription, StringTable::LoadString(pThis->Text));
-
-		if (ScenarioClass::Instance->SaveGame(fName, fDescription))
-			PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
-		else
-			PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
+		std::wstring fDesc = ScenarioClass::Instance->UINameLoaded;
+		fDesc += L" - ";
+		fDesc += StringTable::LoadString(pThis->Text);
+		PendingSaveGameByTrigger = fDesc;
 	}
 
 	return true;
