@@ -108,31 +108,31 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 	GET(CellStruct* const, pSpawnerMapCrd, EBP);
 
 	if (!pThis)
-	{
 		return 0;
-	}
+
 	auto pSpawner = pThis->Owner;
+
 	if (!pSpawner || !pSpawned)
-	{
 		return 0;
-	}
+
 	auto const pSpawnerType = pSpawner->GetTechnoType();
 	auto spawnedMapCrd = pSpawned->GetMapCoords();
+
 	if (!pSpawnerType)
-	{
 		return 0;
-	}
+
 	auto const pSpawnerExt = TechnoTypeExt::ExtMap.Find(pSpawnerType);
+
 	if (!pSpawnerExt)
-	{
 		return 0;
-	}
+
 	auto spawnerCrd = pSpawner->GetCoords();
 	auto spawnedCrd = pSpawned->GetCoords();
 	auto recycleCrd = spawnerCrd;
 	auto deltaCrd = spawnedCrd - recycleCrd;
 	bool shouldRecycleSpawned = false;
 	int recycleRange = pSpawnerExt->Spawner_RecycleRange;
+
 	if (recycleRange < 0)
 	{
 		if (pSpawner->WhatAmI() == AbstractType::Building && deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
@@ -151,6 +151,7 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 			shouldRecycleSpawned = true;
 		}
 	}
+
 	if (!shouldRecycleSpawned)
 	{
 		return 0;
