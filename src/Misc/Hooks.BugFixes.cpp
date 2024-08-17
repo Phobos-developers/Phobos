@@ -50,18 +50,18 @@ DEFINE_HOOK(0x62AA32, ParasiteClass_TryInfect_MissBehaviorFix, 0x5)
 {
 	GET(DWORD, dwdIsReturnSuccess, EAX);
 	bool bIsReturnSuccess = (BYTE)((WORD)(dwdIsReturnSuccess));
-	GET(ParasiteClass*, pParasite, ESI);
+	GET(ParasiteClass* const, pParasite, ESI);
 
 	auto pParasiteTechno = pParasite->Owner;
+
 	if (bIsReturnSuccess || !pParasiteTechno)
-	{
 		return 0;
-	}
-	auto pType = pParasiteTechno->GetTechnoType();
+
+	const auto pType = pParasiteTechno->GetTechnoType();
+
 	if (!pType)
-	{
 		return 0;
-	}
+
 	auto cell = MapClass::Instance->NearByLocation(pParasiteTechno->LastMapCoords,
 				pType->SpeedType, -1, pType->MovementZone, false, 1, 1, false,
 				false, false, true, CellStruct::Empty, false, false);
