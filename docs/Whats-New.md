@@ -437,7 +437,7 @@ New:
 - Option for Warhead damage to penetrate Iron Curtain or Force Shield (by Starkku)
 - Option for Warhead to remove all shield types at once (by Starkku)
 - Allow customizing voxel light source position (by Kerbiter, Morton, based on knowledge of thomassnedon)
-- Enable waypoint for buildings and aircrafts (by 航味麻酱)
+- Toggle waypoint for building and aircraft (by 航味麻酱)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
