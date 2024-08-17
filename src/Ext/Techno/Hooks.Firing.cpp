@@ -392,7 +392,7 @@ DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x51C9B8, InfantryClass_CanFire_HitAndRun1, 0x17)
+DEFINE_HOOK(0x51C9B8, InfantryClass_CanFire_OnMoving1, 0x17)
 {
 	enum { CheckPass = 0x51C9CF, CheckNotPass = 0x51CAFA };
 
@@ -400,18 +400,15 @@ DEFINE_HOOK(0x51C9B8, InfantryClass_CanFire_HitAndRun1, 0x17)
 
 	const auto pType = pThis->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
 	if (pTypeExt && pTypeExt->FiringByPassMovingCheck
 		|| pThis->SpeedPercentage <= 0.1 ) // vanilla check
-	{
 		return CheckPass;
-	}
 	else
-	{
 		return CheckNotPass;
-	}
 }
 
-DEFINE_HOOK(0x51CAAC, InfantryClass_CanFire_HitAndRun2, 0x13)
+DEFINE_HOOK(0x51CAAC, InfantryClass_CanFire_OnMoving2, 0x13)
 {
 	enum { CheckPass = 0x51CACD, CheckNotPass = 0x51CABF };
 
@@ -419,15 +416,12 @@ DEFINE_HOOK(0x51CAAC, InfantryClass_CanFire_HitAndRun2, 0x13)
 
 	const auto pType = pThis->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
 	if (pTypeExt && pTypeExt->FiringByPassMovingCheck
 		|| !pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now() ) // vanilla check
-	{
 		return CheckPass;
-	}
 	else
-	{
 		return CheckNotPass;
-	}
 }
 
 // Skips bridge-related coord checks to allow AA to target air units while both are on a bridge.
