@@ -334,13 +334,13 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 		return;
 
 	const ObjectClass* const pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
-	const CoordStruct pCoords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;
+	const CoordStruct coords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;
 
-	if (pCoords.DistanceFrom(pBullet->Location) <= this->TargetSnapDistance)
+	if (coords.DistanceFrom(pBullet->Location) <= this->TargetSnapDistance)
 	{
 		auto const pExt = BulletExt::ExtMap.Find(pBullet);
 		pExt->SnappedToTarget = true;
-		pBullet->SetLocation(pCoords);
+		pBullet->SetLocation(coords);
 	}
 }
 
@@ -363,7 +363,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 {
 	double rotateAngle = 0.0;
 	const double straightSpeed = this->GetTrajectorySpeed(pBullet);
-	ObjectClass* const pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
+	const AbstractClass* const pTarget = pBullet->Target;
 	CoordStruct theTargetCoords = pBullet->TargetCoords;
 	CoordStruct theSourceCoords = pBullet->SourceCoords;
 
@@ -423,7 +423,6 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 				theTargetCoords += extraOffsetCoord * travelTime;
 			}
 		}
-
 	}
 
 	if (!this->LeadTimeCalculate && theTargetCoords == theSourceCoords && pBullet->Owner) //For disperse.
@@ -569,7 +568,6 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass
 	{
 		pBullet->SetTarget(this->ExtraCheck);
 		pBullet->TargetCoords = this->ExtraCheck->GetCoords();
-
 		return true;
 	}
 
@@ -607,11 +605,10 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 
 	const bool checkThrough = (!this->ThroughBuilding || !this->ThroughVehicles);
 	const bool checkSubject = (this->SubjectToGround || pBullet->Type->SubjectToWalls);
-	const bool lowSpeedMode = (straightSpeed < 256.0);
 
-	if (checkThrough || checkSubject)
+	if (straightSpeed < 256.0) //Low speed with checkSubject was already done well.
 	{
-		if (lowSpeedMode && checkThrough) //lowSpeedMode with checkSubject was already done well.
+		if (checkThrough)
 		{
 			if (CellClass* const pCell = MapClass::Instance->GetCellAt(pBullet->Location))
 			{
@@ -622,59 +619,59 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 				}
 			}
 		}
-		else if (!lowSpeedMode)
+	}
+	else if (checkThrough || checkSubject)
+	{
+		const CoordStruct theSourceCoords = pBullet->Location;
+		const CoordStruct theTargetCoords
 		{
-			const CoordStruct theSourceCoords = pBullet->Location;
-			const CoordStruct theTargetCoords
+			pBullet->Location.X + static_cast<int>(pBullet->Velocity.X),
+			pBullet->Location.Y + static_cast<int>(pBullet->Velocity.Y),
+			pBullet->Location.Z + static_cast<int>(pBullet->Velocity.Z)
+		};
+
+		const CellStruct sourceCell = CellClass::Coord2Cell(theSourceCoords);
+		const CellStruct targetCell = CellClass::Coord2Cell(theTargetCoords);
+		const CellStruct cellDist = sourceCell - targetCell;
+		const CellStruct cellPace = CellStruct { static_cast<short>(std::abs(cellDist.X)), static_cast<short>(std::abs(cellDist.Y)) };
+
+		size_t largePace = static_cast<size_t>(std::max(cellPace.X, cellPace.Y));
+		const CoordStruct stepCoord = !largePace ? CoordStruct::Empty : (theTargetCoords - theSourceCoords) * (1.0 / largePace);
+		CoordStruct curCoord = theSourceCoords;
+		CellClass* pCurCell = MapClass::Instance->GetCellAt(sourceCell);
+		double cellDistance = locationDistance;
+
+		for (size_t i = 0; i < largePace; ++i)
+		{
+			if (this->SubjectToGround && (curCoord.Z + 15) < MapClass::Instance->GetCellFloorHeight(curCoord))
 			{
-				pBullet->Location.X + static_cast<int>(pBullet->Velocity.X),
-				pBullet->Location.Y + static_cast<int>(pBullet->Velocity.Y),
-				pBullet->Location.Z + static_cast<int>(pBullet->Velocity.Z)
-			};
-
-			const CellStruct sourceCell = CellClass::Coord2Cell(theSourceCoords);
-			const CellStruct targetCell = CellClass::Coord2Cell(theTargetCoords);
-			const CellStruct cellDist = sourceCell - targetCell;
-			const CellStruct cellPace = CellStruct { static_cast<short>(std::abs(cellDist.X)), static_cast<short>(std::abs(cellDist.Y)) };
-
-			size_t largePace = static_cast<size_t>(std::max(cellPace.X, cellPace.Y));
-			const CoordStruct stepCoord = !largePace ? CoordStruct::Empty : (theTargetCoords - theSourceCoords) * (1.0 / largePace);
-			CoordStruct curCoord = theSourceCoords;
-			CellClass* pCurCell = MapClass::Instance->GetCellAt(sourceCell);
-			double cellDistance = locationDistance;
-
-			for (size_t i = 0; i < largePace; ++i)
-			{
-				if (this->SubjectToGround && (curCoord.Z + 15) < MapClass::Instance->GetCellFloorHeight(curCoord))
-				{
-					velocityCheck = true;
-					cellDistance = curCoord.DistanceFrom(theSourceCoords);
-					break;
-				}
-
-				if (pBullet->Type->SubjectToWalls && pCurCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array->GetItem(pCurCell->OverlayTypeIndex)->Wall)
-				{
-					velocityCheck = true;
-					cellDistance = curCoord.DistanceFrom(theSourceCoords);
-					break;
-				}
-
-				if (!checkThrough)
-					continue;
-
-				if (this->CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))
-				{
-					velocityCheck = true;
-					cellDistance = curCoord.DistanceFrom(theSourceCoords);
-					break;
-				}
-
-				curCoord += stepCoord;
-				pCurCell = MapClass::Instance->GetCellAt(curCoord);
+				velocityCheck = true;
+				cellDistance = curCoord.DistanceFrom(theSourceCoords);
+				break;
 			}
 
-			locationDistance = cellDistance;
+			if (pBullet->Type->SubjectToWalls && pCurCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array->GetItem(pCurCell->OverlayTypeIndex)->Wall)
+			{
+				velocityCheck = true;
+				cellDistance = curCoord.DistanceFrom(theSourceCoords);
+				break;
+			}
+
+			if (!checkThrough)
+				continue;
+
+			if (this->CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))
+			{
+				velocityCheck = true;
+				cellDistance = curCoord.DistanceFrom(theSourceCoords);
+				break;
+			}
+
+			curCoord += stepCoord;
+			pCurCell = MapClass::Instance->GetCellAt(curCoord);
 		}
+
+		locationDistance = cellDistance;
 	}
 
 	if (velocityCheck)
@@ -771,7 +768,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 	std::vector<TechnoClass*> validTechnos;
 	validTechnos.reserve(vectSize);
-	const TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
+	const TechnoClass* const pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
 
 	for (auto const& pRecCell : recCellClass)
 	{
