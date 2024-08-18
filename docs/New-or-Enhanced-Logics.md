@@ -42,7 +42,7 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
-  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage]`->`C4Warhead`. If `ReflectDamage.Warhead` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back.
+  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage]`->`C4Warhead`. If `ReflectDamage.Warhead` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
@@ -416,14 +416,15 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `CreateUnit.Owner` determines which house will own the created VehicleType. This only works as expected if the animation has owner set.
     - Vehicle [destroy animations](Fixed-or-Improved-Logics.md#destroy-animations), animations from Warhead `AnimList/SplashList` and map trigger action `41 Play Anim At` will have the owner set correctly.
     - `CreateUnit.RemapAnim`, if set to true, will cause the animation to be drawn in unit palette and remappable to owner's team color.
-  - `CreateUnit.Mission` determines the initial mission of the created VehicleType.
+  - `CreateUnit.Mission` determines the initial mission of the created VehicleType. This can be overridden for AI players by setting `CreateUnit.AIMission`.
   - `CreateUnit.Facing` determines the initial facing of created VehicleType.
     - `CreateUnit.RandomFacing`, if set to true, makes it so that a random facing is picked instead.
     - `CreateUnit.InheritFacings` and `CreateUnit.InheritTurretFacings` inherit facings for vehicle body and turret respectively from the destroyed vehicle if the animation is a vehicle destroy animation. `InheritTurretFacings` does not work with jumpjet vehicles due to technical constraints.
   - `CreateUnit.AlwaysSpawnOnGround`, if set to true, ensures the vehicle will be created on the cell at ground level even if animation is in air. If set to false, jumpjet units spawned on ground will take off automatically after being spawned regardless.
+  - `CreateUnit.SpawnParachutedInAir`, if set to true, makes it so that the vehicle is created with a parachute if it is spawned in air. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
   - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles if possible.
   - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
-  - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit. Ignored if `CreateUnit.AlwaysSpawnOnGround` is set to true.
+  - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
 
 In `artmd.ini`:
 ```ini
@@ -432,11 +433,13 @@ CreateUnit=                            ; VehicleType
 CreateUnit.Owner=Victim                ; Owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
 CreateUnit.RemapAnim=false             ; boolean
 CreateUnit.Mission=Guard               ; MissionType
+CreateUnit.AIMission=                  ; MissionType
 CreateUnit.Facing=0                    ; Direction type (integers from 0-255)
 CreateUnit.RandomFacing=true           ; boolean
 CreateUnit.InheritFacings=false        ; boolean
 CreateUnit.InheritTurretFacings=false  ; boolean
 CreateUnit.AlwaysSpawnOnGround=false   ; boolean
+CreateUnit.SpawnParachutedInAir=false  ; boolean
 CreateUnit.ConsiderPathfinding=false   ; boolean
 CreateUnit.SpawnAnim=                  ; Animation
 CreareUnit.SpawnHeight=                ; integer, height in leptons

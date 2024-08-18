@@ -128,7 +128,7 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
+DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(int*, pDamage, EBX);
@@ -139,7 +139,10 @@ DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
-	if (pExt->AE.ReflectDamage && pSource && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || pWHExt->SuppressReflectDamage_Types.size() > 0))
+	if (pWHExt->Reflected)
+		return 0;
+
+	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || pWHExt->SuppressReflectDamage_Types.size() > 0))
 	{
 		for (auto& attachEffect : pExt->AttachedEffects)
 		{
@@ -159,10 +162,15 @@ DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 
 			if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
 			{
+				auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
+				pWHExtRef->Reflected = true;
+
 				if (pType->ReflectDamage_Warhead_Detonate)
 					WarheadTypeExt::DetonateAt(pWH, pSource, pThis, damage, pThis->Owner);
 				else
 					pSource->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pThis->Owner);
+
+				pWHExtRef->Reflected = false;
 			}
 		}
 	}
