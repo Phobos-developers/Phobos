@@ -176,18 +176,4 @@ public:
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
-
-	// Inlined
-	static void GetLevelIntensity(TechnoClass* pThis, int level, int& levelIntensity, int& cellIntensity, double levelMult, double cellMult, bool applyBridgeBonus = false)
-	{
-		double currentLevel = pThis->GetHeight() / static_cast<double>(Unsorted::LevelHeight);
-		levelIntensity = static_cast<int>(level * currentLevel * levelMult);
-		int bridgeBonus = applyBridgeBonus ? 4 * level : 0;
-		cellIntensity = MapClass::Instance()->GetCellAt(pThis->GetMapCoords())->Intensity_Normal + bridgeBonus;
-
-		if (cellMult > 0.0)
-			cellIntensity = Math::clamp(cellIntensity + static_cast<int>((1000 - cellIntensity) * currentLevel * cellMult), 0, 1000);
-		else if (cellMult < 0.0)
-			cellIntensity = 1000;
-	}
 };

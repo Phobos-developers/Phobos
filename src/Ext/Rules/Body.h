@@ -146,10 +146,7 @@ public:
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
 		Valueable<double> AircraftLevelLightMultiplier;
-		Valueable<double> AircraftCellLightLevelMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
-		Valueable<double> JumpjetCellLightLevelMultiplier;
-		Valueable<bool> JumpjetCellLightApplyBridgeHeight;
 
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
@@ -258,10 +255,7 @@ public:
 			, DropPodTrailer { }
 			, PodImage { }
 			, AircraftLevelLightMultiplier { 1.0 }
-			, AircraftCellLightLevelMultiplier { 0.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
-			, JumpjetCellLightLevelMultiplier { 0.0 }
-			, JumpjetCellLightApplyBridgeHeight { true }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
 			, UseFixedVoxelLighting { false }

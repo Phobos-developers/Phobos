@@ -647,21 +647,16 @@ Wake.Grapple=        ; Anim (played when Techno being parasited on the water), d
 Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [SOMETECHNO]->Wake
 ```
 
-### Customizing effect of level & cell lighting on air units
+### Customizing effect of level lighting on air units
 
-- It is now possible to customize how air units are affected by level and cell lighting, separately for AircraftTypes and infantry/vehicles with Jumpjet `Locomotor`.
+- It is now possible to customize how air units are affected by level lighting, separately for AircraftTypes and infantry/vehicles with Jumpjet `Locomotor`.
   - `AircraftLevelLightMultiplier` & `JumpjetLevelLightMultiplier` are direct multipliers to level lighting applied on the units, for height levels above the cell they are on.
-  - `AircraftCellLightLevelMultiplier` & `JumpjetCellLightLevelMultiplier` control how much the effects of cell lighting are reduced for each height level above the cell they are on. Negative values completely disable the cell lighting.
-  - `JumpjetCellLightApplyBridgeHeight`, if set to true, applies a bonus cell lighting equivalent to 4 height levels if the jumpjet unit is on a high bridge. This is added before `JumpjetCellLightLevelMultiplier` is calculated and is thus affected by it.
 
-In `rulesmd.ini`
+  - In `rulesmd.ini`
 ```ini
 [AudioVisual]
-AircraftLevelLightMultiplier=1.0        ; floating point value, percents or absolute
-AircraftCellLightLevelMultiplier=0.0    ; floating point value, percents or absolute
-JumpjetLevelLightMultiplier=0.0         ; floating point value, percents or absolute
-JumpjetCellLightLevelMultiplier=0.0     ; floating point value, percents or absolute
-JumpjetCellLightApplyBridgeHeight=true  ; boolean
+AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
+JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
 ```
 
 ### Exploding object customizations

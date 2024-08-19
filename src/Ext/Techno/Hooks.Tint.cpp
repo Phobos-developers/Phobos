@@ -211,6 +211,15 @@ static bool __forceinline IsOnBridge(FootClass* pUnit)
 	return false;
 }
 
+static void __forceinline GetLevelIntensity(TechnoClass* pThis, int level, int& levelIntensity, int& cellIntensity, double levelMult, bool applyBridgeBonus)
+{
+	int bridgeHeight = applyBridgeBonus ? 4 : 0;
+	int bridgeBonus = bridgeHeight * level;
+	double currentLevel = (pThis->GetHeight() / static_cast<double>(Unsorted::LevelHeight)) - bridgeHeight;
+	levelIntensity = static_cast<int>(level * currentLevel * levelMult);
+	cellIntensity = MapClass::Instance()->GetCellAt(pThis->GetMapCoords())->Intensity_Normal + bridgeBonus;
+}
+
 DEFINE_HOOK(0x4148F4, AircraftClass_DrawIt_LevelIntensity, 0x5)
 {
 	enum { SkipGameCode = 0x41493E };
@@ -226,7 +235,7 @@ DEFINE_HOOK(0x4148F4, AircraftClass_DrawIt_LevelIntensity, 0x5)
 	auto const pRulesExt = RulesExt::Global();
 	int levelIntensity = 0;
 	int cellIntensity = 1000;
-	TechnoExt::GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->AircraftLevelLightMultiplier, pRulesExt->AircraftCellLightLevelMultiplier);
+	GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->AircraftLevelLightMultiplier, false);
 
 	R->ESI(levelIntensity);
 	R->EBX(cellIntensity);
@@ -240,15 +249,15 @@ DEFINE_HOOK(0x51933B, InfantryClass_DrawIt_LevelIntensity, 0x6)
 	enum { SkipGameCode = 0x51944D };
 
 	GET(InfantryClass*, pThis, EBP);
-	GET(int, level, EBX);
 
 	if (locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 	{
+		GET(int, level, EBX);
+
 		auto const pRulesExt = RulesExt::Global();
 		int levelIntensity = 0;
 		int cellIntensity = 1000;
-		bool applyBridgeBonus = pRulesExt->JumpjetCellLightApplyBridgeHeight ? IsOnBridge(pThis) : false;
-		TechnoExt::GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->JumpjetLevelLightMultiplier, pRulesExt->JumpjetCellLightLevelMultiplier, applyBridgeBonus);
+		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
 
 		R->ESI(levelIntensity + cellIntensity);
 		return SkipGameCode;
@@ -277,8 +286,7 @@ DEFINE_HOOK(0x73CFA7, UnitClass_DrawIt_LevelIntensity, 0x6)
 		auto const pRulesExt = RulesExt::Global();
 		int levelIntensity = 0;
 		int cellIntensity = 1000;
-		bool applyBridgeHeightBonus = pRulesExt->JumpjetCellLightApplyBridgeHeight ? IsOnBridge(pThis) : false;
-		TechnoExt::GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->JumpjetLevelLightMultiplier, pRulesExt->JumpjetCellLightLevelMultiplier, applyBridgeHeightBonus);
+		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
 
 		R->EBP(levelIntensity + cellIntensity);
 		return SkipGameCode;
