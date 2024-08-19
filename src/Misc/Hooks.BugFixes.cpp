@@ -896,3 +896,22 @@ DEFINE_HOOK(0x753D86, VoxelCalcNormals_NullAdditionalVector, 0x0)
 
 	return 0x753D9E;
 }
+
+DEFINE_HOOK(0x705D74, TechnoClass_GetRemapColour_DisguisePalette, 0x8)
+{
+	enum { SkipGameCode = 0x705D7C };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto pTechnoType = pThis->GetTechnoType();
+
+	if (!pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		if (const auto pDisguise = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+			pTechnoType = pDisguise;
+	}
+
+	R->EAX(pTechnoType);
+
+	return SkipGameCode;
+}
