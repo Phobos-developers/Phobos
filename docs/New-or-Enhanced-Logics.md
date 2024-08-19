@@ -1013,6 +1013,16 @@ DisguiseBlinkingVisibility=owner  ; list of Affected House Enumeration (none|own
 UseDisguiseMovementSpeed=false    ; boolean
 ```
 
+### Drop crates on death
+
+- Ìf `DropCrate` is declared then the specified crate will be spawned when the object is destroyed.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]  ; TechnoType
+DropCrate=    ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
+```
+
 ### Firing offsets for specific Burst shots
 
 - You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.

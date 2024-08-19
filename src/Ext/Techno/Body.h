@@ -53,6 +53,8 @@ public:
 		HouseClass* OriginalPassengerOwner;
 		bool HasCarryoverWarpInDelay; // Converted from object with Teleport Locomotor to one with a different Locomotor while still phasing in.
 		int LastWarpInDelay;          // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
+		int DropCrate; // Drop crate on death, modified by map action
+		Powerup DropCrateType;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -82,6 +84,8 @@ public:
 			, OriginalPassengerOwner {}
 			, HasCarryoverWarpInDelay { false }
 			, LastWarpInDelay { 0 }
+			, DropCrate { -1 }
+			, DropCrateType { Powerup::Money }
 		{ }
 
 		void OnEarlyUpdate();
@@ -173,4 +177,6 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
+
+	static bool TryToCreateCrate(CoordStruct location, Powerup selectedPowerup = Powerup::Money, int maxCellRange = 10);
 };

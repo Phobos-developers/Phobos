@@ -465,6 +465,83 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+// Check adjacent cells from the center
+// The current MapClass::Instance->PlacePowerupCrate(...) doesn't like slopes and maybe other cases
+bool TechnoExt::TryToCreateCrate(CoordStruct location, Powerup selectedPowerup, int maxCellRange)
+{
+	CellStruct centerCell = CellClass::Coord2Cell(location);
+	int currentRange = 0;
+	bool placed = false;
+
+	do
+	{
+		int x = -currentRange;
+		int y = -currentRange;
+
+		CellStruct checkedCell;
+		checkedCell.Y = centerCell.Y + y;
+
+		// Check upper line
+		for (int i = -currentRange; i <= currentRange; i++)
+		{
+			checkedCell.X = centerCell.X + i;
+
+			if (placed = MapClass::Instance->PlacePowerupCrate(checkedCell, selectedPowerup))
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.Y = centerCell.Y + std::abs(y);
+
+		// Check lower line
+		for (int i = -currentRange; i <= currentRange; i++)
+		{
+			checkedCell.X = centerCell.X + i;
+
+			if (placed = MapClass::Instance->PlacePowerupCrate(checkedCell, selectedPowerup))
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.X = centerCell.X + x;
+
+		// Check left line
+		for (int j = -currentRange + 1; j < currentRange; j++)
+		{
+			checkedCell.Y = centerCell.Y + j;
+
+			if (placed = MapClass::Instance->PlacePowerupCrate(checkedCell, selectedPowerup))
+				break;
+		}
+
+		if (placed)
+			break;
+
+		checkedCell.X = centerCell.X + std::abs(x);
+
+		// Check right line
+		for (int j = -currentRange + 1; j < currentRange; j++)
+		{
+			checkedCell.Y = centerCell.Y + j;
+
+			if (placed = MapClass::Instance->PlacePowerupCrate(checkedCell, selectedPowerup))
+				break;
+		}
+
+		currentRange++;
+	}
+	while (!placed && currentRange < maxCellRange);
+
+	if (!placed)
+		Debug::Log(__FUNCTION__": Failed to place a crate in the cell (%d,%d) and around that location.\n", centerCell.X, centerCell.Y, maxCellRange);
+
+	return placed;
+}
+
 // =============================
 // load / save
 
@@ -496,6 +573,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->HasCarryoverWarpInDelay)
 		.Process(this->LastWarpInDelay)
+		.Process(this->DropCrate)
+		.Process(this->DropCrateType)
 		;
 }
 
