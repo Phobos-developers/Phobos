@@ -143,15 +143,15 @@ DEFINE_HOOK(0x70989C, TechnoClass_TargetAndEstimateDamage_ScanDelayNormal, 0x6)
 	auto const pOwner = pThis->Owner;
 	auto const pRulesExt = RulesExt::Global();
 	auto const pRules = RulesClass::Instance();
-	int delay = 1;
+	int delay = (pThis->Location.X + pThis->Location.Y + Unsorted::CurrentFrame) % 3;
 
 	if (pOwner->IsHumanPlayer || pOwner->IsControlledByHuman())
 	{
-		delay = pTypeExt->PlayerNormalTargetingDelay.Get(pRulesExt->PlayerNormalTargetingDelay.Get(pRules->NormalTargetingDelay));
+		delay += pTypeExt->PlayerNormalTargetingDelay.Get(pRulesExt->PlayerNormalTargetingDelay.Get(pRules->NormalTargetingDelay));
 	}
 	else
 	{
-		delay = pTypeExt->AINormalTargetingDelay.Get(pRulesExt->AINormalTargetingDelay.Get(pRules->NormalTargetingDelay));
+		delay += pTypeExt->AINormalTargetingDelay.Get(pRulesExt->AINormalTargetingDelay.Get(pRules->NormalTargetingDelay));
 	}
 
 	R->ECX(delay);
