@@ -1463,6 +1463,30 @@ LaunchSW.DisplayMoney.Houses=all  ; Affected House Enumeration (none|owner/self|
 LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
+### Penetration damage on garrisoned structures
+
+![image](_static/images/garrison-penetration-01.gif)
+*Penetration damage on garrisoned structures example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
+- Warheads can now damage garrisoned infantry at impact.
+- `GarrisonPenetration` Enables the logic.
+  - `GarrisonPenetration.RandomTarget` specifies if the damage will go at some random garrisoned soldier or if all infantry should be damaged at the same time.
+  - `GarrisonPenetration.DamageMultiplier` can be used to modify the damage applied against the garrisoned infantry. A random percentage value will be picked between the specified range.
+  - `GarrisonPenetration.CleanSound` can be used to specify a sound to play when the structure lost all the garrisoned soldiers with this logic.
+  - `ImmuneToGarrisonPenetration` can be set on garrisonable buildings to protect the garrisoned infantry. If used on infantry these units won't affected by this logic.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                                 ; Warhead
+GarrisonPenetration=false                     ; boolean
+GarrisonPenetration.RandomTarget=true         ; boolean
+GarrisonPenetration.DamageMultiplier=1.0,1.0  ; floating point value - single or comma-sep. range (percentages)
+GarrisonPenetration.CleanSound=               ; sound entry
+
+[SOMETECHNO]                                  ; TechnoType
+ImmuneToGarrisonPenetration=false             ; boolean
+```
+
 ### Remove disguise on impact
 
 - Warheads can now remove disguise from disguised spies or mirage tanks. This will work even if the disguised was acquired by default through `PermaDisguise`.

@@ -157,6 +157,11 @@ public:
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 
+		Valueable<bool> GarrisonPenetration;
+		Valueable<bool> GarrisonPenetration_RandomTarget;
+		Valueable<PartialVector2D<double>> GarrisonPenetration_DamageMultiplier;
+		NullableIdx<VocClass> GarrisonPenetration_CleanSound;
+
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
@@ -295,6 +300,11 @@ public:
 			, Reflected { false }
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate {false}
+
+			, GarrisonPenetration { false }
+			, GarrisonPenetration_RandomTarget { true }
+			, GarrisonPenetration_DamageMultiplier { { 1.0, 1.0 } }
+			, GarrisonPenetration_CleanSound { }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
@@ -321,13 +331,14 @@ public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
 		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
 	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false, BulletExt::ExtData* pBulletExt = nullptr);
 		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
 		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		double GetCritChance(TechnoClass* pFirer) const;
+		void ApplyGarrisonPenetration(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, BulletExt::ExtData* pBulletExt);
 	};
 
 	class ExtContainer final : public Container<WarheadTypeExt>

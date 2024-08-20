@@ -298,6 +298,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->AttachEffect_AttachTypes.size() > 0
 		|| this->AttachEffect_RemoveTypes.size() > 0
 		|| this->AttachEffect_RemoveGroups.size() > 0
+		|| this->GarrisonPenetration
 	);
 
 	char tempBuffer[32];
@@ -337,6 +338,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		else
 			this->SpawnsCrate_Weights.push_back(weight);
 	}
+
+	this->GarrisonPenetration.Read(exINI, pSection, "GarrisonPenetration");
+	this->GarrisonPenetration_RandomTarget.Read(exINI, pSection, "GarrisonPenetration.RandomTarget");
+	this->GarrisonPenetration_DamageMultiplier.Read(exINI, pSection, "GarrisonPenetration.DamageMultiplier");
+	this->GarrisonPenetration_CleanSound.Read(exINI, pSection, "GarrisonPenetration.CleanSound");
 }
 
 template <typename T>
@@ -468,6 +474,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RemainingAnimCreationInterval)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
+
+		.Process(this->GarrisonPenetration)
+		.Process(this->GarrisonPenetration_RandomTarget)
+		.Process(this->GarrisonPenetration_DamageMultiplier)
+		.Process(this->GarrisonPenetration_CleanSound)
 		;
 }
 
