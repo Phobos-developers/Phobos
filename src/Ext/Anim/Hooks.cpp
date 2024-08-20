@@ -465,3 +465,38 @@ DEFINE_HOOK(0x425174, AnimClass_Detach_Cloak, 0x6)
 
 	return 0;
 }
+
+#pragma region DetachOnCloak
+
+DEFINE_HOOK(0x4255B6, AnimClass_Remove_DetachOnCloak, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt && !pTypeExt->DetachOnCloak)
+	{
+		pThis->OwnerObject = nullptr;
+	}
+
+	return 0;
+}
+
+static void __fastcall AnimClass_AttachTo_Wrapper(AnimClass* pThis, void*, ObjectClass* pObj)
+{
+	if (pThis->OwnerObject)
+	{
+		if (pThis->IsOnMap)
+			DisplayClass::Instance->Remove(pThis);
+
+		pThis->OwnerObject->Extinguish();
+		pThis->OwnerObject->HasParachute = false;
+		pThis->OwnerObject = nullptr;
+	}
+}
+
+// Replace the AnimClass::AttachTo() call with a simplified version that does not bother to deal
+// with coords for anim that is about to be removed to fix a crash with DetachOnCloak=no anims.
+DEFINE_JUMP(CALL, 0x4255CA, GET_OFFSET(AnimClass_AttachTo_Wrapper));
+
+#pragma endregion
