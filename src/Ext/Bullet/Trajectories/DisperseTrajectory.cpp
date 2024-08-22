@@ -1143,7 +1143,9 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 		if (pBulletExt->Trajectory && curBurst >= 0)
 		{
-			if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Disperse)
+			const TrajectoryFlag flag = pBulletExt->Trajectory->Flag;
+
+			if (flag == TrajectoryFlag::Disperse)
 			{
 				DisperseTrajectory* const pTrajectory = static_cast<DisperseTrajectory*>(pBulletExt->Trajectory);
 				pTrajectory->FirepowerMult = this->FirepowerMult;
@@ -1178,13 +1180,13 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					pCreateBullet->Velocity = this->RotateAboutTheAxis(pCreateBullet->Velocity, rotationAxis, extraRotate);
 				}
 			}
-/*			else if (pBulletExt->Trajectory->Flag == TrajectoryFlag::Straight) // TODO If merge #1294
+/*			else if (flag == TrajectoryFlag::Straight) // TODO If merge #1294
 			{
 				StraightTrajectory* const pTrajectory = static_cast<StraightTrajectory*>(pBulletExt->Trajectory);
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 
 				//The straight trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
-				if (pTrajectory->LeadTimeCalculate)
+				if (pTrajectory->LeadTimeCalculate && (!pTarget || pTarget->WhatAmI() != AbstractType::Building))
 				{
 					pTrajectory->CurrentBurst = curBurst;
 					pTrajectory->CountOfBurst = maxBurst;
