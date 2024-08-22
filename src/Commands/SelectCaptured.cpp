@@ -32,7 +32,7 @@ const wchar_t* SelectCapturedCommandClass::GetUIDescription() const
 
 void SelectCapturedCommandClass::Execute(WWKey eInput) const
 {
-	
+
 	MapClass::Instance->SetTogglePowerMode(0);
 	MapClass::Instance->SetWaypointMode(0, false);
 	MapClass::Instance->SetRepairMode(0);
@@ -51,7 +51,8 @@ void SelectCapturedCommandClass::Execute(WWKey eInput) const
 			TacticalClass* const pTactical = TacticalClass::Instance;
 			const Point2D coordInScreen = pTactical->CoordsToScreen(pTechno->GetCoords()) - pTactical->TacticalPos;
 			RectangleStruct screenArea = DSurface::Composite->GetRect();
-			if (screenArea.Width >= coordInScreen.X && screenArea.Height >= coordInScreen.Y && coordInScreen.X >=0 && coordInScreen.Y >= 0 && // the unit is in the current screen
+
+			if (screenArea.Width >= coordInScreen.X && screenArea.Height >= coordInScreen.Y && coordInScreen.X >= 0 && coordInScreen.Y >= 0 && // the unit is in the current screen
 				pTechno->IsMindControlled() && pTechno->IsSelectable() && !pTechno->MindControlledByAUnit) // the unit is mc by non-perma mc, and selectable.
 			{
 				if (!capturedPresent)
@@ -59,6 +60,7 @@ void SelectCapturedCommandClass::Execute(WWKey eInput) const
 					capturedPresent = true;
 					MapClass::UnselectAll();
 				}
+
 				pCurrentObject->Select();
 			}
 		}
