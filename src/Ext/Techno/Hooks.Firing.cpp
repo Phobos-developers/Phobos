@@ -403,9 +403,13 @@ DEFINE_HOOK(0x51C9B8, InfantryClass_CanFire_OnMoving1, 0x17)
 
 	if (pTypeExt && pTypeExt->FiringByPassMovingCheck
 		|| pThis->SpeedPercentage <= 0.1 ) // vanilla check
+	{
 		return CheckPass;
+	}
 	else
+	{
 		return CheckNotPass;
+	}
 }
 
 DEFINE_HOOK(0x51CAAC, InfantryClass_CanFire_OnMoving2, 0x13)
@@ -419,9 +423,13 @@ DEFINE_HOOK(0x51CAAC, InfantryClass_CanFire_OnMoving2, 0x13)
 
 	if (pTypeExt && pTypeExt->FiringByPassMovingCheck
 		|| !pThis->Locomotor.GetInterfacePtr()->Is_Moving_Now() ) // vanilla check
+	{
 		return CheckPass;
+	}
 	else
+	{
 		return CheckNotPass;
+	}
 }
 
 // Skips bridge-related coord checks to allow AA to target air units while both are on a bridge.
