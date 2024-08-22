@@ -48,13 +48,12 @@ DEFINE_JUMP(LJMP, 0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 //Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
 DEFINE_HOOK(0x62AA32, ParasiteClass_TryInfect_MissBehaviorFix, 0x5)
 {
-	GET(DWORD, dwdIsReturnSuccess, EAX);
-	bool bIsReturnSuccess = (BYTE)((WORD)(dwdIsReturnSuccess));
+	GET(bool, isReturnSuccess, EAX);
 	GET(ParasiteClass* const, pParasite, ESI);
 
 	auto pParasiteTechno = pParasite->Owner;
 
-	if (bIsReturnSuccess || !pParasiteTechno)
+	if (isReturnSuccess || !pParasiteTechno)
 		return 0;
 
 	const auto pType = pParasiteTechno->GetTechnoType();
@@ -66,8 +65,8 @@ DEFINE_HOOK(0x62AA32, ParasiteClass_TryInfect_MissBehaviorFix, 0x5)
 				pType->SpeedType, -1, pType->MovementZone, false, 1, 1, false,
 				false, false, true, CellStruct::Empty, false, false);
 	auto crd = CellClass::Cell2Coord(cell);
-	bIsReturnSuccess = pParasiteTechno->Unlimbo(crd, DirType::North);
-	R->AL(bIsReturnSuccess);
+	isReturnSuccess = pParasiteTechno->Unlimbo(crd, DirType::North);
+	R->AL(isReturnSuccess);
 
 	return 0;
 }
