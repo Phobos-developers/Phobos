@@ -99,3 +99,31 @@ DEFINE_HOOK(0x6A108D, ShipLocomotionClass_WhileMoving_CrushTilt, 0xD)
 
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x4B1146, DriveLocomotionClass_WhileMoving_SkipCrushSlowDown, 0x6)
+{
+	enum { Skip = 0x4B1182, NotSkip = 0 };
+
+	GET(UnitClass*, pTechno, ECX);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+	if (pTypeExt && pTypeExt->SkipCrushSlowDown)
+		return Skip;
+	else
+		return NotSkip;
+}
+
+DEFINE_HOOK(0x6A0809, ShipLocomotionClass_WhileMoving_SkipCrushSlowDown, 0x6)
+{
+	enum { Skip = 0x6A0845, NotSkip = 0 };
+
+	GET(UnitClass*, pTechno, ECX);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+	if (pTypeExt && pTypeExt->SkipCrushSlowDown)
+		return Skip;
+	else
+		return NotSkip;
+}
