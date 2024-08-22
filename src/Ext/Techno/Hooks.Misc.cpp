@@ -105,6 +105,7 @@ DEFINE_HOOK(0x739920, UnitClass_TryToDeploy_DisableRegroupAtNewConYard, 0x6)
 	enum { SkipRegroup = 0x73992B, DoNotSkipRegroup = 0 };
 
 	auto const pRules = RulesExt::Global();
+
 	if (!pRules->GatherWhenMCVDeploy)
 		return SkipRegroup;
 	else
