@@ -254,7 +254,7 @@ public:
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
-		Valueable<bool> SkipCrushSlowDown;
+		Valueable<bool> SkipCrushSlowdown;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -456,7 +456,7 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
-			, SkipCrushSlowDown { false }
+			, SkipCrushSlowdown { false }
 		{ }
 
 		virtual ~ExtData() = default;
