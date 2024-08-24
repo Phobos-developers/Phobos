@@ -45,7 +45,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableUponTypes, 0x6)
 		{
 			const AbstractType absType = pCellObject->WhatAmI();
 
-			if (absType == AbstractType::Infantry || absType == AbstractType::Unit || absType == AbstractType::Aircraft)
+			if (absType == AbstractType::Infantry || absType == AbstractType::Unit || absType == AbstractType::Aircraft || absType == AbstractType::Building)
 			{
 				TechnoClass* const pTechno = static_cast<TechnoClass*>(pCellObject);
 				TechnoTypeClass* const pType = pTechno->GetTechnoType();
@@ -57,19 +57,6 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableUponTypes, 0x6)
 					pTechno->Stun();
 					pTechno->Limbo();
 					pTechno->UnInit();
-				}
-			}
-			else if (absType == AbstractType::Building)
-			{
-				BuildingClass* const pBuilding = static_cast<BuildingClass*>(pCellObject);
-				auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
-
-				if (pTypeExt && pTypeExt->CanBeBuiltOn)
-				{
-					pBuilding->KillOccupants(nullptr);
-					pBuilding->Stun();
-					pBuilding->Limbo();
-					pBuilding->UnInit();
 				}
 			}
 			else if (absType == AbstractType::Terrain)
@@ -90,44 +77,6 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableUponTypes, 0x6)
 
 	return 0;
 }
-
-/*
-DisplayClass:
-unknown_1180 -> CurrentFoundation_InAdjacent
-When the cell which mouse is pointing at has changed, new command has given or try to click to place the current building
-
-unknown_1181 -> CurrentFoundation_NoShrouded
-When the cell which mouse is pointing at has changed or new command has given
-
-CurrentFoundationCopy_CenterCell
-When the left mouse button release, move the CurrentFoundation_CenterCell to here and clear the CurrentFoundation_CenterCell, and move itself back to CurrentFoundation_CenterCell if place failed
-
-CurrentFoundationCopy_TopLeftOffset
-When the left mouse button release, move the CurrentFoundation_TopLeftOffset to here and clear the CurrentFoundation_TopLeftOffset, and move itself back to CurrentFoundation_TopLeftOffset if place failed
-
-CurrentFoundationCopy_Data
-When the left mouse button release, move the CurrentFoundation_Data to here and clear the CurrentFoundation_Data, and move itself back to CurrentFoundation_Data if place failed
-
-unknown_1190 -> CurrentBuilding_Buffer
-When the left mouse button release, move the CurrentBuilding to here and clear the CurrentBuilding, and move itself back to CurrentBuilding if place failed, otherwise it will clear itself
-
-unknown_1194 -> CurrentBuildingType_Buffer
-When the left mouse button release, move the CurrentBuildingType to here and clear the CurrentBuildingType, and move itself back to CurrentBuildingType if place failed, otherwise it will clear itself
-
-unknown_1198 -> CurrentBuildingTypeArrayIndexCopy
-When the left mouse button release, move the unknown_11AC to here and clear the unknown_11AC, and move itself back to unknown_11AC if place failed
-
-unknown_11AC -> CurrentBuildingTypeArrayIndex
-When the building type cameo clicked, this record the ArrayIndex of the building type product
-
-CellClass:
-AltFlags = AltCellFlags::Unknown_4 -> InBuildingProcess
-Vanilla only between AddPlaceEvent and RespondToEvent
-
-BuildingClass:
-unknown_timer_550 -> KickOutBusyTimer
-Only start when factory update's kick out result is busy, and only check in factory update
-*/
 
 // BaseNormal for units Hook #1 -> sub_4A8EB0 - Rewrite and add functions in
 DEFINE_HOOK(0x4A8F21, MapClass_PassesProximityCheck_BaseNormalExtra, 0x9)
@@ -976,7 +925,9 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_AI_CheckHangUpBuilding, 0x6)
 			}
 
 			for (auto const& pUnit : deleteTechnos)
+			{
 				vec.erase(std::remove(vec.begin(), vec.end(), pUnit), vec.end());
+			}
 		}
 	}
 
