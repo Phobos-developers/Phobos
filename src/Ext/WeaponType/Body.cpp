@@ -4,7 +4,7 @@
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
-bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const
+bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
 {
 	bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
 	bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
@@ -13,8 +13,13 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, Te
 
 	if (hasRequiredTypes || hasDisallowedTypes || hasRequiredGroups || hasDisallowedGroups)
 	{
+		auto pTechno = pTarget;
+
 		if (this->AttachEffect_CheckOnFirer && pFirer)
 			pTechno = pFirer;
+
+		if (!pTechno)
+			return true;
 
 		auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
