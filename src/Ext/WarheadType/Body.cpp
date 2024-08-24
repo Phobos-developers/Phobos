@@ -187,6 +187,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_Break.Read(exINI, pSection, "Shield.Break");
 	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
 	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
+	this->Shield_SkipHitAnim.Read(exINI, pSection, "Shield.SkipHitAnim");
 	this->Shield_HitFlash.Read(exINI, pSection, "Shield.HitFlash");
 	this->Shield_BreakWeapon.Read<true>(exINI, pSection, "Shield.BreakWeapon");
 	this->Shield_AbsorbPercent.Read(exINI, pSection, "Shield.AbsorbPercent");
@@ -393,6 +394,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_Break)
 		.Process(this->Shield_BreakAnim)
 		.Process(this->Shield_HitAnim)
+		.Process(this->Shield_SkipHitAnim)
+		.Process(this->Shield_HitFlash)
 		.Process(this->Shield_BreakWeapon)
 		.Process(this->Shield_AbsorbPercent)
 		.Process(this->Shield_PassPercent)
