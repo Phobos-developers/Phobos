@@ -349,54 +349,44 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 	{
 		if (UnitClass* const pUnit = abstract_cast<UnitClass*>(pTechno))
 		{
-			if (pUnit->CurrentMission != Mission::Enter)
+			if (!pUnit->unknown_bool_418 && pUnit->GetCurrentSpeed() <= 0)
 			{
 				if (TeamClass* const pTeam = pUnit->Team)
 					pTeam->LiberateMember(pUnit);
 
-				pUnit->SetDestination(nullptr, false);
-				pUnit->ForceMission(Mission::Guard);
-				pThis->QueueMission(Mission::Unload, false);
+				if (pThis->CurrentMission == Mission::Guard)
+					pThis->QueueMission(Mission::Unload, false);
+				else
+					pThis->SendCommand(RadioCommand::NotifyUnlink, pUnit);
+
+				pUnit->QueueMission(Mission::Guard, false);
 				return; // one after another
 			}
 		}
 	}
 
-//	CoordStruct buffer = CoordStruct::Empty;
-//	CellClass* const pCell = MapClass::Instance->GetCellAt(*pThis->GetExitCoords(&buffer, 0));
-	BuildingTypeClass* const pType = pThis->Type;
-	const CellStruct foundation { pType->GetFoundationWidth(), pType->GetFoundationHeight(false) };
-	const CellStruct topLeft = pThis->GetMapCoords() + CellStruct { 1, 1 };
-	const CellStruct bottomRight = topLeft + foundation - CellStruct { 2, 2 };
+	CoordStruct buffer = CoordStruct::Empty;
 
-	for (short curX = topLeft.X; curX < bottomRight.X; ++curX)
+	if (CellClass* const pCell = MapClass::Instance->GetCellAt(*pThis->GetExitCoords(&buffer, 0)))
 	{
-		for (short curY = topLeft.Y; curY < bottomRight.Y; ++curY)
+		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
-			if (CellClass* const pCell = MapClass::Instance->GetCellAt(CellStruct{ curX, curY }))
+			if (UnitClass* const pUnit = abstract_cast<UnitClass*>(pObject))
 			{
-				for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
-				{
-					if (UnitClass* const pUnit = abstract_cast<UnitClass*>(pObject))
-					{
-						if (pThis->Owner != pUnit->Owner || pUnit->CurrentMission == Mission::Enter)
-							continue;
+				if (pThis->Owner != pUnit->Owner || pUnit->unknown_bool_418)
+					continue;
 
-						const int height = pUnit->GetHeight();
+				const int height = pUnit->GetHeight();
 
-						if (height < 0 || height > Unsorted::CellHeight)
-							continue;
+				if (height < 0 || height > Unsorted::CellHeight)
+					continue;
 
-						if (TeamClass* const pTeam = pUnit->Team)
-							pTeam->LiberateMember(pUnit);
+				if (TeamClass* const pTeam = pUnit->Team)
+					pTeam->LiberateMember(pUnit);
 
-						pUnit->SetDestination(nullptr, false);
-						pUnit->ForceMission(Mission::Guard);
-						pThis->SendCommand(RadioCommand::RequestLink, pUnit);
-						pThis->QueueMission(Mission::Unload, false);
-						return; // one after another
-					}
-				}
+				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
+				pThis->QueueMission(Mission::Unload, false);
+				return; // one after another
 			}
 		}
 	}
