@@ -234,6 +234,7 @@ This page lists all the individual contributions to the project by their author.
   - Extra tint intensity for Iron Curtain & Force Shield
   - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565
   - Customizing height at which subterranean units travel
+  - `MovementZone=Subterannean` harvester fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -319,6 +320,7 @@ This page lists all the individual contributions to the project by their author.
 - **NetsuNegi**
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
+   - Disguised units not using the correct palette if target has custom palette bugfix
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons

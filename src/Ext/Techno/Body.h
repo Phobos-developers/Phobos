@@ -159,6 +159,11 @@ public:
 	static int GetCustomTintColor(TechnoClass* pThis);
 	static int GetCustomTintIntensity(TechnoClass* pThis);
 	static void ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity);
+	static Point2D GetScreenLocation(TechnoClass* pThis);
+	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
+	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
+	static void ProcessDigitalDisplays(TechnoClass* pThis);
+	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
@@ -168,9 +173,5 @@ public:
 	static WeaponTypeClass* GetDeployFireWeapon(TechnoClass* pThis);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
-	static Point2D GetScreenLocation(TechnoClass* pThis);
-	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
-	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
-	static void ProcessDigitalDisplays(TechnoClass* pThis);
-	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
+	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
 };

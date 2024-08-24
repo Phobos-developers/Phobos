@@ -163,6 +163,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory. If the unit is not able to kick out from the factory, the unit will be removed and the cost will be given back to its house.
+- Fixed disguised units not using the correct palette if target has custom palette.
+- Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
 
 ## Fixes / interactions with other extensions
 
