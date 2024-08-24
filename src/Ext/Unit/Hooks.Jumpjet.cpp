@@ -288,7 +288,7 @@ namespace JumpjetRushHelpers
 
 int JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(Point2D location)
 {
-	CellClass* const pCell = MapClass::Instance->GetTargetCell(location);
+	CellClass* const pCell = MapClass::Instance->TryGetCellAt(CellStruct{ static_cast<short>(location.X >> 8), static_cast<short>(location.Y >> 8) });
 
 	if (!pCell)
 		return -1;
