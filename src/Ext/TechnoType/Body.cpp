@@ -331,30 +331,67 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	char tempBuffer[32];
 
-	if (this->OwnerObject()->Gunner && this->Insignia_Weapon.empty())
+	if (this->OwnerObject()->Gunner)
 	{
-		int weaponCount = this->OwnerObject()->WeaponCount;
-		this->Insignia_Weapon.resize(weaponCount);
-		this->InsigniaFrame_Weapon.resize(weaponCount);
-		this->InsigniaFrames_Weapon.resize(weaponCount);
+		size_t weaponCount = this->OwnerObject()->WeaponCount;
 
-		for (int i = 0; i < weaponCount; i++)
+		if (this->Insignia_Weapon.empty() || this->Insignia_Weapon.size() != weaponCount)
+		{
+			this->Insignia_Weapon.resize(weaponCount);
+			this->InsigniaFrame_Weapon.resize(weaponCount);
+			this->InsigniaFrames_Weapon.resize(weaponCount);
+		}
+
+		for (size_t i = 0; i < weaponCount; i++)
 		{
 			Promotable<SHPStruct*> insignia;
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
 			insignia.Read(exINI, pSection, tempBuffer);
-			this->Insignia_Weapon[i] = insignia;
+			this->Insignia_Weapon[i].setEmpty(insignia);
 
 			Promotable<int> frame = Promotable<int>(-1);
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
 			frame.Read(exINI, pSection, tempBuffer);
-			this->InsigniaFrame_Weapon[i] = frame;
+			this->InsigniaFrame_Weapon[i].setEmpty(frame);
 
 			Valueable<Vector3D<int>> frames;
 			frames = Vector3D<int>(-1, -1, -1);
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
 			frames.Read(exINI, pSection, tempBuffer);
-			this->InsigniaFrames_Weapon[i] = frames;
+			if (this->InsigniaFrames_Weapon[i] != frames)
+				this->InsigniaFrames_Weapon[i] = frames;
+		}
+	}
+
+	if (this->OwnerObject()->Passengers > 0)
+	{
+		size_t passengers = this->OwnerObject()->Passengers + 1;
+
+		if (this->Insignia_Passengers.empty() || this->Insignia_Passengers.size() != passengers)
+		{
+			this->Insignia_Passengers.resize(passengers);
+			this->InsigniaFrame_Passengers.resize(passengers);
+			this->InsigniaFrames_Passengers.resize(passengers);
+		}
+
+		for (size_t i = 0; i < passengers; i++)
+		{
+			Promotable<SHPStruct*> insignia;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Passengers%d.%s", i, "%s");
+			insignia.Read(exINI, pSection, tempBuffer);
+			this->Insignia_Passengers[i].setEmpty(insignia);
+
+			Promotable<int> frame = Promotable<int>(-1);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Passengers%d.%s", i, "%s");
+			frame.Read(exINI, pSection, tempBuffer);
+			this->InsigniaFrame_Passengers[i].setEmpty(frame);
+
+			Valueable<Vector3D<int>> frames;
+			frames = Vector3D<int>(-1, -1, -1);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Passengers%d", i);
+			frames.Read(exINI, pSection, tempBuffer);
+			if (this->InsigniaFrames_Passengers[i] != frames)
+				this->InsigniaFrames_Passengers[i] = frames;
 		}
 	}
 
@@ -622,6 +659,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Insignia_Weapon)
 		.Process(this->InsigniaFrame_Weapon)
 		.Process(this->InsigniaFrames_Weapon)
+		.Process(this->Insignia_Passengers)
+		.Process(this->InsigniaFrame_Passengers)
+		.Process(this->InsigniaFrames_Passengers)
 
 		.Process(this->TiltsWhenCrushes_Vehicles)
 		.Process(this->TiltsWhenCrushes_Overlays)
