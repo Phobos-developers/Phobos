@@ -329,27 +329,32 @@ DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	if (!(Unsorted::CurrentFrame % 15) && pThis->CurrentMission == Mission::Guard)
+	if (!(Unsorted::CurrentFrame % 15))
 	{
 		BuildingTypeClass* const pType = pThis->Type;
 
-		if (pType->Factory == AbstractType::UnitType && pType->WeaponsFactory && !pType->Naval)
-			BuildingExt::KickOutStuckUnits(pThis);
+		if (pType->Factory == AbstractType::UnitType && pType->WeaponsFactory && !pType->Naval && pThis->QueuedMission != Mission::Unload)
+		{
+			const Mission mission = pThis->CurrentMission;
+
+			if (mission == Mission::Guard || (mission == Mission::Unload && pThis->MissionStatus == 1))
+				BuildingExt::KickOutStuckUnits(pThis);
+		}
 	}
 
 	return 0;
 }
 
 // Should not kick out units if the factory building is in construction process
-DEFINE_HOOK(0x4444A0, BuildingClass_KickOutUnit_NoKickOutInConstruction, 0x7)
+DEFINE_HOOK(0x4444A0, BuildingClass_KickOutUnit_NoKickOutInConstruction, 0xA)
 {
-	enum { OfCourse = 0x444565, NoChance = 0x4444B3};
+	enum { ThisIsOK = 0x444565, ThisIsNotOK = 0x4444B3};
 
 	GET(BuildingClass* const, pThis, ESI);
 
 	const Mission mission = pThis->GetCurrentMission();
 
-	return (mission == Mission::Unload || mission == Mission::Construction) ? NoChance : OfCourse;
+	return (mission == Mission::Unload || mission == Mission::Construction) ? ThisIsNotOK : ThisIsOK;
 }
 
 // Ares didn't have something like 0x7397E4 in its UnitDelivery code
