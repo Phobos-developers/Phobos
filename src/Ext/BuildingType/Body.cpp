@@ -441,7 +441,9 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 						if (valid && pOptionalCell->IsClearToMove(pCheckedType->SpeedType, true, true, -1, pCheckedType->MovementZone, -1, false))
 						{
 							for (auto const& pOptionalTechno : optionalTechnos)
+							{
 								reCheckedTechnos.push_back(pOptionalTechno);
+							}
 
 							if (isInfantry) // Not need to remove it now
 							{
