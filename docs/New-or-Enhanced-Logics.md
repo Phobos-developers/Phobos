@@ -67,7 +67,8 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.Required/DisallowedGroups` have the same effect except applied with/to all types that have one of the listed groups in their `Groups` listing.
   - `AttachEffect.(Required|Disallowed)MinCounts & (Required|Disallowed)MaxCounts` can be used to set the minimum and maximum number of instances required / disallowed to be on the Techno for `Cumulative=true` types (ignored for other types) respectively.
   - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead.
-
+  - `AttachEffect.CheckOnFirer` is set to true makes it so that the required / disallowed attached effects are checked from the firer of the weapon instead of the target.
+  
 In `rulesmd.ini`:
 ```ini
 [AttachEffectTypes]
@@ -139,6 +140,7 @@ AttachEffect.RequiredMaxCounts=                ; integer - maximum required inst
 AttachEffect.DisallowedMinCounts=              ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.DisallowedMaxCounts=              ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.IgnoreFromSameSource=false        ; boolean
+AttachEffect.CheckOnFirer=false                ; boolean
 
 [SOMEWARHEAD]
 AttachEffect.AttachTypes=                      ; List of AttachEffectTypes

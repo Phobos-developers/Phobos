@@ -162,6 +162,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
 - Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
+- Fixed disguised units not using the correct palette if target has custom palette.
+- Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
 
 ## Fixes / interactions with other extensions
 
