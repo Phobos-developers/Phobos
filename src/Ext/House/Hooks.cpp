@@ -261,31 +261,43 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoTypeClass*, pType, 0x4);
-	GET(bool, needDisable, EAX);
+	GET(bool, aresDisable, EAX);
 
-	if (!pType)
+	if (aresDisable || !pType)
 		return 0;
 
-	if (!needDisable && HouseExt::ReachedBuildLimit(pThis, pType, false))
-		needDisable = true;
-
-	if (!needDisable) // The types exist in the list means that they are not buildable now
+	if (HouseExt::ReachedBuildLimit(pThis, pType, false))
 	{
-		TechnoTypeExt::ExtData* const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-		if (pTypeExt && pTypeExt->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
+		R->EAX(true);
+	}
+	else if (TechnoTypeExt::ExtData* const pTypeExt = TechnoTypeExt::ExtMap.Find(pType)) // The types exist in the list means that they are not buildable now
+	{
+		if (pTypeExt->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
 		{
 			if (auto const pHouseExt = HouseExt::ExtMap.Find(pThis))
 			{
 				auto& vec = pHouseExt->OwnedExistCameoTechnoTypes;
 
 				if (std::find(vec.begin(), vec.end(), pTypeExt) != vec.end())
-					needDisable = true;
+					R->EAX(true);
 			}
 		}
 	}
 
-	R->EAX(needDisable);
+	return 0;
+}
+
+// All technos have AlwaysExistTheCameo=true need to change the EVA_NewConstructionOptions playing time
+DEFINE_HOOK(0x6A640B, SideBarClass_AddCameo_DoNotPlayEVA, 0x5)
+{
+	GET(AbstractType, absType, ESI);
+	GET(int, idxType, EBP);
+
+	if (auto const pType = ObjectTypeClass::GetTechnoType(absType, idxType))
+	{
+		if (TechnoTypeExt::ExtMap.Find(pType)->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
+			return 0x6A641A; // Skip playing
+	}
 
 	return 0;
 }
