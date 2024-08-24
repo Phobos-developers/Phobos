@@ -88,8 +88,8 @@ DEFINE_HOOK(0x44459A, BuildingClass_ExitObject_SubterraneanHarvester, 0x5)
 	return 0;
 }
 
-// Reset the rally point when starting harvesting as it is no longer needed at that point.
-DEFINE_HOOK(0x73E87D, UnitClass_Mission_Harvest_SubterraneanHarvester, 0x7)
+// Reset the rally point when it is not needed anymore.
+DEFINE_HOOK(0x73EDA1, UnitClass_Mission_Harvest_SubterraneanHarvester, 0x6)
 {
 	GET(UnitClass*, pThis, EBP);
 
