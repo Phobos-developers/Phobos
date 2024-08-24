@@ -915,3 +915,18 @@ DEFINE_HOOK(0x705D74, TechnoClass_GetRemapColour_DisguisePalette, 0x8)
 
 	return SkipGameCode;
 }
+
+// Allows MovementZone=Subterannean harvester to find docks from any zone, since simply checking
+// if the dock is in same zone using MovementZone::Subterranean does not seem to work as expected
+DEFINE_HOOK(0x4DEFC6, FootClass_FindDock_SubterraneanHarvester, 0x5)
+{
+	GET(TechnoTypeClass*, pTechnoType, EAX);
+
+	if (auto const pUnitType = abstract_cast<UnitTypeClass*>(pTechnoType))
+	{
+		if (pUnitType->Harvester && pUnitType->MovementZone == MovementZone::Subterrannean)
+			R->ECX(MovementZone::Fly);
+	}
+
+	return 0;
+}
