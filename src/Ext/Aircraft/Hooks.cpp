@@ -1,5 +1,6 @@
 #include <AircraftClass.h>
 #include <FlyLocomotionClass.h>
+#include <EventClass.h>
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Techno/Body.h>
@@ -342,3 +343,154 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 
 	return SkipKickOutPassengers;
 }
+
+// Aircraft mission hard code are all disposable that no ammo, target died or arrived destination all will call the aircraft return airbase
+#pragma region AircraftMissionExpand
+
+// AreaGuard: return when no ammo or first target died
+int __fastcall AircraftClass_Mission_AreaGuard(AircraftClass* pThis)
+{
+	do
+	{
+		const bool flying = pThis->GetHeight() == pThis->Type->GetFlightLevel();
+
+		if (!pThis->Team)
+		{
+		//	if (!flying && pThis->Target) // This is what vanilla do, but now there is no need to do so
+		//		break;
+
+			if (pThis->Ammo && pThis->IsArmed())
+			{
+				CoordStruct coords = pThis->GetCoords();
+
+				if (pThis->TargetAndEstimateDamage(reinterpret_cast<DWORD>(&coords), static_cast<DWORD>(TargetFlags::unknown_1)))
+					break;
+				else if (!flying && pThis->HasAnyLink())
+					return 30;
+
+				pThis->EnterIdleMode(false, true);
+				return 1;
+			}
+		}
+
+		return flying ? 1 : reinterpret_cast<int(__thiscall*)(FootClass*)>(0x4D6AA0)(pThis);
+	}
+	while (false);
+
+	pThis->QueueMission(Mission::Attack, false);
+	return 1;
+}
+DEFINE_JUMP(VTABLE, 0x7E24C4, GET_OFFSET(AircraftClass_Mission_AreaGuard))
+
+DEFINE_HOOK(0x4C740F, EventClass_RespondToEvent_AircraftAreaGuard, 0x5)
+{
+	enum { SkipGameCode = 0x4C7435 };
+
+	GET(EventClass* const, pThis, ESI);
+	GET(FootClass* const, pFoot, EDI);
+
+	if (pFoot->WhatAmI() == AbstractType::Aircraft && pThis->MegaMission.Target.m_RTTI == static_cast<unsigned char>(AbstractType::Cell))
+	{
+		if (AbstractClass* const pTarget = reinterpret_cast<AbstractClass*(__thiscall*)(TargetClass*)>(0x6E6E20)(&pThis->MegaMission.Target))
+		{
+			const CoordStruct coords = pTarget->GetCoords() - pFoot->GetCoords();
+
+			if ((coords.X * coords.X + coords.Y * coords.Y) & 0x7FFF0000) // Horizontal distance too close, no need to move
+				return SkipGameCode;
+		}
+	}
+
+	return 0;
+}
+
+// AttackMove: return when no ammo or arrived destination
+bool __fastcall AircraftTypeClass_CanAttackMove(AircraftTypeClass* pThis)
+{
+	return true;
+}
+DEFINE_JUMP(VTABLE, 0x7E290C, GET_OFFSET(AircraftTypeClass_CanAttackMove))
+
+DEFINE_HOOK(0x6FA68B, TechnoClass_Update_ShouldReturnToAirbase, 0xA)
+{
+	enum { SkipGameCode = 0x6FA6F5 };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (pThis->WhatAmI() == AbstractType::Aircraft && !pThis->Ammo)
+	{
+		pThis->EnterIdleMode(false, true); // No ammo, return
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget, 0x6)
+{
+	enum { LoseCurrentTarget = 0x4DF3D3, HoldCurrentTarget = 0x4DF4AB };
+
+	GET(FootClass* const, pThis, ESI);
+
+	return (pThis->WhatAmI() == AbstractType::Aircraft || pThis->vt_entry_3B4(reinterpret_cast<DWORD>(pThis->Target))) ? HoldCurrentTarget : LoseCurrentTarget;
+}
+
+DEFINE_HOOK(0x418CD1, AircraftClass_Mission_Attack_ContinueFlyToDestination, 0x6)
+{
+	enum { Continue = 0x418C43, Return = 0x418CE8 };
+
+	GET(AircraftClass* const, pThis, ESI);
+
+	if (!pThis->Target)
+	{
+		if (!pThis->vt_entry_4C4() || !pThis->unknown_5C8)
+			return Continue;
+
+		pThis->SetDestination(reinterpret_cast<AbstractClass*>(pThis->unknown_5C8), false);
+		pThis->QueueMission(Mission::Move, true);
+		pThis->unknown_bool_5D1 = false;
+	}
+	else
+	{
+		pThis->MissionStatus = 1;
+	}
+
+	R->EAX(1);
+	return Return;
+}
+
+// Stop: clear the mega mission and return to airbase immediately
+DEFINE_HOOK(0x4C762A, EventClass_RespondToEvent_StopAircraftAction, 0x6)
+{
+	GET(TechnoClass* const, pTechno, ESI);
+
+	if (pTechno->WhatAmI() == AbstractType::Aircraft && !pTechno->Airstrike && !pTechno->Spawned)
+	{
+		if (pTechno->vt_entry_4C4())
+			pTechno->vt_entry_4A8();
+
+		if (!pTechno->HasAnyLink() && pTechno->GetCurrentMission() != Mission::Enter)
+			pTechno->EnterIdleMode(false, true);
+	}
+
+	return 0;
+}
+
+// SelectAutoTarget: for all the mission that should let the aircraft auto select a closing target
+AbstractClass* __fastcall AircraftClass_SelectAutoTarget(AircraftClass* pThis, void* _, TargetFlags targetFlags, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)
+{
+	WeaponTypeClass* const pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType;
+	WeaponTypeClass* const pSecondaryWeapon = pThis->GetWeapon(1)->WeaponType;
+
+	if (pSecondaryWeapon) // Vanilla (other types) secondary first
+		targetFlags |= reinterpret_cast<TargetFlags(__thiscall*)(WeaponTypeClass*)>(0x772A90)(pSecondaryWeapon);
+	else if (pPrimaryWeapon)
+		targetFlags |= reinterpret_cast<TargetFlags(__thiscall*)(WeaponTypeClass*)>(0x772A90)(pPrimaryWeapon);
+
+	AbstractClass* const pTarget = reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, TargetFlags, CoordStruct*, bool)>(0x6F8DF0)(pThis, targetFlags, pSelectCoords, onlyTargetHouseEnemy);
+	const int range = pThis->SelectWeapon(pTarget) ? pSecondaryWeapon->Range : pPrimaryWeapon->Range; // No need to check pTarget
+
+	return (!pThis->vt_entry_4C4() || (pTarget && pThis->GetCoords().DistanceFrom(pTarget->GetCoords()) < (range << 1))) ? pTarget : nullptr; // Should check lower distance if in AttackMove
+}
+DEFINE_JUMP(VTABLE, 0x7E2668, GET_OFFSET(AircraftClass_SelectAutoTarget))
+
+#pragma endregion
