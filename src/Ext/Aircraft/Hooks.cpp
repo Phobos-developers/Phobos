@@ -382,48 +382,12 @@ int __fastcall AircraftClass_Mission_AreaGuard(AircraftClass* pThis)
 }
 DEFINE_JUMP(VTABLE, 0x7E24C4, GET_OFFSET(AircraftClass_Mission_AreaGuard))
 
-DEFINE_HOOK(0x4C740F, EventClass_RespondToEvent_AircraftAreaGuard, 0x5)
-{
-	enum { SkipGameCode = 0x4C7435 };
-
-	GET(EventClass* const, pThis, ESI);
-	GET(FootClass* const, pFoot, EDI);
-
-	if (pFoot->WhatAmI() == AbstractType::Aircraft && pThis->MegaMission.Target.m_RTTI == static_cast<unsigned char>(AbstractType::Cell))
-	{
-		if (AbstractClass* const pTarget = reinterpret_cast<AbstractClass*(__thiscall*)(TargetClass*)>(0x6E6E20)(&pThis->MegaMission.Target))
-		{
-			const CoordStruct coords = pTarget->GetCoords() - pFoot->GetCoords();
-
-			if (!((coords.X * coords.X + coords.Y * coords.Y) & 0x7FFF0000)) // Horizontal distance too close, no need to move
-				return SkipGameCode;
-		}
-	}
-
-	return 0;
-}
-
 // AttackMove: return when no ammo or arrived destination
 bool __fastcall AircraftTypeClass_CanAttackMove(AircraftTypeClass* pThis)
 {
 	return true;
 }
 DEFINE_JUMP(VTABLE, 0x7E290C, GET_OFFSET(AircraftTypeClass_CanAttackMove))
-
-DEFINE_HOOK(0x6FA68B, TechnoClass_Update_ShouldReturnToAirbase, 0xA)
-{
-	enum { SkipGameCode = 0x6FA6F5 };
-
-	GET(TechnoClass* const, pThis, ESI);
-
-	if (pThis->WhatAmI() == AbstractType::Aircraft && !pThis->Ammo)
-	{
-		pThis->EnterIdleMode(false, true); // No ammo, return
-		return SkipGameCode;
-	}
-
-	return 0;
-}
 
 DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget, 0x6)
 {
@@ -481,15 +445,15 @@ AbstractClass* __fastcall AircraftClass_SelectAutoTarget(AircraftClass* pThis, v
 	WeaponTypeClass* const pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType;
 	WeaponTypeClass* const pSecondaryWeapon = pThis->GetWeapon(1)->WeaponType;
 
+	if (pThis->vt_entry_4C4())
+		targetFlags = TargetFlags::unknown_2;
+
 	if (pSecondaryWeapon) // Vanilla (other types) secondary first
 		targetFlags |= reinterpret_cast<TargetFlags(__thiscall*)(WeaponTypeClass*)>(0x772A90)(pSecondaryWeapon);
 	else if (pPrimaryWeapon)
 		targetFlags |= reinterpret_cast<TargetFlags(__thiscall*)(WeaponTypeClass*)>(0x772A90)(pPrimaryWeapon);
 
-	AbstractClass* const pTarget = reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, TargetFlags, CoordStruct*, bool)>(0x6F8DF0)(pThis, targetFlags, pSelectCoords, onlyTargetHouseEnemy);
-	const int range = pThis->SelectWeapon(pTarget) ? pSecondaryWeapon->Range : pPrimaryWeapon->Range; // No need to check pTarget
-
-	return (!pThis->vt_entry_4C4() || (pTarget && pThis->GetCoords().DistanceFrom(pTarget->GetCoords()) < (range << 1))) ? pTarget : nullptr; // Should check lower distance if in AttackMove
+	return reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, TargetFlags, CoordStruct*, bool)>(0x6F8DF0)(pThis, targetFlags, pSelectCoords, onlyTargetHouseEnemy);
 }
 DEFINE_JUMP(VTABLE, 0x7E2668, GET_OFFSET(AircraftClass_SelectAutoTarget))
 
