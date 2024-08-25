@@ -745,6 +745,16 @@ This currently has same limitations as `AirburstWeapon` in that it does not prop
 
 ## Super Weapons
 
+### AI Superweapon delay timer
+
+- By default AI houses only process superweapon logic e.g checks if it can fire any superweapons firing them at randomized intervals of 106 to 112 game frames. This behaviour can now be customized by setting explicit delay, or disabling it entirely. Values of 0 and below disable the delay and cause AI houses to check superweapons on every game frame.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AISuperWeaponDelay=  ; integer, game frames
+```
+
 ### Convert TechnoType
 
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).

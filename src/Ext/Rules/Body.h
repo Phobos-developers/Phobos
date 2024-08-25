@@ -43,6 +43,7 @@ public:
 		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
 		Valueable<int> SubterraneanHeight;
+		Nullable<int> AISuperWeaponDelay;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<int> RadBuildingDamageMaxCount;
@@ -156,6 +157,7 @@ public:
 			, AIChronoSphereSW {}
 			, AIChronoWarpSW {}
 			, SubterraneanHeight { -256 }
+			, AISuperWeaponDelay {}
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadBuildingDamageMaxCount { -1 }

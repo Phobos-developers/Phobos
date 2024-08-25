@@ -440,6 +440,7 @@ New:
 - Option for Warhead to remove all shield types at once (by Starkku)
 - Allow customizing voxel light source position (by Kerbiter, Morton, based on knowledge of thomassnedon)
 - Option to fix voxel light source being offset and incorrectly tilting on slopes (by Kerbiter)
+- AI superweapon delay timer customization (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
