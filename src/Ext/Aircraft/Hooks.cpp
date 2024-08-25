@@ -432,8 +432,7 @@ DEFINE_HOOK(0x4C762A, EventClass_RespondToEvent_StopAircraftAction, 0x6)
 		if (pTechno->vt_entry_4C4())
 			pTechno->vt_entry_4A8();
 
-		if (!pTechno->HasAnyLink() && pTechno->GetCurrentMission() != Mission::Enter)
-			pTechno->EnterIdleMode(false, true);
+		pTechno->EnterIdleMode(false, true);
 	}
 
 	return 0;
