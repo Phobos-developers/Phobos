@@ -280,6 +280,7 @@ This page lists all the individual contributions to the project by their author.
   - Changes / fixes to `Vertical` projectile logic and customizing projectile initial facing behavior
   - Bugfixes to map trigger action `125 Build At...`
   - Owner change during buildup bugfix
+  - Subterranean harvester pathfinding fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
