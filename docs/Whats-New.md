@@ -509,6 +509,7 @@ Vanilla fixes:
 - Units with `Sensors=true` will no longer reveal ally buildings (by Starkku)
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread` (by Starkku)
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge (by Starkku)
+- Fixed disguised units not using the correct palette if target has custom palette (by NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -726,8 +727,6 @@ Vanilla fixes:
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges (by Starkku)
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines (by Starkku)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
-- Fixed disguised units not using the correct palette if target has custom palette (by NetsuNegi)
-- Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc. (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

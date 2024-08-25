@@ -53,7 +53,6 @@ public:
 		HouseClass* OriginalPassengerOwner;
 		bool HasCarryoverWarpInDelay;          // Converted from object with Teleport Locomotor to one with a different Locomotor while still phasing in.
 		int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
-		CellClass* SubterraneanHarvRallyPoint; // Subterranean harvester's rally point on exit from factory.
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -83,7 +82,6 @@ public:
 			, OriginalPassengerOwner {}
 			, HasCarryoverWarpInDelay { false }
 			, LastWarpInDelay { 0 }
-			, SubterraneanHarvRallyPoint { nullptr }
 		{ }
 
 		void OnEarlyUpdate();
