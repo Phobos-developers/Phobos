@@ -395,7 +395,7 @@ DEFINE_HOOK(0x4C740F, EventClass_RespondToEvent_AircraftAreaGuard, 0x5)
 		{
 			const CoordStruct coords = pTarget->GetCoords() - pFoot->GetCoords();
 
-			if ((coords.X * coords.X + coords.Y * coords.Y) & 0x7FFF0000) // Horizontal distance too close, no need to move
+			if (!((coords.X * coords.X + coords.Y * coords.Y) & 0x7FFF0000)) // Horizontal distance too close, no need to move
 				return SkipGameCode;
 		}
 	}
