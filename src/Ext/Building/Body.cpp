@@ -354,11 +354,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 				if (TeamClass* const pTeam = pUnit->Team)
 					pTeam->LiberateMember(pUnit);
 
-				if (pThis->CurrentMission == Mission::Guard)
-					pThis->QueueMission(Mission::Unload, false);
-				else
-					pThis->SendCommand(RadioCommand::NotifyUnlink, pUnit);
-
+				pThis->SendCommand(RadioCommand::NotifyUnlink, pUnit);
 				pUnit->QueueMission(Mission::Guard, false);
 				return; // one after another
 			}
