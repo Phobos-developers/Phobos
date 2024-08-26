@@ -43,6 +43,7 @@ public:
 		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
 		Valueable<int> SubterraneanHeight;
+		Nullable<int> AISuperWeaponDelay;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<int> RadBuildingDamageMaxCount;
@@ -142,6 +143,7 @@ public:
 
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
+		Valueable<bool> UseFixedVoxelLighting;
 		Valueable<bool> BuildingWaypoint;
 		Valueable<bool> AircraftWaypoint;
 
@@ -157,6 +159,7 @@ public:
 			, AIChronoSphereSW {}
 			, AIChronoWarpSW {}
 			, SubterraneanHeight { -256 }
+			, AISuperWeaponDelay {}
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadBuildingDamageMaxCount { -1 }
@@ -245,6 +248,7 @@ public:
 			, PodImage { }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
+			, UseFixedVoxelLighting { false }
 			, BuildingWaypoint { false }
 			, AircraftWaypoint { false }
 		{ }
