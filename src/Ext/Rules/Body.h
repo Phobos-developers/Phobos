@@ -144,6 +144,8 @@ public:
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+		Valueable<bool> BuildingWaypoint;
+		Valueable<bool> AircraftWaypoint;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -247,6 +249,8 @@ public:
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
 			, UseFixedVoxelLighting { false }
+			, BuildingWaypoint { false }
+			, AircraftWaypoint { false }
 		{ }
 
 		virtual ~ExtData() = default;

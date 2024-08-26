@@ -441,6 +441,7 @@ New:
 - Allow customizing voxel light source position (by Kerbiter, Morton, based on knowledge of thomassnedon)
 - Option to fix voxel light source being offset and incorrectly tilting on slopes (by Kerbiter)
 - AI superweapon delay timer customization (by Starkku)
+- Toggle waypoint for building and aircraft (by 航味麻酱 and CrimRecya)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
