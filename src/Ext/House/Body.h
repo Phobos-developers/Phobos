@@ -66,11 +66,11 @@ public:
 			, RepairBaseNodes { false,false,false }
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
-		    , NumAirpads_NonMFB { 0 }
-		    , NumBarracks_NonMFB { 0 }
-		    , NumWarFactories_NonMFB { 0 }
-		    , NumConYards_NonMFB { 0 }
-		    , NumShipyards_NonMFB { 0 }
+			, NumAirpads_NonMFB { 0 }
+			, NumBarracks_NonMFB { 0 }
+			, NumWarFactories_NonMFB { 0 }
+			, NumConYards_NonMFB { 0 }
+			, NumShipyards_NonMFB { 0 }
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
