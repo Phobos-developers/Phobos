@@ -442,6 +442,7 @@ New:
 - Option to fix voxel light source being offset and incorrectly tilting on slopes (by Kerbiter)
 - AI superweapon delay timer customization (by Starkku)
 - Disabling `MultipleFactory` bonus from specific BuildingType (by Starkku)
+- Customizable ChronoSphere teleport delays for units (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

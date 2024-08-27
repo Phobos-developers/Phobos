@@ -93,6 +93,8 @@ public:
 		Nullable<int> ChronoMinimumDelay;
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
+		Nullable<int> ChronoSpherePreDelay;
+		Nullable<int> ChronoSphereDelay;
 
 		Valueable<WeaponTypeClass*> WarpInWeapon;
 		Nullable<WeaponTypeClass*> WarpInMinRangeWeapon;
@@ -293,6 +295,8 @@ public:
 			, ChronoMinimumDelay {}
 			, ChronoRangeMinimum {}
 			, ChronoDelay {}
+			, ChronoSpherePreDelay {}
+			, ChronoSphereDelay {}
 			, WarpInWeapon {}
 			, WarpInMinRangeWeapon {}
 			, WarpOutWeapon {}

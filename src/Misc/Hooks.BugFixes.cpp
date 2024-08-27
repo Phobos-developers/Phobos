@@ -855,7 +855,8 @@ DEFINE_HOOK(0x7195BF, TeleportLocomotionClass_Process_WarpInDelay, 0x6)
 	GET(FootClass*, pLinkedTo, ECX);
 
 	auto const pLoco = static_cast<TeleportLocomotionClass*>(pThis);
-	TechnoExt::ExtMap.Find(pLinkedTo)->LastWarpInDelay = pLoco->Timer.GetTimeLeft();
+	auto const pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+	pExt->LastWarpInDelay = Math::max(pLoco->Timer.GetTimeLeft(), pExt->LastWarpInDelay);
 
 	return 0;
 }
@@ -866,7 +867,7 @@ DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->HasCarryoverWarpInDelay)
+	if (pExt->HasRemainingWarpInDelay)
 	{
 		if (pExt->LastWarpInDelay)
 		{
@@ -874,7 +875,8 @@ DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
 		}
 		else
 		{
-			pExt->HasCarryoverWarpInDelay = false;
+			pExt->HasRemainingWarpInDelay = false;
+			pExt->IsBeingChronoSphered = false;
 			pThis->WarpingOut = false;
 		}
 	}

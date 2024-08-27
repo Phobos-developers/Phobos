@@ -474,6 +474,25 @@ ChronoSparkleDisplayDelay=24                         ; integer, game frames
 ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle position enum (building | occupants | occupantslots | all)
 ```
 
+### Customizable ChronoSphere teleport delays for units
+
+- It is now possible to customize (globally and per TechnoType) the warp-in delay for units teleporting through `Type=ChronoSphere/Warp` Superweapon, both before and after the jump.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ChronoSpherePreDelay=60  ; integer, game frames
+ChronoSpherePreDelay=0   ; integer, game frames
+
+[SOMETECHNO]             ; TechnoType
+ChronoSpherePreDelay=    ; integer, game frames
+ChronoSpherePreDelay=    ; integer, game frames
+```
+
+```{warning}
+Due to technical constraints, these settings do not apply to buildings teleported by Ares' customizable ChronoSphere SW. They only have a pre-teleport delay equal to `[General]` -> ChronoDelay.
+```
+
 ### Customizable veterancy insignias
 
 - You can now customize veterancy insignia of TechnoTypes.
@@ -485,7 +504,6 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
   - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
   - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
   - `DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to anchor the insignia position relative to the building's selection bracket. By default the insignia position is not anchored to the selection bracket.
-
 
 In `rulesmd.ini`:
 ```ini

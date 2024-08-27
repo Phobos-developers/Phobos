@@ -237,6 +237,7 @@ This page lists all the individual contributions to the project by their author.
   - `MovementZone=Subterannean` harvester fix
   - AI superweapon delay timer customization
   - Disabling `MultipleFactory` bonus from specific BuildingType
+  - Customizable ChronoSphere teleport delays for units
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
