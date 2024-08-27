@@ -360,6 +360,16 @@ In `rulesmd.ini`:
 SellBuildupLength=23  ; integer, number of buildup frames to play
 ```
 
+### Exclude Factory from providing multiple factory bonus
+
+- It is now possible to exclude a building with `Factory` from counting towards `MultipleFactory` bonus.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                         ; BuildingType
+ExcludeFromMultipleFactoryBonus=false  ; boolean
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates

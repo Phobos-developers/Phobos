@@ -43,6 +43,13 @@ public:
 		int LastBuiltNavalVehicleType;
 		int ProducingNavalUnitTypeIndex;
 
+		// Factories that exist but don't count towards multiple factory bonus.
+		int NumAirpads_NonMFB;
+		int NumBarracks_NonMFB;
+		int NumWarFactories_NonMFB;
+		int NumConYards_NonMFB;
+		int NumShipyards_NonMFB;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -59,12 +66,19 @@ public:
 			, RepairBaseNodes { false,false,false }
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
+		    , NumAirpads_NonMFB { 0 }
+		    , NumBarracks_NonMFB { 0 }
+		    , NumWarFactories_NonMFB { 0 }
+		    , NumConYards_NonMFB { 0 }
+		    , NumShipyards_NonMFB { 0 }
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
 		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
 		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
 		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);
+		void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
+		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval);
 
 		virtual ~ExtData() = default;
 

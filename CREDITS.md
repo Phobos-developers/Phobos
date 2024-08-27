@@ -236,6 +236,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizing height at which subterranean units travel
   - `MovementZone=Subterannean` harvester fix
   - AI superweapon delay timer customization
+  - Disabling `MultipleFactory` bonus from specific BuildingType
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

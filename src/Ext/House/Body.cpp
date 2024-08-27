@@ -494,6 +494,69 @@ int HouseExt::ExtData::CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType)
 	return count;
 }
 
+void HouseExt::ExtData::UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval)
+{
+	int* count = nullptr;
+
+	switch (rtti)
+	{
+	case AbstractType::Aircraft:
+	case AbstractType::AircraftType:
+		count = &this->NumAirpads_NonMFB;
+		break;
+	case AbstractType::Building:
+	case AbstractType::BuildingType:
+		count = &this->NumConYards_NonMFB;
+		break;
+	case AbstractType::Infantry:
+	case AbstractType::InfantryType:
+		count = &this->NumBarracks_NonMFB;
+		break;
+	case AbstractType::Unit:
+	case AbstractType::UnitType:
+		count = isNaval ? &this->NumShipyards_NonMFB : &this->NumWarFactories_NonMFB;
+		break;
+	default:
+		break;
+	}
+
+	if (count)
+		*count += remove ? -1 : 1;
+}
+
+int HouseExt::ExtData::GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval)
+{
+	auto const pThis = this->OwnerObject();
+	int count = 0;
+
+	switch (rtti)
+	{
+	case AbstractType::Aircraft:
+	case AbstractType::AircraftType:
+		count = pThis->NumAirpads - this->NumAirpads_NonMFB;
+		break;
+	case AbstractType::Building:
+	case AbstractType::BuildingType:
+		count = pThis->NumConYards - this->NumConYards_NonMFB;
+		break;
+	case AbstractType::Infantry:
+	case AbstractType::InfantryType:
+		count = pThis->NumBarracks - this->NumBarracks_NonMFB;
+		break;
+	case AbstractType::Unit:
+	case AbstractType::UnitType:
+		if (isNaval)
+			count = pThis->NumShipyards - this->NumShipyards_NonMFB;
+		else
+			count = pThis->NumWarFactories - this->NumWarFactories_NonMFB;
+		break;
+	default:
+		break;
+	}
+
+	return Math::max(count, 0);
+}
+
 void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	const char* pSection = this->OwnerObject()->PlainName;
@@ -533,6 +596,11 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->RepairBaseNodes)
 		.Process(this->LastBuiltNavalVehicleType)
 		.Process(this->ProducingNavalUnitTypeIndex)
+		.Process(this->NumAirpads_NonMFB)
+		.Process(this->NumBarracks_NonMFB)
+		.Process(this->NumWarFactories_NonMFB)
+		.Process(this->NumConYards_NonMFB)
+		.Process(this->NumShipyards_NonMFB)
 		;
 }
 
