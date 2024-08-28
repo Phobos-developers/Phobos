@@ -54,6 +54,7 @@ public:
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
+		Valueable<bool> ForbidParallelAIQueues;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
@@ -286,6 +287,7 @@ public:
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ReloadInTransport { false }
+			, ForbidParallelAIQueues { false }
 			, ShieldType {}
 			, PassengerDeletionType { nullptr }
 
