@@ -510,7 +510,6 @@ Vanilla fixes:
 - Objects in invalid map coordinates are no longer used for starting view and AI base center calculations (by Starkku)
 - Units & buildings with `DecloakToFire=false` weapons can now cloak while targeting & reloading (by Starkku)
 - Units with `Sensors=true` will no longer reveal ally buildings (by Starkku)
-- Waypoint path is drawn for all units under player control or `DebugKeysEnabled=yes` (by Trsdy)
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread` (by Starkku)
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge (by Starkku)
 - Fixed disguised units not using the correct palette if target has custom palette (by NetsuNegi)
