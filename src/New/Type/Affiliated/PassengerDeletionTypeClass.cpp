@@ -11,7 +11,7 @@ std::pair<bool,bool> PassengerDeletionTypeClass::CanParse(INI_EX exINI, const ch
 	useCost.Read(exINI, pSection, "PassengerDeletion.UseCostAsRate");
 
 	bool canParse = rate.Get(0) > 0 || useCost.Get(false);
-	bool shouldResetValue = !canParse && (rate.isset() || !useCost.isset());
+	bool shouldResetValue = rate.isset() && rate.Get() == 0 && !(useCost.isset() && useCost.Get());
 	return std::make_pair(canParse, shouldResetValue);
 }
 

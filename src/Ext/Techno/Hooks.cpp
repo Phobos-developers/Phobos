@@ -399,7 +399,7 @@ DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
 
 	for (auto const& attachEffect : pExt->AttachedEffects)
 	{
-		attachEffect->SetAnimationVisibility(false);
+		attachEffect->SetAnimationTunnelState(false);
 	}
 
 	return 0;
@@ -421,12 +421,77 @@ DEFINE_HOOK(0x728E5F, TunnelLocomotionClass_Process_RestoreAnims, 0x7)
 
 		for (auto const& attachEffect : pExt->AttachedEffects)
 		{
-			attachEffect->SetAnimationVisibility(true);
+			attachEffect->SetAnimationTunnelState(true);
 		}
 	}
 
 	return 0;
 }
+
+#pragma region SubterraneanHeight
+
+DEFINE_HOOK(0x728F89, TunnelLocomotionClass_Process_SubterraneanHeight1, 0x5)
+{
+	enum { Skip = 0x728FA6, Continue = 0x728F90 };
+
+	GET(TechnoClass*, pLinkedTo, ECX);
+	GET(int, height, EAX);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
+
+	if (height == pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
+		return Continue;
+
+	return Skip;
+}
+
+DEFINE_HOOK(0x728FC6, TunnelLocomotionClass_Process_SubterraneanHeight2, 0x5)
+{
+	enum { Skip = 0x728FCD, Continue = 0x729021 };
+
+	GET(TechnoClass*, pLinkedTo, ECX);
+	GET(int, height, EAX);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
+
+	if (height <= pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight))
+		return Continue;
+
+	return Skip;
+}
+
+DEFINE_HOOK(0x728FF2, TunnelLocomotionClass_Process_SubterraneanHeight3, 0x6)
+{
+	enum { SkipGameCode = 0x72900C };
+
+	GET(TechnoClass*, pLinkedTo, ECX);
+	GET(int, heightOffset, EAX);
+	REF_STACK(int, height, 0x14);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
+	int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
+	height -= heightOffset;
+
+	if (height < subtHeight)
+		height = subtHeight;
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x7295E2, TunnelLocomotionClass_ProcessStateDigging_SubterraneanHeight, 0xC)
+{
+	enum { SkipGameCode = 0x7295EE };
+
+	GET(TechnoClass*, pLinkedTo, EAX);
+	REF_STACK(int, height, STACK_OFFSET(0x44, -0x8));
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
+	height = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
+
+	return SkipGameCode;
+}
+
+#pragma endregion
 
 #pragma region Fly Layer Update
 
@@ -613,10 +678,10 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 FireError __fastcall TechnoClass_TargetSomethingNearby_CanFire_Wrapper(TechnoClass* pThis, void* _, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	bool disableWeapons = pExt->AE_DisableWeapons;
-	pExt->AE_DisableWeapons = false;
+	bool disableWeapons = pExt->AE.DisableWeapons;
+	pExt->AE.DisableWeapons = false;
 	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
-	pExt->AE_DisableWeapons = disableWeapons;
+	pExt->AE.DisableWeapons = disableWeapons;
 	return fireError;
 }
 
