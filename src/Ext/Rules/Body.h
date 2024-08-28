@@ -43,6 +43,7 @@ public:
 		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
 		Valueable<int> SubterraneanHeight;
+		Nullable<int> AISuperWeaponDelay;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<int> RadBuildingDamageMaxCount;
@@ -161,6 +162,7 @@ public:
 
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
+		Valueable<bool> UseFixedVoxelLighting;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -174,6 +176,7 @@ public:
 			, AIChronoSphereSW {}
 			, AIChronoWarpSW {}
 			, SubterraneanHeight { -256 }
+			, AISuperWeaponDelay {}
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadBuildingDamageMaxCount { -1 }
@@ -280,6 +283,7 @@ public:
 			, ProgressDisplay_Buildings_PipsShape { FileSystem::PIPS_SHP }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
+			, UseFixedVoxelLighting { false }
 		{ }
 
 		virtual ~ExtData() = default;
