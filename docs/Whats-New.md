@@ -758,6 +758,7 @@ Phobos fixes:
 - Fixed a game crash when checking BuildLimit if Phobos is running without Ares (by Belonit)
 - Corrected the misinterpretation in the definition of `DiskLaser.Radius` (by Trsdy)
 - Fixed GlobalVariables failed working among scenarios (by Trsdy)
+- Fixed Phobos Warhead effects not reliably being applied on damage area as opposed to full weapon-based Warhead detonation (by Starkku)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)

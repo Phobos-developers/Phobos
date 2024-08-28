@@ -155,6 +155,7 @@ public:
 		double Crit_RandomBuffer;
 		double Crit_CurrentChance;
 		bool Crit_Active;
+		bool InDamageArea;
 		bool WasDetonatedOnAllMapObjects;
 		bool Splashed;
 		bool Reflected;
@@ -299,6 +300,7 @@ public:
 			, Crit_RandomBuffer { 0.0 }
 			, Crit_CurrentChance { 0.0 }
 			, Crit_Active { false }
+			, InDamageArea { true }
 			, WasDetonatedOnAllMapObjects { false }
 			, Splashed { false }
 			, Reflected { false }

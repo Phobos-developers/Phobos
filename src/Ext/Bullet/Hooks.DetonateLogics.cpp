@@ -361,5 +361,7 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 		}
 	}
 
+	WarheadTypeExt::ExtMap.Find(pThis->WH)->InDamageArea = true;
+
 	return 0;
 }
