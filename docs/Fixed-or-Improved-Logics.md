@@ -481,12 +481,12 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
 In `rulesmd.ini`:
 ```ini
 [General]
-ChronoSpherePreDelay=60  ; integer, game frames
-ChronoSpherePreDelay=0   ; integer, game frames
+ChronoSphereDelay=60    ; integer, game frames
+ChronoSpherePreDelay=0  ; integer, game frames
 
-[SOMETECHNO]             ; TechnoType
-ChronoSpherePreDelay=    ; integer, game frames
-ChronoSpherePreDelay=    ; integer, game frames
+[SOMETECHNO]            ; TechnoType
+ChronoSphereDelay=      ; integer, game frames
+ChronoSpherePreDelay=   ; integer, game frames
 ```
 
 ```{warning}
