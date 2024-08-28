@@ -560,6 +560,7 @@ Phobos fixes:
 - Fixed `Shield.Respawn.Amount` not defaulting to shield type default if not set (by Starkku)
 - Fixed frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` instead of `TXT_DISPLAY_DAMAGE_DESC` (by DeathFishAtEase)
 - Buildings considered vehicles (`ConsideredVehicle=true` or not set in conjunction with `UndeploysInto` & 1x1 foundation) are now considered units by affected target enum checks (by Starkku)
+- Fixed Phobos Warhead effects not reliably being applied on damage area as opposed to full weapon-based Warhead detonation (by Starkku)
 
 Fixes / interactions with other extensions:
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely (by Starkku)
@@ -767,7 +768,6 @@ Phobos fixes:
 - Fixed a game crash when checking BuildLimit if Phobos is running without Ares (by Belonit)
 - Corrected the misinterpretation in the definition of `DiskLaser.Radius` (by Trsdy)
 - Fixed GlobalVariables failed working among scenarios (by Trsdy)
-- Fixed Phobos Warhead effects not reliably being applied on damage area as opposed to full weapon-based Warhead detonation (by Starkku)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
