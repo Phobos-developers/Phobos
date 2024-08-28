@@ -65,6 +65,9 @@ public:
 
 		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
 
+		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -103,6 +106,8 @@ public:
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
 			, AircraftDockingDirs {}
+			, FactoryPlant_AllowTypes {}
+			, FactoryPlant_DisallowTypes {}
 		{ }
 
 		// Ares 0.A functions

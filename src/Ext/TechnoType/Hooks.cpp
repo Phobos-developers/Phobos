@@ -11,6 +11,7 @@
 #include "Body.h"
 #include <Ext/AnimType/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -760,4 +761,32 @@ DEFINE_HOOK(0x737F05, UnitClass_ReceiveDamage_SinkingWake, 0x6)
 	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
 
 	return 0x737F0B;
+}
+
+DEFINE_HOOK(0x711F39, TechnoTypeClass_CostOf_FactoryPlant, 0x8)
+{
+	GET(TechnoTypeClass*, pThis, ESI);
+	GET(HouseClass*, pHouse, EDI);
+	REF_STACK(float, mult, STACK_OFFSET(0x10, -0x8));
+
+	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	if (pHouseExt->RestrictedFactoryPlants.size() > 0)
+		mult *= pHouseExt->GetRestrictedFactoryPlantMult(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x711FDF, TechnoTypeClass_RefundAmount_FactoryPlant, 0x8)
+{
+	GET(TechnoTypeClass*, pThis, ESI);
+	GET(HouseClass*, pHouse, EDI);
+	REF_STACK(float, mult, STACK_OFFSET(0x10, -0x4));
+
+	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	if (pHouseExt->RestrictedFactoryPlants.size() > 0)
+		mult *= pHouseExt->GetRestrictedFactoryPlantMult(pThis);
+
+	return 0;
 }
