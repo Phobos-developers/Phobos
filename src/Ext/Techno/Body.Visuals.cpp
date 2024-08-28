@@ -354,7 +354,7 @@ void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBo
 
 		DrawFrameStruct pDraw
 		{
-			static_cast<int>((static_cast<double>(timer->GetTimeLeft()) / timer->TimeLeft) * maxLength),
+			static_cast<int>((static_cast<double>(timer->GetTimeLeft()) / timer->TimeLeft) * maxLength + 0.99),
 			(pThis->ForceShielded ? pRulesExt->InvulnerableDisplay_Buildings_Pips.Get().X : pRulesExt->InvulnerableDisplay_Buildings_Pips.Get().Y),
 			0,
 			-1,
@@ -388,7 +388,7 @@ void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBo
 
 		DrawFrameStruct pDraw
 		{
-			static_cast<int>((static_cast<double>(timer->GetTimeLeft()) / timer->TimeLeft) * maxLength),
+			static_cast<int>((static_cast<double>(timer->GetTimeLeft()) / timer->TimeLeft) * maxLength + 0.99),
 			(pThis->ForceShielded ? pRulesExt->InvulnerableDisplay_Others_Pips.Get().X : pRulesExt->InvulnerableDisplay_Others_Pips.Get().Y),
 			0,
 			-1,
@@ -425,7 +425,7 @@ void TechnoExt::DrawTemporalProgress(TechnoClass* pThis, RectangleStruct* pBound
 
 		DrawFrameStruct pDraw
 		{
-			static_cast<int>((static_cast<double>(pTemporal->WarpRemaining) / (pType->Strength * 10)) * maxLength),
+			static_cast<int>((static_cast<double>(pTemporal->WarpRemaining) / (pType->Strength * 10)) * maxLength + 0.99),
 			pRulesExt->TemporalLifeDisplay_Buildings_Pips,
 			0,
 			-1,
@@ -460,8 +460,8 @@ void TechnoExt::DrawTemporalProgress(TechnoClass* pThis, RectangleStruct* pBound
 
 		DrawFrameStruct pDraw
 		{
-			static_cast<int>((static_cast<double>(pTemporal->WarpRemaining) / (pType->Strength * 10)) * maxLength),
-			pRulesExt->TemporalLifeDisplay_Buildings_Pips,
+			static_cast<int>((static_cast<double>(pTemporal->WarpRemaining) / (pType->Strength * 10)) * maxLength + 0.99),
+			pRulesExt->TemporalLifeDisplay_Others_Pips,
 			0,
 			-1,
 			maxLength,
