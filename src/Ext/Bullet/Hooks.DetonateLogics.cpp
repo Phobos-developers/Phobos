@@ -325,7 +325,7 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 			if (size > i)
 				isFull = pWeaponExt->ExtraWarheads_FullDetonation[i];
 			if (size > 0)
-				isFull = pWeaponExt->ExtraWarheads_DetonationChances[size - 1];
+				isFull = pWeaponExt->ExtraWarheads_FullDetonation[size - 1];
 
 			if (detonate)
 			{
