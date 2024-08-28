@@ -135,6 +135,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
 	this->Spawner_DelayFrames.Read(exINI, pSection, "Spawner.DelayFrames");
+	this->Spawner_AttackImmediately.Read(exINI, pSection, "Spawner.AttackImmediately");
 
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	if (!this->Harvester_Counted.isset() && pThis->Enslaves)
@@ -190,11 +191,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
+	this->ChronoSpherePreDelay.Read(exINI, pSection, "ChronoSpherePreDelay");
+	this->ChronoSphereDelay.Read(exINI, pSection, "ChronoSphereDelay");
 
 	this->WarpInWeapon.Read<true>(exINI, pSection, "WarpInWeapon");
 	this->WarpInMinRangeWeapon.Read<true>(exINI, pSection, "WarpInMinRangeWeapon");
 	this->WarpOutWeapon.Read<true>(exINI, pSection, "WarpOutWeapon");
 	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
+
+	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
 
 	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
 	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
@@ -430,18 +435,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	auto [canParse, resetValue] = PassengerDeletionTypeClass::CanParse(exINI, pSection);
 
-	if (canParse)
-	{
-		if (this->PassengerDeletionType == nullptr)
-			this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
+	if (canParse && !this->PassengerDeletionType)
+		this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
 
-		this->PassengerDeletionType->LoadFromINI(pINI, pSection);
-	}
-	else if (resetValue)
+	if (this->PassengerDeletionType)
 	{
-		this->PassengerDeletionType.reset();
+		if (resetValue)
+			this->PassengerDeletionType.reset();
+		else
+			this->PassengerDeletionType->LoadFromINI(pINI, pSection);
 	}
-
 
 	Nullable<bool> isInterceptor;
 	isInterceptor.Read(exINI, pSection, "Interceptor");
@@ -495,6 +498,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Spawner_LimitRange)
 		.Process(this->Spawner_ExtraLimitRange)
 		.Process(this->Spawner_DelayFrames)
+		.Process(this->Spawner_AttackImmediately)
 		.Process(this->Harvester_Counted)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
@@ -541,10 +545,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoMinimumDelay)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
+		.Process(this->ChronoSpherePreDelay)
+		.Process(this->ChronoSphereDelay)
 		.Process(this->WarpInWeapon)
 		.Process(this->WarpInMinRangeWeapon)
 		.Process(this->WarpOutWeapon)
 		.Process(this->WarpInWeapon_UseDistanceAsDamage)
+
+		.Process(this->SubterraneanHeight)
 
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)

@@ -11,6 +11,7 @@
 #include "Ext/House/Body.h"
 #include "Ext/WarheadType/Body.h"
 #include "Ext/WeaponType/Body.h"
+#include <Ext/Scenario/Body.h>
 
 // ============= New SuperWeapon Effects================
 
@@ -110,7 +111,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 
 		if (pTechnoTypeExt->AutoDeath_Behavior.isset())
 		{
-			pOwnerExt->OwnedAutoDeathObjects.push_back(pTechnoExt);
+			ScenarioExt::Global()->AutoDeathObjects.push_back(pTechnoExt);
 
 			if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
 				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
@@ -215,15 +216,15 @@ void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& c
 		return;
 	}
 
-	HouseClass* pFirerHouse = nullptr;
-
-	if (!pFirer)
-		pFirerHouse = pHouse;
-
 	if (pWeapon)
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage), pFirerHouse);
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage), pHouse);
 	else
-		WarheadTypeExt::DetonateAt(this->Detonate_Warhead, coords, pFirer, this->Detonate_Damage.Get(0), pFirerHouse);
+	{
+		if (this->Detonate_Warhead_Full)
+			WarheadTypeExt::DetonateAt(this->Detonate_Warhead, coords, pFirer, this->Detonate_Damage.Get(0), pHouse);
+		else
+			MapClass::DamageArea(coords, this->Detonate_Damage.Get(0), pFirer, this->Detonate_Warhead, true, pHouse);
+	}
 }
 
 void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)

@@ -10,7 +10,7 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	bool cloakable = pThis->Cloakable;
 	int rearm = -1;
-	pThis->Cloakable |= pExt->AE_Cloakable;
+	pThis->Cloakable |= pExt->AE.Cloakable;
 
 	if (pExt->CanCloakDuringRearm)
 	{
@@ -27,7 +27,7 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 	if (rearm != -1)
 		pThis->RearmTimer.Start(rearm);
 
-	if (retVal && pExt->AE_ForceDecloak)
+	if (retVal && pExt->AE.ForceDecloak)
 		return false;
 
 	return retVal;
@@ -37,13 +37,13 @@ bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	bool cloakable = pThis->Cloakable;
-	pThis->Cloakable |= pExt->AE_Cloakable;
+	pThis->Cloakable |= pExt->AE.Cloakable;
 
 	bool retVal = pThis->TechnoClass::ShouldNotBeCloaked();
 
 	pThis->Cloakable = cloakable;
 
-	if (!retVal && pExt->AE_ForceDecloak)
+	if (!retVal && pExt->AE.ForceDecloak)
 		return true;
 
 	return retVal;

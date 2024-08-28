@@ -9,60 +9,37 @@
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
-#pragma region DETONATION
-
-namespace Detonation
-{
-	bool InDamageArea = true;
-}
+#pragma region Detonation
 
 DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 {
 	GET(BulletClass* const, pBullet, ESI);
+	GET_BASE(const CoordStruct*, pCoords, 0x8);
 
-	auto const pWH = pBullet ? pBullet->WH : nullptr;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pBullet->WH);
+	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	auto const pOwner = pBullet->Owner;
+	auto const pHouse = pOwner ? pOwner->Owner : nullptr;
+	auto const pDecidedHouse = pHouse ? pHouse : pBulletExt->FirerHouse;
+	pWHExt->Detonate(pOwner, pDecidedHouse, pBulletExt, *pCoords);
+	pWHExt->InDamageArea = false;
 
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
-	{
-		GET_BASE(const CoordStruct*, pCoords, 0x8);
-		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-		auto const pOwner = pBullet->Owner;
-		auto const pHouse = pOwner ? pOwner->Owner : nullptr;
-		auto const pDecidedHouse = pHouse ? pHouse : pBulletExt->FirerHouse;
-
-		pWHExt->Detonate(pOwner, pDecidedHouse, pBulletExt, *pCoords);
-	}
-
-	Detonation::InDamageArea = false;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x46A290, BulletClass_Detonate_Return, 0x5)
-{
-	Detonation::InDamageArea = true;
 	return 0;
 }
 
 DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 {
-	if (Detonation::InDamageArea)
+	GET_BASE(const WarheadTypeClass*, pWH, 0x0C);
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pWHExt->InDamageArea)
 	{
-		// GET(const int, Damage, EDX);
-		// GET_BASE(const bool, AffectsTiberium, 0x10);
+		GET(const CoordStruct*, pCoords, ECX);
+		GET_BASE(TechnoClass*, pOwner, 0x08);
+		GET_BASE(HouseClass*, pHouse, 0x14);
 
-		GET_BASE(const WarheadTypeClass*, pWH, 0x0C);
-
-		if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
-		{
-			GET(const CoordStruct*, pCoords, ECX);
-			GET_BASE(TechnoClass*, pOwner, 0x08);
-			GET_BASE(HouseClass*, pHouse, 0x14);
-
-			auto const pDecidedHouse = !pHouse && pOwner ? pOwner->Owner : pHouse;
-
-			pWHExt->Detonate(pOwner, pDecidedHouse, nullptr, *pCoords);
-		}
+		auto const pDecidedHouse = !pHouse && pOwner ? pOwner->Owner : pHouse;
+		pWHExt->Detonate(pOwner, pDecidedHouse, nullptr, *pCoords);
 	}
 
 	return 0;
@@ -72,7 +49,7 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	GET(int, nDamage, ECX);
+	GET(int, nDamage, EDI);
 
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 	pWHExt->Splashed = true;
@@ -230,3 +207,42 @@ DEFINE_HOOK(0x48922D, GetTotalDamage_NegativeDamageModifiers2, 0x5)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x701A54, TechnoClass_ReceiveDamage_PenetratesIronCurtain, 0x6)
+{
+	enum { AllowDamage = 0x701AAD };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->CanAffectInvulnerable(pThis))
+		return AllowDamage;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x489968, Explosion_Damage_PenetratesIronCurtain, 0x5)
+{
+	enum { BypassInvulnerability = 0x48996D };
+
+	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
+
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->PenetratesIronCurtain)
+		return BypassInvulnerability;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
+{
+	GET_BASE(WarheadTypeClass*, pWH, 0xC);
+	GET_STACK(int, damage, STACK_OFFSET(0xE0, -0xBC));
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	double rocker = pWHExt->Rocker_AmplitudeOverride.Get(damage);
+	rocker *= 0.01 * pWHExt->Rocker_AmplitudeMultiplier;
+
+	_asm fld rocker
+
+	return 0x489B53;
+}

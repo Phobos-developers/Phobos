@@ -193,13 +193,24 @@ namespace Helpers {
 			auto const range = static_cast<size_t>(spread + 0.99);
 			for (CellSpreadEnumerator it(range); it; ++it) {
 				auto const pCell = MapClass::Instance->GetCellAt(*it + cellCoords);
+				bool isCenter = pCell->MapCoords == cellCoords;
 				for (NextObject obj(pCell->GetContent()); obj; ++obj) {
 					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
 					{
 						// Starkku: Buildings need their distance from the origin coords checked at cell level.
 						if (pTechno->WhatAmI() == AbstractType::Building)
 						{
-							auto const dist = pCell->GetCenterCoords().DistanceFrom(coords);
+							auto const cellCenterCoords = pCell->GetCenterCoords();
+							double dist = cellCenterCoords.DistanceFrom(coords);
+
+							// If this is the center cell, there's some different behaviour.
+							if (isCenter)
+							{
+								if (coords.Z - cellCenterCoords.Z <= Unsorted::LevelHeight)
+									dist = 0;
+								else
+									dist -= Unsorted::LevelHeight;
+							}
 
 							if (dist > spreadMult)
 								continue;
@@ -215,7 +226,7 @@ namespace Helpers {
 			if (includeInAir)
 			{
 				auto const airTracker = &AircraftTrackerClass::Instance.get();
-				airTracker->SetArea(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
+				airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
 
 				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 				{
