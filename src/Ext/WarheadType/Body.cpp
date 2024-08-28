@@ -250,6 +250,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
+	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
+
 	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
 	this->AttachEffect_RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
 	exINI.ParseStringList(this->AttachEffect_RemoveGroups, pSection, "AttachEffect.RemoveGroups");
@@ -476,6 +478,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
+
+		.Process(this->Nonprovocative)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

@@ -246,3 +246,98 @@ DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
 
 	return 0x489B53;
 }
+
+#pragma region Nonprovocative
+
+// Do not retaliate against being hit by these Warheads.
+DEFINE_HOOK(0x708B0B, TechnoClass_AllowedToRetaliate_Nonprovocative, 0x5)
+{
+	enum {  SkipEvents = 0x708B17 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x18, 0x8));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+// Do not spring 'attacked' trigger events by these Warheads.
+DEFINE_HOOK(0x5F57CF, ObjectClass_ReceiveDamage_Nonprovocative, 0x6)
+{
+	enum { SkipEvents = 0x5F580C };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x24, 0xC));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+// Do not consider ToProtect technos hit by weapon as having been attacked e.g provoking response from AI.
+DEFINE_HOOK(0x7027E6, TechnoClass_ReceiveDamage_Nonprovocative, 0x8)
+{
+	enum { SkipGameCode = 0x7027EE };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pSource, EAX);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (!pTypeExt->Nonprovocative)
+	{
+		pThis->BaseIsAttacked(pSource);
+
+		return SkipGameCode;
+	}
+
+	return SkipGameCode;
+}
+
+// Do not consider Whiner=true team members hit by weapon as having been attacked e.g provoking response from AI.
+DEFINE_HOOK(0x4D7493, FootClass_ReceiveDamage_Nonprovocative, 0x5)
+{
+	enum { SkipChecks = 0x4D74CD, SkipEvents = 0x4D74A3 };
+
+	GET(TechnoClass*, pSource, EBX);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x1C, 0xC));
+
+	if (!pSource)
+		return SkipChecks;
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+// Suppress harvester under attack notification - Also covered by Ares' Malicious.
+DEFINE_HOOK(0x7384BD, UnitClass_ReceiveDamage_Nonprovocative, 0x6)
+{
+	enum { SkipEvents = 0x738535 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x44, 0xC));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+// Do not consider buildings hit by weapon as having been attacked e.g provoking response from AI.
+DEFINE_HOOK(0x442290, BuildingClass_ReceiveDamage_Nonprovocative1, 0x6)
+{
+	enum { SkipEvents = 0x4422C1 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x9C, 0xC));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+// Suppress all events and alerts that come from attacking a building, unlike Ares' Malicious this includes all EVA notifications AND events
+DEFINE_HOOK(0x442956, BuildingClass_ReceiveDamage_Nonprovocative2, 0x6)
+{
+	enum { SkipEvents = 0x442980 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x9C, 0xC));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+#pragma endregion
