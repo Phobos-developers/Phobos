@@ -145,21 +145,6 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
 	}
 
-	this->Detonate_Warhead.Read(exINI, pSection, "Detonate.Warhead");
-	this->Detonate_Weapon.Read<true>(exINI, pSection, "Detonate.Weapon");
-	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
-	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
-
-	// Convert.From & Convert.To
-	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::Owner);
-
-	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
-
-	this->UseWeeds.Read(exINI, pSection, "UseWeeds");
-	this->UseWeeds_Amount.Read(exINI, pSection, "UseWeeds.Amount");
-	this->UseWeeds_StorageTimer.Read(exINI, pSection, "UseWeeds.StorageTimer");
-	this->UseWeeds_ReadinessAnimationPercentage.Read(exINI, pSection, "UseWeeds.ReadinessAnimationPercentage");
-
 	this->SW_GrantOneTime.Read(exINI, pSection, "SW.GrantOneTime");
 	this->SW_GrantOneTime_InitialReady.Read(exINI, pSection, "SW.GrantOneTime.InitialReady");
 	this->Message_GrantOneTimeLaunched.Read(exINI, pSection, "Message.GrantOneTimeLaunched");
@@ -187,6 +172,21 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		else
 			this->SW_GrantOneTime_RandomWeightsData.push_back(std::move(weights3));
 	}
+
+	this->Detonate_Warhead.Read(exINI, pSection, "Detonate.Warhead");
+	this->Detonate_Weapon.Read<true>(exINI, pSection, "Detonate.Weapon");
+	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
+	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
+
+	// Convert.From & Convert.To
+	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::Owner);
+
+	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
+
+	this->UseWeeds.Read(exINI, pSection, "UseWeeds");
+	this->UseWeeds_Amount.Read(exINI, pSection, "UseWeeds.Amount");
+	this->UseWeeds_StorageTimer.Read(exINI, pSection, "UseWeeds.StorageTimer");
+	this->UseWeeds_ReadinessAnimationPercentage.Read(exINI, pSection, "UseWeeds.ReadinessAnimationPercentage");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

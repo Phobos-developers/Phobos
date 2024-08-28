@@ -328,26 +328,18 @@ void SWTypeExt::ExtData::GrantOneTimeFromList(SuperClass* pSW)
 		return false;
 	};
 
-	bool grantedAnySW = false;
-
 	// random mode
 	if (this->SW_GrantOneTime_RandomWeightsData.size())
 	{
 		auto results = this->WeightedRollsHandler(&this->SW_GrantOneTime_RollChances, &this->SW_GrantOneTime_RandomWeightsData, this->SW_GrantOneTime.size());
 		for (int result : results)
-		{
-			if (grantTheSW(this->SW_GrantOneTime[result]))
-				grantedAnySW = true;
-		}
+			grantTheSW(this->SW_GrantOneTime[result]);
 	}
 	// no randomness mode
 	else
 	{
 		for (const auto swType : this->SW_GrantOneTime)
-		{
-			if (grantTheSW(swType))
-				grantedAnySW = true;
-		}
+			grantTheSW(swType);
 	}
 
 	if (notObserver && pHouse->IsCurrentPlayer())
