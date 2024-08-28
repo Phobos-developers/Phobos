@@ -222,7 +222,7 @@ static void __forceinline GetLevelIntensity(TechnoClass* pThis, int level, int& 
 
 DEFINE_HOOK(0x4148F4, AircraftClass_DrawIt_LevelIntensity, 0x5)
 {
-	enum { SkipGameCode = 0x41493E };
+	enum { SkipGameCode = 0x414925 };
 
 	GET(AircraftClass*, pThis, EBP);
 	GET(int, level, EDI);
@@ -239,7 +239,6 @@ DEFINE_HOOK(0x4148F4, AircraftClass_DrawIt_LevelIntensity, 0x5)
 
 	R->ESI(levelIntensity);
 	R->EBX(cellIntensity);
-	R->EAX(pThis->Locomotor); // Restore overridden instruction
 
 	return SkipGameCode;
 }
