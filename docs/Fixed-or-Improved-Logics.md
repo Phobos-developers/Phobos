@@ -163,6 +163,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
 - Fixed disguised units not using the correct palette if target has custom palette.
+- Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
 
 ## Fixes / interactions with other extensions
 
