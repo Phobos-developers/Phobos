@@ -256,6 +256,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->LastTargetCoord = pBullet->TargetCoords;
 	this->CurrentBurst = 0;
 	this->CountOfBurst = 0;
+	pBullet->Velocity = BulletVelocity::Empty;
 
 	TechnoClass* const pOwner = pBullet->Owner;
 	WeaponTypeClass* const pWeapon = pBullet->WeaponType;
