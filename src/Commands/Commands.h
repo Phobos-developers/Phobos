@@ -1,7 +1,6 @@
 #pragma once
 
 #include <CommandClass.h>
-#include <GameStrings.h>
 #include <StringTable.h>
 #include <MessageListClass.h>
 #include <Phobos.h>
