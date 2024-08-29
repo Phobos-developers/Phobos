@@ -78,13 +78,6 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			{
 				int weaponIndex = pThis->SelectWeapon(pBullet);
 				auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-				//auto pWpExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-				//bool cylinder = pWpExt ? pWpExt->CylinderRangefinding.Get(RulesExt::Global()->CylinderRangefinding) : pThis->IsInAir();
-				//auto distance = pBullet->Location.DistanceFrom(pThis->Location, cylinder);
-
-				//if (distance > guardRange || distance < minguardRange)
-				//	continue;
-
 				double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
 
 				if (versus == 0.0)
