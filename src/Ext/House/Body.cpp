@@ -601,7 +601,7 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 	return mult;
 }
 
-void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1)
+void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode)
 {
 	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
 
