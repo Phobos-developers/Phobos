@@ -217,13 +217,13 @@ SaveGameOnScenarioStart=true     ; boolean
   10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
 
   
-  16006=16006 - Set House Index For Managing AI Triggers,20,0,1,[LONG DESC]
-  16007=16007 - Enable Or Disable All AI Triggers,21,0,1,[LONG DESC]
-  16008=16008 - Enable AI Triggers From List,28,0,1,[LONG DESC]
-  16009=16009 - Disable AI Triggers From List,28,0,1,[LONG DESC]
-  16010=16010 - Disable AI Triggers If Contains Any Objects From the List,29,0,1,[LONG DESC]
-  16011=16011 - Enable AI Triggers If Contains Any Objects From the List,29,0,1,[LONG DESC]
-  16012=16012 - Set Side Index For Managing AI Triggers,20,0,1,[LONG DESC]
+  16006=Set House Index For Managing AI Triggers,20,0,1,[LONG DESC]
+  16007=Enable Or Disable All AI Triggers,21,0,1,[LONG DESC]
+  16008=Enable AI Triggers From List,28,0,1,[LONG DESC]
+  16009=Disable AI Triggers From List,28,0,1,[LONG DESC]
+  16010=Disable AI Triggers If Contains Any Objects From the List,29,0,1,[LONG DESC]
+  16011=Enable AI Triggers If Contains Any Objects From the List,29,0,1,[LONG DESC]
+  16012=Set Side Index For Managing AI Triggers,20,0,1,[LONG DESC]
 
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
