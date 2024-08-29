@@ -102,21 +102,10 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Disguised;
 		}
-
-		if (pTypeExt->ForceWeapon_UnderEMP >= 0)
+		else if (pTypeExt->ForceWeapon_UnderEMP >= 0 &&
+			pTarget->IsUnderEMP())
 		{
-			if (auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType))
-			{
-				bool condition1 = pTargetTypeExt->ImmuneToEMP.isset() && pTargetTypeExt->ImmuneToEMP.Get() == true;
-				bool condition2 = pTarget->WhatAmI() == AbstractType::Infantry && !static_cast<InfantryTypeClass*>(pTargetType)->Cyborg;
-				bool condition3 = (pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft) && pTargetType->Organic;
-
-				if ((pTarget->IsUnderEMP() || condition1 || (!pTargetTypeExt->ImmuneToEMP.isset() && (condition2 || condition3))))
-				{
-					R->EAX(pTypeExt->ForceWeapon_UnderEMP);
-					return UseWeaponIndex;
-				}
-			}
+			forceWeaponIndex = pTypeExt->ForceWeapon_UnderEMP;
 		}
 
 		if (forceWeaponIndex >= 0)
