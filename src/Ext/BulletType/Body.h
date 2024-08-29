@@ -46,8 +46,6 @@ public:
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
 		Valueable<WeaponTypeClass*> ReturnWeapon;
 
-		Valueable<bool> AU;
-
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
@@ -75,7 +73,6 @@ public:
 			, AAOnly { false }
 			, Arcing_AllowElevationInaccuracy { true }
 			, ReturnWeapon {}
-			, AU { false }
 		{ }
 
 		virtual ~ExtData() = default;

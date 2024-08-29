@@ -172,132 +172,73 @@ namespace Helpers {
 
 			\param coords The location the projectile detonated.
 			\param spread The range to find items in.
-			\param includeInAir Include items that are currently InAir (height less than 204).
-			\param includeOnFloor Include items that are currently OnFloor (height more than 204).
-			\param includeUnderground Include items that are currently in Layer::Underground (no matter the height).
-			\param cylinder Will make the delta distance calculation ignore delta Z.
+			\param includeInAir Include items that are currently InAir.
 
 			\author AlexB
 			\date 2010-06-28
 
 			\modifications by Starkku
 			\date 2024-05-20
-
-			\modifications by 航味麻酱
-			\date 2024-08-15
 		*/
 		inline std::vector<TechnoClass*> getCellSpreadItems(
 			CoordStruct const& coords, double const spread,
-			bool const includeInAir = false, bool const includeOnFloor = true, bool const includeUnderground = false, bool const cylinder = false)
+			bool const includeInAir = false)
 		{
 			// set of possibly affected objects. every object can be here only once.
 			DistinctCollector<TechnoClass*> set;
 			double const spreadMult = spread * Unsorted::LeptonsPerCell;
 
-			if (!includeUnderground)
-			{
-				if (includeOnFloor)
-				{
-					// the quick way. only look at stuff residing on the very cells we are affecting.
-					auto const cellCoords = MapClass::Instance->GetCellAt(coords)->MapCoords;
-					auto const range = static_cast<size_t>(spread + 0.99);
-					for (CellSpreadEnumerator it(range); it; ++it)
+			// the quick way. only look at stuff residing on the very cells we are affecting.
+			auto const cellCoords = MapClass::Instance->GetCellAt(coords)->MapCoords;
+			auto const range = static_cast<size_t>(spread + 0.99);
+			for (CellSpreadEnumerator it(range); it; ++it) {
+				auto const pCell = MapClass::Instance->GetCellAt(*it + cellCoords);
+				bool isCenter = pCell->MapCoords == cellCoords;
+				for (NextObject obj(pCell->GetContent()); obj; ++obj) {
+					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
 					{
-						auto const pCell = MapClass::Instance->GetCellAt(*it + cellCoords);
-						bool isCenter = pCell->MapCoords == cellCoords;
-						for (NextObject obj(pCell->GetContent()); obj; ++obj)
+						// Starkku: Buildings need their distance from the origin coords checked at cell level.
+						if (pTechno->WhatAmI() == AbstractType::Building)
 						{
-							if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
+							auto const cellCenterCoords = pCell->GetCenterCoords();
+							double dist = cellCenterCoords.DistanceFrom(coords);
+
+							// If this is the center cell, there's some different behaviour.
+							if (isCenter)
 							{
-								// Starkku: Buildings need their distance from the origin coords checked at cell level.
-								if (pTechno->WhatAmI() == AbstractType::Building)
-								{
-									auto const cellCenterCoords = pCell->GetCenterCoords();
-									double dist = 0.0;
-									if (cylinder)
-									{
-										dist = Math::sqrt(cellCenterCoords.X - coords.X + cellCenterCoords.Y - coords.Y);
-									}
-									else
-									{
-										dist = cellCenterCoords.DistanceFrom(coords);
-									}
-
-									// If this is the center cell, there's some different behaviour.
-									if (isCenter)
-									{
-										if (cylinder || coords.Z - cellCenterCoords.Z <= Unsorted::LevelHeight)
-											dist = 0;
-										else
-											dist -= Unsorted::LevelHeight;
-									}
-
-									if (dist > spreadMult)
-										continue;
-								}
-
-								set.insert(pTechno);
+								if (coords.Z - cellCenterCoords.Z <= Unsorted::LevelHeight)
+									dist = 0;
+								else
+									dist -= Unsorted::LevelHeight;
 							}
+
+							if (dist > spreadMult)
+								continue;
 						}
-					}
-				}
 
-				// flying objects are not included normally
-				// Starkku: Reimplemented using AircraftTrackerClass.
-				if (includeInAir)
-				{
-					auto const airTracker = &AircraftTrackerClass::Instance.get();
-					airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
-
-					for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
-					{
-						if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0)
-						{
-							double dist = 0.0;
-							auto technoCoords = pTechno->Location;
-							if (cylinder)
-							{
-								dist = Math::sqrt(technoCoords.X - coords.X + technoCoords.Y - coords.Y);
-							}
-							else
-							{
-								dist = technoCoords.DistanceFrom(coords);
-							}
-							if (dist <= spreadMult)
-							{
-								set.insert(pTechno);
-							}
-						}
+						set.insert(pTechno);
 					}
 				}
 			}
-			else
+
+			// flying objects are not included normally
+		    // Starkku: Reimplemented using AircraftTrackerClass.
+			if (includeInAir)
 			{
-				// 航味麻酱: Under ground units can not be finded by ATC or cell. No way but iterate through the array.
-				for (auto const& pTechno : *TechnoClass::Array)
+				auto const airTracker = &AircraftTrackerClass::Instance.get();
+				airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
+
+				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 				{
-					if (pTechno->InWhichLayer() == Layer::Underground || // Layer is the mark for the underground units.
-						(includeInAir && pTechno->IsInAir() > 0) ||
-						(includeOnFloor && pTechno->IsOnFloor()))
+					if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0)
 					{
-						double dist = 0.0;
-						auto technoCoords = pTechno->Location;
-						if (cylinder)
-						{
-							dist = Math::sqrt(technoCoords.X - coords.X + technoCoords.Y - coords.Y);
-						}
-						else
-						{
-							dist = technoCoords.DistanceFrom(coords);
-						}
-						if (dist <= spread * 256)
+						if (pTechno->Location.DistanceFrom(coords) <= spreadMult)
 						{
 							set.insert(pTechno);
 						}
 					}
 				}
 			}
-
 
 			// look closer. the final selection. put all affected items in a vector.
 			std::vector<TechnoClass*> ret;
@@ -318,15 +259,7 @@ namespace Helpers {
 
 				// get distance from impact site
 				auto const target = pTechno->GetCoords();
-				double dist = 0.0;
-				if (cylinder)
-				{
-					dist = Math::sqrt(target.X - coords.X + target.Y - coords.Y);
-				}
-				else
-				{
-					dist = target.DistanceFrom(coords);
-				}
+				auto dist = target.DistanceFrom(coords);
 
 				// reduce the distance for flying aircraft
 				if (abs == AbstractType::Aircraft && pTechno->IsInAir()) {

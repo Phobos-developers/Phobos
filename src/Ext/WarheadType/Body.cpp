@@ -251,7 +251,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AffectsOnFloor.Read(exINI, pSection, "AffectsOnFloor");
 	this->AffectsInAir.Read(exINI, pSection, "AffectsInAir");
-	this->AffectsUnderground.Read(exINI, pSection, "AffectsUnderground");
 	this->CellSpread_Cylinder.Read(exINI, pSection, "CellSpread.Cylinder");
 
 	// Convert.From & Convert.To
@@ -466,7 +465,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AffectsOnFloor)
 		.Process(this->AffectsInAir)
-		.Process(this->AffectsUnderground)
 		.Process(this->CellSpread_Cylinder)
 
 		// Ares tags

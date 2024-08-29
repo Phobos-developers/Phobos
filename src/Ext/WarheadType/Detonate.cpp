@@ -113,35 +113,19 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 		const float cellSpread = this->OwnerObject()->CellSpread;
-		const bool cylinder = this->CellSpread_Cylinder;
-		const bool au = this->AffectsUnderground;
-		const bool aa = this->AffectsInAir;
-		const bool ag = this->AffectsOnFloor;
 
 		if (cellSpread)
 		{
-			for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, aa, ag, au, cylinder))
+			for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
 				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 		}
 		else if (pBullet)
 		{
 			if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 			{
-				double dist = 0.0;
-				auto bulletCoords = pBullet->GetCoords();
-				auto targetCoords = pTarget->GetCoords();
-				if (cylinder)
-				{
-					dist = Math::sqrt(bulletCoords.X - targetCoords.X + bulletCoords.Y - targetCoords.Y);
-				}
-				else
-				{
-					dist = bulletCoords.DistanceFrom(targetCoords);
-				}
 				// Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
-				if (dist < Unsorted::LeptonsPerCell / 4 &&
-					(aa && pTarget->IsInAir() || ag && pTarget->IsOnFloor() || au && pTarget->InWhichLayer() == Layer::Underground))
+				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4)
 					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 			}
 		}

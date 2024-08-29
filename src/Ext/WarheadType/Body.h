@@ -144,7 +144,6 @@ public:
 
 		Valueable<bool> AffectsOnFloor;
 		Valueable<bool> AffectsInAir;
-		Valueable<bool> AffectsUnderground;
 		Valueable<bool> CellSpread_Cylinder;
 
 		// Ares tags
@@ -303,7 +302,6 @@ public:
 
 			, AffectsOnFloor { true }
 			, AffectsInAir { true }
-			, AffectsUnderground { false }
 			, CellSpread_Cylinder { false }
 		{ }
 
