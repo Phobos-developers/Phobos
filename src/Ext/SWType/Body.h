@@ -71,6 +71,7 @@ public:
 
 		ValueableIdxVector<SuperWeaponTypeClass> SW_GrantOneTime;
 		Nullable<bool> SW_GrantOneTime_InitialReady;
+		Nullable<bool> SW_GrantOneTime_ReadyIfExists;
 		ValueableVector<float> SW_GrantOneTime_RollChances;
 		Valueable<CSFText> Message_GrantOneTimeLaunched;
 		NullableIdx<VoxClass> EVA_GrantOneTimeLaunched;
@@ -116,6 +117,7 @@ public:
 			, UseWeeds_ReadinessAnimationPercentage { 0.9 }
 			, SW_GrantOneTime {}
 			, SW_GrantOneTime_InitialReady {}
+			, SW_GrantOneTime_ReadyIfExists {}
 			, SW_GrantOneTime_RollChances {}
 			, SW_GrantOneTime_RandomWeightsData {}
 			, Message_GrantOneTimeLaunched {}

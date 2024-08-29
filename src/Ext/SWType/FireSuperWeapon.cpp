@@ -297,13 +297,16 @@ void SWTypeExt::ExtData::GrantOneTimeFromList(SuperClass* pSW)
 	{
 		if (const auto pSuper = pHouse->Supers.GetItem(swIdxToAdd))
 		{
+
+			bool forceReadyness = pSuper->IsPresent && this->SW_GrantOneTime_ReadyIfExists.isset() && this->SW_GrantOneTime_ReadyIfExists.Get();
 			bool granted = pSuper->Grant(true, false, false);
 
-			if (granted)
+			if (granted || forceReadyness)
 			{
 				auto const pTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 				bool isReady = this->SW_GrantOneTime_InitialReady.isset() && this->SW_GrantOneTime_InitialReady.Get() ? true : false;
 				isReady = !this->SW_GrantOneTime_InitialReady.isset() && pTypeExt->SW_InitialReady ? true : isReady;
+				isReady = forceReadyness ? true : isReady;
 
 				if (isReady)
 				{
