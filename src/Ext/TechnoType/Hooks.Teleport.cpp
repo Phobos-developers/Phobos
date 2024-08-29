@@ -46,8 +46,18 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	}
 	pLocomotor->Timer.Start(duree);
 
-	R->EDI(&pLocomotor->Timer);
-	return 0x719576;
+	pLinked->WarpingOut = true;
+
+	if (auto pUnit = specific_cast<UnitClass*>(pLinked))
+	{
+		if (pUnit->Type->Harvester || pUnit->Type->Weeder)
+		{
+			pLocomotor->Timer.Start(0);
+			pLinked->WarpingOut = false;
+		}
+	}
+
+	return 0x7195BC;
 }
 
 DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x5)
@@ -103,9 +113,7 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 	if (pIndex && pIndex->Is_Valid_Key())
 		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
 
-	*ret = pThis->LocomotionClass::Draw_Matrix(pIndex);
-	if (slope_idx && pIndex && pIndex->Is_Valid_Key())
-		*ret = Matrix3D::VoxelRampMatrix[slope_idx] * *ret;
+	*ret = Matrix3D::VoxelRampMatrix[slope_idx] * pThis->LocomotionClass::Draw_Matrix(pIndex);
 
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
@@ -145,3 +153,39 @@ DEFINE_HOOK(0x729B5D, TunnelLocomotionClass_DrawMatrix_Tilt, 0x8)
 
 // DEFINE_JUMP(VTABLE, 0x7F5A4C, 0x5142A0);//TunnelLocomotionClass_Shadow_Matrix : just use hover's to save my time
 // Since I've already invalidated the key for tilted vxls when reimplementing the shadow drawing code, this is no longer necessary
+
+DEFINE_HOOK(0x7197E4, TeleportLocomotionClass_Process_ChronospherePreDelay, 0x6)
+{
+	GET(TeleportLocomotionClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis->Owner);
+	pExt->IsBeingChronoSphered = true;
+	R->ECX(pExt->TypeExtData->ChronoSpherePreDelay.Get(RulesExt::Global()->ChronoSpherePreDelay));
+
+	return 0;
+}
+
+DEFINE_HOOK(0x719BD9, TeleportLocomotionClass_Process_ChronosphereDelay2, 0x6)
+{
+	GET(TeleportLocomotionClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis->Owner);
+
+	if (!pExt->IsBeingChronoSphered)
+		return 0;
+
+	int delay = pExt->TypeExtData->ChronoSphereDelay.Get(RulesExt::Global()->ChronoSphereDelay);
+
+	if (delay > 0)
+	{
+		pThis->Owner->WarpingOut = true;
+		pExt->HasRemainingWarpInDelay = true;
+		pExt->LastWarpInDelay = Math::max(delay, pExt->LastWarpInDelay);
+	}
+	else
+	{
+		pExt->IsBeingChronoSphered = false;
+	}
+
+	return 0;
+}

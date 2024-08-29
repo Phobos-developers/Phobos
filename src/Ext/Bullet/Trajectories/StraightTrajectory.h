@@ -7,6 +7,7 @@ class StraightTrajectoryType final : public PhobosTrajectoryType
 public:
 	StraightTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Straight)
 		, DetonationDistance { Leptons(102) }
+		, ApplyRangeModifiers { false }
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
 	{}
@@ -17,6 +18,7 @@ public:
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	Valueable<Leptons> DetonationDistance;
+	Valueable<bool> ApplyRangeModifiers;
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> PassThrough;
 };
