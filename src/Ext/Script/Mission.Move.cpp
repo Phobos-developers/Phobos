@@ -224,7 +224,6 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 		{
 			int enemyHouseIndex = pFoot->Team->FirstUnit->Owner->EnemyHouseIndex;
 			bool onlyTargetHouseEnemy = pFoot->Team->Type->OnlyTargetHouseEnemy;
-
 			auto pHouseExt = HouseExt::ExtMap.Find(pFoot->Team->Owner);
 
 			if (pHouseExt && pHouseExt->ForceOnlyTargetHouseEnemyMode != -1)

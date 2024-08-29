@@ -197,7 +197,6 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	if (!pFocus && !bAircraftsWithoutAmmo)
 	{
 		// This part of the code is used for picking a new target.
-
 		bool onlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
 
 		if (pHouseExt->ForceOnlyTargetHouseEnemyMode != -1)

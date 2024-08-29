@@ -1304,7 +1304,7 @@ void ScriptExt::Log(const char* pFormat, ...)
 	va_end(args);
 }
 
-void ScriptExt::ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
+void ScriptExt::ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode)
 {
 	if (!pTeam)
 		return;
