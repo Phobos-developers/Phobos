@@ -37,6 +37,7 @@ public:
 		bool SecretLab_Placed;
 		int AccumulatedIncome;
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
+		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -50,6 +51,7 @@ public:
 			, SecretLab_Placed { false }
 			, AccumulatedIncome { 0 }
 			, CurrentLaserWeaponIndex {}
+			, PoweredUpToLevel { 0 }
 		{ }
 
 		void DisplayIncomeString();

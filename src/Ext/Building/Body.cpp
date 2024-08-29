@@ -481,6 +481,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->SecretLab_Placed)
 		.Process(this->AccumulatedIncome)
 		.Process(this->CurrentLaserWeaponIndex)
+		.Process(this->PoweredUpToLevel)
 		;
 }
 
