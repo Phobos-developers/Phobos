@@ -1,7 +1,6 @@
 #include "RadTypeClass.h"
 
 #include <Utilities/TemplateDef.h>
-#include <GameStrings.h>
 #include <WarheadTypeClass.h>
 
 template<>
@@ -34,6 +33,7 @@ void RadTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Color.Read(exINI, section, "RadColor");
 	this->SiteWarhead.Read<true>(exINI, section, "RadSiteWarhead");
 	this->SiteWarhead_Detonate.Read(exINI, section, "RadSiteWarhead.Detonate");
+	this->SiteWarhead_Detonate_Full.Read(exINI, section, "RadSiteWarhead.Detonate.Full");
 	this->HasOwner.Read(exINI, section, "RadHasOwner");
 	this->HasInvoker.Read(exINI, section, "RadHasInvoker");
 }
@@ -55,6 +55,7 @@ void RadTypeClass::Serialize(T& Stm)
 		.Process(this->Color)
 		.Process(this->SiteWarhead)
 		.Process(this->SiteWarhead_Detonate)
+		.Process(this->SiteWarhead_Detonate_Full)
 		.Process(this->HasOwner)
 		.Process(this->HasInvoker)
 		;
