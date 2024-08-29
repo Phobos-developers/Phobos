@@ -64,7 +64,8 @@ void ScriptExt::SetSideIdxForManagingTriggers(TeamClass* pTeam, int sideIdx = -1
 	if (sideIdx < 0)
 		sideIdx = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
 
-	if (sideIdx < -1)
+	// Any negative value will mark it as "Any side"
+	if (sideIdx < 0)
 		sideIdx = -1;
 
 	if (auto pTeamData = TeamExt::ExtMap.Find(pTeam))
@@ -74,11 +75,12 @@ void ScriptExt::SetSideIdxForManagingTriggers(TeamClass* pTeam, int sideIdx = -1
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx = 1000000)
+void ScriptExt::SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx = 2147483647)
 {
 	auto pScript = pTeam->CurrentScript;
 
-	if (houseIdx == 1000000)
+	// Note: this magic number is a default index value the game will never be able to use due to technical limitations
+	if (houseIdx == 2147483647)
 		houseIdx = pScript->Type->ScriptActions[pScript->CurrentMission].Argument;
 
 	houseIdx = HouseExt::GetHouseIndex(houseIdx, pTeam, nullptr);

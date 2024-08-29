@@ -220,7 +220,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		ScriptExt::SetSideIdxForManagingTriggers(pTeam, -1);
 		break;
 	case PhobosScripts::SetHouseIdxForManagingTriggers:
-		ScriptExt::SetHouseIdxForManagingTriggers(pTeam, 1000000);
+		ScriptExt::SetHouseIdxForManagingTriggers(pTeam, 2147483647);
 		break;
 	case PhobosScripts::ManageAllAITriggers:
 		ScriptExt::ManageAITriggers(pTeam, -1);
