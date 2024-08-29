@@ -684,6 +684,9 @@ Detonate.AtFirer=false  ; boolean
 - `SW.GrantOneTime.InitialReady` specifies if all new granted superweapons will be ready for launch. If not set this behaviour will be managed by `SW.InitialReady` of the granted superweapon.
 - `Message.GrantOneTimeLaunched` will be displayed to the firer when the main superweapon is launched.
 - `EVA.GrantOneTimeLaunched` will be played to the firer when the main superweapon is launched.
+- These superweapons can be made random with these optional tags. The game will randomly choose only a single superweapon from the list for each roll chance provided.
+  - `SW.GrantOneTime.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `SW.GrantOneTime.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific superweapon. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 In `rulesmd.ini`:
 ```ini
