@@ -874,6 +874,7 @@ Detonate.AtFirer=false      ; boolean
 - Superweapons can add 1-time superweapons to the firer like the nuke crate. Granted types can be additionally randomized using the same rules as with LimboDelivery (see above).
 - `SW.GrantOneTime.InitialReady` specifies if all new granted superweapons will be ready for launch. If not set this behaviour will be managed by `SW.InitialReady` of the granted superweapon.
 - `SW.GrantOneTime.ReadyIfExists` specifies if superweapons should be ready for launch if already exists. If not set this behaviour will be managed by `SW.GrantOneTime.InitialReady` or `SW.InitialReady` of the granted superweapon.
+- `SW.GrantOneTime.ResetIfExists` specifies if superweapons timers should be reset if already exists. Takes precedence over `SW.GrantOneTime.ReadyIfExists`, `SW.GrantOneTime.InitialReady` and `SW.InitialReady`.
 - `Message.GrantOneTimeLaunched` will be displayed to the firer when the main superweapon is launched.
 - `EVA.GrantOneTimeLaunched` will be played to the firer when the main superweapon is launched.
 - These superweapons can be made random with these optional tags. The game will randomly choose only a single superweapon from the list for each roll chance provided.
@@ -882,13 +883,15 @@ Detonate.AtFirer=false      ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                         ; Super Weapon
-SW.GrantOneTime=                 ; List of super weapons
-SW.GrantOneTime.RollChances=     ; List of percentages.
-SW.GrantOneTime.RandomWeightsN=  ; List of integers.
-SW.GrantOneTime.InitialReady=    ; boolean
-Message.GrantOneTimeLaunched=    ; CSF entry key
-EVA.GrantOneTimeLaunched=        ; EVA entry
+[SOMESW]                             ; Super Weapon
+SW.GrantOneTime=                     ; List of super weapons
+SW.GrantOneTime.RollChances=         ; List of percentages.
+SW.GrantOneTime.RandomWeightsN=      ; List of integers.
+SW.GrantOneTime.InitialReady=        ; boolean
+SW.GrantOneTime.ReadyIfExists=       ; boolean
+SW.GrantOneTime.ResetIfExists=false  ; boolean
+Message.GrantOneTimeLaunched=        ; CSF entry key
+EVA.GrantOneTimeLaunched=            ; EVA entry
 ```
 
 ## Technos
