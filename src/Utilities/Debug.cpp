@@ -72,6 +72,7 @@ void Debug::FatalErrorAndExit(const char* pFormat, ...)
 	va_start(args, pFormat);
 	LogWithVArgs(pFormat, args);
 	va_end(args);
+	MessageBox(0, StringBuffer, "Fatal error ", MB_ICONERROR);
 	FatalExit(static_cast<int>(ExitCode::Undefined));
 }
 
@@ -81,6 +82,7 @@ void Debug::FatalErrorAndExit(ExitCode nExitCode, const char* pFormat, ...)
 	va_start(args, pFormat);
 	LogWithVArgs(pFormat, args);
 	va_end(args);
+	MessageBox(0, StringBuffer, "Fatal error ", MB_ICONERROR);
 	FatalExit(static_cast<int>(nExitCode));
 }
 

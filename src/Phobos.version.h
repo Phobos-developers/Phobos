@@ -23,7 +23,7 @@
 #pragma endregion
 
 // Build number. Incremented on each released build.
-#define BUILD_NUMBER 39
+#define BUILD_NUMBER 43
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 

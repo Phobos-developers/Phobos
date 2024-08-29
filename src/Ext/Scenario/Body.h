@@ -6,6 +6,8 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <Ext/Techno/Body.h>
+
 #include <map>
 
 struct ExtendedVariable
@@ -31,11 +33,16 @@ public:
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
 
+		std::vector<TechnoExt::ExtData*> AutoDeathObjects;
+		std::vector<TechnoExt::ExtData*> TransportReloaders; // Objects that can reload ammo in limbo
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
 			, Waypoints { }
 			, Variables { }
+			, AutoDeathObjects {}
+			, TransportReloaders {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
@@ -51,6 +58,9 @@ public:
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+		void UpdateAutoDeathObjectsInLimbo();
+		void UpdateTransportReloaders();
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
