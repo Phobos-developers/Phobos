@@ -215,6 +215,16 @@ SaveGameOnScenarioStart=true     ; boolean
   10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]
   10103=Load Onto Transports,0,0,1,[LONG DESC]
   10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]
+
+  
+  16006=16006 - Set House Index For Managing AI Triggers,20,0,1,[LONG DESC]
+  16007=16007 - Enable Or Disable All AI Triggers,21,0,1,[LONG DESC]
+  16008=16008 - Enable AI Triggers From List,28,0,1,[LONG DESC]
+  16009=16009 - Disable AI Triggers From List,28,0,1,[LONG DESC]
+  16010=16010 - Disable AI Triggers If Contains Any Objects From the List,29,0,1,[LONG DESC]
+  16011=16011 - Enable AI Triggers If Contains Any Objects From the List,29,0,1,[LONG DESC]
+  16012=16012 - Set Side Index For Managing AI Triggers,20,0,1,[LONG DESC]
+
   18000=Local variable set,22,0,1,[LONG DESC]
   18001=Local variable add,22,0,1,[LONG DESC]
   18002=Local variable minus,22,0,1,[LONG DESC]
@@ -295,6 +305,12 @@ SaveGameOnScenarioStart=true     ; boolean
   25=Local variables,-4
   26=Global variables,-5
   27=Global variables,-6
+  28=AI Scripts List, -7
+  29=AI Target Type,-8
+
+  [ScriptParamTypes]
+  7=AIScriptsList,1,1,0
+  8=AITargetTypes,1,1,0
   ```
 </details>
 
