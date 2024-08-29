@@ -86,13 +86,7 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
 
 		if (pTypeExt->IsPassable)
-		{
-			if (IS_CELL_OCCUPIED(pTerrain->GetCell()))
-				return SkipTerrainChecks;
-
-			R->EBP(0);
-			return ReturnPassable;
-		}
+			return SkipTerrainChecks;
 	}
 
 	return 0;

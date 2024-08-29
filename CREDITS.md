@@ -45,6 +45,8 @@ This page lists all the individual contributions to the project by their author.
   - Code style
   - Customizable ElectricBolt Arcs
   - Ability to disable shadow for debris & meteor animations
+  - Voxel light source position customization
+  - Voxel light source position and tilting fix
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -130,6 +132,7 @@ This page lists all the individual contributions to the project by their author.
   - Shared ammo logic
   - Customizable FLH when infantry is prone or deployed
   - Initial strength for cloned infantry
+  - Map Events 604 & 605 for checking if a specific Techno enters in a cell
   - Mind Control Threshold
 - **Starkku**:
   - Misc. minor bugfixes & improvements
@@ -175,6 +178,7 @@ This page lists all the individual contributions to the project by their author.
   - Trailer animation owner inheritance
   - Warhead detonation on all objects on map
   - Animated TerrainTypes extension
+  - TerrainType damage & crumbling frames
   - Exploding unit passenger killing customization
   - Railgun particle target coordinate fix
   - Building target coordinate offset fix
@@ -223,6 +227,21 @@ This page lists all the individual contributions to the project by their author.
   - `AmbientDamage` warhead & main target ignore customization
   - Projectile return weapon
   - Aircraft landing / docking direction
+  - `DeploysInto` cursor desync fix
+  - Minor crate logic improvements
+  - Custom tint effects
+  - Revenge weapons
+  - AttachEffect
+  - Air unit tracking fix for large range / `CellSpread`
+  - Extra tint intensity for Iron Curtain & Force Shield
+  - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565
+  - Customizing height at which subterranean units travel
+  - AI superweapon delay timer customization
+  - Disabling `MultipleFactory` bonus from specific BuildingType
+  - Customizable ChronoSphere teleport delays for units
+  - Allowed and disallowed types for `FactoryPlant`
+  - Forbidding parallel AI queues for specific TechnoTypes
+  - Nonprovocative Warheads
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -241,6 +260,7 @@ This page lists all the individual contributions to the project by their author.
   - Dump variables to file on scenario end / hotkey
   - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
   - Help with docs
+  - Voxel light source position customization
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
    - Interceptor logic prototype
@@ -255,6 +275,7 @@ This page lists all the individual contributions to the project by their author.
       - Allow to tilt regardless of TiltCrashJumpjet
       - Forbid firing when crashing
    - OmniFire.TurnToTarget
+   - Strafing aircraft weapon customization
    - Object Self-destruction logic
    - Misc vanilla suicidal behavior fix
    - Post-type-conversion update
@@ -298,6 +319,7 @@ This page lists all the individual contributions to the project by their author.
    - Droppod properties dehardcode
    - Waypoint entering building together with engineer/agent bug fix
    - Skippable game save on scenario start
+   - Skip rally point line drawing when undeploying a building
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -305,27 +327,37 @@ This page lists all the individual contributions to the project by their author.
 - **NetsuNegi**
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
+   - Disguised units not using the correct palette if target has custom palette bugfix
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons
    - Iron Curtain effects customization on infantries and organic units
    - Use `CustomPalette` for animations with `Tiled=yes`
    - Unlimited `AlternateFLH` entries
+   - Build limit group
+   - Customizing whether passengers are kicked out when an aircraft fires
 - **TwinkleStar**
   - Custom slaves free sound
   - Jumpjet crash rotation control
   - Vehicle voxel turret shadows & body multi-section shadows
   - `TurretOffset` support for SHP vehicles
+  - Customizable rocker amplitude
+  - Customizable wake anim
 - **Fryone**
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
   - Auto-deploy/Deploy block on ammo change
   - Flashing Technos on selecting
+  - Promotion animation
 - **ZivDero**
   - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
+- **Ollerus**
+  - Build limit group enhancement
+  - Customizable rocker amplitude
+- **handama** - AI script action to jump back to previous script
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
@@ -348,7 +380,7 @@ This page lists all the individual contributions to the project by their author.
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
 - **4SG** - help with docs
-- **thomassneddon** - general assistance
+- **thomassneddon** - general assistance, knowledge about voxel lighting model
 - **Xkein** - general assistance, YRpp edits
 - **mevitar** - honorary shield tester *triple* award
 - **Damfoos** - extensive and thorough testing
