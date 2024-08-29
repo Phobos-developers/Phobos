@@ -89,8 +89,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 
 	double ratio = static_cast<double>(value) / maxValue;
 	COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
-	RectangleStruct rect = { 0, 0, 0, 0 };
-	DSurface::Composite->GetRect(&rect);
+	RectangleStruct rect = DSurface::Composite->GetRect();
 	rect.Height -= 32; // account for bottom bar
 	const int textHeight = 12;
 	const int pipsHeight = hasShield ? 4 : 0;

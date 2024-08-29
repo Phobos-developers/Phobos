@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <GameStrings.h>
 #include <New/Type/RadTypeClass.h>
 #include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>
@@ -14,7 +13,7 @@ void RadSiteExt::ExtData::Initialize()
 
 bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)
 {
-	auto pWarhead = this->Type->GetWarhead();
+	auto const pWarhead = this->Type->GetWarhead();
 
 	if (!this->Type->GetWarheadDetonate())
 	{
@@ -23,7 +22,15 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 	}
 	else
 	{
-		WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage);
+		if (this->Type->GetWarheadDetonateFull())
+		{
+			WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage, this->RadHouse);
+		}
+		else
+		{
+			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+			pWHExt->DamageAreaWithTarget(pTarget->GetCoords(), damage, this->RadInvoker, pWarhead, true, this->RadHouse, pTarget);
+		}
 
 		if (!pTarget->IsAlive)
 			return false;

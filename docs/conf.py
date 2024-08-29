@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Phobos'
-copyright = '2023, The Phobos Contributors'
+copyright = '2024, The Phobos Contributors'
 author = 'The Phobos Contributors'
 
 
@@ -28,7 +28,7 @@ author = 'The Phobos Contributors'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx_rtd_theme', 'myst_parser']
+extensions = ['sphinx_rtd_theme', 'myst_parser', 'sphinx.ext.mathjax']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -55,7 +55,10 @@ html_static_path = ['_static']
 
 myst_heading_anchors = 3
 
-myst_enable_extensions = []
+myst_enable_extensions = [
+    "amsmath",
+    "dollarmath",
+]
 
 html_theme_options = {
     'navigation_depth': 4,

@@ -4,7 +4,9 @@
 #include <ScenarioClass.h>
 #include <BitFont.h>
 
+#include <Ext/Rules/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <Utilities/Constructs.h>
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -216,6 +218,19 @@ void GeneralUtils::DisplayDamageNumberString(int damage, DamageDisplayType type,
 	offset = offset + width;
 }
 
+DynamicVectorClass<ColorScheme*>* GeneralUtils::BuildPalette(const char* paletteFileName)
+{
+	if (GeneralUtils::IsValidString(paletteFileName))
+	{
+		char pFilename[0x20];
+		strcpy_s(pFilename, paletteFileName);
+
+		return ColorScheme::GeneratePalette(pFilename);
+	}
+
+	return nullptr;
+}
+
 // Gets integer representation of color from ColorAdd corresponding to given index, or 0 if there's no color found.
 // Code is pulled straight from game's draw functions that deal with the tint colors.
 int GeneralUtils::GetColorFromColorAdd(int colorIndex)
@@ -227,6 +242,10 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 		return colorValue;
 
 	auto const& color = colorAdd[colorIndex];
+
+	if (RulesExt::Global()->ColorAddUse8BitRGB)
+		return Drawing::RGB_To_Int(color);
+
 	int red = color.R;
 	int green = color.G;
 	int blue = color.B;
