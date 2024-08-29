@@ -2,10 +2,7 @@
 
 void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 {
-	if (!pTeam)
-		return;
-
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeamData)
 		return;
 
@@ -20,7 +17,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 			if (pTechno->WhatAmI() != AbstractType::Building)
 				continue;
 
-			auto pBuilding = static_cast<BuildingClass*>(pTechno);
+			const auto pBuilding = abstract_cast<BuildingClass*>(pTechno);
 			if (!pBuilding)
 				continue;
 
@@ -31,7 +28,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 		if (pTeamData->BridgeRepairHuts.size() == 0)
 		{
 			pTeam->StepCompleted = true;
-			ScriptExt::Log("[%s][%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: No repair huts found).\n",
+			ScriptExt::Log("AI Scripts - RepairDestroyedBridge: [%s][%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: No repair huts found).\n",
 				pTeam->Type->ID,
 				pScript->Type->ID,
 				currentMission,
@@ -54,7 +51,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 		}
 		else
 		{
-			auto pBuilding = static_cast<BuildingClass*>(pTeam->Focus);
+			const auto pBuilding = static_cast<BuildingClass*>(pTeam->Focus);
 
 			if (!pBuilding->Type->BridgeRepairHut)
 			{
@@ -91,7 +88,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 
 		if (pUnit->WhatAmI() == AbstractType::Infantry)
 		{
-			auto const pInf = static_cast<InfantryClass*>(pUnit);
+			const auto pInf = static_cast<InfantryClass*>(pUnit);
 
 			if (pInf->IsEngineer())
 			{
@@ -114,7 +111,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 	if (engineers.size() == 0)
 	{
 		pTeam->StepCompleted = true;
-		ScriptExt::Log("[%s][%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: Team has no engineers).\n",
+		ScriptExt::Log("AI Scripts - RepairDestroyedBridge: [%s][%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: Team has no engineers).\n",
 			pTeam->Type->ID,
 			pScript->Type->ID,
 			currentMission,
@@ -131,7 +128,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 
 	if (!selectedTarget)
 	{
-		for (auto const pTechno : pTeamData->BridgeRepairHuts)
+		for (const auto pTechno : pTeamData->BridgeRepairHuts)
 		{
 			CellStruct cell = pTechno->GetCell()->MapCoords;
 
@@ -145,7 +142,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 			}
 			else
 			{
-				auto coords = pTechno->GetCenterCoords();
+				CoordStruct coords = pTechno->GetCenterCoords();
 
 				// Only huts reachable by the (first) engineer are valid
 				if (engineers.at(0)->IsInSameZoneAsCoords(pTechno->GetCenterCoords()))
@@ -155,7 +152,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 
 		if (validHuts.size() == 0)
 		{
-			ScriptExt::Log("[%s][%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (Reason: Can not select a bridge repair hut).\n",
+			ScriptExt::Log("AI Scripts - RepairDestroyedBridge: [%s][%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (Reason: Can not select a bridge repair hut).\n",
 			pTeam->Type->ID,
 			pScript->Type->ID,
 			currentMission,
@@ -181,10 +178,9 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 		}
 		else
 		{
-			for (auto const pHut : validHuts)
+			for (const auto pHut : validHuts)
 			{
 				int value = engineers.at(0)->DistanceFrom(pHut); // Note: distance is in leptons (*256)
-
 				bool isValidCandidate = false;
 
 				if (mode == 0)
@@ -205,7 +201,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 
 	if (!selectedTarget)
 	{
-		ScriptExt::Log("[%s][%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (Reason: Can not select a bridge repair hut).\n",
+		ScriptExt::Log("AI Scripts - RepairDestroyedBridge: [%s][%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (Reason: Can not select a bridge repair hut).\n",
 			pTeam->Type->ID,
 			pScript->Type->ID,
 			currentMission,
