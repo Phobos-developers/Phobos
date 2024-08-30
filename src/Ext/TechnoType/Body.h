@@ -149,6 +149,7 @@ public:
 		Valueable<int> ForceWeapon_Naval_Decloaked;
 		Valueable<int> ForceWeapon_Cloaked;
 		Valueable<int> ForceWeapon_Disguised;
+		Valueable<int> ForceWeapon_Webby;
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
@@ -200,6 +201,11 @@ public:
 		Nullable<Leptons> SpawnDistanceFromTarget;
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
+
+		ValueableVector<AnimTypeClass*> Webby_Anims;
+		Valueable<bool> ImmuneToWeb;
+		Valueable<int> Webby_Duration;
+		Valueable<int> Webby_DurationVariation;
 
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
@@ -371,6 +377,7 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
+			, ForceWeapon_Webby { -1 }
 
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
@@ -427,6 +434,11 @@ public:
 
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
+
+			, Webby_Anims {}
+			, ImmuneToWeb { false }
+			, Webby_Duration { 0 }
+			, Webby_DurationVariation { 0 }
 			, LandingDir {}
 			, DroppodType {}
 

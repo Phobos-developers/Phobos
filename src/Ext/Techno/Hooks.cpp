@@ -8,6 +8,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -520,6 +521,119 @@ DEFINE_HOOK(0x51BAFB, InfantryClass_ChronoSparkleDelay, 0x5)
 {
 	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
 	return 0x51BB00;
+}
+
+DEFINE_HOOK(0x518FBC, InfantryClass_DrawIt_DontRenderSHP, 0x6)
+{
+	enum { SkipDrawCode = 0x5192B5 };
+
+	GET(InfantryClass*, pThis, EBP);
+
+	if (!pThis)
+		return 0;
+
+	auto pTechno = static_cast<TechnoClass*>(pThis);
+	if (!pTechno)
+		return 0;
+
+	auto pExt = TechnoExt::ExtMap.Find(pTechno);
+	if (!pExt)
+		return 0;
+
+	if (pExt->WebbyDurationCountDown > 0)
+		return SkipDrawCode;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x518016, InfantryClass_TakeDamage_Webby, 0x7)
+{
+	GET(InfantryClass* const, pThis, ESI);
+	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0xD0, 0x4));
+
+	if (!receiveDamageArgs.WH)
+		return 0;
+
+	auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH);
+	if (!pWarheadExt || !pWarheadExt->Webby || pWarheadExt->Webby_Duration == 0 || pWarheadExt->Webby_Anims.size() == 0)
+		return 0;
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (!pTypeExt)
+		return 0;
+
+	if (pTypeExt->ImmuneToWeb.Get())
+		return 0;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return 0;
+
+	if (!pExt->WebbyAnim)
+	{
+		bool hasCustomAnims = pTypeExt->Webby_Anims.size() > 0;
+		int max = hasCustomAnims ? pTypeExt->Webby_Anims.size() - 1 : pWarheadExt->Webby_Anims.size() - 1;
+		int selectedIndex = ScenarioClass::Instance->Random.RandomRanged(0, max);
+		auto const pAnimType = hasCustomAnims ? pTypeExt->Webby_Anims[selectedIndex] : pWarheadExt->Webby_Anims[selectedIndex];
+		auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location, 0, 1, 0x600, 0, false);
+
+		if (pAnim)
+		{
+			pExt->WebbyAnim = pAnim;
+			pExt->WebbyAnim->SetOwnerObject(pThis);
+		}
+	}
+
+	int duration = pTypeExt->Webby_Duration.Get() > 0 ? pTypeExt->Webby_Duration.Get() : pWarheadExt->Webby_Duration.Get();
+	int durationVariation = pTypeExt->Webby_DurationVariation.Get() > 0 ? pTypeExt->Webby_DurationVariation.Get() : pWarheadExt->Webby_DurationVariation.Get();
+	durationVariation = durationVariation < 0 ? 0 : durationVariation;
+	int minDuration = duration - durationVariation;
+	minDuration = minDuration <= 0 ? 0 : minDuration;
+	int maxDuration = duration + durationVariation;
+
+	duration = ScenarioClass::Instance->Random.RandomRanged(minDuration, maxDuration);
+
+	int cap = pWarheadExt->Webby_Cap;
+	int webbyCountDown = pExt->WebbyDurationTimer.GetTimeLeft();
+
+	if (cap == 0)
+	{
+		// Makes this Web effect stackable, but uncapped
+		duration += webbyCountDown;
+	}
+	else if (cap > 0)
+	{
+		if (webbyCountDown > cap)
+		{
+			// If current duration effect is greater than the new attempt don't change the values
+			duration = webbyCountDown;
+		}
+		else
+		{
+			// Makes this Web effect stackable, but capped
+			duration += webbyCountDown;
+			duration = duration > cap ? cap : duration;
+		}
+	}
+	else
+	{
+		// Cap=-1 case: The target’s Web counter is set to this absolute number of frames specified by Web.Duration, unless the target’s Web counter is already greater than this
+		if (webbyCountDown > duration)
+			duration = webbyCountDown;
+	}
+
+	pExt->WebbyLastTarget = pThis->Target;
+	pExt->WebbyLastMission = pThis->CurrentMission;
+
+	pExt->WebbyDurationCountDown = duration;
+	pExt->WebbyDurationTimer.Start(duration);
+
+	if (pThis->Locomotor && pThis->Locomotor->Is_Moving())
+		pThis->Locomotor->Stop_Moving();
+
+	pThis->ParalysisTimer.Start(duration);
+
+	return 0x51804E;
 }
 
 DEFINE_HOOK_AGAIN(0x5F4718, ObjectClass_Select, 0x7)

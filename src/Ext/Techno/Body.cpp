@@ -497,6 +497,11 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasRemainingWarpInDelay)
 		.Process(this->LastWarpInDelay)
 		.Process(this->IsBeingChronoSphered)
+		.Process(this->WebbyDurationCountDown)
+		.Process(this->WebbyDurationTimer)
+		.Process(this->WebbyAnim)
+		.Process(this->WebbyLastTarget)
+		.Process(this->WebbyLastMission)
 		;
 }
 

@@ -2,9 +2,11 @@
 // Author: Starkku
 
 #include "UnitClass.h"
+#include "InfantryClass.h"
 
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
 
 DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 {
@@ -80,4 +82,28 @@ DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)
 	GET(UnitClass*, pThis, ESI);
 
 	return pThis->Type->Speed == 0 ? 0x738927 : 0;
+}
+
+DEFINE_HOOK(0x51AA49, InfantryClass_Assign_Destination_DisallowMoving, 0x6)
+{
+	GET(InfantryClass*, pThis, ECX);
+
+	if (pThis->ParalysisTimer.HasTimeLeft())
+		return 0x51B1D7;
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return 0;
+
+	if (pExt->WebbyDurationCountDown > 0)
+	{
+		if (pThis->Target)
+		{
+			pThis->SetTarget(nullptr);
+			pThis->SetDestination(nullptr, false);
+			pThis->QueueMission(Mission::Sleep, false);
+		}
+	}
+
+	return 0;
 }
