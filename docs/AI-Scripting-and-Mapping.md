@@ -722,3 +722,23 @@ In `mycampaign.map`:
 ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 ...
 ```
+
+### `604-605` Checking if a specific Techno enters in a cell
+- 604: Checks if the techno that entered in the cell has the same ID specified in the event.
+- 605: Checks if the techno that entered in the cell appears in the selected list in `AITargetTypes`.
+- `HouseIndex` can be customized to focus in a specified house.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...
+ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...
+...
+```
+
+| *House Index* | *Description*                              |
+| :-----------: | :----------------------------------------: |
+| >= 0          | The index of the current House in the map  |
+| -1            | This value is ignored (any house is valid) |
+| -2            | Pick the owner of the map trigger          |

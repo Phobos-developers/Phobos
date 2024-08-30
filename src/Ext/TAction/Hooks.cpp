@@ -99,21 +99,12 @@ DEFINE_HOOK(0x6D4455, Tactical_Render_UpdateLightSources, 0x8)
 {
 	if (RetintTemp::UpdateLightSources)
 	{
-		for (auto pBld : *BuildingClass::Array)
+		for (auto lSource : *LightSourceClass::Array)
 		{
-			if (pBld->LightSource && pBld->LightSource->Activated)
+			if (lSource->Activated)
 			{
-				pBld->LightSource->Activated = false;
-				pBld->LightSource->Activate();
-			}
-		}
-
-		for (auto pRadSite : *RadSiteClass::Array)
-		{
-			if (pRadSite->LightSource && pRadSite->LightSource->Activated)
-			{
-				pRadSite->LightSource->Activated = false;
-				pRadSite->LightSource->Activate();
+				lSource->Activated = false;
+				lSource->Activate();
 			}
 		}
 

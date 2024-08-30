@@ -27,7 +27,8 @@ void ParticleTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (pThis->StateAIAdvance == 0 && pThis->StartStateAI < pThis->EndStateAI)
 	{
-		Debug::Log("[Developer warning] [%s] has StateAIAdvance=0 in conjunction with StartStateAI value less than EndStateAI. StateAIAdvance set to 1 to prevent crashes from occuring.\n", pSection);
+		Debug::FatalErrorAndExit(Debug::ExitCode::BadINIUsage,
+			"[%s] has StateAIAdvance=0 in conjunction with StartStateAI value less than EndStateAI.\n", pSection);
 		pThis->StateAIAdvance = 1;
 	}
 }
