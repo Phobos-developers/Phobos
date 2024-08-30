@@ -5,56 +5,42 @@
 
 #include <type_traits>
 
-#include <Objidl.h>
+#include <SwizzleManagerClass.h>
 
 class PhobosSwizzle
 {
 public:
-	static PhobosSwizzle Instance;
-
-	PhobosSwizzle() { }
-	~PhobosSwizzle() { }
-
 	/**
 	* pass in the *address* of the pointer you want to have changed
 	* caution, after the call *p will be NULL
 	*/
-	HRESULT RegisterForChange(void** p);
+	inline static HRESULT RegisterForChange(void** p)
+	{
+		return SwizzleManagerClass::Instance->Swizzle(p);
+	}
 
 	/**
 	* the original game objects all save their `this` pointer to the save stream
 	* that way they know what ptr they used and call this function with that old ptr and `this` as the new ptr
 	*/
-	HRESULT RegisterChange(void* was, void* is);
+	inline static HRESULT RegisterChange(void* was, void* is)
+	{
+		return SwizzleManagerClass::Instance->Here_I_Am((long)was, is);
+	}
 
 	template<typename T>
-	void RegisterPointerForChange(T*& ptr)
+	inline static void RegisterPointerForChange(T*& ptr)
 	{
 		auto pptr = const_cast<std::remove_cv_t<T>**>(&ptr);
-		this->RegisterForChange(reinterpret_cast<void**>(pptr));
+		RegisterForChange(reinterpret_cast<void**>(pptr));
 	}
 };
-
-template<typename T>
-struct is_swizzlable : public std::is_pointer<T>::type { };
 
 struct Swizzle {
 	template <typename T>
 	Swizzle(T& object)
 	{
-		swizzle(object, typename is_swizzlable<T>::type());
-	}
-
-private:
-	template <typename TSwizzle>
-	void swizzle(TSwizzle& object, std::true_type)
-	{
-		PhobosSwizzle::Instance.RegisterPointerForChange(object);
-	}
-
-	template <typename TSwizzle>
-	void swizzle(TSwizzle& object, std::false_type)
-	{
-		// not swizzlable
+		if constexpr (std::is_pointer_v<T>)
+			PhobosSwizzle::RegisterPointerForChange(object);
 	}
 };
