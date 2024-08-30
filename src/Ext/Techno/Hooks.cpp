@@ -17,6 +17,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	// Do not search this up again in any functions called here because it is costly for performance - Starkku
 	TechnoExt::ExtMap.Find(pThis)->OnEarlyUpdate();
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
+	//TechnoExt::UpdateUniversalDeploy(pThis);
 
 	return 0;
 }

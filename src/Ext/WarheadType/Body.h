@@ -129,6 +129,7 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
+		Nullable<AnimTypeClass*> Convert_Anim;
 
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
@@ -163,6 +164,8 @@ public:
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 		TechnoClass* DamageAreaTarget;
+
+		Valueable<bool> Convert_UseUniversalDeploy;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -278,6 +281,7 @@ public:
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
 			, Convert_Pairs {}
+			, Convert_Anim {}
 
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
@@ -310,6 +314,8 @@ public:
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate {false}
 			, DamageAreaTarget {}
+
+			, Convert_UseUniversalDeploy { false }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

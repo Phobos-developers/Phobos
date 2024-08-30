@@ -15,6 +15,8 @@ public:
 	static void Parse(std::vector<TypeConvertGroup>& list,INI_EX& exINI, const char* section,AffectedHouse defaultAffectHouse);
 
 	static void Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner);
+	static void UniversalConvert(TechnoClass* pTarget, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner, AnimTypeClass* pAnimType = nullptr);
+
 
 private:
 	template <typename T>
