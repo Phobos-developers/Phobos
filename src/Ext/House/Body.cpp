@@ -557,6 +557,50 @@ int HouseExt::ExtData::GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNa
 	return Math::max(count, 0);
 }
 
+float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const
+{
+	float mult = 1.0;
+	auto const pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
+	for (auto const pBuilding : this->RestrictedFactoryPlants)
+	{
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
+		if (pTypeExt->FactoryPlant_AllowTypes.size() > 0 && !pTypeExt->FactoryPlant_AllowTypes.Contains(pTechnoType))
+			continue;
+
+		if (pTypeExt->FactoryPlant_DisallowTypes.size() > 0 && pTypeExt->FactoryPlant_DisallowTypes.Contains(pTechnoType))
+			continue;
+
+		float currentMult = 1.0f;
+
+		switch (pTechnoType->WhatAmI())
+		{
+		case AbstractType::BuildingType:
+			if (((BuildingTypeClass*)pTechnoType)->BuildCat == BuildCat::Combat)
+				currentMult -= pBuilding->Type->DefensesCostBonus;
+			else
+				currentMult -= pBuilding->Type->BuildingsCostBonus;
+			break;
+		case AbstractType::AircraftType:
+			currentMult -= pBuilding->Type->AircraftCostBonus;
+			break;
+		case AbstractType::InfantryType:
+			currentMult -= pBuilding->Type->InfantryCostBonus;
+			break;
+		case AbstractType::UnitType:
+			currentMult -= pBuilding->Type->UnitsCostBonus;
+			break;
+		default:
+			break;
+		}
+
+		mult *= (1.0f - currentMult * pTechnoTypeExt->FactoryPlant_Multiplier);
+	}
+
+	return mult;
+}
+
 void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	const char* pSection = this->OwnerObject()->PlainName;
@@ -594,6 +638,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->Factory_AircraftType)
 		.Process(this->AISuperWeaponDelayTimer)
 		.Process(this->RepairBaseNodes)
+		.Process(this->RestrictedFactoryPlants)
 		.Process(this->LastBuiltNavalVehicleType)
 		.Process(this->ProducingNavalUnitTypeIndex)
 		.Process(this->NumAirpads_NonMFB)
@@ -636,11 +681,21 @@ void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 	AnnounceInvalidPointer(Factory_NavyType, ptr);
 	AnnounceInvalidPointer(Factory_AircraftType, ptr);
 
-	if (!OwnedLimboDeliveredBuildings.empty() && ptr != nullptr)
+	if (ptr != nullptr)
 	{
-		auto& vec = this->OwnedLimboDeliveredBuildings;
-		vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+		if (!OwnedLimboDeliveredBuildings.empty())
+		{
+			auto& vec = this->OwnedLimboDeliveredBuildings;
+			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+		}
+
+		if (!RestrictedFactoryPlants.empty())
+		{
+			auto& vec = this->RestrictedFactoryPlants;
+			vec.erase(std::remove(vec.begin(), vec.end(), reinterpret_cast<BuildingClass*>(ptr)), vec.end());
+		}
 	}
+
 }
 
 // =============================
@@ -723,7 +778,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 
 	if (!pItemExt->BuildLimitGroup_ExtraLimit_Types.empty() && !pItemExt->BuildLimitGroup_ExtraLimit_Nums.empty())
 	{
-		for (size_t i = 0; i < pItemExt->BuildLimitGroup_ExtraLimit_Types.size(); i ++)
+		for (size_t i = 0; i < pItemExt->BuildLimitGroup_ExtraLimit_Types.size(); i++)
 		{
 			int count = 0;
 			auto pTmpType = pItemExt->BuildLimitGroup_ExtraLimit_Types[i];
@@ -754,7 +809,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 	{
 		bool reachedLimit = false;
 
-		for (size_t i = 0; i < std::min(pItemExt->BuildLimitGroup_Types.size(), pItemExt->BuildLimitGroup_Nums.size()); i ++)
+		for (size_t i = 0; i < std::min(pItemExt->BuildLimitGroup_Types.size(), pItemExt->BuildLimitGroup_Nums.size()); i++)
 		{
 			TechnoTypeClass* pType = pItemExt->BuildLimitGroup_Types[i];
 			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -807,7 +862,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 		}
 		else
 		{
-			for (size_t i = 0; i < std::min(pItemExt->BuildLimitGroup_Types.size(), limits.size()); i ++)
+			for (size_t i = 0; i < std::min(pItemExt->BuildLimitGroup_Types.size(), limits.size()); i++)
 			{
 				TechnoTypeClass* pType = pItemExt->BuildLimitGroup_Types[i];
 				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -863,7 +918,7 @@ void RemoveProduction(const HouseClass* pHouse, const TechnoTypeClass* pType, in
 		if (num >= 0)
 			queued = Math::min(num, queued);
 
-		for (int i = 0; i < queued; i ++)
+		for (int i = 0; i < queued; i++)
 		{
 			pFactory->RemoveOneFromQueue(pType);
 		}
@@ -881,7 +936,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 
 	if (!pTypeExt->BuildLimitGroup_ExtraLimit_Types.empty() && !pTypeExt->BuildLimitGroup_ExtraLimit_Nums.empty())
 	{
-		for (size_t i = 0; i < pTypeExt->BuildLimitGroup_ExtraLimit_Types.size(); i ++)
+		for (size_t i = 0; i < pTypeExt->BuildLimitGroup_ExtraLimit_Types.size(); i++)
 		{
 			auto pTmpType = pTypeExt->BuildLimitGroup_ExtraLimit_Types[i];
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTmpType);
@@ -953,7 +1008,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 		bool reached = true;
 		bool realReached = true;
 
-		for (size_t i = 0; i < size; i ++)
+		for (size_t i = 0; i < size; i++)
 		{
 			TechnoTypeClass* pTmpType = pTypeExt->BuildLimitGroup_Types[i];
 			const auto pTmpTypeExt = TechnoTypeExt::ExtMap.Find(pTmpType);
