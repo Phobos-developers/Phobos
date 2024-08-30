@@ -1486,7 +1486,7 @@ LaunchSW.DisplayMoney.Houses=all  ; Affected House Enumeration (none|owner/self|
 LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
-### Penetration damage on garrisoned structures
+### Penetration damage on garrisonable structures
 
 ![image](_static/images/garrison-penetration-01.gif)
 *Penetration damage on garrisoned structures example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*

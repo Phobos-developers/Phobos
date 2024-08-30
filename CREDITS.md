@@ -133,7 +133,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable FLH when infantry is prone or deployed
   - Initial strength for cloned infantry
   - Map Events 604 & 605 for checking if a specific Techno enters in a cell
-  - Penetration damage on garrisoned structures
+  - Penetration damage on garrisonable structures
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
