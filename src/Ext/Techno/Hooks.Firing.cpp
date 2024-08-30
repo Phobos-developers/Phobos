@@ -38,7 +38,7 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 
 DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 {
-	enum { Secondary = 0x6F3745 };
+	enum { ReturnWeaponIndex = 0x6F37AF };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
@@ -47,20 +47,22 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 	{
 		auto const pWeaponPrimary = pThis->GetWeapon(0)->WeaponType;
 		auto const pWeaponSecondary = pThis->GetWeapon(1)->WeaponType;
-		const auto pPrimaryExt = WeaponTypeExt::ExtMap.Find(pWeaponPrimary);
+		auto const pPrimaryExt = WeaponTypeExt::ExtMap.Find(pWeaponPrimary);
 
-		if (pWeaponSecondary && !EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true))
+		if (pWeaponSecondary && (!EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true)
+			|| (pPrimaryExt->AttachEffect_CheckOnFirer && !pPrimaryExt->HasRequiredAttachedEffects(pThis, pThis))))
 		{
-			return Secondary;
+			R->EAX(1);
+			return ReturnWeaponIndex;
 		}
 		else if (pCell->OverlayTypeIndex != -1)
 		{
 			auto const pOverlayType = OverlayTypeClass::Array()->GetItem(pCell->OverlayTypeIndex);
 
-			if (pOverlayType->Wall && pCell->OverlayData >> 4 != pOverlayType->DamageLevels && !pWeaponPrimary->Warhead->Wall &&
-				pWeaponSecondary && pWeaponSecondary->Warhead->Wall && !TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoSecondaryWeaponFallback)
+			if (pOverlayType->Wall && pCell->OverlayData >> 4 != pOverlayType->DamageLevels)
 			{
-				return Secondary;
+				R->EAX(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayType));
+				return ReturnWeaponIndex;
 			}
 		}
 	}
@@ -309,28 +311,51 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			{
 				return CannotFire;
 			}
+
+			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
+				return CannotFire;
 		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x6FC587, TechnoClass_CanFire_OpenTopped, 0x6)
+DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 {
-	enum { DisallowFiring = 0x6FC86A };
+	enum { OutOfRange = 0x6FC0DF, Illegal = 0x6FC86A, Continue = 0x6FC0D3 };
 
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pTransport = pThis->Transporter)
-	{
-		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
-		{
-			if (pTransport->Deactivated && !pExt->OpenTopped_AllowFiringIfDeactivated)
-				return DisallowFiring;
-		}
-	}
+	if (pThis->SlaveOwner)
+		return Illegal;
 
-	return 0;
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->AE.DisableWeapons)
+		return OutOfRange;
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
+{
+	enum { Illegal = 0x6FC86A, OutOfRange = 0x6FC0DF, Continue = 0x6FC5D5 };
+
+//	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pTransport, EAX);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+
+	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
+		return Illegal;
+
+	if (pTransport->Transporter)
+		return Illegal;
+
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::ExtMap.Find(pTransport)->AE.DisableWeapons)
+		return OutOfRange;
+
+	return Continue;
 }
 
 DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
@@ -366,6 +391,19 @@ DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
 			return DisallowFiring;
 		}
 	}
+
+	return 0;
+}
+
+// Skips bridge-related coord checks to allow AA to target air units while both are on a bridge.
+DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
+{
+	enum { SkipChecks = 0x6FCCBD };
+
+	GET(TechnoClass*, pTarget, EBP);
+
+	if (pTarget->IsInAir())
+		return SkipChecks;
 
 	return 0;
 }
@@ -413,7 +451,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 	{
 		if (pExt->AreaFire_Target == AreaFireTarget::Random)
 		{
-			auto const range = pWeaponType->Range / static_cast<double>(Unsorted::LeptonsPerCell);
+			auto const range = WeaponTypeExt::GetRangeWithModifiers(pWeaponType, pThis) / static_cast<double>(Unsorted::LeptonsPerCell);
 
 			std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(static_cast<size_t>(range + 0.99));
 			size_t size = adjacentCells.size();
@@ -460,10 +498,8 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 
 	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
-		if (pWeaponExt->FeedbackWeapon.isset())
+		if (auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon)
 		{
-			auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon.Get();
-
 			if (pThis->InOpenToppedTransport && !pWeaponFeedback->FireInTransport)
 				return 0;
 
@@ -595,57 +631,6 @@ DEFINE_HOOK(0x6F3C88, TechnoClass_GetFLH_BurstFLH_2, 0x6)
 }
 #pragma endregion
 
-// Reimplements the game function with few changes / optimizations
-DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
-{
-	enum { ReturnResult = 0x70138F };
-
-	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0x8, 0x4));
-
-	int result = 0;
-	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-	if (pWeapon)
-	{
-		result = pWeapon->Range;
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-		if (pThis->GetTechnoType()->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
-		{
-			int smallestRange = INT32_MAX;
-			auto pPassenger = pThis->Passengers.FirstPassenger;
-
-			while (pPassenger && (pPassenger->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
-			{
-				int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
-				int tWeaponIndex = 0;
-
-				if (openTWeaponIndex != -1)
-					tWeaponIndex = openTWeaponIndex;
-				else
-					tWeaponIndex = pPassenger->SelectWeapon(pThis->Target);
-
-				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
-
-				if (pTWeapon && pTWeapon->FireInTransport)
-				{
-					if (pTWeapon->Range < smallestRange)
-						smallestRange = pTWeapon->Range;
-				}
-
-				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
-			}
-
-			if (result > smallestRange)
-				result = smallestRange;
-		}
-	}
-
-	R->EBX(result);
-	return ReturnResult;
-}
-
 // Basically a hack to make game and Ares pick laser properties from non-Primary weapons.
 DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
 {
@@ -668,15 +653,32 @@ DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_RandomDelay, 0x6)
+DEFINE_HOOK(0x6FCFE0, TechnoClass_RearmDelay_CanCloakDuringRearm, 0x6)
 {
+	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	TechnoExt::ExtMap.Find(pThis)->CanCloakDuringRearm = !pWeapon->DecloakToFire;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_ROF, 0x6)
+{
+	enum { SkipGameCode = 0x6FD0BB };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis);
 	auto range = pWeaponExt->ROF_RandomDelay.Get(RulesExt::Global()->ROF_RandomDelay);
+	double rof = pWeapon->ROF * pTechnoExt->AE.ROFMultiplier;
 
 	R->EAX(GeneralUtils::GetRangedRandomOrSingleValue(range));
-	return 0;
+	__asm { fld rof };
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x6FD054, TechnoClass_RearmDelay_ForceFullDelay, 0x6)
@@ -733,25 +735,35 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x5209A7, InfantryClass_FiringAI_BurstDelays, 0x8)
+namespace FiringAITemp
+{
+	int weaponIndex;
+}
+
+DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
+{
+	GET(int, weaponIndex, EDI);
+
+	FiringAITemp::weaponIndex = weaponIndex;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 {
 	enum { Continue = 0x5209CD, ReturnFromFunction = 0x520AD9 };
 
 	GET(InfantryClass*, pThis, EBP);
 	GET(int, firingFrame, EDX);
 
-	int weaponIndex = pThis->SelectWeapon(pThis->Target);
-	const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-	if (!pWeapon)
-		return ReturnFromFunction;
-
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	int cumulativeDelay = 0;
 	int projectedDelay = 0;
+	int weaponIndex = FiringAITemp::weaponIndex;
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
-	if (pWeaponExt->Burst_FireWithinSequence)
+	if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
 	{
 		for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
 		{
@@ -774,16 +786,16 @@ DEFINE_HOOK(0x5209A7, InfantryClass_FiringAI_BurstDelays, 0x8)
 		}
 	}
 
-	if (pThis->IsFiring && pThis->Animation.Value == firingFrame + cumulativeDelay)
+	if (pThis->Animation.Value == firingFrame + cumulativeDelay)
 	{
-		if (pWeaponExt->Burst_FireWithinSequence)
+		if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
 		{
 			int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
 
 			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
 			if (firingFrame + projectedDelay > frameCount)
 			{
-				const auto pExt = TechnoExt::ExtMap.Find(pThis);
+				auto const pExt = TechnoExt::ExtMap.Find(pThis);
 				pExt->ForceFullRearmDelay = true;
 			}
 		}
@@ -805,35 +817,39 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 
 #pragma region WallWeaponStuff
 
-WeaponStruct* __fastcall TechnoClass_GetWeaponAgainstWallWrapper(TechnoClass* pThis, void* _, int weaponIndex)
-{
-	auto const weaponPrimary = pThis->GetWeapon(0);
-
-	if (!weaponPrimary->WeaponType->Warhead->Wall)
-	{
-		auto const weaponSecondary = pThis->GetWeapon(1);
-
-		if (weaponSecondary && weaponSecondary->WeaponType && weaponSecondary->WeaponType->Warhead->Wall &&
-			!TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoSecondaryWeaponFallback)
-		{
-			return weaponSecondary;
-		}
-	}
-
-	return weaponPrimary;
-}
-
-
-DEFINE_JUMP(CALL6, 0x51C1F8, GET_OFFSET(TechnoClass_GetWeaponAgainstWallWrapper));  // InfantryClass_CanEnterCell
-DEFINE_JUMP(CALL6, 0x73F49B, GET_OFFSET(TechnoClass_GetWeaponAgainstWallWrapper));  // UnitClass_CanEnterCell
-
 DEFINE_HOOK(0x70095A, TechnoClass_WhatAction_WallWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(OverlayTypeClass*, pOverlayTypeClass, STACK_OFFSET(0x2C, -0x18));
 
-	R->EAX(TechnoClass_GetWeaponAgainstWallWrapper(pThis, nullptr, 0));
+	int weaponIndex = TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass);
+	R->EAX(pThis->GetWeapon(weaponIndex));
 
 	return 0;
+}
+
+DEFINE_HOOK(0x51C1F1, InfantryClass_CanEnterCell_WallWeapon, 0x5)
+{
+	enum { SkipGameCode = 0x51C1FE };
+
+	GET(InfantryClass*, pThis, EBP);
+	GET(OverlayTypeClass*, pOverlayTypeClass, ESI);
+
+	R->EAX(pThis->GetWeapon(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass)));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x73F495, UnitClass_CanEnterCell_WallWeapon, 0x6)
+{
+	enum { SkipGameCode = 0x73F4A1 };
+
+	GET(UnitClass*, pThis, EBX);
+	GET(OverlayTypeClass*, pOverlayTypeClass, ESI);
+
+	R->EAX(pThis->GetWeapon(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass)));
+
+	return SkipGameCode;
 }
 
 namespace CellEvalTemp
@@ -869,7 +885,7 @@ DEFINE_HOOK(0x736F61, UnitClass_FiringAI_BurstRandomTarget_Setup, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (pThis->DiskLaserTimer.TimeLeft <= 0 && pThis->Target)
+	if (pThis->RearmTimer.TimeLeft <= 0 && pThis->Target)
 		TechnoExt::UpdateRandomTarget(pThis);
 
 	return 0;
@@ -879,7 +895,7 @@ DEFINE_HOOK(0x4D4E8A, FootClass_FiringAI_BurstRandomTarget_Setup, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (pThis->DiskLaserTimer.TimeLeft <= 0 && pThis->Target)
+	if (pThis->RearmTimer.TimeLeft <= 0 && pThis->Target)
 		TechnoExt::UpdateRandomTarget(pThis);
 
 	return 0;
@@ -891,7 +907,7 @@ DEFINE_HOOK(0x44AFF8, BuildingClass_FireAt_BurstRandomTarget_Setup, 0x6)
 
 	auto pOriginalTarget = pThis->Target;
 
-	if (pThis->DiskLaserTimer.TimeLeft <= 0 && pThis->Target)
+	if (pThis->RearmTimer.TimeLeft <= 0 && pThis->Target)
 		TechnoExt::UpdateRandomTarget(pThis);
 
 	int weaponIndex = pThis->SelectWeapon(pThis->Target);

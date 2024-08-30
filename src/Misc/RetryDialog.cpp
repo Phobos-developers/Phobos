@@ -6,7 +6,6 @@
 #include <GameOptionsClass.h>
 #include <GScreenClass.h>
 #include <EvadeClass.h>
-#include <GameStrings.h>
 
 namespace RetryDialogFlag
 {
