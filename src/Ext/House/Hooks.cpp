@@ -1,21 +1,10 @@
 #include "Body.h"
 
 #include <Ext/Aircraft/Body.h>
+#include <Ext/Scenario/Body.h>
 #include "Ext/Techno/Body.h"
 #include "Ext/Building/Body.h"
 #include <unordered_map>
-
-DEFINE_HOOK(0x4F8440, HouseClass_Update_Beginning, 0x5)
-{
-	GET(HouseClass* const, pThis, ECX);
-
-	auto pExt = HouseExt::ExtMap.Find(pThis);
-
-	pExt->UpdateAutoDeathObjectsInLimbo();
-	pExt->UpdateTransportReloaders();
-
-	return 0;
-}
 
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 {
@@ -96,8 +85,23 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	auto const pExt = RecalcCenterTemp::pExtData;
 
-	if (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding))
+	if (!MapClass::Instance->CoordinatesLegal(pBuilding->GetMapCoords())
+		|| (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding)))
+	{
 		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
+{
+	enum { SkipTechno = 0x4AC55B };
+
+	GET(TechnoClass* const, pTechno, ECX);
+
+	if (!MapClass::Instance->CoordinatesLegal(pTechno->GetMapCoords()))
+		return SkipTechno;
 
 	return 0;
 }
@@ -182,10 +186,7 @@ DEFINE_HOOK(0x6F6D85, TechnoClass_Unlimbo_RemoveTracking, 0x6)
 		pExt->HasBeenPlacedOnMap = true;
 
 		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
-		{
-			auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
-			pOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
-		}
+			ScenarioExt::Global()->AutoDeathObjects.push_back(pExt);
 	}
 
 	return 0;
@@ -207,19 +208,24 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->AddToLimboTracking(pType);
 	}
 
-	if (pExt->TypeExtData->AutoDeath_Behavior.isset())
+	if (auto pMe = generic_cast<FootClass*>(pThis))
 	{
-		auto& vec = pOwnerExt->OwnedAutoDeathObjects;
-		vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
-		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
-	}
+		bool I_am_human = pThis->Owner->IsControlledByHuman();
+		bool You_are_human = pNewOwner->IsControlledByHuman();
+		auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
+			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_ComputerToHuman.Get() : nullptr;
 
-	if (pThis->Transporter && pThis->WhatAmI() != AbstractType::Aircraft
-		&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
-	{
-		auto& vec = pOwnerExt->OwnedTransportReloaders;
-		vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
-		pNewOwnerExt->OwnedAutoDeathObjects.push_back(pExt);
+		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
+			TechnoExt::ConvertToType(pMe, pConvertTo);
+
+		for (auto& trail : pExt->LaserTrails)
+		{
+			if (trail.Type->IsHouseColor)
+				trail.CurrentColor = pNewOwner->LaserColor;
+		}
+
+		if (!I_am_human && You_are_human)
+			TechnoExt::ChangeOwnerMissionFix(pMe);
 	}
 
 	return 0;
@@ -249,4 +255,85 @@ DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
 	bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
 
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
+}
+
+DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
+{
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(TechnoTypeClass*, pType, 0x4);
+	GET(bool, aresDisable, EAX);
+
+	if (aresDisable || !pType)
+		return 0;
+
+	if (HouseExt::ReachedBuildLimit(pThis, pType, false))
+		R->EAX(true);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4FD77C, HouseClass_ExpertAI_Superweapons, 0x5)
+{
+	enum { SkipSWProcess = 0x4FD7A0 };
+
+	if (RulesExt::Global()->AISuperWeaponDelay.isset())
+		return SkipSWProcess;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4F9038, HouseClass_AI_Superweapons, 0x5)
+{
+	GET(HouseClass*, pThis, ESI);
+
+	if (!RulesExt::Global()->AISuperWeaponDelay.isset() || pThis->IsControlledByHuman() || pThis->Type->MultiplayPassive)
+		return 0;
+
+	int delay = RulesExt::Global()->AISuperWeaponDelay.Get();
+
+	if (delay > 0)
+	{
+		auto const pExt = HouseExt::ExtMap.Find(pThis);
+
+		if (pExt->AISuperWeaponDelayTimer.HasTimeLeft())
+			return 0;
+
+		pExt->AISuperWeaponDelayTimer.Start(delay);
+	}
+
+	if (!SessionClass::IsCampaign() || pThis->IQLevel2 >= RulesClass::Instance->SuperWeapons)
+		pThis->AI_TryFireSW();
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x4FFA99, HouseClass_ExcludeFromMultipleFactoryBonus, 0x6)
+DEFINE_HOOK(0x4FF9C9, HouseClass_ExcludeFromMultipleFactoryBonus, 0x6)
+{
+	GET(BuildingClass*, pBuilding, ESI);
+
+	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->ExcludeFromMultipleFactoryBonus)
+	{
+		GET(HouseClass*, pThis, EDI);
+		GET(bool, isNaval, ECX);
+
+		auto const pExt = HouseExt::ExtMap.Find(pThis);
+		pExt->UpdateNonMFBFactoryCounts(pBuilding->Type->Factory, R->Origin() == 0x4FF9C9, isNaval);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x500910, HouseClass_GetFactoryCount, 0x5)
+{
+	enum { SkipGameCode = 0x50095D };
+
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(AbstractType, rtti, 0x4);
+	GET_STACK(bool, isNaval, 0x8);
+
+	auto const pExt = HouseExt::ExtMap.Find(pThis);
+	R->EAX(pExt->GetFactoryCountWithoutNonMFB(rtti, isNaval));
+
+	return SkipGameCode;
 }

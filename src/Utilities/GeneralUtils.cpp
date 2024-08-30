@@ -4,7 +4,9 @@
 #include <ScenarioClass.h>
 #include <BitFont.h>
 
+#include <Ext/Rules/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <Utilities/Constructs.h>
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -214,4 +216,47 @@ void GeneralUtils::DisplayDamageNumberString(int damage, DamageDisplayType type,
 	FlyingStrings::Add(damageStr, coords, color, Point2D { offset - (width / 2), 0 });
 
 	offset = offset + width;
+}
+
+DynamicVectorClass<ColorScheme*>* GeneralUtils::BuildPalette(const char* paletteFileName)
+{
+	if (GeneralUtils::IsValidString(paletteFileName))
+	{
+		char pFilename[0x20];
+		strcpy_s(pFilename, paletteFileName);
+
+		return ColorScheme::GeneratePalette(pFilename);
+	}
+
+	return nullptr;
+}
+
+// Gets integer representation of color from ColorAdd corresponding to given index, or 0 if there's no color found.
+// Code is pulled straight from game's draw functions that deal with the tint colors.
+int GeneralUtils::GetColorFromColorAdd(int colorIndex)
+{
+	auto const& colorAdd = RulesClass::Instance->ColorAdd;
+	int colorValue = 0;
+
+	if (colorIndex < 0 || colorIndex >= (sizeof(colorAdd) / sizeof(ColorStruct)))
+		return colorValue;
+
+	auto const& color = colorAdd[colorIndex];
+
+	if (RulesExt::Global()->ColorAddUse8BitRGB)
+		return Drawing::RGB_To_Int(color);
+
+	int red = color.R;
+	int green = color.G;
+	int blue = color.B;
+
+	if (Drawing::ColorMode() == RGBMode::RGB565)
+		colorValue |= blue | (32 * (green | (red << 6)));
+
+	if (Drawing::ColorMode() != RGBMode::RGB655)
+		colorValue |= blue | (((32 * red) | (green >> 1)) << 6);
+
+	colorValue |= blue | (32 * ((32 * red) | (green >> 1)));
+
+	return colorValue;
 }

@@ -17,10 +17,12 @@ public:
 	class ExtData final : public Extension<OverlayTypeClass>
 	{
 	public:
+		Valueable<int> ZAdjust;
 		PhobosFixedString<32u> PaletteFile;
-		DynamicVectorClass<ColorScheme*>* Palette;
+		DynamicVectorClass<ColorScheme*>* Palette; // Intentionally not serialized - rebuilt from the palette file on load.
 
 		ExtData(OverlayTypeClass* OwnerObject) : Extension<OverlayTypeClass>(OwnerObject)
+			, ZAdjust { 0 }
 			, PaletteFile {}
 			, Palette {}
 		{ }

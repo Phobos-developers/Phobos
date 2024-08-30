@@ -15,7 +15,6 @@ void OverlayTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->PaletteFile)
-		.Process(this->Palette)
 		;
 }
 
@@ -30,24 +29,23 @@ void OverlayTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	//
 	//INI_EX exINI(pINI);
 
-	auto const pArtINI = &CCINIClass::INI_Art();
 	auto pArtSection = pThis->ImageFile;
+	auto const pArtINI = &CCINIClass::INI_Art();
+	INI_EX exArtINI(pArtINI);
 
+	this->ZAdjust.Read(exArtINI, pArtSection, "ZAdjust");
 	this->PaletteFile.Read(pArtINI, pArtSection, "Palette");
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 
-	if (GeneralUtils::IsValidString(this->PaletteFile))
-	{
-		char pFilename[0x20];
-		strcpy_s(pFilename, this->PaletteFile.data());
-
-		this->Palette = ColorScheme::GeneratePalette(pFilename);
-	}
+	if (GeneralUtils::IsValidString(this->PaletteFile) && !this->Palette)
+		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, this->PaletteFile);
 }
 
 void OverlayTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<OverlayTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
 void OverlayTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)

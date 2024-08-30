@@ -7,6 +7,8 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
+#include <Utilities/Macro.h>
+
 DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 {
 	GET(AnimClass* const, pThis, ESI);
@@ -23,20 +25,19 @@ DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 	return 0x423BBF;
 }
 
-// Goes before and replaces Ares animation damage / weapon hook at 0x424538.
-DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
+// Nuke Ares' animation damage hook at 0x424538.
+DEFINE_PATCH(0x424538, 0x8B, 0x8E, 0xCC, 0x00, 0x00, 0x00);
+
+// And add the new one after that.
+DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 {
 	enum { SkipDamage = 0x42465D, Continue = 0x42464C };
 
 	GET(AnimClass*, pThis, ESI);
 
-	if (pThis->Type->Damage <= 0.0 || pThis->HasExtras)
-		return SkipDamage;
-
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 	int delay = pTypeExt->Damage_Delay.Get();
 	int damageMultiplier = 1;
-	bool adjustAccum = false;
 	double damage = 0;
 	int appliedDamage = 0;
 
@@ -52,15 +53,19 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	}
 	else if (delay <= 0 || pThis->Type->Damage < 1.0) // If Damage.Delay is less than 1 or Damage is a fraction.
 	{
-		adjustAccum = true;
 		damage = damageMultiplier * pThis->Type->Damage + pThis->Accum;
-		pThis->Accum = damage;
 
 		// Deal damage if it is at least 1, otherwise accumulate it for later.
 		if (damage >= 1.0)
+		{
 			appliedDamage = static_cast<int>(std::round(damage));
+			pThis->Accum = damage - appliedDamage;
+		}
 		else
+		{
+			pThis->Accum = damage;
 			return SkipDamage;
+		}
 	}
 	else
 	{
@@ -73,52 +78,61 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 
 		// Use Type->Damage as the actually dealt damage.
 		appliedDamage = static_cast<int>(std::round(pThis->Type->Damage)) * damageMultiplier;
+		pThis->Accum = 0.0;
 	}
 
-	if (appliedDamage <= 0 || pThis->IsPlaying)
+	if (appliedDamage <= 0 || pThis->IsInert)
 		return SkipDamage;
 
-	// Store fractional damage if needed, or reset the accum if hit the Damage.Delay counter.
-	if (adjustAccum)
-		pThis->Accum = damage - appliedDamage;
-	else
-		pThis->Accum = 0.0;
-
 	TechnoClass* pInvoker = nullptr;
-	HouseClass* pInvokerHouse = nullptr;
+	HouseClass* pOwner = nullptr;
 
 	if (pTypeExt->Damage_DealtByInvoker)
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pThis);
 		pInvoker = pExt->Invoker;
+		pOwner = pExt->InvokerHouse;
 
 		if (!pInvoker)
 		{
 			pInvoker = pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
-			pInvokerHouse = !pInvoker ? pExt->InvokerHouse : nullptr;
+
+			if (pInvoker)
+				pOwner = pInvoker->Owner;
 		}
 	}
 
-	if (pTypeExt->Weapon.isset())
+	if (pTypeExt->Weapon)
 	{
-		WeaponTypeExt::DetonateAt(pTypeExt->Weapon.Get(), pThis->GetCoords(), pInvoker, appliedDamage, pInvokerHouse);
+		WeaponTypeExt::DetonateAt(pTypeExt->Weapon, pThis->GetCoords(), pInvoker, appliedDamage, pOwner);
 	}
 	else
 	{
+		if (!pOwner)
+		{
+			if (pThis->Owner)
+			{
+				pOwner = pThis->Owner;
+			}
+			else if (pInvoker)
+			{
+				pOwner = pInvoker->Owner;
+			}
+			else if (pThis->OwnerObject)
+			{
+				pOwner = pThis->OwnerObject->GetOwningHouse();
+			}
+			else if (pThis->IsBuildingAnim)
+			{
+				auto const pBuilding = AnimExt::ExtMap.Find(pThis)->ParentBuilding;
+				pOwner = pBuilding ? pBuilding->Owner : nullptr;
+			}
+		}
+
 		auto pWarhead = pThis->Type->Warhead;
 
 		if (!pWarhead)
 			pWarhead = strcmp(pThis->Type->get_ID(), "INVISO") ? RulesClass::Instance->FlameDamage2 : RulesClass::Instance->C4Warhead;
-
-		auto pOwner = pInvoker ? pInvoker->Owner : nullptr;
-
-		if (!pOwner)
-		{
-			if (pThis->Owner)
-				pOwner = pThis->Owner;
-			else if (pThis->OwnerObject)
-				pOwner = pThis->OwnerObject->GetOwningHouse();
-		}
 
 		MapClass::DamageArea(pThis->GetCoords(), appliedDamage, pInvoker, pWarhead, true, pOwner);
 	}
@@ -153,6 +167,15 @@ DEFINE_HOOK(0x423939, AnimClass_BounceAI_AttachedSystem, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x62E08B, ParticleSystemClass_DTOR_DetachAttachedSystem, 0x7)
+{
+	GET(ParticleSystemClass*, pParticleSystem, EDI);
+
+	AnimExt::InvalidateParticleSystemPointers(pParticleSystem);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 {
 	enum { SkipGameCode = 0x423EFD };
@@ -169,7 +192,7 @@ DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 	auto const nDamage = Game::F2I(pType->Damage);
 	auto const pOwner = AnimExt::GetOwnerHouse(pThis);
 
-	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim.Get(), splashAnims, pOwner, pType->Warhead, nDamage,
+	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim, splashAnims, pOwner, pType->Warhead, nDamage,
 		pThis->GetCell(), pThis->Location, heightFlag, pType->IsMeteor, pTypeExt->Warhead_Detonate, pTypeExt->ExplodeOnWater, pTypeExt->SplashAnims_PickRandom);
 
 	return SkipGameCode;
@@ -197,19 +220,21 @@ DEFINE_HOOK(0x424CF1, AnimClass_Start_DetachedReport, 0x6)
 
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTypeExt->DetachedReport.isset())
+	if (pTypeExt->DetachedReport >= 0)
 		VocClass::PlayAt(pTypeExt->DetachedReport.Get(), pThis->GetCoords());
 
 	return 0;
 }
 
-DEFINE_HOOK(0x422CAB, AnimClass_DrawIt_XDrawOffset, 0x5)
+// 0x422CD8 is in an alternate code path only used by anims with ID RING1, unused normally but covering it just because
+DEFINE_HOOK_AGAIN(0x422CD8, AnimClass_DrawIt_XDrawOffset, 0x6)
+DEFINE_HOOK(0x423122, AnimClass_DrawIt_XDrawOffset, 0x6)
 {
-	GET(AnimClass* const, pThis, ECX);
-	GET_STACK(Point2D*, pCoord, STACK_OFFSET(0x100, 0x4));
+	GET(AnimClass* const, pThis, ESI);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x110, 0x4));
 
 	if (auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type))
-		pCoord->X += pTypeExt->XDrawOffset;
+		pLocation->X += pTypeExt->XDrawOffset;
 
 	return 0;
 }
@@ -280,6 +305,8 @@ DEFINE_HOOK(0x423365, AnimClass_DrawIt_ExtraShadow, 0x8)
 
 		if (!pTypeExt->ExtraShadow)
 			return SkipExtraShadow;
+
+		return DrawExtraShadow;
 	}
 
 	return SkipExtraShadow;
