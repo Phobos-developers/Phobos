@@ -6,7 +6,7 @@ const char* Enumerable<ShieldTypeClass>::GetMainSection()
 	return "ShieldTypes";
 }
 
-AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRatio)
+AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRatio) const
 {
 	auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio);
 
@@ -16,12 +16,12 @@ AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRat
 		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
 }
 
-double ShieldTypeClass::GetConditionYellow()
+double ShieldTypeClass::GetConditionYellow() const
 {
 	return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow));
 }
 
-double ShieldTypeClass::GetConditionRed()
+double ShieldTypeClass::GetConditionRed() const
 {
 	return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed));
 }

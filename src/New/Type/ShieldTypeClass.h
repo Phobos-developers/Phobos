@@ -112,9 +112,14 @@ public:
 	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio);
-	double GetConditionYellow();
-	double GetConditionRed();
+	bool HasTint() const
+	{
+		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
+	}
+
+	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const;
+	double GetConditionYellow() const;
+	double GetConditionRed() const;
 
 private:
 	template <typename T>
