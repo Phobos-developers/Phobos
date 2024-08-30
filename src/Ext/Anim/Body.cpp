@@ -167,11 +167,12 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 
 		if (!splashAnims.empty())
 		{
-			auto nIndexR = (splashAnims.size() - 1);
-			auto nIndex = splashAnimsPickRandom ?
-				ScenarioClass::Instance->Random.RandomRanged(0, nIndexR) : 0;
+			auto const lastIndex = (splashAnims.size() - 1);
+			auto const defaultIndex = isMeteor ? lastIndex : 0;
+			auto const animIndex = splashAnimsPickRandom ?
+				ScenarioClass::Instance->Random.RandomRanged(0, lastIndex) : defaultIndex;
 
-			pSplashAnimToUse = splashAnims.at(nIndex);
+			pSplashAnimToUse = splashAnims.at(animIndex);
 		}
 	}
 
