@@ -288,7 +288,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
 	}
 
-	if (!this->LeadTimeCalculate || (pBullet->Target && pBullet->Target->WhatAmI() == AbstractType::Building))
+	if (!this->LeadTimeCalculate || (pBullet->Target && (pBullet->Target->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None))
 		this->PrepareForOpenFire(pBullet);
 	else
 		this->WaitOneFrame.Start(1);
