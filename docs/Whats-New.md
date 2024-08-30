@@ -169,7 +169,7 @@ SaveGameOnScenarioStart=true     ; boolean
   510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
 
   [TriggerParamTypes]
-  500=AIHousesList,1,1
+  501=AIHousesList,1,1
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
