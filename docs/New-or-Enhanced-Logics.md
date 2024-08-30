@@ -1554,6 +1554,7 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 - Infantry can have custom values for the web logic.
 - Infantry with `ImmuneToWeb=true` are not affected by `Webby=true` warheads.
 - No damage is done by the weapons warhead.
+- `ForceWeapon.Webby` specify what weapon should use the attacker against the affected unit.
 
 In `rulesmd.ini`:
 ```ini
@@ -1563,15 +1564,15 @@ Webby.Anims=               ; list of animations
 Webby.Duration=0           ; integer, game frames
 Webby.DurationVariation=0  ; integer
 Webby.Cap=-1               ; integer
-```
 
-In `rulesmd.ini`:
-```ini
 [SOMEINFANTRY]             ; InfantryType
 ImmuneToWeb=false          ; boolean
 Webby.Anims=               ; list of animations
 Webby.Duration=0           ; integer, game frames
 Webby.DurationVariation=0  ; integer
+
+[SOMETECHNO]               ; TechnoType
+ForceWeapon.Webby=-1       ; integer
 ```
 
 ```{warning}
