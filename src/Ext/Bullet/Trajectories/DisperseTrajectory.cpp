@@ -1,5 +1,6 @@
 #include "DisperseTrajectory.h"
-#include "StraightTrajectory.h"
+// #include "StraightTrajectory.h" // TODO If merge #1294
+// #include "ParabolaTrajectory.h" // TODO If merge #????
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -1186,7 +1187,47 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 
 				//The straight trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
-				if (pTrajectory->LeadTimeCalculate && (!pTarget || pTarget->WhatAmI() != AbstractType::Building))
+				if (pTrajectory->LeadTimeCalculate && (!pTarget || (pTarget->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None))
+				{
+					pTrajectory->CurrentBurst = curBurst;
+					pTrajectory->CountOfBurst = maxBurst;
+					pTrajectory->UseDisperseBurst = false;
+				}
+				else if (pTrajectory->UseDisperseBurst && pTrajectory->RotateCoord != 0 && maxBurst > 1)
+				{
+					const CoordStruct createBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
+					const double rotateAngle = Math::atan2(createBulletTargetToSource.Y , createBulletTargetToSource.X);
+
+					BulletVelocity rotationAxis
+					{
+						pTrajectory->AxisOfRotation.X * Math::cos(rotateAngle) + pTrajectory->AxisOfRotation.Y * Math::sin(rotateAngle),
+						pTrajectory->AxisOfRotation.X * Math::sin(rotateAngle) - pTrajectory->AxisOfRotation.Y * Math::cos(rotateAngle),
+						static_cast<double>(pTrajectory->AxisOfRotation.Z)
+					};
+
+					double extraRotate = 0;
+
+					if (pTrajectory->MirrorCoord)
+					{
+						if (curBurst % 2 == 1)
+							rotationAxis *= -1;
+
+						extraRotate = Math::Pi * (pTrajectory->RotateCoord * ((curBurst / 2) / (maxBurst - 1.0) - 0.5)) / 180;
+					}
+					else
+					{
+						extraRotate = Math::Pi * (pTrajectory->RotateCoord * (curBurst / (maxBurst - 1.0) - 0.5)) / 180;
+					}
+
+					pCreateBullet->Velocity = this->RotateAboutTheAxis(pCreateBullet->Velocity, rotationAxis, extraRotate);
+				}
+			}*/
+/*			else if (flag == TrajectoryFlag::Parabola) // TODO If merge #????
+			{
+				ParabolaTrajectory* const pTrajectory = static_cast<ParabolaTrajectory*>(pBulletExt->Trajectory);
+
+				//The parabola trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
+				if (pTrajectory->LeadTimeCalculate && (!pTarget || (pTarget->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None))
 				{
 					pTrajectory->CurrentBurst = curBurst;
 					pTrajectory->CountOfBurst = maxBurst;
