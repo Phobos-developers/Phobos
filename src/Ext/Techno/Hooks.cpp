@@ -102,11 +102,22 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 
 	return 0;
 }
-
+/*
 DEFINE_HOOK(0x702E4E, TechnoClass_RegisterDestruction_SaveKillerInfo, 0x6)
 {
 	GET(TechnoClass*, pKiller, EDI);
 	GET(TechnoClass*, pVictim, ECX);
+
+	if (pKiller && pVictim)
+		TechnoExt::ObjectKilledBy(pVictim, pKiller);
+
+	return 0;
+}*/
+
+DEFINE_HOOK(0x702D6D, TechnoClass_RegisterDestruction_SaveKillerInfo, 0x6)
+{
+	GET(TechnoClass*, pKiller, EDI);
+	GET(TechnoClass*, pVictim, ESI);
 
 	if (pKiller && pVictim)
 		TechnoExt::ObjectKilledBy(pVictim, pKiller);
