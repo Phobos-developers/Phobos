@@ -736,17 +736,15 @@ void TechnoExt::HandleStopTarNav(EventExt* event)
 		{
 			auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 
-			pTechno->SetTarget(nullptr);
 			pExt->CurrentRandomTarget = nullptr;
 			pExt->OriginalTarget = nullptr;
-			pTechno->SetDestination(nullptr, true);
+			pTechno->ForceMission(Mission::Guard);
 
 			auto pFoot = abstract_cast<FootClass*>(pTechno);
 
 			if (pFoot->Locomotor->Is_Moving_Now())
 				pFoot->StopMoving();
 
-			pTechno->QueueMission(Mission::Guard, false);
 			break;
 		}
 	}

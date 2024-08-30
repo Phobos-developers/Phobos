@@ -1037,7 +1037,19 @@ DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected_ClearRetargets, 0x5)
 			continue;
 
 		if (pExt->CurrentRandomTarget)
-			TechnoExt::SendStopTarNav(pTechno);
+		{
+			if (SessionClass::IsMultiplayer())
+			{
+				TechnoExt::SendStopTarNav(pTechno); // Prevent desyncs!
+			}
+			else
+			{
+				pExt->CurrentRandomTarget = nullptr;
+				pExt->OriginalTarget = nullptr;
+				pTechno->ForceMission(Mission::Guard);
+				return 0;
+			}
+		}
 	}
 
 	return 0;
