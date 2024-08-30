@@ -75,8 +75,14 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 		auto pCell = pThis->GetCell();
 		CoordStruct location = pThis->GetCoords();
+		auto origLocation = location;
 
-		pThis->UnmarkAllOccupationBits(location);
+		if (pCell)
+			origLocation = pCell->GetCoordsWithBridge();
+		else
+			origLocation.Z = MapClass::Instance->GetCellFloorHeight(location);
+
+		pThis->UnmarkAllOccupationBits(origLocation);
 
 		bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(unit->SpeedType)] > 0.0;
 		bool isBridge = allowBridges && pCell->ContainsBridge();
@@ -95,9 +101,14 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 		{
 			isBridge = allowBridges && pCell->ContainsBridge();
 			int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
-			int baseHeight = pTypeExt->CreateUnit_SpawnHeight.isset() ? pTypeExt->CreateUnit_SpawnHeight : pThis->GetCoords().Z;
+			int baseHeight = pThis->GetCoords().Z;
 			int zCoord = pTypeExt->CreateUnit_AlwaysSpawnOnGround ? INT32_MIN : baseHeight;
-			location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location) + bridgeZ, zCoord);
+			int cellFloorHeight = MapClass::Instance->GetCellFloorHeight(location) + bridgeZ;
+
+			if (!pTypeExt->CreateUnit_AlwaysSpawnOnGround && pTypeExt->CreateUnit_SpawnHeight.isset())
+				location.Z = cellFloorHeight + pTypeExt->CreateUnit_SpawnHeight;
+			else
+				location.Z = Math::max(cellFloorHeight, zCoord);
 
 			if (auto pTechno = static_cast<FootClass*>(unit->CreateObject(decidedOwner)))
 			{
