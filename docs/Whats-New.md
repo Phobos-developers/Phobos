@@ -561,6 +561,7 @@ Phobos fixes:
 - Fixed frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` instead of `TXT_DISPLAY_DAMAGE_DESC` (by DeathFishAtEase)
 - Buildings considered vehicles (`ConsideredVehicle=true` or not set in conjunction with `UndeploysInto` & 1x1 foundation) are now considered units by affected target enum checks (by Starkku)
 - Fixed Phobos Warhead effects not reliably being applied on damage area as opposed to full weapon-based Warhead detonation (by Starkku)
+- Fixed an issue that caused new attack and move script actions to pick buildings with `InvisibleInGame=yes` as targets (FS-21)
 
 Fixes / interactions with other extensions:
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely (by Starkku)
