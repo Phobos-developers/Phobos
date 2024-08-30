@@ -360,6 +360,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedIncome)
 		.Process(this->CurrentLaserWeaponIndex)
+		.Process(this->PoweredUpToLevel)
 		;
 }
 
