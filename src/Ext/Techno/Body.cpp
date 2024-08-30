@@ -6,6 +6,8 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -463,6 +465,82 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	}
 
 	return foundCount;
+}
+
+void TechnoExt::RemoveParasite(TechnoClass* pThis, HouseClass* sourceHouse, WarheadTypeClass* wh)
+{
+	if (!pThis || !wh)
+		return;
+
+	const auto pFoot = abstract_cast<FootClass*>(pThis);
+	if (!pFoot)
+		return;
+
+	bool isParasiteEatingMe = pFoot->ParasiteEatingMe && pThis->WhatAmI() != AbstractType::Infantry	&& pThis->WhatAmI() != AbstractType::Building;
+
+	// Ignore other cases that aren't useful for this logic
+	if (!isParasiteEatingMe)
+		return;
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(wh);
+	auto parasite = pFoot->ParasiteEatingMe;
+
+	if (!pWHExt || !pWHExt->CanRemoveParasites.Get() || !pWHExt->CanTargetHouse(parasite->Owner, pThis))
+		return;
+
+	if (pWHExt->CanRemoveParasites_ReportSound.isset() && pWHExt->CanRemoveParasites_ReportSound.Get() >= 0)
+		VocClass::PlayAt(pWHExt->CanRemoveParasites_ReportSound.Get(), parasite->GetCoords());
+
+	// Kill the parasite
+	CoordStruct coord = TechnoExt::PassengerKickOutLocation(pThis, parasite, 10);
+
+	auto deleteParasite = [parasite]()
+	{
+		auto parasiteOwner = parasite->Owner;
+		parasite->IsAlive = false;
+		parasite->IsOnMap = false;
+		parasite->Health = 0;
+
+		parasiteOwner->RegisterLoss(parasite, false);
+		parasiteOwner->RemoveTracking(parasite);
+		parasite->UnInit();
+	};
+
+	if (!pWHExt->CanRemoveParasites_KickOut.Get() || coord == CoordStruct::Empty)
+	{
+		deleteParasite;
+		return;
+	}
+
+	// Kick the parasite outside
+	pFoot->ParasiteEatingMe = nullptr;
+
+	if (!parasite->Unlimbo(coord, parasite->PrimaryFacing.Current().GetDir()))
+	{
+		// Failed to kick out the parasite, remove it instead
+		deleteParasite;
+		return;
+	}
+
+	parasite->Target = nullptr;
+	int paralysisCountdown = pWHExt->CanRemoveParasites_KickOut_Paralysis.Get() < 0 ? 15 : pWHExt->CanRemoveParasites_KickOut_Paralysis.Get();
+
+	if (paralysisCountdown > 0)
+	{
+		parasite->ParalysisTimer.Start(paralysisCountdown);
+		parasite->RearmTimer.Start(paralysisCountdown);
+	}
+
+	if (pWHExt->CanRemoveParasites_KickOut_Anim.isset())
+	{
+		if (auto const pAnim = GameCreate<AnimClass>(pWHExt->CanRemoveParasites_KickOut_Anim.Get(), parasite->GetCoords()))
+		{
+			pAnim->Owner = sourceHouse ? sourceHouse : parasite->Owner;
+			pAnim->SetOwnerObject(parasite);
+		}
+	}
+
+	return;
 }
 
 // =============================
