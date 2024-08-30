@@ -9,11 +9,6 @@
 #include <AircraftClass.h>
 #include <TacticalClass.h>
 
-namespace LogicsTemp
-{
-	BulletClass* pThis = nullptr;
-}
-
 DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 {
 	GET(BulletClass*, pThis, ESI);
@@ -30,11 +25,8 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 {
 	enum { SkipShaking = 0x469130 };
 
-	GET(BulletClass*, pThis, ESI);
 	GET(WarheadTypeClass*, pWarhead, EAX);
 	GET_BASE(CoordStruct*, pCoords, 0x8);
-
-	LogicsTemp::pThis = pThis;
 
 	if (auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
@@ -295,14 +287,10 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK_AGAIN(0x46A2FB, BulletClass_Logics_Extras, 0x5)
-DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
+DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 {
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct*, coords, 0x8);
-
-	if (R->Origin() == 0x46A2FB)
-		pThis = LogicsTemp::pThis; // 0x46A2FB has ESI overwritten so need to set this in an earlier hook that is always entered.
 
 	// Extra warheads
 	if (pThis->WeaponType)
