@@ -1187,7 +1187,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 
 				//The straight trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
-				if (pTrajectory->LeadTimeCalculate && (!pTarget || (pTarget->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None))
+				if (pTrajectory->LeadTimeCalculate && abstract_cast<FootClass*>(pTarget))
 				{
 					pTrajectory->CurrentBurst = curBurst;
 					pTrajectory->CountOfBurst = maxBurst;
@@ -1227,7 +1227,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				ParabolaTrajectory* const pTrajectory = static_cast<ParabolaTrajectory*>(pBulletExt->Trajectory);
 
 				//The parabola trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
-				if (pTrajectory->LeadTimeCalculate && (!pTarget || (pTarget->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None))
+				if (pTrajectory->LeadTimeCalculate && abstract_cast<FootClass*>(pTarget))
 				{
 					pTrajectory->CurrentBurst = curBurst;
 					pTrajectory->CountOfBurst = maxBurst;
