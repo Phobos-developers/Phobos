@@ -1,4 +1,3 @@
-#include <GameStrings.h>
 #include <FactoryClass.h>
 
 #include <Ext/TechnoType/Body.h>

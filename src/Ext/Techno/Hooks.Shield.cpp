@@ -1,7 +1,6 @@
 #include "Body.h"
 #include <InfantryClass.h>
 #include <SpecificStructures.h>
-#include <TunnelLocomotionClass.h>
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
@@ -22,16 +21,19 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	if (ScriptExt::IsUnitAvailable(pThis, false))
 		TechnoExt::RemoveParasite(pThis, args->SourceHouse, args->WH);
 
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	int nDamageLeft = *args->Damage;
+
 	if (!args->IgnoreDefenses)
 	{
-		const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (!pShieldData->IsActive())
 				return 0;
 
-			const int nDamageLeft = pShieldData->ReceiveDamage(args);
+			nDamageLeft = pShieldData->ReceiveDamage(args);
+
 			if (nDamageLeft >= 0)
 			{
 				*args->Damage = nDamageLeft;
@@ -102,26 +104,6 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 	return 0;
 }
 
-// Ares-hook jmp to this offset
-DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
-{
-	GET(TemporalClass*, pThis, ESI);
-	if (auto const pTarget = pThis->Target)
-	{
-		pTarget->IsMouseHovering = false;
-		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
-
-		if (const auto pShieldData = pExt->Shield.get())
-		{
-			if (pShieldData->IsAvailable())
-				pShieldData->AI_Temporal();
-		}
-	}
-
-	// Recovering vanilla instructions that were broken by a hook call
-	return R->EAX<int>() <= 0 ? 0x71A895 : 0x71AB08;
-}
-
 DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
@@ -172,36 +154,6 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	}
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
-{
-	GET(ILocomotion*, pThis, ESI);
-
-	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
-	const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
-
-	if (const auto pShieldData = pExt->Shield.get())
-		pShieldData->SetAnimationVisibility(false);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x728E5F, TunnelLocomotionClass_Process_RestoreAnims, 0x7)
-{
-	GET(ILocomotion*, pThis, ESI);
-
-	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
-
-	if (pLoco->State == TunnelLocomotionClass::State::PreDigOut)
-	{
-		const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
-
-		if (const auto pShieldData = pExt->Shield.get())
-			pShieldData->SetAnimationVisibility(true);
-	}
 
 	return 0;
 }
@@ -328,67 +280,40 @@ private:
 	}
 };
 
-#pragma region UnitClass_GetFireError_Heal
-
-FireError __fastcall UnitClass__GetFireError(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
-{
-	JMP_THIS(0x740FD0);
-}
 
 FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
-	auto const result = UnitClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
+	auto const result = pThis->UnitClass::GetFireError(pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
 	return result;
 }
 DEFINE_JUMP(VTABLE, 0x7F6030, GET_OFFSET(UnitClass__GetFireError_Wrapper))
-#pragma endregion UnitClass_GetFireError_Heal
 
-#pragma region InfantryClass_GetFireError_Heal
-FireError __fastcall InfantryClass__GetFireError(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
-{
-	JMP_THIS(0x51C8B0);
-}
 FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
-	auto const result = InfantryClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
+	auto const result = pThis->InfantryClass::GetFireError(pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
 	return result;
 }
 DEFINE_JUMP(VTABLE, 0x7EB418, GET_OFFSET(InfantryClass__GetFireError_Wrapper))
-#pragma endregion InfantryClass_GetFireError_Heal
-
-#pragma region UnitClass__WhatAction
-Action __fastcall UnitClass__WhatAction(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
-{
-	JMP_THIS(0x73FD50);
-}
 
 Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	AresScheme::Prefix(pThis, pObj, -1, false);
-	auto const result = UnitClass__WhatAction(pThis, _, pObj, ignoreForce);
+	auto const result = pThis->UnitClass::MouseOverObject(pObj, ignoreForce);
 	AresScheme::Suffix();
 	return result;
 }
 DEFINE_JUMP(VTABLE, 0x7F5CE4, GET_OFFSET(UnitClass__WhatAction_Wrapper))
-#pragma endregion UnitClass__WhatAction
-
-#pragma region InfantryClass__WhatAction
-Action __fastcall InfantryClass__WhatAction(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
-{
-	JMP_THIS(0x51E3B0);
-}
 
 Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	AresScheme::Prefix(pThis, pObj, -1, pThis->Type->Engineer);
-	auto const result = InfantryClass__WhatAction(pThis, _, pObj, ignoreForce);
+	auto const result = pThis->InfantryClass::MouseOverObject(pObj, ignoreForce);
 	AresScheme::Suffix();
 	return result;
 }
 DEFINE_JUMP(VTABLE, 0x7EB0CC, GET_OFFSET(InfantryClass__WhatAction_Wrapper))
-#pragma endregion InfantryClass__WhatAction
 #pragma endregion HealingWeapons

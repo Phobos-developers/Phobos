@@ -34,9 +34,11 @@
 
 #include "Debug.h"
 
+#include <AircraftTrackerClass.h>
 #include <BuildingClass.h>
 #include <BuildingTypeClass.h>
 #include <CellSpread.h>
+#include <Unsorted.h>
 #include <Helpers/Iterators.h>
 #include <Helpers/Enumerators.h>
 
@@ -174,6 +176,9 @@ namespace Helpers {
 
 			\author AlexB
 			\date 2010-06-28
+
+			\modifications by Starkku
+			\date 2024-05-20
 		*/
 		inline std::vector<TechnoClass*> getCellSpreadItems(
 			CoordStruct const& coords, double const spread,
@@ -181,26 +186,54 @@ namespace Helpers {
 		{
 			// set of possibly affected objects. every object can be here only once.
 			DistinctCollector<TechnoClass*> set;
+			double const spreadMult = spread * Unsorted::LeptonsPerCell;
 
 			// the quick way. only look at stuff residing on the very cells we are affecting.
 			auto const cellCoords = MapClass::Instance->GetCellAt(coords)->MapCoords;
 			auto const range = static_cast<size_t>(spread + 0.99);
 			for (CellSpreadEnumerator it(range); it; ++it) {
 				auto const pCell = MapClass::Instance->GetCellAt(*it + cellCoords);
+				bool isCenter = pCell->MapCoords == cellCoords;
 				for (NextObject obj(pCell->GetContent()); obj; ++obj) {
-					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj)) {
+					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
+					{
+						// Starkku: Buildings need their distance from the origin coords checked at cell level.
+						if (pTechno->WhatAmI() == AbstractType::Building)
+						{
+							auto const cellCenterCoords = pCell->GetCenterCoords();
+							double dist = cellCenterCoords.DistanceFrom(coords);
+
+							// If this is the center cell, there's some different behaviour.
+							if (isCenter)
+							{
+								if (coords.Z - cellCenterCoords.Z <= Unsorted::LevelHeight)
+									dist = 0;
+								else
+									dist -= Unsorted::LevelHeight;
+							}
+
+							if (dist > spreadMult)
+								continue;
+						}
+
 						set.insert(pTechno);
 					}
 				}
 			}
 
 			// flying objects are not included normally
-			if (includeInAir) {
-				// the not quite so fast way. skip everything not in the air.
-				for (auto const& pTechno : *TechnoClass::Array) {
-					if (pTechno->GetHeight() > 0) {
-						// rough estimation
-						if (pTechno->Location.DistanceFrom(coords) <= spread * Unsorted::LeptonsPerCell) {
+		    // Starkku: Reimplemented using AircraftTrackerClass.
+			if (includeInAir)
+			{
+				auto const airTracker = &AircraftTrackerClass::Instance.get();
+				airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
+
+				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
+				{
+					if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0)
+					{
+						if (pTechno->Location.DistanceFrom(coords) <= spreadMult)
+						{
 							set.insert(pTechno);
 						}
 					}
@@ -213,6 +246,7 @@ namespace Helpers {
 
 			for (auto const& pTechno : set) {
 				auto const abs = pTechno->WhatAmI();
+				bool isBuilding = false;
 
 				// ignore buildings that are not visible, like ambient light posts
 				if (abs == AbstractType::Building) {
@@ -220,6 +254,7 @@ namespace Helpers {
 					if (pBuilding->Type->InvisibleInGame) {
 						continue;
 					}
+					isBuilding = true;
 				}
 
 				// get distance from impact site
@@ -232,7 +267,8 @@ namespace Helpers {
 				}
 
 				// this is good
-				if (dist <= spread * Unsorted::LeptonsPerCell) {
+				// Starkku: Building distance is checked prior on cell level, skip here.
+				if (isBuilding || dist <= spreadMult) {
 					ret.push_back(pTechno);
 				}
 			}
