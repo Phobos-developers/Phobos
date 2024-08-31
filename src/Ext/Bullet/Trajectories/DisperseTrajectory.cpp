@@ -12,6 +12,7 @@
 #include <ParticleSystemClass.h>
 #include <ScenarioClass.h>
 #include <Utilities/Helpers.Alex.h>
+#include <AircraftTrackerClass.h>
 
 bool DisperseTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -267,13 +268,13 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->ROT = pType->ROT > 0.001 ? pType->ROT : 0.001;
 	this->LockDirection = pType->LockDirection;
 	this->CruiseEnable = pType->CruiseEnable;
-	this->CruiseUnableRange = pType->CruiseUnableRange > 0.25 ? pType->CruiseUnableRange * 256 : 64;
+	this->CruiseUnableRange = pType->CruiseUnableRange > 0.5 ? pType->CruiseUnableRange * Unsorted::LeptonsPerCell : Unsorted::LeptonsPerCell / 2;
 	this->LeadTimeCalculate = pType->LeadTimeCalculate;
 	this->TargetSnapDistance = pType->TargetSnapDistance;
 	this->RetargetRadius = pType->RetargetRadius;
 	this->RetargetAllies = pType->RetargetAllies;
 	this->SuicideShortOfROT = pType->SuicideShortOfROT;
-	this->SuicideAboveRange = pType->SuicideAboveRange * 256;
+	this->SuicideAboveRange = pType->SuicideAboveRange * Unsorted::LeptonsPerCell;
 	this->SuicideIfNoWeapon = pType->SuicideIfNoWeapon;
 	this->Weapons = pType->Weapons;
 	this->WeaponBurst = pType->WeaponBurst;
@@ -520,7 +521,7 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 	if (this->RetargetRadius < 0)
 		return true;
 
-	const double retargetRange = this->RetargetRadius * 256.0;
+	const double retargetRange = this->RetargetRadius * Unsorted::LeptonsPerCell;
 	CoordStruct retargetCoords = pBullet->TargetCoords;
 	TechnoClass* pNewTechno = nullptr;
 
@@ -545,7 +546,7 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 					TechnoClass* const pTechno = abstract_cast<TechnoClass*>(pObject);
 					pObject = pObject->NextObject;
 
-					if (!pTechno || pTechno->GetHeight() > Unsorted::CellHeight || this->CheckTechnoIsInvalid(pTechno))
+					if (!pTechno || this->CheckTechnoIsInvalid(pTechno))
 						continue;
 
 					TechnoTypeClass* const pTechnoType = pTechno->GetTechnoType();
@@ -607,9 +608,12 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 	}
 	else
 	{
-		for (auto const& pTechno : *TechnoClass::Array)
+		AircraftTrackerClass* const airTracker = &AircraftTrackerClass::Instance.get();
+		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(retargetCoords), Game::F2I(this->RetargetRadius));
+
+		for (TechnoClass* pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
-			if (pTechno->GetHeight() <= Unsorted::CellHeight || this->CheckTechnoIsInvalid(pTechno))
+			if (this->CheckTechnoIsInvalid(pTechno))
 				continue;
 
 			TechnoTypeClass* const pTechnoType = pTechno->GetTechnoType();
@@ -984,7 +988,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 					continue;
 			}
 
-			const double spread = pWeapon->Range / 256.0;
+			const double spread = static_cast<double>(pWeapon->Range) / Unsorted::LeptonsPerCell;
 			const bool includeInAir = (this->TargetInTheAir && pWeapon->Projectile->AA);
 			const CoordStruct centerCoords = this->WeaponLocation ? pBullet->Location : pBullet->TargetCoords;
 			std::vector<TechnoClass*> technos = Helpers::Alex::getCellSpreadItems(centerCoords, spread, includeInAir);
@@ -1024,7 +1028,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 							}
 							else
 							{
-								if (randomRange > 256)
+								if (randomRange > Unsorted::LeptonsPerCell)
 									randomRange = randomRange / 2;
 								else if (randomRange > 1)
 									randomRange = 1;
