@@ -658,10 +658,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 				break;
 			}
 
-			if (!checkThrough)
-				continue;
-
-			if (this->CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))
+			if (checkThrough && this->CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))
 			{
 				velocityCheck = true;
 				cellDistance = curCoord.DistanceFrom(theSourceCoords);
