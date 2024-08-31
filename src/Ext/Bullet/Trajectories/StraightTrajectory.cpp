@@ -5,6 +5,7 @@
 #include <Ext/Techno/Body.h>
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
+#include <AircraftTrackerClass.h>
 
 bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -756,7 +757,6 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	size_t vectSize = cellSize;
 	size_t thisSize = 0;
 
-	const int checkHeight = this->ProximityFlight ? 0 : 200;
 	const CoordStruct velocityCrd
 	{
 		static_cast<int>(pBullet->Velocity.X),
@@ -777,7 +777,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			TechnoClass* const pTechno = abstract_cast<TechnoClass*>(pObject);
 			pObject = pObject->NextObject;
 
-			if (!pTechno || pTechno->GetHeight() > checkHeight)
+			if (!pTechno || !pTechno->IsAlive || !pTechno->IsOnMap || pTechno->Health <= 0)
 				continue;
 
 			const AbstractType technoType = pTechno->WhatAmI();
@@ -823,9 +823,12 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	//Step 2: Find valid targets in the air within range if necessary.
 	if (this->ProximityFlight)
 	{
-		for (auto const& pTechno : *TechnoClass::Array)
+		AircraftTrackerClass* const airTracker = &AircraftTrackerClass::Instance.get();
+		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5), static_cast<int>((this->ProximityRadius + this->GetTrajectorySpeed(pBullet) / 2) / Unsorted::LeptonsPerCell));
+
+		for (TechnoClass* pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
-			if (pTechno->GetHeight() <= 0)
+			if (!pTechno->IsAlive || !pTechno->IsOnMap || pTechno->Health <= 0)
 				continue;
 
 			if (!this->ProximityAllies && pOwner->IsAlliedWith(pTechno->Owner) && !(pTargetTechno && pTechno == pTargetTechno))
