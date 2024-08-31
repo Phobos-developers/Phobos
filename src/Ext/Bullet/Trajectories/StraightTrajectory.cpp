@@ -302,7 +302,7 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 	const double straightSpeed = this->GetTrajectorySpeed(pBullet);
 	HouseClass* const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 
-	if (this->BulletDetonatePreCheck(pBullet, pOwner, straightSpeed))
+	if (this->BulletDetonatePreCheck(pBullet, straightSpeed))
 		return true;
 
 	if (this->PassDetonate)
@@ -563,7 +563,7 @@ bool StraightTrajectory::BulletPrepareCheck(BulletClass* pBullet)
 	return false;
 }
 
-bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner, double straightSpeed)
+bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, double straightSpeed)
 {
 	if (this->ExtraCheck)
 	{

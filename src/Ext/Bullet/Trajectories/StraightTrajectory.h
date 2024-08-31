@@ -215,7 +215,7 @@ private:
 	int GetVelocityZ(BulletClass* pBullet);
 	bool CalculateBulletVelocity(BulletClass* pBullet, double straightSpeed);
 	bool BulletPrepareCheck(BulletClass* pBullet);
-	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner, double straightSpeed);
+	bool BulletDetonatePreCheck(BulletClass* pBullet, double straightSpeed);
 	void BulletDetonateLastCheck(BulletClass* pBullet, HouseClass* pOwner, double straightSpeed);
 	bool CheckThroughAndSubjectInCell(BulletClass* pBullet, CellClass* pCell, HouseClass* pOwner);
 	void PassWithDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
