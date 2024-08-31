@@ -136,29 +136,16 @@ DEFINE_HOOK(0x418B46, AircraftClass_MissionAttack_ScatterCell6, 0x6)
 }
 
 // 航味麻酱: These are WW's bullshit checks.
-// 
+//
 //if (  bHasAElite
 //   || ignoreDestination
 //   || RulesClass::Instance->PlayerScatter
 //   || pTechnoToScatter && (FootClass::HasAbility(pTechnoToScatter, Ability::Scatter)
 //   || pTechnoToScatter->Owner->IQLevel2 >= RulesClass::Instance->Scatter) )
 
-// delete the first one 'bHasAElite'
-DEFINE_HOOK(0x481778, CellClass_ScatterContent_Fix1, 0x6)
-{
-	R->AL(false);
-	return 0;
-}
-
-// delete the second one 'ignoreDestination'
-DEFINE_HOOK(0x481780, CellClass_ScatterContent_Fix2, 0x6)
-{
-	R->AL(false);
-	return 0;
-}
-
+// delete the first one 'bHasAElite' and the second one 'ignoreDestination'
 // fix the third one 'RulesClass::Instance->PlayerScatter'
-DEFINE_HOOK(0x481788, CellClass_ScatterContent_Fix3, 0x5)
+DEFINE_HOOK(0x481778, CellClass_ScatterContent_Fix, 0x6)
 {
 	enum { ret = 0x481793 };
 	GET(ObjectClass*, pObject, ESI);
@@ -175,7 +162,7 @@ DEFINE_HOOK(0x481788, CellClass_ScatterContent_Fix3, 0x5)
 // 00418B4A 0E0                 push    1               ; ignoreMission // I want to change this '1' to zero conditionally to make it not always ignore mission.
 // 00418B4C 0E4                 mov     eax, [edx]                      // I don't know if my code is working as my purpose. I don't quite understand assembly.
 //                                                                      // If it is, then the forced scatter is not just a problem with this boolean.
-// 
+//
 //DEFINE_HOOK_AGAIN(0x418484, AircraftClass_MissionAttack_ScatterIgnoreMission, 0x6)
 //DEFINE_HOOK_AGAIN(0x4186E2, AircraftClass_MissionAttack_ScatterIgnoreMission, 0xA)
 //DEFINE_HOOK_AGAIN(0x418832, AircraftClass_MissionAttack_ScatterIgnoreMission, 0xC)
