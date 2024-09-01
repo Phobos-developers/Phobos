@@ -47,7 +47,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 			const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
-			if (pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious))
+			if (pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
 				break;
 
 			const auto pType = pThis->GetTechnoType();
