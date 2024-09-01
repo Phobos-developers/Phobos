@@ -26,6 +26,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -514,8 +515,8 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 {
 	auto const pThisBomb = FetchBomb::pThisBomb;
 	auto nCoord = *pCoord;
-	auto nDamageAreaResult = MapClass::Instance()->DamageArea
-	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse);
+	auto nDamageAreaResult = WarheadTypeExt::ExtMap.Find(pWarhead)->DamageAreaWithTarget
+	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse, abstract_cast<TechnoClass*>(pThisBomb->Target));
 	auto nLandType = MapClass::Instance()->GetCellAt(nCoord)->LandType;
 
 	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
@@ -871,7 +872,8 @@ DEFINE_HOOK(0x7195BF, TeleportLocomotionClass_Process_WarpInDelay, 0x6)
 	GET(FootClass*, pLinkedTo, ECX);
 
 	auto const pLoco = static_cast<TeleportLocomotionClass*>(pThis);
-	TechnoExt::ExtMap.Find(pLinkedTo)->LastWarpInDelay = pLoco->Timer.GetTimeLeft();
+	auto const pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+	pExt->LastWarpInDelay = Math::max(pLoco->Timer.GetTimeLeft(), pExt->LastWarpInDelay);
 
 	return 0;
 }
@@ -882,7 +884,7 @@ DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->HasCarryoverWarpInDelay)
+	if (pExt->HasRemainingWarpInDelay)
 	{
 		if (pExt->LastWarpInDelay)
 		{
@@ -890,7 +892,8 @@ DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
 		}
 		else
 		{
-			pExt->HasCarryoverWarpInDelay = false;
+			pExt->HasRemainingWarpInDelay = false;
+			pExt->IsBeingChronoSphered = false;
 			pThis->WarpingOut = false;
 		}
 	}
@@ -899,3 +902,35 @@ DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
 }
 
 #pragma endregion
+
+// this fella was { 0, 0, 1 } before and somehow it also breaks both the light position a bit and how the lighting is applied when voxels rotate - Kerbiter
+DEFINE_HOOK(0x753D86, VoxelCalcNormals_NullAdditionalVector, 0x0)
+{
+	REF_STACK(Vector3D<float>, secondaryLightVector, STACK_OFFSET(0xD8, -0xC0))
+
+	if (RulesExt::Global()->UseFixedVoxelLighting)
+		secondaryLightVector = { 0, 0, 0 };
+	else
+		secondaryLightVector = { 0, 0, 1 };
+
+	return 0x753D9E;
+}
+
+DEFINE_HOOK(0x705D74, TechnoClass_GetRemapColour_DisguisePalette, 0x8)
+{
+	enum { SkipGameCode = 0x705D7C };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto pTechnoType = pThis->GetTechnoType();
+
+	if (!pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		if (const auto pDisguise = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+			pTechnoType = pDisguise;
+	}
+
+	R->EAX(pTechnoType);
+
+	return SkipGameCode;
+}

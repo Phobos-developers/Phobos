@@ -26,7 +26,12 @@ DEFINE_HOOK(0x701966, TechnoClass_ArmorMultiplier, 0x6)       // TechnoClass_Rec
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pShieldData = pExt->Shield.get();
 	damage = static_cast<int>(damage / pExt->AE.ArmorMultiplier) - pTypeExt->ArmorBonus - pExt->AE.ArmorBonus;
+
+	if (pShieldData && pShieldData->IsActive())
+		damage -= pShieldData->ArmorBonus;
+
 	R->EAX(damage);
 
 	return 0;

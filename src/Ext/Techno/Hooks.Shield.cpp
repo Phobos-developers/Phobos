@@ -22,8 +22,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	if (!args->IgnoreDefenses)
 	{
-		*args->Damage = Math::clamp(*args->Damage, Math::max(pTypeExt->ReceivedDamage_Minimum, pExt->AE.ReceivedDamage_Minimum),
-			Math::min(pTypeExt->ReceivedDamage_Maximum, pExt->AE.ReceivedDamage_Maximum));
+		if (*args->Damage != 0)
+			*args->Damage = Math::clamp(*args->Damage, Math::max(pTypeExt->ReceivedDamage_Minimum, pExt->AE.ReceivedDamage_Minimum),
+				Math::min(pTypeExt->ReceivedDamage_Maximum, pExt->AE.ReceivedDamage_Maximum));
+
 		int nDamageLeft = *args->Damage;
 
 		if (const auto pShieldData = pExt->Shield.get())
