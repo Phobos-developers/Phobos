@@ -1,6 +1,7 @@
 #pragma once
 #include <Phobos.version.h>
 #include <Windows.h>
+#include <WinInet.h>
 
 #include <string>
 
@@ -22,6 +23,8 @@ public:
 
 	static void ExeRun();
 	static void ExeTerminate();
+	static void PhobosCheckUpdate();
+	static void PhobosUpdateLog();
 
 	//variables
 	static HANDLE hInstance;
@@ -38,6 +41,7 @@ public:
 	static bool ShouldQuickSave;
 	static std::wstring CustomGameSaveDescription;
 	static void PassiveSaveGame();
+	static unsigned int Phobos_latest_Version[4];
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif
@@ -90,6 +94,7 @@ public:
 		static bool ShowPowerDelta;
 		static bool ShowHarvesterCounter;
 		static bool ShowWeedsCounter;
+		static bool CheckUpdate_Enable;
 	};
 
 	class Misc
