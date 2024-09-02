@@ -135,6 +135,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 			}
 		}
+		else if (this->DamageAreaTarget)
+		{
+			if (coords.DistanceFrom(this->DamageAreaTarget->GetCoords()) < Unsorted::LeptonsPerCell / 4)
+				this->DetonateOnOneUnit(pHouse, this->DamageAreaTarget, pOwner, bulletWasIntercepted);
+		}
 	}
 }
 
@@ -337,7 +342,12 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	auto damage = this->Crit_ExtraDamage.Get();
 
 	if (this->Crit_Warhead)
-		WarheadTypeExt::DetonateAt(this->Crit_Warhead, pTarget, pOwner, damage);
+	{
+		if (this->Crit_Warhead_FullDetonation)
+			WarheadTypeExt::DetonateAt(this->Crit_Warhead, pTarget, pOwner, damage, pHouse);
+		else
+			this->DamageAreaWithTarget(pTarget->GetCoords(), damage, pOwner, this->Crit_Warhead, true, pHouse, pTarget);
+	}
 	else
 		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }
