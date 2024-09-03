@@ -1391,6 +1391,14 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			{
 				value = DisplayInfoType::SuperWeapon;
 			}
+			else if (_strcmpi(str, "ironcurtain") == 0)
+			{
+				value = DisplayInfoType::IronCurtain;
+			}
+			else if (_strcmpi(str, "temporallife") == 0)
+			{
+				value = DisplayInfoType::TemporalLife;
+			}
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, str, "Display info type is invalid");

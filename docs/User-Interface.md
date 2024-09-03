@@ -45,7 +45,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1.
-  
+
 In `rulesmd.ini`:
 ```ini
 [DigitalDisplayTypes]
@@ -59,7 +59,7 @@ Aircraft.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
 
 [SOMEDIGITALDISPLAYTYPE]                ; DigitalDisplayType
 ; Generic
-InfoType=Health                         ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage|ROF|Reload|SpawnTimer|GattlingTimer|ProduceCash|PassengerKill|AutoDeath|SuperWeapon)
+InfoType=Health                         ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage|ROF|Reload|SpawnTimer|GattlingTimer|ProduceCash|PassengerKill|AutoDeath|SuperWeapon|IronCurtain|TemporalLife)
 Offset=0,0                              ; integers - horizontal, vertical
 Offset.ShieldDelta=                     ; integers - horizontal, vertical
 Align=right                             ; Text alignment enumeration (left|right|center/centre)
@@ -70,6 +70,7 @@ Percentage=false                        ; boolean
 HideMaxValue=false                      ; boolean
 VisibleToHouses=owner                   ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true           ; boolean
+VisibleInSpecialState=true              ; boolean
 ValueScaleDivisor=1                     ; integer
 ; Text
 Text.Color=0,255,0                      ; integers - Red, Green, Blue

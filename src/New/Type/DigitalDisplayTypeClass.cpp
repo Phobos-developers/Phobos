@@ -21,6 +21,7 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Text_Color.Read(exINI, section, "Text.Color.%s");
 	this->Text_Background.Read(exINI, section, "Text.Background");
+	this->VisibleInSpecialState.Read(exINI, section, "VisibleInSpecialState");
 	this->Offset.Read(exINI, section, "Offset");
 	this->Offset_ShieldDelta.Read(exINI, section, "Offset.ShieldDelta");
 	this->Align.Read(exINI, section, "Align");
@@ -224,6 +225,7 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 	Stm
 		.Process(this->Text_Color)
 		.Process(this->Text_Background)
+		.Process(this->VisibleInSpecialState)
 		.Process(this->Offset)
 		.Process(this->Offset_ShieldDelta)
 		.Process(this->Align)

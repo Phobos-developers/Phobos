@@ -283,7 +283,9 @@ enum class DisplayInfoType : BYTE
 	ProduceCash = 14,
 	PassengerKill = 15,
 	AutoDeath = 16,
-	SuperWeapon = 17
+	SuperWeapon = 17,
+	IronCurtain = 18,
+	TemporalLife = 19
 };
 
 class MouseCursorHotSpotX

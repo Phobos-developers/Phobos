@@ -10,6 +10,7 @@ class DigitalDisplayTypeClass final : public Enumerable<DigitalDisplayTypeClass>
 public:
 	Damageable<ColorStruct> Text_Color;
 	Valueable<bool> Text_Background;
+	Valueable<bool> VisibleInSpecialState;
 	Valueable<Vector2D<int>> Offset;
 	Nullable<Vector2D<int>> Offset_ShieldDelta;
 	Valueable<TextAlign> Align;
@@ -29,6 +30,7 @@ public:
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
 		, Text_Color({ 0, 255, 0 }, { 255,255,0 }, { 255,0,0 })
 		, Text_Background(false)
+		, VisibleInSpecialState(true)
 		, Offset({ 0, 0 })
 		, Offset_ShieldDelta()
 		, Align(TextAlign::Right)
