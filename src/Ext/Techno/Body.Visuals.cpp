@@ -369,19 +369,14 @@ void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBo
 			pBounds
 		};
 
-		if (offset == Point2D::Empty) // Layer fix
+		if (offset == Point2D::Empty && (pThis->IsSelected || pThis->IsMouseHovering)) // Layer fix
 		{
 			RulesClass* const pRules = RulesClass::Instance;
 			const double ratio = pBuilding->GetHealthPercentage();
-
 			pDraw.MidLength = static_cast<int>(ratio * maxLength);
-
-			if (pThis->IsSelected || pThis->IsMouseHovering)
-			{
-				pDraw.MidFrame = (ratio > pRules->ConditionYellow) ? 1 : (ratio > pRules->ConditionRed ? 2 : 4);
-				pDraw.MidPipSHP = FileSystem::PIPS_SHP;
-				pDraw.BrdFrame = 0;
-			}
+			pDraw.MidFrame = (ratio > pRules->ConditionYellow) ? 1 : (ratio > pRules->ConditionRed ? 2 : 4);
+			pDraw.MidPipSHP = FileSystem::PIPS_SHP;
+			pDraw.BrdFrame = 0;
 		}
 
 		TechnoExt::DrawVanillaStyleBuildingBar(&pDraw);
@@ -443,19 +438,14 @@ void TechnoExt::DrawTemporalProgress(TechnoClass* pThis, RectangleStruct* pBound
 			pBounds
 		};
 
-		if (offset == Point2D::Empty) // Layer fix
+		if (offset == Point2D::Empty && (pThis->IsSelected || pThis->IsMouseHovering)) // Layer fix
 		{
 			RulesClass* const pRules = RulesClass::Instance;
 			const double ratio = pBuilding->GetHealthPercentage();
-
 			pDraw.MidLength = static_cast<int>(ratio * maxLength);
-
-			if (pThis->IsSelected || pThis->IsMouseHovering)
-			{
-				pDraw.MidFrame = (ratio > pRules->ConditionYellow) ? 1 : (ratio > pRules->ConditionRed ? 2 : 4);
-				pDraw.MidPipSHP = FileSystem::PIPS_SHP;
-				pDraw.BrdFrame = 0;
-			}
+			pDraw.MidFrame = (ratio > pRules->ConditionYellow) ? 1 : (ratio > pRules->ConditionRed ? 2 : 4);
+			pDraw.MidPipSHP = FileSystem::PIPS_SHP;
+			pDraw.BrdFrame = 0;
 		}
 
 		TechnoExt::DrawVanillaStyleBuildingBar(&pDraw);
