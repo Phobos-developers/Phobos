@@ -129,11 +129,12 @@ public:
 	{
 		int TopLength;
 		int TopFrame;
+		SHPStruct* TopPipSHP;
 		int MidLength;
 		int MidFrame;
+		SHPStruct* MidPipSHP;
 		int MaxLength;
 		int BrdFrame;
-		SHPStruct* PipSHP;
 		Point2D* Location;
 		RectangleStruct* Bounds;
 	};
