@@ -314,7 +314,7 @@ void TechnoExt::DrawSuperProgress(BuildingClass* pThis, RectangleStruct* pBounds
 		return;
 
 	const int maxLength = pType->GetFoundationHeight(false) * 15 >> 1;
-	Point2D position = basePosition + Point2D { 6, 3 + pType->PixelSelectionBracketDelta } + pRulesExt->MainSWProgressDisplay_Offset.Get();
+	Point2D position = basePosition + Point2D { 6, (3 + pType->PixelSelectionBracketDelta) } + pRulesExt->MainSWProgressDisplay_Offset.Get();
 
 	DrawFrameStruct pDraw
 	{
@@ -374,7 +374,7 @@ void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBo
 
 			if (pThis->IsSelected || pThis->IsMouseHovering)
 			{
-				pDraw.MidFrame = ratio > pRules->ConditionYellow ? 1 : (ratio > pRules->ConditionRed ? 2 : 4);
+				pDraw.MidFrame = (ratio > pRules->ConditionYellow) ? 1 : (ratio > pRules->ConditionRed ? 2 : 4);
 				pDraw.BrdFrame = 0;
 			}
 		}
@@ -445,7 +445,7 @@ void TechnoExt::DrawTemporalProgress(TechnoClass* pThis, RectangleStruct* pBound
 
 			if (pThis->IsSelected || pThis->IsMouseHovering)
 			{
-				pDraw.MidFrame = ratio > pRules->ConditionYellow ? 1 : (ratio > pRules->ConditionRed ? 2 : 4);
+				pDraw.MidFrame = (ratio > pRules->ConditionYellow) ? 1 : (ratio > pRules->ConditionRed ? 2 : 4);
 				pDraw.BrdFrame = 0;
 			}
 		}
@@ -456,7 +456,7 @@ void TechnoExt::DrawTemporalProgress(TechnoClass* pThis, RectangleStruct* pBound
 	{
 		const int maxLength = isInfantry ? 8 : 17;
 		const TechnoTypeClass* const pType = pThis->GetTechnoType();
-		Point2D position = basePosition + Point2D{ 0, pType->PixelSelectionBracketDelta + 2 } + pRulesExt->TemporalLifeDisplay_Others_Offset.Get();
+		Point2D position = basePosition + Point2D{ 0, (pType->PixelSelectionBracketDelta + 2) } + pRulesExt->TemporalLifeDisplay_Others_Offset.Get();
 
 		DrawFrameStruct pDraw
 		{
@@ -489,7 +489,7 @@ void TechnoExt::DrawVanillaStyleFootBar(DrawFrameStruct* pDraw)
 	}
 	else
 	{
-		pLocation->X += 2;
+		pLocation->X += 1;
 	}
 
 	if (!pipSHP)
