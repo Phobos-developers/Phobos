@@ -162,13 +162,15 @@ DEFINE_HOOK(0x70CA8B, TechnoClass_Railgun_AmbientDamageIgnoreTarget2, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x70CBE0, TechnoClass_Railgun_AmbientDamageWarhead, 0x5)
+DEFINE_HOOK(0x70CBDA, TechnoClass_Railgun_AmbientDamageWarhead, 0x6)
 {
+	enum { SkipGameCode = 0x70CBE0 };
+
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
 	R->EDX(WeaponTypeExt::ExtMap.Find(pWeapon)->AmbientDamage_Warhead.Get(pWeapon->Warhead));
 
-	return 0;
+	return SkipGameCode;
 }
 
 // Do not adjust map coordinates for railgun or fire stream particles that are below cell coordinates.

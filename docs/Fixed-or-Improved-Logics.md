@@ -82,7 +82,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 ![Waving trees](_static/images/tree-shake.gif)
 *Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
 
-- `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true. Note that this might impact performance.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
 ![image](_static/images/translucency-fix.png)
@@ -159,9 +158,18 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Units & buildings with `DecloakToFire=false` weapons now cloak while targeting & reloading.
 - Units with `Sensors=true` will no longer reveal ally buildings.
 - Air units are now reliably included by target scan with large range and Warhead detonation by large `CellSpread`.
+- OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
+- Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
+- Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
+- Fixed disguised units not using the correct palette if target has custom palette.
+- Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
+- Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading.
+- The otherwise unused setting `[AI]` -> `PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI]` -> `EnablePowerSurplus` to true.
 
 ## Fixes / interactions with other extensions
 
+- `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely.
+- All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
@@ -295,6 +303,18 @@ In `rulesmd.ini`:
 AllowAirstrike=  ; boolean
 ```
 
+### Allowed / disallowed types for FactoryPlant
+
+- It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
+  - `FactoryPlant.Multiplier` (Ares feature) is still applied on the bonuses if they are in effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]               ; BuildingType
+FactoryPlant.AllowTypes=     ; List of TechnoTypes
+FactoryPlant.DisallowTypes=  ; List of TechnoTypes
+```
+
 ### Apply ZShapePointMove during buildups
 
 - By default buildings do not apply `ZShapePointMove` (which offsets the 'z shape' applied on buildings which is used to adjust them in depth buffer and is used to fix issues related to that such as corners of buildings getting cut off when drawn) when buildup is being displayed. This behaviour can now be toggled by setting `ZShapePointMove.OnBuildup`.
@@ -353,6 +373,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]        ; BuildingType
 SellBuildupLength=23  ; integer, number of buildup frames to play
+```
+
+### Exclude Factory from providing multiple factory bonus
+
+- It is now possible to exclude a building with `Factory` from counting towards `MultipleFactory` bonus.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                         ; BuildingType
+ExcludeFromMultipleFactoryBonus=false  ; boolean
 ```
 
 ## Particle systems
@@ -459,6 +489,25 @@ ChronoSparkleDisplayDelay=24                         ; integer, game frames
 ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle position enum (building | occupants | occupantslots | all)
 ```
 
+### Customizable ChronoSphere teleport delays for units
+
+- It is now possible to customize (globally and per TechnoType) the warp-in delay for units teleporting through `Type=ChronoSphere/Warp` Superweapon, both before and after the jump.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ChronoSphereDelay=60    ; integer, game frames
+ChronoSpherePreDelay=0  ; integer, game frames
+
+[SOMETECHNO]            ; TechnoType
+ChronoSphereDelay=      ; integer, game frames
+ChronoSpherePreDelay=   ; integer, game frames
+```
+
+```{warning}
+Due to technical constraints, these settings do not apply to buildings teleported by Ares' customizable ChronoSphere SW. They only have a pre-teleport delay equal to `[General]` -> ChronoDelay.
+```
+
 ### Customizable veterancy insignias
 
 - You can now customize veterancy insignia of TechnoTypes.
@@ -469,41 +518,40 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true.
   - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
   - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
-  - `DrawInsignia.AdjustPos.BuildingsAnchor` sets the anchor point from which the insignia offset is calculated, relative to building's center.
-
+  - `DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to anchor the insignia position relative to the building's selection bracket. By default the insignia position is not anchored to the selection bracket.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-EnemyInsignia=true                             ; boolean
+EnemyInsignia=true                       ; boolean
 
 [AudioVisual]
-DrawInsignia.OnlyOnSelected=false              ; boolean
-DrawInsignia.AdjustPos.Infantry=5,2            ; X,Y, position offset from default
-DrawInsignia.AdjustPos.Units=10,6              ; X,Y, position offset from default
-DrawInsignia.AdjustPos.Buildings=10,6          ; X,Y, position offset from default
-DrawInsignia.AdjustPos.BuildingsAnchor=bottom  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+DrawInsignia.OnlyOnSelected=false        ; boolean
+DrawInsignia.AdjustPos.Infantry=5,2      ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Units=10,6        ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Buildings=10,6    ; X,Y, position offset from default
+DrawInsignia.AdjustPos.BuildingsAnchor=  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
 
-[SOMETECHNO]                                   ; TechnoType
-Insignia=                                      ; filename - excluding the .shp extension
-Insignia.Rookie=                               ; filename - excluding the .shp extension
-Insignia.Veteran=                              ; filename - excluding the .shp extension
-Insignia.Elite=                                ; filename - excluding the .shp extension
-InsigniaFrame=-1                               ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Rookie=-1                        ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Veteran=-1                       ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Elite=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames=-1,-1,-1                        ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.WeaponN=                              ; filename - excluding the .shp extension
-Insignia.WeaponN.Rookie=                       ; filename - excluding the .shp extension
-Insignia.WeaponN.Veteran=                      ; filename - excluding the .shp extension
-Insignia.WeaponN.Elite=                        ; filename - excluding the .shp extension
-InsigniaFrame.WeaponN=-1                       ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Rookie=-1                ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Veteran=-1               ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Elite=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames.WeaponN=-1,-1,-1                ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.ShowEnemy=                            ; boolean
+[SOMETECHNO]                             ; TechnoType
+Insignia=                                ; filename - excluding the .shp extension
+Insignia.Rookie=                         ; filename - excluding the .shp extension
+Insignia.Veteran=                        ; filename - excluding the .shp extension
+Insignia.Elite=                          ; filename - excluding the .shp extension
+InsigniaFrame=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames=-1,-1,-1                  ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.WeaponN=                        ; filename - excluding the .shp extension
+Insignia.WeaponN.Rookie=                 ; filename - excluding the .shp extension
+Insignia.WeaponN.Veteran=                ; filename - excluding the .shp extension
+Insignia.WeaponN.Elite=                  ; filename - excluding the .shp extension
+InsigniaFrame.WeaponN=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Rookie=-1          ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Veteran=-1         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Elite=-1           ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames.WeaponN=-1,-1,-1          ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.ShowEnemy=                      ; boolean
 ```
 
 ```{note}
@@ -637,6 +685,17 @@ ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invu
 ForceShield.KillWarhead=           ; Warhead
 ```
 
+### Iron Curtain & Force Shield extra tint intensity
+
+- It is now possible to specify additional tint intensity applied to Iron Curtained and Force Shielded units.
+
+In `rulesmd.ini`
+```ini
+[AudioVisual]
+IronCurtain.ExtraTintIntensity=0.0  ; floating point value
+ForceShield.ExtraTintIntensity=0.0  ; floating point value
+```
+
 ### Jumpjet rotating on crashing toggle
 
 - Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
@@ -726,6 +785,23 @@ NoWobbles=false  ; boolean
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
 ```
 
+### Subterranean unit travel height
+
+- It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
+
+[SOMETECHNO]             ; TechnoType
+SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
+```
+
+```{warning}
+This expects negative values to be used and may behave erratically if set to above -50.
+```
+
 ### Voxel body multi-section shadows
 
 - It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
@@ -737,6 +813,34 @@ In `artmd.ini`:
 ShadowIndices=        ; list of integers (voxel section indices)
 ShadowIndex.Frame=0   ; integer (HVA animation frame index)
 ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
+```
+
+### Voxel light source customization
+
+- Vanilla game applies some weird unnecessary math which resulted in the voxel light source being "nudged" up by a bit and light being applied incorrectly on tilted voxels. It is now possible to fix that.
+
+```{note}
+Please note that enabling this will remove the vertical offset vanilla engine applies to the light source position. Assuming vanilla lighting this will make the light shine even more from below the ground than it was before, so it is recommended to turn the Z value up in value of `VoxelLightSource`.
+```
+
+![image](_static/images/VoxelLightSourceComparison.png)
+*Applying `VoxelLightSource=0.02,-0.69,0.36` (assuming `UseFixedVoxelLighting=false`) vs default lighting, Prism Tank voxel by [CCS_qkl](https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index)*
+
+- It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
+  - Only the direction of the light is accounted, the distance to the voxel is not accounted.
+  - Vanilla light (assuming `UseFixedVoxelLighting=false`) is located roughly at `VoxelLightSource=0.201,-0.907,-0.362`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+UseFixedVoxelLighting=false  ; boolean, whether to fix the lighting
+VoxelLightSource=            ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
+```
+
+```{hint}
+In order to easily preview the light source settings use the [VXL Viewer and VPL Generator tool by thomassneddon](https://github.com/ThomasSneddon/vxl-renderer/releases). To use the tool unpack it somewhere, then drag the main VXL file of a voxel that you will use to preview onto it (auxilliary VXL and HVA files must be in the same folder).
+
+Keep in mind that the tool doesn't account for `UseFixedVoxelLighting=true` as of yet, so the values shown in tool need to be offset when putting in the game with with fixed voxel lighting.
 ```
 
 ### Voxel shadow scaling in air
@@ -759,6 +863,7 @@ ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 
 - You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
   - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
+- You can also exclude specific TechnoTypes from being built in parallel by AI by setting `ForbidParallelAIQueues` to true on a TechnoType.
 
 In `rulesmd.ini`
 ```ini
@@ -769,9 +874,23 @@ ForbidParallelAIQueues.Vehicle=no   ; boolean
 ForbidParallelAIQueues.Navy=no      ; boolean
 ForbidParallelAIQueues.Aircraft=no  ; boolean
 ForbidParallelAIQueues.Building=no  ; boolean
+
+[SOMETECHNO]                        ; TechnoType
+ForbidParallelAIQueues=false        ; boolean
 ```
 
 ## Terrains
+
+### Animated TerrainTypes
+
+- By default `IsAnimated`, `AnimationRate` and `AnimationProbability` only work on TerrainTypes with `SpawnsTiberium` set to true. This restriction has now been lifted.
+  - Length of the animation can now be customized by setting `AnimationLength` as well, defaulting to half (or quarter if [damaged frames](#damaged-frames-and-crumbling-animation) are enabled) the number of frames in TerrainType's image.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+AnimationLength=   ; integer, number of frames
+```
 
 ### Customizable ore spawners
 
@@ -789,6 +908,38 @@ SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
+```
+
+### Custom palette
+
+- You can now specify custom palette for TerrainTypes in similar manner as TechnoTypes can.
+  - Note that this palette behaves like an object palette and does not use tint etc. that have been applied to the tile the TerrainType resides on like a TerrainType using tile palette would.
+
+In `artmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+Palette=           ; filename - excluding .pal extension and three-character theater-specific suffix
+```
+
+### Damaged frames and crumbling animation
+
+- By default game shows damage frame only for TerrainTypes alive at only 1 point of health left. Because none of the original game TerrainType assets were made with this in mind, the logic is now locked behind a new key `HasDamagedFrames`.
+  - Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual]` -> `ConditionYellow.Terrain` percentage of their maximum health. Defaults to `ConditionYellow` if not set.
+- In addition, TerrainTypes can now show 'crumbling' animation after their health has reached zero and before they are deleted from the map by setting `HasCrumblingFrames` to true.
+  - Crumbling frames start from first frame after both regular & damaged frames and ends at halfway point of the frames in TerrainType's image.
+    - Note that the number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes). Exercise caution and ensure there are correct amount of frames to display.
+  - Sound event from `CrumblingSound` (if set) is played when crumbling animation starts playing.
+  - [Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation-sound) only play after crumbling animation has finished.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ConditionYellow.Terrain=  ; floating-point value
+
+[SOMETERRAINTYPE]         ; TerrainType
+HasDamagedFrames=false    ; boolean
+HasCrumblingFrames=false
+CrumblingSound=           ; Sound
 ```
 
 ### Minimap color customization
@@ -1098,6 +1249,20 @@ In `rulesmd.ini`:
 DecloakDamagedTargets=true  ; boolean
 ```
 
+### Nonprovocative Warheads
+
+- You can now make Warheads behave in nonprovocative fashion. Warheads with `Nonprovocative=true` exhibit following behaviours:
+  - They will not generate any EVA announcements upon hitting targets, be it for attacking ore miners, base buildings or ally base buildings.
+  - They will not spring 'attacked' / 'attacked by' events. Note that if the Warhead deals actual damage, events that check for that can still be sprung. 
+  - They will not evoke defense response from AI players when used to attack base buildings, `ToProtect=true` TechnoTypes or members of TeamTypes with `Whiner=true`.
+  - They will not evoke retaliation from TechnoTypes hit by the Warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]         ; WarheadType
+Nonprovocative=false  ; boolean
+```
+
 ### Restricting screen shaking to current view
 
 - You can now specify whether or not the warhead can only shake screen (`ShakeX/Ylo/hi`) if it is detonated while visible on current screen view.
@@ -1106,6 +1271,18 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]       ; WarheadType
 ShakeIsLocal=false  ; boolean
+```
+
+### Customizable rocker amplitude
+
+- The rocker amplitude of warheads with `Rocker=yes` used to be determined by `Damage` value of the weapon. You can now override it with fixed value and add a multiplier to it.
+  - When both multiplier and override values are set - both are used.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; WarheadType
+Rocker.AmplitudeMultiplier=1.0  ; double
+Rocker.AmplitudeOverride=       ; integer
 ```
 
 ## Weapons
