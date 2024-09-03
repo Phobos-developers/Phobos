@@ -479,23 +479,23 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	case DisplayInfoType::SpawnTimer:
 	{
-		if (pThis->SpawnManager == nullptr || pType->Spawns == nullptr || pType->SpawnsNumber <= 0)
+		if (!pThis->SpawnManager || !pType->Spawns || pType->SpawnsNumber <= 0)
 			return;
 
 		value = 0;
-		maxValue = pThis->SpawnManager->RegenRate;
 
 		for (int i = 0; i < pType->SpawnsNumber; i++)
 		{
-			if (pThis->SpawnManager->SpawnedNodes[i]->Status == SpawnNodeStatus::Dead)
-			{
-				int thisValue = pThis->SpawnManager->SpawnedNodes[i]->SpawnTimer.GetTimeLeft();
+			if (pThis->SpawnManager->SpawnedNodes[i]->Status != SpawnNodeStatus::Dead)
+				continue;
 
-				if (thisValue < value)
-					value = thisValue;
-			}
+			const int thisValue = pThis->SpawnManager->SpawnedNodes[i]->SpawnTimer.GetTimeLeft();
+
+			if (thisValue < value || !value)
+				value = thisValue;
 		}
 
+		maxValue = pThis->SpawnManager->RegenRate;
 		break;
 	}
 	case DisplayInfoType::GattlingTimer:
@@ -504,34 +504,25 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 			return;
 
 		const int thisStage = pThis->CurrentGattlingStage;
+		Point2D values = Point2D::Empty;
 
 		if (pThis->Veterancy.IsElite())
 		{
 			if (thisStage > 0)
-			{
-				value = pThis->GattlingValue - pType->EliteStage[thisStage - 1];
-				maxValue = pType->EliteStage[thisStage] - pType->EliteStage[thisStage - 1];
-			}
+				values = Point2D{ (pThis->GattlingValue - pType->EliteStage[thisStage - 1]), (pType->EliteStage[thisStage] - pType->EliteStage[thisStage - 1]) };
 			else
-			{
-				value = pThis->GattlingValue;
-				maxValue = pType->EliteStage[thisStage];
-			}
+				values = Point2D{ pThis->GattlingValue, pType->EliteStage[thisStage] };
 		}
 		else
 		{
 			if (thisStage > 0)
-			{
-				value = pThis->GattlingValue - pType->WeaponStage[thisStage - 1];
-				maxValue = pType->WeaponStage[thisStage] - pType->WeaponStage[thisStage - 1];
-			}
+				values = Point2D{ (pThis->GattlingValue - pType->WeaponStage[thisStage - 1]), (pType->WeaponStage[thisStage] - pType->WeaponStage[thisStage - 1]) };
 			else
-			{
-				value = pThis->GattlingValue;
-				maxValue = pType->WeaponStage[thisStage];
-			}
+				values = Point2D{ pThis->GattlingValue, pType->WeaponStage[thisStage] };
 		}
 
+		value = values.X;
+		maxValue = values.Y;
 		break;
 	}
 	case DisplayInfoType::ProduceCash:
@@ -539,8 +530,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pThis->WhatAmI() != AbstractType::Building)
 			return;
 
-		const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
-		const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+		const auto pBuildingType = static_cast<BuildingTypeClass*>(pType);
+		const auto pBuilding = static_cast<BuildingClass*>(pThis);
 
 		if (pBuildingType->ProduceCashAmount <= 0)
 			return;
@@ -567,17 +558,15 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (!pTypeExt || !pTypeExt->AutoDeath_Behavior.isset())
 			return;
 
-		if (pTypeExt->AutoDeath_AfterDelay > 0)
-		{
-			value = pExt->AutoDeathTimer.GetTimeLeft();
-			maxValue = pExt->AutoDeathTimer.TimeLeft;
-		}
-		else if (pTypeExt->AutoDeath_OnAmmoDepletion && pType->Ammo > 0)
-		{
-			value = pThis->Ammo;
-			maxValue = pType->Ammo;
-		}
+		Point2D values = Point2D::Empty;
 
+		if (pTypeExt->AutoDeath_AfterDelay > 0)
+			values = Point2D{ pExt->AutoDeathTimer.GetTimeLeft(), pExt->AutoDeathTimer.TimeLeft };
+		else if (pTypeExt->AutoDeath_OnAmmoDepletion && pType->Ammo > 0)
+			values = Point2D{ pThis->Ammo, pType->Ammo };
+
+		value = values.X;
+		maxValue = values.Y;
 		break;
 	}
 	case DisplayInfoType::SuperWeapon:
@@ -585,7 +574,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pThis->WhatAmI() != AbstractType::Building || !pThis->Owner)
 			return;
 
-		const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+		const auto pBuildingType = static_cast<BuildingTypeClass*>(pType);
 		const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
 		SuperClass* pSuper = nullptr;
 
@@ -596,12 +585,11 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		else if (pBuildingTypeExt->SuperWeapons.size() > 0)
 			pSuper = pThis->Owner->Supers.GetItem(pBuildingTypeExt->SuperWeapons[0]);
 
-		if (pSuper)
-		{
-			value = pSuper->RechargeTimer.GetTimeLeft();
-			maxValue = pSuper->RechargeTimer.TimeLeft;
-		}
+		if (!pSuper)
+			return;
 
+		value = pSuper->RechargeTimer.GetTimeLeft();
+		maxValue = pSuper->RechargeTimer.TimeLeft;
 		break;
 	}
 	default:
