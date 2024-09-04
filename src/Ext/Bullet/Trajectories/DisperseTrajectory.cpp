@@ -1226,7 +1226,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					pCreateBullet->Velocity = this->RotateAboutTheAxis(pCreateBullet->Velocity, rotationAxis, extraRotate);
 				}
 			}*/
-/*			else if (flag == TrajectoryFlag::Parabola) // TODO If merge #????
+/*			else if (flag == TrajectoryFlag::Parabola) // TODO If merge #1374
 			{
 				ParabolaTrajectory* const pTrajectory = static_cast<ParabolaTrajectory*>(pBulletExt->Trajectory);
 
