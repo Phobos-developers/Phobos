@@ -715,10 +715,12 @@ Trajectory.Bombard.Height=0.0  ; double
     - 4 - Fixed maximum height and fire angle mode, using `Trajectory.Parabola.ThrowHeight` and `Trajectory.Parabola.LaunchAngle` as calculation conditions, i.e. the trajectory will change horizontally with the height of the target.
     - 5 - Fixed horizontal velocity and fire angle mode, using `Trajectory.Speed` and `Trajectory.Parabola.LaunchAngle` as calculation conditions, i.e. the trajectory will be permanently fixed.
   - `Trajectory.Parabola.ThrowHeight` controls the maximum height of the projectile and is only used for modes 1, 3, or 4. The specific height will be determined by taking the larger of the launch height and the target height then increasing this value. Non positive numbers are not supported.
-  - `Trajectory.Parabola.LaunchAngle` controls the fire angle of the projectile and is only used for modes 2, 4, or 5. Only supports -90.0~90.0 (Cannot use boundary values) in Mode 2 or 5, and 0.0~90.0 (Cannot use boundary values) in Mode 4.
+  - `Trajectory.Parabola.LaunchAngle` controls the fire angle of the projectile and is only used for modes 2, 4, or 5. Only supports -90.0 ~ 90.0 (Cannot use boundary values) in Mode 2 or 5, and 0.0 ~ 90.0 (Cannot use boundary values) in Mode 4.
   - `Trajectory.Parabola.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target when firing. Note that this will not affect the facing of the turret.
     - `Trajectory.Parabola.LeadTimeSimplify` controls whether only perform simplified calculations when calculate the lead time. You can simply consider this as another calculation mode.
     - `Trajectory.Parabola.LeadTimeMultiplier` is an additional lead time multiplier, it will affect the aiming position. You can use this to reduce the errors caused by target speed and target distance.
+  - `Trajectory.Parabola.DetonationAngle` controls when the angle between the projectile in the current velocity direction and the horizontal plane is less than this value, it will detonate prematurely. Taking effect when the value is at -90.0 ~ 90.0 (Cannot use boundary values).
+  - `Trajectory.Parabola.DetonationHeight` controls when the projectile is in a descending state and below the height of the launch position plus this value, it will detonate prematurely. Taking effect when it is set to non negative value.
   - `Trajectory.Parabola.BounceTimes` controls how many times can it bounce back when the projectile hits the ground or cliff. Be aware that excessive projectile speed may cause abnormal operation. And `Trajectory.Parabola.DetonationDistance` do not conflict with this and will take effect simultaneously. So if you want to explode the bullet only after the times of bounces is exhausted, you should set `Trajectory.Parabola.DetonationDistance` to a non positive value.
     - `Trajectory.Parabola.BounceOnWater` controls whether it can bounce on the water surface.
     - `Trajectory.Parabola.BounceDetonate` controls whether it detonates the warhead once extra during each bounce.
@@ -741,6 +743,8 @@ Trajectory.Parabola.LaunchAngle=30              ; floating point value
 Trajectory.Parabola.LeadTimeCalculate=no        ; boolean
 Trajectory.Parabola.LeadTimeSimplify=no         ; boolean
 Trajectory.Parabola.LeadTimeMultiplier=1.0      ; floating point value
+Trajectory.Parabola.DetonationAngle=-90.0       ; floating point value
+Trajectory.Parabola.DetonationHeight=-1         ; integer
 Trajectory.Parabola.BounceTimes=0               ; integer
 Trajectory.Parabola.BounceOnWater=no            ; boolean
 Trajectory.Parabola.BounceDetonate=no           ; boolean

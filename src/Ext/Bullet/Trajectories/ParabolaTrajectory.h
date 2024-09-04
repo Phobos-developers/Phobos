@@ -14,6 +14,8 @@ public:
 		, LeadTimeCalculate { false }
 		, LeadTimeSimplify { false }
 		, LeadTimeMultiplier { 1.0 }
+		, DetonationAngle { -90.0 }
+		, DetonationHeight { -1 }
 		, BounceTimes { 0 }
 		, BounceOnWater { false }
 		, BounceDetonate { false }
@@ -39,6 +41,8 @@ public:
 	Valueable<bool> LeadTimeCalculate;
 	Valueable<bool> LeadTimeSimplify;
 	Valueable<double> LeadTimeMultiplier;
+	Valueable<double> DetonationAngle;
+	Valueable<int> DetonationHeight;
 	Valueable<int> BounceTimes;
 	Valueable<bool> BounceOnWater;
 	Valueable<bool> BounceDetonate;
@@ -64,6 +68,8 @@ public:
 		, LeadTimeCalculate { false }
 		, LeadTimeSimplify { false }
 		, LeadTimeMultiplier { 1.0 }
+		, DetonationAngle { -90.0 }
+		, DetonationHeight { -1 }
 		, BounceTimes { 0 }
 		, BounceOnWater { false }
 		, BounceDetonate { false }
@@ -93,6 +99,8 @@ public:
 		, LeadTimeCalculate { false }
 		, LeadTimeSimplify { false }
 		, LeadTimeMultiplier { 1.0 }
+		, DetonationAngle { -90.0 }
+		, DetonationHeight { -1 }
 		, BounceTimes { 0 }
 		, BounceOnWater { false }
 		, BounceDetonate { false }
@@ -131,6 +139,8 @@ public:
 	bool LeadTimeCalculate;
 	bool LeadTimeSimplify;
 	double LeadTimeMultiplier;
+	double DetonationAngle;
+	int DetonationHeight;
 	int BounceTimes;
 	bool BounceOnWater;
 	bool BounceDetonate;
@@ -166,6 +176,7 @@ private:
 	bool CalculateBulletVelocityAfterBounce(BulletClass* pBullet, CellClass* pCell, double gravity);
 	BulletVelocity GetGroundNormalVector(BulletClass* pBullet, CellClass* pCell);
 	bool CheckBulletHitCliff(short X, short Y, int bulletHeight, int lastCellHeight);
+	bool BulletDetonatePreCheck(BulletClass* pBullet);
 	bool BulletDetonateLastCheck(BulletClass* pBullet, double gravity);
 	void BulletDetonateEffectuate(BulletClass* pBullet, double velocityMult);
 };

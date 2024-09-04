@@ -18,6 +18,8 @@ bool ParabolaTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChang
 		.Process(this->LeadTimeCalculate, false)
 		.Process(this->LeadTimeSimplify, false)
 		.Process(this->LeadTimeMultiplier, false)
+		.Process(this->DetonationAngle, false)
+		.Process(this->DetonationHeight, false)
 		.Process(this->BounceTimes, false)
 		.Process(this->BounceOnWater, false)
 		.Process(this->BounceDetonate, false)
@@ -46,6 +48,8 @@ bool ParabolaTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->LeadTimeCalculate)
 		.Process(this->LeadTimeSimplify)
 		.Process(this->LeadTimeMultiplier)
+		.Process(this->DetonationAngle)
+		.Process(this->DetonationHeight)
 		.Process(this->BounceTimes)
 		.Process(this->BounceOnWater)
 		.Process(this->BounceDetonate)
@@ -77,6 +81,8 @@ void ParabolaTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->LeadTimeCalculate.Read(exINI, pSection, "Trajectory.Parabola.LeadTimeCalculate");
 	this->LeadTimeSimplify.Read(exINI, pSection, "Trajectory.Parabola.LeadTimeSimplify");
 	this->LeadTimeMultiplier.Read(exINI, pSection, "Trajectory.Parabola.LeadTimeMultiplier");
+	this->DetonationAngle.Read(exINI, pSection, "Trajectory.Parabola.DetonationAngle");
+	this->DetonationHeight.Read(exINI, pSection, "Trajectory.Parabola.DetonationHeight");
 	this->BounceTimes.Read(exINI, pSection, "Trajectory.Parabola.BounceTimes");
 	this->BounceOnWater.Read(exINI, pSection, "Trajectory.Parabola.BounceOnWater");
 	this->BounceDetonate.Read(exINI, pSection, "Trajectory.Parabola.BounceDetonate");
@@ -102,6 +108,8 @@ bool ParabolaTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->LeadTimeCalculate)
 		.Process(this->LeadTimeSimplify)
 		.Process(this->LeadTimeMultiplier)
+		.Process(this->DetonationAngle)
+		.Process(this->DetonationHeight)
 		.Process(this->BounceTimes)
 		.Process(this->BounceOnWater)
 		.Process(this->BounceDetonate)
@@ -138,6 +146,8 @@ bool ParabolaTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->LeadTimeCalculate)
 		.Process(this->LeadTimeSimplify)
 		.Process(this->LeadTimeMultiplier)
+		.Process(this->DetonationAngle)
+		.Process(this->DetonationHeight)
 		.Process(this->BounceTimes)
 		.Process(this->BounceOnWater)
 		.Process(this->BounceDetonate)
@@ -173,6 +183,8 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->LeadTimeCalculate = pType->LeadTimeCalculate;
 	this->LeadTimeSimplify = pType->LeadTimeSimplify;
 	this->LeadTimeMultiplier = pType->LeadTimeMultiplier;
+	this->DetonationAngle = pType->DetonationAngle;
+	this->DetonationHeight = pType->DetonationHeight;
 	this->BounceTimes = pType->BounceTimes;
 	this->BounceOnWater = pType->BounceOnWater;
 	this->BounceDetonate = pType->BounceDetonate;
@@ -214,7 +226,7 @@ bool ParabolaTrajectory::OnAI(BulletClass* pBullet)
 	if (this->WaitOneFrame.IsTicking() && this->BulletPrepareCheck(pBullet))
 		return false;
 
-	if (this->ShouldDetonate || (this->DetonationDistance > 0 && pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance))
+	if (this->BulletDetonatePreCheck(pBullet))
 		return true;
 
 	CellClass* const pCell = MapClass::Instance->TryGetCellAt(pBullet->Location);
@@ -381,12 +393,12 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		{
 			double radian = this->LaunchAngle * Math::Pi / 180.0;
 			radian = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? (Math::HalfPi / 3) : radian;
-			const double factor = cos(radian);
+			const double factor = Math::cos(radian);
 
 			if (abs(factor) < 1e-10)
 				break;
 
-			const double mult = sin(2 * radian);
+			const double mult = Math::sin(2 * radian);
 			const double velocity = abs(mult) > 1e-10 ? sqrt((Unsorted::LeptonsPerCell << 2) * gravity / mult) : 0.0;
 
 			if (velocity < 1e-10)
@@ -448,7 +460,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 
 		const double horizontalDistance = Point2D{ destinationCoords.X, destinationCoords.Y }.Magnitude();
 		const double horizontalVelocity = horizontalDistance / meetTime;
-		pBullet->Velocity.Z = horizontalVelocity * tan(radian) + gravity / 2;
+		pBullet->Velocity.Z = horizontalVelocity * Math::tan(radian) + gravity / 2;
 		this->CheckIfNeedExtraCheck(pBullet);
 		return;
 	}
@@ -492,7 +504,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		radian = (radian >= Math::HalfPi || radian <= 0.0) ? (Math::HalfPi / 3) : radian;
 
 		const double horizontalDistance = Point2D{ destinationCoords.X, destinationCoords.Y }.Magnitude();
-		const double mult = (pBullet->Velocity.Z / tan(radian)) / horizontalDistance;
+		const double mult = (pBullet->Velocity.Z / Math::tan(radian)) / horizontalDistance;
 
 		pBullet->Velocity.X = destinationCoords.X * mult;
 		pBullet->Velocity.Y = destinationCoords.Y * mult;
@@ -519,7 +531,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 
 		double radian = this->LaunchAngle * Math::Pi / 180.0;
 		radian = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? (Math::HalfPi / 3) : radian;
-		pBullet->Velocity.Z = horizontalVelocity * tan(radian) + gravity / 2;
+		pBullet->Velocity.Z = horizontalVelocity * Math::tan(radian) + gravity / 2;
 		this->CheckIfNeedExtraCheck(pBullet);
 		return;
 	}
@@ -579,9 +591,9 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 	{
 		double radian = this->LaunchAngle * Math::Pi / 180.0;
 		double velocity = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? 100.0 : this->SearchVelocity(horizontalDistance, distanceCoords.Z, radian, gravity);
-		pBullet->Velocity.Z = velocity * sin(radian);
+		pBullet->Velocity.Z = velocity * Math::sin(radian);
 
-		const double mult = velocity * cos(radian) / horizontalDistance;
+		const double mult = velocity * Math::cos(radian) / horizontalDistance;
 		pBullet->Velocity.X = distanceCoords.X * mult;
 		pBullet->Velocity.Y = distanceCoords.Y * mult;
 		break;
@@ -607,7 +619,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 
 		double radian = this->LaunchAngle * Math::Pi / 180.0;
 		radian = (radian >= Math::HalfPi || radian <= 0.0) ? (Math::HalfPi / 3) : radian;
-		const double mult = (pBullet->Velocity.Z / tan(radian)) / horizontalDistance;
+		const double mult = (pBullet->Velocity.Z / Math::tan(radian)) / horizontalDistance;
 
 		pBullet->Velocity.X = distanceCoords.X * mult;
 		pBullet->Velocity.Y = distanceCoords.Y * mult;
@@ -623,7 +635,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 
 		double radian = this->LaunchAngle * Math::Pi / 180.0;
 		radian = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? (Math::HalfPi / 3) : radian;
-		pBullet->Velocity.Z = horizontalSpeed * tan(radian);
+		pBullet->Velocity.Z = horizontalSpeed * Math::tan(radian);
 		break;
 	}
 	default: // Fixed horizontal speed and aim at the target
@@ -663,7 +675,7 @@ void ParabolaTrajectory::CheckIfNeedExtraCheck(BulletClass* pBullet)
 
 double ParabolaTrajectory::SearchVelocity(double horizontalDistance, int distanceCoordsZ, double radian, double gravity)
 {
-	const double mult = sin(2 * radian);
+	const double mult = Math::sin(2 * radian);
 	double velocity = abs(mult) > 1e-10 ? sqrt(horizontalDistance * gravity / mult) : 0.0;
 	velocity += distanceCoordsZ / gravity;
 	velocity = velocity > 10.0 ? velocity : 10.0;
@@ -691,8 +703,8 @@ double ParabolaTrajectory::SearchVelocity(double horizontalDistance, int distanc
 
 double ParabolaTrajectory::CheckVelocityEquation(double horizontalDistance, int distanceCoordsZ, double velocity, double radian, double gravity)
 {
-	const double horizontalVelocity = velocity * cos(radian);
-	const double verticalVelocity = velocity * sin(radian);
+	const double horizontalVelocity = velocity * Math::cos(radian);
+	const double verticalVelocity = velocity * Math::sin(radian);
 
 	const double upTime = verticalVelocity / gravity;
 	const double maxHeight = 0.5 * verticalVelocity * upTime;
@@ -759,7 +771,7 @@ double ParabolaTrajectory::CheckFixedHeightEquation(CoordStruct* pSourceCrd, Coo
 double ParabolaTrajectory::SearchFixedAngleMeetTime(CoordStruct* pSourceCrd, CoordStruct* pTargetCrd, CoordStruct* pOffsetCrd, double radian, double gravity)
 {
 	const double delta = 1e-5;
-	double meetTime = 512 * sin(radian) / gravity;
+	double meetTime = 512 * Math::sin(radian) / gravity;
 
 	for (int i = 0; i < 10; ++i)
 	{
@@ -787,7 +799,7 @@ double ParabolaTrajectory::CheckFixedAngleEquation(CoordStruct* pSourceCrd, Coor
 	const double horizontalDistance = Point2D{ distanceCoords.X, distanceCoords.Y }.Magnitude();
 
 	const double horizontalVelocity = horizontalDistance / meetTime;
-	const double verticalVelocity = horizontalVelocity * tan(radian);
+	const double verticalVelocity = horizontalVelocity * Math::tan(radian);
 
 	const double upTime = verticalVelocity / gravity;
 	const double maxHeight = 0.5 * verticalVelocity * upTime;
@@ -930,6 +942,34 @@ bool ParabolaTrajectory::CheckBulletHitCliff(short X, short Y, int bulletHeight,
 		if (bulletHeight < cellHeight && (cellHeight - lastCellHeight) > 384)
 			return true;
 	}
+
+	return false;
+}
+
+bool ParabolaTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
+{
+	if (this->ShouldDetonate)
+		return true;
+
+	if (this->DetonationHeight >= 0 && pBullet->Velocity.Z < 0.0 && (pBullet->Location.Z - pBullet->SourceCoords.Z) < this->DetonationHeight)
+		return true;
+
+	if (!this->DetonationAngle)
+	{
+		if (pBullet->Velocity.Z < 0.0)
+			return true;
+	}
+	else if (abs(this->DetonationAngle) < 90.0)
+	{
+		if (const double horizontalVelocity = Vector2D<double>{ pBullet->Velocity.X, pBullet->Velocity.Y }.Magnitude())
+		{
+			if ((pBullet->Velocity.Z / horizontalVelocity) < Math::tan(this->DetonationAngle * Math::Pi / 180.0))
+				return true;
+		}
+	}
+
+	if (this->DetonationDistance > 0 && pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
+		return true;
 
 	return false;
 }
