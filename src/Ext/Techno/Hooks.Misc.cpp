@@ -105,7 +105,7 @@ DEFINE_HOOK(0x41847E, AircraftClass_MissionAttack_ScatterCell1, 0x6)
 	return RulesExt::Global()->StrafingTargetScatter ? Scatter : SkipScatter;
 }
 
-DEFINE_HOOK(0x4186DD, AircraftClass_MissionAttack_ScatterCell2, 0x6)
+DEFINE_HOOK(0x4186DD, AircraftClass_MissionAttack_ScatterCell2, 0x5)
 {
 	enum { SkipScatter = 0x418720, Scatter = 0 };
 	return RulesExt::Global()->StrafingTargetScatter ? Scatter : SkipScatter;
