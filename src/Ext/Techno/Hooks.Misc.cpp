@@ -98,3 +98,17 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 
 	return R->Origin() == 0x6B7600 ? SkipGameCode1 : SkipGameCode2;
 }
+
+DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
+{
+	enum { SkipVanillaChecks = 0x70FBAF, DoVanillaChecks = 0 };
+
+	GET(TechnoTypeClass*, pType, EAX);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt && pTypeExt->BunkerableAnyWay)
+		return SkipVanillaChecks;
+
+	return DoVanillaChecks;
+}
