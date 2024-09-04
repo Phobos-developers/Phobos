@@ -449,6 +449,7 @@ New:
 - Custom object palettes for TerrainTypes (by Starkku)
 - Forbidding parallel AI queues for specific TechnoTypes (by Starkku)
 - Nonprovocative Warheads (by Starkku)
+- New Parabola trajectory (by CrimRecya)
 - Option to restore `PowerSurplus` setting for AI (by Starkku)
 
 Vanilla fixes:
