@@ -13,6 +13,7 @@ enum class TrajectoryFlag : int
 	Invalid = -1,
 	Straight = 0,
 	Bombard = 1,
+	Parabola = 4
 };
 
 enum class TrajectoryCheckReturnType : int

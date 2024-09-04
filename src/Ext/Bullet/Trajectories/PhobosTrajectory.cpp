@@ -7,8 +7,9 @@
 #include <BulletClass.h>
 #include <Helpers/Macro.h>
 
-#include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
+#include "BombardTrajectory.h"
+#include "ParabolaTrajectory.h"
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -34,6 +35,8 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 		pNewType = DLLCreate<StraightTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Bombard") == 0)
 		pNewType = DLLCreate<BombardTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Parabola") == 0)
+		pNewType = DLLCreate<ParabolaTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -64,6 +67,9 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 			break;
 		case TrajectoryFlag::Bombard:
 			pType = DLLCreate<BombardTrajectoryType>();
+			break;
+		case TrajectoryFlag::Parabola:
+			pType = DLLCreate<ParabolaTrajectoryType>();
 			break;
 		default:
 			return nullptr;
@@ -114,9 +120,15 @@ bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 {
 	if (auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
-		return pBulletTypeExt->Trajectory_Speed;
+	{
+		double StraightSpeed = pBulletTypeExt->Trajectory_Speed;
+		StraightSpeed = StraightSpeed > 0.001 ? StraightSpeed : 0.001 ;
+		return StraightSpeed;
+	}
 	else
+	{
 		return 100.0;
+	}
 }
 
 PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
@@ -136,6 +148,9 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 			break;
 		case TrajectoryFlag::Bombard:
 			pTraj = DLLCreate<BombardTrajectory>();
+			break;
+		case TrajectoryFlag::Parabola:
+			pTraj = DLLCreate<ParabolaTrajectory>();
 			break;
 		default:
 			return nullptr;
