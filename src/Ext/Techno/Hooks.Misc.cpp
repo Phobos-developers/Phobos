@@ -98,3 +98,17 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 
 	return R->Origin() == 0x6B7600 ? SkipGameCode1 : SkipGameCode2;
 }
+
+DEFINE_HOOK(0x4D6D34, FootClass_MissionAreaGuard_Miner, 0x5)
+{
+	enum { GoHarvest = 0, GoGuardArea = 0x4D6D69 };
+
+	GET(FootClass*, pThis, ESI);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt && pTypeExt->Harvester_CanGuardArea)
+		return GoGuardArea;
+
+	return GoHarvest;
+}
