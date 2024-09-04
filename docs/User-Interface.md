@@ -277,13 +277,22 @@ SelectionFlashDuration=0  ; integer, number of frames
     - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
     - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
 
+### `[ ]` Save Variables
+
+- Save local & global variables to an INI file. See [this](Miscellanous.html#save-variables-to-file) for details.
+- For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
+
 ### `[ ]` Toggle Designator Range
 - Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
 - For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Digital Display
-- Switches on/off [digital gisplay types](#digital-display).
+- Switches on/off [digital display types](#digital-display).
 - For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Frame By Frame Mode
+- Switches on/off [frame by frame mode](Miscellanous.html#frame-step-in).
+- For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
 ## Loading screen
 
