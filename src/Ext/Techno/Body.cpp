@@ -23,7 +23,7 @@ TechnoExt::ExtData::~ExtData()
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	if (pThis->Transporter && pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
+	if (pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
 		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
@@ -496,6 +496,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastWeaponFLH)
 		.Process(this->FiringObstacleCell)
 		.Process(this->OriginalPassengerOwner)
+		.Process(this->HasRemainingWarpInDelay)
+		.Process(this->LastWarpInDelay)
+		.Process(this->IsBeingChronoSphered)
 		;
 }
 
