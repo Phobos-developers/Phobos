@@ -157,19 +157,3 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Fix, 0x6)
 
 	return ret;
 }
-
-// 航味麻酱: No idea about why these did not works. Not important though. Here is the assembly:
-// 00418B4A 0E0                 push    1               ; ignoreMission // I want to change this '1' to zero conditionally to make it not always ignore mission.
-// 00418B4C 0E4                 mov     eax, [edx]                      // I don't know if my code is working as my purpose. I don't quite understand assembly.
-//                                                                      // If it is, then the forced scatter is not just a problem with this boolean.
-//
-//DEFINE_HOOK_AGAIN(0x418484, AircraftClass_MissionAttack_ScatterIgnoreMission, 0x6)
-//DEFINE_HOOK_AGAIN(0x4186E2, AircraftClass_MissionAttack_ScatterIgnoreMission, 0xA)
-//DEFINE_HOOK_AGAIN(0x418832, AircraftClass_MissionAttack_ScatterIgnoreMission, 0xC)
-//DEFINE_HOOK_AGAIN(0x418941, AircraftClass_MissionAttack_ScatterIgnoreMission, 0x6)
-//DEFINE_HOOK_AGAIN(0x418A50, AircraftClass_MissionAttack_ScatterIgnoreMission, 0x6)
-//DEFINE_HOOK(0x418B4C, AircraftClass_MissionAttack_ScatterIgnoreMission, 0xA)
-//{
-//	R->ESP(false);
-//	return 0;
-//}
