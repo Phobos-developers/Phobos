@@ -310,25 +310,23 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 		}
 	}
 
-	if (keepRange > 0)
+	if (mode)
 	{
-		if (!mode)
-			return absType == AbstractType::Infantry ? keepRange + 256 : keepRange + 128;
+		if (keepRange > 0)
+			return keepRange;
 	}
 	else if (keepRange < 0)
 	{
 		const int checkRange = -keepRange - 128;
+		AbstractClass* const pTarget = pFirer->Target;
 
-		if (pFirer->Target && pFirer->GetCoords().DistanceFrom(pFirer->Target->GetCoords()) >= checkRange)
-			keepRange = checkRange > 0 ? checkRange : 0;
+		if (pTarget && static_cast<int>(pFirer->GetCoords().DistanceFrom(pTarget->GetCoords())) >= checkRange)
+			return (checkRange > 128) ? checkRange : 128;
 		else
-			keepRange = -keepRange;
-
-		if (mode)
-			return 0;
+			return -keepRange;
 	}
 
-	return keepRange;
+	return 0;
 }
 
 // =============================
