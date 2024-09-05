@@ -312,12 +312,16 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 
 	if (!pFirer->RearmTimer.InProgress())
 	{
-		if (!pFirer->SpawnManager || pFirer->SpawnManager->Status != SpawnManagerStatus::CoolDown)
+		SpawnManagerClass* const spawnManager = pFirer->SpawnManager;
+
+		if (!spawnManager || spawnManager->Status != SpawnManagerStatus::CoolDown)
 			return 0;
 
-		for (int i = 0; i < pFirer->GetTechnoType()->SpawnsNumber; i++)
+		const int spawnsNumber = pFirer->GetTechnoType()->SpawnsNumber;
+
+		for (int i = 0; i < spawnsNumber; i++)
 		{
-			if (pFirer->SpawnManager->SpawnedNodes[i]->Status == SpawnNodeStatus::Returning)
+			if (spawnManager->SpawnedNodes[i]->Status == SpawnNodeStatus::Returning)
 				return 0;
 		}
 	}
