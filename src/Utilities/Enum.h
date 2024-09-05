@@ -278,6 +278,16 @@ enum class DisplayInfoType : BYTE
 	GattlingStage = 9
 };
 
+enum class ParabolaFireMode
+{
+	Speed = 0,
+	Height = 1,
+	Angle = 2,
+	SpeedAndHeight = 3,
+	HeightAndAngle = 4,
+	SpeedAndAngle = 5,
+};
+
 class MouseCursorHotSpotX
 {
 public:

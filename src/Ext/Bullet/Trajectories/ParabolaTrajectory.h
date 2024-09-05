@@ -8,7 +8,7 @@ public:
 	ParabolaTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Parabola)
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
-		, OpenFireMode { 0 }
+		, OpenFireMode { ParabolaFireMode::Speed }
 		, ThrowHeight { 600 }
 		, LaunchAngle { 30.0 }
 		, LeadTimeCalculate { false }
@@ -35,7 +35,7 @@ public:
 
 	Valueable<Leptons> DetonationDistance;
 	Valueable<Leptons> TargetSnapDistance;
-	Valueable<int> OpenFireMode;
+	Valueable<ParabolaFireMode> OpenFireMode;
 	Valueable<int> ThrowHeight;
 	Valueable<double> LaunchAngle;
 	Valueable<bool> LeadTimeCalculate;
@@ -62,7 +62,7 @@ public:
 	ParabolaTrajectory() : PhobosTrajectory(TrajectoryFlag::Parabola)
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
-		, OpenFireMode { 0 }
+		, OpenFireMode { ParabolaFireMode::Speed }
 		, ThrowHeight { 600 }
 		, LaunchAngle { 30.0 }
 		, LeadTimeCalculate { false }
@@ -93,7 +93,7 @@ public:
 	ParabolaTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Parabola)
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
-		, OpenFireMode { 0 }
+		, OpenFireMode { ParabolaFireMode::Speed }
 		, ThrowHeight { 600 }
 		, LaunchAngle { 30.0 }
 		, LeadTimeCalculate { false }
@@ -133,7 +133,7 @@ public:
 
 	Leptons DetonationDistance;
 	Leptons TargetSnapDistance;
-	int OpenFireMode;
+	ParabolaFireMode OpenFireMode;
 	int ThrowHeight;
 	double LaunchAngle;
 	bool LeadTimeCalculate;

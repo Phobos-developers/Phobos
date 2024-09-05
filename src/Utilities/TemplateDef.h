@@ -1369,6 +1369,44 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 		return false;
 	}
 
+	template <>
+	inline bool read<ParabolaFireMode>(ParabolaFireMode &value, INI_EX &parser, const char *pSection, const char *pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "height") == 0)
+			{
+				value = ParabolaFireMode::Height;
+			}
+			else if (_strcmpi(parser.value(), "angle") == 0)
+			{
+				value = ParabolaFireMode::Angle;
+			}
+			else if (_strcmpi(parser.value(), "speedandheight") == 0)
+			{
+				value = ParabolaFireMode::SpeedAndHeight;
+			}
+			else if (_strcmpi(parser.value(), "heightandangle") == 0)
+			{
+				value = ParabolaFireMode::HeightAndAngle;
+			}
+			else if (_strcmpi(parser.value(), "speedandangle") == 0)
+			{
+				value = ParabolaFireMode::SpeedAndAngle;
+			}
+			else
+			{
+				if (_strcmpi(parser.value(), "speed") != 0)
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Parabola fire mode is invalid, default to Speed");
+				value = ParabolaFireMode::Speed;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
