@@ -19,6 +19,7 @@ public:
 	Valueable<DiscardCondition> DiscardOn;
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Valueable<bool> PenetratesIronCurtain;
+	Nullable<bool> PenetratesForceShield;
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
 	Valueable<bool> Animation_ResetOnReapply;
@@ -66,6 +67,7 @@ public:
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
 		, PenetratesIronCurtain { false }
+		, PenetratesForceShield {}
 		, Animation {}
 		, CumulativeAnimations {}
 		, Animation_ResetOnReapply { false }

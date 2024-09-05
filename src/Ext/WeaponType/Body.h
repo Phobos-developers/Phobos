@@ -43,6 +43,7 @@ public:
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		ValueableVector<double> ExtraWarheads_DetonationChances;
+		ValueableVector<bool> ExtraWarheads_FullDetonation;
 		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 		Valueable<bool> AmbientDamage_IgnoreTarget;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
@@ -53,6 +54,7 @@ public:
 		ValueableVector<int> AttachEffect_RequiredMaxCounts;
 		ValueableVector<int> AttachEffect_DisallowedMinCounts;
 		ValueableVector<int> AttachEffect_DisallowedMaxCounts;
+		Valueable<bool> AttachEffect_CheckOnFirer;
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
 		Valueable<Leptons> KeepRange;
 		Valueable<bool> KeepRange_AllowAI;
@@ -82,6 +84,7 @@ public:
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
 			, ExtraWarheads_DetonationChances {}
+			, ExtraWarheads_FullDetonation {}
 			, AmbientDamage_Warhead {}
 			, AmbientDamage_IgnoreTarget { false }
 			, AttachEffect_RequiredTypes {}
@@ -92,6 +95,7 @@ public:
 			, AttachEffect_RequiredMaxCounts {}
 			, AttachEffect_DisallowedMinCounts {}
 			, AttachEffect_DisallowedMaxCounts {}
+			, AttachEffect_CheckOnFirer { false }
 			, AttachEffect_IgnoreFromSameSource { false }
 			, KeepRange { Leptons(0) }
 			, KeepRange_AllowAI { false }

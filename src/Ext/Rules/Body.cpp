@@ -74,13 +74,17 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisguiseBlinkingVisibility.Read(exINI, GameStrings::General, "DisguiseBlinkingVisibility");
 	this->ChronoSparkleDisplayDelay.Read(exINI, GameStrings::General, "ChronoSparkleDisplayDelay");
 	this->ChronoSparkleBuildingDisplayPositions.Read(exINI, GameStrings::General, "ChronoSparkleBuildingDisplayPositions");
+	this->ChronoSpherePreDelay.Read(exINI, GameStrings::General, "ChronoSpherePreDelay");
+	this->ChronoSphereDelay.Read(exINI, GameStrings::General, "ChronoSphereDelay");
 	this->AIChronoSphereSW.Read(exINI, GameStrings::General, "AIChronoSphereSW");
 	this->AIChronoWarpSW.Read(exINI, GameStrings::General, "AIChronoWarpSW");
 	this->SubterraneanHeight.Read(exINI, GameStrings::General, "SubterraneanHeight");
+	this->AISuperWeaponDelay.Read(exINI, GameStrings::General, "AISuperWeaponDelay");
 	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
 	this->RadApplicationDelay_Building.Read(exINI, GameStrings::Radiation, "RadApplicationDelay.Building");
 	this->RadBuildingDamageMaxCount.Read(exINI, GameStrings::Radiation, "RadBuildingDamageMaxCount");
 	this->RadSiteWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
+	this->RadSiteWarhead_Detonate_Full.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate.Full");
 	this->RadHasOwner.Read(exINI, GameStrings::Radiation, "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
 	this->VeinholeWarhead.Read<true>(exINI, GameStrings::CombatDamage, "VeinholeWarhead");
@@ -91,6 +95,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
 
+	this->ConditionYellow_Terrain.Read(exINI, GameStrings::AudioVisual, "ConditionYellow.Terrain");
 	this->Shield_ConditionYellow.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionYellow");
 	this->Shield_ConditionRed.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionRed");
 	this->Pips_Shield.Read(exINI, GameStrings::AudioVisual, "Pips.Shield");
@@ -137,6 +142,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ForbidParallelAIQueues_Navy.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Navy");
 	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
 
+	this->EnablePowerSurplus.Read(exINI, GameStrings::AI, "EnablePowerSurplus");
+
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "IronCurtain.EffectOnOrganics");
 	this->IronCurtain_KillOrganicsWarhead.Read<true>(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
@@ -177,6 +184,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
 	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
+
+	this->VoxelLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelLightSource");
+	// this->VoxelShadowLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelShadowLightSource");
+
+	this->ReplaceVoxelLightSources();
+
+	this->UseFixedVoxelLighting.Read(exINI, GameStrings::AudioVisual, "UseFixedVoxelLighting");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -254,13 +268,17 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisguiseBlinkingVisibility)
 		.Process(this->ChronoSparkleDisplayDelay)
 		.Process(this->ChronoSparkleBuildingDisplayPositions)
+		.Process(this->ChronoSpherePreDelay)
+		.Process(this->ChronoSphereDelay)
 		.Process(this->AIChronoSphereSW)
 		.Process(this->AIChronoWarpSW)
 		.Process(this->SubterraneanHeight)
+		.Process(this->AISuperWeaponDelay)
 		.Process(this->UseGlobalRadApplicationDelay)
 		.Process(this->RadApplicationDelay_Building)
 		.Process(this->RadBuildingDamageMaxCount)
 		.Process(this->RadSiteWarhead_Detonate)
+		.Process(this->RadSiteWarhead_Detonate_Full)
 		.Process(this->RadHasOwner)
 		.Process(this->RadHasInvoker)
 		.Process(this->JumpjetCrash)
@@ -271,6 +289,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementGrid_TranslucencyWithPreview)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Translucency)
+		.Process(this->ConditionYellow_Terrain)
 		.Process(this->Shield_ConditionYellow)
 		.Process(this->Shield_ConditionRed)
 		.Process(this->Pips_Shield)
@@ -301,6 +320,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForbidParallelAIQueues_Infantry)
 		.Process(this->ForbidParallelAIQueues_Navy)
 		.Process(this->ForbidParallelAIQueues_Vehicle)
+		.Process(this->EnablePowerSurplus)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_EffectOnOrganics)
 		.Process(this->IronCurtain_KillOrganicsWarhead)
@@ -340,6 +360,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
 		.Process(this->PodImage)
+		.Process(this->VoxelLightSource)
+		// .Process(this->VoxelShadowLightSource)
+		.Process(this->UseFixedVoxelLighting)
 		;
 }
 
@@ -347,6 +370,8 @@ void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<RulesClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	this->ReplaceVoxelLightSources();
 }
 
 void RulesExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
@@ -354,6 +379,32 @@ void RulesExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	Extension<RulesClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
+
+void RulesExt::ExtData::ReplaceVoxelLightSources()
+{
+	bool needCacheFlush = false;
+
+	if (this->VoxelLightSource.isset())
+	{
+		needCacheFlush = true;
+		auto source = this->VoxelLightSource.Get().Normalized();
+		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix.get() * source;
+	}
+
+	/*
+	// doesn't really impact anything from my testing - Kerbiter
+	if (this->VoxelShadowLightSource.isset())
+	{
+		needCacheFlush = true;
+		auto source = this->VoxelShadowLightSource.Get().Normalized();
+		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix.get() * source;
+	}
+	*/
+
+	if (needCacheFlush)
+		Game::DestroyVoxelCaches();
+}
+
 
 bool RulesExt::LoadGlobals(PhobosStreamReader& Stm)
 {

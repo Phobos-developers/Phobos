@@ -11,7 +11,9 @@
 #include "Body.h"
 #include <Ext/AnimType/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
@@ -192,92 +194,6 @@ DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
-{
-	enum { KeepUnitVisible = 0x73CF62 };
-
-	GET(UnitClass*, pThis, ESI);
-
-	if (pThis->Deploying || pThis->Undeploying)
-	{
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-		if (pTypeExt->DeployingAnim_KeepUnitVisible)
-			return KeepUnitVisible;
-	}
-
-	return 0;
-}
-
-// Ares hooks in at 739B8A, this goes before it and skips it if needed.
-DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
-{
-	enum { SkipAnim = 0x739C70, PlayAnim = 0x739B9E };
-
-	GET(UnitClass*, pThis, ESI);
-
-	if (!pThis->InAir)
-	{
-		if (pThis->Type->DeployingAnim)
-		{
-			if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployingAnim_AllowAnyDirection)
-				return PlayAnim;
-
-			return 0;
-		}
-
-		pThis->Deployed = true;
-	}
-
-	return SkipAnim;
-}
-
-DEFINE_HOOK_AGAIN(0x739D8B, UnitClass_DeployUndeploy_DeployAnim, 0x5)
-DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
-{
-	enum { Deploy = 0x739C20, DeployUseUnitDrawer = 0x739C0A, Undeploy = 0x739E04, UndeployUseUnitDrawer = 0x739DEE };
-
-	GET(UnitClass*, pThis, ESI);
-
-	bool isDeploying = R->Origin() == 0x739BA8;
-
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-	{
-		if (auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
-			pThis->Location, 0, 1, 0x600, 0,
-			!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false))
-		{
-			pThis->DeployAnim = pAnim;
-			pAnim->SetOwnerObject(pThis);
-
-			if (pExt->DeployingAnim_UseUnitDrawer)
-				return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;
-		}
-		else
-		{
-			pThis->DeployAnim = nullptr;
-		}
-	}
-
-	return isDeploying ? Deploy : Undeploy;
-}
-
-DEFINE_HOOK_AGAIN(0x739E81, UnitClass_DeployUndeploy_DeploySound, 0x6)
-DEFINE_HOOK(0x739C86, UnitClass_DeployUndeploy_DeploySound, 0x6)
-{
-	enum { DeployReturn = 0x739CBF, UndeployReturn = 0x739EB8 };
-
-	GET(UnitClass*, pThis, ESI);
-
-	bool isDeploying = R->Origin() == 0x739C86;
-	bool isDoneWithDeployUndeploy = isDeploying ? pThis->Deployed : !pThis->Deployed;
-
-	if (isDoneWithDeployUndeploy)
-		return 0; // Only play sound when done with deploying or undeploying.
-
-	return isDeploying ? DeployReturn : UndeployReturn;
-}
-
 // Issue #503
 // Author : Otamaa
 DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
@@ -341,16 +257,19 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	if (pSource)
 	{
 		auto const pExt = TechnoExt::ExtMap.Find(pThis);
 		auto const pTypeExt = pExt->TypeExtData;
+		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+		bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
 
-		if (pTypeExt && pTypeExt->RevengeWeapon &&
-			EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		if (pTypeExt && pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 		{
-			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
+			if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
+				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
 		}
 
 		for (auto& attachEffect : pExt->AttachedEffects)
@@ -361,6 +280,9 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 			auto const pType = attachEffect->GetType();
 
 			if (!pType->RevengeWeapon)
+				continue;
+
+			if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
 				continue;
 
 			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
@@ -839,4 +761,32 @@ DEFINE_HOOK(0x737F05, UnitClass_ReceiveDamage_SinkingWake, 0x6)
 	R->ECX(pTypeExt->Wake_Sinking.Get(pTypeExt->Wake.Get(RulesClass::Instance->Wake)));
 
 	return 0x737F0B;
+}
+
+DEFINE_HOOK(0x711F39, TechnoTypeClass_CostOf_FactoryPlant, 0x8)
+{
+	GET(TechnoTypeClass*, pThis, ESI);
+	GET(HouseClass*, pHouse, EDI);
+	REF_STACK(float, mult, STACK_OFFSET(0x10, -0x8));
+
+	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	if (pHouseExt->RestrictedFactoryPlants.size() > 0)
+		mult *= pHouseExt->GetRestrictedFactoryPlantMult(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x711FDF, TechnoTypeClass_RefundAmount_FactoryPlant, 0x8)
+{
+	GET(TechnoTypeClass*, pThis, ESI);
+	GET(HouseClass*, pHouse, EDI);
+	REF_STACK(float, mult, STACK_OFFSET(0x10, -0x4));
+
+	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	if (pHouseExt->RestrictedFactoryPlants.size() > 0)
+		mult *= pHouseExt->GetRestrictedFactoryPlantMult(pThis);
+
+	return 0;
 }
