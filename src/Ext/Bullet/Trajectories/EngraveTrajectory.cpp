@@ -195,7 +195,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	double straightSpeed = this->GetTrajectorySpeed(pBullet);
 	straightSpeed = straightSpeed > 128.0 ? 128.0 : straightSpeed;
 	double coordDistance = pBullet->Velocity.Magnitude();
-	pBullet->Velocity *= (coordDistance > 0) ? (straightSpeed / coordDistance) : 0;
+	pBullet->Velocity *= (coordDistance > 1e-10) ? (straightSpeed / coordDistance) : 0;
 
 	WeaponTypeClass* const pWeapon = pBullet->WeaponType;
 
