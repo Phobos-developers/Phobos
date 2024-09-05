@@ -395,14 +395,14 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 			const double baseFactor = straightSpeedSquared - targetSpeedSquared;
 			const double squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
 
-			if (squareFactor > 0)
+			if (squareFactor > 1e-10)
 			{
 				const double minusFactor = -(horizonDistance * targetSpeed);
 				int travelTime = 0;
 
-				if (baseFactor == 0)
+				if (abs(baseFactor) < 1e-10)
 				{
-					travelTime = (horizonDistance != 0) ? (static_cast<int>(theDistanceSquared / (2 * horizonDistance * targetSpeed)) + 1) : 0;
+					travelTime = abs(horizonDistance) > 1e-10 ? (static_cast<int>(theDistanceSquared / (2 * horizonDistance * targetSpeed)) + 1) : 0;
 				}
 				else
 				{
@@ -477,7 +477,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	else
 		pBullet->Velocity.Z = static_cast<double>(this->GetVelocityZ(pBullet));
 
-	if (!this->UseDisperseBurst && this->RotateCoord != 0 && this->CountOfBurst > 1)
+	if (!this->UseDisperseBurst && abs(this->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
 	{
 		BulletVelocity rotationAxis
 		{
@@ -488,9 +488,9 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 
 		const double rotationAxisLengthSquared = rotationAxis.MagnitudeSquared();
 
-		if (rotationAxisLengthSquared != 0)
+		if (abs(rotationAxisLengthSquared) > 1e-10)
 		{
-			double extraRotate = 0;
+			double extraRotate = 0.0;
 			rotationAxis *= 1 / sqrt(rotationAxisLengthSquared);
 
 			if (this->MirrorCoord)
@@ -532,7 +532,7 @@ int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 		if (this->DetonationDistance < 0)
 			theDistance = distanceOfTwo - this->DetonationDistance;
 
-		if (theDistance != 0)
+		if (abs(theDistance) > 1e-10)
 			bulletVelocity = static_cast<int>(bulletVelocity * (distanceOfTwo / theDistance));
 		else
 			return 0;
@@ -545,7 +545,7 @@ bool StraightTrajectory::CalculateBulletVelocity(BulletClass* pBullet, double st
 {
 	const double velocityLength = pBullet->Velocity.Magnitude();
 
-	if (velocityLength > 0)
+	if (velocityLength > 1e-10)
 		pBullet->Velocity *= straightSpeed / velocityLength;
 	else
 		return true;
@@ -616,7 +616,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 			{
 				if (this->CheckThroughAndSubjectInCell(pBullet, pCell, pOwner))
 				{
-					locationDistance = 0;
+					locationDistance = 0.0;
 					velocityCheck = true;
 				}
 			}
@@ -804,7 +804,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (distanceCrd * velocityCrd < 0 || terminalCrd * velocityCrd > 0)
 				continue;
 
-			distance = (distance > 0) ? sqrt(distanceCrd.CrossProduct(terminalCrd).MagnitudeSquared() / distance) : distanceCrd.Magnitude();
+			distance = (distance > 1e-10) ? sqrt(distanceCrd.CrossProduct(terminalCrd).MagnitudeSquared() / distance) : distanceCrd.Magnitude();
 
 			if (technoType != AbstractType::Building && distance > this->ProximityRadius)
 				continue;
@@ -846,7 +846,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (distanceCrd * velocityCrd < 0 || terminalCrd * velocityCrd > 0)
 				continue;
 
-			distance = (distance > 0) ? sqrt(distanceCrd.CrossProduct(terminalCrd).MagnitudeSquared() / distance) : distanceCrd.Magnitude();
+			distance = (distance > 1e-10) ? sqrt(distanceCrd.CrossProduct(terminalCrd).MagnitudeSquared() / distance) : distanceCrd.Magnitude();
 
 			if (distance > this->ProximityRadius)
 				continue;
@@ -1278,7 +1278,7 @@ int StraightTrajectory::GetTheTrueDamage(int damage, BulletClass* pBullet, Techn
 
 double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno)
 {
-	double distance = 0;
+	double distance = 0.0;
 	double damageMult = 1.0;
 
 	if (pTechno)
