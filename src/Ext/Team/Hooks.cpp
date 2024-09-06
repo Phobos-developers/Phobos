@@ -35,7 +35,8 @@ DEFINE_HOOK(0x65DF81, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x7)
 
 void _fastcall PayloadFix(FootClass* pThis)
 {
-	if (!pThis || !pThis->GetTechnoType())
+	if (!pThis ||
+		pThis->WhatAmI() == AbstractType::Infantry)
 		return;
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
