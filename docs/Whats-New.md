@@ -429,7 +429,7 @@ New:
 - Promotion animation (by Fryone)
 - Allow different technos to share build limit in a group (by ststl & Ollerus)
 - Map events `604-605` for checking if a specific Techno enters in a cell (by FS-21)
-- Waypoint path is drawn for all units, even those not under player control if `DebugKeysEnabled=yes` (by Trsdy)
+- Waypoint path is drawn for all units under player control or if `[GlobalControls]->DebugPlanningPaths=yes` (by Trsdy)
 - `RemoveDisguise` now works on vehicle disguises (by Trsdy)
 - Allow anchoring extended tooltips to the left side of the sidebar (by Trsdy)
 - Toggle to allow spawned aircraft to attack immediately after being spawned (by Starkku)
