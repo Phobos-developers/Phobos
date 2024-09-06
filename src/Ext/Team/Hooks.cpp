@@ -52,12 +52,13 @@ void _fastcall PayloadFix(FootClass* pThis)
 	{
 		auto pType = pTypeExt->InitialPayload_Types.at(idx);
 
-		if (pType->WhatAmI() == AbstractType::AircraftType ||
+		if (!pType ||
+			pType->WhatAmI() == AbstractType::AircraftType ||
 			pType->WhatAmI() == AbstractType::BuildingType)
 			continue;
 
 		int pNum = pTypeExt->InitialPayload_Nums.size() > idx ?
-			pNum = pTypeExt->InitialPayload_Nums.at(idx) : 1;
+			pTypeExt->InitialPayload_Nums.at(idx) : 1;
 
 		if (pNum <= 0)
 			continue;
