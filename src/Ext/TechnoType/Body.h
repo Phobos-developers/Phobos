@@ -258,6 +258,9 @@ public:
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
+		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
+		ValueableVector<int> InitialPayload_Nums;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -461,6 +464,9 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+
+			, InitialPayload_Types {}
+			, InitialPayload_Nums {}
 		{ }
 
 		virtual ~ExtData() = default;
