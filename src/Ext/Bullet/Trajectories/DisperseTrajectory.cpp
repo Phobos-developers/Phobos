@@ -310,12 +310,12 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 
 	this->PreAimDistance = !this->ReduceCoord ? this->PreAimCoord.Magnitude() + this->LaunchSpeed: this->PreAimCoord.Magnitude() * this->OriginalDistance / 2560 + this->LaunchSpeed;
 
-	if (pBullet->Owner)
+	if (TechnoClass* const pFirer = pBullet->Owner)
 	{
-		this->CurrentBurst = pBullet->Owner->CurrentBurstIndex;
-		this->FirepowerMult = pBullet->Owner->FirepowerMultiplier;
+		this->CurrentBurst = pFirer->CurrentBurstIndex;
+		this->FirepowerMult = pFirer->FirepowerMultiplier;
 
-		if (this->MirrorCoord && pBullet->Owner->CurrentBurstIndex % 2 == 1)
+		if (this->MirrorCoord && pFirer->CurrentBurstIndex % 2 == 1)
 			this->PreAimCoord.Y = -(this->PreAimCoord.Y);
 	}
 
@@ -410,17 +410,15 @@ TrajectoryCheckReturnType DisperseTrajectory::OnAITechnoCheck(BulletClass* pBull
 void DisperseTrajectory::InitializeBulletNotCurve(BulletClass* pBullet)
 {
 	double rotateAngle = 0.0;
-	CoordStruct theSource = pBullet->SourceCoords;
+	TechnoClass* const pFirer = pBullet->Owner;
+	const CoordStruct theSource = pFirer ? pFirer->GetCoords() : pBullet->SourceCoords;
 
-	if (pBullet->Owner)
-		theSource = pBullet->Owner->GetCoords();
-
-	if (this->FacingCoord || (pBullet->TargetCoords.Y == theSource.Y && pBullet->TargetCoords.X == theSource.X) && pBullet->Owner)
+	if ((this->FacingCoord || (pBullet->TargetCoords.Y == theSource.Y && pBullet->TargetCoords.X == theSource.X)) && pFirer)
 	{
-		if (pBullet->Owner->HasTurret())
-			rotateAngle = -(pBullet->Owner->TurretFacing().GetRadian<32>());
+		if (pFirer->HasTurret())
+			rotateAngle = -(pFirer->TurretFacing().GetRadian<32>());
 		else
-			rotateAngle = -(pBullet->Owner->PrimaryFacing.Current().GetRadian<32>());
+			rotateAngle = -(pFirer->PrimaryFacing.Current().GetRadian<32>());
 	}
 	else
 	{
@@ -465,7 +463,7 @@ void DisperseTrajectory::InitializeBulletNotCurve(BulletClass* pBullet)
 
 		if (this->MirrorCoord)
 		{
-			if (pBullet->Owner && pBullet->Owner->CurrentBurstIndex % 2 == 1)
+			if (pFirer && pFirer->CurrentBurstIndex % 2 == 1)
 				rotationAxis *= -1;
 
 			extraRotate = Math::Pi * (this->RotateCoord * ((this->CurrentBurst / 2) / (pBullet->WeaponType->Burst - 1.0) - 0.5)) / 180;
@@ -971,15 +969,20 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 
 			if (!this->WeaponRetarget)
 			{
-				for (int burstNum = 0; burstNum < burstCount; burstNum++)
-					this->CreateDisperseBullets(pBullet, pWeapon, pTarget, pOwner, burstNum, burstCount);
+				if (pTarget)
+				{
+					for (int burstNum = 0; burstNum < burstCount; burstNum++)
+					{
+						this->CreateDisperseBullets(pBullet, pWeapon, pTarget, pOwner, burstNum, burstCount);
+					}
+				}
 
 				continue;
 			}
 
 			int burstNow = 0;
 
-			if (this->WeaponTendency && burstCount > 0)
+			if (this->WeaponTendency && burstCount > 0 && pTarget)
 			{
 				this->CreateDisperseBullets(pBullet, pWeapon, pTarget, pOwner, burstNow, burstCount);
 				burstNow++;
