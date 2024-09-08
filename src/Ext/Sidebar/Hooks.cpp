@@ -5,6 +5,12 @@
 #include <FileSystem.h>
 #include <Ext/Side/Body.h>
 
+#include <Ext/House/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <Utilities/Macro.h>
+#include <Utilities/ShapeTextPrinter.h>
+#include <CCToolTip.h>
+
 DEFINE_HOOK(0x6A593E, SidebarClass_InitForHouse_AdditionalFiles, 0x5)
 {
 	char filename[0x20];
@@ -93,6 +99,86 @@ DEFINE_HOOK(0x72FCB5, InitSideRectangles_CenterBackground, 0x5)
 		pRect->Y = (height - 32 - pRect->Height) / 2;
 
 		R->EAX(pRect);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
+{
+	GET(const bool, greyCameo, EBX);
+	GET(const int, destX, ESI);
+	GET(const int, destY, EBP);
+	GET_STACK(const RectangleStruct, boundingRect, STACK_OFFSET(0x48C, -0x3E0));
+	GET_STACK(TechnoTypeClass* const, pType, STACK_OFFSET(0x48C, -0x458));
+
+	const Point2D position { destX + 30, destY + 24 };
+	HouseClass* const pHouse = HouseClass::CurrentPlayer;
+	const RulesExt::ExtData* const pRulesExt = RulesExt::Global();
+	const CoordStruct frames = pRulesExt->CameoOverlayFrames;
+
+	if (greyCameo) // Only draw extras over grey cameos
+	{
+		int frame = frames.Y;
+		TechnoTypeExt::ExtData* const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt && pTypeExt->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
+		{
+			auto& vec = HouseExt::ExtMap.Find(pHouse)->OwnedExistCameoTechnoTypes;
+
+			if (std::find(vec.begin(), vec.end(), pTypeExt) != vec.end())
+				frame = frames.Z;
+		}
+
+		if (frame >= 0)
+		{
+			DSurface::Sidebar->DrawSHP(
+				pRulesExt->CameoOverlayPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
+				pRulesExt->CameoOverlayShapes,
+				frame,
+				&position,
+				&boundingRect,
+				BlitterFlags(0x600),
+				0, 0,
+				ZGradient::Ground,
+				1000, 0, 0, 0, 0, 0);
+		}
+	}
+
+	BuildingTypeClass* const pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+
+	if (pBuildingType) // Only count owned buildings
+	{
+		if (const int count = pHouse->CountOwnedAndPresent(pBuildingType))
+		{
+			if (frames.X >= 0)
+			{
+				DSurface::Sidebar->DrawSHP(
+					pRulesExt->CameoOverlayPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
+					pRulesExt->CameoOverlayShapes,
+					frames.X,
+					&position,
+					&boundingRect,
+					BlitterFlags(0x600),
+					0, 0,
+					ZGradient::Ground,
+					1000, 0, 0, 0, 0, 0);
+			}
+
+			if (pRulesExt->BuildingStatisticsCameo)
+			{
+				GET_STACK(RectangleStruct, surfaceRect, STACK_OFFSET(0x48C, -0x438));
+
+				const COLORREF color = CCToolTip::ToolTipTextColor->ToInt();
+				const TextPrintType printType = TextPrintType::Background |
+					TextPrintType::Right | TextPrintType::FullShadow | TextPrintType::Point8;
+				Point2D textPosition { destX + 60, destY + 1 };
+
+				wchar_t text[0x20];
+				swprintf_s(text, L"%d", count);
+				DSurface::Sidebar->DrawTextA(text, &surfaceRect, &textPosition, color, 0, printType);
+			}
+		}
 	}
 
 	return 0;

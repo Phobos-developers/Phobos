@@ -92,7 +92,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
 
 	this->CheckUnitBaseNormal.Read(exINI, GameStrings::General, "CheckUnitBaseNormal");
-	this->AlwaysExistTheCameo.Read(exINI, GameStrings::General, "AlwaysExistTheCameo");
+	this->AlwaysExistTheCameo.Read(exINI, GameStrings::AudioVisual, "AlwaysExistTheCameo");
+	this->BuildingStatisticsCameo.Read(exINI, GameStrings::AudioVisual, "BuildingStatisticsCameo");
+	this->CameoOverlayShapes.Read(exINI, GameStrings::AudioVisual, "CameoOverlayShapes");
+	this->CameoOverlayFrames.Read(exINI, GameStrings::AudioVisual, "CameoOverlayFrames");
+	this->CameoOverlayPalette.LoadFromINI(pINI, GameStrings::AudioVisual, "CameoOverlayPalette");
 	this->ExpandBuildingPlace.Read(exINI, GameStrings::General, "ExpandBuildingPlace");
 	this->CheckExpandPlaceGrid.Read(exINI, GameStrings::AudioVisual, "CheckExpandPlaceGrid");
 	this->ExpandLandGridFrames.Read(exINI, GameStrings::AudioVisual, "ExpandLandGridFrames");
@@ -287,6 +291,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementPreview_Translucency)
 		.Process(this->CheckUnitBaseNormal)
 		.Process(this->AlwaysExistTheCameo)
+		.Process(this->BuildingStatisticsCameo)
+		.Process(this->CameoOverlayShapes)
+		.Process(this->CameoOverlayFrames)
+		.Process(this->CameoOverlayPalette)
 		.Process(this->ExpandBuildingPlace)
 		.Process(this->CheckExpandPlaceGrid)
 		.Process(this->ExpandLandGridFrames)

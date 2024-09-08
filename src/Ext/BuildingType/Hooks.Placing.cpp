@@ -453,7 +453,9 @@ DEFINE_HOOK(0x47EF52, CellClass_DrawPlaceGrid_DrawGrids, 0x6)
 
 	bool green = false;
 
-	for (auto const& baseCell : HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->BaseNormalCells)
+	auto const cells = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->BaseNormalCells;
+
+	for (auto const& baseCell : cells)
 	{
 		if (baseCell.X >= minX && baseCell.Y >= minY && baseCell.X <= maxX && baseCell.Y <= maxY)
 		{

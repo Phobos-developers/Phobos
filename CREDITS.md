@@ -352,7 +352,9 @@ This page lists all the individual contributions to the project by their author.
   - Customizable rocker amplitude
 - **handama** - AI script action to jump back to previous script
 - **CrimRecya**
-  - Building placing and deploying logic enhancement, unit base normal, new placing grids and grey cameo preview
+  - Building placing and deploying logic enhancement
+  - Unit base normal and new placing grids
+  - Grey cameo preview and cameo overlays
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
