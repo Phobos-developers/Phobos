@@ -364,7 +364,7 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
   - `AlwaysExistTheCameo` controls whether you can see the cameo when the prerequisite have not satisfied (`TechnoLevel`, `Owner`, `RequiredHouses` and `ForbiddenHouses` should be satisfied). Defaults to `[AudioVisual]` -> `AlwaysExistTheCameo`.
   - `BuildingStatisticsCameo` controls whether the number of buildings of this type that you currently own needs to be displayed in the upper right corner of the building cameo (requires the cameo exist).
   - `CameoOverlayShapes` controls the drawn image file.
-  - `CameoOverlayFrames` controls which frame in `CameoOverlayShapes` to draw in three different situations: currently owned this building type, grey cameo and have its prerequisite, grey cameo but have no prerequisite (The last situation requires `AlwaysExistTheCameo` to be true).
+  - `CameoOverlayFrames` controls which frame in `CameoOverlayShapes` to draw in three different situations: currently owned this building type, grey cameo and have its prerequisite, grey cameo but have no prerequisite (The last situation requires `AlwaysExistTheCameo` to be true). When set to a negative number, it means that there is no need to draw under the corresponding conditions.
   - `CameoOverlayPalette` the color palette used when drawing `CameoOverlayShapes`.
   - If `PrerequisiteForCameo` is not set, the grey cameo will only show when `AIBasePlanningSide` is satisfied. If set a techno type, the grey cameo will show if you have a techno in this type or this type's `TechnoLevel`, `Owner`, `RequiredHouses` and `ForbiddenHouses` is satisfied.
   - The `UIExtraDescription` is like `UIDescription`, but this only appearing when the techno is truly unbuildable.
@@ -372,16 +372,16 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-AlwaysExistTheCameo=false     ; boolean
-BuildingStatisticsCameo=false ; boolean
-CameoOverlayShapes=           ; filename - including the .shp extension
-CameoOverlayFrames=-1,-1,-1   ; integer - owned this building, grey and have its prerequisite, grey but have no prerequisite
-CameoOverlayPalette=          ; filename - including the .pal extension
+AlwaysExistTheCameo=false        ; boolean
+BuildingStatisticsCameo=false    ; boolean
+CameoOverlayShapes=pips.shp      ; filename - including the .shp extension
+CameoOverlayFrames=-1,-1,-1      ; integer - owned this building, grey and have its prerequisite, grey but have no prerequisite
+CameoOverlayPalette=palette.pal  ; filename - including the .pal extension
 
-[SOMETECHNO]                  ; TechnoType
-AlwaysExistTheCameo=          ; boolean
-PrerequisiteForCameo=         ; TechnoType
-UIExtraDescription=           ; CSF entry key
+[SOMETECHNO]                     ; TechnoType
+AlwaysExistTheCameo=             ; boolean
+PrerequisiteForCameo=            ; TechnoType
+UIExtraDescription=              ; CSF entry key
 ```
 
 ### Harvester counter
