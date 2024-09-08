@@ -33,6 +33,7 @@ public:
 		Valueable<int> RadarJamRadius;
 		Nullable<int> InhibitorRange;
 		Nullable<int> DesignatorRange;
+		Valueable<float> FactoryPlant_Multiplier;
 		Valueable<Leptons> MindControlRangeLimit;
 
 		std::unique_ptr<InterceptorTypeClass> InterceptorType;
@@ -53,6 +54,7 @@ public:
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
+		Valueable<bool> ForbidParallelAIQueues;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
@@ -93,6 +95,8 @@ public:
 		Nullable<int> ChronoMinimumDelay;
 		Nullable<int> ChronoRangeMinimum;
 		Nullable<int> ChronoDelay;
+		Nullable<int> ChronoSpherePreDelay;
+		Nullable<int> ChronoSphereDelay;
 
 		Valueable<WeaponTypeClass*> WarpInWeapon;
 		Nullable<WeaponTypeClass*> WarpInMinRangeWeapon;
@@ -269,6 +273,7 @@ public:
 			, RadarJamRadius { 0 }
 			, InhibitorRange {}
 			, DesignatorRange { }
+			, FactoryPlant_Multiplier { 1.0 }
 			, MindControlRangeLimit {}
 
 			, InterceptorType { nullptr }
@@ -289,6 +294,7 @@ public:
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ReloadInTransport { false }
+			, ForbidParallelAIQueues { false }
 			, ShieldType {}
 			, PassengerDeletionType { nullptr }
 
@@ -300,6 +306,8 @@ public:
 			, ChronoMinimumDelay {}
 			, ChronoRangeMinimum {}
 			, ChronoDelay {}
+			, ChronoSpherePreDelay {}
+			, ChronoSphereDelay {}
 			, WarpInWeapon {}
 			, WarpInMinRangeWeapon {}
 			, WarpOutWeapon {}

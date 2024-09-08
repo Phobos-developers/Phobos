@@ -26,6 +26,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -498,8 +499,8 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 {
 	auto const pThisBomb = FetchBomb::pThisBomb;
 	auto nCoord = *pCoord;
-	auto nDamageAreaResult = MapClass::Instance()->DamageArea
-	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse);
+	auto nDamageAreaResult = WarheadTypeExt::ExtMap.Find(pWarhead)->DamageAreaWithTarget
+	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse, abstract_cast<TechnoClass*>(pThisBomb->Target));
 	auto nLandType = MapClass::Instance()->GetCellAt(nCoord)->LandType;
 
 	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
@@ -855,7 +856,8 @@ DEFINE_HOOK(0x7195BF, TeleportLocomotionClass_Process_WarpInDelay, 0x6)
 	GET(FootClass*, pLinkedTo, ECX);
 
 	auto const pLoco = static_cast<TeleportLocomotionClass*>(pThis);
-	TechnoExt::ExtMap.Find(pLinkedTo)->LastWarpInDelay = pLoco->Timer.GetTimeLeft();
+	auto const pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+	pExt->LastWarpInDelay = Math::max(pLoco->Timer.GetTimeLeft(), pExt->LastWarpInDelay);
 
 	return 0;
 }
@@ -866,7 +868,7 @@ DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->HasCarryoverWarpInDelay)
+	if (pExt->HasRemainingWarpInDelay)
 	{
 		if (pExt->LastWarpInDelay)
 		{
@@ -874,7 +876,8 @@ DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
 		}
 		else
 		{
-			pExt->HasCarryoverWarpInDelay = false;
+			pExt->HasRemainingWarpInDelay = false;
+			pExt->IsBeingChronoSphered = false;
 			pThis->WarpingOut = false;
 		}
 	}
@@ -914,19 +917,4 @@ DEFINE_HOOK(0x705D74, TechnoClass_GetRemapColour_DisguisePalette, 0x8)
 	R->EAX(pTechnoType);
 
 	return SkipGameCode;
-}
-
-// Allows MovementZone=Subterannean harvester to find docks from any zone, since simply checking
-// if the dock is in same zone using MovementZone::Subterranean does not seem to work as expected
-DEFINE_HOOK(0x4DEFC6, FootClass_FindDock_SubterraneanHarvester, 0x5)
-{
-	GET(TechnoTypeClass*, pTechnoType, EAX);
-
-	if (auto const pUnitType = abstract_cast<UnitTypeClass*>(pTechnoType))
-	{
-		if (pUnitType->Harvester && pUnitType->MovementZone == MovementZone::Subterrannean)
-			R->ECX(MovementZone::Fly);
-	}
-
-	return 0;
 }

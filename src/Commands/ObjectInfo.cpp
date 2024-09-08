@@ -79,7 +79,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		append("ID = %s, ", pType->ID);
 		append("Owner = %s (%s), ", pFoot->Owner->get_ID(), pFoot->Owner->PlainName);
 		append("Location = (%d, %d), ", pFoot->GetMapCoords().X, pFoot->GetMapCoords().Y);
-		append("Current Mission = %d (%s), Status = %d\n", pFoot->CurrentMission, MissionControlClass::FindName(pFoot->CurrentMission), pFoot->MissionStatus);
+		append("Mission = %d (%s), Status = %d\n", pFoot->CurrentMission, MissionControlClass::FindName(pFoot->CurrentMission), pFoot->MissionStatus);
 
 		if (pFoot->BelongsToATeam())
 		{
@@ -161,7 +161,8 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		auto pType = pBuilding->Type;
 		append("ID = %s, ", pType->ID);
 		append("Owner = %s (%s), ", pBuilding->Owner->get_ID(), pBuilding->Owner->PlainName);
-		append("Location = (%d, %d)\n", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
+		append("Location = (%d, %d), ", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
+		append("Mission = %d (%s), Status = %d\n", pBuilding->CurrentMission, MissionControlClass::FindName(pBuilding->CurrentMission), pBuilding->MissionStatus);
 
 		if (pBuilding->Factory && pBuilding->Factory->Object)
 		{

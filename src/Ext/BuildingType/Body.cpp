@@ -579,6 +579,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+	this->ExcludeFromMultipleFactoryBonus.Read(exINI, pSection, "ExcludeFromMultipleFactoryBonus");
 
 	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
 	this->Grinding_AllowOwner.Read(exINI, pSection, "Grinding.AllowOwner");
@@ -595,6 +596,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
+
+	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
+	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -681,6 +685,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowAirstrike)
 		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->ExcludeFromMultipleFactoryBonus)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)
@@ -707,6 +712,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
 		.Process(this->AircraftDockingDirs)
+		.Process(this->FactoryPlant_AllowTypes)
+		.Process(this->FactoryPlant_DisallowTypes)
 		;
 }
 
