@@ -9,7 +9,6 @@
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/ShapeTextPrinter.h>
-#include <CCToolTip.h>
 
 DEFINE_HOOK(0x6A593E, SidebarClass_InitForHouse_AdditionalFiles, 0x5)
 {
@@ -169,7 +168,7 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 			{
 				GET_STACK(RectangleStruct, surfaceRect, STACK_OFFSET(0x48C, -0x438));
 
-				const COLORREF color = CCToolTip::ToolTipTextColor->ToInt();
+				const COLORREF color = Drawing::RGB_To_Int(Drawing::TooltipColor);
 				const TextPrintType printType = TextPrintType::Background |
 					TextPrintType::Right | TextPrintType::FullShadow | TextPrintType::Point8;
 				Point2D textPosition { destX + 60, destY + 1 };

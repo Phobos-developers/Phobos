@@ -102,6 +102,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CameoOverlayFrames.Read(exINI, GameStrings::AudioVisual, "CameoOverlayFrames");
 	this->CameoOverlayPalette.LoadFromINI(pINI, GameStrings::AudioVisual, "CameoOverlayPalette");
 	this->ExpandBuildingPlace.Read(exINI, GameStrings::General, "ExpandBuildingPlace");
+	this->DrawAdjacentBoundary.Read(exINI, GameStrings::AudioVisual, "DrawAdjacentBoundary");
 	this->CheckExpandPlaceGrid.Read(exINI, GameStrings::AudioVisual, "CheckExpandPlaceGrid");
 	this->ExpandLandGridFrames.Read(exINI, GameStrings::AudioVisual, "ExpandLandGridFrames");
 	this->ExpandWaterGridFrames.Read(exINI, GameStrings::AudioVisual, "ExpandWaterGridFrames");
@@ -307,6 +308,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoOverlayFrames)
 		.Process(this->CameoOverlayPalette)
 		.Process(this->ExpandBuildingPlace)
+		.Process(this->DrawAdjacentBoundary)
 		.Process(this->CheckExpandPlaceGrid)
 		.Process(this->ExpandLandGridFrames)
 		.Process(this->ExpandWaterGridFrames)

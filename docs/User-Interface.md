@@ -255,13 +255,14 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 ### More display styles for placing grids
 
-- This feature is highly compatible with `ExpandBuildingPlace`. If set `CheckExpandPlaceGrid` to true, it will display the placing grids with `place.shp` and following corresponding frame number.
+- This feature is highly compatible with `ExpandBuildingPlace`. If set `DrawAdjacentBoundary` to true, it will display the four corners of the `Adjacent` boundary. If set `CheckExpandPlaceGrid` to true, it will display the placing grids with `place.shp` and following corresponding frame number.
   - `ExpandLandGridFrames` controls the placing grids frames on non-water cell. The three numbers respectively represent "Some technos that can command departure have occupied this area", "This cell is actually beyond the scope, but there is still at least one cell inside the entire region" and "Here is no problem, everything is OK".
   - `ExpandWaterGridFrames` controls the placing grids frames on water cell. Each item corresponds to the same as above.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
+DrawAdjacentBoundary=false     ; boolean
 CheckExpandPlaceGrid=false     ; boolean
 ExpandLandGridFrames=1,0,0     ; integer, zero-based frame index - have technos, near boundary, is normal
 ExpandWaterGridFrames=1,0,0    ; integer, zero-based frame index - have technos, near boundary, is normal

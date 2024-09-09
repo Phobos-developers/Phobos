@@ -72,6 +72,7 @@ public:
 		Valueable<Vector3D<int>> CameoOverlayFrames;
 		CustomPalette CameoOverlayPalette;
 		Valueable<bool> ExpandBuildingPlace;
+		Valueable<bool> DrawAdjacentBoundary;
 		Valueable<bool> CheckExpandPlaceGrid;
 		Valueable<Vector3D<int>> ExpandLandGridFrames;
 		Valueable<Vector3D<int>> ExpandWaterGridFrames;
@@ -201,6 +202,7 @@ public:
 			, CameoOverlayFrames { { -1, -1, -1 } }
 			, CameoOverlayPalette {}
 			, ExpandBuildingPlace { false }
+			, DrawAdjacentBoundary { false }
 			, CheckExpandPlaceGrid { false }
 			, ExpandLandGridFrames { { 1, 0, 0 } }
 			, ExpandWaterGridFrames { { 1, 0, 0 } }

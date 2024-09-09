@@ -4,6 +4,7 @@
 #include <Ext/House/Body.h>
 #include <Utilities/GeneralUtils.h>
 #include <Ext/SWType/Body.h>
+#include <TacticalClass.h>
 
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 
@@ -543,6 +544,81 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 	}
 
 	return false;
+}
+
+void BuildingTypeExt::DrawAdjacentLines()
+{
+	BuildingClass* const pBuilding = abstract_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding);
+
+	if (!pBuilding)
+		return;
+
+	BuildingTypeClass* const pType = pBuilding->Type;
+	const short adjacent = static_cast<short>(pType->Adjacent + 1);
+
+	if (adjacent <= 0)
+		return;
+
+	const CellStruct foundation { pType->GetFoundationWidth(), pType->GetFoundationHeight(false) };
+
+	if (foundation == CellStruct::Empty)
+		return;
+
+	const CellStruct topLeft = DisplayClass::Instance->CurrentFoundation_CenterCell + DisplayClass::Instance->CurrentFoundation_TopLeftOffset;
+	const CellStruct min { topLeft.X - adjacent, topLeft.Y - adjacent };
+	const CellStruct max { topLeft.X + foundation.X + adjacent - 1, topLeft.Y + foundation.Y + adjacent - 1 };
+	const COLORREF color = Drawing::RGB_To_Int(ColorStruct { static_cast<BYTE>(255), static_cast<BYTE>(255), static_cast<BYTE>(255) });
+
+	RectangleStruct rect = DSurface::Temp->GetRect();
+	rect.Height -= 32;
+
+	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(min))
+	{
+		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
+		Point2D nextPoint = point;
+		point.Y -= 15;
+
+		nextPoint.X -= 30;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+		nextPoint.X += 60;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+	}
+
+	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(CellStruct{ min.X, max.Y }))
+	{
+		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
+		Point2D nextPoint = point;
+		point.X -= 30;
+
+		nextPoint.Y += 15;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+		nextPoint.Y -= 30;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+	}
+
+	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(max))
+	{
+		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
+		Point2D nextPoint = point;
+		point.Y += 15;
+
+		nextPoint.X += 30;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+		nextPoint.X -= 60;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+	}
+
+	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(CellStruct{ max.X, min.Y }))
+	{
+		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
+		Point2D nextPoint = point;
+		point.X += 30;
+
+		nextPoint.Y -= 15;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+		nextPoint.Y += 30;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+	}
 }
 
 void BuildingTypeExt::ExtData::Initialize()
