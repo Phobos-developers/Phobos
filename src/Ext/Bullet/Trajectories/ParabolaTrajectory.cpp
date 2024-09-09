@@ -256,8 +256,10 @@ void ParabolaTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 		pExt->SnappedToTarget = true;
 		pBullet->SetLocation(coords);
 	}
-	else if (const int cellHeight = MapClass::Instance->GetCellFloorHeight(pBullet->Location))
+	else
 	{
+		const int cellHeight = MapClass::Instance->GetCellFloorHeight(pBullet->Location);
+
 		if (pBullet->Location.Z < cellHeight)
 			pBullet->SetLocation(CoordStruct{ pBullet->Location.X, pBullet->Location.Y, cellHeight });
 	}
