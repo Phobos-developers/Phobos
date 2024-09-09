@@ -353,7 +353,7 @@ void TechnoExt::DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBo
 		const BuildingTypeClass* const pType = pBuilding->Type;
 		const int maxLength = pType->GetFoundationHeight(false) * 15 >> 1;
 		const Point2D offset = pRulesExt->InvulnerableDisplay_Buildings_Offset.Get();
-		Point2D position = basePosition + Point2D{ 0, pType->PixelSelectionBracketDelta } + offset;
+		Point2D position = basePosition + Point2D{ offset.X, pType->PixelSelectionBracketDelta + offset.Y };
 
 		DrawFrameStruct pDraw
 		{
@@ -422,7 +422,7 @@ void TechnoExt::DrawTemporalProgress(TechnoClass* pThis, RectangleStruct* pBound
 		const BuildingTypeClass* const pType = pBuilding->Type;
 		const int maxLength = pType->GetFoundationHeight(false) * 15 >> 1;
 		const Point2D offset = pRulesExt->TemporalLifeDisplay_Buildings_Offset.Get();
-		Point2D position = basePosition + Point2D{ 0, pType->PixelSelectionBracketDelta } + offset;
+		Point2D position = basePosition + Point2D{ offset.X, pType->PixelSelectionBracketDelta + offset.Y };
 
 		DrawFrameStruct pDraw
 		{
@@ -483,11 +483,11 @@ void TechnoExt::DrawVanillaStyleFootBar(DrawFrameStruct* pDraw)
 	{
 		pLocation->X += 17;
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP, pDraw->BrdFrame, pLocation, pBounds, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-		pLocation->X -= 16;
+		pLocation->X -= 15;
 	}
 	else
 	{
-		pLocation->X += 1;
+		pLocation->X += 2;
 	}
 
 	pLocation->Y += 1;
@@ -516,6 +516,7 @@ void TechnoExt::DrawVanillaStyleFootBar(DrawFrameStruct* pDraw)
 void TechnoExt::DrawVanillaStyleBuildingBar(DrawFrameStruct* pDraw)
 {
 	Point2D* pLocation = pDraw->Location;
+	++pLocation->X;
 	const RectangleStruct* const pBounds = pDraw->Bounds;
 
 	const int topLength = pDraw->TopLength;
