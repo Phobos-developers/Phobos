@@ -157,6 +157,10 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Units_RepairPercent.Read(exINI, pSection, "Units.RepairPercent");
 	this->Units_DisableRepairCost.Read(exINI, pSection, "Units.DisableRepairCost");
 
+	this->NoBuildAreaOnBuildup.Read(exINI, pSection, "NoBuildAreaOnBuildup");
+	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
+	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		this->AircraftDockingDirs.clear();
@@ -276,6 +280,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Units_RepairStep)
 		.Process(this->Units_RepairPercent)
 		.Process(this->Units_DisableRepairCost)
+		.Process(this->NoBuildAreaOnBuildup)
+		.Process(this->Adjacent_Allowed)
+		.Process(this->Adjacent_Disallowed)
 		;
 }
 
