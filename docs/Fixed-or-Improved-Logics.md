@@ -1335,6 +1335,16 @@ In `rulesmd.ini`
 KickOutPassengers=true  ; boolean
 ```
 
+### Disable FireOnce resetting infantry sequence
+
+- It is now possible to disable `FireOnce=true` weapon resetting infantry sequences after firing via `FireOnce.ResetSequence`. Target will be forgotten like before, the firing sequence will simply continue playing after firing if there are any frames left.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+FireOnce.ResetSequence=true  ; boolean
+```
+
 ### Single-color lasers
 
 ![image](_static/images/issinglecolor.gif)
