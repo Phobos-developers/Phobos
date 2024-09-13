@@ -1,20 +1,38 @@
 #include "Body.h"
-
-// Ares InitialPayload fix: Man, what can I say
-DEFINE_HOOK(0x65DE21, TeamTypeClass_CreateMembers_MutexOut, 0x6)
-{
-	GET(TeamClass*, pTeam, EBP);
-	GET(TechnoTypeClass*, pType, EDI);
-	R->ESI(pType->CreateObject(pTeam->Owner));
-	return 0x65DE53;
-}
+#include <Utilities/AresHelper.h>
 
 // Bugfix: TAction 7,80,107.
-DEFINE_HOOK(0x65DF81, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x7)
+DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
 {
 	GET(FootClass* const, pPayload, EAX);
 	GET(FootClass* const, pTransport, ESI);
 	GET(TeamClass* const, pTeam, EBP);
+	GET(TeamTypeClass const*, pThis, EBX);
+
+	
+	auto unmarkPayloadCreated = [](FootClass* pUnit)
+		{
+			if (AresHelper::CanUseAres)
+			{
+				if (auto& payloadCreated = reinterpret_cast<char*>(pUnit->align_154)[0x9E])
+					payloadCreated = false;
+			}
+		};
+
+	if (!pTransport)
+	{
+		for (auto pNext = pPayload;
+		pNext && pNext != pTransport && pNext->Team == pTeam;
+		pNext = abstract_cast<FootClass*>(pNext->NextObject))
+			unmarkPayloadCreated(pNext);
+
+		return 0x65DFE8;
+	}
+
+	unmarkPayloadCreated(pTransport);
+
+	if (!pPayload || !pThis->Full)
+		return 0x65E004;
 
 	const bool isTransportOpenTopped = pTransport->GetTechnoType()->OpenTopped;
 	FootClass* pGunner = nullptr;
@@ -37,6 +55,5 @@ DEFINE_HOOK(0x65DF81, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x7)
 	if (pTransport->GetTechnoType()->Gunner && pGunner)
 		pTransport->ReceiveGunner(pGunner);
 
-	// Ares' CreateInitialPayload doesn't work here
 	return 0x65DF8D;
 }
