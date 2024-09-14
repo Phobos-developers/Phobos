@@ -522,7 +522,6 @@ Vanilla fixes:
 - Fixed disguised units not using the correct palette if target has custom palette (by NetsuNegi)
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible (by Starkku)
 - Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading (by Starkku)
-- Subterranean units no longer draw an incorrectly positioned shadow when burrowing etc. (by Starkku)
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry (by Starkku)
 
 Phobos fixes:

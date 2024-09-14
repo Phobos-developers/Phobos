@@ -21,6 +21,7 @@
 #include <JumpjetLocomotionClass.h>
 #include <FlyLocomotionClass.h>
 #include <RocketLocomotionClass.h>
+#include <TunnelLocomotionClass.h>
 
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
@@ -311,6 +312,49 @@ struct DummyExtHere // TODO: move it
 	UnitTypeClass* WaterImage;
 	VoxelStruct NoSpawnAltVXL;
 };
+
+Matrix3D* __stdcall TunnelLocomotionClass_ShadowMatrix(ILocomotion* iloco, Matrix3D* ret,VoxelIndexKey* key)
+{
+	__assume(iloco != nullptr);
+	auto tLoco = static_cast<TunnelLocomotionClass*>(iloco);
+	*ret = tLoco->LocomotionClass::Shadow_Matrix(key);
+	if (tLoco->State != TunnelLocomotionClass::State::Idle)
+	{
+		double theta = 0.;
+		switch (tLoco->State)
+		{
+		case TunnelLocomotionClass::State::DiggingIn:
+			if (key)key->Invalidate();
+			theta = Math::HalfPi;
+			if (auto total = tLoco->DigTimer.Rate)
+				theta *= 1.0 - double(tLoco->DigTimer.GetTimeLeft()) / double(total);
+			break;
+		case TunnelLocomotionClass::State::DugIn:
+			theta = Math::HalfPi;
+			break;
+		case TunnelLocomotionClass::State::PreDigOut:
+			theta = -Math::HalfPi;
+			break;
+		case TunnelLocomotionClass::State::DiggingOut:
+			if (key)key->Invalidate();
+			theta = -Math::HalfPi;
+			if (auto total = tLoco->DigTimer.Rate)
+				theta *= double(tLoco->DigTimer.GetTimeLeft()) / double(total);
+			break;
+		case TunnelLocomotionClass::State::DugOut:
+			if (key)key->Invalidate();
+			theta = Math::HalfPi;
+			if (auto total = tLoco->DigTimer.Rate)
+				theta *= double(tLoco->DigTimer.GetTimeLeft()) / double(total);
+			break;
+		default:break;
+		}
+		ret->ScaleX((float)Math::cos(theta));// I know it's ugly
+	}
+	return ret;
+}
+
+DEFINE_JUMP(VTABLE, 0x7F5A4C, GET_OFFSET(TunnelLocomotionClass_ShadowMatrix));
 
 DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 {
