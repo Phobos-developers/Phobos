@@ -301,6 +301,17 @@ constexpr double Pade2_2(double in)
 		* (12. - 6 * s + s * s) / (12. + 6 * s + s * s);
 }
 
+// We need to handle Ares turrets/barrels/waterimage/nospawnalt
+struct DummyExtHere // TODO: move it
+{
+	char _[0xA4];
+	std::vector<VoxelStruct> ChargerTurrets;
+	std::vector<VoxelStruct> ChargerBarrels;
+	char __[0x120];
+	UnitTypeClass* WaterImage;
+	VoxelStruct NoSpawnAltVXL;
+};
+
 DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 {
 	GET(UnitClass*, pThis, EBP);
@@ -354,17 +365,6 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	{
 		shadow_matrix.Scale((float)Pade2_2(baseScale_log));
 	}
-
-	// We need to handle Ares turrets/barrels
-	struct DummyExtHere
-	{
-		char _[0xA4];
-		std::vector<VoxelStruct> ChargerTurrets;
-		std::vector<VoxelStruct> ChargerBarrels;
-		char __[0x120];
-		UnitTypeClass* WaterImage;
-		VoxelStruct NoSpawnAltVXL;
-	};
 
 	auto GetMainVoxel = [&]()
 	{
@@ -636,7 +636,7 @@ DEFINE_JUMP(CALL6, 0x4148AB, 0x5F4300);
 DEFINE_JUMP(CALL6, 0x4147F3, 0x5F4300);
 */
 
-DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
+DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x6)
 {
 	GET(FootClass*, pThis, EBX);//Maybe Techno later
 	GET(VoxelStruct*, pVXL, EBP);
@@ -660,9 +660,12 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 			if (who_are_you[0] == UnitTypeClass::AbsVTable)
 				pType = reinterpret_cast<TechnoTypeClass*>(who_are_you);//you are someone else
 			else
-				return pThis->TurretAnimFrame % hva->FrameCount;
-			// you might also be SpawnAlt voxel, but I can't know
-			// otherwise what would you expect me to do, shift back to ares typeext base and check if ownerobject is technotype?
+			{
+				// guess what, someone actually has a multisection nospawnalt
+				if (!(AresHelper::CanUseAres && pVXL == &reinterpret_cast<DummyExtHere*>(pType->align_2FC)->NoSpawnAltVXL))
+					return pThis->TurretAnimFrame % hva->FrameCount;
+			}
+			// you might also be WaterImage or sth else, but I don't want to care anymore, go fuck yourself
 		}
 
 		// Main body sections
