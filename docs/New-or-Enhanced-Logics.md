@@ -68,7 +68,7 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.(Required|Disallowed)MinCounts & (Required|Disallowed)MaxCounts` can be used to set the minimum and maximum number of instances required / disallowed to be on the Techno for `Cumulative=true` types (ignored for other types) respectively.
   - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead.
   - `AttachEffect.CheckOnFirer` is set to true makes it so that the required / disallowed attached effects are checked from the firer of the weapon instead of the target.
-  
+
 In `rulesmd.ini`:
 ```ini
 [AttachEffectTypes]
@@ -433,7 +433,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles if possible.
   - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
   - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
-  
+
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                             ; AnimationType
@@ -682,7 +682,7 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but ínstead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
 
 In `rulesmd.ini`:
-```ini                                         
+```ini
 [SOMEPROJECTILE]                               ; Projectile
 Trajectory=Straight                            ; Trajectory type
 Trajectory.Straight.DetonationDistance=0.4     ; floating point value
