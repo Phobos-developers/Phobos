@@ -1291,11 +1291,11 @@ RemoveMindControl=false  ; boolean
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
-  - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target. Can be set to a single value for all conditions, or a list of values which would work when target health is below certain percentage. Value from position matching the position from `Crit.AffectBelowPercent` is used if found, or 0.0 if not found.
-  - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings. Can be set to a single value for all conditions, or a list of values which would work when target health is below certain percentage. Value from position matching the position from `Crit.AffectBelowPercent` is used if found, or 0 if not found.
+  - `Crit.Chance(s)` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target. Can be set to a single value for all conditions, or a list of values which would work when target health is below certain percentage. Value from position matching the position from `Crit.AffectBelowPercent(s)` is used if found, or 0.0 if not found. If both are set, `Crit.Chances` will override `Crit.Chance`.
+  - `Crit.ExtraDamage(s)` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings. Can be set to a single value for all conditions, or a list of values which would work when target health is below certain percentage. Value from position matching the position from `Crit.AffectBelowPercent(s)` is used if found, or 0 if not found. If both are set, `Crit.ExtraDamages` will override `Crit.ExtraDamage`.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
-  - `Crit.AffectBelowPercent`, if set to a single value, determines minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit. If set to a list of values, it'll further determine `Crit.Chance` and `Crit.ExtraDamage` when target health is below the certain percentage listed here.
+  - `Crit.AffectBelowPercent(s)`, if set to a single value, determines minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit. If set to a list of values, it'll further determine `Crit.Chance(s)` and `Crit.ExtraDamage(s)` when target health is below the certain percentage listed here. If both are set, `Crit.AffectBelowPercents` will override `Crit.AffectBelowPercent`.
     - Health percentage values in the list should be in descending order, or the health check could go wrong.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
@@ -1306,12 +1306,15 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                       ; Warhead
 Crit.Chance=                        ; list of floating-point values (percentage or absolute) (0.0-1.0)
+Crit.Chances=                       ; list of floating-point values (percentage or absolute) (0.0-1.0), overrides Crit.Chance
 Crit.ApplyChancePerTarget=false     ; boolean
 Crit.ExtraDamage=                   ; list of integers
+Crit.ExtraDamages=                  ; list of integers, overrides Crit.ExtraDamage
 Crit.Warhead=                       ; Warhead
 Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
 Crit.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Crit.AffectBelowPercent=            ; list of floating-point values (percentage or absolute) (0.0-1.0)
+Crit.AffectBelowPercents=           ; list of floating-point values (percentage or absolute) (0.0-1.0), overrides Crit.AffectBelowPercent
 Crit.AnimList=                      ; list of animations
 Crit.AnimList.PickRandom=           ; boolean
 Crit.AnimOnAffectedTargets=false    ; boolean

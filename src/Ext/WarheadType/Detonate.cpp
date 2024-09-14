@@ -489,7 +489,8 @@ std::pair<std::vector<double>, std::vector<int>> WarheadTypeExt::ExtData::GetCri
 
 		auto const pType = attachEffect->GetType();
 
-		if (pType->Crit_Multiplier == 1.0 && pType->Crit_ExtraChance == 0.0)
+		if (pType->Crit_Multiplier == 1.0 && pType->Crit_ExtraChance == 0.0
+			&& pType->Crit_ExtraDamage_Multiplier == 1.0 && pType->Crit_ExtraDamage_Bonus == 0)
 			continue;
 
 		if (pType->Crit_AllowWarheads.size() > 0 && !pType->Crit_AllowWarheads.Contains(this->OwnerObject()))
