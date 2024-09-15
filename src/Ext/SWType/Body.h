@@ -35,7 +35,19 @@ public:
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
 		Valueable<bool> SW_InitialReady;
+		Valueable<bool> SW_AutoFire;
+		Valueable<bool> SW_ManualFire;
+		Valueable<bool> SW_Unstoppable;
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
+		ValueableIdx<VoxClass> EVA_Impatient;
+		ValueableIdx<VoxClass> EVA_InsufficientFunds;
+		ValueableIdx<VoxClass> EVA_SelectTarget;
+		Valueable<CSFText> Message_InsufficientFunds;
+		Valueable<int> Message_ColorScheme;
+		Valueable<bool> Message_FirerColor;
+		PhobosPCXFile SidebarPCX;
+
+		Valueable<bool> SW_UseAITargeting;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -65,6 +77,11 @@ public:
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
+		Valueable<bool> SW_InScreen_Show;
+		DWORD SW_InScreen_PriorityHouses;
+		DWORD SW_InScreen_RequiredHouses;
+		Valueable<bool> SW_InScreen_QuickFire;
+
 		Valueable<bool> UseWeeds;
 		Valueable<int> UseWeeds_Amount;
 		Valueable<bool> UseWeeds_StorageTimer;
@@ -83,7 +100,17 @@ public:
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
 			, SW_InitialReady { false }
+			, SW_AutoFire { false }
+			, SW_ManualFire { true }
+			, SW_Unstoppable { false }
 			, SW_PostDependent {}
+			, EVA_Impatient { -1 }
+			, EVA_InsufficientFunds { -1 }
+			, EVA_SelectTarget { -1 }
+			, Message_InsufficientFunds {}
+			, Message_ColorScheme { -1 }
+			, Message_FirerColor { false }
+			, SW_UseAITargeting { false }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -107,6 +134,10 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+			, SW_InScreen_Show { false }
+			, SW_InScreen_PriorityHouses { 0u }
+			, SW_InScreen_RequiredHouses { 0xFFFFFFFFu }
+			, SW_InScreen_QuickFire { false }
 			, UseWeeds { false }
 			, UseWeeds_Amount { RulesClass::Instance->WeedCapacity }
 			, UseWeeds_StorageTimer { false }

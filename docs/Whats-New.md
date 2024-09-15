@@ -450,6 +450,7 @@ New:
 - Forbidding parallel AI queues for specific TechnoTypes (by Starkku)
 - Nonprovocative Warheads (by Starkku)
 - Option to restore `PowerSurplus` setting for AI (by Starkku)
+- Exclusive Sidebar for Superweapons (by CrimRecya)
 - `FireOnce` infantry sequence reset toggle (by Starkku)
 
 Vanilla fixes:

@@ -179,6 +179,8 @@
     <ClCompile Include="src\Utilities\AresHelper.cpp" />
     <ClCompile Include="src\Utilities\AresAddressTable.cpp" />
     <ClCompile Include="src\Misc\SyncLogging.cpp" />
+    <ClCompile Include="src\Misc\TacticalButtons.cpp" />
+    <ClCompile Include="src\Commands\SWShortcuts.cpp" />
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -272,6 +274,8 @@
     <ClInclude Include="src\Utilities\AresHelper.h" />
     <ClInclude Include="src\Utilities\AresFunctions.h" />
     <ClInclude Include="lib\nameof\nameof.h" />
+    <ClInclude Include="src\Misc\TacticalButtons.h" />
+    <ClInclude Include="src\Commands\SWShortcuts.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
   <ItemGroup>
