@@ -552,69 +552,79 @@ DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
 
 }
 
-static bool __forceinline DisallowObject(ObjectClass* pObj)
+#pragma region FrameCRC
+
+static bool IsHashable(ObjectClass* pObj)
 {
 	auto const rtti = pObj->WhatAmI();
 
 	if (rtti == AbstractType::Anim)
 	{
 		if (pObj->UniqueID == -2)
-			return true;
+			return false;
 
-		auto const pAnim = abstract_cast<AnimClass*>(pObj);
+		auto const pAnim = static_cast<AnimClass*>(pObj);
 		auto const pType = pAnim->Type;
 
 		if (pType->Damage != 0.0 || pType->Bouncer || pType->IsMeteor || pType->IsTiberium || pType->TiberiumChainReaction
 			|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::ExtMap.Find(pType)->CreateUnit)
 		{
-			return false;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 	else if (rtti == AbstractType::Particle)
 	{
-		auto const pParticle = abstract_cast<ParticleClass*>(pObj);
+		auto const pParticle = static_cast<ParticleClass*>(pObj);
 		auto const pType = pParticle->Type;
 
 		if (pType->Damage)
-			return false;
+			return true;
 
-		return true;
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
-DEFINE_HOOK(0x64DAB0, ComputeFrameCRC, 0x6)
+static void __forceinline AddCRC(DWORD* crc, unsigned int val)
 {
-	enum { SkipGameCode = 0x64DE7C };
+	*crc = val + (*crc >> 31) + (*crc << 1);
+}
 
+static int __forceinline GetCoordHash(CoordStruct location)
+{
+	return location.X / 10 + ((location.Y / 10) << 16);
+}
+
+void __fastcall ComputeGameCRC()
+{
 	auto& GameCRC = EventClass::CurrentFrameCRC.get();
 	GameCRC = 0;
 
 	for (auto const pInf : *InfantryClass::Array)
 	{
-		int primaryFacing = (((pInf->PrimaryFacing.Current().Raw >> 7) + 1) >> 1);
-		GameCRC = pInf->Location.X / 10 + ((pInf->Location.Y / 10) << 16) + primaryFacing + (GameCRC >> 31) + 2 * GameCRC;
+		int primaryFacing = pInf->PrimaryFacing.Current().GetValue<8>();
+		AddCRC(&GameCRC, GetCoordHash(pInf->Location) + primaryFacing);
 	}
 
 	for (auto const pUnit : *UnitClass::Array)
 	{
-		int primaryFacing = (((pUnit->PrimaryFacing.Current().Raw >> 7) + 1) >> 1);
-		int secondaryFacing = (((pUnit->SecondaryFacing.Current().Raw >> 7) + 1) >> 1);
-		GameCRC = pUnit->Location.X / 10 + ((pUnit->Location.Y / 10) << 16) + primaryFacing + secondaryFacing + (GameCRC >> 31) + 2 * GameCRC;
+		int primaryFacing = pUnit->PrimaryFacing.Current().GetValue<8>();
+		int secondaryFacing = pUnit->SecondaryFacing.Current().GetValue<8>();
+		AddCRC(&GameCRC, GetCoordHash(pUnit->Location) + primaryFacing + secondaryFacing);
 	}
 
 	for (auto const pBuilding : *BuildingClass::Array)
 	{
-		int primaryFacing = (((pBuilding->PrimaryFacing.Current().Raw >> 7) + 1) >> 1);
-		GameCRC = pBuilding->Location.X / 10 + ((pBuilding->Location.Y / 10) << 16) + primaryFacing + (GameCRC >> 31) + 2 * GameCRC;
+		int primaryFacing = pBuilding->PrimaryFacing.Current().GetValue<8>();
+		AddCRC(&GameCRC, GetCoordHash(pBuilding->Location) + primaryFacing);
 	}
 
 	for (auto const pHouse : *HouseClass::Array)
 	{
-		GameCRC = pHouse->MapIsClear + (GameCRC >> 31) + 2 * GameCRC;
+		AddCRC(&GameCRC, pHouse->MapIsClear);
 	}
 
 	for (int i = 0; i < 5; i++)
@@ -623,23 +633,22 @@ DEFINE_HOOK(0x64DAB0, ComputeFrameCRC, 0x6)
 
 		for (auto const pObj : *layer)
 		{
-			if (DisallowObject(pObj))
-				continue;
-
-			GameCRC = pObj->Location.X / 10 + ((pObj->Location.Y / 10) << 16) + (int)pObj->WhatAmI() + (GameCRC >> 31) + 2 * GameCRC;
+			if (IsHashable(pObj))
+				AddCRC(&GameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
 		}
 	}
 
 	auto const& logic = LogicClass::Instance.get();
 	for (auto const pObj : logic)
 	{
-		if (DisallowObject(pObj))
-			continue;
-
-		GameCRC = pObj->Location.X / 10 + ((pObj->Location.Y / 10) << 16) + (int)pObj->WhatAmI() + (GameCRC >> 31) + 2 * GameCRC;
+		if (IsHashable(pObj))
+			AddCRC(&GameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
 	}
 
-	GameCRC = ScenarioClass::Instance->Random.Random() + (GameCRC >> 31) + 2 * GameCRC;
+	AddCRC(&GameCRC, ScenarioClass::Instance->Random.Random());
 	Game::LogFrameCRC(Unsorted::CurrentFrame % 256);
 
-	return SkipGameCode;
+DEFINE_JUMP(CALL, 0x64731C, GET_OFFSET(ComputeGameCRC));
+DEFINE_JUMP(CALL, 0x647684, GET_OFFSET(ComputeGameCRC));
+
+#pragma endregion
