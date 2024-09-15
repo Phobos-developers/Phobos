@@ -575,49 +575,59 @@ void BuildingTypeExt::DrawAdjacentLines()
 	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(min))
 	{
 		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
+		point.Y -= 1;
 		Point2D nextPoint = point;
-		point.Y -= 15;
 
-		nextPoint.X -= 30;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
-		nextPoint.X += 60;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+		point.Y -= 14;
+		nextPoint.X += 29;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+
+		point.X -= 1;
+		nextPoint.X -= 59;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
 	}
 
 	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(CellStruct{ min.X, max.Y }))
 	{
 		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
+		point.X -= 1;
 		Point2D nextPoint = point;
-		point.X -= 30;
 
-		nextPoint.Y += 15;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
-		nextPoint.Y -= 30;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+		point.X -= 29;
+		nextPoint.Y += 14;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+
+		point.Y -= 1;
+		nextPoint.Y -= 29;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
 	}
 
 	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(max))
 	{
 		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
 		Point2D nextPoint = point;
-		point.Y += 15;
 
-		nextPoint.X += 30;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
-		nextPoint.X -= 60;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+		point.Y += 14;
+		nextPoint.X += 29;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+
+		point.X -= 1;
+		nextPoint.X -= 59;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
 	}
 
 	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(CellStruct{ max.X, min.Y }))
 	{
 		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
 		Point2D nextPoint = point;
-		point.X += 30;
 
-		nextPoint.Y -= 15;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
-		nextPoint.Y += 30;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, color);
+		point.X += 29;
+		nextPoint.Y += 14;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+
+		point.Y -= 1;
+		nextPoint.Y -= 29;
+		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
 	}
 }
 
