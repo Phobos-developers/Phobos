@@ -520,6 +520,22 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
+	{
+		GET(WeaponTypeClass*, pWeapon, EBX);
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+		if (!pWeaponExt->FireOnce_ResetSequence)
+			TechnoExt::ExtMap.Find(pInf)->SkipTargetChangeResetSequence = true;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 {
 	GET(TechnoClass* const, pSource, ESI);
