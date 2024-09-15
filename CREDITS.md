@@ -353,6 +353,8 @@ This page lists all the individual contributions to the project by their author.
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
+- **CrimRecya**
+  - Fix a mistake of `LimboKill` that it did not update the iterators correctly
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
