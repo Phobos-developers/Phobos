@@ -23,6 +23,7 @@ private:
 	Nullable<ColorStruct> Color;
 	Nullable<WarheadTypeClass*> SiteWarhead;
 	Nullable<bool> SiteWarhead_Detonate;
+	Nullable<bool> SiteWarhead_Detonate_Full;
 	Nullable<bool> HasOwner;
 	Nullable<bool> HasInvoker;
 
@@ -42,6 +43,7 @@ public:
 		, Color { }
 		, SiteWarhead { }
 		, SiteWarhead_Detonate { }
+		, SiteWarhead_Detonate_Full { }
 		, HasOwner { }
 		, HasInvoker { }
 	{ }
@@ -58,6 +60,11 @@ public:
 	bool GetWarheadDetonate() const
 	{
 		return this->SiteWarhead_Detonate.Get(RulesExt::Global()->RadSiteWarhead_Detonate);
+	}
+
+	bool GetWarheadDetonateFull() const
+	{
+		return this->SiteWarhead_Detonate_Full.Get(RulesExt::Global()->RadSiteWarhead_Detonate_Full);
 	}
 
 	const ColorStruct& GetColor() const
