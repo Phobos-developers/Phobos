@@ -79,6 +79,8 @@ public:
 		Nullable<double> Shield_PassPercent;
 		Nullable<int> Shield_ReceivedDamage_Minimum;
 		Nullable<int> Shield_ReceivedDamage_Maximum;
+		Valueable<double> Shield_ReceivedDamage_MinMultiplier;
+		Valueable<double> Shield_ReceivedDamage_MaxMultiplier;
 
 		Valueable<int> Shield_Respawn_Duration;
 		Nullable<double> Shield_Respawn_Amount;
@@ -227,6 +229,8 @@ public:
 			, Shield_PassPercent {}
 			, Shield_ReceivedDamage_Minimum {}
 			, Shield_ReceivedDamage_Maximum {}
+			, Shield_ReceivedDamage_MinMultiplier { 1.0 }
+			, Shield_ReceivedDamage_MaxMultiplier { 1.0 }
 
 			, Shield_Respawn_Duration { 0 }
 			, Shield_Respawn_Amount { 0.0 }
