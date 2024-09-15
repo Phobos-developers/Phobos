@@ -42,6 +42,7 @@ public:
 		bool IsBurrowed;
 		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 		CDTimerClass DeployFireTimer;
+		bool SkipTargetChangeResetSequence;
 		bool ForceFullRearmDelay;
 		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
@@ -75,6 +76,7 @@ public:
 			, IsBurrowed { false }
 			, HasBeenPlacedOnMap { false }
 			, DeployFireTimer {}
+			, SkipTargetChangeResetSequence { false }
 			, ForceFullRearmDelay { false }
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
@@ -166,6 +168,8 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
+	static int CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args);
+	static std::pair<std::vector<double>, std::vector<double>> GetBlockChanceAndDamageMult(TechnoClass* pThis, std::vector<double> blockChance, std::vector<double> blockDamageMult);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

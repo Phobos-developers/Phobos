@@ -79,6 +79,8 @@ public:
 		Nullable<double> Shield_PassPercent;
 		Nullable<int> Shield_ReceivedDamage_Minimum;
 		Nullable<int> Shield_ReceivedDamage_Maximum;
+		Valueable<double> Shield_ReceivedDamage_MinMultiplier;
+		Valueable<double> Shield_ReceivedDamage_MaxMultiplier;
 
 		Valueable<int> Shield_Respawn_Duration;
 		Nullable<double> Shield_Respawn_Amount;
@@ -146,6 +148,16 @@ public:
 		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
 		Valueable<bool> SuppressReflectDamage;
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
+
+		std::unique_ptr<BlockTypeClass> BlockType;
+		Valueable<bool> ImmuneToBlock;
+		Valueable<bool> Block_WarheadOverride;
+		Valueable<bool> Block_WarheadOverride_All;
+		Valueable<bool> Block_IgnoreAttachEffect;
+		Valueable<double> Block_Multiplier;
+		Valueable<double> Block_ExtraChance;
+		Valueable<double> Block_DamageMult_Multiplier;
+		Valueable<double> Block_DamageMult_Bonus;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -227,6 +239,8 @@ public:
 			, Shield_PassPercent {}
 			, Shield_ReceivedDamage_Minimum {}
 			, Shield_ReceivedDamage_Maximum {}
+			, Shield_ReceivedDamage_MinMultiplier { 1.0 }
+			, Shield_ReceivedDamage_MaxMultiplier { 1.0 }
 
 			, Shield_Respawn_Duration { 0 }
 			, Shield_Respawn_Amount { 0.0 }
@@ -295,6 +309,16 @@ public:
 			, SuppressRevengeWeapons_Types {}
 			, SuppressReflectDamage { false }
 			, SuppressReflectDamage_Types {}
+
+			, BlockType {}
+			, ImmuneToBlock { false }
+			, Block_WarheadOverride { false }
+			, Block_WarheadOverride_All { false }
+			, Block_IgnoreAttachEffect { true }
+			, Block_Multiplier { 1.0 }
+			, Block_ExtraChance { 0.0 }
+			, Block_DamageMult_Multiplier { 1.0 }
+			, Block_DamageMult_Bonus { 0.0 }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}

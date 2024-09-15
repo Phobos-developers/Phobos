@@ -6,6 +6,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -465,6 +466,283 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args)
+{
+	int damage = *args->Damage;
+	const auto pWH = args->WH;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pWHExt->ImmuneToBlock)
+		return damage;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pWHBlockType = pWHExt->BlockType.get();
+	const auto pBlockType = pWHExt->Block_WarheadOverride && pWHExt->Block_WarheadOverride_All ? pTypeExt->BlockType.get() : pWHBlockType;
+	bool override = pWHExt->Block_WarheadOverride && pBlockType != pWHBlockType;
+	std::vector<double> blockChances = pBlockType->Block_Chances;
+	std::vector<double> blockDamageMultipliers = pBlockType->Block_DamageMultipliers;
+
+	if (override)
+	{
+		blockChances = !pWHBlockType->Block_Chances.empty() ? pWHBlockType->Block_Chances : blockChances;
+		blockDamageMultipliers = !pWHBlockType->Block_DamageMultipliers.empty() ? pWHBlockType->Block_DamageMultipliers : blockDamageMultipliers;
+	}
+
+	if (!pWHExt->Block_IgnoreAttachEffect)
+	{
+		std::pair<std::vector<double>, std::vector<double>> blockPair = TechnoExt::GetBlockChanceAndDamageMult(pThis, blockChances, blockDamageMultipliers);
+		blockChances = blockPair.first;
+		blockDamageMultipliers = blockPair.second;
+	}
+
+	if ((blockChances.size() == 1 && blockChances[0] + pWHExt->Block_ExtraChance > 0.0) || blockChances.size() > 1)
+	{
+		// handle block conditions first
+		auto blockAffectBelowPercents = pBlockType->Block_AffectBelowPercents;
+		auto blockAffectsHouses = pBlockType->Block_AffectsHouses.Get(AffectedHouse::All);
+		bool blockCanActiveZeroDamage = pBlockType->Block_CanActive_ZeroDamage.Get(false);
+		bool blockCanActiveNegativeDamage = pBlockType->Block_CanActive_NegativeDamage.Get(false);
+		bool blockCanActivePowered = pBlockType->Block_CanActive_Powered.Get(false);
+		bool blockCanActiveNoFirer = pBlockType->Block_CanActive_NoFirer.Get(true);
+		bool blockCanActiveShieldActive = pBlockType->Block_CanActive_ShieldActive.Get(true);
+		bool blockCanActiveShieldInactive = pBlockType->Block_CanActive_ShieldInactive.Get(true);
+
+		if (override)
+		{
+			blockAffectBelowPercents = !pWHBlockType->Block_AffectBelowPercents.empty() ? pWHBlockType->Block_AffectBelowPercents : blockAffectBelowPercents;
+			blockAffectsHouses = pWHBlockType->Block_AffectsHouses.isset() ? pWHBlockType->Block_AffectsHouses.Get() : blockAffectsHouses;
+			blockCanActiveZeroDamage = pWHBlockType->Block_CanActive_ZeroDamage.isset() ? pWHBlockType->Block_CanActive_ZeroDamage : blockCanActiveZeroDamage;
+			blockCanActiveNegativeDamage = pWHBlockType->Block_CanActive_NegativeDamage.isset() ? pWHBlockType->Block_CanActive_NegativeDamage : blockCanActiveNegativeDamage;
+			blockCanActivePowered = pWHBlockType->Block_CanActive_Powered.isset() ? pWHBlockType->Block_CanActive_Powered : blockCanActivePowered;
+			blockCanActiveNoFirer = pWHBlockType->Block_CanActive_NoFirer.isset() ? pWHBlockType->Block_CanActive_NoFirer : blockCanActiveNoFirer;
+			blockCanActiveShieldActive = pWHBlockType->Block_CanActive_ShieldActive.isset() ? pWHBlockType->Block_CanActive_ShieldActive : blockCanActiveShieldActive;
+			blockCanActiveShieldInactive = pWHBlockType->Block_CanActive_ShieldInactive.isset() ? pWHBlockType->Block_CanActive_ShieldInactive : blockCanActiveShieldInactive;
+		}
+
+		if (blockAffectBelowPercents.size() > 0 && pThis->GetHealthPercentage() > blockAffectBelowPercents[0])
+			return damage;
+
+		if (damage == 0 && !blockCanActiveZeroDamage)
+			return 0;
+		else if (damage < 0 && !blockCanActiveNegativeDamage)
+			return damage;
+
+		unsigned int level = 0;
+
+		if (blockAffectBelowPercents.size() > 0)
+		{
+			for (; level < blockAffectBelowPercents.size() - 1; level++)
+			{
+				if (pThis->GetHealthPercentage() > blockAffectBelowPercents[level + 1])
+					break;
+			}
+		}
+
+		double dice = ScenarioClass::Instance->Random.RandomDouble();
+
+		if (blockChances.size() == 1)
+		{
+			if (blockChances[0] * pWHExt->Block_Multiplier + pWHExt->Block_ExtraChance < dice)
+				return damage;
+		}
+		else if (blockChances.size() <= level || blockChances[level] * pWHExt->Block_Multiplier + pWHExt->Block_ExtraChance < dice)
+		{
+			return damage;
+		}
+
+		if (blockCanActivePowered)
+		{
+			bool isActive = !(pThis->Deactivated || pThis->IsUnderEMP());
+
+			if (isActive && pThis->WhatAmI() == AbstractType::Building)
+			{
+				auto const pBuilding = static_cast<BuildingClass const*>(pThis);
+				isActive = pBuilding->IsPowerOnline();
+			}
+
+			if (!isActive)
+				return damage;
+		}
+
+		const auto pFirer = args->Attacker;
+
+		if (pFirer)
+		{
+			if (pFirer->Owner && !EnumFunctions::CanTargetHouse(blockAffectsHouses, pFirer->Owner, pThis->Owner))
+				return damage;
+		}
+		else if (!blockCanActiveNoFirer)
+		{
+			return damage;
+		}
+
+		const auto pShieldData = pExt->Shield.get();
+
+		if (pShieldData && pShieldData->IsActive())
+		{
+			if (!blockCanActiveShieldActive || !pShieldData->GetType()->CanBlock)
+				return damage;
+		}
+		else if (!blockCanActiveShieldInactive)
+		{
+			return damage;
+		}
+
+		// a block is triggered
+		auto blockAnims = pBlockType->Block_Anims;
+		auto blockWeapon = pBlockType->Block_Weapon.Get();
+		bool blockFlash = pBlockType->Block_Flash.Get(false);
+		bool blockReflectDamage = pBlockType->Block_ReflectDamage.Get(false);
+		double blockReflectDamageChance = pBlockType->Block_ReflectDamage_Chance.Get(1.0);
+
+		if (override)
+		{
+			blockAnims = !pWHBlockType->Block_Anims.empty() ? pWHBlockType->Block_Anims : blockAnims;
+			blockWeapon = pWHBlockType->Block_Weapon.isset() ? pWHBlockType->Block_Weapon.Get() : blockWeapon;
+			blockFlash = pWHBlockType->Block_Flash.isset() ? pWHBlockType->Block_Flash.Get() : blockFlash;
+			blockReflectDamage = pWHBlockType->Block_ReflectDamage.isset() ? pWHBlockType->Block_ReflectDamage.Get() : blockReflectDamage;
+			blockReflectDamageChance = pWHBlockType->Block_ReflectDamage_Chance.isset() ? pWHBlockType->Block_ReflectDamage_Chance.Get() : blockReflectDamageChance;
+		}
+
+		if (blockAnims.size() > 0)
+		{
+			int idx = ScenarioClass::Instance->Random.RandomRanged(0, blockAnims.size() - 1);
+			GameCreate<AnimClass>(blockAnims[idx], pThis->Location);
+		}
+
+		if (blockFlash)
+		{
+			int size = pBlockType->Block_Flash_FixedSize.Get(damage * 2);
+			SpotlightFlags flags = SpotlightFlags::NoColor;
+			bool blockFlashRed = pBlockType->Block_Flash_Red.Get(true);
+			bool blockFlashGreen = pBlockType->Block_Flash_Green.Get(true);
+			bool blockFlashBlue = pBlockType->Block_Flash_Blue.Get(true);
+			bool blockFlashBlack = pBlockType->Block_Flash_Black.Get(false);
+
+			if (override)
+			{
+				size = pWHBlockType->Block_Flash_FixedSize.isset() ? pWHBlockType->Block_Flash_FixedSize.Get() : size;
+				blockFlashRed = pWHBlockType->Block_Flash_Red.isset() ? pWHBlockType->Block_Flash_Red.Get() : blockFlashRed;
+				blockFlashGreen = pWHBlockType->Block_Flash_Green.isset() ? pWHBlockType->Block_Flash_Green.Get() : blockFlashGreen;
+				blockFlashBlue = pWHBlockType->Block_Flash_Blue.isset() ? pWHBlockType->Block_Flash_Blue.Get() : blockFlashBlue;
+				blockFlashBlack = pWHBlockType->Block_Flash_Black.isset() ? pWHBlockType->Block_Flash_Black.Get() : blockFlashBlack;
+			}
+
+			if (blockFlashBlack)
+			{
+				flags = SpotlightFlags::NoColor;
+			}
+			else
+			{
+				if (!blockFlashRed)
+					flags = SpotlightFlags::NoRed;
+				if (!blockFlashGreen)
+					flags |= SpotlightFlags::NoGreen;
+				if (!blockFlashBlue)
+					flags |= SpotlightFlags::NoBlue;
+			}
+
+			MapClass::FlashbangWarheadAt(size, args->WH, pThis->Location, true, flags);
+		}
+
+		if (blockReflectDamage && blockReflectDamageChance >= ScenarioClass::Instance->Random.RandomDouble()
+			&& damage > 0 && pFirer && !pWHExt->SuppressReflectDamage && !pWHExt->Reflected)
+		{
+			auto pWHRef = pBlockType->Block_ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
+			auto blockReflectDamageAffectsHouses = pBlockType->Block_ReflectDamage_AffectsHouses.Get(blockAffectsHouses);
+			Nullable<int> blockReflectDamageOverride = pBlockType->Block_ReflectDamage_Override;
+			double blockReflectDamageMultiplier = pBlockType->Block_ReflectDamage_Multiplier.Get(1.0);
+			bool blockReflectDamageWHDetonate = pBlockType->Block_ReflectDamage_Warhead_Detonate.Get(false);
+
+			if (override)
+			{
+				pWHRef = pWHBlockType->Block_ReflectDamage_Warhead.isset() ? pWHBlockType->Block_ReflectDamage_Warhead.Get() : pWHRef;
+				blockReflectDamageOverride = pWHBlockType->Block_ReflectDamage_Override.isset() ? pWHBlockType->Block_ReflectDamage_Override : blockReflectDamageOverride;
+				blockReflectDamageAffectsHouses = pWHBlockType->Block_ReflectDamage_AffectsHouses.isset() ? pWHBlockType->Block_ReflectDamage_AffectsHouses.Get() : blockReflectDamageAffectsHouses;
+				blockReflectDamageMultiplier = pWHBlockType->Block_ReflectDamage_Multiplier.isset() ? pWHBlockType->Block_ReflectDamage_Multiplier.Get() : blockReflectDamageMultiplier;
+				blockReflectDamageWHDetonate = pWHBlockType->Block_ReflectDamage_Warhead_Detonate.isset() ? pWHBlockType->Block_ReflectDamage_Warhead_Detonate.Get() : blockReflectDamageWHDetonate;
+			}
+
+			int damageRef = blockReflectDamageOverride.Get(static_cast<int>(damage * blockReflectDamageMultiplier));
+
+			if (EnumFunctions::CanTargetHouse(blockReflectDamageAffectsHouses, pThis->Owner, pFirer->Owner))
+			{
+				auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWHRef);
+				pWHExtRef->Reflected = true;
+
+				if (blockReflectDamageWHDetonate)
+					WarheadTypeExt::DetonateAt(pWHRef, pFirer, pThis, damageRef, pThis->Owner);
+				else
+					pFirer->ReceiveDamage(&damage, 0, pWHRef, pThis, false, false, pThis->Owner);
+
+				pWHExtRef->Reflected = false;
+			}
+		}
+
+		if (blockDamageMultipliers.size() == 1)
+			damage = static_cast<int>(damage * (blockDamageMultipliers[0] * pWHExt->Block_Multiplier + pWHExt->Block_ExtraChance));
+		else if (blockDamageMultipliers.size() > level)
+			damage = static_cast<int>(damage * (blockDamageMultipliers[level] * pWHExt->Block_Multiplier + pWHExt->Block_ExtraChance));
+
+		if (blockWeapon)
+			TechnoExt::FireWeaponAtSelf(pThis, blockWeapon);
+	}
+
+	return damage;
+}
+
+std::pair<std::vector<double>, std::vector<double>> TechnoExt::GetBlockChanceAndDamageMult(TechnoClass* pThis, std::vector<double> blockChance, std::vector<double> blockDamageMult)
+{
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (blockChance.size() == 0)
+		blockChance.push_back(0.0);
+
+	if (blockDamageMult.size() == 0)
+		blockDamageMult.push_back(0.0);
+
+	double extraChance = 0.0;
+	double extraDamageMult = 0.0;
+
+	for (auto& attachEffect : pExt->AttachedEffects)
+	{
+		if (!attachEffect->IsActive())
+			continue;
+
+		auto const pType = attachEffect->GetType();
+
+		if (pType->Block_Multiplier == 1.0 && pType->Block_ExtraChance == 0.0)
+			continue;
+
+		for (auto& chance : blockChance)
+		{
+			chance = chance * Math::max(pType->Block_Multiplier, 0);
+		}
+
+		for (auto& extraDamage : blockDamageMult)
+		{
+			extraDamage = static_cast<int>(extraDamage * pType->Block_DamageMult_Multiplier);
+		}
+
+		extraChance += pType->Block_ExtraChance;
+		extraDamageMult += pType->Block_DamageMult_Bonus;
+	}
+
+	for (auto& chance : blockChance)
+	{
+		chance += extraChance;
+	}
+
+	for (auto& extraDamage : blockDamageMult)
+	{
+		extraDamage += extraDamageMult;
+	}
+
+	return std::pair<std::vector<double>, std::vector<double>>(blockChance, blockDamageMult);
+}
+
 // =============================
 // load / save
 
@@ -489,6 +767,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsBurrowed)
 		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)
+		.Process(this->SkipTargetChangeResetSequence)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)

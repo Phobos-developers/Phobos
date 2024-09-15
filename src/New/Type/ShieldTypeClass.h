@@ -56,6 +56,8 @@ public:
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
 
+	Valueable<bool> CanBlock;
+
 public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle)
 		, Strength { 0 }
@@ -100,6 +102,7 @@ public:
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
+		, CanBlock { true }
 	{ };
 
 	virtual ~ShieldTypeClass() override = default;

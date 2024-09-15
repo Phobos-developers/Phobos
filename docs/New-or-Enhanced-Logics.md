@@ -40,7 +40,9 @@ This page describes all the engine features that are either new and introduced b
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
   - `Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
-  - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
+  - `Block.Multiplier` and `Block.ExtraChance` can be used to multiply the [block](#block-damage) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
+  - `Block.DamageMult.Multiplier` and `Block.DamageMult.Bonus` can be used to multiply the [block](#block-damage) damage multiplier or grant a fixed bonus to it for the object the effect is attached to, respectively.
+  - - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
   - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage]`->`C4Warhead`. If `ReflectDamage.Warhead` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed.
@@ -68,7 +70,7 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.(Required|Disallowed)MinCounts & (Required|Disallowed)MaxCounts` can be used to set the minimum and maximum number of instances required / disallowed to be on the Techno for `Cumulative=true` types (ignored for other types) respectively.
   - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead.
   - `AttachEffect.CheckOnFirer` is set to true makes it so that the required / disallowed attached effects are checked from the firer of the weapon instead of the target.
-  
+
 In `rulesmd.ini`:
 ```ini
 [AttachEffectTypes]
@@ -111,6 +113,10 @@ Crit.Multiplier=1.0                            ; floating point value
 Crit.ExtraChance=0.0                           ; floating point value
 Crit.AllowWarheads=                            ; list of WarheadTypes
 Crit.DisallowWarheads=                         ; list of WarheadTypes
+Block.Multiplier=1.0                           ; floating point value
+Block.ExtraChance=0.0                          ; floating point value
+Block.DamageMult.Multiplier=1.0                ; floating point value
+Block.DamageMult.Bonus=0.0                     ; floating point value
 RevengeWeapon=                                 ; WeaponType
 RevengeWeapon.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ReflectDamage=false                            ; boolean
@@ -308,6 +314,7 @@ ImmuneToCrit=no                             ; boolean
 Tint.Color=                                 ; integer - R,G,B
 Tint.Intensity=0.0                          ; floating point value
 Tint.VisibleToHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+CanBlock=true                               ; boolean
 
 [SOMETECHNO]                                ; TechnoType
 ShieldType=SOMESHIELDTYPE                   ; ShieldType; none by default
@@ -324,6 +331,8 @@ Shield.AbsorbPercent=                       ; floating point value
 Shield.PassPercent=                         ; floating point value
 Shield.ReceivedDamage.Minimum=              ; integer
 Shield.ReceivedDamage.Maximum=              ; integer
+Shield.ReceivedDamage.MinMultiplier=1.0     ; floating point value
+Shield.ReceivedDamage.MaxMultiplier=1.0     ; floating point value
 Shield.Respawn.Duration=0                   ; integer, game frames
 Shield.Respawn.Amount=0.0                   ; floating point value, percents or absolute
 Shield.Respawn.Rate=-1.0                    ; floating point value, ingame minutes
@@ -399,6 +408,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Shield.AbsorbPercent` overrides the `AbsorbPercent` value set in the ShieldType that is being damaged.
   - `Shield.PassPercent` overrides the `PassPercent` value set in the ShieldType that is being damaged.
   - `Shield.ReceivedDamage.Minimum` & `Shield.ReceivedDamage.Maximum` override the values set in in the ShieldType that is being damaged.
+    - `Shield.ReceivedDamage.MinMultiplier` and `Shield.ReceivedDamage.MinMultiplier` are multipliers to the effective `Shield.ReceivedDamage.Minimum` and `Shield.ReceivedDamage.Maximum` respectively that are applied when the Warhead deals damage to a shield.
   - `Shield.Respawn.Rate` & `Shield.Respawn.Amount` override ShieldType `Respawn.Rate` and `Respawn.Amount` for duration of `Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.Respawn.RestartTimer` is set, currently running shield respawn timer is reset, otherwise the timer's duration is adjusted in proportion to the new `Shield.Respawn.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while respawn timer is running, remaining time is adjusted to proportionally match ShieldType `Respawn.Rate`. Re-applying the effect resets the duration to `Shield.Respawn.Duration`
   - `Shield.SelfHealing.Rate` & `Shield.SelfHealing.Amount` override ShieldType `SelfHealing.Rate` and `SelfHealing.Amount` for duration of `Shield.SelfHealing.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.SelfHealing.RestartTimer` is set, currently running self-healing timer is restarted, otherwise timer's duration is adjusted in proportion to the new `Shield.SelfHealing.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while self-healing timer is running, remaining time is adjusted to proportionally match ShieldType `SelfHealing.Rate`. Re-applying the effect resets the duration to `Shield.SelfHealing.Duration`.
     - Additionally `Shield.SelfHealing.RestartInCombat` & `Shield.SelfHealing.RestartInCombatDelay` can be used to override ShieldType settings.
@@ -410,6 +420,93 @@ Shield.InheritStateOnReplace=false          ; boolean
     - If `Shield.RemoveAll` is set, all shield types are removed from the affected targets, even those that are not listed in `Shield.RemoveTypes`. If `Shield.ReplaceOnly` is set, first type listed in `Shield.AttachTypes` is used to replace any removed types not listed in `Shield.RemoveTypes`.
     - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
+
+### Block damage
+
+- You can now make techno have a chance to block the incoming damage, which will make it multiply by a set percentage.
+- `Block.Chances` determines chance for a block to occur. Value from position matching the position from `Block.AffectBelowPercents` is used if found, or 0.0 if not found.
+- `Block.DamageMultipliers` determines the multiplier of received damage. Value from position matching the position from `Block.AffectBelowPercents` is used if found, or 1.0 if not found.
+- `Block.AffectBelowPercents`, if set to a single value, determines minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit. If set to a list of values, it'll further determine `Block.Chances` and `Block.DamageMultipliers` when target health is below the certain percentage listed here.
+- `Block.AffectsHouses` can be used to customize houses that damage from this firer can be blocked. Notice that not all damage has a firer, such as damage dealt by anims.
+- Following conditions determine whether a block can be triggered. `Block.CanActive.NoFirer` determines if the block can be triggered when the damage has no firer. `Block.CanActive.Powered` determines if the block can be triggered when the techno is deactivated (`PoweredUnit` or affected by EMP) or on low power. `Block.CanActive.ShieldActive` determines if the block can be triggered when the techno has an active shield. If you only want it to be triggered by certain type of shield, you can further set `CanBlock` for them. `Block.CanActive.ShieldInactive` determines if the block can be triggered when the techno doesn't have an active shield. `Block.CanActive.ZeroDamage` determines if the block can be triggered when the damage is equal to 0. `Block.CanActive.NegativeDamage` determines if the block can be triggered when the damage is below 0.
+- `Block.Flash`, if set to true, makes it so that a light flash is generated when a block is triggered. Size of the flash is determined by damage dealt (based on original damage instead of the blocked one), unless `Block.Flash.FixedSize` is set to a number, in which case that value is used instead (range of values that produces visible effect are increments of 4 from 81 to 252, anything higher or below does not have effect). Color can be customized via `Block.Flash.Red/Green/Blue`. If `Block.Flash.Black` is set to true, the generated flash will be black regardless of other color settings.
+- `Block.Anims` can be used to set animation to be displayed if a block is triggered. If more than one animation is listed, a random one is selected.
+- `Block.Weapon`, if set, will be fired at the techno once a block is triggered.
+- `Block.ReflectDamage` can be set to true to have positive damage dealt to the object to be reflected back to the attacker, if a block is triggered and there is a firer of the damage. `Block.ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage]`->`C4Warhead`. If `Block.ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `Block.ReflectDamage.Chance` determines the chance of reflection. - `Block.ReflectDamage.AffectsHouses` customizes which houses can trigger the reflect damage, default to `Block.AffectsHouses`. `Block.ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back (based on original damage instead of the blocked one), while `Block.ReflectDamage.Override` directly overrides the damage. Already reflected damage cannot be further reflected back.
+  - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true.
+
+- Warheads can also use the above settings to determine their own block behaviors when hitting the target. If both the techno and the warhead has block settings, it'll use the ones from techno by default. If `Block.WarheadOverride` set to true, it'll use the settings from warhead to override if they're set, while keeping the unset settings as techno's.
+  - `Block.WarheadOverride.All`, if set to true along with `Block.WarheadOverride`, will use the block settings from warhead to fully override techno's, even if they're unset.
+  - Despite all block settings can be overridden, if you want to override `Block.Chances` or `Block.DamageMultipliers`, it's recommended to override `Block.AffectBelowPercents` in the meantime since they're lists with values in correpsonding positions.
+- `ImmuneToBlock` can be set on WarheadTypes to make them can't trigger a block.
+- `Block.IgnoreAttachEffect` can be set on WarheadTypes to make their attack ignore modifiers of `Block.Chances` and `Block.DamageMultipliers` from the attached effects on the techno.
+- `Block.Multiplier` and `Block.ExtraChance` can be set on WarheadTypes to multiply the block chance or grant a fixed bonus to it when these warheads hit their targets, respectively.
+- `Block.DamageMult.Multiplier` and `Block.DamageMult.Bonus` can be set on WarheadTypes to multiply the block damage multiplier or grant a fixed bonus to it when these warheads hit their targets, respectively.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                                         ; TechnoType
+Block.Chances=                                       ; list of floating-point values (percentage or absolute) (0.0-1.0)
+Block.DamageMultipliers=                             ; list of floating-point values (percentage or absolute)
+Block.AffectBelowPercents=                           ; list of floating-point values (percentage or absolute) (0.0-1.0)
+Block.AffectsHouses=all                              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Block.CanActive.NoFirer=true                         ; boolean
+Block.CanActive.Powered=false                        ; boolean
+Block.CanActive.ShieldActive=true                    ; boolean
+Block.CanActive.ShieldInactive=true                  ; boolean
+Block.CanActive.ZeroDamage=false                     ; boolean
+Block.CanActive.NegativeDamage=false                 ; boolean
+Block.Flash=false                                    ; boolean
+Block.Flash.FixedSize=                               ; integer
+Block.Flash.Red=true                                 ; boolean
+Block.Flash.Green=true                               ; boolean
+Block.Flash.Blue=true                                ; boolean
+Block.Flash.Black=false                              ; boolean
+Block.Anims=                                         ; list of animations
+Block.Weapon=                                        ; WeaponType
+Block.ReflectDamage=false                            ; boolean
+Block.ReflectDamage.Chance=1.0                       ; floating point value
+Block.ReflectDamage.Warhead=                         ; WarheadType
+Block.ReflectDamage.Warhead.Detonate=false           ; WarheadType
+Block.ReflectDamage.Multiplier=1.0                   ; floating point value, percents or absolute
+Block.ReflectDamage.AffectsHouses=                   ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Block.ReflectDamage.Override=                        ; integer
+
+[SOMEWARHEAD]                                        ; WarheadType
+Block.Chances=                                       ; list of floating-point values (percentage or absolute) (0.0-1.0)
+Block.DamageMultipliers=                             ; list of floating-point values (percentage or absolute)
+Block.AffectBelowPercents=                           ; list of floating-point values (percentage or absolute) (0.0-1.0)
+Block.AffectsHouses=all                              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Block.CanActive.NoFirer=true                         ; boolean
+Block.CanActive.Powered=false                        ; boolean
+Block.CanActive.ShieldActive=true                    ; boolean
+Block.CanActive.ShieldInactive=true                  ; boolean
+Block.CanActive.ZeroDamage=false                     ; boolean
+Block.CanActive.NegativeDamage=false                 ; boolean
+Block.Flash=false                                    ; boolean
+Block.Flash.FixedSize=                               ; integer
+Block.Flash.Red=true                                 ; boolean
+Block.Flash.Green=true                               ; boolean
+Block.Flash.Blue=true                                ; boolean
+Block.Flash.Black=false                              ; boolean
+Block.Anims=                                         ; list of animations
+Block.Weapon=                                        ; WeaponType
+Block.ReflectDamage=false                            ; boolean
+Block.ReflectDamage.Chance=1.0                       ; floating point value
+Block.ReflectDamage.Warhead=                         ; WarheadType
+Block.ReflectDamage.Warhead.Detonate=false           ; WarheadType
+Block.ReflectDamage.Multiplier=1.0                   ; floating point value, percents or absolute
+Block.ReflectDamage.AffectsHouses=                   ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Block.ReflectDamage.Override=                        ; integer
+ImmuneToBlock=false                                  ; boolean
+Block.WarheadOverride=false                          ; boolean
+Block.WarheadOverride.All=false                      ; boolean
+Block.IgnoreAttachEffect=true                        ; boolean
+Block.Multiplier=1.0                                 ; floating point value
+Block.ExtraChance=0.0                                ; floating point value
+Block.DamageMult.Multiplier=1.0                      ; floating point value
+Block.DamageMult.Bonus=0.0                           ; floating point value
+```
 
 ## Animations
 
@@ -430,7 +527,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles if possible.
   - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
   - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
-  
+
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                             ; AnimationType
@@ -679,7 +776,7 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but ínstead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
 
 In `rulesmd.ini`:
-```ini                                         
+```ini
 [SOMEPROJECTILE]                               ; Projectile
 Trajectory=Straight                            ; Trajectory type
 Trajectory.Straight.DetonationDistance=0.4     ; floating point value
@@ -952,6 +1049,7 @@ AutoFire.TargetSelf=false  ; boolean
 ```
 
 ### Build limit group
+
 - You can now make different technos share build limit in a group.
 - `BuildLimitGroup.Types` determines the technos that'll be used for build limit conditions of the selected techno. Note that the limit won't be applied to technos in the list. To do this, you'll have to manually define the limit per techno.
 - `BuildLimitGroup.Nums` determines the amount of technos that would reach the build limit. If using a single integer, it'll use the sum of all technos in the group to calculate build limit. If using a list of integers with the same size of `BuildLimitGroup.Types`, it'll calculate build limit per techno with value matching the position in `BuildLimitGroup.Types` is used for that type.
