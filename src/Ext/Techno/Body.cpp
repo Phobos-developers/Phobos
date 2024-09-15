@@ -5,7 +5,7 @@
 #include <ScenarioClass.h>
 
 #include <Ext/Anim/Body.h>
-#include <Ext/House/Body.h>
+#include <Ext/Scenario/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -19,16 +19,14 @@ TechnoExt::ExtData::~ExtData()
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto& vec = pOwnerExt->OwnedAutoDeathObjects;
+		auto& vec = ScenarioExt::Global()->AutoDeathObjects;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
 	if (pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
 		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
 	{
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto& vec = pOwnerExt->OwnedTransportReloaders;
+		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
@@ -121,7 +119,7 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pThis->SpeedMultiplier * houseMultiplier * pExt->AE_SpeedMultiplier *
+	return pThis->SpeedMultiplier * houseMultiplier * pExt->AE.SpeedMultiplier *
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
@@ -383,7 +381,7 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 /// <param name="pSource">Source AbstractClass instance used for same source check.</param>
 /// <returns>True if techno has active AttachEffects that satisfy the source, false if not.</returns>
 bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource,
-	TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const& minCounts, std::vector<int> const& maxCounts) const
+	TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const
 {
 	unsigned int foundCount = 0;
 	unsigned int typeCounter = 1;
@@ -397,8 +395,8 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
 					continue;
 
-				unsigned int minSize = minCounts.size();
-				unsigned int maxSize = maxCounts.size();
+				unsigned int minSize = minCounts ? minCounts->size() : 0;
+				unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
 
 				if (type->Cumulative && (minSize > 0 || maxSize > 0))
 				{
@@ -406,12 +404,12 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 
 					if (minSize > 0)
 					{
-						if (cumulativeCount < minCounts.at(typeCounter-1 >= minSize ? minSize - 1 : typeCounter - 1))
+						if (cumulativeCount < minCounts->at(typeCounter-1 >= minSize ? minSize - 1 : typeCounter - 1))
 							continue;
 					}
 					if (maxSize > 0)
 					{
-						if (cumulativeCount > maxCounts.at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
+						if (cumulativeCount > maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
 							continue;
 					}
 				}
@@ -477,6 +475,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TypeExtData)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
+		.Process(this->AttachedEffects)
+		.Process(this->AE)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)
@@ -485,25 +485,20 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->Strafe_BombsDroppedThisRound)
 		.Process(this->CurrentAircraftWeaponIndex)
-		.Process(this->OriginalPassengerOwner)
 		.Process(this->IsInTunnel)
 		.Process(this->IsBurrowed)
 		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)
+		.Process(this->SkipTargetChangeResetSequence)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
-		.Process(this->AttachedEffects)
-		.Process(this->AE_FirepowerMultiplier)
-		.Process(this->AE_ArmorMultiplier)
-		.Process(this->AE_SpeedMultiplier)
-		.Process(this->AE_ROFMultiplier)
-		.Process(this->AE_Cloakable)
-		.Process(this->AE_ForceDecloak)
-		.Process(this->AE_DisableWeapons)
-		.Process(this->AE_HasTint)
 		.Process(this->LastWeaponType)
 		.Process(this->FiringObstacleCell)
+		.Process(this->OriginalPassengerOwner)
+		.Process(this->HasRemainingWarpInDelay)
+		.Process(this->LastWarpInDelay)
+		.Process(this->IsBeingChronoSphered)
 		;
 }
 

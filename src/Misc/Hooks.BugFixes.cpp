@@ -14,6 +14,7 @@
 #include <HouseClass.h>
 #include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
+#include <TeleportLocomotionClass.h>
 #include <BombClass.h>
 #include <ParticleSystemClass.h>
 #include <WarheadTypeClass.h>
@@ -25,6 +26,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -497,8 +499,8 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 {
 	auto const pThisBomb = FetchBomb::pThisBomb;
 	auto nCoord = *pCoord;
-	auto nDamageAreaResult = MapClass::Instance()->DamageArea
-	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse);
+	auto nDamageAreaResult = WarheadTypeExt::ExtMap.Find(pWarhead)->DamageAreaWithTarget
+	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse, abstract_cast<TechnoClass*>(pThisBomb->Target));
 	auto nLandType = MapClass::Instance()->GetCellAt(nCoord)->LandType;
 
 	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
@@ -844,4 +846,88 @@ DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
 
 	R->EAX(0); // The original function returns some number, hell if I know what (it is 0 most of the time though and never actually used for anything).
 	return SkipGameCode;
+}
+
+#pragma region WarpInDelayFix
+
+DEFINE_HOOK(0x7195BF, TeleportLocomotionClass_Process_WarpInDelay, 0x6)
+{
+	GET(ILocomotion*, pThis, ESI);
+	GET(FootClass*, pLinkedTo, ECX);
+
+	auto const pLoco = static_cast<TeleportLocomotionClass*>(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+	pExt->LastWarpInDelay = Math::max(pLoco->Timer.GetTimeLeft(), pExt->LastWarpInDelay);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->HasRemainingWarpInDelay)
+	{
+		if (pExt->LastWarpInDelay)
+		{
+			pExt->LastWarpInDelay--;
+		}
+		else
+		{
+			pExt->HasRemainingWarpInDelay = false;
+			pExt->IsBeingChronoSphered = false;
+			pThis->WarpingOut = false;
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+// this fella was { 0, 0, 1 } before and somehow it also breaks both the light position a bit and how the lighting is applied when voxels rotate - Kerbiter
+DEFINE_HOOK(0x753D86, VoxelCalcNormals_NullAdditionalVector, 0x0)
+{
+	REF_STACK(Vector3D<float>, secondaryLightVector, STACK_OFFSET(0xD8, -0xC0))
+
+	if (RulesExt::Global()->UseFixedVoxelLighting)
+		secondaryLightVector = { 0, 0, 0 };
+	else
+		secondaryLightVector = { 0, 0, 1 };
+
+	return 0x753D9E;
+}
+
+DEFINE_HOOK(0x705D74, TechnoClass_GetRemapColour_DisguisePalette, 0x8)
+{
+	enum { SkipGameCode = 0x705D7C };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto pTechnoType = pThis->GetTechnoType();
+
+	if (!pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		if (const auto pDisguise = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+			pTechnoType = pDisguise;
+	}
+
+	R->EAX(pTechnoType);
+
+	return SkipGameCode;
+}
+
+// Fixes an edge case crash caused by temporal targeting enslaved infantry.
+DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
+{
+	enum { ReturnFromFunction = 0x71AE47 };
+
+	GET(TemporalClass* const, pThis, ESI);
+
+	if (!pThis->Target)
+		return ReturnFromFunction;
+
+	return 0;
 }
