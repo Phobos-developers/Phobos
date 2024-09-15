@@ -377,7 +377,7 @@ DEFINE_HOOK(0x604985, GetDialogUIStatusLabels_ShowBriefing, 0x5)
 
 bool __fastcall Fake_HouseIsAlliedWith(HouseClass* pThis, void*, HouseClass* CurrentPlayer)
 {
-	return Phobos::Config::DevelopmentCommands
+	return (Phobos::Config::ShowPlanningPath && SessionClass::IsSingleplayer())
 		|| pThis->IsControlledByCurrentPlayer()
 		|| pThis->IsAlliedWith(CurrentPlayer);
 }

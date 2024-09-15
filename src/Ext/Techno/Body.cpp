@@ -489,14 +489,16 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsBurrowed)
 		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)
+		.Process(this->SkipTargetChangeResetSequence)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
 		.Process(this->LastWeaponFLH)
 		.Process(this->FiringObstacleCell)
 		.Process(this->OriginalPassengerOwner)
-		.Process(this->HasCarryoverWarpInDelay)
+		.Process(this->HasRemainingWarpInDelay)
 		.Process(this->LastWarpInDelay)
+		.Process(this->IsBeingChronoSphered)
 		;
 }
 
