@@ -7,7 +7,6 @@
 #include <Ext/WarheadType/Body.h>
 
 #include <Utilities/GeneralUtils.h>
-#include <GameStrings.h>
 #include <AnimClass.h>
 #include <HouseClass.h>
 #include <RadarEventClass.h>
@@ -163,14 +162,15 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		}
 	}
 
-	if (this->Techno->IsIronCurtained() || CanBePenetrated(args->WH) || this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	bool IC = pWHExt->CanAffectInvulnerable(this->Techno);
+
+	if (!IC || CanBePenetrated(args->WH) || this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
 		return *args->Damage;
 
 	int nDamage = 0;
 	int shieldDamage = 0;
 	int healthDamage = 0;
-
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	if (pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
 	{
@@ -189,9 +189,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	}
 
 	int originalShieldDamage = shieldDamage;
-
-	shieldDamage = Math::clamp(shieldDamage, pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum),
-		pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum));
+	int min = pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum);
+	int max = pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum);
+	int minDmg = static_cast<int>(min * pWHExt->Shield_ReceivedDamage_MinMultiplier);
+	int maxDmg = static_cast<int>(max * pWHExt->Shield_ReceivedDamage_MaxMultiplier);
+	shieldDamage = Math::clamp(shieldDamage, minDmg, maxDmg);
 
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
 		GeneralUtils::DisplayDamageNumberString(shieldDamage, DamageDisplayType::Shield, this->Techno->GetRenderCoords(), TechnoExt::ExtMap.Find(this->Techno)->DamageNumberOffset);
@@ -257,7 +259,9 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 				MapClass::FlashbangWarheadAt(size, args->WH, this->Techno->Location, true, flags);
 			}
 
-			this->WeaponNullifyAnim(pWHExt->Shield_HitAnim);
+			if (!pWHExt->Shield_SkipHitAnim)
+				this->WeaponNullifyAnim(pWHExt->Shield_HitAnim);
+
 			this->HP = -residueDamage;
 
 			this->UpdateIdleAnim();
@@ -721,7 +725,7 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTi
 	const auto timerWHModifier = &this->Timers.Respawn_WHModifier;
 
 	bool modifierTimerInProgress = timerWHModifier->InProgress();
-	this->Respawn_Warhead = amount > 0 ? amount : Type->Respawn;
+	this->Respawn_Warhead = amount;
 	this->Respawn_Rate_Warhead = rate >= 0 ? rate : Type->Respawn_Rate;
 
 	timerWHModifier->Start(duration);
@@ -797,7 +801,7 @@ void ShieldClass::UpdateIdleAnim()
 
 void ShieldClass::UpdateTint()
 {
-	if (this->Type->Tint_Color.isset() || this->Type->Tint_Intensity != 0.0)
+	if (this->Type->HasTint())
 		this->Techno->MarkForRedraw();
 }
 

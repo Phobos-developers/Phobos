@@ -40,9 +40,11 @@ public:
 		Valueable<bool> Laser_IsSingleColor;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<bool> OmniFire_TurnToTarget;
+		Valueable<bool> FireOnce_ResetSequence;
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		ValueableVector<double> ExtraWarheads_DetonationChances;
+		ValueableVector<bool> ExtraWarheads_FullDetonation;
 		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 		Valueable<bool> AmbientDamage_IgnoreTarget;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
@@ -53,6 +55,7 @@ public:
 		ValueableVector<int> AttachEffect_RequiredMaxCounts;
 		ValueableVector<int> AttachEffect_DisallowedMinCounts;
 		ValueableVector<int> AttachEffect_DisallowedMaxCounts;
+		Valueable<bool> AttachEffect_CheckOnFirer;
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
 		Valueable<bool> KickOutPassengers;
 
@@ -76,9 +79,11 @@ public:
 			, Laser_IsSingleColor { false }
 			, ROF_RandomDelay {}
 			, OmniFire_TurnToTarget { false }
+			, FireOnce_ResetSequence { true }
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
 			, ExtraWarheads_DetonationChances {}
+			, ExtraWarheads_FullDetonation {}
 			, AmbientDamage_Warhead {}
 			, AmbientDamage_IgnoreTarget { false }
 			, AttachEffect_RequiredTypes {}
@@ -89,6 +94,7 @@ public:
 			, AttachEffect_RequiredMaxCounts {}
 			, AttachEffect_DisallowedMinCounts {}
 			, AttachEffect_DisallowedMaxCounts {}
+			, AttachEffect_CheckOnFirer { false }
 			, AttachEffect_IgnoreFromSameSource { false }
 			, KickOutPassengers { true }
 		{ }
@@ -132,4 +138,5 @@ public:
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
+	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range);
 };
