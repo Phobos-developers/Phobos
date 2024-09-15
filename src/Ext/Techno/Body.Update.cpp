@@ -192,7 +192,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	// death if listed technos exist
 	if (!pTypeExt->AutoDeath_TechnosExist.empty())
 	{
-		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
+		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosExist_AllowLimboed))
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 
@@ -510,7 +510,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		}
 
 		if (pOldType->Locomotor == LocomotionClass::CLSIDs::Teleport && pCurrentType->Locomotor != LocomotionClass::CLSIDs::Teleport && pThis->WarpingOut)
-			this->HasCarryoverWarpInDelay = true;
+			this->HasRemainingWarpInDelay = true;
 	}
 }
 

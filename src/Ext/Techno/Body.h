@@ -42,6 +42,7 @@ public:
 		bool IsBurrowed;
 		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 		CDTimerClass DeployFireTimer;
+		bool SkipTargetChangeResetSequence;
 		bool ForceFullRearmDelay;
 		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
@@ -51,8 +52,9 @@ public:
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
-		bool HasCarryoverWarpInDelay; // Converted from object with Teleport Locomotor to one with a different Locomotor while still phasing in.
-		int LastWarpInDelay;          // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
+		bool HasRemainingWarpInDelay;          // Converted from object with Teleport Locomotor to one with a different Locomotor while still phasing in OR set if ChronoSphereDelay > 0.
+		int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
+		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -74,14 +76,16 @@ public:
 			, IsBurrowed { false }
 			, HasBeenPlacedOnMap { false }
 			, DeployFireTimer {}
+			, SkipTargetChangeResetSequence { false }
 			, ForceFullRearmDelay { false }
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
 			, CanCurrentlyDeployIntoBuilding { false }
 			, FiringObstacleCell {}
 			, OriginalPassengerOwner {}
-			, HasCarryoverWarpInDelay { false }
+			, HasRemainingWarpInDelay { false }
 			, LastWarpInDelay { 0 }
+			, IsBeingChronoSphered { false}
 		{ }
 
 		void OnEarlyUpdate();
