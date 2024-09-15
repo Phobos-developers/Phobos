@@ -162,7 +162,7 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 				auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
 				auto& vec = pHouseExt->OwnedLimboDeliveredBuildings;
 
-				for (auto it = vec.begin(); it != vec.end();)
+				for (auto it = vec.begin(); it != vec.end(); )
 				{
 					BuildingClass* const pBuilding = *it;
 					auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
