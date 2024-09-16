@@ -131,6 +131,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
+	this->FactoryPlant_Multiplier.Read(exINI, pSection, "FactoryPlant.Multiplier");
 
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
@@ -152,6 +153,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->InitialStrength = Math::clamp(this->InitialStrength, 1, pThis->Strength);
 
 	this->ReloadInTransport.Read(exINI, pSection, "ReloadInTransport");
+	this->ForbidParallelAIQueues.Read(exINI, pSection, "ForbidParallelAIQueues");
 	this->ShieldType.Read<true>(exINI, pSection, "ShieldType");
 
 	this->Ammo_AddOnDeploy.Read(exINI, pSection, "Ammo.AddOnDeploy");
@@ -191,6 +193,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
+	this->ChronoSpherePreDelay.Read(exINI, pSection, "ChronoSpherePreDelay");
+	this->ChronoSphereDelay.Read(exINI, pSection, "ChronoSphereDelay");
 
 	this->WarpInWeapon.Read<true>(exINI, pSection, "WarpInWeapon");
 	this->WarpInMinRangeWeapon.Read<true>(exINI, pSection, "WarpInMinRangeWeapon");
@@ -344,22 +348,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		for (size_t i = 0; i < weaponCount; i++)
 		{
-			Promotable<SHPStruct*> insignia;
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
-			insignia.Read(exINI, pSection, tempBuffer);
-			this->Insignia_Weapon[i].setEmpty(insignia);
+			this->Insignia_Weapon[i].Read(exINI, pSection, tempBuffer);
 
-			Promotable<int> frame = Promotable<int>(-1);
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
-			frame.Read(exINI, pSection, tempBuffer);
-			this->InsigniaFrame_Weapon[i].setEmpty(frame);
+			this->InsigniaFrame_Weapon[i].Read(exINI, pSection, tempBuffer);
 
-			Valueable<Vector3D<int>> frames;
-			frames = Vector3D<int>(-1, -1, -1);
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
-			frames.Read(exINI, pSection, tempBuffer);
-			if (this->InsigniaFrames_Weapon[i] != frames)
-				this->InsigniaFrames_Weapon[i] = frames;
+			this->InsigniaFrames_Weapon[i].Read(exINI, pSection, tempBuffer);
 		}
 	}
 
@@ -376,22 +372,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		for (size_t i = 0; i < passengers; i++)
 		{
-			Promotable<SHPStruct*> insignia;
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Passengers%d.%s", i, "%s");
-			insignia.Read(exINI, pSection, tempBuffer);
-			this->Insignia_Passengers[i].setEmpty(insignia);
+			this->Insignia_Passengers[i].Read(exINI, pSection, tempBuffer);
 
-			Promotable<int> frame = Promotable<int>(-1);
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Passengers%d.%s", i, "%s");
-			frame.Read(exINI, pSection, tempBuffer);
-			this->InsigniaFrame_Passengers[i].setEmpty(frame);
+			this->InsigniaFrame_Passengers[i].Read(exINI, pSection, tempBuffer);
 
-			Valueable<Vector3D<int>> frames;
-			frames = Vector3D<int>(-1, -1, -1);
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Passengers%d", i);
-			frames.Read(exINI, pSection, tempBuffer);
-			if (this->InsigniaFrames_Passengers[i] != frames)
-				this->InsigniaFrames_Passengers[i] = frames;
+			this->InsigniaFrames_Passengers[i].Read(exINI, pSection, tempBuffer);
 		}
 	}
 
@@ -519,6 +507,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
+		.Process(this->FactoryPlant_Multiplier)
 
 		.Process(this->InterceptorType)
 
@@ -542,6 +531,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
 		.Process(this->ReloadInTransport)
+		.Process(this->ForbidParallelAIQueues)
 		.Process(this->ShieldType)
 		.Process(this->PassengerDeletionType)
 
@@ -580,6 +570,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoMinimumDelay)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
+		.Process(this->ChronoSpherePreDelay)
+		.Process(this->ChronoSphereDelay)
 		.Process(this->WarpInWeapon)
 		.Process(this->WarpInMinRangeWeapon)
 		.Process(this->WarpOutWeapon)

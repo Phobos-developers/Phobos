@@ -82,7 +82,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 ![Waving trees](_static/images/tree-shake.gif)
 *Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
 
-- `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true. Note that this might impact performance.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
 ![image](_static/images/translucency-fix.png)
@@ -163,10 +162,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
 - Fixed disguised units not using the correct palette if target has custom palette.
-- Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
+- Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
+- Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading.
+- The otherwise unused setting `[AI]` -> `PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI]` -> `EnablePowerSurplus` to true.
+- Planning paths are now shown for all units under player control or when `[GlobalControls]->DebugPlanningPaths=yes` in singleplayer game modes.
+- Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
 
 ## Fixes / interactions with other extensions
 
+- `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely.
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
@@ -301,6 +305,18 @@ In `rulesmd.ini`:
 AllowAirstrike=  ; boolean
 ```
 
+### Allowed / disallowed types for FactoryPlant
+
+- It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
+  - `FactoryPlant.Multiplier` (Ares feature) is still applied on the bonuses if they are in effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]               ; BuildingType
+FactoryPlant.AllowTypes=     ; List of TechnoTypes
+FactoryPlant.DisallowTypes=  ; List of TechnoTypes
+```
+
 ### Apply ZShapePointMove during buildups
 
 - By default buildings do not apply `ZShapePointMove` (which offsets the 'z shape' applied on buildings which is used to adjust them in depth buffer and is used to fix issues related to that such as corners of buildings getting cut off when drawn) when buildup is being displayed. This behaviour can now be toggled by setting `ZShapePointMove.OnBuildup`.
@@ -359,6 +375,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]        ; BuildingType
 SellBuildupLength=23  ; integer, number of buildup frames to play
+```
+
+### Exclude Factory from providing multiple factory bonus
+
+- It is now possible to exclude a building with `Factory` from counting towards `MultipleFactory` bonus.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                         ; BuildingType
+ExcludeFromMultipleFactoryBonus=false  ; boolean
 ```
 
 ## Particle systems
@@ -465,6 +491,25 @@ ChronoSparkleDisplayDelay=24                         ; integer, game frames
 ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle position enum (building | occupants | occupantslots | all)
 ```
 
+### Customizable ChronoSphere teleport delays for units
+
+- It is now possible to customize (globally and per TechnoType) the warp-in delay for units teleporting through `Type=ChronoSphere/Warp` Superweapon, both before and after the jump.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ChronoSphereDelay=60    ; integer, game frames
+ChronoSpherePreDelay=0  ; integer, game frames
+
+[SOMETECHNO]            ; TechnoType
+ChronoSphereDelay=      ; integer, game frames
+ChronoSpherePreDelay=   ; integer, game frames
+```
+
+```{warning}
+Due to technical constraints, these settings do not apply to buildings teleported by Ares' customizable ChronoSphere SW. They only have a pre-teleport delay equal to `[General]` -> ChronoDelay.
+```
+
 ### Customizable veterancy insignias
 
 - You can now customize veterancy insignia of TechnoTypes.
@@ -477,7 +522,6 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
   - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
   - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
   - `DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to anchor the insignia position relative to the building's selection bracket. By default the insignia position is not anchored to the selection bracket.
-
 
 In `rulesmd.ini`:
 ```ini
@@ -831,6 +875,7 @@ ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 
 - You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
   - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
+- You can also exclude specific TechnoTypes from being built in parallel by AI by setting `ForbidParallelAIQueues` to true on a TechnoType.
 
 In `rulesmd.ini`
 ```ini
@@ -841,9 +886,23 @@ ForbidParallelAIQueues.Vehicle=no   ; boolean
 ForbidParallelAIQueues.Navy=no      ; boolean
 ForbidParallelAIQueues.Aircraft=no  ; boolean
 ForbidParallelAIQueues.Building=no  ; boolean
+
+[SOMETECHNO]                        ; TechnoType
+ForbidParallelAIQueues=false        ; boolean
 ```
 
 ## Terrains
+
+### Animated TerrainTypes
+
+- By default `IsAnimated`, `AnimationRate` and `AnimationProbability` only work on TerrainTypes with `SpawnsTiberium` set to true. This restriction has now been lifted.
+  - Length of the animation can now be customized by setting `AnimationLength` as well, defaulting to half (or quarter if [damaged frames](#damaged-frames-and-crumbling-animation) are enabled) the number of frames in TerrainType's image.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+AnimationLength=   ; integer, number of frames
+```
 
 ### Customizable ore spawners
 
@@ -861,6 +920,38 @@ SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
+```
+
+### Custom palette
+
+- You can now specify custom palette for TerrainTypes in similar manner as TechnoTypes can.
+  - Note that this palette behaves like an object palette and does not use tint etc. that have been applied to the tile the TerrainType resides on like a TerrainType using tile palette would.
+
+In `artmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+Palette=           ; filename - excluding .pal extension and three-character theater-specific suffix
+```
+
+### Damaged frames and crumbling animation
+
+- By default game shows damage frame only for TerrainTypes alive at only 1 point of health left. Because none of the original game TerrainType assets were made with this in mind, the logic is now locked behind a new key `HasDamagedFrames`.
+  - Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual]` -> `ConditionYellow.Terrain` percentage of their maximum health. Defaults to `ConditionYellow` if not set.
+- In addition, TerrainTypes can now show 'crumbling' animation after their health has reached zero and before they are deleted from the map by setting `HasCrumblingFrames` to true.
+  - Crumbling frames start from first frame after both regular & damaged frames and ends at halfway point of the frames in TerrainType's image.
+    - Note that the number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes). Exercise caution and ensure there are correct amount of frames to display.
+  - Sound event from `CrumblingSound` (if set) is played when crumbling animation starts playing.
+  - [Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation-sound) only play after crumbling animation has finished.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ConditionYellow.Terrain=  ; floating-point value
+
+[SOMETERRAINTYPE]         ; TerrainType
+HasDamagedFrames=false    ; boolean
+HasCrumblingFrames=false
+CrumblingSound=           ; Sound
 ```
 
 ### Minimap color customization
@@ -1170,6 +1261,20 @@ In `rulesmd.ini`:
 DecloakDamagedTargets=true  ; boolean
 ```
 
+### Nonprovocative Warheads
+
+- You can now make Warheads behave in nonprovocative fashion. Warheads with `Nonprovocative=true` exhibit following behaviours:
+  - They will not generate any EVA announcements upon hitting targets, be it for attacking ore miners, base buildings or ally base buildings.
+  - They will not spring 'attacked' / 'attacked by' events. Note that if the Warhead deals actual damage, events that check for that can still be sprung.
+  - They will not evoke defense response from AI players when used to attack base buildings, `ToProtect=true` TechnoTypes or members of TeamTypes with `Whiner=true`.
+  - They will not evoke retaliation from TechnoTypes hit by the Warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]         ; WarheadType
+Nonprovocative=false  ; boolean
+```
+
 ### Restricting screen shaking to current view
 
 - You can now specify whether or not the warhead can only shake screen (`ShakeX/Ylo/hi`) if it is detonated while visible on current screen view.
@@ -1238,6 +1343,16 @@ In `rulesmd.ini`
 ```ini
 [SOMEWEAPON]
 KickOutPassengers=true  ; boolean
+```
+
+### Disable FireOnce resetting infantry sequence
+
+- It is now possible to disable `FireOnce=true` weapon resetting infantry sequences after firing via `FireOnce.ResetSequence`. Target will be forgotten like before, the firing sequence will simply continue playing after firing if there are any frames left.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+FireOnce.ResetSequence=true  ; boolean
 ```
 
 ### Single-color lasers

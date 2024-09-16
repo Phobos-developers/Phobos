@@ -276,18 +276,6 @@ public:
 		this->Elite = this->Veteran = this->Rookie = val;
 	}
 
-	void setEmpty(const Promotable<T> vals)
-	{
-		if (!this->Rookie || this->Rookie != vals->Rookie)
-			this->Rookie = vals->Rookie;
-
-		if (!this->Veteran || this->Veteran != vals->Veteran)
-			this->Veteran = vals->Veteran;
-
-		if (!this->Elite || this->Elite != vals->Elite)
-			this->Elite = vals->Elite;
-	}
-
 	inline void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag, const char* pSingleFlag = nullptr);
 
 	const T* GetEx(TechnoClass* pTechno) const noexcept
