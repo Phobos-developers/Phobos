@@ -350,35 +350,36 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 // AreaGuard: return when no ammo or first target died
 int __fastcall AircraftClass_Mission_AreaGuard(AircraftClass* pThis)
 {
-	do
+	const bool flying = pThis->GetHeight() == pThis->Type->GetFlightLevel();
+
+	if (!pThis->Team)
 	{
-		const bool flying = pThis->GetHeight() == pThis->Type->GetFlightLevel();
-
-		if (!pThis->Team)
+/*		if (!flying && pThis->Target) // This is what vanilla do, but now there is no need to do so
 		{
-		//	if (!flying && pThis->Target) // This is what vanilla do, but now there is no need to do so
-		//		break;
+			pThis->QueueMission(Mission::Attack, false);
+			return 1;
+		}*/
 
-			if (pThis->Ammo && pThis->IsArmed())
+		if (pThis->Ammo && pThis->IsArmed())
+		{
+			CoordStruct coords = pThis->GetCoords();
+
+			if (pThis->TargetAndEstimateDamage(reinterpret_cast<DWORD>(&coords), static_cast<DWORD>(TargetFlags::unknown_1)))
 			{
-				CoordStruct coords = pThis->GetCoords();
-
-				if (pThis->TargetAndEstimateDamage(reinterpret_cast<DWORD>(&coords), static_cast<DWORD>(TargetFlags::unknown_1)))
-					break;
-				else if (!flying && pThis->HasAnyLink())
-					return 30;
-
-				pThis->EnterIdleMode(false, true);
+				pThis->QueueMission(Mission::Attack, false);
 				return 1;
 			}
+			else if (!flying && pThis->HasAnyLink())
+			{
+				return 30;
+			}
+
+			pThis->EnterIdleMode(false, true);
+			return 1;
 		}
-
-		return flying ? 1 : reinterpret_cast<int(__thiscall*)(FootClass*)>(0x4D6AA0)(pThis);
 	}
-	while (false);
 
-	pThis->QueueMission(Mission::Attack, false);
-	return 1;
+	return flying ? 1 : reinterpret_cast<int(__thiscall*)(FootClass*)>(0x4D6AA0)(pThis); // FootClass_Mission_AreaGuard (Prevent circular calls)
 }
 DEFINE_JUMP(VTABLE, 0x7E24C4, GET_OFFSET(AircraftClass_Mission_AreaGuard))
 
@@ -404,7 +405,7 @@ DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget, 0
 
 	GET(FootClass* const, pThis, ESI);
 
-	return (pThis->WhatAmI() == AbstractType::Aircraft || pThis->vt_entry_3B4(reinterpret_cast<DWORD>(pThis->Target))) ? HoldCurrentTarget : LoseCurrentTarget;
+	return (pThis->WhatAmI() == AbstractType::Aircraft || pThis->vt_entry_3B4(reinterpret_cast<DWORD>(pThis->Target))) ? HoldCurrentTarget : LoseCurrentTarget; // pThis->InAuxiliarySearchRange(pThis->Target)
 }
 
 DEFINE_HOOK(0x418CD1, AircraftClass_Mission_Attack_ContinueFlyToDestination, 0x6)
@@ -415,12 +416,12 @@ DEFINE_HOOK(0x418CD1, AircraftClass_Mission_Attack_ContinueFlyToDestination, 0x6
 
 	if (!pThis->Target)
 	{
-		if (!pThis->vt_entry_4C4() || !pThis->unknown_5C8)
+		if (!pThis->vt_entry_4C4() || !pThis->unknown_5C8) // (!pThis->MegaMissionIsAttackMove() || !pThis->MegaDestination)
 			return Continue;
 
-		pThis->SetDestination(reinterpret_cast<AbstractClass*>(pThis->unknown_5C8), false);
+		pThis->SetDestination(reinterpret_cast<AbstractClass*>(pThis->unknown_5C8), false); // pThis->MegaDestination
 		pThis->QueueMission(Mission::Move, true);
-		pThis->unknown_bool_5D1 = false;
+		pThis->unknown_bool_5D1 = false; // pThis->HaveAttackMoveTarget
 	}
 	else
 	{
@@ -450,8 +451,8 @@ DEFINE_HOOK(0x4C762A, EventClass_RespondToEvent_StopAircraftAction, 0x6)
 
 	if (pTechno->WhatAmI() == AbstractType::Aircraft && !pTechno->Airstrike && !pTechno->Spawned)
 	{
-		if (pTechno->vt_entry_4C4())
-			pTechno->vt_entry_4A8();
+		if (pTechno->vt_entry_4C4()) // pTechno->MegaMissionIsAttackMove()
+			pTechno->vt_entry_4A8(); // pTechno->ClearMegaMissionData()
 
 		pTechno->EnterIdleMode(false, true);
 	}
@@ -465,15 +466,15 @@ AbstractClass* __fastcall AircraftClass_SelectAutoTarget(AircraftClass* pThis, v
 	WeaponTypeClass* const pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType;
 	WeaponTypeClass* const pSecondaryWeapon = pThis->GetWeapon(1)->WeaponType;
 
-	if (pThis->vt_entry_4C4())
-		targetFlags = TargetFlags::unknown_2;
+	if (pThis->vt_entry_4C4()) // pTechno->MegaMissionIsAttackMove()
+		targetFlags = TargetFlags::unknown_2; // Select closing targets
 
 	if (pSecondaryWeapon) // Vanilla (other types) secondary first
-		targetFlags |= reinterpret_cast<TargetFlags(__thiscall*)(WeaponTypeClass*)>(0x772A90)(pSecondaryWeapon);
+		targetFlags |= reinterpret_cast<TargetFlags(__thiscall*)(WeaponTypeClass*)>(0x772A90)(pSecondaryWeapon); // WeaponTypeClass_GetTargetFlags()
 	else if (pPrimaryWeapon)
-		targetFlags |= reinterpret_cast<TargetFlags(__thiscall*)(WeaponTypeClass*)>(0x772A90)(pPrimaryWeapon);
+		targetFlags |= reinterpret_cast<TargetFlags(__thiscall*)(WeaponTypeClass*)>(0x772A90)(pPrimaryWeapon); // WeaponTypeClass_GetTargetFlags()
 
-	return reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, TargetFlags, CoordStruct*, bool)>(0x6F8DF0)(pThis, targetFlags, pSelectCoords, onlyTargetHouseEnemy);
+	return reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, TargetFlags, CoordStruct*, bool)>(0x6F8DF0)(pThis, targetFlags, pSelectCoords, onlyTargetHouseEnemy); // TechnoClass_SelectAutoTarget (Prevent circular calls)
 }
 DEFINE_JUMP(VTABLE, 0x7E2668, GET_OFFSET(AircraftClass_SelectAutoTarget))
 
