@@ -231,7 +231,12 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			int actualResidueDamage = Math::max(0, int((double)(originalShieldDamage - this->HP) /
 				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetArmorType()))); //only absord percentage damage
 
-			this->BreakShield(pWHExt->Shield_BreakAnim, pWHExt->Shield_BreakWeapon.Get(nullptr));
+			AnimTypeClass* pAnimType = nullptr;
+
+			if (!pWHExt->Shield_BreakAnim.empty())
+				pAnimType = pWHExt->Shield_BreakAnim[ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Shield_BreakAnim.size() - 1)];
+
+			this->BreakShield(pAnimType, pWHExt->Shield_BreakWeapon.Get(nullptr));
 
 			return this->Type->AbsorbOverDamage ? healthDamage : actualResidueDamage + healthDamage;
 		}
@@ -260,7 +265,14 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			}
 
 			if (!pWHExt->Shield_SkipHitAnim)
-				this->WeaponNullifyAnim(pWHExt->Shield_HitAnim);
+			{
+				AnimTypeClass* pAnimType = nullptr;
+
+				if (!pWHExt->Shield_HitAnim.empty())
+					pAnimType = pWHExt->Shield_HitAnim[ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Shield_HitAnim.size() - 1)];
+
+				this->WeaponNullifyAnim(pAnimType);
+			}
 
 			this->HP = -residueDamage;
 
@@ -324,10 +336,11 @@ void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 	if (this->AreAnimsHidden)
 		return;
 
-	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
+	if (!pHitAnim && !this->Type->HitAnim.empty())
+		pHitAnim = this->Type->HitAnim[ScenarioClass::Instance->Random.RandomRanged(0, this->Type->HitAnim.size() - 1)];
 
-	if (pAnimType)
-		GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+	if (pHitAnim)
+		GameCreate<AnimClass>(pHitAnim, this->Techno->GetCoords());
 }
 
 bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
@@ -680,11 +693,12 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 
 	if (!this->AreAnimsHidden)
 	{
-		const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim;
+		if (!pBreakAnim && !this->Type->BreakAnim.empty())
+			pBreakAnim = this->Type->BreakAnim[ScenarioClass::Instance->Random.RandomRanged(0, this->Type->BreakAnim.size() - 1)];
 
-		if (pAnimType)
+		if (pBreakAnim)
 		{
-			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
+			if (auto const pAnim = GameCreate<AnimClass>(pBreakAnim, this->Techno->Location))
 			{
 				pAnim->SetOwnerObject(this->Techno);
 				pAnim->Owner = this->Techno->Owner;

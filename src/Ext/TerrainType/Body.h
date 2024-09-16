@@ -21,7 +21,7 @@ public:
 		Valueable<int> SpawnsTiberium_Range;
 		Valueable<PartialVector2D<int>> SpawnsTiberium_GrowthStage;
 		Valueable<PartialVector2D<int>> SpawnsTiberium_CellsPerAnim;
-		Valueable<AnimTypeClass*> DestroyAnim;
+		ValueableVector<AnimTypeClass*> DestroyAnim;
 		ValueableIdx<VocClass> DestroySound;
 		Nullable<ColorStruct> MinimapColor;
 		Valueable<bool> IsPassable;

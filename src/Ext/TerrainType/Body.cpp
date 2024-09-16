@@ -5,6 +5,7 @@
 #include <TerrainClass.h>
 #include <TerrainTypeClass.h>
 
+#include <Ext/Scenario/Body.h>
 #include <Utilities/GeneralUtils.h>
 
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
@@ -23,8 +24,11 @@ void TerrainTypeExt::ExtData::PlayDestroyEffects(const CoordStruct& coords)
 {
 	VocClass::PlayIndexAtPos(this->DestroySound, coords);
 
-	if (auto const pAnimType = this->DestroyAnim)
-		GameCreate<AnimClass>(pAnimType, coords);
+	if (!this->DestroyAnim.empty())
+	{
+		if (auto const pAnimType = this->DestroyAnim[ScenarioClass::Instance->Random.RandomRanged(0, this->DestroyAnim.size() - 1)])
+			GameCreate<AnimClass>(pAnimType, coords);
+	}
 }
 
 void TerrainTypeExt::Remove(TerrainClass* pTerrain)
@@ -78,6 +82,7 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsTiberium_CellsPerAnim.Read(exINI, pSection, "SpawnsTiberium.CellsPerAnim");
 
 	this->DestroyAnim.Read(exINI, pSection, "DestroyAnim");
+	this->DestroyAnim.Read(exINI, pSection, "DestroyAnims");
 	this->DestroySound.Read(exINI, pSection, "DestroySound");
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");

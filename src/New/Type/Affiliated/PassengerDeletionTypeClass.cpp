@@ -53,6 +53,7 @@ void PassengerDeletionTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSect
 	this->DisplaySoylentOffset.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentOffset");
 	this->ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
 	this->Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
+	this->Anim.Read(exINI, pSection, "PassengerDeletion.Anims");
 }
 
 #pragma region(save/load)

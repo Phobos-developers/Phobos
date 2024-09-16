@@ -69,8 +69,8 @@ public:
 
 		Valueable<bool> Shield_Penetrate;
 		Valueable<bool> Shield_Break;
-		Valueable<AnimTypeClass*> Shield_BreakAnim;
-		Valueable<AnimTypeClass*> Shield_HitAnim;
+		ValueableVector<AnimTypeClass*> Shield_BreakAnim;
+		ValueableVector<AnimTypeClass*> Shield_HitAnim;
 		Valueable<bool> Shield_SkipHitAnim;
 		Valueable<bool> Shield_HitFlash;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;

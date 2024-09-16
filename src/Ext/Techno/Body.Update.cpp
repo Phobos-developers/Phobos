@@ -136,7 +136,10 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
-	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation;
+	AnimTypeClass* pVanishAnim = nullptr;
+
+	if (!pTypeExt->AutoDeath_VanishAnimation.empty())
+		pVanishAnim = pTypeExt->AutoDeath_VanishAnimation[ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->AutoDeath_VanishAnimation.size() - 1)];
 
 	// Death if no ammo
 	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
@@ -283,11 +286,16 @@ void TechnoExt::ExtData::EatPassengers()
 					if (pDelType->ReportSound >= 0)
 						VocClass::PlayAt(pDelType->ReportSound.Get(), pThis->GetCoords(), nullptr);
 
-					if (const auto pAnimType = pDelType->Anim.Get())
+					if (!pDelType->Anim.empty())
 					{
-						auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
-						pAnim->SetOwnerObject(pThis);
-						pAnim->Owner = pThis->Owner;
+						if (auto const pAnimType = pDelType->Anim[ScenarioClass::Instance->Random.RandomRanged(0, pDelType->Anim.size() - 1)])
+						{
+							if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location))
+							{
+								pAnim->SetOwnerObject(pThis);
+								pAnim->Owner = pThis->Owner;
+							}
+						}
 					}
 
 					// Check if there is money refund
