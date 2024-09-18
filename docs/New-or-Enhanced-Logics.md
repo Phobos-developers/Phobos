@@ -1290,16 +1290,16 @@ Convert.ComputerToHuman =   ; TechnoType
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                       ; InfantryType, UnitType or AircraftType
-MobileRefinery=false                  ; boolean
-MobileRefinery.TransDelay=30       ; unsigned int, how many frames are there between two conversions
-MobileRefinery.CashMultiplier=1.0  ; float, it's multiplier of the final cash.
-MobileRefinery.AmountPerCell=0     ; unsigned int, how many ore can be convert at one time in each cell
-MobileRefinery.FrontOffset=        ; list of integer, use cell as unit, multiple values mean that they are effective in multiple cells at the same time
-MobileRefinery.LeftOffset=         ; list of integer, use cell as unit, multiple values mean that they are effective in multiple cells at the same time
-MobileRefinery.Display=true         ; boolean, should it display translated cash ?
-MobileRefinery.Display.Houses=all  ; AffectedHouse, who can see cash
-MobileRefinery.Anims=              ; list of animations, if set 8 animations, it will select by techno's body facing, other amount will random select
-MobileRefinery.AnimMove=true        ; should the anim move as techno ?
+MobileRefinery=false               ; boolean
+MobileRefinery.TransDelay=30       ; integer
+MobileRefinery.CashMultiplier=1.0  ; float
+MobileRefinery.AmountPerCell=0     ; integer
+MobileRefinery.FrontOffset=        ; list of double, use cell as unit, multiple values mean that they are effective in multiple cells at the same time
+MobileRefinery.LeftOffset=         ; list of double, use cell as unit, multiple values mean that they are effective in multiple cells at the same time
+MobileRefinery.Display=true        ; boolean
+MobileRefinery.Display.Houses=all  ; AffectedHouse enumeration
+MobileRefinery.Anims=              ; list of animations
+MobileRefinery.AnimMove=true       ; boolean
 ```
 
 ## Terrain
