@@ -21,43 +21,53 @@ public:
 template<size_t KeyIndex>
 inline const char* SWShortcutsCommandClass<KeyIndex>::GetName() const
 {
-	class to_string_t
+	if (KeyIndex > 0)
 	{
-	public:
-		char buffer[27];
-
-	public:
-		constexpr to_string_t() noexcept
-			: buffer { "SW Sidebar Shortcuts Num 0" }
+		class to_string_t
 		{
-			buffer[25] = KeyIndex + '0';
-		}
+		public:
+			char buffer[29];
 
-		constexpr operator char* () noexcept { return buffer; }
-	};
-	static to_string_t name;
-	return name;
+		public:
+			constexpr to_string_t() noexcept
+				: buffer { "" }
+			{
+				sprintf_s(buffer, "SW Sidebar Shortcuts Num %2d", KeyIndex);
+			}
+
+			constexpr operator char* () noexcept { return buffer; }
+		};
+		static to_string_t name;
+		return name;
+	}
+
+	return "SW Sidebar Display";
 }
 
 template<size_t KeyIndex>
 inline const wchar_t* SWShortcutsCommandClass<KeyIndex>::GetUIName() const
 {
-	class to_string_t
+	if (KeyIndex > 0)
 	{
-	public:
-		wchar_t buffer[18];
-
-	public:
-		constexpr to_string_t() noexcept
-			: buffer { L"Quick Select SW 0" }
+		class to_string_t
 		{
-			buffer[16] = KeyIndex + '0';
-		}
+		public:
+			wchar_t buffer[20];
 
-		constexpr operator wchar_t* () noexcept { return buffer; }
-	};
-	static to_string_t name;
-	return StringTable::TryFetchString("TXT_SW_XX_FORWARD", name);
+		public:
+			constexpr to_string_t() noexcept
+				: buffer { L"" }
+			{
+				swprintf_s(buffer, L"Quick Select SW %2d", KeyIndex);
+			}
+
+			constexpr operator wchar_t* () noexcept { return buffer; }
+		};
+		static to_string_t name;
+		return StringTable::TryFetchString("TXT_SW_XX_FORWARD", name);
+	}
+
+	return GeneralUtils::LoadStringUnlessMissing("TXT_SW_XX_FORWARD", L"SW sidebar display");
 }
 
 template<size_t KeyIndex>
@@ -69,26 +79,49 @@ inline const wchar_t* SWShortcutsCommandClass<KeyIndex>::GetUICategory() const
 template<size_t KeyIndex>
 inline const wchar_t* SWShortcutsCommandClass<KeyIndex>::GetUIDescription() const
 {
-	class to_string_t
+	if (KeyIndex > 0)
 	{
-	public:
-		wchar_t buffer[31];
-
-	public:
-		constexpr to_string_t() noexcept
-			: buffer { L"Select No.0 SW in left sidebar" }
+		class to_string_t
 		{
-			buffer[10] = KeyIndex + '0';
-		}
+		public:
+			wchar_t buffer[34];
 
-		constexpr operator wchar_t* () noexcept { return buffer; }
-	};
-	static to_string_t name;
-	return StringTable::TryFetchString("TXT_SW_XX_FORWARD_DESC", name);
+		public:
+			constexpr to_string_t() noexcept
+				: buffer { L"" }
+			{
+				swprintf_s(buffer, L"Select No.%02d SW in left sidebar", KeyIndex);
+			}
+
+			constexpr operator wchar_t* () noexcept { return buffer; }
+		};
+		static to_string_t name;
+		return StringTable::TryFetchString("TXT_SW_XX_FORWARD_DESC", name);
+	}
+
+	return GeneralUtils::LoadStringUnlessMissing("TXT_SW_XX_FORWARD_DESC", L"Switch between visible/invisible modes for exclusive SW sidebar");
 }
 
 template<size_t KeyIndex>
 inline void SWShortcutsCommandClass<KeyIndex>::Execute(WWKey eInput) const
 {
-	TacticalButtonClass::TriggerButtonForSW(KeyIndex);
+	if (KeyIndex > 0)
+	{
+		TacticalButtonClass::Instance.KeyboardCall = true;
+		TacticalButtonClass::Instance.TriggerButtonForSW(KeyIndex);
+		return;
+	}
+
+	TacticalButtonClass::Instance.SuperVisible = !TacticalButtonClass::Instance.SuperVisible;
+	TacticalButtonClass::Instance.RecheckButtonIndex();
+
+	MessageListClass::Instance->PrintMessage
+	(
+		(TacticalButtonClass::Instance.SuperVisible ?
+			GeneralUtils::LoadStringUnlessMissing("MSG:SWSidebarVisible", L"Set exclusive SW sidebar visible.") :
+			GeneralUtils::LoadStringUnlessMissing("MSG:SWSidebarInvisible", L"Set exclusive SW sidebar invisible.")),
+		RulesClass::Instance->MessageDelay,
+		HouseClass::CurrentPlayer->ColorSchemeIndex,
+		true
+	);
 }

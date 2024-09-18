@@ -35,9 +35,6 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
-		int SuperWeaponButtonData[9];
-		int SuperWeaponButtonCount;
-
 		CDTimerClass AISuperWeaponDelayTimer;
 
 		//Read from INI
@@ -68,8 +65,6 @@ public:
 			, Factory_VehicleType { nullptr }
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
-			, SuperWeaponButtonData { -1, -1, -1, -1, -1, -1, -1, -1, -1 }
-			, SuperWeaponButtonCount { 0 }
 			, AISuperWeaponDelayTimer {}
 			, RepairBaseNodes { false,false,false }
 			, RestrictedFactoryPlants {}

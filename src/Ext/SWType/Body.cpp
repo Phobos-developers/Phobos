@@ -23,18 +23,8 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_AuxBuildings)
 		.Process(this->SW_NegBuildings)
 		.Process(this->SW_InitialReady)
-		.Process(this->SW_AutoFire)
-		.Process(this->SW_ManualFire)
-		.Process(this->SW_Unstoppable)
 		.Process(this->SW_PostDependent)
-		.Process(this->EVA_Impatient)
-		.Process(this->EVA_InsufficientFunds)
-		.Process(this->EVA_SelectTarget)
-		.Process(this->Message_InsufficientFunds)
-		.Process(this->Message_ColorScheme)
-		.Process(this->Message_FirerColor)
 		.Process(this->SidebarPCX)
-		.Process(this->SW_UseAITargeting)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
@@ -58,10 +48,11 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->SW_QuickFireAtMouse)
+		.Process(this->SW_QuickFireInScreen)
 		.Process(this->SW_InScreen_Show)
 		.Process(this->SW_InScreen_PriorityHouses)
 		.Process(this->SW_InScreen_RequiredHouses)
-		.Process(this->SW_InScreen_QuickFire)
 		.Process(this->UseWeeds)
 		.Process(this->UseWeeds_Amount)
 		.Process(this->UseWeeds_StorageTimer)
@@ -94,18 +85,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_AuxBuildings.Read(exINI, pSection, "SW.AuxBuildings");
 	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
 	this->SW_InitialReady.Read(exINI, pSection, "SW.InitialReady");
-	this->SW_AutoFire.Read(exINI, pSection, "SW.AutoFire");
-	this->SW_ManualFire.Read(exINI, pSection, "SW.ManualFire");
-	this->SW_Unstoppable.Read(exINI, pSection, "SW.Unstoppable");
 	this->SW_PostDependent.Read(exINI, pSection, "SW.PostDependent");
-	this->EVA_Impatient.Read(exINI, pSection, "EVA.Impatient");
-	this->EVA_InsufficientFunds.Read(exINI, pSection, "EVA.InsufficientFunds");
-	this->EVA_SelectTarget.Read(exINI, pSection, "EVA.SelectTarget");
-	this->Message_InsufficientFunds.Read(exINI, pSection, "Message.InsufficientFunds");
-	this->Message_ColorScheme.Read(exINI, pSection, "Message.ColorScheme");
-	this->Message_FirerColor.Read(exINI, pSection, "Message.FirerColor");
 	this->SidebarPCX.Read(pINI, pSection, "SidebarPCX");
-	this->SW_UseAITargeting.Read(exINI, pSection, "SW.UseAITargeting");
 
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
@@ -186,10 +167,11 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
 
+	this->SW_QuickFireAtMouse.Read(exINI, pSection, "SW.QuickFireAtMouse");
+	this->SW_QuickFireInScreen.Read(exINI, pSection, "SW.QuickFireInScreen");
 	this->SW_InScreen_Show.Read(exINI, pSection, "SW.InScreen.Show");
 	this->SW_InScreen_PriorityHouses = pINI->ReadHouseTypesList(pSection, "SW.InScreen.PriorityHouses", this->SW_InScreen_PriorityHouses);
 	this->SW_InScreen_RequiredHouses = pINI->ReadHouseTypesList(pSection, "SW.InScreen.RequiredHouses", this->SW_InScreen_RequiredHouses);
-	this->SW_InScreen_QuickFire.Read(exINI, pSection, "SW.InScreen.QuickFire");
 
 	this->UseWeeds.Read(exINI, pSection, "UseWeeds");
 	this->UseWeeds_Amount.Read(exINI, pSection, "UseWeeds.Amount");
