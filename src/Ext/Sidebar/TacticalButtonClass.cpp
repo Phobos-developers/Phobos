@@ -80,9 +80,8 @@ bool TacticalButtonClass::Draw(bool forced)
 
 	if (pSuper->IsCharged && !pCurrent->CanTransactMoney(pSWExt->Money_Amount) || (pSWExt->SW_UseAITargeting && !AresFunctions::IsTargetConstraintsEligible(AresFunctions::SWTypeExtMap_Find(pSuper->Type), HouseClass::CurrentPlayer, true)))
 	{
-		const auto pDarken = Make_Global<SHPStruct*>(0xB07BC0);
 		RectangleStruct darkenBounds { 0, 0, location.X + this->Width, location.Y + this->Height };
-		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, pDarken, 0, &location, &darkenBounds, BlitterFlags::bf_400 | BlitterFlags::Darken, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::DARKEN_SHP, 0, &location, &darkenBounds, BlitterFlags::bf_400 | BlitterFlags::Darken, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
 	if (this->IsHovering)
@@ -94,9 +93,8 @@ bool TacticalButtonClass::Draw(bool forced)
 
 	if (!pSuper->RechargeTimer.Completed())
 	{
-		const auto pGClock2 = Make_Global<SHPStruct*>(0xB0B484);
 		Point2D loc = { location.X, location.Y };
-		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, pGClock2, pSuper->GetCameoChargeState() + 1, &loc, &bounds, BlitterFlags::bf_400 | BlitterFlags::TransLucent50, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::GCLOCK2_SHP, pSuper->GetCameoChargeState() + 1, &loc, &bounds, BlitterFlags::bf_400 | BlitterFlags::TransLucent50, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
 	const auto buffer = pSuper->NameReadiness();;
