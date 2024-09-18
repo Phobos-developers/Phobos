@@ -355,11 +355,10 @@ This page lists all the individual contributions to the project by their author.
   - Allow to change the speed of gas particles
 - **CrimRecya**
   - Fix `LimboKill` not working reliably
+  - Optimize aircrafts stop action and allow they using area guard and attack moving
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
-- **CrimRecya**
-  - Optimize aircrafts stop action and allow they using area guard and attack moving
 - **handama** - AI script action to jump back to previous script
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
