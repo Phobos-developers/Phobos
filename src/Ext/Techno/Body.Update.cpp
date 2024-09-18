@@ -43,7 +43,6 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
 	this->UpdateAttachEffects();
-	this->UpdateMobileRefinery();
 }
 
 
@@ -596,7 +595,7 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 	}
 }
 
-void TechnoExt::ExtData::UpdateMobileRefinery()
+void TechnoExt::ExtData::ApplyMobileRefinery()
 {
 	const auto pMobileRefineryType = this->TypeExtData->MobileRefineryType.get();
 	if (!pMobileRefineryType || this->MobileRefineryTimer.InProgress())
