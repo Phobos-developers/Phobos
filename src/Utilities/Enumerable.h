@@ -85,7 +85,7 @@ public:
 				return false;
 
 			auto newPtr = FindOrAllocate(name);
-			PhobosSwizzle::Instance.RegisterChange(oldPtr, newPtr);
+			PhobosSwizzle::RegisterChange(oldPtr, newPtr);
 
 			newPtr->LoadFromStream(Stm);
 		}
@@ -125,3 +125,6 @@ public:
 
 	PhobosFixedString<32> Name;
 };
+
+template <typename T>
+Enumerable<T>::container_t Enumerable<T>::Array;

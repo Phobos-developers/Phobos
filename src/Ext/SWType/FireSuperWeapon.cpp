@@ -11,6 +11,7 @@
 #include "Ext/House/Body.h"
 #include "Ext/WarheadType/Body.h"
 #include "Ext/WeaponType/Body.h"
+#include <Ext/Scenario/Body.h>
 
 // ============= New SuperWeapon Effects================
 
@@ -24,7 +25,7 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 		if (pTypeExt->LimboKill_IDs.size() > 0)
 			pTypeExt->ApplyLimboKill(pSW->Owner);
 
-		if (pTypeExt->Detonate_Warhead.isset() || pTypeExt->Detonate_Weapon.isset())
+		if (pTypeExt->Detonate_Warhead || pTypeExt->Detonate_Weapon)
 			pTypeExt->ApplyDetonation(pSW->Owner, cell);
 
 		if (pTypeExt->SW_Next.size() > 0)
@@ -64,7 +65,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		// Normally on unlimbo the buildings are revealed to current player if unshrouded or if game is a campaign and to non-player houses always.
 		// Because of the unique nature of LimboDelivered buildings, this has been adjusted to always reveal to the current player in singleplayer
 		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist - Starkku
-		if (SessionClass::Instance->GameMode == GameMode::Campaign)
+		if (SessionClass::IsCampaign())
 			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
 
 		pBuilding->DiscoveredBy(pOwner);
@@ -89,77 +90,34 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 			pOwner->CalculateCostMultipliers();
 		}
 
-		if (pType->OrePurifier)
-			pOwner->NumOrePurifiers++;
-
-		// BuildingClass::Place is where Ares hooks secret lab expansion
-		// pTechnoBuilding->Place(false);
-		// even with it no bueno yet, plus new issues
-		// probably should just port it from Ares 0.A and be done
+		// BuildingClass::Place is already called in DiscoveredBy
+		// it added OrePurifier and xxxGainSelfHeal to House counter already
 
 		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
 
-		if (pBuildingExt)
+		// LimboKill ID
+		pBuildingExt->LimboID = ID;
+
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+
+		// Add building to list of owned limbo buildings
+		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
+
+		if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+			pOwnerExt->AddToLimboTracking(pBuilding->Type);
+
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
+		auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
+
+		if (pTechnoTypeExt->AutoDeath_Behavior.isset())
 		{
-			// LimboKill ID
-			pBuildingExt->LimboID = ID;
+			ScenarioExt::Global()->AutoDeathObjects.push_back(pTechnoExt);
 
-			if (auto pOwnerExt = HouseExt::ExtMap.Find(pOwner))
-			{	// Add building to list of owned limbo buildings
-				pOwnerExt->OwnedLimboDeliveredBuildings.insert({ pBuilding, pBuildingExt });
-
-				auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
-				auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
-
-				if (pTechnoTypeExt->AutoDeath_Behavior.isset() && pTechnoTypeExt->AutoDeath_AfterDelay > 0)
-				{
-					pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
-					pOwnerExt->OwnedTimedAutoDeathObjects.push_back(pTechnoExt);
-				}
-			}
+			if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
+				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
 		}
+
 	}
-}
-
-inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
-{
-	BuildingTypeClass* pType = pBuilding->Type;
-
-	auto pOwnerExt = HouseExt::ExtMap.Find(pTargetHouse);
-
-	// Remove building from list of owned limbo buildings
-	if (pOwnerExt)
-		pOwnerExt->OwnedLimboDeliveredBuildings.erase(pBuilding);
-
-	// Mandatory
-	pBuilding->InLimbo = true;
-	pBuilding->IsAlive = false;
-	pBuilding->IsOnMap = false;
-	pTargetHouse->RegisterLoss(pBuilding, false);
-	pTargetHouse->UpdatePower();
-	pTargetHouse->RecheckTechTree = true;
-	pTargetHouse->RecheckPower = true;
-	pTargetHouse->RecheckRadar = true;
-	pTargetHouse->Buildings.Remove(pBuilding);
-
-	// Building logics
-	if (pType->ConstructionYard)
-		pTargetHouse->ConYards.Remove(pBuilding);
-
-	if (pType->SecretLab)
-		pTargetHouse->SecretLabs.Remove(pBuilding);
-
-	if (pType->FactoryPlant)
-	{
-		pTargetHouse->FactoryPlants.Remove(pBuilding);
-		pTargetHouse->CalculateCostMultipliers();
-	}
-
-	if (pType->OrePurifier)
-		pTargetHouse->NumOrePurifiers--;
-
-	// Remove completely
-	pBuilding->UnInit();
 }
 
 void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
@@ -201,12 +159,25 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 		{
 			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
 			{
-				if (auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse))
+				auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
+				auto& vec = pHouseExt->OwnedLimboDeliveredBuildings;
+
+				for (auto it = vec.begin(); it != vec.end(); )
 				{
-					for (const auto& [pBuilding, pBuildingExt] : pHouseExt->OwnedLimboDeliveredBuildings)
+					BuildingClass* const pBuilding = *it;
+					auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+
+					if (pBuildingExt->LimboID == limboKillID)
 					{
-						if (pBuildingExt->LimboID == limboKillID)
-							LimboDelete(pBuildingExt->OwnerObject(), pTargetHouse);
+						it = vec.erase(it);
+						pBuilding->Stun();
+						pBuilding->Limbo();
+						pBuilding->RegisterDestruction(nullptr);
+						pBuilding->UnInit();
+					}
+					else
+					{
+						++it;
 					}
 				}
 			}
@@ -218,9 +189,6 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 
 void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& cell)
 {
-	if (!this->Detonate_Weapon.isset() && !this->Detonate_Warhead.isset())
-		return;
-
 	auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
 	BuildingClass* pFirer = nullptr;
 
@@ -236,25 +204,25 @@ void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& c
 	if (this->Detonate_AtFirer)
 		coords = pFirer ? pFirer->GetCenterCoords() : CoordStruct::Empty;
 
-	const auto pWeapon = this->Detonate_Weapon.isset() ? this->Detonate_Weapon.Get() : nullptr;
+	const auto pWeapon = this->Detonate_Weapon;
 	auto const mapCoords = CellClass::Coord2Cell(coords);
 
 	if (!MapClass::Instance->CoordinatesLegal(mapCoords))
 	{
-		auto const ID = pWeapon ? pWeapon->get_ID() : this->Detonate_Warhead.Get()->get_ID();
+		auto const ID = pWeapon ? pWeapon->get_ID() : this->Detonate_Warhead->get_ID();
 		Debug::Log("ApplyDetonation: Superweapon [%s] failed to detonate [%s] - cell at %d, %d is invalid.\n", this->OwnerObject()->get_ID(), ID, mapCoords.X, mapCoords.Y);
 		return;
 	}
 
-	HouseClass* pFirerHouse = nullptr;
-
-	if (!pFirer)
-		pFirerHouse = pHouse;
-
 	if (pWeapon)
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage), pFirerHouse);
+		WeaponTypeExt::DetonateAt(pWeapon, coords, pFirer, this->Detonate_Damage.Get(pWeapon->Damage), pHouse);
 	else
-		WarheadTypeExt::DetonateAt(this->Detonate_Warhead.Get(), coords, pFirer, this->Detonate_Damage.Get(0), pFirerHouse);
+	{
+		if (this->Detonate_Warhead_Full)
+			WarheadTypeExt::DetonateAt(this->Detonate_Warhead, coords, pFirer, this->Detonate_Damage.Get(0), pHouse);
+		else
+			MapClass::DamageArea(coords, this->Detonate_Damage.Get(0), pFirer, this->Detonate_Warhead, true, pHouse);
+	}
 }
 
 void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
@@ -267,7 +235,7 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 		{
 			const auto pNextTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 			if (!this->SW_Next_RealLaunch ||
-				(pSuper->Granted && pSuper->IsCharged && !pSuper->IsOnHold && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
+				(pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
 			{
 				if (this->SW_Next_IgnoreInhibitors || !pNextTypeExt->HasInhibitor(pHouse, cell)
 					&& (this->SW_Next_IgnoreDesignators || pNextTypeExt->HasDesignator(pHouse, cell)))
@@ -275,7 +243,7 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 					int oldstart = pSuper->RechargeTimer.StartTime;
 					int oldleft = pSuper->RechargeTimer.TimeLeft;
 					pSuper->SetReadiness(true);
-					pSuper->Launch(cell, true);
+					pSuper->Launch(cell, pHouse->IsCurrentPlayer());
 					pSuper->Reset();
 					if (!this->SW_Next_RealLaunch)
 					{
@@ -308,5 +276,5 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 		return;
 
 	for (const auto pTargetFoot : *FootClass::Array)
-		TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
+		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }

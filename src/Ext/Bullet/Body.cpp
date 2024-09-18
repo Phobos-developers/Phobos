@@ -5,6 +5,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Misc/FlyingStrings.h>
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
@@ -14,7 +15,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 		return;
 
 	auto const pThis = this->OwnerObject();
-	auto const pTypeExt = this->TypeExtData;
+	auto pTypeExt = this->TypeExtData;
 	bool canAffect = false;
 	bool isIntercepted = false;
 
@@ -25,7 +26,12 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 		if (versus != 0.0)
 		{
 			canAffect = true;
-			this->CurrentStrength -= static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+
+			int damage = static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+			this->CurrentStrength -= damage;
+
+			if (Phobos::DisplayDamageNumbers && damage != 0)
+				GeneralUtils::DisplayDamageNumberString(damage, DamageDisplayType::Intercept, this->OwnerObject()->GetRenderCoords(), this->DamageNumberOffset);
 
 			if (this->CurrentStrength <= 0)
 				isIntercepted = true;
@@ -41,7 +47,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	{
 		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
 		const auto pInterceptorType = pTechnoTypeExt->InterceptorType.get();
-		const auto pWeaponOverride = pInterceptorType->WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride.Get(nullptr));
+		const auto pWeaponOverride = pInterceptorType->WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride);
 		bool detonate = !pInterceptorType->DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
 
 		this->DetonateOnInterception = detonate;
@@ -60,7 +66,8 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 			{
 				pThis->Speed = pWeaponOverride->Speed;
 				pThis->Type = pWeaponOverride->Projectile;
-				this->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
+				pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+				this->TypeExtData = pTypeExt;
 
 				if (this->LaserTrails.size())
 				{
@@ -69,6 +76,10 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 					if (!pThis->Type->Inviso)
 						this->InitializeLaserTrails();
 				}
+
+				// Lose target if the current bullet is no longer interceptable.
+				if (!pTypeExt->Interceptable || (pTypeExt->Armor.isset() && GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor.Get()) == 0.0))
+					pSource->SetTarget(nullptr);
 			}
 		}
 
@@ -82,7 +93,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	auto const pThis = this->OwnerObject();
 
 	auto const pWeapon = pThis->GetWeaponType();
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	auto const pRadType = pWeaponExt->RadType;
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 
@@ -160,6 +171,8 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->InterceptedStatus)
 		.Process(this->DetonateOnInterception)
 		.Process(this->LaserTrails)
+		.Process(this->SnappedToTarget)
+		.Process(this->DamageNumberOffset)
 		;
 
 	this->Trajectory = PhobosTrajectory::ProcessFromStream(Stm, this->Trajectory);
@@ -191,7 +204,7 @@ DEFINE_HOOK(0x4664BA, BulletClass_CTOR, 0x5)
 {
 	GET(BulletClass*, pItem, ESI);
 
-	BulletExt::ExtMap.FindOrAllocate(pItem);
+	BulletExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

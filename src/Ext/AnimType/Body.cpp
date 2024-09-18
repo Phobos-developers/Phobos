@@ -12,7 +12,7 @@
 
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
-const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
+void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 {
 	if (!pThis)
 		return;
@@ -84,22 +84,25 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Palette.LoadFromINI(pINI, pID, "CustomPalette");
-	this->CreateUnit.Read(exINI, pID, "CreateUnit", true);
+	this->CreateUnit.Read(exINI, pID, "CreateUnit");
 	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
 	this->CreateUnit_InheritDeathFacings.Read(exINI, pID, "CreateUnit.InheritFacings");
 	this->CreateUnit_InheritTurretFacings.Read(exINI, pID, "CreateUnit.InheritTurretFacings");
 	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
 	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
+	this->CreateUnit_AIMission.Read(exINI, pID, "CreateUnit.AIMission");
 	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
 	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
 	this->CreateUnit_AlwaysSpawnOnGround.Read(exINI, pID, "CreateUnit.AlwaysSpawnOnGround");
+	this->CreateUnit_SpawnParachutedInAir.Read(exINI, pID, "CreateUnit.SpawnParachutedInAir");
 	this->CreateUnit_ConsiderPathfinding.Read(exINI, pID, "CreateUnit.ConsiderPathfinding");
 	this->CreateUnit_SpawnAnim.Read(exINI, pID, "CreateUnit.SpawnAnim");
+	this->CreateUnit_SpawnHeight.Read(exINI, pID, "CreateUnit.SpawnHeight");
 	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
 	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
 	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
 	this->UseCenterCoordsIfAttached.Read(exINI, pID, "UseCenterCoordsIfAttached");
-	this->Weapon.Read(exINI, pID, "Weapon", true);
+	this->Weapon.Read<true>(exINI, pID, "Weapon");
 	this->Damage_Delay.Read(exINI, pID, "Damage.Delay");
 	this->Damage_DealtByInvoker.Read(exINI, pID, "Damage.DealtByInvoker");
 	this->Damage_ApplyOncePerLoop.Read(exINI, pID, "Damage.ApplyOncePerLoop");
@@ -108,8 +111,11 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->WakeAnim.Read(exINI, pID, "WakeAnim");
 	this->SplashAnims.Read(exINI, pID, "SplashAnims");
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
-	this->AttachedSystem.Read(exINI, pID, "AttachedSystem", true);
+	this->AttachedSystem.Read<true>(exINI, pID, "AttachedSystem");
 	this->AltPalette_ApplyLighting.Read(exINI, pID, "AltPalette.ApplyLighting");
+	this->MakeInfantryOwner.Read(exINI, pID, "MakeInfantryOwner");
+	this->ExtraShadow.Read(exINI, pID, "ExtraShadow");
+	this->DetachedReport.Read(exINI, pID, "DetachedReport");
 }
 
 template <typename T>
@@ -122,12 +128,15 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateUnit_InheritDeathFacings)
 		.Process(this->CreateUnit_RemapAnim)
 		.Process(this->CreateUnit_Mission)
+		.Process(this->CreateUnit_AIMission)
 		.Process(this->CreateUnit_InheritTurretFacings)
 		.Process(this->CreateUnit_Owner)
 		.Process(this->CreateUnit_RandomFacing)
 		.Process(this->CreateUnit_AlwaysSpawnOnGround)
+		.Process(this->CreateUnit_SpawnParachutedInAir)
 		.Process(this->CreateUnit_ConsiderPathfinding)
 		.Process(this->CreateUnit_SpawnAnim)
+		.Process(this->CreateUnit_SpawnHeight)
 		.Process(this->XDrawOffset)
 		.Process(this->HideIfNoOre_Threshold)
 		.Process(this->Layer_UseObjectLayer)
@@ -143,6 +152,9 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SplashAnims_PickRandom)
 		.Process(this->AttachedSystem)
 		.Process(this->AltPalette_ApplyLighting)
+		.Process(this->MakeInfantryOwner)
+		.Process(this->ExtraShadow)
+		.Process(this->DetachedReport)
 		;
 }
 

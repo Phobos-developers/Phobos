@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <GameStrings.h>
 
 // SellSound and EVA dehardcode
 DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
@@ -26,7 +25,7 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 
 // Rewrite 0x449BC0
 // true: undeploy into vehicle; false: sell
-bool __forceinline BuildingCanUndeploy(BuildingClass* pThis)
+bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 {
 	auto pType = pThis->Type;
 
@@ -61,7 +60,7 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mi_Selling_EVASold_UndeploysInto, 0x6)
 	if (pThis->IsOwnedByCurrentPlayer && (!pThis->Focus || !pThis->Type->UndeploysInto))
 		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_StructureSold)));
 
-	return BuildingCanUndeploy(pThis) ? CreateUnit : SkipTheEntireShit;
+	return BuildingExt::CanUndeployOnSell(pThis) ? CreateUnit : SkipTheEntireShit;
 }
 
 DEFINE_HOOK(0x44A7CF, BuildingClass_Mi_Selling_PlaySellSound, 0x6)
@@ -69,7 +68,7 @@ DEFINE_HOOK(0x44A7CF, BuildingClass_Mi_Selling_PlaySellSound, 0x6)
 	enum { FinishPlaying = 0x44A85B };
 	GET(BuildingClass*, pThis, EBP);
 
-	if (!BuildingCanUndeploy(pThis))
+	if (!BuildingExt::CanUndeployOnSell(pThis))
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 		VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
@@ -83,7 +82,7 @@ DEFINE_HOOK(0x44A8E5, BuildingClass_Mi_Selling_SetTarget, 0x6)
 	enum { ResetTarget = 0x44A937, SkipShit = 0x44A95E };
 	GET(BuildingClass*, pThis, EBP);
 
-	return BuildingCanUndeploy(pThis) ? ResetTarget : SkipShit;
+	return BuildingExt::CanUndeployOnSell(pThis) ? ResetTarget : SkipShit;
 }
 
 DEFINE_HOOK(0x44A964, BuildingClass_Mi_Selling_VoiceDeploy, 0x6)
@@ -91,7 +90,7 @@ DEFINE_HOOK(0x44A964, BuildingClass_Mi_Selling_VoiceDeploy, 0x6)
 	enum { CanDeploySound = 0x44A9CA, SkipShit = 0x44AA3D };
 	GET(BuildingClass*, pThis, EBP);
 
-	return BuildingCanUndeploy(pThis) ? CanDeploySound : SkipShit;
+	return BuildingExt::CanUndeployOnSell(pThis) ? CanDeploySound : SkipShit;
 }
 
 DEFINE_HOOK(0x44AB22, BuildingClass_Mi_Selling_EVASold_Plug, 0x6)

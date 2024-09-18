@@ -8,6 +8,8 @@ This page lists all user interface additions, changes, fixes that are implemente
 - You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
 - Fixed `Blowfish.dll`-caused error `***FATAL*** String Manager failed to initialize properly`, which occurred if `Blowfish.dll` could not be registered in the OS, for example, it happened when the player did not have administrator rights. With Phobos, if the game did not find a registered file in the system, it will no longer try to register this file, but will load it bypassing registration.
 - Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (font support required).
+- Fixed position and layer of info tip and reveal production cameo on selected building
+- Timer (superweapon, mission etc) blinking color scheme can be customized by setting `[AudioVisual]` -> `TimerBlinkColorScheme`. Defaults to third color scheme listed in `[Colors]`.
 
 ```{note}
 You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
@@ -42,7 +44,8 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
     - Frames 0-9 will be used as digits when the owner's health bar is green, 10-19 when yellow, 20-29 when red. For `/` and `%` characters, frame numbers are 30-31, 32-33, 34-35, respectively.
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
-
+  - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1.
+  
 In `rulesmd.ini`:
 ```ini
 [DigitalDisplayTypes]
@@ -67,6 +70,7 @@ Percentage=false                        ; boolean
 HideMaxValue=false                      ; boolean
 VisibleToHouses=owner                   ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true           ; boolean
+ValueScaleDivisor=1                     ; integer
 ; Text
 Text.Color=0,255,0                      ; integers - Red, Green, Blue
 Text.Color.ConditionYellow=255,255,0    ; integers - Red, Green, Blue
@@ -82,7 +86,7 @@ DigitalDisplay.Disable=false            ; boolean
 DigitalDisplayTypes=                    ; list of DigitalDisplayTypes
 ```
 
-In `Ra2MD.ini`:
+In `RA2MD.ini`:
 ```ini
 [Phobos]
 DigitalDisplay.Enable=false             ; boolean
@@ -90,6 +94,28 @@ DigitalDisplay.Enable=false             ; boolean
 
 ```{note}
 An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)).
+```
+
+### Show designator & inhibitor range
+
+- It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon]->SW.Designators` will display a circle with radius set in `[TechnoType]->DesignatorRange` or `Sight`.
+  - In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon]->SW.Inhibitors` will display a circle with radius set in `[TechnoType]->InhibitorRange` or `Sight`.
+- This feature can be disabled globally with `[AudioVisual]->ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon]->ShowDesignatorRange=false`.
+- This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `Ra2MD.ini` or with "Toggle Designator Range" hotkey in "Interface" category.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ShowDesignatorRange=true    ; boolean
+
+[SOMESW]                    ; SuperWeapon
+ShowDesignatorRange=true    ; boolean
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowDesignatorRange=false             ; boolean
 ```
 
 ### Hide health bars
@@ -154,7 +180,7 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 *Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual]->PlacementPreview` and then further customized for each building with `[SOMEBUILDING]->PlacementPreview`.
-- The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency`.
+- The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is disabled and `PlacementGrid.TranslucencyWithPreview` if enabled.
 - If using the building's appropriate `Buildup` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to show as preview through `PlacementPreview.Shape`, `PlacementPreview.ShapeFrame` and `PlacementPreview.Palette`.
   - You can specify theater-specific palettes and shapes by putting three `~` marks to the theater specific part of the filename. `~~~` is replaced with the theater’s three-letter extension.
 - `PlacementPreview.ShapeFrame=` tag defaults to building's artmd.ini `Buildup` entry's last non-shadow frame. If there is no 'Buildup' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
@@ -162,9 +188,11 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
+PlacementGrid.Translucency=0            ; translucency level (0/25/50/75)
+PlacementGrid.TranslucencyWithPreview=  ; translucency level (0/25/50/75), defaults to [AudioVisual]->PlacementGrid.Translucency
+
 PlacementPreview=no                  ; boolean
 PlacementPreview.Translucency=75     ; translucency level (0/25/50/75)
-PlacementGrid.Translucency=0         ; translucency level (0/25/50/75)
 
 [SOMEBUILDING]
 PlacementPreview=yes                 ; boolean
@@ -182,7 +210,7 @@ The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap=y
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
-In `ra2md.ini`:
+In `RA2MD.ini`:
 ```ini
 [Phobos]
 ShowPlacementPreview=yes   ; boolean
@@ -215,25 +243,56 @@ ShowTimer=yes
 ShowTimer.Priority=0  ; integer
 ```
 
+### Flashing Technos on selecting
+
+Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SelectionFlashDuration=0  ; integer, number of frames
+```
+
 ## Hotkey Commands
+
+### `[ ]` Display Damage Numbers
+
+- Switches on/off floating numbers when dealing damage. See [this](Miscellanous.md#display-damage-numbers) for details.
+- For localization add `TXT_DISPLAY_DAMAGE` and `TXT_DISPLAY_DAMAGE_DESC` into your `.csf` file.
 
 ### `[ ]` Dump Object Info
 
 - Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details.
-- If need localization, just add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file.
+- For localization add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file.
 
 ### `[ ]` Next Idle Harvester
 
 - Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
-- If need localization, just add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file.
+- For localization add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file.
 
 ### `[ ]` Quicksave
 
 - Save the current singleplayer game.
-- If need localization, just add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
+- For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
     - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
     - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
 
+### `[ ]` Save Variables
+
+- Save local & global variables to an INI file. See [this](Miscellanous.html#save-variables-to-file) for details.
+- For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Designator Range
+- Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
+- For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Digital Display
+- Switches on/off [digital display types](#digital-display).
+- For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Frame By Frame Mode
+- Switches on/off [frame by frame mode](Miscellanous.html#frame-step-in).
+- For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
 ## Loading screen
 
@@ -290,12 +349,13 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 ![image](_static/images/harvestercounter-01.gif)
 *Harvester Counter in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
-- An additional counter for your active/total harvesters can be added near the credits indicator.
-- You can specify which TechnoType should be counted as a Harvester with `Harvester.Counted`. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted.
-  - Can be set to true on buildings with `ProduceCashAmount` to count them as active 'harvesters' while generating credits.
-- The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
-- You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
-- By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
+- An additional counter for your active / total harvesters can be added near the credits indicator.
+  - You can specify which TechnoType should be counted as a Harvester with `Harvester.Counted`. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted.
+    - Can be set to true on buildings with `ProduceCashAmount` to count them as active 'harvesters' while generating credits.
+  - The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
+  - You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
+  - By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowHarvesterCounter` setting in `RA2MD.ini`.
 
 In `uimd.ini`:
 ```ini
@@ -317,8 +377,16 @@ Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - R,G,B
 Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
 ```
 
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowHarvesterCounter=true  ; boolean
+```
+
 ```{note}
 If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+
+Additionally, default position for harvester counter overlaps with [weeds counter](#weeds-counter).
 ```
 
 ### Power delta counter
@@ -327,12 +395,13 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 *Power delta Counter in [Assault Amerika](https://www.moddb.com/mods/assault-amerika)*
 
 - An additional counter for your power delta (surplus) can be added near the credits indicator.
-- The counter is displayed with the format of `Label(sign)(Power Delta)`. The label is `PowerLabel` used in `ToolTips` (by default `⚡ U+26A1`).
-- When the power of the player is blacked-out by a spy or force-shield, `PowerBlackoutLabel` in `ToolTips` is displayed instead (by default ⚡❌ `U+26A1 U+274C`), the text color is `Sidebar.PowerDelta.ColorGrey`.
-- You can adjust counter position by `Sidebar.PowerDelta.Offset`, negative means left/up, positive means right/down.
-- You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, acceptable values are left, right, center/centre.
-- By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, the game will warn player by changing the color of counter whenever the percentage of used power exceeds the value (i.e. when drain to output ratio is above 100%, the counter will turn red).
-- The exception for this rule is when both power output and drain are 0 - in this case the counter will default to yellow.
+  - The counter is displayed with the format of `Label(sign)(Power Delta)`. The label is `PowerLabel` used in `ToolTips` (by default `⚡ U+26A1`).
+  - When the power of the player is blacked-out by a spy or force-shield, `PowerBlackoutLabel` in `ToolTips` is displayed instead (by default ⚡❌ `U+26A1 U+274C`), the text color is `Sidebar.PowerDelta.ColorGrey`.
+  - You can adjust counter position by `Sidebar.PowerDelta.Offset`, negative means left/up, positive means right/down.
+  - You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, acceptable values are left, right, center/centre.
+  - By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, the game will warn player by changing the color of counter whenever the percentage of used power exceeds the value (i.e. when drain to output ratio is above 100%, the counter will turn red).
+  - The exception for this rule is when both power output and drain are 0 - in this case the counter will default to yellow.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowPowerDelta` setting in `RA2MD.ini`.
 
 In `uimd.ini`:
 ```ini
@@ -353,8 +422,44 @@ Sidebar.PowerDelta.ColorGrey=128,128,128  ; integer - R,G,B
 Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left | center/centre | right
 ```
 
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowPowerDelta=true  ; boolean
+```
+
 ```{note}
 If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
+```
+
+### Weeds counter
+
+- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds-weed-eaters) can be added near the credits indicator.
+  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
+  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.ini`.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+WeedsCounter.Show=false          ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                       ; Side
+Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
+Sidebar.WeedsCounter.Color=      ; integer - R,G,B
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowWeedsCounter=true  ; boolean
+```
+
+```{note}
+Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
 ```
 
 ### Producing Progress
@@ -398,11 +503,13 @@ Sidebar.GDIPositions=  ; boolean
 - Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default.
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
+- `AnchoredToolTips` positions the tooltip always to the left of sidebar, only applies to if `ExtendedToolTips` is set to true and they are enabled in user settings.
 
 In `uimd.ini`:
 ```ini
 [ToolTips]
 ExtendedToolTips=false     ; boolean
+AnchoredToolTips=false     ; boolean
 CostLabel=<none>           ; CSF entry key
 PowerLabel=<none>          ; CSF entry key
 PowerBlackoutLabel=<none>  ; CSF entry key
@@ -445,4 +552,15 @@ In `RA2MD.ini`:
 ```ini
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
+```
+## Miscellanous
+
+### Skip saving game on starting a new campaign
+
+When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+SaveGameOnScenarioStart=true ; boolean
 ```

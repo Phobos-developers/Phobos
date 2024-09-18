@@ -3,40 +3,46 @@
 #include <AircraftClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
-#include <SpawnManagerClass.h>
-#include <TacticalClass.h>
 
-#include <Ext/House/Body.h>
+#include <Ext/Anim/Body.h>
+#include <Ext/Scenario/Body.h>
 
 #include <Utilities/AresFunctions.h>
-#include <Utilities/EnumFunctions.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
 TechnoExt::ExtData::~ExtData()
 {
 	auto const pTypeExt = this->TypeExtData;
+	auto const pType = pTypeExt->OwnerObject();
+	auto pThis = this->OwnerObject();
 
-	if (pTypeExt && pTypeExt->AutoDeath_Behavior.isset())
+	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
-		auto pThis = this->OwnerObject();
-		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
-		auto it = std::find(hExt->OwnedTimedAutoDeathObjects.begin(), hExt->OwnedTimedAutoDeathObjects.end(), this);
-		if (it != hExt->OwnedTimedAutoDeathObjects.end())
-			hExt->OwnedTimedAutoDeathObjects.erase(it);
+		auto& vec = ScenarioExt::Global()->AutoDeathObjects;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
+
+	if (pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
+		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
+	{
+		auto& vec = ScenarioExt::Global()->TransportReloaders;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
+
+	AnimExt::InvalidateTechnoPointers(pThis);
 }
 
 bool TechnoExt::IsActive(TechnoClass* pThis)
 {
-	return
-		pThis &&
-		!pThis->TemporalTargetingMe &&
-		!pThis->BeingWarpedOut &&
-		!pThis->IsUnderEMP() &&
-		pThis->IsAlive &&
-		pThis->Health > 0 &&
-		!pThis->InLimbo;
+	return pThis
+		&& pThis->IsAlive
+		&& pThis->Health > 0
+		&& !pThis->InLimbo
+		&& !pThis->TemporalTargetingMe
+		&& !pThis->BeingWarpedOut
+		&& !pThis->IsUnderEMP()
+		;
 }
 
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
@@ -81,15 +87,21 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 	return false;
 }
 
-void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
+// Syncs Iron Curtain or Force Shield timer to another techno.
+void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 {
-	if (pFrom->IsIronCurtained() && !pFrom->ForceShielded)
+	if (pFrom->IsIronCurtained())
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFrom->GetTechnoType());
-		if (pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy))
+		bool isForceShielded = pFrom->ForceShielded;
+		bool allowSyncing = !isForceShielded ? pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy) :
+			pTypeExt->ForceShield_KeptOnDeploy.Get(RulesExt::Global()->ForceShield_KeptOnDeploy);
+
+		if (allowSyncing)
 		{
 			pTo->IronCurtain(pFrom->IronCurtainTimer.GetTimeLeft(), pFrom->Owner, false);
 			pTo->IronTintStage = pFrom->IronTintStage;
+			pTo->ForceShielded = isForceShielded;
 		}
 	}
 }
@@ -105,7 +117,9 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 	else
 		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
 
-	return pThis->SpeedMultiplier * houseMultiplier *
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pThis->SpeedMultiplier * houseMultiplier * pExt->AE.SpeedMultiplier *
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
@@ -311,270 +325,144 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	return true;
 }
 
-Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
+// Checks if vehicle can deploy into a building at its current location. If unit has no DeploysInto set returns noDeploysIntoDefaultValue (def = false) instead.
+bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaultValue)
 {
-	CoordStruct absolute = pThis->GetCoords();
-	Point2D  position = { 0,0 };
-	TacticalClass::Instance->CoordsToScreen(&position, &absolute);
-	position -= TacticalClass::Instance->TacticalPos;
+	if (!pThis)
+		return false;
 
-	return position;
+	auto const pDeployType = pThis->Type->DeploysInto;
+
+	if (!pDeployType)
+		return noDeploysIntoDefaultValue;
+
+	bool canDeploy = true;
+	auto mapCoords = CellClass::Coord2Cell(pThis->GetCoords());
+
+	if (pDeployType->GetFoundationWidth() > 2 || pDeployType->GetFoundationHeight(false) > 2)
+		mapCoords += CellStruct { -1, -1 };
+
+	pThis->Mark(MarkType::Up);
+
+	pThis->Locomotor->Mark_All_Occupation_Bits(MarkType::Up);
+
+	if (!pDeployType->CanCreateHere(mapCoords, pThis->Owner))
+		canDeploy = false;
+
+	pThis->Locomotor->Mark_All_Occupation_Bits(MarkType::Down);
+	pThis->Mark(MarkType::Down);
+
+	return canDeploy;
 }
 
-Point2D TechnoExt::GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor)
+bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 {
-	int length = 17;
-	Point2D position = GetScreenLocation(pThis);
+	if (!pThis || !pSource)
+		return false;
 
-	if (pThis->WhatAmI() == AbstractType::Infantry)
-		length = 8;
+	auto const pType = pThis->GetTechnoType();
 
-	RectangleStruct bracketRect =
-	{
-		position.X - length + (length == 8) + 1,
-		position.Y - 28 + (length == 8),
-		length * 2,
-		length * 3
-	};
+	if (!pType->TypeImmune)
+		return false;
 
-	return anchor.OffsetPosition(bracketRect);
+	if (pType == pSource->GetTechnoType() && pThis->Owner == pSource->Owner)
+		return true;
+
+	return false;
 }
 
-Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition)
+/// <summary>
+/// Gets whether or not techno has listed AttachEffect types active on it
+/// </summary>
+/// <param name="attachEffectTypes">Attacheffect types.</param>
+/// <param name="requireAll">Whether or not to require all listed types to be present or if only one will satisfy the check.</param>
+/// <param name="ignoreSameSource">Ignore AttachEffects that come from set invoker and source.</param>
+/// <param name="pInvoker">Invoker Techno used for same source check.</param>
+/// <param name="pSource">Source AbstractClass instance used for same source check.</param>
+/// <returns>True if techno has active AttachEffects that satisfy the source, false if not.</returns>
+bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource,
+	TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const
 {
-	const auto pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
-	Point2D position = GetScreenLocation(pThis);
-	CoordStruct dim2 = CoordStruct::Empty;
-	pBuildingType->Dimension2(&dim2);
-	Point2D positionFix = Point2D::Empty;
-	dim2 = { -dim2.X / 2, dim2.Y / 2, dim2.Z };
-	TacticalClass::Instance->CoordsToScreen(&positionFix, &dim2);
+	unsigned int foundCount = 0;
+	unsigned int typeCounter = 1;
 
-	const int foundationWidth = pBuildingType->GetFoundationWidth();
-	const int foundationHeight = pBuildingType->GetFoundationHeight(false);
-	const int height = pBuildingType->Height * 12;
-	const int lengthW = foundationWidth * 7 + foundationWidth / 2;
-	const int lengthH = foundationHeight * 7 + foundationHeight / 2;
-
-	position.X += positionFix.X + 3 + lengthH * 4;
-	position.Y += positionFix.Y + 4 - lengthH * 2;
-
-	switch (bracketPosition)
+	for (auto const& type : attachEffectTypes)
 	{
-	case BuildingSelectBracketPosition::Top:
-		break;
-	case BuildingSelectBracketPosition::LeftTop:
-		position.X -= lengthH * 4;
-		position.Y += lengthH * 2;
-		break;
-	case BuildingSelectBracketPosition::LeftBottom:
-		position.X -= lengthH * 4;
-		position.Y += lengthH * 2 + height;
-		break;
-	case BuildingSelectBracketPosition::Bottom:
-		position.Y += lengthW * 2 + lengthH * 2 + height;
-		break;
-	case BuildingSelectBracketPosition::RightBottom:
-		position.X += lengthW * 4;
-		position.Y += lengthW * 2 + height;
-		break;
-	case BuildingSelectBracketPosition::RightTop:
-		position.X += lengthW * 4;
-		position.Y += lengthW * 2;
-	default:
-		break;
+		for (auto const& attachEffect : this->AttachedEffects)
+		{
+			if (attachEffect->GetType() == type && attachEffect->IsActive())
+			{
+				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+					continue;
+
+				unsigned int minSize = minCounts ? minCounts->size() : 0;
+				unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
+
+				if (type->Cumulative && (minSize > 0 || maxSize > 0))
+				{
+					int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+
+					if (minSize > 0)
+					{
+						if (cumulativeCount < minCounts->at(typeCounter-1 >= minSize ? minSize - 1 : typeCounter - 1))
+							continue;
+					}
+					if (maxSize > 0)
+					{
+						if (cumulativeCount > maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
+							continue;
+					}
+				}
+
+				// Only need to find one match, can stop here.
+				if (!requireAll)
+					return true;
+
+				foundCount++;
+				break;
+			}
+		}
+
+		// One of the required types was not found, can stop here.
+		if (requireAll && foundCount < typeCounter)
+			return false;
+
+		typeCounter++;
 	}
 
-	return position;
+	if (requireAll && foundCount == attachEffectTypes.size())
+		return true;
+
+	return false;
 }
 
-void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
+/// <summary>
+/// Gets how many counts of same cumulative AttachEffect type instance techno has active on it.
+/// </summary>
+/// <param name="pAttachEffectType">AttachEffect type.</param>
+/// <param name="ignoreSameSource">Ignore AttachEffects that come from set invoker and source.</param>
+/// <param name="pInvoker">Invoker Techno used for same source check.</param>
+/// <param name="pSource">Source AbstractClass instance used for same source check.</param>
+/// <returns>Number of active cumulative AttachEffect type instances on the techno. 0 if the AttachEffect type is not cumulative.</returns>
+int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource) const
 {
-	if (!Phobos::Config::DigitalDisplay_Enable)
-		return;
+	if (!pAttachEffectType->Cumulative)
+		return 0;
 
-	const auto pType = pThis->GetTechnoType();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	unsigned int foundCount = 0;
 
-	if (pTypeExt->DigitalDisplay_Disable)
-		return;
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	int length = 17;
-	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = nullptr;
-
-	if (!pTypeExt->DigitalDisplayTypes.empty())
+	for (auto const& attachEffect : this->AttachedEffects)
 	{
-		pDisplayTypes = &pTypeExt->DigitalDisplayTypes;
-	}
-	else
-	{
-		switch (pThis->WhatAmI())
+		if (attachEffect->GetType() == pAttachEffectType && attachEffect->IsActive())
 		{
-		case AbstractType::Building:
-		{
-			pDisplayTypes = &RulesExt::Global()->Buildings_DefaultDigitalDisplayTypes;
-			const auto pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
-			const int height = pBuildingType->GetFoundationHeight(false);
-			length = height * 7 + height / 2;
-			break;
-		}
-		case AbstractType::Infantry:
-		{
-			pDisplayTypes = &RulesExt::Global()->Infantry_DefaultDigitalDisplayTypes;
-			length = 8;
-			break;
-		}
-		case AbstractType::Unit:
-		{
-			pDisplayTypes = &RulesExt::Global()->Vehicles_DefaultDigitalDisplayTypes;
-			break;
-		}
-		case AbstractType::Aircraft:
-		{
-			pDisplayTypes = &RulesExt::Global()->Aircraft_DefaultDigitalDisplayTypes;
-			break;
-		}
-		default:
-			return;
+			if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+				continue;
+
+			foundCount++;
 		}
 	}
 
-	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
-	{
-		if (HouseClass::IsCurrentPlayerObserver() && !pDisplayType->VisibleToHouses_Observer)
-			continue;
-
-		if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
-			continue;
-
-		int value = -1;
-		int maxValue = -1;
-
-		GetValuesForDisplay(pThis, pDisplayType->InfoType, value, maxValue);
-
-		if (value == -1 || maxValue == -1)
-			continue;
-
-		const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
-		const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
-		const bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
-		Point2D position = pThis->WhatAmI() == AbstractType::Building ?
-			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
-			: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
-		position.Y += pType->PixelSelectionBracketDelta;
-
-		if (pDisplayType->InfoType == DisplayInfoType::Shield)
-			position.Y += pExt->Shield->GetType()->BracketDelta;
-
-		pDisplayType->Draw(position, length, value, maxValue, isBuilding, isInfantry, hasShield);
-	}
-}
-
-void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue)
-{
-	const auto pType = pThis->GetTechnoType();
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	switch (infoType)
-	{
-	case DisplayInfoType::Health:
-	{
-		value = pThis->Health;
-		maxValue = pType->Strength;
-		break;
-	}
-	case DisplayInfoType::Shield:
-	{
-		if (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning())
-			return;
-
-		value = pExt->Shield->GetHP();
-		maxValue = pExt->Shield->GetType()->Strength.Get();
-		break;
-	}
-	case DisplayInfoType::Ammo:
-	{
-		if (pType->Ammo <= 0)
-			return;
-
-		value = pThis->Ammo;
-		maxValue = pType->Ammo;
-		break;
-	}
-	case DisplayInfoType::MindControl:
-	{
-		if (pThis->CaptureManager == nullptr)
-			return;
-
-		value = pThis->CaptureManager->ControlNodes.Count;
-		maxValue = pThis->CaptureManager->MaxControlNodes;
-		break;
-	}
-	case DisplayInfoType::Spawns:
-	{
-		if (pThis->SpawnManager == nullptr || pType->Spawns == nullptr || pType->SpawnsNumber <= 0)
-			return;
-
-		value = pThis->SpawnManager->CountAliveSpawns();
-		maxValue = pType->SpawnsNumber;
-		break;
-	}
-	case DisplayInfoType::Passengers:
-	{
-		if (pType->Passengers <= 0)
-			return;
-
-		value = pThis->Passengers.NumPassengers;
-		maxValue = pType->Passengers;
-		break;
-	}
-	case DisplayInfoType::Tiberium:
-	{
-		if (pType->Storage <= 0)
-			return;
-
-		value = static_cast<int>(pThis->Tiberium.GetTotalAmount());
-		maxValue = pType->Storage;
-		break;
-	}
-	case DisplayInfoType::Experience:
-	{
-		value = static_cast<int>(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetCost());
-		maxValue = static_cast<int>(2.0 * RulesClass::Instance->VeteranRatio * pType->GetCost());
-		break;
-	}
-	case DisplayInfoType::Occupants:
-	{
-		if (pThis->WhatAmI() != AbstractType::Building)
-			return;
-
-		const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
-		const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
-
-		if (!pBuildingType->CanBeOccupied)
-			return;
-
-		value = pBuilding->Occupants.Count;
-		maxValue = pBuildingType->MaxNumberOccupants;
-		break;
-	}
-	case DisplayInfoType::GattlingStage:
-	{
-		if (!pType->IsGattling)
-			return;
-
-		value = pThis->CurrentGattlingStage;
-		maxValue = pType->WeaponStages;
-		break;
-	}
-	default:
-	{
-		value = pThis->Health;
-		maxValue = pType->Strength;
-		break;
-	}
-	}
+	return foundCount;
 }
 
 // =============================
@@ -587,18 +475,30 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TypeExtData)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
+		.Process(this->AttachedEffects)
+		.Process(this->AE)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
 		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
-		.Process(this->OriginalPassengerOwner)
-		.Process(this->CurrentLaserWeaponIndex)
+		.Process(this->Strafe_BombsDroppedThisRound)
+		.Process(this->CurrentAircraftWeaponIndex)
 		.Process(this->IsInTunnel)
+		.Process(this->IsBurrowed)
+		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)
+		.Process(this->SkipTargetChangeResetSequence)
 		.Process(this->ForceFullRearmDelay)
-		.Process(this->MobileRefineryTimer)
+		.Process(this->CanCloakDuringRearm)
+		.Process(this->WHAnimRemainingCreationInterval)
+		.Process(this->FiringObstacleCell)
+		.Process(this->OriginalPassengerOwner)
+		.Process(this->HasRemainingWarpInDelay)
+		.Process(this->LastWarpInDelay)
+		.Process(this->IsBeingChronoSphered)
+    .Process(this->MobileRefineryTimer)
 		;
 }
 

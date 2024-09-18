@@ -16,13 +16,18 @@ public:
 
 	static constexpr DWORD Canary = 0x11111111;
 	static constexpr size_t ExtPointerOffset = 0x16098;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
-		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
-		std::map<BuildingClass*, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
-		std::vector<TechnoExt::ExtData*> OwnedTimedAutoDeathObjects;
+		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
+		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
+
+		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
+		CounterClass LimboBuildings; // Currently owned buildings in limbo
+		CounterClass LimboInfantry;  // Currently owned infantry in limbo
+		CounterClass LimboVehicles;  // Currently owned vehicles in limbo
 
 		BuildingClass* Factory_BuildingType;
 		BuildingClass* Factory_InfantryType;
@@ -30,28 +35,55 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		CDTimerClass AISuperWeaponDelayTimer;
+
 		//Read from INI
 		bool RepairBaseNodes[3];
+
+		// FactoryPlants with Allow/DisallowTypes set.
+		std::vector<BuildingClass*> RestrictedFactoryPlants;
 
 		int LastBuiltNavalVehicleType;
 		int ProducingNavalUnitTypeIndex;
 
+		// Factories that exist but don't count towards multiple factory bonus.
+		int NumAirpads_NonMFB;
+		int NumBarracks_NonMFB;
+		int NumWarFactories_NonMFB;
+		int NumConYards_NonMFB;
+		int NumShipyards_NonMFB;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
-			, BuildingCounter {}
+			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
-			, OwnedTimedAutoDeathObjects {}
+			, LimboAircraft {}
+			, LimboBuildings {}
+			, LimboInfantry {}
+			, LimboVehicles {}
 			, Factory_BuildingType { nullptr }
 			, Factory_InfantryType { nullptr }
 			, Factory_VehicleType { nullptr }
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
+			, AISuperWeaponDelayTimer {}
 			, RepairBaseNodes { false,false,false }
+			, RestrictedFactoryPlants {}
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
+			, NumAirpads_NonMFB { 0 }
+			, NumBarracks_NonMFB { 0 }
+			, NumWarFactories_NonMFB { 0 }
+			, NumConYards_NonMFB { 0 }
+			, NumShipyards_NonMFB { 0 }
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
-		void UpdateAutoDeathObjectsInLimbo();
+		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
+		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
+		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);
+		void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
+		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval);
+		float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
 
 		virtual ~ExtData() = default;
 
@@ -82,9 +114,6 @@ public:
 			switch (abs)
 			{
 			case AbstractType::Building:
-			case AbstractType::Infantry:
-			case AbstractType::Unit:
-			case AbstractType::Aircraft:
 				return false;
 			}
 
@@ -101,6 +130,8 @@ public:
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
+	static void GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSphere, SuperClass*& pSuperCWarp);
+	static void SetSkirmishHouseName(HouseClass* pHouse);
 
 	static bool IsDisabledFromShell(
 	HouseClass const* pHouse, BuildingTypeClass const* pItem);
@@ -135,4 +166,7 @@ public:
 	static std::vector<int> AIProduction_Values;
 	static std::vector<int> AIProduction_BestChoices;
 	static std::vector<int> AIProduction_BestChoicesNaval;
+
+	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
+	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
 };

@@ -3,10 +3,12 @@
 #include <Helpers/Macro.h>
 #include <PreviewClass.h>
 #include <Surface.h>
+#include <ThemeClass.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/Rules/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Misc/FlyingStrings.h>
@@ -14,7 +16,7 @@
 
 DEFINE_HOOK(0x777C41, UI_ApplyAppIcon, 0x9)
 {
-	if (Phobos::AppIconPath != nullptr)
+	if (Phobos::AppIconPath != nullptr && strlen(Phobos::AppIconPath))
 	{
 		Debug::Log("Applying AppIcon from \"%s\"\n", Phobos::AppIconPath);
 
@@ -82,7 +84,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 	RectangleStruct vRect = DSurface::Sidebar->GetRect();
 
-	if (Phobos::UI::ShowHarvesterCounter)
+	if (Phobos::UI::HarvesterCounter_Show && Phobos::Config::ShowHarvesterCounter)
 	{
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
@@ -105,7 +107,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
 	}
 
-	if (Phobos::UI::ShowPowerDelta && pPlayer->Buildings.Count)
+	if (Phobos::UI::PowerDelta_Show && Phobos::Config::ShowPowerDelta && pPlayer->Buildings.Count)
 	{
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
@@ -143,6 +145,23 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 	}
 
+	if (Phobos::UI::WeedsCounter_Show && Phobos::Config::ShowWeedsCounter)
+	{
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
+		wchar_t counter[0x20];
+		ColorStruct clrToolTip = pSideExt->Sidebar_WeedsCounter_Color.Get(Drawing::TooltipColor());
+
+		swprintf_s(counter, L"%d", static_cast<int>(pPlayer->OwnedWeed.GetTotalAmount()));
+
+		Point2D vPos = {
+			DSurface::Sidebar->GetWidth() / 2 + 50 + pSideExt->Sidebar_WeedsCounter_Offset.Get().X,
+			2 + pSideExt->Sidebar_WeedsCounter_Offset.Get().Y
+		};
+
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0,
+			TextPrintType::UseGradPal | TextPrintType::Center | TextPrintType::Metal12);
+	}
+
 	return 0;
 }
 
@@ -155,7 +174,7 @@ DEFINE_HOOK(0x715A4D, Replace_XXICON_With_New, 0x7)         //TechnoTypeClass::R
 	strcpy_s(pFilename, RulesExt::Global()->MissingCameo.data());
 	_strlwr_s(pFilename);
 
-	if (_stricmp(pFilename, "xxicon.shp")
+	if (_stricmp(pFilename, GameStrings::XXICON_SHP)
 		&& strstr(pFilename, ".shp"))
 	{
 		if (auto pFile = FileSystem::LoadFile(RulesExt::Global()->MissingCameo, false))
@@ -220,3 +239,151 @@ DEFINE_HOOK(0x456776, BuildingClass_DrawRadialIndicator_Visibility, 0x6)
 
 	return DoNotDraw;
 }
+
+#pragma region ShowBriefing
+
+namespace BriefingTemp
+{
+	bool ShowBriefing = false;
+}
+
+__forceinline void ShowBriefing()
+{
+	if (BriefingTemp::ShowBriefing)
+	{
+		// Show briefing dialog.
+		Game::SpecialDialog = 9;
+		Game::ShowSpecialDialog();
+		BriefingTemp::ShowBriefing = false;
+
+		// Play scenario theme.
+		int theme = ScenarioClass::Instance->ThemeIndex;
+
+		if (theme == -1)
+			ThemeClass::Instance->Stop(true);
+		else
+			ThemeClass::Instance->Queue(theme);
+	}
+}
+
+// Check if briefing dialog should be played before starting scenario.
+DEFINE_HOOK(0x683E41, ScenarioClass_Start_ShowBriefing, 0x6)
+{
+	enum { SkipGameCode = 0x683E6B };
+
+	GET_STACK(bool, showBriefing, STACK_OFFSET(0xFC, -0xE9));
+
+	// Don't show briefing dialog for non-campaign games etc.
+	if (!Phobos::Config::ShowBriefing || !ScenarioExt::Global()->ShowBriefing || !showBriefing || !SessionClass::IsCampaign())
+		return 0;
+
+	BriefingTemp::ShowBriefing = true;
+
+	int theme = ScenarioExt::Global()->BriefingTheme;
+
+	if (theme == -1)
+	{
+		SideClass* pSide = SideClass::Array->GetItemOrDefault(ScenarioClass::Instance->PlayerSideIndex);
+
+		if (const auto pSideExt = SideExt::ExtMap.Find(pSide))
+			theme = pSideExt->BriefingTheme;
+	}
+
+	if (theme != -1)
+		ThemeClass::Instance->Queue(theme);
+
+	// Skip over playing scenario theme.
+	return SkipGameCode;
+}
+
+// Show the briefing dialog before entering game loop.
+DEFINE_HOOK(0x48CE85, MainGame_ShowBriefing, 0x5)
+{
+	enum { SkipGameCode = 0x48CE8A };
+
+	// Restore overridden instructions.
+	SessionClass::Instance->Resume();
+
+	ShowBriefing();
+
+	return SkipGameCode;
+}
+
+// Show the briefing dialog on starting a new scenario after clearing another.
+DEFINE_HOOK(0x55D14F, AuxLoop_ShowBriefing, 0x5)
+{
+	enum { SkipGameCode = 0x55D159 };
+
+	// Restore overridden instructions.
+	SessionClass::Instance->Resume();
+
+	ShowBriefing();
+
+	return SkipGameCode;
+}
+
+// Skip redrawing the screen if we're gonna show the briefing screen immediately after loading screen finishes on initially launched mission.
+DEFINE_HOOK(0x683F66, PauseGame_ShowBriefing, 0x5)
+{
+	enum { SkipGameCode = 0x683FAA };
+
+	if (BriefingTemp::ShowBriefing)
+		return SkipGameCode;
+
+	return 0;
+}
+
+// Skip redrawing the screen if we're gonna show the briefing screen immediately after loading screen finishes on succeeding missions.
+DEFINE_HOOK(0x685D95, DoWin_ShowBriefing, 0x5)
+{
+	enum { SkipGameCode = 0x685D9F };
+
+	if (BriefingTemp::ShowBriefing)
+		return SkipGameCode;
+
+	return 0;
+}
+
+// Set briefing dialog resume button text.
+DEFINE_HOOK(0x65F764, BriefingDialog_ShowBriefing, 0x5)
+{
+	if (BriefingTemp::ShowBriefing)
+	{
+		GET(HWND, hDlg, ESI);
+
+		auto const hResumeBtn = GetDlgItem(hDlg, 1059);
+		SendMessageA(hResumeBtn, 1202, 0, reinterpret_cast<LPARAM>(Phobos::UI::ShowBriefingResumeButtonLabel));
+	}
+
+	return 0;
+}
+
+// Set briefing dialog resume button status bar label.
+DEFINE_HOOK(0x604985, GetDialogUIStatusLabels_ShowBriefing, 0x5)
+{
+	if (BriefingTemp::ShowBriefing)
+	{
+		enum { SkipGameCode = 0x60498A };
+
+		R->EAX(Phobos::UI::ShowBriefingResumeButtonStatusLabel);
+
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+bool __fastcall Fake_HouseIsAlliedWith(HouseClass* pThis, void*, HouseClass* CurrentPlayer)
+{
+	return (Phobos::Config::ShowPlanningPath && SessionClass::IsSingleplayer())
+		|| pThis->IsControlledByCurrentPlayer()
+		|| pThis->IsAlliedWith(CurrentPlayer);
+}
+
+DEFINE_JUMP(CALL, 0x63B136, GET_OFFSET(Fake_HouseIsAlliedWith));
+DEFINE_JUMP(CALL, 0x63B100, GET_OFFSET(Fake_HouseIsAlliedWith));
+DEFINE_JUMP(CALL, 0x63B17F, GET_OFFSET(Fake_HouseIsAlliedWith));
+DEFINE_JUMP(CALL, 0x63B1BA, GET_OFFSET(Fake_HouseIsAlliedWith));
+DEFINE_JUMP(CALL, 0x63B2CE, GET_OFFSET(Fake_HouseIsAlliedWith));

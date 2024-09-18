@@ -24,6 +24,7 @@ __forceinline T* Make_Pointer(const uintptr_t address)
 #pragma region Patch Structs
 #pragma pack(push, 1)
 #pragma warning(push)
+#pragma warning( disable : 4324)
 
 #define LJMP_OPCODE 0xE9
 #define CALL_OPCODE 0xE8
@@ -83,6 +84,10 @@ struct _VTABLE
 	{ };
 };
 
+typedef JumpType OFFSET;
+typedef _VTABLE _OFFSET;
+
+#pragma warning(pop)
 #pragma pack(pop)
 #pragma endregion Patch Structs
 
@@ -97,12 +102,15 @@ struct _VTABLE
 		Patch patch = {offset, size, (byte*)data};                \
 	}
 
-#define DEFINE_PATCH(offset, ...)                                 \
+#define DEFINE_PATCH_TYPED(type, offset, ...)                     \
 	namespace STATIC_PATCH##offset                                \
 	{                                                             \
-		const byte data[] = {__VA_ARGS__};                        \
+		const type data[] = {__VA_ARGS__};                        \
 	}                                                             \
 	_ALLOCATE_STATIC_PATCH(offset, sizeof(data), data);
+
+#define DEFINE_PATCH(offset, ...)                                 \
+	DEFINE_PATCH_TYPED(byte, offset, __VA_ARGS__);
 
 #define DEFINE_JUMP(jumpType, offset, pointer)                    \
 	namespace STATIC_PATCH##offset                                \
@@ -110,6 +118,12 @@ struct _VTABLE
 		const _##jumpType data (offset, pointer);                 \
 	}                                                             \
 	_ALLOCATE_STATIC_PATCH(offset, sizeof(data), &data);
+
+#define DEFINE_NAKED_HOOK(hook, funcname)                         \
+	void funcname();                                              \
+	DEFINE_JUMP(LJMP, hook, GET_OFFSET(funcname))                 \
+	void NAKED funcname()
+
 #pragma endregion Static Patch
 
 #pragma region Dynamic Patch
@@ -120,12 +134,15 @@ struct _VTABLE
 	}                                                             \
 	Patch* const name = &DYNAMIC_PATCH_##name::patch;
 
-#define DEFINE_DYNAMIC_PATCH(name, offset, ...)                   \
+#define DEFINE_DYNAMIC_PATCH_TYPED(type, name, offset, ...)       \
 	namespace DYNAMIC_PATCH_##name                                \
 	{                                                             \
-		const byte data[] = {__VA_ARGS__};                        \
+		const type data[] = {__VA_ARGS__};                        \
 	}                                                             \
 	_ALLOCATE_DYNAMIC_PATCH(name, offset, sizeof(data), data);
+
+#define DEFINE_DYNAMIC_PATCH(name, offset, ...)                   \
+	DEFINE_DYNAMIC_PATCH_TYPED(byte, name, offset, __VA_ARGS__)
 
 #define DEFINE_DYNAMIC_JUMP(jumpType, name, offset, pointer)      \
 	namespace DYNAMIC_PATCH_##name                                \

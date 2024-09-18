@@ -2,21 +2,16 @@
 
 #include <Utilities/EnumFunctions.h>
 
-DEFINE_HOOK_AGAIN(0x522790, TechnoClass_DefaultDisguise, 0x6) // InfantryClass_SetDisguise_DefaultDisguise
-DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDisguise
+DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
+	GET(InfantryClass*, pThis, ECX);
+	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-	enum { SetDisguise = 0x5227BF, DefaultDisguise = 0x6F4277 };
-
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (pExt->DefaultDisguise)
 	{
-		if (pExt->DefaultDisguise.isset())
-		{
-			pThis->Disguise = pExt->DefaultDisguise;
-			pThis->Disguised = true;
-			return R->Origin() == 0x522790 ? SetDisguise : DefaultDisguise;
-		}
+		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->Disguised = true;
+		return 0x5227BF;
 	}
 
 	pThis->Disguised = false;
@@ -24,47 +19,52 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 	return 0;
 }
 
-__forceinline bool CanBlinkDisguise(TechnoClass* pTechno)
+DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 {
-	return HouseClass::IsCurrentPlayerObserver()
-		|| EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, HouseClass::CurrentPlayer, pTechno->Owner);
-}
-
-DEFINE_HOOK(0x4DEDCB, FootClass_GetImage_DisguiseBlinking, 0x7)
-{
-	enum { ContinueChecks = 0x4DEDDB, AllowBlinking = 0x4DEE15 };
-
 	GET(TechnoClass*, pThis, ESI);
+	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	// mirage is not here yet
+	if (pThis->WhatAmI() == AbstractType::Infantry && pExt->DefaultDisguise)
+	{
+		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->Disguised = true;
+		return 0x6F4277;
+	}
 
-	if (CanBlinkDisguise(pThis))
-		return AllowBlinking;
+	pThis->Disguised = false;
 
-	return ContinueChecks;
+	return 0;
 }
 
-DEFINE_HOOK(0x70EE70, TechnoClass_IsClearlyVisibleTo_DisguiseBlinking, 0x5)
+#pragma region DisguiseBlinkingVisibility
+
+bool __fastcall IsAlly_Wrapper(HouseClass* pThis, void* _, HouseClass* pOther)
 {
-	enum { ContinueChecks = 0x70EE79, DisallowBlinking = 0x70EEB6 };
-
-	GET(TechnoClass*, pThis, ESI);
-
-	if (CanBlinkDisguise(pThis))
-		return ContinueChecks;
-
-	return DisallowBlinking;
+	return pThis->IsObserver() || pOther->IsAlliedWith(pOther) || (RulesExt::Global()->DisguiseBlinkingVisibility & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
-DEFINE_HOOK(0x7062F5, TechnoClass_TechnoClass_DrawObject_DisguiseBlinking, 0x6)
+bool __fastcall IsControlledByCurrentPlayer_Wrapper(HouseClass* pThis)
 {
-	enum { ContinueChecks = 0x706304, DisallowBlinking = 0x70631F };
+	HouseClass* pCurrent = HouseClass::CurrentPlayer;
+	AffectedHouse visibilityFlags = RulesExt::Global()->DisguiseBlinkingVisibility;
 
-	GET(TechnoClass*, pThis, ESI);
+	if (SessionClass::IsCampaign() && (pThis->IsHumanPlayer || pThis->IsInPlayerControl))
+	{
+		if ((visibilityFlags & AffectedHouse::Allies) != AffectedHouse::None && pCurrent->IsAlliedWith(pThis))
+			return true;
 
-	if (CanBlinkDisguise(pThis))
-		return ContinueChecks;
+		return (visibilityFlags & AffectedHouse::Owner) != AffectedHouse::None;
+	}
 
-	return DisallowBlinking;
+	return pCurrent->IsObserver() || EnumFunctions::CanTargetHouse(visibilityFlags, pCurrent, pThis);
 }
+
+DEFINE_JUMP(CALL, 0x4DEDD2, GET_OFFSET(IsAlly_Wrapper));                      // FootClass_GetImage
+DEFINE_JUMP(CALL, 0x70EE5D, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
+DEFINE_JUMP(CALL, 0x70EE70, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
+DEFINE_JUMP(CALL, 0x7062FB, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_DrawObject
+
+#pragma endregion
 
 DEFINE_HOOK(0x7060A9, TechnoClass_TechnoClass_DrawObject_DisguisePalette, 0x6)
 {
@@ -85,4 +85,18 @@ DEFINE_HOOK(0x7060A9, TechnoClass_TechnoClass_DrawObject_DisguisePalette, 0x6)
 	R->EBX(convert);
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+	// Remove mirage disguise if under emp or being flipped, approximately 15 deg
+	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
+	{
+		pThis->ClearDisguise();
+		R->EAX(pThis->MindControlRingAnim);
+		return 0x746AA5;
+	}
+
+	return 0x746931;
 }

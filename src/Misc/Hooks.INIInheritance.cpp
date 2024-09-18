@@ -29,7 +29,7 @@ namespace INIInheritance
 		INI_EX exINI(ini);
 		T result;
 
-		if (!detail::read<T>(result, exINI, section, entry, false))
+		if (!detail::read<T>(result, exINI, section, entry))
 			result = defaultValue;
 		return result;
 	}
@@ -44,7 +44,7 @@ namespace INIInheritance
 		GET_STACK(T*, defaultValue, 0x10);
 		INI_EX exINI(ini);
 
-		if (!detail::read<T>(*result, exINI, section, entry, false))
+		if (!detail::read<T>(*result, exINI, section, entry))
 			*result = *defaultValue;
 		return result;
 	}
@@ -60,7 +60,7 @@ namespace INIInheritance
 		GET_STACK(CLSID, defaultValue, 0x10);
 		INI_EX exINI(ini);
 
-		if (!detail::read<CLSID>(*result, exINI, section, entry, false))
+		if (!detail::read<CLSID>(*result, exINI, section, entry))
 			*result = defaultValue;
 		return result;
 	}
@@ -233,7 +233,7 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 		return 0;
 
 	// include path in the list
-	for (const auto node : section->EntryIndex)
+	for (const auto& node : section->EntryIndex)
 	{
 		if (!node.Data || !node.Data->Value || !*node.Data->Value)
 			continue;

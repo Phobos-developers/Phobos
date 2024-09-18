@@ -63,7 +63,7 @@ public:
 	Valueable& operator = (Valueable const& value) = default;
 	Valueable& operator = (Valueable&& value) = default;
 
-	template <typename Val, typename = std::enable_if_t<std::is_assignable<T&, Val&&>::value>>
+	template <typename Val> requires std::assignable_from<T&, Val&&>
 	Valueable& operator = (Val value)
 	{
 		this->Value = std::move(value);
@@ -111,7 +111,8 @@ public:
 		return &this->Value;
 	}
 
-	inline void Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate = false);
+	template<bool Allocate = false>
+	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
@@ -155,7 +156,7 @@ public:
 	ValueableIdx& operator = (ValueableIdx const& value) = default;
 	ValueableIdx& operator = (ValueableIdx&& value) = default;
 
-	template <typename Val, typename = std::enable_if_t<std::is_assignable<int&, Val&&>::value>>
+	template <typename Val> requires std::assignable_from<int&, Val&&>
 	ValueableIdx& operator = (Val value)
 	{
 		this->Value = std::move(value);
@@ -217,7 +218,8 @@ public:
 		this->HasValue = false;
 	}
 
-	inline void Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate = false);
+	template<bool Allocate = false>
+	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
@@ -445,11 +447,17 @@ public:
 		return &this->Get(ratio);
 	}
 
-	const T& Get(double ratio) const noexcept
+	const T& Get(double ratio, double conditionYellow = -1, double conditionRed = -1) const noexcept
 	{
-		if (this->ConditionRed.isset() && ratio <= RulesClass::Instance->ConditionRed)
+		if (conditionYellow < 0)
+			conditionYellow = RulesClass::Instance->ConditionYellow;
+
+		if (conditionRed < 0)
+			conditionRed = RulesClass::Instance->ConditionRed;
+
+		if (this->ConditionRed.isset() && ratio <= conditionRed)
 			return this->ConditionRed;
-		else if (this->ConditionYellow.isset() && ratio <= RulesClass::Instance->ConditionYellow)
+		else if (this->ConditionYellow.isset() && ratio <= conditionYellow)
 			return this->ConditionYellow;
 
 		return this->BaseValue;

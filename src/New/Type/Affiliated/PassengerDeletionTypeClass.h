@@ -27,14 +27,14 @@ public:
 	Valueable<bool> DisplaySoylent;
 	Valueable<AffectedHouse> DisplaySoylentToHouses;
 	Valueable<Point2D> DisplaySoylentOffset;
-	NullableIdx<VocClass> ReportSound;
-	Nullable<AnimTypeClass*> Anim;
+	ValueableIdx<VocClass> ReportSound;
+	Valueable<AnimTypeClass*> Anim;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 
-	static bool CanParse(INI_EX exINI, const char* pSection, bool& shouldResetValue);
+	static std::pair<bool,bool> CanParse(INI_EX exINI, const char* pSection);
 
 private:
 

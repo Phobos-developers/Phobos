@@ -63,6 +63,37 @@ DEFINE_HOOK(0x689880, ScenarioClass_ReadGlobalVariables, 0x6)
 	return 0x6898FF;
 }
 
+DEFINE_HOOK(0x685354, ClearLotsOfShit_GlobalVariable, 0x9)
+{
+	for (auto& [idx, var] : ScenarioExt::Global()->Variables[1])
+	{
+		if (var.Value)
+		{
+			var.Value = 0;
+			ScenarioClass::Instance->VariablesChanged = true;
+			TagClass::NotifyGlobalChanged(idx);
+		}
+	}
+	return 0x68538D;
+}
+
+std::vector<std::pair<int, int>> CarryOverGlobalsBuffer {};
+
+DEFINE_HOOK(0x4C6217, EvadeClass_DoShit_Globals, 0x0)
+{
+	for (auto const& [idx, var] : CarryOverGlobalsBuffer)
+		ScenarioExt::Global()->SetVariableToByID(true, idx, static_cast<char>(var));
+	return 0x4C622F;
+}
+
+DEFINE_HOOK(0x4C6185, EvadeClass_CarryOverShit_Globals, 0x0)
+{
+	CarryOverGlobalsBuffer.clear();
+	for (auto const& [idx, var] : ScenarioExt::Global()->Variables[1])
+		CarryOverGlobalsBuffer.emplace_back(idx, var.Value);
+	return 0x4C61A3;
+}
+
 // ScenarioClass_ReadGlobalVariables inlined in Read_Scenario_INI
 DEFINE_HOOK(0x6876C2, ReadScenarioINI_Inlined_ReadGlobalVariables, 0x6)
 {
@@ -73,3 +104,17 @@ DEFINE_HOOK(0x6876C2, ReadScenarioINI_Inlined_ReadGlobalVariables, 0x6)
 
 	return 0x68773F;
 }
+
+//IDK why but you can't do it at the beginning, just random place in the middle
+DEFINE_HOOK_AGAIN(0x6857EA, PhobosSaveVariables, 0x5)//Win
+DEFINE_HOOK(0x685EB1, PhobosSaveVariables, 0x5)//Lose
+{
+	if (Phobos::Config::SaveVariablesOnScenarioEnd)
+	{
+		ScenarioExt::ExtData::SaveVariablesToFile(false);
+		ScenarioExt::ExtData::SaveVariablesToFile(true);
+	}
+
+	return 0;
+}
+

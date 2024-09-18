@@ -48,19 +48,19 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 	switch (pType->WhatAmI())
 	{
 	case AbstractType::BuildingType:
-		VTable::Set(pTrick, 0x7E3EBC); // BuildingClass::`vtable`
+		VTable::Set(pTrick, BuildingClass::AbsVTable);
 		reinterpret_cast<BuildingClass*>(pTrick)->Type = (BuildingTypeClass*)pType;
 		break;
 	case AbstractType::AircraftType:
-		VTable::Set(pTrick, 0x7E22A4); // AircraftClass::`vtable`
+		VTable::Set(pTrick, AircraftClass::AbsVTable);
 		reinterpret_cast<AircraftClass*>(pTrick)->Type = (AircraftTypeClass*)pType;
 		break;
 	case AbstractType::InfantryType:
-		VTable::Set(pTrick, 0x7EB058); // InfantryClass::`vtable`
+		VTable::Set(pTrick, InfantryClass::AbsVTable);
 		reinterpret_cast<InfantryClass*>(pTrick)->Type = (InfantryTypeClass*)pType;
 		break;
 	case AbstractType::UnitType:
-		VTable::Set(pTrick, 0x7F5C70); // UnitClass::`vtable`
+		VTable::Set(pTrick, UnitClass::AbsVTable);
 		reinterpret_cast<UnitClass*>(pTrick)->Type = (UnitTypeClass*)pType;
 		break;
 	}
@@ -71,7 +71,7 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 	reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::CurrentPlayer;
 	int nTimeToBuild = reinterpret_cast<TechnoClass*>(pTrick)->TimeToBuild();
 	// 54 frames at least
-	return nTimeToBuild < 54 ? 54 : nTimeToBuild;
+	return std::max(54, nTimeToBuild);
 }
 
 inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
@@ -90,12 +90,12 @@ inline const wchar_t* PhobosToolTip::GetBuffer() const
 void PhobosToolTip::HelpText(BuildType& cameo)
 {
 	if (cameo.ItemType == AbstractType::Special)
-		this->HelpText(SuperWeaponTypeClass::Array->GetItem(cameo.ItemIndex));
+		this->HelpText(HouseClass::CurrentPlayer->Supers.Items[cameo.ItemIndex]);
 	else
 		this->HelpText(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
 }
 
-inline int tickTimeToSeconds(int tickTime)
+inline static int TickTimeToSeconds(int tickTime)
 {
 	if (!Phobos::Config::RealTimeTimers)
 		return tickTime / 15;
@@ -117,10 +117,9 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
 
-	int nBuildTime = this->GetBuildTime(pType);
-	int nSec = tickTimeToSeconds(nBuildTime) % 60;
-	int nMin = tickTimeToSeconds(nBuildTime) / 60 /* % 60*/;
-	// int nHour = tickTimeToSeconds(nBuildTime) / 60 / 60;
+	int nBuildTime = TickTimeToSeconds(this->GetBuildTime(pType));
+	int nSec = nBuildTime % 60;
+	int nMin = nBuildTime / 60;
 
 	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
 
@@ -129,7 +128,6 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 		<< (cost < 0 ? L"+" : L"")
 		<< Phobos::UI::CostLabel << std::abs(cost) << L" "
 		<< Phobos::UI::TimeLabel
-		// << std::setw(2) << std::setfill(L'0') << nHour << L":"
 		<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 		<< std::setw(2) << std::setfill(L'0') << nSec;
 
@@ -147,12 +145,12 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 	this->TextBuffer = oss.str();
 }
 
-void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
+void PhobosToolTip::HelpText(SuperClass* pSuper)
 {
-	auto const pData = SWTypeExt::ExtMap.Find(pType);
+	auto const pData = SWTypeExt::ExtMap.Find(pSuper->Type);
 
 	std::wostringstream oss;
-	oss << pType->UIName;
+	oss << pSuper->Type->UIName;
 	bool showCost = false;
 
 	if (int nCost = std::abs(pData->Money_Amount))
@@ -166,17 +164,16 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 		showCost = true;
 	}
 
-	if (pType->RechargeTime > 0)
+	int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());
+	if (rechargeTime > 0)
 	{
 		if (!showCost)
 			oss << L"\n";
 
-		int nSec = tickTimeToSeconds(pType->RechargeTime) % 60;
-		int nMin = tickTimeToSeconds(pType->RechargeTime) / 60 /* % 60*/;
-		// int nHour = tickTimeToSeconds(pType->RechargeTime) / 60 / 60;
+		int nSec = rechargeTime % 60;
+		int nMin = rechargeTime / 60;
 
 		oss << (showCost ? L" " : L"") << Phobos::UI::TimeLabel
-			// << std::setw(2) << std::setfill(L'0') << nHour << L":"
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 			<< std::setw(2) << std::setfill(L'0') << nSec;
 	}
@@ -308,6 +305,16 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	{
 		GET(SurfaceExt*, pThis, ESI);
 		LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
+
+		if (Phobos::UI::AnchoredToolTips && PhobosToolTip::Instance.IsEnabled() && Phobos::Config::ToolTipDescriptions)
+		{
+			LEA_STACK(LTRBStruct*, a2, STACK_OFFSET(0x44, -0x20));
+			auto x = DSurface::SidebarBounds->X - pRect->Width - 2;
+			pRect->X = x;
+			a2->Left = x;
+			pRect->Y -= 40;
+			a2->Top -= 40;
+		}
 
 		// Should we make some SideExt items as static to improve the effeciency?
 		// Though it might not be a big improvement... - secsome
