@@ -354,6 +354,7 @@ This page lists all the individual contributions to the project by their author.
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
 - **CrimRecya**
+  - Fix `LimboKill` not working reliably
   - Technos recount current burst index when change the firing weapon
 - **Ollerus**
   - Build limit group enhancement
