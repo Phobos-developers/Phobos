@@ -463,7 +463,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->InterceptorType.reset();
 	}
 
-	auto [canParse, resetValue] = MobileRefineryTypeClass::CanParse(exINI, pSection);
+	Nullable<bool> isRefinery;
+	isRefinery.Read(exINI, pSection, "MobileRefinery");
+	canParse = isRefinery.Get(false);
+	resetValue = isRefinery.isset() && !isRefinery.Get();
 
 	if (canParse && !this->MobileRefineryType)
 		this->MobileRefineryType = std::make_unique<MobileRefineryTypeClass>(this->OwnerObject());

@@ -3,16 +3,6 @@
 #include <Utilities/SavegameDef.h>
 #include <Utilities/TemplateDef.h>
 
-std::pair<bool, bool> MobileRefineryTypeClass::CanParse(INI_EX exINI, const char* pSection)
-{
-	Nullable<bool> isRefinery;
-	isRefinery.Read(exINI, pSection, "MobileRefinery");
-
-	bool canParse = isRefinery.Get(false);
-	bool shouldResetValue = isRefinery.isset() && !isRefinery.Get();
-	return std::make_pair(canParse, shouldResetValue);
-}
-
 MobileRefineryTypeClass::MobileRefineryTypeClass(TechnoTypeClass* OwnedBy) : OwnerType { OwnedBy }
 , TransDelay { 30 }
 , CashMultiplier { 1.0 }
