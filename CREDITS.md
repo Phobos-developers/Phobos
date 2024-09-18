@@ -354,6 +354,7 @@ This page lists all the individual contributions to the project by their author.
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
 - **CrimRecya**
+  - Fix `LimboKill` not working reliably
   - Units will not always stuck in the factory
 - **TaranDahl**
   - Units are now unable to kick out from a factory that is in construction process
