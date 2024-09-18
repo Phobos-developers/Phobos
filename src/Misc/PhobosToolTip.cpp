@@ -82,7 +82,7 @@ inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 	return 0;
 }
 
-inline const wchar_t* PhobosToolTip::GetBuffer() const
+const wchar_t* PhobosToolTip::GetBuffer() const
 {
 	return this->TextBuffer.c_str();
 }

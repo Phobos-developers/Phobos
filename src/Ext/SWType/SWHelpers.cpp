@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <MessageListClass.h>
 
 // Universal handler of the rolls-weights system
 std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>* rolls, std::vector<ValueableVector<int>>* weights, size_t size)
@@ -190,4 +191,36 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 		return false;
 
 	return true;
+}
+
+void SWTypeExt::ExtData::PrintMessage(const CSFText& message, HouseClass* pFirer) const
+{
+	if (message.empty())
+		return;
+
+	int color = ColorScheme::FindIndex("Gold");
+	if (this->Message_FirerColor)
+	{
+		// firer color
+		if (pFirer)
+		{
+			color = pFirer->ColorSchemeIndex;
+		}
+	}
+	else
+	{
+		if (this->Message_ColorScheme > -1)
+		{
+			// user defined color
+			color = this->Message_ColorScheme;
+		}
+		else if (const auto pCurrent = HouseClass::CurrentPlayer())
+		{
+			// default way: the current player's color
+			color = pCurrent->ColorSchemeIndex;
+		}
+	}
+
+	// print the message
+	MessageListClass::Instance->PrintMessage(message, RulesClass::Instance->MessageDelay, color);
 }

@@ -10,6 +10,7 @@ class TechnoTypeClass;
 class FootClass;
 class HouseClass;
 class BuildingTypeClass;
+class SuperWeaponTypeClass;
 
 class AresTechnoTypeExt
 {
@@ -46,6 +47,34 @@ public:
 	static bool CanBeBuiltAt(AresTechnoTypeExt* pExt, BuildingTypeClass* pBuildingType)
 	{
 		return THIS_CALL_ARES(&AresTechnoTypeExt::CanBeBuiltAt, pExt, pBuildingType);
+	}
+
+	// SWTypeExt
+	static bool IsTargetConstraintsEligible(void* pItem, HouseClass* pFirer, bool isPlayer)
+	{
+		DWORD function = AresHelper::AresFunctionOffsetsFinal[__func__];
+		DWORD _isPlayer = isPlayer;
+
+		__asm {
+			push _isPlayer
+			push pFirer
+			mov ecx, pItem
+		}
+
+		CALL(function)
+	}
+
+	static void* SWTypeExtMap_Find(SuperWeaponTypeClass* key)
+	{
+		DWORD function = AresHelper::AresFunctionOffsetsFinal["ExtMap_Find"];
+		DWORD extMap = AresHelper::AresFunctionOffsetsFinal["SWTypeExt_Map"];
+
+		__asm {
+			push key
+			mov ecx, extMap
+		}
+
+		CALL(function)
 	}
 
 #undef CALL_ARES
