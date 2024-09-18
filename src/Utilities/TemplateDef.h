@@ -236,6 +236,15 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Vector3D<float>>(Vector3D<float> &value, INI_EX &parser, const char *pSection, const char *pKey)
+	{
+		if (parser.Read<float, 3>(pSection, pKey, (float*)&value))
+			return true;
+
+		return false;
+	}
+
+	template <>
 	inline bool read<CoordStruct>(CoordStruct &value, INI_EX &parser, const char *pSection, const char *pKey)
 	{
 		if (parser.Read3Integers(pSection, pKey, (int*)&value))
@@ -1084,6 +1093,14 @@ namespace detail
 				else if (!_strcmpi(cur, "drain"))
 				{
 					parsed |= DiscardCondition::Drain;
+				}
+				else if (!_strcmpi(cur, "inrange"))
+				{
+					parsed |= DiscardCondition::InRange;
+				}
+				else if (!_strcmpi(cur, "outofrange"))
+				{
+					parsed |= DiscardCondition::OutOfRange;
 				}
 				else
 				{

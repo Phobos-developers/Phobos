@@ -13,10 +13,17 @@ public:
 		, FallScatter_Min { Leptons(0) }
 		, FallSpeed { 0.0 }
 		, DetonationDistance { Leptons(102) }
+		, ApplyRangeModifiers { false }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
+		, LeadTimeCalculate { false }
 		, NoLaunch { false }
 		, TurningPointAnims {}
+		, OffsetCoord { { 0, 0, 0 } }
+		, RotateCoord { 0 }
+		, MirrorCoord { true }
+		, UseDisperseBurst { false }
+		, AxisOfRotation { { 0, 0, 1 } }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -32,10 +39,17 @@ public:
 	Valueable<Leptons> FallScatter_Min;
 	Valueable<double> FallSpeed;
 	Valueable<Leptons> DetonationDistance;
+	Valueable<bool> ApplyRangeModifiers;
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> FreeFallOnTarget;
+	Valueable<bool> LeadTimeCalculate;
 	Valueable<bool> NoLaunch;
 	ValueableVector<AnimTypeClass*> TurningPointAnims;
+	Valueable<CoordStruct> OffsetCoord;
+	Valueable<int> RotateCoord;
+	Valueable<bool> MirrorCoord;
+	Valueable<bool> UseDisperseBurst;
+	Valueable<CoordStruct> AxisOfRotation;
 };
 
 class BombardTrajectory final : public PhobosTrajectory
@@ -50,6 +64,15 @@ public:
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
+		, LeadTimeCalculate { false }
+		, OffsetCoord {}
+		, RotateCoord { 0 }
+		, MirrorCoord { true }
+		, UseDisperseBurst { false }
+		, AxisOfRotation {}
+		, LastTargetCoord {}
+		, CountOfBurst { 0 }
+		, CurrentBurst { 0 }
 	{}
 
 	BombardTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Bombard)
@@ -61,6 +84,15 @@ public:
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
+		, LeadTimeCalculate { false }
+		, OffsetCoord {}
+		, RotateCoord { 0 }
+		, MirrorCoord { true }
+		, UseDisperseBurst { false }
+		, AxisOfRotation {}
+		, LastTargetCoord {}
+		, CountOfBurst { 0 }
+		, CurrentBurst { 0 }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -70,6 +102,8 @@ public:
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) override;
+	virtual void CalculateLeadTime(BulletClass* pBullet) override;
+	virtual void CalculateDisperseBurst(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
@@ -81,8 +115,16 @@ public:
 	Leptons DetonationDistance;
 	Leptons TargetSnapDistance;
 	bool FreeFallOnTarget;
+	bool LeadTimeCalculate;
+	CoordStruct OffsetCoord;
+	int RotateCoord;
+	bool MirrorCoord;
+	bool UseDisperseBurst;
+	CoordStruct AxisOfRotation;
+	CoordStruct LastTargetCoord;
+	int CountOfBurst;
+	int CurrentBurst;
 
 private:
-	void PrepareForOpenFire(BulletClass* pBullet);
 	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed);
 };

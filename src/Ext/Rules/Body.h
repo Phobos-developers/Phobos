@@ -2,13 +2,13 @@
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
-#include <GameStrings.h>
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
 #include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Debug.h>
+#include <Utilities/Anchor.h>
 
 class AnimTypeClass;
 class MouseCursor;
@@ -40,12 +40,17 @@ public:
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
 		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
+		Valueable<int> ChronoSpherePreDelay;
+		Valueable<int> ChronoSphereDelay;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
+		Valueable<int> SubterraneanHeight;
+		Nullable<int> AISuperWeaponDelay;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<int> RadBuildingDamageMaxCount;
 		Valueable<bool> RadSiteWarhead_Detonate;
+		Valueable<bool> RadSiteWarhead_Detonate_Full;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
@@ -60,6 +65,7 @@ public:
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
 
+		Nullable<double> ConditionYellow_Terrain;
 		Nullable<double> Shield_ConditionYellow;
 		Nullable<double> Shield_ConditionRed;
 		Valueable<Vector3D<int>> Pips_Shield;
@@ -93,6 +99,8 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Navy;
 		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
+		Valueable<bool> EnablePowerSurplus;
+
 		Valueable<bool> DisplayIncome;
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
@@ -103,6 +111,10 @@ public:
 		Valueable<bool> ForceShield_KeptOnDeploy;
 		Valueable<IronCurtainEffect> ForceShield_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> ForceShield_KillOrganicsWarhead;
+
+		Valueable<double> IronCurtain_ExtraTintIntensity;
+		Valueable<double> ForceShield_ExtraTintIntensity;
+		Valueable<bool> ColorAddUse8BitRGB;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -127,6 +139,17 @@ public:
 		Valueable<int> SelectionFlashDuration;
 		AnimTypeClass* DropPodTrailer;
 		SHPStruct* PodImage;
+		Valueable<bool> DrawInsignia_OnlyOnSelected;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Infantry;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
+		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
+		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
+		Valueable<AnimTypeClass*> Promote_EliteAnimation;
+
+		Nullable<Vector3D<float>> VoxelLightSource;
+		// Nullable<Vector3D<float>> VoxelShadowLightSource;
+		Valueable<bool> UseFixedVoxelLighting;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -137,12 +160,17 @@ public:
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
 			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
+			, ChronoSpherePreDelay { 60 }
+			, ChronoSphereDelay { 0 }
 			, AIChronoSphereSW {}
 			, AIChronoWarpSW {}
+			, SubterraneanHeight { -256 }
+			, AISuperWeaponDelay {}
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadBuildingDamageMaxCount { -1 }
 			, RadSiteWarhead_Detonate { false }
+			, RadSiteWarhead_Detonate_Full { true }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
@@ -186,12 +214,18 @@ public:
 			, ForbidParallelAIQueues_Infantry { false }
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
+
+			, EnablePowerSurplus { false }
+
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
 			, ForceShield_KeptOnDeploy { false }
 			, ForceShield_EffectOnOrganics { IronCurtainEffect::Kill }
 			, ForceShield_KillOrganicsWarhead { }
+			, IronCurtain_ExtraTintIntensity { 0.0 }
+			, ForceShield_ExtraTintIntensity { 0.0 }
+			, ColorAddUse8BitRGB { false }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
@@ -206,6 +240,13 @@ public:
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
+			, DrawInsignia_OnlyOnSelected { false }
+			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }
+			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
+			, DrawInsignia_AdjustPos_BuildingsAnchor {}
+			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
+			, Promote_VeteranAnimation {}
+			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
@@ -215,6 +256,9 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, VoxelLightSource { }
+			// , VoxelShadowLightSource { }
+			, UseFixedVoxelLighting { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -229,6 +273,8 @@ public:
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+		void ReplaceVoxelLightSources();
 
 	private:
 		template <typename T>

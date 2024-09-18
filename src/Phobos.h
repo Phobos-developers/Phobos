@@ -57,6 +57,7 @@ public:
 		static double PowerDelta_ConditionRed;
 		static bool CenterPauseMenuBackground;
 		static bool WeedsCounter_Show;
+		static bool AnchoredToolTips;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
@@ -89,6 +90,7 @@ public:
 		static bool ShowPowerDelta;
 		static bool ShowHarvesterCounter;
 		static bool ShowWeedsCounter;
+		static bool ShowPlanningPath;
 	};
 
 	class Misc

@@ -32,11 +32,13 @@ double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 bool Phobos::UI::CenterPauseMenuBackground = false;
 bool Phobos::UI::WeedsCounter_Show = false;
+bool Phobos::UI::AnchoredToolTips = false;
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
+bool Phobos::Config::ShowPlanningPath = false;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::ShowPlacementPreview = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
@@ -100,6 +102,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	{
 		Phobos::UI::ExtendedToolTips =
 			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
+
+		Phobos::UI::AnchoredToolTips =
+			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "AnchoredToolTips", false);
 
 		Phobos::UI::MaxToolTipWidth =
 			pINI_UIMD->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
@@ -207,6 +212,8 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 #ifndef DEBUG
 	Phobos::Config::DevelopmentCommands = pINI_RULESMD->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 #endif
+	Phobos::Config::ShowPlanningPath = pINI_RULESMD->ReadBool("GlobalControls", "DebugPlanningPaths", Phobos::Config::ShowPlanningPath);
+
 	return 0;
 }
 

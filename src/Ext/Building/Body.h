@@ -36,6 +36,7 @@ public:
 		BuildingClass* CurrentAirFactory;
 		int AccumulatedIncome;
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
+		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -48,12 +49,13 @@ public:
 			, CurrentAirFactory { nullptr }
 			, AccumulatedIncome { 0 }
 			, CurrentLaserWeaponIndex {}
+			, PoweredUpToLevel { 0 }
 		{ }
 
 		void DisplayIncomeString();
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
-
+		bool HandleInfiltrate(HouseClass* pInfiltratorHouse , int moneybefore);
 		void UpdatePrimaryFactoryAI();
 		virtual ~ExtData() = default;
 
@@ -103,6 +105,5 @@ public:
 	static bool HasFreeDocks(BuildingClass* pBuilding);
 	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
-	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
 	static bool CanUndeployOnSell(BuildingClass* pThis);
 };

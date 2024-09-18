@@ -4,6 +4,7 @@
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
@@ -252,15 +253,26 @@ DEFINE_HOOK(0x4CF31C, FlyLocomotionClass_FlightUpdate_LandingDir, 0x9)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x446F6C, BuildingClass_GrandOpening_PoseDir, 0x9)
+namespace SeparateAircraftTemp
+{
+	BuildingClass* pBuilding = nullptr;
+}
+
+DEFINE_HOOK(0x446F57, BuildingClass_GrandOpening_PoseDir_SetContext, 0x6)
 {
 	GET(BuildingClass*, pThis, EBP);
-	GET(AircraftClass*, pAircraft, ESI);
 
-	R->EAX(AircraftExt::GetLandingDir(pAircraft, pThis));
+	SeparateAircraftTemp::pBuilding = pThis;
 
 	return 0;
 }
+
+DirType _fastcall AircraftClass_PoseDir_Wrapper(AircraftClass* pThis)
+{
+	return AircraftExt::GetLandingDir(pThis, SeparateAircraftTemp::pBuilding);
+}
+
+DEFINE_JUMP(CALL, 0x446F67, GET_OFFSET(AircraftClass_PoseDir_Wrapper)); // BuildingClass_GrandOpening
 
 DEFINE_HOOK(0x443FC7, BuildingClass_ExitObject_PoseDir1, 0x8)
 {
@@ -294,17 +306,39 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 	auto pThis = static_cast<AircraftClass*>(loco->LinkedTo);
 	if (pThis->GetHeight() <= 0)
 	{
+		REF_STACK(Matrix3D, mat, STACK_OFFSET(0x38, -0x30));
+		auto slope_idx = MapClass::Instance->GetCellAt(pThis->Location)->SlopeIndex;
+		mat = Matrix3D::VoxelRampMatrix[slope_idx] * mat;
 		float ars = pThis->AngleRotatedSideways;
 		float arf = pThis->AngleRotatedForwards;
 		if (std::abs(ars) > 0.005 || std::abs(arf) > 0.005)
 		{
-			LEA_STACK(Matrix3D*, mat, STACK_OFFSET(0x38, -0x30));
-			mat->TranslateZ(float(std::abs(Math::sin(ars)) * pThis->Type->VoxelScaleX
+			mat.TranslateZ(float(std::abs(Math::sin(ars)) * pThis->Type->VoxelScaleX
 				+ std::abs(Math::sin(arf)) * pThis->Type->VoxelScaleY));
 			R->ECX(pThis);
 			return 0x4CF6AD;
 		}
 	}
 
-	return 0;
+	return 0x4CF6A0;
+}
+
+DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
+{
+	enum { SkipKickOutPassengers = 0x415F08 };
+
+	GET(AircraftClass*, pThis, EDI);
+	GET_BASE(int, weaponIdx, 0xC);
+
+	auto const pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
+
+	if (!pWeapon)
+		return 0;
+
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeaponExt->KickOutPassengers)
+		return 0;
+
+	return SkipKickOutPassengers;
 }

@@ -85,40 +85,54 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 		return SkipDamage;
 
 	TechnoClass* pInvoker = nullptr;
-	HouseClass* pInvokerHouse = nullptr;
+	HouseClass* pOwner = nullptr;
 
 	if (pTypeExt->Damage_DealtByInvoker)
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pThis);
 		pInvoker = pExt->Invoker;
+		pOwner = pExt->InvokerHouse;
 
 		if (!pInvoker)
 		{
 			pInvoker = pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
-			pInvokerHouse = !pInvoker ? pExt->InvokerHouse : nullptr;
+
+			if (pInvoker)
+				pOwner = pInvoker->Owner;
 		}
 	}
 
 	if (pTypeExt->Weapon)
 	{
-		WeaponTypeExt::DetonateAt(pTypeExt->Weapon, pThis->GetCoords(), pInvoker, appliedDamage, pInvokerHouse);
+		WeaponTypeExt::DetonateAt(pTypeExt->Weapon, pThis->GetCoords(), pInvoker, appliedDamage, pOwner);
 	}
 	else
 	{
+		if (!pOwner)
+		{
+			if (pThis->Owner)
+			{
+				pOwner = pThis->Owner;
+			}
+			else if (pInvoker)
+			{
+				pOwner = pInvoker->Owner;
+			}
+			else if (pThis->OwnerObject)
+			{
+				pOwner = pThis->OwnerObject->GetOwningHouse();
+			}
+			else if (pThis->IsBuildingAnim)
+			{
+				auto const pBuilding = AnimExt::ExtMap.Find(pThis)->ParentBuilding;
+				pOwner = pBuilding ? pBuilding->Owner : nullptr;
+			}
+		}
+
 		auto pWarhead = pThis->Type->Warhead;
 
 		if (!pWarhead)
 			pWarhead = strcmp(pThis->Type->get_ID(), "INVISO") ? RulesClass::Instance->FlameDamage2 : RulesClass::Instance->C4Warhead;
-
-		auto pOwner = pInvoker ? pInvoker->Owner : nullptr;
-
-		if (!pOwner)
-		{
-			if (pThis->Owner)
-				pOwner = pThis->Owner;
-			else if (pThis->OwnerObject)
-				pOwner = pThis->OwnerObject->GetOwningHouse();
-		}
 
 		MapClass::DamageArea(pThis->GetCoords(), appliedDamage, pInvoker, pWarhead, true, pOwner);
 	}
@@ -149,6 +163,15 @@ DEFINE_HOOK(0x423939, AnimClass_BounceAI_AttachedSystem, 0x6)
 	GET(AnimClass*, pThis, EBP);
 
 	AnimExt::ExtMap.Find(pThis)->CreateAttachedSystem();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x62E08B, ParticleSystemClass_DTOR_DetachAttachedSystem, 0x7)
+{
+	GET(ParticleSystemClass*, pParticleSystem, EDI);
+
+	AnimExt::InvalidateParticleSystemPointers(pParticleSystem);
 
 	return 0;
 }
@@ -197,14 +220,14 @@ DEFINE_HOOK(0x424CF1, AnimClass_Start_DetachedReport, 0x6)
 
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTypeExt->DetachedReport.isset())
+	if (pTypeExt->DetachedReport >= 0)
 		VocClass::PlayAt(pTypeExt->DetachedReport.Get(), pThis->GetCoords());
 
 	return 0;
 }
 
 // 0x422CD8 is in an alternate code path only used by anims with ID RING1, unused normally but covering it just because
-DEFINE_HOOK_AGAIN(0x422CD8, AnimClass_DrawIt_XDrawOffset, 0x6) 
+DEFINE_HOOK_AGAIN(0x422CD8, AnimClass_DrawIt_XDrawOffset, 0x6)
 DEFINE_HOOK(0x423122, AnimClass_DrawIt_XDrawOffset, 0x6)
 {
 	GET(AnimClass* const, pThis, ESI);
