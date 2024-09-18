@@ -380,3 +380,25 @@ In `RA2MD.ini`:
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
 ```
+
+### Exclusive SuperWeapon Sidebar
+
+![image](_static/images/exclusive-sw-sidebar.png)
+
+- It is possible to put sw cameos on the left of screen like C&C3 when `ExclusiveSuperWeaponSidebar` is true.
+- In theory, it should be compatible with Ares
+- Cameos arranged in a pyramid shape.
+- `ExclusiveSuperWeaponSidebar.Max` controls the maximum number of icons on the leftmost side, which also depends on the current game resolution.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+ExclusiveSuperWeaponSidebar=false  ; boolean
+ExclusiveSuperWeaponSidebar.Max=0 ; integer
+```
+
+In `rulesmd.ini`
+```ini
+[SuperWeapon]
+AllowInExclusiveSidebar=true  ; boolean
+```
