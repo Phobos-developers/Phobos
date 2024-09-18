@@ -34,10 +34,18 @@ public:
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
 	Valueable<double> FirepowerMultiplier;
+	Valueable<int> FirepowerBonus;
 	Valueable<double> ArmorMultiplier;
+	Valueable<int> ArmorBonus;
 	Valueable<double> SpeedMultiplier;
+	Valueable<double> SpeedBonus;
 	Valueable<double> ROFMultiplier;
 	Valueable<bool> ROFMultiplier_ApplyOnCurrentTimer;
+	Valueable<int> ROFBonus;
+	Valueable<int> ReceivedDamage_Minimum;
+	Valueable<int> ReceivedDamage_Maximum;
+	Valueable<double> Speed_Minimum;
+	Valueable<double> Speed_Maximum;
 	Valueable<bool> Cloakable;
 	Valueable<bool> ForceDecloak;
 	Valueable<double> WeaponRange_Multiplier;
@@ -82,10 +90,18 @@ public:
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
 		, FirepowerMultiplier { 1.0 }
+		, FirepowerBonus { 0 }
 		, ArmorMultiplier { 1.0 }
+		, ArmorBonus { 0 }
 		, SpeedMultiplier { 1.0 }
+		, SpeedBonus { 0.0 }
 		, ROFMultiplier { 1.0 }
 		, ROFMultiplier_ApplyOnCurrentTimer { true }
+		, ROFBonus { 0 }
+		, ReceivedDamage_Minimum { INT32_MIN }
+		, ReceivedDamage_Maximum { INT32_MAX }
+		, Speed_Minimum { 0.0 }
+		, Speed_Maximum { INT32_MAX }
 		, Cloakable { false }
 		, ForceDecloak { false }
 		, WeaponRange_Multiplier { 1.0 }

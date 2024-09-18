@@ -103,6 +103,14 @@ struct AttachEffectTechnoProperties
 	double ArmorMultiplier;
 	double SpeedMultiplier;
 	double ROFMultiplier;
+	int FirepowerBonus;
+	int ArmorBonus;
+	double SpeedBonus;
+	int ROFBonus;
+	int ReceivedDamage_Minimum;
+	int ReceivedDamage_Maximum;
+	double Speed_Minimum;
+	double Speed_Maximum;
 	bool Cloakable;
 	bool ForceDecloak;
 	bool DisableWeapons;
@@ -115,6 +123,14 @@ struct AttachEffectTechnoProperties
 		, ArmorMultiplier { 1.0 }
 		, SpeedMultiplier { 1.0 }
 		, ROFMultiplier { 1.0 }
+		, FirepowerBonus { 0 }
+		, ArmorBonus { 0 }
+		, SpeedBonus { 0.0 }
+		, ROFBonus { 0 }
+		, ReceivedDamage_Minimum { INT32_MIN }
+		, ReceivedDamage_Maximum { INT32_MAX }
+		, Speed_Minimum { 0.0 }
+		, Speed_Maximum { INT32_MAX }
 		, Cloakable { false }
 		, ForceDecloak { false }
 		, DisableWeapons { false }

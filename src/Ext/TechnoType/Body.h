@@ -233,6 +233,12 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
+		Valueable<int> ArmorBonus;
+		Valueable<int> ReceivedDamage_Minimum;
+		Valueable<int> ReceivedDamage_Maximum;
+		Valueable<double> Speed_Minimum;
+		Valueable<double> Speed_Maximum;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -461,6 +467,12 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+
+			, ArmorBonus { 0 }
+			, ReceivedDamage_Minimum { INT32_MIN }
+			, ReceivedDamage_Maximum { INT32_MAX }
+			, Speed_Minimum { 0.0 }
+			, Speed_Maximum { INT32_MAX }
 		{ }
 
 		virtual ~ExtData() = default;
