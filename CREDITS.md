@@ -354,6 +354,7 @@ This page lists all the individual contributions to the project by their author.
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
 - **CrimRecya**
+  - Fix `LimboKill` not working reliably
   - Units Rotate Turret When in Idle Action
 - **Ollerus**
   - Build limit group enhancement
