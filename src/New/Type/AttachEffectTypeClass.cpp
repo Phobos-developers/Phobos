@@ -139,7 +139,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crit_AllowWarheads.Read(exINI, pSection, "Crit.AllowWarheads");
 	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
 
-	this->Block_Multiplier.Read(exINI, pSection, "Block.Multiplier");
+	this->Block_ChanceMultiplier.Read(exINI, pSection, "Block.ChanceMultiplier");
 	this->Block_ExtraChance.Read(exINI, pSection, "Block.ExtraChance");
 	this->Block_DamageMult_Multiplier.Read(exINI, pSection, "Block.DamageMult.Multiplier");
 	this->Block_DamageMult_Bonus.Read(exINI, pSection, "Block.DamageMult.Bonus");
@@ -200,7 +200,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Crit_ExtraChance)
 		.Process(this->Crit_AllowWarheads)
 		.Process(this->Crit_DisallowWarheads)
-		.Process(this->Block_Multiplier)
+		.Process(this->Block_ChanceMultiplier)
 		.Process(this->Block_ExtraChance)
 		.Process(this->Block_DamageMult_Multiplier)
 		.Process(this->Block_DamageMult_Bonus)

@@ -48,7 +48,7 @@ public:
 	Valueable<double> Crit_ExtraChance;
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
-	Valueable<double> Block_Multiplier;
+	Valueable<double> Block_ChanceMultiplier;
 	Valueable<double> Block_ExtraChance;
 	Valueable<double> Block_DamageMult_Multiplier;
 	Valueable<double> Block_DamageMult_Bonus;
@@ -100,7 +100,7 @@ public:
 		, Crit_ExtraChance { 0.0 }
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
-		, Block_Multiplier { 1.0 }
+		, Block_ChanceMultiplier { 1.0 }
 		, Block_ExtraChance { 0.0 }
 		, Block_DamageMult_Multiplier { 1.0 }
 		, Block_DamageMult_Bonus{ 0.0 }

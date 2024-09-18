@@ -3,64 +3,6 @@
 #include <Utilities/SavegameDef.h>
 #include <Utilities/TemplateDef.h>
 
-BlockTypeClass::BlockTypeClass(TechnoTypeClass* pOwnerType)
-	: Block_Chances { }
-	, Block_DamageMultipliers { }
-	, Block_AffectBelowPercents { }
-	, Block_AffectsHouses { AffectedHouse::All }
-	, Block_CanActive_NoFirer { true }
-	, Block_CanActive_Powered { false }
-	, Block_CanActive_ShieldActive { true }
-	, Block_CanActive_ShieldInactive { true }
-	, Block_CanActive_ZeroDamage { false }
-	, Block_CanActive_NegativeDamage { false }
-	, Block_Flash { false }
-	, Block_Flash_FixedSize { }
-	, Block_Flash_Red { true }
-	, Block_Flash_Green { true }
-	, Block_Flash_Blue { true }
-	, Block_Flash_Black { false }
-	, Block_Anims { }
-	, Block_Weapon { }
-	, Block_ReflectDamage { false }
-	, Block_ReflectDamage_Chance { 1.0 }
-	, Block_ReflectDamage_Warhead { }
-	, Block_ReflectDamage_Warhead_Detonate { false }
-	, Block_ReflectDamage_Multiplier { 1.0 }
-	, Block_ReflectDamage_Override { }
-	, Block_ReflectDamage_AffectsHouses { }
-{
-}
-
-BlockTypeClass::BlockTypeClass(WarheadTypeClass* pOwnerType)
-	: Block_Chances { }
-	, Block_DamageMultipliers { }
-	, Block_AffectBelowPercents { }
-	, Block_AffectsHouses { }
-	, Block_CanActive_NoFirer { }
-	, Block_CanActive_Powered { }
-	, Block_CanActive_ShieldActive { }
-	, Block_CanActive_ShieldInactive { }
-	, Block_CanActive_ZeroDamage { }
-	, Block_CanActive_NegativeDamage { }
-	, Block_Flash { }
-	, Block_Flash_FixedSize { }
-	, Block_Flash_Red { }
-	, Block_Flash_Green { }
-	, Block_Flash_Blue { }
-	, Block_Flash_Black { }
-	, Block_Anims { }
-	, Block_Weapon { }
-	, Block_ReflectDamage { }
-	, Block_ReflectDamage_Chance { }
-	, Block_ReflectDamage_Warhead { }
-	, Block_ReflectDamage_Warhead_Detonate { }
-	, Block_ReflectDamage_Multiplier { }
-	, Block_ReflectDamage_Override { }
-	, Block_ReflectDamage_AffectsHouses { }
-{
-}
-
 void BlockTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
@@ -75,6 +17,8 @@ void BlockTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->Block_CanActive_ShieldInactive.Read(exINI, pSection, "Block.CanActive.ShieldInactive");
 	this->Block_CanActive_ZeroDamage.Read(exINI, pSection, "Block.CanActive.ZeroDamage");
 	this->Block_CanActive_NegativeDamage.Read(exINI, pSection, "Block.CanActive.NegativeDamage");
+	this->Block_CanActive_Move.Read(exINI, pSection, "Block.CanActive.Move");
+	this->Block_CanActive_Stationary.Read(exINI, pSection, "Block.CanActive.Stationary");
 	this->Block_Flash.Read(exINI, pSection, "Block.Flash");
 	this->Block_Flash_FixedSize.Read(exINI, pSection, "Block.Flash.FixedSize");
 	this->Block_Flash_Red.Read(exINI, pSection, "Block.Flash.Red");
@@ -108,6 +52,8 @@ bool BlockTypeClass::Serialize(T& stm)
 		.Process(this->Block_CanActive_ShieldInactive)
 		.Process(this->Block_CanActive_ZeroDamage)
 		.Process(this->Block_CanActive_NegativeDamage)
+		.Process(this->Block_CanActive_Move)
+		.Process(this->Block_CanActive_Stationary)
 		.Process(this->Block_Flash)
 		.Process(this->Block_Flash_FixedSize)
 		.Process(this->Block_Flash_Red)

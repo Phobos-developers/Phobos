@@ -150,14 +150,14 @@ public:
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
 
 		std::unique_ptr<BlockTypeClass> BlockType;
-		Valueable<bool> ImmuneToBlock;
-		Valueable<bool> Block_WarheadOverride;
-		Valueable<bool> Block_WarheadOverride_All;
+		Valueable<bool> Block_BasedOnWarhead;
+		Valueable<bool> Block_AllowOverride;
 		Valueable<bool> Block_IgnoreAttachEffect;
-		Valueable<double> Block_Multiplier;
+		Valueable<double> Block_ChanceMultiplier;
 		Valueable<double> Block_ExtraChance;
 		Valueable<double> Block_DamageMult_Multiplier;
 		Valueable<double> Block_DamageMult_Bonus;
+		Valueable<bool> ImmuneToBlock;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -311,14 +311,14 @@ public:
 			, SuppressReflectDamage_Types {}
 
 			, BlockType {}
-			, ImmuneToBlock { false }
-			, Block_WarheadOverride { false }
-			, Block_WarheadOverride_All { false }
+			, Block_BasedOnWarhead { false }
+			, Block_AllowOverride { true }
 			, Block_IgnoreAttachEffect { true }
-			, Block_Multiplier { 1.0 }
+			, Block_ChanceMultiplier { 1.0 }
 			, Block_ExtraChance { 0.0 }
 			, Block_DamageMult_Multiplier { 1.0 }
 			, Block_DamageMult_Bonus { 0.0 }
+			, ImmuneToBlock { false }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}

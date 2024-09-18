@@ -469,24 +469,26 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args)
 {
 	int damage = *args->Damage;
-	const auto pWH = args->WH;
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	if (pWHExt->ImmuneToBlock)
 		return damage;
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	const auto pWHBlockType = pWHExt->BlockType.get();
-	const auto pBlockType = pWHExt->Block_WarheadOverride && pWHExt->Block_WarheadOverride_All ? pTypeExt->BlockType.get() : pWHBlockType;
-	bool override = pWHExt->Block_WarheadOverride && pBlockType != pWHBlockType;
+
+	if (!pTypeExt->CanBlock)
+		return damage;
+
+	const auto pBlockType = pWHExt->Block_BasedOnWarhead ? pWHExt->BlockType.get() : pTypeExt->BlockType.get();
+	const auto pOtherBlock = !pWHExt->Block_BasedOnWarhead ? pWHExt->BlockType.get() : pTypeExt->BlockType.get();
 	std::vector<double> blockChances = pBlockType->Block_Chances;
 	std::vector<double> blockDamageMultipliers = pBlockType->Block_DamageMultipliers;
 
-	if (override)
+	if (pWHExt->Block_AllowOverride)
 	{
-		blockChances = !pWHBlockType->Block_Chances.empty() ? pWHBlockType->Block_Chances : blockChances;
-		blockDamageMultipliers = !pWHBlockType->Block_DamageMultipliers.empty() ? pWHBlockType->Block_DamageMultipliers : blockDamageMultipliers;
+		blockChances = !pOtherBlock->Block_Chances.empty() ? pOtherBlock->Block_Chances : blockChances;
+		blockDamageMultipliers = !pOtherBlock->Block_DamageMultipliers.empty() ? pOtherBlock->Block_DamageMultipliers : blockDamageMultipliers;
 	}
 
 	if (!pWHExt->Block_IgnoreAttachEffect)
@@ -507,17 +509,21 @@ int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args
 		bool blockCanActiveNoFirer = pBlockType->Block_CanActive_NoFirer.Get(true);
 		bool blockCanActiveShieldActive = pBlockType->Block_CanActive_ShieldActive.Get(true);
 		bool blockCanActiveShieldInactive = pBlockType->Block_CanActive_ShieldInactive.Get(true);
+		bool blockCanActiveMove = pBlockType->Block_CanActive_Move.Get(true);
+		bool blockCanActiveStationary = pBlockType->Block_CanActive_Stationary.Get(true);
 
-		if (override)
+		if (pWHExt->Block_AllowOverride)
 		{
-			blockAffectBelowPercents = !pWHBlockType->Block_AffectBelowPercents.empty() ? pWHBlockType->Block_AffectBelowPercents : blockAffectBelowPercents;
-			blockAffectsHouses = pWHBlockType->Block_AffectsHouses.isset() ? pWHBlockType->Block_AffectsHouses.Get() : blockAffectsHouses;
-			blockCanActiveZeroDamage = pWHBlockType->Block_CanActive_ZeroDamage.isset() ? pWHBlockType->Block_CanActive_ZeroDamage : blockCanActiveZeroDamage;
-			blockCanActiveNegativeDamage = pWHBlockType->Block_CanActive_NegativeDamage.isset() ? pWHBlockType->Block_CanActive_NegativeDamage : blockCanActiveNegativeDamage;
-			blockCanActivePowered = pWHBlockType->Block_CanActive_Powered.isset() ? pWHBlockType->Block_CanActive_Powered : blockCanActivePowered;
-			blockCanActiveNoFirer = pWHBlockType->Block_CanActive_NoFirer.isset() ? pWHBlockType->Block_CanActive_NoFirer : blockCanActiveNoFirer;
-			blockCanActiveShieldActive = pWHBlockType->Block_CanActive_ShieldActive.isset() ? pWHBlockType->Block_CanActive_ShieldActive : blockCanActiveShieldActive;
-			blockCanActiveShieldInactive = pWHBlockType->Block_CanActive_ShieldInactive.isset() ? pWHBlockType->Block_CanActive_ShieldInactive : blockCanActiveShieldInactive;
+			blockAffectBelowPercents = !pOtherBlock->Block_AffectBelowPercents.empty() ? pOtherBlock->Block_AffectBelowPercents : blockAffectBelowPercents;
+			blockAffectsHouses = pOtherBlock->Block_AffectsHouses.isset() ? pOtherBlock->Block_AffectsHouses.Get() : blockAffectsHouses;
+			blockCanActiveZeroDamage = pOtherBlock->Block_CanActive_ZeroDamage.isset() ? pOtherBlock->Block_CanActive_ZeroDamage : blockCanActiveZeroDamage;
+			blockCanActiveNegativeDamage = pOtherBlock->Block_CanActive_NegativeDamage.isset() ? pOtherBlock->Block_CanActive_NegativeDamage : blockCanActiveNegativeDamage;
+			blockCanActivePowered = pOtherBlock->Block_CanActive_Powered.isset() ? pOtherBlock->Block_CanActive_Powered : blockCanActivePowered;
+			blockCanActiveNoFirer = pOtherBlock->Block_CanActive_NoFirer.isset() ? pOtherBlock->Block_CanActive_NoFirer : blockCanActiveNoFirer;
+			blockCanActiveShieldActive = pOtherBlock->Block_CanActive_ShieldActive.isset() ? pOtherBlock->Block_CanActive_ShieldActive : blockCanActiveShieldActive;
+			blockCanActiveShieldInactive = pOtherBlock->Block_CanActive_ShieldInactive.isset() ? pOtherBlock->Block_CanActive_ShieldInactive : blockCanActiveShieldInactive;
+			blockCanActiveMove = pOtherBlock->Block_CanActive_Move.isset() ? pOtherBlock->Block_CanActive_Move : blockCanActiveMove;
+			blockCanActiveStationary = pOtherBlock->Block_CanActive_Stationary.isset() ? pOtherBlock->Block_CanActive_Stationary : blockCanActiveStationary;
 		}
 
 		if (blockAffectBelowPercents.size() > 0 && pThis->GetHealthPercentage() > blockAffectBelowPercents[0])
@@ -543,10 +549,10 @@ int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args
 
 		if (blockChances.size() == 1)
 		{
-			if (blockChances[0] * pWHExt->Block_Multiplier + pWHExt->Block_ExtraChance < dice)
+			if (blockChances[0] * pWHExt->Block_ChanceMultiplier + pWHExt->Block_ExtraChance < dice)
 				return damage;
 		}
-		else if (blockChances.size() <= level || blockChances[level] * pWHExt->Block_Multiplier + pWHExt->Block_ExtraChance < dice)
+		else if (blockChances.size() <= level || blockChances[level] * pWHExt->Block_ChanceMultiplier + pWHExt->Block_ExtraChance < dice)
 		{
 			return damage;
 		}
@@ -563,6 +569,19 @@ int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args
 
 			if (!isActive)
 				return damage;
+		}
+
+		if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+		{
+			if (pFoot->Locomotor->Is_Moving())
+			{
+				if (!blockCanActiveMove)
+					return damage;
+			}
+			else if (!blockCanActiveStationary)
+			{
+				return damage;
+			}
 		}
 
 		const auto pFirer = args->Attacker;
@@ -596,13 +615,13 @@ int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args
 		bool blockReflectDamage = pBlockType->Block_ReflectDamage.Get(false);
 		double blockReflectDamageChance = pBlockType->Block_ReflectDamage_Chance.Get(1.0);
 
-		if (override)
+		if (pWHExt->Block_AllowOverride)
 		{
-			blockAnims = !pWHBlockType->Block_Anims.empty() ? pWHBlockType->Block_Anims : blockAnims;
-			blockWeapon = pWHBlockType->Block_Weapon.isset() ? pWHBlockType->Block_Weapon.Get() : blockWeapon;
-			blockFlash = pWHBlockType->Block_Flash.isset() ? pWHBlockType->Block_Flash.Get() : blockFlash;
-			blockReflectDamage = pWHBlockType->Block_ReflectDamage.isset() ? pWHBlockType->Block_ReflectDamage.Get() : blockReflectDamage;
-			blockReflectDamageChance = pWHBlockType->Block_ReflectDamage_Chance.isset() ? pWHBlockType->Block_ReflectDamage_Chance.Get() : blockReflectDamageChance;
+			blockAnims = !pOtherBlock->Block_Anims.empty() ? pOtherBlock->Block_Anims : blockAnims;
+			blockWeapon = pOtherBlock->Block_Weapon.isset() ? pOtherBlock->Block_Weapon.Get() : blockWeapon;
+			blockFlash = pOtherBlock->Block_Flash.isset() ? pOtherBlock->Block_Flash.Get() : blockFlash;
+			blockReflectDamage = pOtherBlock->Block_ReflectDamage.isset() ? pOtherBlock->Block_ReflectDamage.Get() : blockReflectDamage;
+			blockReflectDamageChance = pOtherBlock->Block_ReflectDamage_Chance.isset() ? pOtherBlock->Block_ReflectDamage_Chance.Get() : blockReflectDamageChance;
 		}
 
 		if (blockAnims.size() > 0)
@@ -620,13 +639,13 @@ int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args
 			bool blockFlashBlue = pBlockType->Block_Flash_Blue.Get(true);
 			bool blockFlashBlack = pBlockType->Block_Flash_Black.Get(false);
 
-			if (override)
+			if (pWHExt->Block_AllowOverride)
 			{
-				size = pWHBlockType->Block_Flash_FixedSize.isset() ? pWHBlockType->Block_Flash_FixedSize.Get() : size;
-				blockFlashRed = pWHBlockType->Block_Flash_Red.isset() ? pWHBlockType->Block_Flash_Red.Get() : blockFlashRed;
-				blockFlashGreen = pWHBlockType->Block_Flash_Green.isset() ? pWHBlockType->Block_Flash_Green.Get() : blockFlashGreen;
-				blockFlashBlue = pWHBlockType->Block_Flash_Blue.isset() ? pWHBlockType->Block_Flash_Blue.Get() : blockFlashBlue;
-				blockFlashBlack = pWHBlockType->Block_Flash_Black.isset() ? pWHBlockType->Block_Flash_Black.Get() : blockFlashBlack;
+				size = pOtherBlock->Block_Flash_FixedSize.isset() ? pOtherBlock->Block_Flash_FixedSize.Get() : size;
+				blockFlashRed = pOtherBlock->Block_Flash_Red.isset() ? pOtherBlock->Block_Flash_Red.Get() : blockFlashRed;
+				blockFlashGreen = pOtherBlock->Block_Flash_Green.isset() ? pOtherBlock->Block_Flash_Green.Get() : blockFlashGreen;
+				blockFlashBlue = pOtherBlock->Block_Flash_Blue.isset() ? pOtherBlock->Block_Flash_Blue.Get() : blockFlashBlue;
+				blockFlashBlack = pOtherBlock->Block_Flash_Black.isset() ? pOtherBlock->Block_Flash_Black.Get() : blockFlashBlack;
 			}
 
 			if (blockFlashBlack)
@@ -655,13 +674,13 @@ int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args
 			double blockReflectDamageMultiplier = pBlockType->Block_ReflectDamage_Multiplier.Get(1.0);
 			bool blockReflectDamageWHDetonate = pBlockType->Block_ReflectDamage_Warhead_Detonate.Get(false);
 
-			if (override)
+			if (pWHExt->Block_AllowOverride)
 			{
-				pWHRef = pWHBlockType->Block_ReflectDamage_Warhead.isset() ? pWHBlockType->Block_ReflectDamage_Warhead.Get() : pWHRef;
-				blockReflectDamageOverride = pWHBlockType->Block_ReflectDamage_Override.isset() ? pWHBlockType->Block_ReflectDamage_Override : blockReflectDamageOverride;
-				blockReflectDamageAffectsHouses = pWHBlockType->Block_ReflectDamage_AffectsHouses.isset() ? pWHBlockType->Block_ReflectDamage_AffectsHouses.Get() : blockReflectDamageAffectsHouses;
-				blockReflectDamageMultiplier = pWHBlockType->Block_ReflectDamage_Multiplier.isset() ? pWHBlockType->Block_ReflectDamage_Multiplier.Get() : blockReflectDamageMultiplier;
-				blockReflectDamageWHDetonate = pWHBlockType->Block_ReflectDamage_Warhead_Detonate.isset() ? pWHBlockType->Block_ReflectDamage_Warhead_Detonate.Get() : blockReflectDamageWHDetonate;
+				pWHRef = pOtherBlock->Block_ReflectDamage_Warhead.isset() ? pOtherBlock->Block_ReflectDamage_Warhead.Get() : pWHRef;
+				blockReflectDamageOverride = pOtherBlock->Block_ReflectDamage_Override.isset() ? pOtherBlock->Block_ReflectDamage_Override : blockReflectDamageOverride;
+				blockReflectDamageAffectsHouses = pOtherBlock->Block_ReflectDamage_AffectsHouses.isset() ? pOtherBlock->Block_ReflectDamage_AffectsHouses.Get() : blockReflectDamageAffectsHouses;
+				blockReflectDamageMultiplier = pOtherBlock->Block_ReflectDamage_Multiplier.isset() ? pOtherBlock->Block_ReflectDamage_Multiplier.Get() : blockReflectDamageMultiplier;
+				blockReflectDamageWHDetonate = pOtherBlock->Block_ReflectDamage_Warhead_Detonate.isset() ? pOtherBlock->Block_ReflectDamage_Warhead_Detonate.Get() : blockReflectDamageWHDetonate;
 			}
 
 			int damageRef = blockReflectDamageOverride.Get(static_cast<int>(damage * blockReflectDamageMultiplier));
@@ -681,9 +700,9 @@ int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args
 		}
 
 		if (blockDamageMultipliers.size() == 1)
-			damage = static_cast<int>(damage * (blockDamageMultipliers[0] * pWHExt->Block_Multiplier + pWHExt->Block_ExtraChance));
+			damage = static_cast<int>(damage * (blockDamageMultipliers[0] * pWHExt->Block_ChanceMultiplier + pWHExt->Block_ExtraChance));
 		else if (blockDamageMultipliers.size() > level)
-			damage = static_cast<int>(damage * (blockDamageMultipliers[level] * pWHExt->Block_Multiplier + pWHExt->Block_ExtraChance));
+			damage = static_cast<int>(damage * (blockDamageMultipliers[level] * pWHExt->Block_ChanceMultiplier + pWHExt->Block_ExtraChance));
 
 		if (blockWeapon)
 			TechnoExt::FireWeaponAtSelf(pThis, blockWeapon);
@@ -695,7 +714,6 @@ int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args
 std::pair<std::vector<double>, std::vector<double>> TechnoExt::GetBlockChanceAndDamageMult(TechnoClass* pThis, std::vector<double> blockChance, std::vector<double> blockDamageMult)
 {
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (blockChance.size() == 0)
 		blockChance.push_back(0.0);
@@ -713,12 +731,12 @@ std::pair<std::vector<double>, std::vector<double>> TechnoExt::GetBlockChanceAnd
 
 		auto const pType = attachEffect->GetType();
 
-		if (pType->Block_Multiplier == 1.0 && pType->Block_ExtraChance == 0.0)
+		if (pType->Block_ChanceMultiplier == 1.0 && pType->Block_ExtraChance == 0.0)
 			continue;
 
 		for (auto& chance : blockChance)
 		{
-			chance = chance * Math::max(pType->Block_Multiplier, 0);
+			chance = chance * Math::max(pType->Block_ChanceMultiplier, 0);
 		}
 
 		for (auto& extraDamage : blockDamageMult)

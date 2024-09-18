@@ -318,6 +318,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
+	this->CanBlock.Read(exINI, pSection, "CanBlock");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -475,7 +476,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	if (this->BlockType == nullptr)
-		this->BlockType = std::make_unique<BlockTypeClass>(this->OwnerObject());
+		this->BlockType = std::make_unique<BlockTypeClass>();
 	this->BlockType->LoadFromINI(pINI, pSection);
 
 	if (GeneralUtils::IsValidString(pThis->PaletteFile) && !pThis->Palette)
@@ -694,6 +695,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake_Sinking)
 
 		.Process(this->BlockType)
+		.Process(this->CanBlock)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

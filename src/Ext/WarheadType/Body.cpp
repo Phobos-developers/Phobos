@@ -266,21 +266,21 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
 	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
 
-	this->ImmuneToBlock.Read(exINI, pSection, "ImmuneToBlock");
-	this->Block_WarheadOverride.Read(exINI, pSection, "Block.WarheadOverride");
-	this->Block_WarheadOverride_All.Read(exINI, pSection, "Block.WarheadOverride.All");
+	this->Block_BasedOnWarhead.Read(exINI, pSection, "Block.BasedOnWarhead");
+	this->Block_AllowOverride.Read(exINI, pSection, "Block.AllowOverride");
 	this->Block_IgnoreAttachEffect.Read(exINI, pSection, "Block.IgnoreAttachEffect");
-	this->Block_Multiplier.Read(exINI, pSection, "Block.Multiplier");
+	this->Block_ChanceMultiplier.Read(exINI, pSection, "Block.ChanceMultiplier");
 	this->Block_ExtraChance.Read(exINI, pSection, "Block.ExtraChance");
 	this->Block_DamageMult_Multiplier.Read(exINI, pSection, "Block.DamageMult.Multiplier");
 	this->Block_DamageMult_Bonus.Read(exINI, pSection, "Block.DamageMult.Bonus");
+	this->ImmuneToBlock.Read(exINI, pSection, "ImmuneToBlock");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
 	// Block
 	if (this->BlockType == nullptr)
-		this->BlockType = std::make_unique<BlockTypeClass>(this->OwnerObject());
+		this->BlockType = std::make_unique<BlockTypeClass>();
 	this->BlockType->LoadFromINI(pINI, pSection);
 
 #ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
@@ -500,14 +500,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Nonprovocative)
 
 		.Process(this->BlockType)
-		.Process(this->ImmuneToBlock)
-		.Process(this->Block_WarheadOverride)
-		.Process(this->Block_WarheadOverride_All)
+		.Process(this->Block_BasedOnWarhead)
+		.Process(this->Block_AllowOverride)
 		.Process(this->Block_IgnoreAttachEffect)
-		.Process(this->Block_Multiplier)
+		.Process(this->Block_ChanceMultiplier)
 		.Process(this->Block_ExtraChance)
 		.Process(this->Block_DamageMult_Multiplier)
 		.Process(this->Block_DamageMult_Bonus)
+		.Process(this->ImmuneToBlock)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

@@ -8,8 +8,6 @@ class BlockTypeClass
 public:
 
 	BlockTypeClass() = default;
-	BlockTypeClass(TechnoTypeClass* pOwnerType);
-	BlockTypeClass(WarheadTypeClass* pOwnerType);
 
 	ValueableVector<double> Block_Chances;
 	ValueableVector<double> Block_DamageMultipliers;
@@ -21,6 +19,8 @@ public:
 	Nullable<bool> Block_CanActive_ShieldInactive;
 	Nullable<bool> Block_CanActive_ZeroDamage;
 	Nullable<bool> Block_CanActive_NegativeDamage;
+	Nullable<bool> Block_CanActive_Move;
+	Nullable<bool> Block_CanActive_Stationary;
 	Nullable<bool> Block_Flash;
 	Nullable<int> Block_Flash_FixedSize;
 	Nullable<bool> Block_Flash_Red;
