@@ -106,7 +106,7 @@ public:
 		void RecalculateStatMultipliers();
 		void UpdateTemporal();
 		void UpdateMindControlAnim();
-		void ApplyMobileRefinery();
+		void UpdateMobileRefinery();
 		void InitializeLaserTrails();
 		void InitializeAttachEffects();
 		void UpdateSelfOwnedAttachEffects();
