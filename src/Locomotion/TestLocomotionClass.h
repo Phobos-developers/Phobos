@@ -199,7 +199,7 @@ public:
 	//virtual bool __stdcall Will_Jump_Tracks() override;
 	virtual bool __stdcall Is_Really_Moving_Now() override;
 	//virtual void __stdcall Stop_Movement_Animation() override;
-	virtual void __stdcall Clear_Coords() override;
+	virtual void __stdcall Limbo() override;
 	//virtual void __stdcall Lock() override;
 	//virtual void __stdcall Unlock() override;
 	//virtual int __stdcall Get_Track_Number() override;

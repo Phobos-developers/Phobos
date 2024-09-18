@@ -76,6 +76,7 @@ enum class PhobosScripts : unsigned int
 	StopForceJumpCountdown = 16002,
 	RandomSkipNextAction = 16003,
 	PickRandomScript = 16004,
+	JumpBackToPreviousScript = 16005,
 
 	// Range 18000-18999 are variable actions
 	LocalVariableSet = 18000,
@@ -175,8 +176,8 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm);
-		virtual void SaveToStream(PhobosStreamWriter& Stm);
+		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
+		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 	};
 
@@ -206,6 +207,7 @@ public:
 	static FootClass* FindTheTeamLeader(TeamClass* pTeam);
 	static void Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine, int count);
 	static void Stop_ForceJump_Countdown(TeamClass* pTeam);
+	static void JumpBackToPreviousScript(TeamClass* pTeam);
 	static void ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance);
 
 	static bool IsExtVariableAction(int action);
@@ -216,7 +218,6 @@ public:
 	static void VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate);
 	static bool IsUnitAvailable(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed);
 	static void Log(const char* pFormat, ...);
-
 	// Mission.Attack.cpp
 	static void Mission_Attack(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType, int IdxAITargetTypeItem);
 	static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode);

@@ -61,10 +61,10 @@ DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
 	}
 
 	auto pCell = MapClass::Instance->GetCellAt(pThis->GetMapCoords());
+	pThis->SetTarget(pCell);
 
 	if (pThis->GetFireError(pCell, weaponIndex, true) == FireError::OK)
 	{
-		pThis->SetTarget(pCell);
 		pThis->Fire(pThis->Target, weaponIndex);
 
 		if (pWeapon->FireOnce)

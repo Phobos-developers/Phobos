@@ -7,6 +7,7 @@
 #include <InfantryClass.h>
 #include <UnitClass.h>
 #include <AircraftClass.h>
+#include <HouseClass.h>
 
 //Static init
 TEventExt::ExtContainer TEventExt::ExtMap;
@@ -118,6 +119,14 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 
 	case PhobosTriggerEvent::ShieldBroken:
 		return ShieldClass::ShieldIsBrokenTEvent(pObject);
+	case PhobosTriggerEvent::HouseOwnsTechnoType:
+		return TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
+	case PhobosTriggerEvent::HouseDoesntOwnTechnoType:
+		return TEventExt::HouseDoesntOwnTechnoTypeTEvent(pThis);
+	case PhobosTriggerEvent::CellHasTechnoType:
+		return TEventExt::CellHasTechnoTypeTEvent(pThis, pObject, pHouse);
+	case PhobosTriggerEvent::CellHasAnyTechnoTypeFromList:
+		return TEventExt::CellHasAnyTechnoTypeFromListTEvent(pThis, pObject, pHouse);
 
 	default:
 		bHandled = false;
@@ -153,6 +162,112 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 
 		if (itrsrc != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
 			return _Pr()(itr->second.Value, itrsrc->second.Value);
+	}
+
+	return false;
+}
+
+bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
+{
+	auto pType = TechnoTypeClass::Find(pThis->String);
+	if (!pType)
+		return false;
+
+	auto pHouse = HouseClass::FindByIndex(pThis->Value);
+	if (!pHouse)
+		return false;
+
+	return pHouse->CountOwnedNow(pType) > 0;
+}
+
+bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
+{
+	return !TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
+}
+
+bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
+{
+	if (!pObject)
+		return false;
+
+	int desiredListIdx = -1;
+	if (sscanf_s(pThis->String, "%d", &desiredListIdx) <= 0 || desiredListIdx < 0)
+	{
+		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid index value for [AITargetTypes]\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
+		return false;
+	}
+
+	if (RulesExt::Global()->AITargetTypesLists.size() == 0
+		|| RulesExt::Global()->AITargetTypesLists[desiredListIdx].size() == 0)
+	{
+		return false;
+	}
+
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+	if (!pTechno)
+		return false;
+
+	auto const pTechnoType = pTechno->GetTechnoType();
+	bool found = false;
+
+	for (auto const pDesiredItem : RulesExt::Global()->AITargetTypesLists[desiredListIdx])
+	{
+		if (pDesiredItem == pTechnoType)
+		{
+			HouseClass* pHouse = nullptr;
+
+			if (pThis->Value <= -2)
+				pHouse = pEventHouse;
+			else if (pThis->Value >= 0)
+				pHouse = HouseClass::Array->GetItem(pThis->Value);
+
+			if (pHouse && pTechno->Owner != pHouse)
+				break;
+
+			found = true;
+			break;
+		}
+	}
+
+	return found;
+}
+
+bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
+{
+	if (!pObject)
+		return false;
+
+	auto pDesiredType = TechnoTypeClass::Find(pThis->String);
+	if (!pDesiredType)
+	{
+		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid Techno ID\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
+		return false;
+	}
+
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+	if (!pTechno)
+		return false;
+
+	auto const pTechnoType = pTechno->GetTechnoType();
+
+	if (pDesiredType == pTechnoType)
+	{
+		HouseClass* pHouse = nullptr;
+
+		if (pThis->Value <= -2)
+			pHouse = pEventHouse;
+		else if (pThis->Value >= 0)
+			pHouse = HouseClass::Array->GetItem(pThis->Value);
+
+		if (pHouse)
+		{
+			if (pTechno->Owner == pHouse)
+				return true;
+
+			return false;
+		}
+
+		return true;
 	}
 
 	return false;

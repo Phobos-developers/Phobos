@@ -2,6 +2,11 @@
 
 #include <Ext/BulletType/Body.h>
 
+PhobosTrajectory* BombardTrajectoryType::CreateInstance() const
+{
+	return new BombardTrajectory(this);
+}
+
 bool BombardTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->PhobosTrajectoryType::Load(Stm, false);

@@ -1,8 +1,10 @@
 #include "Body.h"
 
+#include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
 #include <TerrainClass.h>
 
+#include <Ext/Building/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -35,17 +37,32 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 
 DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 {
-	enum { Secondary = 0x6F3745, UseWeaponIndex = 0x6F37AF };
+	enum { ReturnWeaponIndex = 0x6F37AF };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (const auto pCell = abstract_cast<CellClass*>(pTarget))
 	{
-		if (const auto pPrimaryExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType))
+		auto const pWeaponPrimary = pThis->GetWeapon(0)->WeaponType;
+		auto const pWeaponSecondary = pThis->GetWeapon(1)->WeaponType;
+		auto const pPrimaryExt = WeaponTypeExt::ExtMap.Find(pWeaponPrimary);
+
+		if (pWeaponSecondary && (!EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true)
+			|| (pPrimaryExt->AttachEffect_CheckOnFirer && !pPrimaryExt->HasRequiredAttachedEffects(pThis, pThis))))
 		{
-			if (pThis->GetWeapon(1)->WeaponType && !EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true))
-				return Secondary;
+			R->EAX(1);
+			return ReturnWeaponIndex;
+		}
+		else if (pCell->OverlayTypeIndex != -1)
+		{
+			auto const pOverlayType = OverlayTypeClass::Array()->GetItem(pCell->OverlayTypeIndex);
+
+			if (pOverlayType->Wall && pCell->OverlayData >> 4 != pOverlayType->DamageLevels)
+			{
+				R->EAX(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayType));
+				return ReturnWeaponIndex;
+			}
 		}
 	}
 
@@ -258,7 +275,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		CellClass* pTargetCell = nullptr;
 
 		// AAOnly doesn't need to be checked if LandTargeting=1.
-		if ((!pTechno || pTechno->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK) && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
+		if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
 		{
 			auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pWeapon->Projectile);
 
@@ -282,7 +299,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (pTargetCell)
 		{
-			if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true))
+			if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
 				return CannotFire;
 		}
 
@@ -293,28 +310,51 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			{
 				return CannotFire;
 			}
+
+			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
+				return CannotFire;
 		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x6FC587, TechnoClass_CanFire_OpenTopped, 0x6)
+DEFINE_HOOK(0x6FC0C5, TechnoClass_CanFire_DisableWeapons, 0x6)
 {
-	enum { DisallowFiring = 0x6FC86A };
+	enum { OutOfRange = 0x6FC0DF, Illegal = 0x6FC86A, Continue = 0x6FC0D3 };
 
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pTransport = pThis->Transporter)
-	{
-		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
-		{
-			if (pTransport->Deactivated && !pExt->OpenTopped_AllowFiringIfDeactivated)
-				return DisallowFiring;
-		}
-	}
+	if (pThis->SlaveOwner)
+		return Illegal;
 
-	return 0;
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->AE.DisableWeapons)
+		return OutOfRange;
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
+{
+	enum { Illegal = 0x6FC86A, OutOfRange = 0x6FC0DF, Continue = 0x6FC5D5 };
+
+//	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pTransport, EAX);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+
+	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
+		return Illegal;
+
+	if (pTransport->Transporter)
+		return Illegal;
+
+	if (pTypeExt->OpenTopped_CheckTransportDisableWeapons && TechnoExt::ExtMap.Find(pTransport)->AE.DisableWeapons)
+		return OutOfRange;
+
+	return Continue;
 }
 
 DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
@@ -350,6 +390,19 @@ DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
 			return DisallowFiring;
 		}
 	}
+
+	return 0;
+}
+
+// Skips bridge-related coord checks to allow AA to target air units while both are on a bridge.
+DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
+{
+	enum { SkipChecks = 0x6FCCBD };
+
+	GET(TechnoClass*, pTarget, EBP);
+
+	if (pTarget->IsInAir())
+		return SkipChecks;
 
 	return 0;
 }
@@ -397,7 +450,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 	{
 		if (pExt->AreaFire_Target == AreaFireTarget::Random)
 		{
-			auto const range = pWeaponType->Range / static_cast<double>(Unsorted::LeptonsPerCell);
+			auto const range = WeaponTypeExt::GetRangeWithModifiers(pWeaponType, pThis) / static_cast<double>(Unsorted::LeptonsPerCell);
 
 			std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(static_cast<size_t>(range + 0.99));
 			size_t size = adjacentCells.size();
@@ -408,8 +461,9 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 				unsigned int cellIndex = (i + rand) % size;
 				CellStruct tgtPos = pCell->MapCoords + adjacentCells[cellIndex];
 				CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
+				bool allowBridges = tgtCell && tgtCell->ContainsBridge() && (pThis->OnBridge || tgtCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
 
-				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true))
+				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true, false, allowBridges))
 				{
 					R->EAX(tgtCell);
 					return 0;
@@ -420,14 +474,16 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 		}
 		else if (pExt->AreaFire_Target == AreaFireTarget::Self)
 		{
-			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
+			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget, pExt->CanTargetHouses, nullptr, false, false, pThis->OnBridge))
 				return DoNotFire;
 
 			R->EAX(pThis);
 			return SkipSetTarget;
 		}
 
-		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
+		bool allowBridges = pCell && pCell->ContainsBridge() && (pThis->OnBridge || pCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
+
+		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false, false, allowBridges))
 			return DoNotFire;
 	}
 
@@ -439,17 +495,31 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
-	if (auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
-		if (pWeaponExt->FeedbackWeapon.isset())
+		if (auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon)
 		{
-			auto fbWeapon = pWeaponExt->FeedbackWeapon.Get();
-
-			if (pThis->InOpenToppedTransport && !fbWeapon->FireInTransport)
+			if (pThis->InOpenToppedTransport && !pWeaponFeedback->FireInTransport)
 				return 0;
 
-			WeaponTypeExt::DetonateAt(fbWeapon, pThis, pThis);
+			WeaponTypeExt::DetonateAt(pWeaponFeedback, pThis, pThis);
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
+	{
+		GET(WeaponTypeClass*, pWeapon, EBX);
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+		if (!pWeaponExt->FireOnce_ResetSequence)
+			TechnoExt::ExtMap.Find(pInf)->SkipTargetChangeResetSequence = true;
 	}
 
 	return 0;
@@ -459,7 +529,6 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 {
 	GET(TechnoClass* const, pSource, ESI);
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
-	GET(WeaponTypeClass* const, pWeaponType, EBX);
 	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
 
 	auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
@@ -472,13 +541,6 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 			{
 				pBulletExt->IsInterceptor = true;
 				pBulletExt->InterceptedStatus = InterceptedStatus::Targeted;
-			}
-
-			// If using Inviso projectile, can intercept bullets right after firing.
-			if (pTargetObject->IsAlive && pWeaponType->Projectile->Inviso)
-			{
-				if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeaponType->Warhead))
-					pWHExt->InterceptBullets(pSource, pWeaponType, pTargetObject->Location);
 			}
 		}
 	}
@@ -495,7 +557,7 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 
 	if (pThis->WhatAmI() == AbstractType::Building && pWeapon->IsLaser)
 	{
-		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*>(pThis)))
 		{
 			if (pExt->CurrentLaserWeaponIndex.empty())
 				pExt->CurrentLaserWeaponIndex = weaponIndex;
@@ -584,91 +646,54 @@ DEFINE_HOOK(0x6F3C88, TechnoClass_GetFLH_BurstFLH_2, 0x6)
 }
 #pragma endregion
 
-// Reimplements the game function with few changes / optimizations
-DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
-{
-	enum { ReturnResult = 0x70138F };
-
-	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0x8, 0x4));
-
-	int result = 0;
-	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-	if (pWeapon)
-	{
-		result = pWeapon->Range;
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-		if (pThis->GetTechnoType()->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
-		{
-			int smallestRange = INT32_MAX;
-			auto pPassenger = pThis->Passengers.FirstPassenger;
-
-			while (pPassenger && (pPassenger->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
-			{
-				int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
-				int tWeaponIndex = 0;
-
-				if (openTWeaponIndex != -1)
-					tWeaponIndex = openTWeaponIndex;
-				else
-					tWeaponIndex = pPassenger->SelectWeapon(pThis->Target);
-
-				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
-
-				if (pTWeapon && pTWeapon->FireInTransport)
-				{
-					if (pTWeapon->Range < smallestRange)
-						smallestRange = pTWeapon->Range;
-				}
-
-				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
-			}
-
-			if (result > smallestRange)
-				result = smallestRange;
-		}
-	}
-
-	R->EBX(result);
-	return ReturnResult;
-}
-
 // Basically a hack to make game and Ares pick laser properties from non-Primary weapons.
-DEFINE_HOOK(0x70E1A5, TechnoClass_GetTurretWeapon_LaserWeapon, 0x6)
+DEFINE_HOOK(0x70E1A0, TechnoClass_GetTurretWeapon_LaserWeapon, 0x5)
 {
-	enum { ReturnResult = 0x70E1C7, Continue = 0x70E1AB };
+	enum { ReturnResult = 0x70E1C8 };
 
-	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pThis, ECX);
 
-	if (pThis->WhatAmI() == AbstractType::Building)
+	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
 	{
-		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
+
+		if (!pExt->CurrentLaserWeaponIndex.empty())
 		{
-			if (!pExt->CurrentLaserWeaponIndex.empty())
-			{
-				auto weaponStruct = pThis->GetWeapon(pExt->CurrentLaserWeaponIndex.get());
-				R->EAX(weaponStruct);
-				return ReturnResult;
-			}
+			auto weaponStruct = pThis->GetWeapon(pExt->CurrentLaserWeaponIndex.get());
+			R->EAX(weaponStruct);
+			return ReturnResult;
 		}
 	}
 
-	// Restore overridden instructions.
-	R->EAX(pThis->GetTechnoType());
-	return Continue;
+	return 0;
 }
 
-DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_RandomDelay, 0x6)
+DEFINE_HOOK(0x6FCFE0, TechnoClass_RearmDelay_CanCloakDuringRearm, 0x6)
 {
+	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	TechnoExt::ExtMap.Find(pThis)->CanCloakDuringRearm = !pWeapon->DecloakToFire;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_ROF, 0x6)
+{
+	enum { SkipGameCode = 0x6FD0BB };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis);
 	auto range = pWeaponExt->ROF_RandomDelay.Get(RulesExt::Global()->ROF_RandomDelay);
+	double rof = pWeapon->ROF * pTechnoExt->AE.ROFMultiplier;
 
 	R->EAX(GeneralUtils::GetRangedRandomOrSingleValue(range));
-	return 0;
+	__asm { fld rof };
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x6FD054, TechnoClass_RearmDelay_ForceFullDelay, 0x6)
@@ -725,25 +750,35 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x5209A7, InfantryClass_FiringAI_BurstDelays, 0x8)
+namespace FiringAITemp
+{
+	int weaponIndex;
+}
+
+DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
+{
+	GET(int, weaponIndex, EDI);
+
+	FiringAITemp::weaponIndex = weaponIndex;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 {
 	enum { Continue = 0x5209CD, ReturnFromFunction = 0x520AD9 };
 
 	GET(InfantryClass*, pThis, EBP);
 	GET(int, firingFrame, EDX);
 
-	int weaponIndex = pThis->SelectWeapon(pThis->Target);
-	const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-
-	if (!pWeapon)
-		return ReturnFromFunction;
-
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	int cumulativeDelay = 0;
 	int projectedDelay = 0;
+	int weaponIndex = FiringAITemp::weaponIndex;
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
-	if (pWeaponExt->Burst_FireWithinSequence)
+	if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
 	{
 		for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
 		{
@@ -766,16 +801,16 @@ DEFINE_HOOK(0x5209A7, InfantryClass_FiringAI_BurstDelays, 0x8)
 		}
 	}
 
-	if (pThis->IsFiring && pThis->Animation.Value == firingFrame + cumulativeDelay)
+	if (pThis->Animation.Value == firingFrame + cumulativeDelay)
 	{
-		if (pWeaponExt->Burst_FireWithinSequence)
+		if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
 		{
 			int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
 
 			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
 			if (firingFrame + projectedDelay > frameCount)
 			{
-				const auto pExt = TechnoExt::ExtMap.Find(pThis);
+				auto const pExt = TechnoExt::ExtMap.Find(pThis);
 				pExt->ForceFullRearmDelay = true;
 			}
 		}
@@ -794,3 +829,70 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
 	return 0x5223B9;
 }
+
+#pragma region WallWeaponStuff
+
+DEFINE_HOOK(0x70095A, TechnoClass_WhatAction_WallWeapon, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(OverlayTypeClass*, pOverlayTypeClass, STACK_OFFSET(0x2C, -0x18));
+
+	int weaponIndex = TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass);
+	R->EAX(pThis->GetWeapon(weaponIndex));
+
+	return 0;
+}
+
+DEFINE_HOOK(0x51C1F1, InfantryClass_CanEnterCell_WallWeapon, 0x5)
+{
+	enum { SkipGameCode = 0x51C1FE };
+
+	GET(InfantryClass*, pThis, EBP);
+	GET(OverlayTypeClass*, pOverlayTypeClass, ESI);
+
+	R->EAX(pThis->GetWeapon(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass)));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x73F495, UnitClass_CanEnterCell_WallWeapon, 0x6)
+{
+	enum { SkipGameCode = 0x73F4A1 };
+
+	GET(UnitClass*, pThis, EBX);
+	GET(OverlayTypeClass*, pOverlayTypeClass, ESI);
+
+	R->EAX(pThis->GetWeapon(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass)));
+
+	return SkipGameCode;
+}
+
+namespace CellEvalTemp
+{
+	int weaponIndex;
+}
+
+DEFINE_HOOK(0x6F8C9D, TechnoClass_EvaluateCell_SetContext, 0x7)
+{
+	GET(int, weaponIndex, EAX);
+
+	CellEvalTemp::weaponIndex = weaponIndex;
+
+	return 0;
+}
+
+WeaponStruct* __fastcall TechnoClass_EvaluateCellGetWeaponWrapper(TechnoClass* pThis)
+{
+	return pThis->GetWeapon(CellEvalTemp::weaponIndex);
+}
+
+int __fastcall TechnoClass_EvaluateCellGetWeaponRangeWrapper(TechnoClass* pThis, void* _, int weaponIndex)
+{
+	return pThis->GetWeaponRange(CellEvalTemp::weaponIndex);
+}
+
+DEFINE_JUMP(CALL6, 0x6F8CE3, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponWrapper));
+DEFINE_JUMP(CALL6, 0x6F8DD2, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponRangeWrapper));
+
+#pragma endregion
+

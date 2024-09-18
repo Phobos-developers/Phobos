@@ -36,9 +36,6 @@ const wchar_t* ObjectInfoCommandClass::GetUIDescription() const
 
 void ObjectInfoCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
-		return;
-
 	char buffer[0x800] = { 0 };
 
 	auto append = [&buffer](const char* pFormat, ...)
@@ -59,14 +56,30 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		buffer[0] = 0;
 	};
 
-	auto printFoots = [&append, &display](FootClass* pFoot)
+	auto getTargetInfo = [](TechnoClass* pCurrent, AbstractClass* pTarget, int& distance, const char*& ID, CellStruct& mapCoords)
+	{
+		if (auto const pObject = abstract_cast<ObjectClass*>(pTarget))
+		{
+			mapCoords = pObject->GetMapCoords();
+			ID = pObject->GetType()->get_ID();
+		}
+		else if (auto const pCell = abstract_cast<CellClass*>(pTarget))
+		{
+			mapCoords = pCell->MapCoords;
+			ID = "Cell";
+		}
+
+		distance = pCurrent->DistanceFrom(pTarget) / Unsorted::LeptonsPerCell;
+	};
+
+	auto printFoots = [&append, &display, &getTargetInfo](FootClass* pFoot)
 	{
 		append("[Phobos] Dump ObjectInfo runs.\n");
 		auto pType = pFoot->GetTechnoType();
 		append("ID = %s, ", pType->ID);
 		append("Owner = %s (%s), ", pFoot->Owner->get_ID(), pFoot->Owner->PlainName);
 		append("Location = (%d, %d), ", pFoot->GetMapCoords().X, pFoot->GetMapCoords().Y);
-		append("Current Mission = %d (%s)\n", pFoot->CurrentMission, MissionControlClass::FindName(pFoot->CurrentMission));
+		append("Mission = %d (%s), Status = %d\n", pFoot->CurrentMission, MissionControlClass::FindName(pFoot->CurrentMission), pFoot->MissionStatus);
 
 		if (pFoot->BelongsToATeam())
 		{
@@ -109,10 +122,22 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 			append("\n");
 		}
 
-		auto pTarget = abstract_cast<TechnoClass*>(pFoot->Target);
-		if (pTarget)
+		if (pFoot->Target)
 		{
-			append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pFoot) / Unsorted::LeptonsPerCell), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
+			auto mapCoords = CellStruct::Empty;
+			auto ID = "N/A";
+			int distance = 0;
+			getTargetInfo(pFoot, pFoot->Target, distance, ID, mapCoords);
+			append("Target = %s, Distance = %d, Location = (%d, %d)\n", ID, distance, mapCoords.X, mapCoords.Y);
+		}
+
+		if (pFoot->Destination)
+		{
+			auto mapCoords = CellStruct::Empty;
+			auto ID = "N/A";
+			int distance = 0;
+			getTargetInfo(pFoot, pFoot->Destination, distance, ID, mapCoords);
+			append("Destination = %s, Distance = %d, Location = (%d, %d)\n", ID, distance, mapCoords.X, mapCoords.Y);
 		}
 
 		append("Current HP = (%d / %d)", pFoot->Health, pType->Strength);
@@ -130,13 +155,14 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		display();
 	};
 
-	auto printBuilding = [&append, &display](BuildingClass* pBuilding)
+	auto printBuilding = [&append, &display, &getTargetInfo](BuildingClass* pBuilding)
 	{
 		append("[Phobos] Dump ObjectInfo runs.\n");
 		auto pType = pBuilding->Type;
 		append("ID = %s, ", pType->ID);
 		append("Owner = %s (%s), ", pBuilding->Owner->get_ID(), pBuilding->Owner->PlainName);
-		append("Location = (%d, %d)\n", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
+		append("Location = (%d, %d), ", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
+		append("Mission = %d (%s), Status = %d\n", pBuilding->CurrentMission, MissionControlClass::FindName(pBuilding->CurrentMission), pBuilding->MissionStatus);
 
 		if (pBuilding->Factory && pBuilding->Factory->Object)
 		{
@@ -158,13 +184,29 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 			append("\n");
 		}
 
+		if (pBuilding->Type->Upgrades)
+		{
+			append("Upgrades (%d/%d): ", pBuilding->UpgradeLevel, pBuilding->Type->Upgrades);
+			for (int i = 0; i < 3; i++)
+			{
+				if (i != 0)
+					append(", ");
+
+				append("Slot %d = %s", i+1, pBuilding->Upgrades[i] ? pBuilding->Upgrades[i]->get_ID() : "<none>");
+			}
+			append("\n");
+		}
+
 		if (pBuilding->Type->Ammo > 0)
 			append("Ammo = (%d / %d)\n", pBuilding->Ammo, pBuilding->Type->Ammo);
 
-		auto pTarget = abstract_cast<TechnoClass*>(pBuilding->Target);
-		if (pTarget)
+		if (pBuilding->Target)
 		{
-			append("Target = %s, Distance = %d, Location = (%d, %d)\n", pTarget->GetTechnoType()->ID, (pTarget->DistanceFrom(pBuilding) / Unsorted::LeptonsPerCell), pTarget->GetMapCoords().X, pTarget->GetMapCoords().Y);
+			auto mapCoords = CellStruct::Empty;
+			auto ID = "N/A";
+			int distance = 0;
+			getTargetInfo(pBuilding, pBuilding->Target, distance, ID, mapCoords);
+			append("Target = %s, Distance = %d, Location = (%d, %d)\n", ID, distance, mapCoords.X, mapCoords.Y);
 		}
 
 		append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);

@@ -23,7 +23,7 @@ public:
 	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
 
 	void SetRespawn(int duration, double amount, int rate, bool resetTimer);
-	void SetSelfHealing(int duration, double amount, int rate, bool resetTimer);
+	void SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer);
 	void KillAnim();
 	void AI_Temporal();
 	void AI();
@@ -80,6 +80,8 @@ private:
 	int DrawShieldBar_Pip(const bool isBuilding) const;
 	int DrawShieldBar_PipAmount(const int length) const;
 
+	void UpdateTint();
+
 	/// Properties ///
 	TechnoClass* Techno;
 	TechnoTypeClass* TechnoID;
@@ -94,6 +96,8 @@ private:
 
 	double SelfHealing_Warhead;
 	int SelfHealing_Rate_Warhead;
+	bool SelfHealing_RestartInCombat_Warhead;
+	int SelfHealing_RestartInCombatDelay_Warhead;
 	double Respawn_Warhead;
 	int Respawn_Rate_Warhead;
 
@@ -105,12 +109,14 @@ private:
 	struct Timers
 	{
 		Timers() :
-			SelfHealing { }
+			SelfHealing_CombatRestart { }
+			, SelfHealing { }
 			, SelfHealing_WHModifier { }
 			, Respawn { }
 			, Respawn_WHModifier { }
 		{ }
 
+		CDTimerClass SelfHealing_CombatRestart;
 		CDTimerClass SelfHealing;
 		CDTimerClass SelfHealing_WHModifier;
 		CDTimerClass Respawn;

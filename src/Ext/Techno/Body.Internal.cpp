@@ -1,8 +1,7 @@
 #include "Body.h"
 
-#include <BitFont.h>
+#include <AirstrikeClass.h>
 
-#include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 // Unsorted methods
@@ -14,7 +13,6 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 
 	if (auto pTypeExt = this->TypeExtData)
 	{
-		this->LaserTrails.clear();
 		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
@@ -69,14 +67,11 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	// Step 4: apply FLH offset
 	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
 
-	auto result = mtx * Vector3D<float>::Empty;
-
-	// Resulting coords are mirrored along X axis, so we mirror it back
-	result.Y *= -1;
+	auto result = mtx.GetTranslation();
 
 	// Step 5: apply as an offset to global object coords
-	CoordStruct location = pThis->GetCoords();
-	location += { (int)result.X, (int)result.Y, (int)result.Z };
+	// Resulting coords are mirrored along X axis, so we mirror it back
+	auto location = pThis->GetCoords() + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
 
 	return location;
 }
@@ -153,219 +148,97 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	return FLH;
 }
 
-void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage)
+void TechnoExt::ExtData::InitializeAttachEffects()
 {
-	if (!pThis || damage == 0)
-		return;
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	ColorStruct color;
-
-	if (!isShieldDamage)
-		color = damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
-	else
-		color = damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 };
-
-	auto coords = pThis->GetRenderCoords();
-	int maxOffset = Unsorted::CellWidthInPixels / 2;
-	int width = 0, height = 0;
-	wchar_t damageStr[0x20];
-	swprintf_s(damageStr, L"%d", damage);
-
-	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
-
-	if (pExt->DamageNumberOffset >= maxOffset || pExt->DamageNumberOffset.empty())
-		pExt->DamageNumberOffset = -maxOffset;
-
-	FlyingStrings::Add(damageStr, coords, color, Point2D { pExt->DamageNumberOffset - (width / 2), 0 });
-
-	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
-}
-
-void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
-{
-	bool drawPip = false;
-	bool isInfantryHeal = false;
-	int selfHealFrames = 0;
-
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (auto pTypeExt = this->TypeExtData)
 	{
-		if (pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::None)
+		if (pTypeExt->AttachEffect_AttachTypes.size() < 1)
 			return;
 
-		bool hasInfantrySelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
-		bool hasUnitSelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Units;
-		bool isOrganic = false;
+		auto const pThis = this->OwnerObject();
 
-		if (pThis->WhatAmI() == AbstractType::Infantry ||
-			pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit)
-		{
-			isOrganic = true;
-		}
-
-		if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || isOrganic))
-		{
-			drawPip = true;
-			selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
-			isInfantryHeal = true;
-		}
-		else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)))
-		{
-			drawPip = true;
-			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
-		}
-	}
-
-	if (drawPip)
-	{
-		Valueable<Point2D> pipFrames;
-		bool isSelfHealFrame = false;
-		int xOffset = 0;
-		int yOffset = 0;
-
-		if (Unsorted::CurrentFrame % selfHealFrames <= 5
-			&& pThis->Health < pThis->GetTechnoType()->Strength)
-		{
-			isSelfHealFrame = true;
-		}
-
-		if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft)
-		{
-			auto& offset = RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get();
-			pipFrames = RulesExt::Global()->Pips_SelfHeal_Units;
-			xOffset = offset.X;
-			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
-		}
-		else if (pThis->WhatAmI() == AbstractType::Infantry)
-		{
-			auto& offset = RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get();
-			pipFrames = RulesExt::Global()->Pips_SelfHeal_Infantry;
-			xOffset = offset.X;
-			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
-		}
-		else
-		{
-			auto pType = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
-			int fHeight = pType->GetFoundationHeight(false);
-			int yAdjust = -Unsorted::CellHeightInPixels / 2;
-
-			auto& offset = RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get();
-			pipFrames = RulesExt::Global()->Pips_SelfHeal_Buildings;
-			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
-			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
-		}
-
-		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;
-
-		Point2D position = { pLocation->X + xOffset, pLocation->Y + yOffset };
-
-		auto flags = BlitterFlags::bf_400 | BlitterFlags::Centered;
-
-		if (isSelfHealFrame)
-			flags = flags | BlitterFlags::Darken;
-
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-		pipFrame, &position, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		AttachEffectClass::Attach(pTypeExt->AttachEffect_AttachTypes, pThis, pThis->Owner, pThis, pThis,
+			pTypeExt->AttachEffect_DurationOverrides, pTypeExt->AttachEffect_Delays, pTypeExt->AttachEffect_InitialDelays, pTypeExt->AttachEffect_RecreationDelays);
 	}
 }
 
-void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
+// Gets tint colors for invulnerability, airstrike laser target and berserk, depending on parameters.
+int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airstrike, bool berserk)
 {
-	Point2D offset = *pLocation;
+	int tintColor = 0;
 
-	SHPStruct* pShapeFile = FileSystem::PIPS_SHP;
-	int defaultFrameIndex = -1;
-
-	auto pTechnoType = pThis->GetTechnoType();
-	auto pOwner = pThis->Owner;
-
-	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !(HouseClass::IsCurrentPlayerObserver()
-		|| EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, HouseClass::CurrentPlayer, pOwner)))
+	if (pThis)
 	{
-		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
-		{
-			pTechnoType = pType;
-			pOwner = pThis->DisguisedAsHouse;
-		}
+		if (invulnerability && pThis->IsIronCurtained())
+			tintColor |= GeneralUtils::GetColorFromColorAdd(pThis->ForceShielded ? RulesClass::Instance->ForceShieldColor : RulesClass::Instance->IronCurtainColor);
+		if (airstrike && pThis->Airstrike && pThis->Airstrike->Target == pThis)
+			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->LaserTargetColor);
+		if (berserk && pThis->Berzerk)
+			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
 	}
 
-	TechnoTypeExt::ExtData* pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+	return tintColor;
+}
 
-	bool isVisibleToPlayer = (pOwner && pOwner->IsAlliedWith(HouseClass::CurrentPlayer))
-		|| HouseClass::IsCurrentPlayerObserver()
-		|| pTechnoTypeExt->Insignia_ShowEnemy.Get(RulesExt::Global()->EnemyInsignia);
+// Gets custom tint color from TechnoTypes & Warheads.
+int TechnoExt::GetCustomTintColor(TechnoClass* pThis)
+{
+	int dummy = 0;
+	int color = 0;
+	TechnoExt::ApplyCustomTintValues(pThis, color, dummy);
+	return color;
+}
 
-	if (!isVisibleToPlayer)
+// Gets custom tint intensity from TechnoTypes & Warheads.
+int TechnoExt::GetCustomTintIntensity(TechnoClass* pThis)
+{
+	int dummy = 0;
+	int intensity = 0;
+	TechnoExt::ApplyCustomTintValues(pThis, dummy, intensity);
+	return intensity;
+}
+
+// Applies custom tint color and intensity from TechnoTypes and any AttachEffects and shields it might have on provided values.
+void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity)
+{
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
+	bool hasShieldTint = pExt->Shield && pExt->Shield->IsActive() && pExt->Shield->GetType()->HasTint();
+
+	// Bail out early if no custom tint is applied.
+	if (!hasTechnoTint && !pExt->AE.HasTint && !hasShieldTint)
 		return;
 
-	bool isCustomInsignia = false;
-
-	if (SHPStruct* pCustomShapeFile = pTechnoTypeExt->Insignia.Get(pThis))
+	if (hasTechnoTint && EnumFunctions::CanTargetHouse(pTypeExt->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
 	{
-		pShapeFile = pCustomShapeFile;
-		defaultFrameIndex = 0;
-		isCustomInsignia = true;
+		color |= Drawing::RGB_To_Int(pTypeExt->Tint_Color);
+		intensity += static_cast<int>(pTypeExt->Tint_Intensity * 1000);
 	}
 
-	VeterancyStruct* pVeterancy = &pThis->Veterancy;
-	auto insigniaFrames = pTechnoTypeExt->InsigniaFrames.Get();
-	int insigniaFrame = insigniaFrames.X;
-	int frameIndex = pTechnoTypeExt->InsigniaFrame.Get(pThis);
-
-	if (pTechnoType->Gunner)
+	if (pExt->AE.HasTint)
 	{
-		int weaponIndex = pThis->CurrentWeaponNumber;
-
-		if (auto const pCustomShapeFile = pTechnoTypeExt->Insignia_Weapon[weaponIndex].Get(pThis))
+		for (auto const& attachEffect : pExt->AttachedEffects)
 		{
-			pShapeFile = pCustomShapeFile;
-			defaultFrameIndex = 0;
-			isCustomInsignia = true;
+			auto const type = attachEffect->GetType();
+
+			if (!attachEffect->IsActive() || !type->HasTint())
+				continue;
+
+			if (!EnumFunctions::CanTargetHouse(type->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+				continue;
+
+			color |= Drawing::RGB_To_Int(type->Tint_Color);
+			intensity += static_cast<int>(type->Tint_Intensity * 1000);
 		}
-
-		int frame = pTechnoTypeExt->InsigniaFrame_Weapon[weaponIndex].Get(pThis);
-
-		if (frame != -1)
-			frameIndex = frame;
-
-		auto& frames = pTechnoTypeExt->InsigniaFrames_Weapon[weaponIndex];
-
-		if (frames != Vector3D<int>(-1, -1, -1))
-			insigniaFrames = frames;
 	}
 
-	if (pVeterancy->IsVeteran())
+	if (hasShieldTint)
 	{
-		defaultFrameIndex = !isCustomInsignia ? 14 : defaultFrameIndex;
-		insigniaFrame = insigniaFrames.Y;
+		auto const pShieldType = pExt->Shield->GetType();
+		color |= Drawing::RGB_To_Int(pShieldType->Tint_Color);
+		intensity += static_cast<int>(pShieldType->Tint_Intensity * 1000);
 	}
-	else if (pVeterancy->IsElite())
-	{
-		defaultFrameIndex = !isCustomInsignia ? 15 : defaultFrameIndex;
-		insigniaFrame = insigniaFrames.Z;
-	}
-
-	frameIndex = frameIndex == -1 ? insigniaFrame : frameIndex;
-
-	if (frameIndex == -1)
-		frameIndex = defaultFrameIndex;
-
-	if (frameIndex != -1 && pShapeFile)
-	{
-		offset.X += 5;
-		offset.Y += 2;
-
-		if (pThis->WhatAmI() != AbstractType::Infantry)
-		{
-			offset.X += 5;
-			offset.Y += 4;
-		}
-
-		DSurface::Temp->DrawSHP(
-			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-	}
-
-	return;
 }
 
 // This is still not even correct, but let's see how far this can help us

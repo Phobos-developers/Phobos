@@ -26,15 +26,12 @@ const wchar_t* FrameByFrameCommandClass::GetUICategory() const
 
 const wchar_t* FrameByFrameCommandClass::GetUIDescription() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_DISPLAY_DAMAGE_DESC", L"Enter or exit frame by frame mode.");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_FRAME_BY_FRAME_DESC", L"Enter or exit frame by frame mode.");
 }
 
 void FrameByFrameCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
-		return;
-
-	if (!SessionClass::Instance->IsSingleplayer())
+	if (!SessionClass::IsSingleplayer())
 		return;
 
 	if (!FrameStep)

@@ -23,7 +23,7 @@ public:
 		ValueableIdxVector<SuperWeaponTypeClass> SuperWeapons;
 
 		ValueableVector<BuildingTypeClass*> PowerPlantEnhancer_Buildings;
-		Nullable<int> PowerPlantEnhancer_Amount;
+		Valueable<int> PowerPlantEnhancer_Amount;
 		Nullable<float> PowerPlantEnhancer_Factor;
 
 		std::vector<Point2D> OccupierMuzzleFlashes;
@@ -32,9 +32,11 @@ public:
 		Valueable<bool> CanC4_AllowZeroDamage;
 		Valueable<bool> Refinery_UseStorage;
 		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
+		Valueable<bool> ExcludeFromMultipleFactoryBonus;
 
-		NullableIdx<VocClass> Grinding_Sound;
-		Nullable<WeaponTypeClass*> Grinding_Weapon;
+		ValueableIdx<VocClass> Grinding_Sound;
+		Valueable<WeaponTypeClass*> Grinding_Weapon;
+		Valueable<int> Grinding_Weapon_RequiredCredits;
 		ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
 		ValueableVector<TechnoTypeClass*> Grinding_DisallowTypes;
 		Valueable<bool> Grinding_AllowAllies;
@@ -54,24 +56,30 @@ public:
 		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
 		Valueable<bool> SpyEffect_Custom;
-		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
-		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
+		ValueableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
+		ValueableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
 
 		Nullable<bool> ConsideredVehicle;
 		Valueable<bool> ZShapePointMove_OnBuildup;
 		Valueable<int> SellBuildupLength;
 
+		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
+
+		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
 			, PowerPlantEnhancer_Buildings {}
-			, PowerPlantEnhancer_Amount {}
-			, PowerPlantEnhancer_Factor {}
+			, PowerPlantEnhancer_Amount { 0 }
+			, PowerPlantEnhancer_Factor { 1.0 }
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
 			, AllowAirstrike {}
 			, CanC4_AllowZeroDamage { false }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
+			, ExcludeFromMultipleFactoryBonus { false }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
 			, Grinding_AllowOwner { true }
@@ -80,6 +88,7 @@ public:
 			, Grinding_Sound {}
 			, Grinding_PlayDieSound { true }
 			, Grinding_Weapon {}
+			, Grinding_Weapon_RequiredCredits { 0 }
 			, DisplayIncome { }
 			, DisplayIncome_Houses { }
 			, DisplayIncome_Offset { { 0,0 } }
@@ -96,6 +105,9 @@ public:
 			, ConsideredVehicle {}
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
+			, AircraftDockingDirs {}
+			, FactoryPlant_AllowTypes {}
+			, FactoryPlant_DisallowTypes {}
 		{ }
 
 		// Ares 0.A functions

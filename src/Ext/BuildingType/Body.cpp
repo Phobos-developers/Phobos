@@ -48,12 +48,12 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto& [pExt, nCount] : pHouseExt->BuildingCounter)
+	for (const auto& [pExt, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
 		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
-			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor.Get(1.0f), static_cast<float>(nCount));
-			nAmount += pExt->PowerPlantEnhancer_Amount.Get(0) * nCount;
+			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
+			nAmount += pExt->PowerPlantEnhancer_Amount * nCount;
 		}
 	}
 
@@ -131,6 +131,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+	this->ExcludeFromMultipleFactoryBonus.Read(exINI, pSection, "ExcludeFromMultipleFactoryBonus");
 
 	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
 	this->Grinding_AllowOwner.Read(exINI, pSection, "Grinding.AllowOwner");
@@ -138,7 +139,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_DisallowTypes.Read(exINI, pSection, "Grinding.DisallowTypes");
 	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
 	this->Grinding_PlayDieSound.Read(exINI, pSection, "Grinding.PlayDieSound");
-	this->Grinding_Weapon.Read(exINI, pSection, "Grinding.Weapon", true);
+	this->Grinding_Weapon.Read<true>(exINI, pSection, "Grinding.Weapon");
+	this->Grinding_Weapon_RequiredCredits.Read(exINI, pSection, "Grinding.Weapon.RequiredCredits");
 
 	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
@@ -146,6 +148,31 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
+
+	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
+	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
+
+	if (pThis->NumberOfDocks > 0)
+	{
+		this->AircraftDockingDirs.clear();
+		this->AircraftDockingDirs.resize(pThis->NumberOfDocks);
+
+		Nullable<DirType> nLandingDir;
+		nLandingDir.Read(exINI, pSection, "AircraftDockingDir");
+
+		if (nLandingDir.isset())
+			this->AircraftDockingDirs[0] = nLandingDir.Get();
+
+		for (int i = 0; i < pThis->NumberOfDocks; ++i)
+		{
+			char tempBuffer[32];
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "AircraftDockingDir%d", i);
+			nLandingDir.Read(exINI, pSection, tempBuffer);
+
+			if (nLandingDir.isset())
+				this->AircraftDockingDirs[i] = nLandingDir.Get();
+		}
+	}
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
@@ -176,6 +203,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// PlacementPreview
 	{
+		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
 		this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
 		this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
 		this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
@@ -209,6 +237,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowAirstrike)
 		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->ExcludeFromMultipleFactoryBonus)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)
@@ -217,6 +246,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_Sound)
 		.Process(this->Grinding_PlayDieSound)
 		.Process(this->Grinding_Weapon)
+		.Process(this->Grinding_Weapon_RequiredCredits)
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_Houses)
 		.Process(this->DisplayIncome_Offset)
@@ -233,6 +263,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ConsideredVehicle)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
+		.Process(this->AircraftDockingDirs)
+		.Process(this->FactoryPlant_AllowTypes)
+		.Process(this->FactoryPlant_DisallowTypes)
 		;
 }
 

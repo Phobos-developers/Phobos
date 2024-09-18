@@ -1,4 +1,5 @@
 #include <AircraftClass.h>
+#include <AircraftTrackerClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
 #include <TechnoClass.h>
@@ -7,32 +8,29 @@
 #include <UnitClass.h>
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
+#include <SpawnManagerClass.h>
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
 #include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
+#include <TeleportLocomotionClass.h>
 #include <BombClass.h>
+#include <ParticleSystemClass.h>
 #include <WarheadTypeClass.h>
+#include <HashTable.h>
+
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
 #include <Utilities/TemplateDef.h>
-
-//Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
-DEFINE_HOOK(0x423365, Phobos_BugFixes_SHPShadowCheck, 0x8)
-{
-	GET(AnimClass*, pAnim, ESI);
-	return (pAnim->Type->Shadow && pAnim->HasExtras) ?
-		0x42336D :
-		0x4233EE;
-}
 
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
@@ -198,11 +196,30 @@ DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
 	enum { IsNaval = 0x4438BC, NotNaval = 0x4438C9 };
 
 	GET(BuildingTypeClass*, pBuildingType, EAX);
+	GET_STACK(bool, playEVA, STACK_OFFSET(0xA4, 0x8));
+	REF_STACK(SpeedType, spdtp, STACK_OFFSET(0xA4, -0x84));
+	if (!playEVA)// assuming the hook above is the only place where it's set to false when UndeploysInto
+	{
+		if (auto pInto = pBuildingType->UndeploysInto)// r u sure this is not too OP?
+		{
+			R->ESI(pInto->MovementZone);
+			spdtp = pInto->SpeedType;
+			return NotNaval;
+		}
+	}
 
 	if (pBuildingType->Naval || pBuildingType->SpeedType == SpeedType::Float)
 		return IsNaval;
 
 	return NotNaval;
+}
+
+DEFINE_HOOK(0x6DAAB2, TacticalClass_DrawRallyPointLines_NoUndeployBlyat, 0x6)
+{
+	GET(BuildingClass*, pBld, EDI);
+	if (pBld->Focus && pBld->CurrentMission != Mission::Selling)
+		return 0x6DAAC0;
+	return 0x6DAD45;
 }
 
 // bugfix: DeathWeapon not properly detonates
@@ -482,20 +499,18 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 {
 	auto const pThisBomb = FetchBomb::pThisBomb;
 	auto nCoord = *pCoord;
-	auto nDamageAreaResult = MapClass::Instance()->DamageArea
-	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse);
+	auto nDamageAreaResult = WarheadTypeExt::ExtMap.Find(pWarhead)->DamageAreaWithTarget
+	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse, abstract_cast<TechnoClass*>(pThisBomb->Target));
 	auto nLandType = MapClass::Instance()->GetCellAt(nCoord)->LandType;
 
 	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
 	{
 		if (auto pAnim = GameCreate<AnimClass>(pAnimType, nCoord, 0, 1, 0x2600, -15, false))
 		{
-			if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
-			{
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
-					pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
-			}
-			else
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
+				pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+
+			if (!pAnim->Owner)
 			{
 				pAnim->Owner = pThisBomb->OwnerHouse;
 			}
@@ -542,23 +557,6 @@ DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
 
 	return 0;
 }
-
-// Fix railgun target coordinates potentially differing from actual target coords.
-DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
-{
-	GET(AbstractClass*, pTarget, EBX);
-
-	auto coords = pTarget->GetCenterCoords();
-
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
-		coords = pBuilding->GetTargetCoords();
-	else if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-		coords = pCell->GetCoordsWithBridge();
-
-	R->EAX(&coords);
-	return 0;
-}
-
 // Fix techno target coordinates (used for fire angle calculations, target lines etc) to take building target coordinate offsets into accord.
 // This, for an example, fixes a vanilla bug where Destroyer has trouble targeting Naval Yards with its cannon weapon from certain angles.
 DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
@@ -570,47 +568,6 @@ DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
 		const auto coords = pBuilding->GetTargetCoords();
 		R->EAX(&coords);
 	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
-{
-	enum { SpawnCrate = 0x56BE7B, SkipSpawn = 0x56BE91 };
-
-	int XP = 2 * MapClass::Instance->VisibleRect.X - MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Width);
-	int YP = 2 * MapClass::Instance->VisibleRect.Y + MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Height + 2);
-	CellStruct candidate { (short)((XP + YP) / 2),(short)((YP - XP) / 2) };
-
-	auto pCell = MapClass::Instance->TryGetCellAt(candidate);
-	if (!pCell)
-		return SkipSpawn;
-
-	if (!MapClass::Instance->IsWithinUsableArea(pCell, true))
-		return SkipSpawn;
-
-	bool isWater = pCell->LandType == LandType::Water;
-	if (isWater && RulesExt::Global()->CrateOnlyOnLand.Get())
-		return SkipSpawn;
-
-	REF_STACK(CellStruct, cell, STACK_OFFSET(0x28, -0x18));
-	cell = MapClass::Instance->NearByLocation(pCell->MapCoords,
-		isWater ? SpeedType::Float : SpeedType::Track,
-		-1, MovementZone::Normal, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
-
-	R->EAX(&cell);
-
-	return SpawnCrate;
-}
-
-// Enable sorted add for Air/Top layers to fix issues with attached anims etc.
-DEFINE_HOOK(0x4A9750, DisplayClass_Submit_LayerSort, 0x9)
-{
-	GET(Layer, layer, EDI);
-
-	R->ECX(layer != Layer::Surface && layer != Layer::Underground);
 
 	return 0;
 }
@@ -694,3 +651,283 @@ DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
 
 // Stops INI parsing for Anim/BuildingTypeClass on game startup, will only be read on scenario load later like everything else.
 DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);
+
+// Fixes second half of Colors list not getting retinted correctly by map triggers, superweapons etc.
+DEFINE_HOOK(0x53AD85, IonStormClass_AdjustLighting_ColorSchemes, 0x5)
+{
+	enum { SkipGameCode = 0x53ADD6 };
+
+	GET_STACK(bool, tint, STACK_OFFSET(0x20, 0x8));
+	GET(HashIterator*, it, ECX);
+	GET(int, red, EBP);
+	GET(int, green, EDI);
+	GET(int, blue, EBX);
+
+	int paletteCount = 0;
+
+	for (auto pSchemes = ColorScheme::GetPaletteSchemesFromIterator(it); pSchemes; pSchemes = ColorScheme::GetPaletteSchemesFromIterator(it))
+	{
+		for (int i = 1; i < pSchemes->Count; i += 2)
+		{
+			auto pScheme = pSchemes->GetItem(i);
+			pScheme->LightConvert->UpdateColors(red, green, blue, tint);
+		}
+
+		paletteCount++;
+	}
+
+	if (paletteCount > 0)
+	{
+		int schemeCount = ColorScheme::GetNumberOfSchemes();
+		Debug::Log("Recalculated %d extra palettes across %d color schemes (total: %d).\n", paletteCount, schemeCount, schemeCount * paletteCount);
+	}
+
+	return SkipGameCode;
+}
+
+// Fixes a literal edge-case in passability checks to cover cells with bridges that are not accessible when moving on the bridge and
+// normally not even attempted to enter but things like MapClass::NearByLocation() can still end up trying to pick.
+DEFINE_HOOK(0x4834E5, CellClass_IsClearToMove_BridgeEdges, 0x5)
+{
+	enum { IsNotClear = 0x48351E };
+
+	GET(CellClass*, pThis, ESI);
+	GET(int, level, EAX);
+	GET(bool, isBridge, EBX);
+
+	if (isBridge && pThis->ContainsBridge() && (level == -1 || level == pThis->Level + CellClass::BridgeLevels)
+		&& !(pThis->Flags & CellFlags::Unknown_200))
+	{
+		return IsNotClear;
+	}
+
+	return 0;
+}
+
+// Fix DeployToFire not working properly for WaterBound DeploysInto buildings and not recalculating position on land if can't deploy.
+DEFINE_HOOK(0x4D580B, FootClass_ApproachTarget_DeployToFire, 0x6)
+{
+	enum { SkipGameCode = 0x4D583F };
+
+	GET(UnitClass*, pThis, EBX);
+
+	R->EAX(TechnoExt::CanDeployIntoBuilding(pThis, true));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
+{
+	enum { SkipGameCode = 0x741086, MustDeploy = 0x7410A8 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->Type->DeployToFire && pThis->CanDeployNow() && !TechnoExt::CanDeployIntoBuilding(pThis, true))
+		return MustDeploy;
+
+	return SkipGameCode;
+}
+
+// Fixed position and layer of info tip and reveal production cameo on selected building
+// Author: Belonit
+#pragma region DrawInfoTipAndSpiedSelection
+
+// skip call DrawInfoTipAndSpiedSelection
+// Note that Ares have the TacticalClass_DrawUnits_ParticleSystems hook at 0x6D9427
+DEFINE_JUMP(LJMP, 0x6D9430, 0x6D95A1); // Tactical_RenderLayers
+
+// Call DrawInfoTipAndSpiedSelection in new location
+DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
+{
+	GET(BuildingClass*, pBuilding, EBX);
+	GET(Point2D*, pLocation, EAX);
+
+	if (pBuilding->IsSelected && pBuilding->IsOnMap && pBuilding->WhatAmI() == AbstractType::Building)
+	{
+		const int foundationHeight = pBuilding->Type->GetFoundationHeight(0);
+		const int typeHeight = pBuilding->Type->Height;
+		const int yOffest = (Unsorted::CellHeightInPixels * (foundationHeight + typeHeight)) >> 2;
+
+		Point2D centeredPoint = { pLocation->X, pLocation->Y - yOffest };
+		pBuilding->DrawInfoTipAndSpiedSelection(&centeredPoint, &DSurface::ViewBounds);
+	}
+
+	return 0;
+}
+#pragma endregion DrawInfoTipAndSpiedSelection
+
+
+bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
+{
+	// Fix : Suppress capture EVA event if ConsideredVehicle=yes
+	announce = announce && !pThis->Type->IsVehicle();
+
+	using this_func_sig = bool(__thiscall*)(BuildingClass*, HouseClass*, bool);
+	bool res = reinterpret_cast<this_func_sig>(0x448260)(pThis, pHouse, announce);
+
+	// Fix : update powered anims
+	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
+		reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
+	return res;
+}
+
+DEFINE_JUMP(VTABLE, 0x7E4290, GET_OFFSET(BuildingClass_SetOwningHouse_Wrapper));
+DEFINE_JUMP(LJMP, 0x6E0BD4, 0x6E0BFE);
+DEFINE_JUMP(LJMP, 0x6E0C1D, 0x6E0C8B);//Simplify TAction 36
+
+// Fix a glitch related to incorrect target setting for missiles
+// Author: Belonit
+DEFINE_HOOK(0x6B75AC, SpawnManagerClass_AI_SetDestinationForMissiles, 0x5)
+{
+	GET(SpawnManagerClass*, pSpawnManager, ESI);
+	GET(TechnoClass*, pSpawnTechno, EDI);
+
+	CoordStruct coord = pSpawnManager->Target->GetCenterCoords();
+	CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+
+	pSpawnTechno->SetDestination(pCellDestination, true);
+
+	return 0x6B75BC;
+}
+
+DEFINE_HOOK(0x689EB0, ScenarioClass_ReadMap_SkipHeaderInCampaign, 0x6)
+{
+	return SessionClass::IsCampaign() ? 0x689FC0 : 0;
+}
+
+#pragma region save_load
+
+//Skip incorrect load ctor call in various LocomotionClass_Load
+DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Teleport, notorious CLEG frozen state removal on loading game
+DEFINE_JUMP(LJMP, 0x72A16A, 0x72A186);//Tunnel, not a big deal
+DEFINE_JUMP(LJMP, 0x663428, 0x663445);//Rocket, not a big deal
+DEFINE_JUMP(LJMP, 0x5170CE, 0x5170E0);//Hover, not a big deal
+
+// Save GameModeOptions in campaign modes
+DEFINE_JUMP(LJMP, 0x67E3BD, 0x67E3D3); // Save
+DEFINE_JUMP(LJMP, 0x67F72E, 0x67F744); // Load
+
+#pragma endregion save_load
+
+// An attempt to fix an issue where the ATC->CurrentVector does not contain every air Techno in given range that increases in frequency as the range goes up.
+// Real talk: I have absolutely no clue how the original function works besides doing vector looping and manipulation, as far as I can tell it never even explicitly
+// clears CurrentVector but somehow it only contains applicable items afterwards anyway. It is possible this one does not achieve everything the original does functionality and/or
+// performance-wise but it does work and produces results with greater accuracy than the original for large ranges. - Starkku
+DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
+{
+	enum { SkipGameCode = 0x413482 };
+
+	GET(AircraftTrackerClass*, pThis, ECX);
+	GET_STACK(CellClass*, pCell, 0x4);
+	GET_STACK(int, range, 0x8);
+
+	pThis->CurrentVector.Clear();
+
+	if (range < 1)
+		range = 1;
+
+	auto const bounds = MapClass::Instance->MapCoordBounds;
+	auto const mapCoords = pCell->MapCoords;
+	int sectorWidth = bounds.Right / 20;
+	int sectorHeight = bounds.Bottom / 20;
+	int sectorIndexXStart = Math::clamp((mapCoords.X - range) / sectorWidth, 0, 19);
+	int sectorIndexYStart = Math::clamp((mapCoords.Y - range) / sectorHeight, 0, 19);
+	int sectorIndexXEnd = Math::clamp((mapCoords.X + range) / sectorWidth, 0, 19);
+	int sectorIndexYEnd = Math::clamp((mapCoords.Y + range) / sectorHeight, 0, 19);
+
+	for (int y = sectorIndexYStart; y <= sectorIndexYEnd; y++)
+	{
+		for (int x = sectorIndexXStart; x <= sectorIndexXEnd; x++)
+		{
+			for (auto const pTechno : pThis->TrackerVectors[y][x])
+				pThis->CurrentVector.AddItem(pTechno);
+		}
+	}
+
+	R->EAX(0); // The original function returns some number, hell if I know what (it is 0 most of the time though and never actually used for anything).
+	return SkipGameCode;
+}
+
+#pragma region WarpInDelayFix
+
+DEFINE_HOOK(0x7195BF, TeleportLocomotionClass_Process_WarpInDelay, 0x6)
+{
+	GET(ILocomotion*, pThis, ESI);
+	GET(FootClass*, pLinkedTo, ECX);
+
+	auto const pLoco = static_cast<TeleportLocomotionClass*>(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+	pExt->LastWarpInDelay = Math::max(pLoco->Timer.GetTimeLeft(), pExt->LastWarpInDelay);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->HasRemainingWarpInDelay)
+	{
+		if (pExt->LastWarpInDelay)
+		{
+			pExt->LastWarpInDelay--;
+		}
+		else
+		{
+			pExt->HasRemainingWarpInDelay = false;
+			pExt->IsBeingChronoSphered = false;
+			pThis->WarpingOut = false;
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+// this fella was { 0, 0, 1 } before and somehow it also breaks both the light position a bit and how the lighting is applied when voxels rotate - Kerbiter
+DEFINE_HOOK(0x753D86, VoxelCalcNormals_NullAdditionalVector, 0x0)
+{
+	REF_STACK(Vector3D<float>, secondaryLightVector, STACK_OFFSET(0xD8, -0xC0))
+
+	if (RulesExt::Global()->UseFixedVoxelLighting)
+		secondaryLightVector = { 0, 0, 0 };
+	else
+		secondaryLightVector = { 0, 0, 1 };
+
+	return 0x753D9E;
+}
+
+DEFINE_HOOK(0x705D74, TechnoClass_GetRemapColour_DisguisePalette, 0x8)
+{
+	enum { SkipGameCode = 0x705D7C };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto pTechnoType = pThis->GetTechnoType();
+
+	if (!pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		if (const auto pDisguise = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+			pTechnoType = pDisguise;
+	}
+
+	R->EAX(pTechnoType);
+
+	return SkipGameCode;
+}
+
+// Fixes an edge case crash caused by temporal targeting enslaved infantry.
+DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
+{
+	enum { ReturnFromFunction = 0x71AE47 };
+
+	GET(TemporalClass* const, pThis, ESI);
+
+	if (!pThis->Target)
+		return ReturnFromFunction;
+
+	return 0;
+}

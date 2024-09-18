@@ -101,6 +101,7 @@ PhobosTrajectoryType* PhobosTrajectoryType::ProcessFromStream(PhobosStreamWriter
 bool PhobosTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	Stm.Process(this->Flag, false);
+
 	return true;
 }
 
@@ -116,27 +117,6 @@ double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 		return pBulletTypeExt->Trajectory_Speed;
 	else
 		return 100.0;
-}
-
-PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
-{
-	PhobosTrajectory* pRet = nullptr;
-
-	switch (pType->Flag)
-	{
-	case TrajectoryFlag::Straight:
-		pRet = DLLCreate<StraightTrajectory>(pType);
-		break;
-
-	case TrajectoryFlag::Bombard:
-		pRet = DLLCreate<BombardTrajectory>(pType);
-		break;
-	}
-
-	if (pRet)
-		pRet->OnUnlimbo(pBullet, pCoord, pVelocity);
-
-	return pRet;
 }
 
 PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
@@ -206,6 +186,36 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 	if (detonate && !pThis->SpawnNextAnim)
 		return Detonate;
 
+	if (pExt->Trajectory && pExt->LaserTrails.size())
+	{
+		CoordStruct futureCoords
+		{
+			pThis->Location.X + static_cast<int>(pThis->Velocity.X),
+			pThis->Location.Y + static_cast<int>(pThis->Velocity.Y),
+			pThis->Location.Z + static_cast<int>(pThis->Velocity.Z)
+		};
+
+		for (auto& trail : pExt->LaserTrails)
+		{
+			if (!trail.LastLocation.isset())
+				trail.LastLocation = pThis->Location;
+
+			trail.Update(futureCoords);
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (auto pTraj = pExt->Trajectory)
+		pTraj->OnAIPreDetonate(pThis);
+
 	return 0;
 }
 
@@ -225,7 +235,7 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 
 DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 {
-	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879 };
+	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879, Detonate = 0x467E53 };
 
 	GET(BulletClass*, pThis, EBP);
 
@@ -233,12 +243,20 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 
 	if (auto pTraj = pExt->Trajectory)
 	{
-		auto flag = pTraj->OnAITargetCoordCheck(pThis);
-
-		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
+		switch (pTraj->OnAITargetCoordCheck(pThis))
+		{
+		case TrajectoryCheckReturnType::SkipGameCheck:
 			return SkipCheck;
-		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+			break;
+		case TrajectoryCheckReturnType::SatisfyGameCheck:
 			return ContinueAfterCheck;
+			break;
+		case TrajectoryCheckReturnType::Detonate:
+			return Detonate;
+			break;
+		default:
+			break;
+		}
 	}
 
 	return 0;
@@ -255,12 +273,17 @@ DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 
 	if (auto pTraj = pExt->Trajectory)
 	{
-		auto flag = pTraj->OnAITechnoCheck(pThis, pTechno);
-
-		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
+		switch (pTraj->OnAITechnoCheck(pThis, pTechno))
+		{
+		case TrajectoryCheckReturnType::SkipGameCheck:
 			return SkipCheck;
-		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+			break;
+		case TrajectoryCheckReturnType::SatisfyGameCheck:
 			return ContinueAfterCheck;
+			break;
+		default:
+			break;
+		}
 	}
 
 	return 0;
@@ -276,7 +299,10 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	auto const pTypeExt = pExt->TypeExtData;
 
 	if (pTypeExt && pTypeExt->TrajectoryType)
-		pExt->Trajectory = PhobosTrajectory::CreateInstance(pTypeExt->TrajectoryType, pThis, pCoord, pVelocity);
+	{
+		pExt->Trajectory = pTypeExt->TrajectoryType->CreateInstance();
+		pExt->Trajectory->OnUnlimbo(pThis, pCoord, pVelocity);
+	}
 
 	return 0;
 }

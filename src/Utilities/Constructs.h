@@ -49,14 +49,14 @@
 #include <Phobos.h>
 #include <Phobos.CRT.h>
 
-#include "Savegame.h"
-#include "Debug.h"
+class PhobosStreamReader;
+class PhobosStreamWriter;
+#include "Enum.h"
 
 class ConvertClass;
 
 template <typename T>
 using UniqueGamePtr = std::unique_ptr<T, GameDeleter>;
-
 
 class ArmorType
 {
@@ -319,70 +319,21 @@ public:
 		*this = pFilename;
 	}
 
-	PhobosPCXFile& operator = (const char* pFilename) {
-		this->filename = pFilename;
-		auto& data = this->filename.data();
-		_strlwr_s(data);
-
-		this->checked = false;
-		this->exists = false;
-
-		if (this->resolve) {
-			this->Exists();
-		}
-
-		return *this;
-	}
+	PhobosPCXFile& operator = (const char* pFilename);
 
 	const FixedString<Capacity>::data_type& GetFilename() const {
 		return this->filename.data();
 	}
 
-	BSurface* GetSurface(BytePalette* pPalette = nullptr) const {
-		return this->Exists() ? PCX::Instance->GetSurface(this->filename, pPalette) : nullptr;
-	}
+	BSurface* GetSurface(BytePalette* pPalette = nullptr) const;
 
-	bool Exists() const {
-		if (!this->checked) {
-			this->checked = true;
-			if (this->filename) {
-				auto pPCX = &PCX::Instance();
-				this->exists = (pPCX->GetSurface(this->filename) || pPCX->LoadFile(this->filename));
-			}
-		}
-		return this->exists;
-	}
+	bool Exists() const;
 
-	bool Read(INIClass* pINI, const char* pSection, const char* pKey, const char* pDefault = "") {
-		char buffer[Capacity];
-		if (pINI->ReadString(pSection, pKey, pDefault, buffer)) {
-			*this = buffer;
+	bool Read(INIClass* pINI, const char* pSection, const char* pKey, const char* pDefault = "");
 
-			if (this->checked && !this->exists) {
-				Debug::INIParseFailed(pSection, pKey, this->filename, "PCX file not found.");
-			}
-		}
-		return buffer[0] != 0;
-	}
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-	bool Load(PhobosStreamReader& Stm, bool RegisterForChange) {
-		this->filename = nullptr;
-		if (Stm.Load(*this)) {
-			if (this->checked && this->exists) {
-				this->checked = false;
-				if (!this->Exists()) {
-					Debug::Log("PCX file '%s' was not found.\n", this->filename.data());
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-
-	bool Save(PhobosStreamWriter& Stm) const {
-		Stm.Save(*this);
-		return true;
-	}
+	bool Save(PhobosStreamWriter& Stm) const;
 
 private:
 	FixedString<Capacity> filename;
@@ -403,18 +354,7 @@ public:
 
 	CSFText& operator = (CSFText const& rhs) = default;
 
-	const CSFText& operator = (const char* label) {
-		if (this->Label != label) {
-			this->Label = label;
-			this->Text = nullptr;
-
-			if (this->Label) {
-				this->Text = StringTable::LoadString(this->Label);
-			}
-		}
-
-		return *this;
-	}
+	const CSFText& operator = (const char* label);
 
 	operator const wchar_t* () const {
 		return this->Text;
@@ -424,21 +364,9 @@ public:
 		return !this->Text || !*this->Text;
 	}
 
-	bool load(PhobosStreamReader& Stm, bool RegisterForChange) {
-		this->Text = nullptr;
-		if (Stm.Load(this->Label.data())) {
-			if (this->Label) {
-				this->Text = StringTable::LoadString(this->Label);
-			}
-			return true;
-		}
-		return false;
-	}
+	bool load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-	bool save(PhobosStreamWriter& Stm) const {
-		Stm.Save(this->Label.data());
-		return true;
-	}
+	bool save(PhobosStreamWriter& Stm) const;
 
 	FixedString<0x20> Label;
 	const wchar_t* Text{ nullptr };
@@ -648,29 +576,11 @@ public:
 		return *this;
 	}
 
-	bool Read(INI_EX& parser, const char* pSection, const char* pKey)
-	{
-		int buf;
-		if (parser.ReadInteger(pSection, pKey, &buf))
-		{
-			*this = buf;
-			return true;
-		}
+	bool Read(INI_EX& parser, const char* pSection, const char* pKey);
 
-		return false;
-	}
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-	bool Load(PhobosStreamReader& Stm, bool RegisterForChange)
-	{
-		Stm.Load(this->value);
-		return true;
-	}
-
-	bool Save(PhobosStreamWriter& Stm) const
-	{
-		Stm.Save(this->value);
-		return true;
-	}
+	bool Save(PhobosStreamWriter& Stm) const;
 
 private:
 	BlitterFlags value { BlitterFlags::None };
@@ -701,40 +611,11 @@ public:
 		return *this;
 	}
 
-	bool Read(INI_EX& parser, const char* pSection, const char* pKey)
-	{
-		if (parser.ReadString(pSection, pKey))
-		{
-			auto pValue = parser.value();
-			GeneralUtils::ApplyTheaterSuffixToString(pValue);
+	bool Read(INI_EX& parser, const char* pSection, const char* pKey);
 
-			std::string Result = pValue;
-			if (!strstr(pValue, ".shp"))
-				Result += ".shp";
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
-			{
-				value = pImage;
-				return true;
-			}
-			else
-			{
-				Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", Result.c_str(), pSection, pKey, pValue);
-			}
-		}
-		return false;
-	}
-
-	bool Load(PhobosStreamReader& Stm, bool RegisterForChange)
-	{
-		return Savegame::ReadPhobosStream(Stm, this->value, RegisterForChange);
-	}
-
-	bool Save(PhobosStreamWriter& Stm) const
-	{
-		return Savegame::WritePhobosStream(Stm, this->value);
-	}
-
+	bool Save(PhobosStreamWriter& Stm) const;
 private:
 	SHPStruct* value { nullptr };
 };
