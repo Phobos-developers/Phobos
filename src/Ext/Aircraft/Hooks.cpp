@@ -441,7 +441,7 @@ DEFINE_HOOK(0x414D4D, AircraftClass_Update_ClearTargetIfNoAmmo, 0x6)
 
 	const Mission mission = pThis->CurrentMission;
 
-	return (!pThis->Ammo || mission == Mission::Sleep || mission == Mission::Enter) ? ClearTarget : 0;
+	return (!pThis->Ammo || mission == Mission::Sleep) ? ClearTarget : 0;
 }
 
 // Stop: clear the mega mission and return to airbase immediately
