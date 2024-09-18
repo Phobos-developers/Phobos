@@ -134,6 +134,10 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
 
+		Valueable<AnimTypeClass*> CloakAnim;
+		Valueable<AnimTypeClass*> DecloakAnim;
+		Valueable<bool> Cloak_KickOutParasite;
+
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
@@ -253,6 +257,9 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, CloakAnim { nullptr }
+			, DecloakAnim { nullptr }
+			, Cloak_KickOutParasite { true }
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }

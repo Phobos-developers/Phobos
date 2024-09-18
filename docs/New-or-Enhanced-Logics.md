@@ -1274,6 +1274,26 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### Cloak Enhancement
+
+- When unit start cloak or stop cloaking, an animation can play on his location
+  - You can also set whether cloak units kick out parasites
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]
+CloakAnim=                   ; Animation
+DecloakAnim=                 ; Animation
+Cloak.KickOutParasite=       ; boolean
+
+[AudioVisual]
+CloakAnim=                   ; Animation
+DecloakAnim=                 ; Animation
+
+[CombatDamage]
+Cloak.KickOutParasite=true   ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound

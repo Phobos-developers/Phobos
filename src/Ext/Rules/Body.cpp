@@ -161,6 +161,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
 
+	this->CloakAnim.Read(exINI, GameStrings::AudioVisual, "CloakAnim");
+	this->DecloakAnim.Read(exINI, GameStrings::AudioVisual, "DecloakAnim");
+	this->Cloak_KickOutParasite.Read(exINI, GameStrings::CombatDamage, "Cloak.KickOutParasite");
+
 	this->DisplayIncome.Read(exINI, GameStrings::AudioVisual, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Houses");
 	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
@@ -357,6 +361,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
+		.Process(this->CloakAnim)
+		.Process(this->DecloakAnim)
+		.Process(this->Cloak_KickOutParasite)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
 		.Process(this->PodImage)
