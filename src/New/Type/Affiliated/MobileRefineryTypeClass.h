@@ -17,8 +17,8 @@ public:
 	Valueable<int> TransDelay;
 	Valueable<float>  CashMultiplier;
 	Valueable<int> AmountPerCell;
-	ValueableVector<double> FrontOffset;
-	ValueableVector<double> LeftOffset;
+	ValueableVector<int> FrontOffset;
+	ValueableVector<int> LeftOffset;
 	Valueable<bool> Display;
 	Valueable<AffectedHouse> Display_House;
 	ValueableVector<AnimTypeClass*> Anims;

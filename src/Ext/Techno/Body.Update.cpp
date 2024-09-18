@@ -618,8 +618,8 @@ void TechnoExt::ExtData::UpdateMobileRefinery()
 
 	for (size_t i = 0; i < cellCount; i++)
 	{
-		flh.X = static_cast<int>(frontSize > i ? pMobileRefineryType->FrontOffset[i] * Unsorted::LeptonsPerCell : 0);
-		flh.Y = static_cast<int>(leftSize > i ? pMobileRefineryType->LeftOffset[i] * Unsorted::LeptonsPerCell : 0);
+		flh.X = frontSize > i ? pMobileRefineryType->FrontOffset[i] * Unsorted::LeptonsPerCell : 0;
+		flh.Y = leftSize > i ? pMobileRefineryType->LeftOffset[i] * Unsorted::LeptonsPerCell : 0;
 		CoordStruct pos = flh != CoordStruct::Empty ? TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false) : pThis->GetCoords();
 		CellClass* pCell = MapClass::Instance->TryGetCellAt(pos);
 
