@@ -30,7 +30,7 @@ DEFINE_HOOK(0x701966, TechnoClass_ArmorMultiplier, 0x6)       // TechnoClass_Rec
 	damage = static_cast<int>(damage / pExt->AE.ArmorMultiplier) - pTypeExt->ArmorBonus - pExt->AE.ArmorBonus;
 
 	if (pShieldData && pShieldData->IsActive())
-		damage -= pShieldData->ArmorBonus;
+		damage -= pShieldData->GetType()->ArmorBonus;
 
 	R->EAX(damage);
 
