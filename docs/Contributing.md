@@ -146,7 +146,7 @@ ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject
 - Class fields that can be set via INI tags should be named exactly like ini tags with dots replaced with underscores.
 - Pointer type declarations always have pointer sign `*` attached to the type declaration.
 - Non-static class extension methods faked by declaring a static method with `pThis` as a first argument are only to be placed in the extension class for the class instance of which `pThis` is.
-  - If it's crucial to fake `__thiscall` you may use `__fastcall` and use `void*` or `void* _` as a second argument to discard value passed through `EDX` register. Such methods are to be used for call replacement.
+  - If it's crucial to fake `__thiscall` you may use `__fastcall` and use `discard_t` or `discard_t _` as a second argument to discard value passed through `EDX` register. Such methods are to be used for call replacement.
 - Hooks have to be named using a following scheme: `HookedFunction_HookPurpose`, or `ClassName_HookedMethod_HookPurpose`. Defined-again hooks are exempt from this scheme due to impossibility to define different names for the same hook.
 - Return addresses should use anonymous enums to make it clear what address means what, if applicable. The enum has to be placed right at the function start and include all addresses that are used in this hook:
 ```cpp

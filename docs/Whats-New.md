@@ -300,6 +300,15 @@ SaveGameOnScenarioStart=true     ; boolean
 
 ## Changelog
 
+### 0.4
+
+<details>
+  <summary>Click to show</summary>
+
+New:
+- Techno Attachment logic (by Kerbiter)
+</details>
+
 ### Version TBD (develop branch nightly builds)
 
 <details open>

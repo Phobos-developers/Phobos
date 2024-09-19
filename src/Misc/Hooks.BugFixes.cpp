@@ -19,6 +19,7 @@
 #include <ParticleSystemClass.h>
 #include <WarheadTypeClass.h>
 #include <HashTable.h>
+#include <EventClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>

@@ -229,7 +229,9 @@ using PhobosTypeRegistry = TypeRegistry<
 	ShieldClass,
 	DigitalDisplayTypeClass,
 	AttachEffectTypeClass,
-	AttachEffectClass
+	AttachEffectClass,
+	AttachmentClass,
+	AttachmentTypeClass
 	// other classes
 >;
 
