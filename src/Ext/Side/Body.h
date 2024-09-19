@@ -36,6 +36,8 @@ public:
 		Nullable<int> ToolTip_Background_Opacity;
 		Nullable<float> ToolTip_Background_BlurSize;
 		Valueable<int> BriefingTheme;
+		PhobosPCXFile SWSidebarBackground_OnPCX;
+		PhobosPCXFile SWSidebarBackground_OffPCX;
 		PhobosPCXFile SWSidebarBackground_TopPCX;
 		PhobosPCXFile SWSidebarBackground_CenterPCX;
 		PhobosPCXFile SWSidebarBackground_BottomPCX;

@@ -2,10 +2,10 @@
 #include <Ext/SWType/Body.h>
 #include <ControlClass.h>
 
-class TacticalButtonClass
+class TacticalButtonsClass
 {
 public:
-	static TacticalButtonClass Instance;
+	static TacticalButtonsClass Instance;
 
 private:
 	int CheckMouseOverButtons(const Point2D* pMousePosition);
@@ -21,11 +21,13 @@ public:
 	void PressDesignatedButton(int triggerIndex);
 
 	// Button index 1-10 : Super weapons buttons
-	void DrawButtonForSW();
-	void RecheckButtonForSW();
-	bool InsertButtonForSW(int& superIndex);
-	bool SortButtonForSW(SuperWeaponTypeClass* pDataType, SuperWeaponTypeClass* pAddType, SWTypeExt::ExtData* pAddTypeExt, unsigned int ownerBits);
-	void TriggerButtonForSW(int buttonIndex);
+	inline bool IndexInSWButtons();
+
+	void SWSidebarDraw();
+	void SWSidebarRecheck();
+	bool SWSidebarAdd(int& superIndex);
+	bool SWSidebarSort(SuperWeaponTypeClass* pDataType, SuperWeaponTypeClass* pAddType, SWTypeExt::ExtData* pAddTypeExt, unsigned int ownerBits);
+	void SWSidebarTrigger(int buttonIndex);
 
 	struct DummySelectClass
 	{
@@ -36,7 +38,15 @@ public:
 		int SWIndex { -1 }; // New
 	};
 
-	// TODO New buttons (Start from index = 11)
+	// Button index 11 : SW sidebar switch
+	inline bool IndexIsSWSwitch();
+
+	void SWSidebarSwitch();
+
+	// Extra functions
+	bool SWQuickLaunch(int superIndex);
+
+	// TODO New buttons (Start from index = 12)
 
 public:
 	bool PressedInButtonsLayer { false }; // Check press
@@ -44,9 +54,8 @@ public:
 	// Button index 1-10 : Super weapons buttons
 	bool DummyAction { false };
 	bool KeyboardCall { false };
-	bool SuperVisible { true };
 
-	// TODO New buttons (Start from index = 11)
+	// TODO New buttons (Start from index = 12)
 
 private:
 	int ButtonIndex { -1 }; // -1 -> above no buttons, 0 -> above buttons background, POSITIVE -> above button who have this index
@@ -56,5 +65,8 @@ private:
 	std::vector<int> SWButtonData;
 	SuperClass* RecordSuper { nullptr }; // Cannot be used, only for comparison purposes
 
-	// TODO New buttons (Start from index = 11)
+	// Button index 11 : SW sidebar switch
+	bool SuperVisible { true };
+
+	// TODO New buttons (Start from index = 12)
 };

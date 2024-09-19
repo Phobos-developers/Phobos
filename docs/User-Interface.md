@@ -348,6 +348,7 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 
 - Now, you can display a sidebar exclusive to superweapons through a series of settings. At the same time, you can specify the shortcuts for these buttons in the shortcut key settings.
   - `SWSidebarBackground` controls whether to draw the background shape of the exclusive sidebar.
+  - `SWSidebarBackground.OnPCX` and `SWSidebarBackground.OffPCX` controlled the shapes of this exclusive sidebar's switch displaying, respectively used in non-hidden and hidden. Required sizes are all `10 * 50`.
   - `SWSidebarBackground.TopPCX`, `SWSidebarBackground.CenterPCX` and `SWSidebarBackground.BottomPCX` controlled the materials that were combined to create the entire exclusive sidebar background shape. Their required sizes are respectively `80 * 20`, `80 * 50` and `80 * 20`. In `SWSidebarBackground.CenterPCX`, the position of the superweapon's `SidebarPCX` is 5 pixels away from the left contour of this background, 15 pixels away from the right contour, and 1 pixel away from both the upper and lower contours.
   - `SW.InScreen.Show` controls whether the superweapon should be displayed first in the exclusive sidebar. If the exclusive sidebar is full (up to 10 are displayed), the overflowing superweapon's cameo will be added back to the original sidebar. If there is an empty space in the exclusive sidebar afterwards, it will no longer return to the exclusive sidebar, unless the permission to use the superweapon is regained (lost and gained again). Therefore, it is not recommended to place all superweapons in the exclusive sidebar.
   - `SW.InScreen.PriorityHouses` controls if the superweapon is displayed first in the exclusive sidebar, players belonging to these houses will have priority in placing the superweapon cameo in the exclusive sidebar.
@@ -361,6 +362,8 @@ In `rulesmd.ini`:
 SWSidebarBackground=true         ; boolean
 
 [SOMESIDE]                       ; Side
+SWSidebarBackground.OnPCX=       ; filename - including the .pcx extension
+SWSidebarBackground.OffPCX=      ; filename - including the .pcx extension
 SWSidebarBackground.TopPCX=      ; filename - including the .pcx extension
 SWSidebarBackground.CenterPCX=   ; filename - including the .pcx extension
 SWSidebarBackground.BottomPCX=   ; filename - including the .pcx extension
