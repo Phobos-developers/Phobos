@@ -872,6 +872,16 @@ Detonate.Damage=            ; integer
 Detonate.AtFirer=false      ; boolean
 ```
 
+### Customize SuperWeapon TabIndex
+
+- Now you can specific sw will insert to which tab of sidebar.
+
+In `rulesmd.ini`
+```ini
+[SOMESW]                    ; Super Weapon
+TabIndex=1                  ; integer
+```
+
 ## Technos
 
 ### Aircraft spawner customizations

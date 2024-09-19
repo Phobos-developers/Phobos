@@ -182,3 +182,34 @@ DEFINE_HOOK(0x6CC1E6, SuperClass_SetSWCharge_UseWeeds, 0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6A633D, SidebarClass_AddCameo_TabIndex, 0x5)
+{
+	enum { ApplyTabIndex = 0x6A63B7 };
+	GET(AbstractType const, absType, ESI);
+	GET(int const, typeIdx, EBP);
+
+	R->Stack(STACK_OFFSET(0x14, 0x4), SidebarClass::GetObjectTabIdx(absType, typeIdx, 0));
+
+	return ApplyTabIndex;
+}
+
+DEFINE_HOOK(0x6ABC9D, SidebarClass_GetObjectTabIndex_Super, 0x5)
+{
+	enum { ApplyTabIndex = 0x6ABCA2 };
+	GET(int const, typeIdx, EDX);
+
+	if (typeIdx < 0 || typeIdx >= SuperWeaponTypeClass::Array->Count)
+		return 0;
+
+	const auto pSWType = SuperWeaponTypeClass::Array->Items[typeIdx];
+	const auto pSWTypExt = SWTypeExt::ExtMap.Find(pSWType);
+	int tabIdx = pSWTypExt->TabIndex;
+
+	if (tabIdx < 0 || tabIdx > 3)
+		tabIdx = 1;
+
+	R->EAX(tabIdx);
+
+	return ApplyTabIndex;
+}

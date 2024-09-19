@@ -451,6 +451,7 @@ New:
 - Nonprovocative Warheads (by Starkku)
 - Option to restore `PowerSurplus` setting for AI (by Starkku)
 - `FireOnce` infantry sequence reset toggle (by Starkku)
+- Customize superweapon tabindex (by NetsuNegi)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
