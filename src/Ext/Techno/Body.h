@@ -176,4 +176,6 @@ public:
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
+
+	static void CreateInitialPayload(FootClass* pThis, ValueableVector<TechnoTypeClass*>* pTypes, ValueableVector<int>* pNums);
 };

@@ -1,4 +1,5 @@
 #include "Body.h"
+#include "AresExtData.h"
 
 #include <AircraftClass.h>
 #include <HouseClass.h>
@@ -463,6 +464,60 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	}
 
 	return foundCount;
+}
+
+void TechnoExt::CreateInitialPayload(FootClass* pThis, ValueableVector<TechnoTypeClass*>* pTypes, ValueableVector<int>* pNums)
+{
+	if (!pThis || !pTypes->empty())
+		return;
+
+	for (size_t idx = 0; idx < pTypes->size(); idx++)
+	{
+		if (pThis->Passengers.NumPassengers >= pThis->GetTechnoType()->Passengers)
+			break;
+
+		auto pType = pTypes->at(idx);
+		int pNum = pNums->size() > idx ?
+			pNums->at(idx) : 1;
+
+		if (pNum <= 0 ||
+			!pType ||
+			pType->WhatAmI() == AbstractType::AircraftType ||
+			pType->WhatAmI() == AbstractType::BuildingType)
+			continue;
+
+		for (int i = 0; i < pNum; i++)
+		{
+			if (pThis->Passengers.NumPassengers >= pThis->GetTechnoType()->Passengers)
+				break;
+
+			TechnoClass* pTechno = abstract_cast<TechnoClass*>(pType->CreateObject(pThis->Owner));
+			FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
+
+			if (auto const pAresTechnoExt = AresTechnoExt::FindExtData(pTechno))
+				pAresTechnoExt->PayloadCreated = true;
+
+			pTechno->OnBridge = pThis->OnBridge;
+			Unsorted::IKnowWhatImDoing++;
+			pTechno->Unlimbo(pThis->GetCoords(), DirType::North);
+			Unsorted::IKnowWhatImDoing--;
+
+			pTechno->SetLocation(pThis->GetCoords());
+			pTechno->Limbo();
+			pTechno->Transporter = pThis;
+
+			const auto old = std::exchange(VocClass::VoicesEnabled(), false);
+			pThis->AddPassenger(pFoot);
+			VocClass::VoicesEnabled = old;
+
+			if (pThis->GetTechnoType()->OpenTopped)
+				pThis->EnteredOpenTopped(pTechno);
+
+			if (pThis->GetTechnoType()->Gunner &&
+				pThis->Passengers.NumPassengers == 1)
+				pThis->ReceiveGunner(pFoot);
+		}
+	}
 }
 
 // =============================
