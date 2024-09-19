@@ -212,7 +212,7 @@ DEFINE_HOOK(0x4AE511, DisplayClass_GetToolTip_SkipTacticalTip, 0x5)
 	if (!buttonIndex)
 		return SkipGameCode;
 
-	if (buttonIndex <= 8)
+	if (buttonIndex <= 10)
 		R->EAX(PhobosToolTip::Instance.GetBuffer());
 	else
 		R->EAX(0);
