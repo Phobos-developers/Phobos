@@ -1,7 +1,7 @@
 #include "Body.h"
 #include <Ext/Techno/Body.h>
 #include <Ext/Techno/AresExtData.h>
-#include <Utilities/AresFunctions.h>
+#include <Utilities/AresHelper.h>
 
 // Bugfix: TAction 7,80,107.
 DEFINE_HOOK(0x65DF81, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x7)
@@ -44,11 +44,12 @@ void _fastcall PayloadFix(FootClass* pThis)
 		pThis->Passengers.NumPassengers > 0)
 		return;
 
-	const auto pAresTechnoExt = AresTechnoExt::FindExtData(static_cast<TechnoClass*>(pThis));
-
-	if (pAresTechnoExt && pAresTechnoExt->PayloadCreated)
+	if (AresHelper::CanUseAres)
 	{
-		pAresTechnoExt->PayloadCreated = false;
+		const auto pAresTechnoExt = AresTechnoExt::FindExtData(static_cast<TechnoClass*>(pThis));
+
+		if (pAresTechnoExt && pAresTechnoExt->PayloadCreated)
+			pAresTechnoExt->PayloadCreated = false;
 	}
 	else
 	{

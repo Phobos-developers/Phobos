@@ -494,9 +494,6 @@ void TechnoExt::CreateInitialPayload(FootClass* pThis, ValueableVector<TechnoTyp
 			TechnoClass* pTechno = abstract_cast<TechnoClass*>(pType->CreateObject(pThis->Owner));
 			FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
 
-			if (auto const pAresTechnoExt = AresTechnoExt::FindExtData(pTechno))
-				pAresTechnoExt->PayloadCreated = true;
-
 			pTechno->OnBridge = pThis->OnBridge;
 			Unsorted::IKnowWhatImDoing++;
 			pTechno->Unlimbo(pThis->GetCoords(), DirType::North);
