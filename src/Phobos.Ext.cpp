@@ -50,6 +50,11 @@ concept DerivedFromSpecializationOf =
 template<typename TExt>
 concept HasExtMap = requires { { TExt::ExtMap } -> DerivedFromSpecializationOf<Container>; };
 
+template<typename TExt>
+concept ExtDataConsiderPointerInvalidation = HasExtMap<TExt> && requires{
+	{ TExt::ShouldConsiderInvalidatePointer }->std::convertible_to<const bool>;
+}&& TExt::ShouldConsiderInvalidatePointer == true;
+
 template <typename T>
 concept Clearable = requires { T::Clear(); };
 
@@ -97,7 +102,7 @@ struct InvalidatePointerAction
 	{
 		if constexpr (PointerInvalidationSubscribable<T>)
 			T::PointerGotInvalid(ptr, removed);
-		else if constexpr (HasExtMap<T>)
+		else if constexpr (ExtDataConsiderPointerInvalidation<T>)
 			T::ExtMap.PointerGotInvalid(ptr, removed);
 
 		return true;
@@ -223,6 +228,8 @@ using PhobosTypeRegistry = TypeRegistry<
 	RadTypeClass,
 	ShieldClass,
 	DigitalDisplayTypeClass,
+	AttachEffectTypeClass,
+	AttachEffectClass,
 	AttachmentClass,
 	AttachmentTypeClass
 	// other classes

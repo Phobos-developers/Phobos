@@ -167,11 +167,12 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 
 		if (!splashAnims.empty())
 		{
-			auto nIndexR = (splashAnims.size() - 1);
-			auto nIndex = splashAnimsPickRandom ?
-				ScenarioClass::Instance->Random.RandomRanged(0, nIndexR) : 0;
+			auto const lastIndex = (splashAnims.size() - 1);
+			auto const defaultIndex = isMeteor ? lastIndex : 0;
+			auto const animIndex = splashAnimsPickRandom ?
+				ScenarioClass::Instance->Random.RandomRanged(0, lastIndex) : defaultIndex;
 
-			pSplashAnimToUse = splashAnims.at(nIndex);
+			pSplashAnimToUse = splashAnims.at(animIndex);
 		}
 	}
 
@@ -202,6 +203,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->Invoker)
 		.Process(this->InvokerHouse)
 		.Process(this->AttachedSystem)
+		.Process(this->ParentBuilding)
 		;
 }
 
@@ -222,6 +224,31 @@ void AnimExt::ExtData::InitializeConstants()
 	// Something about creating this in constructor messes with debris anims, so it has to be done for them later.
 	if (!this->OwnerObject()->HasExtras)
 		CreateAttachedSystem();
+}
+
+void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
+{
+	for (auto const& pAnim : *AnimClass::Array)
+	{
+		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+
+		if (pExt->Invoker == pTechno)
+			pExt->Invoker = nullptr;
+
+		if ((TechnoClass*)pExt->ParentBuilding == pTechno)
+			pExt->ParentBuilding = nullptr;
+	}
+}
+
+void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem)
+{
+	for (auto const& pAnim : *AnimClass::Array)
+	{
+		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+
+		if (pExt->AttachedSystem == pParticleSystem)
+			pExt->AttachedSystem = nullptr;
+	}
 }
 
 // =============================
@@ -254,10 +281,10 @@ DEFINE_HOOK_AGAIN(0x422126, AnimClass_CTOR, 0x5)
 DEFINE_HOOK_AGAIN(0x422707, AnimClass_CTOR, 0x5)
 DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
+	GET(AnimClass*, pItem, ESI);
+
 	if (!Phobos::IsLoadingSaveGame)
 	{
-		GET(AnimClass*, pItem, ESI);
-
 		auto const callerAddress = CTORTemp::callerAddress;
 
 		// Do this here instead of using a duplicate hook in SyncLogger.cpp
@@ -269,9 +296,9 @@ DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 			Debug::Log("Attempting to create animation with null Type (Caller: %08x)!\n", callerAddress);
 			return 0;
 		}
-
-		AnimExt::ExtMap.Allocate(pItem);
 	}
+
+	AnimExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }

@@ -51,6 +51,8 @@ enum PhobosTriggerEvent
 	ShieldBroken = 600,
 	HouseOwnsTechnoType = 601,
 	HouseDoesntOwnTechnoType = 602,
+	CellHasTechnoType = 604,
+	CellHasAnyTechnoTypeFromList = 605,
 
 	_DummyMaximum,
 };
@@ -90,6 +92,10 @@ public:
 
 	static bool HouseOwnsTechnoTypeTEvent(TEventClass* pThis);
 	static bool HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis);
+
+	static bool CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pHouse);
+	static bool CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pHouse);
+
 
 	class ExtContainer final : public Container<TEventExt>
 	{

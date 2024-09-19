@@ -7,7 +7,6 @@
 #include <Ext/WarheadType/Body.h>
 
 #include <Utilities/GeneralUtils.h>
-#include <GameStrings.h>
 #include <AnimClass.h>
 #include <HouseClass.h>
 #include <RadarEventClass.h>
@@ -163,14 +162,15 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		}
 	}
 
-	if (this->Techno->IsIronCurtained() || CanBePenetrated(args->WH) || this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	bool IC = pWHExt->CanAffectInvulnerable(this->Techno);
+
+	if (!IC || CanBePenetrated(args->WH) || this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
 		return *args->Damage;
 
 	int nDamage = 0;
 	int shieldDamage = 0;
 	int healthDamage = 0;
-
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	if (pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
 	{
@@ -189,9 +189,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	}
 
 	int originalShieldDamage = shieldDamage;
-
-	shieldDamage = Math::clamp(shieldDamage, pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum),
-		pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum));
+	int min = pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum);
+	int max = pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum);
+	int minDmg = static_cast<int>(min * pWHExt->Shield_ReceivedDamage_MinMultiplier);
+	int maxDmg = static_cast<int>(max * pWHExt->Shield_ReceivedDamage_MaxMultiplier);
+	shieldDamage = Math::clamp(shieldDamage, minDmg, maxDmg);
 
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
 		GeneralUtils::DisplayDamageNumberString(shieldDamage, DamageDisplayType::Shield, this->Techno->GetRenderCoords(), TechnoExt::ExtMap.Find(this->Techno)->DamageNumberOffset);
@@ -229,13 +231,37 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			int actualResidueDamage = Math::max(0, int((double)(originalShieldDamage - this->HP) /
 				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetArmorType()))); //only absord percentage damage
 
-			this->BreakShield(pWHExt->Shield_BreakAnim.Get(nullptr), pWHExt->Shield_BreakWeapon.Get(nullptr));
+			this->BreakShield(pWHExt->Shield_BreakAnim, pWHExt->Shield_BreakWeapon.Get(nullptr));
 
 			return this->Type->AbsorbOverDamage ? healthDamage : actualResidueDamage + healthDamage;
 		}
 		else
 		{
-			this->WeaponNullifyAnim(pWHExt->Shield_HitAnim.Get(nullptr));
+			if (this->Type->HitFlash && pWHExt->Shield_HitFlash)
+			{
+				int size = this->Type->HitFlash_FixedSize.Get((shieldDamage * 2));
+				SpotlightFlags flags = SpotlightFlags::NoColor;
+
+				if (this->Type->HitFlash_Black)
+				{
+					flags = SpotlightFlags::NoColor;
+				}
+				else
+				{
+					if (!this->Type->HitFlash_Red)
+						flags = SpotlightFlags::NoRed;
+					if (!this->Type->HitFlash_Green)
+						flags |= SpotlightFlags::NoGreen;
+					if (!this->Type->HitFlash_Blue)
+						flags |= SpotlightFlags::NoBlue;
+				}
+
+				MapClass::FlashbangWarheadAt(size, args->WH, this->Techno->Location, true, flags);
+			}
+
+			if (!pWHExt->Shield_SkipHitAnim)
+				this->WeaponNullifyAnim(pWHExt->Shield_HitAnim);
+
 			this->HP = -residueDamage;
 
 			this->UpdateIdleAnim();
@@ -298,7 +324,7 @@ void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 	if (this->AreAnimsHidden)
 		return;
 
-	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim.Get(nullptr);
+	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
 
 	if (pAnimType)
 		GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
@@ -393,6 +419,7 @@ void ShieldClass::AI()
 		return;
 
 	this->TemporalCheck();
+
 	if (this->Temporal)
 		return;
 
@@ -449,6 +476,9 @@ void ShieldClass::OnlineCheck()
 
 	if (!isActive)
 	{
+		if (this->Online)
+			this->UpdateTint();
+
 		this->Online = false;
 		timer->Pause();
 
@@ -477,6 +507,9 @@ void ShieldClass::OnlineCheck()
 	}
 	else
 	{
+		if (!this->Online)
+			this->UpdateTint();
+
 		this->Online = true;
 		timer->Resume();
 
@@ -524,6 +557,7 @@ bool ShieldClass::ConvertCheck()
 		this->KillAnim();
 		pTechnoExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
 		pTechnoExt->Shield = nullptr;
+		this->UpdateTint();
 
 		return true;
 	}
@@ -566,6 +600,7 @@ bool ShieldClass::ConvertCheck()
 	}
 
 	this->TechnoID = newID;
+	this->UpdateTint();
 
 	return false;
 }
@@ -641,12 +676,11 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 		this->Timers.Respawn.Start(Timers.Respawn_WHModifier.InProgress() ? Respawn_Rate_Warhead : this->Type->Respawn_Rate);
 
 	this->Timers.SelfHealing.Stop();
-
 	this->KillAnim();
 
 	if (!this->AreAnimsHidden)
 	{
-		const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim.Get(nullptr);
+		const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim;
 
 		if (pAnimType)
 		{
@@ -658,9 +692,9 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 		}
 	}
 
-	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon.Get(nullptr);
-
+	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon;
 	this->LastBreakFrame = Unsorted::CurrentFrame;
+	this->UpdateTint();
 
 	if (pWeaponType)
 		TechnoExt::FireWeaponAtSelf(this->Techno, pWeaponType);
@@ -676,6 +710,7 @@ void ShieldClass::RespawnShield()
 		timer->Stop();
 		double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
 		this->HP = this->GetPercentageAmount(amount);
+		this->UpdateTint();
 	}
 	else if (timerWHModifier->Completed() && timer->InProgress())
 	{
@@ -690,7 +725,7 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTi
 	const auto timerWHModifier = &this->Timers.Respawn_WHModifier;
 
 	bool modifierTimerInProgress = timerWHModifier->InProgress();
-	this->Respawn_Warhead = amount > 0 ? amount : Type->Respawn;
+	this->Respawn_Warhead = amount;
 	this->Respawn_Rate_Warhead = rate >= 0 ? rate : Type->Respawn_Rate;
 
 	timerWHModifier->Start(duration);
@@ -762,6 +797,12 @@ void ShieldClass::UpdateIdleAnim()
 		this->KillAnim();
 		this->CreateAnim();
 	}
+}
+
+void ShieldClass::UpdateTint()
+{
+	if (this->Type->HasTint())
+		this->Techno->MarkForRedraw();
 }
 
 AnimTypeClass* ShieldClass::GetIdleAnimType()

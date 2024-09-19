@@ -1,9 +1,5 @@
 #include "Body.h"
-
-#include <BitFont.h>
-
-#include <Ext/WeaponType/Body.h>
-#include <Misc/FlyingStrings.h>
+#include <AirstrikeClass.h>
 #include <Utilities/EnumFunctions.h>
 
 // Unsorted methods
@@ -87,14 +83,11 @@ Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, CoordStruct pCoord, bool is
 // reversed from 6F3D60
 CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
-	auto result = TechnoExt::GetFLHMatrix(pThis, pCoord, isOnTurret) * Vector3D<float>::Empty;
-
-	// Resulting coords are mirrored along X axis, so we mirror it back
-	result.Y *= -1;
+	auto result = TechnoExt::GetFLHMatrix(pThis, pCoord, isOnTurret).GetTranslation();
 
 	// apply as an offset to global object coords
-	CoordStruct location = pThis->GetCoords();
-	location += { std::lround(result.X), std::lround(result.Y), std::lround(result.Z) };
+	// Resulting coords are mirrored along X axis, so we mirror it back
+	auto location = pThis->GetCoords() + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
 
 	return location;
 }
@@ -169,6 +162,99 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	}
 
 	return FLH;
+}
+
+void TechnoExt::ExtData::InitializeAttachEffects()
+{
+	if (auto pTypeExt = this->TypeExtData)
+	{
+		if (pTypeExt->AttachEffect_AttachTypes.size() < 1)
+			return;
+
+		auto const pThis = this->OwnerObject();
+
+		AttachEffectClass::Attach(pTypeExt->AttachEffect_AttachTypes, pThis, pThis->Owner, pThis, pThis,
+			pTypeExt->AttachEffect_DurationOverrides, pTypeExt->AttachEffect_Delays, pTypeExt->AttachEffect_InitialDelays, pTypeExt->AttachEffect_RecreationDelays);
+	}
+}
+
+// Gets tint colors for invulnerability, airstrike laser target and berserk, depending on parameters.
+int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airstrike, bool berserk)
+{
+	int tintColor = 0;
+
+	if (pThis)
+	{
+		if (invulnerability && pThis->IsIronCurtained())
+			tintColor |= GeneralUtils::GetColorFromColorAdd(pThis->ForceShielded ? RulesClass::Instance->ForceShieldColor : RulesClass::Instance->IronCurtainColor);
+		if (airstrike && pThis->Airstrike && pThis->Airstrike->Target == pThis)
+			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->LaserTargetColor);
+		if (berserk && pThis->Berzerk)
+			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
+	}
+
+	return tintColor;
+}
+
+// Gets custom tint color from TechnoTypes & Warheads.
+int TechnoExt::GetCustomTintColor(TechnoClass* pThis)
+{
+	int dummy = 0;
+	int color = 0;
+	TechnoExt::ApplyCustomTintValues(pThis, color, dummy);
+	return color;
+}
+
+// Gets custom tint intensity from TechnoTypes & Warheads.
+int TechnoExt::GetCustomTintIntensity(TechnoClass* pThis)
+{
+	int dummy = 0;
+	int intensity = 0;
+	TechnoExt::ApplyCustomTintValues(pThis, dummy, intensity);
+	return intensity;
+}
+
+// Applies custom tint color and intensity from TechnoTypes and any AttachEffects and shields it might have on provided values.
+void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity)
+{
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
+	bool hasShieldTint = pExt->Shield && pExt->Shield->IsActive() && pExt->Shield->GetType()->HasTint();
+
+	// Bail out early if no custom tint is applied.
+	if (!hasTechnoTint && !pExt->AE.HasTint && !hasShieldTint)
+		return;
+
+	if (hasTechnoTint && EnumFunctions::CanTargetHouse(pTypeExt->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+	{
+		color |= Drawing::RGB_To_Int(pTypeExt->Tint_Color);
+		intensity += static_cast<int>(pTypeExt->Tint_Intensity * 1000);
+	}
+
+	if (pExt->AE.HasTint)
+	{
+		for (auto const& attachEffect : pExt->AttachedEffects)
+		{
+			auto const type = attachEffect->GetType();
+
+			if (!attachEffect->IsActive() || !type->HasTint())
+				continue;
+
+			if (!EnumFunctions::CanTargetHouse(type->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+				continue;
+
+			color |= Drawing::RGB_To_Int(type->Tint_Color);
+			intensity += static_cast<int>(type->Tint_Intensity * 1000);
+		}
+	}
+
+	if (hasShieldTint)
+	{
+		auto const pShieldType = pExt->Shield->GetType();
+		color |= Drawing::RGB_To_Int(pShieldType->Tint_Color);
+		intensity += static_cast<int>(pShieldType->Tint_Intensity * 1000);
+	}
 }
 
 // This is still not even correct, but let's see how far this can help us

@@ -40,7 +40,7 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->ToolTip_Background_Color.Read(exINI, pSection, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, pSection, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
-	this->BriefingTheme = pINI->ReadTheme(pSection, "BriefingTheme", this->BriefingTheme);;
+	this->BriefingTheme = pINI->ReadTheme(pSection, "BriefingTheme", this->BriefingTheme);
 }
 
 // =============================
@@ -149,8 +149,8 @@ DEFINE_HOOK(0x679A10, SideClass_LoadAllFromINI, 0x5)
 {
 	GET_STACK(CCINIClass*, pINI, 0x4);
 
-	for (auto& [pSide, pSideExt] : SideExt::ExtMap)
-		pSideExt->LoadFromINI(pINI);
+	for (auto const pSide : *SideClass::Array)
+		SideExt::ExtMap.Find(pSide)->LoadFromINI(pINI);
 
 	return 0;
 }
