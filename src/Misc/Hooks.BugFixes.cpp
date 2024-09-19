@@ -931,3 +931,18 @@ DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
 
 	return 0;
 }
+
+// Fix TechnoTypeClass::CanBeHidden
+
+DEFINE_PATCH(0x711229, 0xC6, 0x86, 0x24, 0x07, 0x00, 0x00, 0x00) // TechnoTypeClass::CTOR
+DEFINE_PATCH(0x6FA2AA, 0x75, 0x2E) // TechnoClass::AI
+
+DEFINE_HOOK(0x7121EB, TechnoTypeClass_LoadFromINI_CanBeHidden, 0x6)
+{
+	enum { SkipGameCode = 0x712208 };
+
+	GET(TechnoTypeClass*, pTechnoType, EBP);
+	pTechnoType->CanBeHidden = CCINIClass::INI_Art->ReadBool(pTechnoType->ImageFile, "CanBeHidden", pTechnoType->CanBeHidden);
+
+	return SkipGameCode;
+}

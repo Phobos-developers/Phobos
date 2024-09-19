@@ -523,6 +523,7 @@ Vanilla fixes:
 - Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading (by Starkku)
 - Subterranean units no longer draw an incorrectly positioned shadow when burrowing etc. (by Starkku)
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry (by Starkku)
+- Fixed logical confusion and read section in CanBeHidden tags (by NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
