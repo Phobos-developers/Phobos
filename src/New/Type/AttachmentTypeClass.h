@@ -12,6 +12,8 @@ public:
 	Valueable<bool> RespawnAtCreation; // whether to spawn the attachment initially
 	Valueable<int> RespawnDelay;
 	Valueable<bool> InheritCommands;
+	Valueable<bool> InheritCommands_StopCommand;
+	Valueable<bool> InheritCommands_DeployCommand;
 	Valueable<bool> InheritOwner; // aka mind control inheritance
 	Valueable<bool> InheritStateEffects; // phasing out, stealth etc.
 	Valueable<bool> InheritDestruction;
@@ -29,6 +31,8 @@ public:
 		, RespawnAtCreation { true }
 		, RespawnDelay { -1 }
 		, InheritCommands { true }
+		, InheritCommands_StopCommand { true }
+		, InheritCommands_DeployCommand { true }
 		, InheritOwner { true }
 		, InheritStateEffects { true }
 		, OccupiesCell { true }

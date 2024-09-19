@@ -18,6 +18,8 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->RespawnAtCreation.Read(exINI, section, "RespawnAtCreation");
 	this->RespawnDelay.Read(exINI, section, "RespawnDelay");
 	this->InheritCommands.Read(exINI, section, "InheritCommands");
+	this->InheritCommands_StopCommand.Read(exINI, section, "InheritCommands.StopCommand");
+	this->InheritCommands_DeployCommand.Read(exINI, section, "InheritCommands.DeployCommand");
 	this->InheritOwner.Read(exINI, section, "InheritOwner");
 	this->InheritStateEffects.Read(exINI, section, "InheritStateEffects");
 	this->InheritDestruction.Read(exINI, section, "InheritDestruction");
@@ -39,6 +41,8 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->RespawnAtCreation)
 		.Process(this->RespawnDelay)
 		.Process(this->InheritCommands)
+		.Process(this->InheritCommands_StopCommand)
+		.Process(this->InheritCommands_DeployCommand)
 		.Process(this->InheritOwner)
 		.Process(this->InheritStateEffects)
 		.Process(this->InheritDestruction)

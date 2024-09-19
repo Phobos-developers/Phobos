@@ -177,6 +177,8 @@ RespawnDelay=-1                       ; integer, non-negative values enable the 
 InheritOwner=true                     ; boolean, whether the child inherits owner of the parent while it's attached
 InheritStateEffects=true              ; boolean (state effects = chaos, iron curtain etc.)
 InheritCommands=true                  ; boolean
+InheritCommands.StopCommand=true      ; boolean
+InheritCommands.DeployCommand=true    ; boolean
 LowSelectionPriority=true             ; boolean, whether the child is low priority while attached
 TransparentToMouse=false              ; boolean, can't click on attached techno if set
 YSortPosition=default                 ; Attachment YSort position enumeration - default|underparent|overparent

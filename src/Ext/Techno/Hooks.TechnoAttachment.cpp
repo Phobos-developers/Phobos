@@ -557,11 +557,18 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 namespace TechnoAttachmentTemp
 {
 	bool stopPressed = false;
+	bool deployPressed = false;
 }
 
 DEFINE_HOOK(0x730EA0, StopCommand_Context_Set, 0x5)
 {
 	TechnoAttachmentTemp::stopPressed = true;
+	return 0;
+}
+
+DEFINE_HOOK(0x730AF0, DeployCommand_Context_Set, 0x8)
+{
+	TechnoAttachmentTemp::deployPressed = true;
 	return 0;
 }
 
@@ -579,14 +586,21 @@ DEFINE_HOOK(0x6FFE00, TechnoClass_ClickedEvent_Context_Set, 0x5)
 DEFINE_HOOK_AGAIN(0x6FFEB1, TechnoClass_ClickedEvent_HandleChildren, 0x6)
 DEFINE_HOOK(0x6FFE4F, TechnoClass_ClickedEvent_HandleChildren, 0x6)
 {
-	if (TechnoAttachmentTemp::stopPressed && TechnoAttachmentTemp::pParent)
+	if ((TechnoAttachmentTemp::stopPressed || TechnoAttachmentTemp::deployPressed)
+		&& TechnoAttachmentTemp::pParent)
 	{
 		if (auto const& pExt = TechnoExt::ExtMap.Find(TechnoAttachmentTemp::pParent))
 		{
 			for (auto const& pAttachment : pExt->ChildAttachments)
 			{
-				if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
+				if (!pAttachment->Child)
+					continue;
+
+				if (pAttachment->GetType()->InheritCommands_StopCommand)
 					pAttachment->Child->ClickedEvent(EventType::Idle);
+
+				if (pAttachment->GetType()->InheritCommands_DeployCommand)
+					pAttachment->Child->ClickedEvent(EventType::Deploy);
 			}
 		}
 	}
@@ -599,6 +613,13 @@ DEFINE_HOOK(0x730F1C, StopCommand_Context_Unset, 0x5)
 	TechnoAttachmentTemp::stopPressed = false;
 	return 0;
 }
+
+DEFINE_HOOK(0x730D55, DeployCommand_Context_Unset, 0x7)
+{
+	TechnoAttachmentTemp::deployPressed = false;
+	return 0;
+}
+
 
 #pragma endregion
 
