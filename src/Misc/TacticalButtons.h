@@ -6,6 +6,7 @@ class TacticalButtonsClass
 {
 public:
 	static TacticalButtonsClass Instance;
+	static PhobosMap<int, const wchar_t*> KeyboardCodeTextMap;
 
 private:
 	int CheckMouseOverButtons(const Point2D* pMousePosition);
@@ -22,12 +23,14 @@ public:
 
 	// Button index 1-10 : Super weapons buttons
 	inline bool IndexInSWButtons();
+	inline const wchar_t* Key2ConcatText(const wchar_t* showText, int key, int overlay);
 
 	void SWSidebarDraw();
 	void SWSidebarRecheck();
 	bool SWSidebarAdd(int& superIndex);
 	bool SWSidebarSort(SuperWeaponTypeClass* pDataType, SuperWeaponTypeClass* pAddType, SWTypeExt::ExtData* pAddTypeExt, unsigned int ownerBits);
 	void SWSidebarTrigger(int buttonIndex);
+	void SWSidebarRecord(int buttonIndex, int key);
 
 	struct DummySelectClass
 	{
@@ -54,6 +57,8 @@ public:
 	// Button index 1-10 : Super weapons buttons
 	bool DummyAction { false };
 	bool KeyboardCall { false };
+	const wchar_t* keyCodeText[10] {};
+	int keyCodeData[10] {};
 
 	// TODO New buttons (Start from index = 12)
 

@@ -16,6 +16,141 @@
 
 TacticalButtonsClass TacticalButtonsClass::Instance;
 
+static PhobosMap<int , const wchar_t*> CreateKeyboardCodeTextMap()
+{
+	PhobosMap<int , const wchar_t*> Code2Text;
+
+	Code2Text[0x00] = L"  ";
+	Code2Text[0x01] = L"MouseLeft";
+	Code2Text[0x02] = L"MouseRight";
+	Code2Text[0x03] = L"Cancel";
+	Code2Text[0x04] = L"MouseCenter";
+
+	Code2Text[0x08] = L"Back";
+	Code2Text[0x09] = L"Tab";
+
+	Code2Text[0x0C] = L"Clear";
+	Code2Text[0x0D] = L"Enter";
+
+	Code2Text[0x10] = L"Shift";
+	Code2Text[0x11] = L"Ctrl";
+	Code2Text[0x12] = L"Alt";
+	Code2Text[0x13] = L"Pause";
+	Code2Text[0x14] = L"CapsLock";
+
+	Code2Text[0x1B] = L"Esc";
+
+	Code2Text[0x20] = L"Space";
+	Code2Text[0x21] = L"PageUp";
+	Code2Text[0x22] = L"PageDown";
+	Code2Text[0x23] = L"End";
+	Code2Text[0x24] = L"Home";
+	Code2Text[0x25] = L"Left";
+	Code2Text[0x26] = L"Up";
+	Code2Text[0x27] = L"Right";
+	Code2Text[0x28] = L"Down";
+	Code2Text[0x29] = L"Select";
+	Code2Text[0x2A] = L"Print";
+	Code2Text[0x2B] = L"Execute";
+	Code2Text[0x2C] = L"PrintScreen";
+	Code2Text[0x2D] = L"Insert";
+	Code2Text[0x2E] = L"Delete";
+	Code2Text[0x2F] = L"Help";
+	Code2Text[0x30] = L"0";
+	Code2Text[0x31] = L"1";
+	Code2Text[0x32] = L"2";
+	Code2Text[0x33] = L"3";
+	Code2Text[0x34] = L"4";
+	Code2Text[0x35] = L"5";
+	Code2Text[0x36] = L"6";
+	Code2Text[0x37] = L"7";
+	Code2Text[0x38] = L"8";
+	Code2Text[0x39] = L"9";
+
+	Code2Text[0x41] = L"A";
+	Code2Text[0x42] = L"B";
+	Code2Text[0x43] = L"C";
+	Code2Text[0x44] = L"D";
+	Code2Text[0x45] = L"E";
+	Code2Text[0x46] = L"F";
+	Code2Text[0x47] = L"G";
+	Code2Text[0x48] = L"H";
+	Code2Text[0x49] = L"I";
+	Code2Text[0x4A] = L"J";
+	Code2Text[0x4B] = L"K";
+	Code2Text[0x4C] = L"L";
+	Code2Text[0x4D] = L"M";
+	Code2Text[0x4E] = L"N";
+	Code2Text[0x4F] = L"O";
+	Code2Text[0x50] = L"P";
+	Code2Text[0x51] = L"Q";
+	Code2Text[0x52] = L"R";
+	Code2Text[0x53] = L"S";
+	Code2Text[0x54] = L"T";
+	Code2Text[0x55] = L"U";
+	Code2Text[0x56] = L"V";
+	Code2Text[0x57] = L"W";
+	Code2Text[0x58] = L"X";
+	Code2Text[0x59] = L"Y";
+	Code2Text[0x5A] = L"Z";
+	Code2Text[0x5B] = L"LWin";
+	Code2Text[0x5C] = L"RWin";
+	Code2Text[0x5D] = L"Menu";
+
+	Code2Text[0x60] = L"Num0";
+	Code2Text[0x61] = L"Num1";
+	Code2Text[0x62] = L"Num2";
+	Code2Text[0x63] = L"Num3";
+	Code2Text[0x64] = L"Num4";
+	Code2Text[0x65] = L"Num5";
+	Code2Text[0x66] = L"Num6";
+	Code2Text[0x67] = L"Num7";
+	Code2Text[0x68] = L"Num8";
+	Code2Text[0x69] = L"Num9";
+	Code2Text[0x6A] = L"Num*";
+	Code2Text[0x6B] = L"Num+";
+	Code2Text[0x6C] = L"Separator";
+	Code2Text[0x6D] = L"Num-";
+	Code2Text[0x6E] = L"Num.";
+	Code2Text[0x6F] = L"Num/";
+	Code2Text[0x70] = L"F1";
+	Code2Text[0x71] = L"F2";
+	Code2Text[0x72] = L"F3";
+	Code2Text[0x73] = L"F4";
+	Code2Text[0x74] = L"F5";
+	Code2Text[0x75] = L"F6";
+	Code2Text[0x76] = L"F7";
+	Code2Text[0x77] = L"F8";
+	Code2Text[0x78] = L"F9";
+	Code2Text[0x79] = L"F10";
+	Code2Text[0x7A] = L"F11";
+	Code2Text[0x7B] = L"F12";
+
+	Code2Text[0x90] = L"NumLock";
+	Code2Text[0x91] = L"ScrollLock";
+
+	Code2Text[0xBA] = L";";
+	Code2Text[0xBB] = L"=";
+	Code2Text[0xBC] = L",";
+	Code2Text[0xBD] = L"-";
+	Code2Text[0xBE] = L".";
+	Code2Text[0xBF] = L"/";
+	Code2Text[0xC0] = L"`";
+
+	Code2Text[0xDB] = L"[";
+	Code2Text[0xDC] = L"\\";
+	Code2Text[0xDD] = L"]";
+	Code2Text[0xDE] = L"'";
+
+	Code2Text[static_cast< int >( WWKey::Shift )] = L"Shift+";
+	Code2Text[static_cast< int >( WWKey::Ctrl )] = L"Ctrl+";
+	Code2Text[static_cast< int >( WWKey::Alt )] = L"Alt+";
+
+	return Code2Text;
+}
+
+PhobosMap<int , const wchar_t*> TacticalButtonsClass::KeyboardCodeTextMap = CreateKeyboardCodeTextMap();
+
 // Functions
 
 // Private functions
@@ -175,6 +310,21 @@ inline bool TacticalButtonsClass::IndexInSWButtons()
 	return this->ButtonIndex <= 10;
 }
 
+inline const wchar_t* TacticalButtonsClass::Key2ConcatText(const wchar_t* showText, int key, int overlay)
+{
+	if (key & overlay)
+	{
+		const wchar_t* text = KeyboardCodeTextMap[overlay];
+		const int Length = std::wcslen(text) + std::wcslen(showText) + 1;
+		wchar_t* newText = new wchar_t[Length];
+		swprintf(newText ,Length ,L"%ls%ls" ,text ,showText);
+		newText[Length] = L'\0';
+		delete[] showText;
+		return newText;
+	}
+	return showText;
+}
+
 void TacticalButtonsClass::SWSidebarDraw()
 {
 	const int currentCounts = this->SWButtonData.size();
@@ -291,14 +441,18 @@ void TacticalButtonsClass::SWSidebarDraw()
 			}
 		}
 
-		// Flash cameo
-		const int delay = pSWType->FlashSidebarTabFrames;
+		const bool ready = !pSuper->IsSuspended && (pSWType->UseChargeDrain ? pSuper->ChargeDrainState == ChargeDrainState::Ready : pSuper->IsReady);
 
-		if (delay > 0 && !pSuper->IsSuspended && (pSuper->IsReady || (pSWType->UseChargeDrain && pSuper->ChargeDrainState != ChargeDrainState::Charging))
-			&& ((Unsorted::CurrentFrame - pSuper->ReadyFrame) % (delay << 1)) > delay)
+		// Flash cameo
+		if (ready)
 		{
-			DSurface::Composite->DrawSHP(FileSystem::SIDEBAR_PAL, Make_Global<SHPStruct*>(0xB07BC0), 0, &position, &rect,
-				BlitterFlags(0x406), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			const int delay = pSWType->FlashSidebarTabFrames;
+
+			if (delay > 0 && ((Unsorted::CurrentFrame - pSuper->ReadyFrame) % (delay << 1)) > delay)
+			{
+				DSurface::Composite->DrawSHP(FileSystem::SIDEBAR_PAL, Make_Global<SHPStruct*>(0xB07BC0), 0, &position, &rect,
+					BlitterFlags(0x406), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			}
 		}
 
 		// SW charge progress
@@ -310,8 +464,20 @@ void TacticalButtonsClass::SWSidebarDraw()
 				BlitterFlags(0x404), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 
+		const wchar_t* pKey = this->keyCodeText[i];
+
 		// SW status
-		if (const wchar_t* pName = pSuper->NameReadiness())
+		if (ready && pKey)
+		{
+			Point2D textLocation { 35, position.Y + 1 };
+			const TextPrintType printType = TextPrintType::Center | TextPrintType::FullShadow | TextPrintType::Point8;
+			RectangleStruct textRect = Drawing::GetTextDimensions(pKey, textLocation, static_cast<WORD>(printType), 2, 1);
+
+			// Text black background
+			reinterpret_cast<void(__fastcall*)(RectangleStruct*, DSurface*, unsigned short, unsigned char)>(0x621B80)(&textRect, DSurface::Composite, 0, 0xAFu);
+			DSurface::Composite->DrawTextA(pKey, &rect, &textLocation, static_cast<COLORREF>(color), COLOR_BLACK, printType);
+		}
+		else if (const wchar_t* pName = pSuper->NameReadiness())
 		{
 			Point2D textLocation { 35, position.Y + 1 };
 			const TextPrintType printType = TextPrintType::Center | TextPrintType::FullShadow | TextPrintType::Point8;
@@ -474,6 +640,38 @@ void TacticalButtonsClass::SWSidebarTrigger(int buttonIndex)
 
 	DWORD KeyNum = 0;
 	reinterpret_cast<bool(__thiscall*)(DummySelectClass*, GadgetFlag, DWORD*, KeyModifier)>(0x6AAD00)(&pButton, GadgetFlag::LeftPress, &KeyNum, KeyModifier::None); // SelectClass_Action
+}
+
+void TacticalButtonsClass::SWSidebarRecord(int buttonIndex, int key)
+{
+	const int index = buttonIndex - 1;
+
+	if (this->keyCodeData[index] == key)
+		return;
+
+	this->keyCodeData[index] = key;
+	const int pureKey = key & 0xFF;
+	const wchar_t* showText;
+
+	if (KeyboardCodeTextMap.contains(pureKey))
+	{
+		const wchar_t* pureText = KeyboardCodeTextMap[pureKey];
+		const int pureLength = std::wcslen(pureText) + 1;
+		wchar_t* text = new wchar_t[pureLength];
+		wcscpy_s( text , pureLength ,pureText);
+		text[pureLength] = L'\0';
+		showText = text;
+	}
+	else
+	{
+		showText = L"Unknown";
+	}
+
+	showText = this->Key2ConcatText(showText, key, static_cast<int>(WWKey::Shift));
+	showText = this->Key2ConcatText(showText, key, static_cast<int>(WWKey::Ctrl));
+	showText = this->Key2ConcatText(showText, key, static_cast<int>(WWKey::Alt));
+
+	this->keyCodeText[index] = showText;
 }
 
 inline bool TacticalButtonsClass::IndexIsSWSwitch()
@@ -679,6 +877,7 @@ DEFINE_HOOK(0x6A6314, SidebarClass_AddCameo_SupportSWButtons, 0x8)
 	return (absType != AbstractType::Special || SuperWeaponTypeClass::Array->Count <= index || TacticalButtonsClass::Instance.SWSidebarAdd(index)) ? 0 : SkipThisCameo;
 }
 
+// Extra function hooks
 DEFINE_HOOK(0x6AAF46, SelectClass_Action_ButtonClick1, 0x6)
 {
 	enum { SkipClearMouse = 0x6AB95A };
@@ -714,4 +913,45 @@ DEFINE_HOOK(0x6AB961, SelectClass_Action_ButtonClick3, 0x7)
 	pButtons->DummyAction = false;
 
 	return SkipControlAction;
+}
+
+// Shortcuts keys hooks
+DEFINE_HOOK(0x533E69, UnknownClass_sub_533D20_LoadKeyboardCodeFromINI, 0x6)
+{
+	GET(CommandClass*, pCommand, ESI);
+	GET(int, key, EDI);
+
+	TacticalButtonsClass* const pButtons = &TacticalButtonsClass::Instance;
+	const char* name = pCommand->GetName();
+	char buffer[29];
+
+	for (int i = 1; i <= 10; ++i)
+	{
+		sprintf_s(buffer, "SW Sidebar Shortcuts Num %2d", i);
+
+		if (!_strcmpi(name, buffer))
+			pButtons->SWSidebarRecord(i, key);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5FB992, UnknownClass_sub_5FB320_SaveKeyboardCodeToINI, 0x6)
+{
+	GET(CommandClass*, pCommand, ECX);
+	GET(int, key, EAX);
+
+	TacticalButtonsClass* const pButtons = &TacticalButtonsClass::Instance;
+	const char* name = pCommand->GetName();
+	char buffer[29];
+
+	for (int i = 1; i <= 10; ++i)
+	{
+		sprintf_s(buffer, "SW Sidebar Shortcuts Num %2d", i);
+
+		if (!_strcmpi(name, buffer))
+			pButtons->SWSidebarRecord(i, key);
+	}
+
+	return 0;
 }
