@@ -43,6 +43,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
 	this->UpdateAttachEffects();
+	this->UpdateMobileRefinery();
 }
 
 
@@ -593,6 +594,93 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 	{
 		this->MindControlRingAnimType = nullptr;
 	}
+}
+
+void TechnoExt::ExtData::UpdateMobileRefinery()
+{
+	const auto pMobileRefineryType = this->TypeExtData->MobileRefineryType.get();
+	if (!pMobileRefineryType || this->MobileRefineryTimer.InProgress())
+		return;
+
+	const auto pThis = this->OwnerObject();
+	if (!TechnoExt::IsActive(pThis))
+		return;
+
+	const size_t frontSize = pMobileRefineryType->FrontOffset.size();
+	const size_t leftSize = pMobileRefineryType->LeftOffset.size();
+	size_t cellCount = Math::max(frontSize, leftSize);
+
+	if (!cellCount)
+		cellCount = 1;
+
+	CoordStruct flh = { 0,0,0 };
+	bool active = false;
+
+	for (size_t i = 0; i < cellCount; i++)
+	{
+		flh.X = frontSize > i ? pMobileRefineryType->FrontOffset[i] * Unsorted::LeptonsPerCell : 0;
+		flh.Y = leftSize > i ? pMobileRefineryType->LeftOffset[i] * Unsorted::LeptonsPerCell : 0;
+		CoordStruct pos = flh != CoordStruct::Empty ? TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false) : pThis->GetCoords();
+		CellClass* pCell = MapClass::Instance->TryGetCellAt(pos);
+
+		if (!pCell)
+			continue;
+
+		auto cellCoords = pCell->GetCoords();
+		cellCoords.Z = pThis->Location.Z;
+
+		if (const int contained = pCell->GetContainedTiberiumValue())
+		{
+			int tiberiumValue = TiberiumClass::Array->GetItem(pCell->GetContainedTiberiumIndex())->Value;
+			int tiberiumAmount = static_cast<int>(contained * 1.0 / tiberiumValue);
+			int amount = pMobileRefineryType->AmountPerCell ? Math::min(pMobileRefineryType->AmountPerCell, tiberiumAmount) : tiberiumAmount;
+			pCell->ReduceTiberium(amount);
+			int value = static_cast<int>(amount * tiberiumValue * pMobileRefineryType->CashMultiplier);
+			pThis->Owner->TransactMoney(value);
+			active = true;
+
+			if (pMobileRefineryType->Display)
+				FlyingStrings::AddMoneyString(value, pThis->Owner, pMobileRefineryType->Display_House, cellCoords);
+
+			if (!pMobileRefineryType->Anims.empty())
+			{
+				AnimTypeClass* pAnimType = nullptr;
+				int facing = pThis->PrimaryFacing.Current().GetFacing<8>();
+
+				if (facing >= 7)
+					facing = 0;
+				else
+					facing++;
+
+				switch (pMobileRefineryType->Anims.size())
+				{
+				case 1:
+					pAnimType = pMobileRefineryType->Anims[0];
+					break;
+				case 8:
+					pAnimType = pMobileRefineryType->Anims[facing];
+					break;
+				default:
+					pAnimType = pMobileRefineryType->Anims[ScenarioClass::Instance->Random.RandomRanged(0, pMobileRefineryType->Anims.size() - 1)];
+					break;
+				}
+
+				if (pAnimType)
+				{
+					if (auto pAnim = GameCreate<AnimClass>(pAnimType, pos))
+					{
+						pAnim->Owner = pThis->Owner;
+
+						if (pMobileRefineryType->AnimMove)
+							pAnim->SetOwnerObject(pThis);
+					}
+				}
+			}
+		}
+	}
+
+	if (active)
+		this->MobileRefineryTimer.Start(pMobileRefineryType->TransDelay);
 }
 
 void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)

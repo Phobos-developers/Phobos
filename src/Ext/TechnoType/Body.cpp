@@ -335,9 +335,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	char tempBuffer[32];
 
-	if (this->OwnerObject()->Gunner && this->Insignia_Weapon.empty())
+	if (pThis->Gunner && this->Insignia_Weapon.empty())
 	{
-		int weaponCount = this->OwnerObject()->WeaponCount;
+		int weaponCount = pThis->WeaponCount;
 		this->Insignia_Weapon.resize(weaponCount);
 		this->InsigniaFrame_Weapon.resize(weaponCount);
 		this->InsigniaFrames_Weapon.resize(weaponCount);
@@ -425,7 +425,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (i >= 5U && !alternateFLH.isset())
 			break;
 		else if (!alternateFLH.isset())
-			alternateFLH = this->OwnerObject()->Weapon[0].FLH; // Game defaults to this for AlternateFLH, not 0,0,0
+			alternateFLH = pThis->Weapon[0].FLH; // Game defaults to this for AlternateFLH, not 0,0,0
 
 		if (this->AlternateFLHs.size() < i)
 			this->AlternateFLHs[i] = alternateFLH;
@@ -454,13 +454,29 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (isInterceptor)
 	{
 		if (this->InterceptorType == nullptr)
-			this->InterceptorType = std::make_unique<InterceptorTypeClass>(this->OwnerObject());
+			this->InterceptorType = std::make_unique<InterceptorTypeClass>(pThis);
 
 		this->InterceptorType->LoadFromINI(pINI, pSection);
 	}
 	else if (isInterceptor.isset())
 	{
 		this->InterceptorType.reset();
+	}
+
+	Nullable<bool> isRefinery;
+	isRefinery.Read(exINI, pSection, "MobileRefinery");
+	canParse = isRefinery.Get(false);
+	resetValue = isRefinery.isset() && !isRefinery.Get();
+
+	if (canParse && !this->MobileRefineryType)
+		this->MobileRefineryType = std::make_unique<MobileRefineryTypeClass>(this->OwnerObject());
+
+	if (this->MobileRefineryType)
+	{
+		if (resetValue)
+			this->MobileRefineryType.reset();
+		else
+			this->MobileRefineryType->LoadFromINI(pINI, pSection);
 	}
 
 	if (this->OwnerObject()->WhatAmI() == AbstractType::InfantryType)
@@ -489,6 +505,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FactoryPlant_Multiplier)
 
 		.Process(this->InterceptorType)
+
+		.Process(this->MobileRefineryType)
 
 		.Process(this->GroupAs)
 		.Process(this->RadarJamRadius)

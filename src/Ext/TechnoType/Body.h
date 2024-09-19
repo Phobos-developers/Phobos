@@ -10,6 +10,7 @@
 #include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
+#include <New/Type/Affiliated/MobileRefineryTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 
@@ -37,6 +38,8 @@ public:
 		Valueable<Leptons> MindControlRangeLimit;
 
 		std::unique_ptr<InterceptorTypeClass> InterceptorType;
+
+		std::unique_ptr<MobileRefineryTypeClass> MobileRefineryType;
 
 		Valueable<PartialVector3D<int>> TurretOffset;
 		Nullable<bool> TurretShadow;
@@ -270,6 +273,8 @@ public:
 			, MindControlRangeLimit {}
 
 			, InterceptorType { nullptr }
+
+			, MobileRefineryType { nullptr }
 
 			, TurretOffset { { 0, 0, 0 } }
 			, TurretShadow { }
