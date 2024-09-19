@@ -450,6 +450,7 @@ New:
 - Forbidding parallel AI queues for specific TechnoTypes (by Starkku)
 - Nonprovocative Warheads (by Starkku)
 - Option to restore `PowerSurplus` setting for AI (by Starkku)
+- `FireOnce` infantry sequence reset toggle (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -521,7 +522,7 @@ Vanilla fixes:
 - Fixed disguised units not using the correct palette if target has custom palette (by NetsuNegi)
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible (by Starkku)
 - Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading (by Starkku)
-- Subterranean units no longer draw an incorrectly positioned shadow when burrowing etc. (by Starkku)
+- Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -563,6 +564,7 @@ Phobos fixes:
 - Fixed frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` instead of `TXT_DISPLAY_DAMAGE_DESC` (by DeathFishAtEase)
 - Buildings considered vehicles (`ConsideredVehicle=true` or not set in conjunction with `UndeploysInto` & 1x1 foundation) are now considered units by affected target enum checks (by Starkku)
 - Fixed Phobos Warhead effects not reliably being applied on damage area as opposed to full weapon-based Warhead detonation (by Starkku)
+- Fix `LimboKill` not working reliably (by CrimRecya)
 
 Fixes / interactions with other extensions:
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely (by Starkku)
