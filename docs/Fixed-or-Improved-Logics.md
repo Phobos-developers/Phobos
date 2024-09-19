@@ -166,6 +166,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading.
 - The otherwise unused setting `[AI]` -> `PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI]` -> `EnablePowerSurplus` to true.
 - Planning paths are now shown for all units under player control or when `[GlobalControls]->DebugPlanningPaths=yes` in singleplayer game modes.
+- Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
 
 ## Fixes / interactions with other extensions
 
@@ -1254,7 +1255,7 @@ DecloakDamagedTargets=true  ; boolean
 
 - You can now make Warheads behave in nonprovocative fashion. Warheads with `Nonprovocative=true` exhibit following behaviours:
   - They will not generate any EVA announcements upon hitting targets, be it for attacking ore miners, base buildings or ally base buildings.
-  - They will not spring 'attacked' / 'attacked by' events. Note that if the Warhead deals actual damage, events that check for that can still be sprung. 
+  - They will not spring 'attacked' / 'attacked by' events. Note that if the Warhead deals actual damage, events that check for that can still be sprung.
   - They will not evoke defense response from AI players when used to attack base buildings, `ToProtect=true` TechnoTypes or members of TeamTypes with `Whiner=true`.
   - They will not evoke retaliation from TechnoTypes hit by the Warhead.
 
@@ -1332,6 +1333,16 @@ In `rulesmd.ini`
 ```ini
 [SOMEWEAPON]
 KickOutPassengers=true  ; boolean
+```
+
+### Disable FireOnce resetting infantry sequence
+
+- It is now possible to disable `FireOnce=true` weapon resetting infantry sequences after firing via `FireOnce.ResetSequence`. Target will be forgotten like before, the firing sequence will simply continue playing after firing if there are any frames left.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+FireOnce.ResetSequence=true  ; boolean
 ```
 
 ### Single-color lasers
