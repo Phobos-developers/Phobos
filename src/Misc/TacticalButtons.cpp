@@ -317,7 +317,7 @@ inline const wchar_t* TacticalButtonsClass::Key2ConcatText(const wchar_t* showTe
 		const wchar_t* text = KeyboardCodeTextMap[overlay];
 		const int Length = std::wcslen(text) + std::wcslen(showText) + 1;
 		wchar_t* newText = new wchar_t[Length];
-		swprintf(newText ,Length ,L"%ls%ls" ,text ,showText);
+		swprintf(newText, Length, L"%ls%ls", text, showText);
 		newText[Length] = L'\0';
 		delete[] showText;
 		return newText;
@@ -658,7 +658,7 @@ void TacticalButtonsClass::SWSidebarRecord(int buttonIndex, int key)
 		const wchar_t* pureText = KeyboardCodeTextMap[pureKey];
 		const int pureLength = std::wcslen(pureText) + 1;
 		wchar_t* text = new wchar_t[pureLength];
-		wcscpy_s( text , pureLength ,pureText);
+		wcscpy_s(text, pureLength, pureText);
 		text[pureLength] = L'\0';
 		showText = text;
 	}
