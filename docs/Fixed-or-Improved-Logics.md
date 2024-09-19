@@ -167,7 +167,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - The otherwise unused setting `[AI]` -> `PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI]` -> `EnablePowerSurplus` to true.
 - Planning paths are now shown for all units under player control or when `[GlobalControls]->DebugPlanningPaths=yes` in singleplayer game modes.
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
-- Fixed a bug that infantry get stuck when move too fast.
+- Fixed that some loco (Tunnel,Walk,Mech) get stuck when move too fast.
 
 ## Fixes / interactions with other extensions
 
