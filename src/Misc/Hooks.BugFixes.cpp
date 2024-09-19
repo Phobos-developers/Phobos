@@ -932,7 +932,7 @@ DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessDigging_SlowdownDistance, 0x9)
+DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
 {
 	GET(WalkLocomotionClass* const, pLoco, EBP);
 	GET(int const, distance, EAX);
