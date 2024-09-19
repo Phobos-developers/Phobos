@@ -740,7 +740,7 @@ In `rulesmd.ini`:
 Trajectory=Parabola                             ; Trajectory type
 Trajectory.Parabola.DetonationDistance=0.4      ; floating point value
 Trajectory.Parabola.TargetSnapDistance=0.5      ; floating point value
-Trajectory.Parabola.OpenFireMode=speed          ; ParabolaFireMode value enumeration (speed|height|angle|speedandheight|heightandangle|speedandangle)
+Trajectory.Parabola.OpenFireMode=Speed          ; ParabolaFireMode value enumeration (Speed|Height|Angle|SpeedAndHeight|HeightAndAngle|SpeedAndAngle)
 Trajectory.Parabola.ThrowHeight=600             ; integer
 Trajectory.Parabola.LaunchAngle=30              ; floating point value
 Trajectory.Parabola.LeadTimeCalculate=no        ; boolean
