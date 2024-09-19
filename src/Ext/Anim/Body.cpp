@@ -281,10 +281,10 @@ DEFINE_HOOK_AGAIN(0x422126, AnimClass_CTOR, 0x5)
 DEFINE_HOOK_AGAIN(0x422707, AnimClass_CTOR, 0x5)
 DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
+	GET(AnimClass*, pItem, ESI);
+
 	if (!Phobos::IsLoadingSaveGame)
 	{
-		GET(AnimClass*, pItem, ESI);
-
 		auto const callerAddress = CTORTemp::callerAddress;
 
 		// Do this here instead of using a duplicate hook in SyncLogger.cpp
@@ -296,9 +296,9 @@ DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 			Debug::Log("Attempting to create animation with null Type (Caller: %08x)!\n", callerAddress);
 			return 0;
 		}
-
-		AnimExt::ExtMap.Allocate(pItem);
 	}
+
+	AnimExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }

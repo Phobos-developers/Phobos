@@ -189,9 +189,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	}
 
 	int originalShieldDamage = shieldDamage;
-
-	shieldDamage = Math::clamp(shieldDamage, pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum),
-		pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum));
+	int min = pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum);
+	int max = pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum);
+	int minDmg = static_cast<int>(min * pWHExt->Shield_ReceivedDamage_MinMultiplier);
+	int maxDmg = static_cast<int>(max * pWHExt->Shield_ReceivedDamage_MaxMultiplier);
+	shieldDamage = Math::clamp(shieldDamage, minDmg, maxDmg);
 
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
 		GeneralUtils::DisplayDamageNumberString(shieldDamage, DamageDisplayType::Shield, this->Techno->GetRenderCoords(), TechnoExt::ExtMap.Find(this->Techno)->DamageNumberOffset);
@@ -257,7 +259,9 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 				MapClass::FlashbangWarheadAt(size, args->WH, this->Techno->Location, true, flags);
 			}
 
-			this->WeaponNullifyAnim(pWHExt->Shield_HitAnim);
+			if (!pWHExt->Shield_SkipHitAnim)
+				this->WeaponNullifyAnim(pWHExt->Shield_HitAnim);
+
 			this->HP = -residueDamage;
 
 			this->UpdateIdleAnim();
@@ -721,7 +725,7 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTi
 	const auto timerWHModifier = &this->Timers.Respawn_WHModifier;
 
 	bool modifierTimerInProgress = timerWHModifier->InProgress();
-	this->Respawn_Warhead = amount > 0 ? amount : Type->Respawn;
+	this->Respawn_Warhead = amount;
 	this->Respawn_Rate_Warhead = rate >= 0 ? rate : Type->Respawn_Rate;
 
 	timerWHModifier->Start(duration);
