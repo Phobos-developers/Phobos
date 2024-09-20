@@ -174,7 +174,10 @@ public:
 		Nullable<bool> Insignia_ShowEnemy;
 		std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
-		std::vector<Vector3D<int>> InsigniaFrames_Weapon;
+		std::vector<Nullable<Vector3D<int>>> InsigniaFrames_Weapon;
+		std::vector<Promotable<SHPStruct*>> Insignia_Passengers;
+		std::vector<Promotable<int>> InsigniaFrame_Passengers;
+		std::vector<Nullable<Vector3D<int>>> InsigniaFrames_Passengers;
 
 		Nullable<bool> TiltsWhenCrushes_Vehicles;
 		Nullable<bool> TiltsWhenCrushes_Overlays;
@@ -403,6 +406,9 @@ public:
 			, Insignia_Weapon {}
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
+			, Insignia_Passengers {}
+			, InsigniaFrame_Passengers {}
+			, InsigniaFrames_Passengers {}
 
 			, TiltsWhenCrushes_Vehicles {}
 			, TiltsWhenCrushes_Overlays {}
