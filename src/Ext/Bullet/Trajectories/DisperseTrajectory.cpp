@@ -1295,10 +1295,13 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				animIndex = ScenarioClass::Instance->Random.RandomRanged(0 , animCounts - 1);
 			}
 
-			if (AnimClass* const pAnim = GameCreate<AnimClass>(pWeapon->Anim[animIndex], pBullet->Location))
+			if (AnimTypeClass* const pAnimType = pWeapon->Anim[animIndex])
 			{
-				pAnim->SetOwnerObject(pBullet->Owner);
-				pAnim->Owner = pOwner;
+				if (AnimClass* const pAnim = GameCreate<AnimClass>(pAnimType, pBullet->Location))
+				{
+					pAnim->SetOwnerObject(pBullet->Owner);
+					pAnim->Owner = pOwner;
+				}
 			}
 		}
 	}
@@ -1309,7 +1312,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 	if (pWeapon->Report.Count > 0)
 	{
-		const int reportIndex = pWeapon->Report.GetItem(ScenarioClass::Instance->Random.RandomRanged(0 , pWeapon->Report.Count - 1));
+		const int reportIndex = pWeapon->Report.GetItem((pBullet->Owner ? pBullet->Owner->unknown_short_3C8 : ScenarioClass::Instance->Random.Random()) % pWeapon->Report.Count);
 
 		if (reportIndex != -1)
 			VocClass::PlayAt(reportIndex, pBullet->Location, nullptr);
