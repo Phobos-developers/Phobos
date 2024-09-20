@@ -933,26 +933,38 @@ DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
 	return 0;
 }
 
+// Here's distance check is hardcoded 20, didn't considerate actual speed
+// So we check it and it won't get stuck even move very fast
 DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9)
 {
+	enum { KeepMoving = 0x72980F, CloseEnough = 0x7295CE }
+
 	GET(TunnelLocomotionClass* const, pLoco, ESI);
 	GET(int const, distance, EAX);
 
-	return distance >= pLoco->LinkedTo->GetCurrentSpeed() ? 0x72980F : 0x7295CE;
+	return distance >= pLoco->LinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
 }
 
+// Here's distance check is hardcoded 17, didn't considerate actual speed
+// So we check it and it won't get stuck even move very fast
 DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
 {
-	GET(FootClass*, pLinkedTo, ECX);
+	enum { KeepMoving = 0x75BF85, CloseEnough = 0x75BD79 }
+
+	GET(FootClass* const, pLinkedTo, ECX);
 	GET(int const, distance, EAX);
 
-	return distance >= pLinkedTo->GetCurrentSpeed() ? 0x75BF85 : 0x75BD79;
+	return distance >= pLinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
 }
 
+// Here's distance check is hardcoded 16, didn't considerate actual speed
+// So we check it and it won't get stuck even move very fast
 DEFINE_HOOK(0x5B11DD, MechLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
 {
-	GET(FootClass*, pLinkedTo, ECX);
+	enum { KeepMoving = 0x5B14AA, CloseEnough = 0x5B11E6 }
+
+	GET(FootClass* const, pLinkedTo, ECX);
 	GET(int const, distance, EAX);
 
-	return distance >= pLinkedTo->GetCurrentSpeed() ? 0x5B14AA : 0x5B11E6;
+	return distance >= pLinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
 }
