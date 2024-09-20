@@ -23,7 +23,6 @@ public:
 
 	// Button index 1-10 : Super weapons buttons
 	inline bool IndexInSWButtons();
-	inline const wchar_t* Key2ConcatText(const wchar_t* showText, int key, int overlay);
 
 	void SWSidebarDraw();
 	void SWSidebarRecheck();
@@ -57,7 +56,7 @@ public:
 	// Button index 1-10 : Super weapons buttons
 	bool DummyAction { false };
 	bool KeyboardCall { false };
-	const wchar_t* keyCodeText[10] {};
+	std::wstring keyCodeText[10] {};
 	int keyCodeData[10] {};
 
 	// TODO New buttons (Start from index = 12)

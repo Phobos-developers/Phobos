@@ -10,6 +10,8 @@
 #include <TacticalClass.h>
 #include <WWMouseClass.h>
 #include <CCToolTip.h>
+#include <sstream>
+#include <iomanip>
 
 #include "PhobosToolTip.h"
 #include "TacticalButtons.h"
@@ -142,9 +144,9 @@ static PhobosMap<int , const wchar_t*> CreateKeyboardCodeTextMap()
 	Code2Text[0xDD] = L"]";
 	Code2Text[0xDE] = L"'";
 
-	Code2Text[static_cast< int >( WWKey::Shift )] = L"Shift+";
-	Code2Text[static_cast< int >( WWKey::Ctrl )] = L"Ctrl+";
-	Code2Text[static_cast< int >( WWKey::Alt )] = L"Alt+";
+	Code2Text[static_cast<int>(WWKey::Shift)] = L"Shift";
+	Code2Text[static_cast<int>(WWKey::Ctrl)] = L"Ctrl";
+	Code2Text[static_cast<int>(WWKey::Alt)] = L"Alt";
 
 	return Code2Text;
 }
@@ -310,21 +312,6 @@ inline bool TacticalButtonsClass::IndexInSWButtons()
 	return this->ButtonIndex <= 10;
 }
 
-inline const wchar_t* TacticalButtonsClass::Key2ConcatText(const wchar_t* showText, int key, int overlay)
-{
-	if (key & overlay)
-	{
-		const wchar_t* text = KeyboardCodeTextMap[overlay];
-		const int Length = std::wcslen(text) + std::wcslen(showText) + 1;
-		wchar_t* newText = new wchar_t[Length];
-		swprintf(newText, Length, L"%ls%ls", text, showText);
-		newText[Length] = L'\0';
-		delete[] showText;
-		return newText;
-	}
-	return showText;
-}
-
 void TacticalButtonsClass::SWSidebarDraw()
 {
 	const int currentCounts = this->SWButtonData.size();
@@ -464,11 +451,10 @@ void TacticalButtonsClass::SWSidebarDraw()
 				BlitterFlags(0x404), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 
-		const wchar_t* pKey = this->keyCodeText[i];
-
 		// SW status
-		if (ready && pKey)
+		if (ready && !this->keyCodeText[i].empty())
 		{
+			const wchar_t* pKey = this->keyCodeText[i].c_str();
 			Point2D textLocation { 35, position.Y + 1 };
 			const TextPrintType printType = TextPrintType::Center | TextPrintType::FullShadow | TextPrintType::Point8;
 			RectangleStruct textRect = Drawing::GetTextDimensions(pKey, textLocation, static_cast<WORD>(printType), 2, 1);
@@ -650,28 +636,25 @@ void TacticalButtonsClass::SWSidebarRecord(int buttonIndex, int key)
 		return;
 
 	this->keyCodeData[index] = key;
+	std::wostringstream oss;
+
+	if (key & static_cast<int>(WWKey::Shift))
+		oss << KeyboardCodeTextMap[static_cast<int>(WWKey::Shift)] << L"+";
+
+	if (key & static_cast<int>(WWKey::Ctrl))
+		oss << KeyboardCodeTextMap[static_cast<int>(WWKey::Ctrl)] << L"+";
+
+	if (key & static_cast<int>(WWKey::Alt))
+		oss << KeyboardCodeTextMap[static_cast<int>(WWKey::Alt)] << L"+";
+
 	const int pureKey = key & 0xFF;
-	const wchar_t* showText;
 
 	if (KeyboardCodeTextMap.contains(pureKey))
-	{
-		const wchar_t* pureText = KeyboardCodeTextMap[pureKey];
-		const int pureLength = std::wcslen(pureText) + 1;
-		wchar_t* text = new wchar_t[pureLength];
-		wcscpy_s(text, pureLength, pureText);
-		text[pureLength] = L'\0';
-		showText = text;
-	}
+		oss << KeyboardCodeTextMap[pureKey];
 	else
-	{
-		showText = L"Unknown";
-	}
+		oss << L"Unknown";
 
-	showText = this->Key2ConcatText(showText, key, static_cast<int>(WWKey::Shift));
-	showText = this->Key2ConcatText(showText, key, static_cast<int>(WWKey::Ctrl));
-	showText = this->Key2ConcatText(showText, key, static_cast<int>(WWKey::Alt));
-
-	this->keyCodeText[index] = showText;
+	this->keyCodeText[index] = oss.str();
 }
 
 inline bool TacticalButtonsClass::IndexIsSWSwitch()
@@ -927,7 +910,7 @@ DEFINE_HOOK(0x533E69, UnknownClass_sub_533D20_LoadKeyboardCodeFromINI, 0x6)
 
 	for (int i = 1; i <= 10; ++i)
 	{
-		sprintf_s(buffer, "SW Sidebar Shortcuts Num %2d", i);
+		sprintf_s(buffer, "SW Sidebar Shortcuts Num %02d", i);
 
 		if (!_strcmpi(name, buffer))
 			pButtons->SWSidebarRecord(i, key);
@@ -943,11 +926,11 @@ DEFINE_HOOK(0x5FB992, UnknownClass_sub_5FB320_SaveKeyboardCodeToINI, 0x6)
 
 	TacticalButtonsClass* const pButtons = &TacticalButtonsClass::Instance;
 	const char* name = pCommand->GetName();
-	char buffer[29];
+	char buffer[30];
 
 	for (int i = 1; i <= 10; ++i)
 	{
-		sprintf_s(buffer, "SW Sidebar Shortcuts Num %2d", i);
+		sprintf_s(buffer, "SW Sidebar Shortcuts Num %02d", i);
 
 		if (!_strcmpi(name, buffer))
 			pButtons->SWSidebarRecord(i, key);
