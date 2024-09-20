@@ -635,7 +635,7 @@ void TacticalButtonsClass::SWSidebarTrigger(int buttonIndex)
 
 	DummySelectClass pButton;
 	pButton.LinkTo = &pSidebar->Tabs[pSidebar->ActiveTabIndex];
-	pButton.unknown_int_30 = 0x7FFFFFFF;
+	pButton.unknown_int_30 = 0x7FFFFFFF - (2 * pButton.LinkTo->TopRowIndex);
 	pButton.SWIndex = this->SWButtonData[buttonIndex - 1];
 
 	DWORD KeyNum = 0;
