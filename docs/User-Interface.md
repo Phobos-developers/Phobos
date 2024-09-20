@@ -294,6 +294,12 @@ SelectionFlashDuration=0  ; integer, number of frames
 - Switches on/off [frame by frame mode](Miscellanous.html#frame-step-in).
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
+### `[ ]` Exclusive SW Sidebar Shortcuts
+- Switches visible/invisible [this](#Exclusive-sidebar-for-superweapons).
+- For localization add `TXT_EX_SW_SWITCH` and `TXT_EX_SW_SWITCH_DESC` into your `.csf` file.
+- And Select the SWs in this exclusive sidebar.
+- For localization add `TXT_EX_SW_BUTTON_XX` and `TXT_EX_SW_BUTTON_XX_DESC` into your `.csf` file. (`XX` -> `03`, `10` .etc)
+
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.
@@ -374,6 +380,10 @@ SW.InScreen.PriorityHouses=      ; list of house types
 SW.InScreen.RequiredHouses=      ; list of house types
 SW.QuickFireAtMouse=false        ; boolean
 SW.QuickFireInScreen=false       ; boolean
+```
+
+```{note}
+If you want to change the printing message of switch on/off, for localization add `TXT_EX_SW_BAR_VISIBLE` and `TXT_EX_SW_BAR_INVISIBLE` into your `.csf` file.
 ```
 
 ### Harvester counter
