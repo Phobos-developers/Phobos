@@ -708,7 +708,7 @@ Trajectory.Bombard.Height=0.0  ; double
 #### Parabola trajectory
 
 - As the name says, this is a completely reset `Arcing` with different enhanced functions. Without doubt, It supported linkage with `Trajectory=Disperse`.
-  - `Trajectory.Parabola.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation.
+  - `Trajectory.Parabola.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation. More specifically, when it is set to a negative value, if the target is movable, it will change its target to the cell where the target is located (This is a function expanded for `Disperse` and `Airburst` purposes).
   - `Trajectory.Parabola.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
   - `Trajectory.Parabola.OpenFireMode` controls how should the projectile be launched. This has the following 6 modes.
     - Speed - Automatic calculation mode with fixed horizontal velocity, using `Trajectory.Speed` and target coordinates as calculation conditions, i.e. the flight time of the projectile is permanently fixed.

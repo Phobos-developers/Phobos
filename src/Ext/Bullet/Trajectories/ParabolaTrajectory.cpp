@@ -220,6 +220,19 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->LastVelocity = BulletVelocity::Empty;
 	pBullet->Velocity = BulletVelocity::Empty;
 
+	FootClass* const pTarget = abstract_cast<FootClass*>(pBullet->Target);
+	bool resetTarget = false;
+
+	if (this->DetonationDistance <= -1e-10 && pTarget)
+	{
+		if (CellClass* const pCell = MapClass::Instance->TryGetCellAt(pTarget->GetCoords()))
+		{
+			pBullet->Target = pCell;
+			pBullet->TargetCoords = pCell->GetCoords();
+			resetTarget = true;
+		}
+	}
+
 	if (WeaponTypeClass* const pWeapon = pBullet->WeaponType)
 		this->CountOfBurst = pWeapon->Burst;
 
@@ -231,7 +244,7 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
 	}
 
-	if (!this->LeadTimeCalculate || !abstract_cast<FootClass*>(pBullet->Target))
+	if (!this->LeadTimeCalculate || !pTarget || resetTarget)
 		this->PrepareForOpenFire(pBullet);
 	else
 		this->WaitOneFrame.Start(1);
