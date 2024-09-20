@@ -937,7 +937,7 @@ DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
 // So we check it and it won't get stuck even move very fast
 DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9)
 {
-	enum { KeepMoving = 0x72980F, CloseEnough = 0x7295CE }
+	enum { KeepMoving = 0x72980F, CloseEnough = 0x7295CE };
 
 	GET(TunnelLocomotionClass* const, pLoco, ESI);
 	GET(int const, distance, EAX);
@@ -949,7 +949,7 @@ DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9
 // So we check it and it won't get stuck even move very fast
 DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
 {
-	enum { KeepMoving = 0x75BF85, CloseEnough = 0x75BD79 }
+	enum { KeepMoving = 0x75BF85, CloseEnough = 0x75BD79 };
 
 	GET(FootClass* const, pLinkedTo, ECX);
 	GET(int const, distance, EAX);
@@ -961,7 +961,7 @@ DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
 // So we check it and it won't get stuck even move very fast
 DEFINE_HOOK(0x5B11DD, MechLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
 {
-	enum { KeepMoving = 0x5B14AA, CloseEnough = 0x5B11E6 }
+	enum { KeepMoving = 0x5B14AA, CloseEnough = 0x5B11E6 };
 
 	GET(FootClass* const, pLinkedTo, ECX);
 	GET(int const, distance, EAX);
