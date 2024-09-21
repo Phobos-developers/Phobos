@@ -327,6 +327,7 @@ This page lists all the individual contributions to the project by their author.
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
    - Disguised units not using the correct palette if target has custom palette bugfix
+   - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons
