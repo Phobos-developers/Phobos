@@ -244,7 +244,7 @@ DEFINE_HOOK(0x6AC67A, SidebarClass_6AC5F0_TabIndex, 0x5)
 	return ApplyTabIndex;
 }
 
-DEFINE_HOOK(0x6A8D0A, StripClass_AI_CheckTabIndex, 0x7)
+DEFINE_HOOK(0x6A8D0A, StripClass_AI_FlashTabButton, 0x7)
 {
 	enum { CheckFlashTab = 0x6A8D17, SkipFlashTab = 0x6A8D9F };
 
