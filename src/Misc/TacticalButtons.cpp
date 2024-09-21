@@ -375,16 +375,12 @@ void TacticalButtonsClass::SWSidebarDraw()
 
 	if (drawSWSidebarBackground)
 	{
+		RectangleStruct drawRect { 0, backPosition.Y, 80, 20 };
+
 		if (BSurface* const CameoPCX = pSideExt->SWSidebarBackground_TopPCX.GetSurface())
-		{
-			RectangleStruct drawRect { backPosition.X, backPosition.Y, 60, 48 };
 			PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, CameoPCX);
-		}
 		else
-		{
-			RectangleStruct backRect { 0, backPosition.Y, 80, 20};
-			DSurface::Composite->FillRect(&backRect, COLOR_BLACK);
-		}
+			DSurface::Composite->FillRect(&drawRect, COLOR_BLACK);
 	}
 
 	// Draw each buttons
@@ -394,17 +390,12 @@ void TacticalButtonsClass::SWSidebarDraw()
 		if (drawSWSidebarBackground)
 		{
 			backPosition.Y = position.Y - 1;
+			RectangleStruct drawRect { 0, backPosition.Y, 80, 50 };
 
 			if (BSurface* const CameoPCX = pSideExt->SWSidebarBackground_CenterPCX.GetSurface())
-			{
-				RectangleStruct drawRect { backPosition.X, backPosition.Y, 60, 48 };
 				PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, CameoPCX);
-			}
 			else
-			{
-				RectangleStruct backRect { 0, backPosition.Y, 80, 50};
-				DSurface::Composite->FillRect(&backRect, COLOR_BLACK);
-			}
+				DSurface::Composite->FillRect(&drawRect, COLOR_BLACK);
 		}
 
 		// Get SW data
@@ -452,9 +443,9 @@ void TacticalButtonsClass::SWSidebarDraw()
 		}
 
 		// SW status
-		if (ready && !this->keyCodeText[i].empty())
+		if (ready && !this->KeyCodeText[i].empty())
 		{
-			const wchar_t* pKey = this->keyCodeText[i].c_str();
+			const wchar_t* pKey = this->KeyCodeText[i].c_str();
 			Point2D textLocation { 35, position.Y + 1 };
 			const TextPrintType printType = TextPrintType::Center | TextPrintType::FullShadow | TextPrintType::Point8;
 			RectangleStruct textRect = Drawing::GetTextDimensions(pKey, textLocation, static_cast<WORD>(printType), 2, 1);
@@ -482,17 +473,12 @@ void TacticalButtonsClass::SWSidebarDraw()
 	if (drawSWSidebarBackground)
 	{
 		backPosition.Y = position.Y - 1;
+		RectangleStruct drawRect { 0, backPosition.Y, 80, 20};
 
 		if (BSurface* const CameoPCX = pSideExt->SWSidebarBackground_BottomPCX.GetSurface())
-		{
-			RectangleStruct drawRect { backPosition.X, backPosition.Y, 60, 48 };
 			PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, CameoPCX);
-		}
 		else
-		{
-			RectangleStruct backRect { 0, backPosition.Y, 80, 20};
-			DSurface::Composite->FillRect(&backRect, COLOR_BLACK);
-		}
+			DSurface::Composite->FillRect(&drawRect, COLOR_BLACK);
 	}
 
 	// Draw mouse hover rectangle
@@ -632,10 +618,10 @@ void TacticalButtonsClass::SWSidebarRecord(int buttonIndex, int key)
 {
 	const int index = buttonIndex - 1;
 
-	if (this->keyCodeData[index] == key)
+	if (this->KeyCodeData[index] == key)
 		return;
 
-	this->keyCodeData[index] = key;
+	this->KeyCodeData[index] = key;
 	std::wostringstream oss;
 
 	if (key & static_cast<int>(WWKey::Shift))
@@ -654,7 +640,7 @@ void TacticalButtonsClass::SWSidebarRecord(int buttonIndex, int key)
 	else
 		oss << L"Unknown";
 
-	this->keyCodeText[index] = oss.str();
+	this->KeyCodeText[index] = oss.str();
 }
 
 inline bool TacticalButtonsClass::IndexIsSWSwitch()

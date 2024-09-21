@@ -56,8 +56,8 @@ public:
 	// Button index 1-10 : Super weapons buttons
 	bool DummyAction { false };
 	bool KeyboardCall { false };
-	std::wstring keyCodeText[10] {};
-	int keyCodeData[10] {};
+	std::wstring KeyCodeText[10] {};
+	int KeyCodeData[10] {};
 
 	// TODO New buttons (Start from index = 12)
 
