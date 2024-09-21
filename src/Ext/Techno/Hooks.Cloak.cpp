@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Ext/House/Body.h>
 
 namespace CloakTemp
 {
@@ -147,4 +148,58 @@ DEFINE_HOOK(0x4579A5, BuildingClass_ShouldNotCloak_Sensors, 0x6)
 		return Skip;
 
 	return Continue;
+}
+
+// When a friendly unit goes cloaked, UIName can be displayed normally when hovering the mouse.
+DEFINE_HOOK(0x4AE616, DisplayClass_GetToolTip_PlayControl, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	enum { SkipGameCode = 0x4AE654 };
+
+	R->ESI(pThis);
+
+	return HouseExt::CanSelectOwner(pThis->Owner, HouseClass::CurrentPlayer()) ?
+		SkipGameCode : 0;
+}
+
+// When a friendly unit goes cloaked, the DrawExtra() function can be triggered normally on mouse hover.
+DEFINE_HOOK(0x69252D, DisplayClass_ProcessClickCoords_PlayControl, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	enum { SkipGameCode = 0x692585 };
+
+	return HouseExt::CanSelectOwner(pThis->Owner, HouseClass::CurrentPlayer()) ?
+		SkipGameCode : 0;
+}
+
+// When a friendly unit goes cloaked, the mouse pointer will change.
+DEFINE_HOOK(0x692686, DisplayClass_DecideAction_PlayControl, 0x6)
+{
+	GET(TechnoClass*, pThis, EDI);
+	enum { SkipGameCode = 0x6926DB };
+
+	return HouseExt::CanSelectOwner(pThis->Owner, HouseClass::CurrentPlayer()) ?
+		SkipGameCode : 0;
+}
+
+// Block out Deselect() when a friendly unit goes cloakd.
+DEFINE_HOOK(0x6F4F10, TechnoClass_Sensed_DisableDSelect, 0x5)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	enum { SkipGameCode = 0x6F4F3A, Continue = 0x6F4F21 };
+
+	R->EAX(HouseClass::CurrentPlayer());
+
+	return HouseExt::CanSelectOwner(pThis->Owner, HouseClass::CurrentPlayer()) ?
+		SkipGameCode : 0;
+}
+
+// Block out Deselect() when a friendly unit goes cloakd.
+DEFINE_HOOK(0x703819, TechnoClass_Cloak_DisableDSelect, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	enum { SkipGameCode = 0x70383C, Continue = 0x703828 };
+	
+	return HouseExt::CanSelectOwner(pThis->Owner, HouseClass::CurrentPlayer()) ?
+		SkipGameCode : 0;
 }

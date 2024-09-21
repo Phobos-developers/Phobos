@@ -1076,3 +1076,14 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 	return false;
 }
 #pragma endregion
+
+bool HouseExt::CanSelectOwner(HouseClass* pThis, HouseClass* pPlayer)
+{
+	if (!pThis || !pPlayer)
+		return false;
+
+	return pThis == pPlayer ||
+		pPlayer->IsCurrentPlayerObserver() ||
+		(pThis->IsAlliedWith(pPlayer) &&
+		pPlayer->IsAlliedWith(pThis));
+}
