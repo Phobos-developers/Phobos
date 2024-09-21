@@ -244,12 +244,5 @@ DEFINE_HOOK(0x6AC67A, SidebarClass_6AC5F0_TabIndex, 0x5)
 	return ApplyTabIndex;
 }
 
-DEFINE_HOOK(0x6A8D0A, StripClass_AI_FlashTabButton, 0x7)
-{
-	enum { CheckFlashTab = 0x6A8D17, SkipFlashTab = 0x6A8D9F };
-
-	GET(int const, tabIdx, EAX);
-
-	return tabIdx >= 0 && tabIdx <= 3 ? CheckFlashTab : SkipFlashTab;
-}
+DEFINE_JUMP(LJMP, 0x6A8D07, 0x6A8D17) // Skip tabIndex check
 #pragma endregion
