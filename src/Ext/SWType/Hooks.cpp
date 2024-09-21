@@ -183,20 +183,44 @@ DEFINE_HOOK(0x6CC1E6, SuperClass_SetSWCharge_UseWeeds, 0x5)
 	return 0;
 }
 
+#pragma region SW TabIndex
+DEFINE_HOOK(0x6A5F6E, SidebarClass_6A5F20_TabIndex, 0x8)
+{
+	enum { ApplyTabIndex = 0x6A5FD3 };
+
+	GET(AbstractType const, absType, ESI);
+	GET(int const, typeIdx, EAX);
+
+	R->EAX(SidebarClass::GetObjectTabIdx(absType, typeIdx, 0));
+	return ApplyTabIndex;
+}
+
+DEFINE_HOOK(0x6A614D, SidebarClass_6A6140_TabIndex, 0x5)
+{
+	enum { ApplyTabIndex = 0x6A61B1 };
+
+	GET(AbstractType const, absType, EDI);
+	GET(int const, typeIdx, EBP);
+
+	R->EAX(SidebarClass::GetObjectTabIdx(absType, typeIdx, 0));
+	return ApplyTabIndex;
+}
+
 DEFINE_HOOK(0x6A633D, SidebarClass_AddCameo_TabIndex, 0x5)
 {
 	enum { ApplyTabIndex = 0x6A63B7 };
+
 	GET(AbstractType const, absType, ESI);
 	GET(int const, typeIdx, EBP);
 
 	R->Stack(STACK_OFFSET(0x14, 0x4), SidebarClass::GetObjectTabIdx(absType, typeIdx, 0));
-
 	return ApplyTabIndex;
 }
 
 DEFINE_HOOK(0x6ABC9D, SidebarClass_GetObjectTabIndex_Super, 0x5)
 {
 	enum { ApplyTabIndex = 0x6ABCA2 };
+
 	GET(int const, typeIdx, EDX);
 
 	if (typeIdx < 0 || typeIdx >= SuperWeaponTypeClass::Array->Count)
@@ -204,12 +228,28 @@ DEFINE_HOOK(0x6ABC9D, SidebarClass_GetObjectTabIndex_Super, 0x5)
 
 	const auto pSWType = SuperWeaponTypeClass::Array->Items[typeIdx];
 	const auto pSWTypExt = SWTypeExt::ExtMap.Find(pSWType);
-	int tabIdx = pSWTypExt->TabIndex;
 
-	if (tabIdx < 0 || tabIdx > 3)
-		tabIdx = 1;
-
-	R->EAX(tabIdx);
-
+	R->EAX(pSWTypExt->TabIndex);
 	return ApplyTabIndex;
 }
+
+DEFINE_HOOK(0x6AC67A, SidebarClass_6AC5F0_TabIndex, 0x5)
+{
+	enum { ApplyTabIndex = 0x6AC6D9 };
+
+	GET(AbstractType const, absType, EAX);
+	GET(int const, typeIdx, ESI);
+
+	R->EAX(SidebarClass::GetObjectTabIdx(absType, typeIdx, 0));
+	return ApplyTabIndex;
+}
+
+DEFINE_HOOK(0x6A8D0A, StripClass_AI_CheckTabIndex, 0x7)
+{
+	enum { CheckFlashTab = 0x6A8D17, SkipFlashTab = 0x6A8D9F };
+
+	GET(int const, tabIdx, EAX);
+
+	return tabIdx >= 0 && tabIdx <= 3 ? CheckFlashTab : SkipFlashTab;
+}
+#pragma endregion
