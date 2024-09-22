@@ -25,6 +25,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_InitialReady)
 		.Process(this->SW_PostDependent)
 		.Process(this->SidebarPCX)
+		.Process(this->CameoPal)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
@@ -87,6 +88,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_InitialReady.Read(exINI, pSection, "SW.InitialReady");
 	this->SW_PostDependent.Read(exINI, pSection, "SW.PostDependent");
 	this->SidebarPCX.Read(pINI, pSection, "SidebarPCX");
+	this->CameoPal.LoadFromINI(pINI, pSection, "SidebarPalette");
 
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");

@@ -414,8 +414,32 @@ void TacticalButtonsClass::SWSidebarDraw()
 			}
 			else if (SHPStruct* const pSHP = pSWType->SidebarImage)
 			{
-				DSurface::Composite->DrawSHP(FileSystem::CAMEO_PAL, pSHP, 0, &position, &rect,
-					BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				SHPReference* const pCameoRef = pSHP->AsReference();
+
+				char pFilename[0x20];
+				strcpy_s(pFilename, RulesExt::Global()->MissingCameo.data());
+				_strlwr_s(pFilename);
+
+				if (!_stricmp(pCameoRef->Filename, GameStrings::XXICON_SHP) && strstr(pFilename, ".pcx"))
+				{
+					PCX::Instance->LoadFile(pFilename);
+					RectangleStruct drawRect { position.X, position.Y, 60, 48 };
+
+					if (BSurface* const MissingCameoPCX = PCX::Instance->GetSurface(pFilename))
+						PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, MissingCameoPCX);
+					else
+						DSurface::Composite->FillRect(&drawRect, COLOR_WHITE);
+				}
+				else
+				{
+					DSurface::Composite->DrawSHP(pTypeExt->CameoPal.GetOrDefaultConvert(FileSystem::CAMEO_PAL), pSHP, 0, &position, &rect,
+						BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				}
+			}
+			else
+			{
+				RectangleStruct drawRect { position.X, position.Y, 60, 48 };
+				DSurface::Composite->FillRect(&drawRect, COLOR_WHITE);
 			}
 		}
 

@@ -37,6 +37,7 @@ public:
 		Valueable<bool> SW_InitialReady;
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 		PhobosPCXFile SidebarPCX;
+		CustomPalette CameoPal;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -91,6 +92,7 @@ public:
 			, SW_NegBuildings {}
 			, SW_InitialReady { false }
 			, SW_PostDependent {}
+			, CameoPal {}
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
