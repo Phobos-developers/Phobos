@@ -836,7 +836,8 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (pType->HasTint())
 				markForRedraw = true;
 
-			this->UpdateCumulativeAttachEffects(attachEffect->GetType());
+			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
+				this->UpdateCumulativeAttachEffects(attachEffect->GetType(), attachEffect);
 
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
@@ -949,31 +950,45 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 		pThis->MarkForRedraw();
 }
 
-// Updates state of AttachEffects of same cumulative type on techno, (which one is first active instance existing, if any), kills animations if needed.
-void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType)
+// Updates CumulativeAnimations AE's on techno.
+void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved)
 {
-	if (!pAttachEffectType || !pAttachEffectType->Cumulative)
-		return;
-
-	bool foundFirst = false;
+	AttachEffectClass* pAELargestDuration = nullptr;
+	AttachEffectClass* pAEWithAnim = nullptr;
+	int duration = 0;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
-		if (attachEffect->GetType() != pAttachEffectType || !attachEffect->IsActive())
+		if (attachEffect->GetType() != pAttachEffectType)
 			continue;
 
-		if (!foundFirst)
+		if (attachEffect->HasCumulativeAnim)
 		{
-			foundFirst = true;
-			attachEffect->IsFirstCumulativeInstance = true;
+			pAEWithAnim = attachEffect.get();
 		}
-		else
+		else if (attachEffect->CanShowAnim())
 		{
-			attachEffect->IsFirstCumulativeInstance = false;
-		}
+			int currentDuration = attachEffect->GetRemainingDuration();
 
-		if (pAttachEffectType->CumulativeAnimations.size() > 0)
-			attachEffect->KillAnim();
+			if (currentDuration < 0 || currentDuration > duration)
+			{
+				pAELargestDuration = attachEffect.get();
+				duration = currentDuration;
+			}
+		}
+	}
+
+	if (pAEWithAnim)
+	{
+		pAEWithAnim->UpdateCumulativeAnim();
+
+		if (pRemoved == pAEWithAnim)
+		{
+			pAEWithAnim->HasCumulativeAnim = false;
+
+			if (pAELargestDuration)
+				pAELargestDuration->TransferCumulativeAnim(pAEWithAnim);
+		}
 	}
 }
 
