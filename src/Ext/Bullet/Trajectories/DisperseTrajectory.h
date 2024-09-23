@@ -90,7 +90,6 @@ public:
 		, PreAimCoord {}
 		, RotateCoord { 0 }
 		, MirrorCoord { true }
-		, FacingCoord { false }
 		, ReduceCoord { true }
 		, UseDisperseBurst { false }
 		, AxisOfRotation {}
@@ -137,7 +136,6 @@ public:
 		, PreAimCoord {}
 		, RotateCoord { 0 }
 		, MirrorCoord { true }
-		, FacingCoord { false }
 		, ReduceCoord { true }
 		, UseDisperseBurst { false }
 		, AxisOfRotation {}
@@ -193,7 +191,6 @@ public:
 	CoordStruct PreAimCoord;
 	double RotateCoord;
 	bool MirrorCoord;
-	bool FacingCoord;
 	bool ReduceCoord;
 	bool UseDisperseBurst;
 	CoordStruct AxisOfRotation;
@@ -235,7 +232,7 @@ public:
 	double FirepowerMult;
 
 private:
-	void InitializeBulletNotCurve(BulletClass* pBullet);
+	void InitializeBulletNotCurve(BulletClass* pBullet, bool facing);
 	BulletVelocity RotateAboutTheAxis(BulletVelocity theSpeed, BulletVelocity theAxis, double theRadian);
 	bool CalculateBulletVelocity(BulletClass* pBullet, double trajectorySpeed);
 	bool BulletRetargetTechno(BulletClass* pBullet, HouseClass* pOwner);

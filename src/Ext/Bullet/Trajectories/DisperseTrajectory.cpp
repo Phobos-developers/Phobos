@@ -152,7 +152,6 @@ bool DisperseTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->PreAimCoord)
 		.Process(this->RotateCoord)
 		.Process(this->MirrorCoord)
-		.Process(this->FacingCoord)
 		.Process(this->ReduceCoord)
 		.Process(this->UseDisperseBurst)
 		.Process(this->AxisOfRotation)
@@ -206,7 +205,6 @@ bool DisperseTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->PreAimCoord)
 		.Process(this->RotateCoord)
 		.Process(this->MirrorCoord)
-		.Process(this->FacingCoord)
 		.Process(this->ReduceCoord)
 		.Process(this->UseDisperseBurst)
 		.Process(this->AxisOfRotation)
@@ -259,7 +257,6 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->PreAimCoord = pType->PreAimCoord;
 	this->RotateCoord = pType->RotateCoord;
 	this->MirrorCoord = pType->MirrorCoord;
-	this->FacingCoord = pType->FacingCoord;
 	this->ReduceCoord = pType->ReduceCoord;
 	this->UseDisperseBurst = pType->UseDisperseBurst;
 	this->AxisOfRotation = pType->AxisOfRotation;
@@ -345,7 +342,7 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 		}
 		else
 		{
-			this->InitializeBulletNotCurve(pBullet);
+			this->InitializeBulletNotCurve(pBullet, pType->FacingCoord);
 		}
 
 		if (this->CalculateBulletVelocity(pBullet, this->LaunchSpeed))
@@ -407,13 +404,13 @@ TrajectoryCheckReturnType DisperseTrajectory::OnAITechnoCheck(BulletClass* pBull
 	return TrajectoryCheckReturnType::SkipGameCheck;
 }
 
-void DisperseTrajectory::InitializeBulletNotCurve(BulletClass* pBullet)
+void DisperseTrajectory::InitializeBulletNotCurve(BulletClass* pBullet, bool facing)
 {
 	double rotateAngle = 0.0;
 	TechnoClass* const pFirer = pBullet->Owner;
 	const CoordStruct theSource = pFirer ? pFirer->GetCoords() : pBullet->SourceCoords;
 
-	if ((this->FacingCoord || (pBullet->TargetCoords.Y == theSource.Y && pBullet->TargetCoords.X == theSource.X)) && pFirer)
+	if ((facing || (pBullet->TargetCoords.Y == theSource.Y && pBullet->TargetCoords.X == theSource.X)) && pFirer)
 	{
 		if (pFirer->HasTurret())
 			rotateAngle = -(pFirer->TurretFacing().GetRadian<32>());
