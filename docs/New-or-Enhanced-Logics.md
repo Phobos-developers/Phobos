@@ -879,8 +879,8 @@ Detonate.AtFirer=false      ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                    ; Super Weapon
-TabIndex=1                  ; integer
+[SOMESW]    ; Super Weapon
+TabIndex=1  ; integer
 ```
 
 ## Technos
