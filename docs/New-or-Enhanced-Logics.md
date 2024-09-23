@@ -874,6 +874,17 @@ Detonate.Damage=            ; integer
 Detonate.AtFirer=false      ; boolean
 ```
 
+### Customize SuperWeapon TabIndex
+
+- You can now assign a Super Weapon's cameo to any sidebar tab using `TabIndex`.
+  - Valid values are: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]    ; Super Weapon
+TabIndex=1  ; integer
+```
+
 ## Technos
 
 ### Aircraft spawner customizations
