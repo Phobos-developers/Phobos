@@ -15,10 +15,10 @@ template<typename T>
 void EngraveTrajectoryType::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->ApplyRangeModifiers)
 		.Process(this->SourceCoord)
 		.Process(this->TargetCoord)
 		.Process(this->MirrorCoord)
+		.Process(this->ApplyRangeModifiers)
 		.Process(this->TheDuration)
 		.Process(this->IsLaser)
 		.Process(this->IsSupported)
