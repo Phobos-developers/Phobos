@@ -23,6 +23,8 @@ public:
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
+		bool ForceOnlyTargetHouseEnemy;
+		int ForceOnlyTargetHouseEnemyMode;
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 		CounterClass LimboBuildings; // Currently owned buildings in limbo
@@ -75,6 +77,8 @@ public:
 			, NumWarFactories_NonMFB { 0 }
 			, NumConYards_NonMFB { 0 }
 			, NumShipyards_NonMFB { 0 }
+			, ForceOnlyTargetHouseEnemy { false }
+			, ForceOnlyTargetHouseEnemyMode { -1 }
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
@@ -131,6 +135,8 @@ public:
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
 	static void GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSphere, SuperClass*& pSuperCWarp);
+	static void ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1);
+
 	static void SetSkirmishHouseName(HouseClass* pHouse);
 
 	static bool IsDisabledFromShell(
