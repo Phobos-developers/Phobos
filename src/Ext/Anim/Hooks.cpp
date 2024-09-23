@@ -312,6 +312,23 @@ DEFINE_HOOK(0x423365, AnimClass_DrawIt_ExtraShadow, 0x8)
 	return SkipExtraShadow;
 }
 
+// Apply cell lighting on UseNormalLight=no MakeInfantry anims.
+DEFINE_HOOK(0x4232BF, AnimClass_DrawIt_MakeInfantry, 0x6)
+{
+	enum { SkipGameCode = 0x4232C5 };
+
+	GET(AnimClass*, pThis, ESI);
+
+	if (pThis->Type->MakeInfantry != -1)
+	{
+		auto const pCell = pThis->GetCell();
+		R->EAX(pCell->Intensity_Normal);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
 #pragma region AltPalette
 
 // Fix AltPalette anims not using owner color scheme.

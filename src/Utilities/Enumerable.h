@@ -115,13 +115,11 @@ public:
 		this->Name = Title;
 	}
 
-	virtual ~Enumerable() = default;
+	void LoadFromINI(CCINIClass* pINI) { static_cast<T*>(this)->LoadFromINI(pINI); }//=0;
 
-	virtual void LoadFromINI(CCINIClass* pINI) { }
+	void LoadFromStream(PhobosStreamReader& Stm) { static_cast<T*>(this)->LoadFromStream(Stm); }//=0;
 
-	virtual void LoadFromStream(PhobosStreamReader& Stm) = 0;
-
-	virtual void SaveToStream(PhobosStreamWriter& Stm) = 0;
+	void SaveToStream(PhobosStreamWriter& Stm) { static_cast<T*>(this)->SaveToStream(Stm); } //=0;
 
 	PhobosFixedString<32> Name;
 };
