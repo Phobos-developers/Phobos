@@ -665,6 +665,19 @@ Explodes.KillPassengers=true ; boolean
 Explodes.DuringBuildup=true  ; boolean
 ```
 
+### Infantry firing while moving
+- In vanilla, there is a hardcoded behavior that the infantries can not fire until they stop, even if they have `OpportunityFire=yes` set. Now you can bypass this restriction by using the following flag.
+  - Mind that you still need `OpportunityFire=yes` to make them acquire target when moving. However, if `OpportunityFire=no` is set, they can still do that if you use the "ctrl+shift" command, just like the units on the ground do.
+  - Additionally, the behavior that "rocketeers can not fire when they have buildings beneath them" is also caused by this hardcode. You can use the flag to bypass this behavior as well.
+  - The vanilla flag `JumpJetTurn` will affect the visual behavior when the infantry is firing while moving. You need to set it to **no** if you want to make the infantry always facing the target during the attack.
+  - Setting this flag on types except infantry is useless.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                 ; InfantryType
+FiringByPassMovingCheck=true ; boolean
+```
+
 ### Iron Curtain & Force Shield effects on organics customization
 
 - In vanilla game, when Iron Curtain is applied on `Organic=true` units like squids or infantry, they could only get killed instantly by `C4Warhead`. This behavior is now unhardcoded and can be set with `IronCurtain.EffectOnOrganics` globally and on per-TechnoType basis with `IronCurtain.Effect`. Following values are respected:

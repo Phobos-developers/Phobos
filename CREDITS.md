@@ -362,6 +362,8 @@ This page lists all the individual contributions to the project by their author.
   - Build limit group enhancement
   - Customizable rocker amplitude
 - **handama** - AI script action to jump back to previous script
+- **航味麻酱**
+  - Infantry fire while moving
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
