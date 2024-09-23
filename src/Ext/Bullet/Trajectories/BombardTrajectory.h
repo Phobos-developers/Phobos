@@ -16,15 +16,16 @@ public:
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	double Height;
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };
 
 class BombardTrajectory final : public PhobosTrajectory
 {
 public:
-	BombardTrajectory() : PhobosTrajectory(TrajectoryFlag::Bombard)
-		, IsFalling { false }
-		, Height { 0.0 }
-	{}
+	BombardTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
 	BombardTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Bombard)
 		, IsFalling { false }
@@ -43,4 +44,8 @@ public:
 
 	bool IsFalling;
 	double Height;
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };

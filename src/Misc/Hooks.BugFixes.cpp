@@ -19,6 +19,7 @@
 #include <ParticleSystemClass.h>
 #include <WarheadTypeClass.h>
 #include <HashTable.h>
+#include <TunnelLocomotionClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -930,4 +931,38 @@ DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
 		return ReturnFromFunction;
 
 	return 0;
+}
+
+// In the following three places the distance check was hardcoded to compare with 20, 17 and 16 respectively,
+// which means it didn't consider the actual speed of the unit. Now we check it and the units won't get stuck 
+// even at high speeds - NetsuNegi
+
+DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9)
+{
+	enum { KeepMoving = 0x72980F, CloseEnough = 0x7295CE };
+
+	GET(TunnelLocomotionClass* const, pLoco, ESI);
+	GET(int const, distance, EAX);
+
+	return distance >= pLoco->LinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
+}
+
+DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
+{
+	enum { KeepMoving = 0x75BF85, CloseEnough = 0x75BD79 };
+
+	GET(FootClass* const, pLinkedTo, ECX);
+	GET(int const, distance, EAX);
+
+	return distance >= pLinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
+}
+
+DEFINE_HOOK(0x5B11DD, MechLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
+{
+	enum { KeepMoving = 0x5B14AA, CloseEnough = 0x5B11E6 };
+
+	GET(FootClass* const, pLinkedTo, ECX);
+	GET(int const, distance, EAX);
+
+	return distance >= pLinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
 }
