@@ -16,9 +16,9 @@ template<typename T>
 void StraightTrajectoryType::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->ApplyRangeModifiers)
 		.Process(this->DetonationDistance)
 		.Process(this->TargetSnapDistance)
+		.Process(this->ApplyRangeModifiers)
 		.Process(this->PassThrough)
 		.Process(this->PassDetonate)
 		.Process(this->PassDetonateWarhead)
@@ -103,6 +103,7 @@ void StraightTrajectory::Serialize(T& Stm)
 	Stm
 		.Process(this->DetonationDistance)
 		.Process(this->TargetSnapDistance)
+		.Process(this->ApplyRangeModifiers)
 		.Process(this->PassThrough)
 		.Process(this->PassDetonate)
 		.Process(this->PassDetonateWarhead)
