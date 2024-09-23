@@ -71,54 +71,21 @@ public:
 	Valueable<bool> SubjectToGround;
 	Valueable<int> ConfineAtHeight;
 	Valueable<double> EdgeAttenuation;
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };
 
 class StraightTrajectory final : public PhobosTrajectory
 {
 public:
-	StraightTrajectory() : PhobosTrajectory(TrajectoryFlag::Straight)
-		, DetonationDistance { Leptons(102) }
-		, TargetSnapDistance { Leptons(128) }
-		, PassThrough { false }
-		, PassDetonate { false }
-		, PassDetonateWarhead {}
-		, PassDetonateDamage { 0 }
-		, PassDetonateDelay { 1 }
-		, PassDetonateTimer {}
-		, PassDetonateLocal { false }
-		, LeadTimeCalculate { false }
-		, OffsetCoord {}
-		, RotateCoord { 0 }
-		, MirrorCoord { true }
-		, UseDisperseBurst { false }
-		, AxisOfRotation {}
-		, ProximityImpact { 0 }
-		, ProximityWarhead {}
-		, ProximityDamage { 0 }
-		, ProximityRadius { Leptons(179) }
-		, ProximityDirect { false }
-		, ProximityMedial { false }
-		, ProximityAllies { false }
-		, ProximityFlight { false }
-		, ThroughVehicles { true }
-		, ThroughBuilding { true }
-		, SubjectToGround { false }
-		, ConfineAtHeight { 0 }
-		, EdgeAttenuation { 1.0 }
-		, RemainingDistance { 1 }
-		, ExtraCheck { nullptr }
-		, LastCasualty {}
-		, FirepowerMult { 1.0 }
-		, AttenuationRange { 0 }
-		, LastTargetCoord {}
-		, CurrentBurst { 0 }
-		, CountOfBurst { 0 }
-		, WaitOneFrame {}
-	{}
+	StraightTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
 	StraightTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
+		, ApplyRangeModifiers { false }
 		, PassThrough { false }
 		, PassDetonate { false }
 		, PassDetonateWarhead {}
@@ -154,7 +121,39 @@ public:
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
 		, WaitOneFrame {}
-	{}
+	{
+		auto const pFinalType = static_cast<const StraightTrajectoryType*>(pType);
+
+		this->DetonationDistance = pFinalType->DetonationDistance;
+		this->TargetSnapDistance = pFinalType->TargetSnapDistance;
+		this->ApplyRangeModifiers = pFinalType->ApplyRangeModifiers;
+		this->PassThrough = pFinalType->PassThrough;
+		this->PassDetonate = pFinalType->PassDetonate;
+		this->PassDetonateWarhead = pFinalType->PassDetonateWarhead;
+		this->PassDetonateDamage = pFinalType->PassDetonateDamage;
+		this->PassDetonateDelay = pFinalType->PassDetonateDelay > 0 ? pFinalType->PassDetonateDelay : 1;
+		this->PassDetonateTimer.Start(pFinalType->PassDetonateTimer > 0 ? pFinalType->PassDetonateTimer : 0);
+		this->PassDetonateLocal = pFinalType->PassDetonateLocal;
+		this->LeadTimeCalculate = pFinalType->LeadTimeCalculate;
+		this->OffsetCoord = pFinalType->OffsetCoord;
+		this->RotateCoord = pFinalType->RotateCoord;
+		this->MirrorCoord = pFinalType->MirrorCoord;
+		this->UseDisperseBurst = pFinalType->UseDisperseBurst;
+		this->AxisOfRotation = pFinalType->AxisOfRotation;
+		this->ProximityImpact = pFinalType->ProximityImpact;
+		this->ProximityWarhead = pFinalType->ProximityWarhead;
+		this->ProximityDamage = pFinalType->ProximityDamage;
+		this->ProximityRadius = pFinalType->ProximityRadius;
+		this->ProximityDirect = pFinalType->ProximityDirect;
+		this->ProximityMedial = pFinalType->ProximityMedial;
+		this->ProximityAllies = pFinalType->ProximityAllies;
+		this->ProximityFlight = pFinalType->ProximityFlight;
+		this->ThroughVehicles = pFinalType->ThroughVehicles;
+		this->ThroughBuilding = pFinalType->ThroughBuilding;
+		this->SubjectToGround = pFinalType->SubjectToGround;
+		this->ConfineAtHeight = pFinalType->ConfineAtHeight;
+		this->EdgeAttenuation = pFinalType->EdgeAttenuation > 0.0 ? pFinalType->EdgeAttenuation : 0.0;
+	}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
@@ -174,6 +173,7 @@ public:
 
 	Leptons DetonationDistance;
 	Leptons TargetSnapDistance;
+	bool ApplyRangeModifiers;
 	bool PassThrough;
 	bool PassDetonate;
 	WarheadTypeClass* PassDetonateWarhead;
@@ -211,6 +211,9 @@ public:
 	CDTimerClass WaitOneFrame;
 
 private:
+	template <typename T>
+	void Serialize(T& Stm);
+
 	void PrepareForOpenFire(BulletClass* pBullet);
 	int GetVelocityZ(BulletClass* pBullet);
 	bool CalculateBulletVelocity(BulletClass* pBullet, double straightSpeed);
@@ -225,4 +228,7 @@ private:
 	int GetTheTrueDamage(int damage, BulletClass* pBullet, TechnoClass* pTechno, bool self);
 	double GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno);
 	bool PassAndConfineAtHeight(BulletClass* pBullet, double straightSpeed);
+	int GetFirerZPosition(BulletClass* pBullet);
+	int GetTargetZPosition(BulletClass* pBullet);
+	bool ElevationDetonationCheck(BulletClass* pBullet);
 };

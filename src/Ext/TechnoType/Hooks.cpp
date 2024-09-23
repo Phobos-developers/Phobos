@@ -756,7 +756,13 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x6)
 
 	return 0x707331;
 }
-
+Matrix3D* __fastcall BounceClass_ShadowMatrix(BounceClass* self, void*, Matrix3D* ret)
+{
+	Matrix3D::FromQuaternion(ret, &self->CurrentAngle);
+	*ret = Matrix3D { 1, 0, 0 , 0,	0, 0.25, -0.4330127018922194 , 0, 0, 0, 0 , 0 } **ret;
+	return ret;
+}
+DEFINE_JUMP(CALL, 0x749CAC, GET_OFFSET(BounceClass_ShadowMatrix));
 DEFINE_HOOK_AGAIN(0x69FEDC, Locomotion_Process_Wake, 0x6)  // Ship
 DEFINE_HOOK_AGAIN(0x4B0814, Locomotion_Process_Wake, 0x6)  // Drive
 DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)  // Hover
