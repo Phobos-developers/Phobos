@@ -158,7 +158,7 @@ DEFINE_HOOK(0x4AE616, DisplayClass_GetToolTip_PlayControl, 0x6)
 
 	R->ESI(pThis);
 
-	return HouseExt::CanSelectOwner(pThis->Owner, HouseClass::CurrentPlayer()) ?
+	return HouseExt::CanBeSelectedBy(pThis->Owner, HouseClass::CurrentPlayer()) ?
 		SkipGameCode : 0;
 }
 
@@ -168,7 +168,7 @@ DEFINE_HOOK(0x69252D, DisplayClass_ProcessClickCoords_PlayControl, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	enum { SkipGameCode = 0x692585 };
 
-	return HouseExt::CanSelectOwner(pThis->Owner, HouseClass::CurrentPlayer()) ?
+	return HouseExt::CanBeSelectedBy(pThis->Owner, HouseClass::CurrentPlayer()) ?
 		SkipGameCode : 0;
 }
 
@@ -178,28 +178,28 @@ DEFINE_HOOK(0x692686, DisplayClass_DecideAction_PlayControl, 0x6)
 	GET(TechnoClass*, pThis, EDI);
 	enum { SkipGameCode = 0x6926DB };
 
-	return HouseExt::CanSelectOwner(pThis->Owner, HouseClass::CurrentPlayer()) ?
+	return HouseExt::CanBeSelectedBy(pThis->Owner, HouseClass::CurrentPlayer()) ?
 		SkipGameCode : 0;
 }
 
-// Block out Deselect() when a friendly unit goes cloakd.
+// Do not forcibly deselect when a friendly unit goes cloaked.
 DEFINE_HOOK(0x6F4F10, TechnoClass_Sensed_DisableDSelect, 0x5)
 {
 	GET(TechnoClass* const, pThis, ESI);
-	enum { SkipGameCode = 0x6F4F3A, Continue = 0x6F4F21 };
+	enum { SkipGameCode = 0x6F4F3A };
 
 	R->EAX(HouseClass::CurrentPlayer());
 
-	return HouseExt::CanSelectOwner(pThis->Owner, HouseClass::CurrentPlayer()) ?
+	return HouseExt::CanBeSelectedBy(pThis->Owner, HouseClass::CurrentPlayer()) ?
 		SkipGameCode : 0;
 }
 
-// Block out Deselect() when a friendly unit goes cloakd.
+// Do not forcibly deselect when a friendly unit goes cloaked.
 DEFINE_HOOK(0x703819, TechnoClass_Cloak_DisableDSelect, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
-	enum { SkipGameCode = 0x70383C, Continue = 0x703828 };
+	enum { SkipGameCode = 0x70383C };
 	
-	return HouseExt::CanSelectOwner(pThis->Owner, HouseClass::CurrentPlayer()) ?
+	return HouseExt::CanBeSelectedBy(pThis->Owner, HouseClass::CurrentPlayer()) ?
 		SkipGameCode : 0;
 }
