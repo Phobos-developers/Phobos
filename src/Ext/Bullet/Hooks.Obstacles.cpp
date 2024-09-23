@@ -93,7 +93,7 @@ public:
 
 		const int extraHeight = pTechno->GetHeight();
 
-		if (extraHeight > Unsorted::CellHeight || (sourceCoords.Z >= targetCoords.Z && MapClass::Instance->GetCellAt(CellClass::Coord2Cell(targetCoords))->ContainsBridgeEx()))
+		if (extraHeight > Unsorted::CellHeight || MapClass::Instance->GetCellAt(CellClass::Coord2Cell(targetCoords))->ContainsBridgeEx())
 		{
 			subjectToGround = false;
 			return sourceCoords;
