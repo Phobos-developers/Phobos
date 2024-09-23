@@ -14,53 +14,14 @@
 #include <Utilities/Helpers.Alex.h>
 #include <AircraftTrackerClass.h>
 
-bool DisperseTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+PhobosTrajectory* DisperseTrajectoryType::CreateInstance() const
 {
-	this->PhobosTrajectoryType::Load(Stm, false);
-
-	Stm
-		.Process(this->UniqueCurve, false)
-		.Process(this->PreAimCoord, false)
-		.Process(this->RotateCoord, false)
-		.Process(this->MirrorCoord, false)
-		.Process(this->FacingCoord, false)
-		.Process(this->ReduceCoord, false)
-		.Process(this->UseDisperseBurst, false)
-		.Process(this->AxisOfRotation, false)
-		.Process(this->LaunchSpeed, false)
-		.Process(this->Acceleration, false)
-		.Process(this->ROT, false)
-		.Process(this->LockDirection, false)
-		.Process(this->CruiseEnable, false)
-		.Process(this->CruiseUnableRange, false)
-		.Process(this->LeadTimeCalculate, false)
-		.Process(this->TargetSnapDistance, false)
-		.Process(this->RetargetRadius, false)
-		.Process(this->RetargetAllies, false)
-		.Process(this->SuicideShortOfROT, false)
-		.Process(this->SuicideAboveRange, false)
-		.Process(this->SuicideIfNoWeapon, false)
-		.Process(this->Weapons)
-		.Process(this->WeaponBurst, false)
-		.Process(this->WeaponCount, false)
-		.Process(this->WeaponDelay, false)
-		.Process(this->WeaponTimer, false)
-		.Process(this->WeaponScope, false)
-		.Process(this->WeaponSeparate, false)
-		.Process(this->WeaponRetarget, false)
-		.Process(this->WeaponLocation, false)
-		.Process(this->WeaponTendency, false)
-		.Process(this->WeaponToAllies, false)
-		.Process(this->WeaponToGround, false)
-		;
-
-	return true;
+	return new DisperseTrajectory(this);
 }
 
-bool DisperseTrajectoryType::Save(PhobosStreamWriter& Stm) const
+template<typename T>
+void DisperseTrajectoryType::Serialize(T& Stm)
 {
-	this->PhobosTrajectoryType::Save(Stm);
-
 	Stm
 		.Process(this->UniqueCurve)
 		.Process(this->PreAimCoord)
@@ -96,13 +57,20 @@ bool DisperseTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->WeaponToAllies)
 		.Process(this->WeaponToGround)
 		;
+}
 
+bool DisperseTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->PhobosTrajectoryType::Load(Stm, false);
+	this->Serialize(Stm);
 	return true;
 }
 
-PhobosTrajectory* DisperseTrajectoryType::CreateInstance() const
+bool DisperseTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
-	return new DisperseTrajectory(this);
+	this->PhobosTrajectoryType::Save(Stm);
+	const_cast<DisperseTrajectoryType*>(this)->Serialize(Stm);
+	return true;
 }
 
 void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
@@ -143,10 +111,9 @@ void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->WeaponToGround.Read(exINI, pSection, "Trajectory.Disperse.WeaponToGround");
 }
 
-bool DisperseTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+template<typename T>
+void DisperseTrajectory::Serialize(T& Stm)
 {
-	this->PhobosTrajectory::Load(Stm, false);
-
 	Stm
 		.Process(this->UniqueCurve)
 		.Process(this->PreAimCoord)
@@ -193,61 +160,19 @@ bool DisperseTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->LastReviseMult)
 		.Process(this->FirepowerMult)
 		;
+}
 
+bool DisperseTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->PhobosTrajectory::Load(Stm, false);
+	this->Serialize(Stm);
 	return true;
 }
 
 bool DisperseTrajectory::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectory::Save(Stm);
-
-	Stm
-		.Process(this->UniqueCurve)
-		.Process(this->PreAimCoord)
-		.Process(this->RotateCoord)
-		.Process(this->MirrorCoord)
-		.Process(this->FacingCoord)
-		.Process(this->ReduceCoord)
-		.Process(this->UseDisperseBurst)
-		.Process(this->AxisOfRotation)
-		.Process(this->LaunchSpeed)
-		.Process(this->Acceleration)
-		.Process(this->ROT)
-		.Process(this->LockDirection)
-		.Process(this->CruiseEnable)
-		.Process(this->CruiseUnableRange)
-		.Process(this->LeadTimeCalculate)
-		.Process(this->TargetSnapDistance)
-		.Process(this->RetargetRadius)
-		.Process(this->RetargetAllies)
-		.Process(this->SuicideShortOfROT)
-		.Process(this->SuicideAboveRange)
-		.Process(this->SuicideIfNoWeapon)
-		.Process(this->Weapons)
-		.Process(this->WeaponBurst)
-		.Process(this->WeaponCount)
-		.Process(this->WeaponDelay)
-		.Process(this->WeaponTimer)
-		.Process(this->WeaponScope)
-		.Process(this->WeaponSeparate)
-		.Process(this->WeaponRetarget)
-		.Process(this->WeaponLocation)
-		.Process(this->WeaponTendency)
-		.Process(this->WeaponToAllies)
-		.Process(this->WeaponToGround)
-		.Process(this->InStraight)
-		.Process(this->Accelerate)
-		.Process(this->TargetInTheAir)
-		.Process(this->TargetIsTechno)
-		.Process(this->OriginalDistance)
-		.Process(this->CurrentBurst)
-		.Process(this->ThisWeaponIndex)
-		.Process(this->LastTargetCoord)
-		.Process(this->PreAimDistance)
-		.Process(this->LastReviseMult)
-		.Process(this->FirepowerMult)
-		;
-
+	const_cast<DisperseTrajectory*>(this)->Serialize(Stm);
 	return true;
 }
 
