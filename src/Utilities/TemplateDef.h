@@ -838,9 +838,9 @@ namespace detail
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			if (_strcmpi(parser.value(), "none") == 0)
+			if (_strcmpi(parser.value(), "noheal") == 0)
 			{
-				value = SelfHealGainType::None;
+				value = SelfHealGainType::NoHeal;
 			}
 			else if (_strcmpi(parser.value(), "infantry") == 0)
 			{

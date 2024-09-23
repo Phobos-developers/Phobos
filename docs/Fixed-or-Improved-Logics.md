@@ -168,6 +168,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Planning paths are now shown for all units under player control or when `[GlobalControls]->DebugPlanningPaths=yes` in singleplayer game modes.
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
+- Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them (by Starkku)
 
 ## Fixes / interactions with other extensions
 
@@ -474,7 +475,7 @@ Pips.SelfHeal.Units.Offset=33,-32       ; X,Y, pixels relative to default
 Pips.SelfHeal.Buildings.Offset=15,10    ; X,Y, pixels relative to default
 
 [SOMETECHNO]                            ; TechnoType
-SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (none|infantry|units)
+SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (noheal|infantry|units)
 ```
 
 ### Chrono sparkle animation customization & improvements
