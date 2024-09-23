@@ -1294,11 +1294,9 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 			if (AnimTypeClass* const pAnimType = pWeapon->Anim[animIndex])
 			{
-				if (AnimClass* const pAnim = GameCreate<AnimClass>(pAnimType, pBullet->Location))
-				{
-					pAnim->SetOwnerObject(pBullet->Owner);
-					pAnim->Owner = pOwner;
-				}
+				AnimClass* const pAnim = GameCreate<AnimClass>(pAnimType, pBullet->Location);
+				pAnim->SetOwnerObject(pBullet->Owner);
+				pAnim->Owner = pOwner;
 			}
 		}
 	}
@@ -1344,10 +1342,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 	{
 		if (EBolt* const pEBolt = GameCreate<EBolt>())
 		{
-			if (pWeapon->IsAlternateColor)
-				pEBolt->AlternateColor = true;
-			else
-				pEBolt->AlternateColor = false;
+			pEBolt->AlternateColor = pWeapon->IsAlternateColor;
 
 			//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
 			//Although I can reread the Ares tags but how to do with Bolt_Disable1, Bolt_Disable2, Bolt_Disable3, Bolt_Arcs(Phobos)
