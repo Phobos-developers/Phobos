@@ -7,8 +7,8 @@
 #include <BulletClass.h>
 #include <Helpers/Macro.h>
 
-#include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
+#include "BombardTrajectory.h"
 #include "DisperseTrajectory.h"
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -147,7 +147,7 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 			pTraj = new BombardTrajectory(noinit_t {});
 			break;
 		case TrajectoryFlag::Disperse:
-			pTraj = DLLCreate<DisperseTrajectory>();
+			pTraj = new DisperseTrajectory(noinit_t {});
 			break;
 		default:
 			return nullptr;
