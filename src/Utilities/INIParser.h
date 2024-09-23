@@ -34,7 +34,7 @@
 
 #include <vector>
 #include <string>
-
+#include <ranges>
 #include "Parser.h"
 
 #include <Phobos.h>
@@ -140,11 +140,13 @@ public:
 		if (this->ReadString(pSection, pKey))
 		{
 			values.clear();
-			char* context = nullptr;
-
-			for (auto pCur = strtok_s(this->value(), Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
-				values.push_back(pCur);
-
+			for (auto&& part : std::string_view { this->value() } | std::views::split(','))
+			{
+				std::string_view sv { part.begin(), part.end() };
+				auto s = sv.find_first_not_of(" \t\r");
+				auto e = sv.find_last_not_of(" \t\r");
+				values.emplace_back(sv.substr(s, e - s + 1));
+			}
 			return true;
 		}
 

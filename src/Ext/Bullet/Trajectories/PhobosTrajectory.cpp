@@ -141,10 +141,10 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
-			pTraj = DLLCreate<StraightTrajectory>();
+			pTraj = new StraightTrajectory(noinit_t {});
 			break;
 		case TrajectoryFlag::Bombard:
-			pTraj = DLLCreate<BombardTrajectory>();
+			pTraj = new BombardTrajectory(noinit_t {});
 			break;
 		case TrajectoryFlag::Parabola:
 			pTraj = DLLCreate<ParabolaTrajectory>();
