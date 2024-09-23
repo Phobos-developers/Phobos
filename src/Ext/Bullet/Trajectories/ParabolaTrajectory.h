@@ -63,42 +63,16 @@ public:
 	Valueable<bool> MirrorCoord;
 	Valueable<bool> UseDisperseBurst;
 	Valueable<CoordStruct> AxisOfRotation;
-	// The faster the projectile's speed, the worse the visual effect of bounce function.
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };
 
 class ParabolaTrajectory final : public PhobosTrajectory
 {
 public:
-	ParabolaTrajectory() : PhobosTrajectory(TrajectoryFlag::Parabola)
-		, DetonationDistance { Leptons(102) }
-		, TargetSnapDistance { Leptons(128) }
-		, OpenFireMode { ParabolaFireMode::Speed }
-		, ThrowHeight { 600 }
-		, LaunchAngle { 30.0 }
-		, LeadTimeCalculate { false }
-		, LeadTimeSimplify { false }
-		, LeadTimeMultiplier { 1.0 }
-		, DetonationAngle { -90.0 }
-		, DetonationHeight { -1 }
-		, BounceTimes { 0 }
-		, BounceOnWater { false }
-		, BounceDetonate { false }
-		, BounceAttenuation { 0.8 }
-		, BounceCoefficient { 0.8 }
-		, OffsetCoord {}
-		, RotateCoord { 0 }
-		, MirrorCoord { true }
-		, UseDisperseBurst { false }
-		, AxisOfRotation {}
-		, ShouldDetonate { false }
-		, ShouldBounce { false }
-		, NeedExtraCheck { false }
-		, LastTargetCoord {}
-		, CurrentBurst { 0 }
-		, CountOfBurst { 0 }
-		, WaitOneFrame {}
-		, LastVelocity {}
-	{}
+	ParabolaTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
 	ParabolaTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Parabola)
 		, DetonationDistance { Leptons(102) }
@@ -129,7 +103,30 @@ public:
 		, CountOfBurst { 0 }
 		, WaitOneFrame {}
 		, LastVelocity {}
-	{}
+	{
+		auto const pFinalType = static_cast<const ParabolaTrajectoryType*>(pType);
+
+		this->DetonationDistance = pFinalType->DetonationDistance;
+		this->TargetSnapDistance = pFinalType->TargetSnapDistance;
+		this->OpenFireMode = pFinalType->OpenFireMode;
+		this->ThrowHeight = pFinalType->ThrowHeight > 0 ? pFinalType->ThrowHeight : 600;
+		this->LaunchAngle = pFinalType->LaunchAngle;
+		this->LeadTimeCalculate = pFinalType->LeadTimeCalculate;
+		this->LeadTimeSimplify = pFinalType->LeadTimeSimplify;
+		this->LeadTimeMultiplier = pFinalType->LeadTimeMultiplier;
+		this->DetonationAngle = pFinalType->DetonationAngle;
+		this->DetonationHeight = pFinalType->DetonationHeight;
+		this->BounceTimes = pFinalType->BounceTimes;
+		this->BounceOnWater = pFinalType->BounceOnWater;
+		this->BounceDetonate = pFinalType->BounceDetonate;
+		this->BounceAttenuation = pFinalType->BounceAttenuation;
+		this->BounceCoefficient = pFinalType->BounceCoefficient;
+		this->OffsetCoord = pFinalType->OffsetCoord;
+		this->RotateCoord = pFinalType->RotateCoord;
+		this->MirrorCoord = pFinalType->MirrorCoord;
+		this->UseDisperseBurst = pFinalType->UseDisperseBurst;
+		this->AxisOfRotation = pFinalType->AxisOfRotation;
+	}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
@@ -171,6 +168,9 @@ public:
 	BulletVelocity LastVelocity;
 
 private:
+	template <typename T>
+	void Serialize(T& Stm);
+
 	void PrepareForOpenFire(BulletClass* pBullet);
 	bool BulletPrepareCheck(BulletClass* pBullet);
 	void CalculateBulletVelocityRightNow(BulletClass* pBullet, CoordStruct* pSourceCoords, double gravity);

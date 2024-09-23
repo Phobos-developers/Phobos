@@ -147,7 +147,7 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 			pTraj = new BombardTrajectory(noinit_t {});
 			break;
 		case TrajectoryFlag::Parabola:
-			pTraj = DLLCreate<ParabolaTrajectory>();
+			pTraj = new ParabolaTrajectory(noinit_t {});
 			break;
 		default:
 			return nullptr;
