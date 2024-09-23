@@ -152,6 +152,7 @@ bool DisperseTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->PreAimCoord)
 		.Process(this->RotateCoord)
 		.Process(this->MirrorCoord)
+		.Process(this->FacingCoord)
 		.Process(this->ReduceCoord)
 		.Process(this->UseDisperseBurst)
 		.Process(this->AxisOfRotation)
@@ -205,6 +206,7 @@ bool DisperseTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->PreAimCoord)
 		.Process(this->RotateCoord)
 		.Process(this->MirrorCoord)
+		.Process(this->FacingCoord)
 		.Process(this->ReduceCoord)
 		.Process(this->UseDisperseBurst)
 		.Process(this->AxisOfRotation)
@@ -251,49 +253,9 @@ bool DisperseTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	auto const pType = this->GetTrajectoryType<DisperseTrajectoryType>(pBullet);
-
-	this->UniqueCurve = pType->UniqueCurve;
-	this->PreAimCoord = pType->PreAimCoord;
-	this->RotateCoord = pType->RotateCoord;
-	this->MirrorCoord = pType->MirrorCoord;
-	this->ReduceCoord = pType->ReduceCoord;
-	this->UseDisperseBurst = pType->UseDisperseBurst;
-	this->AxisOfRotation = pType->AxisOfRotation;
-	this->LaunchSpeed = pType->LaunchSpeed;
-	this->Acceleration = pType->Acceleration > 1e-10 ? pType->Acceleration : 0.001;
-	this->ROT = pType->ROT > 1e-10 ? pType->ROT : 0.001;
-	this->LockDirection = pType->LockDirection;
-	this->CruiseEnable = pType->CruiseEnable;
-	this->CruiseUnableRange = pType->CruiseUnableRange > 0.5 ? pType->CruiseUnableRange * Unsorted::LeptonsPerCell : Unsorted::LeptonsPerCell / 2;
-	this->LeadTimeCalculate = pType->LeadTimeCalculate;
-	this->TargetSnapDistance = pType->TargetSnapDistance;
-	this->RetargetRadius = pType->RetargetRadius;
-	this->RetargetAllies = pType->RetargetAllies;
-	this->SuicideShortOfROT = pType->SuicideShortOfROT;
-	this->SuicideAboveRange = pType->SuicideAboveRange * Unsorted::LeptonsPerCell;
-	this->SuicideIfNoWeapon = pType->SuicideIfNoWeapon;
-	this->Weapons = pType->Weapons;
-	this->WeaponBurst = pType->WeaponBurst;
-	this->WeaponCount = pType->WeaponCount;
-	this->WeaponDelay = pType->WeaponDelay > 0 ? pType->WeaponDelay : 1;
-	this->WeaponTimer.Start(pType->WeaponTimer > 0 ? pType->WeaponTimer : 0);
-	this->WeaponScope = pType->WeaponScope;
-	this->WeaponSeparate = pType->WeaponSeparate;
-	this->WeaponRetarget = pType->WeaponRetarget;
-	this->WeaponLocation = pType->WeaponLocation;
-	this->WeaponTendency = pType->WeaponTendency;
-	this->WeaponToAllies = pType->WeaponToAllies;
-	this->WeaponToGround = pType->WeaponToGround;
-	this->InStraight = false;
-	this->Accelerate = true;
 	this->TargetIsTechno = static_cast<bool>(abstract_cast<TechnoClass*>(pBullet->Target));
 	this->OriginalDistance = static_cast<int>(pBullet->TargetCoords.DistanceFrom(pBullet->SourceCoords));
-	this->CurrentBurst = 0;
-	this->ThisWeaponIndex = 0;
 	this->LastTargetCoord = pBullet->TargetCoords;
-	this->LastReviseMult = 0;
-	this->FirepowerMult = 1.0;
 
 	if (const ObjectClass* const pTarget = abstract_cast<ObjectClass*>(pBullet->Target))
 		this->TargetInTheAir = (pTarget->GetHeight() > Unsorted::CellHeight);
@@ -342,7 +304,7 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 		}
 		else
 		{
-			this->InitializeBulletNotCurve(pBullet, pType->FacingCoord);
+			this->InitializeBulletNotCurve(pBullet, this->FacingCoord);
 		}
 
 		if (this->CalculateBulletVelocity(pBullet, this->LaunchSpeed))
