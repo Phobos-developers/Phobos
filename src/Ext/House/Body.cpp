@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <Ext/SWType/Body.h>
-#include "New/Entity/ExtendedStorageClass.h"
+#include <New/Entity/PhobosStorageClass.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 
@@ -654,6 +654,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuspendedEMPulseSWs)
 		.Process(this->SuperExts)
 		.Process(this->ForceEnemyIndex)
+		.Process(this->Tiberium)
+		.Process(this->Weed)
 		;
 }
 
@@ -662,22 +664,15 @@ void HouseExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	Extension<HouseClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 
-	auto ownedTiberium = reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->OwnedTiberium);
-	auto ownedWeed = reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->OwnedWeed);
-
-	*ownedTiberium = new ExtendedStorageClass();
-	*ownedWeed = new ExtendedStorageClass();
-
-	(*ownedTiberium)->Load(Stm, false);
-	(*ownedWeed)->Load(Stm, false);
+	// Restore the pointers to our new Storage class
+	new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject()->OwnedTiberium)) PhobosStorageClass(&Tiberium);
+	new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject()->OwnedWeed)) PhobosStorageClass(&Weed);
 }
 
 void HouseExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<HouseClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
-	(*reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->OwnedTiberium))->Save(Stm);
-	(*reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->OwnedWeed))->Save(Stm);
 }
 
 bool HouseExt::LoadGlobals(PhobosStreamReader& Stm)
@@ -737,12 +732,6 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 	if (RulesExt::Global()->EnablePowerSurplus)
 		pItem->PowerSurplus = RulesClass::Instance->PowerSurplus;
 
-	auto ownedTiberium = new ExtendedStorageClass();
-	auto ownedWeed = new ExtendedStorageClass();
-
-	std::memcpy(&pItem->OwnedTiberium, &ownedTiberium, sizeof(ownedTiberium));
-	std::memcpy(&pItem->OwnedWeed, &ownedWeed, sizeof(ownedWeed));
-
 	return 0;
 }
 
@@ -752,8 +741,8 @@ DEFINE_HOOK(0x4F7371, HouseClass_DTOR, 0x6)
 
 	HouseExt::ExtMap.Remove(pItem);
 
-	delete* reinterpret_cast<ExtendedStorageClass**>(&pItem->OwnedTiberium);
-	delete* reinterpret_cast<ExtendedStorageClass**>(&pItem->OwnedWeed);
+	delete* reinterpret_cast<PhobosStorageClass**>(&pItem->OwnedTiberium);
+	delete* reinterpret_cast<PhobosStorageClass**>(&pItem->OwnedWeed);
 
 	return 0;
 }

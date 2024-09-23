@@ -6,6 +6,8 @@
 #include "Ext/Building/Body.h"
 #include <unordered_map>
 
+#include "Utilities/AresHelper.h"
+
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);

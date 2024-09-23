@@ -9,6 +9,7 @@
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include "New/Entity/ExtendedStorageClass.h"
+#include "New/Entity/PhobosStorageClass.h"
 #include <Ext/House/Body.h>
 
 #include <Utilities/AresFunctions.h>
@@ -622,6 +623,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastSensorsMapCoords)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
+		.Process(this->Tiberium)
 		;
 }
 
@@ -630,16 +632,14 @@ void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	Extension<TechnoClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 
-	auto storage = reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->Tiberium);
-	*storage = new ExtendedStorageClass();
-	(*storage)->Load(Stm, false);
+	// Restore the pointer to our new Storage class
+	new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject()->Tiberium)) PhobosStorageClass(&Tiberium);
 }
 
 void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<TechnoClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
-	(*reinterpret_cast<ExtendedStorageClass**>(&this->OwnerObject()->Tiberium))->Save(Stm);
 }
 
 bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm)
@@ -670,8 +670,6 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 	GET(TechnoClass*, pItem, ESI);
 
 	TechnoExt::ExtMap.TryAllocate(pItem);
-	auto storageClass = new ExtendedStorageClass();
-	std::memcpy(&pItem->Tiberium, &storageClass, sizeof(storageClass));
 
 	return 0;
 }
@@ -681,7 +679,6 @@ DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 	GET(TechnoClass*, pItem, ECX);
 
 	TechnoExt::ExtMap.Remove(pItem);
-	delete *reinterpret_cast<ExtendedStorageClass**>(&pItem->Tiberium);
 
 	return 0;
 }
