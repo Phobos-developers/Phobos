@@ -364,7 +364,7 @@ int __fastcall AircraftClass_Mission_AreaGuard(AircraftClass* pThis)
 		{
 			CoordStruct coords = pThis->GetCoords();
 
-			if (pThis->TargetAndEstimateDamage(reinterpret_cast<DWORD>(&coords), static_cast<DWORD>(TargetFlags::unknown_1)))
+			if (pThis->TargetAndEstimateDamage(coords, ThreatType::Normal))
 			{
 				pThis->QueueMission(Mission::Attack, false);
 				return 1;
@@ -461,20 +461,20 @@ DEFINE_HOOK(0x4C762A, EventClass_RespondToEvent_StopAircraftAction, 0x6)
 }
 
 // SelectAutoTarget: for all the mission that should let the aircraft auto select a closing target
-AbstractClass* __fastcall AircraftClass_SelectAutoTarget(AircraftClass* pThis, void* _, TargetFlags targetType, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)
+AbstractClass* __fastcall AircraftClass_SelectAutoTarget(AircraftClass* pThis, void* _, ThreatType threatType, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)
 {
 	WeaponTypeClass* const pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType;
 	WeaponTypeClass* const pSecondaryWeapon = pThis->GetWeapon(1)->WeaponType;
 
 	if (pThis->vt_entry_4C4()) // pTechno->MegaMissionIsAttackMove()
-		targetType = TargetFlags::unknown_2; // Select closing targets
+		threatType = ThreatType::Area; // Select closing targets
 
 	if (pSecondaryWeapon) // Vanilla (other types) secondary first
-		targetType |= reinterpret_cast<TargetFlags(__thiscall*)(WeaponTypeClass*)>(0x772A90)(pSecondaryWeapon); // WeaponTypeClass_GetTargetFlags()
+		threatType |= pSecondaryWeapon->AllowedThreats();
 	else if (pPrimaryWeapon)
-		targetType |= reinterpret_cast<TargetFlags(__thiscall*)(WeaponTypeClass*)>(0x772A90)(pPrimaryWeapon); // WeaponTypeClass_GetTargetFlags()
+		threatType |= pPrimaryWeapon->AllowedThreats();
 
-	return reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, TargetFlags, CoordStruct*, bool)>(0x6F8DF0)(pThis, targetType, pSelectCoords, onlyTargetHouseEnemy); // TechnoClass_SelectAutoTarget (Prevent circular calls)
+	return reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, ThreatType, CoordStruct*, bool)>(0x6F8DF0)(pThis, threatType, pSelectCoords, onlyTargetHouseEnemy); // TechnoClass_SelectAutoTarget (Prevent circular calls)
 }
 DEFINE_JUMP(VTABLE, 0x7E2668, GET_OFFSET(AircraftClass_SelectAutoTarget))
 
