@@ -94,6 +94,8 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
 	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
+
+	this->CanBlock.Read(exINI, pSection, "CanBlock");
 }
 
 template <typename T>
@@ -141,6 +143,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)
+		.Process(this->CanBlock)
 		;
 }
 

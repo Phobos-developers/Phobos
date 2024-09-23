@@ -17,12 +17,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	int nDamageLeft = *args->Damage;
-
 	if (!args->IgnoreDefenses)
 	{
+		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+		*args->Damage = TechnoExt::CalculateBlockDamage(pThis, args);
+		int nDamageLeft = *args->Damage;
+
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (!pShieldData->IsActive())

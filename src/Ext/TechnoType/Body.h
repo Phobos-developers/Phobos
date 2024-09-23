@@ -12,6 +12,7 @@
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
+#include <New/Type/Affiliated/BlockTypeClass.h>
 
 class Matrix3D;
 
@@ -59,6 +60,7 @@ public:
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 		std::unique_ptr<DroppodTypeClass> DroppodType;
+		std::unique_ptr<BlockTypeClass> BlockType;
 
 		Valueable<int> Ammo_AddOnDeploy;
 		Valueable<int> Ammo_AutoDeployMinimumAmount;
@@ -232,6 +234,8 @@ public:
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
+
+		Valueable<bool> CanBlock;
 
 		struct LaserTrailDataEntry
 		{
@@ -429,6 +433,7 @@ public:
 			, SpawnHeight {}
 			, LandingDir {}
 			, DroppodType {}
+			, BlockType {}
 
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
@@ -461,6 +466,8 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+
+			, CanBlock { true }
 		{ }
 
 		virtual ~ExtData() = default;

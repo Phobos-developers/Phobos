@@ -266,8 +266,22 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
 	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
 
+	this->Block_BasedOnWarhead.Read(exINI, pSection, "Block.BasedOnWarhead");
+	this->Block_AllowOverride.Read(exINI, pSection, "Block.AllowOverride");
+	this->Block_IgnoreAttachEffect.Read(exINI, pSection, "Block.IgnoreAttachEffect");
+	this->Block_ChanceMultiplier.Read(exINI, pSection, "Block.ChanceMultiplier");
+	this->Block_ExtraChance.Read(exINI, pSection, "Block.ExtraChance");
+	this->Block_DamageMult_Multiplier.Read(exINI, pSection, "Block.DamageMult.Multiplier");
+	this->Block_DamageMult_Bonus.Read(exINI, pSection, "Block.DamageMult.Bonus");
+	this->ImmuneToBlock.Read(exINI, pSection, "ImmuneToBlock");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
+
+	// Block
+	if (this->BlockType == nullptr)
+		this->BlockType = std::make_unique<BlockTypeClass>();
+	this->BlockType->LoadFromINI(pINI, pSection);
 
 #ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 	this->InflictLocomotor.Read(exINI, pSection, "InflictLocomotor");
@@ -484,6 +498,16 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RemoveInflictedLocomotor)
 
 		.Process(this->Nonprovocative)
+
+		.Process(this->BlockType)
+		.Process(this->Block_BasedOnWarhead)
+		.Process(this->Block_AllowOverride)
+		.Process(this->Block_IgnoreAttachEffect)
+		.Process(this->Block_ChanceMultiplier)
+		.Process(this->Block_ExtraChance)
+		.Process(this->Block_DamageMult_Multiplier)
+		.Process(this->Block_DamageMult_Bonus)
+		.Process(this->ImmuneToBlock)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

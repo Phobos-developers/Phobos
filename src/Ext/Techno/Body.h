@@ -168,6 +168,8 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
+	static int CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args);
+	static std::pair<std::vector<double>, std::vector<double>> GetBlockChanceAndDamageMult(TechnoClass* pThis, std::vector<double> blockChance, std::vector<double> blockDamageMult);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
