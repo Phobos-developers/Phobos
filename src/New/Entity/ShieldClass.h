@@ -22,7 +22,7 @@ public:
 	bool CanBePenetrated(WarheadTypeClass* pWarhead) const;
 	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
 
-	void SetRespawn(int duration, double amount, int rate, bool resetTimer);
+	void SetRespawn(int duration, double amount, int rate, bool resetTimer, std::vector<AnimTypeClass*> anim, WeaponTypeClass* weapon = nullptr);
 	void SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer);
 	void KillAnim();
 	void AI_Temporal();
@@ -100,6 +100,8 @@ private:
 	int SelfHealing_RestartInCombatDelay_Warhead;
 	double Respawn_Warhead;
 	int Respawn_Rate_Warhead;
+	std::vector<AnimTypeClass*> Respawn_Anims_Warhead;
+	WeaponTypeClass* Respawn_Weapon_Warhead;
 
 	int LastBreakFrame;
 	double LastTechnoHealthRatio;

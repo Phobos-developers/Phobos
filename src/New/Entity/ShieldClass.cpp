@@ -93,6 +93,8 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->SelfHealing_RestartInCombatDelay_Warhead)
 		.Process(this->Respawn_Warhead)
 		.Process(this->Respawn_Rate_Warhead)
+		.Process(this->Respawn_Anims_Warhead)
+		.Process(this->Respawn_Weapon_Warhead)
 		.Process(this->LastBreakFrame)
 		.Process(this->LastTechnoHealthRatio)
 		.Success();
@@ -711,6 +713,23 @@ void ShieldClass::RespawnShield()
 		double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
 		this->HP = this->GetPercentageAmount(amount);
 		this->UpdateTint();
+		const auto pAnimList = timerWHModifier->InProgress() ? this->Respawn_Anims_Warhead : this->Type->Respawn_Anims;
+		const auto pWeapon = timerWHModifier->InProgress() ? this->Respawn_Weapon_Warhead : this->Type->Respawn_Weapon;
+
+		if (!pAnimList.empty())
+		{
+			if (const auto pAnimType = pAnimList[ScenarioClass::Instance->Random.RandomRanged(0, pAnimList.size() - 1)])
+			{
+				if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
+				{
+					pAnim->SetOwnerObject(this->Techno);
+					pAnim->Owner = this->Techno->Owner;
+				}
+			}
+		}
+
+		if (pWeapon)
+			TechnoExt::FireWeaponAtSelf(this->Techno, pWeapon);
 	}
 	else if (timerWHModifier->Completed() && timer->InProgress())
 	{
@@ -719,7 +738,7 @@ void ShieldClass::RespawnShield()
 	}
 }
 
-void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTimer)
+void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTimer, std::vector<AnimTypeClass*> anim, WeaponTypeClass* weapon)
 {
 	const auto timer = &this->Timers.Respawn;
 	const auto timerWHModifier = &this->Timers.Respawn_WHModifier;
@@ -727,6 +746,8 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTi
 	bool modifierTimerInProgress = timerWHModifier->InProgress();
 	this->Respawn_Warhead = amount;
 	this->Respawn_Rate_Warhead = rate >= 0 ? rate : Type->Respawn_Rate;
+	this->Respawn_Anims_Warhead = anim;
+	this->Respawn_Weapon_Warhead = weapon ? weapon : Type->Respawn_Weapon;
 
 	timerWHModifier->Start(duration);
 

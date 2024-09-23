@@ -43,6 +43,8 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Powered.Read(exINI, pSection, "Powered");
 
 	this->Respawn.Read(exINI, pSection, "Respawn");
+	this->Respawn_Anims.Read(exINI, pSection, "Respawn.Anims");
+	this->Respawn_Weapon.Read(exINI, pSection, "Respawn.Weapon");
 	Nullable<double> Respawn_Rate__InMinutes;
 	Respawn_Rate__InMinutes.Read(exINI, pSection, "Respawn.Rate");
 	if (Respawn_Rate__InMinutes.isset())
@@ -109,6 +111,8 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Powered)
 		.Process(this->Respawn)
 		.Process(this->Respawn_Rate)
+		.Process(this->Respawn_Anims)
+		.Process(this->Respawn_Weapon)
 		.Process(this->SelfHealing)
 		.Process(this->SelfHealing_Rate)
 		.Process(this->SelfHealing_RestartInCombat)

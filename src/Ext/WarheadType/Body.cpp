@@ -211,6 +211,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_Respawn_Rate_InMinutes.Read(exINI, pSection, "Shield.Respawn.Rate");
 	this->Shield_Respawn_Rate = (int)(this->Shield_Respawn_Rate_InMinutes * 900);
 	this->Shield_Respawn_RestartTimer.Read(exINI, pSection, "Shield.Respawn.RestartTimer");
+	this->Shield_Respawn_Anims.Read(exINI, pSection, "Shield.Respawn.Anims");
+	this->Shield_Respawn_Weapon.Read(exINI, pSection, "Shield.Respawn.Weapon");
 	this->Shield_SelfHealing_Duration.Read(exINI, pSection, "Shield.SelfHealing.Duration");
 	this->Shield_SelfHealing_Amount.Read(exINI, pSection, "Shield.SelfHealing.Amount");
 	this->Shield_SelfHealing_Rate_InMinutes.Read(exINI, pSection, "Shield.SelfHealing.Rate");
@@ -423,6 +425,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_Respawn_Amount)
 		.Process(this->Shield_Respawn_Rate)
 		.Process(this->Shield_Respawn_RestartTimer)
+		.Process(this->Shield_Respawn_Anims)
+		.Process(this->Shield_Respawn_Weapon)
 		.Process(this->Shield_SelfHealing_Duration)
 		.Process(this->Shield_SelfHealing_Amount)
 		.Process(this->Shield_SelfHealing_Rate)
