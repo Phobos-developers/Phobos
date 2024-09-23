@@ -114,9 +114,12 @@ bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 {
 	if (auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
-		return pBulletTypeExt->Trajectory_Speed;
-	else
-		return 100.0;
+	{
+		const double trajectorySpeed = pBulletTypeExt->Trajectory_Speed;
+		return abs(trajectorySpeed) > 1e-10 ? trajectorySpeed : 0.001;
+	}
+
+	return 100.0;
 }
 
 PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)

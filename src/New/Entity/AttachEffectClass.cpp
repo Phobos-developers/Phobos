@@ -871,6 +871,7 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->IsOnline)
 		.Process(this->IsCloaked)
 		.Process(this->HasInitialized)
+		.Process(this->NeedsDurationRefresh)
 		.Success();
 }
 

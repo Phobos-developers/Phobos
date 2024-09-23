@@ -445,8 +445,6 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	auto const rtti = pOldType->WhatAmI();
-
 	// Remove from limbo reloaders if no longer applicable
 	if (pOldType->Ammo > 0 && pOldTypeExt->ReloadInTransport && !this->TypeExtData->ReloadInTransport)
 	{

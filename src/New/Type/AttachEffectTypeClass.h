@@ -116,11 +116,9 @@ public:
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
 
-	virtual ~AttachEffectTypeClass() override = default;
-
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm);
-	virtual void SaveToStream(PhobosStreamWriter& Stm);
+	void LoadFromINI(CCINIClass* pINI);
+	void LoadFromStream(PhobosStreamReader& Stm);
+	void SaveToStream(PhobosStreamWriter& Stm);
 
 	static void Clear()
 	{

@@ -11,9 +11,11 @@ public:
 		, FallPercentShift { 0.0 }
 		, FallScatter_Max { Leptons(0) }
 		, FallScatter_Min { Leptons(0) }
-		, FallSpeed { 0.0 }
+		, FallSpeed {}
 		, DetonationDistance { Leptons(102) }
 		, ApplyRangeModifiers { false }
+		, DetonationHeight { -1 }
+		, EarlyDetonation { false }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
 		, LeadTimeCalculate { false }
@@ -24,6 +26,7 @@ public:
 		, MirrorCoord { true }
 		, UseDisperseBurst { false }
 		, AxisOfRotation { { 0, 0, 1 } }
+		, SubjectToGround { false }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -37,9 +40,11 @@ public:
 	Valueable<double> FallPercentShift;
 	Valueable<Leptons> FallScatter_Max;
 	Valueable<Leptons> FallScatter_Min;
-	Valueable<double> FallSpeed;
+	Nullable<double> FallSpeed;
 	Valueable<Leptons> DetonationDistance;
 	Valueable<bool> ApplyRangeModifiers;
+	Valueable<int> DetonationHeight;
+	Valueable<bool> EarlyDetonation;
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> FreeFallOnTarget;
 	Valueable<bool> LeadTimeCalculate;
@@ -50,6 +55,7 @@ public:
 	Valueable<bool> MirrorCoord;
 	Valueable<bool> UseDisperseBurst;
 	Valueable<CoordStruct> AxisOfRotation;
+	Valueable<bool> SubjectToGround;
 };
 
 class BombardTrajectory final : public PhobosTrajectory
@@ -60,8 +66,10 @@ public:
 		, Height { 0.0 }
 		, RemainingDistance { 1 }
 		, FallPercent { 1.0 }
-		, FallSpeed { 0.0 }
+		, FallSpeed {}
 		, DetonationDistance { Leptons(102) }
+		, DetonationHeight { -1 }
+		, EarlyDetonation { false }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
 		, LeadTimeCalculate { false }
@@ -70,9 +78,12 @@ public:
 		, MirrorCoord { true }
 		, UseDisperseBurst { false }
 		, AxisOfRotation {}
+		, SubjectToGround { false }
 		, LastTargetCoord {}
 		, CountOfBurst { 0 }
 		, CurrentBurst { 0 }
+		, RotateAngle { 0.0 }
+		, AscendTime { 1 }
 	{}
 
 	BombardTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Bombard)
@@ -80,8 +91,10 @@ public:
 		, Height { 0.0 }
 		, RemainingDistance { 1 }
 		, FallPercent { 1.0 }
-		, FallSpeed { 0.0 }
+		, FallSpeed {}
 		, DetonationDistance { Leptons(102) }
+		, DetonationHeight { -1 }
+		, EarlyDetonation { false }
 		, TargetSnapDistance { Leptons(128) }
 		, FreeFallOnTarget { true }
 		, LeadTimeCalculate { false }
@@ -90,9 +103,12 @@ public:
 		, MirrorCoord { true }
 		, UseDisperseBurst { false }
 		, AxisOfRotation {}
+		, SubjectToGround { false }
 		, LastTargetCoord {}
 		, CountOfBurst { 0 }
 		, CurrentBurst { 0 }
+		, RotateAngle { 0.0 }
+		, AscendTime { 1 }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -102,8 +118,6 @@ public:
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) override;
-	virtual void CalculateLeadTime(BulletClass* pBullet) override;
-	virtual void CalculateDisperseBurst(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
@@ -113,6 +127,8 @@ public:
 	double FallPercent;
 	double FallSpeed;
 	Leptons DetonationDistance;
+	int DetonationHeight;
+	bool EarlyDetonation;
 	Leptons TargetSnapDistance;
 	bool FreeFallOnTarget;
 	bool LeadTimeCalculate;
@@ -121,10 +137,16 @@ public:
 	bool MirrorCoord;
 	bool UseDisperseBurst;
 	CoordStruct AxisOfRotation;
+	bool SubjectToGround;
 	CoordStruct LastTargetCoord;
 	int CountOfBurst;
 	int CurrentBurst;
+	double RotateAngle;
+	int AscendTime;
 
 private:
-	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner, double StraightSpeed);
+	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner);
+	void CalculateLeadTime(BulletClass* pBullet);
+	void CalculateDisperseBurst(BulletClass* pBullet, BulletVelocity& pVelocity);
+	void CalculateBulletVelocity(BulletVelocity& pVelocity);
 };
