@@ -89,9 +89,6 @@ bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	this->PhobosTrajectory::Load(Stm, false);
 
 	Stm
-		.Process(this->SourceCoord)
-		.Process(this->TargetCoord)
-		.Process(this->MirrorCoord)
 		.Process(this->TheDuration)
 		.Process(this->IsLaser)
 		.Process(this->IsSupported)
@@ -110,7 +107,6 @@ bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->NotMainWeapon)
 		.Process(this->FLHCoord)
 		.Process(this->BuildingCoord)
-		.Process(this->TemporaryCoord)
 		;
 
 	return true;
@@ -121,9 +117,6 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 	this->PhobosTrajectory::Save(Stm);
 
 	Stm
-		.Process(this->SourceCoord)
-		.Process(this->TargetCoord)
-		.Process(this->MirrorCoord)
 		.Process(this->TheDuration)
 		.Process(this->IsLaser)
 		.Process(this->IsSupported)
@@ -142,7 +135,6 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 		.Process(this->NotMainWeapon)
 		.Process(this->FLHCoord)
 		.Process(this->BuildingCoord)
-		.Process(this->TemporaryCoord)
 		;
 
 	return true;
@@ -152,9 +144,6 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 {
 	auto const pType = this->GetTrajectoryType<EngraveTrajectoryType>(pBullet);
 
-	this->SourceCoord = pType->SourceCoord;
-	this->TargetCoord = pType->TargetCoord;
-	this->MirrorCoord = pType->MirrorCoord;
 	this->TheDuration = pType->TheDuration;
 	this->IsLaser = pType->IsLaser;
 	this->IsSupported = pType->IsSupported;
@@ -171,9 +160,10 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->DamageTimer.StartTime = 0;
 	this->FLHCoord = pBullet->SourceCoords;
 	this->BuildingCoord = CoordStruct::Empty;
-	this->TemporaryCoord = CoordStruct::Empty;
 
 	TechnoClass* const pTechno = pBullet->Owner;
+	Point2D sourceOffset = pType->SourceCoord;
+	Point2D targetOffset = pType->TargetCoord;
 
 	if (pTechno)
 	{
@@ -181,21 +171,22 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		this->NotMainWeapon = false;
 
 		this->GetTechnoFLHCoord(pBullet, pTechno);
-		this->CheckMirrorCoord(pTechno);
-		this->SetEngraveDirection(pBullet, pTechno->GetCoords(), pBullet->TargetCoords);
+		this->CheckMirrorCoord(pTechno, sourceOffset, targetOffset, pType->MirrorCoord);
+		this->SetEngraveDirection(pBullet, pTechno->GetCoords(), pBullet->TargetCoords, sourceOffset, targetOffset);
 	}
 	else
 	{
 		this->TechnoInLimbo = false;
 		this->NotMainWeapon = true;
 
-		this->SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords);
+		this->SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords, sourceOffset, targetOffset);
 	}
 
-	double straightSpeed = this->GetTrajectorySpeed(pBullet);
-	straightSpeed = straightSpeed > 128.0 ? 128.0 : straightSpeed;
+	double engraveSpeed = this->GetTrajectorySpeed(pBullet);
+	engraveSpeed = engraveSpeed > 128.0 ? 128.0 : engraveSpeed;
+
 	double coordDistance = pBullet->Velocity.Magnitude();
-	pBullet->Velocity *= (coordDistance > 1e-10) ? (straightSpeed / coordDistance) : 0;
+	pBullet->Velocity *= (coordDistance > 1e-10) ? (engraveSpeed / coordDistance) : 0;
 
 	WeaponTypeClass* const pWeapon = pBullet->WeaponType;
 
@@ -203,7 +194,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		coordDistance = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno, static_cast<int>(coordDistance)));
 
 	if (this->TheDuration <= 0)
-		this->TheDuration = static_cast<int>(coordDistance / straightSpeed) + 1;
+		this->TheDuration = static_cast<int>(coordDistance / engraveSpeed) + 1;
 }
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
@@ -213,9 +204,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 	if ((!pTechno && !this->NotMainWeapon) || this->TechnoInLimbo != static_cast<bool>(pTechno->Transporter))
 		return true;
 
-	if (--this->TheDuration < 0)
-		return true;
-	else if (this->PlaceOnCorrectHeight(pBullet))
+	if (--this->TheDuration < 0 || this->PlaceOnCorrectHeight(pBullet))
 		return true;
 
 	HouseClass* const pOwner = pTechno->Owner;
@@ -278,34 +267,34 @@ void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTe
 	this->FLHCoord = pExt->LastWeaponFLH;
 }
 
-void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno)
+void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno, Point2D& sourceOffset, Point2D& targetOffset, bool mirror)
 {
-	if (pTechno->CurrentBurstIndex % 2 == 0)
+	if (this->NotMainWeapon || pTechno->CurrentBurstIndex % 2 == 0)
 		return;
 
-	if (this->MirrorCoord)
+	if (mirror)
 	{
-		this->SourceCoord.Y = -(this->SourceCoord.Y);
-		this->TargetCoord.Y = -(this->TargetCoord.Y);
+		sourceOffset.Y = -(sourceOffset.Y);
+		targetOffset.Y = -(targetOffset.Y);
 	}
 }
 
-void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget)
+void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget, Point2D& sourceOffset, Point2D& targetOffset)
 {
 	const double rotateAngle = Math::atan2(theTarget.Y - theSource.Y , theTarget.X - theSource.X);
 
-	if (this->SourceCoord.X != 0 || this->SourceCoord.Y != 0)
+	if (sourceOffset.X != 0 || sourceOffset.Y != 0)
 	{
 		theSource = theTarget;
-		theSource.X += static_cast<int>(this->SourceCoord.X * Math::cos(rotateAngle) + this->SourceCoord.Y * Math::sin(rotateAngle));
-		theSource.Y += static_cast<int>(this->SourceCoord.X * Math::sin(rotateAngle) - this->SourceCoord.Y * Math::cos(rotateAngle));
+		theSource.X += static_cast<int>(sourceOffset.X * Math::cos(rotateAngle) + sourceOffset.Y * Math::sin(rotateAngle));
+		theSource.Y += static_cast<int>(sourceOffset.X * Math::sin(rotateAngle) - sourceOffset.Y * Math::cos(rotateAngle));
 	}
 
 	theSource.Z = this->GetFloorCoordHeight(pBullet, theSource);
 	pBullet->SetLocation(theSource);
 
-	theTarget.X += static_cast<int>(this->TargetCoord.X * Math::cos(rotateAngle) + this->TargetCoord.Y * Math::sin(rotateAngle));
-	theTarget.Y += static_cast<int>(this->TargetCoord.X * Math::sin(rotateAngle) - this->TargetCoord.Y * Math::cos(rotateAngle));
+	theTarget.X += static_cast<int>(targetOffset.X * Math::cos(rotateAngle) + targetOffset.Y * Math::sin(rotateAngle));
+	theTarget.Y += static_cast<int>(targetOffset.X * Math::sin(rotateAngle) - targetOffset.Y * Math::cos(rotateAngle));
 
 	pBullet->Velocity.X = theTarget.X - theSource.X;
 	pBullet->Velocity.Y = theTarget.Y - theSource.Y;
@@ -331,13 +320,6 @@ int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, CoordStruct coo
 bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 {
 	CoordStruct bulletCoords = pBullet->Location;
-
-	if (this->TemporaryCoord != CoordStruct::Empty)
-	{
-		pBullet->SetLocation(this->TemporaryCoord);
-		this->TemporaryCoord = CoordStruct::Empty;
-	}
-
 	CoordStruct futureCoords
 	{
 		bulletCoords.X + static_cast<int>(pBullet->Velocity.X),
@@ -350,18 +332,22 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 	if (abs(checkDifference) >= 384)
 	{
 		if (pBullet->Type->SubjectToCliffs)
-		{
 			return true;
-		}
-		else if (checkDifference > 0)
+
+		if (checkDifference > 0)
 		{
 			bulletCoords.Z += checkDifference;
 			pBullet->SetLocation(bulletCoords);
 		}
 		else
 		{
-			futureCoords.Z += checkDifference;
-			this->TemporaryCoord = futureCoords;
+			const int nowDifference = bulletCoords.Z - this->GetFloorCoordHeight(pBullet, bulletCoords);
+
+			if (nowDifference >= 256)
+			{
+				bulletCoords.Z -= nowDifference;
+				pBullet->SetLocation(bulletCoords);
+			}
 		}
 	}
 	else

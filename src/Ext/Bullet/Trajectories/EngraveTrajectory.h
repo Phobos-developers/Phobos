@@ -51,9 +51,6 @@ class EngraveTrajectory final : public PhobosTrajectory
 {
 public:
 	EngraveTrajectory() : PhobosTrajectory(TrajectoryFlag::Engrave)
-		, SourceCoord {}
-		, TargetCoord {}
-		, MirrorCoord { true }
 		, TheDuration { 0 }
 		, IsLaser { true }
 		, IsSupported { false }
@@ -72,13 +69,9 @@ public:
 		, NotMainWeapon { false }
 		, FLHCoord {}
 		, BuildingCoord {}
-		, TemporaryCoord {}
 	{}
 
 	EngraveTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Engrave)
-		, SourceCoord {}
-		, TargetCoord {}
-		, MirrorCoord { true }
 		, TheDuration { 0 }
 		, IsLaser { true }
 		, IsSupported { false }
@@ -97,7 +90,6 @@ public:
 		, NotMainWeapon { false }
 		, FLHCoord {}
 		, BuildingCoord {}
-		, TemporaryCoord {}
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -110,9 +102,6 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
-	Point2D SourceCoord;
-	Point2D TargetCoord;
-	bool MirrorCoord;
 	int TheDuration;
 	bool IsLaser;
 	bool IsSupported;
@@ -131,12 +120,11 @@ public:
 	bool NotMainWeapon;
 	CoordStruct FLHCoord;
 	CoordStruct BuildingCoord;
-	CoordStruct TemporaryCoord;
 
 private:
 	void GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno);
-	void CheckMirrorCoord(TechnoClass* pTechno);
-	void SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget);
+	void CheckMirrorCoord(TechnoClass* pTechno, Point2D& sourceOffset, Point2D& targetOffset, bool mirror);
+	void SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget, Point2D& sourceOffset, Point2D& targetOffset);
 	int GetFloorCoordHeight(BulletClass* pBullet, CoordStruct coord);
 	bool PlaceOnCorrectHeight(BulletClass* pBullet);
 	void DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
