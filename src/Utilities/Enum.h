@@ -152,7 +152,7 @@ enum class AutoDeathBehavior
 
 enum class SelfHealGainType
 {
-	None = 0,
+	NoHeal = 0,
 	Infantry = 1,
 	Units = 2
 };
