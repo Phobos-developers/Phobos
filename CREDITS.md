@@ -328,7 +328,7 @@ This page lists all the individual contributions to the project by their author.
    - Jumpjet crash speed fix when crashing onto building
    - Disguised units not using the correct palette if target has custom palette bugfix
    - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
-   - Customize superweapon tabindex
+   - Assign Super Weapon cameo to any sidebar tab
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons
