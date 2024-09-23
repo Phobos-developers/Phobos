@@ -6,36 +6,14 @@
 #include <TacticalClass.h>
 #include <LaserDrawClass.h>
 
-bool EngraveTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+PhobosTrajectory* EngraveTrajectoryType::CreateInstance() const
 {
-	this->PhobosTrajectoryType::Load(Stm, false);
-
-	Stm
-		.Process(this->ApplyRangeModifiers, false)
-		.Process(this->SourceCoord, false)
-		.Process(this->TargetCoord, false)
-		.Process(this->MirrorCoord, false)
-		.Process(this->TheDuration, false)
-		.Process(this->IsLaser, false)
-		.Process(this->IsSupported, false)
-		.Process(this->IsHouseColor, false)
-		.Process(this->IsSingleColor, false)
-		.Process(this->LaserInnerColor, false)
-		.Process(this->LaserOuterColor, false)
-		.Process(this->LaserOuterSpread, false)
-		.Process(this->LaserThickness, false)
-		.Process(this->LaserDuration, false)
-		.Process(this->LaserDelay, false)
-		.Process(this->DamageDelay, false)
-		;
-
-	return true;
+	return new EngraveTrajectory(this);
 }
 
-bool EngraveTrajectoryType::Save(PhobosStreamWriter& Stm) const
+template<typename T>
+void EngraveTrajectoryType::Serialize(T& Stm)
 {
-	this->PhobosTrajectoryType::Save(Stm);
-
 	Stm
 		.Process(this->ApplyRangeModifiers)
 		.Process(this->SourceCoord)
@@ -54,13 +32,20 @@ bool EngraveTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->LaserDelay)
 		.Process(this->DamageDelay)
 		;
+}
 
+bool EngraveTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->PhobosTrajectoryType::Load(Stm, false);
+	this->Serialize(Stm);
 	return true;
 }
 
-PhobosTrajectory* EngraveTrajectoryType::CreateInstance() const
+bool EngraveTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
-	return new EngraveTrajectory(this);
+	this->PhobosTrajectoryType::Save(Stm);
+	const_cast<EngraveTrajectoryType*>(this)->Serialize(Stm);
+	return true;
 }
 
 void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
@@ -84,11 +69,14 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->DamageDelay.Read(exINI, pSection, "Trajectory.Engrave.DamageDelay");
 }
 
-bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+template<typename T>
+void EngraveTrajectory::Serialize(T& Stm)
 {
-	this->PhobosTrajectory::Load(Stm, false);
-
 	Stm
+		.Process(this->SourceCoord)
+		.Process(this->TargetCoord)
+		.Process(this->MirrorCoord)
+		.Process(this->ApplyRangeModifiers)
 		.Process(this->TheDuration)
 		.Process(this->IsLaser)
 		.Process(this->IsSupported)
@@ -108,62 +96,28 @@ bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->FLHCoord)
 		.Process(this->BuildingCoord)
 		;
+}
 
+bool EngraveTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->PhobosTrajectory::Load(Stm, false);
+	this->Serialize(Stm);
 	return true;
 }
 
 bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectory::Save(Stm);
-
-	Stm
-		.Process(this->TheDuration)
-		.Process(this->IsLaser)
-		.Process(this->IsSupported)
-		.Process(this->IsHouseColor)
-		.Process(this->IsSingleColor)
-		.Process(this->LaserInnerColor)
-		.Process(this->LaserOuterColor)
-		.Process(this->LaserOuterSpread)
-		.Process(this->LaserThickness)
-		.Process(this->LaserDuration)
-		.Process(this->LaserDelay)
-		.Process(this->DamageDelay)
-		.Process(this->LaserTimer)
-		.Process(this->DamageTimer)
-		.Process(this->TechnoInLimbo)
-		.Process(this->NotMainWeapon)
-		.Process(this->FLHCoord)
-		.Process(this->BuildingCoord)
-		;
-
+	const_cast<EngraveTrajectory*>(this)->Serialize(Stm);
 	return true;
 }
 
 void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	auto const pType = this->GetTrajectoryType<EngraveTrajectoryType>(pBullet);
-
-	this->TheDuration = pType->TheDuration;
-	this->IsLaser = pType->IsLaser;
-	this->IsSupported = pType->IsSupported;
-	this->IsHouseColor = pType->IsHouseColor;
-	this->IsSingleColor = pType->IsSingleColor;
-	this->LaserInnerColor = pType->LaserInnerColor;
-	this->LaserOuterColor = pType->LaserOuterColor;
-	this->LaserOuterSpread = pType->LaserOuterSpread;
-	this->LaserThickness = pType->LaserThickness > 0 ? pType->LaserThickness : 1;
-	this->LaserDuration = pType->LaserDuration > 0 ? pType->LaserDuration : 1;
-	this->LaserDelay = pType->LaserDelay > 0 ? pType->LaserDelay : 1;
-	this->DamageDelay = pType->DamageDelay > 0 ? pType->DamageDelay : 1;
-	this->LaserTimer.StartTime = 0;
-	this->DamageTimer.StartTime = 0;
 	this->FLHCoord = pBullet->SourceCoords;
 	this->BuildingCoord = CoordStruct::Empty;
 
 	TechnoClass* const pTechno = pBullet->Owner;
-	Point2D sourceOffset = pType->SourceCoord;
-	Point2D targetOffset = pType->TargetCoord;
 
 	if (pTechno)
 	{
@@ -171,15 +125,15 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		this->NotMainWeapon = false;
 
 		this->GetTechnoFLHCoord(pBullet, pTechno);
-		this->CheckMirrorCoord(pTechno, sourceOffset, targetOffset, pType->MirrorCoord);
-		this->SetEngraveDirection(pBullet, pTechno->GetCoords(), pBullet->TargetCoords, sourceOffset, targetOffset);
+		this->CheckMirrorCoord(pTechno);
+		this->SetEngraveDirection(pBullet, pTechno->GetCoords(), pBullet->TargetCoords);
 	}
 	else
 	{
 		this->TechnoInLimbo = false;
 		this->NotMainWeapon = true;
 
-		this->SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords, sourceOffset, targetOffset);
+		this->SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords);
 	}
 
 	double engraveSpeed = this->GetTrajectorySpeed(pBullet);
@@ -190,7 +144,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 	WeaponTypeClass* const pWeapon = pBullet->WeaponType;
 
-	if (pType->ApplyRangeModifiers && pWeapon && pTechno)
+	if (this->ApplyRangeModifiers && pWeapon && pTechno)
 		coordDistance = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno, static_cast<int>(coordDistance)));
 
 	if (this->TheDuration <= 0)
@@ -267,34 +221,34 @@ void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTe
 	this->FLHCoord = pExt->LastWeaponFLH;
 }
 
-void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno, Point2D& sourceOffset, Point2D& targetOffset, bool mirror)
+void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno)
 {
-	if (this->NotMainWeapon || pTechno->CurrentBurstIndex % 2 == 0)
+	if (this->NotMainWeapon || !(pTechno->CurrentBurstIndex % 2))
 		return;
 
-	if (mirror)
+	if (this->MirrorCoord)
 	{
-		sourceOffset.Y = -(sourceOffset.Y);
-		targetOffset.Y = -(targetOffset.Y);
+		this->SourceCoord.Y = -(this->SourceCoord.Y);
+		this->TargetCoord.Y = -(this->TargetCoord.Y);
 	}
 }
 
-void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget, Point2D& sourceOffset, Point2D& targetOffset)
+void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget)
 {
 	const double rotateAngle = Math::atan2(theTarget.Y - theSource.Y , theTarget.X - theSource.X);
 
-	if (sourceOffset.X != 0 || sourceOffset.Y != 0)
+	if (this->SourceCoord.X != 0 || this->SourceCoord.Y != 0)
 	{
 		theSource = theTarget;
-		theSource.X += static_cast<int>(sourceOffset.X * Math::cos(rotateAngle) + sourceOffset.Y * Math::sin(rotateAngle));
-		theSource.Y += static_cast<int>(sourceOffset.X * Math::sin(rotateAngle) - sourceOffset.Y * Math::cos(rotateAngle));
+		theSource.X += static_cast<int>(this->SourceCoord.X * Math::cos(rotateAngle) + this->SourceCoord.Y * Math::sin(rotateAngle));
+		theSource.Y += static_cast<int>(this->SourceCoord.X * Math::sin(rotateAngle) - this->SourceCoord.Y * Math::cos(rotateAngle));
 	}
 
 	theSource.Z = this->GetFloorCoordHeight(pBullet, theSource);
 	pBullet->SetLocation(theSource);
 
-	theTarget.X += static_cast<int>(targetOffset.X * Math::cos(rotateAngle) + targetOffset.Y * Math::sin(rotateAngle));
-	theTarget.Y += static_cast<int>(targetOffset.X * Math::sin(rotateAngle) - targetOffset.Y * Math::cos(rotateAngle));
+	theTarget.X += static_cast<int>(this->TargetCoord.X * Math::cos(rotateAngle) + this->TargetCoord.Y * Math::sin(rotateAngle));
+	theTarget.Y += static_cast<int>(this->TargetCoord.X * Math::sin(rotateAngle) - this->TargetCoord.Y * Math::cos(rotateAngle));
 
 	pBullet->Velocity.X = theTarget.X - theSource.X;
 	pBullet->Velocity.Y = theTarget.Y - theSource.Y;
