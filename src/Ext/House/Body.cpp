@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/SWType/Body.h>
+#include <New/Entity/PhobosStorageClass.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 
@@ -646,6 +647,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->NumWarFactories_NonMFB)
 		.Process(this->NumConYards_NonMFB)
 		.Process(this->NumShipyards_NonMFB)
+		.Process(this->Tiberium)
+		.Process(this->Weed)
 		;
 }
 
@@ -653,6 +656,10 @@ void HouseExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<HouseClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	// Restore the pointers to our new Storage class
+	new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject()->OwnedTiberium)) PhobosStorageClass(&Tiberium);
+	new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject()->OwnedWeed)) PhobosStorageClass(&Weed);
 }
 
 void HouseExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)

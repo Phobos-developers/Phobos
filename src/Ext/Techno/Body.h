@@ -1,6 +1,7 @@
 #pragma once
 #include <InfantryClass.h>
 #include <AnimClass.h>
+#include <TiberiumClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
@@ -9,6 +10,7 @@
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <New/Entity/PhobosStorageClass.h>
 
 class BulletClass;
 
@@ -55,6 +57,7 @@ public:
 		bool HasRemainingWarpInDelay;          // Converted from object with Teleport Locomotor to one with a different Locomotor while still phasing in OR set if ChronoSphereDelay > 0.
 		int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
+		std::vector<float> Tiberium;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -85,8 +88,12 @@ public:
 			, OriginalPassengerOwner {}
 			, HasRemainingWarpInDelay { false }
 			, LastWarpInDelay { 0 }
-			, IsBeingChronoSphered { false}
-		{ }
+			, IsBeingChronoSphered { false }
+			, Tiberium(TiberiumClass::Array->Count, 0.0f)
+		{
+			// Initialize our new storage class inside the owner object
+			new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject->Tiberium)) PhobosStorageClass(&Tiberium);
+		}
 
 		void OnEarlyUpdate();
 

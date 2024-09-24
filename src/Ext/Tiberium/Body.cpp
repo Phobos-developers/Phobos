@@ -10,6 +10,8 @@ void TiberiumExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->MinimapColor)
+		.Process(this->Overlay)
+		.Process(this->Overlays_UseSlopes)
 		;
 }
 
@@ -24,6 +26,17 @@ void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
+
+	this->Overlay = OwnerObject()->Image;
+	this->Overlays_UseSlopes = OwnerObject()->NumSlopes > 0;
+
+	this->Overlay.Read(exINI, pSection, "Overlay");
+	this->Overlays_UseSlopes.Read(exINI, pSection, "Overlays.UseSlopes");
+
+	OwnerObject()->Image = Overlay;
+	OwnerObject()->NumFrames = 12;
+	OwnerObject()->NumImages = 12;
+	OwnerObject()->NumSlopes = Overlays_UseSlopes ? 8 : 0;
 }
 
 void TiberiumExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

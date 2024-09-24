@@ -53,6 +53,9 @@ public:
 		int NumConYards_NonMFB;
 		int NumShipyards_NonMFB;
 
+		std::vector<float> Tiberium;
+		std::vector<float> Weed;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -75,7 +78,13 @@ public:
 			, NumWarFactories_NonMFB { 0 }
 			, NumConYards_NonMFB { 0 }
 			, NumShipyards_NonMFB { 0 }
-		{ }
+			, Tiberium(TiberiumClass::Array->Count, 0.0f)
+			, Weed(TiberiumClass::Array->Count, 0.0f)
+		{
+			// Initialize our new storage classes inside the owner object
+			new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject->OwnedTiberium)) PhobosStorageClass(&Tiberium);
+			new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject->OwnedWeed)) PhobosStorageClass(&Weed);
+		}
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
 		void AddToLimboTracking(TechnoTypeClass* pTechnoType);

@@ -92,6 +92,19 @@ typedef _VTABLE _OFFSET;
 #pragma endregion Patch Structs
 
 #pragma region Macros
+template<typename T>
+int GetPtr(T func)
+{
+	union
+	{
+		T Func;
+		int Ptr;
+	} addr;
+
+	addr.Func = func;
+	return addr.Ptr;
+}
+#define GET_PTR(func) GetPtr(func)
 #define GET_OFFSET(pointer) reinterpret_cast<DWORD>(pointer)
 
 #pragma region Static Patch

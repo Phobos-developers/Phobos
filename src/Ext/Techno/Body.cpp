@@ -6,6 +6,8 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Scenario/Body.h>
+#include "New/Entity/PhobosStorageClass.h"
+#include <Ext/House/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -498,6 +500,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasRemainingWarpInDelay)
 		.Process(this->LastWarpInDelay)
 		.Process(this->IsBeingChronoSphered)
+		.Process(this->Tiberium)
 		;
 }
 
@@ -505,6 +508,9 @@ void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<TechnoClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	// Restore the pointer to our new Storage class
+	new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject()->Tiberium)) PhobosStorageClass(&Tiberium);
 }
 
 void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
