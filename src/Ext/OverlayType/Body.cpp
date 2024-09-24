@@ -35,29 +35,17 @@ void OverlayTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ZAdjust.Read(exArtINI, pArtSection, "ZAdjust");
 	this->PaletteFile.Read(pArtINI, pArtSection, "Palette");
-
-	BuildPalette();
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 
 	if (GeneralUtils::IsValidString(this->PaletteFile) && !this->Palette)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, this->PaletteFile);
-}
-
-void OverlayTypeExt::ExtData::BuildPalette()
-{
-	if (GeneralUtils::IsValidString(this->PaletteFile))
-	{
-		char pFilename[0x20];
-		strcpy_s(pFilename, this->PaletteFile.data());
-
-		this->Palette = ColorScheme::GeneratePalette(pFilename);
-	}
 }
 
 void OverlayTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<OverlayTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
-	this->BuildPalette();
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
 void OverlayTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
