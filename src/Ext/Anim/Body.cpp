@@ -189,6 +189,43 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 	}
 }
 
+AnimClass* AnimExt::CreateRandomAnim(std::vector<AnimTypeClass*> AnimList, CoordStruct coords, TechnoClass* pTechno, HouseClass* pHouse, bool invoker)
+{
+	if (!AnimList.empty())
+	{
+		if (auto const pAnimType = AnimList[ScenarioClass::Instance->Random.RandomRanged(0, AnimList.size() - 1)])
+		{
+			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, coords))
+			{
+				if (pTechno)
+				{
+					pAnim->SetOwnerObject(pTechno);
+					pAnim->Owner = pHouse ? pHouse : pTechno->Owner;
+
+					if (invoker)
+					{
+						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+						{
+							if (pHouse)
+								pAnimExt->SetInvoker(pTechno, pHouse);
+							else
+								pAnimExt->SetInvoker(pTechno);
+						}
+					}
+				}
+				else if (pHouse)
+				{
+					pAnim->Owner = pHouse;
+				}
+
+				return pAnim;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
 // =============================
 // load / save
 

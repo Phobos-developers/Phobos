@@ -253,14 +253,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 				};
 
 			if (this->Shield_Break && pTargetExt->Shield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
-			{
-				AnimTypeClass* pAnimType = nullptr;
-
-				if (!this->Shield_BreakAnim.empty())
-					pAnimType = this->Shield_BreakAnim[ScenarioClass::Instance->Random.RandomRanged(0, this->Shield_BreakAnim.size() - 1)];
-
-				pTargetExt->Shield->BreakShield(pAnimType, this->Shield_BreakWeapon);
-			}
+				pTargetExt->Shield->BreakShield(this->Shield_BreakAnim, this->Shield_BreakWeapon);
 
 			if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
 			{

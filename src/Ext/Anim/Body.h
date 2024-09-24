@@ -80,4 +80,6 @@ public:
 
 	static void InvalidateTechnoPointers(TechnoClass* pTechno);
 	static void InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem);
+
+	static AnimClass* CreateRandomAnim(std::vector<AnimTypeClass*> AnimList, CoordStruct coords, TechnoClass* pTechno = nullptr, HouseClass* pHouse = nullptr, bool invoker = false);
 };

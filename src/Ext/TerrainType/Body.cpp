@@ -5,6 +5,7 @@
 #include <TerrainClass.h>
 #include <TerrainTypeClass.h>
 
+#include <Ext/Anim/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Utilities/GeneralUtils.h>
 
@@ -23,12 +24,7 @@ int TerrainTypeExt::ExtData::GetCellsPerAnim()
 void TerrainTypeExt::ExtData::PlayDestroyEffects(const CoordStruct& coords)
 {
 	VocClass::PlayIndexAtPos(this->DestroySound, coords);
-
-	if (!this->DestroyAnim.empty())
-	{
-		if (auto const pAnimType = this->DestroyAnim[ScenarioClass::Instance->Random.RandomRanged(0, this->DestroyAnim.size() - 1)])
-			GameCreate<AnimClass>(pAnimType, coords);
-	}
+	AnimExt::CreateRandomAnim(this->DestroyAnim, coords);
 }
 
 void TerrainTypeExt::Remove(TerrainClass* pTerrain)

@@ -144,19 +144,8 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 				if (success)
 				{
-					if (!pTypeExt->CreateUnit_SpawnAnim.empty())
-					{
-						if (auto const pAnimType = pTypeExt->CreateUnit_SpawnAnim[ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->CreateUnit_SpawnAnim.size() - 1)])
-						{
-							if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
-							{
-								AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
-
-								if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
-									pAnimExt->SetInvoker(pInvoker, pInvokerHouse);
-							}
-						}
-					}
+					if (auto const pAnim = AnimExt::CreateRandomAnim(pTypeExt->CreateUnit_SpawnAnim, location, pInvoker, pInvokerHouse, true))
+						AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
 
 					if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings)
 					{
