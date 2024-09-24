@@ -415,8 +415,8 @@ DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET(TechnoClass* const, pThis, ESI);
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->LastWeaponType = pWeapon;
+	if (TechnoExt::ExtData* const pExt = TechnoExt::ExtMap.Find(pThis))
+		pExt->LastWeaponType = pWeapon;
 
 	return 0;
 }
