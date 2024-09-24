@@ -21,9 +21,6 @@ public:
 	PhobosStorageClass operator+=(PhobosStorageClass& that);
 	PhobosStorageClass operator-=(PhobosStorageClass& that);
 
-	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
-	bool Save(PhobosStreamWriter& Stm) const;
-
 private:
 	std::vector<float>* Tiberiums;
 };

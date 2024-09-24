@@ -741,9 +741,6 @@ DEFINE_HOOK(0x4F7371, HouseClass_DTOR, 0x6)
 
 	HouseExt::ExtMap.Remove(pItem);
 
-	delete* reinterpret_cast<PhobosStorageClass**>(&pItem->OwnedTiberium);
-	delete* reinterpret_cast<PhobosStorageClass**>(&pItem->OwnedWeed);
-
 	return 0;
 }
 

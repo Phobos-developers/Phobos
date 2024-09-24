@@ -10,9 +10,8 @@ void TiberiumExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->MinimapColor)
-		.Process(this->Overlays)
+		.Process(this->Overlay)
 		.Process(this->Overlays_UseSlopes)
-		.Process(this->Overlays_FrameCount)
 		;
 }
 
@@ -28,33 +27,16 @@ void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
 
+	this->Overlay = OwnerObject()->Image;
+	this->Overlays_UseSlopes = OwnerObject()->NumSlopes > 0;
+
+	this->Overlay.Read(exINI, pSection, "Overlay");
 	this->Overlays_UseSlopes.Read(exINI, pSection, "Overlays.UseSlopes");
-	this->Overlays_FrameCount.Read(exINI, pSection, "Overlays.FrameCount");
-	this->Overlays.Read(exINI, pSection, "Overlays");
 
-	if (!this->Overlays.empty())
-	{
-		const int overlayCount = this->Overlays.size();
-
-		pThis->NumFrames = this->Overlays_FrameCount;
-		pThis->field_EC = 0;
-		pThis->NumImages = overlayCount;
-
-		if (this->Overlays_UseSlopes)
-		{
-			constexpr int rampCount = 8;
-
-			if (overlayCount <= rampCount)
-			{
-				Debug::Log("Tiberium %s is set to use slopes, but has only got %d frames (need at least 9), turning slopes off!", pThis->ID, overlayCount);
-			}
-			else
-			{
-				pThis->field_EC = rampCount;
-				pThis->NumImages -= rampCount;
-			}
-		}
-	}
+	OwnerObject()->Image = Overlay;
+	OwnerObject()->NumFrames = 12;
+	OwnerObject()->NumImages = 12;
+	OwnerObject()->NumSlopes = Overlays_UseSlopes ? 8 : 0;
 }
 
 void TiberiumExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -141,14 +123,6 @@ DEFINE_HOOK(0x721C7B, TiberiumClass_LoadFromINI, 0xA)
 	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0xC4, 0x4));
 
 	TiberiumExt::ExtMap.LoadFromINI(pItem, pINI);
-
-	if (!TiberiumExt::ExtMap.Find(pItem)->Overlays.empty())
-	{
-		if (auto pOverlay = TiberiumExt::ExtMap.Find(pItem)->Overlays[0])
-		{
-			pItem->Image = pOverlay; 
-		}
-	}
 
 	return 0;
 }

@@ -4,9 +4,9 @@ int PhobosStorageClass::GetTotalValue() const
 {
 	float total = 0;
 
-	for (int i = 0; i < TiberiumClass::Array->Count; i++)
+	for (size_t i = 0; i < Tiberiums->size(); i++)
 	{
-		total += ((*Tiberiums)[i] * TiberiumClass::Array->GetItem(i)->Value);
+		total += static_cast<int>((*Tiberiums)[i] * TiberiumClass::Array->GetItem(i)->Value);
 	}
 
 	return static_cast<int>(total);
@@ -16,7 +16,7 @@ float PhobosStorageClass::GetTotalAmount() const
 {
 	float total = 0;
 
-	for (int i = 0; i < TiberiumClass::Array->Count; i++)
+	for (size_t i = 0; i < Tiberiums->size(); i++)
 	{
 		total += (*Tiberiums)[i];
 	}
@@ -46,7 +46,7 @@ float PhobosStorageClass::DecreaseAmount(float amount, int index)
 
 int PhobosStorageClass::FirstUsedSlot() const
 {
-	for (int i = 0; i < TiberiumClass::Array->Count; i++)
+	for (size_t i = 0; i < Tiberiums->size(); i++)
 	{
 		if ((*Tiberiums)[i] > 0.0)
 			return i;
@@ -57,7 +57,7 @@ int PhobosStorageClass::FirstUsedSlot() const
 
 PhobosStorageClass PhobosStorageClass::operator+=(PhobosStorageClass& that)
 {
-	for (int i = 0; i < TiberiumClass::Array->Count; i++)
+	for (size_t i = 0; i < Tiberiums->size(); i++)
 	{
 		(*Tiberiums)[i] += (*that.Tiberiums)[i];
 	}
@@ -67,7 +67,7 @@ PhobosStorageClass PhobosStorageClass::operator+=(PhobosStorageClass& that)
 
 PhobosStorageClass PhobosStorageClass::operator-=(PhobosStorageClass& that)
 {
-	for (int i = 0; i < TiberiumClass::Array->Count; i++)
+	for (size_t i = 0; i < Tiberiums->size(); i++)
 	{
 		(*Tiberiums)[i] -= (*that.Tiberiums)[i];
 	}

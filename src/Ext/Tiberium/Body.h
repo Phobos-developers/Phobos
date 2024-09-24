@@ -20,15 +20,13 @@ public:
 	public:
 		Nullable<ColorStruct> MinimapColor;
 
-		ValueableVector<OverlayTypeClass*> Overlays;
+		Valueable<OverlayTypeClass*> Overlay;
 		Valueable<bool> Overlays_UseSlopes;
-		Valueable<int> Overlays_FrameCount;
 
 		ExtData(TiberiumClass* OwnerObject) : Extension<TiberiumClass>(OwnerObject)
 			, MinimapColor {}
-			, Overlays {}
-			, Overlays_UseSlopes { false }
-			, Overlays_FrameCount { 12 }
+			, Overlay {}
+			, Overlays_UseSlopes {}
 		{ }
 
 		virtual ~ExtData() override = default;

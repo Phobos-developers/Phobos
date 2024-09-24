@@ -469,9 +469,7 @@ DEFINE_HOOK(0x4F961A, HouseClass_GiveTiberium_Storage, 0x9)
 
 	// If we don't have Ares, don't patch this function since it's a replacement of theirs
 	if (!AresHelper::CanUseAres)
-	{
 		return 0;
-	}
 
 	pThis->SiloMoney += static_cast<int>(amount * 5.0);
 
@@ -483,17 +481,13 @@ DEFINE_HOOK(0x4F961A, HouseClass_GiveTiberium_Storage, 0x9)
 
 		// this is the upper limit for stored tiberium
 		if (amount > static_cast<float>(lastTotalStorage - lastStorage))
-		{
 			amount = static_cast<float>(lastTotalStorage - lastStorage);
-		}
 
 		// go through all buildings and fill them up until all is in there
 		for (auto const& pBuilding : pThis->Buildings)
 		{
 			if (amount <= 0.0)
-			{
 				break;
-			}
 
 			auto const storage = pBuilding->Type->Storage;
 			if (pBuilding->IsOnMap && storage > 0)
@@ -503,9 +497,7 @@ DEFINE_HOOK(0x4F961A, HouseClass_GiveTiberium_Storage, 0x9)
 				if (freeSpace > 0.0)
 				{
 					if (freeSpace > amount)
-					{
 						freeSpace = amount;
-					}
 
 					pBuilding->Tiberium.AddAmount(freeSpace, idxType);
 					pThis->OwnedTiberium.AddAmount(freeSpace, idxType);
