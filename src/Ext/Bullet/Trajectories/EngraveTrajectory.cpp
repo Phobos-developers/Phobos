@@ -114,9 +114,9 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
+	this->LaserTimer.Start(0);
+	this->DamageTimer.Start(0);
 	this->FLHCoord = pBullet->SourceCoords;
-	this->BuildingCoord = CoordStruct::Empty;
-
 	TechnoClass* const pTechno = pBullet->Owner;
 
 	if (pTechno)
