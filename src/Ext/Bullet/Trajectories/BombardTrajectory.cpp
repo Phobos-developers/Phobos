@@ -7,17 +7,23 @@ PhobosTrajectory* BombardTrajectoryType::CreateInstance() const
 	return new BombardTrajectory(this);
 }
 
+template<typename T>
+void BombardTrajectoryType::Serialize(T& Stm)
+{
+	Stm.Process(this->Height);
+}
+
 bool BombardTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->PhobosTrajectoryType::Load(Stm, false);
-	Stm.Process(this->Height, false);
+	this->Serialize(Stm);
 	return true;
 }
 
 bool BombardTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectoryType::Save(Stm);
-	Stm.Process(this->Height);
+	const_cast<BombardTrajectoryType*>(this)->Serialize(Stm);
 	return true;
 }
 
@@ -26,14 +32,20 @@ void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->Height = pINI->ReadDouble(pSection, "Trajectory.Bombard.Height", 0.0);
 }
 
-bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+template<typename T>
+void BombardTrajectory::Serialize(T& Stm)
 {
-	this->PhobosTrajectory::Load(Stm, false);
-
 	Stm
 		.Process(this->IsFalling)
 		.Process(this->Height)
 		;
+}
+
+bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->PhobosTrajectory::Load(Stm, false);
+
+	this->Serialize(Stm);
 
 	return true;
 }
@@ -42,10 +54,7 @@ bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectory::Save(Stm);
 
-	Stm
-		.Process(this->IsFalling)
-		.Process(this->Height)
-		;
+	const_cast<BombardTrajectory*>(this)->Serialize(Stm);
 
 	return true;
 }

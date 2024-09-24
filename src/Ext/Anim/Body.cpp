@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <GameOptionsClass.h>
+
 #include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -130,6 +132,54 @@ void AnimExt::VeinAttackAI(AnimClass* pAnim)
 	}
 }
 
+// Changes type of anim in similar fashion to Next.
+void AnimExt::ChangeAnimType(AnimClass* pAnim, AnimTypeClass* pNewType, bool resetLoops, bool restart)
+{
+	double percentThrough = pAnim->Animation.Value / static_cast<double>(pAnim->Type->End);
+
+	if (pNewType->End == -1)
+	{
+		pNewType->End = pNewType->GetImage()->Frames;
+
+		if (pNewType->Shadow)
+			pNewType->End /= 2;
+	}
+
+	if (pNewType->LoopEnd == -1)
+	{
+		pNewType->LoopEnd = pNewType->End;
+	}
+
+	pAnim->Type = pNewType;
+
+	if (resetLoops)
+		pAnim->RemainingIterations = static_cast<byte>(pNewType->LoopCount);
+
+	pAnim->Accum = 0;
+	pAnim->UnableToContinue = false;
+	pAnim->Reverse = pNewType->Reverse;
+
+	int rate = pNewType->Rate;
+
+	if (pNewType->RandomRate.Min || pNewType->RandomRate.Max)
+		rate = ScenarioClass::Instance->Random.RandomRanged(pNewType->RandomRate.Min, pNewType->RandomRate.Max);
+
+	if (pNewType->Normalized)
+		rate = GameOptionsClass::Instance->GetAnimSpeed(rate);
+
+	pAnim->Animation.Start(rate, pNewType->Reverse ? -1 : 1);
+
+	if (restart)
+	{
+		pAnim->Animation.Value = pNewType->Reverse ? pNewType->End : pNewType->Start;
+		pAnim->Start();
+	}
+	else
+	{
+		pAnim->Animation.Value = static_cast<int>(pNewType->End * percentThrough);
+	}
+}
+
 void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
 	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom)
 {
@@ -189,41 +239,38 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 	}
 }
 
-AnimClass* AnimExt::CreateRandomAnim(std::vector<AnimTypeClass*> AnimList, CoordStruct coords, TechnoClass* pTechno, HouseClass* pHouse, bool invoker)
+void AnimExt::CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, CoordStruct coords, TechnoClass* pTechno, HouseClass* pHouse, bool invoker, bool ownedObject)
 {
-	if (!AnimList.empty())
+	if (AnimList.empty())
+		return;
+
+	auto const pAnimType = AnimList[ScenarioClass::Instance->Random.RandomRanged(0, AnimList.size() - 1)];
+
+	if (!pAnimType)
+		return;
+
+	auto const pAnim = GameCreate<AnimClass>(pAnimType, coords);
+
+	if (!pAnim || !pTechno)
+		return;
+
+	AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse ? pHouse : pTechno->Owner, nullptr, false, true);
+
+	if (ownedObject)
+		pAnim->SetOwnerObject(pTechno);
+
+	if (invoker)
 	{
-		if (auto const pAnimType = AnimList[ScenarioClass::Instance->Random.RandomRanged(0, AnimList.size() - 1)])
-		{
-			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, coords))
-			{
-				if (pTechno)
-				{
-					pAnim->SetOwnerObject(pTechno);
-					pAnim->Owner = pHouse ? pHouse : pTechno->Owner;
+		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
 
-					if (invoker)
-					{
-						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
-						{
-							if (pHouse)
-								pAnimExt->SetInvoker(pTechno, pHouse);
-							else
-								pAnimExt->SetInvoker(pTechno);
-						}
-					}
-				}
-				else if (pHouse)
-				{
-					pAnim->Owner = pHouse;
-				}
+		if (!pAnimExt)
+			return;
 
-				return pAnim;
-			}
-		}
+		if (pHouse)
+			pAnimExt->SetInvoker(pTechno, pHouse);
+		else
+			pAnimExt->SetInvoker(pTechno);
 	}
-
-	return nullptr;
 }
 
 // =============================

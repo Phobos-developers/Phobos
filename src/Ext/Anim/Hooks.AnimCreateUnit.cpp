@@ -144,8 +144,7 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 				if (success)
 				{
-					if (auto const pAnim = AnimExt::CreateRandomAnim(pTypeExt->CreateUnit_SpawnAnim, location, pInvoker, pInvokerHouse, true))
-						AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
+					AnimExt::CreateRandomAnim(pTypeExt->CreateUnit_SpawnAnim, location, pInvoker, pInvokerHouse, true);
 
 					if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings)
 					{

@@ -327,7 +327,7 @@ void ShieldClass::WeaponNullifyAnim(std::vector<AnimTypeClass*> pHitAnim)
 	if (pHitAnim.empty())
 		pHitAnim = this->Type->HitAnim;
 
-	AnimExt::CreateRandomAnim(pHitAnim, this->Techno->GetCoords(), this->Techno);
+	AnimExt::CreateRandomAnim(pHitAnim, this->Techno->GetCoords(), this->Techno, nullptr, true, true);
 }
 
 bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
@@ -684,7 +684,7 @@ void ShieldClass::BreakShield(std::vector<AnimTypeClass*> pBreakAnim, WeaponType
 		if (!pBreakAnim.empty())
 			pBreakAnim = this->Type->BreakAnim;
 
-		AnimExt::CreateRandomAnim(pBreakAnim, this->Techno->Location, this->Techno);
+		AnimExt::CreateRandomAnim(pBreakAnim, this->Techno->Location, this->Techno, nullptr, true);
 	}
 
 	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon;
