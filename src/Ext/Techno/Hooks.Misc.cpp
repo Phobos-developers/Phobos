@@ -107,7 +107,7 @@ DEFINE_HOOK(0x6B6D44, SpawnManagerClass_Init_Spawns, 0x5)
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
 
-	if (i >= pTypeExt->InitialSpawnsNumber.Get(pThis->SpawnCount))
+	if ((int) i >= pTypeExt->InitialSpawnsNumber.Get(pThis->SpawnCount))
 	{
 		GET(SpawnControl*, pControl, EBP);
 		pControl->Unit = nullptr;
@@ -117,7 +117,7 @@ DEFINE_HOOK(0x6B6D44, SpawnManagerClass_Init_Spawns, 0x5)
 		return Jump;
 	}
 
-	if (!pTypeExt->Spawns_Queue[i] || pTypeExt->Spawns_Queue.size() <= i)
+	if (pTypeExt->Spawns_Queue.size() <= i || !pTypeExt->Spawns_Queue[i])
 		return Continue;
 
 	R->EAX(pTypeExt->Spawns_Queue[i]->CreateObject(pThis->Owner->GetOwningHouse()));

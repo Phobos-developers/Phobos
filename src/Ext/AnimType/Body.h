@@ -25,8 +25,10 @@ public:
 		Valueable<bool> CreateUnit_RemapAnim;
 		Valueable<bool> CreateUnit_RandomFacing;
 		Valueable<Mission> CreateUnit_Mission;
+		Nullable<Mission> CreateUnit_AIMission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
 		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
+		Valueable<bool> CreateUnit_SpawnParachutedInAir;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
 		Valueable<AnimTypeClass*> CreateUnit_SpawnAnim;
 		Nullable<int> CreateUnit_SpawnHeight;
@@ -57,8 +59,10 @@ public:
 			, CreateUnit_InheritTurretFacings { false }
 			, CreateUnit_RemapAnim { false }
 			, CreateUnit_Mission { Mission::Guard }
+			, CreateUnit_AIMission {}
 			, CreateUnit_Owner { OwnerHouseKind::Victim }
 			, CreateUnit_AlwaysSpawnOnGround { false }
+			, CreateUnit_SpawnParachutedInAir { false }
 			, CreateUnit_ConsiderPathfinding { false }
 			, CreateUnit_SpawnAnim {}
 			, CreateUnit_SpawnHeight {}
