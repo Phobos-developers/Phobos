@@ -913,11 +913,8 @@ DEFINE_HOOK(0x46B19B, BulletClass_DrawVoxel_GetLightConvert, 0x6)
 	else if (pThis->Type->FirersPalette)
 	{
 		const int inheritColor = pThis->InheritedColor;
-
-		if (inheritColor == -1)
-			BulletDrawVoxelTemp::Convert = ColorScheme::Array->Items[HouseClass::CurrentPlayer->ColorSchemeIndex]->LightConvert;
-		else
-			BulletDrawVoxelTemp::Convert = ColorScheme::Array->Items[inheritColor]->LightConvert;
+		const int colorIndex = inheritColor == -1 ? HouseClass::CurrentPlayer->ColorSchemeIndex : inheritColor;
+		BulletDrawVoxelTemp::Convert = ColorScheme::Array->Items[colorIndex]->LightConvert;
 	}
 
 	return 0;
@@ -926,7 +923,6 @@ DEFINE_HOOK(0x46B19B, BulletClass_DrawVoxel_GetLightConvert, 0x6)
 DEFINE_HOOK_AGAIN(0x46B23C, BulletClass_DrawVoxel_SetLightConvert, 0x6)
 DEFINE_HOOK(0x46B212, BulletClass_DrawVoxel_SetLightConvert, 0x6)
 {
-	enum { SkipGameCode = 0x46B218 };
 
 	const auto pConvert = BulletDrawVoxelTemp::Convert;
 

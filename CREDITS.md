@@ -319,7 +319,7 @@ This page lists all the individual contributions to the project by their author.
 - **NetsuNegi**
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
-   - Allow voxel bullet to use AnimPalette and FirersPalette
+   - Allow voxel projectiles to use AnimPalette and FirersPalette
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons
