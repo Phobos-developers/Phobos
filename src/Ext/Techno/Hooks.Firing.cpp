@@ -412,15 +412,31 @@ DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
 #pragma region TechnoClass_Fire
 DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
 {
+	enum { CanNotFire = 0x6FDE03 };
+
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET(TechnoClass* const, pThis, ESI);
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	if (TechnoExt::ExtData* const pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pExt->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst) && pWeapon != pExt->LastWeaponType)
+		{
+			if (pExt->LastWeaponType && pThis->CurrentBurstIndex)
+			{
+				const double ratio = static_cast<double>(pThis->CurrentBurstIndex) / pExt->LastWeaponType->Burst;
+				const int rof = static_cast<int>(ratio * pExt->LastWeaponType->ROF * pExt->AE.ROFMultiplier);
+				pThis->ChargeTurretDelay = rof;
+				pThis->RearmTimer.Start(rof);
+			}
 
-	if (pExt->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst) && pWeapon != pExt->LastWeaponType)
-		pThis->CurrentBurstIndex = 0;
+			pThis->CurrentBurstIndex = 0;
+			pExt->LastWeaponType = pWeapon;
 
-	pExt->LastWeaponType = pWeapon;
+			return CanNotFire;
+		}
+
+		pExt->LastWeaponType = pWeapon;
+	}
 
 	return 0;
 }
