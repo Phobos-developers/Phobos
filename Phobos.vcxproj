@@ -18,6 +18,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
     <ClCompile Include="src\Ext\Sidebar\TacticalButtonClass.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Cloak.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
@@ -183,6 +184,7 @@
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Commands\ToggleSWSidebar.h" />
     <ClInclude Include="src\Ext\Sidebar\TacticalButtonClass.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />

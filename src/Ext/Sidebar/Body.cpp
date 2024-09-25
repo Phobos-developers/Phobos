@@ -21,6 +21,7 @@ template <typename T>
 void SidebarExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->ExclusiveSWSidebar_Enable)
 		;
 }
 

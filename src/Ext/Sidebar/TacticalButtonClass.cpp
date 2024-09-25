@@ -15,7 +15,7 @@ bool TacticalButtonClass::Initialized { false };
 TacticalButtonClass* TacticalButtonClass::CurrentButton { nullptr };
 
 TacticalButtonClass::TacticalButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
-	: ToggleClass(id, x, y, width, height)
+	: ControlClass(id, x, y, width, height, GadgetFlag((int)GadgetFlag::LeftPress | (int)GadgetFlag::LeftRelease), true)
 	, SuperIndex(superIdx)
 {
 	TacticalButtonClass::Buttons.emplace_back(this);
@@ -42,6 +42,9 @@ bool TacticalButtonClass::Draw(bool forced)
 {
 	/*if (!this->ControlClass::Draw(forced))
 		return false;*/
+
+	if (!SidebarExt::Global()->ExclusiveSWSidebar_Enable)
+		return false;
 
 	auto pSurface = DSurface::Composite();
 	auto bounds = pSurface->GetRect();
@@ -113,12 +116,18 @@ bool TacticalButtonClass::Draw(bool forced)
 
 void TacticalButtonClass::OnMouseEnter()
 {
+	if (!SidebarExt::Global()->ExclusiveSWSidebar_Enable)
+		return;
+
 	this->IsHovering = true;
 	TacticalButtonClass::CurrentButton = this;
 }
 
 void TacticalButtonClass::OnMouseLeave()
 {
+	if (!SidebarExt::Global()->ExclusiveSWSidebar_Enable)
+		return;
+
 	this->IsHovering = false;
 	this->IsPressed = false;
 	TacticalButtonClass::CurrentButton = nullptr;
@@ -127,7 +136,7 @@ void TacticalButtonClass::OnMouseLeave()
 
 bool TacticalButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 {
-	if (!this->ControlClass::Action(flags, pKey, modifier))
+	if (!SidebarExt::Global()->ExclusiveSWSidebar_Enable)
 		return false;
 
 	if ((int)flags & (int)GadgetFlag::LeftPress)
@@ -136,10 +145,10 @@ bool TacticalButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 	if ((int)flags & (int)GadgetFlag::LeftRelease && this->IsPressed)
 	{
 		this->IsPressed = false;
-		return this->LaunchSuper(this->SuperIndex);
+		this->LaunchSuper(this->SuperIndex);
 	}
 
-	return true;
+	return this->ControlClass::Action(flags, pKey, KeyModifier::None);
 }
 
 bool TacticalButtonClass::LaunchSuper(int superIdx)
@@ -204,13 +213,33 @@ bool TacticalButtonClass::AddButton(int superIdx)
 {
 	TacticalButtonClass::Initialized = true;
 
-	if (!Phobos::UI::ExclusiveSuperWeaponSidebar || Unsorted::ArmageddonMode)
+	if (const auto pSWType = SuperWeaponTypeClass::Array->GetItemOrDefault(superIdx))
+	{
+		const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+
+		if (!Phobos::UI::ExclusiveSuperWeaponSidebar || Unsorted::ArmageddonMode)
+			return false;
+
+		if (!pSWExt->ExclusiveSidebar_Allow)
+			return false;
+
+		const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
+
+		if ((pSWExt->ExclusiveSidebar_RequiredHouses & ownerBits) == 0)
+			return false;
+
+		if (!pSWExt->SW_ShowCameo && pSWExt->SW_AutoFire)
+			return true;
+	}
+	else
+	{
 		return false;
+	}
 
 	auto& buttons = TacticalButtonClass::Buttons;
 
 	if (std::any_of(buttons.begin(), buttons.end(), [superIdx](TacticalButtonClass* const button) { return button->SuperIndex == superIdx; }))
-		return false;
+		return true;
 
 	DLLCreate<TacticalButtonClass>(superIdx + 2200, superIdx, 0, 0, 60, 48);
 	SortButtons();
@@ -220,9 +249,6 @@ bool TacticalButtonClass::AddButton(int superIdx)
 bool TacticalButtonClass::RemoveButton(int superIdx)
 {
 	auto& buttons = TacticalButtonClass::Buttons;
-
-	if (buttons.empty())
-		return false;
 
 	const auto it = std::find_if(buttons.begin(), buttons.end(), [superIdx](TacticalButtonClass* const button) { return button->SuperIndex == superIdx; });
 
@@ -357,16 +383,10 @@ DEFINE_HOOK(0x6A6300, SidebarClass_AddCameo_SuperWeapon_TacticalButton, 0x6)
 	case AbstractType::Super:
 	case AbstractType::SuperWeaponType:
 	case AbstractType::Special:
-		if (const auto pSWType = SuperWeaponTypeClass::Array->GetItemOrDefault(index))
+		if (TacticalButtonClass::AddButton(index))
 		{
-			const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
-
-			if (pSWExt->AllowInExclusiveSidebar && pSWExt->SW_ShowCameo.Get(!pSWExt->SW_AutoFire))
-			{
-				TacticalButtonClass::AddButton(index);
-				R->AL(false);
-				return SkipGameCode;
-			}
+			R->AL(false);
+			return SkipGameCode;
 		}
 		break;
 
@@ -400,10 +420,7 @@ DEFINE_HOOK(0x55B6B3, LogicClass_AI_InitializedTacticalButton, 0x5)
 		if (!pSuper->IsPresent)
 			continue;
 
-		const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
-
-		if (pSWExt->AllowInExclusiveSidebar && pSWExt->SW_ShowCameo.Get(!pSWExt->SW_AutoFire))
-			TacticalButtonClass::AddButton(pSuper->Type->ArrayIndex);
+		TacticalButtonClass::AddButton(pSuper->Type->ArrayIndex);
 	}
 
 	return 0;

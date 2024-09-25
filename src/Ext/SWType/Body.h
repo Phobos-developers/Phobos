@@ -30,7 +30,7 @@ public:
 		Valueable<bool> SW_UseAITargeting;
 		Valueable<bool> SW_AutoFire;
 		Valueable<bool> SW_ManualFire;
-		Nullable<bool> SW_ShowCameo;
+		Valueable<bool> SW_ShowCameo;
 		Valueable<bool> SW_Unstoppable;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 		Valueable<bool> SW_AnyInhibitor;
@@ -74,8 +74,9 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 
 		Valueable<int> TabIndex;
-
-		Valueable<bool> AllowInExclusiveSidebar;
+        
+		Valueable<bool> ExclusiveSidebar_Allow;
+		DWORD ExclusiveSidebar_RequiredHouses;
 
 		CustomPalette SidebarPal;
 		PhobosPCXFile SidebarPCX;
@@ -98,7 +99,7 @@ public:
 			, SW_UseAITargeting { false }
 			, SW_AutoFire { false }
 			, SW_ManualFire { true }
-			, SW_ShowCameo {}
+			, SW_ShowCameo { true }
 			, SW_Unstoppable { false }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
@@ -140,7 +141,8 @@ public:
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }
-			, AllowInExclusiveSidebar { true }
+			, ExclusiveSidebar_Allow { true }
+			, ExclusiveSidebar_RequiredHouses { 0xFFFFFFFFu }
 			, SidebarPal {}
 			, SidebarPCX {}
 			, UseWeeds { false }

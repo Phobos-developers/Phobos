@@ -1,11 +1,11 @@
 #pragma once
 #include "Body.h"
-#include <ToggleClass.h>
+#include <ControlClass.h>
 
 #include <Utilities/Macro.h>
 #include <Ext/SWType/Body.h>
 
-class TacticalButtonClass : public ToggleClass
+class TacticalButtonClass : public ControlClass
 {
 public:
 	TacticalButtonClass() = default;
@@ -32,5 +32,6 @@ public:
 	static TacticalButtonClass* CurrentButton;
 
 	bool IsHovering { false };
+	bool IsPressed { false };
 	int SuperIndex { -1 };
 };
