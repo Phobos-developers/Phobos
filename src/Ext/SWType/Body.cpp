@@ -36,6 +36,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Detonate_Warhead)
 		.Process(this->Detonate_Weapon)
 		.Process(this->Detonate_Damage)
+		.Process(this->Detonate_Warhead_Full)
 		.Process(this->Detonate_AtFirer)
 		.Process(this->SW_Next)
 		.Process(this->SW_Next_RealLaunch)
@@ -46,6 +47,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->TabIndex)
 		.Process(this->UseWeeds)
 		.Process(this->UseWeeds_Amount)
 		.Process(this->UseWeeds_StorageTimer)
@@ -97,7 +99,6 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	char tempBuffer[32];
 	// LimboDelivery.RandomWeights
-	// so you know what's going on by not clearing the vector, do you?
 	for (size_t i = 0; ; ++i)
 	{
 		ValueableVector<int> weights;
@@ -107,8 +108,12 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (!weights.size())
 			break;
 
-		this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
+		if (this->LimboDelivery_RandomWeightsData.size() > i)
+			this->LimboDelivery_RandomWeightsData[i] = std::move(weights);
+		else
+			this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
 	}
+
 	ValueableVector<int> weights;
 	weights.Read(exINI, pSection, "LimboDelivery.RandomWeights");
 	if (weights.size())
@@ -129,8 +134,12 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (!weights2.size())
 			break;
 
-		this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
+		if (this->SW_Next_RandomWeightsData.size() > i)
+			this->SW_Next_RandomWeightsData[i] = std::move(weights2);
+		else
+			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
 	}
+
 	ValueableVector<int> weights2;
 	weights2.Read(exINI, pSection, "SW.Next.RandomWeights");
 	if (weights2.size())
@@ -144,12 +153,16 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Detonate_Warhead.Read<true>(exINI, pSection, "Detonate.Warhead");
 	this->Detonate_Weapon.Read<true>(exINI, pSection, "Detonate.Weapon");
 	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
+	this->Detonate_Warhead_Full.Read(exINI, pSection, "Detonate.Warhead.Full");
 	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::Owner);
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
+
+	this->TabIndex.Read(exINI, pSection, "TabIndex");
+	GeneralUtils::IntValidCheck(&this->TabIndex, pSection, "TabIndex", 1, 0, 3);
 
 	this->UseWeeds.Read(exINI, pSection, "UseWeeds");
 	this->UseWeeds_Amount.Read(exINI, pSection, "UseWeeds.Amount");

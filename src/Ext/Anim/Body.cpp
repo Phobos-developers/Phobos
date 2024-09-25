@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <GameOptionsClass.h>
+
 #include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -127,6 +129,54 @@ void AnimExt::VeinAttackAI(AnimClass* pAnim)
 
 			pOccupier = pNext;
 		}
+	}
+}
+
+// Changes type of anim in similar fashion to Next.
+void AnimExt::ChangeAnimType(AnimClass* pAnim, AnimTypeClass* pNewType, bool resetLoops, bool restart)
+{
+	double percentThrough = pAnim->Animation.Value / static_cast<double>(pAnim->Type->End);
+
+	if (pNewType->End == -1)
+	{
+		pNewType->End = pNewType->GetImage()->Frames;
+
+		if (pNewType->Shadow)
+			pNewType->End /= 2;
+	}
+
+	if (pNewType->LoopEnd == -1)
+	{
+		pNewType->LoopEnd = pNewType->End;
+	}
+
+	pAnim->Type = pNewType;
+
+	if (resetLoops)
+		pAnim->RemainingIterations = static_cast<byte>(pNewType->LoopCount);
+
+	pAnim->Accum = 0;
+	pAnim->UnableToContinue = false;
+	pAnim->Reverse = pNewType->Reverse;
+
+	int rate = pNewType->Rate;
+
+	if (pNewType->RandomRate.Min || pNewType->RandomRate.Max)
+		rate = ScenarioClass::Instance->Random.RandomRanged(pNewType->RandomRate.Min, pNewType->RandomRate.Max);
+
+	if (pNewType->Normalized)
+		rate = GameOptionsClass::Instance->GetAnimSpeed(rate);
+
+	pAnim->Animation.Start(rate, pNewType->Reverse ? -1 : 1);
+
+	if (restart)
+	{
+		pAnim->Animation.Value = pNewType->Reverse ? pNewType->End : pNewType->Start;
+		pAnim->Start();
+	}
+	else
+	{
+		pAnim->Animation.Value = static_cast<int>(pNewType->End * percentThrough);
 	}
 }
 
@@ -281,10 +331,10 @@ DEFINE_HOOK_AGAIN(0x422126, AnimClass_CTOR, 0x5)
 DEFINE_HOOK_AGAIN(0x422707, AnimClass_CTOR, 0x5)
 DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
+	GET(AnimClass*, pItem, ESI);
+
 	if (!Phobos::IsLoadingSaveGame)
 	{
-		GET(AnimClass*, pItem, ESI);
-
 		auto const callerAddress = CTORTemp::callerAddress;
 
 		// Do this here instead of using a duplicate hook in SyncLogger.cpp
@@ -296,9 +346,9 @@ DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 			Debug::Log("Attempting to create animation with null Type (Caller: %08x)!\n", callerAddress);
 			return 0;
 		}
-
-		AnimExt::ExtMap.Allocate(pItem);
 	}
+
+	AnimExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }
