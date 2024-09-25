@@ -12,6 +12,7 @@
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
+#include <New/Type/HealthBarTypeClass.h>
 
 class Matrix3D;
 
@@ -232,6 +233,8 @@ public:
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
+
+		Valueable<HealthBarTypeClass*> CustomHealthBarType;
 
 		struct LaserTrailDataEntry
 		{
@@ -461,6 +464,8 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+
+			, CustomHealthBarType {}
 		{ }
 
 		virtual ~ExtData() = default;
