@@ -152,6 +152,22 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
 	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
 
+	this->Secret_RecalcOnCapture.Read(exINI, pSection, "SecretLab.GenerateOnCapture");
+
+	// Secret.Boons contains a list of TechnoTypeClass IDs
+	const char* key = "SecretLab.PossibleBoons";
+	char* context = nullptr;
+	pINI->ReadString(pSection, key, "", Phobos::readBuffer);
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		int index = TechnoTypeClass::FindIndex(cur);
+		if (index != -1)
+			this->PossibleBoons.push_back(TechnoTypeClass::Array->GetItem(index));
+	}
+
+	key = nullptr;
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		this->AircraftDockingDirs.clear();
@@ -263,6 +279,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ConsideredVehicle)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
+		.Process(this->Secret_RecalcOnCapture)
+		.Process(this->PossibleBoons)
 		.Process(this->AircraftDockingDirs)
 		.Process(this->FactoryPlant_AllowTypes)
 		.Process(this->FactoryPlant_DisallowTypes)

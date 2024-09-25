@@ -34,6 +34,7 @@ public:
 		int GrindingWeapon_LastFiredFrame;
 		int GrindingWeapon_AccumulatedCredits;
 		BuildingClass* CurrentAirFactory;
+		bool SecretLab_Placed;
 		int AccumulatedIncome;
 		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
@@ -47,6 +48,7 @@ public:
 			, GrindingWeapon_LastFiredFrame { 0 }
 			, GrindingWeapon_AccumulatedCredits { 0 }
 			, CurrentAirFactory { nullptr }
+			, SecretLab_Placed { false }
 			, AccumulatedIncome { 0 }
 			, CurrentLaserWeaponIndex {}
 			, PoweredUpToLevel { 0 }
@@ -56,6 +58,8 @@ public:
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
 		bool HandleInfiltrate(HouseClass* pInfiltratorHouse , int moneybefore);
+		void UpdateSecretLabAI();
+
 		void UpdatePrimaryFactoryAI();
 		virtual ~ExtData() = default;
 

@@ -63,6 +63,9 @@ public:
 		Valueable<bool> ZShapePointMove_OnBuildup;
 		Valueable<int> SellBuildupLength;
 
+		Valueable<bool> Secret_RecalcOnCapture;
+		NullableVector<TechnoTypeClass*> PossibleBoons;
+
 		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
 
 		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
@@ -105,6 +108,8 @@ public:
 			, ConsideredVehicle {}
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
+			, Secret_RecalcOnCapture { false }
+			, PossibleBoons {}
 			, AircraftDockingDirs {}
 			, FactoryPlant_AllowTypes {}
 			, FactoryPlant_DisallowTypes {}

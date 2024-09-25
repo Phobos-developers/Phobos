@@ -258,6 +258,19 @@ public:
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
+		Nullable<bool> ConsideredNaval;
+		Nullable<bool> ConsideredVehicle;
+		Valueable<bool> ConsideredSecretLabTech;
+		std::vector<std::string> Secret_RequiredHouses;
+		std::vector<std::string> Secret_ForbiddenHouses;
+
+		// Ares 0.1
+		ValueableVector<int> Prerequisite_RequiredTheaters;
+		ValueableVector<int> Prerequisite;
+		ValueableVector<int> Prerequisite_Negative;
+		Valueable<int> Prerequisite_Lists;
+		std::vector<DynamicVectorClass<int>> Prerequisite_ListVector;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -393,6 +406,14 @@ public:
 
 			, Explodes_KillPassengers { true }
 			, Explodes_DuringBuildup { true }
+			, Prerequisite { }
+			, Prerequisite_Negative { }
+			, Prerequisite_Lists { 0 }
+			, ConsideredNaval { }
+			, ConsideredVehicle { }
+			, ConsideredSecretLabTech { false }
+			, Secret_RequiredHouses { }
+			, Secret_ForbiddenHouses { }
 			, DeployFireWeapon {}
 			, TargetZoneScanType { TargetZoneScanType::Same }
 

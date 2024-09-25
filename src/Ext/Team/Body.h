@@ -1,10 +1,15 @@
 #pragma once
 #include <TeamClass.h>
+#include <AITriggerTypeClass.h>
 
 #include <Helpers/Enumerators.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <Ext/HouseType/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/Rules/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Phobos.h>
 
 class TeamExt
@@ -84,5 +89,13 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static bool HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool allies, std::vector<TechnoTypeClass*> list);
+	static bool HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, std::vector<TechnoTypeClass*> list);
+	static bool EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, bool onlySelectedEnemy, std::vector<TechnoTypeClass*> list);
+	static bool EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, std::vector<TechnoTypeClass*> list);
+	static bool NeutralOwns(AITriggerTypeClass* pThis, std::vector<TechnoTypeClass*> list);
+	static bool NeutralOwnsAll(AITriggerTypeClass* pThis, std::vector<TechnoTypeClass*> list);
+	static bool CountConditionMet(AITriggerTypeClass* pThis, int nObjects);
 
 };

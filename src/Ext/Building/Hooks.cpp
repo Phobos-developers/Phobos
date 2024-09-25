@@ -504,3 +504,16 @@ DEFINE_HOOK(0x449149, BuildingClass_Captured_FactoryPlant2, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x445F80, BuildingClass_GrandOpening_UpdateSecretLabAI, 0x5)
+{
+	GET(BuildingClass*, pThis, ECX);
+
+	if (pThis->Type->SecretLab && !pThis->Owner->IsControlledByHuman())
+	{
+		auto pExt = BuildingExt::ExtMap.Find(pThis);
+		pExt->UpdateSecretLabAI();
+	}
+
+	return 0;
+}

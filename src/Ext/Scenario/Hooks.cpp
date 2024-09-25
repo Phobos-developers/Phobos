@@ -1,3 +1,5 @@
+#include "Body.h"
+
 #include <Ext/Scenario/Body.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Debug.h>
