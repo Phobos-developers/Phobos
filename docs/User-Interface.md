@@ -45,7 +45,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1.
-  
+
 In `rulesmd.ini`:
 ```ini
 [DigitalDisplayTypes]
@@ -560,20 +560,29 @@ ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enable
 
 - It is possible to put sw cameos on the left of screen like C&C3 when `ExclusiveSuperWeaponSidebar` is true.
 - In theory, it should be compatible with Ares
-- Cameos arranged in a pyramid shape.
-- `ExclusiveSuperWeaponSidebar.Max` controls the maximum number of icons on the leftmost side, which also depends on the current game resolution.
+- Cameos arranged in single column (limited 10 cameos).
+- You can also launch these SW by hotkey.
 
 In `uimd.ini`:
 ```ini
 [Sidebar]
 ExclusiveSuperWeaponSidebar=false  ; boolean
-ExclusiveSuperWeaponSidebar.Max=0 ; integer
 ```
 
 In `rulesmd.ini`
 ```ini
-[SuperWeapon]
-AllowInExclusiveSidebar=true  ; boolean
+[AudioVisual]
+SWSidebarBackground=true           ; boolean
+
+[SOMESIDE]
+SWSidebarBackground.TopPCX=        ; filename - including the .pcx extension
+SWSidebarBackground.CenterPCX=     ; filename - including the .pcx extension
+SWSidebarBackground.BottomPCX=     ; filename - including the .pcx extension
+
+[SOMESW]
+AllowInExclusiveSidebar=true       ; boolean
+ExclusiveSidebar.PriorityHouses=   ; list of house types
+ExclusiveSidebar.RequiredHouses=   ; list of house types
 ```
 ## Miscellanous
 
