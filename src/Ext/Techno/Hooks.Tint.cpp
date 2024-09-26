@@ -201,14 +201,12 @@ DEFINE_HOOK(0x70E475, TechnoClass_InvulnerabilityIntensity_Adjust, 0x5)
 static bool __forceinline IsOnBridge(FootClass* pUnit)
 {
 	auto const pCell = MapClass::Instance->GetCellAt(pUnit->GetCoords());
-	auto const pCellAjd = pCell->GetNeighbourCell(FacingType::North);
+	auto const pCellAdj = pCell->GetNeighbourCell(FacingType::North);
 	bool containsBridge = pCell->ContainsBridge();
 	bool containsBridgeDir = static_cast<bool>(pCell->Flags & CellFlags::BridgeDir);
 
-	if ((containsBridge || containsBridgeDir || pCellAjd->ContainsBridge()) && (!containsBridge || pCell->GetNeighbourCell(FacingType::West)->ContainsBridge()))
-		return true;
-
-	return false;
+return (containsBridge || containsBridgeDir || pCellAdj->ContainsBridge())
+    && (!containsBridge || pCell->GetNeighbourCell(FacingType::West)->ContainsBridge());
 }
 
 static void __forceinline GetLevelIntensity(TechnoClass* pThis, int level, int& levelIntensity, int& cellIntensity, double levelMult, bool applyBridgeBonus)
