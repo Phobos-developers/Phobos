@@ -30,7 +30,7 @@ public:
 		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
 		Valueable<bool> CreateUnit_SpawnParachutedInAir;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
-		Valueable<AnimTypeClass*> CreateUnit_SpawnAnim;
+		ValueableVector<AnimTypeClass*> CreateUnit_SpawnAnim;
 		Nullable<int> CreateUnit_SpawnHeight;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;

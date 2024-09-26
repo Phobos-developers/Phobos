@@ -69,7 +69,9 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->IdleAnimDamaged.Read(exINI, pSection, "IdleAnimDamaged.%s");
 
 	this->BreakAnim.Read(exINI, pSection, "BreakAnim");
+	this->BreakAnim.Read(exINI, pSection, "BreakAnims");
 	this->HitAnim.Read(exINI, pSection, "HitAnim");
+	this->HitAnim.Read(exINI, pSection, "HitAnims");
 	this->HitFlash.Read(exINI, pSection, "HitFlash");
 	this->HitFlash_FixedSize.Read(exINI, pSection, "HitFlash.FixedSize");
 	this->HitFlash_Red.Read(exINI, pSection, "HitFlash.Red");

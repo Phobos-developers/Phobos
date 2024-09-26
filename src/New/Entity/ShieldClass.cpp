@@ -319,15 +319,15 @@ void ShieldClass::ResponseAttack()
 	}
 }
 
-void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
+void ShieldClass::WeaponNullifyAnim(std::vector<AnimTypeClass*> pHitAnim)
 {
 	if (this->AreAnimsHidden)
 		return;
 
-	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
+	if (pHitAnim.empty())
+		pHitAnim = this->Type->HitAnim;
 
-	if (pAnimType)
-		GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+	AnimExt::CreateRandomAnim(pHitAnim, this->Techno->GetCoords(), this->Techno, nullptr, true, true);
 }
 
 bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
@@ -651,7 +651,8 @@ void ShieldClass::SelfHealing()
 			}
 			else if (this->HP <= 0)
 			{
-				this->BreakShield();
+				std::vector<AnimTypeClass*> nothing;
+				this->BreakShield(nothing);
 			}
 		}
 	}
@@ -668,7 +669,7 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 	return (int)trunc(iStatus);
 }
 
-void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)
+void ShieldClass::BreakShield(std::vector<AnimTypeClass*> pBreakAnim, WeaponTypeClass* pBreakWeapon)
 {
 	this->HP = 0;
 
@@ -680,16 +681,10 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 
 	if (!this->AreAnimsHidden)
 	{
-		const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim;
+		if (!pBreakAnim.empty())
+			pBreakAnim = this->Type->BreakAnim;
 
-		if (pAnimType)
-		{
-			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
-			{
-				pAnim->SetOwnerObject(this->Techno);
-				pAnim->Owner = this->Techno->Owner;
-			}
-		}
+		AnimExt::CreateRandomAnim(pBreakAnim, this->Techno->Location, this->Techno, nullptr, true);
 	}
 
 	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon;

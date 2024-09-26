@@ -136,12 +136,11 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 
 	// Self-destruction must be enabled
 	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
-	const auto pVanishAnim = pTypeExt->AutoDeath_VanishAnimation;
 
 	// Death if no ammo
 	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 	{
-		TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
+		TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 		return true;
 	}
 
@@ -154,7 +153,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 		}
 		else if (this->AutoDeathTimer.Completed())
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 			return true;
 		}
 	}
@@ -183,7 +182,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	{
 		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
 			return true;
 		}
@@ -194,7 +193,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	{
 		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosExist_AllowLimboed))
 		{
-			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
+			TechnoExt::KillSelf(pThis, howToDie, pTypeExt->AutoDeath_VanishAnimation, isInLimbo);
 
 			return true;
 		}
@@ -283,12 +282,7 @@ void TechnoExt::ExtData::EatPassengers()
 					if (pDelType->ReportSound >= 0)
 						VocClass::PlayAt(pDelType->ReportSound.Get(), pThis->GetCoords(), nullptr);
 
-					if (const auto pAnimType = pDelType->Anim.Get())
-					{
-						auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
-						pAnim->SetOwnerObject(pThis);
-						pAnim->Owner = pThis->Owner;
-					}
+					AnimExt::CreateRandomAnim(pDelType->Anim, pThis->Location, pThis, nullptr, true, true);
 
 					// Check if there is money refund
 					if (pDelType->Soylent &&
@@ -682,7 +676,7 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo)
+void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, std::vector<AnimTypeClass*> pVanishAnimation, bool isInLimbo)
 {
 	if (isInLimbo)
 	{
@@ -703,15 +697,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 
 	case AutoDeathBehavior::Vanish:
 	{
-		if (pVanishAnimation)
-		{
-			if (auto const pAnim = GameCreate<AnimClass>(pVanishAnimation, pThis->GetCoords()))
-			{
-				auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-				pAnim->Owner = pThis->Owner;
-				pAnimExt->SetInvoker(pThis);
-			}
-		}
+		AnimExt::CreateRandomAnim(pVanishAnimation, pThis->GetCoords(), pThis, nullptr, true);
 
 		pThis->KillPassengers(pThis);
 		pThis->Stun();

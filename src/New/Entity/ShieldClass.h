@@ -20,7 +20,7 @@ public:
 	int ReceiveDamage(args_ReceiveDamage* args);
 	bool CanBeTargeted(WeaponTypeClass* pWeapon) const;
 	bool CanBePenetrated(WarheadTypeClass* pWarhead) const;
-	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
+	void BreakShield(std::vector<AnimTypeClass*> pBreakAnim, WeaponTypeClass* pBreakWeapon = nullptr);
 
 	void SetRespawn(int duration, double amount, int rate, bool resetTimer);
 	void SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer);
@@ -67,7 +67,7 @@ private:
 	void UpdateIdleAnim();
 	AnimTypeClass* GetIdleAnimType();
 
-	void WeaponNullifyAnim(AnimTypeClass* pHitAnim = nullptr);
+	void WeaponNullifyAnim(std::vector<AnimTypeClass*> pHitAnim);
 	void ResponseAttack();
 
 	void CloakCheck();
