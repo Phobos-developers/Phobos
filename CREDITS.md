@@ -367,11 +367,11 @@ This page lists all the individual contributions to the project by their author.
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
   - Global value of `RepairBaseNodes` and `MCVRedeploys`
-  - Target scanning delay customization.(codes)
-  - Skip target scanning function calling for unarmed technos.(codes)
-  **solar-III (凤九歌)**
-  - Target scanning delay customization.(docs)
-  - Skip target scanning function calling for unarmed technos.(docs)
+  - Target scanning delay customization (code)
+  - Skip target scanning function calling for unarmed technos (code)
+**solar-III (凤九歌)**
+  - Target scanning delay customization (documentation)
+  - Skip target scanning function calling for unarmed technos (documentation)
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
