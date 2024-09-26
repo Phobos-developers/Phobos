@@ -99,6 +99,16 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 	return R->Origin() == 0x6B7600 ? SkipGameCode1 : SkipGameCode2;
 }
 
+// I must not regroup my forces.
+DEFINE_HOOK(0x739920, UnitClass_TryToDeploy_DisableRegroupAtNewConYard, 0x6)
+{
+	enum { SkipRegroup = 0x73992B, DoNotSkipRegroup = 0 };
+
+	auto const pRules = RulesExt::Global();
+
+	 return pRules->GatherWhenMCVDeploy ? DoNotSkipRegroup : SkipRegroup;
+}
+
 DEFINE_HOOK(0x6FA697, TechnoClass_Update_DontScanIfUnarmed, 0x6)
 {
 	enum { SkipTargeting = 0x6FA6F5, DoTargeting = 0 };

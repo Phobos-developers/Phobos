@@ -35,11 +35,24 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		CDTimerClass AISuperWeaponDelayTimer;
+		CDTimerClass AIFireSaleDelayTimer;
+
 		//Read from INI
 		bool RepairBaseNodes[3];
 
+		// FactoryPlants with Allow/DisallowTypes set.
+		std::vector<BuildingClass*> RestrictedFactoryPlants;
+
 		int LastBuiltNavalVehicleType;
 		int ProducingNavalUnitTypeIndex;
+
+		// Factories that exist but don't count towards multiple factory bonus.
+		int NumAirpads_NonMFB;
+		int NumBarracks_NonMFB;
+		int NumWarFactories_NonMFB;
+		int NumConYards_NonMFB;
+		int NumShipyards_NonMFB;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
@@ -53,15 +66,26 @@ public:
 			, Factory_VehicleType { nullptr }
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
+			, AISuperWeaponDelayTimer {}
 			, RepairBaseNodes { false,false,false }
+			, RestrictedFactoryPlants {}
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
+			, NumAirpads_NonMFB { 0 }
+			, NumBarracks_NonMFB { 0 }
+			, NumWarFactories_NonMFB { 0 }
+			, NumConYards_NonMFB { 0 }
+			, NumShipyards_NonMFB { 0 }
+			, AIFireSaleDelayTimer {}
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
 		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
 		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
 		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);
+		void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
+		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval);
+		float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
 
 		virtual ~ExtData() = default;
 
