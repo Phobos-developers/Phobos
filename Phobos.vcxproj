@@ -19,7 +19,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
-    <ClCompile Include="src\Ext\Sidebar\TacticalButtonClass.cpp" />
+    <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWSidebarClass.cpp" />
+    <ClCompile Include="src\Ext\Sidebar\SWSidebar\TacticalButtonClass.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Cloak.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
     <ClCompile Include="src\New\Type\AttachEffectTypeClass.cpp" />
@@ -185,7 +186,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Commands\ToggleSWSidebar.h" />
-    <ClInclude Include="src\Ext\Sidebar\TacticalButtonClass.h" />
+    <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWSidebarClass.h" />
+    <ClInclude Include="src\Ext\Sidebar\SWSidebar\TacticalButtonClass.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />
     <ClInclude Include="src\Commands\FrameByFrame.h" />

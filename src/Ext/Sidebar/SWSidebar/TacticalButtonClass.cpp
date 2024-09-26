@@ -1,24 +1,17 @@
 #include "TacticalButtonClass.h"
+#include "SWSidebarClass.h"
 #include <EventClass.h>
-#include <WWMouseClass.h>
-#include <BitFont.h>
 #include <CCToolTip.h>
 
-#include <Misc/PhobosToolTip.h>
-#include <Ext/Side/Body.h>
-#include <Ext/Surface/Body.h>
-#include <Ext/House/Body.h>
+#include <Ext/SWType/Body.h>
+#include <Ext/Sidebar/Body.h>
 #include <Utilities/AresFunctions.h>
-
-std::vector<TacticalButtonClass*> TacticalButtonClass::Buttons {};
-bool TacticalButtonClass::Initialized { false };
-TacticalButtonClass* TacticalButtonClass::CurrentButton { nullptr };
 
 TacticalButtonClass::TacticalButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
 	: ControlClass(id, x, y, width, height, GadgetFlag((int)GadgetFlag::LeftPress | (int)GadgetFlag::LeftRelease), true)
 	, SuperIndex(superIdx)
 {
-	TacticalButtonClass::Buttons.emplace_back(this);
+	SWSidebarClass::Instance.Buttons.emplace_back(this);
 
 	this->Zap();
 	GScreenClass::Instance->AddButton(this);
@@ -26,14 +19,14 @@ TacticalButtonClass::TacticalButtonClass(unsigned int id, int superIdx, int x, i
 
 TacticalButtonClass::~TacticalButtonClass()
 {
-	auto& buttons = TacticalButtonClass::Buttons;
+	auto& buttons = SWSidebarClass::Instance.Buttons;
 	const auto it = std::find(buttons.begin(), buttons.end(), this);
 
 	if (it != buttons.end())
 		buttons.erase(it);
 
-	if (TacticalButtonClass::CurrentButton == this)
-		TacticalButtonClass::CurrentButton = nullptr;
+	if (SWSidebarClass::Instance.CurrentButton == this)
+		SWSidebarClass::Instance.CurrentButton = nullptr;
 
 	GScreenClass::Instance->RemoveButton(this);
 }
@@ -120,7 +113,7 @@ void TacticalButtonClass::OnMouseEnter()
 		return;
 
 	this->IsHovering = true;
-	TacticalButtonClass::CurrentButton = this;
+	SWSidebarClass::Instance.CurrentButton = this;
 }
 
 void TacticalButtonClass::OnMouseLeave()
@@ -130,7 +123,7 @@ void TacticalButtonClass::OnMouseLeave()
 
 	this->IsHovering = false;
 	this->IsPressed = false;
-	TacticalButtonClass::CurrentButton = nullptr;
+	SWSidebarClass::Instance.CurrentButton = nullptr;
 	CCToolTip::Instance->MarkToRedraw(CCToolTip::Instance->CurrentToolTipData);
 }
 
@@ -207,221 +200,4 @@ bool TacticalButtonClass::LaunchSuper(int superIdx)
 	}
 
 	return false;
-}
-
-bool TacticalButtonClass::AddButton(int superIdx)
-{
-	TacticalButtonClass::Initialized = true;
-
-	if (const auto pSWType = SuperWeaponTypeClass::Array->GetItemOrDefault(superIdx))
-	{
-		const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
-
-		if (!Phobos::UI::ExclusiveSuperWeaponSidebar || Unsorted::ArmageddonMode)
-			return false;
-
-		if (!pSWExt->ExclusiveSidebar_Allow)
-			return false;
-
-		const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
-
-		if ((pSWExt->ExclusiveSidebar_RequiredHouses & ownerBits) == 0)
-			return false;
-
-		if (!pSWExt->SW_ShowCameo && pSWExt->SW_AutoFire)
-			return true;
-	}
-	else
-	{
-		return false;
-	}
-
-	auto& buttons = TacticalButtonClass::Buttons;
-
-	if (std::any_of(buttons.begin(), buttons.end(), [superIdx](TacticalButtonClass* const button) { return button->SuperIndex == superIdx; }))
-		return true;
-
-	DLLCreate<TacticalButtonClass>(superIdx + 2200, superIdx, 0, 0, 60, 48);
-	SortButtons();
-	return true;
-}
-
-bool TacticalButtonClass::RemoveButton(int superIdx)
-{
-	auto& buttons = TacticalButtonClass::Buttons;
-
-	const auto it = std::find_if(buttons.begin(), buttons.end(), [superIdx](TacticalButtonClass* const button) { return button->SuperIndex == superIdx; });
-
-	if (it == buttons.end())
-		return false;
-
-	DLLDelete(*it);
-	SortButtons();
-	return true;
-}
-
-void TacticalButtonClass::ClearButtons()
-{
-	TacticalButtonClass::CurrentButton = nullptr;
-	auto& buttons = TacticalButtonClass::Buttons;
-
-	if (buttons.empty())
-		return;
-
-	for (const auto button : buttons)
-		DLLDelete(button);
-
-	buttons.clear();
-}
-
-void TacticalButtonClass::SortButtons()
-{
-	auto& buttons = TacticalButtonClass::Buttons;
-
-	if (buttons.empty())
-		return;
-
-	std::stable_sort(buttons.begin(), buttons.end(), [](TacticalButtonClass* const a, TacticalButtonClass* const b)
-		{
-			return BuildType::SortsBefore(AbstractType::Special, a->SuperIndex, AbstractType::Special, b->SuperIndex);
-		 });
-
-	const int buttonCount = static_cast<int>(buttons.size());
-	const int cameoWidth = 60, cameoHeight = 48;
-	const int maximum = Phobos::UI::ExclusiveSuperWeaponSidebar_Max;
-	Point2D location = { 0, (DSurface::ViewBounds().Height - std::min(buttonCount, maximum) * cameoHeight) / 2 };
-	int location_Y = location.Y;
-	int row = 0, line = 0;
-
-	for (int idx = 0; idx < buttonCount && maximum - line > 0; idx++)
-	{
-		const auto button = buttons[idx];
-		button->SetPosition(location.X, location.Y);
-		row++;
-
-		if (row >= maximum - line)
-		{
-			row = 0;
-			line++;
-			location_Y += cameoHeight / 2;
-			location = { location.X + cameoWidth, location_Y };
-		}
-		else
-		{
-			location.Y += cameoHeight;
-		}
-	}
-}
-
-DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_TacticalButton, 0x7)
-{
-	return TacticalButtonClass::CurrentButton ? 0x6925FC : 0;
-}
-
-DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_TacticalButton, 0x6)
-{
-	enum { ApplyToolTip = 0x4AE69D };
-
-	const auto button = TacticalButtonClass::CurrentButton;
-
-	if (!button)
-		return 0;
-
-	PhobosToolTip::Instance.IsCameo = true;
-	const auto pSuper = HouseClass::CurrentPlayer->Supers[button->SuperIndex];
-	PhobosToolTip::Instance.HelpText(pSuper);
-	R->EAX(PhobosToolTip::Instance.GetBuffer());
-	return ApplyToolTip;
-}
-
-DEFINE_HOOK(0x72426F, ToolTipManager_ProcessMessage_TacticalButton, 0x5)
-{
-	if (TacticalButtonClass::CurrentButton)
-		R->EDX(0);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x72428C, ToolTipManager_ProcessMessage_TacticalButton2, 0x5)
-{
-	return TacticalButtonClass::CurrentButton ? 0x724297 : 0;
-}
-
-DEFINE_HOOK(0x724B2E, ToolTipManager_SetX_TacticalButtons, 0x6)
-{
-	if (const auto button = TacticalButtonClass::CurrentButton)
-	{
-		R->EDX(button->X + button->Width);
-		R->EAX(button->Y + 27);
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6CB7BA, SuperClass_Lose_UpdateTacticalButton, 0x6)
-{
-	GET(SuperClass*, pSuper, ECX);
-
-	if (pSuper->Owner == HouseClass::CurrentPlayer)
-		TacticalButtonClass::RemoveButton(pSuper->Type->ArrayIndex);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6A6300, SidebarClass_AddCameo_SuperWeapon_TacticalButton, 0x6)
-{
-	enum { SkipGameCode = 0x6A6606 };
-
-	if (!Phobos::UI::ExclusiveSuperWeaponSidebar)
-		return 0;
-
-	GET_STACK(AbstractType, whatAmI, 0x4);
-	GET_STACK(int, index, 0x8);
-
-	switch (whatAmI)
-	{
-	case AbstractType::Super:
-	case AbstractType::SuperWeaponType:
-	case AbstractType::Special:
-		if (TacticalButtonClass::AddButton(index))
-		{
-			R->AL(false);
-			return SkipGameCode;
-		}
-		break;
-
-	default:
-		break;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6A5030, SidebarClass_Init_Clear_InitializedTacticalButton, 0x6)
-{
-	TacticalButtonClass::Initialized = false;
-	TacticalButtonClass::ClearButtons();
-	return 0;
-}
-
-DEFINE_HOOK(0x55B6B3, LogicClass_AI_InitializedTacticalButton, 0x5)
-{
-	if (TacticalButtonClass::Initialized)
-		return 0;
-
-	TacticalButtonClass::Initialized = true;
-	const auto pCurrent = HouseClass::CurrentPlayer();
-
-	if (!pCurrent || pCurrent->Defeated)
-		return 0;
-
-	for (const auto pSuper : pCurrent->Supers)
-	{
-		if (!pSuper->IsPresent)
-			continue;
-
-		TacticalButtonClass::AddButton(pSuper->Type->ArrayIndex);
-	}
-
-	return 0;
 }

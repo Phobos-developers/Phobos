@@ -1,7 +1,8 @@
 #include "ToggleSWSidebar.h"
 
 #include <Utilities/GeneralUtils.h>
-#include <Ext/Sidebar/TacticalButtonClass.h>
+#include <Ext/Sidebar/Body.h>
+#include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>
 
 const char* ToggleSWSidebar::GetName() const
 {
@@ -29,7 +30,7 @@ void ToggleSWSidebar::Execute(WWKey eInput) const
 
 	if (!SidebarExt::Global()->ExclusiveSWSidebar_Enable)
 	{
-		if (const auto button = TacticalButtonClass::CurrentButton)
+		if (const auto button = SWSidebarClass::Instance.CurrentButton)
 			button->OnMouseLeave();
 	}
 }

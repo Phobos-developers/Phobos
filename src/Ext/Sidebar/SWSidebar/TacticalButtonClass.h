@@ -1,9 +1,5 @@
 #pragma once
-#include "Body.h"
 #include <ControlClass.h>
-
-#include <Utilities/Macro.h>
-#include <Ext/SWType/Body.h>
 
 class TacticalButtonClass : public ControlClass
 {
@@ -21,16 +17,6 @@ public:
 	bool LaunchSuper(int superIdx);
 
 public:
-	static bool AddButton(int superIdx);
-	static bool RemoveButton(int superIdx);
-	static void ClearButtons();
-	static void SortButtons();
-
-public:
-	static std::vector<TacticalButtonClass*> Buttons;
-	static bool Initialized;
-	static TacticalButtonClass* CurrentButton;
-
 	bool IsHovering { false };
 	bool IsPressed { false };
 	int SuperIndex { -1 };
