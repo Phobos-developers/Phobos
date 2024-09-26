@@ -20,24 +20,15 @@ inline const char* FireTacticalSWCommandClass<Index>::GetName() const
 	class to_string_t
 	{
 	public:
-		char buffer[Index >= 10 ? 18 : 17];
+		char buffer[17];
 
 	public:
 		constexpr to_string_t() noexcept
 			: buffer { "FireTacticalSW" }
 		{
 			size_t idx = 14;
-			if constexpr (Index < 10)
-			{
-				buffer[idx++] = (Index + 1) + '0';
-				buffer[idx++] = '\0';
-			}
-			else
-			{
-				buffer[idx++] = (Index + 1) / 10 + '0';
-				buffer[idx++] = (Index + 1) % 10 + '0';
-				buffer[idx++] = '\0';
-			}
+			buffer[idx++] = Index + '0';
+			buffer[idx++] = '\0';
 		}
 
 		constexpr operator char* () noexcept { return buffer; }
@@ -52,24 +43,15 @@ inline const wchar_t* FireTacticalSWCommandClass<Index>::GetUIName() const
 	class to_string_t
 	{
 	public:
-		wchar_t buffer[Index >= 10 ? 21 : 20];
+		wchar_t buffer[20];
 
 	public:
 		constexpr to_string_t() noexcept
 			: buffer { L"Fire tactical SW " }
 		{
 			size_t idx = 17;
-			if constexpr (Index < 10)
-			{
-				buffer[idx++] = (Index + 1) + '0';
-				buffer[idx++] = '\0';
-			}
-			else
-			{
-				buffer[idx++] = (Index + 1) / 10 + '0';
-				buffer[idx++] = (Index + 1) % 10 + '0';
-				buffer[idx++] = '\0';
-			}
+			buffer[idx++] = Index + '0';
+			buffer[idx++] = '\0';
 		}
 
 		constexpr operator wchar_t* () noexcept { return buffer; }
@@ -90,24 +72,15 @@ inline const wchar_t* FireTacticalSWCommandClass<Index>::GetUIDescription() cons
 	class to_string_t
 	{
 	public:
-		wchar_t buffer[Index >= 10 ? 21 : 20];
+		wchar_t buffer[20];
 
 	public:
 		constexpr to_string_t() noexcept
 			: buffer { L"Fire tactical SW " }
 		{
 			size_t idx = 17;
-			if constexpr (Index < 10)
-			{
-				buffer[idx++] = (Index + 1) + '0';
-				buffer[idx++] = '\0';
-			}
-			else
-			{
-				buffer[idx++] = (Index + 1) / 10 + '0';
-				buffer[idx++] = (Index + 1) % 10 + '0';
-				buffer[idx++] = '\0';
-			}
+			buffer[idx++] = Index + '0';
+			buffer[idx++] = '\0';
 		}
 
 		constexpr operator wchar_t* () noexcept { return buffer; }
