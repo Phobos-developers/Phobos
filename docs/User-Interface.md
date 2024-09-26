@@ -556,8 +556,6 @@ ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enable
 
 ### Exclusive SuperWeapon Sidebar
 
-![image](_static/images/exclusive-sw-sidebar.png)
-
 - It is possible to put sw cameos on the left of screen like C&C3 when `ExclusiveSuperWeaponSidebar` is true.
 - In theory, it should be compatible with Ares
 - Cameos arranged in single column (limited 10 cameos).
