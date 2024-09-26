@@ -13,7 +13,9 @@ public:
 
 	static SWSidebarClass Instance;
 
-	std::vector<TacticalButtonClass*> Buttons;
-	bool Initialized;
-	TacticalButtonClass* CurrentButton;
+	std::vector<TacticalButtonClass*> Buttons {};
+	bool Initialized { false };
+	TacticalButtonClass* FirstButton { nullptr };
+	TacticalButtonClass* LastButton { nullptr };
+	TacticalButtonClass* CurrentButton { nullptr };
 };

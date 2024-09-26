@@ -5,6 +5,7 @@
 
 #include <Ext/SWType/Body.h>
 #include <Ext/Sidebar/Body.h>
+#include <Ext/Side/Body.h>
 #include <Utilities/AresFunctions.h>
 
 TacticalButtonClass::TacticalButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
@@ -25,9 +26,9 @@ TacticalButtonClass::~TacticalButtonClass()
 	if (it != buttons.end())
 		buttons.erase(it);
 
-	if (SWSidebarClass::Instance.CurrentButton == this)
-		SWSidebarClass::Instance.CurrentButton = nullptr;
-
+	AnnounceInvalidPointer(SWSidebarClass::Instance.FirstButton, this);
+	AnnounceInvalidPointer(SWSidebarClass::Instance.LastButton, this);
+	AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentButton, this);
 	GScreenClass::Instance->RemoveButton(this);
 }
 
@@ -36,13 +37,61 @@ bool TacticalButtonClass::Draw(bool forced)
 	/*if (!this->ControlClass::Draw(forced))
 		return false;*/
 
-	if (!SidebarExt::Global()->ExclusiveSWSidebar_Enable)
+	if (!SidebarExt::Global()->SWSidebar_Enable)
 		return false;
 
 	auto pSurface = DSurface::Composite();
 	auto bounds = pSurface->GetRect();
 	Point2D location = { this->X, this->Y };
 	RectangleStruct destRect = { location.X, location.Y, this->Width, this->Height };
+
+	// draw background
+	if (RulesExt::Global()->SWSidebarBackground)
+	{
+		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
+
+		// center background
+		const auto center = pSideExt->SWSidebarBackground_CenterPCX.GetSurface();
+
+		if (center)
+		{
+			RectangleStruct drawRect = destRect;
+			drawRect.Width = center->GetWidth();
+			drawRect.Height = center->GetHeight();
+			drawRect.Y -= Phobos::UI::ExclusiveSuperWeaponSidebar_Interval / 2;
+			PCX::Instance->BlitToSurface(&drawRect, pSurface, center);
+		}
+
+		// top background
+		if (this == SWSidebarClass::Instance.FirstButton)
+		{
+			if (const auto top = pSideExt->SWSidebarBackground_TopPCX.GetSurface())
+			{
+				RectangleStruct drawRect = destRect;
+				drawRect.Width = top->GetWidth();
+				drawRect.Height = top->GetHeight();
+				drawRect.Y -= Phobos::UI::ExclusiveSuperWeaponSidebar_Interval / 2 + drawRect.Height;
+				PCX::Instance->BlitToSurface(&drawRect, pSurface, top);
+			}
+		}
+
+		// bottom background
+		if (this == SWSidebarClass::Instance.LastButton)
+		{
+			if (const auto bottom = pSideExt->SWSidebarBackground_TopPCX.GetSurface())
+			{
+				RectangleStruct drawRect = destRect;
+				drawRect.Width = bottom->GetWidth();
+				drawRect.Height = bottom->GetHeight();
+				drawRect.Y += Phobos::UI::ExclusiveSuperWeaponSidebar_Interval / 2 + drawRect.Height;
+
+				if (center)
+					drawRect.Y += center->GetHeight();
+
+				PCX::Instance->BlitToSurface(&drawRect, pSurface, bottom);
+			}
+		}
+	}
 
 	const auto pCurrent = HouseClass::CurrentPlayer();
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];
@@ -109,7 +158,7 @@ bool TacticalButtonClass::Draw(bool forced)
 
 void TacticalButtonClass::OnMouseEnter()
 {
-	if (!SidebarExt::Global()->ExclusiveSWSidebar_Enable)
+	if (!SidebarExt::Global()->SWSidebar_Enable)
 		return;
 
 	this->IsHovering = true;
@@ -118,7 +167,7 @@ void TacticalButtonClass::OnMouseEnter()
 
 void TacticalButtonClass::OnMouseLeave()
 {
-	if (!SidebarExt::Global()->ExclusiveSWSidebar_Enable)
+	if (!SidebarExt::Global()->SWSidebar_Enable)
 		return;
 
 	this->IsHovering = false;
@@ -129,7 +178,7 @@ void TacticalButtonClass::OnMouseLeave()
 
 bool TacticalButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 {
-	if (!SidebarExt::Global()->ExclusiveSWSidebar_Enable)
+	if (!SidebarExt::Global()->SWSidebar_Enable)
 		return false;
 
 	if ((int)flags & (int)GadgetFlag::LeftPress)

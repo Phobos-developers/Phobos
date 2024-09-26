@@ -1,6 +1,8 @@
 #include "SWSidebarClass.h"
 #include <Misc/PhobosToolTip.h>
 #include <Ext/House/Body.h>
+#include <Ext/Sidebar/Body.h>
+#include <Ext/Side/Body.h>
 
 SWSidebarClass SWSidebarClass::Instance;
 
@@ -57,7 +59,6 @@ bool SWSidebarClass::RemoveButton(int superIdx)
 
 void SWSidebarClass::ClearButtons()
 {
-	SWSidebarClass::Instance.CurrentButton = nullptr;
 	auto& buttons = SWSidebarClass::Instance.Buttons;
 
 	if (buttons.empty())
@@ -92,34 +93,21 @@ void SWSidebarClass::SortButtons()
 			return BuildType::SortsBefore(AbstractType::Special, a->SuperIndex, AbstractType::Special, b->SuperIndex);
 		 });
 
+	SWSidebarClass::Instance.FirstButton = *buttons.begin();
+	SWSidebarClass::Instance.LastButton = *buttons.end();
+
 	const int buttonCount = static_cast<int>(buttons.size());
 	const int cameoWidth = 60, cameoHeight = 48;
-	const int maximum = Phobos::UI::ExclusiveSuperWeaponSidebar_Max;
+	const int maximum = 10;
+	const int interval = Phobos::UI::ExclusiveSuperWeaponSidebar_Interval;
 	Point2D location = { 0, (DSurface::ViewBounds().Height - std::min(buttonCount, maximum) * cameoHeight) / 2 };
-	int location_Y = location.Y;
-	int row = 0, line = 0;
 
-	for (int idx = 0; idx < buttonCount && maximum - line > 0; idx++)
+	for (int idx = 0; idx < buttonCount && idx < maximum; idx++, location.Y += cameoHeight + interval)
 	{
 		const auto button = buttons[idx];
-		button->SetPosition(location.X, location.Y);
-		row++;
-
-		if (row >= maximum - line)
-		{
-			row = 0;
-			line++;
-			location_Y += cameoHeight / 2;
-			location = { location.X + cameoWidth, location_Y };
-		}
-		else
-		{
-			location.Y += cameoHeight;
-		}
+		button->SetPosition(location.X, location.Y + interval / 2);
 	}
 }
-
-// Hooks
 
 DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_TacticalButton, 0x7)
 {

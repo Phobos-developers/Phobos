@@ -18,10 +18,10 @@ public:
 	class ExtData final : public Extension<SidebarClass>
 	{
 	public:
-		bool ExclusiveSWSidebar_Enable;
+		bool SWSidebar_Enable;
 
 		ExtData(SidebarClass* OwnerObject) : Extension<SidebarClass>(OwnerObject)
-			, ExclusiveSWSidebar_Enable { true }
+			, SWSidebar_Enable { true }
 		{ }
 
 		virtual ~ExtData() = default;

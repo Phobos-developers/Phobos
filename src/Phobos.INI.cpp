@@ -5,7 +5,6 @@
 #include <SessionClass.h>
 #include <MessageListClass.h>
 #include <HouseClass.h>
-#include <GameOptionsClass.h>
 
 #include <Utilities/Parser.h>
 #include <Utilities/GeneralUtils.h>
@@ -33,7 +32,7 @@ double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 bool Phobos::UI::CenterPauseMenuBackground = false;
 bool Phobos::UI::ExclusiveSuperWeaponSidebar = false;
-int Phobos::UI::ExclusiveSuperWeaponSidebar_Max = 0;
+int Phobos::UI::ExclusiveSuperWeaponSidebar_Interval = 2;
 bool Phobos::UI::WeedsCounter_Show = false;
 bool Phobos::UI::AnchoredToolTips = false;
 
@@ -160,15 +159,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		Phobos::UI::ExclusiveSuperWeaponSidebar =
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "ExclusiveSuperWeaponSidebar", Phobos::UI::ExclusiveSuperWeaponSidebar);
 
-		Phobos::UI::ExclusiveSuperWeaponSidebar_Max =
-			pINI_UIMD->ReadInteger(SIDEBAR_SECTION, "ExclusiveSuperWeaponSidebar.Max", Phobos::UI::ExclusiveSuperWeaponSidebar_Max);
-
-		const int screenHeight = GameOptionsClass::Instance->ScreenHeight - 192;
-
-		if (Phobos::UI::ExclusiveSuperWeaponSidebar_Max > 0)
-			Phobos::UI::ExclusiveSuperWeaponSidebar_Max = std::min(Phobos::UI::ExclusiveSuperWeaponSidebar_Max, screenHeight / 48);
-		else
-			Phobos::UI::ExclusiveSuperWeaponSidebar_Max = screenHeight / 48;
+		Phobos::UI::ExclusiveSuperWeaponSidebar_Interval =
+			pINI_UIMD->ReadInteger(SIDEBAR_SECTION, "ExclusiveSuperWeaponSidebar.Interval", Phobos::UI::ExclusiveSuperWeaponSidebar_Interval);
 	}
 
 	// UISettings
