@@ -169,6 +169,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them (by Starkku)
+- Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
 
 ## Fixes / interactions with other extensions
 
@@ -649,6 +650,18 @@ In `rulesmd.ini`:
 Wake=                ; Anim (played when Techno moving on the water), default to [General]->Wake
 Wake.Grapple=        ; Anim (played when Techno being parasited on the water), defaults to [SOMETECHNO]->Wake
 Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [SOMETECHNO]->Wake
+```
+
+### Customizing effect of level lighting on air units
+
+- It is now possible to customize how air units are affected by level lighting, separately for AircraftTypes and infantry/vehicles with Jumpjet `Locomotor`.
+  - `AircraftLevelLightMultiplier` & `JumpjetLevelLightMultiplier` are direct multipliers to level lighting applied on the units, for height levels above the cell they are on.
+
+  - In `rulesmd.ini`
+```ini
+[AudioVisual]
+AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
+JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
 ```
 
 ### Exploding object customizations
