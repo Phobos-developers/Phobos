@@ -11,6 +11,7 @@
 #include "ToggleDesignatorRange.h"
 #include "SaveVariablesToFile.h"
 #include "ToggleSWSidebar.h"
+#include "FireTacticalSW.h"
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -21,6 +22,17 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
 	MakeCommand<ToggleSWSidebar>();
+
+	MakeCommand<FireTacticalSWCommandClass<0>>();
+	MakeCommand<FireTacticalSWCommandClass<1>>();
+	MakeCommand<FireTacticalSWCommandClass<2>>();
+	MakeCommand<FireTacticalSWCommandClass<3>>();
+	MakeCommand<FireTacticalSWCommandClass<4>>();
+	MakeCommand<FireTacticalSWCommandClass<5>>();
+	MakeCommand<FireTacticalSWCommandClass<6>>();
+	MakeCommand<FireTacticalSWCommandClass<7>>();
+	MakeCommand<FireTacticalSWCommandClass<8>>();
+	MakeCommand<FireTacticalSWCommandClass<9>>();
 
 	if (Phobos::Config::DevelopmentCommands)
 	{

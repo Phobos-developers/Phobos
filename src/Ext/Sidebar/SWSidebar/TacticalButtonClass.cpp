@@ -26,8 +26,6 @@ TacticalButtonClass::~TacticalButtonClass()
 	if (it != buttons.end())
 		buttons.erase(it);
 
-	AnnounceInvalidPointer(SWSidebarClass::Instance.FirstButton, this);
-	AnnounceInvalidPointer(SWSidebarClass::Instance.LastButton, this);
 	AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentButton, this);
 	GScreenClass::Instance->RemoveButton(this);
 }
@@ -63,7 +61,7 @@ bool TacticalButtonClass::Draw(bool forced)
 		}
 
 		// top background
-		if (this == SWSidebarClass::Instance.FirstButton)
+		if (this == SWSidebarClass::Instance.Buttons.front())
 		{
 			if (const auto top = pSideExt->SWSidebarBackground_TopPCX.GetSurface())
 			{
@@ -76,7 +74,7 @@ bool TacticalButtonClass::Draw(bool forced)
 		}
 
 		// bottom background
-		if (this == SWSidebarClass::Instance.LastButton)
+		if (this == SWSidebarClass::Instance.Buttons.back())
 		{
 			if (const auto bottom = pSideExt->SWSidebarBackground_TopPCX.GetSurface())
 			{
@@ -187,16 +185,16 @@ bool TacticalButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 	if ((int)flags & (int)GadgetFlag::LeftRelease && this->IsPressed)
 	{
 		this->IsPressed = false;
-		this->LaunchSuper(this->SuperIndex);
+		this->LaunchSuper();
 	}
 
 	return this->ControlClass::Action(flags, pKey, KeyModifier::None);
 }
 
-bool TacticalButtonClass::LaunchSuper(int superIdx)
+bool TacticalButtonClass::LaunchSuper()
 {
 	const auto pCurrent = HouseClass::CurrentPlayer();
-	const auto pSuper = pCurrent->Supers[superIdx];
+	const auto pSuper = pCurrent->Supers[this->SuperIndex];
 	const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 	VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
 	const bool manual = !pSWExt->SW_ManualFire && pSWExt->SW_AutoFire;

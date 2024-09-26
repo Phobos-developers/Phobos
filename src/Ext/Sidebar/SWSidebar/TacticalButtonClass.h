@@ -14,7 +14,7 @@ public:
 	virtual void OnMouseLeave() override;
 	virtual bool Action(GadgetFlag fags, DWORD* pKey, KeyModifier modifier) override;
 
-	bool LaunchSuper(int superIdx);
+	bool LaunchSuper();
 
 public:
 	bool IsHovering { false };

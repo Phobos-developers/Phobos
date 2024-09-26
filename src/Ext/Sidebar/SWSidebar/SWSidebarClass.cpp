@@ -93,9 +93,6 @@ void SWSidebarClass::SortButtons()
 			return BuildType::SortsBefore(AbstractType::Special, a->SuperIndex, AbstractType::Special, b->SuperIndex);
 		 });
 
-	SWSidebarClass::Instance.FirstButton = *buttons.begin();
-	SWSidebarClass::Instance.LastButton = *buttons.end();
-
 	const int buttonCount = static_cast<int>(buttons.size());
 	const int cameoWidth = 60, cameoHeight = 48;
 	const int maximum = 10;

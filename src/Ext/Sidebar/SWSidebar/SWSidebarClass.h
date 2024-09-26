@@ -15,7 +15,5 @@ public:
 
 	std::vector<TacticalButtonClass*> Buttons {};
 	bool Initialized { false };
-	TacticalButtonClass* FirstButton { nullptr };
-	TacticalButtonClass* LastButton { nullptr };
 	TacticalButtonClass* CurrentButton { nullptr };
 };
