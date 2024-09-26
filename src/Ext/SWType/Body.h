@@ -76,6 +76,7 @@ public:
 		Valueable<int> TabIndex;
         
 		Valueable<bool> ExclusiveSidebar_Allow;
+		DWORD ExclusiveSidebar_PriorityHouses;
 		DWORD ExclusiveSidebar_RequiredHouses;
 
 		CustomPalette SidebarPal;
@@ -142,6 +143,7 @@ public:
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }
 			, ExclusiveSidebar_Allow { true }
+			, ExclusiveSidebar_PriorityHouses { 0u }
 			, ExclusiveSidebar_RequiredHouses { 0xFFFFFFFFu }
 			, SidebarPal {}
 			, SidebarPCX {}

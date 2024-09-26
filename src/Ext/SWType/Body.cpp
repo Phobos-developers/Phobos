@@ -61,6 +61,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->TabIndex)
 		.Process(this->ExclusiveSidebar_Allow)
+		.Process(this->ExclusiveSidebar_PriorityHouses)
 		.Process(this->ExclusiveSidebar_RequiredHouses)
 		.Process(this->SidebarPal)
 		.Process(this->SidebarPCX)
@@ -201,6 +202,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	GeneralUtils::IntValidCheck(&this->TabIndex, pSection, "TabIndex", 1, 0, 3);
     
 	this->ExclusiveSidebar_Allow.Read(exINI, pSection, "ExclusiveSidebar.Allow");
+	this->ExclusiveSidebar_PriorityHouses = pINI->ReadHouseTypesList(pSection, "ExclusiveSidebar.PriorityHouses", this->ExclusiveSidebar_PriorityHouses);
 	this->ExclusiveSidebar_RequiredHouses = pINI->ReadHouseTypesList(pSection, "ExclusiveSidebar.RequiredHouses", this->ExclusiveSidebar_RequiredHouses);
 
 	this->SidebarPal.LoadFromINI(pINI, pSection, "SidebarPalette");

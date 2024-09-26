@@ -147,6 +147,8 @@ public:
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Valueable<bool> SWSidebarBackground;
+
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
@@ -256,6 +258,7 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, SWSidebarBackground { true }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
 			, UseFixedVoxelLighting { false }
