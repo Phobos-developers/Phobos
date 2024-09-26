@@ -171,4 +171,6 @@ public:
 
 	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
 	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
+
+	static bool CanBeSelectedBy(HouseClass* pOwner, HouseClass* pSelectingPlayer);
 };

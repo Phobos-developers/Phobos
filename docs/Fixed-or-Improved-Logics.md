@@ -169,6 +169,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them (by Starkku)
+- Fix for friendly units that have been cloaked not being able to be selected.
 
 ## Fixes / interactions with other extensions
 
