@@ -155,13 +155,20 @@ DEFINE_HOOK(0x724B2E, ToolTipManager_SetX_TacticalButtons, 0x6)
 	return 0;
 }
 
+// I cannot add it into YRppp :(
+// It always failed, help me
+static void __fastcall HouseClass_UpdateSuperWeaponsUnavailable(HouseClass* pHouse)
+{
+	JMP_STD(0x50B1D0);
+}
+
 DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_UpdateSupers, 0x7)
 {
 	enum { SkipGameCode = 0x4F9302 };
 
 	GET(HouseClass*, pHouse, ESI);
 
-	pHouse->UpdateSuperWeaponsUnavailable();
+	HouseClass_UpdateSuperWeaponsUnavailable(pHouse);
 
 	if (pHouse->IsCurrentPlayer())
 	{
