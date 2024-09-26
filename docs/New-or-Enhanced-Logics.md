@@ -25,7 +25,8 @@ This page describes all the engine features that are either new and introduced b
     - `Animation.TemporalAction` determines what happens to the animation when the attached object is under effect of `Temporal=true` Warhead.
     - `Animation.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the animation's owner & invoker instead of the object the effect is attached to.
     - `Animation.HideIfAttachedWith` contains list of other AttachEffectTypes that if attached to same techno as the current one, will hide this effect's animation.
-  - `CumulativeAnimations` can be used to declare a list of animations used for `Cumulative=true` types instead of `Animation`. An animation is picked from the list in order matching the number of active instances of the type on the object, with last listed animation used if number is higher than the number of listed animations. This animation is only displayed once, on the first active instance of the effect found attached and is updated and restarted if the number of active instances changed.
+  - `CumulativeAnimations` can be used to declare a list of animations used for `Cumulative=true` types instead of `Animation`. An animation is picked from the list in order matching the number of active instances of the type on the object, with last listed animation used if number is higher than the number of listed animations. This animation is only displayed once and is transferred from the effect to another of same type (specifically one with longest remaining duration), if such exists, upon expiration or removal. Note that because `Cumulative.MaxCount` limits the number of effects of same type that can be applied this can cause animations to 'flicker' here as effects expire before new ones can be applied in some circumstances.
+    - `CumulativeAnimations.RestartOnChange` determines if the animation playback is restarted when the type of animation changes, if not then playback resumes at frame at same position relative to the animation's length.
   - Attached effect can fire off a weapon when expired / removed / object dies by setting `ExpireWeapon`.
     - `ExpireWeapon.TriggerOn` determines the exact conditions upon which the weapon is fired, defaults to `expire` which means only if the effect naturally expires.
     - `ExpireWeapon.CumulativeOnlyOnce`, if set to true, makes it so that `Cumulative=true` attached effects only detonate the weapon once period, instead of once per active instance. On `remove` and `expire` condition this means it will only detonate after last instance has expired or been removed.
@@ -68,7 +69,7 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.(Required|Disallowed)MinCounts & (Required|Disallowed)MaxCounts` can be used to set the minimum and maximum number of instances required / disallowed to be on the Techno for `Cumulative=true` types (ignored for other types) respectively.
   - `AttachEffect.IgnoreFromSameSource` can be set to true to ignore effects that have been attached by the firer of the weapon and its Warhead.
   - `AttachEffect.CheckOnFirer` is set to true makes it so that the required / disallowed attached effects are checked from the firer of the weapon instead of the target.
-  
+
 In `rulesmd.ini`:
 ```ini
 [AttachEffectTypes]
@@ -90,6 +91,7 @@ Animation.TemporalAction=None                  ; AttachedAnimFlag (None, Hides, 
 Animation.UseInvokerAsOwner=false              ; boolean
 Animation.HideIfAttachedWith=                  ; List of AttachEffectTypes
 CumulativeAnimations=                          ; list of animations
+CumulativeAnimations.RestartOnChange=true      ; boolean
 ExpireWeapon=                                  ; WeaponType
 ExpireWeapon.TriggerOn=expire                  ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
 ExpireWeapon.CumulativeOnlyOnce=false          ; boolean
@@ -324,6 +326,8 @@ Shield.AbsorbPercent=                       ; floating point value
 Shield.PassPercent=                         ; floating point value
 Shield.ReceivedDamage.Minimum=              ; integer
 Shield.ReceivedDamage.Maximum=              ; integer
+Shield.ReceivedDamage.MinMultiplier=1.0     ; floating point value
+Shield.ReceivedDamage.MaxMultiplier=1.0     ; floating point value
 Shield.Respawn.Duration=0                   ; integer, game frames
 Shield.Respawn.Amount=0.0                   ; floating point value, percents or absolute
 Shield.Respawn.Rate=-1.0                    ; floating point value, ingame minutes
@@ -399,6 +403,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Shield.AbsorbPercent` overrides the `AbsorbPercent` value set in the ShieldType that is being damaged.
   - `Shield.PassPercent` overrides the `PassPercent` value set in the ShieldType that is being damaged.
   - `Shield.ReceivedDamage.Minimum` & `Shield.ReceivedDamage.Maximum` override the values set in in the ShieldType that is being damaged.
+    - `Shield.ReceivedDamage.MinMultiplier` and `Shield.ReceivedDamage.MinMultiplier` are multipliers to the effective `Shield.ReceivedDamage.Minimum` and `Shield.ReceivedDamage.Maximum` respectively that are applied when the Warhead deals damage to a shield.
   - `Shield.Respawn.Rate` & `Shield.Respawn.Amount` override ShieldType `Respawn.Rate` and `Respawn.Amount` for duration of `Shield.Respawn.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.Respawn.RestartTimer` is set, currently running shield respawn timer is reset, otherwise the timer's duration is adjusted in proportion to the new `Shield.Respawn.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while respawn timer is running, remaining time is adjusted to proportionally match ShieldType `Respawn.Rate`. Re-applying the effect resets the duration to `Shield.Respawn.Duration`
   - `Shield.SelfHealing.Rate` & `Shield.SelfHealing.Amount` override ShieldType `SelfHealing.Rate` and `SelfHealing.Amount` for duration of `Shield.SelfHealing.Duration` amount of frames. Negative rate & zero or lower amount default to ShieldType values. If `Shield.SelfHealing.RestartTimer` is set, currently running self-healing timer is restarted, otherwise timer's duration is adjusted in proportion to the new `Shield.SelfHealing.Rate` (e.g timer will be same percentage through before and after) without restarting the timer. If the effect expires while self-healing timer is running, remaining time is adjusted to proportionally match ShieldType `SelfHealing.Rate`. Re-applying the effect resets the duration to `Shield.SelfHealing.Duration`.
     - Additionally `Shield.SelfHealing.RestartInCombat` & `Shield.SelfHealing.RestartInCombatDelay` can be used to override ShieldType settings.
@@ -430,7 +435,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles if possible.
   - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
   - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
-  
+
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                             ; AnimationType
@@ -679,7 +684,7 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but ínstead travels up to a distance defined by `Trajectory.Straight.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
 
 In `rulesmd.ini`:
-```ini                                         
+```ini
 [SOMEPROJECTILE]                               ; Projectile
 Trajectory=Straight                            ; Trajectory type
 Trajectory.Straight.DetonationDistance=0.4     ; floating point value
@@ -867,6 +872,17 @@ Detonate.Warhead.Full=true  ; boolean
 Detonate.Weapon=            ; WeaponType
 Detonate.Damage=            ; integer
 Detonate.AtFirer=false      ; boolean
+```
+
+### Customize SuperWeapon TabIndex
+
+- You can now assign a Super Weapon's cameo to any sidebar tab using `TabIndex`.
+  - Valid values are: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]    ; Super Weapon
+TabIndex=1  ; integer
 ```
 
 ## Technos

@@ -21,18 +21,16 @@ public:
 	Valueable<bool> ApplyRangeModifiers;
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> PassThrough;
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };
 
 class StraightTrajectory final : public PhobosTrajectory
 {
 public:
-	StraightTrajectory() : PhobosTrajectory(TrajectoryFlag::Straight)
-		, DetonationDistance { Leptons(102) }
-		, TargetSnapDistance { Leptons(128) }
-		, PassThrough { false }
-		, FirerZPosition { 0 }
-		, TargetZPosition { 0 }
-	{}
+	StraightTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
 	StraightTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
 		, DetonationDistance { Leptons(102) }
@@ -63,4 +61,7 @@ private:
 	int GetFirerZPosition(BulletClass* pBullet);
 	int GetTargetZPosition(BulletClass* pBullet);
 	bool ElevationDetonationCheck(BulletClass* pBullet);
+
+	template <typename T>
+	void Serialize(T& Stm);
 };

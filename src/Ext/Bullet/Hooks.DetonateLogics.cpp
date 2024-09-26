@@ -287,8 +287,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK_AGAIN(0x46A2FB, BulletClass_Logics_Extras, 0x5)
-DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
+DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 {
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct*, coords, 0x8);

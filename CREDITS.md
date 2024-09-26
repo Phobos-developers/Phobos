@@ -21,6 +21,7 @@ This page lists all the individual contributions to the project by their author.
   - Non-ASCII input fix
   - Building Placement Preview Adjustment
   - Check for Changelog/Documentation/Credits in Pull Requests
+  - Docs dark theme switcher
   - Fix position and layer of info tip and reveal production cameo on selected building
   - Fix a glitch related to incorrect target setting for missiles
   - Ability to disable shadow for debris & meteor animations
@@ -328,6 +329,8 @@ This page lists all the individual contributions to the project by their author.
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
    - Disguised units not using the correct palette if target has custom palette bugfix
+   - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
+   - Assign Super Weapon cameo to any sidebar tab
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons
@@ -354,10 +357,16 @@ This page lists all the individual contributions to the project by their author.
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
+- **CrimRecya**
+  - Fix `LimboKill` not working reliably
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
 - **handama** - AI script action to jump back to previous script
+- **TaranDahl (航味麻酱)**
+  - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
+  - Skirmish AI "gather when MCV deploy" behavior dehardcode
+  - Global value of `RepairBaseNodes` and `MCVRedeploys`
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

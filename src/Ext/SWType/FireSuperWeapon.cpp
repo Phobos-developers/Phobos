@@ -120,20 +120,6 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 	}
 }
 
-inline void LimboDelete(BuildingClass* pBuilding, HouseClass* pTargetHouse)
-{
-	auto pOwnerExt = HouseExt::ExtMap.Find(pTargetHouse);
-
-	// Remove building from list of owned limbo buildings
-	auto& vec = pOwnerExt->OwnedLimboDeliveredBuildings;
-	vec.erase(std::remove(vec.begin(), vec.end(), pBuilding), vec.end());
-
-	pBuilding->Stun();
-	pBuilding->Limbo();
-	pBuilding->RegisterDestruction(nullptr);
-	pBuilding->UnInit();
-}
-
 void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 {
 	// random mode
@@ -174,13 +160,25 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
 			{
 				auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
+				auto& vec = pHouseExt->OwnedLimboDeliveredBuildings;
 
-				for (const auto& pBuilding : pHouseExt->OwnedLimboDeliveredBuildings)
+				for (auto it = vec.begin(); it != vec.end(); )
 				{
+					BuildingClass* const pBuilding = *it;
 					auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
 
 					if (pBuildingExt->LimboID == limboKillID)
-						LimboDelete(pBuilding, pTargetHouse);
+					{
+						it = vec.erase(it);
+						pBuilding->Stun();
+						pBuilding->Limbo();
+						pBuilding->RegisterDestruction(nullptr);
+						pBuilding->UnInit();
+					}
+					else
+					{
+						++it;
+					}
 				}
 			}
 		}

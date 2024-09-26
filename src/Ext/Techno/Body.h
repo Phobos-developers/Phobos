@@ -42,6 +42,7 @@ public:
 		bool IsBurrowed;
 		bool HasBeenPlacedOnMap; // Set to true on first Unlimbo() call.
 		CDTimerClass DeployFireTimer;
+		bool SkipTargetChangeResetSequence;
 		bool ForceFullRearmDelay;
 		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
@@ -75,6 +76,7 @@ public:
 			, IsBurrowed { false }
 			, HasBeenPlacedOnMap { false }
 			, DeployFireTimer {}
+			, SkipTargetChangeResetSequence { false }
 			, ForceFullRearmDelay { false }
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
@@ -98,7 +100,7 @@ public:
 		void UpdateTypeData(TechnoTypeClass* currentType);
 		void UpdateLaserTrails();
 		void UpdateAttachEffects();
-		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType);
+		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
 		void RecalculateStatMultipliers();
 		void UpdateTemporal();
 		void UpdateMindControlAnim();

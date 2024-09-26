@@ -99,6 +99,8 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Navy;
 		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
+		Valueable<bool> EnablePowerSurplus;
+
 		Valueable<bool> DisplayIncome;
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
@@ -151,6 +153,13 @@ public:
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<bool> GatherWhenMCVDeploy;
+		Valueable<bool> AIFireSale;
+		Valueable<int> AIFireSaleDelay;
+		Valueable<bool> AIAllToHunt;
+		ValueableVector<bool> RepairBaseNodes;
+		Valueable<bool> MCVRedeploysInCampaign;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -215,6 +224,9 @@ public:
 			, ForbidParallelAIQueues_Infantry { false }
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
+
+			, EnablePowerSurplus { false }
+
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
@@ -259,6 +271,12 @@ public:
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
 			, UseFixedVoxelLighting { false }
+			, GatherWhenMCVDeploy { true }
+			, AIFireSale { true }
+			, AIFireSaleDelay { 0 }
+			, AIAllToHunt { true }
+			, RepairBaseNodes {}
+			, MCVRedeploysInCampaign { false }
 		{ }
 
 		virtual ~ExtData() = default;

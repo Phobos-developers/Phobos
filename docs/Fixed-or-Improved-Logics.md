@@ -164,6 +164,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed disguised units not using the correct palette if target has custom palette.
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
 - Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading.
+- The otherwise unused setting `[AI]` -> `PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI]` -> `EnablePowerSurplus` to true.
+- Planning paths are now shown for all units under player control or when `[GlobalControls]->DebugPlanningPaths=yes` in singleplayer game modes.
+- Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
+- Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
+- Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them (by Starkku)
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
 
 ## Fixes / interactions with other extensions
@@ -471,7 +476,7 @@ Pips.SelfHeal.Units.Offset=33,-32       ; X,Y, pixels relative to default
 Pips.SelfHeal.Buildings.Offset=15,10    ; X,Y, pixels relative to default
 
 [SOMETECHNO]                            ; TechnoType
-SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (none|infantry|units)
+SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (noheal|infantry|units)
 ```
 
 ### Chrono sparkle animation customization & improvements
@@ -795,6 +800,24 @@ NoWobbles=false  ; boolean
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Skirmish AI behavior dehardcode
+
+- In vanilla, there is a hardcoded behavior that when an skirmish AI player has no factory and has not taken damage for a while, it will sell its buildings and set its units to hunt. This can be customized now.
+  - `[General]->AIFireSale` and `[General]->AIAllToHunt` control whether the AI will act selling and hunting respectively.
+  - `[General]->AIFireSaleDelay` defines a timer, it will only work if `[General]->AIFireSale` is set to `true`. When the first time the AI reaches the trigger condition of vanilla behavior, the timer starts and prevents the selling behavior from happening until the timer is expired.
+  - You can use these flags to make the AIs "all in" before they are defeated.
+- Another hardcoded behavior is that, when the AI deploys a MCV, it will gather all of its forces to that place. This can be toggle off now.
+  - `[General]->GatherWhenMCVDeploy` controls this behavior.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AIFireSale=true           ; boolean
+AIFireSaleDelay=0         ; integer, number of frames
+AIAllToHunt=true          ; boolean
+GatherWhenMCVDeploy=true  ; boolean
 ```
 
 ### Subterranean unit travel height
@@ -1265,7 +1288,7 @@ DecloakDamagedTargets=true  ; boolean
 
 - You can now make Warheads behave in nonprovocative fashion. Warheads with `Nonprovocative=true` exhibit following behaviours:
   - They will not generate any EVA announcements upon hitting targets, be it for attacking ore miners, base buildings or ally base buildings.
-  - They will not spring 'attacked' / 'attacked by' events. Note that if the Warhead deals actual damage, events that check for that can still be sprung. 
+  - They will not spring 'attacked' / 'attacked by' events. Note that if the Warhead deals actual damage, events that check for that can still be sprung.
   - They will not evoke defense response from AI players when used to attack base buildings, `ToProtect=true` TechnoTypes or members of TeamTypes with `Whiner=true`.
   - They will not evoke retaliation from TechnoTypes hit by the Warhead.
 
@@ -1343,6 +1366,16 @@ In `rulesmd.ini`
 ```ini
 [SOMEWEAPON]
 KickOutPassengers=true  ; boolean
+```
+
+### Disable FireOnce resetting infantry sequence
+
+- It is now possible to disable `FireOnce=true` weapon resetting infantry sequences after firing via `FireOnce.ResetSequence`. Target will be forgotten like before, the firing sequence will simply continue playing after firing if there are any frames left.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+FireOnce.ResetSequence=true  ; boolean
 ```
 
 ### Single-color lasers
