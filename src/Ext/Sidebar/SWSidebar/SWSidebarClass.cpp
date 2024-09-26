@@ -76,8 +76,19 @@ void SWSidebarClass::SortButtons()
 	if (buttons.empty())
 		return;
 
-	std::stable_sort(buttons.begin(), buttons.end(), [](TacticalButtonClass* const a, TacticalButtonClass* const b)
+	const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
+
+	std::stable_sort(buttons.begin(), buttons.end(), [ownerBits](TacticalButtonClass* const a, TacticalButtonClass* const b)
 		{
+			const auto pLeftExt = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->Items[a->SuperIndex]);
+			const auto pRightExt = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->Items[b->SuperIndex]);
+
+			if ((pLeftExt->ExclusiveSidebar_PriorityHouses & ownerBits) && !(pRightExt->ExclusiveSidebar_PriorityHouses & ownerBits))
+				return false;
+
+			if (!(pLeftExt->ExclusiveSidebar_PriorityHouses & ownerBits) && (pRightExt->ExclusiveSidebar_PriorityHouses & ownerBits))
+				return true;
+
 			return BuildType::SortsBefore(AbstractType::Special, a->SuperIndex, AbstractType::Special, b->SuperIndex);
 		 });
 
@@ -113,46 +124,6 @@ void SWSidebarClass::SortButtons()
 DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_TacticalButton, 0x7)
 {
 	return SWSidebarClass::Instance.CurrentButton ? 0x6925FC : 0;
-}
-
-DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_TacticalButton, 0x6)
-{
-	enum { ApplyToolTip = 0x4AE69D };
-
-	const auto button = SWSidebarClass::Instance.CurrentButton;
-
-	if (!button)
-		return 0;
-
-	PhobosToolTip::Instance.IsCameo = true;
-	const auto pSuper = HouseClass::CurrentPlayer->Supers[button->SuperIndex];
-	PhobosToolTip::Instance.HelpText(pSuper);
-	R->EAX(PhobosToolTip::Instance.GetBuffer());
-	return ApplyToolTip;
-}
-
-DEFINE_HOOK(0x72426F, ToolTipManager_ProcessMessage_TacticalButton, 0x5)
-{
-	if (SWSidebarClass::Instance.CurrentButton)
-		R->EDX(0);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x72428C, ToolTipManager_ProcessMessage_TacticalButton2, 0x5)
-{
-	return SWSidebarClass::Instance.CurrentButton ? 0x724297 : 0;
-}
-
-DEFINE_HOOK(0x724B2E, ToolTipManager_SetX_TacticalButtons, 0x6)
-{
-	if (const auto button = SWSidebarClass::Instance.CurrentButton)
-	{
-		R->EDX(button->X + button->Width);
-		R->EAX(button->Y + 27);
-	}
-
-	return 0;
 }
 
 // I cannot add it into YRppp :(

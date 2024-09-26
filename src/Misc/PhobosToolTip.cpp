@@ -17,6 +17,7 @@
 
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>
+#include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>
 
 #include <sstream>
 #include <iomanip>
@@ -82,7 +83,7 @@ inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 	return 0;
 }
 
-const wchar_t* PhobosToolTip::GetBuffer() const
+inline const wchar_t* PhobosToolTip::GetBuffer() const
 {
 	return this->TextBuffer.c_str();
 }
@@ -197,6 +198,46 @@ DEFINE_HOOK(0x6A9316, SidebarClass_StripClass_HelpText, 0x6)
 	PhobosToolTip::Instance.HelpText(pThis->Cameos[0]); // pStrip->Cameos[nID] in fact
 	R->EAX(L"X");
 	return 0x6A93DE;
+}
+
+DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_HelpText, 0x6)
+{
+	enum { ApplyToolTip = 0x4AE69D };
+
+	const auto button = SWSidebarClass::Instance.CurrentButton;
+
+	if (!button)
+		return 0;
+
+	PhobosToolTip::Instance.IsCameo = true;
+	const auto pSuper = HouseClass::CurrentPlayer->Supers[button->SuperIndex];
+	PhobosToolTip::Instance.HelpText(pSuper);
+	R->EAX(PhobosToolTip::Instance.GetBuffer());
+	return ApplyToolTip;
+}
+
+DEFINE_HOOK(0x72426F, ToolTipManager_ProcessMessage_SetDelay, 0x5)
+{
+	if (SWSidebarClass::Instance.CurrentButton)
+		R->EDX(0);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x72428C, ToolTipManager_ProcessMessage_Redraw, 0x5)
+{
+	return SWSidebarClass::Instance.CurrentButton ? 0x724297 : 0;
+}
+
+DEFINE_HOOK(0x724B2E, ToolTipManager_SetX, 0x6)
+{
+	if (const auto button = SWSidebarClass::Instance.CurrentButton)
+	{
+		R->EDX(button->X + button->Width);
+		R->EAX(button->Y + 27);
+	}
+
+	return 0;
 }
 
 // TODO: reimplement CCToolTip::Draw2 completely

@@ -1,4 +1,5 @@
 #include "ToggleSWSidebar.h"
+#include <HouseClass.h>
 
 #include <Utilities/GeneralUtils.h>
 #include <Ext/Sidebar/Body.h>
@@ -28,8 +29,14 @@ void ToggleSWSidebar::Execute(WWKey eInput) const
 {
 	SidebarExt::Global()->ExclusiveSWSidebar_Enable = !SidebarExt::Global()->ExclusiveSWSidebar_Enable;
 
-	if (!SidebarExt::Global()->ExclusiveSWSidebar_Enable)
+	if (SidebarExt::Global()->ExclusiveSWSidebar_Enable)
 	{
+		MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("TXT_EX_SW_BAR_VISIBLE", L"Set exclusive SW sidebar visible."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+	}
+	else
+	{
+		MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("TXT_EX_SW_BAR_INVISIBLE", L"Set exclusive SW sidebar invisible."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+
 		if (const auto button = SWSidebarClass::Instance.CurrentButton)
 			button->OnMouseLeave();
 	}

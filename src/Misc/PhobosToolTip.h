@@ -26,7 +26,7 @@ private:
 
 public:
 	inline bool IsEnabled() const;
-	const wchar_t* GetBuffer() const;
+	inline const wchar_t* GetBuffer() const;
 
 	void HelpText(BuildType& cameo);
 	void HelpText(TechnoTypeClass* pType);
