@@ -38,6 +38,9 @@ bool SWSidebarClass::AddButton(int superIdx)
 	if (std::any_of(buttons.begin(), buttons.end(), [superIdx](TacticalButtonClass* const button) { return button->SuperIndex == superIdx; }))
 		return true;
 
+	if (buttons.size() >= 10)
+		return false;
+
 	DLLCreate<TacticalButtonClass>(superIdx + 2200, superIdx, 0, 0, 60, 48);
 	SortButtons();
 	return true;
