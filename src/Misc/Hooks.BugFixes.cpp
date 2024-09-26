@@ -966,3 +966,45 @@ DEFINE_HOOK(0x5B11DD, MechLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
 
 	return distance >= pLinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
 }
+
+#pragma region End_Piggyback PowerOn
+// Auther: tyuah8
+static void End_Piggyback_PowerOn(ILocomotion* loco)
+{
+	const auto pLoco = static_cast<LocomotionClass*>(loco);
+	const auto pLinkedTo = pLoco->LinkedTo;
+
+	if (!pLinkedTo->Deactivated && !pLinkedTo->IsUnderEMP())
+		pLoco->Power_On();
+	else
+		pLoco->Power_Off();
+}
+
+DEFINE_HOOK(0x4AF94D, DriveLocomotionClass__End_Piggyback__PowerOn, 0x7)
+{
+	GET(ILocomotion*, loco, EAX);
+	End_Piggyback_PowerOn(loco);
+	return 0;
+}
+
+DEFINE_HOOK(0x54DADC, JumpjetLocomotionClass__End_Piggyback__PowerOn, 0x5)
+{
+	GET(ILocomotion*, loco, EAX);
+	End_Piggyback_PowerOn(loco);
+	return 0;
+}
+
+DEFINE_HOOK(0x69F05D, ShipLocomotionClass__End_Piggyback__PowerOn, 0x7)
+{
+	GET(ILocomotion*, loco, EAX);
+	End_Piggyback_PowerOn(loco);
+	return 0;
+}
+
+DEFINE_HOOK(0x719F17, TeleportLocomotionClass__End_Piggyback__PowerOn, 0x5)
+{
+	GET(ILocomotion*, loco, ECX);
+	End_Piggyback_PowerOn(loco);
+	return 0;
+}
+#pragma endregion
