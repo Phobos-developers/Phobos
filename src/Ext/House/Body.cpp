@@ -610,12 +610,22 @@ void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	ValueableVector<bool> readBaseNodeRepairInfo;
 	readBaseNodeRepairInfo.Read(exINI, pSection, "RepairBaseNodes");
 	size_t nWritten = readBaseNodeRepairInfo.size();
+	size_t nWrittenGlobal = RulesExt::Global()->RepairBaseNodes.size();
+	if ( nWrittenGlobal > 0)
+	{
+		for (size_t i = 0; i < 3; i++)
+		{
+			this->RepairBaseNodes[i] = RulesExt::Global()->RepairBaseNodes[i < nWrittenGlobal ? i : nWrittenGlobal - 1];
+		}
+	}
+
 	if (nWritten > 0)
 	{
 		for (size_t i = 0; i < 3; i++)
+		{
 			this->RepairBaseNodes[i] = readBaseNodeRepairInfo[i < nWritten ? i : nWritten - 1];
+		}
 	}
-
 }
 
 // =============================
@@ -646,6 +656,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->NumWarFactories_NonMFB)
 		.Process(this->NumConYards_NonMFB)
 		.Process(this->NumShipyards_NonMFB)
+		.Process(this->AIFireSaleDelayTimer)
 		;
 }
 

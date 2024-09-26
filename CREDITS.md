@@ -242,6 +242,7 @@ This page lists all the individual contributions to the project by their author.
   - Allowed and disallowed types for `FactoryPlant`
   - Forbidding parallel AI queues for specific TechnoTypes
   - Nonprovocative Warheads
+  - Customizing effect of level lighting on air units
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -363,6 +364,10 @@ This page lists all the individual contributions to the project by their author.
   - Build limit group enhancement
   - Customizable rocker amplitude
 - **handama** - AI script action to jump back to previous script
+- **TaranDahl (航味麻酱)**
+  - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
+  - Skirmish AI "gather when MCV deploy" behavior dehardcode
+  - Global value of `RepairBaseNodes` and `MCVRedeploys`
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
