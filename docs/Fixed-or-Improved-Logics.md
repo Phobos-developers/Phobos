@@ -1393,23 +1393,23 @@ IsSingleColor=false  ; boolean
 ```
 
 ### Target scanning delay optimization
-In Vanilla, the game used 'NormalTargetingDelay' and 'GuardAreaTargetingDelay' to globally control the target searching intervals. Increasing these values would make units stupid, while decreasing them would cause the game lagging.
-Now, you can define them per techno, also allowing different values for AI and players. The default values are the same as those originally defined by the vanilla flags.
 
- In `rulesmd.ini`:
+- In vanilla, the game used 'NormalTargetingDelay' and 'GuardAreaTargetingDelay' to globally control the target searching intervals. Increasing these values would make units stupid, while decreasing them would cause game lag.
+- Now, you can define them per techno, also allowing different values for AI and players. The default values are the same as those originally defined by the vanilla flags.
+
+In `rulesmd.ini`:
 ```ini
 [General]
-AINormalTargetingDelay=              ;integer, game frames
-PlayerNormalTargetingDelay=          ;integer, game frames
-AIGuardAreaTargetingDelay=           ;integer, game frames
-PlayerGuardAreaTargetingDelay=       ;integer, game frames
+AINormalTargetingDelay=              ; integer, game frames
+PlayerNormalTargetingDelay=          ; integer, game frames
+AIGuardAreaTargetingDelay=           ; integer, game frames
+PlayerGuardAreaTargetingDelay=       ; integer, game frames
 
-[SOMETECHNO]
-AINormalTargetingDelay=              ;integer, game frames
-PlayerNormalTargetingDelay=          ;integer, game frames
-AIGuardAreaTargetingDelay=           ;integer, game frames
-PlayerGuardAreaTargetingDelay=       ;integer, game frames
-```
+[SOMETECHNO]                         ; TechnoType
+AINormalTargetingDelay=              ; integer, game frames
+PlayerNormalTargetingDelay=          ; integer, game frames
+AIGuardAreaTargetingDelay=           ; integer, game frames
+PlayerGuardAreaTargetingDelay=       ; integer, game frames
 
 ### Toggle-able ElectricBolt visuals
 
