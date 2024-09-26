@@ -852,7 +852,7 @@ DEFINE_HOOK(0x6D4941, TacticalClass_Render_DrawButtonCameo, 0x6)
 	return 0;
 }
 
-// SW buttons hooks
+// SW buttons update hooks
 DEFINE_HOOK(0x4F9283, HouseClass_Update_RecheckTechTree, 0x5)
 {
 	TacticalButtonsClass::Instance.SWSidebarRecheck();
@@ -880,6 +880,7 @@ DEFINE_HOOK(0x6AAF46, SelectClass_Action_ButtonClick1, 0x6)
 	return TacticalButtonsClass::Instance.SWQuickLaunch(index) ? SkipClearMouse : 0;
 }
 
+// SW buttons trigger hooks
 DEFINE_HOOK_AGAIN(0x6AAD2F, SelectClass_Action_ButtonClick2, 0x7)
 DEFINE_HOOK(0x6AB94F, SelectClass_Action_ButtonClick2, 0xB)
 {
