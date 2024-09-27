@@ -94,7 +94,7 @@ void SWSidebarClass::SortButtons()
 				return true;
 
 			if (!(pLeftExt->ExclusiveSidebar_PriorityHouses & ownerBits) && (pRightExt->ExclusiveSidebar_PriorityHouses & ownerBits))
-				return true;
+				return false;
 
 			return BuildType::SortsBefore(AbstractType::Special, a->SuperIndex, AbstractType::Special, b->SuperIndex);
 		 });
