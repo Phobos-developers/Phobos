@@ -4,27 +4,27 @@
 #include <CCToolTip.h>
 
 #include <Ext/SWType/Body.h>
-#include <Ext/Sidebar/Body.h>
-#include <Ext/Side/Body.h>
 #include <Utilities/AresFunctions.h>
 
 TacticalButtonClass::TacticalButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
 	: ControlClass(id, x, y, width, height, GadgetFlag((int)GadgetFlag::LeftPress | (int)GadgetFlag::LeftRelease), true)
 	, SuperIndex(superIdx)
 {
-	SWSidebarClass::Instance.Buttons.emplace_back(this);
-
 	this->Zap();
 	GScreenClass::Instance->AddButton(this);
 }
 
 TacticalButtonClass::~TacticalButtonClass()
 {
-	auto& buttons = SWSidebarClass::Instance.Buttons;
-	const auto it = std::find(buttons.begin(), buttons.end(), this);
+	if (this->ColumnIndex != -1)
+	{
+		auto& columns = SWSidebarClass::Instance.Columns;
+		auto& buttons = columns[this->ColumnIndex]->Buttons;
+		const auto it = std::find(buttons.begin(), buttons.end(), this);
 
-	if (it != buttons.end())
-		buttons.erase(it);
+		if (it != buttons.end())
+			buttons.erase(it);
+	}
 
 	AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentButton, this);
 	GScreenClass::Instance->RemoveButton(this);
@@ -32,55 +32,13 @@ TacticalButtonClass::~TacticalButtonClass()
 
 bool TacticalButtonClass::Draw(bool forced)
 {
-	/*if (!this->ControlClass::Draw(forced))
-		return false;*/
-
-	if (!SidebarExt::Global()->SWSidebar_Enable)
+	if (!forced)
 		return false;
 
-	auto pSurface = DSurface::Composite();
+	const auto pSurface = DSurface::Composite();
 	auto bounds = pSurface->GetRect();
 	Point2D location = { this->X, this->Y };
 	RectangleStruct destRect = { location.X, location.Y, this->Width, this->Height };
-
-	// draw background
-	if (RulesExt::Global()->ExclusiveSWSidebarBackground)
-	{
-		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
-		const auto centerPCX = pSideExt->ExclusiveSWSidebar_CenterPCX.GetSurface();
-
-		if (centerPCX)
-		{
-			RectangleStruct backRect = destRect;
-			backRect.Width = centerPCX->GetWidth();
-			backRect.Height = centerPCX->GetHeight();
-			PCX::Instance->BlitToSurface(&backRect, pSurface, centerPCX);
-		}
-
-		if (this->IsTop)
-		{
-			if (const auto topPCX = pSideExt->ExclusiveSWSidebar_TopPCX.GetSurface())
-			{
-				RectangleStruct backRect = destRect;
-				backRect.Width = topPCX->GetWidth();
-				backRect.Height = topPCX->GetHeight();
-				backRect.Y -= backRect.Height;
-				PCX::Instance->BlitToSurface(&backRect, pSurface, topPCX);
-			}
-		}
-
-		if (this->IsBottom)
-		{
-			if (const auto bottomPCX = pSideExt->ExclusiveSWSidebar_BottomPCX.GetSurface())
-			{
-				RectangleStruct backRect = destRect;
-				backRect.Width = bottomPCX->GetWidth();
-				backRect.Height = bottomPCX->GetHeight();
-				backRect.Y += this->Height + backRect.Height;
-				PCX::Instance->BlitToSurface(&backRect, pSurface, bottomPCX);
-			}
-		}
-	}
 
 	const auto pCurrent = HouseClass::CurrentPlayer();
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];
@@ -112,7 +70,8 @@ bool TacticalButtonClass::Draw(bool forced)
 		}
 	}
 
-	if (pSuper->IsReady && !pCurrent->CanTransactMoney(pSWExt->Money_Amount) || (pSWExt->SW_UseAITargeting && AresHelper::CanUseAres && !AresFunctions::IsTargetConstraintsEligible(AresFunctions::SWTypeExtMap_Find(pSuper->Type), HouseClass::CurrentPlayer, true)))
+	if (pSuper->IsReady && !pCurrent->CanTransactMoney(pSWExt->Money_Amount) ||
+		(pSWExt->SW_UseAITargeting && AresHelper::CanUseAres && !AresFunctions::IsTargetConstraintsEligible(AresFunctions::SWTypeExtMap_Find(pSuper->Type), HouseClass::CurrentPlayer, true)))
 	{
 		RectangleStruct darkenBounds { 0, 0, location.X + this->Width, location.Y + this->Height };
 		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::DARKEN_SHP, 0, &location, &darkenBounds, BlitterFlags::bf_400 | BlitterFlags::Darken, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
@@ -147,33 +106,34 @@ bool TacticalButtonClass::Draw(bool forced)
 
 void TacticalButtonClass::OnMouseEnter()
 {
-	if (!SidebarExt::Global()->SWSidebar_Enable)
+	if (!SWSidebarClass::IsEnabled())
 		return;
 
 	this->IsHovering = true;
 	SWSidebarClass::Instance.CurrentButton = this;
+	SWSidebarClass::Instance.Columns[this->ColumnIndex]->OnMouseEnter();
+	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
 }
 
 void TacticalButtonClass::OnMouseLeave()
 {
-	if (!SidebarExt::Global()->SWSidebar_Enable)
+	if (!SWSidebarClass::IsEnabled())
 		return;
 
 	this->IsHovering = false;
 	this->IsPressed = false;
 	SWSidebarClass::Instance.CurrentButton = nullptr;
+	SWSidebarClass::Instance.Columns[this->ColumnIndex]->OnMouseLeave();
+	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
 	CCToolTip::Instance->MarkToRedraw(CCToolTip::Instance->CurrentToolTipData);
 }
 
 bool TacticalButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 {
-	if (!SidebarExt::Global()->SWSidebar_Enable)
-		return false;
-
 	if ((int)flags & (int)GadgetFlag::LeftPress)
 		this->IsPressed = true;
 
-	if ((int)flags & (int)GadgetFlag::LeftRelease && this->IsPressed)
+	if (((int)flags & (int)GadgetFlag::LeftRelease) && this->IsPressed)
 	{
 		this->IsPressed = false;
 		this->LaunchSuper();
@@ -182,7 +142,12 @@ bool TacticalButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 	return this->ControlClass::Action(flags, pKey, KeyModifier::None);
 }
 
-bool TacticalButtonClass::LaunchSuper()
+void TacticalButtonClass::SetColumn(int column)
+{
+	this->ColumnIndex = column;
+}
+
+bool TacticalButtonClass::LaunchSuper() const
 {
 	const auto pCurrent = HouseClass::CurrentPlayer();
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];

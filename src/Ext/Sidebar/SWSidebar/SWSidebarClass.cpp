@@ -1,122 +1,116 @@
 #include "SWSidebarClass.h"
 #include <Misc/PhobosToolTip.h>
 #include <Ext/House/Body.h>
-#include <Ext/Sidebar/Body.h>
-#include <Ext/Side/Body.h>
 
 SWSidebarClass SWSidebarClass::Instance;
 
-bool SWSidebarClass::AddButton(int superIdx)
+bool SWSidebarClass::AddColumn()
 {
-	SWSidebarClass::Instance.Initialized = true;
+	auto& columns = this->Columns;
 
-	if (const auto pSWType = SuperWeaponTypeClass::Array->GetItemOrDefault(superIdx))
+	if (static_cast<int>(columns.size()) >= Phobos::UI::ExclusiveSWSidebar_MaxColumn)
+		return false;
+
+	return DLLCreate<SWColumnClass>(2200 + SuperWeaponTypeClass::Array->Count + static_cast<int>(columns.size()), 0, 0, 60 + Phobos::UI::ExclusiveSWSidebar_Interval, 48);
+}
+
+bool SWSidebarClass::RemoveColumn()
+{
+	auto& columns = this->Columns;
+
+	if (const auto backColumn = columns.back())
 	{
-		const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
-
-		if (!pSWExt->SW_ShowCameo)
-			return true;
-
-		if (!Phobos::UI::ExclusiveSWSidebar || Unsorted::ArmageddonMode)
-			return false;
-
-		if (!pSWExt->ExclusiveSidebar_Allow)
-			return false;
-
-		const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
-
-		if ((pSWExt->ExclusiveSidebar_RequiredHouses & ownerBits) == 0)
-			return false;
-	}
-	else
-	{
+		DLLDelete(backColumn);
 		return true;
 	}
 
-	auto& buttons = SWSidebarClass::Instance.Buttons;
-
-	if (std::any_of(buttons.begin(), buttons.end(), [superIdx](TacticalButtonClass* const button) { return button->SuperIndex == superIdx; }))
-		return true;
-
-	const int maximum = (Phobos::UI::ExclusiveSWSidebar_Max + 1) * Phobos::UI::ExclusiveSWSidebar_Max / 2;
-
-	if (static_cast<int>(buttons.size()) >= maximum)
-		return false;
-
-	DLLCreate<TacticalButtonClass>(superIdx + 2200, superIdx, 0, 0, 60, 48);
-	SortButtons();
-	return true;
+	return false;
 }
 
-bool SWSidebarClass::RemoveButton(int superIdx)
+void SWSidebarClass::ClearColumns()
 {
-	auto& buttons = SWSidebarClass::Instance.Buttons;
+	auto& columns = this->Columns;
 
-	const auto it = std::find_if(buttons.begin(), buttons.end(), [superIdx](TacticalButtonClass* const button) { return button->SuperIndex == superIdx; });
-
-	if (it == buttons.end())
-		return false;
-
-	DLLDelete(*it);
-	SortButtons();
-	return true;
-}
-
-void SWSidebarClass::ClearButtons()
-{
-	auto& buttons = SWSidebarClass::Instance.Buttons;
-
-	if (buttons.empty())
+	if (columns.empty())
 		return;
 
-	for (const auto button : buttons)
+	for (const auto button : columns)
 		DLLDelete(button);
 
-	buttons.clear();
+	columns.clear();
+}
+
+bool SWSidebarClass::AddButton(int superIdx)
+{
+	this->Initialized = true;
+	auto& columns = this->Columns;
+
+	if (columns.empty() && !this->AddColumn())
+		return false;
+
+	if (std::any_of(columns.begin(), columns.end(), [superIdx](SWColumnClass* column) { return std::any_of(column->Buttons.begin(), column->Buttons.end(), [superIdx](TacticalButtonClass* button) { return button->SuperIndex == superIdx; }); }))
+		return true;
+
+	return columns.back()->AddButton(superIdx);
 }
 
 void SWSidebarClass::SortButtons()
 {
-	auto& buttons = SWSidebarClass::Instance.Buttons;
+	auto& columns = this->Columns;
 
-	if (buttons.empty())
+	if (columns.empty())
 		return;
 
-	const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
+	columns.erase(
+		std::remove_if(columns.begin(), columns.end(),
+			[](SWColumnClass* const column)
+			{ return column->Buttons.empty(); }
+		),
+		columns.end()
+	);
 
-	std::stable_sort(buttons.begin(), buttons.end(), [ownerBits](TacticalButtonClass* const a, TacticalButtonClass* const b)
+	if (columns.empty())
+		return;
+
+	std::vector<TacticalButtonClass*> vec_Buttons;
+	vec_Buttons.reserve(this->GetMaximumButtonCount());
+
+	for (const auto column : columns)
+	{
+		for (const auto button : column->Buttons)
+			vec_Buttons.emplace_back(button);
+
+		column->ClearButtons(false);
+	}
+
+	std::stable_sort(vec_Buttons.begin(), vec_Buttons.end(), [](TacticalButtonClass* const a, TacticalButtonClass* const b)
 		{
-			const auto pLeftExt = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->Items[a->SuperIndex]);
-			const auto pRightExt = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->Items[b->SuperIndex]);
-
-			if ((pLeftExt->ExclusiveSidebar_PriorityHouses & ownerBits) && !(pRightExt->ExclusiveSidebar_PriorityHouses & ownerBits))
-				return false;
-
-			if (!(pLeftExt->ExclusiveSidebar_PriorityHouses & ownerBits) && (pRightExt->ExclusiveSidebar_PriorityHouses & ownerBits))
-				return true;
-
 			return BuildType::SortsBefore(AbstractType::Special, a->SuperIndex, AbstractType::Special, b->SuperIndex);
 		 });
 
-	const int buttonCount = static_cast<int>(buttons.size());
+	const int buttonCount = static_cast<int>(vec_Buttons.size());
 	const int cameoWidth = 60, cameoHeight = 48;
 	const int maximum = Phobos::UI::ExclusiveSWSidebar_Max;
 	Point2D location = { 0, (DSurface::ViewBounds().Height - std::min(buttonCount, maximum) * cameoHeight) / 2 };
 	int location_Y = location.Y;
-	int row = 0, line = 0;
+	int rowIdx = 0, columnIdx = 0;
 
-	for (const auto button : buttons)
+	for (const auto button : vec_Buttons)
 	{
-		button->SetPosition(location.X, location.Y);
-		button->IsTop = row == 0;
-		button->IsBottom = false;
-		row++;
+		const auto column = columns[columnIdx];
 
-		if (row >= maximum - line)
+		if (rowIdx == 0)
+			column->SetPosition(location.X, location.Y);
+
+		column->Buttons.emplace_back(button);
+		button->SetColumn(columnIdx);
+		button->SetPosition(location.X, location.Y);
+		rowIdx++;
+
+		if (rowIdx >= maximum - columnIdx)
 		{
-			button->IsBottom = true;
-			row = 0;
-			line++;
+			rowIdx = 0;
+			columnIdx++;
 			location_Y += cameoHeight / 2;
 			location = { location.X + cameoWidth + Phobos::UI::ExclusiveSWSidebar_Interval, location_Y };
 		}
@@ -125,11 +119,30 @@ void SWSidebarClass::SortButtons()
 			location.Y += cameoHeight;
 		}
 	}
+
+	for (const auto column : columns)
+		column->SetHeight(column->Buttons.size() * 48);
 }
 
-DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_TacticalButton, 0x7)
+int SWSidebarClass::GetMaximumButtonCount()
 {
-	return SWSidebarClass::Instance.CurrentButton ? 0x6925FC : 0;
+	const int firstColumn = Phobos::UI::ExclusiveSWSidebar_Max;
+	const int columns = std::min(firstColumn, Phobos::UI::ExclusiveSWSidebar_MaxColumn);
+	return (firstColumn + (firstColumn - (columns - 1))) * columns / 2;
+}
+
+bool SWSidebarClass::IsEnabled()
+{
+	return SidebarExt::Global()->SWSidebar_Enable;
+}
+
+// Hooks
+
+DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_SWSidebar, 0x7)
+{
+	enum { Nothing = 0x6925FC };
+
+	return SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentColumn ? Nothing : 0;
 }
 
 // I cannot add it into YRppp :(
@@ -139,7 +152,7 @@ static void __fastcall HouseClass_UpdateSuperWeaponsUnavailable(HouseClass* pHou
 	JMP_STD(0x50B1D0);
 }
 
-DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_UpdateSupers, 0x7)
+DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_SWSidebar, 0x7)
 {
 	enum { SkipGameCode = 0x4F9302 };
 
@@ -149,17 +162,22 @@ DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_UpdateSupers, 0x7)
 
 	if (pHouse->IsCurrentPlayer())
 	{
-		for (const auto button : SWSidebarClass::Instance.Buttons)
+		for (const auto column : SWSidebarClass::Instance.Columns)
 		{
-			if (!HouseClass::CurrentPlayer->Supers[button->SuperIndex]->IsPresent)
-				SWSidebarClass::Instance.RemoveButton(button->SuperIndex);
+			for (const auto button : column->Buttons)
+			{
+				if (HouseClass::CurrentPlayer->Supers[button->SuperIndex]->IsPresent)
+					continue;
+
+				column->RemoveButton(button->SuperIndex);
+			}
 		}
 	}
 
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x6A6300, SidebarClass_AddCameo_SuperWeapon_TacticalButton, 0x6)
+DEFINE_HOOK(0x6A6300, SidebarClass_AddCameo_SuperWeapon_SWSidebar, 0x6)
 {
 	enum { SkipGameCode = 0x6A6606 };
 
@@ -185,14 +203,14 @@ DEFINE_HOOK(0x6A6300, SidebarClass_AddCameo_SuperWeapon_TacticalButton, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6A5030, SidebarClass_Init_Clear_InitializedTacticalButton, 0x6)
+DEFINE_HOOK(0x6A5030, SidebarClass_Init_Clear_InitializedSWSidebar, 0x6)
 {
 	SWSidebarClass::Instance.Initialized = false;
-	SWSidebarClass::Instance.ClearButtons();
+	SWSidebarClass::Instance.ClearColumns();
 	return 0;
 }
 
-DEFINE_HOOK(0x55B6B3, LogicClass_AI_InitializedTacticalButton, 0x5)
+DEFINE_HOOK(0x55B6B3, LogicClass_AI_InitializedSWSidebar, 0x5)
 {
 	if (SWSidebarClass::Instance.Initialized)
 		return 0;

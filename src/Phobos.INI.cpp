@@ -35,6 +35,7 @@ bool Phobos::UI::CenterPauseMenuBackground = false;
 bool Phobos::UI::ExclusiveSWSidebar = false;
 int Phobos::UI::ExclusiveSWSidebar_Interval = 0;
 int Phobos::UI::ExclusiveSWSidebar_Max = 0;
+int Phobos::UI::ExclusiveSWSidebar_MaxColumn = INT32_MAX;
 bool Phobos::UI::WeedsCounter_Show = false;
 bool Phobos::UI::AnchoredToolTips = false;
 
@@ -173,6 +174,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 			Phobos::UI::ExclusiveSWSidebar_Max = std::min(Phobos::UI::ExclusiveSWSidebar_Max, screenHeight / 48);
 		else
 			Phobos::UI::ExclusiveSWSidebar_Max = screenHeight / 48;
+
+		Phobos::UI::ExclusiveSWSidebar_MaxColumn =
+			pINI_UIMD->ReadInteger(SIDEBAR_SECTION, "ExclusiveSWSidebar.MaxColumn", Phobos::UI::ExclusiveSWSidebar_MaxColumn);
 	}
 
 	// UISettings

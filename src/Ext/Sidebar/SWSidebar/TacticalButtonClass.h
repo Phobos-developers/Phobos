@@ -14,13 +14,12 @@ public:
 	virtual void OnMouseLeave() override;
 	virtual bool Action(GadgetFlag fags, DWORD* pKey, KeyModifier modifier) override;
 
-	bool LaunchSuper();
+	void SetColumn(int column);
+	bool LaunchSuper() const;
 
 public:
 	bool IsHovering { false };
 	bool IsPressed { false };
+	int ColumnIndex { -1 };
 	int SuperIndex { -1 };
-
-	bool IsTop { false };
-	bool IsBottom { false };
 };

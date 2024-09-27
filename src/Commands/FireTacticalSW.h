@@ -92,10 +92,15 @@ inline const wchar_t* FireTacticalSWCommandClass<Index>::GetUIDescription() cons
 template<size_t Index>
 inline void FireTacticalSWCommandClass<Index>::Execute(WWKey eInput) const
 {
-	if (!SidebarExt::Global()->SWSidebar_Enable)
+	if (!SWSidebarClass::IsEnabled())
 		return;
 
-	const auto& buttons = SWSidebarClass::Instance.Buttons;
+	const auto column = SWSidebarClass::Instance.Columns.front();
+
+	if (!column)
+		return;
+
+	const auto& buttons = column->Buttons;
 
 	if (buttons.size() > Index)
 		buttons[Index]->LaunchSuper();

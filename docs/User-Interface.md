@@ -561,6 +561,7 @@ ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enable
 - Cameos arranged in a pyramid shape.
 - `ExclusiveSWSidebar.Interval` specific how many leptons between two columns.
 - `ExclusiveSuperWeaponSidebar.Max` controls the maximum number of icons on the leftmost side, which also depends on the current game resolution.
+- `ExclusiveSWSidebar.MaxColumn` controls that maximum count of columns.
 - You can also launch first 10 SW by hotkey.
 
 In `uimd.ini`:
@@ -569,6 +570,7 @@ In `uimd.ini`:
 ExclusiveSWSidebar=false                  ; boolean
 ExclusiveSWSidebar.Interval=0           ; integer
 ExclusiveSWSidebar.Max=0                ; integer
+ExclusiveSWSidebar.MaxColumn=       ; integer
 ```
 
 In `rulesmd.ini`

@@ -1,19 +1,26 @@
 #pragma once
 #include "TacticalButtonClass.h"
-
-#include <vector>
+#include "SWColumnClass.h"
+#include <Ext/Sidebar/Body.h>
 
 class SWSidebarClass
 {
 public:
+	bool AddColumn();
+	bool RemoveColumn();
+	void ClearColumns();
+
 	bool AddButton(int superIdx);
-	bool RemoveButton(int superIdx);
-	void ClearButtons();
 	void SortButtons();
+
+	int GetMaximumButtonCount();
+
+	static bool IsEnabled();
 
 	static SWSidebarClass Instance;
 
-	std::vector<TacticalButtonClass*> Buttons {};
 	bool Initialized { false };
+	std::vector<SWColumnClass*> Columns {};
+	SWColumnClass* CurrentColumn { nullptr };
 	TacticalButtonClass* CurrentButton { nullptr };
 };
