@@ -37,9 +37,9 @@ public:
 		Nullable<float> ToolTip_Background_BlurSize;
 		Valueable<int> BriefingTheme;
 
-		PhobosPCXFile SWSidebarBackground_TopPCX;
-		PhobosPCXFile SWSidebarBackground_CenterPCX;
-		PhobosPCXFile SWSidebarBackground_BottomPCX;
+		PhobosPCXFile ExclusiveSWSidebar_TopPCX;
+		PhobosPCXFile ExclusiveSWSidebar_CenterPCX;
+		PhobosPCXFile ExclusiveSWSidebar_BottomPCX;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
@@ -62,9 +62,9 @@ public:
 			, ToolTip_Background_Opacity { }
 			, ToolTip_Background_BlurSize { }
 			, BriefingTheme { -1 }
-			, SWSidebarBackground_TopPCX { }
-			, SWSidebarBackground_CenterPCX { }
-			, SWSidebarBackground_BottomPCX { }
+			, ExclusiveSWSidebar_TopPCX { }
+			, ExclusiveSWSidebar_CenterPCX { }
+			, ExclusiveSWSidebar_BottomPCX { }
 		{ }
 
 		virtual ~ExtData() = default;

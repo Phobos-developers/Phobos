@@ -20,4 +20,7 @@ public:
 	bool IsHovering { false };
 	bool IsPressed { false };
 	int SuperIndex { -1 };
+
+	bool IsTop { false };
+	bool IsBottom { false };
 };

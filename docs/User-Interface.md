@@ -558,29 +558,33 @@ ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enable
 
 - It is possible to put sw cameos on the left of screen like C&C3 when `ExclusiveSuperWeaponSidebar` is true.
 - In theory, it should be compatible with Ares
-- Cameos arranged in single column (limited 10 cameos).
-- You can also launch these SW by hotkey.
+- Cameos arranged in a pyramid shape.
+- `ExclusiveSWSidebar.Interval` specific how many leptons between two columns.
+- `ExclusiveSuperWeaponSidebar.Max` controls the maximum number of icons on the leftmost side, which also depends on the current game resolution.
+- You can also launch first 10 SW by hotkey.
 
 In `uimd.ini`:
 ```ini
 [Sidebar]
-ExclusiveSuperWeaponSidebar=false  ; boolean
+ExclusiveSWSidebar=false                  ; boolean
+ExclusiveSWSidebar.Interval=0           ; integer
+ExclusiveSWSidebar.Max=0                ; integer
 ```
 
 In `rulesmd.ini`
 ```ini
 [AudioVisual]
-SWSidebarBackground=true           ; boolean
+ExclusiveSWSidebarBackground=true  ; boolean
 
 [SOMESIDE]
-SWSidebarBackground.TopPCX=        ; filename - including the .pcx extension
-SWSidebarBackground.CenterPCX=     ; filename - including the .pcx extension
-SWSidebarBackground.BottomPCX=     ; filename - including the .pcx extension
+ExclusiveSWSidebar.TopPCX=            ; filename - including the .pcx extension
+ExclusiveSWSidebar.CenterPCX=        ; filename - including the .pcx extension
+ExclusiveSWSidebar.BottomPCX=       ; filename - including the .pcx extension
 
 [SOMESW]
-AllowInExclusiveSidebar=true       ; boolean
-ExclusiveSidebar.PriorityHouses=   ; list of house types
-ExclusiveSidebar.RequiredHouses=   ; list of house types
+AllowInExclusiveSidebar=true              ; boolean
+ExclusiveSidebar.PriorityHouses=        ; list of house types
+ExclusiveSidebar.RequiredHouses=     ; list of house types
 ```
 ## Miscellanous
 

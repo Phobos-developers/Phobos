@@ -44,49 +44,40 @@ bool TacticalButtonClass::Draw(bool forced)
 	RectangleStruct destRect = { location.X, location.Y, this->Width, this->Height };
 
 	// draw background
-	if (RulesExt::Global()->SWSidebarBackground)
+	if (RulesExt::Global()->ExclusiveSWSidebarBackground)
 	{
 		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
+		const auto centerPCX = pSideExt->ExclusiveSWSidebar_CenterPCX.GetSurface();
 
-		// center background
-		const auto center = pSideExt->SWSidebarBackground_CenterPCX.GetSurface();
-
-		if (center)
+		if (centerPCX)
 		{
-			RectangleStruct drawRect = destRect;
-			drawRect.Width = center->GetWidth();
-			drawRect.Height = center->GetHeight();
-			drawRect.Y -= Phobos::UI::ExclusiveSuperWeaponSidebar_Interval / 2;
-			PCX::Instance->BlitToSurface(&drawRect, pSurface, center);
+			RectangleStruct backRect = destRect;
+			backRect.Width = centerPCX->GetWidth();
+			backRect.Height = centerPCX->GetHeight();
+			PCX::Instance->BlitToSurface(&backRect, pSurface, centerPCX);
 		}
 
-		// top background
-		if (this == SWSidebarClass::Instance.Buttons.front())
+		if (this->IsTop)
 		{
-			if (const auto top = pSideExt->SWSidebarBackground_TopPCX.GetSurface())
+			if (const auto topPCX = pSideExt->ExclusiveSWSidebar_TopPCX.GetSurface())
 			{
-				RectangleStruct drawRect = destRect;
-				drawRect.Width = top->GetWidth();
-				drawRect.Height = top->GetHeight();
-				drawRect.Y -= Phobos::UI::ExclusiveSuperWeaponSidebar_Interval / 2 + drawRect.Height;
-				PCX::Instance->BlitToSurface(&drawRect, pSurface, top);
+				RectangleStruct backRect = destRect;
+				backRect.Width = topPCX->GetWidth();
+				backRect.Height = topPCX->GetHeight();
+				backRect.Y -= backRect.Height;
+				PCX::Instance->BlitToSurface(&backRect, pSurface, topPCX);
 			}
 		}
 
-		// bottom background
-		if (this == SWSidebarClass::Instance.Buttons.back())
+		if (this->IsBottom)
 		{
-			if (const auto bottom = pSideExt->SWSidebarBackground_TopPCX.GetSurface())
+			if (const auto bottomPCX = pSideExt->ExclusiveSWSidebar_BottomPCX.GetSurface())
 			{
-				RectangleStruct drawRect = destRect;
-				drawRect.Width = bottom->GetWidth();
-				drawRect.Height = bottom->GetHeight();
-				drawRect.Y += Phobos::UI::ExclusiveSuperWeaponSidebar_Interval / 2 + drawRect.Height;
-
-				if (center)
-					drawRect.Y += center->GetHeight();
-
-				PCX::Instance->BlitToSurface(&drawRect, pSurface, bottom);
+				RectangleStruct backRect = destRect;
+				backRect.Width = bottomPCX->GetWidth();
+				backRect.Height = bottomPCX->GetHeight();
+				backRect.Y += this->Height + backRect.Height;
+				PCX::Instance->BlitToSurface(&backRect, pSurface, bottomPCX);
 			}
 		}
 	}

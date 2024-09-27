@@ -42,9 +42,9 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
 	this->BriefingTheme = pINI->ReadTheme(pSection, "BriefingTheme", this->BriefingTheme);
 
-	this->SWSidebarBackground_TopPCX.Read(pINI, pSection, "SWSidebarBackground.TopPCX");
-	this->SWSidebarBackground_CenterPCX.Read(pINI, pSection, "SWSidebarBackground.CenterPCX");
-	this->SWSidebarBackground_BottomPCX.Read(pINI, pSection, "SWSidebarBackground.BottomPCX");
+	this->ExclusiveSWSidebar_TopPCX.Read(pINI, pSection, "ExclusiveSWSidebar.TopPCX");
+	this->ExclusiveSWSidebar_CenterPCX.Read(pINI, pSection, "ExclusiveSWSidebar.CenterPCX");
+	this->ExclusiveSWSidebar_BottomPCX.Read(pINI, pSection, "ExclusiveSWSidebar.BottomPCX");
 }
 
 // =============================
@@ -74,9 +74,9 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->IngameScore_WinTheme)
 		.Process(this->IngameScore_LoseTheme)
 		.Process(this->BriefingTheme)
-		.Process(this->SWSidebarBackground_TopPCX)
-		.Process(this->SWSidebarBackground_CenterPCX)
-		.Process(this->SWSidebarBackground_BottomPCX)
+		.Process(this->ExclusiveSWSidebar_TopPCX)
+		.Process(this->ExclusiveSWSidebar_CenterPCX)
+		.Process(this->ExclusiveSWSidebar_BottomPCX)
 		;
 }
 

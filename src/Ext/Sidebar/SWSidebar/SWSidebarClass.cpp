@@ -17,7 +17,7 @@ bool SWSidebarClass::AddButton(int superIdx)
 		if (!pSWExt->SW_ShowCameo)
 			return true;
 
-		if (!Phobos::UI::ExclusiveSuperWeaponSidebar || Unsorted::ArmageddonMode)
+		if (!Phobos::UI::ExclusiveSWSidebar || Unsorted::ArmageddonMode)
 			return false;
 
 		if (!pSWExt->ExclusiveSidebar_Allow)
@@ -38,7 +38,9 @@ bool SWSidebarClass::AddButton(int superIdx)
 	if (std::any_of(buttons.begin(), buttons.end(), [superIdx](TacticalButtonClass* const button) { return button->SuperIndex == superIdx; }))
 		return true;
 
-	if (buttons.size() >= 10)
+	const int maximum = (Phobos::UI::ExclusiveSWSidebar_Max + 1) * Phobos::UI::ExclusiveSWSidebar_Max / 2;
+
+	if (static_cast<int>(buttons.size()) >= maximum)
 		return false;
 
 	DLLCreate<TacticalButtonClass>(superIdx + 2200, superIdx, 0, 0, 60, 48);
@@ -98,14 +100,30 @@ void SWSidebarClass::SortButtons()
 
 	const int buttonCount = static_cast<int>(buttons.size());
 	const int cameoWidth = 60, cameoHeight = 48;
-	const int maximum = 10;
-	const int interval = Phobos::UI::ExclusiveSuperWeaponSidebar_Interval;
+	const int maximum = Phobos::UI::ExclusiveSWSidebar_Max;
 	Point2D location = { 0, (DSurface::ViewBounds().Height - std::min(buttonCount, maximum) * cameoHeight) / 2 };
+	int location_Y = location.Y;
+	int row = 0, line = 0;
 
-	for (int idx = 0; idx < buttonCount && idx < maximum; idx++, location.Y += cameoHeight + interval)
+	for (const auto button : buttons)
 	{
-		const auto button = buttons[idx];
-		button->SetPosition(location.X, location.Y + interval / 2);
+		button->SetPosition(location.X, location.Y);
+		button->IsTop = row == 0;
+		button->IsBottom = false;
+		row++;
+
+		if (row >= maximum - line)
+		{
+			button->IsBottom = true;
+			row = 0;
+			line++;
+			location_Y += cameoHeight / 2;
+			location = { location.X + cameoWidth + Phobos::UI::ExclusiveSWSidebar_Interval, location_Y };
+		}
+		else
+		{
+			location.Y += cameoHeight;
+		}
 	}
 }
 
