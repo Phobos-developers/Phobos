@@ -150,7 +150,7 @@ public:
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
     
-    Valueable<bool> SWSidebarBackground;
+		Valueable<bool> ExclusiveSWSidebarBackground;
 
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
@@ -270,7 +270,7 @@ public:
 			, PodImage { }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
-      , SWSidebarBackground { true }
+			, ExclusiveSWSidebarBackground { true }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
 			, UseFixedVoxelLighting { false }

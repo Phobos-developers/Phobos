@@ -188,7 +188,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AircraftLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "AircraftLevelLightMultiplier");
 	this->JumpjetLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "JumpjetLevelLightMultiplier");
   
-  this->SWSidebarBackground.Read(exINI, GameStrings::AudioVisual, "SWSidebarBackground");
+	this->ExclusiveSWSidebarBackground.Read(exINI, GameStrings::AudioVisual, "ExclusiveSWSidebarBackground");
 
 	this->VoxelLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelLightSource");
 	// this->VoxelShadowLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelShadowLightSource");
@@ -374,7 +374,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PodImage)
 		.Process(this->AircraftLevelLightMultiplier)
 		.Process(this->JumpjetLevelLightMultiplier)
-    .Process(this->SWSidebarBackground)
+		.Process(this->ExclusiveSWSidebarBackground)
 		.Process(this->VoxelLightSource)
 		// .Process(this->VoxelShadowLightSource)
 		.Process(this->UseFixedVoxelLighting)

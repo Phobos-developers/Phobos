@@ -34,6 +34,7 @@ double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 bool Phobos::UI::CenterPauseMenuBackground = false;
 bool Phobos::UI::ExclusiveSWSidebar = false;
 int Phobos::UI::ExclusiveSWSidebar_Interval = 0;
+int Phobos::UI::ExclusiveSWSidebar_Max = 0;
 bool Phobos::UI::WeedsCounter_Show = false;
 bool Phobos::UI::AnchoredToolTips = false;
 
