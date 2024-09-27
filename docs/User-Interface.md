@@ -575,9 +575,6 @@ ExclusiveSWSidebar.MaxColumn=       ; integer
 
 In `rulesmd.ini`
 ```ini
-[AudioVisual]
-ExclusiveSWSidebarBackground=true  ; boolean
-
 [SOMESIDE]
 ExclusiveSWSidebar.TopPCX=            ; filename - including the .pcx extension
 ExclusiveSWSidebar.CenterPCX=        ; filename - including the .pcx extension
