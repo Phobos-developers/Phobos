@@ -258,7 +258,7 @@ public:
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
-		Valueable<bool> Transporter_FixCyborgLegs;
+		Valueable<bool> FixEnteringCyborgLegs;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -463,7 +463,7 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
-			, Transporter_FixCyborgLegs { false }
+			, FixEnteringCyborgLegs { false }
 		{ }
 
 		virtual ~ExtData() = default;

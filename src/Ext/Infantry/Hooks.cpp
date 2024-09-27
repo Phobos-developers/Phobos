@@ -19,7 +19,7 @@ DEFINE_HOOK(0x51DF42, InfantryClass_Limbo_Cyborg, 0x7)
 			// Note: When infantry enters into a transport this Limbo will be executed 2 times, in the second run of this hook infaatry will contain information of the transport unit (Transporter variable)
 			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Transporter->GetTechnoType());
 
-			if (pTypeExt->Transporter_FixCyborgLegs)
+			if (pTypeExt->FixEnteringCyborgLegs)
 				return 0;
 		}
 
@@ -39,7 +39,7 @@ DEFINE_HOOK(0x52291A, InfantryClass_InfantryEnteredThing_Cyborg, 0x6)
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
 
-		if (pTypeExt->Transporter_FixCyborgLegs)
+		if (pTypeExt->FixEnteringCyborgLegs)
 			pThis->Crawling = false;
 	}
 
@@ -56,7 +56,7 @@ DEFINE_HOOK(0x51A27F, InfantryClass_PerCellProcess_AresTunnel_Cyborg, 0xA)
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
 
-		if (pTypeExt->Transporter_FixCyborgLegs)
+		if (pTypeExt->FixEnteringCyborgLegs)
 			pThis->Crawling = false;
 	}
 
