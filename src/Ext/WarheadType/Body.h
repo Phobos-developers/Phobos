@@ -149,6 +149,9 @@ public:
 		Valueable<bool> SuppressReflectDamage;
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
 
+		Valueable<double> AffectsAbovePercent;
+		Valueable<double> AffectsBelowPercent;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -299,6 +302,9 @@ public:
 			, SuppressRevengeWeapons_Types {}
 			, SuppressReflectDamage { false }
 			, SuppressReflectDamage_Types {}
+
+			, AffectsAbovePercent { 0.0 }
+			, AffectsBelowPercent { 1.0 }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}

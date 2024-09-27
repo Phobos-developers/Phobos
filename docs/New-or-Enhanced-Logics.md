@@ -1306,7 +1306,7 @@ DestroySound=      ; Sound
 All new Warhead effects
 - Can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
 - Cannot be used with `MindControl.Permanent=yes` of Ares.
-- Respect `Verses` where applicable unless `EffectsRequireVerses` is set to false. If target has an active shield, its armor type is used instead unless warhead can penetrate the shield.
+- Respect `Verses` where applicable unless `EffectsRequireVerses` is set to `false`. If target has an active shield, its armor type is used instead unless warhead can penetrate the shield.
 ```
 
 ### Break Mind Control on impact

@@ -35,6 +35,14 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::E
 	if (!pTarget)
 		return false;
 
+	auto hp = pTarget->GetHealthPercentage();
+
+	if (hp < this->AffectsAbovePercent)
+		return false;
+
+	if (this->AffectsBelowPercent < hp)
+		return false;
+
 	if (!this->EffectsRequireVerses)
 		return true;
 
@@ -266,6 +274,12 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
 	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
 
+	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
+	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
+
+	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
+		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -479,6 +493,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuppressRevengeWeapons_Types)
 		.Process(this->SuppressReflectDamage)
 		.Process(this->SuppressReflectDamage_Types)
+
+		.Process(this->AffectsAbovePercent)
+		.Process(this->AffectsBelowPercent)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
