@@ -83,8 +83,19 @@ void SWSidebarClass::SortButtons()
 		column->ClearButtons(false);
 	}
 
-	std::stable_sort(vec_Buttons.begin(), vec_Buttons.end(), [](TacticalButtonClass* const a, TacticalButtonClass* const b)
+	const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
+
+	std::stable_sort(vec_Buttons.begin(), vec_Buttons.end(), [ownerBits](TacticalButtonClass* const a, TacticalButtonClass* const b)
 		{
+			const auto pLeftExt = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->Items[a->SuperIndex]);
+			const auto pRightExt = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->Items[b->SuperIndex]);
+
+			if ((pLeftExt->ExclusiveSidebar_PriorityHouses & ownerBits) && !(pRightExt->ExclusiveSidebar_PriorityHouses & ownerBits))
+				return true;
+
+			if (!(pLeftExt->ExclusiveSidebar_PriorityHouses & ownerBits) && (pRightExt->ExclusiveSidebar_PriorityHouses & ownerBits))
+				return true;
+
 			return BuildType::SortsBefore(AbstractType::Special, a->SuperIndex, AbstractType::Special, b->SuperIndex);
 		 });
 
