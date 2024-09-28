@@ -427,12 +427,13 @@ DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
 				const int rof = static_cast<int>(ratio * pExt->LastWeaponType->ROF * pExt->AE.ROFMultiplier);
 				pThis->ChargeTurretDelay = rof;
 				pThis->RearmTimer.Start(rof);
+				pThis->CurrentBurstIndex = 0;
+				pExt->LastWeaponType = pWeapon;
+
+				return CanNotFire;
 			}
 
 			pThis->CurrentBurstIndex = 0;
-			pExt->LastWeaponType = pWeapon;
-
-			return CanNotFire;
 		}
 
 		pExt->LastWeaponType = pWeapon;
