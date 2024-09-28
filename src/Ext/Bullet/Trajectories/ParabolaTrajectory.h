@@ -75,26 +75,11 @@ public:
 	ParabolaTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
 	ParabolaTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Parabola)
-		, DetonationDistance { Leptons(102) }
-		, TargetSnapDistance { Leptons(128) }
-		, OpenFireMode { ParabolaFireMode::Speed }
-		, ThrowHeight { 600 }
-		, LaunchAngle { 30.0 }
-		, LeadTimeCalculate { false }
-		, LeadTimeSimplify { false }
-		, LeadTimeMultiplier { 1.0 }
-		, DetonationAngle { -90.0 }
-		, DetonationHeight { -1 }
-		, BounceTimes { 0 }
-		, BounceOnWater { false }
-		, BounceDetonate { false }
-		, BounceAttenuation { 0.8 }
-		, BounceCoefficient { 0.8 }
-		, OffsetCoord {}
-		, RotateCoord { 0 }
-		, MirrorCoord { true }
-		, UseDisperseBurst { false }
-		, AxisOfRotation {}
+		, Type { static_cast<ParabolaTrajectoryType*>(const_cast<PhobosTrajectoryType*>(pType)) }
+		, ThrowHeight { Type->ThrowHeight > 0 ? Type->ThrowHeight : 600 }
+		, BounceTimes { Type->BounceTimes }
+		, OffsetCoord { static_cast<CoordStruct>(Type->OffsetCoord) }
+		, UseDisperseBurst { Type->UseDisperseBurst }
 		, ShouldDetonate { false }
 		, ShouldBounce { false }
 		, NeedExtraCheck { false }
@@ -103,30 +88,7 @@ public:
 		, CountOfBurst { 0 }
 		, WaitOneFrame {}
 		, LastVelocity {}
-	{
-		auto const pFinalType = static_cast<const ParabolaTrajectoryType*>(pType);
-
-		this->DetonationDistance = pFinalType->DetonationDistance;
-		this->TargetSnapDistance = pFinalType->TargetSnapDistance;
-		this->OpenFireMode = pFinalType->OpenFireMode;
-		this->ThrowHeight = pFinalType->ThrowHeight > 0 ? pFinalType->ThrowHeight : 600;
-		this->LaunchAngle = pFinalType->LaunchAngle;
-		this->LeadTimeCalculate = pFinalType->LeadTimeCalculate;
-		this->LeadTimeSimplify = pFinalType->LeadTimeSimplify;
-		this->LeadTimeMultiplier = pFinalType->LeadTimeMultiplier;
-		this->DetonationAngle = pFinalType->DetonationAngle;
-		this->DetonationHeight = pFinalType->DetonationHeight;
-		this->BounceTimes = pFinalType->BounceTimes;
-		this->BounceOnWater = pFinalType->BounceOnWater;
-		this->BounceDetonate = pFinalType->BounceDetonate;
-		this->BounceAttenuation = pFinalType->BounceAttenuation;
-		this->BounceCoefficient = pFinalType->BounceCoefficient;
-		this->OffsetCoord = pFinalType->OffsetCoord;
-		this->RotateCoord = pFinalType->RotateCoord;
-		this->MirrorCoord = pFinalType->MirrorCoord;
-		this->UseDisperseBurst = pFinalType->UseDisperseBurst;
-		this->AxisOfRotation = pFinalType->AxisOfRotation;
-	}
+	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
@@ -138,26 +100,11 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
-	Leptons DetonationDistance;
-	Leptons TargetSnapDistance;
-	ParabolaFireMode OpenFireMode;
+	ParabolaTrajectoryType* Type;
 	int ThrowHeight;
-	double LaunchAngle;
-	bool LeadTimeCalculate;
-	bool LeadTimeSimplify;
-	double LeadTimeMultiplier;
-	double DetonationAngle;
-	int DetonationHeight;
 	int BounceTimes;
-	bool BounceOnWater;
-	bool BounceDetonate;
-	double BounceAttenuation;
-	double BounceCoefficient;
 	CoordStruct OffsetCoord;
-	int RotateCoord;
-	bool MirrorCoord;
 	bool UseDisperseBurst;
-	CoordStruct AxisOfRotation;
 	bool ShouldDetonate;
 	bool ShouldBounce;
 	bool NeedExtraCheck;

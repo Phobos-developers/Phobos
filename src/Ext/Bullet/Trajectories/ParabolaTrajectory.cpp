@@ -96,26 +96,11 @@ template<typename T>
 void ParabolaTrajectory::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->DetonationDistance)
-		.Process(this->TargetSnapDistance)
-		.Process(this->OpenFireMode)
+		.Process(this->Type)
 		.Process(this->ThrowHeight)
-		.Process(this->LaunchAngle)
-		.Process(this->LeadTimeCalculate)
-		.Process(this->LeadTimeSimplify)
-		.Process(this->LeadTimeMultiplier)
-		.Process(this->DetonationAngle)
-		.Process(this->DetonationHeight)
 		.Process(this->BounceTimes)
-		.Process(this->BounceOnWater)
-		.Process(this->BounceDetonate)
-		.Process(this->BounceAttenuation)
-		.Process(this->BounceCoefficient)
 		.Process(this->OffsetCoord)
-		.Process(this->RotateCoord)
-		.Process(this->MirrorCoord)
 		.Process(this->UseDisperseBurst)
-		.Process(this->AxisOfRotation)
 		.Process(this->ShouldDetonate)
 		.Process(this->ShouldBounce)
 		.Process(this->NeedExtraCheck)
@@ -143,13 +128,16 @@ bool ParabolaTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
+	if (!this->Type) // After load
+		this->Type = this->GetTrajectoryType<ParabolaTrajectoryType>(pBullet);
+
+	ParabolaTrajectoryType* const pType = this->Type;
 	this->LastTargetCoord = pBullet->TargetCoords;
 	pBullet->Velocity = BulletVelocity::Empty;
-
 	FootClass* const pTarget = abstract_cast<FootClass*>(pBullet->Target);
 	bool resetTarget = false;
 
-	if (this->DetonationDistance <= -1e-10 && pTarget)
+	if (static_cast<Leptons>(pType->DetonationDistance) <= -1e-10 && pTarget)
 	{
 		if (CellClass* const pCell = MapClass::Instance->TryGetCellAt(pTarget->GetCoords()))
 		{
@@ -166,11 +154,11 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	{
 		this->CurrentBurst = pOwner->CurrentBurstIndex;
 
-		if (this->MirrorCoord && pOwner->CurrentBurstIndex % 2 == 1)
+		if (pType->MirrorCoord && pOwner->CurrentBurstIndex % 2 == 1)
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
 	}
 
-	if (!this->LeadTimeCalculate || !pTarget || resetTarget)
+	if (!pType->LeadTimeCalculate || !pTarget || resetTarget)
 		this->PrepareForOpenFire(pBullet);
 	else
 		this->WaitOneFrame.Start(1);
@@ -178,6 +166,9 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 
 bool ParabolaTrajectory::OnAI(BulletClass* pBullet)
 {
+	if (!this->Type) // After load
+		this->Type = this->GetTrajectoryType<ParabolaTrajectoryType>(pBullet);
+
 	if (this->WaitOneFrame.IsTicking() && this->BulletPrepareCheck(pBullet))
 		return false;
 
@@ -192,20 +183,22 @@ bool ParabolaTrajectory::OnAI(BulletClass* pBullet)
 	const double gravity = BulletTypeExt::GetAdjustedGravity(pBullet->Type);
 
 	if (this->ShouldBounce && this->BounceTimes > 0)
-		return (pCell->LandType == LandType::Water && !this->BounceOnWater) || this->CalculateBulletVelocityAfterBounce(pBullet, pCell, gravity);
+		return (pCell->LandType == LandType::Water && !this->Type->BounceOnWater) || this->CalculateBulletVelocityAfterBounce(pBullet, pCell, gravity);
 
 	return this->BulletDetonateLastCheck(pBullet, gravity);
 }
 
 void ParabolaTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
-	if (this->TargetSnapDistance <= 0)
+	const Leptons targetSnapDistance = this->Type->TargetSnapDistance;
+
+	if (targetSnapDistance <= 0)
 		return;
 
 	const ObjectClass* const pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
 	const CoordStruct coords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;
 
-	if (coords.DistanceFrom(pBullet->Location) <= this->TargetSnapDistance)
+	if (coords.DistanceFrom(pBullet->Location) <= targetSnapDistance)
 	{
 		auto const pExt = BulletExt::ExtMap.Find(pBullet);
 		pExt->SnappedToTarget = true;
@@ -237,14 +230,15 @@ TrajectoryCheckReturnType ParabolaTrajectory::OnAITechnoCheck(BulletClass* pBull
 
 void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 {
+	ParabolaTrajectoryType* const pType = this->Type;
 	const AbstractClass* const pTarget = pBullet->Target;
-	bool leadTimeCalculate = this->LeadTimeCalculate && pTarget;
+	bool leadTimeCalculate = pType->LeadTimeCalculate && pTarget;
 	CoordStruct theTargetCoords = leadTimeCalculate ? pTarget->GetCoords() : pBullet->TargetCoords;
 	CoordStruct theSourceCoords = leadTimeCalculate ? pBullet->Location : pBullet->SourceCoords;
 	leadTimeCalculate &= theTargetCoords != this->LastTargetCoord;
 	double rotateAngle = 0.0;
 
-	if (!this->LeadTimeCalculate && theTargetCoords == theSourceCoords && pBullet->Owner) //For disperse.
+	if (!pType->LeadTimeCalculate && theTargetCoords == theSourceCoords && pBullet->Owner) //For disperse.
 	{
 		const CoordStruct theOwnerCoords = pBullet->Owner->GetCoords();
 		rotateAngle = Math::atan2(theTargetCoords.Y - theOwnerCoords.Y , theTargetCoords.X - theOwnerCoords.X);
@@ -286,13 +280,15 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	else
 		this->CalculateBulletVelocityRightNow(pBullet, &theSourceCoords, gravity);
 
-	if (!this->UseDisperseBurst && abs(this->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+	if (!this->UseDisperseBurst && abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
 	{
+		const CoordStruct axis = pType->AxisOfRotation;
+
 		BulletVelocity rotationAxis
 		{
-			this->AxisOfRotation.X * Math::cos(rotateAngle) + this->AxisOfRotation.Y * Math::sin(rotateAngle),
-			this->AxisOfRotation.X * Math::sin(rotateAngle) - this->AxisOfRotation.Y * Math::cos(rotateAngle),
-			static_cast<double>(this->AxisOfRotation.Z)
+			axis.X * Math::cos(rotateAngle) + axis.Y * Math::sin(rotateAngle),
+			axis.X * Math::sin(rotateAngle) - axis.Y * Math::cos(rotateAngle),
+			static_cast<double>(axis.Z)
 		};
 
 		const double rotationAxisLengthSquared = rotationAxis.MagnitudeSquared();
@@ -302,16 +298,16 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 			double extraRotate = 0.0;
 			rotationAxis *= 1 / sqrt(rotationAxisLengthSquared);
 
-			if (this->MirrorCoord)
+			if (pType->MirrorCoord)
 			{
 				if (pBullet->Owner && pBullet->Owner->CurrentBurstIndex % 2 == 1)
 					rotationAxis *= -1;
 
-				extraRotate = Math::Pi * (this->RotateCoord * ((this->CurrentBurst / 2) / (this->CountOfBurst - 1.0) - 0.5)) / 180;
+				extraRotate = Math::Pi * (pType->RotateCoord * ((this->CurrentBurst / 2) / (this->CountOfBurst - 1.0) - 0.5)) / 180;
 			}
 			else
 			{
-				extraRotate = Math::Pi * (this->RotateCoord * (this->CurrentBurst / (this->CountOfBurst - 1.0) - 0.5)) / 180;
+				extraRotate = Math::Pi * (pType->RotateCoord * (this->CurrentBurst / (this->CountOfBurst - 1.0) - 0.5)) / 180;
 			}
 
 			const double cosRotate = Math::cos(extraRotate);
@@ -333,13 +329,15 @@ bool ParabolaTrajectory::BulletPrepareCheck(BulletClass* pBullet)
 
 void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, CoordStruct* pSourceCoords, double gravity)
 {
-	if (this->LeadTimeSimplify) // Only simple guess, not exact solution
+	ParabolaTrajectoryType* const pType = this->Type;
+
+	if (pType->LeadTimeSimplify) // Only simple guess, not exact solution
 	{
 		int leadTime = 0;
 
 		// Step 1: Guess the time of encounter between the projectile and the target based on known conditions
 		// Directly assume that the distance between the position where the projectile hits the target and the starting point is 4 grids
-		switch (this->OpenFireMode)
+		switch (pType->OpenFireMode)
 		{
 		case ParabolaFireMode::Height:
 		case ParabolaFireMode::HeightAndAngle:
@@ -350,7 +348,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		}
 		case ParabolaFireMode::Angle:
 		{
-			double radian = this->LaunchAngle * Math::Pi / 180.0;
+			double radian = pType->LaunchAngle * Math::Pi / 180.0;
 			radian = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? (Math::HalfPi / 3) : radian;
 			const double factor = Math::cos(radian);
 
@@ -379,7 +377,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		}
 
 		// Step 2: Substitute the time into the calculation of the attack coordinates
-		pBullet->TargetCoords += (pBullet->Target->GetCoords() - this->LastTargetCoord) * (this->LeadTimeMultiplier * leadTime);
+		pBullet->TargetCoords += (pBullet->Target->GetCoords() - this->LastTargetCoord) * (pType->LeadTimeMultiplier * leadTime);
 
 		// Step 3: Calculate the parabolic starting point vector
 		this->CalculateBulletVelocityRightNow(pBullet, pSourceCoords, gravity);
@@ -390,9 +388,9 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 	CoordStruct offsetCoords = pBullet->TargetCoords - targetCoords;
 
 	// A coefficient that should not exist here normally, but even so, there are still errors
-	const double speedFixMult = this->LeadTimeMultiplier * 0.75;
+	const double speedFixMult = pType->LeadTimeMultiplier * 0.75;
 
-	switch (this->OpenFireMode)
+	switch (pType->OpenFireMode)
 	{
 	case ParabolaFireMode::Height: // Fixed max height and aim at the target
 	{
@@ -425,7 +423,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 	case ParabolaFireMode::Angle: // Fixed fire angle and aim at the target
 	{
 		// Step 1: Read the appropriate fire angle
-		double radian = this->LaunchAngle * Math::Pi / 180.0;
+		double radian = pType->LaunchAngle * Math::Pi / 180.0;
 		radian = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? (Math::HalfPi / 3) : radian;
 
 		// Step 2: Using Newton Iteration Method to determine the time of encounter between the projectile and the target
@@ -510,7 +508,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		pBullet->Velocity.Z = sqrt(2 * gravity * (maxHeight - sourceHeight)) + gravity / 2;
 
 		// Step 6: Read the appropriate fire angle
-		double radian = this->LaunchAngle * Math::Pi / 180.0;
+		double radian = pType->LaunchAngle * Math::Pi / 180.0;
 		radian = (radian >= Math::HalfPi || radian <= 1e-10) ? (Math::HalfPi / 3) : radian;
 
 		// Step 7: Calculate the ratio of horizontal velocity to horizontal distance
@@ -553,7 +551,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		const double horizontalVelocity = horizontalDistance * mult;
 
 		// Step 8: Read the appropriate fire angle
-		double radian = this->LaunchAngle * Math::Pi / 180.0;
+		double radian = pType->LaunchAngle * Math::Pi / 180.0;
 		radian = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? (Math::HalfPi / 3) : radian;
 
 		// Step 9: Calculate the vertical component of the projectile velocity
@@ -603,6 +601,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 
 void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, CoordStruct* pSourceCoords, double gravity)
 {
+	ParabolaTrajectoryType* const pType = this->Type;
 	// Calculate horizontal distance
 	const CoordStruct distanceCoords = pBullet->TargetCoords - *pSourceCoords;
 	const double distance = distanceCoords.Magnitude();
@@ -615,7 +614,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 		return;
 	}
 
-	switch (this->OpenFireMode)
+	switch (pType->OpenFireMode)
 	{
 	case ParabolaFireMode::Height: // Fixed max height and aim at the target
 	{
@@ -637,7 +636,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 	case ParabolaFireMode::Angle: // Fixed fire angle and aim at the target
 	{
 		// Step 1: Read the appropriate fire angle
-		double radian = this->LaunchAngle * Math::Pi / 180.0;
+		double radian = pType->LaunchAngle * Math::Pi / 180.0;
 
 		// Step 2: Using Newton Iteration Method to determine the projectile velocity
 		double velocity = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? 100.0 : this->SearchVelocity(horizontalDistance, distanceCoords.Z, radian, gravity);
@@ -683,7 +682,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 		pBullet->Velocity.Z = sqrt(2 * gravity * (maxHeight - sourceHeight));
 
 		// Step 3: Read the appropriate fire angle
-		double radian = this->LaunchAngle * Math::Pi / 180.0;
+		double radian = pType->LaunchAngle * Math::Pi / 180.0;
 		radian = (radian >= Math::HalfPi || radian <= 1e-10) ? (Math::HalfPi / 3) : radian;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
@@ -707,7 +706,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 		pBullet->Velocity.Y = distanceCoords.Y * mult;
 
 		// Step 4: Read the appropriate fire angle
-		double radian = this->LaunchAngle * Math::Pi / 180.0;
+		double radian = pType->LaunchAngle * Math::Pi / 180.0;
 		radian = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? (Math::HalfPi / 3) : radian;
 
 		// Step 5: Calculate the vertical component of the projectile velocity
@@ -739,7 +738,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 
 void ParabolaTrajectory::CheckIfNeedExtraCheck(BulletClass* pBullet)
 {
-	switch (this->OpenFireMode)
+	switch (this->Type->OpenFireMode)
 	{
 	case ParabolaFireMode::Height: // Fixed max height and aim at the target
 	case ParabolaFireMode::Angle: // Fixed fire angle and aim at the target
@@ -940,11 +939,12 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(BulletClass* pBullet
 	--this->BounceTimes;
 	this->ShouldBounce = false;
 
+	ParabolaTrajectoryType* const pType = this->Type;
 	const BulletVelocity groundNormalVector = this->GetGroundNormalVector(pBullet, pCell);
-	pBullet->Velocity = (this->LastVelocity - groundNormalVector * (this->LastVelocity * groundNormalVector) * 2) * this->BounceCoefficient;
+	pBullet->Velocity = (this->LastVelocity - groundNormalVector * (this->LastVelocity * groundNormalVector) * 2) * pType->BounceCoefficient;
 	pBullet->Velocity.Z -= gravity;
 
-	if (this->BounceDetonate)
+	if (pType->BounceDetonate)
 	{
 		TechnoClass* const pFirer = pBullet->Owner;
 		HouseClass* const pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
@@ -953,7 +953,7 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(BulletClass* pBullet
 
 	if (const int damage = pBullet->Health)
 	{
-		if (const int newDamage = static_cast<int>(damage * this->BounceAttenuation))
+		if (const int newDamage = static_cast<int>(damage * pType->BounceAttenuation))
 			pBullet->Health = newDamage;
 		else
 			pBullet->Health = damage > 0 ? 1 : -1;
@@ -1088,30 +1088,32 @@ bool ParabolaTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 	if (this->ShouldDetonate)
 		return true;
 
-	if (this->DetonationHeight >= 0 && pBullet->Velocity.Z < 1e-10 && (pBullet->Location.Z - pBullet->SourceCoords.Z) < this->DetonationHeight)
+	ParabolaTrajectoryType* const pType = this->Type;
+
+	if (pType->DetonationHeight >= 0 && pBullet->Velocity.Z < 1e-10 && (pBullet->Location.Z - pBullet->SourceCoords.Z) < pType->DetonationHeight)
 		return true;
 
-	if (abs(this->DetonationAngle) < 1e-10)
+	if (abs(pType->DetonationAngle) < 1e-10)
 	{
 		if (pBullet->Velocity.Z < 1e-10)
 			return true;
 	}
-	else if (abs(this->DetonationAngle) < 90.0)
+	else if (abs(pType->DetonationAngle) < 90.0)
 	{
 		const double horizontalVelocity = Vector2D<double>{ pBullet->Velocity.X, pBullet->Velocity.Y }.Magnitude();
 
 		if (horizontalVelocity > 1e-10)
 		{
-			if ((pBullet->Velocity.Z / horizontalVelocity) < Math::tan(this->DetonationAngle * Math::Pi / 180.0))
+			if ((pBullet->Velocity.Z / horizontalVelocity) < Math::tan(pType->DetonationAngle * Math::Pi / 180.0))
 				return true;
 		}
-		else if (this->DetonationAngle > 1e-10 || pBullet->Velocity.Z < 1e-10)
+		else if (pType->DetonationAngle > 1e-10 || pBullet->Velocity.Z < 1e-10)
 		{
 			return true;
 		}
 	}
 
-	if (this->DetonationDistance > 0 && pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < static_cast<Leptons>(pType->DetonationDistance))
 		return true;
 
 	return false;
