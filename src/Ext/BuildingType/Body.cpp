@@ -152,6 +152,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
 	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
 
+	this->AnimDontDelayBurst.Read(exArtINI, pSection, "AnimDontDelayBurst");
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		this->AircraftDockingDirs.clear();
@@ -266,6 +268,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftDockingDirs)
 		.Process(this->FactoryPlant_AllowTypes)
 		.Process(this->FactoryPlant_DisallowTypes)
+		.Process(this->AnimDontDelayBurst)
 		;
 }
 

@@ -63,6 +63,8 @@ public:
 		Valueable<bool> ZShapePointMove_OnBuildup;
 		Valueable<int> SellBuildupLength;
 
+		Valueable<bool> AnimDontDelayBurst;
+
 		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
 
 		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
@@ -108,6 +110,7 @@ public:
 			, AircraftDockingDirs {}
 			, FactoryPlant_AllowTypes {}
 			, FactoryPlant_DisallowTypes {}
+			, AnimDontDelayBurst { false }
 		{ }
 
 		// Ares 0.A functions

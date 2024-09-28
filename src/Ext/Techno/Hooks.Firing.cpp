@@ -896,3 +896,13 @@ DEFINE_JUMP(CALL6, 0x6F8DD2, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponRangeWr
 
 #pragma endregion
 
+DEFINE_HOOK(0x44B630, BuildingClass_MissionAttack_AnimDelayedFire, 0x6)
+{
+	enum { JustFire = 0x44B6C4, VanillaCheck = 0 };
+
+	GET(BuildingClass* const, pThis, ESI);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	return (pTypeExt && pTypeExt->AnimDontDelayBurst && pThis->CurrentBurstIndex != 0) ? JustFire : VanillaCheck;
+}
