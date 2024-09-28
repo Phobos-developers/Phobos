@@ -348,40 +348,26 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 #pragma region AircraftMissionExpand
 
 // AreaGuard: return when no ammo or first target died
-int __fastcall AircraftClass_Mission_AreaGuard(AircraftClass* pThis)
+DEFINE_HOOK_AGAIN(0x41A982, AircraftClass_Mission_AreaGuard, 0x6)
+DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
 {
-	const bool flying = pThis->GetHeight() == pThis->Type->GetFlightLevel();
+	enum { SkipGameCode = 0x41A97A };
 
-	if (!pThis->Team)
+	GET(AircraftClass* const, pThis, ESI);
+
+	if (!pThis->Team && pThis->Ammo && pThis->IsArmed())
 	{
-/*		if (!flying && pThis->Target) // This is what vanilla do, but now there is no need to do so
+		CoordStruct coords = pThis->GetCoords();
+
+		if (pThis->TargetAndEstimateDamage(coords, ThreatType::Normal))
 		{
 			pThis->QueueMission(Mission::Attack, false);
-			return 1;
-		}*/
-
-		if (pThis->Ammo && pThis->IsArmed())
-		{
-			CoordStruct coords = pThis->GetCoords();
-
-			if (pThis->TargetAndEstimateDamage(coords, ThreatType::Normal))
-			{
-				pThis->QueueMission(Mission::Attack, false);
-				return 1;
-			}
-			else if (!flying && pThis->HasAnyLink())
-			{
-				return 30;
-			}
-
-			pThis->EnterIdleMode(false, true);
-			return 1;
+			return SkipGameCode;
 		}
 	}
 
-	return flying ? 1 : reinterpret_cast<int(__thiscall*)(FootClass*)>(0x4D6AA0)(pThis); // FootClass_Mission_AreaGuard (Prevent circular calls)
+	return 0;
 }
-DEFINE_JUMP(VTABLE, 0x7E24C4, GET_OFFSET(AircraftClass_Mission_AreaGuard))
 
 // AttackMove: return when no ammo or arrived destination
 bool __fastcall AircraftTypeClass_CanAttackMove(AircraftTypeClass* pThis)
@@ -439,9 +425,7 @@ DEFINE_HOOK(0x414D4D, AircraftClass_Update_ClearTargetIfNoAmmo, 0x6)
 
 	GET(AircraftClass* const, pThis, ESI);
 
-	const Mission mission = pThis->CurrentMission;
-
-	return (!pThis->Ammo || mission == Mission::Sleep) ? ClearTarget : 0;
+	return (!pThis->Ammo || pThis->CurrentMission == Mission::Sleep) ? ClearTarget : 0;
 }
 
 // Stop: clear the mega mission and return to airbase immediately
@@ -460,22 +444,22 @@ DEFINE_HOOK(0x4C762A, EventClass_RespondToEvent_StopAircraftAction, 0x6)
 	return 0;
 }
 
-// SelectAutoTarget: for all the mission that should let the aircraft auto select a closing target
-AbstractClass* __fastcall AircraftClass_SelectAutoTarget(AircraftClass* pThis, void* _, ThreatType threatType, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)
+// GreatestThreat: for all the mission that should let the aircraft auto select a target
+AbstractClass* __fastcall AircraftClass_GreatestThreat(AircraftClass* pThis, void* _, ThreatType threatType, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)
 {
 	WeaponTypeClass* const pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType;
 	WeaponTypeClass* const pSecondaryWeapon = pThis->GetWeapon(1)->WeaponType;
 
 	if (pThis->vt_entry_4C4()) // pTechno->MegaMissionIsAttackMove()
-		threatType = ThreatType::Area; // Select closing targets
+		threatType = ThreatType::Area;
 
 	if (pSecondaryWeapon) // Vanilla (other types) secondary first
 		threatType |= pSecondaryWeapon->AllowedThreats();
 	else if (pPrimaryWeapon)
 		threatType |= pPrimaryWeapon->AllowedThreats();
 
-	return reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, ThreatType, CoordStruct*, bool)>(0x6F8DF0)(pThis, threatType, pSelectCoords, onlyTargetHouseEnemy); // TechnoClass_SelectAutoTarget (Prevent circular calls)
+	return reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, ThreatType, CoordStruct*, bool)>(0x6F8DF0)(pThis, threatType, pSelectCoords, onlyTargetHouseEnemy); // TechnoClass_GreatestThreat (Prevent circular calls)
 }
-DEFINE_JUMP(VTABLE, 0x7E2668, GET_OFFSET(AircraftClass_SelectAutoTarget))
+DEFINE_JUMP(VTABLE, 0x7E2668, GET_OFFSET(AircraftClass_GreatestThreat))
 
 #pragma endregion
