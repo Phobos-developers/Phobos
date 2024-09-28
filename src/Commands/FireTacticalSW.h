@@ -95,7 +95,7 @@ inline void FireTacticalSWCommandClass<Index>::Execute(WWKey eInput) const
 	if (!SWSidebarClass::IsEnabled())
 		return;
 
-	const auto column = SWSidebarClass::Instance.Columns.front();
+	const auto column = SWSidebarClass::Global()->Columns.front();
 
 	if (!column)
 		return;

@@ -10,7 +10,7 @@ public:
 	SWColumnClass() = default;
 	SWColumnClass(unsigned int id, int x, int y, int width, int height);
 
-	~SWColumnClass();
+	~SWColumnClass() = default;
 
 	virtual bool Draw(bool forced) override;
 	virtual void OnMouseEnter() override;

@@ -7,27 +7,11 @@
 #include <Utilities/AresFunctions.h>
 
 TacticalButtonClass::TacticalButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, GadgetFlag((int)GadgetFlag::LeftPress | (int)GadgetFlag::LeftRelease), true)
+	: ControlClass(id, x, y, width, height, static_cast<GadgetFlag>((int)GadgetFlag::LeftPress | (int)GadgetFlag::LeftRelease), true)
 	, SuperIndex(superIdx)
 {
-	this->Zap();
-	GScreenClass::Instance->AddButton(this);
-}
-
-TacticalButtonClass::~TacticalButtonClass()
-{
-	if (this->ColumnIndex != -1)
-	{
-		auto& columns = SWSidebarClass::Instance.Columns;
-		auto& buttons = columns[this->ColumnIndex]->Buttons;
-		const auto it = std::find(buttons.begin(), buttons.end(), this);
-
-		if (it != buttons.end())
-			buttons.erase(it);
-	}
-
-	AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentButton, this);
-	GScreenClass::Instance->RemoveButton(this);
+	if (const auto backColumn = SWSidebarClass::Global()->Columns.back())
+		backColumn->Buttons.emplace_back(this);
 }
 
 bool TacticalButtonClass::Draw(bool forced)
@@ -110,8 +94,8 @@ void TacticalButtonClass::OnMouseEnter()
 		return;
 
 	this->IsHovering = true;
-	SWSidebarClass::Instance.CurrentButton = this;
-	SWSidebarClass::Instance.Columns[this->ColumnIndex]->OnMouseEnter();
+	SWSidebarClass::Global()->CurrentButton = this;
+	SWSidebarClass::Global()->Columns[this->ColumnIndex]->OnMouseEnter();
 	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
 }
 
@@ -122,8 +106,8 @@ void TacticalButtonClass::OnMouseLeave()
 
 	this->IsHovering = false;
 	this->IsPressed = false;
-	SWSidebarClass::Instance.CurrentButton = nullptr;
-	SWSidebarClass::Instance.Columns[this->ColumnIndex]->OnMouseLeave();
+	SWSidebarClass::Global()->CurrentButton = nullptr;
+	SWSidebarClass::Global()->Columns[this->ColumnIndex]->OnMouseLeave();
 	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
 	CCToolTip::Instance->MarkToRedraw(CCToolTip::Instance->CurrentToolTipData);
 }

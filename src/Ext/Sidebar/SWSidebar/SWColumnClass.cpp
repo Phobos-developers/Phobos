@@ -7,25 +7,10 @@
 SWColumnClass::SWColumnClass(unsigned int id, int x, int y, int width, int height)
 	: ControlClass(id, x, y, width, height, static_cast<GadgetFlag>(0), true)
 {
-	auto& columns = SWSidebarClass::Instance.Columns;
+	auto& columns = SWSidebarClass::Global()->Columns;
 	columns.emplace_back(this);
 
 	this->MaxButtons = Phobos::UI::ExclusiveSWSidebar_Max - (static_cast<int>(columns.size()) - 1);
-
-	this->Zap();
-	GScreenClass::Instance->AddButton(this);
-}
-
-SWColumnClass::~SWColumnClass()
-{
-	auto& columns = SWSidebarClass::Instance.Columns;
-	const auto it = std::find(columns.begin(), columns.end(), this);
-
-	if (it != columns.end())
-		columns.erase(it);
-
-	AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentColumn, this);
-	GScreenClass::Instance->RemoveButton(this);
 }
 
 bool SWColumnClass::Draw(bool forced)
@@ -72,12 +57,12 @@ void SWColumnClass::OnMouseEnter()
 	if (!SWSidebarClass::IsEnabled())
 		return;
 
-	SWSidebarClass::Instance.CurrentColumn = this;
+	SWSidebarClass::Global()->CurrentColumn = this;
 }
 
 void SWColumnClass::OnMouseLeave()
 {
-	SWSidebarClass::Instance.CurrentColumn = nullptr;
+	SWSidebarClass::Global()->CurrentColumn = nullptr;
 }
 
 bool SWColumnClass::Clicked(DWORD* pKey, GadgetFlag flags, int x, int y, KeyModifier modifier)
@@ -118,7 +103,7 @@ bool SWColumnClass::AddButton(int superIdx)
 
 	auto& buttons = this->Buttons;
 
-	if (static_cast<int>(buttons.size()) >= this->MaxButtons && !SWSidebarClass::Instance.AddColumn())
+	if (static_cast<int>(buttons.size()) >= this->MaxButtons && !SWSidebarClass::Global()->AddColumn())
 		return false;
 
 	const auto button = DLLCreate<TacticalButtonClass>(superIdx + 2200, superIdx, 0, 0, 60, 48);
@@ -126,8 +111,9 @@ bool SWColumnClass::AddButton(int superIdx)
 	if (!button)
 		return false;
 
-	buttons.emplace_back(button);
-	SWSidebarClass::Instance.SortButtons();
+	button->Zap();
+	GScreenClass::Instance->AddButton(button);
+	SWSidebarClass::Global()->SortButtons();
 	return true;
 }
 
@@ -140,8 +126,12 @@ bool SWColumnClass::RemoveButton(int superIdx)
 	if (it == buttons.end())
 		return false;
 
+	AnnounceInvalidPointer(SWSidebarClass::Global()->CurrentButton, *it);
+	GScreenClass::Instance->RemoveButton(*it);
+
 	DLLDelete(*it);
-	SWSidebarClass::Instance.SortButtons();
+	buttons.erase(it);
+	SWSidebarClass::Global()->SortButtons();
 	return true;
 }
 
@@ -149,13 +139,10 @@ void SWColumnClass::ClearButtons(bool remove)
 {
 	auto& buttons = this->Buttons;
 
-	if (buttons.empty())
-		return;
-
 	if (remove)
 	{
 		for (const auto button : buttons)
-			DLLDelete(button);
+			GScreenClass::Instance->RemoveButton(button);
 	}
 
 	buttons.clear();

@@ -7,7 +7,7 @@ public:
 	TacticalButtonClass() = default;
 	TacticalButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height);
 
-	~TacticalButtonClass();
+	~TacticalButtonClass() = default;
 
 	virtual bool Draw(bool forced) override;
 	virtual void OnMouseEnter() override;
