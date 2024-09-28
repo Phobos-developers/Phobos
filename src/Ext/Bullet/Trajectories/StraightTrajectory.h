@@ -83,35 +83,12 @@ public:
 	StraightTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
 	StraightTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
-		, DetonationDistance { Leptons(102) }
-		, TargetSnapDistance { Leptons(128) }
-		, ApplyRangeModifiers { false }
-		, PassThrough { false }
-		, PassDetonate { false }
-		, PassDetonateWarhead {}
-		, PassDetonateDamage { 0 }
-		, PassDetonateDelay { 1 }
+		, Type { static_cast<StraightTrajectoryType*>(const_cast<PhobosTrajectoryType*>(pType)) }
+		, DetonationDistance { Type->DetonationDistance }
 		, PassDetonateTimer {}
-		, PassDetonateLocal { false }
-		, LeadTimeCalculate { false }
-		, OffsetCoord {}
-		, RotateCoord { 0 }
-		, MirrorCoord { true }
-		, UseDisperseBurst { false }
-		, AxisOfRotation {}
-		, ProximityImpact { 0 }
-		, ProximityWarhead {}
-		, ProximityDamage { 0 }
-		, ProximityRadius { Leptons(179) }
-		, ProximityDirect { false }
-		, ProximityMedial { false }
-		, ProximityAllies { false }
-		, ProximityFlight { false }
-		, ThroughVehicles { true }
-		, ThroughBuilding { true }
-		, SubjectToGround { false }
-		, ConfineAtHeight { 0 }
-		, EdgeAttenuation { 1.0 }
+		, OffsetCoord { static_cast<CoordStruct>(Type->OffsetCoord) }
+		, UseDisperseBurst { Type->UseDisperseBurst }
+		, ProximityImpact { Type->ProximityImpact }
 		, RemainingDistance { 1 }
 		, ExtraCheck { nullptr }
 		, LastCasualty {}
@@ -121,39 +98,7 @@ public:
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
 		, WaitOneFrame {}
-	{
-		auto const pFinalType = static_cast<const StraightTrajectoryType*>(pType);
-
-		this->DetonationDistance = pFinalType->DetonationDistance;
-		this->TargetSnapDistance = pFinalType->TargetSnapDistance;
-		this->ApplyRangeModifiers = pFinalType->ApplyRangeModifiers;
-		this->PassThrough = pFinalType->PassThrough;
-		this->PassDetonate = pFinalType->PassDetonate;
-		this->PassDetonateWarhead = pFinalType->PassDetonateWarhead;
-		this->PassDetonateDamage = pFinalType->PassDetonateDamage;
-		this->PassDetonateDelay = pFinalType->PassDetonateDelay > 0 ? pFinalType->PassDetonateDelay : 1;
-		this->PassDetonateTimer.Start(pFinalType->PassDetonateTimer > 0 ? pFinalType->PassDetonateTimer : 0);
-		this->PassDetonateLocal = pFinalType->PassDetonateLocal;
-		this->LeadTimeCalculate = pFinalType->LeadTimeCalculate;
-		this->OffsetCoord = pFinalType->OffsetCoord;
-		this->RotateCoord = pFinalType->RotateCoord;
-		this->MirrorCoord = pFinalType->MirrorCoord;
-		this->UseDisperseBurst = pFinalType->UseDisperseBurst;
-		this->AxisOfRotation = pFinalType->AxisOfRotation;
-		this->ProximityImpact = pFinalType->ProximityImpact;
-		this->ProximityWarhead = pFinalType->ProximityWarhead;
-		this->ProximityDamage = pFinalType->ProximityDamage;
-		this->ProximityRadius = pFinalType->ProximityRadius;
-		this->ProximityDirect = pFinalType->ProximityDirect;
-		this->ProximityMedial = pFinalType->ProximityMedial;
-		this->ProximityAllies = pFinalType->ProximityAllies;
-		this->ProximityFlight = pFinalType->ProximityFlight;
-		this->ThroughVehicles = pFinalType->ThroughVehicles;
-		this->ThroughBuilding = pFinalType->ThroughBuilding;
-		this->SubjectToGround = pFinalType->SubjectToGround;
-		this->ConfineAtHeight = pFinalType->ConfineAtHeight;
-		this->EdgeAttenuation = pFinalType->EdgeAttenuation > 0.0 ? pFinalType->EdgeAttenuation : 0.0;
-	}
+	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
@@ -167,39 +112,16 @@ public:
 
 	struct CasualtyData
 	{
-		TechnoClass* pCasualty;
+		TechnoClass* pCasualty; // Cannot be used, only for comparison purposes
 		int RemainTime;
 	};
 
+	StraightTrajectoryType* Type;
 	Leptons DetonationDistance;
-	Leptons TargetSnapDistance;
-	bool ApplyRangeModifiers;
-	bool PassThrough;
-	bool PassDetonate;
-	WarheadTypeClass* PassDetonateWarhead;
-	int PassDetonateDamage;
-	int PassDetonateDelay;
 	CDTimerClass PassDetonateTimer;
-	bool PassDetonateLocal;
-	bool LeadTimeCalculate;
 	CoordStruct OffsetCoord;
-	double RotateCoord;
-	bool MirrorCoord;
 	bool UseDisperseBurst;
-	CoordStruct AxisOfRotation;
 	int ProximityImpact;
-	WarheadTypeClass* ProximityWarhead;
-	int ProximityDamage;
-	Leptons ProximityRadius;
-	bool ProximityDirect;
-	bool ProximityMedial;
-	bool ProximityAllies;
-	bool ProximityFlight;
-	bool ThroughVehicles;
-	bool ThroughBuilding;
-	bool SubjectToGround;
-	int ConfineAtHeight;
-	double EdgeAttenuation;
 	int RemainingDistance;
 	TechnoClass* ExtraCheck;
 	std::vector<CasualtyData> LastCasualty;
@@ -226,7 +148,7 @@ private:
 	std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet);
 	std::vector<CellStruct> GetCellsInRectangle(CellStruct bottomStaCell, CellStruct leftMidCell, CellStruct rightMidCell, CellStruct topEndCell);
 	int GetTheTrueDamage(int damage, BulletClass* pBullet, TechnoClass* pTechno, bool self);
-	double GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno);
+	double GetExtraDamageMultiplier(BulletClass* pBullet, TechnoClass* pTechno, double edgeAttenuation);
 	bool PassAndConfineAtHeight(BulletClass* pBullet, double straightSpeed);
 	int GetFirerZPosition(BulletClass* pBullet);
 	int GetTargetZPosition(BulletClass* pBullet);
