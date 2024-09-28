@@ -92,39 +92,13 @@ public:
 	DisperseTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
 	DisperseTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Disperse)
-		, UniqueCurve { false }
-		, PreAimCoord {}
-		, RotateCoord { 0 }
-		, MirrorCoord { true }
-		, FacingCoord { false }
-		, ReduceCoord { true }
-		, UseDisperseBurst { false }
-		, AxisOfRotation {}
-		, LaunchSpeed { 0 }
-		, Acceleration { 10.0 }
-		, ROT { 30.0 }
-		, LockDirection { false }
-		, CruiseEnable { false }
-		, CruiseUnableRange { 5.0 }
-		, LeadTimeCalculate { true }
-		, TargetSnapDistance { Leptons(128) }
-		, RetargetRadius { 0 }
-		, RetargetAllies { false }
-		, SuicideShortOfROT { true }
-		, SuicideAboveRange { 0 }
-		, SuicideIfNoWeapon { true }
-		, Weapons {}
-		, WeaponBurst {}
-		, WeaponCount { 0 }
-		, WeaponDelay { 1 }
+		, Type { static_cast<DisperseTrajectoryType*>(const_cast<PhobosTrajectoryType*>(pType)) }
+		, PreAimCoord { static_cast<CoordStruct>(Type->PreAimCoord) }
+		, UseDisperseBurst { Type->UseDisperseBurst }
+		, LaunchSpeed { Type->LaunchSpeed }
+		, SuicideAboveRange { Type->SuicideAboveRange * Unsorted::LeptonsPerCell }
+		, WeaponCount { Type->WeaponCount }
 		, WeaponTimer {}
-		, WeaponScope { Leptons(0) }
-		, WeaponSeparate { false }
-		, WeaponRetarget { false }
-		, WeaponLocation { false }
-		, WeaponTendency { false }
-		, WeaponToAllies { false }
-		, WeaponToGround { false }
 		, InStraight { false }
 		, Accelerate { true }
 		, TargetInTheAir { false }
@@ -136,43 +110,7 @@ public:
 		, PreAimDistance { 0 }
 		, LastReviseMult { 0 }
 		, FirepowerMult { 1.0 }
-	{
-		auto const pFinalType = static_cast<const DisperseTrajectoryType*>(pType);
-
-		this->UniqueCurve = pFinalType->UniqueCurve;
-		this->PreAimCoord = pFinalType->PreAimCoord;
-		this->RotateCoord = pFinalType->RotateCoord;
-		this->MirrorCoord = pFinalType->MirrorCoord;
-		this->FacingCoord = pFinalType->FacingCoord;
-		this->ReduceCoord = pFinalType->ReduceCoord;
-		this->UseDisperseBurst = pFinalType->UseDisperseBurst;
-		this->AxisOfRotation = pFinalType->AxisOfRotation;
-		this->LaunchSpeed = pFinalType->LaunchSpeed;
-		this->Acceleration = pFinalType->Acceleration > 1e-10 ? pFinalType->Acceleration : 0.001;
-		this->ROT = pFinalType->ROT > 1e-10 ? pFinalType->ROT : 0.001;
-		this->LockDirection = pFinalType->LockDirection;
-		this->CruiseEnable = pFinalType->CruiseEnable;
-		this->CruiseUnableRange = pFinalType->CruiseUnableRange > 0.5 ? pFinalType->CruiseUnableRange * Unsorted::LeptonsPerCell : Unsorted::LeptonsPerCell / 2;
-		this->LeadTimeCalculate = pFinalType->LeadTimeCalculate;
-		this->TargetSnapDistance = pFinalType->TargetSnapDistance;
-		this->RetargetRadius = pFinalType->RetargetRadius;
-		this->RetargetAllies = pFinalType->RetargetAllies;
-		this->SuicideShortOfROT = pFinalType->SuicideShortOfROT;
-		this->SuicideAboveRange = pFinalType->SuicideAboveRange * Unsorted::LeptonsPerCell;
-		this->SuicideIfNoWeapon = pFinalType->SuicideIfNoWeapon;
-		this->Weapons = pFinalType->Weapons;
-		this->WeaponBurst = pFinalType->WeaponBurst;
-		this->WeaponCount = pFinalType->WeaponCount;
-		this->WeaponDelay = pFinalType->WeaponDelay > 0 ? pFinalType->WeaponDelay : 1;
-		this->WeaponTimer.Start(pFinalType->WeaponTimer > 0 ? pFinalType->WeaponTimer : 0);
-		this->WeaponScope = pFinalType->WeaponScope;
-		this->WeaponSeparate = pFinalType->WeaponSeparate;
-		this->WeaponRetarget = pFinalType->WeaponRetarget;
-		this->WeaponLocation = pFinalType->WeaponLocation;
-		this->WeaponTendency = pFinalType->WeaponTendency;
-		this->WeaponToAllies = pFinalType->WeaponToAllies;
-		this->WeaponToGround = pFinalType->WeaponToGround;
-	}
+	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
@@ -184,39 +122,13 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
-	bool UniqueCurve;
+	DisperseTrajectoryType* Type;
 	CoordStruct PreAimCoord;
-	double RotateCoord;
-	bool MirrorCoord;
-	bool FacingCoord;
-	bool ReduceCoord;
 	bool UseDisperseBurst;
-	CoordStruct AxisOfRotation;
 	double LaunchSpeed;
-	double Acceleration;
-	double ROT;
-	bool LockDirection;
-	bool CruiseEnable;
-	double CruiseUnableRange;
-	bool LeadTimeCalculate;
-	Leptons TargetSnapDistance;
-	double RetargetRadius;
-	bool RetargetAllies;
-	bool SuicideShortOfROT;
 	double SuicideAboveRange;
-	bool SuicideIfNoWeapon;
-	std::vector<WeaponTypeClass*> Weapons;
-	std::vector<int> WeaponBurst;
 	int WeaponCount;
-	int WeaponDelay;
 	CDTimerClass WeaponTimer;
-	Leptons WeaponScope;
-	bool WeaponSeparate;
-	bool WeaponRetarget;
-	bool WeaponLocation;
-	bool WeaponTendency;
-	bool WeaponToAllies;
-	bool WeaponToGround;
 	bool InStraight;
 	bool Accelerate;
 	bool TargetInTheAir;
