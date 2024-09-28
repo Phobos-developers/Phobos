@@ -305,10 +305,11 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 	}
 	else if (auto const pExt = BulletAITemp::ExtData)
 	{
-		if (pExt->Trajectory)
+		if (auto const pTrajectory = pExt->Trajectory)
 		{
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight
-				|| pExt->Trajectory->Flag == TrajectoryFlag::Disperse)
+			const TrajectoryFlag flag = pTrajectory->Flag;
+
+			if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Disperse)
 			{
 				R->EAX(pThis->Type);
 				return SkipChecks;
@@ -337,12 +338,18 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	}
 	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && !pExt->SnappedToTarget
-			&& (pExt->Trajectory->Flag == TrajectoryFlag::Straight
-			|| pExt->Trajectory->Flag == TrajectoryFlag::Disperse))
+		if (!pExt->SnappedToTarget)
 		{
-			R->EAX(pThis->Type);
-			return SkipChecks;
+			if (auto const pTrajectory = pExt->Trajectory)
+			{
+				const TrajectoryFlag flag = pTrajectory->Flag;
+
+				if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Disperse)
+				{
+					R->EAX(pThis->Type);
+					return SkipChecks;
+				}
+			}
 		}
 	}
 
@@ -370,11 +377,15 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	// Fixes issues with walls etc.
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && !pExt->SnappedToTarget
-			&& (pExt->Trajectory->Flag == TrajectoryFlag::Straight
-			|| pExt->Trajectory->Flag == TrajectoryFlag::Disperse))
+		if (!pExt->SnappedToTarget)
 		{
-			return SkipSetCoordinate;
+			if (auto const pTrajectory = pExt->Trajectory)
+			{
+				const TrajectoryFlag flag = pTrajectory->Flag;
+
+				if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Disperse)
+					return SkipSetCoordinate;
+			}
 		}
 	}
 
@@ -389,10 +400,12 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && (pExt->Trajectory->Flag == TrajectoryFlag::Straight
-			|| pExt->Trajectory->Flag == TrajectoryFlag::Disperse))
+		if (auto const pTrajectory = pExt->Trajectory)
 		{
-			return SkipCheck;
+			const TrajectoryFlag flag = pTrajectory->Flag;
+
+			if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Disperse)
+				return SkipCheck;
 		}
 	}
 
