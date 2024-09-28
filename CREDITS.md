@@ -369,7 +369,7 @@ This page lists all the individual contributions to the project by their author.
   - Global value of `RepairBaseNodes` and `MCVRedeploys`
   - Target scanning delay customization (code)
   - Skip target scanning function calling for unarmed technos (code)
-**solar-III (凤九歌)**
+- **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
 - **Ares developers**
