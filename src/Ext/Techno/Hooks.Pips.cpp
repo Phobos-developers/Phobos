@@ -285,7 +285,7 @@ DEFINE_HOOK(0x6F64C1, TechnoClass_DrawHealthBar_BuildingHealthBar, 0xA)
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if(pThis->WhatAmI() == AbstractType::Building && pTypeExt->CustomHealthBarType)
+	if(pThis->WhatAmI() == AbstractType::Building && pTypeExt->HealthBar_BarType)
 		return Skip;
 
 	return Continue;
@@ -301,7 +301,7 @@ DEFINE_HOOK(0x6F6846, TechnoClass_DrawHealthBar_CustomHealthBar, 0x6)
 
 	bool pThisIsInf = pThis->WhatAmI() == AbstractType::Infantry;
 
-	if(!pTypeExt->CustomHealthBarType)
+	if(!pTypeExt->HealthBar_BarType)
 	{
 		R->AL(pThis->IsSelected);
 		if(pThisIsInf)
@@ -309,60 +309,17 @@ DEFINE_HOOK(0x6F6846, TechnoClass_DrawHealthBar_CustomHealthBar, 0x6)
 		return Continue;
 	}
 
-	const auto thisHBType = pTypeExt->CustomHealthBarType.Get();
-	const auto pipBoardBG = thisHBType->Frame_Background.Get(FileSystem::PIPBRD_SHP());
-	const bool pipBoardBGVisibility = thisHBType->Frame_Background_ShowWhenNotSelected.Get();
-	const BlitterFlags blitFlags = thisHBType->Frame_Background_Translucency.Get(0);
-	const auto pipBoardFG = thisHBType->Frame_Foreground.Get();
-	const bool pipBoardFGVisibility = thisHBType->Frame_Foreground_ShowWhenNotSelected.Get();
-	const int pipsOffset = thisHBType->HealthBar_XOffset.Get();
-	const Vector3D<int> pipsFrames = thisHBType->Sections_Pips.Get();
-	const int pipsAmount = thisHBType->Sections_Amount.Get();
-	const int pipsSize = thisHBType->Sections_Size.Get();
+	const auto thisHBType = pTypeExt->HealthBar_BarType.Get();
 
-	int top_adjust = pThisIsInf ? -25 : -26;
-	int left_adjust = pipsAmount * pipsSize / 2 - pipsSize;
-	left_adjust = (pipsAmount % 2 == 0) ? left_adjust - 1 : left_adjust;
-	int border_adjust = (pipsAmount % 2 == 0) ? 1 : 0;
-	Point2D position;
+	Point2D position = *pLocation;
 
 	if(pThis->WhatAmI() == AbstractType::Building)
-		top_adjust -= static_cast<BuildingClass*>(pThis)->Type->Height * Unsorted::CellHeightInPixels / 2;
+		position.Y -= (static_cast<BuildingClass*>(pThis)->Type->Height + 1) * Unsorted::CellHeightInPixels / 2;
+	else
+		position.Y -= pThisIsInf ? 25 : 26;
 
-	if(pThis->IsSelected || pipBoardBGVisibility)
-	{
-		position.X = pLocation->X + 1 + border_adjust + pipsOffset;
-		position.Y = pThis->GetTechnoType()->PixelSelectionBracketDelta + pLocation->Y + top_adjust;
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipBoardBG,
-				0, &position, pBound, BlitterFlags(0xE00) | blitFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-	}
-
-	double health = pThis->GetHealthPercentage();
-	int frameIdxa = pipsFrames.Z;
-
-	if (health > RulesClass::Instance->ConditionYellow)
-		frameIdxa = pipsFrames.X;
-	else if (health > RulesClass::Instance->ConditionRed)
-		frameIdxa = pipsFrames.Y;
-
-	int pipsNeeded = (int)round(health * pipsAmount);
-	pipsNeeded = pipsNeeded <= 0 ? 1 : pipsNeeded;
-
-	for(int i = 0; i < pipsNeeded; ++i)
-	{
-		position.X = pLocation->X - left_adjust + pipsOffset + pipsSize * i;
-		position.Y = pThis->GetTechnoType()->PixelSelectionBracketDelta + pLocation->Y + top_adjust + 1;
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP(),
-				frameIdxa, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-	}
-
-	if(pipBoardFG && (pThis->IsSelected || pipBoardFGVisibility))
-	{
-		position.X = pLocation->X + 1 + border_adjust + pipsOffset;
-		position.Y = pThis->GetTechnoType()->PixelSelectionBracketDelta + pLocation->Y + top_adjust;
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipBoardFG,
-				0, &position, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-	}
+	position.Y += pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	TechnoExt::DrawBar(pThis, thisHBType, position, pBound, pThis->GetHealthPercentage(), RulesClass::Instance->ConditionYellow, RulesClass::Instance->ConditionRed);
 
 	R->EDI(pLocation);
 	return Skip;

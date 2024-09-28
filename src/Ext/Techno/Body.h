@@ -168,6 +168,7 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
+	static void DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLocation, RectangleStruct* pBounds, double barPercentage, double yellowCond, double redCond);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

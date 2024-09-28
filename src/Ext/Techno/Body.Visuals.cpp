@@ -469,3 +469,62 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	}
 }
+
+void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLocation, RectangleStruct* pBounds, double barPercentage, double yellowCond, double redCond)
+{
+	const BlitterFlags blitFlagsBG = barType->BoardBG_Translucency.Get(0);
+	const BlitterFlags blitFlagsFG = barType->BoardFG_Translucency.Get(0);
+	const Point2D sectionOffset = barType->Sections_PositionDelta;
+	const Vector3D<int> sectionFrames = barType->Sections_Pips;
+	const int sectionAmount = barType->Sections_Amount;
+	const int sectionEmptyFrame = barType->Sections_EmptyPip;
+	const bool drawBackwards = barType->Sections_DrawBackwards;
+	int sectionsToDraw = (int)round(sectionAmount * barPercentage);
+	sectionsToDraw = sectionsToDraw == 0 ? 1 : sectionsToDraw;
+	int frameIdxa = sectionFrames.Z;
+
+	if (barPercentage > yellowCond)
+		frameIdxa = sectionFrames.X;
+	else if (barPercentage > redCond)
+		frameIdxa = sectionFrames.Y;
+
+	pLocation += barType->Bar_Offset;
+	Point2D boardPosition = pLocation + barType->Board_Offset;
+
+	if(barType->BoardBG_File && (pThis->IsSelected || barType->BoardBG_ShowWhenNotSelected))
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->BoardBG_File.Get(),
+				0, &boardPosition, pBounds, BlitterFlags(0xE00) | blitFlagsBG, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+
+	Point2D position = pLocation;
+	position.X += drawBackwards ? (int)round(sectionAmount * sectionOffset.X / 2) : -(int)round(sectionAmount * sectionOffset.X / 2);
+	position.Y += drawBackwards ? (int)round(sectionAmount * sectionOffset.Y / 2) : -(int)round(sectionAmount * sectionOffset.Y / 2);
+
+	if(sectionEmptyFrame != -1)
+	{
+		for(int i = 0; i < sectionAmount; ++i)
+		{
+			position += drawBackwards ? -sectionOffset : sectionOffset;
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP(),
+					sectionEmptyFrame, &position, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		}
+		
+		position = pLocation;
+		position.X += drawBackwards ? (int)round(sectionAmount * sectionOffset.X / 2) : -(int)round(sectionAmount * sectionOffset.X / 2);
+		position.Y += drawBackwards ? (int)round(sectionAmount * sectionOffset.Y / 2) : -(int)round(sectionAmount * sectionOffset.Y / 2);
+	}
+
+	if(drawBackwards)
+		for(int i = 0; i < (sectionAmount - sectionsToDraw); ++i)
+			position -= sectionOffset;
+
+	for(int i = 0; i < sectionsToDraw; ++i)
+	{
+		position += drawBackwards ? -sectionOffset : sectionOffset;
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP(),
+				frameIdxa, &position, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+
+	if(barType->BoardFG_File && (pThis->IsSelected || barType->BoardFG_ShowWhenNotSelected))
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->BoardFG_File.Get(),
+				0, &boardPosition, pBounds, BlitterFlags(0xE00) | blitFlagsFG, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+}
