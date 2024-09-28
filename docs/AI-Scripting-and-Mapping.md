@@ -18,12 +18,19 @@ This page describes all AI scripting and mapping related additions and changes i
 
 ### Base node repairing
 
-- In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW (Ares) by setting `RepairBaseNodes`.
+- In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW (Ares).
+  - You can control it globally by setting `[General]->RepairBaseNodes` in rulesmd.ini, or locally by setting the flag with same name in `[Some House]` in certain map file. The global one will be overriden if the local one is set.
+
+In rulesmd.ini:
+```ini
+[General]
+RepairBaseNodes=false,false,false  ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
+```
 
 In map file:
 ```ini
 [Country House]
-RepairBaseNodes=false,false,false  ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
+RepairBaseNodes=                   ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
 ```
 
 ### Default loading screen and briefing offsets
@@ -45,12 +52,18 @@ DefaultLS800BkgdPal=     ; filename - including the .pal extension
 
 ### MCV redeploying
 
-- You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `MCVRedeploys`. Overrides `[MultiplayerDialogSettings]`->`MCVRedeploys` only in singleplayer campaign missions.
+- You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `[Basic]->MCVRedeploys` in map file. Overrides `[MultiplayerDialogSettings]`->`MCVRedeploys` only in singleplayer campaign missions. You can also define this globally by setting `[General]->MCVRedeploysInCampaign` in rulesmd.ini. The flag defined in map file has higher priority.
+
+In rulesmd.ini:
+```ini
+[General]
+MCVRedeploysInCampaign=false  ; boolean
+```
 
 In map file:
 ```ini
 [Basic]
-MCVRedeploys=false  ; boolean
+MCVRedeploys=                 ; boolean
 ```
 
 ### Set par times and related string labels in missionmd.ini

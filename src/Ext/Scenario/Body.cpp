@@ -128,7 +128,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		Nullable<bool> SP_MCVRedeploy;
 		SP_MCVRedeploy.Read(exINI, GameStrings::Basic, GameStrings::MCVRedeploys);
-		GameModeOptionsClass::Instance->MCVRedeploy = SP_MCVRedeploy.Get(false);
+		GameModeOptionsClass::Instance->MCVRedeploy = SP_MCVRedeploy.Get(RulesExt::Global()->MCVRedeploysInCampaign);
 
 		CCINIClass* pINI_MISSIONMD = CCINIClass::LoadINIFile(GameStrings::MISSIONMD_INI);
 		auto const scenarioName = pThis->FileName;
