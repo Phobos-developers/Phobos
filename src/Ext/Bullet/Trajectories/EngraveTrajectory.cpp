@@ -73,22 +73,10 @@ template<typename T>
 void EngraveTrajectory::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->Type)
 		.Process(this->SourceCoord)
 		.Process(this->TargetCoord)
-		.Process(this->MirrorCoord)
-		.Process(this->ApplyRangeModifiers)
 		.Process(this->TheDuration)
-		.Process(this->IsLaser)
-		.Process(this->IsSupported)
-		.Process(this->IsHouseColor)
-		.Process(this->IsSingleColor)
-		.Process(this->LaserInnerColor)
-		.Process(this->LaserOuterColor)
-		.Process(this->LaserOuterSpread)
-		.Process(this->LaserThickness)
-		.Process(this->LaserDuration)
-		.Process(this->LaserDelay)
-		.Process(this->DamageDelay)
 		.Process(this->LaserTimer)
 		.Process(this->DamageTimer)
 		.Process(this->TechnoInLimbo)
@@ -114,6 +102,10 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
+	if (!this->Type) // After load
+		this->Type = this->GetTrajectoryType<EngraveTrajectoryType>(pBullet);
+
+	EngraveTrajectoryType* const pType = this->Type;
 	this->LaserTimer.Start(0);
 	this->DamageTimer.Start(0);
 	this->FLHCoord = pBullet->SourceCoords;
@@ -144,7 +136,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 	WeaponTypeClass* const pWeapon = pBullet->WeaponType;
 
-	if (this->ApplyRangeModifiers && pWeapon && pTechno)
+	if (pType->ApplyRangeModifiers && pWeapon && pTechno)
 		coordDistance = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno, static_cast<int>(coordDistance)));
 
 	if (this->TheDuration <= 0)
@@ -153,6 +145,9 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 {
+	if (!this->Type) // After load
+		this->Type = this->GetTrajectoryType<EngraveTrajectoryType>(pBullet);
+
 	TechnoClass* const pTechno = pBullet->Owner;
 
 	if ((!pTechno && !this->NotMainWeapon) || this->TechnoInLimbo != static_cast<bool>(pTechno->Transporter))
@@ -163,7 +158,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 
 	HouseClass* const pOwner = pTechno->Owner;
 
-	if (this->IsLaser && this->LaserTimer.Completed())
+	if (this->Type->IsLaser && this->LaserTimer.Completed())
 		this->DrawEngraveLaser(pBullet, pTechno, pOwner);
 
 	if (this->DamageTimer.Completed())
@@ -226,7 +221,7 @@ void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno)
 	if (this->NotMainWeapon || !(pTechno->CurrentBurstIndex % 2))
 		return;
 
-	if (this->MirrorCoord)
+	if (this->Type->MirrorCoord)
 	{
 		this->SourceCoord.Y = -(this->SourceCoord.Y);
 		this->TargetCoord.Y = -(this->TargetCoord.Y);
@@ -314,7 +309,8 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 
 void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
-	this->LaserTimer.Start(this->LaserDelay);
+	EngraveTrajectoryType* const pType = this->Type;
+	this->LaserTimer.Start(pType->LaserDelay > 0 ? pType->LaserDelay : 1);
 	LaserDrawClass* pLaser;
 	CoordStruct fireCoord = pTechno->GetCoords();
 
@@ -346,28 +342,29 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 		fireCoord = pBuilding->GetCoords() + this->BuildingCoord + CoordStruct { static_cast<int>(result.X), -static_cast<int>(result.Y), static_cast<int>(result.Z) };
 	}
 
-	if (this->IsHouseColor)
+	if (pType->IsHouseColor)
 	{
-		pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, pOwner->LaserColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
+		pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, pOwner->LaserColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, (pType->LaserDuration > 0 ? pType->LaserDuration : 1));
 		pLaser->IsHouseColor = true;
 	}
-	else if (this->IsSingleColor)
+	else if (pType->IsSingleColor)
 	{
-		pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, this->LaserInnerColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, this->LaserDuration);
+		pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, pType->LaserInnerColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, (pType->LaserDuration > 0 ? pType->LaserDuration : 1));
 		pLaser->IsHouseColor = true;
 	}
 	else
 	{
-		pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, this->LaserInnerColor, this->LaserOuterColor, this->LaserOuterSpread, this->LaserDuration);
+		pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, pType->LaserInnerColor, pType->LaserOuterColor, pType->LaserOuterSpread, (pType->LaserDuration > 0 ? pType->LaserDuration : 1));
 		pLaser->IsHouseColor = false;
 	}
 
-	pLaser->Thickness = this->LaserThickness;
-	pLaser->IsSupported = this->IsSupported;
+	pLaser->Thickness = (pType->LaserThickness > 0 ? pType->LaserThickness : 1);
+	pLaser->IsSupported = pType->IsSupported;
 }
 
 void EngraveTrajectory::DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
-	this->DamageTimer.Start(this->DamageDelay);
+	EngraveTrajectoryType* const pType = this->Type;
+	this->DamageTimer.Start(pType->DamageDelay > 0 ? pType->DamageDelay : 1);
 	WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, pBullet->Health, pOwner);
 }

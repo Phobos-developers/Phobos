@@ -57,48 +57,17 @@ public:
 	EngraveTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
 	EngraveTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Engrave)
-		, SourceCoord {}
-		, TargetCoord {}
-		, MirrorCoord { true }
-		, ApplyRangeModifiers { false }
-		, TheDuration { 0 }
-		, IsLaser { true }
-		, IsSupported { false }
-		, IsHouseColor { false }
-		, IsSingleColor { false }
-		, LaserInnerColor {}
-		, LaserOuterColor {}
-		, LaserOuterSpread {}
-		, LaserThickness { 3 }
-		, LaserDuration { 1 }
-		, LaserDelay { 1 }
-		, DamageDelay { 2 }
+		, Type { static_cast<EngraveTrajectoryType*>(const_cast<PhobosTrajectoryType*>(pType)) }
+		, SourceCoord { static_cast<Point2D>(Type->SourceCoord) }
+		, TargetCoord { static_cast<Point2D>(Type->TargetCoord) }
+		, TheDuration { Type->TheDuration }
 		, LaserTimer {}
 		, DamageTimer {}
 		, TechnoInLimbo { false }
 		, NotMainWeapon { false }
 		, FLHCoord {}
 		, BuildingCoord {}
-	{
-		auto const pFinalType = static_cast<const EngraveTrajectoryType*>(pType);
-
-		this->SourceCoord = pFinalType->SourceCoord;
-		this->TargetCoord = pFinalType->TargetCoord;
-		this->MirrorCoord = pFinalType->MirrorCoord;
-		this->ApplyRangeModifiers = pFinalType->ApplyRangeModifiers;
-		this->TheDuration = pFinalType->TheDuration;
-		this->IsLaser = pFinalType->IsLaser;
-		this->IsSupported = pFinalType->IsSupported;
-		this->IsHouseColor = pFinalType->IsHouseColor;
-		this->IsSingleColor = pFinalType->IsSingleColor;
-		this->LaserInnerColor = pFinalType->LaserInnerColor;
-		this->LaserOuterColor = pFinalType->LaserOuterColor;
-		this->LaserOuterSpread = pFinalType->LaserOuterSpread;
-		this->LaserThickness = pFinalType->LaserThickness > 0 ? pFinalType->LaserThickness : 1;
-		this->LaserDuration = pFinalType->LaserDuration > 0 ? pFinalType->LaserDuration : 1;
-		this->LaserDelay = pFinalType->LaserDelay > 0 ? pFinalType->LaserDelay : 1;
-		this->DamageDelay = pFinalType->DamageDelay > 0 ? pFinalType->DamageDelay : 1;
-	}
+	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
@@ -110,22 +79,10 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
+	EngraveTrajectoryType* Type;
 	Point2D SourceCoord;
 	Point2D TargetCoord;
-	bool MirrorCoord;
-	bool ApplyRangeModifiers;
 	int TheDuration;
-	bool IsLaser;
-	bool IsSupported;
-	bool IsHouseColor;
-	bool IsSingleColor;
-	ColorStruct LaserInnerColor;
-	ColorStruct LaserOuterColor;
-	ColorStruct LaserOuterSpread;
-	int LaserThickness;
-	int LaserDuration;
-	int LaserDelay;
-	int DamageDelay;
 	CDTimerClass LaserTimer;
 	CDTimerClass DamageTimer;
 	bool TechnoInLimbo;
