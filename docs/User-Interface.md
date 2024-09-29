@@ -579,7 +579,7 @@ In `rulesmd.ini`
 ExclusiveSWSidebar.TopPCX=            ; filename - including the .pcx extension
 ExclusiveSWSidebar.CenterPCX=        ; filename - including the .pcx extension
 ExclusiveSWSidebar.BottomPCX=       ; filename - including the .pcx extension
-ExclusiveSWSidebar.TogglePCX=        ; filename - including the .pcx extension
+ExclusiveSWSidebar.ToggleShape=     ; filename - including the .shp extension
 
 [SOMESW]
 AllowInExclusiveSidebar=true              ; boolean
