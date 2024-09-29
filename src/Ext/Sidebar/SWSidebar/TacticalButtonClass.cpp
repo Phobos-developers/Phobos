@@ -56,13 +56,6 @@ bool TacticalButtonClass::Draw(bool forced)
 		}
 	}
 
-	if (pSuper->IsReady && !pCurrent->CanTransactMoney(pSWExt->Money_Amount) ||
-		(pSWExt->SW_UseAITargeting && AresHelper::CanUseAres && !AresFunctions::IsTargetConstraintsEligible(AresFunctions::SWTypeExtMap_Find(pSuper->Type), HouseClass::CurrentPlayer, true)))
-	{
-		RectangleStruct darkenBounds { 0, 0, location.X + this->Width, location.Y + this->Height };
-		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::DARKEN_SHP, 0, &location, &darkenBounds, BlitterFlags::bf_400 | BlitterFlags::Darken, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-	}
-
 	if (this->IsHovering)
 	{
 		RectangleStruct cameoRect = { location.X, location.Y, this->Width, this->Height };
@@ -70,13 +63,15 @@ bool TacticalButtonClass::Draw(bool forced)
 		pSurface->DrawRect(&cameoRect, tooltipColor);
 	}
 
-	if (pSuper->ShouldDrawProgress() && !pSuper->RechargeTimer.Completed())
+	if (pSuper->IsReady && !pCurrent->CanTransactMoney(pSWExt->Money_Amount) ||
+		(pSWExt->SW_UseAITargeting && AresHelper::CanUseAres && !AresFunctions::IsTargetConstraintsEligible(AresFunctions::SWTypeExtMap_Find(pSuper->Type), HouseClass::CurrentPlayer, true)))
 	{
-		Point2D loc = { location.X, location.Y };
-		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::GCLOCK2_SHP, pSuper->AnimStage() + 1, &loc, &bounds, BlitterFlags::bf_400 | BlitterFlags::TransLucent50, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		RectangleStruct darkenBounds { 0, 0, location.X + this->Width, location.Y + this->Height };
+		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::DARKEN_SHP, 0, &location, &darkenBounds, BlitterFlags::bf_400 | BlitterFlags::Darken, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
 	const bool ready = !pSuper->IsSuspended && (pSuper->Type->UseChargeDrain ? pSuper->ChargeDrainState == ChargeDrainState::Ready : pSuper->IsReady);
+	bool drawReadiness = true;
 
 	if (ready && this->ColumnIndex == 0)
 	{
@@ -91,17 +86,26 @@ bool TacticalButtonClass::Draw(bool forced)
 			TextPrintType printType = TextPrintType::FullShadow | TextPrintType::Point8 | TextPrintType::Background | TextPrintType::Center;
 
 			pSurface->DrawTextA(buffer, &bounds, &textLoc, foreColor, 0, printType);
-			return true;
+			drawReadiness = false;
 		}
 	}
 
-	if (const auto buffer = pSuper->NameReadiness())
+	if (drawReadiness)
 	{
-		Point2D textLoc = { location.X + this->Width / 2, location.Y };
-		const COLORREF foreColor = Drawing::RGB_To_Int(Drawing::TooltipColor);
-		TextPrintType printType = TextPrintType::FullShadow | TextPrintType::Point8 | TextPrintType::Background | TextPrintType::Center;
+		if (const auto buffer = pSuper->NameReadiness())
+		{
+			Point2D textLoc = { location.X + this->Width / 2, location.Y };
+			const COLORREF foreColor = Drawing::RGB_To_Int(Drawing::TooltipColor);
+			TextPrintType printType = TextPrintType::FullShadow | TextPrintType::Point8 | TextPrintType::Background | TextPrintType::Center;
 
-		pSurface->DrawTextA(buffer, &bounds, &textLoc, foreColor, 0, printType);
+			pSurface->DrawTextA(buffer, &bounds, &textLoc, foreColor, 0, printType);
+		}
+	}
+
+	if (pSuper->ShouldDrawProgress())
+	{
+		Point2D loc = { location.X, location.Y };
+		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::GCLOCK2_SHP, pSuper->AnimStage() + 1, &loc, &bounds, BlitterFlags::bf_400 | BlitterFlags::TransLucent50, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
 	return true;
