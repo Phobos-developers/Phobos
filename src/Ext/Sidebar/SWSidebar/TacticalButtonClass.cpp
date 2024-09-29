@@ -2,12 +2,14 @@
 #include "SWSidebarClass.h"
 #include <EventClass.h>
 #include <CCToolTip.h>
+#include <GameOptionsClass.h>
 
 #include <Ext/SWType/Body.h>
 #include <Utilities/AresFunctions.h>
+#include <Ext/Side/Body.h>
 
 TacticalButtonClass::TacticalButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, static_cast<GadgetFlag>((int)GadgetFlag::LeftPress | (int)GadgetFlag::LeftRelease), true)
+	: ControlClass(id, x, y, width, height, GadgetFlag::LeftPress, true)
 	, SuperIndex(superIdx)
 {
 	if (const auto backColumn = SWSidebarClass::Global()->Columns.back())
@@ -105,7 +107,6 @@ void TacticalButtonClass::OnMouseLeave()
 		return;
 
 	this->IsHovering = false;
-	this->IsPressed = false;
 	SWSidebarClass::Global()->CurrentButton = nullptr;
 	SWSidebarClass::Global()->Columns[this->ColumnIndex]->OnMouseLeave();
 	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
@@ -115,11 +116,8 @@ void TacticalButtonClass::OnMouseLeave()
 bool TacticalButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 {
 	if ((int)flags & (int)GadgetFlag::LeftPress)
-		this->IsPressed = true;
-
-	if (((int)flags & (int)GadgetFlag::LeftRelease) && this->IsPressed)
 	{
-		this->IsPressed = false;
+		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
 		this->LaunchSuper();
 	}
 
@@ -136,7 +134,6 @@ bool TacticalButtonClass::LaunchSuper() const
 	const auto pCurrent = HouseClass::CurrentPlayer();
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];
 	const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
-	VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
 	const bool manual = !pSWExt->SW_ManualFire && pSWExt->SW_AutoFire;
 	const bool unstopable = pSuper->Type->UseChargeDrain && pSuper->ChargeDrainState == ChargeDrainState::Draining && pSWExt->SW_Unstoppable;
 
@@ -187,4 +184,106 @@ bool TacticalButtonClass::LaunchSuper() const
 	}
 
 	return false;
+}
+
+ToggleSWButtonClass::ToggleSWButtonClass(unsigned int id, int x, int y, int width, int height)
+	: ControlClass(id, x, y, width, height, static_cast<GadgetFlag>((int)GadgetFlag::LeftPress | (int)GadgetFlag::LeftRelease), true)
+{
+	SWSidebarClass::Global()->ToggleButton = this;
+}
+
+bool ToggleSWButtonClass::Draw(bool forced)
+{
+	auto& columns = SWSidebarClass::Global()->Columns;
+
+	if (columns.empty())
+		return false;
+
+	const auto pSurface = DSurface::Composite();
+	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
+	const auto togglePCX = pSideExt->ExclusiveSWSidebar_TogglePCX.GetSurface();
+	RectangleStruct destRect = { this->X, this->Y, this->Width, this->Height };
+	PCX::Instance->BlitToSurface(&destRect, pSurface, togglePCX);
+
+	if (this->IsHovering)
+	{
+		const COLORREF tooltipColor = Drawing::RGB_To_Int(Drawing::TooltipColor());
+		pSurface->DrawRect(&destRect, tooltipColor);
+	}
+
+	return true;
+}
+
+void ToggleSWButtonClass::OnMouseEnter()
+{
+	auto& columns = SWSidebarClass::Global()->Columns;
+
+	if (columns.empty())
+		return;
+
+	this->IsHovering = true;
+	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
+}
+
+void ToggleSWButtonClass::OnMouseLeave()
+{
+	auto& columns = SWSidebarClass::Global()->Columns;
+
+	if (columns.empty())
+		return;
+
+	this->IsHovering = false;
+	this->IsPressed = false;
+	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
+	CCToolTip::Instance->MarkToRedraw(CCToolTip::Instance->CurrentToolTipData);
+}
+
+bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
+{
+	auto& columns = SWSidebarClass::Global()->Columns;
+
+	if (columns.empty())
+		return false;
+
+	if ((int)flags & (int)GadgetFlag::LeftPress)
+		this->IsPressed = true;
+
+	if (((int)flags & (int)GadgetFlag::LeftRelease) && this->IsPressed)
+	{
+		this->IsPressed = false;
+		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
+		ToggleSWButtonClass::SwitchSidebar();
+	}
+
+	return this->ControlClass::Action(flags, pKey, KeyModifier::None);
+}
+
+void ToggleSWButtonClass::UpdatePosition()
+{
+	Point2D position = Point2D::Empty;
+	auto& columns = SWSidebarClass::Global()->Columns;
+
+	if (!columns.empty())
+	{
+		const auto backColumn = columns.back();
+		position.X = SWSidebarClass::Global()->IsEnabled() ? backColumn->X + backColumn->Width : 0;
+		position.Y = backColumn->Y + (backColumn->Height - this->Height) / 2;
+	}
+	else
+	{
+		position.X = 0;
+		position.Y = (GameOptionsClass::Instance->ScreenHeight - this->Height) / 2;
+	}
+
+	this->SetPosition(position.X, position.Y);
+}
+
+bool ToggleSWButtonClass::SwitchSidebar()
+{
+	SidebarExt::Global()->SWSidebar_Enable = !SidebarExt::Global()->SWSidebar_Enable;
+
+	if (const auto toggleButton = SWSidebarClass::Global()->ToggleButton)
+		toggleButton->UpdatePosition();
+
+	return SWSidebarClass::Global()->IsEnabled();
 }

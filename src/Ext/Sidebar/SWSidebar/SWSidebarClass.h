@@ -39,4 +39,5 @@ public:
 	std::vector<SWColumnClass*> Columns {};
 	SWColumnClass* CurrentColumn { nullptr };
 	TacticalButtonClass* CurrentButton { nullptr };
+	ToggleSWButtonClass* ToggleButton { nullptr };
 };

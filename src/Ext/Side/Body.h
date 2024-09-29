@@ -40,6 +40,7 @@ public:
 		PhobosPCXFile ExclusiveSWSidebar_TopPCX;
 		PhobosPCXFile ExclusiveSWSidebar_CenterPCX;
 		PhobosPCXFile ExclusiveSWSidebar_BottomPCX;
+		PhobosPCXFile ExclusiveSWSidebar_TogglePCX;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
@@ -65,6 +66,7 @@ public:
 			, ExclusiveSWSidebar_TopPCX { }
 			, ExclusiveSWSidebar_CenterPCX { }
 			, ExclusiveSWSidebar_BottomPCX { }
+			, ExclusiveSWSidebar_TogglePCX { }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -27,7 +27,7 @@ const wchar_t* ToggleSWSidebar::GetUIDescription() const
 
 void ToggleSWSidebar::Execute(WWKey eInput) const
 {
-	SidebarExt::Global()->SWSidebar_Enable = !SidebarExt::Global()->SWSidebar_Enable;
+	ToggleSWButtonClass::SwitchSidebar();
 
 	if (SidebarExt::Global()->SWSidebar_Enable)
 		MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("TXT_EX_SW_BAR_VISIBLE", L"Set exclusive SW sidebar visible."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);

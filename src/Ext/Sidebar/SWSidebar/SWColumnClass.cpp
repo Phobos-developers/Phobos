@@ -106,7 +106,7 @@ bool SWColumnClass::AddButton(int superIdx)
 	if (static_cast<int>(buttons.size()) >= this->MaxButtons && !SWSidebarClass::Global()->AddColumn())
 		return false;
 
-	const auto button = DLLCreate<TacticalButtonClass>(superIdx + 2200, superIdx, 0, 0, 60, 48);
+	const auto button = DLLCreate<TacticalButtonClass>(TacticalButtonClass::StartID + superIdx, superIdx, 0, 0, 60, 48);
 
 	if (!button)
 		return false;

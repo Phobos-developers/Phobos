@@ -95,12 +95,12 @@ inline void FireTacticalSWCommandClass<Index>::Execute(WWKey eInput) const
 	if (!SWSidebarClass::IsEnabled())
 		return;
 
-	const auto column = SWSidebarClass::Global()->Columns.front();
+	const auto& columns = SWSidebarClass::Global()->Columns;
 
-	if (!column)
+	if (columns.empty())
 		return;
 
-	const auto& buttons = column->Buttons;
+	const auto& buttons = columns.front()->Buttons;
 
 	if (buttons.size() > Index)
 		buttons[Index]->LaunchSuper();

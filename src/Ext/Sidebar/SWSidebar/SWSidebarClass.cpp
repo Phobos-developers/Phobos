@@ -1,5 +1,6 @@
 #include "SWSidebarClass.h"
 #include <Ext/House/Body.h>
+#include <Ext/Side/Body.h>
 
 std::unique_ptr<SWSidebarClass> SWSidebarClass::Instance = nullptr;
 
@@ -23,7 +24,7 @@ bool SWSidebarClass::AddColumn()
 	if (static_cast<int>(columns.size()) >= Phobos::UI::ExclusiveSWSidebar_MaxColumn)
 		return false;
 
-	const auto column = DLLCreate<SWColumnClass>(2200 + SuperWeaponTypeClass::Array->Count + static_cast<int>(columns.size()), 0, 0, 60 + Phobos::UI::ExclusiveSWSidebar_Interval, 48);
+	const auto column = DLLCreate<SWColumnClass>(TacticalButtonClass::StartID + SuperWeaponTypeClass::Array->Count + 1 + static_cast<int>(columns.size()), 0, 0, 60 + Phobos::UI::ExclusiveSWSidebar_Interval, 48);
 
 	if (!column)
 		return false;
@@ -57,6 +58,14 @@ void SWSidebarClass::Init_Clear()
 {
 	this->CurrentColumn = nullptr;
 	this->CurrentButton = nullptr;
+
+	if (const auto toggleButton = this->ToggleButton)
+	{
+		this->ToggleButton = nullptr;
+		GScreenClass::Instance->RemoveButton(toggleButton);
+		DLLDelete(toggleButton);
+	}
+
 	auto& columns = this->Columns;
 
 	for (const auto column : columns)
@@ -103,7 +112,12 @@ void SWSidebarClass::SortButtons()
 	);
 
 	if (columns.empty())
+	{
+		if (const auto toggleButton = this->ToggleButton)
+			toggleButton->UpdatePosition();
+
 		return;
+	}
 
 	std::vector<TacticalButtonClass*> vec_Buttons;
 	vec_Buttons.reserve(this->GetMaximumButtonCount());
@@ -155,6 +169,9 @@ void SWSidebarClass::SortButtons()
 
 	for (const auto column : columns)
 		column->SetHeight(column->Buttons.size() * 48);
+
+	if (const auto toggleButton = this->ToggleButton)
+		toggleButton->UpdatePosition();
 }
 
 int SWSidebarClass::GetMaximumButtonCount()
@@ -175,7 +192,12 @@ DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_SWSidebar, 0x7)
 {
 	enum { Nothing = 0x6925FC };
 
-	return SWSidebarClass::IsEnabled() && SWSidebarClass::Global()->CurrentColumn ? Nothing : 0;
+	if (SWSidebarClass::IsEnabled() && SWSidebarClass::Global()->CurrentColumn)
+		return Nothing;
+
+	const auto toggleButton = SWSidebarClass::Global()->ToggleButton;
+
+	return toggleButton && toggleButton->IsHovering ? Nothing : 0;
 }
 
 // I cannot add it into YRppp :(
@@ -245,6 +267,23 @@ DEFINE_HOOK(0x6A5082, SidebarClass_Init_Clear_InitializeSWSidebar, 0x5)
 
 DEFINE_HOOK(0x6A5839, SidebarClass_Init_IO_InitializeSWSidebar, 0x5)
 {
+	if (!Phobos::UI::ExclusiveSWSidebar)
+		return 0;
+
+	if (const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]))
+	{
+		if (const auto togglePCX = pSideExt->ExclusiveSWSidebar_TogglePCX.GetSurface())
+		{
+			if (const auto toggleButton = DLLCreate<ToggleSWButtonClass>(TacticalButtonClass::StartID + SuperWeaponTypeClass::Array->Count, 0, 0, togglePCX->GetWidth(), togglePCX->GetHeight()))
+			{
+				toggleButton->Zap();
+				GScreenClass::Instance->AddButton(toggleButton);
+				SWSidebarClass::Global()->ToggleButton = toggleButton;
+				toggleButton->UpdatePosition();
+			}
+		}
+	}
+
 	for (const auto superIdx : SidebarExt::Global()->SWSidebar_Indices)
 		SWSidebarClass::Global()->AddButton(superIdx);
 
