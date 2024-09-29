@@ -1,4 +1,5 @@
 #include "SWSidebarClass.h"
+#include <CommandClass.h>
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
 #include <sstream>
@@ -451,6 +452,45 @@ DEFINE_HOOK(0x6A5839, SidebarClass_Init_IO_InitializeSWSidebar, 0x5)
 
 	for (const auto superIdx : SidebarExt::Global()->SWSidebar_Indices)
 		SWSidebarClass::Global()->AddButton(superIdx);
+
+	return 0;
+}
+
+// Shortcuts keys hooks
+DEFINE_HOOK(0x533E69, UnknownClass_sub_533D20_LoadKeyboardCodeFromINI, 0x6)
+{
+	GET(CommandClass*, pCommand, ESI);
+	GET(int, key, EDI);
+
+	const char* name = pCommand->GetName();
+	char buffer[29];
+
+	for (int idx = 1; idx <= 10; idx++)
+	{
+		sprintf_s(buffer, "SW Sidebar Shortcuts Num %02d", idx);
+
+		if (!_strcmpi(name, buffer))
+			SWSidebarClass::Global()->RecordHotkey(idx, key);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5FB992, UnknownClass_sub_5FB320_SaveKeyboardCodeToINI, 0x6)
+{
+	GET(CommandClass*, pCommand, ECX);
+	GET(int, key, EAX);
+
+	const char* name = pCommand->GetName();
+	char buffer[30];
+
+	for (int idx = 1; idx <= 10; idx++)
+	{
+		sprintf_s(buffer, "SW Sidebar Shortcuts Num %02d", idx);
+
+		if (!_strcmpi(name, buffer))
+			SWSidebarClass::Global()->RecordHotkey(idx, key);
+	}
 
 	return 0;
 }
