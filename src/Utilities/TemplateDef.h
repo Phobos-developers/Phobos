@@ -1752,8 +1752,9 @@ bool Damageable<T>::Save(PhobosStreamWriter& Stm) const
 
 // MultiflagValueableVector
 
-template <MultiflagReadable T>
-void __declspec(noinline) MultiflagValueableVector<T>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag)
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
+void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs& const... extraArgs)
 {
 	char flagName[0x40];
 	for (size_t i = 0; ; ++i)
@@ -1763,7 +1764,7 @@ void __declspec(noinline) MultiflagValueableVector<T>::Read(INI_EX& parser, cons
 		// we expect %d for array number then %s for the subflag name, so we replace %s with itself (but escaped)
 		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%%s");
 
-		if (!dataEntry.Read(parser, pSection, flagName))
+		if (!dataEntry.Read(parser, pSection, flagName, extraArgs...))
 			break;
 
 		this->push_back(dataEntry);
@@ -1772,8 +1773,9 @@ void __declspec(noinline) MultiflagValueableVector<T>::Read(INI_EX& parser, cons
 
 // MultiflagNullableVector
 
-template <MultiflagReadable T>
-void __declspec(noinline) MultiflagNullableVector<T>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag)
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
+void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs& const... extraArgs)
 {
 	char flagName[0x40];
 	for (size_t i = 0; ; ++i)
@@ -1783,7 +1785,7 @@ void __declspec(noinline) MultiflagNullableVector<T>::Read(INI_EX& parser, const
 		// we expect %d for array number then %s for the subflag name, so we replace %s with itself (but escaped)
 		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%%s");
 
-		if (!dataEntry.Read(parser, pSection, flagName))
+		if (!dataEntry.Read(parser, pSection, flagName, extraArgs...))
 			break;
 
 		this->push_back(dataEntry);
@@ -1796,22 +1798,23 @@ void __declspec(noinline) MultiflagNullableVector<T>::Read(INI_EX& parser, const
 // Animatable::KeyframeDataEntry
 
 template <typename TValue>
-bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag)
+bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& const absoluteLength)
 {
 	char flagName[0x40];
 
-	Nullable<double> percentageTemp {};
-
-	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Frame");
-	this->Frame.Read(parser, pSection, flagName);
+	Nullable<absolute_length_t> absoluteTemp {};
 
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Percentage");
-	percentageTemp.Read(parser, pSection, flagName);
+	this->Percentage.Read(parser, pSection, flagName);
 
-	if (!this->Frame.HasValue && !percentageTemp.HasValue)
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Absolute");
+	absoluteTemp.Read(parser, pSection, flagName);
+
+	if (!this->Frame.HasValue && !absoluteTemp.HasValue)
 		return false;
 
-	this->Percentage.Value = percentageTemp.Value;
+	if (absoluteTemp.HasValue)
+		this->Percentage.Value = (double)absoluteTemp.Value / absoluteLength;
 
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Value");
 	this->Value.Read(parser, pSection, flagName);
@@ -1843,14 +1846,14 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 }
 
 template <typename TValue>
-void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag)
+void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& const absoluteLength)
 {
 	char flagName[0x40];
 
 	// we expect "BaseFlagName.%s" here
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Keyframe%%d.%%s");
 
-	this->KeyframeData.Read(parser, pSection, flagName);
+	this->KeyframeData.Read(parser, pSection, flagName, absoluteLength);
 };
 
 template <typename TValue>

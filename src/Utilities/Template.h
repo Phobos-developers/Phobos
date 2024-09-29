@@ -483,22 +483,24 @@ public:
 };
 
 // Designates that the type can read it's value from multiple flags.
-template<typename T>
-concept MultiflagReadable = requires(T obj, INI_EX& const parser, const char* const pSection, const char* const pBaseFlag)
+template<typename T, typename... TExtraArgs>
+concept MultiflagReadable = requires(T obj, INI_EX& const parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs& const... extraArgs)
 {
-    { obj.Read(parser, pSection, pBaseFlag) } -> std::same_as<bool>;
+    { obj.Read(parser, pSection, pBaseFlag, extraArgs...) } -> std::same_as<bool>;
 };
 
-template<MultiflagReadable T>
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
 class MultiflagValueableVector : public ValueableVector<T>
 {
-	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag);
+	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs& const... extraArgs);
 };
 
-template<MultiflagReadable T>
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
 class MultiflagNullableVector : public NullableVector<T>
 {
-	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag);
+	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs& const... extraArgs);
 };
 
 // Need multiple args or multiple return values? Use std::tuple - Kerbiter
@@ -537,22 +539,22 @@ template<typename TValue>
 class Animatable // : public Calculatable<double, TValue> //, public ArgBoundable<int>
 {
 public:
+	using absolute_length_t = int;
+
 	class KeyframeDataEntry
 	{
 	public:
 		Valueable<double> Percentage;
-		Nullable<int> Frame;
-
 		Valueable<TValue> Value;
 
-		inline bool Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag);
+		inline bool Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& const absoluteLength = 0);
 
 		inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
 		inline bool Save(PhobosStreamWriter& Stm) const;
 	};
 
-	MultiflagValueableVector<KeyframeDataEntry> KeyframeData;
+	MultiflagValueableVector<KeyframeDataEntry, absolute_length_t> KeyframeData;
 
 	// TODO ctors and stuff
 
@@ -562,7 +564,7 @@ public:
 
 	// Vector2D<TArg> GetArgBounds() const noexcept override;
 
-	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag);
+	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& const absoluteLength = 0);
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
