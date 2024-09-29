@@ -602,10 +602,14 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 
 	if (pThis->Health && healthDeficit > 0)
 	{
+		auto defaultSelfHealType = SelfHealGainType::NoHeal;
+
+		if (pThis->WhatAmI() == AbstractType::Infantry || (pThis->WhatAmI() == AbstractType::Unit && pThis->GetTechnoType()->Organic))
+			defaultSelfHealType = SelfHealGainType::Infantry;
+		else if (pThis->WhatAmI() == AbstractType::Unit)
+			defaultSelfHealType = SelfHealGainType::Units;
+
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
-		bool isOrganic = pThis->WhatAmI() == AbstractType::Infantry || pThis->WhatAmI() == AbstractType::Unit && pThis->GetTechnoType()->Organic;
-		auto defaultSelfHealType = isBuilding ? SelfHealGainType::NoHeal : isOrganic ? SelfHealGainType::Infantry : SelfHealGainType::Units;
 		auto selfHealType = pTypeExt->SelfHealGainType.Get(defaultSelfHealType);
 
 		if (selfHealType == SelfHealGainType::NoHeal)
@@ -655,13 +659,10 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 					pBuilding->ToggleDamagedAnims(false);
 				}
 
-				if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Building)
-				{
-					auto dmgParticle = pThis->DamageParticleSystem;
+				auto dmgParticle = pThis->DamageParticleSystem;
 
-					if (dmgParticle)
-						dmgParticle->UnInit();
-				}
+				if (dmgParticle)
+					dmgParticle->UnInit();
 			}
 		}
 	}
