@@ -527,20 +527,18 @@ DEFINE_HOOK(0x42308D, AnimClass_DrawIt_Transparency, 0x6)
 		int currentFrame = pThis->Animation.Value;
 		int frames = pType->End;
 
-		if ((pTypeExt->Translucent_Stage3_Frame.isset() && currentFrame >= pTypeExt->Translucent_Stage3_Frame.Get())
-			|| (!pTypeExt->Translucent_Stage3_Frame.isset() && currentFrame >= frames * pTypeExt->Translucent_Stage3_Percent))
+		if (pTypeExt->Translucent_Keyframes.KeyframeData.size() > 0)
 		{
-			flags |= pTypeExt->Translucent_Stage3_Translucency.Get();
+			flags |= pTypeExt->Translucent_Keyframes.Get(static_cast<double>(currentFrame) / frames);
 		}
-		else if ((pTypeExt->Translucent_Stage2_Frame.isset() && currentFrame >= pTypeExt->Translucent_Stage2_Frame.Get())
-			|| (!pTypeExt->Translucent_Stage2_Frame.isset() && currentFrame >= frames * pTypeExt->Translucent_Stage2_Percent))
+		else
 		{
-			flags |= pTypeExt->Translucent_Stage2_Translucency.Get();
-		}
-		else if ((pTypeExt->Translucent_Stage1_Frame.isset() && currentFrame >= pTypeExt->Translucent_Stage1_Frame.Get())
-			|| (!pTypeExt->Translucent_Stage1_Frame.isset() && currentFrame >= frames * pTypeExt->Translucent_Stage1_Percent))
-		{
-			flags |= pTypeExt->Translucent_Stage1_Translucency.Get();
+			if (currentFrame > frames * 0.6)
+				flags |= BlitterFlags::TransLucent75;
+			else if (currentFrame > frames * 0.4)
+				flags |= BlitterFlags::TransLucent50;
+			else if (currentFrame > frames * 0.2)
+				flags |= BlitterFlags::TransLucent25;
 		}
 	}
 

@@ -1141,6 +1141,30 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	}
 
 	template <>
+	inline bool read<InterpolationMode>(InterpolationMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "none") == 0)
+			{
+				value = InterpolationMode::None;
+			}
+			else if (_strcmpi(str, "linear") == 0)
+			{
+				value = InterpolationMode::Linear;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Expected an interpolation mode");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<HorizontalPosition>(HorizontalPosition& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -1447,9 +1471,69 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 		}
 	}
 
-	// TODO detail::interpolate
-}
+	// Generic type interpolation, does not actually do interpolation.
+	template <typename T>
+	inline T interpolate(T& first, T& second, double percentage, InterpolationMode mode)
+	{
+		return first;
+	}
 
+	template <>
+	inline int interpolate<int>(int& first, int& second, double percentage, InterpolationMode mode)
+	{
+		int result = first;
+
+		switch (mode)
+		{
+			case InterpolationMode::Linear:
+				result = static_cast<int>(first + ((second - first) * percentage));
+				break;
+			default:
+				break;
+		}
+
+		return result;
+	}
+
+	template <>
+	inline double interpolate<double>(double& first, double& second, double percentage, InterpolationMode mode)
+	{
+		double result = first;
+
+		switch (mode)
+		{
+		case InterpolationMode::Linear:
+			result = first + ((second - first) * percentage);
+			break;
+		default:
+			break;
+		}
+
+		return result;
+	}
+
+	template <>
+	inline ColorStruct interpolate<ColorStruct>(ColorStruct& first, ColorStruct& second, double percentage, InterpolationMode mode)
+	{
+		ColorStruct result = first;
+
+		switch (mode)
+		{
+		case InterpolationMode::Linear:
+		{
+			BYTE r = static_cast<BYTE>(first.R + ((second.R - first.R) * percentage));
+			BYTE g = static_cast<BYTE>(first.G + ((second.G - first.G) * percentage));
+			BYTE b = static_cast<BYTE>(first.B + ((second.B - first.B) * percentage));
+			result = ColorStruct { r, g, b };
+			break;
+		}
+		default:
+			break;
+		}
+
+		return result;
+	}
+}
 
 // Valueable
 
@@ -1557,7 +1641,6 @@ void __declspec(noinline) NullableIdx<Lookuper>::Read(INI_EX& parser, const char
 		}
 	}
 }
-
 
 // Promotable
 
@@ -1753,7 +1836,6 @@ void __declspec(noinline) ValueableIdxVector<Lookuper>::Read(INI_EX& parser, con
 	}
 }
 
-
 // NullableIdxVector
 
 template <typename Lookuper>
@@ -1814,7 +1896,7 @@ bool Damageable<T>::Save(PhobosStreamWriter& Stm) const
 
 template<typename T, typename... TExtraArgs>
 requires MultiflagReadable<T, TExtraArgs...>
-void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs& const... extraArgs)
+void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs)
 {
 	char flagName[0x40];
 	for (size_t i = 0; ; ++i)
@@ -1822,7 +1904,7 @@ void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_E
 		T dataEntry {};
 
 		// we expect %d for array number then %s for the subflag name, so we replace %s with itself (but escaped)
-		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%%s");
+		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%s");
 
 		if (!dataEntry.Read(parser, pSection, flagName, extraArgs...))
 			break;
@@ -1835,7 +1917,7 @@ void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_E
 
 template<typename T, typename... TExtraArgs>
 requires MultiflagReadable<T, TExtraArgs...>
-void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs& const... extraArgs)
+void __declspec(noinline) MultiflagNullableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs)
 {
 	char flagName[0x40];
 	for (size_t i = 0; ; ++i)
@@ -1843,7 +1925,7 @@ void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_E
 		T dataEntry {};
 
 		// we expect %d for array number then %s for the subflag name, so we replace %s with itself (but escaped)
-		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%%s");
+		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%s");
 
 		if (!dataEntry.Read(parser, pSection, flagName, extraArgs...))
 			break;
@@ -1858,23 +1940,26 @@ void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_E
 // Animatable::KeyframeDataEntry
 
 template <typename TValue>
-bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& const absoluteLength)
+bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& absoluteLength)
 {
 	char flagName[0x40];
 
+	Nullable<double> percentageTemp {};
 	Nullable<absolute_length_t> absoluteTemp {};
 
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Percentage");
-	this->Percentage.Read(parser, pSection, flagName);
+	percentageTemp.Read(parser, pSection, flagName);
 
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Absolute");
 	absoluteTemp.Read(parser, pSection, flagName);
 
-	if (!this->Frame.HasValue && !absoluteTemp.HasValue)
+	if (!percentageTemp.isset() && !absoluteTemp.isset())
 		return false;
 
-	if (absoluteTemp.HasValue)
-		this->Percentage.Value = (double)absoluteTemp.Value / absoluteLength;
+	if (absoluteTemp.isset())
+		this->Percentage = (double)absoluteTemp / absoluteLength;
+	else
+		this->Percentage = percentageTemp;
 
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Value");
 	this->Value.Read(parser, pSection, flagName);
@@ -1886,7 +1971,6 @@ template <typename TValue>
 bool Animatable<TValue>::KeyframeDataEntry::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	return Savegame::ReadPhobosStream(Stm, this->Percentage, RegisterForChange)
-		&& Savegame::ReadPhobosStream(Stm, this->Frame, RegisterForChange)
 		&& Savegame::ReadPhobosStream(Stm, this->Value, RegisterForChange);
 }
 
@@ -1894,26 +1978,55 @@ template <typename TValue>
 bool Animatable<TValue>::KeyframeDataEntry::Save(PhobosStreamWriter& Stm) const
 {
 	return Savegame::WritePhobosStream(Stm, this->Percentage)
-		&& Savegame::WritePhobosStream(Stm, this->Frame)
 		&& Savegame::WritePhobosStream(Stm, this->Value);
 }
-
 
 template <typename TValue>
 TValue Animatable<TValue>::Get(double const percentage) const noexcept
 {
-	return detail::interpolate<TValue>(percentage);  // TODO
+	// This currently assumes the keyframes are ordered and there are no duplicates for same frame/percentage.
+	// Thing is still far from lightweight as searching for the correct items requires going through the vector.
+
+	TValue match {};
+	double startPercentage = 0.0;
+	size_t i = this->KeyframeData.size() - 1;
+
+	for (; i >= 0; i--)
+	{
+		auto const value = this->KeyframeData[i];
+
+		if (percentage >= value.Percentage)
+		{
+			startPercentage = value.Percentage;
+			match = value.Value;
+			break;
+		}
+	}
+
+	// Only interpolate if an interpolation mode is enabled and there's keyframes remaining.
+	if (this->InterpolationMode != InterpolationMode::None && i + 1 < this->KeyframeData.size())
+	{
+		auto const value = this->KeyframeData[i + 1];
+		TValue nextValue = value.Value;
+		double progressPercentage = (percentage - startPercentage) / (value.Percentage - startPercentage);
+		return detail::interpolate(match, nextValue, progressPercentage, this->InterpolationMode);
+	}
+
+	return match;
 }
 
 template <typename TValue>
-void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& const absoluteLength)
+void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& absoluteLength)
 {
 	char flagName[0x40];
 
 	// we expect "BaseFlagName.%s" here
-	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Keyframe%%d.%%s");
-
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Keyframe%d.%s");
 	this->KeyframeData.Read(parser, pSection, flagName, absoluteLength);
+
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Interpolation");
+	detail::read(this->InterpolationMode, parser, pSection, flagName);
+	
 };
 
 template <typename TValue>

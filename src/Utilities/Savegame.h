@@ -15,7 +15,7 @@ namespace Savegame
 	};
 
 	template <typename T>
-	concept ImplementsLowerCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T& value, bool registerForChange)
+	concept ImplementsLowerCaseSaveLoad = requires (PhobosStreamWriter& stmWriter, PhobosStreamReader& stmReader, T& value, bool registerForChange)
 	{
 		value.save(stmWriter);
 		value.load(stmReader, registerForChange);

@@ -110,15 +110,12 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->RestrictVisibilityIfCloaked.Read(exINI, pID, "RestrictVisibilityIfCloaked");
 	this->DetachOnCloak.Read(exINI, pID, "DetachOnCloak");
 	this->Translucency_Cloaked.Read(exINI, pID, "Translucency.Cloaked");
-	this->Translucent_Stage1_Percent.Read(exINI, pID, "Translucent.Stage1.Percent");
-	this->Translucent_Stage1_Frame.Read(exINI, pID, "Translucent.Stage1.Frame");
-	this->Translucent_Stage1_Translucency.Read(exINI, pID, "Translucent.Stage1.Translucency");
-	this->Translucent_Stage2_Percent.Read(exINI, pID, "Translucent.Stage2.Percent");
-	this->Translucent_Stage2_Frame.Read(exINI, pID, "Translucent.Stage2.Frame");
-	this->Translucent_Stage2_Translucency.Read(exINI, pID, "Translucent.Stage2.Translucency");
-	this->Translucent_Stage3_Percent.Read(exINI, pID, "Translucent.Stage3.Percent");
-	this->Translucent_Stage3_Frame.Read(exINI, pID, "Translucent.Stage3.Frame");
-	this->Translucent_Stage3_Translucency.Read(exINI, pID, "Translucent.Stage3.Translucency");
+
+	if (this->OwnerObject()->Translucent)
+	{
+		this->Translucent_Keyframes.Read(exINI, pID, "Translucent.%s", this->OwnerObject()->End);
+		this->Translucent_Keyframes.InterpolationMode = InterpolationMode::None;
+	}
 	this->ConstrainFireAnimsToCellSpots.Read(exINI, pID, "ConstrainFireAnimsToCellSpots");
 	this->FireAnimDisallowedLandTypes.Read<false, true>(exINI, pID, "FireAnimDisallowedLandTypes");
 	this->AttachFireAnimsToParent.Read(exINI, pID, "AttachFireAnimsToParent");
@@ -179,15 +176,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RestrictVisibilityIfCloaked)
 		.Process(this->DetachOnCloak)
 		.Process(this->Translucency_Cloaked)
-		.Process(this->Translucent_Stage1_Percent)
-		.Process(this->Translucent_Stage1_Frame)
-		.Process(this->Translucent_Stage1_Translucency)
-		.Process(this->Translucent_Stage2_Percent)
-		.Process(this->Translucent_Stage2_Frame)
-		.Process(this->Translucent_Stage2_Translucency)
-		.Process(this->Translucent_Stage3_Percent)
-		.Process(this->Translucent_Stage3_Frame)
-		.Process(this->Translucent_Stage3_Translucency)
+		.Process(this->Translucent_Keyframes)
 		.Process(this->ConstrainFireAnimsToCellSpots)
 		.Process(this->FireAnimDisallowedLandTypes)
 		.Process(this->AttachFireAnimsToParent)

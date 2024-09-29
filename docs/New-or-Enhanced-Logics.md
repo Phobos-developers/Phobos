@@ -563,24 +563,19 @@ AttachedSystem=  ; ParticleSystemType
 ### Customizable animation transparency settings
 
 - `Translucency.Cloaked` can be used to override `Translucency` on animations attached to currently cloaked TechnoTypes.
-- Properties of the three transparency stages used by `Translucent=true`can now be customized per animation type.
-  - `Translucent.StageX.Percent` controls at what percentage through the animation's frames the applicable translucency stage becomes active.
-    - If `Translucent.StageX.Frame` is set, this explicit frame value is used instead.
-  - `Translucent.StageX.Translucency` controls the transparency level for the stage.
+- `Translucent=true` animated transparency is now fully controllable via new keyframe settings.
+  - Keyframes are defined via `Translucent.KeyframeN.*` settings where N is zero-based keyframe index.
+  - `Translucent.KeyframeN.Value` is keyframe's transparency value.
+  - `Translucent.KeyframeN.Percentage` is the percentage through the animation's frames where the keyframes becomes active. It is also possible to instead use zero-based frame index via `Translucent.KeyframeN.Absolute` which takes precedence over percentage.
+  - Keyframes should be listed in ascending order with no duplicate percentages / frames across different keyframes. Failure to do so can produce unpredictable results.
 
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                          ; AnimationType
 Translucency.Cloaked=               ; integer - only accepted values are 75, 50, 25 and 0.
-Translucent.Stage1.Percent=0.2      ; floating point value, percents or absolute
-Translucent.Stage1.Frame=           ; integer, 0-based frame index
-Translucent.Stage1.Translucency=25  ; integer - only accepted values are 75, 50, 25 and 0.
-Translucent.Stage2.Percent=0.4      ; floating point value, percents or absolute
-Translucent.Stage2.Frame=           ; integer, 0-based frame index
-Translucent.Stage2.Translucency=50  ; integer - only accepted values are 75, 50, 25 and 0.
-Translucent.Stage3.Percent=0.6      ; floating point value, percents or absolute
-Translucent.Stage3.Frame=           ; integer, 0-based frame index
-Translucent.Stage3.Translucency=75  ; integer - only accepted values are 75, 50, 25 and 0.
+Translucent.KeyframeN.Value=        ; integer - only accepted values are 75, 50, 25 and 0.
+Translucent.KeyframeN.Percentage=   ; floating point value, percents or absolute
+Translucent.KeyframeN.Absolute=     ; integer, zero-based frame index
 ```
 
 ### Customizable animation visibility settings

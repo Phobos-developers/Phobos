@@ -479,60 +479,36 @@ public:
 	size_t ValueCount;
 };
 
+enum class InterpolationMode : BYTE
+{
+	None = 0,
+	Linear = 1
+};
+
 // Designates that the type can read it's value from multiple flags.
 template<typename T, typename... TExtraArgs>
-concept MultiflagReadable = requires(T obj, INI_EX& const parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs& const... extraArgs)
+concept MultiflagReadable = requires(T obj, INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs)
 {
-    { obj.Read(parser, pSection, pBaseFlag, extraArgs...) } -> std::same_as<bool>;
+	{ obj.Read(parser, pSection, pBaseFlag, extraArgs...) } -> std::same_as<bool>;
 };
 
 template<typename T, typename... TExtraArgs>
 requires MultiflagReadable<T, TExtraArgs...>
 class MultiflagValueableVector : public ValueableVector<T>
 {
-	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs& const... extraArgs);
+public:
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs);
 };
 template<typename T, typename... TExtraArgs>
 requires MultiflagReadable<T, TExtraArgs...>
 class MultiflagNullableVector : public NullableVector<T>
 {
-	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs& const... extraArgs);
+public:
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs);
 };
 
-// Need multiple args or multiple return values? Use std::tuple - Kerbiter
-// template<typename TArg, typename TValue>
-// class Calculatable
-// {
-// public:
-
-// 	virtual TValue Get(TArg const arg) const noexcept = 0;
-
-// 	virtual void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag) = 0;
-
-// 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) = 0;
-
-// 	virtual bool Save(PhobosStreamWriter& Stm) const = 0;
-// };
-
-// template<typename TArg>
-// class ArgBoundable
-// {
-// public:
-
-// 	virtual Vector2D<TArg> GetArgBounds() const noexcept = 0;
-// };
-
-// template<typename TValue>
-// class ValueBoundable
-// {
-// public:
-
-// 	virtual Vector2D<TValue> GetValueBounds() const noexcept = 0;
-// };
-
-
 template<typename TValue>
-class Animatable // : public Calculatable<double, TValue> //, public ArgBoundable<int>
+class Animatable
 {
 public:
 	using absolute_length_t = int;
@@ -540,27 +516,24 @@ public:
 	class KeyframeDataEntry
 	{
 	public:
-		Valueable<double> Percentage;
+		double Percentage;
 		Valueable<TValue> Value;
 
-		inline bool Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& const absoluteLength = 0);
+		inline bool Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& absoluteLength = absolute_length_t(0));
 
 		inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
 		inline bool Save(PhobosStreamWriter& Stm) const;
 	};
 
+	InterpolationMode InterpolationMode;
 	MultiflagValueableVector<KeyframeDataEntry, absolute_length_t> KeyframeData;
 
 	// TODO ctors and stuff
 
 	inline TValue Get(double const percentage) const noexcept;
 
-	// inline TValue Get(int const frame) const noexcept;
-
-	// Vector2D<TArg> GetArgBounds() const noexcept override;
-
-	inline void Read(INI_EX& const parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& const absoluteLength = 0);
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& absoluteLength = absolute_length_t(0));
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
