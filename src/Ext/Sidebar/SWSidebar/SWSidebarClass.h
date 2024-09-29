@@ -14,12 +14,14 @@ public:
 	bool AddButton(int superIdx);
 	void SortButtons();
 
+	void RecordHotkey(int buttonIndex, int key);
 	int GetMaximumButtonCount();
 
 	static bool IsEnabled();
 
 private:
 	static std::unique_ptr<SWSidebarClass> Instance;
+	static PhobosMap<int, const wchar_t*> KeyboardCodeTextMap;
 
 public:
 	static void Allocate();
@@ -40,4 +42,7 @@ public:
 	SWColumnClass* CurrentColumn { nullptr };
 	TacticalButtonClass* CurrentButton { nullptr };
 	ToggleSWButtonClass* ToggleButton { nullptr };
+
+	std::wstring KeyCodeText[10] {};
+	int KeyCodeData[10] {};
 };

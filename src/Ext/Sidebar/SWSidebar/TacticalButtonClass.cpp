@@ -70,15 +70,32 @@ bool TacticalButtonClass::Draw(bool forced)
 		pSurface->DrawRect(&cameoRect, tooltipColor);
 	}
 
-	if (!pSuper->RechargeTimer.Completed())
+	if (pSuper->ShouldDrawProgress() && !pSuper->RechargeTimer.Completed())
 	{
 		Point2D loc = { location.X, location.Y };
 		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::GCLOCK2_SHP, pSuper->AnimStage() + 1, &loc, &bounds, BlitterFlags::bf_400 | BlitterFlags::TransLucent50, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
-	const auto buffer = pSuper->NameReadiness();;
+	const bool ready = !pSuper->IsSuspended && (pSuper->Type->UseChargeDrain ? pSuper->ChargeDrainState == ChargeDrainState::Ready : pSuper->IsReady);
 
-	if (buffer && *buffer)
+	if (ready && this->ColumnIndex == 0)
+	{
+		auto& buttons = SWSidebarClass::Global()->Columns[this->ColumnIndex]->Buttons;
+		const int distance = std::distance(buttons.begin(), std::find(buttons.begin(), buttons.end(), this));
+
+		if (distance < 10 && !SWSidebarClass::Global()->KeyCodeText[distance].empty())
+		{
+			const auto buffer = SWSidebarClass::Global()->KeyCodeText[distance].c_str();
+			Point2D textLoc = { location.X + this->Width / 2, location.Y };
+			const COLORREF foreColor = Drawing::RGB_To_Int(Drawing::TooltipColor);
+			TextPrintType printType = TextPrintType::FullShadow | TextPrintType::Point8 | TextPrintType::Background | TextPrintType::Center;
+
+			pSurface->DrawTextA(buffer, &bounds, &textLoc, foreColor, 0, printType);
+			return true;
+		}
+	}
+
+	if (const auto buffer = pSuper->NameReadiness())
 	{
 		Point2D textLoc = { location.X + this->Width / 2, location.Y };
 		const COLORREF foreColor = Drawing::RGB_To_Int(Drawing::TooltipColor);
