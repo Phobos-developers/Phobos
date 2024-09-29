@@ -220,11 +220,17 @@ bool ToggleSWButtonClass::Draw(bool forced)
 	if (columns.empty())
 		return false;
 
-	const auto pSurface = DSurface::Composite();
 	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
-	const auto togglePCX = pSideExt->ExclusiveSWSidebar_TogglePCX.GetSurface();
-	RectangleStruct destRect = { this->X, this->Y, this->Width, this->Height };
-	PCX::Instance->BlitToSurface(&destRect, pSurface, togglePCX);
+	const auto pShape = pSideExt->ExclusiveSWSidebar_ToggleShape.Get();
+
+	if (!pShape)
+		return false;
+
+	const auto pConvert = FileSystem::SIDEBAR_PAL();
+	const auto pSurface = DSurface::Composite();
+	Point2D position = { this->X, this->Y };
+	RectangleStruct destRect = { position.X, position.Y, this->Width, this->Height };
+	pSurface->DrawSHP(pConvert, pShape, SWSidebarClass::IsEnabled(), &position, &destRect, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 
 	if (this->IsHovering)
 	{

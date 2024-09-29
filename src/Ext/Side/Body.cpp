@@ -45,7 +45,7 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->ExclusiveSWSidebar_TopPCX.Read(pINI, pSection, "ExclusiveSWSidebar.TopPCX");
 	this->ExclusiveSWSidebar_CenterPCX.Read(pINI, pSection, "ExclusiveSWSidebar.CenterPCX");
 	this->ExclusiveSWSidebar_BottomPCX.Read(pINI, pSection, "ExclusiveSWSidebar.BottomPCX");
-	this->ExclusiveSWSidebar_TogglePCX.Read(pINI, pSection, "ExclusiveSWSidebar.TogglePCX");
+	this->ExclusiveSWSidebar_ToggleShape.Read(exINI, pSection, "ExclusiveSWSidebar.ToggleShape");
 }
 
 // =============================
@@ -78,7 +78,7 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExclusiveSWSidebar_TopPCX)
 		.Process(this->ExclusiveSWSidebar_CenterPCX)
 		.Process(this->ExclusiveSWSidebar_BottomPCX)
-		.Process(this->ExclusiveSWSidebar_TogglePCX)
+		.Process(this->ExclusiveSWSidebar_ToggleShape)
 		;
 }
 
