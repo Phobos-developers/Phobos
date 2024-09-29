@@ -69,6 +69,11 @@ public:
 		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
 		ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
 
+		Nullable<double> Units_RepairRate;
+		Nullable<int> Units_RepairStep;
+		Nullable<double> Units_RepairPercent;
+		Valueable<bool> Units_DisableRepairCost;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -110,6 +115,10 @@ public:
 			, FactoryPlant_AllowTypes {}
 			, FactoryPlant_DisallowTypes {}
 			, IsDestroyableObstacle { false }
+			, Units_RepairRate {}
+			, Units_RepairStep {}
+			, Units_RepairPercent {}
+			, Units_DisableRepairCost { false }
 		{ }
 
 		// Ares 0.A functions

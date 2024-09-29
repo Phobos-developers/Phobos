@@ -574,3 +574,98 @@ DEFINE_HOOK(0x483D8E, CellClass_CheckPassability_DestroyableObstacle, 0x6)
 }
 
 #pragma endregion
+
+#pragma region UnitRepair
+
+namespace UnitRepairTemp
+{
+	bool SeparateRepair = false;
+}
+
+DEFINE_HOOK(0x44C836, BuildingClass_Mission_Repair_UnitReload, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	if (pThis->Type->UnitReload)
+	{
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+		if (pTypeExt->Units_RepairRate.isset())
+		{
+			double repairRate = pTypeExt->Units_RepairRate.Get();
+
+			if (repairRate < 0.0)
+				return 0;
+
+			int rate = static_cast<int>(Math::max(repairRate * 900, 1));
+
+			if (!(Unsorted::CurrentFrame % rate))
+			{
+				UnitRepairTemp::SeparateRepair = true;
+
+				for (auto i = 0; i < pThis->RadioLinks.Capacity; ++i)
+				{
+					if (auto const pLink = pThis->GetNthLink(i))
+					{
+						if (!pLink->IsInAir() && pThis->SendCommand(RadioCommand::QueryMoving, pLink) == RadioCommand::AnswerPositive)
+							pThis->SendCommand(RadioCommand::RequestRepair, pLink);
+					}
+				}
+
+				UnitRepairTemp::SeparateRepair = false;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44BD38, BuildingClass_Mission_Repair_UnitRepair, 0x6)
+{
+	enum { SkipGameCode = 0x44BD3E };
+
+	GET(BuildingClass*, pThis, EBP);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	double repairRate = pTypeExt->Units_RepairRate.Get(RulesClass::Instance->URepairRate);
+	__asm { fld repairRate }
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x6F4D1A, TechnoClass_ReceiveCommand_Repair, 0x5)
+{
+	enum { AnswerNegative = 0x6F4CB4 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, repairStep, EAX);
+	GET_STACK(TechnoClass*, pFrom, STACK_OFFSET(0x18, 0x4));
+
+	if (auto const pBuilding = abstract_cast<BuildingClass*>(pFrom))
+	{
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
+		if (pBuilding->Type->UnitReload && pTypeExt->Units_RepairRate.isset() && !UnitRepairTemp::SeparateRepair)
+			return AnswerNegative;
+
+		repairStep = pTypeExt->Units_RepairStep.Get(repairStep);
+		double repairPercent = pTypeExt->Units_RepairPercent.Get(RulesClass::Instance->RepairPercent);
+		int repairCost = 0;
+
+		if (!pTypeExt->Units_DisableRepairCost)
+		{
+			auto const pType = pThis->GetTechnoType();
+			repairCost = static_cast<int>((pType->GetCost() / (pType->Strength / static_cast<double>(repairStep))) * repairPercent);
+
+			if (repairCost < 1)
+				repairCost = 1;
+		}
+
+		R->EAX(repairStep);
+		R->EBX(repairCost);
+	}
+
+	return 0;
+}
+
+#pragma endregion
