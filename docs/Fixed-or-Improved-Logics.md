@@ -170,6 +170,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them (by Starkku)
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
+- Skip target scanning function calling for unarmed technos.
 
 ## Fixes / interactions with other extensions
 
@@ -1390,6 +1391,25 @@ In `rulesmd.ini`:
 [SOMEWEAPON]         ; WeaponType
 IsSingleColor=false  ; boolean
 ```
+
+### Target scanning delay optimization
+
+- In vanilla, the game used 'NormalTargetingDelay' and 'GuardAreaTargetingDelay' to globally control the target searching intervals. Increasing these values would make units stupid, while decreasing them would cause game lag.
+- Now, you can define them per techno, also allowing different values for AI and players. The default values are the same as those originally defined by the vanilla flags.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AINormalTargetingDelay=              ; integer, game frames
+PlayerNormalTargetingDelay=          ; integer, game frames
+AIGuardAreaTargetingDelay=           ; integer, game frames
+PlayerGuardAreaTargetingDelay=       ; integer, game frames
+
+[SOMETECHNO]                         ; TechnoType
+AINormalTargetingDelay=              ; integer, game frames
+PlayerNormalTargetingDelay=          ; integer, game frames
+AIGuardAreaTargetingDelay=           ; integer, game frames
+PlayerGuardAreaTargetingDelay=       ; integer, game frames
 
 ### Toggle-able ElectricBolt visuals
 
