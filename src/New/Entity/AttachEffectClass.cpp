@@ -413,7 +413,7 @@ bool AttachEffectClass::AllowedToBeActive() const
 
 	if (auto const pFoot = abstract_cast<FootClass*>(pTechno))
 	{
-		bool isMoving = pFoot->Locomotor->Is_Moving();
+		bool isMoving = pFoot->Locomotor->Is_Really_Moving_Now();
 
 		if (isMoving && (this->Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
 			return false;
