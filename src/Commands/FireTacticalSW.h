@@ -17,47 +17,15 @@ class FireTacticalSWCommandClass : public CommandClass
 template<size_t Index>
 inline const char* FireTacticalSWCommandClass<Index>::GetName() const
 {
-	class to_string_t
-	{
-	public:
-		char buffer[17];
-
-	public:
-		constexpr to_string_t() noexcept
-			: buffer { "FireTacticalSW" }
-		{
-			size_t idx = 14;
-			buffer[idx++] = Index + '0';
-			buffer[idx++] = '\0';
-		}
-
-		constexpr operator char* () noexcept { return buffer; }
-	};
-	static to_string_t ret;
-	return ret;
+	_snprintf_s(Phobos::readBuffer, Phobos::readLength, "FireTacticalSW %d\0", Index);
+	return Phobos::readBuffer;
 }
 
 template<size_t Index>
 inline const wchar_t* FireTacticalSWCommandClass<Index>::GetUIName() const
 {
-	class to_string_t
-	{
-	public:
-		wchar_t buffer[20];
-
-	public:
-		constexpr to_string_t() noexcept
-			: buffer { L"Fire tactical SW " }
-		{
-			size_t idx = 17;
-			buffer[idx++] = Index + '0';
-			buffer[idx++] = '\0';
-		}
-
-		constexpr operator wchar_t* () noexcept { return buffer; }
-	};
-	static to_string_t ret;
-	return StringTable::TryFetchString("TXT_FIRE_TACTICAL_SW_XX", ret);
+	_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, L"Fire tactical SW %d\0", Index);
+	return StringTable::TryFetchString("TXT_FIRE_TACTICAL_SW_XX", Phobos::wideBuffer);
 }
 
 template<size_t Index>
@@ -69,24 +37,8 @@ inline const wchar_t* FireTacticalSWCommandClass<Index>::GetUICategory() const
 template<size_t Index>
 inline const wchar_t* FireTacticalSWCommandClass<Index>::GetUIDescription() const
 {
-	class to_string_t
-	{
-	public:
-		wchar_t buffer[20];
-
-	public:
-		constexpr to_string_t() noexcept
-			: buffer { L"Fire tactical SW " }
-		{
-			size_t idx = 17;
-			buffer[idx++] = Index + '0';
-			buffer[idx++] = '\0';
-		}
-
-		constexpr operator wchar_t* () noexcept { return buffer; }
-	};
-	static to_string_t ret;
-	return StringTable::TryFetchString("TXT_FIRE_TACTICAL_SW_XX_DESC", ret);
+	_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, L"Fire tactical SW %d\0", Index);
+	return StringTable::TryFetchString("TXT_FIRE_TACTICAL_SW_XX_DESC", Phobos::wideBuffer);
 }
 
 template<size_t Index>
