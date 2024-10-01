@@ -567,24 +567,24 @@ ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enable
 In `uimd.ini`:
 ```ini
 [Sidebar]
-ExclusiveSWSidebar=false                  ; boolean
-ExclusiveSWSidebar.Interval=0           ; integer
-ExclusiveSWSidebar.Max=0                ; integer
+ExclusiveSWSidebar=false            ; boolean
+ExclusiveSWSidebar.Interval=0       ; integer
+ExclusiveSWSidebar.Max=0            ; integer
 ExclusiveSWSidebar.MaxColumn=       ; integer
 ```
 
 In `rulesmd.ini`
 ```ini
 [SOMESIDE]
-ExclusiveSWSidebar.TopPCX=            ; filename - including the .pcx extension
-ExclusiveSWSidebar.CenterPCX=        ; filename - including the .pcx extension
+ExclusiveSWSidebar.TopPCX=          ; filename - including the .pcx extension
+ExclusiveSWSidebar.CenterPCX=       ; filename - including the .pcx extension
 ExclusiveSWSidebar.BottomPCX=       ; filename - including the .pcx extension
 ExclusiveSWSidebar.ToggleShape=     ; filename - including the .shp extension
 
 [SOMESW]
-AllowInExclusiveSidebar=true              ; boolean
-ExclusiveSidebar.PriorityHouses=        ; list of house types
-ExclusiveSidebar.RequiredHouses=     ; list of house types
+AllowInExclusiveSidebar=true        ; boolean
+ExclusiveSidebar.PriorityHouses=    ; list of house types
+ExclusiveSidebar.RequiredHouses=    ; list of house types
 ```
 ## Miscellanous
 
