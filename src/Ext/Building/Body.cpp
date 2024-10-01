@@ -334,7 +334,7 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse,int mo
 		int idx = this->TypeExtData->SpyEffect_VictimSuperWeapon;
 		if (idx >= 0)
 			launchTheSWHere(pVictimHouse->Supers.Items[idx], pVictimHouse);
-		
+
 		idx = this->TypeExtData->SpyEffect_InfiltratorSuperWeapon;
 		if (idx >= 0)
 			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx], pInfiltratorHouse);

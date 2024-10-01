@@ -458,32 +458,32 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	{
 		if (pType->ShadowIndex >= 0 && pType->ShadowIndex < main_vxl->HVA->LayerCount)
 			pThis->DrawVoxelShadow(
-				   main_vxl,
-				   pType->ShadowIndex,
-				   vxl_index_key,
-				   &pType->VoxelShadowCache,
-				   bounding,
-				   &why,
-				   &mtx,
-				   true,
-				   surface,
-				   shadow_point
+				main_vxl,
+				pType->ShadowIndex,
+				vxl_index_key,
+				&pType->VoxelShadowCache,
+				bounding,
+				&why,
+				&mtx,
+				true,
+				surface,
+				shadow_point
 			);
 	}
 	else
 	{
 		for (auto& [index, _] : uTypeExt->ShadowIndices)
 			pThis->DrawVoxelShadow(
-				   main_vxl,
-				   index,
-				   index == pType->ShadowIndex ? vxl_index_key : std::bit_cast<VoxelIndexKey>(-1),
-				   &pType->VoxelShadowCache,
-				   bounding,
-				   &why,
-				   &mtx,
-				   index == pType->ShadowIndex,
-				   surface,
-				   shadow_point
+				main_vxl,
+				index,
+				index == pType->ShadowIndex ? vxl_index_key : std::bit_cast<VoxelIndexKey>(-1),
+				&pType->VoxelShadowCache,
+				bounding,
+				&why,
+				&mtx,
+				index == pType->ShadowIndex,
+				surface,
+				shadow_point
 			);
 	}
 
