@@ -17,14 +17,14 @@ class FireTacticalSWCommandClass : public CommandClass
 template<size_t Index>
 inline const char* FireTacticalSWCommandClass<Index>::GetName() const
 {
-	_snprintf_s(Phobos::readBuffer, Phobos::readLength, "FireTacticalSW %d\0", Index);
+	_snprintf_s(Phobos::readBuffer, Phobos::readLength, "FireTacticalSW%d", Index);
 	return Phobos::readBuffer;
 }
 
 template<size_t Index>
 inline const wchar_t* FireTacticalSWCommandClass<Index>::GetUIName() const
 {
-	_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, L"Fire tactical SW %d\0", Index);
+	_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, L"Fire Super Weapon %d", Index);
 	return StringTable::TryFetchString("TXT_FIRE_TACTICAL_SW_XX", Phobos::wideBuffer);
 }
 
@@ -37,7 +37,7 @@ inline const wchar_t* FireTacticalSWCommandClass<Index>::GetUICategory() const
 template<size_t Index>
 inline const wchar_t* FireTacticalSWCommandClass<Index>::GetUIDescription() const
 {
-	_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, L"Fire tactical SW %d\0", Index);
+	_snwprintf_s(Phobos::wideBuffer, Phobos::readLength, L"Fires Super Weapon %d.", Index);
 	return StringTable::TryFetchString("TXT_FIRE_TACTICAL_SW_XX_DESC", Phobos::wideBuffer);
 }
 

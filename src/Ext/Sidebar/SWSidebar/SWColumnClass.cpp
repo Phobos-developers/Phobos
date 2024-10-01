@@ -85,7 +85,7 @@ bool SWColumnClass::AddButton(int superIdx)
 		if (!pSWExt->SW_ShowCameo)
 			return true;
 
-		if (!Phobos::UI::ExclusiveSWSidebar || Unsorted::ArmageddonMode)
+		if (!Phobos::UI::ExclusiveSWSidebar)
 			return false;
 
 		if (!pSWExt->ExclusiveSidebar_Allow)

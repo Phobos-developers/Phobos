@@ -399,12 +399,12 @@ DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_SWSidebar, 0x7)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x6A6300, SidebarClass_AddCameo_SuperWeapon_SWSidebar, 0x6)
+DEFINE_HOOK(0x6A6316, SidebarClass_AddCameo_SuperWeapon_SWSidebar, 0x6)
 {
-	enum { SkipGameCode = 0x6A6606 };
+	enum { ReturnFalse = 0x6A65FF };
 
-	GET_STACK(AbstractType, whatAmI, 0x4);
-	GET_STACK(int, index, 0x8);
+	GET_STACK(AbstractType, whatAmI, STACK_OFFSET(0x14, 0x4));
+	GET_STACK(int, index, STACK_OFFSET(0x14, 0x8));
 
 	switch (whatAmI)
 	{
@@ -412,10 +412,8 @@ DEFINE_HOOK(0x6A6300, SidebarClass_AddCameo_SuperWeapon_SWSidebar, 0x6)
 	case AbstractType::SuperWeaponType:
 	case AbstractType::Special:
 		if (SWSidebarClass::Global()->AddButton(index))
-		{
-			R->AL(false);
-			return SkipGameCode;
-		}
+			return ReturnFalse;
+
 		break;
 
 	default:
@@ -425,15 +423,15 @@ DEFINE_HOOK(0x6A6300, SidebarClass_AddCameo_SuperWeapon_SWSidebar, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6A5082, SidebarClass_Init_Clear_InitializeSWSidebar, 0x5)
+DEFINE_HOOK(0x6A5082, SidebarClass_InitClear_InitializeSWSidebar, 0x5)
 {
 	SWSidebarClass::Global()->Init_Clear();
 	return 0;
 }
 
-DEFINE_HOOK(0x6A5839, SidebarClass_Init_IO_InitializeSWSidebar, 0x5)
+DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeSWSidebar, 0x5)
 {
-	if (!Phobos::UI::ExclusiveSWSidebar)
+	if (!Phobos::UI::ExclusiveSWSidebar || Unsorted::ArmageddonMode)
 		return 0;
 
 	if (const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]))
