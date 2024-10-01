@@ -366,7 +366,7 @@ This page lists all the individual contributions to the project by their author.
 - **TaranDahl (航味麻酱)**
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
-  - Global value of `RepairBaseNodes` and `MCVRedeploys`
+  - Global value of `RepairBaseNodes`
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

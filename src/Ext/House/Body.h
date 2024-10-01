@@ -39,7 +39,7 @@ public:
 		CDTimerClass AIFireSaleDelayTimer;
 
 		//Read from INI
-		bool RepairBaseNodes[3];
+		Nullable<bool> RepairBaseNodes[3];
 
 		// FactoryPlants with Allow/DisallowTypes set.
 		std::vector<BuildingClass*> RestrictedFactoryPlants;
@@ -67,7 +67,7 @@ public:
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
 			, AISuperWeaponDelayTimer {}
-			, RepairBaseNodes { false,false,false }
+			, RepairBaseNodes { }
 			, RestrictedFactoryPlants {}
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
