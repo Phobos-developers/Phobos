@@ -10,7 +10,7 @@ public:
 		, ApplyRangeModifiers { false }
 		, TargetSnapDistance { Leptons(128) }
 		, PassThrough { false }
-	{}
+	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
@@ -38,7 +38,7 @@ public:
 		, PassThrough { trajType->PassThrough }
 		, FirerZPosition { 0 }
 		, TargetZPosition { 0 }
-	{}
+	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;

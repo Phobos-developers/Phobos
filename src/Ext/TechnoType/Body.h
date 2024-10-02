@@ -417,13 +417,13 @@ public:
 			, EmptyAmmoPipFrame { -1 }
 			, AmmoPipWrapStartFrame { 14 }
 			, AmmoPipSize {}
-			, AmmoPipOffset {{ 0,0 }}
+			, AmmoPipOffset { { 0,0 } }
 
 			, ShowSpawnsPips { true }
 			, SpawnsPipFrame { 1 }
 			, EmptySpawnsPipFrame { 0 }
 			, SpawnsPipSize {}
-			, SpawnsPipOffset {{ 0,0 }}
+			, SpawnsPipOffset { { 0,0 } }
 
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}

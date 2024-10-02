@@ -247,11 +247,14 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		if (pTechno->IsMouseHovering)
 			dumpInfo(pTechno);
 	}
-	if (!dumped)
+
+	if (!dumped){
 		if (ObjectClass::CurrentObjects->Count > 0)
 		{
 			if (ObjectClass::CurrentObjects->Count != 1)
 				MessageListClass::Instance->PrintMessage(L"This command will only dump one of these selected object", 600, 5, true);
+
 			dumpInfo(ObjectClass::CurrentObjects->GetItem(ObjectClass::CurrentObjects->Count - 1));
 		}
+	}
 }

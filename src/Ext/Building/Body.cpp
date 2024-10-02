@@ -297,7 +297,7 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 	}
 }
 
-bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse,int moneybefore)
+bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore)
 {
 	auto pVictimHouse = this->OwnerObject()->Owner;
 	this->AccumulatedIncome += pVictimHouse->Available_Money() - moneybefore;

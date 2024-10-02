@@ -22,14 +22,14 @@
 namespace Savegame
 {
 	template <typename T>
-	concept ImplementsUpperCaseSaveLoad = requires (PhobosStreamWriter& stmWriter, PhobosStreamReader& stmReader, T& value, bool registerForChange)
+	concept ImplementsUpperCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T & value, bool registerForChange)
 	{
 		value.Save(stmWriter);
 		value.Load(stmReader, registerForChange);
 	};
 
 	template <typename T>
-	concept ImplementsLowerCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T& value, bool registerForChange)
+	concept ImplementsLowerCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T & value, bool registerForChange)
 	{
 		value.save(stmWriter);
 		value.load(stmReader, registerForChange);

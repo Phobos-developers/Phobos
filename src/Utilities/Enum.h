@@ -205,7 +205,7 @@ enum class DamageDisplayType
 enum class ChronoSparkleDisplayPosition : unsigned char
 {
 	None = 0x0,
-	Building= 0x1,
+	Building = 0x1,
 	Occupants = 0x2,
 	OccupantSlots = 0x4,
 

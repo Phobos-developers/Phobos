@@ -32,10 +32,10 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 				int nSound = pTechnoTo->GetTechnoType()->MindClearedSound;
 				if (nSound == -1)
 					nSound = RulesClass::Instance->MindClearedSound;
+
 				if (nSound != -1)
 					VocClass::PlayIndexAtPos(nSound, pTechnoTo->Location);
 			}
-
 		}
 	}
 	else if (auto MCHouse = pTechnoFrom->MindControlledByHouse)
@@ -50,21 +50,22 @@ void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClas
 		auto const pBuilding = abstract_cast<BuildingClass*>(pTechnoTo);
 		CoordStruct location = pTechnoTo->GetCoords();
 
-		if (pBuilding)
-			location.Z += pBuilding->Type->Height * Unsorted::LevelHeight;
-		else
-			location.Z += pTechnoTo->GetTechnoType()->MindControlRingOffset;
-		if(pAnimType)
-		if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location, 0, 1))
-		{
-			pTechnoTo->MindControlRingAnim = pAnim;
+		location.Z += pBuilding
+			? pBuilding->Type->Height * Unsorted::LevelHeight
+			: pTechnoTo->GetTechnoType()->MindControlRingOffset;
 
+		auto const pAnim = pAnimType
+			? GameCreate<AnimClass>(pAnimType, location, 0, 1)
+			: nullptr;
+
+		if (pAnim)
+		{
 			if (pBuilding)
 				pAnim->ZAdjust = -1024;
 
+			pTechnoTo->MindControlRingAnim = pAnim;
 			pAnim->SetOwnerObject(pTechnoTo);
 		}
-
 	}
 }
 
@@ -156,4 +157,3 @@ DEFINE_HOOK(0x73FEC1, UnitClass_WhatAction_DeploysIntoDesyncFix, 0x6)
 }
 
 #pragma endregion
-

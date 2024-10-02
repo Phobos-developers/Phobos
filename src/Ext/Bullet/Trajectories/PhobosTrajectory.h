@@ -28,7 +28,7 @@ class PhobosTrajectoryType
 public:
 	PhobosTrajectoryType(noinit_t) { }
 	PhobosTrajectoryType(TrajectoryFlag flag) : Flag { flag }
-	{}
+	{ }
 
 	virtual ~PhobosTrajectoryType() noexcept = default;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
@@ -51,7 +51,7 @@ class PhobosTrajectory
 public:
 	PhobosTrajectory(noinit_t) { }
 	PhobosTrajectory(TrajectoryFlag flag) : Flag { flag }
-	{}
+	{ }
 
 	virtual ~PhobosTrajectory() noexcept = default;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);

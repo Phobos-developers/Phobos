@@ -254,7 +254,7 @@ DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
 // Do not retaliate against being hit by these Warheads.
 DEFINE_HOOK(0x708B0B, TechnoClass_AllowedToRetaliate_Nonprovocative, 0x5)
 {
-	enum {  SkipEvents = 0x708B17 };
+	enum { SkipEvents = 0x708B17 };
 
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x18, 0x8));
 

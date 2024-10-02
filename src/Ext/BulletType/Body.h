@@ -92,7 +92,8 @@ public:
 		void TrajectoryValidation() const;
 	};
 
-	class ExtContainer final : public Container<BulletTypeExt> {
+	class ExtContainer final : public Container<BulletTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

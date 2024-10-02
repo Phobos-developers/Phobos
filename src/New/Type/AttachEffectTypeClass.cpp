@@ -49,7 +49,7 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(co
 		}
 	}
 
-	return std::vector<AttachEffectTypeClass*> (types.begin(), types.end());;
+	return std::vector<AttachEffectTypeClass*>(types.begin(), types.end());;
 }
 
 AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount) const
