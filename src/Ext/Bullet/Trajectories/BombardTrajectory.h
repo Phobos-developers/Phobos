@@ -56,35 +56,16 @@ public:
 	Valueable<bool> UseDisperseBurst;
 	Valueable<CoordStruct> AxisOfRotation;
 	Valueable<bool> SubjectToGround;
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };
 
 class BombardTrajectory final : public PhobosTrajectory
 {
 public:
-	BombardTrajectory() : PhobosTrajectory(TrajectoryFlag::Bombard)
-		, IsFalling { false }
-		, Height { 0.0 }
-		, RemainingDistance { 1 }
-		, FallPercent { 1.0 }
-		, FallSpeed {}
-		, DetonationDistance { Leptons(102) }
-		, DetonationHeight { -1 }
-		, EarlyDetonation { false }
-		, TargetSnapDistance { Leptons(128) }
-		, FreeFallOnTarget { true }
-		, LeadTimeCalculate { false }
-		, OffsetCoord {}
-		, RotateCoord { 0 }
-		, MirrorCoord { true }
-		, UseDisperseBurst { false }
-		, AxisOfRotation {}
-		, SubjectToGround { false }
-		, LastTargetCoord {}
-		, CountOfBurst { 0 }
-		, CurrentBurst { 0 }
-		, RotateAngle { 0.0 }
-		, AscendTime { 1 }
-	{}
+	BombardTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
 	BombardTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Bombard)
 		, IsFalling { false }
@@ -149,4 +130,8 @@ private:
 	void CalculateLeadTime(BulletClass* pBullet);
 	void CalculateDisperseBurst(BulletClass* pBullet, BulletVelocity& pVelocity);
 	void CalculateBulletVelocity(BulletVelocity& pVelocity);
+
+private:
+	template <typename T>
+	void Serialize(T& Stm);
 };

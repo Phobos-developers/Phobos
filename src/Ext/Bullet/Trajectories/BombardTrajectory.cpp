@@ -9,39 +9,9 @@ PhobosTrajectory* BombardTrajectoryType::CreateInstance() const
 	return new BombardTrajectory(this);
 }
 
-bool BombardTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+template<typename T>
+void BombardTrajectoryType::Serialize(T& Stm)
 {
-	this->PhobosTrajectoryType::Load(Stm, false);
-	Stm
-		.Process(this->Height, false)
-		.Process(this->FallPercent, false)
-		.Process(this->FallPercentShift, false)
-		.Process(this->FallScatter_Max, false)
-		.Process(this->FallScatter_Min, false)
-		.Process(this->FallSpeed, false)
-		.Process(this->DetonationDistance, false)
-		.Process(this->ApplyRangeModifiers, false)
-		.Process(this->DetonationHeight, false)
-		.Process(this->EarlyDetonation, false)
-		.Process(this->TargetSnapDistance, false)
-		.Process(this->FreeFallOnTarget, false)
-		.Process(this->LeadTimeCalculate, false)
-		.Process(this->NoLaunch, false)
-		.Process(this->TurningPointAnims, false)
-		.Process(this->OffsetCoord, false)
-		.Process(this->RotateCoord, false)
-		.Process(this->MirrorCoord, false)
-		.Process(this->UseDisperseBurst, false)
-		.Process(this->AxisOfRotation, false)
-		.Process(this->SubjectToGround, false)
-		;
-
-	return true;
-}
-
-bool BombardTrajectoryType::Save(PhobosStreamWriter& Stm) const
-{
-	this->PhobosTrajectoryType::Save(Stm);
 	Stm
 		.Process(this->Height)
 		.Process(this->FallPercent)
@@ -65,7 +35,19 @@ bool BombardTrajectoryType::Save(PhobosStreamWriter& Stm) const
 		.Process(this->AxisOfRotation)
 		.Process(this->SubjectToGround)
 		;
+}
 
+bool BombardTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->PhobosTrajectoryType::Load(Stm, false);
+	this->Serialize(Stm);
+	return true;
+}
+
+bool BombardTrajectoryType::Save(PhobosStreamWriter& Stm) const
+{
+	this->PhobosTrajectoryType::Save(Stm);
+	const_cast<BombardTrajectoryType*>(this)->Serialize(Stm);
 	return true;
 }
 
@@ -96,10 +78,9 @@ void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->SubjectToGround.Read(exINI, pSection, "Trajectory.Bombard.SubjectToGround");
 }
 
-bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+template<typename T>
+void BombardTrajectory::Serialize(T& Stm)
 {
-	this->PhobosTrajectory::Load(Stm, false);
-
 	Stm
 		.Process(this->IsFalling)
 		.Process(this->Height)
@@ -124,6 +105,13 @@ bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->RotateAngle)
 		.Process(this->AscendTime)
 		;
+}
+
+bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->PhobosTrajectory::Load(Stm, false);
+
+	this->Serialize(Stm);
 
 	return true;
 }
@@ -132,30 +120,7 @@ bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectory::Save(Stm);
 
-	Stm
-		.Process(this->IsFalling)
-		.Process(this->Height)
-		.Process(this->RemainingDistance)
-		.Process(this->FallPercent)
-		.Process(this->FallSpeed)
-		.Process(this->DetonationDistance)
-		.Process(this->DetonationHeight)
-		.Process(this->EarlyDetonation)
-		.Process(this->TargetSnapDistance)
-		.Process(this->FreeFallOnTarget)
-		.Process(this->LeadTimeCalculate)
-		.Process(this->OffsetCoord)
-		.Process(this->RotateCoord)
-		.Process(this->MirrorCoord)
-		.Process(this->UseDisperseBurst)
-		.Process(this->AxisOfRotation)
-		.Process(this->SubjectToGround)
-		.Process(this->LastTargetCoord)
-		.Process(this->CountOfBurst)
-		.Process(this->CurrentBurst)
-		.Process(this->RotateAngle)
-		.Process(this->AscendTime)
-		;
+	const_cast<BombardTrajectory*>(this)->Serialize(Stm);
 
 	return true;
 }
@@ -211,9 +176,13 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	}
 	else
 	{
+		CoordStruct SourceLocation {
+			0,
+			0,
+			static_cast<int>(this->Height - pBullet->SourceCoords.Z)
+		};
+
 		this->IsFalling = true;
-		CoordStruct SourceLocation;
-		SourceLocation.Z = static_cast<int>(this->Height - pBullet->SourceCoords.Z);
 		double angel = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
 		double length = ScenarioClass::Instance->Random.RandomRanged(Leptons { pType->FallScatter_Min }, Leptons { pType->FallScatter_Max });
 		int scatterX = static_cast<int>(length * Math::cos(angel));
@@ -510,27 +479,34 @@ void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpee
 				pSpeed->Y = 0.0;
 				pSpeed->Z = 0.0;
 
-				// Always respawn and recreate laser trail, or it'll have visual glitch
-				auto pExt = BulletExt::ExtMap.Find(pBullet);
-				pExt->LaserTrails.clear();
-				CoordStruct target = pBullet->TargetCoords;
-				target.Z += static_cast<int>(trajType->Height);
-				pBullet->Limbo();
-				pBullet->Unlimbo(target, DirType::North);
-				pPosition->X = pBullet->TargetCoords.X;
-				pPosition->Y = pBullet->TargetCoords.Y;
-				pPosition->Z = pBullet->TargetCoords.Z + this->GetTrajectoryType<BombardTrajectoryType>(pBullet)->Height;
-
-				if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
+				if (this->FallPercent != 1.0)
 				{
-					auto pThis = pExt->OwnerObject();
-					auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+					auto pExt = BulletExt::ExtMap.Find(pBullet);
+					pExt->LaserTrails.clear();
+					CoordStruct target = pBullet->TargetCoords;
+					target.Z += static_cast<int>(trajType->Height);
+					pBullet->Limbo();
+					pBullet->Unlimbo(target, DirType::North);
+					pPosition->X = pBullet->TargetCoords.X;
+					pPosition->Y = pBullet->TargetCoords.Y;
+					pPosition->Z = pBullet->TargetCoords.Z + this->GetTrajectoryType<BombardTrajectoryType>(pBullet)->Height;
 
-					for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
+					if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
 					{
-						if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
-							pExt->LaserTrails.push_back(LaserTrailClass { pLaserType, pOwner });
+						auto pThis = pExt->OwnerObject();
+						auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+
+						for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
+						{
+							if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
+								pExt->LaserTrails.push_back(LaserTrailClass { pLaserType, pOwner });
+						}
 					}
+				}
+				else
+				{
+					pPosition->X = pBullet->TargetCoords.X;
+					pPosition->Y = pBullet->TargetCoords.Y;
 				}
 
 				CoordStruct BulletLocation {

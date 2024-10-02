@@ -2,39 +2,35 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
-{
-	this->PhobosTrajectoryType::Load(Stm, false);
-
-	Stm
-		.Process(this->DetonationDistance, false)
-		.Process(this->ApplyRangeModifiers, false)
-		.Process(this->TargetSnapDistance, false)
-		.Process(this->PassThrough, false)
-		;
-
-	return true;
-}
-
 PhobosTrajectory* StraightTrajectoryType::CreateInstance() const
 {
 	return new StraightTrajectory(this);
 }
 
-bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
+template<typename T>
+void StraightTrajectoryType::Serialize(T& Stm)
 {
-	this->PhobosTrajectoryType::Save(Stm);
-
 	Stm
 		.Process(this->DetonationDistance)
 		.Process(this->ApplyRangeModifiers)
 		.Process(this->TargetSnapDistance)
 		.Process(this->PassThrough)
 		;
+}
 
+bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->PhobosTrajectoryType::Load(Stm, false);
+	this->Serialize(Stm);
 	return true;
 }
 
+bool StraightTrajectoryType::Save(PhobosStreamWriter& Stm) const
+{
+	this->PhobosTrajectoryType::Save(Stm);
+	const_cast<StraightTrajectoryType*>(this)->Serialize(Stm);
+	return true;
+}
 
 void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
@@ -46,10 +42,9 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->PassThrough.Read(exINI, pSection, "Trajectory.Straight.PassThrough");
 }
 
-bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+template<typename T>
+void StraightTrajectory::Serialize(T& Stm)
 {
-	this->PhobosTrajectory::Load(Stm, false);
-
 	Stm
 		.Process(this->DetonationDistance)
 		.Process(this->TargetSnapDistance)
@@ -57,6 +52,12 @@ bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		.Process(this->FirerZPosition)
 		.Process(this->TargetZPosition)
 		;
+}
+
+bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	this->PhobosTrajectory::Load(Stm, false);
+	this->Serialize(Stm);
 
 	return true;
 }
@@ -65,13 +66,7 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 {
 	this->PhobosTrajectory::Save(Stm);
 
-	Stm
-		.Process(this->DetonationDistance)
-		.Process(this->TargetSnapDistance)
-		.Process(this->PassThrough)
-		.Process(this->FirerZPosition)
-		.Process(this->TargetZPosition)
-		;
+	const_cast<StraightTrajectory*>(this)->Serialize(Stm);
 
 	return true;
 }

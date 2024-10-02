@@ -934,7 +934,7 @@ DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
 }
 
 // In the following three places the distance check was hardcoded to compare with 20, 17 and 16 respectively,
-// which means it didn't consider the actual speed of the unit. Now we check it and the units won't get stuck 
+// which means it didn't consider the actual speed of the unit. Now we check it and the units won't get stuck
 // even at high speeds - NetsuNegi
 
 DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9)

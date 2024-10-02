@@ -458,32 +458,32 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	{
 		if (pType->ShadowIndex >= 0 && pType->ShadowIndex < main_vxl->HVA->LayerCount)
 			pThis->DrawVoxelShadow(
-				   main_vxl,
-				   pType->ShadowIndex,
-				   vxl_index_key,
-				   &pType->VoxelShadowCache,
-				   bounding,
-				   &why,
-				   &mtx,
-				   true,
-				   surface,
-				   shadow_point
+				main_vxl,
+				pType->ShadowIndex,
+				vxl_index_key,
+				&pType->VoxelShadowCache,
+				bounding,
+				&why,
+				&mtx,
+				true,
+				surface,
+				shadow_point
 			);
 	}
 	else
 	{
 		for (auto& [index, _] : uTypeExt->ShadowIndices)
 			pThis->DrawVoxelShadow(
-				   main_vxl,
-				   index,
-				   index == pType->ShadowIndex ? vxl_index_key : std::bit_cast<VoxelIndexKey>(-1),
-				   &pType->VoxelShadowCache,
-				   bounding,
-				   &why,
-				   &mtx,
-				   index == pType->ShadowIndex,
-				   surface,
-				   shadow_point
+				main_vxl,
+				index,
+				index == pType->ShadowIndex ? vxl_index_key : std::bit_cast<VoxelIndexKey>(-1),
+				&pType->VoxelShadowCache,
+				bounding,
+				&why,
+				&mtx,
+				index == pType->ShadowIndex,
+				surface,
+				shadow_point
 			);
 	}
 
@@ -759,7 +759,7 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x6)
 Matrix3D* __fastcall BounceClass_ShadowMatrix(BounceClass* self, void*, Matrix3D* ret)
 {
 	Matrix3D::FromQuaternion(ret, &self->CurrentAngle);
-	*ret = Matrix3D { 1, 0, 0 , 0,	0, 0.25, -0.4330127018922194 , 0, 0, 0, 0 , 0 } **ret;
+	*ret = Matrix3D { 1, 0, 0 , 0,	0, 0.25f, -0.4330127018922194f , 0, 0, 0, 0 , 0 } **ret;
 	return ret;
 }
 DEFINE_JUMP(CALL, 0x749CAC, GET_OFFSET(BounceClass_ShadowMatrix));

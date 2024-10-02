@@ -226,7 +226,6 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 				pipOrder.push_back(i);
 			}
 		}
-				
 
 		for (int i = 0; i < maxPips; i++)
 		{

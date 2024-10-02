@@ -222,7 +222,7 @@ namespace Helpers {
 			}
 
 			// flying objects are not included normally
-		    // Starkku: Reimplemented using AircraftTrackerClass.
+			// Starkku: Reimplemented using AircraftTrackerClass.
 			if (includeInAir)
 			{
 				auto const airTracker = &AircraftTrackerClass::Instance.get();
