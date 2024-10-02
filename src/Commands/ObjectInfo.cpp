@@ -248,7 +248,8 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 			dumpInfo(pTechno);
 	}
 
-	if (!dumped){
+	if (!dumped)
+	{
 		if (ObjectClass::CurrentObjects->Count > 0)
 		{
 			if (ObjectClass::CurrentObjects->Count != 1)
