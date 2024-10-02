@@ -5,7 +5,7 @@
 
 namespace MapTintFix
 {
-	std::unique_ptr<LightConvertClass> TiberiumLightDrawer;
+	LightConvertClass* TiberiumLightDrawer;
 }
 
 DEFINE_HOOK(0x53C441, ScenarioClass_UpdateLighting, 5)
@@ -30,7 +30,7 @@ DEFINE_HOOK(0x683E7F, Start_Scenario_SetInitialTint, 7)
 
 DEFINE_HOOK(0x52BE3B, InitGame_CreateTiberiumDrawer, 0x5)
 {
-	MapTintFix::TiberiumLightDrawer = std::make_unique<LightConvertClass>(LightConvertClass(
+	MapTintFix::TiberiumLightDrawer = GameCreate<LightConvertClass>(
 		&FileSystem::TEMPERAT_PAL, &FileSystem::TEMPERAT_PAL,
 		DSurface::Primary, 1000, 1000, 1000, false, nullptr, 53));
 
@@ -77,6 +77,6 @@ DEFINE_HOOK(0x5FE5F9, OverlayTypeClass_DrawIt_ReplaceTiberiumDrawer, 6)
 
 DEFINE_HOOK(0x6BE468, Prog_End_DeleteTiberiumDrawer, 6)
 {
-	MapTintFix::TiberiumLightDrawer.release();
+	GameDelete(MapTintFix::TiberiumLightDrawer);
 	return 0;
 }
