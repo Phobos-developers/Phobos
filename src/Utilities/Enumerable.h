@@ -115,11 +115,11 @@ public:
 		this->Name = Title;
 	}
 
-	void LoadFromINI(CCINIClass* pINI) { static_cast<T*>(this)->LoadFromINI(pINI); }//=0;
+	void LoadFromINI(CCINIClass* pINI) = delete;
 
-	void LoadFromStream(PhobosStreamReader& Stm) { static_cast<T*>(this)->LoadFromStream(Stm); }//=0;
+	void LoadFromStream(PhobosStreamReader& Stm) = delete;
 
-	void SaveToStream(PhobosStreamWriter& Stm) { static_cast<T*>(this)->SaveToStream(Stm); } //=0;
+	void SaveToStream(PhobosStreamWriter& Stm) = delete;
 
 	PhobosFixedString<32> Name;
 };
