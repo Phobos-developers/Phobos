@@ -15,7 +15,7 @@ public:
 
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
-	double Height;
+	Valueable<double> Height;
 
 private:
 	template <typename T>
@@ -27,9 +27,9 @@ class BombardTrajectory final : public PhobosTrajectory
 public:
 	BombardTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
-	BombardTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Bombard)
+	BombardTrajectory(BombardTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Bombard)
 		, IsFalling { false }
-		, Height { 0.0 }
+		, Height { trajType->Height }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;

@@ -290,7 +290,7 @@ namespace Savegame
 			{
 				std::vector<char> buffer(size);
 
-				if (!size || Stm.Read(reinterpret_cast<byte*>(&buffer[0]), size))
+				if (!size || Stm.Read(reinterpret_cast<byte*>(buffer.data()), size))
 				{
 					Value.assign(buffer.begin(), buffer.end());
 					return true;
