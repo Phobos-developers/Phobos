@@ -29,7 +29,8 @@ bool BombardTrajectoryType::Save(PhobosStreamWriter& Stm) const
 
 void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
-	this->Height = pINI->ReadDouble(pSection, "Trajectory.Bombard.Height", 0.0);
+	INI_EX exINI(pINI);
+	this->Height.Read(exINI, pSection, "Trajectory.Bombard.Height");
 }
 
 template<typename T>
@@ -61,7 +62,7 @@ bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	this->Height = this->GetTrajectoryType<BombardTrajectoryType>(pBullet)->Height + pBullet->TargetCoords.Z;
+	this->Height += pBullet->TargetCoords.Z;
 
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
