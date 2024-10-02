@@ -2,40 +2,8 @@
 
 #include <TacticalClass.h>
 #include <SpawnManagerClass.h>
-#include <BitFont.h>
 
 #include <Utilities/EnumFunctions.h>
-#include <Misc/FlyingStrings.h>
-
-
-void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage)
-{
-	if (!pThis || damage == 0)
-		return;
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	ColorStruct color;
-
-	if (!isShieldDamage)
-		color = damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
-	else
-		color = damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 };
-
-	auto coords = pThis->GetRenderCoords();
-	int maxOffset = Unsorted::CellWidthInPixels / 2;
-	int width = 0, height = 0;
-	wchar_t damageStr[0x20];
-	swprintf_s(damageStr, L"%d", damage);
-
-	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
-
-	if (pExt->DamageNumberOffset >= maxOffset || pExt->DamageNumberOffset.empty())
-		pExt->DamageNumberOffset = -maxOffset;
-
-	FlyingStrings::Add(damageStr, coords, color, Point2D { pExt->DamageNumberOffset - (width / 2), 0 });
-
-	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
-}
 
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
@@ -46,32 +14,28 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	bool isInfantryHeal = false;
 	int selfHealFrames = 0;
 
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::NoHeal)
+		return;
+
+	bool hasInfantrySelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
+	bool hasUnitSelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Units;
+	bool isOrganic = false;
+
+	if (pThis->WhatAmI() == AbstractType::Infantry || (pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit))
+		isOrganic = true;
+
+	if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)))
 	{
-		if (pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::None)
-			return;
-
-		bool hasInfantrySelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
-		bool hasUnitSelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Units;
-		bool isOrganic = false;
-
-		if (pThis->WhatAmI() == AbstractType::Infantry ||
-			pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit)
-		{
-			isOrganic = true;
-		}
-
-		if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)))
-		{
-			drawPip = true;
-			selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
-			isInfantryHeal = true;
-		}
-		else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)))
-		{
-			drawPip = true;
-			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
-		}
+		drawPip = true;
+		selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
+		isInfantryHeal = true;
+	}
+	else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)))
+	{
+		drawPip = true;
+		selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
 	}
 
 	if (drawPip)
@@ -103,7 +67,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		}
 		else
 		{
-			auto pType = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+			auto pType = static_cast<BuildingClass*>(pThis)->Type;
 			int fHeight = pType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
@@ -210,13 +174,20 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	if (frameIndex != -1 && pShapeFile)
 	{
-		offset.X += 5;
-		offset.Y += 2;
-
-		if (pThis->WhatAmI() != AbstractType::Infantry)
+		switch (pThis->WhatAmI())
 		{
-			offset.X += 5;
-			offset.Y += 4;
+		case AbstractType::Infantry:
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Infantry;
+			break;
+		case AbstractType::Building:
+			if (RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor.isset())
+				offset = GetBuildingSelectBracketPosition(pThis, RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor) + RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
+			else
+				offset += RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
+			break;
+		default:
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units;
+			break;
 		}
 
 		DSurface::Temp->DrawSHP(
@@ -231,12 +202,7 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
 {
-	CoordStruct absolute = pThis->GetCoords();
-	Point2D  position = { 0,0 };
-	TacticalClass::Instance->CoordsToScreen(&position, &absolute);
-	position -= TacticalClass::Instance->TacticalPos;
-
-	return position;
+	return TacticalClass::Instance->CoordsToClient(pThis->GetCoords()).first;
 }
 
 Point2D TechnoExt::GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor)
@@ -264,9 +230,8 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 	Point2D position = GetScreenLocation(pThis);
 	CoordStruct dim2 = CoordStruct::Empty;
 	pBuildingType->Dimension2(&dim2);
-	Point2D positionFix = Point2D::Empty;
 	dim2 = { -dim2.X / 2, dim2.Y / 2, dim2.Z };
-	TacticalClass::Instance->CoordsToScreen(&positionFix, &dim2);
+	Point2D positionFix = TacticalClass::CoordsToScreen(dim2);
 
 	const int foundationWidth = pBuildingType->GetFoundationWidth();
 	const int foundationHeight = pBuildingType->GetFoundationHeight(false);
@@ -373,6 +338,12 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 
 		if (value == -1 || maxValue == -1)
 			continue;
+
+		if (pDisplayType->ValueScaleDivisor > 1)
+		{
+			value = Math::max(value / pDisplayType->ValueScaleDivisor, value != 0 ? 1 : 0);
+			maxValue = Math::max(maxValue / pDisplayType->ValueScaleDivisor, maxValue != 0 ? 1 : 0);
+		}
 
 		const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
 		const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;

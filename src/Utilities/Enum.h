@@ -152,7 +152,7 @@ enum class AutoDeathBehavior
 
 enum class SelfHealGainType
 {
-	None = 0,
+	NoHeal = 0,
 	Infantry = 1,
 	Units = 2
 };
@@ -195,10 +195,17 @@ enum class TargetZoneScanType
 	InRange = 2
 };
 
+enum class DamageDisplayType
+{
+	Regular = 0,
+	Shield = 1,
+	Intercept = 2
+};
+
 enum class ChronoSparkleDisplayPosition : unsigned char
 {
 	None = 0x0,
-	Building= 0x1,
+	Building = 0x1,
 	Occupants = 0x2,
 	OccupantSlots = 0x4,
 
@@ -206,6 +213,31 @@ enum class ChronoSparkleDisplayPosition : unsigned char
 };
 
 MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
+
+enum class DiscardCondition : unsigned char
+{
+	None = 0x0,
+	Entry = 0x1,
+	Move = 0x2,
+	Stationary = 0x4,
+	Drain = 0x8,
+	InRange = 0x10,
+	OutOfRange = 0x20
+};
+
+MAKE_ENUM_FLAGS(DiscardCondition);
+
+enum class ExpireWeaponCondition : unsigned char
+{
+	None = 0x0,
+	Expire = 0x1,
+	Remove = 0x2,
+	Death = 0x4,
+
+	All = 0xFF,
+};
+
+MAKE_ENUM_FLAGS(ExpireWeaponCondition);
 
 enum class HorizontalPosition : BYTE
 {

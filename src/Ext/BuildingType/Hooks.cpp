@@ -107,16 +107,16 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 			nImageFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(nImageFrame), 0, (int)pImage->Frames);
 		}
 
-		Point2D nPoint = { 0, 0 };
+
+		Point2D point;
 		{
 			CoordStruct offset = pTypeExt->PlacementPreview_Offset;
 			int nHeight = offset.Z + pCell->GetFloorHeight({ 0, 0 });
-			TacticalClass::Instance->CoordsToClient(
-				CellClass::Cell2Coord(pCell->MapCoords, nHeight),
-				&nPoint
-			);
-			nPoint.X += offset.X;
-			nPoint.Y += offset.Y;
+			CoordStruct coords = CellClass::Cell2Coord(pCell->MapCoords, nHeight);
+
+			point = TacticalClass::Instance->CoordsToClient(coords).first;
+			point.X += offset.X;
+			point.Y += offset.Y;
 		}
 
 		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRules->PlacementPreview_Translucency) |
@@ -127,10 +127,10 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 			: pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
 
 		DSurface* pSurface = DSurface::Temp;
-		RectangleStruct nRect = pSurface->GetRect();
-		nRect.Height -= 32; // account for bottom bar
+		RectangleStruct rect = pSurface->GetRect();
+		rect.Height -= 32; // account for bottom bar
 
-		CC_Draw_Shape(pSurface, pPalette, pImage, nImageFrame, &nPoint, &nRect, blitFlags,
+		CC_Draw_Shape(pSurface, pPalette, pImage, nImageFrame, &point, &rect, blitFlags,
 			0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
@@ -185,9 +185,14 @@ DEFINE_HOOK(0x465D40, BuildingTypeClass_IsVehicle, 0x6)
 	GET(BuildingTypeClass*, pThis, ECX);
 
 	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis);
-	R->EAX(pExt->ConsideredVehicle.Get(pThis->UndeploysInto && pThis->Foundation == Foundation::_1x1));
 
-	return ReturnFromFunction;
+	if (pExt->ConsideredVehicle.isset())
+	{
+		R->EAX(pExt->ConsideredVehicle.Get());
+		return ReturnFromFunction;
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x5F5416, ObjectClass_ReceiveDamage_CanC4DamageRounding, 0x6)
@@ -199,7 +204,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_ReceiveDamage_CanC4DamageRounding, 0x6)
 
 	if (*pDamage == 0 && pThis->WhatAmI() == AbstractType::Building)
 	{
-		auto const pType = static_cast<BuildingTypeClass*>(pThis->GetType());
+		auto const pType = static_cast<BuildingClass*>(pThis)->Type;
 
 		if (!pType->CanC4)
 		{

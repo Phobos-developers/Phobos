@@ -6,14 +6,24 @@ const char* Enumerable<ShieldTypeClass>::GetMainSection()
 	return "ShieldTypes";
 }
 
-AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRatio)
+AnimTypeClass* ShieldTypeClass::GetIdleAnimType(bool isDamaged, double healthRatio) const
 {
 	auto damagedAnim = this->IdleAnimDamaged.Get(healthRatio);
 
 	if (isDamaged && damagedAnim)
 		return damagedAnim;
 	else
-		return this->IdleAnim.Get(healthRatio);
+		return this->IdleAnim.Get(healthRatio, this->GetConditionYellow(), this->GetConditionRed());
+}
+
+double ShieldTypeClass::GetConditionYellow() const
+{
+	return this->ConditionYellow.Get(RulesExt::Global()->Shield_ConditionYellow.Get(RulesClass::Instance->ConditionYellow));
+}
+
+double ShieldTypeClass::GetConditionRed() const
+{
+	return this->ConditionRed.Get(RulesExt::Global()->Shield_ConditionRed.Get(RulesClass::Instance->ConditionRed));
 }
 
 void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
@@ -26,6 +36,8 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Strength.Read(exINI, pSection, "Strength");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
+	this->ConditionYellow.Read(exINI, pSection, "ConditionYellow");
+	this->ConditionRed.Read(exINI, pSection, "ConditionRed");
 	this->Armor.Read(exINI, pSection, "Armor");
 	this->InheritArmorFromTechno.Read(exINI, pSection, "InheritArmorFromTechno");
 	this->Powered.Read(exINI, pSection, "Powered");
@@ -58,6 +70,12 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->BreakAnim.Read(exINI, pSection, "BreakAnim");
 	this->HitAnim.Read(exINI, pSection, "HitAnim");
+	this->HitFlash.Read(exINI, pSection, "HitFlash");
+	this->HitFlash_FixedSize.Read(exINI, pSection, "HitFlash.FixedSize");
+	this->HitFlash_Red.Read(exINI, pSection, "HitFlash.Red");
+	this->HitFlash_Green.Read(exINI, pSection, "HitFlash.Green");
+	this->HitFlash_Blue.Read(exINI, pSection, "HitFlash.Blue");
+	this->HitFlash_Black.Read(exINI, pSection, "HitFlash.Black");
 	this->BreakWeapon.Read<true>(exINI, pSection, "BreakWeapon");
 
 	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
@@ -72,6 +90,10 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->ImmuneToBerserk.Read(exINI, pSection, "ImmuneToBerserk");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
+
+	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
+	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
+	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
 }
 
 template <typename T>
@@ -80,6 +102,8 @@ void ShieldTypeClass::Serialize(T& Stm)
 	Stm
 		.Process(this->Strength)
 		.Process(this->InitialStrength)
+		.Process(this->ConditionYellow)
+		.Process(this->ConditionRed)
 		.Process(this->Armor)
 		.Process(this->InheritArmorFromTechno)
 		.Process(this->Powered)
@@ -98,6 +122,12 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->IdleAnim)
 		.Process(this->BreakAnim)
 		.Process(this->HitAnim)
+		.Process(this->HitFlash)
+		.Process(this->HitFlash_FixedSize)
+		.Process(this->HitFlash_Red)
+		.Process(this->HitFlash_Green)
+		.Process(this->HitFlash_Blue)
+		.Process(this->HitFlash_Black)
 		.Process(this->BreakWeapon)
 		.Process(this->AbsorbPercent)
 		.Process(this->PassPercent)
@@ -108,6 +138,9 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Pips_Building_Empty)
 		.Process(this->ImmuneToBerserk)
 		.Process(this->ImmuneToCrit)
+		.Process(this->Tint_Color)
+		.Process(this->Tint_Intensity)
+		.Process(this->Tint_VisibleToHouses)
 		;
 }
 

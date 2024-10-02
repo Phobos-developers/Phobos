@@ -2,16 +2,17 @@
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
-#include <GameStrings.h>
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
 #include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Debug.h>
+#include <Utilities/Anchor.h>
 
 class AnimTypeClass;
 class MouseCursor;
+class SuperWeaponTypeClass;
 class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
@@ -39,13 +40,23 @@ public:
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
 		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
+		Valueable<int> ChronoSpherePreDelay;
+		Valueable<int> ChronoSphereDelay;
+		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
+		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
+		Valueable<int> SubterraneanHeight;
+		Nullable<int> AISuperWeaponDelay;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
-		Valueable<bool> RadWarhead_Detonate;
+		Valueable<int> RadBuildingDamageMaxCount;
+		Valueable<bool> RadSiteWarhead_Detonate;
+		Valueable<bool> RadSiteWarhead_Detonate_Full;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
+
+		Nullable<WarheadTypeClass*> VeinholeWarhead;
 
 		PhobosFixedString<32u> MissingCameo;
 
@@ -54,6 +65,9 @@ public:
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
 
+		Nullable<double> ConditionYellow_Terrain;
+		Nullable<double> Shield_ConditionYellow;
+		Nullable<double> Shield_ConditionRed;
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
@@ -69,7 +83,14 @@ public:
 		Valueable<Point2D> Pips_Ammo_Size;
 		Valueable<Point2D> Pips_Ammo_Buildings_Size;
 		ValueableVector<int> Pips_Tiberiums_Frames;
+		Valueable<int> Pips_Tiberiums_EmptyFrame;
 		ValueableVector<int> Pips_Tiberiums_DisplayOrder;
+		Valueable<int> Pips_Tiberiums_WeedFrame;
+		Valueable<int> Pips_Tiberiums_WeedEmptyFrame;
+
+		Valueable<bool> HeightShadowScaling;
+		Valueable<double> HeightShadowScaling_MinScale;
+		double AirShadowBaseScale_log;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -78,6 +99,8 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Navy;
 		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
+		Valueable<bool> EnablePowerSurplus;
+
 		Valueable<bool> DisplayIncome;
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
@@ -85,6 +108,13 @@ public:
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
+		Valueable<bool> ForceShield_KeptOnDeploy;
+		Valueable<IronCurtainEffect> ForceShield_EffectOnOrganics;
+		Nullable<WarheadTypeClass*> ForceShield_KillOrganicsWarhead;
+
+		Valueable<double> IronCurtain_ExtraTintIntensity;
+		Valueable<double> ForceShield_ExtraTintIntensity;
+		Valueable<bool> ColorAddUse8BitRGB;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -92,6 +122,8 @@ public:
 		Valueable<float> ToolTip_Background_BlurSize;
 
 		Valueable<bool> CrateOnlyOnLand;
+		Valueable<int> UnitCrateVehicleCap;
+		Valueable<int> FreeMCV_CreditsThreshold;
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 		Valueable<bool> DrawTurretShadow;
 		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
@@ -104,6 +136,29 @@ public:
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
+		Valueable<int> SelectionFlashDuration;
+		AnimTypeClass* DropPodTrailer;
+		SHPStruct* PodImage;
+		Valueable<bool> DrawInsignia_OnlyOnSelected;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Infantry;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
+		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
+		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
+		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
+		Valueable<AnimTypeClass*> Promote_EliteAnimation;
+
+		Valueable<double> AircraftLevelLightMultiplier;
+		Valueable<double> JumpjetLevelLightMultiplier;
+
+		Nullable<Vector3D<float>> VoxelLightSource;
+		// Nullable<Vector3D<float>> VoxelShadowLightSource;
+		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<bool> GatherWhenMCVDeploy;
+		Valueable<bool> AIFireSale;
+		Valueable<int> AIFireSaleDelay;
+		Valueable<bool> AIAllToHunt;
+		Valueable<bool> RepairBaseNodes;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -114,13 +169,22 @@ public:
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
 			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
+			, ChronoSpherePreDelay { 60 }
+			, ChronoSphereDelay { 0 }
+			, AIChronoSphereSW {}
+			, AIChronoWarpSW {}
+			, SubterraneanHeight { -256 }
+			, AISuperWeaponDelay {}
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
-			, RadWarhead_Detonate { false }
+			, RadBuildingDamageMaxCount { -1 }
+			, RadSiteWarhead_Detonate { false }
+			, RadSiteWarhead_Detonate_Full { true }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
+			, VeinholeWarhead {}
 			, MissingCameo { GameStrings::XXICON_SHP() }
 
 			, PlacementGrid_Translucency { 0 }
@@ -128,6 +192,8 @@ public:
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
 
+			, Shield_ConditionYellow { }
+			, Shield_ConditionRed { }
 			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { -1,-1,-1 } }
 			, Pips_Shield_Building_Empty { }
@@ -142,16 +208,33 @@ public:
 			, Pips_Ammo_Size { { 4, 0 } }
 			, Pips_Ammo_Buildings_Size { { 4, 2 } }
 			, Pips_Tiberiums_Frames {}
+			, Pips_Tiberiums_EmptyFrame { 0 }
 			, Pips_Tiberiums_DisplayOrder {}
+			, Pips_Tiberiums_WeedFrame { 1 }
+			, Pips_Tiberiums_WeedEmptyFrame { 0 }
+
+			, HeightShadowScaling { false }
+			, HeightShadowScaling_MinScale { 0.0 }
+			, AirShadowBaseScale_log { 0.693376137 }
+
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
 			, ForbidParallelAIQueues_Infantry { false }
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
+
+			, EnablePowerSurplus { false }
+
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
+			, ForceShield_KeptOnDeploy { false }
+			, ForceShield_EffectOnOrganics { IronCurtainEffect::Kill }
+			, ForceShield_KillOrganicsWarhead { }
+			, IronCurtain_ExtraTintIntensity { 0.0 }
+			, ForceShield_ExtraTintIntensity { 0.0 }
+			, ColorAddUse8BitRGB { false }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
@@ -160,9 +243,19 @@ public:
 			, DisplayIncome_AllowAI { true }
 			, DisplayIncome_Houses { AffectedHouse::All }
 			, CrateOnlyOnLand { false }
+			, UnitCrateVehicleCap { 50 }
+			, FreeMCV_CreditsThreshold { 1500 }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
+			, SelectionFlashDuration { 0 }
+			, DrawInsignia_OnlyOnSelected { false }
+			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }
+			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
+			, DrawInsignia_AdjustPos_BuildingsAnchor {}
+			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
+			, Promote_VeteranAnimation {}
+			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
 			, Buildings_DefaultDigitalDisplayTypes {}
@@ -170,6 +263,18 @@ public:
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
 			, ShowDesignatorRange { true }
+			, DropPodTrailer { }
+			, PodImage { }
+			, AircraftLevelLightMultiplier { 1.0 }
+			, JumpjetLevelLightMultiplier { 0.0 }
+			, VoxelLightSource { }
+			// , VoxelShadowLightSource { }
+			, UseFixedVoxelLighting { false }
+			, GatherWhenMCVDeploy { true }
+			, AIFireSale { true }
+			, AIFireSaleDelay { 0 }
+			, AIAllToHunt { true }
+			, RepairBaseNodes { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -184,6 +289,8 @@ public:
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
+		void ReplaceVoxelLightSources();
 
 	private:
 		template <typename T>

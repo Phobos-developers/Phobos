@@ -77,7 +77,8 @@ public:
 			return false;
 
 
-		for (size_t i = 0; i < Count; ++i) {
+		for (size_t i = 0; i < Count; ++i)
+		{
 			void* oldPtr = nullptr;
 			decltype(Name) name;
 
@@ -85,7 +86,7 @@ public:
 				return false;
 
 			auto newPtr = FindOrAllocate(name);
-			PhobosSwizzle::Instance.RegisterChange(oldPtr, newPtr);
+			PhobosSwizzle::RegisterChange(oldPtr, newPtr);
 
 			newPtr->LoadFromStream(Stm);
 		}
@@ -115,13 +116,11 @@ public:
 		this->Name = Title;
 	}
 
-	virtual ~Enumerable() = default;
+	void LoadFromINI(CCINIClass* pINI) = delete;
 
-	virtual void LoadFromINI(CCINIClass* pINI) { }
+	void LoadFromStream(PhobosStreamReader& Stm) = delete;
 
-	virtual void LoadFromStream(PhobosStreamReader& Stm) = 0;
-
-	virtual void SaveToStream(PhobosStreamWriter& Stm) = 0;
+	void SaveToStream(PhobosStreamWriter& Stm) = delete;
 
 	PhobosFixedString<32> Name;
 };

@@ -6,8 +6,10 @@
 
 #include <Utilities/GeneralUtils.h>
 
-#define IS_CELL_OCCUPIED(pCell)\
-pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false) \
+constexpr bool IS_CELL_OCCUPIED(CellClass* pCell)
+{
+	return pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false);
+}
 
 // Passable TerrainTypes Hook #1 - Do not set occupy bits.
 DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
@@ -53,28 +55,23 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 }
 
 // Passable TerrainTypes Hook #3 - Count passable TerrainTypes as completely passable.
-DEFINE_HOOK(0x483D87, CellClass_CheckPassability_PassableTerrain, 0x5)
+DEFINE_HOOK(0x483DDF, CellClass_CheckPassability_PassableTerrain, 0x6)
 {
-	enum { SkipToNextObject = 0x483DCD, ReturnFromFunction = 0x483E25, BreakFromLoop = 0x483DDF };
+	enum { ReturnFromFunction = 0x483E25 };
 
 	GET(CellClass*, pThis, EDI);
-	GET(ObjectClass*, pObject, ESI);
+	GET(TerrainClass*, pTerrain, ESI);
 
-	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
+	if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type))
 	{
-		if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type))
+		if (pTypeExt->IsPassable)
 		{
-			if (pTypeExt->IsPassable)
-			{
-				pThis->Passability = 0;
-				return ReturnFromFunction;
-			}
+			pThis->Passability = PassabilityType::Passable;
+			return ReturnFromFunction;
 		}
-
-		return BreakFromLoop;
 	}
 
-	return SkipToNextObject;
+	return 0;
 }
 
 // Passable TerrainTypes Hook #4 - Make passable for vehicles.
@@ -89,13 +86,7 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
 
 		if (pTypeExt->IsPassable)
-		{
-			if (IS_CELL_OCCUPIED(pTerrain->GetCell()))
-				return SkipTerrainChecks;
-
-			R->EBP(0);
-			return ReturnPassable;
-		}
+			return SkipTerrainChecks;
 	}
 
 	return 0;

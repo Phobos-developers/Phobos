@@ -9,7 +9,7 @@
 
 #include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
-
+#pragma region RedoAllThesePleaseItsInFactVerySimpleJustFollowTemplateDef_h
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	Stm.Process(this->Flag, false);
@@ -56,7 +56,7 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 	if (pType)
 	{
 		Stm.Process(flag, false);
-
+		auto old = pType;
 		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
@@ -71,6 +71,7 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 
 		pType->Flag = flag;
 		pType->Load(Stm, false);
+		PhobosSwizzle::RegisterChange(old, pType);
 	}
 
 	return pType;
@@ -119,27 +120,6 @@ double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 		return 100.0;
 }
 
-PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
-{
-	PhobosTrajectory* pRet = nullptr;
-
-	switch (pType->Flag)
-	{
-	case TrajectoryFlag::Straight:
-		pRet = DLLCreate<StraightTrajectory>(pType);
-		break;
-
-	case TrajectoryFlag::Bombard:
-		pRet = DLLCreate<BombardTrajectory>(pType);
-		break;
-	}
-
-	if (pRet)
-		pRet->OnUnlimbo(pBullet, pCoord, pVelocity);
-
-	return pRet;
-}
-
 PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 {
 	PhobosTrajectory* pTraj = nullptr;
@@ -149,14 +129,14 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 	if (pTraj)
 	{
 		Stm.Process(flag, false);
-
+		auto old = pTraj;
 		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
-			pTraj = DLLCreate<StraightTrajectory>();
+			pTraj = new StraightTrajectory(noinit_t {});
 			break;
 		case TrajectoryFlag::Bombard:
-			pTraj = DLLCreate<BombardTrajectory>();
+			pTraj = new BombardTrajectory(noinit_t {});
 			break;
 		default:
 			return nullptr;
@@ -164,6 +144,7 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 
 		pTraj->Flag = flag;
 		pTraj->Load(Stm, false);
+		PhobosSwizzle::RegisterChange(old, pTraj);
 	}
 
 	return pTraj;
@@ -190,7 +171,7 @@ PhobosTrajectory* PhobosTrajectory::ProcessFromStream(PhobosStreamWriter& Stm, P
 	WriteToStream(Stm, pTraj);
 	return pTraj;
 }
-
+#pragma endregion
 
 DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 {
@@ -206,6 +187,24 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 
 	if (detonate && !pThis->SpawnNextAnim)
 		return Detonate;
+
+	if (pExt->Trajectory && pExt->LaserTrails.size())
+	{
+		CoordStruct futureCoords
+		{
+			pThis->Location.X + static_cast<int>(pThis->Velocity.X),
+			pThis->Location.Y + static_cast<int>(pThis->Velocity.Y),
+			pThis->Location.Z + static_cast<int>(pThis->Velocity.Z)
+		};
+
+		for (auto& trail : pExt->LaserTrails)
+		{
+			if (!trail.LastLocation.isset())
+				trail.LastLocation = pThis->Location;
+
+			trail.Update(futureCoords);
+		}
+	}
 
 	return 0;
 }
@@ -302,7 +301,10 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	auto const pTypeExt = pExt->TypeExtData;
 
 	if (pTypeExt && pTypeExt->TrajectoryType)
-		pExt->Trajectory = PhobosTrajectory::CreateInstance(pTypeExt->TrajectoryType, pThis, pCoord, pVelocity);
+	{
+		pExt->Trajectory = pTypeExt->TrajectoryType->CreateInstance();
+		pExt->Trajectory->OnUnlimbo(pThis, pCoord, pVelocity);
+	}
 
 	return 0;
 }

@@ -23,6 +23,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_AuxBuildings)
 		.Process(this->SW_NegBuildings)
 		.Process(this->SW_InitialReady)
+		.Process(this->SW_PostDependent)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
@@ -35,6 +36,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Detonate_Warhead)
 		.Process(this->Detonate_Weapon)
 		.Process(this->Detonate_Damage)
+		.Process(this->Detonate_Warhead_Full)
 		.Process(this->Detonate_AtFirer)
 		.Process(this->SW_Next)
 		.Process(this->SW_Next_RealLaunch)
@@ -45,6 +47,11 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->TabIndex)
+		.Process(this->UseWeeds)
+		.Process(this->UseWeeds_Amount)
+		.Process(this->UseWeeds_StorageTimer)
+		.Process(this->UseWeeds_ReadinessAnimationPercentage)
 		;
 }
 
@@ -73,6 +80,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_AuxBuildings.Read(exINI, pSection, "SW.AuxBuildings");
 	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
 	this->SW_InitialReady.Read(exINI, pSection, "SW.InitialReady");
+	this->SW_PostDependent.Read(exINI, pSection, "SW.PostDependent");
 
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
@@ -91,7 +99,6 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	char tempBuffer[32];
 	// LimboDelivery.RandomWeights
-	// so you know what's going on by not clearing the vector, do you?
 	for (size_t i = 0; ; ++i)
 	{
 		ValueableVector<int> weights;
@@ -101,8 +108,12 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (!weights.size())
 			break;
 
-		this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
+		if (this->LimboDelivery_RandomWeightsData.size() > i)
+			this->LimboDelivery_RandomWeightsData[i] = std::move(weights);
+		else
+			this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
 	}
+
 	ValueableVector<int> weights;
 	weights.Read(exINI, pSection, "LimboDelivery.RandomWeights");
 	if (weights.size())
@@ -123,8 +134,12 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (!weights2.size())
 			break;
 
-		this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
+		if (this->SW_Next_RandomWeightsData.size() > i)
+			this->SW_Next_RandomWeightsData[i] = std::move(weights2);
+		else
+			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
 	}
+
 	ValueableVector<int> weights2;
 	weights2.Read(exINI, pSection, "SW.Next.RandomWeights");
 	if (weights2.size())
@@ -135,50 +150,24 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
 	}
 
-	this->Detonate_Warhead.Read(exINI, pSection, "Detonate.Warhead");
+	this->Detonate_Warhead.Read<true>(exINI, pSection, "Detonate.Warhead");
 	this->Detonate_Weapon.Read<true>(exINI, pSection, "Detonate.Weapon");
 	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
+	this->Detonate_Warhead_Full.Read(exINI, pSection, "Detonate.Warhead.Full");
 	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
 
 	// Convert.From & Convert.To
-	for (size_t i = 0; ; ++i)
-	{
-		ValueableVector<TechnoTypeClass*> convertFrom;
-		Nullable<TechnoTypeClass*> convertTo;
-		Nullable<AffectedHouse> convertAffectedHouses;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
-		convertFrom.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
-		convertTo.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i);
-		convertAffectedHouses.Read(exINI, pSection, tempBuffer);
-
-		if (!convertTo.isset())
-			break;
-
-		if (!convertAffectedHouses.isset())
-			convertAffectedHouses = AffectedHouse::Owner;
-
-		this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
-	}
-	ValueableVector<TechnoTypeClass*> convertFrom;
-	Nullable<TechnoTypeClass*> convertTo;
-	Nullable<AffectedHouse> convertAffectedHouses;
-	convertFrom.Read(exINI, pSection, "Convert.From");
-	convertTo.Read(exINI, pSection, "Convert.To");
-	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
-	if (convertTo.isset())
-	{
-		if (!convertAffectedHouses.isset())
-			convertAffectedHouses = AffectedHouse::Owner;
-
-		if (this->Convert_Pairs.size())
-			this->Convert_Pairs[0] = { convertFrom, convertTo, convertAffectedHouses };
-		else
-			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
-	}
+	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::Owner);
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
+
+	this->TabIndex.Read(exINI, pSection, "TabIndex");
+	GeneralUtils::IntValidCheck(&this->TabIndex, pSection, "TabIndex", 1, 0, 3);
+
+	this->UseWeeds.Read(exINI, pSection, "UseWeeds");
+	this->UseWeeds_Amount.Read(exINI, pSection, "UseWeeds.Amount");
+	this->UseWeeds_StorageTimer.Read(exINI, pSection, "UseWeeds.StorageTimer");
+	this->UseWeeds_ReadinessAnimationPercentage.Read(exINI, pSection, "UseWeeds.ReadinessAnimationPercentage");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -209,8 +198,7 @@ bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 // container
 
 SWTypeExt::ExtContainer::ExtContainer() : Container("SuperWeaponTypeClass")
-{
-}
+{ }
 
 SWTypeExt::ExtContainer::~ExtContainer() = default;
 

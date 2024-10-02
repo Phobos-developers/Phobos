@@ -63,7 +63,7 @@ public:
 	Valueable& operator = (Valueable const& value) = default;
 	Valueable& operator = (Valueable&& value) = default;
 
-	template <typename Val, typename = std::enable_if_t<std::is_assignable<T&, Val&&>::value>>
+	template <typename Val> requires std::assignable_from<T&, Val&&>
 	Valueable& operator = (Val value)
 	{
 		this->Value = std::move(value);
@@ -156,7 +156,7 @@ public:
 	ValueableIdx& operator = (ValueableIdx const& value) = default;
 	ValueableIdx& operator = (ValueableIdx&& value) = default;
 
-	template <typename Val, typename = std::enable_if_t<std::is_assignable<int&, Val&&>::value>>
+	template <typename Val> requires std::assignable_from<int&, Val&&>
 	ValueableIdx& operator = (Val value)
 	{
 		this->Value = std::move(value);
@@ -415,20 +415,17 @@ public:
 	explicit Damageable(T const& all)
 		noexcept(noexcept(T { all }))
 		: BaseValue { all }
-	{
-	}
+	{ }
 
 	explicit Damageable(T const& undamaged, T const& damaged)
 		noexcept(noexcept(T { undamaged }) && noexcept(T { damaged }))
 		: BaseValue { undamaged }, ConditionYellow { damaged }
-	{
-	}
+	{ }
 
 	explicit Damageable(T const& green, T const& yellow, T const& red)
 		noexcept(noexcept(T { green }) && noexcept(T { yellow }) && noexcept(T { red }))
 		: BaseValue { green }, ConditionYellow { yellow }, ConditionRed { red }
-	{
-	}
+	{ }
 
 	inline void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag, const char* pSingleFlag = nullptr);
 
@@ -447,11 +444,17 @@ public:
 		return &this->Get(ratio);
 	}
 
-	const T& Get(double ratio) const noexcept
+	const T& Get(double ratio, double conditionYellow = -1, double conditionRed = -1) const noexcept
 	{
-		if (this->ConditionRed.isset() && ratio <= RulesClass::Instance->ConditionRed)
+		if (conditionYellow < 0)
+			conditionYellow = RulesClass::Instance->ConditionYellow;
+
+		if (conditionRed < 0)
+			conditionRed = RulesClass::Instance->ConditionRed;
+
+		if (this->ConditionRed.isset() && ratio <= conditionRed)
 			return this->ConditionRed;
-		else if (this->ConditionYellow.isset() && ratio <= RulesClass::Instance->ConditionYellow)
+		else if (this->ConditionYellow.isset() && ratio <= conditionYellow)
 			return this->ConditionYellow;
 
 		return this->BaseValue;
@@ -475,5 +478,3 @@ class PartialVector3D : public Vector3D<T> // Same as Vector3D except parsing on
 public:
 	size_t ValueCount;
 };
-
-

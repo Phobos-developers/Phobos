@@ -2,6 +2,11 @@
 #include "Debug.h"
 #include <Theater.h>
 #include <ScenarioClass.h>
+#include <BitFont.h>
+
+#include <Ext/Rules/Body.h>
+#include <Misc/FlyingStrings.h>
+#include <Utilities/Constructs.h>
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -174,4 +179,84 @@ CoordStruct GeneralUtils::CalculateCoordsFromDistance(CoordStruct currentCoords,
 	int y = static_cast<int>(targetCoords.Y - Math::sin(radians) * distance);
 
 	return CoordStruct { x, y, targetCoords.Z };
+}
+
+void GeneralUtils::DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset)
+{
+	if (damage == 0)
+		return;
+
+	ColorStruct color;
+
+	switch (type)
+	{
+	case DamageDisplayType::Regular:
+		color = damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+		break;
+	case DamageDisplayType::Shield:
+		color = damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 };
+		break;
+	case DamageDisplayType::Intercept:
+		color = damage > 0 ? ColorStruct { 255, 128, 128 } : ColorStruct { 128, 255, 128 };
+		break;
+	default:
+		break;
+	}
+
+	int maxOffset = Unsorted::CellWidthInPixels / 2;
+	int width = 0, height = 0;
+	wchar_t damageStr[0x20];
+	swprintf_s(damageStr, L"%d", damage);
+
+	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
+
+	if (offset >= maxOffset || offset == INT32_MIN)
+		offset = -maxOffset;
+
+	FlyingStrings::Add(damageStr, coords, color, Point2D { offset - (width / 2), 0 });
+
+	offset = offset + width;
+}
+
+DynamicVectorClass<ColorScheme*>* GeneralUtils::BuildPalette(const char* paletteFileName)
+{
+	if (GeneralUtils::IsValidString(paletteFileName))
+	{
+		char pFilename[0x20];
+		strcpy_s(pFilename, paletteFileName);
+
+		return ColorScheme::GeneratePalette(pFilename);
+	}
+
+	return nullptr;
+}
+
+// Gets integer representation of color from ColorAdd corresponding to given index, or 0 if there's no color found.
+// Code is pulled straight from game's draw functions that deal with the tint colors.
+int GeneralUtils::GetColorFromColorAdd(int colorIndex)
+{
+	auto const& colorAdd = RulesClass::Instance->ColorAdd;
+	int colorValue = 0;
+
+	if (colorIndex < 0 || colorIndex >= (sizeof(colorAdd) / sizeof(ColorStruct)))
+		return colorValue;
+
+	auto const& color = colorAdd[colorIndex];
+
+	if (RulesExt::Global()->ColorAddUse8BitRGB)
+		return Drawing::RGB_To_Int(color);
+
+	int red = color.R;
+	int green = color.G;
+	int blue = color.B;
+
+	if (Drawing::ColorMode() == RGBMode::RGB565)
+		colorValue |= blue | (32 * (green | (red << 6)));
+
+	if (Drawing::ColorMode() != RGBMode::RGB655)
+		colorValue |= blue | (((32 * red) | (green >> 1)) << 6);
+
+	colorValue |= blue | (32 * ((32 * red) | (green >> 1)));
+
+	return colorValue;
 }

@@ -1,4 +1,5 @@
 #include <AircraftClass.h>
+#include <AircraftTrackerClass.h>
 #include <AnimClass.h>
 #include <BuildingClass.h>
 #include <TechnoClass.h>
@@ -13,9 +14,12 @@
 #include <HouseClass.h>
 #include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
+#include <TeleportLocomotionClass.h>
 #include <BombClass.h>
 #include <ParticleSystemClass.h>
 #include <WarheadTypeClass.h>
+#include <HashTable.h>
+#include <TunnelLocomotionClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -23,19 +27,11 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
 #include <Utilities/TemplateDef.h>
-
-//Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
-DEFINE_HOOK(0x423365, Phobos_BugFixes_SHPShadowCheck, 0x8)
-{
-	GET(AnimClass*, pAnim, ESI);
-	return (pAnim->Type->Shadow && pAnim->HasExtras) ?
-		0x42336D :
-		0x4233EE;
-}
 
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
@@ -201,11 +197,30 @@ DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
 	enum { IsNaval = 0x4438BC, NotNaval = 0x4438C9 };
 
 	GET(BuildingTypeClass*, pBuildingType, EAX);
+	GET_STACK(bool, playEVA, STACK_OFFSET(0xA4, 0x8));
+	REF_STACK(SpeedType, spdtp, STACK_OFFSET(0xA4, -0x84));
+	if (!playEVA)// assuming the hook above is the only place where it's set to false when UndeploysInto
+	{
+		if (auto pInto = pBuildingType->UndeploysInto)// r u sure this is not too OP?
+		{
+			R->ESI(pInto->MovementZone);
+			spdtp = pInto->SpeedType;
+			return NotNaval;
+		}
+	}
 
 	if (pBuildingType->Naval || pBuildingType->SpeedType == SpeedType::Float)
 		return IsNaval;
 
 	return NotNaval;
+}
+
+DEFINE_HOOK(0x6DAAB2, TacticalClass_DrawRallyPointLines_NoUndeployBlyat, 0x6)
+{
+	GET(BuildingClass*, pBld, EDI);
+	if (pBld->Focus && pBld->CurrentMission != Mission::Selling)
+		return 0x6DAAC0;
+	return 0x6DAD45;
 }
 
 // bugfix: DeathWeapon not properly detonates
@@ -485,8 +500,8 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 {
 	auto const pThisBomb = FetchBomb::pThisBomb;
 	auto nCoord = *pCoord;
-	auto nDamageAreaResult = MapClass::Instance()->DamageArea
-	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse);
+	auto nDamageAreaResult = WarheadTypeExt::ExtMap.Find(pWarhead)->DamageAreaWithTarget
+	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse, abstract_cast<TechnoClass*>(pThisBomb->Target));
 	auto nLandType = MapClass::Instance()->GetCellAt(nCoord)->LandType;
 
 	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
@@ -556,37 +571,6 @@ DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
 	}
 
 	return 0;
-}
-
-DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
-{
-	enum { SpawnCrate = 0x56BE7B, SkipSpawn = 0x56BE91 };
-
-	int XP = 2 * MapClass::Instance->VisibleRect.X - MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Width);
-	int YP = 2 * MapClass::Instance->VisibleRect.Y + MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Height + 2);
-	CellStruct candidate { (short)((XP + YP) / 2),(short)((YP - XP) / 2) };
-
-	auto pCell = MapClass::Instance->TryGetCellAt(candidate);
-	if (!pCell)
-		return SkipSpawn;
-
-	if (!MapClass::Instance->IsWithinUsableArea(pCell, true))
-		return SkipSpawn;
-
-	bool isWater = pCell->LandType == LandType::Water;
-	if (isWater && RulesExt::Global()->CrateOnlyOnLand.Get())
-		return SkipSpawn;
-
-	REF_STACK(CellStruct, cell, STACK_OFFSET(0x28, -0x18));
-	cell = MapClass::Instance->NearByLocation(pCell->MapCoords,
-		isWater ? SpeedType::Float : SpeedType::Track,
-		-1, MovementZone::Normal, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
-
-	R->EAX(&cell);
-
-	return SpawnCrate;
 }
 
 // Fixes C4=no amphibious infantry being killed in water if Chronoshifted/Paradropped there.
@@ -670,28 +654,37 @@ DEFINE_HOOK(0x451033, BuildingClass_AnimationAI_SuperAnim, 0x6)
 DEFINE_JUMP(LJMP, 0x52C9C4, 0x52CA37);
 
 // Fixes second half of Colors list not getting retinted correctly by map triggers, superweapons etc.
-#pragma region LightingColorSchemesFix
-
-namespace AdjustLightingTemp
+DEFINE_HOOK(0x53AD85, IonStormClass_AdjustLighting_ColorSchemes, 0x5)
 {
-	int colorSchemeCount = 0;
+	enum { SkipGameCode = 0x53ADD6 };
+
+	GET_STACK(bool, tint, STACK_OFFSET(0x20, 0x8));
+	GET(HashIterator*, it, ECX);
+	GET(int, red, EBP);
+	GET(int, green, EDI);
+	GET(int, blue, EBX);
+
+	int paletteCount = 0;
+
+	for (auto pSchemes = ColorScheme::GetPaletteSchemesFromIterator(it); pSchemes; pSchemes = ColorScheme::GetPaletteSchemesFromIterator(it))
+	{
+		for (int i = 1; i < pSchemes->Count; i += 2)
+		{
+			auto pScheme = pSchemes->GetItem(i);
+			pScheme->LightConvert->UpdateColors(red, green, blue, tint);
+		}
+
+		paletteCount++;
+	}
+
+	if (paletteCount > 0)
+	{
+		int schemeCount = ColorScheme::GetNumberOfSchemes();
+		Debug::Log("Recalculated %d extra palettes across %d color schemes (total: %d).\n", paletteCount, schemeCount, schemeCount * paletteCount);
+	}
+
+	return SkipGameCode;
 }
-
-DEFINE_HOOK(0x53AD7D, IonStormClass_AdjustLighting_SetContext, 0x8)
-{
-	AdjustLightingTemp::colorSchemeCount = ColorScheme::GetNumberOfSchemes() * 2;
-
-	return 0;
-}
-
-int __fastcall NumberOfSchemes_Wrapper()
-{
-	return AdjustLightingTemp::colorSchemeCount;
-}
-
-DEFINE_JUMP(CALL, 0x53AD92, GET_OFFSET(NumberOfSchemes_Wrapper));
-
-#pragma endregion
 
 // Fixes a literal edge-case in passability checks to cover cells with bridges that are not accessible when moving on the bridge and
 // normally not even attempted to enter but things like MapClass::NearByLocation() can still end up trying to pick.
@@ -803,4 +796,173 @@ DEFINE_HOOK(0x689EB0, ScenarioClass_ReadMap_SkipHeaderInCampaign, 0x6)
 	return SessionClass::IsCampaign() ? 0x689FC0 : 0;
 }
 
-DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Skip incorrect load ctor call in TeleportLocomotionClass_Load
+#pragma region save_load
+
+//Skip incorrect load ctor call in various LocomotionClass_Load
+DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Teleport, notorious CLEG frozen state removal on loading game
+DEFINE_JUMP(LJMP, 0x72A16A, 0x72A186);//Tunnel, not a big deal
+DEFINE_JUMP(LJMP, 0x663428, 0x663445);//Rocket, not a big deal
+DEFINE_JUMP(LJMP, 0x5170CE, 0x5170E0);//Hover, not a big deal
+
+// Save GameModeOptions in campaign modes
+DEFINE_JUMP(LJMP, 0x67E3BD, 0x67E3D3); // Save
+DEFINE_JUMP(LJMP, 0x67F72E, 0x67F744); // Load
+
+#pragma endregion save_load
+
+// An attempt to fix an issue where the ATC->CurrentVector does not contain every air Techno in given range that increases in frequency as the range goes up.
+// Real talk: I have absolutely no clue how the original function works besides doing vector looping and manipulation, as far as I can tell it never even explicitly
+// clears CurrentVector but somehow it only contains applicable items afterwards anyway. It is possible this one does not achieve everything the original does functionality and/or
+// performance-wise but it does work and produces results with greater accuracy than the original for large ranges. - Starkku
+DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
+{
+	enum { SkipGameCode = 0x413482 };
+
+	GET(AircraftTrackerClass*, pThis, ECX);
+	GET_STACK(CellClass*, pCell, 0x4);
+	GET_STACK(int, range, 0x8);
+
+	pThis->CurrentVector.Clear();
+
+	if (range < 1)
+		range = 1;
+
+	auto const bounds = MapClass::Instance->MapCoordBounds;
+	auto const mapCoords = pCell->MapCoords;
+	int sectorWidth = bounds.Right / 20;
+	int sectorHeight = bounds.Bottom / 20;
+	int sectorIndexXStart = Math::clamp((mapCoords.X - range) / sectorWidth, 0, 19);
+	int sectorIndexYStart = Math::clamp((mapCoords.Y - range) / sectorHeight, 0, 19);
+	int sectorIndexXEnd = Math::clamp((mapCoords.X + range) / sectorWidth, 0, 19);
+	int sectorIndexYEnd = Math::clamp((mapCoords.Y + range) / sectorHeight, 0, 19);
+
+	for (int y = sectorIndexYStart; y <= sectorIndexYEnd; y++)
+	{
+		for (int x = sectorIndexXStart; x <= sectorIndexXEnd; x++)
+		{
+			for (auto const pTechno : pThis->TrackerVectors[y][x])
+				pThis->CurrentVector.AddItem(pTechno);
+		}
+	}
+
+	R->EAX(0); // The original function returns some number, hell if I know what (it is 0 most of the time though and never actually used for anything).
+	return SkipGameCode;
+}
+
+#pragma region WarpInDelayFix
+
+DEFINE_HOOK(0x7195BF, TeleportLocomotionClass_Process_WarpInDelay, 0x6)
+{
+	GET(ILocomotion*, pThis, ESI);
+	GET(FootClass*, pLinkedTo, ECX);
+
+	auto const pLoco = static_cast<TeleportLocomotionClass*>(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+	pExt->LastWarpInDelay = Math::max(pLoco->Timer.GetTimeLeft(), pExt->LastWarpInDelay);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->HasRemainingWarpInDelay)
+	{
+		if (pExt->LastWarpInDelay)
+		{
+			pExt->LastWarpInDelay--;
+		}
+		else
+		{
+			pExt->HasRemainingWarpInDelay = false;
+			pExt->IsBeingChronoSphered = false;
+			pThis->WarpingOut = false;
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+// this fella was { 0, 0, 1 } before and somehow it also breaks both the light position a bit and how the lighting is applied when voxels rotate - Kerbiter
+DEFINE_HOOK(0x753D86, VoxelCalcNormals_NullAdditionalVector, 0x0)
+{
+	REF_STACK(Vector3D<float>, secondaryLightVector, STACK_OFFSET(0xD8, -0xC0));
+
+	if (RulesExt::Global()->UseFixedVoxelLighting)
+		secondaryLightVector = { 0, 0, 0 };
+	else
+		secondaryLightVector = { 0, 0, 1 };
+
+	return 0x753D9E;
+}
+
+DEFINE_HOOK(0x705D74, TechnoClass_GetRemapColour_DisguisePalette, 0x8)
+{
+	enum { SkipGameCode = 0x705D7C };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto pTechnoType = pThis->GetTechnoType();
+
+	if (!pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		if (const auto pDisguise = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+			pTechnoType = pDisguise;
+	}
+
+	R->EAX(pTechnoType);
+
+	return SkipGameCode;
+}
+
+// Fixes an edge case crash caused by temporal targeting enslaved infantry.
+DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
+{
+	enum { ReturnFromFunction = 0x71AE47 };
+
+	GET(TemporalClass* const, pThis, ESI);
+
+	if (!pThis->Target)
+		return ReturnFromFunction;
+
+	return 0;
+}
+
+// In the following three places the distance check was hardcoded to compare with 20, 17 and 16 respectively,
+// which means it didn't consider the actual speed of the unit. Now we check it and the units won't get stuck
+// even at high speeds - NetsuNegi
+
+DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9)
+{
+	enum { KeepMoving = 0x72980F, CloseEnough = 0x7295CE };
+
+	GET(TunnelLocomotionClass* const, pLoco, ESI);
+	GET(int const, distance, EAX);
+
+	return distance >= pLoco->LinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
+}
+
+DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
+{
+	enum { KeepMoving = 0x75BF85, CloseEnough = 0x75BD79 };
+
+	GET(FootClass* const, pLinkedTo, ECX);
+	GET(int const, distance, EAX);
+
+	return distance >= pLinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
+}
+
+DEFINE_HOOK(0x5B11DD, MechLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
+{
+	enum { KeepMoving = 0x5B14AA, CloseEnough = 0x5B11E6 };
+
+	GET(FootClass* const, pLinkedTo, ECX);
+	GET(int const, distance, EAX);
+
+	return distance >= pLinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
+}

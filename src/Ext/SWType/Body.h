@@ -8,7 +8,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Building/Body.h>
-#include <Misc/TypeConvertHelper.h>
+#include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class SWTypeExt
 {
@@ -35,6 +35,7 @@ public:
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
 		Valueable<bool> SW_InitialReady;
+		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -52,16 +53,24 @@ public:
 
 		Valueable<int> ShowTimer_Priority;
 
-		Nullable<WarheadTypeClass*> Detonate_Warhead;
-		Nullable<WeaponTypeClass*> Detonate_Weapon;
+		Valueable<WarheadTypeClass*> Detonate_Warhead;
+		Valueable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
+		Valueable<bool> Detonate_Warhead_Full;
 		Valueable<bool> Detonate_AtFirer;
 		Valueable<bool> ShowDesignatorRange;
+
+		Valueable<int> TabIndex;
 
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
+
+		Valueable<bool> UseWeeds;
+		Valueable<int> UseWeeds_Amount;
+		Valueable<bool> UseWeeds_StorageTimer;
+		Valueable<double> UseWeeds_ReadinessAnimationPercentage;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
@@ -76,6 +85,7 @@ public:
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
 			, SW_InitialReady { false }
+			, SW_PostDependent {}
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -88,6 +98,7 @@ public:
 			, Detonate_Warhead {}
 			, Detonate_Weapon {}
 			, Detonate_Damage {}
+			, Detonate_Warhead_Full { true }
 			, Detonate_AtFirer { false }
 			, SW_Next {}
 			, SW_Next_RealLaunch { true }
@@ -98,6 +109,11 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+			, TabIndex { 1 }
+			, UseWeeds { false }
+			, UseWeeds_Amount { RulesClass::Instance->WeedCapacity }
+			, UseWeeds_StorageTimer { false }
+			, UseWeeds_ReadinessAnimationPercentage { 0.9 }
 		{ }
 
 		// Ares 0.A functions

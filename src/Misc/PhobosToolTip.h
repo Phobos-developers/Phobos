@@ -30,9 +30,9 @@ public:
 
 	void HelpText(BuildType& cameo);
 	void HelpText(TechnoTypeClass* pType);
-	void HelpText(SuperWeaponTypeClass* pType);
+	void HelpText(SuperClass* pSuper);
 
-// Properties
+	// Properties
 private:
 	std::wstring TextBuffer {};
 

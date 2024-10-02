@@ -25,26 +25,31 @@ public:
 		Valueable<bool> CreateUnit_RemapAnim;
 		Valueable<bool> CreateUnit_RandomFacing;
 		Valueable<Mission> CreateUnit_Mission;
+		Nullable<Mission> CreateUnit_AIMission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
 		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
+		Valueable<bool> CreateUnit_SpawnParachutedInAir;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
-		Nullable<AnimTypeClass*> CreateUnit_SpawnAnim;
+		Valueable<AnimTypeClass*> CreateUnit_SpawnAnim;
+		Nullable<int> CreateUnit_SpawnHeight;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
 		Valueable<bool> UseCenterCoordsIfAttached;
-		Nullable<WeaponTypeClass*> Weapon;
+		Valueable<WeaponTypeClass*> Weapon;
 		Valueable<int> Damage_Delay;
 		Valueable<bool> Damage_DealtByInvoker;
 		Valueable<bool> Damage_ApplyOncePerLoop;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
-		Nullable<AnimTypeClass*> WakeAnim;
+		Valueable<AnimTypeClass*> WakeAnim;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
 		Valueable<bool> AltPalette_ApplyLighting;
 		Valueable<OwnerHouseKind> MakeInfantryOwner;
+		Valueable<bool> ExtraShadow;
+		ValueableIdx<VocClass> DetachedReport;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -54,10 +59,13 @@ public:
 			, CreateUnit_InheritTurretFacings { false }
 			, CreateUnit_RemapAnim { false }
 			, CreateUnit_Mission { Mission::Guard }
+			, CreateUnit_AIMission {}
 			, CreateUnit_Owner { OwnerHouseKind::Victim }
 			, CreateUnit_AlwaysSpawnOnGround { false }
+			, CreateUnit_SpawnParachutedInAir { false }
 			, CreateUnit_ConsiderPathfinding { false }
 			, CreateUnit_SpawnAnim {}
+			, CreateUnit_SpawnHeight {}
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
@@ -74,6 +82,8 @@ public:
 			, AttachedSystem {}
 			, AltPalette_ApplyLighting { false }
 			, MakeInfantryOwner { OwnerHouseKind::Victim }
+			, ExtraShadow { true }
+			, DetachedReport {}
 		{ }
 
 		virtual ~ExtData() = default;

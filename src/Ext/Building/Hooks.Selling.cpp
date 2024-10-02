@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <GameStrings.h>
 
 // SellSound and EVA dehardcode
 DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
@@ -36,7 +35,7 @@ bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 	if (pType->ConstructionYard)
 	{
 		// Conyards can't undeploy if MCVRedeploy=no
-		if(!GameModeOptionsClass::Instance->MCVRedeploy)
+		if (!GameModeOptionsClass::Instance->MCVRedeploy)
 			return false;
 		// or MindControlledBy YURIX (why? for balance?)
 		if (pThis->MindControlledBy || !pThis->Owner->IsControlledByHuman())

@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <SessionClass.h>
-#include <GameStrings.h>
+#include <VeinholeMonsterClass.h>
 
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -93,6 +93,28 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 	Data->LoadFromINI(pINI);
 }
 
+void ScenarioExt::ExtData::UpdateAutoDeathObjectsInLimbo()
+{
+	for (auto const pExt : this->AutoDeathObjects)
+	{
+		auto const pTechno = pExt->OwnerObject();
+
+		if (!pTechno->IsInLogic && pTechno->IsAlive)
+			pExt->CheckDeathConditions(true);
+	}
+}
+
+void ScenarioExt::ExtData::UpdateTransportReloaders()
+{
+	for (auto const pExt : this->TransportReloaders)
+	{
+		auto const pTechno = pExt->OwnerObject();
+
+		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
+			pTechno->Reload();
+	}
+}
+
 // =============================
 // load / save
 
@@ -100,12 +122,15 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 
-	INI_EX exINI(pINI);
+	INI_EX maINI(pINI);
+	INI_EX ruINI(CCINIClass::INI_Rules);
 
 	if (SessionClass::IsCampaign())
 	{
 		Nullable<bool> SP_MCVRedeploy;
-		SP_MCVRedeploy.Read(exINI, GameStrings::Basic, GameStrings::MCVRedeploys);
+		SP_MCVRedeploy.Read(maINI, GameStrings::Basic, GameStrings::MCVRedeploys);
+		if (!SP_MCVRedeploy.isset())
+			SP_MCVRedeploy.Read(ruINI, GameStrings::Basic, GameStrings::MCVRedeploys);
 		GameModeOptionsClass::Instance->MCVRedeploy = SP_MCVRedeploy.Get(false);
 
 		CCINIClass* pINI_MISSIONMD = CCINIClass::LoadINIFile(GameStrings::MISSIONMD_INI);
@@ -120,7 +145,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.OverParTitle", pThis->OverParTitle, pThis->OverParTitle);
 		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.OverParMessage", pThis->OverParMessage, pThis->OverParMessage);
 
-		this->ShowBriefing = pINI_MISSIONMD->ReadBool(scenarioName, "ShowBriefing", pINI->ReadBool(GameStrings::Basic,"ShowBriefing", this->ShowBriefing));
+		this->ShowBriefing = pINI_MISSIONMD->ReadBool(scenarioName, "ShowBriefing", pINI->ReadBool(GameStrings::Basic, "ShowBriefing", this->ShowBriefing));
 		this->BriefingTheme = pINI_MISSIONMD->ReadTheme(scenarioName, "BriefingTheme", pINI->ReadTheme(GameStrings::Basic, "BriefingTheme", this->BriefingTheme));
 
 		CCINIClass::UnloadINIFile(pINI_MISSIONMD);
@@ -134,9 +159,10 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->Waypoints)
 		.Process(this->Variables[0])
 		.Process(this->Variables[1])
-		.Process(SessionClass::Instance->Config)
 		.Process(this->ShowBriefing)
 		.Process(this->BriefingTheme)
+		.Process(this->AutoDeathObjects)
+		.Process(this->TransportReloaders)
 		;
 }
 
@@ -236,5 +262,15 @@ DEFINE_HOOK(0x68AD2F, ScenarioClass_LoadFromINI, 0x5)
 	GET(CCINIClass*, pINI, EDI);
 
 	ScenarioExt::LoadFromINIFile(pItem, pINI);
+	return 0;
+}
+
+DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
+{
+	VeinholeMonsterClass::UpdateAllVeinholes();
+
+	ScenarioExt::Global()->UpdateAutoDeathObjectsInLimbo();
+	ScenarioExt::Global()->UpdateTransportReloaders();
+
 	return 0;
 }

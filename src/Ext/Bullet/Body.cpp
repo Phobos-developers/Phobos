@@ -5,6 +5,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Misc/FlyingStrings.h>
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
@@ -25,7 +26,12 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 		if (versus != 0.0)
 		{
 			canAffect = true;
-			this->CurrentStrength -= static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+
+			int damage = static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+			this->CurrentStrength -= damage;
+
+			if (Phobos::DisplayDamageNumbers && damage != 0)
+				GeneralUtils::DisplayDamageNumberString(damage, DamageDisplayType::Intercept, this->OwnerObject()->GetRenderCoords(), this->DamageNumberOffset);
 
 			if (this->CurrentStrength <= 0)
 				isIntercepted = true;
@@ -41,7 +47,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	{
 		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
 		const auto pInterceptorType = pTechnoTypeExt->InterceptorType.get();
-		const auto pWeaponOverride = pInterceptorType->WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride.Get(nullptr));
+		const auto pWeaponOverride = pInterceptorType->WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride);
 		bool detonate = !pInterceptorType->DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
 
 		this->DetonateOnInterception = detonate;
@@ -92,27 +98,28 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 
 	auto const it = std::find_if(RadSiteClass::Array->begin(), RadSiteClass::Array->end(),
-			[=](auto const pSite)
+		[=](auto const pSite)
 		{
 			auto const pRadExt = RadSiteExt::ExtMap.Find(pSite);
 
-	if (pRadExt->Type != pRadType)
-		return false;
+			if (pRadExt->Type != pRadType)
+				return false;
 
-	if (MapClass::Instance->TryGetCellAt(pSite->BaseCell) != MapClass::Instance->TryGetCellAt(Cell))
-		return false;
+			if (MapClass::Instance->TryGetCellAt(pSite->BaseCell) != MapClass::Instance->TryGetCellAt(Cell))
+				return false;
 
-	if (Spread != pSite->Spread)
-		return false;
+			if (Spread != pSite->Spread)
+				return false;
 
-	if (pWeapon != pRadExt->Weapon)
-		return false;
+			if (pWeapon != pRadExt->Weapon)
+				return false;
 
-	if (pRadExt->RadInvoker && pThis->Owner)
-		return pRadExt->RadInvoker == pThis->Owner;
+			if (pRadExt->RadInvoker && pThis->Owner)
+				return pRadExt->RadInvoker == pThis->Owner;
 
-	return true;
-			});
+			return true;
+		}
+	);
 
 	if (it != RadSiteClass::Array->end())
 	{
@@ -166,6 +173,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnInterception)
 		.Process(this->LaserTrails)
 		.Process(this->SnappedToTarget)
+		.Process(this->DamageNumberOffset)
 		;
 
 	this->Trajectory = PhobosTrajectory::ProcessFromStream(Stm, this->Trajectory);
@@ -207,7 +215,7 @@ DEFINE_HOOK(0x4665E9, BulletClass_DTOR, 0xA)
 	GET(BulletClass*, pItem, ESI);
 
 	if (auto pTraj = BulletExt::ExtMap.Find(pItem)->Trajectory)
-		DLLDelete(pTraj);
+		delete pTraj;
 
 	BulletExt::ExtMap.Remove(pItem);
 	return 0;

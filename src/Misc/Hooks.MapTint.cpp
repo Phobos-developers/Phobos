@@ -32,7 +32,7 @@ DEFINE_HOOK(0x52BE3B, InitGame_CreateTiberiumDrawer, 0x5)
 {
 	MapTintFix::TiberiumLightDrawer = GameCreate<LightConvertClass>(
 		&FileSystem::TEMPERAT_PAL, &FileSystem::TEMPERAT_PAL,
-		DSurface::Primary, 1000, 1000, 1000, false, nullptr, 53));
+		DSurface::Primary, 1000, 1000, 1000, false, nullptr, 53);
 
 	return 0;
 }
@@ -53,25 +53,25 @@ DEFINE_HOOK(0x53AD00, ScenarioClass_RecalcLighting_TintTiberiumDrawer, 5)
 
 DEFINE_HOOK(0x47F94B, CellClass_DrawOverlay_ReplaceTiberiumDrawer_1, 6)
 {
-	R->EDX(MapTintFix::TiberiumLightDrawer.get());
+	R->EDX(MapTintFix::TiberiumLightDrawer);
 	return 0x47F951;
 }
 
 DEFINE_HOOK(0x47FA5C, CellClass_DrawOverlay_ReplaceTiberiumDrawer_2, 6)
 {
-	R->EDX(MapTintFix::TiberiumLightDrawer.get());
+	R->EDX(MapTintFix::TiberiumLightDrawer);
 	return 0x47FA62;
 }
 
 DEFINE_HOOK(0x47FA1F, CellClass_DrawOverlay_ReplaceWeirdDrawer, 6)
 {
-	R->EDX(MapTintFix::TiberiumLightDrawer.get());
+	R->EDX(MapTintFix::TiberiumLightDrawer);
 	return 0x47FA25;
 }
 
 DEFINE_HOOK(0x5FE5F9, OverlayTypeClass_DrawIt_ReplaceTiberiumDrawer, 6)
 {
-	R->EDX(MapTintFix::TiberiumLightDrawer.get());
+	R->EDX(MapTintFix::TiberiumLightDrawer);
 	return 0x5FE5FF;
 }
 
