@@ -170,6 +170,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them (by Starkku)
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
+- Fixed units, buildings and tiberiums not being affected by map lighting color tint.
+  - This can be disabled with `FixUnitLightingTint=false` and `FixTiberiumLightingTint=false` under `[General]` in `rulesmd.ini`
+  - `FixTiberiumLightingTint=true` requires `FixUnitLightingTint=true` to work.
 
 ## Fixes / interactions with other extensions
 

@@ -53,6 +53,8 @@ bool Phobos::Config::ShowBriefing = true;
 bool Phobos::Config::ShowHarvesterCounter = false;
 bool Phobos::Config::ShowPowerDelta = true;
 bool Phobos::Config::ShowWeedsCounter = false;
+bool Phobos::Config::FixUnitLightingTint = true;
+bool Phobos::Config::FixTiberiumLightingTint = true;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -176,7 +178,8 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	RulesClass::Instance->Read_JumpjetControls(pINI_RULESMD);
 
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool(GameStrings::General, "ArtImageSwap", false);
-
+	Phobos::Config::FixUnitLightingTint = pINI_RULESMD->ReadBool(GameStrings::General, "FixUnitLightingTint", true);
+	Phobos::Config::FixTiberiumLightingTint = pINI_RULESMD->ReadBool(GameStrings::General, "FixTiberiumLightingTint", true);
 
 	Phobos::Misc::CustomGS = pINI_RULESMD->ReadBool(GameStrings::General, "CustomGS", false);
 

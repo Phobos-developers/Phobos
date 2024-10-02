@@ -94,6 +94,16 @@ DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
 	return 0;
 }
 
+// Same as above, but needed to work with pr#1202.
+// See Misc/Hooks.MapTint.cpp hook @ 0x683E7F.
+DEFINE_HOOK(0x683E94, Start_Scenario_RetintLightSourceFix, 0x5)
+{
+	// Flag the light sources to update, actually do it later and only once to prevent redundancy.
+	RetintTemp::UpdateLightSources = true;
+
+	return 0;
+}
+
 // Update light sources if they have been flagged to be updated.
 DEFINE_HOOK(0x6D4455, Tactical_Render_UpdateLightSources, 0x8)
 {
