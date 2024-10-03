@@ -36,7 +36,7 @@ namespace detail
 			};
 			for (auto [name, flag] : FlagNames)
 			{
-				if (_strcmpi(parser.value(), name)==0)
+				if (_strcmpi(parser.value(), name) == 0)
 				{
 					value = flag;
 					return true;

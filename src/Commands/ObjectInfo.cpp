@@ -192,7 +192,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 				if (i != 0)
 					append(", ");
 
-				append("Slot %d = %s", i+1, pBuilding->Upgrades[i] ? pBuilding->Upgrades[i]->get_ID() : "<none>");
+				append("Slot %d = %s", i + 1, pBuilding->Upgrades[i] ? pBuilding->Upgrades[i]->get_ID() : "<none>");
 			}
 			append("\n");
 		}

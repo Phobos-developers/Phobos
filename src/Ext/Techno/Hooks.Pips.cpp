@@ -167,16 +167,17 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	std::vector<int> pipsToDraw;
 
 	bool isWeeder = false;
+
 	switch (pThis->WhatAmI())
 	{
-		case AbstractType::Building:
-			isWeeder = static_cast<BuildingClass*>(pThis)->Type->Weeder;
-			break;
-		case AbstractType::Unit:
-			isWeeder = static_cast<UnitClass*>(pThis)->Type->Weeder;
-			break;
-		default:
-			break;
+	case AbstractType::Building:
+		isWeeder = static_cast<BuildingClass*>(pThis)->Type->Weeder;
+		break;
+	case AbstractType::Unit:
+		isWeeder = static_cast<UnitClass*>(pThis)->Type->Weeder;
+		break;
+	default:
+		break;
 	}
 
 	if (isWeeder)

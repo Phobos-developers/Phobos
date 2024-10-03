@@ -460,7 +460,7 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 DEFINE_JUMP(LJMP, 0x41D9FB, 0x41DA05);
 
 
-void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*, HouseClass* pInfiltratorHouse)
+void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass * pThis, void*, HouseClass * pInfiltratorHouse)
 {
 	int oldBalance = pThis->Owner->Available_Money();
 	// explicitly call because Ares rewrote it
