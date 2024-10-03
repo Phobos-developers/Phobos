@@ -32,12 +32,12 @@ class StraightTrajectory final : public PhobosTrajectory
 public:
 	StraightTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
-	StraightTrajectory(StraightTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Straight)
+	StraightTrajectory(StraightTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Straight, trajType->Trajectory_Speed)
 		, DetonationDistance { trajType->DetonationDistance }
 		, TargetSnapDistance { trajType->TargetSnapDistance }
-		, PassThrough { trajType->PassThrough }
 		, FirerZPosition { 0 }
 		, TargetZPosition { 0 }
+		, Type { trajType }
 	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -52,10 +52,9 @@ public:
 
 	Leptons DetonationDistance;
 	Leptons TargetSnapDistance;
-	bool PassThrough;
 	int FirerZPosition;
 	int TargetZPosition;
-
+	StraightTrajectoryType const* Type;
 private:
 	int GetVelocityZ(BulletClass* pBullet);
 	int GetFirerZPosition(BulletClass* pBullet);

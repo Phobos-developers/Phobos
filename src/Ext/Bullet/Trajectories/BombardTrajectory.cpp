@@ -67,7 +67,7 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
 	pBullet->Velocity.Z = static_cast<double>(this->Height - pBullet->SourceCoords.Z);
-	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
+	pBullet->Velocity *= this->Speed / pBullet->Velocity.Magnitude();
 }
 
 bool BombardTrajectory::OnAI(BulletClass* pBullet)

@@ -1,5 +1,3 @@
-#include "PhobosTrajectory.h"
-
 #include <Ext/BulletType/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -9,94 +7,106 @@
 
 #include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
-#pragma region RedoAllThesePleaseItsInFactVerySimpleJustFollowTemplateDef_h
+
+TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
+{
+	switch (flag)
+	{
+	case TrajectoryFlag::Straight:
+		_ptr = std::make_unique<StraightTrajectoryType>();
+		return;
+	case TrajectoryFlag::Bombard:
+		_ptr = std::make_unique<StraightTrajectoryType>();
+		return;
+	}
+	_ptr.reset();
+}
+
+namespace detail
+{
+	template <>
+	inline bool read<TrajectoryFlag>(TrajectoryFlag& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static std::pair<const char*, TrajectoryFlag> FlagNames[] =
+			{
+				{"Straight", TrajectoryFlag::Straight},
+				{"Bombard" ,TrajectoryFlag::Bombard},
+			};
+			for (auto [name, flag] : FlagNames)
+			{
+				if (_strcmpi(parser.value(), name)==0)
+				{
+					value = flag;
+					return true;
+				}
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a new trajectory type");
+		}
+
+		return false;
+	}
+}
+
+void TrajectoryTypePointer::LoadFromINI(CCINIClass* pINI, const char* pSection)
+{
+	INI_EX exINI(pINI);
+	Nullable<TrajectoryFlag> flag;
+	flag.Read(exINI, pSection, "Trajectory");// I assume this shit is parsed once and only once, so I keep the impl here
+	if (flag.isset())
+	{
+		if (!_ptr || _ptr->Flag != flag.Get())
+			std::construct_at(this, flag.Get());
+	}
+	if (_ptr)
+	{
+		_ptr->Trajectory_Speed.Read(exINI, pSection, "Trajectory.Speed");
+		_ptr->Read(pINI, pSection);
+	}
+}
+
+bool TrajectoryTypePointer::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	PhobosTrajectoryType* PTR = nullptr;
+	if (!Stm.Load(PTR))
+		return false;
+	TrajectoryFlag flag;
+	if (PTR && Stm.Load(flag))
+	{
+		std::construct_at(this, flag);
+		PhobosSwizzle::RegisterChange(PTR, _ptr.get());
+		return _ptr->Load(Stm, RegisterForChange);
+	}
+	return true;
+}
+
+bool TrajectoryTypePointer::Save(PhobosStreamWriter& Stm) const
+{
+	auto* raw = get();
+	Stm.Process(raw);
+	if (raw)
+	{
+		Stm.Process(raw->Flag);
+		return raw->Save(Stm);
+	}
+	return true;
+}
+
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	Stm.Process(this->Flag, false);
+	Stm
+		.Process(this->Flag)
+		.Process(this->Trajectory_Speed);
 	return true;
 }
 
 bool PhobosTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
-	Stm.Process(this->Flag);
+	Stm
+		.Process(this->Flag)
+		.Process(this->Trajectory_Speed);
 	return true;
-}
-
-void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* const pINI, const char* pSection, const char* pKey)
-{
-	PhobosTrajectoryType* pNewType = nullptr;
-	bool bUpdateType = true;
-
-	pINI->ReadString(pSection, pKey, "", Phobos::readBuffer);
-	if (INIClass::IsBlank(Phobos::readBuffer))
-		pNewType = nullptr;
-	else if (_stricmp(Phobos::readBuffer, "Straight") == 0)
-		pNewType = DLLCreate<StraightTrajectoryType>();
-	else if (_stricmp(Phobos::readBuffer, "Bombard") == 0)
-		pNewType = DLLCreate<BombardTrajectoryType>();
-	else
-		bUpdateType = false;
-
-	if (pNewType)
-		pNewType->Read(pINI, pSection);
-
-	if (bUpdateType)
-	{
-		DLLDelete(pType); // GameDelete already has if(pType) check here.
-		pType = pNewType;
-	}
-}
-
-PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& Stm)
-{
-	PhobosTrajectoryType* pType = nullptr;
-	TrajectoryFlag flag = TrajectoryFlag::Invalid;
-	Stm.Process(pType, false);
-
-	if (pType)
-	{
-		Stm.Process(flag, false);
-		auto old = pType;
-		switch (flag)
-		{
-		case TrajectoryFlag::Straight:
-			pType = DLLCreate<StraightTrajectoryType>();
-			break;
-		case TrajectoryFlag::Bombard:
-			pType = DLLCreate<BombardTrajectoryType>();
-			break;
-		default:
-			return nullptr;
-		}
-
-		pType->Flag = flag;
-		pType->Load(Stm, false);
-		PhobosSwizzle::RegisterChange(old, pType);
-	}
-
-	return pType;
-}
-
-void PhobosTrajectoryType::WriteToStream(PhobosStreamWriter& Stm, PhobosTrajectoryType* pType)
-{
-	Stm.Process(pType);
-	if (pType)
-	{
-		Stm.Process(pType->Flag);
-		pType->Save(Stm);
-	}
-}
-
-PhobosTrajectoryType* PhobosTrajectoryType::ProcessFromStream(PhobosStreamReader& Stm, PhobosTrajectoryType* pType)
-{
-	UNREFERENCED_PARAMETER(pType);
-	return LoadFromStream(Stm);
-}
-
-PhobosTrajectoryType* PhobosTrajectoryType::ProcessFromStream(PhobosStreamWriter& Stm, PhobosTrajectoryType* pType)
-{
-	WriteToStream(Stm, pType);
-	return pType;
 }
 
 bool PhobosTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -112,14 +122,7 @@ bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 	return true;
 }
 
-double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
-{
-	if (auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
-		return pBulletTypeExt->Trajectory_Speed;
-	else
-		return 100.0;
-}
-
+#pragma region RedoAllThesePleaseItsInFactVerySimpleJustFollowTemplateDef_h
 PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 {
 	PhobosTrajectory* pTraj = nullptr;

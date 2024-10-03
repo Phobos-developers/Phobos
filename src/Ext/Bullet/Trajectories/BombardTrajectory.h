@@ -27,7 +27,7 @@ class BombardTrajectory final : public PhobosTrajectory
 public:
 	BombardTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
-	BombardTrajectory(BombardTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Bombard)
+	BombardTrajectory(BombardTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Bombard,trajType->Trajectory_Speed)
 		, IsFalling { false }
 		, Height { trajType->Height }
 	{ }
