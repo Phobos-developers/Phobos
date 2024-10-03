@@ -159,6 +159,7 @@ public:
 		Valueable<int> AIFireSaleDelay;
 		Valueable<bool> AIAllToHunt;
 		Valueable<bool> RepairBaseNodes;
+		Valueable<bool> AIAngerOnAlly;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -275,6 +276,7 @@ public:
 			, AIFireSaleDelay { 0 }
 			, AIAllToHunt { true }
 			, RepairBaseNodes { false }
+			, AIAngerOnAlly { true }
 		{ }
 
 		virtual ~ExtData() = default;
