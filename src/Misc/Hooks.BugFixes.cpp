@@ -966,3 +966,5 @@ DEFINE_HOOK(0x5B11DD, MechLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
 
 	return distance >= pLinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
 }
+
+DEFINE_JUMP(LJMP, 0x517FF5, 0x518016); // Warhead with InfDeath=9 versus infantry in air
