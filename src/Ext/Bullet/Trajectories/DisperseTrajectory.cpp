@@ -4,6 +4,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Anim/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <AnimClass.h>
 #include <LaserDrawClass.h>
@@ -1185,6 +1186,9 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				AnimClass* const pAnim = GameCreate<AnimClass>(pAnimType, pBullet->Location);
 				pAnim->SetOwnerObject(pBullet->Owner);
 				pAnim->Owner = pOwner;
+
+				if (AnimExt::ExtData* const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+					pAnimExt->SetInvoker(pBullet->Owner, pOwner);
 			}
 		}
 	}
