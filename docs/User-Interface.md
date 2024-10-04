@@ -45,7 +45,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1.
-  
+
 In `rulesmd.ini`:
 ```ini
 [DigitalDisplayTypes]

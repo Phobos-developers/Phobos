@@ -106,5 +106,5 @@ DEFINE_HOOK(0x739920, UnitClass_TryToDeploy_DisableRegroupAtNewConYard, 0x6)
 
 	auto const pRules = RulesExt::Global();
 
-	 return pRules->GatherWhenMCVDeploy ? DoNotSkipRegroup : SkipRegroup;
+	return pRules->GatherWhenMCVDeploy ? DoNotSkipRegroup : SkipRegroup;
 }

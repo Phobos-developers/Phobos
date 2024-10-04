@@ -2,9 +2,9 @@
 
 #include <Ext/BulletType/Body.h>
 
-PhobosTrajectory* BombardTrajectoryType::CreateInstance() const
+std::unique_ptr<PhobosTrajectory> BombardTrajectoryType::CreateInstance() const
 {
-	return new BombardTrajectory(this);
+	return std::make_unique<BombardTrajectory>(this);
 }
 
 template<typename T>
@@ -29,7 +29,8 @@ bool BombardTrajectoryType::Save(PhobosStreamWriter& Stm) const
 
 void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
-	this->Height = pINI->ReadDouble(pSection, "Trajectory.Bombard.Height", 0.0);
+	INI_EX exINI(pINI);
+	this->Height.Read(exINI, pSection, "Trajectory.Bombard.Height");
 }
 
 template<typename T>
@@ -61,12 +62,12 @@ bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	this->Height = this->GetTrajectoryType<BombardTrajectoryType>(pBullet)->Height + pBullet->TargetCoords.Z;
+	this->Height += pBullet->TargetCoords.Z;
 
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
 	pBullet->Velocity.Z = static_cast<double>(this->Height - pBullet->SourceCoords.Z);
-	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
+	pBullet->Velocity *= this->Speed / pBullet->Velocity.Magnitude();
 }
 
 bool BombardTrajectory::OnAI(BulletClass* pBullet)
