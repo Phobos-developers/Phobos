@@ -40,7 +40,7 @@ public:
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-	virtual PhobosTrajectory* CreateInstance() const override;
+	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	Valueable<Leptons> DetonationDistance;
@@ -74,12 +74,12 @@ class ParabolaTrajectory final : public PhobosTrajectory
 public:
 	ParabolaTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
-	ParabolaTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Parabola)
-		, Type { static_cast<ParabolaTrajectoryType*>(const_cast<PhobosTrajectoryType*>(pType)) }
-		, ThrowHeight { Type->ThrowHeight > 0 ? Type->ThrowHeight : 600 }
-		, BounceTimes { Type->BounceTimes }
-		, OffsetCoord { static_cast<CoordStruct>(Type->OffsetCoord) }
-		, UseDisperseBurst { Type->UseDisperseBurst }
+	ParabolaTrajectory(ParabolaTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Parabola, trajType->Trajectory_Speed)
+		, Type { trajType }
+		, ThrowHeight { trajType->ThrowHeight > 0 ? trajType->ThrowHeight : 600 }
+		, BounceTimes { trajType->BounceTimes }
+		, OffsetCoord { trajType->OffsetCoord.Get() }
+		, UseDisperseBurst { trajType->UseDisperseBurst }
 		, ShouldDetonate { false }
 		, ShouldBounce { false }
 		, NeedExtraCheck { false }
@@ -100,7 +100,7 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
-	ParabolaTrajectoryType* Type;
+	const ParabolaTrajectoryType* Type;
 	int ThrowHeight;
 	int BounceTimes;
 	CoordStruct OffsetCoord;
