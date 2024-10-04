@@ -296,8 +296,7 @@ public:
 		SavingObject(nullptr),
 		SavingStream(nullptr),
 		Name(pName)
-	{
-	}
+	{ }
 
 	virtual ~Container() = default;
 
