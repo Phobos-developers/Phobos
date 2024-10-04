@@ -39,7 +39,7 @@ public:
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-	virtual PhobosTrajectory* CreateInstance() const override;
+	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	Valueable<Leptons> DetonationDistance;
@@ -82,13 +82,13 @@ class StraightTrajectory final : public PhobosTrajectory
 public:
 	StraightTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
-	StraightTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Straight)
-		, Type { static_cast<StraightTrajectoryType*>(const_cast<PhobosTrajectoryType*>(pType)) }
-		, DetonationDistance { Type->DetonationDistance }
+	StraightTrajectory(StraightTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Straight, trajType->Trajectory_Speed)
+		, Type { trajType }
+		, DetonationDistance { trajType->DetonationDistance }
 		, PassDetonateTimer {}
-		, OffsetCoord { static_cast<CoordStruct>(Type->OffsetCoord) }
-		, UseDisperseBurst { Type->UseDisperseBurst }
-		, ProximityImpact { Type->ProximityImpact }
+		, OffsetCoord { trajType->OffsetCoord.Get() }
+		, UseDisperseBurst { trajType->UseDisperseBurst }
+		, ProximityImpact { trajType->ProximityImpact }
 		, RemainingDistance { 1 }
 		, ExtraCheck { nullptr }
 		, LastCasualty {}
@@ -98,7 +98,7 @@ public:
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
 		, WaitOneFrame {}
-	{}
+	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
@@ -116,7 +116,7 @@ public:
 		int RemainTime;
 	};
 
-	StraightTrajectoryType* Type;
+	const StraightTrajectoryType* Type;
 	Leptons DetonationDistance;
 	CDTimerClass PassDetonateTimer;
 	CoordStruct OffsetCoord;

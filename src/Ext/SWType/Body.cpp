@@ -198,8 +198,7 @@ bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 // container
 
 SWTypeExt::ExtContainer::ExtContainer() : Container("SuperWeaponTypeClass")
-{
-}
+{ }
 
 SWTypeExt::ExtContainer::~ExtContainer() = default;
 

@@ -7,9 +7,9 @@
 #include <ScenarioClass.h>
 #include <AircraftTrackerClass.h>
 
-PhobosTrajectory* StraightTrajectoryType::CreateInstance() const
+std::unique_ptr<PhobosTrajectory> StraightTrajectoryType::CreateInstance() const
 {
-	return new StraightTrajectory(this);
+	return std::make_unique<StraightTrajectory>(this);
 }
 
 template<typename T>
@@ -135,10 +135,7 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	if (!this->Type) // After load
-		this->Type = this->GetTrajectoryType<StraightTrajectoryType>(pBullet);
-
-	StraightTrajectoryType* const pType = this->Type;
+	const StraightTrajectoryType* const pType = this->Type;
 	this->PassDetonateTimer.Start(pType->PassDetonateTimer > 0 ? pType->PassDetonateTimer : 0);
 	this->LastCasualty.reserve(1);
 	this->LastTargetCoord = pBullet->TargetCoords;
@@ -181,19 +178,15 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (!this->Type) // After load
-		this->Type = this->GetTrajectoryType<StraightTrajectoryType>(pBullet);
-
 	if (this->WaitOneFrame.IsTicking() && this->BulletPrepareCheck(pBullet))
 		return false;
 
-	const double straightSpeed = this->GetTrajectorySpeed(pBullet);
 	HouseClass* const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 
-	if (this->BulletDetonatePreCheck(pBullet, straightSpeed))
+	if (this->BulletDetonatePreCheck(pBullet, this->Speed))
 		return true;
 
-	StraightTrajectoryType* const pType = this->Type;
+	const StraightTrajectoryType* const pType = this->Type;
 
 	if (pType->PassDetonate)
 		this->PassWithDetonateAt(pBullet, pOwner);
@@ -201,17 +194,17 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 	if (this->ProximityImpact != 0 && static_cast<Leptons>(pType->ProximityRadius) > 0)
 		this->PrepareForDetonateAt(pBullet, pOwner);
 
-	if (straightSpeed < 256.0 && pType->ConfineAtHeight > 0 && this->PassAndConfineAtHeight(pBullet, straightSpeed))
+	if (this->Speed < 256.0 && pType->ConfineAtHeight > 0 && this->PassAndConfineAtHeight(pBullet, this->Speed))
 		return true;
 
-	this->BulletDetonateLastCheck(pBullet, pOwner, straightSpeed);
+	this->BulletDetonateLastCheck(pBullet, pOwner, this->Speed);
 
 	return false;
 }
 
 void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
-	StraightTrajectoryType* const pType = this->Type;
+	const StraightTrajectoryType* const pType = this->Type;
 	TechnoClass* pTechno = abstract_cast<TechnoClass*>(pBullet->Target);
 	pBullet->Health = this->GetTheTrueDamage(pBullet->Health, pBullet, pTechno, true);
 
@@ -255,9 +248,8 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBull
 
 void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 {
-	StraightTrajectoryType* const pType = this->Type;
+	const StraightTrajectoryType* const pType = this->Type;
 	double rotateAngle = 0.0;
-	const double straightSpeed = this->GetTrajectorySpeed(pBullet);
 	const AbstractClass* const pTarget = pBullet->Target;
 	CoordStruct theTargetCoords = pBullet->TargetCoords;
 	CoordStruct theSourceCoords = pBullet->SourceCoords;
@@ -284,7 +276,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 			const double horizonDistanceSquared = theDistanceSquared - verticalDistanceSquared;
 			const double horizonDistance = sqrt(horizonDistanceSquared);
 
-			const double straightSpeedSquared = straightSpeed * straightSpeed;
+			const double straightSpeedSquared = this->Speed * this->Speed;
 			const double baseFactor = straightSpeedSquared - targetSpeedSquared;
 			const double squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
 
@@ -350,15 +342,15 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	if (pType->PassThrough)
 	{
 		if (this->DetonationDistance > 0)
-			this->RemainingDistance += static_cast<int>(this->DetonationDistance + straightSpeed);
+			this->RemainingDistance += static_cast<int>(this->DetonationDistance + this->Speed);
 		else if (this->DetonationDistance < 0)
-			this->RemainingDistance += static_cast<int>(theSourceCoords.DistanceFrom(theTargetCoords) - this->DetonationDistance + straightSpeed);
+			this->RemainingDistance += static_cast<int>(theSourceCoords.DistanceFrom(theTargetCoords) - this->DetonationDistance + this->Speed);
 		else
 			this->RemainingDistance = INT_MAX;
 	}
 	else
 	{
-		this->RemainingDistance += static_cast<int>(theSourceCoords.DistanceFrom(theTargetCoords) + straightSpeed);
+		this->RemainingDistance += static_cast<int>(theSourceCoords.DistanceFrom(theTargetCoords) + this->Speed);
 	}
 
 	pBullet->TargetCoords = theTargetCoords;
@@ -405,13 +397,13 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		}
 	}
 
-	if (this->CalculateBulletVelocity(pBullet, straightSpeed))
+	if (this->CalculateBulletVelocity(pBullet, this->Speed))
 		this->RemainingDistance = 0;
 }
 
 int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 {
-	StraightTrajectoryType* const pType = this->Type;
+	const StraightTrajectoryType* const pType = this->Type;
 	int bulletVelocity = static_cast<int>(pBullet->TargetCoords.Z - pBullet->SourceCoords.Z);
 
 	if (!pType->PassThrough)
@@ -474,7 +466,7 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, double str
 	if (this->RemainingDistance < 0)
 		return true;
 
-	StraightTrajectoryType* const pType = this->Type;
+	const StraightTrajectoryType* const pType = this->Type;
 
 	if (!pType->PassThrough && pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
 		return true;
@@ -491,7 +483,7 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet, double str
 //If the check result here is true, it only needs to be detonated in the next frame, without returning.
 void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClass* pOwner, double straightSpeed)
 {
-	StraightTrajectoryType* const pType = this->Type;
+	const StraightTrajectoryType* const pType = this->Type;
 	bool velocityCheck = false;
 	double locationDistance = this->RemainingDistance;
 
@@ -581,7 +573,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 
 bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, CellClass* pCell, HouseClass* pOwner)
 {
-	StraightTrajectoryType* const pType = this->Type;
+	const StraightTrajectoryType* const pType = this->Type;
 	ObjectClass* pObject = pCell->FirstObject;
 	TechnoClass* pNearest = nullptr;
 
@@ -632,7 +624,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 {
 	if (this->PassDetonateTimer.Completed())
 	{
-		StraightTrajectoryType* const pType = this->Type;
+		const StraightTrajectoryType* const pType = this->Type;
 		this->PassDetonateTimer.Start(pType->PassDetonateDelay > 0 ? pType->PassDetonateDelay : 1);
 		CoordStruct detonateCoords = pBullet->Location;
 
@@ -652,7 +644,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 //Select suitable targets and choose the closer targets then attack each target only once.
 void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner)
 {
-	StraightTrajectoryType* const pType = this->Type;
+	const StraightTrajectoryType* const pType = this->Type;
 
 	//Step 1: Find valid targets on the ground within range.
 	std::vector<CellClass*> recCellClass = this->GetCellsInProximityRadius(pBullet);
@@ -727,7 +719,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	if (pType->ProximityFlight)
 	{
 		AircraftTrackerClass* const airTracker = &AircraftTrackerClass::Instance.get();
-		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5), static_cast<int>((static_cast<Leptons>(pType->ProximityRadius) + this->GetTrajectorySpeed(pBullet) / 2) / Unsorted::LeptonsPerCell));
+		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5), static_cast<int>((static_cast<Leptons>(pType->ProximityRadius) + this->Speed / 2) / Unsorted::LeptonsPerCell));
 
 		for (TechnoClass* pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
@@ -1165,7 +1157,7 @@ int StraightTrajectory::GetTheTrueDamage(int damage, BulletClass* pBullet, Techn
 	if (damage == 0)
 		return 0;
 
-	StraightTrajectoryType* const pType = this->Type;
+	const StraightTrajectoryType* const pType = this->Type;
 	double edgeAttenuation = pType->EdgeAttenuation > 0.0 ? pType->EdgeAttenuation : 0.0;
 
 	if (edgeAttenuation != 1.0)
@@ -1221,7 +1213,7 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet, double str
 
 		if (abs(checkDifference) < 384 || !pBullet->Type->SubjectToCliffs)
 		{
-			StraightTrajectoryType* const pType = this->Type;
+			const StraightTrajectoryType* const pType = this->Type;
 			pBullet->Velocity.Z += static_cast<double>(checkDifference + pType->ConfineAtHeight);
 
 			if (!pType->PassDetonateLocal && this->CalculateBulletVelocity(pBullet, straightSpeed))

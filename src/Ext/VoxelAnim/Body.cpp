@@ -22,7 +22,7 @@ void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
 	}
 }
 
-void VoxelAnimExt::ExtData::Initialize() {}
+void VoxelAnimExt::ExtData::Initialize() { }
 
 // =============================
 // load / save
@@ -61,7 +61,7 @@ bool VoxelAnimExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-VoxelAnimExt::ExtContainer::ExtContainer() : Container("VoxelAnimClass") {}
+VoxelAnimExt::ExtContainer::ExtContainer() : Container("VoxelAnimClass") { }
 VoxelAnimExt::ExtContainer::~ExtContainer() = default;
 
 // =============================

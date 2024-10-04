@@ -891,7 +891,7 @@ DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
 // this fella was { 0, 0, 1 } before and somehow it also breaks both the light position a bit and how the lighting is applied when voxels rotate - Kerbiter
 DEFINE_HOOK(0x753D86, VoxelCalcNormals_NullAdditionalVector, 0x0)
 {
-	REF_STACK(Vector3D<float>, secondaryLightVector, STACK_OFFSET(0xD8, -0xC0))
+	REF_STACK(Vector3D<float>, secondaryLightVector, STACK_OFFSET(0xD8, -0xC0));
 
 	if (RulesExt::Global()->UseFixedVoxelLighting)
 		secondaryLightVector = { 0, 0, 0 };
@@ -934,7 +934,7 @@ DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
 }
 
 // In the following three places the distance check was hardcoded to compare with 20, 17 and 16 respectively,
-// which means it didn't consider the actual speed of the unit. Now we check it and the units won't get stuck 
+// which means it didn't consider the actual speed of the unit. Now we check it and the units won't get stuck
 // even at high speeds - NetsuNegi
 
 DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9)
@@ -966,3 +966,5 @@ DEFINE_HOOK(0x5B11DD, MechLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
 
 	return distance >= pLinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
 }
+
+DEFINE_JUMP(LJMP, 0x517FF5, 0x518016); // Warhead with InfDeath=9 versus infantry in air

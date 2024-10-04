@@ -282,6 +282,12 @@ void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
 
+		if (!pExt)
+		{
+			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
+			Debug::FatalErrorAndExit("AnimExt::InvalidateTechnoPointers: Animation of type [%s] has no ExtData!", ID);
+		}
+
 		if (pExt->Invoker == pTechno)
 			pExt->Invoker = nullptr;
 
@@ -295,6 +301,12 @@ void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSys
 	for (auto const& pAnim : *AnimClass::Array)
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+
+		if (!pExt)
+		{
+			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
+			Debug::FatalErrorAndExit("AnimExt::InvalidateParticleSystemPointers: Animation of type [%s] has no ExtData!", ID);
+		}
 
 		if (pExt->AttachedSystem == pParticleSystem)
 			pExt->AttachedSystem = nullptr;
