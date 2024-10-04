@@ -87,7 +87,7 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 		bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(unit->SpeedType)] > 0.0;
 		bool isBridge = allowBridges && pCell->ContainsBridge();
 
-		if (pTypeExt->CreateUnit_ConsiderPathfinding && (!pCell || !pCell->IsClearToMove(unit->SpeedType, false, false, -1, unit->MovementZone, -1, isBridge)) )
+		if (pTypeExt->CreateUnit_ConsiderPathfinding && (!pCell || !pCell->IsClearToMove(unit->SpeedType, false, false, -1, unit->MovementZone, -1, isBridge)))
 		{
 			auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
 				unit->SpeedType, -1, unit->MovementZone, isBridge, 1, 1, true,

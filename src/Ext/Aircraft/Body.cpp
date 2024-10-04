@@ -104,4 +104,3 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 
 	return static_cast<DirType>(Math::clamp(landingDir, 0, 255));
 }
-
