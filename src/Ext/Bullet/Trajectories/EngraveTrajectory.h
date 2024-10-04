@@ -5,7 +5,7 @@
 class EngraveTrajectoryType final : public PhobosTrajectoryType
 {
 public:
-	EngraveTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Engrave)
+	EngraveTrajectoryType() : PhobosTrajectoryType()
 		, SourceCoord { { 0, 0 } }
 		, TargetCoord { { 0, 0 } }
 		, MirrorCoord { true }
@@ -28,6 +28,7 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
+	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Engrave; }
 
 	Valueable<Point2D> SourceCoord;
 	Valueable<Point2D> TargetCoord;
@@ -56,7 +57,7 @@ class EngraveTrajectory final : public PhobosTrajectory
 public:
 	EngraveTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
-	EngraveTrajectory(EngraveTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Engrave, trajType->Trajectory_Speed)
+	EngraveTrajectory(EngraveTrajectoryType const* trajType) : PhobosTrajectory(trajType->Trajectory_Speed)
 		, Type { trajType }
 		, SourceCoord { trajType->SourceCoord.Get() }
 		, TargetCoord { trajType->TargetCoord.Get() }
@@ -71,7 +72,7 @@ public:
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-
+	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Engrave; }
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override;
