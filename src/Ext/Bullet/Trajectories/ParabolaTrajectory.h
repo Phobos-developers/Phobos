@@ -15,7 +15,7 @@ enum class ParabolaFireMode
 class ParabolaTrajectoryType final : public PhobosTrajectoryType
 {
 public:
-	ParabolaTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Parabola)
+	ParabolaTrajectoryType() : PhobosTrajectoryType()
 		, DetonationDistance { Leptons(102) }
 		, TargetSnapDistance { Leptons(128) }
 		, OpenFireMode { ParabolaFireMode::Speed }
@@ -42,6 +42,7 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
+	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Parabola; }
 
 	Valueable<Leptons> DetonationDistance;
 	Valueable<Leptons> TargetSnapDistance;
@@ -74,7 +75,7 @@ class ParabolaTrajectory final : public PhobosTrajectory
 public:
 	ParabolaTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
-	ParabolaTrajectory(ParabolaTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Parabola, trajType->Trajectory_Speed)
+	ParabolaTrajectory(ParabolaTrajectoryType const* trajType) : PhobosTrajectory(trajType->Trajectory_Speed)
 		, Type { trajType }
 		, ThrowHeight { trajType->ThrowHeight > 0 ? trajType->ThrowHeight : 600 }
 		, BounceTimes { trajType->BounceTimes }
@@ -92,7 +93,7 @@ public:
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-
+	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Parabola; }
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override;
