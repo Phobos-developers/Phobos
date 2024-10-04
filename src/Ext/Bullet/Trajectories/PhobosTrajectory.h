@@ -27,31 +27,28 @@ class PhobosTrajectoryType
 {
 public:
 	PhobosTrajectoryType() { }
-	PhobosTrajectoryType(TrajectoryFlag flag) : Flag { flag }, Trajectory_Speed { 100.0 }
-	{ }
 
 	virtual ~PhobosTrajectoryType() noexcept = default;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
-
+	virtual TrajectoryFlag Flag() const = 0;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) = 0;
 	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const = 0;
 
-	TrajectoryFlag Flag;
-	Valueable<double> Trajectory_Speed;
+	Valueable<double> Trajectory_Speed { 100.0 };
 };
 
 class PhobosTrajectory
 {
 public:
 	PhobosTrajectory(noinit_t) { }
-	PhobosTrajectory(TrajectoryFlag flag, double speed = 100.0) : Flag { flag }, Speed { speed }
+	PhobosTrajectory(double speed = 100.0) : Speed { speed }
 	{ }
 
 	virtual ~PhobosTrajectory() noexcept = default;
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
-
+	virtual TrajectoryFlag Flag() const = 0;
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) = 0;
 	virtual bool OnAI(BulletClass* pBullet) = 0;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) = 0;
@@ -59,7 +56,6 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) = 0;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) = 0;
 
-	TrajectoryFlag Flag;
 	double Speed;
 };
 

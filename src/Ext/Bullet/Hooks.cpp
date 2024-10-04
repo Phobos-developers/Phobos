@@ -307,7 +307,7 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 	{
 		if (auto const pTrajectory = pExt->Trajectory.get())
 		{
-			const TrajectoryFlag flag = pTrajectory->Flag;
+			const TrajectoryFlag flag = pTrajectory->Flag();
 
 			if (flag == TrajectoryFlag::Straight)
 			{
@@ -342,7 +342,7 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 		{
 			if (auto const pTrajectory = pExt->Trajectory.get())
 			{
-				const TrajectoryFlag flag = pTrajectory->Flag;
+				const TrajectoryFlag flag = pTrajectory->Flag();
 
 				if (flag == TrajectoryFlag::Straight)
 				{
@@ -381,7 +381,7 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 		{
 			if (auto const pTrajectory = pExt->Trajectory.get())
 			{
-				const TrajectoryFlag flag = pTrajectory->Flag;
+				const TrajectoryFlag flag = pTrajectory->Flag();
 
 				if (flag == TrajectoryFlag::Straight)
 				{
@@ -404,7 +404,7 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 	{
 		if (auto const pTrajectory = pExt->Trajectory.get())
 		{
-			const TrajectoryFlag flag = pTrajectory->Flag;
+			const TrajectoryFlag flag = pTrajectory->Flag();
 
 			if (flag == TrajectoryFlag::Straight)
 			{
