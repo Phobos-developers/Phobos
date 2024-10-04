@@ -26,7 +26,7 @@ public:
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-	virtual PhobosTrajectory* CreateInstance() const override;
+	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	Valueable<Point2D> SourceCoord;
@@ -56,11 +56,11 @@ class EngraveTrajectory final : public PhobosTrajectory
 public:
 	EngraveTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
-	EngraveTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Engrave)
-		, Type { static_cast<EngraveTrajectoryType*>(const_cast<PhobosTrajectoryType*>(pType)) }
-		, SourceCoord { static_cast<Point2D>(Type->SourceCoord) }
-		, TargetCoord { static_cast<Point2D>(Type->TargetCoord) }
-		, TheDuration { Type->TheDuration }
+	EngraveTrajectory(EngraveTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Engrave, trajType->Trajectory_Speed)
+		, Type { trajType }
+		, SourceCoord { trajType->SourceCoord.Get() }
+		, TargetCoord { trajType->TargetCoord.Get() }
+		, TheDuration { trajType->TheDuration }
 		, LaserTimer {}
 		, DamageTimer {}
 		, TechnoInLimbo { false }
@@ -79,7 +79,7 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
-	EngraveTrajectoryType* Type;
+	const EngraveTrajectoryType* Type;
 	Point2D SourceCoord;
 	Point2D TargetCoord;
 	int TheDuration;

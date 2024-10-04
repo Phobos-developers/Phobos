@@ -6,9 +6,9 @@
 #include <TacticalClass.h>
 #include <LaserDrawClass.h>
 
-PhobosTrajectory* EngraveTrajectoryType::CreateInstance() const
+std::unique_ptr<PhobosTrajectory> EngraveTrajectoryType::CreateInstance() const
 {
-	return new EngraveTrajectory(this);
+	return std::make_unique<EngraveTrajectory>(this);
 }
 
 template<typename T>
@@ -51,6 +51,10 @@ bool EngraveTrajectoryType::Save(PhobosStreamWriter& Stm) const
 void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
+
+	if (this->Trajectory_Speed > 128.0)
+		this->Trajectory_Speed = 128.0;
+
 	this->ApplyRangeModifiers.Read(exINI, pSection, "Trajectory.Engrave.ApplyRangeModifiers");
 	this->SourceCoord.Read(exINI, pSection, "Trajectory.Engrave.SourceCoord");
 	this->TargetCoord.Read(exINI, pSection, "Trajectory.Engrave.TargetCoord");
@@ -102,10 +106,7 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	if (!this->Type) // After load
-		this->Type = this->GetTrajectoryType<EngraveTrajectoryType>(pBullet);
-
-	EngraveTrajectoryType* const pType = this->Type;
+	const EngraveTrajectoryType* const pType = this->Type;
 	this->LaserTimer.Start(0);
 	this->DamageTimer.Start(0);
 	this->FLHCoord = pBullet->SourceCoords;
@@ -128,11 +129,8 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		this->SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords);
 	}
 
-	double engraveSpeed = this->GetTrajectorySpeed(pBullet);
-	engraveSpeed = engraveSpeed > 128.0 ? 128.0 : engraveSpeed;
-
 	double coordDistance = pBullet->Velocity.Magnitude();
-	pBullet->Velocity *= (coordDistance > 1e-10) ? (engraveSpeed / coordDistance) : 0;
+	pBullet->Velocity *= (coordDistance > 1e-10) ? (this->Speed / coordDistance) : 0;
 
 	WeaponTypeClass* const pWeapon = pBullet->WeaponType;
 
@@ -140,14 +138,11 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		coordDistance = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno, static_cast<int>(coordDistance)));
 
 	if (this->TheDuration <= 0)
-		this->TheDuration = static_cast<int>(coordDistance / engraveSpeed) + 1;
+		this->TheDuration = static_cast<int>(coordDistance / this->Speed) + 1;
 }
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (!this->Type) // After load
-		this->Type = this->GetTrajectoryType<EngraveTrajectoryType>(pBullet);
-
 	TechnoClass* const pTechno = pBullet->Owner;
 
 	if ((!pTechno && !this->NotMainWeapon) || this->TechnoInLimbo != static_cast<bool>(pTechno->Transporter))
@@ -309,7 +304,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 
 void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
-	EngraveTrajectoryType* const pType = this->Type;
+	const EngraveTrajectoryType* const pType = this->Type;
 	this->LaserTimer.Start(pType->LaserDelay > 0 ? pType->LaserDelay : 1);
 	LaserDrawClass* pLaser;
 	CoordStruct fireCoord = pTechno->GetCoords();
@@ -364,7 +359,7 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 
 void EngraveTrajectory::DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
-	EngraveTrajectoryType* const pType = this->Type;
+	const EngraveTrajectoryType* const pType = this->Type;
 	this->DamageTimer.Start(pType->DamageDelay > 0 ? pType->DamageDelay : 1);
 	WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, pBullet->Health, pOwner);
 }
