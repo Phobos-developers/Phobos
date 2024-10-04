@@ -1032,7 +1032,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 		if (pBulletExt->Trajectory && curBurst >= 0)
 		{
-			const TrajectoryFlag flag = pBulletExt->Trajectory->Flag;
+			const TrajectoryFlag flag = pBulletExt->Trajectory->Flag();
 
 			if (flag == TrajectoryFlag::Disperse)
 			{

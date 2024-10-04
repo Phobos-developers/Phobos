@@ -6,7 +6,7 @@
 class DisperseTrajectoryType final : public PhobosTrajectoryType
 {
 public:
-	DisperseTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Disperse)
+	DisperseTrajectoryType() : PhobosTrajectoryType()
 		, UniqueCurve { false }
 		, PreAimCoord { { 0, 0, 0 } }
 		, RotateCoord { 0 }
@@ -46,6 +46,7 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
+	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Disperse; }
 
 	Valueable<bool> UniqueCurve;
 	Valueable<CoordStruct> PreAimCoord;
@@ -91,7 +92,7 @@ class DisperseTrajectory final : public PhobosTrajectory
 public:
 	DisperseTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
-	DisperseTrajectory(DisperseTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Disperse, trajType->Trajectory_Speed)
+	DisperseTrajectory(DisperseTrajectoryType const* trajType) : PhobosTrajectory(trajType->Trajectory_Speed)
 		, Type { trajType }
 		, PreAimCoord { trajType->PreAimCoord.Get() }
 		, UseDisperseBurst { trajType->UseDisperseBurst }
@@ -114,7 +115,7 @@ public:
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-
+	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Disperse; }
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override;
