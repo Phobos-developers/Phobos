@@ -16,7 +16,7 @@ TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 		_ptr = std::make_unique<StraightTrajectoryType>();
 		return;
 	case TrajectoryFlag::Bombard:
-		_ptr = std::make_unique<StraightTrajectoryType>();
+		_ptr = std::make_unique<BombardTrajectoryType>();
 		return;
 	}
 	_ptr.reset();
@@ -56,7 +56,7 @@ void TrajectoryTypePointer::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	flag.Read(exINI, pSection, "Trajectory");// I assume this shit is parsed once and only once, so I keep the impl here
 	if (flag.isset())
 	{
-		if (!_ptr || _ptr->Flag != flag.Get())
+		if (!_ptr || _ptr->Flag() != flag.Get())
 			std::construct_at(this, flag.Get());
 	}
 	if (_ptr)
@@ -87,7 +87,8 @@ bool TrajectoryTypePointer::Save(PhobosStreamWriter& Stm) const
 	Stm.Process(raw);
 	if (raw)
 	{
-		Stm.Process(raw->Flag);
+		auto rtti = raw->Flag();
+		Stm.Process(rtti);
 		return raw->Save(Stm);
 	}
 	return true;
@@ -116,7 +117,6 @@ bool TrajectoryPointer::Load(PhobosStreamReader& Stm, bool registerForChange)
 		if (_ptr.get())
 		{
 			// PhobosSwizzle::RegisterChange(PTR, _ptr.get()); // not used elsewhere yet, if anyone does then reenable this shit
-			_ptr->Flag = flag;
 			return _ptr->Load(Stm, registerForChange);
 		}
 	}
@@ -129,7 +129,8 @@ bool TrajectoryPointer::Save(PhobosStreamWriter& Stm) const
 	Stm.Process(raw);
 	if (raw)
 	{
-		Stm.Process(raw->Flag);
+		auto rtti = raw->Flag();
+		Stm.Process(rtti);
 		return raw->Save(Stm);
 	}
 	return true;
@@ -140,7 +141,6 @@ bool TrajectoryPointer::Save(PhobosStreamWriter& Stm) const
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	Stm
-		.Process(this->Flag)
 		.Process(this->Trajectory_Speed);
 	return true;
 }
@@ -148,7 +148,6 @@ bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 bool PhobosTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
 	Stm
-		.Process(this->Flag)
 		.Process(this->Trajectory_Speed);
 	return true;
 }
@@ -156,7 +155,6 @@ bool PhobosTrajectoryType::Save(PhobosStreamWriter& Stm) const
 bool PhobosTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	Stm
-		.Process(this->Flag)
 		.Process(this->Speed)
 		;
 	return true;
@@ -165,7 +163,6 @@ bool PhobosTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 {
 	Stm
-		.Process(this->Flag, false)
 		.Process(this->Speed)
 		;
 	return true;
