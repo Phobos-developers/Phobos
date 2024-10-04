@@ -2,9 +2,9 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-PhobosTrajectory* StraightTrajectoryType::CreateInstance() const
+std::unique_ptr<PhobosTrajectory> StraightTrajectoryType::CreateInstance() const
 {
-	return new StraightTrajectory(this);
+	return std::make_unique<StraightTrajectory>(this);
 }
 
 template<typename T>

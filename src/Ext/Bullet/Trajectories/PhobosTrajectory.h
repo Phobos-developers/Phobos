@@ -26,7 +26,7 @@ class PhobosTrajectory;
 class PhobosTrajectoryType
 {
 public:
-	PhobosTrajectoryType(noinit_t) { }
+	PhobosTrajectoryType() { }
 	PhobosTrajectoryType(TrajectoryFlag flag) : Flag { flag }, Trajectory_Speed { 100.0 }
 	{ }
 
@@ -35,26 +35,11 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 
 	virtual void Read(CCINIClass* const pINI, const char* pSection) = 0;
-	virtual PhobosTrajectory* CreateInstance() const = 0;
+	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const = 0;
 
 	TrajectoryFlag Flag;
 	Valueable<double> Trajectory_Speed;
 };
-
-class TrajectoryTypePointer
-{
-	std::unique_ptr<PhobosTrajectoryType> _ptr {};
-public:
-	explicit TrajectoryTypePointer(TrajectoryFlag flag);
-	explicit TrajectoryTypePointer() { }
-	void LoadFromINI(CCINIClass* pINI, const char* pSection);
-	bool Load(PhobosStreamReader& stm, bool registerForChange);
-	bool Save(PhobosStreamWriter& stm) const;
-	[[nodiscard]] PhobosTrajectoryType* operator->() const noexcept { return _ptr.get(); }
-	[[nodiscard]] PhobosTrajectoryType* get() const noexcept { return _ptr.get(); }
-	explicit operator bool() const noexcept { return _ptr.get() != nullptr; }
-};
-
 
 class PhobosTrajectory
 {
@@ -73,11 +58,6 @@ public:
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) = 0;
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) = 0;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) = 0;
-
-	static PhobosTrajectory* LoadFromStream(PhobosStreamReader& Stm);
-	static void WriteToStream(PhobosStreamWriter& Stm, PhobosTrajectory* pTraj);
-	static PhobosTrajectory* ProcessFromStream(PhobosStreamReader& Stm, PhobosTrajectory* pTraj);
-	static PhobosTrajectory* ProcessFromStream(PhobosStreamWriter& Stm, PhobosTrajectory* pTraj);
 
 	TrajectoryFlag Flag;
 	double Speed;
@@ -153,3 +133,36 @@ public:
 *                     ^$^                *##^                       ***               ^$
 *
 */
+
+// I removed most part but kept a few so that you know what you are eating
+class TrajectoryTypePointer
+{
+	std::unique_ptr<PhobosTrajectoryType> _ptr {};
+public:
+	explicit TrajectoryTypePointer(TrajectoryFlag flag);
+	explicit TrajectoryTypePointer() { }
+	TrajectoryTypePointer(const TrajectoryTypePointer&) = delete;
+	TrajectoryTypePointer& operator=(const TrajectoryTypePointer&) = delete;
+	void LoadFromINI(CCINIClass* pINI, const char* pSection);
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+	[[nodiscard]] PhobosTrajectoryType* operator->() const noexcept { return _ptr.get(); }
+	[[nodiscard]] PhobosTrajectoryType* get() const noexcept { return _ptr.get(); }
+	operator bool() const noexcept { return _ptr.get() != nullptr; }
+};
+
+class TrajectoryPointer
+{
+	std::unique_ptr<PhobosTrajectory> _ptr;
+public:
+	TrajectoryPointer(std::nullptr_t) : _ptr { nullptr } { }
+	TrajectoryPointer(const TrajectoryPointer&) = delete;
+	TrajectoryPointer& operator=(const TrajectoryPointer&) = delete;
+	TrajectoryPointer& operator=(std::unique_ptr<PhobosTrajectory>&& ptr) noexcept { _ptr = std::move(ptr); return *this; }
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+	[[nodiscard]] PhobosTrajectory* operator->() const noexcept { return _ptr.get(); }
+	[[nodiscard]] PhobosTrajectory* get() const noexcept { return _ptr.get(); }
+	operator bool() const noexcept { return _ptr.get() != nullptr; }
+	operator std::unique_ptr<PhobosTrajectory>() noexcept { return std::move(_ptr); }
+};
