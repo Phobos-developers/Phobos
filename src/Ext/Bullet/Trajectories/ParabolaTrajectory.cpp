@@ -737,10 +737,11 @@ double ParabolaTrajectory::SearchVelocity(double horizontalDistance, int distanc
 	const double mult = Math::sin(2 * radian);
 	double velocity = abs(mult) > 1e-10 ? sqrt(horizontalDistance * gravity / mult) : 0.0;
 	velocity += distanceCoordsZ / gravity;
-	velocity = velocity > 10.0 ? velocity : 10.0;
+	velocity = velocity > 8.0 ? velocity : 8.0;
+	const double error = velocity / 16;
 
 	// Step size
-	const double delta = 1e-6;
+	const double delta = 1e-5;
 
 	// Newton Iteration Method
 	for (int i = 0; i < 10; ++i)
@@ -758,7 +759,7 @@ double ParabolaTrajectory::SearchVelocity(double horizontalDistance, int distanc
 		const double velocityNew = velocity - difference;
 
 		// Check tolerable error
-		if (abs(difference) < 8.0)
+		if (abs(difference) < error)
 			return velocityNew;
 
 		// Update the speed
