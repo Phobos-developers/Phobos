@@ -167,6 +167,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - The otherwise unused setting `[AI]` -> `PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI]` -> `EnablePowerSurplus` to true.
 - Planning paths are now shown for all units under player control or when `[GlobalControls]->DebugPlanningPaths=yes` in singleplayer game modes.
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
+- Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
+- Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them.
+- Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead.
+- Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
 
 ## Fixes / interactions with other extensions
 
@@ -473,7 +477,7 @@ Pips.SelfHeal.Units.Offset=33,-32       ; X,Y, pixels relative to default
 Pips.SelfHeal.Buildings.Offset=15,10    ; X,Y, pixels relative to default
 
 [SOMETECHNO]                            ; TechnoType
-SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (none|infantry|units)
+SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (noheal|infantry|units)
 ```
 
 ### Chrono sparkle animation customization & improvements
@@ -649,6 +653,18 @@ Wake.Grapple=        ; Anim (played when Techno being parasited on the water), d
 Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [SOMETECHNO]->Wake
 ```
 
+### Customizing effect of level lighting on air units
+
+- It is now possible to customize how air units are affected by level lighting, separately for AircraftTypes and infantry/vehicles with Jumpjet `Locomotor`.
+  - `AircraftLevelLightMultiplier` & `JumpjetLevelLightMultiplier` are direct multipliers to level lighting applied on the units, for height levels above the cell they are on.
+
+  - In `rulesmd.ini`
+```ini
+[AudioVisual]
+AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
+JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
@@ -785,6 +801,24 @@ NoWobbles=false  ; boolean
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Skirmish AI behavior dehardcode
+
+- In vanilla, there is a hardcoded behavior that when an skirmish AI player has no factory and has not taken damage for a while, it will sell its buildings and set its units to hunt. This can be customized now.
+  - `[General]->AIFireSale` and `[General]->AIAllToHunt` control whether the AI will act selling and hunting respectively.
+  - `[General]->AIFireSaleDelay` defines a timer, it will only work if `[General]->AIFireSale` is set to `true`. When the first time the AI reaches the trigger condition of vanilla behavior, the timer starts and prevents the selling behavior from happening until the timer is expired.
+  - You can use these flags to make the AIs "all in" before they are defeated.
+- Another hardcoded behavior is that, when the AI deploys a MCV, it will gather all of its forces to that place. This can be toggle off now.
+  - `[General]->GatherWhenMCVDeploy` controls this behavior.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AIFireSale=true           ; boolean
+AIFireSaleDelay=0         ; integer, number of frames
+AIAllToHunt=true          ; boolean
+GatherWhenMCVDeploy=true  ; boolean
 ```
 
 ### Subterranean unit travel height

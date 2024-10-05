@@ -16,7 +16,7 @@ AttachEffectClass::AttachEffectClass()
 	, Duration { 0 }
 	, CurrentDelay { 0 }
 	, NeedsDurationRefresh { false }
-	, IsFirstCumulativeInstance { false }
+	, HasCumulativeAnim { false }
 {
 	this->HasInitialized = false;
 	AttachEffectClass::Array.emplace_back(this);
@@ -35,7 +35,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, IsOnline { true }
 	, IsCloaked { false }
 	, NeedsDurationRefresh { false }
-	, IsFirstCumulativeInstance { false }
+	, HasCumulativeAnim { false }
 {
 	this->HasInitialized = false;
 
@@ -154,7 +154,7 @@ void AttachEffectClass::AI()
 	this->CloakCheck();
 	this->OnlineCheck();
 
-	if (!this->Animation && !this->IsUnderTemporal && this->IsOnline && !this->IsCloaked && !this->IsInTunnel && !this->IsAnimHidden)
+	if (!this->Animation && this->CanShowAnim())
 		this->CreateAnim();
 
 	this->AnimCheck();
@@ -168,7 +168,7 @@ void AttachEffectClass::AI_Temporal()
 
 		this->CloakCheck();
 
-		if (!this->Animation && this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides && this->IsOnline && !this->IsCloaked && !this->IsInTunnel && !this->IsAnimHidden)
+		if (!this->Animation && this->CanShowAnim())
 			this->CreateAnim();
 
 		if (this->Animation)
@@ -212,7 +212,7 @@ void AttachEffectClass::AnimCheck()
 		{
 			this->IsAnimHidden = false;
 
-			if (!this->Animation && (!this->IsUnderTemporal || this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides))
+			if (!this->Animation && this->CanShowAnim())
 				this->CreateAnim();
 		}
 	}
@@ -290,7 +290,7 @@ void AttachEffectClass::CreateAnim()
 
 	if (this->Type->Cumulative && this->Type->CumulativeAnimations.size() > 0)
 	{
-		if (!this->IsFirstCumulativeInstance)
+		if (!this->HasCumulativeAnim)
 			return;
 
 		int count = TechnoExt::ExtMap.Find(this->Techno)->GetAttachedEffectCumulativeCount(this->Type);
@@ -328,6 +328,44 @@ void AttachEffectClass::KillAnim()
 	}
 }
 
+void AttachEffectClass::UpdateCumulativeAnim()
+{
+	if (!this->HasCumulativeAnim || !this->Animation)
+		return;
+
+	int count = TechnoExt::ExtMap.Find(this->Techno)->GetAttachedEffectCumulativeCount(this->Type);
+
+	if (count < 1)
+	{
+		this->KillAnim();
+		return;
+	}
+
+	auto const pAnimType = this->Type->GetCumulativeAnimation(count);
+
+	if (this->Animation->Type != pAnimType)
+		AnimExt::ChangeAnimType(this->Animation, pAnimType, false, this->Type->CumulativeAnimations_RestartOnChange);
+}
+
+void AttachEffectClass::TransferCumulativeAnim(AttachEffectClass* pSource)
+{
+	if (!pSource || !pSource->Animation)
+		return;
+
+	this->KillAnim();
+	this->Animation = pSource->Animation;
+	this->HasCumulativeAnim = true;
+	pSource->Animation = nullptr;
+	pSource->HasCumulativeAnim = false;
+}
+
+bool AttachEffectClass::CanShowAnim() const
+{
+	return (!this->IsUnderTemporal || this->Type->Animation_TemporalAction != AttachedAnimFlag::Hides)
+		&& (this->IsOnline || this->Type->Animation_OfflineAction != AttachedAnimFlag::Hides)
+		&& !this->IsCloaked && !this->IsInTunnel && !this->IsAnimHidden;
+}
+
 void AttachEffectClass::SetAnimationTunnelState(bool visible)
 {
 	if (!this->IsInTunnel && !visible)
@@ -346,7 +384,9 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 	if (this->Type->Animation_ResetOnReapply)
 	{
 		this->KillAnim();
-		this->CreateAnim();
+
+		if (this->CanShowAnim())
+			this->CreateAnim();
 	}
 }
 
@@ -362,11 +402,6 @@ bool AttachEffectClass::ResetIfRecreatable()
 	return true;
 }
 
-bool AttachEffectClass::IsSelfOwned() const
-{
-	return this->Source == this->Techno;
-}
-
 bool AttachEffectClass::HasExpired() const
 {
 	return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration;
@@ -378,7 +413,7 @@ bool AttachEffectClass::AllowedToBeActive() const
 
 	if (auto const pFoot = abstract_cast<FootClass*>(pTechno))
 	{
-		bool isMoving = pFoot->Locomotor->Is_Moving();
+		bool isMoving = pFoot->Locomotor->Is_Really_Moving_Now();
 
 		if (isMoving && (this->Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
 			return false;
@@ -433,11 +468,6 @@ bool AttachEffectClass::IsActive() const
 bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const
 {
 	return pInvoker == this->Invoker && pSource == this->Source;
-}
-
-AttachEffectTypeClass* AttachEffectClass::GetType() const
-{
-	return this->Type;
 }
 
 #pragma region StaticFunctions_AttachDetachTransfer
@@ -532,7 +562,7 @@ int AttachEffectClass::Attach(std::vector<AttachEffectTypeClass*> const& types, 
 				if (pType->HasTint())
 					markForRedraw = true;
 
-				if (pType->Cumulative)
+				if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
 					pTargetExt->UpdateCumulativeAttachEffects(pType);
 			}
 		}
@@ -612,7 +642,12 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	else
 	{
 		targetAEs.push_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay));
-		return targetAEs.back().get();
+		auto const pAE = targetAEs.back().get();
+
+		if (!currentTypeCount && pType->Cumulative && pType->CumulativeAnimations.size() > 0)
+			pAE->HasCumulativeAnim = true;
+
+		return pAE;
 	}
 
 	return nullptr;
@@ -665,16 +700,13 @@ int AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, 
 
 	for (auto const pType : types)
 	{
-		int minCount = minSize > 0 ? (index < minSize ? minCounts.at(index) : minCounts.at(minSize-1)) : -1;
+		int minCount = minSize > 0 ? (index < minSize ? minCounts.at(index) : minCounts.at(minSize - 1)) : -1;
 		int maxCount = maxSize > 0 ? (index < maxSize ? maxCounts.at(index) : maxCounts.at(maxSize - 1)) : -1;
 
 		int count = AttachEffectClass::RemoveAllOfType(pType, pTarget, minCount, maxCount);
 
 		if (count && pType->HasTint())
 			markForRedraw = true;
-
-		if (count && pType->Cumulative)
-			pTargetExt->UpdateCumulativeAttachEffects(pType);
 
 		detachedCount += count;
 		index++;
@@ -759,6 +791,10 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || pTargetExt->GetAttachedEffectCumulativeCount(pType) < 2)
 					expireWeapons.push_back(pType->ExpireWeapon);
 			}
+
+
+			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
+				pTargetExt->UpdateCumulativeAttachEffects(pType, attachEffect);
 
 			if (attachEffect->ResetIfRecreatable())
 			{
@@ -871,6 +907,8 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->IsOnline)
 		.Process(this->IsCloaked)
 		.Process(this->HasInitialized)
+		.Process(this->NeedsDurationRefresh)
+		.Process(this->HasCumulativeAnim)
 		.Success();
 }
 
@@ -883,4 +921,3 @@ bool AttachEffectClass::Save(PhobosStreamWriter& Stm) const
 {
 	return const_cast<AttachEffectClass*>(this)->Serialize(Stm);
 }
-

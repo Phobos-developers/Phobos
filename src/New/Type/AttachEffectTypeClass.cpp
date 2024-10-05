@@ -49,7 +49,7 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(co
 		}
 	}
 
-	return std::vector<AttachEffectTypeClass*> (types.begin(), types.end());;
+	return std::vector<AttachEffectTypeClass*>(types.begin(), types.end());;
 }
 
 AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount) const
@@ -106,6 +106,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Animation.Read(exINI, pSection, "Animation");
 	this->CumulativeAnimations.Read(exINI, pSection, "CumulativeAnimations");
+	this->CumulativeAnimations_RestartOnChange.Read(exINI, pSection, "CumulativeAnimations.RestartOnChange");
 	this->Animation_ResetOnReapply.Read(exINI, pSection, "Animation.ResetOnReapply");
 	this->Animation_OfflineAction.Read(exINI, pSection, "Animation.OfflineAction");
 	this->Animation_TemporalAction.Read(exINI, pSection, "Animation.TemporalAction");
@@ -169,6 +170,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->PenetratesForceShield)
 		.Process(this->Animation)
 		.Process(this->CumulativeAnimations)
+		.Process(this->CumulativeAnimations_RestartOnChange)
 		.Process(this->Animation_ResetOnReapply)
 		.Process(this->Animation_OfflineAction)
 		.Process(this->Animation_TemporalAction)

@@ -47,6 +47,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->TabIndex)
 		.Process(this->UseWeeds)
 		.Process(this->UseWeeds_Amount)
 		.Process(this->UseWeeds_StorageTimer)
@@ -160,6 +161,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
 
+	this->TabIndex.Read(exINI, pSection, "TabIndex");
+	GeneralUtils::IntValidCheck(&this->TabIndex, pSection, "TabIndex", 1, 0, 3);
+
 	this->UseWeeds.Read(exINI, pSection, "UseWeeds");
 	this->UseWeeds_Amount.Read(exINI, pSection, "UseWeeds.Amount");
 	this->UseWeeds_StorageTimer.Read(exINI, pSection, "UseWeeds.StorageTimer");
@@ -194,8 +198,7 @@ bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 // container
 
 SWTypeExt::ExtContainer::ExtContainer() : Container("SuperWeaponTypeClass")
-{
-}
+{ }
 
 SWTypeExt::ExtContainer::~ExtContainer() = default;
 

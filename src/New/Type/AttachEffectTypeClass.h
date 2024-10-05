@@ -22,6 +22,7 @@ public:
 	Nullable<bool> PenetratesForceShield;
 	Valueable<AnimTypeClass*> Animation;
 	ValueableVector<AnimTypeClass*> CumulativeAnimations;
+	Valueable<bool> CumulativeAnimations_RestartOnChange;
 	Valueable<bool> Animation_ResetOnReapply;
 	Valueable<AttachedAnimFlag> Animation_OfflineAction;
 	Valueable<AttachedAnimFlag> Animation_TemporalAction;
@@ -70,6 +71,7 @@ public:
 		, PenetratesForceShield {}
 		, Animation {}
 		, CumulativeAnimations {}
+		, CumulativeAnimations_RestartOnChange { true }
 		, Animation_ResetOnReapply { false }
 		, Animation_OfflineAction { AttachedAnimFlag::Hides }
 		, Animation_TemporalAction { AttachedAnimFlag::None }
@@ -97,7 +99,7 @@ public:
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
 		, RevengeWeapon {}
-		, RevengeWeapon_AffectsHouses{ AffectedHouse::All }
+		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		, ReflectDamage { false }
 		, ReflectDamage_Warhead {}
 		, ReflectDamage_Warhead_Detonate { false }
@@ -116,11 +118,9 @@ public:
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
 
-	virtual ~AttachEffectTypeClass() override = default;
-
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm);
-	virtual void SaveToStream(PhobosStreamWriter& Stm);
+	void LoadFromINI(CCINIClass* pINI);
+	void LoadFromStream(PhobosStreamReader& Stm);
+	void SaveToStream(PhobosStreamWriter& Stm);
 
 	static void Clear()
 	{
@@ -134,4 +134,3 @@ private:
 	void Serialize(T& Stm);
 	void AddToGroupsMap();
 };
-
