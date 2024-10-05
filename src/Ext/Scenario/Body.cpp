@@ -145,7 +145,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.OverParTitle", pThis->OverParTitle, pThis->OverParTitle);
 		pINI_MISSIONMD->ReadString(scenarioName, "Ranking.OverParMessage", pThis->OverParMessage, pThis->OverParMessage);
 
-		this->ShowBriefing = pINI_MISSIONMD->ReadBool(scenarioName, "ShowBriefing", pINI->ReadBool(GameStrings::Basic,"ShowBriefing", this->ShowBriefing));
+		this->ShowBriefing = pINI_MISSIONMD->ReadBool(scenarioName, "ShowBriefing", pINI->ReadBool(GameStrings::Basic, "ShowBriefing", this->ShowBriefing));
 		this->BriefingTheme = pINI_MISSIONMD->ReadTheme(scenarioName, "BriefingTheme", pINI->ReadTheme(GameStrings::Basic, "BriefingTheme", this->BriefingTheme));
 
 		CCINIClass::UnloadINIFile(pINI_MISSIONMD);

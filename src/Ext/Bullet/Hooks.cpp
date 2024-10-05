@@ -305,11 +305,9 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 	}
 	else if (auto const pExt = BulletAITemp::ExtData)
 	{
-		if (auto const pTrajectory = pExt->Trajectory)
+		if (auto pTraj = pExt->Trajectory.get())
 		{
-			const TrajectoryFlag flag = pTrajectory->Flag;
-
-			if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Bombard)
+			if (pTraj->Flag() == TrajectoryFlag::Straight || pTraj->Flag() == TrajectoryFlag::Bombard)
 			{
 				R->EAX(pThis->Type);
 				return SkipChecks;
@@ -338,18 +336,11 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	}
 	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (!pExt->SnappedToTarget)
+		if (pExt->Trajectory && (pExt->Trajectory->Flag() == TrajectoryFlag::Straight
+			|| pExt->Trajectory->Flag() == TrajectoryFlag::Bombard) && !pExt->SnappedToTarget)
 		{
-			if (auto const pTrajectory = pExt->Trajectory)
-			{
-				const TrajectoryFlag flag = pTrajectory->Flag;
-
-				if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Bombard)
-				{
-					R->EAX(pThis->Type);
-					return SkipChecks;
-				}
-			}
+			R->EAX(pThis->Type);
+			return SkipChecks;
 		}
 	}
 
@@ -377,18 +368,9 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	// Fixes issues with walls etc.
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (!pExt->SnappedToTarget)
-		{
-			if (auto const pTrajectory = pExt->Trajectory)
-			{
-				const TrajectoryFlag flag = pTrajectory->Flag;
-
-				if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Bombard)
-				{
-					return SkipSetCoordinate;
-				}
-			}
-		}
+		if (pExt->Trajectory && (pExt->Trajectory->Flag() == TrajectoryFlag::Straight
+			|| pExt->Trajectory->Flag() == TrajectoryFlag::Bombard) && !pExt->SnappedToTarget)
+			return SkipSetCoordinate;
 	}
 
 	return 0;
@@ -402,15 +384,9 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (auto const pTrajectory = pExt->Trajectory)
-		{
-			const TrajectoryFlag flag = pTrajectory->Flag;
-
-			if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Bombard)
-			{
-				return SkipCheck;
-			}
-		}
+		if (pExt->Trajectory && (pExt->Trajectory->Flag() == TrajectoryFlag::Straight
+			|| pExt->Trajectory->Flag() == TrajectoryFlag::Bombard) && !pExt->SnappedToTarget)
+			return SkipCheck;
 	}
 
 	return 0;

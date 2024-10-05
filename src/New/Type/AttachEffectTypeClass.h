@@ -99,7 +99,7 @@ public:
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
 		, RevengeWeapon {}
-		, RevengeWeapon_AffectsHouses{ AffectedHouse::All }
+		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		, ReflectDamage { false }
 		, ReflectDamage_Warhead {}
 		, ReflectDamage_Warhead_Detonate { false }
@@ -134,4 +134,3 @@ private:
 	void Serialize(T& Stm);
 	void AddToGroupsMap();
 };
-

@@ -77,7 +77,8 @@ public:
 			return false;
 
 
-		for (size_t i = 0; i < Count; ++i) {
+		for (size_t i = 0; i < Count; ++i)
+		{
 			void* oldPtr = nullptr;
 			decltype(Name) name;
 

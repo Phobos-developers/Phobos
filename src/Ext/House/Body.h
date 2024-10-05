@@ -104,7 +104,8 @@ public:
 		bool UpdateHarvesterProduction();
 	};
 
-	class ExtContainer final : public Container<HouseExt> {
+	class ExtContainer final : public Container<HouseExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

@@ -530,6 +530,7 @@ Vanilla fixes:
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast (by NetsuNegi)
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them (by Starkku)
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes (by Starkku)
+- Removed the 0 damage effect from `InfDeath=9` warheads to in-air infantries (by Trsdy)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

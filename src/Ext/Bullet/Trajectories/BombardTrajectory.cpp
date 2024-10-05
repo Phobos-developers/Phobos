@@ -4,9 +4,9 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-PhobosTrajectory* BombardTrajectoryType::CreateInstance() const
+std::unique_ptr<PhobosTrajectory> BombardTrajectoryType::CreateInstance() const
 {
-	return new BombardTrajectory(this);
+	return std::make_unique<BombardTrajectory>(this);
 }
 
 template<typename T>
@@ -86,19 +86,26 @@ void BombardTrajectory::Serialize(T& Stm)
 		.Process(this->Height)
 		.Process(this->RemainingDistance)
 		.Process(this->FallPercent)
+		.Process(this->FallPercentShift)
+		.Process(this->FallScatter_Max)
+		.Process(this->FallScatter_Min)
 		.Process(this->FallSpeed)
 		.Process(this->DetonationDistance)
+		.Process(this->ApplyRangeModifiers)
 		.Process(this->DetonationHeight)
 		.Process(this->EarlyDetonation)
 		.Process(this->TargetSnapDistance)
 		.Process(this->FreeFallOnTarget)
 		.Process(this->LeadTimeCalculate)
+		.Process(this->NoLaunch)
+		.Process(this->TurningPointAnims)
 		.Process(this->OffsetCoord)
 		.Process(this->RotateCoord)
 		.Process(this->MirrorCoord)
 		.Process(this->UseDisperseBurst)
 		.Process(this->AxisOfRotation)
 		.Process(this->SubjectToGround)
+		.Process(this->LastHeight)
 		.Process(this->LastTargetCoord)
 		.Process(this->CountOfBurst)
 		.Process(this->CurrentBurst)
@@ -127,15 +134,14 @@ bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	auto const pType = this->GetTrajectoryType<BombardTrajectoryType>(pBullet);
 	this->Height += pBullet->TargetCoords.Z;
 	// use scaling since RandomRanged only support int
-	const double fallPercentShift = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(200 * pType->FallPercentShift)) / 100.0;
-	this->FallPercent += fallPercentShift - pType->FallPercentShift;
+	const double fallPercentShift = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(200 * this->FallPercentShift)) / 100.0;
+	this->FallPercent += fallPercentShift - this->FallPercentShift;
 	this->LastTargetCoord = pBullet->TargetCoords;
 
 	if (!this->FallSpeed)
-		this->FallSpeed = this->GetTrajectorySpeed(pBullet);
+		this->FallSpeed = this->Speed;
 
 	WeaponTypeClass* const pWeapon = pBullet->WeaponType;
 	TechnoClass* const pOwner = pBullet->Owner;
@@ -147,14 +153,14 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	{
 		this->CurrentBurst = pOwner->CurrentBurstIndex;
 
-		if (pType->ApplyRangeModifiers && pWeapon)
+		if (this->ApplyRangeModifiers && pWeapon)
 			this->DetonationDistance = Leptons(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner, this->DetonationDistance));
 
-		if (pType->MirrorCoord && pOwner->CurrentBurstIndex % 2 == 1)
+		if (this->MirrorCoord && pOwner->CurrentBurstIndex % 2 == 1)
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
 	}
 
-	if (!pType->NoLaunch)
+	if (!this->NoLaunch)
 	{
 		if (this->FreeFallOnTarget)
 			BombardTrajectory::CalculateLeadTime(pBullet);
@@ -162,7 +168,7 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X) * this->FallPercent;
 		pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y) * this->FallPercent;
 		pBullet->Velocity.Z = static_cast<double>(this->Height - pBullet->SourceCoords.Z);
-		pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
+		pBullet->Velocity *= this->Speed / pBullet->Velocity.Magnitude();
 	}
 	else
 	{
@@ -174,18 +180,19 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 		this->IsFalling = true;
 		double angel = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
-		double length = ScenarioClass::Instance->Random.RandomRanged(Leptons { pType->FallScatter_Min }, Leptons { pType->FallScatter_Max });
+		double length = ScenarioClass::Instance->Random.RandomRanged(Leptons { this->FallScatter_Min }, Leptons { this->FallScatter_Max });
 		int scatterX = static_cast<int>(length * Math::cos(angel));
 		int scatterY = static_cast<int>(length * Math::sin(angel));
 
 		if (!this->FreeFallOnTarget)
 		{
-			BombardTrajectory::CalculateLeadTime(pBullet);
-
 			SourceLocation.X = pBullet->SourceCoords.X + static_cast<int>((pBullet->TargetCoords.X - pBullet->SourceCoords.X) * this->FallPercent) + scatterX;
 			SourceLocation.Y = pBullet->SourceCoords.Y + static_cast<int>((pBullet->TargetCoords.Y - pBullet->SourceCoords.Y) * this->FallPercent) + scatterY;
 			pBullet->Limbo();
 			pBullet->Unlimbo(SourceLocation, DirType::North);
+
+			BombardTrajectory::CalculateLeadTime(pBullet);
+
 			pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - SourceLocation.X);
 			pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - SourceLocation.Y);
 			pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - SourceLocation.Z);
@@ -216,13 +223,13 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 			pBullet->Velocity.Z = 0.0;
 		}
 
-		AnimExt::CreateRandomAnim(pType->TurningPointAnims, SourceLocation, pBullet->Owner, pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse, true);
+		AnimExt::CreateRandomAnim(this->TurningPointAnims, SourceLocation, pBullet->Owner, pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse, true);
 	}
 }
 
 void BombardTrajectory::CalculateLeadTime(BulletClass* pBullet)
 {
-	const double straightSpeed = this->FreeFallOnTarget ? this->GetTrajectorySpeed(pBullet) : this->FallSpeed;
+	const double straightSpeed = this->FreeFallOnTarget ? this->Speed : this->FallSpeed;
 	const AbstractClass* const pTarget = pBullet->Target;
 	CoordStruct theTargetCoords = pBullet->TargetCoords;
 	CoordStruct theSourceCoords = pBullet->SourceCoords;
@@ -243,8 +250,8 @@ void BombardTrajectory::CalculateLeadTime(BulletClass* pBullet)
 			{
 				CoordStruct theTurningPointCoords = theTargetCoords;
 				CoordStruct theLastTurningPointCoords = this->LastTargetCoord;
-				theTurningPointCoords.Z += static_cast<int>(this->Height) - pBullet->TargetCoords.Z;
-				theLastTurningPointCoords.Z += static_cast<int>(this->Height) - pBullet->TargetCoords.Z;
+				theTurningPointCoords.Z += static_cast<int>(this->LastHeight);
+				theLastTurningPointCoords.Z += static_cast<int>(this->LastHeight);
 
 				if (this->FallPercent != 1.0)
 				{
@@ -428,8 +435,6 @@ void BombardTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 
 void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {
-	auto const trajType = this->GetTrajectoryType<BombardTrajectoryType>(pBullet);
-
 	if (!this->IsFalling)
 	{
 		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
@@ -461,7 +466,7 @@ void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpee
 
 				BombardTrajectory::CalculateBulletVelocity(*pSpeed);
 
-				AnimExt::CreateRandomAnim(trajType->TurningPointAnims, BulletLocation, pBullet->Owner, pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse, true);
+				AnimExt::CreateRandomAnim(this->TurningPointAnims, BulletLocation, pBullet->Owner, pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse, true);
 			}
 			else
 			{
@@ -474,12 +479,12 @@ void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpee
 					auto pExt = BulletExt::ExtMap.Find(pBullet);
 					pExt->LaserTrails.clear();
 					CoordStruct target = pBullet->TargetCoords;
-					target.Z += static_cast<int>(trajType->Height);
+					target.Z += static_cast<int>(this->LastHeight);
 					pBullet->Limbo();
 					pBullet->Unlimbo(target, DirType::North);
 					pPosition->X = pBullet->TargetCoords.X;
 					pPosition->Y = pBullet->TargetCoords.Y;
-					pPosition->Z = pBullet->TargetCoords.Z + this->GetTrajectoryType<BombardTrajectoryType>(pBullet)->Height;
+					pPosition->Z = pBullet->TargetCoords.Z + this->LastHeight;
 
 					if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
 					{
@@ -505,7 +510,7 @@ void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpee
 					static_cast<int>(pPosition->Z)
 				};
 
-				AnimExt::CreateRandomAnim(trajType->TurningPointAnims, BulletLocation, pBullet->Owner, pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse, true);
+				AnimExt::CreateRandomAnim(this->TurningPointAnims, BulletLocation, pBullet->Owner, pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse, true);
 			}
 		}
 		else

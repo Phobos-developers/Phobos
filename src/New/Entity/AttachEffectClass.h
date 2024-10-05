@@ -125,5 +125,5 @@ struct AttachEffectTechnoProperties
 		, HasRangeModifier { false }
 		, HasTint { false }
 		, ReflectDamage { false }
-	{}
+	{ }
 };

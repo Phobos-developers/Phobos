@@ -25,12 +25,16 @@ DEFINE_HOOK(0x6CB5EB, SuperClass_Grant_ShowTimer, 0x5)
 	GET(SuperClass*, pThis, ESI);
 
 	if (SuperClass::ShowTimers->AddItem(pThis))
+	{
 		std::sort(SuperClass::ShowTimers->begin(), SuperClass::ShowTimers->end(),
-			[](SuperClass* a, SuperClass* b){
+			[](SuperClass* a, SuperClass* b)
+			{
 				auto aExt = SWTypeExt::ExtMap.Find(a->Type);
 				auto bExt = SWTypeExt::ExtMap.Find(b->Type);
 				return aExt->ShowTimer_Priority.Get() > bExt->ShowTimer_Priority.Get();
-			});
+			}
+		);
+	}
 
 	return 0x6CB63E;
 }
