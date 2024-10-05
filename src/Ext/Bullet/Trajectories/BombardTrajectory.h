@@ -11,7 +11,7 @@ public:
 		, FallPercentShift { 0.0 }
 		, FallScatter_Max { Leptons(0) }
 		, FallScatter_Min { Leptons(0) }
-		, FallSpeed {}
+		, FallSpeed { 0.0 }
 		, DetonationDistance { Leptons(102) }
 		, ApplyRangeModifiers { false }
 		, DetonationHeight { -1 }
@@ -40,7 +40,7 @@ public:
 	Valueable<double> FallPercentShift;
 	Valueable<Leptons> FallScatter_Max;
 	Valueable<Leptons> FallScatter_Min;
-	Nullable<double> FallSpeed;
+	Valueable<double> FallSpeed;
 	Valueable<Leptons> DetonationDistance;
 	Valueable<bool> ApplyRangeModifiers;
 	Valueable<int> DetonationHeight;
@@ -67,24 +67,24 @@ class BombardTrajectory final : public PhobosTrajectory
 public:
 	BombardTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
 
-	BombardTrajectory(PhobosTrajectoryType const* pType) : PhobosTrajectory(TrajectoryFlag::Bombard)
+	BombardTrajectory(BombardTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Bombard)
 		, IsFalling { false }
-		, Height { 0.0 }
+		, Height { trajType->Height }
 		, RemainingDistance { 1 }
-		, FallPercent { 1.0 }
-		, FallSpeed {}
-		, DetonationDistance { Leptons(102) }
-		, DetonationHeight { -1 }
-		, EarlyDetonation { false }
-		, TargetSnapDistance { Leptons(128) }
-		, FreeFallOnTarget { true }
-		, LeadTimeCalculate { false }
-		, OffsetCoord {}
-		, RotateCoord { 0 }
-		, MirrorCoord { true }
-		, UseDisperseBurst { false }
-		, AxisOfRotation {}
-		, SubjectToGround { false }
+		, FallPercent { trajType->FallPercent }
+		, FallSpeed { trajType->FallSpeed }
+		, DetonationDistance { trajType->DetonationDistance }
+		, DetonationHeight { trajType->DetonationHeight }
+		, EarlyDetonation { trajType->EarlyDetonation }
+		, TargetSnapDistance { trajType->TargetSnapDistance }
+		, FreeFallOnTarget { trajType->FreeFallOnTarget }
+		, LeadTimeCalculate { trajType->LeadTimeCalculate }
+		, OffsetCoord { static_cast<CoordStruct>(trajType->OffsetCoord) }
+		, RotateCoord { trajType->RotateCoord }
+		, MirrorCoord { trajType->MirrorCoord }
+		, UseDisperseBurst { trajType->UseDisperseBurst }
+		, AxisOfRotation { static_cast<CoordStruct>(trajType->AxisOfRotation) }
+		, SubjectToGround { trajType->SubjectToGround }
 		, LastTargetCoord {}
 		, CountOfBurst { 0 }
 		, CurrentBurst { 0 }

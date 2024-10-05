@@ -9,7 +9,7 @@
 
 #include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
-
+#pragma region RedoAllThesePleaseItsInFactVerySimpleJustFollowTemplateDef_h
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	Stm.Process(this->Flag, false);
@@ -56,7 +56,7 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 	if (pType)
 	{
 		Stm.Process(flag, false);
-
+		auto old = pType;
 		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
@@ -71,6 +71,7 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 
 		pType->Flag = flag;
 		pType->Load(Stm, false);
+		PhobosSwizzle::RegisterChange(old, pType);
 	}
 
 	return pType;
@@ -131,7 +132,7 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 	if (pTraj)
 	{
 		Stm.Process(flag, false);
-
+		auto old = pTraj;
 		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
@@ -146,6 +147,7 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 
 		pTraj->Flag = flag;
 		pTraj->Load(Stm, false);
+		PhobosSwizzle::RegisterChange(old, pTraj);
 	}
 
 	return pTraj;
@@ -172,7 +174,7 @@ PhobosTrajectory* PhobosTrajectory::ProcessFromStream(PhobosStreamWriter& Stm, P
 	WriteToStream(Stm, pTraj);
 	return pTraj;
 }
-
+#pragma endregion
 
 DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 {

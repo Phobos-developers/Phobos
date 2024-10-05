@@ -128,24 +128,14 @@ bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
 	auto const pType = this->GetTrajectoryType<BombardTrajectoryType>(pBullet);
-	this->Height = pType->Height + pBullet->TargetCoords.Z;
+	this->Height += pBullet->TargetCoords.Z;
 	// use scaling since RandomRanged only support int
-	double fallPercentShift = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(200 * pType->FallPercentShift)) / 100.0;
-	this->FallPercent = pType->FallPercent - pType->FallPercentShift + fallPercentShift;
-	this->FallSpeed = pType->FallSpeed.Get(this->GetTrajectorySpeed(pBullet));
-	this->DetonationDistance = pType->DetonationDistance;
-	this->DetonationHeight = pType->DetonationHeight;
-	this->EarlyDetonation = pType->EarlyDetonation;
-	this->TargetSnapDistance = pType->TargetSnapDistance;
-	this->FreeFallOnTarget = pType->FreeFallOnTarget;
-	this->LeadTimeCalculate = pType->LeadTimeCalculate;
-	this->OffsetCoord = pType->OffsetCoord;
-	this->RotateCoord = pType->RotateCoord;
-	this->MirrorCoord = pType->MirrorCoord;
-	this->UseDisperseBurst = pType->UseDisperseBurst;
-	this->AxisOfRotation = pType->AxisOfRotation;
-	this->SubjectToGround = pType->SubjectToGround;
+	const double fallPercentShift = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(200 * pType->FallPercentShift)) / 100.0;
+	this->FallPercent += fallPercentShift - pType->FallPercentShift;
 	this->LastTargetCoord = pBullet->TargetCoords;
+
+	if (!this->FallSpeed)
+		this->FallSpeed = this->GetTrajectorySpeed(pBullet);
 
 	WeaponTypeClass* const pWeapon = pBullet->WeaponType;
 	TechnoClass* const pOwner = pBullet->Owner;
