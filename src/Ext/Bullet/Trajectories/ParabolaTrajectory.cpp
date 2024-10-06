@@ -114,14 +114,12 @@ void ParabolaTrajectory::Serialize(T& Stm)
 
 bool ParabolaTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	this->PhobosTrajectory::Load(Stm, false);
 	this->Serialize(Stm);
 	return true;
 }
 
 bool ParabolaTrajectory::Save(PhobosStreamWriter& Stm) const
 {
-	this->PhobosTrajectory::Save(Stm);
 	const_cast<ParabolaTrajectory*>(this)->Serialize(Stm);
 	return true;
 }
@@ -360,7 +358,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		default:
 		{
 			// Assuming equal height
-			leadTime = static_cast<int>((Unsorted::LeptonsPerCell << 2) / this->Speed);
+			leadTime = static_cast<int>((Unsorted::LeptonsPerCell << 2) / pType->Trajectory_Speed);
 			break;
 		}
 		}
@@ -444,7 +442,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 	case ParabolaFireMode::SpeedAndHeight: // Fixed horizontal speed and fixed max height
 	{
 		// Step 1: Calculate the time when the projectile meets the target directly using horizontal velocity
-		const double meetTime = this->SolveFixedSpeedMeetTime(pSourceCoords, &targetCoords, &offsetCoords, this->Speed);
+		const double meetTime = this->SolveFixedSpeedMeetTime(pSourceCoords, &targetCoords, &offsetCoords, pType->Trajectory_Speed);
 
 		// Step 2: Substitute the time into the calculation of the attack coordinates
 		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * (speedFixMult * meetTime);
@@ -456,7 +454,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
 		const double horizontalDistance = Point2D{ destinationCoords.X, destinationCoords.Y }.Magnitude();
-		const double mult = horizontalDistance > 1e-10 ? this->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > 1e-10 ? pType->Trajectory_Speed / horizontalDistance : 1.0;
 
 		// Step 5: Calculate the horizontal component of the projectile velocity
 		pBullet->Velocity.X = destinationCoords.X * mult;
@@ -512,7 +510,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 	case ParabolaFireMode::SpeedAndAngle: // Fixed horizontal speed and fixed fire angle
 	{
 		// Step 1: Calculate the time when the projectile meets the target directly using horizontal velocity
-		const double meetTime = this->SolveFixedSpeedMeetTime(pSourceCoords, &targetCoords, &offsetCoords, this->Speed);
+		const double meetTime = this->SolveFixedSpeedMeetTime(pSourceCoords, &targetCoords, &offsetCoords, pType->Trajectory_Speed);
 
 		// Step 2: Substitute the time into the calculation of the attack coordinates
 		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * (speedFixMult * meetTime);
@@ -524,7 +522,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
 		const double horizontalDistance = Point2D{ destinationCoords.X, destinationCoords.Y }.Magnitude();
-		const double mult = horizontalDistance > 1e-10 ? this->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > 1e-10 ? pType->Trajectory_Speed / horizontalDistance : 1.0;
 
 		// Step 5: Calculate each horizontal component of the projectile velocity
 		pBullet->Velocity.X = destinationCoords.X * mult;
@@ -547,7 +545,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 	default: // Fixed horizontal speed and aim at the target
 	{
 		// Step 1: Calculate the time when the projectile meets the target directly using horizontal velocity
-		const double meetTime = this->SolveFixedSpeedMeetTime(pSourceCoords, &targetCoords, &offsetCoords, this->Speed);
+		const double meetTime = this->SolveFixedSpeedMeetTime(pSourceCoords, &targetCoords, &offsetCoords, pType->Trajectory_Speed);
 
 		// Step 2: Substitute the time into the calculation of the attack coordinates
 		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * (speedFixMult * meetTime);
@@ -559,12 +557,12 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
 		const double horizontalDistance = Point2D{ destinationCoords.X, destinationCoords.Y }.Magnitude();
-		const double mult = horizontalDistance > 1e-10 ? this->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > 1e-10 ? pType->Trajectory_Speed / horizontalDistance : 1.0;
 
 		// Step 5: Calculate the projectile velocity
 		pBullet->Velocity.X = destinationCoords.X * mult;
 		pBullet->Velocity.Y = destinationCoords.Y * mult;
-		pBullet->Velocity.Z = destinationCoords.Z * mult + (gravity * horizontalDistance) / (2 * this->Speed) + gravity / 2;
+		pBullet->Velocity.Z = destinationCoords.Z * mult + (gravity * horizontalDistance) / (2 * pType->Trajectory_Speed) + gravity / 2;
 
 		// Step 6: Record whether it requires additional checks during the flight
 		this->CheckIfNeedExtraCheck(pBullet);
@@ -642,7 +640,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 		pBullet->Velocity.Z = sqrt(2 * gravity * (maxHeight - sourceHeight));
 
 		// Step 3: Calculate the ratio of horizontal velocity to horizontal distance
-		const double mult = horizontalDistance > 1e-10 ? this->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > 1e-10 ? pType->Trajectory_Speed / horizontalDistance : 1.0;
 
 		// Step 4: Calculate the horizontal component of the projectile velocity
 		pBullet->Velocity.X = distanceCoords.X * mult;
@@ -673,7 +671,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 	case ParabolaFireMode::SpeedAndAngle: // Fixed horizontal speed and fixed fire angle
 	{
 		// Step 1: Calculate the ratio of horizontal velocity to horizontal distance
-		const double mult = horizontalDistance > 1e-10 ? this->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > 1e-10 ? pType->Trajectory_Speed / horizontalDistance : 1.0;
 
 		// Step 2: Calculate the horizontal component of the projectile velocity
 		pBullet->Velocity.X = distanceCoords.X * mult;
@@ -684,18 +682,18 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 		radian = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? (Math::HalfPi / 3) : radian;
 
 		// Step 4: Calculate the vertical component of the projectile velocity
-		pBullet->Velocity.Z = this->Speed * Math::tan(radian);
+		pBullet->Velocity.Z = pType->Trajectory_Speed * Math::tan(radian);
 		break;
 	}
 	default: // Fixed horizontal speed and aim at the target
 	{
 		// Step 1: Calculate the ratio of horizontal velocity to horizontal distance
-		const double mult = horizontalDistance > 1e-10 ? this->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > 1e-10 ? pType->Trajectory_Speed / horizontalDistance : 1.0;
 
 		// Step 2: Calculate the projectile velocity
 		pBullet->Velocity.X = distanceCoords.X * mult;
 		pBullet->Velocity.Y = distanceCoords.Y * mult;
-		pBullet->Velocity.Z = distanceCoords.Z * mult + (gravity * horizontalDistance) / (2 * this->Speed);
+		pBullet->Velocity.Z = distanceCoords.Z * mult + (gravity * horizontalDistance) / (2 * pType->Trajectory_Speed);
 		break;
 	}
 	}
@@ -709,7 +707,9 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(BulletClass* pBullet, C
 
 void ParabolaTrajectory::CheckIfNeedExtraCheck(BulletClass* pBullet)
 {
-	switch (this->Type->OpenFireMode)
+	const ParabolaTrajectoryType* const pType = this->Type;
+
+	switch (pType->OpenFireMode)
 	{
 	case ParabolaFireMode::Height: // Fixed max height and aim at the target
 	case ParabolaFireMode::Angle: // Fixed fire angle and aim at the target
@@ -720,7 +720,7 @@ void ParabolaTrajectory::CheckIfNeedExtraCheck(BulletClass* pBullet)
 	}
 	default: // Fixed horizontal speed and blabla
 	{
-		this->NeedExtraCheck = this->Speed > 256.0;
+		this->NeedExtraCheck = pType->Trajectory_Speed > 256.0;
 		break;
 	}
 	}
@@ -992,22 +992,22 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(BulletClass* pBullet, C
 	const BulletVelocity velocity = horizontalVelocity > 362.1 ? pBullet->Velocity * (362.1 / horizontalVelocity) : pBullet->Velocity;
 	const CoordStruct velocityCoords { static_cast<int>(velocity.X), static_cast<int>(velocity.Y), static_cast<int>(velocity.Z) };
 
-	const int cellHeight = pCell->GetCoords().Z;
+	const int cellHeight = pCell->Level * Unsorted::LevelHeight;
 	const int bulletHeight = pBullet->Location.Z;
 	const int lastCellHeight = MapClass::Instance->GetCellFloorHeight(pBullet->Location - velocityCoords);
 
 	if (bulletHeight < cellHeight && (cellHeight - lastCellHeight) > 384)
 	{
 		CellStruct cell = pCell->MapCoords;
-		const short reverseSgnX = pBullet->Velocity.X > -(1e-10) ? -1 : 1;
-		const short reverseSgnY = pBullet->Velocity.Y > -(1e-10) ? -1 : 1;
+		const short reverseSgnX = pBullet->Velocity.X > 0.0 ? -1 : 1;
+		const short reverseSgnY = pBullet->Velocity.Y > 0.0 ? -1 : 1;
 		int index = 0;
 
 		if (this->CheckBulletHitCliff(cell.X + reverseSgnX, cell.Y, bulletHeight, lastCellHeight))
 		{
 			if (!this->CheckBulletHitCliff(cell.X, cell.Y + reverseSgnY, bulletHeight, lastCellHeight))
 			{
-				if (!this->CheckBulletHitCliff(cell.X - reverseSgnX, cell.Y, bulletHeight, lastCellHeight))
+				if (!this->CheckBulletHitCliff(cell.X - reverseSgnX, cell.Y + reverseSgnY, bulletHeight, lastCellHeight))
 					return BulletVelocity{ 0.0, static_cast<double>(reverseSgnY), 0.0 };
 
 				index = 2;
@@ -1049,7 +1049,7 @@ bool ParabolaTrajectory::CheckBulletHitCliff(short X, short Y, int bulletHeight,
 {
 	if (CellClass* const pCell = MapClass::Instance->TryGetCellAt(CellStruct{ X, Y }))
 	{
-		const int cellHeight = pCell->GetCoords().Z;
+		const int cellHeight = pCell->Level * Unsorted::LevelHeight;
 
 		if (bulletHeight < cellHeight && (cellHeight - lastCellHeight) > 384)
 			return true;
