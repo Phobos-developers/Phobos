@@ -22,13 +22,13 @@ public:
 		, LaserDuration { 1 }
 		, LaserDelay { 1 }
 		, DamageDelay { 2 }
-	{}
+	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
-	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Engrave; }
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Engrave; }
 
 	Valueable<Point2D> SourceCoord;
 	Valueable<Point2D> TargetCoord;
@@ -55,10 +55,9 @@ private:
 class EngraveTrajectory final : public PhobosTrajectory
 {
 public:
-	EngraveTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
+	EngraveTrajectory(noinit_t) { }
 
-	EngraveTrajectory(EngraveTrajectoryType const* trajType) : PhobosTrajectory(trajType->Trajectory_Speed)
-		, Type { trajType }
+	EngraveTrajectory(EngraveTrajectoryType const* trajType) : Type { trajType }
 		, SourceCoord { trajType->SourceCoord.Get() }
 		, TargetCoord { trajType->TargetCoord.Get() }
 		, TheDuration { trajType->TheDuration }
@@ -68,11 +67,11 @@ public:
 		, NotMainWeapon { false }
 		, FLHCoord {}
 		, BuildingCoord {}
-	{}
+	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Engrave; }
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Engrave; }
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override;
