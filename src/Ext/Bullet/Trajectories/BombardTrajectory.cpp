@@ -39,24 +39,19 @@ void BombardTrajectory::Serialize(T& Stm)
 	Stm
 		.Process(this->IsFalling)
 		.Process(this->Height)
+		.Process(this->Speed)
 		;
 }
 
 bool BombardTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	this->PhobosTrajectory::Load(Stm, false);
-
 	this->Serialize(Stm);
-
 	return true;
 }
 
 bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 {
-	this->PhobosTrajectory::Save(Stm);
-
 	const_cast<BombardTrajectory*>(this)->Serialize(Stm);
-
 	return true;
 }
 
