@@ -170,41 +170,36 @@ bool ParabolaTrajectory::OnAI(BulletClass* pBullet)
 		return true;
 
 	CellClass* const pCell = MapClass::Instance->TryGetCellAt(pBullet->Location);
+	const bool bounce = this->ShouldBounce;
 
-	if (!pCell)
+	if (!pCell || (bounce && this->CalculateBulletVelocityAfterBounce(pBullet, pCell)))
 		return true;
 
-	const double gravity = BulletTypeExt::GetAdjustedGravity(pBullet->Type);
-
-	if (this->ShouldBounce && this->BounceTimes > 0)
-		return (pCell->LandType == LandType::Water && !this->Type->BounceOnWater) || this->CalculateBulletVelocityAfterBounce(pBullet, pCell, gravity);
-
-	return this->BulletDetonateLastCheck(pBullet, gravity);
+	return this->BulletDetonateLastCheck(pBullet, pCell, BulletTypeExt::GetAdjustedGravity(pBullet->Type), bounce);
 }
 
 void ParabolaTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
 	const Leptons targetSnapDistance = this->Type->TargetSnapDistance;
 
-	if (targetSnapDistance <= 0)
-		return;
-
-	const ObjectClass* const pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
-	const CoordStruct coords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;
-
-	if (coords.DistanceFrom(pBullet->Location) <= targetSnapDistance)
+	if (targetSnapDistance > 0)
 	{
-		auto const pExt = BulletExt::ExtMap.Find(pBullet);
-		pExt->SnappedToTarget = true;
-		pBullet->SetLocation(coords);
-	}
-	else
-	{
-		const int cellHeight = MapClass::Instance->GetCellFloorHeight(pBullet->Location);
+		const ObjectClass* const pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
+		const CoordStruct coords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;
 
-		if (pBullet->Location.Z < cellHeight)
-			pBullet->SetLocation(CoordStruct{ pBullet->Location.X, pBullet->Location.Y, cellHeight });
+		if (coords.DistanceFrom(pBullet->Location) <= targetSnapDistance)
+		{
+			auto const pExt = BulletExt::ExtMap.Find(pBullet);
+			pExt->SnappedToTarget = true;
+			pBullet->SetLocation(coords);
+			return;
+		}
 	}
+
+	const int cellHeight = MapClass::Instance->GetCellFloorHeight(pBullet->Location);
+
+	if (pBullet->Location.Z < cellHeight)
+		pBullet->SetLocation(CoordStruct{ pBullet->Location.X, pBullet->Location.Y, cellHeight });
 }
 
 void ParabolaTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
@@ -911,15 +906,18 @@ double ParabolaTrajectory::CheckFixedAngleEquation(CoordStruct* pSourceCrd, Coor
 	return upTime + downTime - meetTime;
 }
 
-bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(BulletClass* pBullet, CellClass* pCell, double gravity)
+bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(BulletClass* pBullet, CellClass* pCell)
 {
+	const ParabolaTrajectoryType* const pType = this->Type;
+
+	if (pCell->LandType == LandType::Water && !pType->BounceOnWater)
+		return true;
+
 	--this->BounceTimes;
 	this->ShouldBounce = false;
 
-	const ParabolaTrajectoryType* const pType = this->Type;
 	const BulletVelocity groundNormalVector = this->GetGroundNormalVector(pBullet, pCell);
 	pBullet->Velocity = (this->LastVelocity - groundNormalVector * (this->LastVelocity * groundNormalVector) * 2) * pType->BounceCoefficient;
-	pBullet->Velocity.Z -= gravity;
 
 	if (pType->BounceDetonate)
 	{
@@ -1096,7 +1094,7 @@ bool ParabolaTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 	return false;
 }
 
-bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, double gravity)
+bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, CellClass* pCell, double gravity, bool bounce)
 {
 	pBullet->Velocity.Z -= gravity;
 
@@ -1105,30 +1103,27 @@ bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, double gr
 
 	if (this->NeedExtraCheck)
 	{
-		const CellStruct sourceCell = CellClass::Coord2Cell(pBullet->Location);
-		const CellStruct targetCell = CellClass::Coord2Cell(futureCoords);
-		const CellStruct cellDist = sourceCell - targetCell;
+		const CellStruct cellDist = CellClass::Coord2Cell(pBullet->Location) - CellClass::Coord2Cell(futureCoords);
 		const CellStruct cellPace = CellStruct { static_cast<short>(std::abs(cellDist.X)), static_cast<short>(std::abs(cellDist.Y)) };
-
 		const size_t largePace = static_cast<size_t>(std::max(cellPace.X, cellPace.Y));
 		const CoordStruct stepCoord = largePace ? velocityCoords * (1.0 / largePace) : CoordStruct::Empty;
-		CoordStruct curCoord = pBullet->Location;
-		CellClass* pCurCell = MapClass::Instance->GetCellAt(sourceCell);
+		CoordStruct curCoord = pBullet->Location + stepCoord;
 
-		for (size_t i = 0; i < largePace; ++i)
+		for (size_t i = 1; i <= largePace; ++i)
 		{
 			const int cellHeight = MapClass::Instance->GetCellFloorHeight(curCoord);
 
 			if (curCoord.Z < cellHeight)
 			{
+				if (bounce)
+					return true;
+
 				this->LastVelocity = pBullet->Velocity;
-				const double heightMult = abs((pBullet->Location.Z - cellHeight) / pBullet->Velocity.Z);
-				const double speedMult = static_cast<double>(i) / largePace;
-				this->BulletDetonateEffectuate(pBullet, (heightMult < speedMult ? heightMult : speedMult));
+				this->BulletDetonateEffectuate(pBullet, (static_cast<double>(i - 0.5) / largePace));
 				break;
 			}
 
-			if (pBullet->Type->SubjectToWalls && pCurCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array->GetItem(pCurCell->OverlayTypeIndex)->Wall)
+			if (pBullet->Type->SubjectToWalls && pCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array->GetItem(pCell->OverlayTypeIndex)->Wall)
 			{
 				pBullet->Velocity *= static_cast<double>(i) / largePace;
 				this->ShouldDetonate = true;
@@ -1136,7 +1131,7 @@ bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, double gr
 			}
 
 			curCoord += stepCoord;
-			pCurCell = MapClass::Instance->GetCellAt(curCoord);
+			pCell = MapClass::Instance->GetCellAt(curCoord);
 		}
 	}
 	else
@@ -1145,6 +1140,9 @@ bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, double gr
 
 		if (cellHeight < futureCoords.Z)
 			return false;
+
+		if (bounce)
+			return true;
 
 		this->LastVelocity = pBullet->Velocity;
 		this->BulletDetonateEffectuate(pBullet, abs((pBullet->Location.Z - cellHeight) / pBullet->Velocity.Z));

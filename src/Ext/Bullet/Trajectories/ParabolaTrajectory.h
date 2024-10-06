@@ -131,10 +131,10 @@ private:
 	double CheckFixedHeightEquation(CoordStruct* pSourceCrd, CoordStruct* pTargetCrd, CoordStruct* pOffsetCrd, double meetTime, double gravity);
 	double SearchFixedAngleMeetTime(CoordStruct* pSourceCrd, CoordStruct* pTargetCrd, CoordStruct* pOffsetCrd, double radian, double gravity);
 	double CheckFixedAngleEquation(CoordStruct* pSourceCrd, CoordStruct* pTargetCrd, CoordStruct* pOffsetCrd, double meetTime, double radian, double gravity);
-	bool CalculateBulletVelocityAfterBounce(BulletClass* pBullet, CellClass* pCell, double gravity);
+	bool CalculateBulletVelocityAfterBounce(BulletClass* pBullet, CellClass* pCell);
 	BulletVelocity GetGroundNormalVector(BulletClass* pBullet, CellClass* pCell);
 	bool CheckBulletHitCliff(short X, short Y, int bulletHeight, int lastCellHeight);
 	bool BulletDetonatePreCheck(BulletClass* pBullet);
-	bool BulletDetonateLastCheck(BulletClass* pBullet, double gravity);
+	bool BulletDetonateLastCheck(BulletClass* pBullet, CellClass* pCell, double gravity, bool bounce);
 	void BulletDetonateEffectuate(BulletClass* pBullet, double velocityMult);
 };
