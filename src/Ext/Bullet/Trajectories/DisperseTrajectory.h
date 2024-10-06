@@ -40,13 +40,13 @@ public:
 		, WeaponTendency { false }
 		, WeaponToAllies { false }
 		, WeaponToGround { false }
-	{}
+	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
-	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Disperse; }
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Disperse; }
 
 	Valueable<bool> UniqueCurve;
 	Valueable<CoordStruct> PreAimCoord;
@@ -90,13 +90,12 @@ private:
 class DisperseTrajectory final : public PhobosTrajectory
 {
 public:
-	DisperseTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
+	DisperseTrajectory(noinit_t) { }
 
-	DisperseTrajectory(DisperseTrajectoryType const* trajType) : PhobosTrajectory(trajType->Trajectory_Speed)
-		, Type { trajType }
+	DisperseTrajectory(DisperseTrajectoryType const* trajType) : Type { trajType }
+		, Speed { trajType->LaunchSpeed }
 		, PreAimCoord { trajType->PreAimCoord.Get() }
 		, UseDisperseBurst { trajType->UseDisperseBurst }
-		, LaunchSpeed { trajType->LaunchSpeed }
 		, SuicideAboveRange { trajType->SuicideAboveRange * Unsorted::LeptonsPerCell }
 		, WeaponCount { trajType->WeaponCount }
 		, WeaponTimer {}
@@ -111,11 +110,11 @@ public:
 		, PreAimDistance { 0 }
 		, LastReviseMult { 0 }
 		, FirepowerMult { 1.0 }
-	{}
+	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Disperse; }
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Disperse; }
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override;
@@ -124,9 +123,9 @@ public:
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
 	const DisperseTrajectoryType* Type;
+	double Speed;
 	CoordStruct PreAimCoord;
 	bool UseDisperseBurst;
-	double LaunchSpeed;
 	double SuicideAboveRange;
 	int WeaponCount;
 	CDTimerClass WeaponTimer;

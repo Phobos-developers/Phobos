@@ -129,9 +129,9 @@ void DisperseTrajectory::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Type)
+		.Process(this->Speed)
 		.Process(this->PreAimCoord)
 		.Process(this->UseDisperseBurst)
-		.Process(this->LaunchSpeed)
 		.Process(this->SuicideAboveRange)
 		.Process(this->WeaponCount)
 		.Process(this->WeaponTimer)
@@ -151,14 +151,12 @@ void DisperseTrajectory::Serialize(T& Stm)
 
 bool DisperseTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	this->PhobosTrajectory::Load(Stm, false);
 	this->Serialize(Stm);
 	return true;
 }
 
 bool DisperseTrajectory::Save(PhobosStreamWriter& Stm) const
 {
-	this->PhobosTrajectory::Save(Stm);
 	const_cast<DisperseTrajectory*>(this)->Serialize(Stm);
 	return true;
 }
@@ -176,7 +174,7 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	else
 		this->TargetInTheAir = false;
 
-	this->PreAimDistance = !pType->ReduceCoord ? this->PreAimCoord.Magnitude() + this->LaunchSpeed: this->PreAimCoord.Magnitude() * this->OriginalDistance / 2560 + this->LaunchSpeed;
+	this->PreAimDistance = !pType->ReduceCoord ? (this->PreAimCoord.Magnitude() + this->Speed) : (this->PreAimCoord.Magnitude() * this->OriginalDistance / 2560 + this->Speed);
 
 	if (TechnoClass* const pFirer = pBullet->Owner)
 	{
@@ -216,7 +214,7 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 			this->InitializeBulletNotCurve(pBullet, pType->FacingCoord);
 		}
 
-		if (this->CalculateBulletVelocity(pBullet, this->LaunchSpeed))
+		if (this->CalculateBulletVelocity(pBullet, this->Speed))
 			this->SuicideAboveRange = 0.001;
 	}
 }
@@ -630,32 +628,32 @@ bool DisperseTrajectory::NotCurveVelocityChange(BulletClass* pBullet, HouseClass
 
 	if (this->SuicideAboveRange > 1e-10)
 	{
-		this->SuicideAboveRange -= this->LaunchSpeed;
+		this->SuicideAboveRange -= this->Speed;
 
 		if (this->SuicideAboveRange <= 1e-10)
 			return true;
 	}
 
 	if (this->PreAimDistance > 1e-10)
-		this->PreAimDistance -= this->LaunchSpeed;
+		this->PreAimDistance -= this->Speed;
 
 	bool velocityUp = false;
 
 	if (this->Accelerate && pType->Acceleration != 0.0)
 	{
-		this->LaunchSpeed += pType->Acceleration;
+		this->Speed += pType->Acceleration;
 
 		if (pType->Acceleration > 0.0)
 		{
-			if (this->LaunchSpeed >= this->Speed)
+			if (this->Speed >= pType->Trajectory_Speed)
 			{
-				this->LaunchSpeed = this->Speed;
+				this->Speed = pType->Trajectory_Speed;
 				this->Accelerate = false;
 			}
 		}
-		else if (this->LaunchSpeed <= this->Speed)
+		else if (this->Speed <= pType->Trajectory_Speed)
 		{
-			this->LaunchSpeed = this->Speed;
+			this->Speed = pType->Trajectory_Speed;
 			this->Accelerate = false;
 		}
 
@@ -673,7 +671,7 @@ bool DisperseTrajectory::NotCurveVelocityChange(BulletClass* pBullet, HouseClass
 		velocityUp = true;
 	}
 
-	if (velocityUp && this->CalculateBulletVelocity(pBullet, this->LaunchSpeed))
+	if (velocityUp && this->CalculateBulletVelocity(pBullet, this->Speed))
 		return true;
 
 	return false;
@@ -697,14 +695,14 @@ bool DisperseTrajectory::StandardVelocityChange(BulletClass* pBullet)
 	if (pType->CruiseEnable && targetHorizon.DistanceFrom(bulletHorizon) > (pType->CruiseUnableRange > 0.5 ? pType->CruiseUnableRange * Unsorted::LeptonsPerCell : Unsorted::LeptonsPerCell / 2))
 		targetLocation.Z = pBullet->Location.Z;
 
-	if (pType->LeadTimeCalculate && checkValid && this->Speed > 64.0)
+	if (pType->LeadTimeCalculate && checkValid && pType->Trajectory_Speed > 64.0)
 	{
-		const double leadSpeed = (this->Speed + this->LaunchSpeed) / 2;
+		const double leadSpeed = (pType->Trajectory_Speed + this->Speed) / 2;
 		const double timeMult = targetLocation.DistanceFrom(pBullet->Location) / leadSpeed;
 		targetLocation += (targetLocation - this->LastTargetCoord) * timeMult;
 	}
 
-	const double turningRadius = pType->ROT * this->LaunchSpeed * this->LaunchSpeed / 16384;
+	const double turningRadius = pType->ROT * this->Speed * this->Speed / 16384;
 
 	if (this->ChangeBulletVelocity(pBullet, targetLocation, turningRadius, false))
 		return true;
