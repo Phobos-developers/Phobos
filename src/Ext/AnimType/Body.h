@@ -18,7 +18,7 @@ public:
 	{
 	public:
 		CustomPalette Palette;
-		Valueable<UnitTypeClass*> CreateUnit;
+		Valueable<TechnoTypeClass*> CreateUnit;
 		Valueable<DirType> CreateUnit_Facing;
 		Valueable<bool> CreateUnit_InheritDeathFacings;
 		Valueable<bool> CreateUnit_InheritTurretFacings;
@@ -31,7 +31,7 @@ public:
 		Valueable<bool> CreateUnit_SpawnParachutedInAir;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
 		Valueable<AnimTypeClass*> CreateUnit_SpawnAnim;
-		Nullable<int> CreateUnit_SpawnHeight;
+		Valueable<int> CreateUnit_SpawnHeight;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
@@ -65,7 +65,7 @@ public:
 			, CreateUnit_SpawnParachutedInAir { false }
 			, CreateUnit_ConsiderPathfinding { false }
 			, CreateUnit_SpawnAnim {}
-			, CreateUnit_SpawnHeight {}
+			, CreateUnit_SpawnHeight { -1 }
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
