@@ -121,14 +121,12 @@ void StraightTrajectory::Serialize(T& Stm)
 
 bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	this->PhobosTrajectory::Load(Stm, false);
 	this->Serialize(Stm);
 	return true;
 }
 
 bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 {
-	this->PhobosTrajectory::Save(Stm);
 	const_cast<StraightTrajectory*>(this)->Serialize(Stm);
 	return true;
 }
@@ -182,11 +180,10 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 		return false;
 
 	HouseClass* const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
-
-	if (this->BulletDetonatePreCheck(pBullet, this->Speed))
-		return true;
-
 	const StraightTrajectoryType* const pType = this->Type;
+
+	if (this->BulletDetonatePreCheck(pBullet, pType->Trajectory_Speed))
+		return true;
 
 	if (pType->PassDetonate)
 		this->PassWithDetonateAt(pBullet, pOwner);
@@ -194,10 +191,10 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 	if (this->ProximityImpact != 0 && static_cast<Leptons>(pType->ProximityRadius) > 0)
 		this->PrepareForDetonateAt(pBullet, pOwner);
 
-	if (this->Speed < 256.0 && pType->ConfineAtHeight > 0 && this->PassAndConfineAtHeight(pBullet, this->Speed))
+	if (pType->Trajectory_Speed < 256.0 && pType->ConfineAtHeight > 0 && this->PassAndConfineAtHeight(pBullet, pType->Trajectory_Speed))
 		return true;
 
-	this->BulletDetonateLastCheck(pBullet, pOwner, this->Speed);
+	this->BulletDetonateLastCheck(pBullet, pOwner, pType->Trajectory_Speed);
 
 	return false;
 }
@@ -276,7 +273,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 			const double horizonDistanceSquared = theDistanceSquared - verticalDistanceSquared;
 			const double horizonDistance = sqrt(horizonDistanceSquared);
 
-			const double straightSpeedSquared = this->Speed * this->Speed;
+			const double straightSpeedSquared = pType->Trajectory_Speed * pType->Trajectory_Speed;
 			const double baseFactor = straightSpeedSquared - targetSpeedSquared;
 			const double squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
 
@@ -342,15 +339,15 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	if (pType->PassThrough)
 	{
 		if (this->DetonationDistance > 0)
-			this->RemainingDistance += static_cast<int>(this->DetonationDistance + this->Speed);
+			this->RemainingDistance += static_cast<int>(this->DetonationDistance + pType->Trajectory_Speed);
 		else if (this->DetonationDistance < 0)
-			this->RemainingDistance += static_cast<int>(theSourceCoords.DistanceFrom(theTargetCoords) - this->DetonationDistance + this->Speed);
+			this->RemainingDistance += static_cast<int>(theSourceCoords.DistanceFrom(theTargetCoords) - this->DetonationDistance + pType->Trajectory_Speed);
 		else
 			this->RemainingDistance = INT_MAX;
 	}
 	else
 	{
-		this->RemainingDistance += static_cast<int>(theSourceCoords.DistanceFrom(theTargetCoords) + this->Speed);
+		this->RemainingDistance += static_cast<int>(theSourceCoords.DistanceFrom(theTargetCoords) + pType->Trajectory_Speed);
 	}
 
 	pBullet->TargetCoords = theTargetCoords;
@@ -397,7 +394,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		}
 	}
 
-	if (this->CalculateBulletVelocity(pBullet, this->Speed))
+	if (this->CalculateBulletVelocity(pBullet, pType->Trajectory_Speed))
 		this->RemainingDistance = 0;
 }
 
@@ -719,7 +716,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	if (pType->ProximityFlight)
 	{
 		AircraftTrackerClass* const airTracker = &AircraftTrackerClass::Instance.get();
-		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5), static_cast<int>((static_cast<Leptons>(pType->ProximityRadius) + this->Speed / 2) / Unsorted::LeptonsPerCell));
+		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5), static_cast<int>((static_cast<Leptons>(pType->ProximityRadius) + pType->Trajectory_Speed / 2) / Unsorted::LeptonsPerCell));
 
 		for (TechnoClass* pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
