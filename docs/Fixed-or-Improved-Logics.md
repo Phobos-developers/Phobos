@@ -168,7 +168,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Planning paths are now shown for all units under player control or when `[GlobalControls]->DebugPlanningPaths=yes` in singleplayer game modes.
 - Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
-- Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them (by Starkku)
+- Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them.
+- Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead.
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
 - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 
@@ -1297,6 +1298,10 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]         ; WarheadType
 Nonprovocative=false  ; boolean
+```
+
+```{note}
+Due to technical constraints, this does not suppress warnings from Ares' EMP effect.
 ```
 
 ### Restricting screen shaking to current view

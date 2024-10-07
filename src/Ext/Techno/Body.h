@@ -85,7 +85,7 @@ public:
 			, OriginalPassengerOwner {}
 			, HasRemainingWarpInDelay { false }
 			, LastWarpInDelay { 0 }
-			, IsBeingChronoSphered { false}
+			, IsBeingChronoSphered { false }
 		{ }
 
 		void OnEarlyUpdate();

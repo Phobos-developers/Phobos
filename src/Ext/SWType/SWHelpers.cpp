@@ -175,9 +175,9 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 
 	// check that any aux building exist and no neg building
 	auto IsBuildingPresent = [pHouse](BuildingTypeClass* pType)
-	{
-		return pType && pHouse->CountOwnedAndPresent(pType) > 0;
-	};
+		{
+			return pType && pHouse->CountOwnedAndPresent(pType) > 0;
+		};
 
 	const auto& Aux = this->SW_AuxBuildings;
 

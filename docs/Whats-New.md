@@ -345,7 +345,7 @@ New:
 - OpenTopped transport target sharing customization (by Starkku)
 - Vanish animation for `AutoDeath.Behavior=vanish` (by Starkku)
 - `AAOnly` for projectiles (by Starkku)
-- `CreateUnit` improvements & additions (units spawning in air, spawn animation) (by Starkku)
+- `CreateUnit` improvements & additions (can spawn infantry and aircraft, units spawning in air, spawn animation) (by Starkku)
 - Option to center pause menu background (by Starkku)
 - LaunchSW.DisplayMoney (by Starkku)
 - Disguise logic improvements (by Starkku)
@@ -529,6 +529,7 @@ Vanilla fixes:
 - Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast (by NetsuNegi)
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them (by Starkku)
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes (by Starkku)
+- Removed the 0 damage effect from `InfDeath=9` warheads to in-air infantries (by Trsdy)
 - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix (by tyuah8)
 
 Phobos fixes:
@@ -573,6 +574,7 @@ Phobos fixes:
 - Fixed Phobos Warhead effects not reliably being applied on damage area as opposed to full weapon-based Warhead detonation (by Starkku)
 - Fix `LimboKill` not working reliably (by CrimRecya)
 - Fixed `SelfHealGainType=none` not working (changed to `noheal`) (by Starkku)
+- Fixed AircraftTypes gaining self-healing from `UnitsGainSelfHeal` by default (while not displaying the pip) when they should not (by Starkku)
 
 Fixes / interactions with other extensions:
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely (by Starkku)

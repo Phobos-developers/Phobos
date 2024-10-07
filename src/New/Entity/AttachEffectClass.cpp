@@ -413,7 +413,7 @@ bool AttachEffectClass::AllowedToBeActive() const
 
 	if (auto const pFoot = abstract_cast<FootClass*>(pTechno))
 	{
-		bool isMoving = pFoot->Locomotor->Is_Moving();
+		bool isMoving = pFoot->Locomotor->Is_Really_Moving_Now();
 
 		if (isMoving && (this->Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
 			return false;
@@ -700,7 +700,7 @@ int AttachEffectClass::Detach(std::vector<AttachEffectTypeClass*> const& types, 
 
 	for (auto const pType : types)
 	{
-		int minCount = minSize > 0 ? (index < minSize ? minCounts.at(index) : minCounts.at(minSize-1)) : -1;
+		int minCount = minSize > 0 ? (index < minSize ? minCounts.at(index) : minCounts.at(minSize - 1)) : -1;
 		int maxCount = maxSize > 0 ? (index < maxSize ? maxCounts.at(index) : maxCounts.at(maxSize - 1)) : -1;
 
 		int count = AttachEffectClass::RemoveAllOfType(pType, pTarget, minCount, maxCount);
@@ -921,4 +921,3 @@ bool AttachEffectClass::Save(PhobosStreamWriter& Stm) const
 {
 	return const_cast<AttachEffectClass*>(this)->Serialize(Stm);
 }
-
