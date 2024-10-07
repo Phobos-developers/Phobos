@@ -21,6 +21,8 @@ template <typename T>
 void SidebarExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->SWSidebar_Enable)
+		.Process(this->SWSidebar_Indices)
 		;
 }
 
