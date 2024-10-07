@@ -160,8 +160,6 @@ CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pH
 				{
 					vec.push_back(pTypeExt);
 					SidebarClass::Instance->SidebarNeedsRepaint();
-
-					const AbstractType absType = pType->WhatAmI();
 					BuildCat buildCat = BuildCat::DontCare;
 
 					if (auto const pBuildingType = abstract_cast<BuildingTypeClass const* const>(pType))

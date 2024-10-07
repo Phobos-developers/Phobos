@@ -856,7 +856,7 @@ DEFINE_HOOK(0x4C7665, EventClass_RespondToEvent_StopDeployInIdleEvent, 0x6)
 		{
 			const Mission mission = pUnit->CurrentMission;
 
-			if (pUnit->CurrentMission == Mission::Guard || pUnit->CurrentMission == Mission::Unload)
+			if (mission == Mission::Guard || mission == Mission::Unload)
 			{
 				if (HouseClass* const pHouse = pUnit->Owner)
 				{
