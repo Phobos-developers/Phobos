@@ -358,14 +358,15 @@ This page lists all the individual contributions to the project by their author.
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
-- **NaotoYuuki**
-  - Vertical & meteor trajectory projectile prototypes
 - **CrimRecya**
   - Fix `LimboKill` not working reliably
+  - Enhance bombard trajectory
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
-  - Enhance bombard trajectory with vertical and meteor trajectory
+  - Enhance bombard trajectory
+- **NaotoYuuki**
+  - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to jump back to previous script
 - **TaranDahl (航味麻酱)**
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode

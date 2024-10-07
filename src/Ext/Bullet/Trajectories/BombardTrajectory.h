@@ -13,7 +13,6 @@ public:
 		, FallScatter_Min { Leptons(0) }
 		, FallSpeed { 0.0 }
 		, DetonationDistance { Leptons(102) }
-		, ApplyRangeModifiers { false }
 		, DetonationHeight { -1 }
 		, EarlyDetonation { false }
 		, TargetSnapDistance { Leptons(128) }
@@ -27,13 +26,14 @@ public:
 		, UseDisperseBurst { false }
 		, AxisOfRotation { { 0, 0, 1 } }
 		, SubjectToGround { false }
-	{ }
+	{
+	}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const override;
-	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Bombard; }
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Bombard; }
 
 	Valueable<double> Height;
 	Valueable<double> FallPercent;
@@ -42,7 +42,6 @@ public:
 	Valueable<Leptons> FallScatter_Min;
 	Valueable<double> FallSpeed;
 	Valueable<Leptons> DetonationDistance;
-	Valueable<bool> ApplyRangeModifiers;
 	Valueable<int> DetonationHeight;
 	Valueable<bool> EarlyDetonation;
 	Valueable<Leptons> TargetSnapDistance;
@@ -51,7 +50,7 @@ public:
 	Valueable<bool> NoLaunch;
 	ValueableVector<AnimTypeClass*> TurningPointAnims;
 	Valueable<CoordStruct> OffsetCoord;
-	Valueable<int> RotateCoord;
+	Valueable<double> RotateCoord;
 	Valueable<bool> MirrorCoord;
 	Valueable<bool> UseDisperseBurst;
 	Valueable<CoordStruct> AxisOfRotation;
@@ -65,43 +64,28 @@ private:
 class BombardTrajectory final : public PhobosTrajectory
 {
 public:
-	BombardTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
+	BombardTrajectory(noinit_t) { }
 
-	BombardTrajectory(BombardTrajectoryType const* trajType) : PhobosTrajectory(trajType->Trajectory_Speed)
-		, IsFalling { false }
+	BombardTrajectory(BombardTrajectoryType const* trajType) : Type { trajType }
 		, Height { trajType->Height }
-		, RemainingDistance { 1 }
-		, FallPercent { trajType->FallPercent }
-		, FallPercentShift { trajType->FallPercentShift }
-		, FallScatter_Max { trajType->FallScatter_Max }
-		, FallScatter_Min { trajType->FallScatter_Min }
-		, FallSpeed { trajType->FallSpeed }
-		, DetonationDistance { trajType->DetonationDistance }
-		, ApplyRangeModifiers { trajType->ApplyRangeModifiers }
-		, DetonationHeight { trajType->DetonationHeight }
-		, EarlyDetonation { trajType->EarlyDetonation }
-		, TargetSnapDistance { trajType->TargetSnapDistance }
-		, FreeFallOnTarget { trajType->FreeFallOnTarget }
-		, LeadTimeCalculate { trajType->LeadTimeCalculate }
-		, NoLaunch { trajType->NoLaunch }
-		, TurningPointAnims { trajType->TurningPointAnims }
-		, OffsetCoord { static_cast<CoordStruct>(trajType->OffsetCoord) }
-		, RotateCoord { trajType->RotateCoord }
-		, MirrorCoord { trajType->MirrorCoord }
+		, FallPercent { trajType->FallPercent - trajType->FallPercentShift }
+		, OffsetCoord { trajType->OffsetCoord.Get() }
 		, UseDisperseBurst { trajType->UseDisperseBurst }
-		, AxisOfRotation { static_cast<CoordStruct>(trajType->AxisOfRotation) }
-		, SubjectToGround { trajType->SubjectToGround }
-		, LastHeight { trajType->Height }
+		, IsFalling { false }
+		, ToFalling { false }
+		, RemainingDistance { 1 }
 		, LastTargetCoord {}
+		, InitialTargetCoord {}
 		, CountOfBurst { 0 }
 		, CurrentBurst { 0 }
-		, RotateAngle { 0.0 }
-		, AscendTime { 1 }
-	{ }
+		, RotateAngle { 0 }
+		, WaitOneFrame { 0 }
+	{
+	}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Bombard; }
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Bombard; }
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override;
@@ -109,43 +93,33 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
-	bool IsFalling;
+	const BombardTrajectoryType* Type;
 	double Height;
-	int RemainingDistance;
 	double FallPercent;
-	double FallPercentShift;
-	Leptons FallScatter_Max;
-	Leptons FallScatter_Min;
-	double FallSpeed;
-	Leptons DetonationDistance;
-	bool ApplyRangeModifiers;
-	int DetonationHeight;
-	bool EarlyDetonation;
-	Leptons TargetSnapDistance;
-	bool FreeFallOnTarget;
-	bool LeadTimeCalculate;
-	bool NoLaunch;
-	std::vector<AnimTypeClass*> TurningPointAnims;
 	CoordStruct OffsetCoord;
-	int RotateCoord;
-	bool MirrorCoord;
 	bool UseDisperseBurst;
-	CoordStruct AxisOfRotation;
-	bool SubjectToGround;
-	double LastHeight;
+	bool IsFalling;
+	bool ToFalling;
+	int RemainingDistance;
 	CoordStruct LastTargetCoord;
+	CoordStruct InitialTargetCoord;
 	int CountOfBurst;
 	int CurrentBurst;
 	double RotateAngle;
-	int AscendTime;
-
-private:
-	bool BulletDetonatePreCheck(BulletClass* pBullet, HouseClass* pOwner);
-	void CalculateLeadTime(BulletClass* pBullet);
-	void CalculateDisperseBurst(BulletClass* pBullet, BulletVelocity& pVelocity);
-	void CalculateBulletVelocity(BulletVelocity& pVelocity);
+	int WaitOneFrame;
 
 private:
 	template <typename T>
 	void Serialize(T& Stm);
+
+	void PrepareForOpenFire(BulletClass* pBullet);
+	CoordStruct CalculateMiddleCoords(BulletClass* pBullet);
+	void CalculateTargetCoords(BulletClass* pBullet);
+	CoordStruct CalculateBulletLeadTime(BulletClass* pBullet);
+	void CalculateDisperseBurst(BulletClass* pBullet);
+	bool BulletPrepareCheck(BulletClass* pBullet);
+	bool BulletDetonatePreCheck(BulletClass* pBullet);
+	bool BulletDetonateRemainCheck(BulletClass* pBullet, HouseClass* pOwner);
+	void BulletVelocityChange(BulletClass* pBullet);
+	void RefreshBulletLineTrail(BulletClass* pBullet);
 };

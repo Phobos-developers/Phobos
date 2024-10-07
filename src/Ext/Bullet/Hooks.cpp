@@ -305,9 +305,11 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 	}
 	else if (auto const pExt = BulletAITemp::ExtData)
 	{
-		if (auto pTraj = pExt->Trajectory.get())
+		if (auto const pTrajectory = pExt->Trajectory.get())
 		{
-			if (pTraj->Flag() == TrajectoryFlag::Straight || pTraj->Flag() == TrajectoryFlag::Bombard)
+			const TrajectoryFlag flag = pTrajectory->Flag();
+
+			if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Bombard)
 			{
 				R->EAX(pThis->Type);
 				return SkipChecks;
@@ -336,11 +338,18 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	}
 	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && (pExt->Trajectory->Flag() == TrajectoryFlag::Straight
-			|| pExt->Trajectory->Flag() == TrajectoryFlag::Bombard) && !pExt->SnappedToTarget)
+		if (!pExt->SnappedToTarget)
 		{
-			R->EAX(pThis->Type);
-			return SkipChecks;
+			if (auto const pTrajectory = pExt->Trajectory.get())
+			{
+				const TrajectoryFlag flag = pTrajectory->Flag();
+
+				if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Bombard)
+				{
+					R->EAX(pThis->Type);
+					return SkipChecks;
+				}
+			}
 		}
 	}
 
@@ -368,9 +377,18 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	// Fixes issues with walls etc.
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && (pExt->Trajectory->Flag() == TrajectoryFlag::Straight
-			|| pExt->Trajectory->Flag() == TrajectoryFlag::Bombard) && !pExt->SnappedToTarget)
-			return SkipSetCoordinate;
+		if (!pExt->SnappedToTarget)
+		{
+			if (auto const pTrajectory = pExt->Trajectory.get())
+			{
+				const TrajectoryFlag flag = pTrajectory->Flag();
+
+				if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Bombard)
+				{
+					return SkipSetCoordinate;
+				}
+			}
+		}
 	}
 
 	return 0;
@@ -384,9 +402,15 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && (pExt->Trajectory->Flag() == TrajectoryFlag::Straight
-			|| pExt->Trajectory->Flag() == TrajectoryFlag::Bombard) && !pExt->SnappedToTarget)
-			return SkipCheck;
+		if (auto const pTrajectory = pExt->Trajectory.get())
+		{
+			const TrajectoryFlag flag = pTrajectory->Flag();
+
+			if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Bombard)
+			{
+				return SkipCheck;
+			}
+		}
 	}
 
 	return 0;
@@ -447,6 +471,22 @@ DEFINE_HOOK(0x44D23C, BuildingClass_Mission_Missile_ArcingFix, 0x7)
 
 		if (!pBulletTypeExt->Arcing_AllowElevationInaccuracy)
 			R->EAX(targetHeight);
+	}
+
+	return 0;
+}
+
+// Vanilla inertia effect only for bullets with ROT=0
+DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
+{
+	enum { SkipCheck = 0x4160BC };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory)
+			return SkipCheck;
 	}
 
 	return 0;

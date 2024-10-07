@@ -1299,6 +1299,10 @@ In `rulesmd.ini`:
 Nonprovocative=false  ; boolean
 ```
 
+```{note}
+Due to technical constraints, this does not suppress warnings from Ares' EMP effect.
+```
+
 ### Restricting screen shaking to current view
 
 - You can now specify whether or not the warhead can only shake screen (`ShakeX/Ylo/hi`) if it is detonated while visible on current screen view.

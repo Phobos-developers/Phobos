@@ -422,24 +422,24 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 ![image](_static/images/animToUnit.gif)
 
-- Animations can now create (or "convert" to) vehicles when they end via `CreateUnit`.
-  - `CreateUnit.Owner` determines which house will own the created VehicleType. This only works as expected if the animation has owner set.
+- Animations can now create (or "convert" to) any unit (vehicles, aircraft and infantry) when they end via `CreateUnit`. This offers more settings than `MakeInfantry` does for infantry.
+  - `CreateUnit.Owner` determines which house will own the created unit. This only works as expected if the animation has owner set.
     - Vehicle [destroy animations](Fixed-or-Improved-Logics.md#destroy-animations), animations from Warhead `AnimList/SplashList` and map trigger action `41 Play Anim At` will have the owner set correctly.
     - `CreateUnit.RemapAnim`, if set to true, will cause the animation to be drawn in unit palette and remappable to owner's team color.
-  - `CreateUnit.Mission` determines the initial mission of the created VehicleType. This can be overridden for AI players by setting `CreateUnit.AIMission`.
-  - `CreateUnit.Facing` determines the initial facing of created VehicleType.
+  - `CreateUnit.Mission` determines the initial mission of the created unit. This can be overridden for AI players by setting `CreateUnit.AIMission`.
+  - `CreateUnit.Facing` determines the initial facing of created unit.
     - `CreateUnit.RandomFacing`, if set to true, makes it so that a random facing is picked instead.
-    - `CreateUnit.InheritFacings` and `CreateUnit.InheritTurretFacings` inherit facings for vehicle body and turret respectively from the destroyed vehicle if the animation is a vehicle destroy animation. `InheritTurretFacings` does not work with jumpjet vehicles due to technical constraints.
-  - `CreateUnit.AlwaysSpawnOnGround`, if set to true, ensures the vehicle will be created on the cell at ground level even if animation is in air. If set to false, jumpjet units spawned on ground will take off automatically after being spawned regardless.
-  - `CreateUnit.SpawnParachutedInAir`, if set to true, makes it so that the vehicle is created with a parachute if it is spawned in air. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
-  - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the vehicle being created and will attempt to find a nearby cell that is not. Otherwise the vehicle will be created at the animation's location despite these obstacles if possible.
+    - For VehicleTypes only, `CreateUnit.InheritFacings` and `CreateUnit.InheritTurretFacings` inherit facings for vehicle body and turret respectively from the destroyed vehicle if the animation is a vehicle destroy animation. `InheritTurretFacings` does not work with jumpjet vehicles due to technical constraints.
+  - `CreateUnit.AlwaysSpawnOnGround`, if set to true, ensures the unit will be created on the cell at ground level even if animation is in air. If set to false, jumpjet units spawned on ground will take off automatically after being spawned regardless.
+  - `CreateUnit.SpawnParachutedInAir`, if set to true, makes it so that the unit is created with a parachute if it is spawned in air. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
+  - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the unit being created and will attempt to find a nearby cell that is not. Otherwise the unit will be created at the animation's location despite these obstacles if possible.
   - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
-  - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
+  - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit if set to positive value. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
 
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                             ; AnimationType
-CreateUnit=                            ; VehicleType
+CreateUnit=                            ; TechnoType
 CreateUnit.Owner=Victim                ; Owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
 CreateUnit.RemapAnim=false             ; boolean
 CreateUnit.Mission=Guard               ; MissionType
@@ -452,7 +452,7 @@ CreateUnit.AlwaysSpawnOnGround=false   ; boolean
 CreateUnit.SpawnParachutedInAir=false  ; boolean
 CreateUnit.ConsiderPathfinding=false   ; boolean
 CreateUnit.SpawnAnim=                  ; Animation
-CreareUnit.SpawnHeight=                ; integer, height in leptons
+CreareUnit.SpawnHeight=-1              ; integer, height in leptons
 ```
 
 ```{note}
@@ -703,12 +703,12 @@ Trajectory.Straight.PassThrough=false          ; boolean
   - `Trajectory.Bombard.FreeFallOnTarget` controls how it'll hit the intended target. If set to true, the projectile will be respawned above the intended target and free fall. If set to false, the projectile will travel to the intended target from the turning point.
   - `Trajectory.Bombard.NoLaunch` controls whether the attacker will fire the projectile by itself. If set to true, projectile will directly fall from the turning point.
   - `Trajectory.Bombard.FallSpeed` controls the initial speed of the projectile after it turns. If set to 0.0, then it'll use `Trajectory.Speed`. Can't work when `Trajectory.Bombard.FreeFallOnTarget` set to true.
-  - `Trajectory.Bombard.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation (note that this can cause the projectile to overshoot the target). If `Trajectory.Bombard.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied here as well.
+  - `Trajectory.Bombard.DetonationDistance` controls the maximum distance in cells from intended target (checked at start of each game frame, before the projectile moves) at which the projectile will be forced to detonate. Set to 0 to disable forced detonation (note that this can cause the projectile to overshoot the target).
   - `Trajectory.Bombard.DetonationHeight` controls when the projectile is in a descending state and below the height of the launch position plus this value, it will detonate prematurely. Taking effect when it is set to non negative value. If `Trajectory.Bombard.EarlyDetonation` is set to true, it'll take effect during the ascending stage instead, which makes it detonate when its height is above the launch position plus this value.
   - `Trajectory.Bombard.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
   - `Trajectory.Bombard.TurningPointAnims`, if set, will play an anim when the projectile reaches the turning point. If `Trajectory.Bombard.FreeFallOnTarget` is set to true, it'll be spawned above the target with the projectile together. If `Trajectory.Bombard.NoLaunch` is set to true, it'll be played at where the projectile falls, no matter if it's free fall or not. If more than one animation is listed, a random one is selected.
   - `Trajectory.Bombard.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target when firing. Note that this will not affect the facing of the turret.
-  - The following tags further customize the projectile's descending behaviors when `Trajectory.Bombard.FreeFallOnTarget` set to true.
+  - The following tags further customize the projectile's descending behaviors when `Trajectory.Bombard.FreeFallOnTarget` set to false.
     - `Trajectory.Bombard.OffsetCoord` controls the offsets of the target. Projectile will aim at this position to attack. It also supports `Inaccurate=yes` and `Trajectory.Bombard.LeadTimeCalculate=true` on this basis.
     - `Trajectory.Bombard.RotateCoord` controls whether to rotate the projectile's firing direction within the angle bisector of `Trajectory.Bombard.OffsetCoord` according to the weapon's `Burst`. Set to 0 to disable this function.
     - `Trajectory.Bombard.MirrorCoord` controls whether `Trajectory.Bombard.OffsetCoord` need to mirror the lateral value to adapt to the current burst index. At the same time, the rotation direction calculated by `Trajectory.Bombard.RotateCoord` will also be reversed, and the rotation angle between each adjacent projectile on each side will not change as a result.
@@ -729,7 +729,6 @@ Trajectory.Bombard.FreeFallOnTarget=true      ; boolean
 Trajectory.Bombard.NoLaunch=false             ; boolean
 Trajectory.Bombard.FallSpeed=0.0              ; double
 Trajectory.Bombard.DetonationDistance=0.4     ; floating point value
-Trajectory.Bombard.ApplyRangeModifiers=false  ; boolean
 Trajectory.Bombard.DetonationHeight=-1        ; integer
 Trajectory.Bombard.EarlyDetonation=false      ; boolean
 Trajectory.Bombard.TargetSnapDistance=0.5     ; floating point value

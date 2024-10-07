@@ -221,7 +221,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			}
 		}
 
-		this->ResponseAttack();
+		if (!pWHExt->Nonprovocative)
+			this->ResponseAttack();
 
 		if (pWHExt->DecloakDamagedTargets)
 			this->Techno->Uncloak(false);
