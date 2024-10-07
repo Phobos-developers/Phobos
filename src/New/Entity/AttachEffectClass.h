@@ -98,6 +98,7 @@ private:
 
 public:
 	bool HasCumulativeAnim;
+	bool ShouldBeDiscarded;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.
@@ -113,6 +114,7 @@ struct AttachEffectTechnoProperties
 	bool HasRangeModifier;
 	bool HasTint;
 	bool ReflectDamage;
+	bool HasOnFireDiscardables;
 
 	AttachEffectTechnoProperties() :
 		FirepowerMultiplier { 1.0 }
@@ -125,5 +127,6 @@ struct AttachEffectTechnoProperties
 		, HasRangeModifier { false }
 		, HasTint { false }
 		, ReflectDamage { false }
+		, HasOnFireDiscardables { false }
 	{ }
 };

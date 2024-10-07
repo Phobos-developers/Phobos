@@ -4,8 +4,22 @@
 #include <unordered_map>
 
 #include <Utilities/Enumerable.h>
-#include <Utilities/Template.h>
 #include <Utilities/TemplateDef.h>
+
+// AE discard condition
+enum class DiscardCondition : unsigned char
+{
+	None = 0x0,
+	Entry = 0x1,
+	Move = 0x2,
+	Stationary = 0x4,
+	Drain = 0x8,
+	InRange = 0x10,
+	OutOfRange = 0x20,
+	Firing = 0x40
+};
+
+MAKE_ENUM_FLAGS(DiscardCondition);
 
 class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 {

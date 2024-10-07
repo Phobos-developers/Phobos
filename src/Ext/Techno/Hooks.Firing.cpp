@@ -410,6 +410,25 @@ DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
 #pragma endregion
 
 #pragma region TechnoClass_Fire
+
+DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DiscardAEOnFire, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->AE.HasOnFireDiscardables)
+	{
+		for (const auto& attachEffect : pExt->AttachedEffects)
+		{
+			if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
+				attachEffect->ShouldBeDiscarded = true;
+		}
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 {
 	enum { ApplyDamageMult = 0x6FE45A, ContinueCheck = 0x6FE460 };

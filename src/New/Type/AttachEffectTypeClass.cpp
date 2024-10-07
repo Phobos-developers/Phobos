@@ -219,3 +219,64 @@ void AttachEffectTypeClass::SaveToStream(PhobosStreamWriter& Stm)
 {
 	this->Serialize(Stm);
 }
+
+// AE type-related enum etc. parsers
+namespace detail
+{
+	template <>
+	inline bool read<DiscardCondition>(DiscardCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = DiscardCondition::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "none"))
+				{
+					parsed |= DiscardCondition::None;
+				}
+				else if (!_strcmpi(cur, "entry"))
+				{
+					parsed |= DiscardCondition::Entry;
+				}
+				else if (!_strcmpi(cur, "move"))
+				{
+					parsed |= DiscardCondition::Move;
+				}
+				else if (!_strcmpi(cur, "stationary"))
+				{
+					parsed |= DiscardCondition::Stationary;
+				}
+				else if (!_strcmpi(cur, "drain"))
+				{
+					parsed |= DiscardCondition::Drain;
+				}
+				else if (!_strcmpi(cur, "inrange"))
+				{
+					parsed |= DiscardCondition::InRange;
+				}
+				else if (!_strcmpi(cur, "outofrange"))
+				{
+					parsed |= DiscardCondition::OutOfRange;
+				}
+				else if (!_strcmpi(cur, "firing"))
+				{
+					parsed |= DiscardCondition::Firing;
+				}
+				else
+				{
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+}
