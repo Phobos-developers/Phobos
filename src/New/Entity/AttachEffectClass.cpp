@@ -624,7 +624,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			currentTypeCount++;
 			match = attachEffect;
 
-			if (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker)
+			if (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker && (!sourceMatch || sourceMatch->Duration > attachEffect->Duration))
 				sourceMatch = attachEffect;
 		}
 	}
@@ -638,7 +638,9 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	}
 
 	if (!pType->Cumulative && currentTypeCount > 0 && match)
+	{
 		match->RefreshDuration(durationOverride);
+	}
 	else
 	{
 		targetAEs.push_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, durationOverride, delay, initialDelay, recreationDelay));
