@@ -360,6 +360,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow to change the speed of gas particles
 - **CrimRecya**
   - Fix `LimboKill` not working reliably
+  - New Engrave trajectory
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude

@@ -665,7 +665,10 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
 
 - Projectiles can now have customizable trajectories.
   - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT`, `Vertical` or `Inviso`). Attempt to do so will result in the other logics being disabled and a warning being written to log file.
-  - Initial speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
+  - The speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
+    - In `Trajectory=Straight`, it refers to the whole distance speed of the projectile and it has no restrictions.
+    - In `Trajectory=Bombard`, it refers to the initial speed of the projectile and it has no restrictions.
+    - In `Trajectory=Engrave`, it refers to the engrave speed of the projectile and it cannot exceed 128. Recommend set as about 40.
 
   In `rulesmd.ini`:
 ```ini
@@ -702,6 +705,51 @@ In `rulesmd.ini`:
 [SOMEPROJECTILE]               ; Projectile
 Trajectory=Bombard             ; Trajectory type
 Trajectory.Bombard.Height=0.0  ; double
+```
+
+#### Engrave trajectory
+
+- Visually, like the thermal lance. Calling it 'trajectory' may not be appropriate. It does not read the settings on the weapon.
+  - `Trajectory.Engrave.ApplyRangeModifiers` controls whether any applicable weapon range modifiers from the firer are applied to the engrave process.
+  - `Trajectory.Engrave.SourceCoord` controls the starting point of engraving line segment. Taking the target as the coordinate center. Specifically, it will start from the firing position when set to 0,0 . The height of the point will always at ground level.
+  - `Trajectory.Engrave.TargetCoord` controls the end point of engraving line segment. Taking the target as the coordinate center. The height of the point will always at ground level.
+    - `Trajectory.Engrave.MirrorCoord` controls whether `Trajectory.Engrave.SourceCoord` and `Trajectory.Engrave.TargetCoord` need to mirror the lateral value to adapt to the current FLH.
+    - `Trajectory.Engrave.TheDuration` controls the duration of the entire engrave process. Set to 0 will automatically use `Trajectory.Engrave.SourceCoord` and `Trajectory.Engrave.TargetCoord` to calculate the process duration.
+  - `Trajectory.Engrave.IsLaser` controls whether laser drawing is required.
+    - `Trajectory.Engrave.IsSupported` controls whether the engrave laser will be brighter and thicker. Need to set `Trajectory.Engrave.IsHouseColor` or `Trajectory.Engrave.IsSingleColor` to true.
+    - `Trajectory.Engrave.IsHouseColor` controls whether set the engrave laser to draw using player's team color. These lasers respect `Trajectory.Engrave.LaserThickness` and `Trajectory.Engrave.IsSupported`.
+    - `Trajectory.Engrave.IsSingleColor` controls whether set the engrave laser to draw using only `Trajectory.Engrave.LaserInnerColor`. These lasers respect `Trajectory.Engrave.LaserThickness` and `Trajectory.Engrave.IsSupported`.
+    - `Trajectory.Engrave.LaserInnerColor` controls the inner color of the engrave laser.
+    - `Trajectory.Engrave.LaserOuterColor` controls the outer color of the engrave laser.
+    - `Trajectory.Engrave.LaserOuterSpread` controls the spread color of the engrave laser.
+    - `Trajectory.Engrave.LaserThickness` controls the thickness of the engrave laser. Need to set `Trajectory.Engrave.IsHouseColor` or `Trajectory.Engrave.IsSingleColor` to true.
+    - `Trajectory.Engrave.LaserDuration` controls the duration of the engrave laser.
+    - `Trajectory.Engrave.LaserDelay` controls how often to draw the engrave laser.
+  - `Trajectory.Engrave.DamageDelay` controls how often to detonate warheads.
+
+In `rulesmd.ini`:
+```ini
+Trajectory=Engrave                             ; Trajectory type
+Trajectory.Engrave.ApplyRangeModifiers=false   ; boolean
+Trajectory.Engrave.SourceCoord=0,0             ; integer - Forward,Lateral
+Trajectory.Engrave.TargetCoord=0,0             ; integer - Forward,Lateral
+Trajectory.Engrave.MirrorCoord=true            ; boolean
+Trajectory.Engrave.TheDuration=0               ; integer
+Trajectory.Engrave.IsLaser=true                ; boolean
+Trajectory.Engrave.IsSupported=false           ; boolean
+Trajectory.Engrave.IsHouseColor=false          ; boolean
+Trajectory.Engrave.IsSingleColor=false         ; boolean
+Trajectory.Engrave.LaserInnerColor=0,0,0       ; integer - Red,Green,Blue
+Trajectory.Engrave.LaserOuterColor=0,0,0       ; integer - Red,Green,Blue
+Trajectory.Engrave.LaserOuterSpread=0,0,0      ; integer - Red,Green,Blue
+Trajectory.Engrave.LaserThickness=3            ; integer
+Trajectory.Engrave.LaserDuration=1             ; integer
+Trajectory.Engrave.LaserDelay=1                ; integer
+Trajectory.Engrave.DamageDelay=2               ; integer
+```
+
+```{note}
+- It's best not to let it be intercepted.
 ```
 
 ### Shrapnel enhancements
