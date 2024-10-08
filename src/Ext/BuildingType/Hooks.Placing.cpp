@@ -753,7 +753,7 @@ DEFINE_HOOK(0x588664, MapClass_BuildingToFirestormWall_DisableWhenHaveTechnos, 0
 // Buildable-upon TechnoTypes Hook #9-1 -> sub_7393C0 - Try to clean up the building space when is deploying
 DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 {
-	enum { CanDeploy = 0x73958A, TemporarilyCanNotDeploy = 0x73950F, CanNotDeploy = 0x7394E0 };
+	enum { CanDeploy = 0x73958A, TemporarilyCanNotDeploy = 0x73953B, CanNotDeploy = 0x7394E0 };
 
 	GET(UnitClass* const, pUnit, EBP);
 
