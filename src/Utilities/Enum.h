@@ -66,6 +66,33 @@ enum class SuperWeaponAITargetingMode
 	EnemyBase = 14
 };
 
+enum class LandTypeFlags : unsigned short
+{
+	None = 0,
+	Clear = 1 << (char)LandType::Clear,
+	Road = 1 << (char)LandType::Road,
+	Water = 1 << (char)LandType::Water,
+	Rock = 1 << (char)LandType::Rock,
+	Wall = 1 << (char)LandType::Wall,
+	Tiberium = 1 << (char)LandType::Tiberium,
+	Beach = 1 << (char)LandType::Beach,
+	Rough = 1 << (char)LandType::Rough,
+	Ice = 1 << (char)LandType::Ice,
+	Railroad = 1 << (char)LandType::Railroad,
+	Tunnel = 1 << (char)LandType::Tunnel,
+	Weeds = 1 << (char)LandType::Weeds,
+
+	All = 0xFFFF,
+	DefaultDisallowed = Water | Rock | Ice | Beach
+};
+
+MAKE_ENUM_FLAGS(LandTypeFlags);
+
+inline bool IsLandTypeInFlags(LandTypeFlags flags, LandType type)
+{
+	return (bool)((LandTypeFlags)(1 << (char)type) & flags);
+}
+
 enum class AffectedTarget : unsigned char
 {
 	None = 0x0,

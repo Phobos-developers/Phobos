@@ -466,3 +466,25 @@ DEFINE_HOOK(0x425174, AnimClass_Detach_Cloak, 0x6)
 	return 0;
 }
 
+#pragma region ScorchFlamer
+
+// Disable Ares' implementation.
+DEFINE_PATCH(0x42511B, 0x5F, 0x5E, 0x5D, 0x5B, 0x83, 0xC4, 0x20);
+DEFINE_PATCH(0x4250C9, 0x5F, 0x5E, 0x5D, 0x5B, 0x83, 0xC4, 0x20);
+DEFINE_PATCH(0x42513F, 0x5F, 0x5E, 0x5D, 0x5B, 0x83, 0xC4, 0x20);
+
+DEFINE_HOOK(0x425060, AnimClass_Expire_ScorchFlamer, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+
+	auto const pType = pThis->Type;
+
+	if (pType->Flamer || pType->Scorch)
+		AnimExt::SpawnFireAnims(pThis);
+
+	return 0;
+}
+
+#pragma endregion
+
+

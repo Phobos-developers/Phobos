@@ -269,6 +269,41 @@ SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
 
+### Fire animations spawned by Scorch & Flamer
+
+- Tiberian Sun allowed `Scorch=true` and `Flamer=true` animations to spawn fire animations from `[AudioVisual]` -> `SmallFire` & `LargeFire`. This behaviour has been reimplemented and is fully customizable.
+  - `ConstrainFireAnimsToCellSpots` controls whether or not spawned animations are locked to cell spots (e.g the subcell positions infantry are also constrained to).
+  - `FireAnimDisallowedLandTypes` controls which landtypes the fire animations are not allowed to spawn on. Defaults to `water,rock,beach,ice` for `Scorch=true`, `none` otherwise.
+  - `AttachFireAnimsToParent` controls if the spawned animations are attached to the owner of the parent animation if it is also attached. Defaults to true for `Scorch=true`, otherwise false.
+  - `SmallFireCount` determines number of small fire animations to spawn by both `Scorch=true` and `Flamer=true` animations. Defaults to 2 for `Flamer=true`, otherwise 1.
+     - `SmallFireAnims` can be used to set the animation types, defaults to `[AudioVisual]` -> `SmallFire` (single animation).
+     - `SmallFireChances` is a list of probabilities for the animations to spawn, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `1.0,0.5` for `Flamer=true`, `1.0` otherwise.
+     - `SmallFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `0.25,0.625` for `Flamer=true`, `0.0` otherwise.
+  - `LargeFireCount` determines number of large fire animations to spawn by`Flamer=true` animations only.
+     - `LargeFireAnims` can be used to set the animation types, defaults to `[AudioVisual]` -> `LargeFire` (single animation).
+     - `LargeFireChances` is a list of probabilities for the animations to spawn, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
+     - `LargeFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                          ; AnimationType
+ConstrainFireAnimsToCellSpots=true  ; boolean
+FireAnimDisallowedLandTypes=        ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
+AttachFireAnimsToParent=            ; boolean
+SmallFireCount=                     ; integer
+SmallFireAnims=                     ; list of animations
+SmallFireChances=                   ; list of floating point values (percent or absolute)
+SmallFireDistances=                 ; list of floating point values, distance in cells
+LargeFireCount=1                    ; integer
+LargeFireAnims=                     ; list of animations
+LargeFireChances=0.5                ; list of floating point values (percent or absolute)
+LargeFireDistances=0.4375           ; list of floating point values, distance in cells
+```
+
+```{note}
+Save for the change that `Flamer? does not spawn animations if the parent animation is in air, the default settings should provide identical results to similar feature from Ares.
+```
+
 ### Layer on animations attached to objects
 
 - You can now customize whether or not animations attached to objects follow the object's layer or respect their own `Layer` setting. If this is unset, attached animations use `ground` layer.
