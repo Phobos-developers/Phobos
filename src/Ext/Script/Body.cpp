@@ -215,6 +215,27 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Chronoshift to enemy base, argument is additional distance modifier
 		ScriptExt::ChronoshiftToEnemyBase(pTeam, argument);
 		break;
+	case PhobosScripts::SetSideIdxForManagingTriggers:
+		ScriptExt::SetSideIdxForManagingTriggers(pTeam, -1);
+		break;
+	case PhobosScripts::SetHouseIdxForManagingTriggers:
+		ScriptExt::SetHouseIdxForManagingTriggers(pTeam, 2147483647);
+		break;
+	case PhobosScripts::ManageAllAITriggers:
+		ScriptExt::ManageAITriggers(pTeam, -1);
+		break;
+	case PhobosScripts::EnableTriggersFromList:
+		ScriptExt::ManageTriggersFromList(pTeam, -1, true);
+		break;
+	case PhobosScripts::DisableTriggersFromList:
+		ScriptExt::ManageTriggersFromList(pTeam, -1, false);
+		break;
+	case PhobosScripts::EnableTriggersWithObjects:
+		ScriptExt::ManageTriggersWithObjects(pTeam, -1, true);
+		break;
+	case PhobosScripts::DisableTriggersWithObjects:
+		ScriptExt::ManageTriggersWithObjects(pTeam, -1, false);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
@@ -687,15 +708,17 @@ void ScriptExt::SetCloseEnoughDistance(TeamClass* pTeam, double distance = -1)
 	if (distance <= 0)
 		distance = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
-
-	if (pTeamData)
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData)
 	{
-		if (distance > 0)
-			pTeamData->CloseEnough = distance;
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
 	}
 
-	if (distance <= 0)
+	if (distance > 0)
+		pTeamData->CloseEnough = distance;
+	else
 		pTeamData->CloseEnough = RulesClass::Instance->CloseEnough / 256.0;
 
 	// This action finished
