@@ -10,6 +10,9 @@ enum class InterpolationMode : BYTE
 
 namespace detail
 {
+	#define FROM_DOUBLE(type, first, second, percentage, mode) \
+		 (type)(interpolate((double)first, (double)(second), percentage, mode));
+
 	template <typename T>
 	inline T interpolate(T first, T second, double percentage, InterpolationMode mode)
 	{
@@ -36,28 +39,15 @@ namespace detail
 	template <>
 	inline int interpolate<int>(int first, int second, double percentage, InterpolationMode mode)
 	{
-		return static_cast<int>(interpolate(static_cast<double>(first), static_cast<double>(second), percentage, mode));
+		return FROM_DOUBLE(int, first, second, percentage, mode);
 	}
 
 	template <>
 	inline ColorStruct interpolate<ColorStruct>(ColorStruct first, ColorStruct second, double percentage, InterpolationMode mode)
 	{
-		ColorStruct result = first;
-
-		switch (mode)
-		{
-		case InterpolationMode::Linear:
-		{
-			BYTE r = static_cast<BYTE>(first.R + ((second.R - first.R) * percentage));
-			BYTE g = static_cast<BYTE>(first.G + ((second.G - first.G) * percentage));
-			BYTE b = static_cast<BYTE>(first.B + ((second.B - first.B) * percentage));
-			result = ColorStruct { r, g, b };
-			break;
-		}
-		default:
-			break;
-		}
-
-		return result;
+		BYTE r = FROM_DOUBLE(BYTE, first.R, second.R, percentage, mode);
+		BYTE g = FROM_DOUBLE(BYTE, first.G, second.G, percentage, mode);
+		BYTE b = FROM_DOUBLE(BYTE, first.B, second.B, percentage, mode);
+		return ColorStruct { r, g, b };
 	}
 }
