@@ -38,6 +38,7 @@
 #include <FootClass.h>
 
 #include "Savegame.h"
+#include "Interpolation.h"
 
 class INI_EX;
 
@@ -521,12 +522,6 @@ public:
 			ValueCount = 3;
 		}
 	}
-};
-
-enum class InterpolationMode : BYTE
-{
-	None = 0,
-	Linear = 1
 };
 
 // Designates that the type can read it's value from multiple flags.
