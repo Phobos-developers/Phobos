@@ -508,3 +508,69 @@ DEFINE_HOOK(0x449149, BuildingClass_Captured_FactoryPlant2, 0x6)
 }
 
 #pragma endregion
+
+#pragma region DestroyableObstacle
+
+template <bool remove = false>
+static void RecalculateCells(BuildingClass* pThis)
+{
+	auto const cells = BuildingExt::GetFoundationCells(pThis, pThis->GetMapCoords());
+
+	auto& map = MapClass::Instance;
+
+	for (auto const& cell : cells)
+	{
+		if (auto pCell = map->TryGetCellAt(cell))
+		{
+			pCell->RecalcAttributes(DWORD(-1));
+
+			if constexpr (remove)
+				map->ResetZones(cell);
+			else
+				map->RecalculateZones(cell);
+
+			map->RecalculateSubZones(cell);
+
+		}
+	}
+}
+
+DEFINE_HOOK(0x440D01, BuildingClass_Unlimbo_DestroyableObstacle, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->IsDestroyableObstacle)
+		RecalculateCells(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x445D87, BuildingClass_Limbo_DestroyableObstacle, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->IsDestroyableObstacle)
+		RecalculateCells<true>(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x483D8E, CellClass_CheckPassability_DestroyableObstacle, 0x6)
+{
+	enum { IsBlockage = 0x483CD4 };
+
+	GET(BuildingClass*, pBuilding, ESI);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
+	if (pTypeExt->IsDestroyableObstacle)
+		return IsBlockage;
+
+	return 0;
+}
+
+#pragma endregion

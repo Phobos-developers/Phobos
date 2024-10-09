@@ -450,11 +450,12 @@ New:
 - Custom object palettes for TerrainTypes (by Starkku)
 - Forbidding parallel AI queues for specific TechnoTypes (by Starkku)
 - Nonprovocative Warheads (by Starkku)
-- Option to restore `PowerSurplus` setting for AI (by Starkku)
+- Buildings considered as destroyable pathfinding obstacles (by Starkku)
 - `FireOnce` infantry sequence reset toggle (by Starkku)
 - Assign Super Weapon cameo to any sidebar tab (by NetsuNegi)
 - Customizing effect of level lighting on air units (by Starkku)
 - Reimplemented `Airburst` & `Splits` logic with more customization options (by Starkku)
+- Buildings considered as destroyable pathfinding obstacles (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

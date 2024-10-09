@@ -244,6 +244,7 @@ This page lists all the individual contributions to the project by their author.
   - Nonprovocative Warheads
   - Customizing effect of level lighting on air units
   - Reimplemented `Airburst` & `Splits` logic with more customization options
+  - Buildings considered as destroyable pathfinding obstacles
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
