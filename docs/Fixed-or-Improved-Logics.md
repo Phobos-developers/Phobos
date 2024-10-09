@@ -164,6 +164,14 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed disguised units not using the correct palette if target has custom palette.
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
 - Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading.
+- The otherwise unused setting `[AI]` -> `PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI]` -> `EnablePowerSurplus` to true.
+- Planning paths are now shown for all units under player control or when `[GlobalControls]->DebugPlanningPaths=yes` in singleplayer game modes.
+- Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
+- Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
+- Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them.
+- Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead.
+- Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
+- Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
 
 ## Fixes / interactions with other extensions
 
@@ -410,6 +418,45 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
 
 ## Projectiles
 
+### Airburst & Splits
+
+- `AirburstWeapon` logic has been reimplemented and thus there are several additions & changes to it.
+- `Splits` can be set to true to use projectile splitting logic from Firestorm, with the number of split projectiles defined by `Cluster`.
+  - `RetargetAccuracy` defines the probability that the splitted projectiles head to the same target as the original projectile.
+  - `RetargetSelf` determines if it is possible for the splitted projectiles to aim at the firer of the original projectile.
+    - `RetargetSelf.Probability` is the probability that if the original firer is chosen as a target, it is kept as the target instead of rerolled to another.
+  - `Splits.TargetingDistance` is the distance in cells that any potential target has to be within from the original target coordinates to be eligible for targeting by the splitted projectiles.
+  - `Splits.TargetCellRange` is the distance in whole cells from the original target cell from which the splitted projectiles can pick new target cells if not enough TechnoType targets were found nearby.
+  - `Splits.UseWeaponTargeting`, if set to true, enables weapon targeting filter for when checking targets for splitted projectiles. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `AirburstWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
+    - Do note that this overrides checking Warhead for `AffectsAllies/Owner/Enemies` for targeting. You can use `CanTargetHouses` on `AirburstWeapon` to achieve similar behaviour, however.
+- Behaviour for if `Airburst` is set to true can also be customized.
+  - `AirburstSpread` is the distance in cells that the effect covers, with each cell in range being targeted by `AirburstWeapon` by default.
+  - `Airburst.UseCluster`, if set to true, makes it so that only number of cells in the affected area dictated by `Cluster` will be affected, instead of all of them.
+    - If `Airburst.RandomClusters` is set to true, the cells affected will be picked by random. Otherwise they will be evenly spaced (counting from center to edges of affected area).
+- `AroundTarget` controls whether or not targets for projectiles created by `Airburst` or `Splits` are checked for in area around the original projectile's intended target, or where the original projectile detonated. Defaults to value of `Splits`.
+- `AirburstWeapon.ApplyFirepowerMult` determines whether or not firepower modifiers from the firer of the original projectile are applied on the projectiles created from `AirburstWeapon`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]                         ; Projectile
+Splits=                                  ; boolean
+RetargetAccuracy=0.0                     ; floating point value, percents or absolute (0.0-1.0)
+RetargetSelf=true                        ; boolean
+RetargetSelf.Probability=0.5             ; floating point value, percents or absolute (0.0-1.0)
+Splits.TargetingDistance=5.0             ; floating point value, distance in cells
+Splits.TargetCellRange=3                 ; integer, cell offset
+Splits.UseWeaponTargeting=false          ; boolean
+AirburstSpread=1.5                       ; floating point value, distance in cells
+Airburst.UseCluster=false                ; boolean
+Airburst.RandomClusters=false            ; boolean
+AroundTarget=                            ; boolean
+AirburstWeapon.ApplyFirepowerMult=false  ; boolean
+```
+
+```{note}
+`Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and `AroundTarget`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
+```
+
 ### Cluster scatter distance customization
 
 - `ClusterScatter.Min` and `ClusterScatter.Max` can be used to set minimum and maximum distance, respectively, in cells from the original detonation coordinate any additional detonations if `Cluster` is set to value higher than 1 can appear at.
@@ -470,7 +517,7 @@ Pips.SelfHeal.Units.Offset=33,-32       ; X,Y, pixels relative to default
 Pips.SelfHeal.Buildings.Offset=15,10    ; X,Y, pixels relative to default
 
 [SOMETECHNO]                            ; TechnoType
-SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (none|infantry|units)
+SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (noheal|infantry|units)
 ```
 
 ### Chrono sparkle animation customization & improvements
@@ -646,6 +693,18 @@ Wake.Grapple=        ; Anim (played when Techno being parasited on the water), d
 Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [SOMETECHNO]->Wake
 ```
 
+### Customizing effect of level lighting on air units
+
+- It is now possible to customize how air units are affected by level lighting, separately for AircraftTypes and infantry/vehicles with Jumpjet `Locomotor`.
+  - `AircraftLevelLightMultiplier` & `JumpjetLevelLightMultiplier` are direct multipliers to level lighting applied on the units, for height levels above the cell they are on.
+
+  - In `rulesmd.ini`
+```ini
+[AudioVisual]
+AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
+JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
@@ -782,6 +841,24 @@ NoWobbles=false  ; boolean
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
+```
+
+### Skirmish AI behavior dehardcode
+
+- In vanilla, there is a hardcoded behavior that when an skirmish AI player has no factory and has not taken damage for a while, it will sell its buildings and set its units to hunt. This can be customized now.
+  - `[General]->AIFireSale` and `[General]->AIAllToHunt` control whether the AI will act selling and hunting respectively.
+  - `[General]->AIFireSaleDelay` defines a timer, it will only work if `[General]->AIFireSale` is set to `true`. When the first time the AI reaches the trigger condition of vanilla behavior, the timer starts and prevents the selling behavior from happening until the timer is expired.
+  - You can use these flags to make the AIs "all in" before they are defeated.
+- Another hardcoded behavior is that, when the AI deploys a MCV, it will gather all of its forces to that place. This can be toggle off now.
+  - `[General]->GatherWhenMCVDeploy` controls this behavior.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AIFireSale=true           ; boolean
+AIFireSaleDelay=0         ; integer, number of frames
+AIAllToHunt=true          ; boolean
+GatherWhenMCVDeploy=true  ; boolean
 ```
 
 ### Subterranean unit travel height
@@ -1252,7 +1329,7 @@ DecloakDamagedTargets=true  ; boolean
 
 - You can now make Warheads behave in nonprovocative fashion. Warheads with `Nonprovocative=true` exhibit following behaviours:
   - They will not generate any EVA announcements upon hitting targets, be it for attacking ore miners, base buildings or ally base buildings.
-  - They will not spring 'attacked' / 'attacked by' events. Note that if the Warhead deals actual damage, events that check for that can still be sprung. 
+  - They will not spring 'attacked' / 'attacked by' events. Note that if the Warhead deals actual damage, events that check for that can still be sprung.
   - They will not evoke defense response from AI players when used to attack base buildings, `ToProtect=true` TechnoTypes or members of TeamTypes with `Whiner=true`.
   - They will not evoke retaliation from TechnoTypes hit by the Warhead.
 
@@ -1260,6 +1337,10 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]         ; WarheadType
 Nonprovocative=false  ; boolean
+```
+
+```{note}
+Due to technical constraints, this does not suppress warnings from Ares' EMP effect.
 ```
 
 ### Restricting screen shaking to current view
@@ -1330,6 +1411,16 @@ In `rulesmd.ini`
 ```ini
 [SOMEWEAPON]
 KickOutPassengers=true  ; boolean
+```
+
+### Disable FireOnce resetting infantry sequence
+
+- It is now possible to disable `FireOnce=true` weapon resetting infantry sequences after firing via `FireOnce.ResetSequence`. Target will be forgotten like before, the firing sequence will simply continue playing after firing if there are any frames left.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+FireOnce.ResetSequence=true  ; boolean
 ```
 
 ### Single-color lasers

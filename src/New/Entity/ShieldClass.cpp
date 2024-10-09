@@ -14,7 +14,8 @@
 
 std::vector<ShieldClass*> ShieldClass::Array;
 
-ShieldClass::ShieldClass() : Techno { nullptr }
+ShieldClass::ShieldClass()
+	: Techno { nullptr }
 	, HP { 0 }
 	, Timers { }
 	, AreAnimsHidden { false }
@@ -22,7 +23,8 @@ ShieldClass::ShieldClass() : Techno { nullptr }
 	ShieldClass::Array.emplace_back(this);
 }
 
-ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTechno }
+ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached)
+	: Techno { pTechno }
 	, IdleAnim { nullptr }
 	, Timers { }
 	, Cloak { false }
@@ -189,9 +191,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	}
 
 	int originalShieldDamage = shieldDamage;
-
-	shieldDamage = Math::clamp(shieldDamage, pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum),
-		pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum));
+	int min = pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum);
+	int max = pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum);
+	int minDmg = static_cast<int>(min * pWHExt->Shield_ReceivedDamage_MinMultiplier);
+	int maxDmg = static_cast<int>(max * pWHExt->Shield_ReceivedDamage_MaxMultiplier);
+	shieldDamage = Math::clamp(shieldDamage, minDmg, maxDmg);
 
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
 		GeneralUtils::DisplayDamageNumberString(shieldDamage, DamageDisplayType::Shield, this->Techno->GetRenderCoords(), TechnoExt::ExtMap.Find(this->Techno)->DamageNumberOffset);
@@ -217,7 +221,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			}
 		}
 
-		this->ResponseAttack();
+		if (!pWHExt->Nonprovocative)
+			this->ResponseAttack();
 
 		if (pWHExt->DecloakDamagedTargets)
 			this->Techno->Uncloak(false);

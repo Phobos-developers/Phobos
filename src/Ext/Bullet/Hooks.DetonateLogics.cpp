@@ -287,8 +287,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK_AGAIN(0x46A2FB, BulletClass_Logics_Extras, 0x5)
-DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
+DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 {
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct*, coords, 0x8);
@@ -365,3 +364,231 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_Extras, 0x5)
 
 	return 0;
 }
+
+#pragma region Airburst
+
+static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting)
+{
+	auto const pWH = pWeapon->Warhead;
+
+	if (useWeaponTargeting)
+	{
+		auto const pType = pTarget->GetTechnoType();
+
+		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pType->Armor) == 0.0)
+			return false;
+
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
+			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
+			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget))
+		{
+			return false;
+		}
+
+		if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
+			return false;
+	}
+	else
+	{
+		if (!WarheadTypeExt::ExtMap.Find(pWH)->CanTargetHouse(pOwner, pTarget))
+			return false;
+	}
+
+	return true;
+}
+
+// Disable Ares' Airburst implementation.
+DEFINE_PATCH(0x469EBA, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90);
+
+DEFINE_HOOK(0x468EB3, BulletClass_Explodes_AirburstCheck1, 0x6)
+{
+	enum { Continue = 0x468EC7, Skip = 0x468FF4 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+	R->EAX(pThis->Type);
+	return !(pThis->Type->Airburst || pTypeExt->Splits) ? Continue : Skip;
+}
+
+DEFINE_HOOK(0x468FF4, BulletClass_Explodes_AirburstCheck2, 0x6)
+{
+	enum { Continue = 0x46909A, Skip = 0x469008 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+	R->EAX(pThis->Type);
+	return (pThis->Type->Airburst || pTypeExt->Splits) ? Continue : Skip;
+}
+
+DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
+{
+	enum { SkipGameCode = 0x46A290 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	auto const pType = pThis->Type;
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pType);
+	auto const pWeapon = pType->AirburstWeapon;
+
+	if ((pType->Airburst || pTypeExt->Splits) && pWeapon)
+	{
+		auto const pSource = pThis->Owner;
+		auto const pOwner = pSource ? pSource->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+
+		auto& random = ScenarioClass::Instance->Random;
+		int clusterCount = pType->Cluster;
+
+		auto const coordsTarget = pTypeExt->AroundTarget.Get(pTypeExt->Splits) ? pThis->GetTargetCoords() : pThis->GetCoords();
+		auto const cellTarget = CellClass::Coord2Cell(coordsTarget);
+		DynamicVectorClass<AbstractClass*> targets;
+
+		if (!pTypeExt->Splits)
+		{
+			CellRangeIterator<CellClass>{}(cellTarget, pTypeExt->AirburstSpread, [&targets](CellClass* pCell) -> bool
+			{
+				targets.AddItem(pCell);
+				return true;
+			});
+
+			if (pTypeExt->Airburst_UseCluster)
+			{
+				DynamicVectorClass<AbstractClass*> newTargets;
+
+				if (pTypeExt->Airburst_RandomClusters)
+				{
+					// Do random cells for amount matching Cluster.
+					int count = 0;
+					int targetCount = targets.Count;
+
+					while (count < clusterCount)
+					{
+						int index = ScenarioClass::Instance->Random.RandomRanged(0, targetCount);
+						auto const pTarget = targets.GetItem(index);
+
+						if (count > targetCount || newTargets.FindItemIndex(pTarget) < 0)
+						{
+							newTargets.AddItem(pTarget);
+							count++;
+						}
+					}
+				}
+				else
+				{
+					// Do evenly selected cells for amount matching Cluster.
+					double stepSize = (targets.Count - 1.0) / (clusterCount - 1.0);
+
+					for (int i = 0; i < clusterCount; i++)
+					{
+						newTargets.AddItem(targets.GetItem(static_cast<int>(round(stepSize * i))));
+					}
+				}
+
+				targets = newTargets;
+			}
+			else
+			{
+				clusterCount = targets.Count;
+			}
+		}
+		else
+		{
+			for (auto const pTechno : *TechnoClass::Array)
+			{
+				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->Health > 0 && (pTypeExt->RetargetSelf || pTechno != pThis->Owner))
+				{
+					auto const coords = pTechno->GetCoords();
+
+					if (coordsTarget.DistanceFrom(coords) < pTypeExt->Splits_TargetingDistance.Get()
+						&& (pType->AA || !pTechno->IsInAir())
+						&& IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, pTypeExt->Splits_UseWeaponTargeting))
+					{
+						targets.AddItem(pTechno);
+					}
+				}
+			}
+
+			int range = pTypeExt->Splits_TargetCellRange;
+
+			while (targets.Count < clusterCount)
+			{
+				int x = random.RandomRanged(-range, range);
+				int y = random.RandomRanged(-range, range);
+
+				CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
+				auto const pCell = MapClass::Instance->GetCellAt(cell);
+
+				targets.AddItem(pCell);
+			}
+		}
+
+		int projectileRange = WeaponTypeExt::ExtMap.Find(pWeapon)->ProjectileRange.Get();
+		auto const pTypeSplits = pWeapon->Projectile;
+		int damage = pWeapon->Damage;
+
+		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult && pThis->Owner)
+			damage = static_cast<int>(damage * pThis->Owner->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis->Owner)->AE.FirepowerMultiplier);
+
+		for (int i = 0; i < clusterCount; ++i)
+		{
+			auto pTarget = pThis->Target;
+
+			if (!pTypeExt->Splits)
+			{
+				pTarget = targets.GetItem(i);
+			}
+			else if (!pTarget || pTypeExt->RetargetAccuracy < random.RandomDouble())
+			{
+				int index = random.RandomRanged(0, targets.Count - 1);
+				pTarget = targets.GetItem(index);
+
+				if (pTarget == pThis->Owner)
+				{
+					if (random.RandomDouble() > pTypeExt->RetargetSelf_Probability)
+					{
+						index = random.RandomRanged(0, targets.Count - 1);
+						pTarget = targets.GetItem(index);
+					}
+				}
+
+				targets.RemoveItem(index);
+			}
+
+			if (pTarget)
+			{
+
+				if (auto const pBullet = pTypeSplits->CreateBullet(pTarget, pThis->Owner, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+				{
+					BulletExt::ExtMap.Find(pBullet)->FirerHouse = pOwner;
+					pBullet->WeaponType = pWeapon;
+					pBullet->Range = projectileRange;
+
+					DirStruct dir;
+					dir.SetValue<5>(random.RandomRanged(0, 31));
+
+					auto const radians = dir.GetRadian<32>();
+					auto const sin_rad = Math::sin(radians);
+					auto const cos_rad = Math::cos(radians);
+					auto const cos_factor = -2.44921270764e-16; // cos(1.5 * Math::Pi * 1.00001)
+					auto const flatSpeed = cos_factor * pBullet->Speed;
+
+					BulletVelocity velocity;
+					velocity.X = cos_rad * flatSpeed;
+					velocity.Y = sin_rad * flatSpeed;
+					velocity.Z = -pBullet->Speed;
+
+					pBullet->MoveTo(pThis->Location, velocity);
+				}
+			}
+		}
+	}
+
+	return SkipGameCode;
+}
+
+#pragma endregion

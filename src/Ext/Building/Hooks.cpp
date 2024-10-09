@@ -268,10 +268,14 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 	GET_STACK(DWORD const, calledby, 0x18);
 
 	TechnoClass* pTechno = pFactory->Object;
-	if(calledby<0x7F0000)
-	// Replace the old log with this to figure out where keeps flushing the stream
-	Debug::LogGame("(%08x) : %s is abandoning production of %s[%s]\n",
-		calledby-5, pFactory->Owner->PlainName, pTechno->GetType()->Name, pTechno->get_ID());
+	if (calledby < 0x7F0000) // Replace the old log with this to figure out where keeps flushing the stream
+	{
+		Debug::LogGame("(%08x) : %s is abandoning production of %s[%s]\n"
+			, calledby - 5
+			, pFactory->Owner->PlainName
+			, pTechno->GetType()->Name
+			, pTechno->get_ID());
+	}
 
 	auto pRulesExt = RulesExt::Global();
 
@@ -388,7 +392,7 @@ DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 			return SkipSetShouldRebuild;
 
 		// Per-house dehardcoding: BaseNodes + SW-Delivery
-		if (!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance->Difficulty])
+		if (!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance->Difficulty].Get(RulesExt::Global()->RepairBaseNodes))
 			return SkipSetShouldRebuild;
 	}
 	// Vanilla instruction: always repairable in other game modes

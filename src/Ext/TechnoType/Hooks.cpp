@@ -21,6 +21,7 @@
 #include <JumpjetLocomotionClass.h>
 #include <FlyLocomotionClass.h>
 #include <RocketLocomotionClass.h>
+#include <TunnelLocomotionClass.h>
 
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
@@ -301,6 +302,60 @@ constexpr double Pade2_2(double in)
 		* (12. - 6 * s + s * s) / (12. + 6 * s + s * s);
 }
 
+// We need to handle Ares turrets/barrels/waterimage/nospawnalt
+struct DummyExtHere // TODO: move it
+{
+	char _[0xA4];
+	std::vector<VoxelStruct> ChargerTurrets;
+	std::vector<VoxelStruct> ChargerBarrels;
+	char __[0x120];
+	UnitTypeClass* WaterImage;
+	VoxelStruct NoSpawnAltVXL;
+};
+
+Matrix3D* __stdcall TunnelLocomotionClass_ShadowMatrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* key)
+{
+	__assume(iloco != nullptr);
+	auto tLoco = static_cast<TunnelLocomotionClass*>(iloco);
+	*ret = tLoco->LocomotionClass::Shadow_Matrix(key);
+	if (tLoco->State != TunnelLocomotionClass::State::Idle)
+	{
+		double theta = 0.;
+		switch (tLoco->State)
+		{
+		case TunnelLocomotionClass::State::DiggingIn:
+			if (key)key->Invalidate();
+			theta = Math::HalfPi;
+			if (auto total = tLoco->DigTimer.Rate)
+				theta *= 1.0 - double(tLoco->DigTimer.GetTimeLeft()) / double(total);
+			break;
+		case TunnelLocomotionClass::State::DugIn:
+			theta = Math::HalfPi;
+			break;
+		case TunnelLocomotionClass::State::PreDigOut:
+			theta = -Math::HalfPi;
+			break;
+		case TunnelLocomotionClass::State::DiggingOut:
+			if (key)key->Invalidate();
+			theta = -Math::HalfPi;
+			if (auto total = tLoco->DigTimer.Rate)
+				theta *= double(tLoco->DigTimer.GetTimeLeft()) / double(total);
+			break;
+		case TunnelLocomotionClass::State::DugOut:
+			if (key)key->Invalidate();
+			theta = Math::HalfPi;
+			if (auto total = tLoco->DigTimer.Rate)
+				theta *= double(tLoco->DigTimer.GetTimeLeft()) / double(total);
+			break;
+		default:break;
+		}
+		ret->ScaleX((float)Math::cos(theta));// I know it's ugly
+	}
+	return ret;
+}
+
+DEFINE_JUMP(VTABLE, 0x7F5A4C, GET_OFFSET(TunnelLocomotionClass_ShadowMatrix));
+
 DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 {
 	GET(UnitClass*, pThis, EBP);
@@ -355,17 +410,6 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadow_matrix.Scale((float)Pade2_2(baseScale_log));
 	}
 
-	// We need to handle Ares turrets/barrels
-	struct DummyExtHere
-	{
-		char _[0xA4];
-		std::vector<VoxelStruct> ChargerTurrets;
-		std::vector<VoxelStruct> ChargerBarrels;
-		char __[0x120];
-		UnitTypeClass* WaterImage;
-		VoxelStruct NoSpawnAltVXL;
-	};
-
 	auto GetMainVoxel = [&]()
 	{
 		if (pType->NoSpawnAlt && pThis->SpawnManager && pThis->SpawnManager->CountDockedSpawns() == 0)
@@ -414,32 +458,32 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	{
 		if (pType->ShadowIndex >= 0 && pType->ShadowIndex < main_vxl->HVA->LayerCount)
 			pThis->DrawVoxelShadow(
-				   main_vxl,
-				   pType->ShadowIndex,
-				   vxl_index_key,
-				   &pType->VoxelShadowCache,
-				   bounding,
-				   &why,
-				   &mtx,
-				   true,
-				   surface,
-				   shadow_point
+				main_vxl,
+				pType->ShadowIndex,
+				vxl_index_key,
+				&pType->VoxelShadowCache,
+				bounding,
+				&why,
+				&mtx,
+				true,
+				surface,
+				shadow_point
 			);
 	}
 	else
 	{
 		for (auto& [index, _] : uTypeExt->ShadowIndices)
 			pThis->DrawVoxelShadow(
-				   main_vxl,
-				   index,
-				   index == pType->ShadowIndex ? vxl_index_key : std::bit_cast<VoxelIndexKey>(-1),
-				   &pType->VoxelShadowCache,
-				   bounding,
-				   &why,
-				   &mtx,
-				   index == pType->ShadowIndex,
-				   surface,
-				   shadow_point
+				main_vxl,
+				index,
+				index == pType->ShadowIndex ? vxl_index_key : std::bit_cast<VoxelIndexKey>(-1),
+				&pType->VoxelShadowCache,
+				bounding,
+				&why,
+				&mtx,
+				index == pType->ShadowIndex,
+				surface,
+				shadow_point
 			);
 	}
 
@@ -636,7 +680,7 @@ DEFINE_JUMP(CALL6, 0x4148AB, 0x5F4300);
 DEFINE_JUMP(CALL6, 0x4147F3, 0x5F4300);
 */
 
-DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
+DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x6)
 {
 	GET(FootClass*, pThis, EBX);//Maybe Techno later
 	GET(VoxelStruct*, pVXL, EBP);
@@ -660,9 +704,12 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 			if (who_are_you[0] == UnitTypeClass::AbsVTable)
 				pType = reinterpret_cast<TechnoTypeClass*>(who_are_you);//you are someone else
 			else
-				return pThis->TurretAnimFrame % hva->FrameCount;
-			// you might also be SpawnAlt voxel, but I can't know
-			// otherwise what would you expect me to do, shift back to ares typeext base and check if ownerobject is technotype?
+			{
+				// guess what, someone actually has a multisection nospawnalt
+				if (!(AresHelper::CanUseAres && pVXL == &reinterpret_cast<DummyExtHere*>(pType->align_2FC)->NoSpawnAltVXL))
+					return pThis->TurretAnimFrame % hva->FrameCount;
+			}
+			// you might also be WaterImage or sth else, but I don't want to care anymore, go fuck yourself
 		}
 
 		// Main body sections
@@ -705,10 +752,18 @@ DEFINE_HOOK(0x7072A1, suka707280_ChooseTheGoddamnMatrix, 0x7)
 		*reinterpret_cast<DWORD*>(0xB43180) = 1;
 
 	REF_STACK(Matrix3D, b, STACK_OFFSET(0xE8, -0x90));
-	b.MakeIdentity();// we don't do scaling here anymore
+	b.MakeIdentity(); // we don't do scaling here anymore
 
 	return 0x707331;
 }
+
+Matrix3D* __fastcall BounceClass_ShadowMatrix(BounceClass* self, void*, Matrix3D* ret)
+{
+	Matrix3D::FromQuaternion(ret, &self->CurrentAngle);
+	*ret = Matrix3D { 1, 0, 0 , 0,	0, 0.25f, -0.4330127018922194f , 0, 0, 0, 0 , 0 } **ret;
+	return ret;
+}
+DEFINE_JUMP(CALL, 0x749CAC, GET_OFFSET(BounceClass_ShadowMatrix));
 
 DEFINE_HOOK_AGAIN(0x69FEDC, Locomotion_Process_Wake, 0x6)  // Ship
 DEFINE_HOOK_AGAIN(0x4B0814, Locomotion_Process_Wake, 0x6)  // Drive

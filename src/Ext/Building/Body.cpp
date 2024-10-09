@@ -297,7 +297,7 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 	}
 }
 
-bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse,int moneybefore)
+bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore)
 {
 	auto pVictimHouse = this->OwnerObject()->Owner;
 	this->AccumulatedIncome += pVictimHouse->Available_Money() - moneybefore;
@@ -321,20 +321,21 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse,int mo
 	{
 		// I assume you were not launching for real, Morton
 
-		auto launchTheSWHere = [this](SuperClass* const pSuper, HouseClass* const pHouse)
-		{
-			int oldstart = pSuper->RechargeTimer.StartTime;
-			int oldleft = pSuper->RechargeTimer.TimeLeft;
-			pSuper->SetReadiness(true);
-			pSuper->Launch(CellClass::Coord2Cell(this->OwnerObject()->GetCenterCoords()), pHouse->IsCurrentPlayer());
-			pSuper->Reset();
-			pSuper->RechargeTimer.StartTime = oldstart;
-			pSuper->RechargeTimer.TimeLeft = oldleft;
-		};
+		auto launchTheSWHere = [this](SuperClass* const pSuper, HouseClass* const pHouse)->void
+			{
+				int oldstart = pSuper->RechargeTimer.StartTime;
+				int oldleft = pSuper->RechargeTimer.TimeLeft;
+				pSuper->SetReadiness(true);
+				pSuper->Launch(CellClass::Coord2Cell(this->OwnerObject()->GetCenterCoords()), pHouse->IsCurrentPlayer());
+				pSuper->Reset();
+				pSuper->RechargeTimer.StartTime = oldstart;
+				pSuper->RechargeTimer.TimeLeft = oldleft;
+			};
+
 		int idx = this->TypeExtData->SpyEffect_VictimSuperWeapon;
 		if (idx >= 0)
 			launchTheSWHere(pVictimHouse->Supers.Items[idx], pVictimHouse);
-		
+
 		idx = this->TypeExtData->SpyEffect_InfiltratorSuperWeapon;
 		if (idx >= 0)
 			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx], pInfiltratorHouse);

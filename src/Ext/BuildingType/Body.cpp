@@ -98,8 +98,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 }
 
 void BuildingTypeExt::ExtData::Initialize()
-{
-}
+{ }
 
 // =============================
 // load / save

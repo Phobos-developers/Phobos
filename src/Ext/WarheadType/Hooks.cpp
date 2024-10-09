@@ -51,9 +51,9 @@ DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 	GET(WarheadTypeClass* const, pThis, ESI);
 	GET(int, nDamage, EDI);
 
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+	auto const animTypes = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
 	pWHExt->Splashed = true;
-	auto animTypes = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
 
 	int idx = pWHExt->SplashList_PickRandom ?
 		ScenarioClass::Instance->Random.RandomRanged(0, animTypes.size() - 1) :
@@ -66,22 +66,24 @@ DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 DEFINE_HOOK(0x48A5BD, SelectDamageAnimation_PickRandom, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	return pWHExt && pWHExt->AnimList_PickRandom ? 0x48A5C7 : 0;
+	return pWHExt->AnimList_PickRandom ? 0x48A5C7 : 0;
 }
 
 DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+	GET(int, nDamage, EDI);
 
-	if (pWHExt && pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+
+	if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
 	{
-		GET(int, nDamage, ECX);
 		int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
 			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1) :
 			std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
+
 		R->EAX(pWHExt->Crit_AnimList[idx]);
 		return 0x48A5AD;
 	}
@@ -252,7 +254,7 @@ DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
 // Do not retaliate against being hit by these Warheads.
 DEFINE_HOOK(0x708B0B, TechnoClass_AllowedToRetaliate_Nonprovocative, 0x5)
 {
-	enum {  SkipEvents = 0x708B17 };
+	enum { SkipEvents = 0x708B17 };
 
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x18, 0x8));
 
