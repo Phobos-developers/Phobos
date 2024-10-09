@@ -514,7 +514,7 @@ public:
 		double Percentage;
 		Valueable<TValue> Value;
 
-		inline bool Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& absoluteLength = absolute_length_t(0));
+		inline bool Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0));
 
 		inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
@@ -528,7 +528,7 @@ public:
 
 	inline TValue Get(double const percentage) const noexcept;
 
-	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& absoluteLength = absolute_length_t(0));
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0));
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 

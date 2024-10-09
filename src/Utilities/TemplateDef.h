@@ -1877,7 +1877,7 @@ void __declspec(noinline) MultiflagNullableVector<T, TExtraArgs...>::Read(INI_EX
 // Animatable::KeyframeDataEntry
 
 template <typename TValue>
-bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& absoluteLength)
+bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength)
 {
 	char flagName[0x40];
 
@@ -1925,8 +1925,12 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 	// Thing is still far from lightweight as searching for the correct items requires going through the vector.
 
 	TValue match {};
+
+	if (!this->KeyframeData.size())
+		return match;
+
 	double startPercentage = 0.0;
-	size_t i = this->KeyframeData.size() - 1;
+	int i = this->KeyframeData.size() - 1;
 
 	for (; i >= 0; i--)
 	{
@@ -1941,7 +1945,7 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 	}
 
 	// Only interpolate if an interpolation mode is enabled and there's keyframes remaining.
-	if (this->InterpolationMode != InterpolationMode::None && i + 1 < this->KeyframeData.size())
+	if (this->InterpolationMode != InterpolationMode::None && i >= 0 && (size_t)(i + 1) < this->KeyframeData.size())
 	{
 		auto const value = this->KeyframeData[i + 1];
 		TValue nextValue = value.Value;
@@ -1953,7 +1957,7 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 }
 
 template <typename TValue>
-void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t& absoluteLength)
+void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength)
 {
 	char flagName[0x40];
 
