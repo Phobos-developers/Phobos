@@ -1315,6 +1315,21 @@ In `rulesmd.ini`:
 AllowDamageOnSelf=false  ; boolean
 ```
 
+### Combat light customizations
+
+- You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual]` -> `CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead, latter defaults to former.
+- You can now set a percentage chance a combat light effect is shown on Warhead impact by setting `CombatLightChance`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+CombatLightDetailLevel=0                     ; integer
+
+[SOMEWARHEAD]                                ; WarheadType
+CombatLightDetailLevel=                      ; integer
+CombatLightChance=1.0                        ; floating point value, percents or absolute (0.0-1.0)
+```
+
 ### Customizing decloak on damaging targets
 
 - You can now specify whether or not the warhead decloaks objects that are damaged by the warhead.
@@ -1338,6 +1353,7 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]         ; WarheadType
 Nonprovocative=false  ; boolean
 ```
+
 
 ```{note}
 Due to technical constraints, this does not suppress warnings from Ares' EMP effect.

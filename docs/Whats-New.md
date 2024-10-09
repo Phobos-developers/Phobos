@@ -89,6 +89,7 @@ ShowWeedsCounter=true            ; boolean
 ToolTipDescriptions=true         ; boolean
 ToolTipBlur=false                ; boolean
 SaveGameOnScenarioStart=true     ; boolean
+HideLightFlashEffects=false      ; boolean
 ```
 
 ### For Map Editor (Final Alert 2)
@@ -457,6 +458,7 @@ New:
 - Reimplemented `Airburst` & `Splits` logic with more customization options (by Starkku)
 - Buildings considered as destroyable pathfinding obstacles (by Starkku)
 - Animation visibility customization settings (by Starkku)
+- Light effect customizations (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
