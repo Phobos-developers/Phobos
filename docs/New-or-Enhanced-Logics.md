@@ -848,6 +848,24 @@ Convert.To=                     ; TechnoType
 Convert.AffectedHouses=owner    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
+### EMPulse settings
+
+- It is possible to customize which weapon a building with `EMPulseCannon=true` fires when an associated `Type=EMPulse` superweapon (**only** if `EMPulse.TargetSelf=false` or omitted) is fired by setting `EMPulse.WeaponIndex`.
+  - Note that if you fire another `Type=EMPulse` superweapon with different weapon index that the same building is capable of launching before the first weapon was fired, the latter superweapon's settings will take precedence.
+  - Additionally, due to technical limitations the targeting constraints will always default to primary weapon's `Range/MinimumRange` unless `SW.RangeMinimum/SW.RangeMaximum` are explicitly set.
+- Is is now also possible to have all other `Type=EMPulse` superweapons that can be fired by same buildings as current one be put on hold until first of the buildings currently set to fire goes off if the firing superweapon has `EMPulse.SuspendOthers=true`.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                     ; SuperWeapon
+EMPulse.WeaponIndex=0        ; integer, weapon slot index
+EMPulse.SuspendOthers=false  ; boolean
+```
+
+```{note}
+`Type=EMPulse` superweapon and any associated keys are [Ares features](https://ares-developers.github.io/Ares-docs/new/superweapons/types/empulse.html).
+```
+
 ### LimboDelivery
 
 - Superweapons can now deliver off-map buildings that act as if they were on the field.

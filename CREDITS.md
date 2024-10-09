@@ -250,6 +250,7 @@ This page lists all the individual contributions to the project by their author.
   - Building unit repair customizations
   - Build area customizations
   - `Scorch` / `Flamer` fire animation customization
+  - EM Pulse cannon logic improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

@@ -64,7 +64,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 - Aircraft & jumpjet units are now affected by speed modifiers such as `SpeedAircraft/Infantry/UnitsMult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect (Ares feature).
 - Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
-- Weapons fired by EMPulse superweapons without `EMPulse.TargetSelf=true` *(Ares feature)* can now create radiation.
 - Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
 - Mind control indicator animations will now correctly restore on mind controlled objects when uncloaked.
 - Animations from Warhead `AnimList` & `SplashList` etc. as well as animations created through map trigger `41 Play Anim At` now have the appropriate house set as owner of the animation by default.
@@ -127,7 +126,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
-- `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting.
 - You can now specify houses named `<Player @ A>` through `<Player @ H>` as the owner of TechnoTypes preplaced on the map in the editor, and they will be correctly given to players starting on points 1-8. Originally, it was only possible to use these house names in events, actions and teams.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
 - `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
@@ -176,6 +174,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 
 ## Fixes / interactions with other extensions
 
+- Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.
+- Weapons fired by EMPulse superweapons *(Ares feature)* without `EMPulse.TargetSelf=true` can now create radiation.
+- Weapons fired by EMPulse superweapons *(Ares feature)* now respect `Floater` and Phobos-added `Gravity` setting.
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely.
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
