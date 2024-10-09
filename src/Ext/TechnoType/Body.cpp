@@ -449,12 +449,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 
-	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
-	this->AttachEffect_DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
-	this->AttachEffect_Delays.Read(exINI, pSection, "AttachEffect.Delays");
-	this->AttachEffect_InitialDelays.Read(exINI, pSection, "AttachEffect.InitialDelays");
-	this->AttachEffect_RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
-
 	this->BuildLimitGroup_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
 	this->BuildLimitGroup_Nums.Read(exINI, pSection, "BuildLimitGroup.Nums");
 	this->BuildLimitGroup_Factor.Read(exINI, pSection, "BuildLimitGroup.Factor");
@@ -583,6 +577,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	// Parasitic types
+	this->AttachEffects.LoadFromINI(pINI, pSection);
 
 	auto [canParse, resetValue] = PassengerDeletionTypeClass::CanParse(exINI, pSection);
 
@@ -818,11 +813,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
 
-		.Process(this->AttachEffect_AttachTypes)
-		.Process(this->AttachEffect_DurationOverrides)
-		.Process(this->AttachEffect_Delays)
-		.Process(this->AttachEffect_InitialDelays)
-		.Process(this->AttachEffect_RecreationDelays)
+		.Process(this->AttachEffects)
 
 		.Process(this->BuildLimitGroup_Types)
 		.Process(this->BuildLimitGroup_Nums)

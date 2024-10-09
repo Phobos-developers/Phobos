@@ -59,6 +59,8 @@ This page describes all the engine features that are either new and introduced b
 
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
+  - `AttachEffect.CumulativeRefreshAll` if set to true makes it so that trying to attach `Cumulative=true` effect to a target that already has `Cumulative.MaxCount` amount of effects will refresh duration of all attached effects of the same type instead of only the one with shortest remaining duration. If `AttachEffect.CumulativeRefreshAll.OnAttach` is also set to true, this refresh applies even if the target does not have maximum allowed amount of effects of same type.
+  - `AttachEffect.CumulativeRefreshSameSourceOnly` controls whether or not trying to apply `Cumulative=true` effect on target requires any existing effects of same type to come from same Warhead by same firer for them to be eligible for duration refresh.
   - Attached effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes` or `AttachEffect.RemoveGroups`.
     - `AttachEffect.CumulativeRemoveMinCounts` sets minimum number of active instaces per `RemoveTypes`/`RemoveGroups` required for `Cumulative=true` types to be removed.
     - `AttachEffect.CumulativeRemoveMaxCounts` sets maximum number of active instaces per `RemoveTypes`/`RemoveGroups` for `Cumulative=true` that are removed at once by this Warhead.
@@ -76,84 +78,87 @@ In `rulesmd.ini`:
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
 
-[SOMEATTACHEFFECT]                             ; AttachEffectType
-Duration=0                                     ; integer - game frames or negative value for indefinite duration
-Cumulative=false                               ; boolean
-Cumulative.MaxCount=-1                         ; integer
-Powered=false                                  ; boolean
-DiscardOn=none                                 ; list of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
-DiscardOn.RangeOverride=                       ; floating point value, distance in cells
-PenetratesIronCurtain=false                    ; boolean
-PenetratesForceShield=                         ; boolean
-Animation=                                     ; Animation
-Animation.ResetOnReapply=false                 ; boolean
-Animation.OfflineAction=Hides                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-Animation.TemporalAction=None                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-Animation.UseInvokerAsOwner=false              ; boolean
-Animation.HideIfAttachedWith=                  ; List of AttachEffectTypes
-CumulativeAnimations=                          ; list of animations
-CumulativeAnimations.RestartOnChange=true      ; boolean
-ExpireWeapon=                                  ; WeaponType
-ExpireWeapon.TriggerOn=expire                  ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
-ExpireWeapon.CumulativeOnlyOnce=false          ; boolean
-Tint.Color=                                    ; integer - R,G,B
-Tint.Intensity=                                ; floating point value
-Tint.VisibleToHouses=all                       ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-FirepowerMultiplier=1.0                        ; floating point value
-ArmorMultiplier=1.0                            ; floating point value
-SpeedMultiplier=1.0                            ; floating point value
-ROFMultiplier=1.0                              ; floating point value
-ROFMultiplier.ApplyOnCurrentTimer=true         ; boolean
-Cloakable=false                                ; boolean
-ForceDecloak=false                             ; boolean
-WeaponRange.Multiplier=1.0                     ; floating point value
-WeaponRange.ExtraRange=0.0                     ; floating point value
-WeaponRange.AllowWeapons=                      ; list of WeaponTypes
-WeaponRange.DisallowWeapons=                   ; list of WeaponTypes
-Crit.Multiplier=1.0                            ; floating point value
-Crit.ExtraChance=0.0                           ; floating point value
-Crit.AllowWarheads=                            ; list of WarheadTypes
-Crit.DisallowWarheads=                         ; list of WarheadTypes
-RevengeWeapon=                                 ; WeaponType
-RevengeWeapon.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-ReflectDamage=false                            ; boolean
-ReflectDamage.Warhead=                         ; WarheadType
-ReflectDamage.Warhead.Detonate=false           ; WarheadType
-ReflectDamage.Multiplier=1.0                   ; floating point value, percents or absolute
-ReflectDamage.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-DisableWeapons=false                           ; boolean
-Groups=                                        ; comma-separated list of strings (group IDs)
-
-[SOMETECHNO]                                   ; TechnoType
-AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
-AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Delays=                           ; integer - delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.InitialDelays=                    ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.RecreationDelays=                 ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
-OpenTopped.UseTransportRangeModifiers=false    ; boolean
-OpenTopped.CheckTransportDisableWeapons=false  ; boolean
-
-[SOMEWEAPON]                                   ; WeaponType
-AttachEffect.RequiredTypes=                    ; List of AttachEffectTypes
-AttachEffect.DisallowedTypes=                  ; List of AttachEffectTypes
-AttachEffect.RequiredGroups=                   ; comma-separated list of strings (group IDs)
-AttachEffect.DisallowedGroups=                 ; comma-separated list of strings (group IDs)
-AttachEffect.RequiredMinCounts=                ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.RequiredMaxCounts=                ; integer - maximum required instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.DisallowedMinCounts=              ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.DisallowedMaxCounts=              ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.IgnoreFromSameSource=false        ; boolean
-AttachEffect.CheckOnFirer=false                ; boolean
-
-[SOMEWARHEAD]
-AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
-AttachEffect.RemoveTypes=                      ; List of AttachEffectTypes
-AttachEffect.RemoveGroups=                     ; comma-separated list of strings (group IDs)
-AttachEffect.CumulativeRemoveMinCounts=        ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.CumulativeRemoveMaxCounts=        ; integer - maximum removed instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
-SuppressReflectDamage=false                    ; boolean
-SuppressReflectDamage.Types=                   ; List of AttachEffectTypes
+[SOMEATTACHEFFECT]                                 ; AttachEffectType
+Duration=0                                         ; integer - game frames or negative value for indefinite duration
+Cumulative=false                                   ; boolean
+Cumulative.MaxCount=-1                             ; integer
+Powered=false                                      ; boolean
+DiscardOn=none                                     ; list of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
+DiscardOn.RangeOverride=                           ; floating point value, distance in cells
+PenetratesIronCurtain=false                        ; boolean
+PenetratesForceShield=                             ; boolean
+Animation=                                         ; Animation
+Animation.ResetOnReapply=false                     ; boolean
+Animation.OfflineAction=Hides                      ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.TemporalAction=None                      ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.UseInvokerAsOwner=false                  ; boolean
+Animation.HideIfAttachedWith=                      ; List of AttachEffectTypes
+CumulativeAnimations=                              ; list of animations
+CumulativeAnimations.RestartOnChange=true          ; boolean
+ExpireWeapon=                                      ; WeaponType
+ExpireWeapon.TriggerOn=expire                      ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
+ExpireWeapon.CumulativeOnlyOnce=false              ; boolean
+Tint.Color=                                        ; integer - R,G,B
+Tint.Intensity=                                    ; floating point value
+Tint.VisibleToHouses=all                           ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+FirepowerMultiplier=1.0                            ; floating point value
+ArmorMultiplier=1.0                                ; floating point value
+SpeedMultiplier=1.0                                ; floating point value
+ROFMultiplier=1.0                                  ; floating point value
+ROFMultiplier.ApplyOnCurrentTimer=true             ; boolean
+Cloakable=false                                    ; boolean
+ForceDecloak=false                                 ; boolean
+WeaponRange.Multiplier=1.0                         ; floating point value
+WeaponRange.ExtraRange=0.0                         ; floating point value
+WeaponRange.AllowWeapons=                          ; list of WeaponTypes
+WeaponRange.DisallowWeapons=                       ; list of WeaponTypes
+Crit.Multiplier=1.0                                ; floating point value
+Crit.ExtraChance=0.0                               ; floating point value
+Crit.AllowWarheads=                                ; list of WarheadTypes
+Crit.DisallowWarheads=                             ; list of WarheadTypes
+RevengeWeapon=                                     ; WeaponType
+RevengeWeapon.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage=false                                ; boolean
+ReflectDamage.Warhead=                             ; WarheadType
+ReflectDamage.Warhead.Detonate=false               ; WarheadType
+ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
+ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisableWeapons=false                               ; boolean
+Groups=                                            ; comma-separated list of strings (group IDs)
+                                                   
+[SOMETECHNO]                                       ; TechnoType
+AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
+AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.Delays=                               ; integer - delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.InitialDelays=                        ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.RecreationDelays=                     ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
+OpenTopped.UseTransportRangeModifiers=false        ; boolean
+OpenTopped.CheckTransportDisableWeapons=false      ; boolean
+                                                   
+[SOMEWEAPON]                                       ; WeaponType
+AttachEffect.RequiredTypes=                        ; List of AttachEffectTypes
+AttachEffect.DisallowedTypes=                      ; List of AttachEffectTypes
+AttachEffect.RequiredGroups=                       ; comma-separated list of strings (group IDs)
+AttachEffect.DisallowedGroups=                     ; comma-separated list of strings (group IDs)
+AttachEffect.RequiredMinCounts=                    ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.RequiredMaxCounts=                    ; integer - maximum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMinCounts=                  ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMaxCounts=                  ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.IgnoreFromSameSource=false            ; boolean
+AttachEffect.CheckOnFirer=false                    ; boolean
+                                                   
+[SOMEWARHEAD]                                      
+AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
+AttachEffect.CumulativeRefreshAll=false            ; boolean
+AttachEffect.CumulativeRefreshAll.OnAttach=false   ; boolean
+AttachEffect.CumulativeRefreshSameSourceOnly=true  ; boolean
+AttachEffect.RemoveTypes=                          ; List of AttachEffectTypes
+AttachEffect.RemoveGroups=                         ; comma-separated list of strings (group IDs)
+AttachEffect.CumulativeRemoveMinCounts=            ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.CumulativeRemoveMaxCounts=            ; integer - maximum removed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+SuppressReflectDamage=false                        ; boolean
+SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
 ```
 
 ### Custom Radiation Types
