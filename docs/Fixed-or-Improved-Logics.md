@@ -171,6 +171,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them.
 - Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead.
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
+- Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
 
 ## Fixes / interactions with other extensions
 
@@ -416,6 +417,45 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
 ```
 
 ## Projectiles
+
+### Airburst & Splits
+
+- `AirburstWeapon` logic has been reimplemented and thus there are several additions & changes to it.
+- `Splits` can be set to true to use projectile splitting logic from Firestorm, with the number of split projectiles defined by `Cluster`.
+  - `RetargetAccuracy` defines the probability that the splitted projectiles head to the same target as the original projectile.
+  - `RetargetSelf` determines if it is possible for the splitted projectiles to aim at the firer of the original projectile.
+    - `RetargetSelf.Probability` is the probability that if the original firer is chosen as a target, it is kept as the target instead of rerolled to another.
+  - `Splits.TargetingDistance` is the distance in cells that any potential target has to be within from the original target coordinates to be eligible for targeting by the splitted projectiles.
+  - `Splits.TargetCellRange` is the distance in whole cells from the original target cell from which the splitted projectiles can pick new target cells if not enough TechnoType targets were found nearby.
+  - `Splits.UseWeaponTargeting`, if set to true, enables weapon targeting filter for when checking targets for splitted projectiles. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `AirburstWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
+    - Do note that this overrides checking Warhead for `AffectsAllies/Owner/Enemies` for targeting. You can use `CanTargetHouses` on `AirburstWeapon` to achieve similar behaviour, however.
+- Behaviour for if `Airburst` is set to true can also be customized.
+  - `AirburstSpread` is the distance in cells that the effect covers, with each cell in range being targeted by `AirburstWeapon` by default.
+  - `Airburst.UseCluster`, if set to true, makes it so that only number of cells in the affected area dictated by `Cluster` will be affected, instead of all of them.
+    - If `Airburst.RandomClusters` is set to true, the cells affected will be picked by random. Otherwise they will be evenly spaced (counting from center to edges of affected area).
+- `AroundTarget` controls whether or not targets for projectiles created by `Airburst` or `Splits` are checked for in area around the original projectile's intended target, or where the original projectile detonated. Defaults to value of `Splits`.
+- `AirburstWeapon.ApplyFirepowerMult` determines whether or not firepower modifiers from the firer of the original projectile are applied on the projectiles created from `AirburstWeapon`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]                         ; Projectile
+Splits=                                  ; boolean
+RetargetAccuracy=0.0                     ; floating point value, percents or absolute (0.0-1.0)
+RetargetSelf=true                        ; boolean
+RetargetSelf.Probability=0.5             ; floating point value, percents or absolute (0.0-1.0)
+Splits.TargetingDistance=5.0             ; floating point value, distance in cells
+Splits.TargetCellRange=3                 ; integer, cell offset
+Splits.UseWeaponTargeting=false          ; boolean
+AirburstSpread=1.5                       ; floating point value, distance in cells
+Airburst.UseCluster=false                ; boolean
+Airburst.RandomClusters=false            ; boolean
+AroundTarget=                            ; boolean
+AirburstWeapon.ApplyFirepowerMult=false  ; boolean
+```
+
+```{note}
+`Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and `AroundTarget`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
+```
 
 ### Cluster scatter distance customization
 
