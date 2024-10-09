@@ -564,17 +564,17 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
 
 	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
 	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-
-	if ((mission == Mission::Move)
-		&& TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->KeepTargetOnMove
-		&& pTechno->Target && !pTarget)
+	
+	if ((mission == Mission::Move) && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target && !pTarget)
 	{
-		auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
-		pTechno->SetDestination(pDestination, true);
+		if (pTechno->IsCloseEnoughToAttack(pTechno->Target))
+		{
+			auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
+			pTechno->SetDestination(pDestination, true);
+			pExt->KeepTargetOnMove = true;
 
-		pExt->KeepTargetOnMove = true;
-
-		return SkipGameCode;
+			return SkipGameCode;
+		}
 	}
 
 	pExt->KeepTargetOnMove = false;
@@ -589,16 +589,15 @@ DEFINE_HOOK(0x736480, UnitClass_AI_KeepTargetOnMove, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pTypeExt->KeepTargetOnMove && pThis->Target
-		&& pThis->CurrentMission == Mission::Move && TechnoExt::ExtMap.Find(pThis)->KeepTargetOnMove)
+	if (pExt->KeepTargetOnMove && pExt->TypeExtData->KeepTargetOnMove && pThis->Target && pThis->CurrentMission == Mission::Move)
 	{
 		int weaponIndex = pThis->SelectWeapon(pThis->Target);
 
 		if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
 		{
-			int extraDistance = static_cast<int>(pTypeExt->KeepTargetOnMove_ExtraDistance.Get());
+			int extraDistance = static_cast<int>(pExt->TypeExtData->KeepTargetOnMove_ExtraDistance.Get());
 			int range = pWeapon->Range;
 			pWeapon->Range += extraDistance; // Temporarily adjust weapon range based on the extra distance.
 
