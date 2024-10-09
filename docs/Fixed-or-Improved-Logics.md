@@ -171,6 +171,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them.
 - Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead.
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
+- Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 
 ## Fixes / interactions with other extensions
 
