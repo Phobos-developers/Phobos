@@ -505,6 +505,21 @@ DetachedReport=  ; sound entry
 
 ## Buildings
 
+### Build area customizations
+
+- There are now additional customizations available for building placement next to other buildings.
+  - `Adjacent.Allowed` lists BuildingTypes this BuildingType can be placed off (within distance defined by `Adjacent`). If empty, any BuildingType not listed in `Adjacent.Disallowed` is okay.
+  - `Adjacent.Disallowed` lists BuildingTypes this BuildingType cannot be placed next to. If empty, any BuildingTypes are okay as long as `Adjacent.Allowed` is empty or they are listed on it.
+  - If `NoBuildAreaOnBuildup` is set to true, no building can be built next to this building regardless of any other settings if it is currently displaying its buildup animation.
+  
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]              ; BuildingType
+Adjacent.Allowed=           ; list of BuildingTypes
+Adjacent.Disallowed=        ; list of BuildingTypes
+NoBuildAreaOnBuildup=false  ; boolean
+```
+
 ### Extended building upgrades
 
 ![image](_static/images/powersup.owner-01.png)

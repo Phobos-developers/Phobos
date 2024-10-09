@@ -74,6 +74,10 @@ public:
 		Nullable<double> Units_RepairPercent;
 		Valueable<bool> Units_DisableRepairCost;
 
+		Valueable<bool> NoBuildAreaOnBuildup;
+		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
+		ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -119,6 +123,9 @@ public:
 			, Units_RepairStep {}
 			, Units_RepairPercent {}
 			, Units_DisableRepairCost { false }
+			, NoBuildAreaOnBuildup { false }
+			, Adjacent_Allowed {}
+			, Adjacent_Disallowed {}
 		{ }
 
 		// Ares 0.A functions
