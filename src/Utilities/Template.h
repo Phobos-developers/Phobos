@@ -38,6 +38,7 @@
 #include <FootClass.h>
 
 #include "Savegame.h"
+#include "Interpolation.h"
 
 class INI_EX;
 
@@ -477,12 +478,6 @@ class PartialVector3D : public Vector3D<T> // Same as Vector3D except parsing on
 {
 public:
 	size_t ValueCount;
-};
-
-enum class InterpolationMode : BYTE
-{
-	None = 0,
-	Linear = 1
 };
 
 // Designates that the type can read it's value from multiple flags.
