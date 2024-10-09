@@ -48,6 +48,7 @@ This page lists all the individual contributions to the project by their author.
   - Ability to disable shadow for debris & meteor animations
   - Voxel light source position customization
   - Voxel light source position and tilting fix
+  - Warhead activation target health thresholds
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
