@@ -50,6 +50,10 @@ public:
 		Valueable<OwnerHouseKind> MakeInfantryOwner;
 		Valueable<bool> ExtraShadow;
 		ValueableIdx<VocClass> DetachedReport;
+		Valueable<AffectedHouse> VisibleTo;
+		Valueable<bool> VisibleTo_ConsiderInvokerAsOwner;
+		Valueable<bool> RestrictVisibilityIfCloaked;
+		Valueable<bool> DetachOnCloak;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -84,6 +88,10 @@ public:
 			, MakeInfantryOwner { OwnerHouseKind::Victim }
 			, ExtraShadow { true }
 			, DetachedReport {}
+			, VisibleTo { AffectedHouse::All }
+			, VisibleTo_ConsiderInvokerAsOwner { false }
+			, RestrictVisibilityIfCloaked { false }
+			, DetachOnCloak { true }
 		{ }
 
 		virtual ~ExtData() = default;

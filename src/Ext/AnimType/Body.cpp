@@ -116,6 +116,10 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->MakeInfantryOwner.Read(exINI, pID, "MakeInfantryOwner");
 	this->ExtraShadow.Read(exINI, pID, "ExtraShadow");
 	this->DetachedReport.Read(exINI, pID, "DetachedReport");
+	this->VisibleTo.Read(exINI, pID, "VisibleTo");
+	this->VisibleTo_ConsiderInvokerAsOwner.Read(exINI, pID, "VisibleTo.ConsiderInvokerAsOwner");
+	this->RestrictVisibilityIfCloaked.Read(exINI, pID, "RestrictVisibilityIfCloaked");
+	this->DetachOnCloak.Read(exINI, pID, "DetachOnCloak");
 }
 
 template <typename T>
@@ -155,6 +159,10 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MakeInfantryOwner)
 		.Process(this->ExtraShadow)
 		.Process(this->DetachedReport)
+		.Process(this->VisibleTo)
+		.Process(this->VisibleTo_ConsiderInvokerAsOwner)
+		.Process(this->RestrictVisibilityIfCloaked)
+		.Process(this->DetachOnCloak)
 		;
 }
 

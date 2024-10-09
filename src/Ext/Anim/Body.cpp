@@ -254,6 +254,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->InvokerHouse)
 		.Process(this->AttachedSystem)
 		.Process(this->ParentBuilding)
+		.Process(this->IsTechnoTrailerAnim)
 		;
 }
 

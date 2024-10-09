@@ -476,6 +476,23 @@ In `artmd.ini`:
 AttachedSystem=  ; ParticleSystem
 ```
 
+### Customizable animation visibility settings
+
+- It is now possible to customize which players can see an animation using `VisibleTo`.
+  - `VisibleTo.ConsiderInvokerAsOwner`, if set, makes it so that animation's invoker house is considered as owner for purposes of `VisibleTo` instead of owning house of TechnoType it is attached to or animation's owning house. On most animations the they are the same, but it can be different for some.
+  - Note that this is a purely visual feature, any logic attached to these animations like damage is still processed for all players.
+- `RestrictVisibilityIfCloaked`, if set to true, makes so that attached animations or aircraft `Trailer` animations (due to technical constraints, spawned missile trailers are exempt from this) on cloaked objects are only visible to observers and players who can currently detect them.
+- `DetachOnCloak` can be set to false to override vanilla game behaviour where attached animations are removed from cloaked objects.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                              ; AnimationType
+VisibleTo=all                           ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleTo.ConsiderInvokerAsOwner=false  ; boolean
+RestrictVisibilityIfCloaked=false       ; boolean
+DetachOnCloak=true                      ; boolean
+```
+
 ### Play sound as a detached sound event
 
 - It is now possible for animation to play a sound that is not attached to an audio event handler by using `DetachedReport`. By default animation `Report/StartSound` is played by an audio event handler, which allows the sound to loop and play at correct location even if it changes after its initial creation. This can also cause issues with animations that chain different types through `Next`, as the audio event handler resets when the animation restarts.
