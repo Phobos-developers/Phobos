@@ -56,6 +56,8 @@
 #include <LocomotionClass.h>
 #include <Locomotion/TestLocomotionClass.h>
 
+#include <unordered_set>
+
 namespace detail
 {
 	template <typename T, bool allocate = false>
@@ -1934,7 +1936,7 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 
 	for (; i >= 0; i--)
 	{
-		auto const value = this->KeyframeData[i];
+		auto const& value = this->KeyframeData[i];
 
 		if (percentage >= value.Percentage)
 		{
@@ -1947,7 +1949,7 @@ TValue Animatable<TValue>::Get(double const percentage) const noexcept
 	// Only interpolate if an interpolation mode is enabled and there's keyframes remaining.
 	if (this->InterpolationMode != InterpolationMode::None && i >= 0 && (size_t)(i + 1) < this->KeyframeData.size())
 	{
-		auto const value = this->KeyframeData[i + 1];
+		auto const& value = this->KeyframeData[i + 1];
 		TValue nextValue = value.Value;
 		double progressPercentage = (percentage - startPercentage) / (value.Percentage - startPercentage);
 		return detail::interpolate(match, nextValue, progressPercentage, this->InterpolationMode);
@@ -1967,7 +1969,44 @@ void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* c
 
 	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Interpolation");
 	detail::read(this->InterpolationMode, parser, pSection, flagName);
-	
+
+	// Error handling
+	bool foundError = false;
+	double lastPercentage = -DBL_MAX;
+	std::unordered_set<double> percentages;
+
+	for (size_t i = 0; i < this->KeyframeData.size(); i++)
+	{
+		auto const& value = this->KeyframeData[i];
+		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Keyframe%d");
+		_snprintf_s(flagName, sizeof(flagName), flagName, i);
+
+		if (percentages.contains(value.Percentage))
+		{
+			Debug::Log("[Developer warning] [%s] %s has duplicated keyframe %.3f.\n", pSection, flagName, value.Percentage);
+			foundError = true;
+		}
+
+		if (lastPercentage > value.Percentage)
+		{
+			Debug::Log("[Developer warning] [%s] %s has keyframe out of order (%.3f after previous value keyframe of %.3f).\n", pSection, flagName, value.Percentage, lastPercentage);
+			foundError = true;
+		}
+
+		percentages.insert(value.Percentage);
+		lastPercentage = value.Percentage;
+	}
+
+	if (foundError)
+	{
+		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "%s");
+		int len = strlen(pBaseFlag);
+
+		if (len >= 4)
+			flagName[len - 3] = '\0';
+
+		Debug::FatalErrorAndExit("[%s] %s has invalid keyframe data defined. Check debug log for more details.\n", pSection, flagName);
+	}
 };
 
 template <typename TValue>
