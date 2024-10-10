@@ -563,11 +563,8 @@ AttachedSystem=  ; ParticleSystemType
 ### Customizable animation transparency settings
 
 - `Translucency.Cloaked` can be used to override `Translucency` on animations attached to currently cloaked TechnoTypes.
-- `Translucent=true` animated transparency is now fully controllable via new keyframe settings.
-  - Keyframes are defined via `Translucent.KeyframeN.*` settings where N is zero-based keyframe index.
-  - `Translucent.KeyframeN.Value` is keyframe's transparency value.
-  - `Translucent.KeyframeN.Percentage` is the percentage through the animation's frames where the keyframes becomes active. It is also possible to instead use zero-based frame index via `Translucent.KeyframeN.Absolute` which takes precedence over percentage.
-  - `Translucent.Interpolation` controls interpolation of values between keyframes. These values are still clamped to the allowed transparency values of 0,25,50 and 75.
+- `Translucent=true` animated transparency is now fully controllable via new keyframe settings. Read more about the keyframe system [here](Miscellanous.md#keyframe-animations).
+  - If interpolation is enabled, the keyframe values are clamped to valid transparency values (0,25,50 and 75), e.g a value of 1.5 would become 0 and 56.525 would become 50 and so on.
 
 In `artmd.ini`:
 ```ini
@@ -577,10 +574,6 @@ Translucent.KeyframeN.Value=        ; integer - only accepted values are 75, 50,
 Translucent.KeyframeN.Percentage=   ; floating point value, percents or absolute
 Translucent.KeyframeN.Absolute=     ; integer, zero-based frame index
 Translucent.Interpolation=none      ; Interpolation mode (none|linear)
-```
-
-```{note}
-Keyframes are expected to be defined in ascending order with no duplicates. Failure to do so will crash the game and output developer warnings about offending keys to the log.
 ```
 
 ### Customizable animation visibility settings
