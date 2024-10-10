@@ -447,18 +447,13 @@ DEFINE_HOOK(0x4C762A, EventClass_RespondToEvent_StopAircraftAction, 0x6)
 // GreatestThreat: for all the mission that should let the aircraft auto select a target
 AbstractClass* __fastcall AircraftClass_GreatestThreat(AircraftClass* pThis, void* _, ThreatType threatType, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)
 {
-	WeaponTypeClass* const pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType;
-	WeaponTypeClass* const pSecondaryWeapon = pThis->GetWeapon(1)->WeaponType;
-
-	if (pThis->vt_entry_4C4()) // pTechno->MegaMissionIsAttackMove()
-		threatType = ThreatType::Area;
-
-	if (pSecondaryWeapon) // Vanilla (other types) secondary first
-		threatType |= pSecondaryWeapon->AllowedThreats();
-	else if (pPrimaryWeapon)
+	if (WeaponTypeClass* const pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType)
 		threatType |= pPrimaryWeapon->AllowedThreats();
 
-	return reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, ThreatType, CoordStruct*, bool)>(0x6F8DF0)(pThis, threatType, pSelectCoords, onlyTargetHouseEnemy); // TechnoClass_GreatestThreat (Prevent circular calls)
+	if (WeaponTypeClass* const pSecondaryWeapon = pThis->GetWeapon(1)->WeaponType)
+		threatType |= pSecondaryWeapon->AllowedThreats();
+
+	return reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, ThreatType, CoordStruct*, bool)>(0x4D9920)(pThis, threatType, pSelectCoords, onlyTargetHouseEnemy); // FootClass_GreatestThreat (Prevent circular calls)
 }
 DEFINE_JUMP(VTABLE, 0x7E2668, GET_OFFSET(AircraftClass_GreatestThreat))
 
