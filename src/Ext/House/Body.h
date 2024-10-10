@@ -44,9 +44,10 @@ public:
 		BuildingClass* Factory_AircraftType;
 
 		CDTimerClass AISuperWeaponDelayTimer;
+		CDTimerClass AIFireSaleDelayTimer;
 
 		//Read from INI
-		bool RepairBaseNodes[3];
+		Nullable<bool> RepairBaseNodes[3];
 
 		// FactoryPlants with Allow/DisallowTypes set.
 		std::vector<BuildingClass*> RestrictedFactoryPlants;
@@ -81,7 +82,7 @@ public:
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
 			, AISuperWeaponDelayTimer {}
-			, RepairBaseNodes { false,false,false }
+			, RepairBaseNodes { }
 			, RestrictedFactoryPlants {}
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
@@ -90,6 +91,7 @@ public:
 			, NumWarFactories_NonMFB { 0 }
 			, NumConYards_NonMFB { 0 }
 			, NumShipyards_NonMFB { 0 }
+			, AIFireSaleDelayTimer {}
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
@@ -117,7 +119,8 @@ public:
 		bool UpdateHarvesterProduction();
 	};
 
-	class ExtContainer final : public Container<HouseExt> {
+	class ExtContainer final : public Container<HouseExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

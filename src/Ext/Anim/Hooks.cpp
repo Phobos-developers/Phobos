@@ -9,10 +9,19 @@
 
 #include <Utilities/Macro.h>
 
+namespace AnimLoggingTemp
+{
+	DWORD UniqueID = 0;
+	AnimTypeClass* pType = nullptr;
+}
+
 DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 {
 	GET(AnimClass* const, pThis, ESI);
 	GET(AnimTypeClass* const, pType, EDX);
+
+	AnimLoggingTemp::UniqueID = pThis->UniqueID;
+	AnimLoggingTemp::pType = pThis->Type;
 
 	if (pType->HideIfNoOre)
 	{
@@ -138,6 +147,31 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 	}
 
 	return Continue;
+}
+
+DEFINE_HOOK(0x42465D, AnimClass_AI_NullTypeCheck, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+
+	if (!pThis->Type)
+	{
+		char buffer[28];
+
+		if (AnimLoggingTemp::UniqueID == pThis->UniqueID && AnimLoggingTemp::pType)
+			sprintf_s(buffer, sizeof(buffer), " [%s]", AnimLoggingTemp::pType->get_ID());
+		else
+			sprintf_s(buffer, sizeof(buffer), "");
+
+		auto coords = pThis->Location;
+		auto mapCoords = pThis->GetMapCoords();
+		Debug::FatalErrorAndExit("AnimClass_AI_NullTypeCheck: Animation%s has null type. Active: %d | Inert: %d | Coords: %d,%d,%d | Cell: %d,%d\n",
+			buffer, pThis->IsAlive, pThis->IsInert, coords.X, coords.Y, coords.Z, mapCoords.X, mapCoords.Y);
+	}
+
+	AnimLoggingTemp::UniqueID = 0;
+	AnimLoggingTemp::pType = nullptr;
+
+	return 0;
 }
 
 DEFINE_HOOK(0x4242E1, AnimClass_AI_TrailerAnim, 0x5)
@@ -310,6 +344,23 @@ DEFINE_HOOK(0x423365, AnimClass_DrawIt_ExtraShadow, 0x8)
 	}
 
 	return SkipExtraShadow;
+}
+
+// Apply cell lighting on UseNormalLight=no MakeInfantry anims.
+DEFINE_HOOK(0x4232BF, AnimClass_DrawIt_MakeInfantry, 0x6)
+{
+	enum { SkipGameCode = 0x4232C5 };
+
+	GET(AnimClass*, pThis, ESI);
+
+	if (pThis->Type->MakeInfantry != -1)
+	{
+		auto const pCell = pThis->GetCell();
+		R->EAX(pCell->Intensity_Normal);
+		return SkipGameCode;
+	}
+
+	return 0;
 }
 
 #pragma region AltPalette

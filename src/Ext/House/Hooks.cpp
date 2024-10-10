@@ -369,3 +369,35 @@ DEFINE_HOOK(0x500910, HouseClass_GetFactoryCount, 0x5)
 
 	return SkipGameCode;
 }
+
+// Sell all and all in.
+DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
+{
+	enum { ret = 0x4FD907 };
+
+	GET(HouseClass*, pThis, EBX);
+
+	auto const pRules = RulesExt::Global();
+
+	if (pRules->AIFireSale)
+	{
+		auto const pExt = HouseExt::ExtMap.Find(pThis);
+
+		if (pRules->AIFireSaleDelay <= 0 || !pExt ||
+			pExt->AIFireSaleDelayTimer.Completed())
+		{
+			pThis->Fire_Sale();
+		}
+		else if (!pExt->AIFireSaleDelayTimer.HasStarted())
+		{
+			pExt->AIFireSaleDelayTimer.Start(pRules->AIFireSaleDelay);
+		}
+	}
+
+	if (pRules->AIAllToHunt)
+	{
+		pThis->All_To_Hunt();
+	}
+
+	return ret;
+}

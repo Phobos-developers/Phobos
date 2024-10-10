@@ -17,11 +17,16 @@ public:
 	void AI();
 	void AI_Temporal();
 	void KillAnim();
+	void CreateAnim();
+	void UpdateCumulativeAnim();
+	void TransferCumulativeAnim(AttachEffectClass* pSource);
+	bool CanShowAnim() const;
 	void SetAnimationTunnelState(bool visible);
-	AttachEffectTypeClass* GetType() const;
+	AttachEffectTypeClass* GetType() const { return this->Type; }
+	int GetRemainingDuration() const { return this->Duration; }
 	void RefreshDuration(int durationOverride = 0);
 	bool ResetIfRecreatable();
-	bool IsSelfOwned() const;
+	bool IsSelfOwned() const { return this->Source == this->Techno; }
 	bool HasExpired() const;
 	bool AllowedToBeActive() const;
 	bool IsActive() const;
@@ -62,7 +67,6 @@ private:
 	void OnlineCheck();
 	void CloakCheck();
 	void AnimCheck();
-	void CreateAnim();
 
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
 		HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, int durationOverride = 0, int delay = 0, int initialDelay = 0, int recreationDelay = -1);
@@ -93,7 +97,8 @@ private:
 	bool NeedsDurationRefresh;
 
 public:
-	bool IsFirstCumulativeInstance;
+	bool HasCumulativeAnim;
+	bool ShouldBeDiscarded;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.
@@ -109,6 +114,7 @@ struct AttachEffectTechnoProperties
 	bool HasRangeModifier;
 	bool HasTint;
 	bool ReflectDamage;
+	bool HasOnFireDiscardables;
 
 	AttachEffectTechnoProperties() :
 		FirepowerMultiplier { 1.0 }
@@ -121,5 +127,6 @@ struct AttachEffectTechnoProperties
 		, HasRangeModifier { false }
 		, HasTint { false }
 		, ReflectDamage { false }
-	{}
+		, HasOnFireDiscardables { false }
+	{ }
 };

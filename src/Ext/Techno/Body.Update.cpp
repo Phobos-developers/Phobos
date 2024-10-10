@@ -445,8 +445,6 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	auto const rtti = pOldType->WhatAmI();
-
 	// Remove from limbo reloaders if no longer applicable
 	if (pOldType->Ammo > 0 && pOldTypeExt->ReloadInTransport && !this->TypeExtData->ReloadInTransport)
 	{
@@ -604,68 +602,67 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 
 	if (pThis->Health && healthDeficit > 0)
 	{
-		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		auto defaultSelfHealType = SelfHealGainType::NoHeal;
+
+		if (pThis->WhatAmI() == AbstractType::Infantry || (pThis->WhatAmI() == AbstractType::Unit && pThis->GetTechnoType()->Organic))
+			defaultSelfHealType = SelfHealGainType::Infantry;
+		else if (pThis->WhatAmI() == AbstractType::Unit)
+			defaultSelfHealType = SelfHealGainType::Units;
+
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto selfHealType = pTypeExt->SelfHealGainType.Get(defaultSelfHealType);
+
+		if (selfHealType == SelfHealGainType::NoHeal)
+			return;
+
+		bool applyHeal = false;
+		int amount = 0;
+
+		if (selfHealType == SelfHealGainType::Infantry)
 		{
-			bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
-			bool isOrganic = pThis->WhatAmI() == AbstractType::Infantry || pThis->WhatAmI() == AbstractType::Unit && pThis->GetTechnoType()->Organic;
-			auto defaultSelfHealType = isBuilding ? SelfHealGainType::None : isOrganic ? SelfHealGainType::Infantry : SelfHealGainType::Units;
-			auto selfHealType = pExt->SelfHealGainType.Get(defaultSelfHealType);
+			int count = RulesExt::Global()->InfantryGainSelfHealCap.isset() ?
+				std::min(std::max(RulesExt::Global()->InfantryGainSelfHealCap.Get(), 1), pThis->Owner->InfantrySelfHeal) :
+				pThis->Owner->InfantrySelfHeal;
 
-			if (selfHealType == SelfHealGainType::None)
-				return;
+			amount = RulesClass::Instance->SelfHealInfantryAmount * count;
 
-			bool applyHeal = false;
-			int amount = 0;
+			if (!(Unsorted::CurrentFrame % RulesClass::Instance->SelfHealInfantryFrames) && amount)
+				applyHeal = true;
+		}
+		else
+		{
+			int count = RulesExt::Global()->UnitsGainSelfHealCap.isset() ?
+				std::min(std::max(RulesExt::Global()->UnitsGainSelfHealCap.Get(), 1), pThis->Owner->UnitsSelfHeal) :
+				pThis->Owner->UnitsSelfHeal;
 
-			if (selfHealType == SelfHealGainType::Infantry)
+			amount = RulesClass::Instance->SelfHealUnitAmount * count;
+
+			if (!(Unsorted::CurrentFrame % RulesClass::Instance->SelfHealUnitFrames) && amount)
+				applyHeal = true;
+		}
+
+		if (applyHeal && amount)
+		{
+			if (amount >= healthDeficit)
+				amount = healthDeficit;
+
+			bool wasDamaged = pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+
+			pThis->Health += amount;
+
+			if (wasDamaged && (pThis->GetHealthPercentage() > RulesClass::Instance->ConditionYellow
+				|| pThis->GetHeight() < -10))
 			{
-				int count = RulesExt::Global()->InfantryGainSelfHealCap.isset() ?
-					std::min(std::max(RulesExt::Global()->InfantryGainSelfHealCap.Get(), 1), pThis->Owner->InfantrySelfHeal) :
-					pThis->Owner->InfantrySelfHeal;
-
-				amount = RulesClass::Instance->SelfHealInfantryAmount * count;
-
-				if (!(Unsorted::CurrentFrame % RulesClass::Instance->SelfHealInfantryFrames) && amount)
-					applyHeal = true;
-			}
-			else
-			{
-				int count = RulesExt::Global()->UnitsGainSelfHealCap.isset() ?
-					std::min(std::max(RulesExt::Global()->UnitsGainSelfHealCap.Get(), 1), pThis->Owner->UnitsSelfHeal) :
-					pThis->Owner->UnitsSelfHeal;
-
-				amount = RulesClass::Instance->SelfHealUnitAmount * count;
-
-				if (!(Unsorted::CurrentFrame % RulesClass::Instance->SelfHealUnitFrames) && amount)
-					applyHeal = true;
-			}
-
-			if (applyHeal && amount)
-			{
-				if (amount >= healthDeficit)
-					amount = healthDeficit;
-
-				bool wasDamaged = pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
-
-				pThis->Health += amount;
-
-				if (wasDamaged && (pThis->GetHealthPercentage() > RulesClass::Instance->ConditionYellow
-					|| pThis->GetHeight() < -10))
+				if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
 				{
-					if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
-					{
-						pBuilding->Mark(MarkType::Change);
-						pBuilding->ToggleDamagedAnims(false);
-					}
-
-					if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Building)
-					{
-						auto dmgParticle = pThis->DamageParticleSystem;
-
-						if (dmgParticle)
-							dmgParticle->UnInit();
-					}
+					pBuilding->Mark(MarkType::Change);
+					pBuilding->ToggleDamagedAnims(false);
 				}
+
+				auto dmgParticle = pThis->DamageParticleSystem;
+
+				if (dmgParticle)
+					dmgParticle->UnInit();
 			}
 		}
 	}
@@ -840,7 +837,8 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			if (pType->HasTint())
 				markForRedraw = true;
 
-			this->UpdateCumulativeAttachEffects(attachEffect->GetType());
+			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
+				this->UpdateCumulativeAttachEffects(attachEffect->GetType(), attachEffect);
 
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
@@ -953,31 +951,45 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 		pThis->MarkForRedraw();
 }
 
-// Updates state of AttachEffects of same cumulative type on techno, (which one is first active instance existing, if any), kills animations if needed.
-void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType)
+// Updates CumulativeAnimations AE's on techno.
+void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved)
 {
-	if (!pAttachEffectType || !pAttachEffectType->Cumulative)
-		return;
-
-	bool foundFirst = false;
+	AttachEffectClass* pAELargestDuration = nullptr;
+	AttachEffectClass* pAEWithAnim = nullptr;
+	int duration = 0;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
-		if (attachEffect->GetType() != pAttachEffectType || !attachEffect->IsActive())
+		if (attachEffect->GetType() != pAttachEffectType)
 			continue;
 
-		if (!foundFirst)
+		if (attachEffect->HasCumulativeAnim)
 		{
-			foundFirst = true;
-			attachEffect->IsFirstCumulativeInstance = true;
+			pAEWithAnim = attachEffect.get();
 		}
-		else
+		else if (attachEffect->CanShowAnim())
 		{
-			attachEffect->IsFirstCumulativeInstance = false;
-		}
+			int currentDuration = attachEffect->GetRemainingDuration();
 
-		if (pAttachEffectType->CumulativeAnimations.size() > 0)
-			attachEffect->KillAnim();
+			if (currentDuration < 0 || currentDuration > duration)
+			{
+				pAELargestDuration = attachEffect.get();
+				duration = currentDuration;
+			}
+		}
+	}
+
+	if (pAEWithAnim)
+	{
+		pAEWithAnim->UpdateCumulativeAnim();
+
+		if (pRemoved == pAEWithAnim)
+		{
+			pAEWithAnim->HasCumulativeAnim = false;
+
+			if (pAELargestDuration)
+				pAELargestDuration->TransferCumulativeAnim(pAEWithAnim);
+		}
 	}
 }
 
@@ -996,6 +1008,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool hasRangeModifier = false;
 	bool hasTint = false;
 	bool reflectsDamage = false;
+	bool hasOnFireDiscardables = false;
 
 	for (const auto& attachEffect : this->AttachedEffects)
 	{
@@ -1013,6 +1026,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
+		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
 	}
 
 	this->AE.FirepowerMultiplier = firepower;
@@ -1025,6 +1039,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	this->AE.HasRangeModifier = hasRangeModifier;
 	this->AE.HasTint = hasTint;
 	this->AE.ReflectDamage = reflectsDamage;
+	this->AE.HasOnFireDiscardables = hasOnFireDiscardables;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);

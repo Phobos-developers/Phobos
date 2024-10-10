@@ -312,7 +312,7 @@ public:
 			, Splashed { false }
 			, Reflected { false }
 			, RemainingAnimCreationInterval { 0 }
-			, PossibleCellSpreadDetonate {false}
+			, PossibleCellSpreadDetonate { false }
 			, DamageAreaTarget {}
 		{ }
 

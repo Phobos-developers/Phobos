@@ -111,14 +111,16 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		}
 
 
+		Point2D point;
+		{
 			CoordStruct offset = pTypeExt->PlacementPreview_Offset;
 			int nHeight = offset.Z + pCell->GetFloorHeight({ 0, 0 });
-			Point2D nPoint = TacticalClass::Instance->CoordsToClient(
-				CellClass::Cell2Coord(pCell->MapCoords, nHeight)
-			).first;
-			nPoint.X += offset.X;
-			nPoint.Y += offset.Y;
+			CoordStruct coords = CellClass::Cell2Coord(pCell->MapCoords, nHeight);
 
+			point = TacticalClass::Instance->CoordsToClient(coords).first;
+			point.X += offset.X;
+			point.Y += offset.Y;
+		}
 
 		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRules->PlacementPreview_Translucency) |
 			BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
@@ -128,10 +130,10 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 			: pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
 
 		DSurface* pSurface = DSurface::Temp;
-		RectangleStruct nRect = pSurface->GetRect();
-		nRect.Height -= 32; // account for bottom bar
+		RectangleStruct rect = pSurface->GetRect();
+		rect.Height -= 32; // account for bottom bar
 
-		CC_Draw_Shape(pSurface, pPalette, pImage, nImageFrame, &nPoint, &nRect, blitFlags,
+		CC_Draw_Shape(pSurface, pPalette, pImage, nImageFrame, &point, &rect, blitFlags,
 			0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 

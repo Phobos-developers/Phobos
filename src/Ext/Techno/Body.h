@@ -87,7 +87,7 @@ public:
 			, OriginalPassengerOwner {}
 			, HasRemainingWarpInDelay { false }
 			, LastWarpInDelay { 0 }
-			, IsBeingChronoSphered { false}
+			, IsBeingChronoSphered { false }
 		{ }
 
 		void OnEarlyUpdate();
@@ -102,7 +102,7 @@ public:
 		void UpdateTypeData(TechnoTypeClass* currentType);
 		void UpdateLaserTrails();
 		void UpdateAttachEffects();
-		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType);
+		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
 		void RecalculateStatMultipliers();
 		void UpdateTemporal();
 		void UpdateMindControlAnim();
