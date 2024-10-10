@@ -568,6 +568,7 @@ AttachedSystem=  ; ParticleSystemType
   - `Translucent.KeyframeN.Value` is keyframe's transparency value.
   - `Translucent.KeyframeN.Percentage` is the percentage through the animation's frames where the keyframes becomes active. It is also possible to instead use zero-based frame index via `Translucent.KeyframeN.Absolute` which takes precedence over percentage.
   - Keyframes should be listed in ascending order with no duplicate percentages / frames across different keyframes. Failure to do so can produce unpredictable results.
+  - `Translucent.Interpolation` controls interpolation of values between keyframes. These values are still clamped to the allowed transparency values of 0,25,50 and 75.
 
 In `artmd.ini`:
 ```ini
@@ -576,6 +577,7 @@ Translucency.Cloaked=               ; integer - only accepted values are 75, 50,
 Translucent.KeyframeN.Value=        ; integer - only accepted values are 75, 50, 25 and 0.
 Translucent.KeyframeN.Percentage=   ; floating point value, percents or absolute
 Translucent.KeyframeN.Absolute=     ; integer, zero-based frame index
+Translucent.Interpolation=none      ; Interpolation mode (none|linear)
 ```
 
 ### Customizable animation visibility settings

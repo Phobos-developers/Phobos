@@ -381,3 +381,9 @@ public:
 		return false;
 	}
 };
+
+enum class InterpolationMode : BYTE
+{
+	None = 0,
+	Linear = 1
+};

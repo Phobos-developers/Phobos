@@ -124,10 +124,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Crater_DestroyTiberium.Read(exINI, pID, "Crater.DestroyTiberium");
 
 	if (this->OwnerObject()->Translucent)
-	{
 		this->Translucent_Keyframes.Read(exINI, pID, "Translucent.%s", this->OwnerObject()->End);
-		this->Translucent_Keyframes.InterpolationMode = InterpolationMode::None;
-	}
 
 	// Parasitic types
 	Nullable<TechnoTypeClass*> createUnit;

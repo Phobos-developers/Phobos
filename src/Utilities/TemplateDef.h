@@ -40,6 +40,7 @@
 #include "Enum.h"
 #include "Constructs.h"
 #include "SavegameDef.h"
+#include "Interpolation.h"
 
 #include <InfantryTypeClass.h>
 #include <AircraftTypeClass.h>
@@ -955,7 +956,6 @@ namespace detail
 	{
 		return value.Read(parser, pSection, pKey);
 	}
-
 
 	template <>
 	inline bool read<IronCurtainEffect>(IronCurtainEffect& value, INI_EX& parser, const char* pSection, const char* pKey)
