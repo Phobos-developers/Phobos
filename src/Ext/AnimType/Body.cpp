@@ -118,10 +118,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->TheaterPalette.Read(exINI, pID, "TheaterPalette");
 
 	if (this->OwnerObject()->Translucent)
-	{
 		this->Translucent_Keyframes.Read(exINI, pID, "Translucent.%s", this->OwnerObject()->End);
-		this->Translucent_Keyframes.InterpolationMode = InterpolationMode::None;
-	}
 
 	// Parasitic types
 	Nullable<TechnoTypeClass*> createUnit;
