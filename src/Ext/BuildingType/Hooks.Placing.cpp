@@ -688,10 +688,6 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 					}
 					while (false);
 				}
-				else if (pHouseExt->CurrentBuildingTopLeft == CellStruct::Empty)
-				{
-					BuildOnOccupiersHelpers::Mouse = true;
-				}
 
 				pHouseExt->CurrentBuildingType = nullptr;
 				pHouseExt->CurrentBuildingTimes = 0;
