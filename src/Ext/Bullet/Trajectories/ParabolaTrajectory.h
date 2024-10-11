@@ -60,7 +60,7 @@ public:
 	Valueable<double> BounceAttenuation;
 	Valueable<double> BounceCoefficient;
 	Valueable<CoordStruct> OffsetCoord;
-	Valueable<int> RotateCoord;
+	Valueable<double> RotateCoord;
 	Valueable<bool> MirrorCoord;
 	Valueable<bool> UseDisperseBurst;
 	Valueable<CoordStruct> AxisOfRotation;
