@@ -1068,7 +1068,11 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 				//The bombard trajectory bullets without NoLaunch=true can change the velocity.
 				if (!pTrajType->NoLaunch && pTrajType->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
+				{
+					pTrajectory->CurrentBurst = curBurst;
+					pTrajectory->CountOfBurst = maxBurst;
 					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
+				}
 			}*/
 /*			else if (flag == TrajectoryFlag::Parabola) // TODO If merge #1374
 			{
