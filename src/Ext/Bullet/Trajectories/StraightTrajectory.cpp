@@ -188,7 +188,7 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 	if (pType->PassDetonate)
 		this->PassWithDetonateAt(pBullet, pOwner);
 
-	if (this->ProximityImpact != 0 && static_cast<Leptons>(pType->ProximityRadius) > 0)
+	if (this->ProximityImpact != 0 && pType->ProximityRadius.Get() > 0)
 		this->PrepareForDetonateAt(pBullet, pOwner);
 
 	if (pType->Trajectory_Speed < 256.0 && pType->ConfineAtHeight > 0 && this->PassAndConfineAtHeight(pBullet, pType->Trajectory_Speed))
@@ -698,7 +698,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 			distance = (distance > 1e-10) ? sqrt(distanceCrd.CrossProduct(terminalCrd).MagnitudeSquared() / distance) : distanceCrd.Magnitude();
 
-			if (technoType != AbstractType::Building && distance > static_cast<Leptons>(pType->ProximityRadius))
+			if (technoType != AbstractType::Building && distance > pType->ProximityRadius.Get())
 				continue;
 
 			if (thisSize >= vectSize)
@@ -716,7 +716,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	if (pType->ProximityFlight)
 	{
 		AircraftTrackerClass* const airTracker = &AircraftTrackerClass::Instance.get();
-		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5), static_cast<int>((static_cast<Leptons>(pType->ProximityRadius) + pType->Trajectory_Speed / 2) / Unsorted::LeptonsPerCell));
+		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5), static_cast<int>((pType->ProximityRadius.Get() + pType->Trajectory_Speed / 2) / Unsorted::LeptonsPerCell));
 
 		for (TechnoClass* pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
@@ -740,7 +740,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 			distance = (distance > 1e-10) ? sqrt(distanceCrd.CrossProduct(terminalCrd).MagnitudeSquared() / distance) : distanceCrd.Magnitude();
 
-			if (distance > static_cast<Leptons>(pType->ProximityRadius))
+			if (distance > pType->ProximityRadius.Get())
 				continue;
 
 			if (thisSize >= vectSize)
@@ -877,7 +877,7 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClas
 {
 	//Seems like the y-axis is reversed, but it's okay.
 	const CoordStruct walkCoord { static_cast<int>(pBullet->Velocity.X), static_cast<int>(pBullet->Velocity.Y), 0 };
-	const double sideMult = static_cast<Leptons>(this->Type->ProximityRadius) / walkCoord.Magnitude();
+	const double sideMult = this->Type->ProximityRadius.Get() / walkCoord.Magnitude();
 
 	const CoordStruct cor1Coord { static_cast<int>(walkCoord.Y * sideMult), static_cast<int>((-walkCoord.X) * sideMult), 0 };
 	const CoordStruct cor4Coord { static_cast<int>((-walkCoord.Y) * sideMult), static_cast<int>(walkCoord.X * sideMult), 0 };
