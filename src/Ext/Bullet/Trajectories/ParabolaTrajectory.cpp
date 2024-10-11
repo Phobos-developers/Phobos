@@ -287,7 +287,7 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 
 			if (pType->MirrorCoord)
 			{
-				if (pBullet->Owner && pBullet->Owner->CurrentBurstIndex % 2 == 1)
+				if (this->CurrentBurst % 2 == 1)
 					rotationAxis *= -1;
 
 				extraRotate = Math::Pi * (pType->RotateCoord * ((this->CurrentBurst / 2) / (this->CountOfBurst - 1.0) - 0.5)) / 180;
