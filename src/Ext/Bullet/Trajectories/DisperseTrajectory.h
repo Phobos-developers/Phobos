@@ -158,4 +158,5 @@ private:
 	bool PrepareDisperseWeapon(BulletClass* pBullet, HouseClass* pOwner);
 	std::vector<TechnoClass*> GetValidTechnosInSame(std::vector<TechnoClass*> technos, TechnoClass* pFirer, HouseClass* pOwner, WeaponTypeClass* pWeapon, AbstractClass* pTarget);
 	void CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst);
+	void DisperseBurstSubstitution(BulletClass* pBullet, CoordStruct axis, int rotateCoord, int curBurst, int maxBurst, bool mirror);
 };

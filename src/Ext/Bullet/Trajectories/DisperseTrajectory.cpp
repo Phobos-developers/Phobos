@@ -1041,34 +1041,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 				//The created bullet's velocity calculation has been completed, so we should stack the calculations.
 				if (!pTrajType->UniqueCurve && pTrajectory->PreAimCoord != CoordStruct::Empty && pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
-				{
-					const CoordStruct createBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
-					const double rotateAngle = Math::atan2(createBulletTargetToSource.Y , createBulletTargetToSource.X);
-					const CoordStruct axis = pTrajType->AxisOfRotation;
-
-					BulletVelocity rotationAxis
-					{
-						axis.X * Math::cos(rotateAngle) + axis.Y * Math::sin(rotateAngle),
-						axis.X * Math::sin(rotateAngle) - axis.Y * Math::cos(rotateAngle),
-						static_cast<double>(axis.Z)
-					};
-
-					double extraRotate = 0.0;
-
-					if (pTrajType->MirrorCoord)
-					{
-						if (curBurst % 2 == 1)
-							rotationAxis *= -1;
-
-						extraRotate = Math::Pi * (pTrajType->RotateCoord * ((curBurst / 2) / (maxBurst - 1.0) - 0.5)) / 180;
-					}
-					else
-					{
-						extraRotate = Math::Pi * (pTrajType->RotateCoord * (curBurst / (maxBurst - 1.0) - 0.5)) / 180;
-					}
-
-					pCreateBullet->Velocity = this->RotateAboutTheAxis(pCreateBullet->Velocity, rotationAxis, extraRotate);
-				}
+					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->MirrorCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 			}
 /*			else if (flag == TrajectoryFlag::Straight) // TODO If merge #1294
 			{
@@ -1085,32 +1058,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				}
 				else if (pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
 				{
-					const CoordStruct createBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
-					const double rotateAngle = Math::atan2(createBulletTargetToSource.Y , createBulletTargetToSource.X);
-					const CoordStruct axis = pTrajType->AxisOfRotation;
-
-					BulletVelocity rotationAxis
-					{
-						axis.X * Math::cos(rotateAngle) + axis.Y * Math::sin(rotateAngle),
-						axis.X * Math::sin(rotateAngle) - axis.Y * Math::cos(rotateAngle),
-						static_cast<double>(axis.Z)
-					};
-
-					double extraRotate = 0.0;
-
-					if (pTrajType->MirrorCoord)
-					{
-						if (curBurst % 2 == 1)
-							rotationAxis *= -1;
-
-						extraRotate = Math::Pi * (pTrajType->RotateCoord * ((curBurst / 2) / (maxBurst - 1.0) - 0.5)) / 180;
-					}
-					else
-					{
-						extraRotate = Math::Pi * (pTrajType->RotateCoord * (curBurst / (maxBurst - 1.0) - 0.5)) / 180;
-					}
-
-					pCreateBullet->Velocity = this->RotateAboutTheAxis(pCreateBullet->Velocity, rotationAxis, extraRotate);
+					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->MirrorCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 				}
 			}*/
 /*			else if (flag == TrajectoryFlag::Bombard) // TODO If merge #????
@@ -1120,34 +1068,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 				//The bombard trajectory bullets without NoLaunch=true can change the velocity.
 				if (!pTrajType->NoLaunch && pTrajType->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
-				{
-					const CoordStruct createBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
-					const double rotateAngle = Math::atan2(createBulletTargetToSource.Y , createBulletTargetToSource.X);
-					const CoordStruct axis = pTrajType->AxisOfRotation;
-
-					BulletVelocity rotationAxis
-					{
-						axis.X * Math::cos(rotateAngle) + axis.Y * Math::sin(rotateAngle),
-						axis.X * Math::sin(rotateAngle) - axis.Y * Math::cos(rotateAngle),
-						static_cast<double>(axis.Z)
-					};
-
-					double extraRotate = 0.0;
-
-					if (pTrajType->MirrorCoord)
-					{
-						if (curBurst % 2 == 1)
-							rotationAxis *= -1;
-
-						extraRotate = Math::Pi * (pTrajType->RotateCoord * ((curBurst / 2) / (maxBurst - 1.0) - 0.5)) / 180;
-					}
-					else
-					{
-						extraRotate = Math::Pi * (pTrajType->RotateCoord * (curBurst / (maxBurst - 1.0) - 0.5)) / 180;
-					}
-
-					pCreateBullet->Velocity = this->RotateAboutTheAxis(pCreateBullet->Velocity, rotationAxis, extraRotate);
-				}
+					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->MirrorCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 			}*/
 /*			else if (flag == TrajectoryFlag::Parabola) // TODO If merge #1374
 			{
@@ -1163,32 +1084,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				}
 				else if (pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
 				{
-					const CoordStruct createBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
-					const double rotateAngle = Math::atan2(createBulletTargetToSource.Y , createBulletTargetToSource.X);
-					const CoordStruct axis = pTrajType->AxisOfRotation;
-
-					BulletVelocity rotationAxis
-					{
-						axis.X * Math::cos(rotateAngle) + axis.Y * Math::sin(rotateAngle),
-						axis.X * Math::sin(rotateAngle) - axis.Y * Math::cos(rotateAngle),
-						static_cast<double>(axis.Z)
-					};
-
-					double extraRotate = 0.0;
-
-					if (pTrajType->MirrorCoord)
-					{
-						if (curBurst % 2 == 1)
-							rotationAxis *= -1;
-
-						extraRotate = Math::Pi * (pTrajType->RotateCoord * ((curBurst / 2) / (maxBurst - 1.0) - 0.5)) / 180;
-					}
-					else
-					{
-						extraRotate = Math::Pi * (pTrajType->RotateCoord * (curBurst / (maxBurst - 1.0) - 0.5)) / 180;
-					}
-
-					pCreateBullet->Velocity = this->RotateAboutTheAxis(pCreateBullet->Velocity, rotationAxis, extraRotate);
+					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->MirrorCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 				}
 			}*/
 		}
@@ -1299,4 +1195,33 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 	if (ParticleSystemTypeClass* const pPSType = pWeapon->AttachedParticleSystem)
 		GameCreate<ParticleSystemClass>(pPSType, pBullet->Location, pTarget, pBullet->Owner, pTarget->GetCoords(), pOwner);
+}
+
+void DisperseTrajectory::DisperseBurstSubstitution(BulletClass* pBullet, CoordStruct axis, int rotateCoord, int curBurst, int maxBurst, bool mirror)
+{
+	const CoordStruct createBulletTargetToSource = pBullet->TargetCoords - pBullet->SourceCoords;
+	const double rotateAngle = Math::atan2(createBulletTargetToSource.Y , createBulletTargetToSource.X);
+
+	BulletVelocity rotationAxis
+	{
+		axis.X * Math::cos(rotateAngle) + axis.Y * Math::sin(rotateAngle),
+		axis.X * Math::sin(rotateAngle) - axis.Y * Math::cos(rotateAngle),
+		static_cast<double>(axis.Z)
+	};
+
+	double extraRotate = 0.0;
+
+	if (mirror)
+	{
+		if (curBurst % 2 == 1)
+			rotationAxis *= -1;
+
+		extraRotate = Math::Pi * (rotateCoord * ((curBurst / 2) / (maxBurst - 1.0) - 0.5)) / 180;
+	}
+	else
+	{
+		extraRotate = Math::Pi * (rotateCoord * (curBurst / (maxBurst - 1.0) - 0.5)) / 180;
+	}
+
+	pBullet->Velocity = this->RotateAboutTheAxis(pBullet->Velocity, rotationAxis, extraRotate);
 }
