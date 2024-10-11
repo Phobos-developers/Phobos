@@ -806,10 +806,12 @@ double ParabolaTrajectory::SolveFixedSpeedMeetTime(CoordStruct* pSourceCrd, Coor
 		const double timeP = (-factor + sqrt(delta)) / divisor;
 		const double timeM = (-factor - sqrt(delta)) / divisor;
 
-		if (timeM > 1e-10)
+		if (timeM > 1e-10 && timeP > 1e-10)
+			return timeM < timeP ? timeM : timeP;
+		else if (timeM > 1e-10)
 			return timeM;
-
-		return timeP;
+		else if (timeP > 1e-10)
+			return timeP;
 	}
 
 	return -1.0;
