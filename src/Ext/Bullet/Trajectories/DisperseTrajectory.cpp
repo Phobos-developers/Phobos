@@ -1,5 +1,6 @@
 #include "DisperseTrajectory.h"
 // #include "StraightTrajectory.h" // TODO If merge #1294
+// #include "BombardTrajectory.h" // TODO If merge #????
 // #include "ParabolaTrajectory.h" // TODO If merge #1374
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
@@ -335,7 +336,7 @@ void DisperseTrajectory::InitializeBulletNotCurve(BulletClass* pBullet, bool fac
 
 		if (pType->MirrorCoord)
 		{
-			if (pFirer && pFirer->CurrentBurstIndex % 2 == 1)
+			if (this->CurrentBurst % 2 == 1)
 				rotationAxis *= -1;
 
 			extraRotate = Math::Pi * (pType->RotateCoord * ((this->CurrentBurst / 2) / (pBullet->WeaponType->Burst - 1.0) - 0.5)) / 180;
@@ -1083,6 +1084,42 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					pTrajectory->UseDisperseBurst = false;
 				}
 				else if (pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
+				{
+					const CoordStruct createBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
+					const double rotateAngle = Math::atan2(createBulletTargetToSource.Y , createBulletTargetToSource.X);
+					const CoordStruct axis = pTrajType->AxisOfRotation;
+
+					BulletVelocity rotationAxis
+					{
+						axis.X * Math::cos(rotateAngle) + axis.Y * Math::sin(rotateAngle),
+						axis.X * Math::sin(rotateAngle) - axis.Y * Math::cos(rotateAngle),
+						static_cast<double>(axis.Z)
+					};
+
+					double extraRotate = 0.0;
+
+					if (pTrajType->MirrorCoord)
+					{
+						if (curBurst % 2 == 1)
+							rotationAxis *= -1;
+
+						extraRotate = Math::Pi * (pTrajType->RotateCoord * ((curBurst / 2) / (maxBurst - 1.0) - 0.5)) / 180;
+					}
+					else
+					{
+						extraRotate = Math::Pi * (pTrajType->RotateCoord * (curBurst / (maxBurst - 1.0) - 0.5)) / 180;
+					}
+
+					pCreateBullet->Velocity = this->RotateAboutTheAxis(pCreateBullet->Velocity, rotationAxis, extraRotate);
+				}
+			}*/
+/*			else if (flag == TrajectoryFlag::Bombard) // TODO If merge #????
+			{
+				BombardTrajectory* const pTrajectory = static_cast<BombardTrajectory*>(pBulletExt->Trajectory.get());
+				const BombardTrajectoryType* const pTrajType = pTrajectory->Type;
+
+				//The bombard trajectory bullets without NoLaunch=true can change the velocity.
+				if (!pTrajType->NoLaunch && pTrajType->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
 				{
 					const CoordStruct createBulletTargetToSource = pCreateBullet->TargetCoords - pCreateBullet->SourceCoords;
 					const double rotateAngle = Math::atan2(createBulletTargetToSource.Y , createBulletTargetToSource.X);
