@@ -226,12 +226,12 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 
 	const DisperseTrajectoryType* const pType = this->Type;
 
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < (pType->UniqueCurve ? 154 : static_cast<Leptons>(pType->TargetSnapDistance)))
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < (pType->UniqueCurve ? 154 : pType->TargetSnapDistance.Get()))
 		return true;
 
 	HouseClass* const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 
-	if (pType->WeaponCount != 0 && (!static_cast<Leptons>(pType->WeaponScope) || pBullet->TargetCoords.DistanceFrom(pBullet->Location) <= static_cast<Leptons>(pType->WeaponScope)) && (!pOwner || this->PrepareDisperseWeapon(pBullet, pOwner)))
+	if (pType->WeaponCount != 0 && (!pType->WeaponScope.Get() || pBullet->TargetCoords.DistanceFrom(pBullet->Location) <= pType->WeaponScope.Get()) && (!pOwner || this->PrepareDisperseWeapon(pBullet, pOwner)))
 		return true;
 
 	if (pType->UniqueCurve ? this->CurveVelocityChange(pBullet) : this->NotCurveVelocityChange(pBullet, pOwner))
@@ -246,14 +246,14 @@ void DisperseTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 	const CoordStruct coords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;
 	const DisperseTrajectoryType* const pType = this->Type;
 
-	if (coords.DistanceFrom(pBullet->Location) <= static_cast<Leptons>(pType->TargetSnapDistance))
+	if (coords.DistanceFrom(pBullet->Location) <= pType->TargetSnapDistance.Get())
 	{
 		auto const pExt = BulletExt::ExtMap.Find(pBullet);
 		pExt->SnappedToTarget = true;
 		pBullet->SetLocation(coords);
 	}
 
-	if (static_cast<Leptons>(pType->WeaponScope) < 0 && pType->WeaponCount != 0)
+	if (pType->WeaponScope.Get() < 0 && pType->WeaponCount != 0)
 	{
 		HouseClass* const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 		this->WeaponTimer.StartTime = 0;
