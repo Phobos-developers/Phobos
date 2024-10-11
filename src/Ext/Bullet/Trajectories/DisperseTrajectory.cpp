@@ -1066,11 +1066,12 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				BombardTrajectory* const pTrajectory = static_cast<BombardTrajectory*>(pBulletExt->Trajectory.get());
 				const BombardTrajectoryType* const pTrajType = pTrajectory->Type;
 
-				//The bombard trajectory bullets without NoLaunch=true can change the velocity.
-				if (!pTrajType->NoLaunch && pTrajType->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
+				//The bombard trajectory bullets without NoLaunch and FreeFallOnTarget can change the velocity.
+				if (!(pTrajType->NoLaunch && pTrajType->FreeFallOnTarget) && pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
 				{
 					pTrajectory->CurrentBurst = curBurst;
 					pTrajectory->CountOfBurst = maxBurst;
+					pTrajectory->UseDisperseBurst = false;
 					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 				}
 			}*/
