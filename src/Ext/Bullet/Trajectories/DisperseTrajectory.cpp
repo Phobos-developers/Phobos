@@ -1041,7 +1041,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 				//The created bullet's velocity calculation has been completed, so we should stack the calculations.
 				if (!pTrajType->UniqueCurve && pTrajectory->PreAimCoord != CoordStruct::Empty && pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
-					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->MirrorCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
+					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 			}
 /*			else if (flag == TrajectoryFlag::Straight) // TODO If merge #1294
 			{
@@ -1058,7 +1058,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				}
 				else if (pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
 				{
-					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->MirrorCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
+					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 				}
 			}*/
 /*			else if (flag == TrajectoryFlag::Bombard) // TODO If merge #????
@@ -1068,7 +1068,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 				//The bombard trajectory bullets without NoLaunch=true can change the velocity.
 				if (!pTrajType->NoLaunch && pTrajType->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
-					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->MirrorCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
+					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 			}*/
 /*			else if (flag == TrajectoryFlag::Parabola) // TODO If merge #1374
 			{
@@ -1084,7 +1084,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				}
 				else if (pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
 				{
-					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->MirrorCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
+					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 				}
 			}*/
 		}
@@ -1197,7 +1197,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 		GameCreate<ParticleSystemClass>(pPSType, pBullet->Location, pTarget, pBullet->Owner, pTarget->GetCoords(), pOwner);
 }
 
-void DisperseTrajectory::DisperseBurstSubstitution(BulletClass* pBullet, CoordStruct axis, int rotateCoord, int curBurst, int maxBurst, bool mirror)
+void DisperseTrajectory::DisperseBurstSubstitution(BulletClass* pBullet, CoordStruct axis, double rotateCoord, int curBurst, int maxBurst, bool mirror)
 {
 	const CoordStruct createBulletTargetToSource = pBullet->TargetCoords - pBullet->SourceCoords;
 	const double rotateAngle = Math::atan2(createBulletTargetToSource.Y , createBulletTargetToSource.X);
