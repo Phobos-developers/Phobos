@@ -132,7 +132,7 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	FootClass* const pTarget = abstract_cast<FootClass*>(pBullet->Target);
 	bool resetTarget = false;
 
-	if (static_cast<Leptons>(pType->DetonationDistance) <= -1e-10 && pTarget)
+	if (pType->DetonationDistance.Get() <= -1e-10 && pTarget)
 	{
 		if (CellClass* const pCell = MapClass::Instance->TryGetCellAt(pTarget->GetCoords()))
 		{
@@ -1088,7 +1088,7 @@ bool ParabolaTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 		}
 	}
 
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < static_cast<Leptons>(pType->DetonationDistance))
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < pType->DetonationDistance.Get())
 		return true;
 
 	return false;
