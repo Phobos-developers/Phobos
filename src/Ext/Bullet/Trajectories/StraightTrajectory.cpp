@@ -171,12 +171,12 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	if (!pType->LeadTimeCalculate || !abstract_cast<FootClass*>(pBullet->Target))
 		this->PrepareForOpenFire(pBullet);
 	else
-		this->WaitOneFrame.Start(1);
+		this->WaitOneFrame = 2;
 }
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (this->WaitOneFrame.IsTicking() && this->BulletPrepareCheck(pBullet))
+	if (this->WaitOneFrame && this->BulletPrepareCheck(pBullet))
 		return false;
 
 	HouseClass* const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
@@ -440,11 +440,22 @@ bool StraightTrajectory::CalculateBulletVelocity(BulletClass* pBullet, double st
 
 bool StraightTrajectory::BulletPrepareCheck(BulletClass* pBullet)
 {
-	if (this->WaitOneFrame.HasTimeLeft())
-		return true;
+	// The time between bullets' Unlimbo() and Update() is completely uncertain.
+	// Technos will update its location after firing, which may result in inaccurate
+	// target position recorded by the LastTargetCoord in Unlimbo(). Therefore, it's
+	// necessary to record the position during the first Update(). - CrimRecya
+	if (this->WaitOneFrame == 2)
+	{
+		if (const AbstractClass* const pTarget = pBullet->Target)
+		{
+			this->LastTargetCoord = pTarget->GetCoords();
+			this->WaitOneFrame = 1;
+			return true;
+		}
+	}
 
+	this->WaitOneFrame = 0;
 	this->PrepareForOpenFire(pBullet);
-	this->WaitOneFrame.Stop();
 
 	return false;
 }

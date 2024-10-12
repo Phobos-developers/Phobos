@@ -97,7 +97,7 @@ public:
 		, LastTargetCoord {}
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
-		, WaitOneFrame {}
+		, WaitOneFrame { 0 }
 	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -130,7 +130,7 @@ public:
 	CoordStruct LastTargetCoord;
 	int CurrentBurst;
 	int CountOfBurst;
-	CDTimerClass WaitOneFrame;
+	int WaitOneFrame;
 
 private:
 	template <typename T>
