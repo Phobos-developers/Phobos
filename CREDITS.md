@@ -243,6 +243,14 @@ This page lists all the individual contributions to the project by their author.
   - Forbidding parallel AI queues for specific TechnoTypes
   - Nonprovocative Warheads
   - Customizing effect of level lighting on air units
+  - Reimplemented `Airburst` & `Splits` logic with more customization options
+  - Buildings considered as destroyable pathfinding obstacles
+  - Animation visibility customization settings
+  - Light effect customizations
+  - Building unit repair customizations
+  - Build area customizations
+  - `Scorch` / `Flamer` fire animation customization
+  - EM Pulse cannon logic improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -383,7 +391,6 @@ This page lists all the individual contributions to the project by their author.
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
-- **Ollerus** - Enhance bombard trajectory with vertical & meteor trajectory
 - **Chasheen (Chasheenburg)** - CN docs help
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation

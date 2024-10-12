@@ -11,6 +11,7 @@ public:
 		, FallPercentShift { 0.0 }
 		, FallScatter_Max { Leptons(0) }
 		, FallScatter_Min { Leptons(0) }
+		, FallScatter_Linear { false }
 		, FallSpeed { 0.0 }
 		, DetonationDistance { Leptons(102) }
 		, DetonationHeight { -1 }
@@ -40,6 +41,7 @@ public:
 	Valueable<double> FallPercentShift;
 	Valueable<Leptons> FallScatter_Max;
 	Valueable<Leptons> FallScatter_Min;
+	Valueable<bool> FallScatter_Linear;
 	Valueable<double> FallSpeed;
 	Valueable<Leptons> DetonationDistance;
 	Valueable<int> DetonationHeight;

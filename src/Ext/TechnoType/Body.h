@@ -213,11 +213,7 @@ public:
 		Valueable<WeaponTypeClass*> RevengeWeapon;
 		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 
-		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
-		ValueableVector<int> AttachEffect_DurationOverrides;
-		ValueableVector<int> AttachEffect_Delays;
-		ValueableVector<int> AttachEffect_InitialDelays;
-		NullableVector<int> AttachEffect_RecreationDelays;
+		AEAttachInfoTypeClass AttachEffects;
 
 		ValueableVector<TechnoTypeClass*> BuildLimitGroup_Types;
 		ValueableVector<int> BuildLimitGroup_Nums;
@@ -442,11 +438,7 @@ public:
 			, RevengeWeapon {}
 			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 
-			, AttachEffect_AttachTypes {}
-			, AttachEffect_DurationOverrides {}
-			, AttachEffect_Delays {}
-			, AttachEffect_InitialDelays {}
-			, AttachEffect_RecreationDelays {}
+			, AttachEffects {}
 
 			, BuildLimitGroup_Types {}
 			, BuildLimitGroup_Nums {}

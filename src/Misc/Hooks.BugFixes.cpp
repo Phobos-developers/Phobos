@@ -968,3 +968,21 @@ DEFINE_HOOK(0x5B11DD, MechLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
 }
 
 DEFINE_JUMP(LJMP, 0x517FF5, 0x518016); // Warhead with InfDeath=9 versus infantry in air
+
+// Fixes docks not repairing docked aircraft unless they enter the dock first e.g just built ones.
+// Also potential edge cases with unusual docking offsets, original had a distance check for 64 leptons which is replaced with IsInAir here.
+DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
+{
+	enum { AssignRepairMission = 0x449942 };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET(TechnoClass*, pLink, EDI);
+
+	if (pThis->Type->UnitReload && pLink->WhatAmI() == AbstractType::Aircraft && !pLink->IsInAir()
+		&& pThis->SendCommand(RadioCommand::QueryMoving, pLink) == RadioCommand::AnswerPositive)
+	{
+		return AssignRepairMission;
+	}
+
+	return 0;
+}

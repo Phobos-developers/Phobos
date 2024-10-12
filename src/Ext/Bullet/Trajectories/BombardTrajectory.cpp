@@ -20,6 +20,7 @@ void BombardTrajectoryType::Serialize(T& Stm)
 		.Process(this->FallPercentShift)
 		.Process(this->FallScatter_Max)
 		.Process(this->FallScatter_Min)
+		.Process(this->FallScatter_Linear)
 		.Process(this->FallSpeed)
 		.Process(this->DetonationDistance)
 		.Process(this->DetonationHeight)
@@ -61,6 +62,7 @@ void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->FallPercentShift.Read(exINI, pSection, "Trajectory.Bombard.FallPercentShift");
 	this->FallScatter_Max.Read(exINI, pSection, "Trajectory.Bombard.FallScatter.Max");
 	this->FallScatter_Min.Read(exINI, pSection, "Trajectory.Bombard.FallScatter.Min");
+	this->FallScatter_Linear.Read(exINI, pSection, "Trajectory.Bombard.FallScatter.Linear");
 	this->FallSpeed.Read(exINI, pSection, "Trajectory.Bombard.FallSpeed");
 
 	if (abs(this->FallSpeed.Get()) < 1e-10)
@@ -246,15 +248,35 @@ void BombardTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 CoordStruct BombardTrajectory::CalculateMiddleCoords(BulletClass* pBullet)
 {
 	const BombardTrajectoryType* const pType = this->Type;
-	const double angel = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
 	const double length = ScenarioClass::Instance->Random.RandomRanged(pType->FallScatter_Min.Get(), pType->FallScatter_Max.Get());
-	const int scatterX = static_cast<int>(length * Math::cos(angel));
-	const int scatterY = static_cast<int>(length * Math::sin(angel));
+	const double vectorX = (pBullet->TargetCoords.X - pBullet->SourceCoords.X) * this->FallPercent;
+	const double vectorY = (pBullet->TargetCoords.Y - pBullet->SourceCoords.Y) * this->FallPercent;
+	double scatterX = 0.0;
+	double scatterY = 0.0;
+
+	if (!pType->FallScatter_Linear)
+	{
+		const double angel = ScenarioClass::Instance->Random.RandomDouble() * Math::TwoPi;
+		scatterX = length * Math::cos(angel);
+		scatterY = length * Math::sin(angel);
+	}
+	else
+	{
+		const double vectorModule = sqrt(vectorX * vectorX + vectorY * vectorY);
+		scatterX = vectorY / vectorModule * length;
+		scatterY = -(vectorX / vectorModule * length);
+
+		if (ScenarioClass::Instance->Random.RandomRanged(0, 1))
+		{
+			scatterX = -scatterX;
+			scatterY = -scatterY;
+		}
+	}
 
 	return CoordStruct
 	{
-		pBullet->SourceCoords.X + static_cast<int>((pBullet->TargetCoords.X - pBullet->SourceCoords.X) * this->FallPercent) + scatterX,
-		pBullet->SourceCoords.Y + static_cast<int>((pBullet->TargetCoords.Y - pBullet->SourceCoords.Y) * this->FallPercent) + scatterY,
+		pBullet->SourceCoords.X + static_cast<int>(vectorX + scatterX),
+		pBullet->SourceCoords.Y + static_cast<int>(vectorY + scatterY),
 		static_cast<int>(this->Height)
 	};
 }

@@ -437,7 +437,7 @@ void ShieldClass::AI()
 		if (GeneralUtils::HasHealthRatioThresholdChanged(LastTechnoHealthRatio, ratio))
 			UpdateIdleAnim();
 
-		if (!this->Cloak && !this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
+		if (!this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
 			this->CreateAnim();
 	}
 
@@ -457,7 +457,7 @@ void ShieldClass::CloakCheck()
 	const auto cloakState = this->Techno->CloakState;
 	this->Cloak = cloakState == CloakState::Cloaked || cloakState == CloakState::Cloaking;
 
-	if (this->Cloak)
+	if (this->Cloak && this->IdleAnim && AnimTypeExt::ExtMap.Find(this->IdleAnim->Type)->DetachOnCloak)
 		this->KillAnim();
 }
 
@@ -771,6 +771,9 @@ void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool res
 void ShieldClass::CreateAnim()
 {
 	auto idleAnimType = this->GetIdleAnimType();
+
+	if (this->Cloak && (!idleAnimType || AnimTypeExt::ExtMap.Find(idleAnimType)->DetachOnCloak))
+		return;
 
 	if (!this->IdleAnim && idleAnimType)
 	{

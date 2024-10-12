@@ -33,7 +33,11 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 
 		if (pTypeExt->Convert_Pairs.size() > 0)
 			pTypeExt->ApplyTypeConversion(pSW);
+
+		if (static_cast<int>(pSW->Type->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
+			pTypeExt->HandleEMPulseLaunch(pSW, cell);
 	}
+
 }
 
 // ====================================================
@@ -229,31 +233,31 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 {
 	// SW.Next proper launching mechanic
 	auto LaunchTheSW = [=](const int swIdxToLaunch)
-	{
-		HouseClass* pHouse = pSW->Owner;
-		if (const auto pSuper = pHouse->Supers.GetItem(swIdxToLaunch))
 		{
-			const auto pNextTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
-			if (!this->SW_Next_RealLaunch ||
-				(pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
+			HouseClass* pHouse = pSW->Owner;
+			if (const auto pSuper = pHouse->Supers.GetItem(swIdxToLaunch))
 			{
-				if (this->SW_Next_IgnoreInhibitors || !pNextTypeExt->HasInhibitor(pHouse, cell)
-					&& (this->SW_Next_IgnoreDesignators || pNextTypeExt->HasDesignator(pHouse, cell)))
+				const auto pNextTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+				if (!this->SW_Next_RealLaunch ||
+					(pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
 				{
-					int oldstart = pSuper->RechargeTimer.StartTime;
-					int oldleft = pSuper->RechargeTimer.TimeLeft;
-					pSuper->SetReadiness(true);
-					pSuper->Launch(cell, pHouse->IsCurrentPlayer());
-					pSuper->Reset();
-					if (!this->SW_Next_RealLaunch)
+					if (this->SW_Next_IgnoreInhibitors || !pNextTypeExt->HasInhibitor(pHouse, cell)
+						&& (this->SW_Next_IgnoreDesignators || pNextTypeExt->HasDesignator(pHouse, cell)))
 					{
-						pSuper->RechargeTimer.StartTime = oldstart;
-						pSuper->RechargeTimer.TimeLeft = oldleft;
+						int oldstart = pSuper->RechargeTimer.StartTime;
+						int oldleft = pSuper->RechargeTimer.TimeLeft;
+						pSuper->SetReadiness(true);
+						pSuper->Launch(cell, pHouse->IsCurrentPlayer());
+						pSuper->Reset();
+						if (!this->SW_Next_RealLaunch)
+						{
+							pSuper->RechargeTimer.StartTime = oldstart;
+							pSuper->RechargeTimer.TimeLeft = oldleft;
+						}
 					}
 				}
 			}
-		}
-	};
+		};
 
 	// random mode
 	if (this->SW_Next_RandomWeightsData.size())
@@ -277,4 +281,55 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 
 	for (const auto pTargetFoot : *FootClass::Array)
 		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
+}
+
+void SWTypeExt::ExtData::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) const
+{
+	auto const& pBuildings = this->GetEMPulseCannons(pSW->Owner, cell);
+	auto const count = this->SW_MaxCount >= 0 ? static_cast<size_t>(this->SW_MaxCount) : std::numeric_limits<size_t>::max();
+
+	for (size_t i = 0; i < pBuildings.size(); i++)
+	{
+		auto const pBuilding = pBuildings[i];
+		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
+		pExt->EMPulseSW = pSW;
+
+		if (i + 1 == count)
+			break;
+	}
+
+	if (this->EMPulse_SuspendOthers)
+	{
+		auto const pHouseExt = HouseExt::ExtMap.Find(pSW->Owner);
+
+		for (auto const& pSuper : pSW->Owner->Supers)
+		{
+			if (static_cast<int>(pSuper->Type->Type) != 28 || pSuper == pSW)
+				continue;
+
+			auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
+			bool suspend = false;
+
+			if (this->EMPulse_Cannons.empty() && pTypeExt->EMPulse_Cannons.empty())
+			{
+				suspend = true;
+			}
+			else
+			{
+				// Suspend if the two cannon lists share common items.
+				suspend = std::find_first_of(this->EMPulse_Cannons.begin(), this->EMPulse_Cannons.end(),
+					pTypeExt->EMPulse_Cannons.begin(), pTypeExt->EMPulse_Cannons.end()) != this->EMPulse_Cannons.end();
+			}
+
+			if (suspend)
+			{
+				pSuper->IsSuspended = true;
+
+				if (pHouseExt->SuspendedEMPulseSWs.count(pSW))
+					pHouseExt->SuspendedEMPulseSWs[pSW].push_back(pSuper);
+				else
+					pHouseExt->SuspendedEMPulseSWs.insert({ pSW, std::vector<SuperClass*>{pSuper} });
+			}
+		}
+	}
 }

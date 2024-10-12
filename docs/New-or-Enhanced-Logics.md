@@ -8,7 +8,7 @@ This page describes all the engine features that are either new and introduced b
 
 - Similar (but not identical) to Ares' AttachEffect, but with some differences and new features. The largest difference is that here attached effects are explicitly defined types.
   - `Duration` determines how long the effect lasts for. It can be overriden by `DurationOverrides` on TechnoTypes and Warheads.
-  - `Cumulative`, if set to true, allows the same type of effect to be applied on same object multiple times, up to `Cumulative.MaxCount` number or with no limit if `Cumulative.MaxCount` is a negative number.
+  - `Cumulative`, if set to true, allows the same type of effect to be applied on same object multiple times, up to `Cumulative.MaxCount` number or with no limit if `Cumulative.MaxCount` is a negative number. If the target already has `Cumulative.MaxCount` number of the same effect applied on it, trying to attach another will refresh duration of the attached instance with shortest remaining duration.
   - `Powered` controls whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power. What happens to animation is controlled by `Animation.OfflineAction`.
   - `DiscardOn` accepts a list of values corresponding to conditions where the attached effect should be discarded. Defaults to `none`, meaning it is never discarded.
     - `entry`: Discard on exiting the map when entering transports or buildings etc.
@@ -17,6 +17,7 @@ This page describes all the engine features that are either new and introduced b
     - `drain`: Discard when the object is being affected by a weapon with `DrainWeapon=true`.
     - `inrange`: Discard if within weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `outofrange`: Discard if outside weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
+    - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
     - `PenetratesForceShield` can be used to set this separately for Force Shielded objects, defaults to value of `PenetratesIronCurtain`.
   - `Animation` defines animation to play in an indefinite loop for as long as the effect is active on the object it is attached to.
@@ -58,6 +59,8 @@ This page describes all the engine features that are either new and introduced b
 
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
+  - `AttachEffect.CumulativeRefreshAll` if set to true makes it so that trying to attach `Cumulative=true` effect to a target that already has `Cumulative.MaxCount` amount of effects will refresh duration of all attached effects of the same type instead of only the one with shortest remaining duration. If `AttachEffect.CumulativeRefreshAll.OnAttach` is also set to true, this refresh applies even if the target does not have maximum allowed amount of effects of same type.
+  - `AttachEffect.CumulativeRefreshSameSourceOnly` controls whether or not trying to apply `Cumulative=true` effect on target requires any existing effects of same type to come from same Warhead by same firer for them to be eligible for duration refresh.
   - Attached effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes` or `AttachEffect.RemoveGroups`.
     - `AttachEffect.CumulativeRemoveMinCounts` sets minimum number of active instaces per `RemoveTypes`/`RemoveGroups` required for `Cumulative=true` types to be removed.
     - `AttachEffect.CumulativeRemoveMaxCounts` sets maximum number of active instaces per `RemoveTypes`/`RemoveGroups` for `Cumulative=true` that are removed at once by this Warhead.
@@ -75,84 +78,87 @@ In `rulesmd.ini`:
 [AttachEffectTypes]
 0=SOMEATTACHEFFECT
 
-[SOMEATTACHEFFECT]                             ; AttachEffectType
-Duration=0                                     ; integer - game frames or negative value for indefinite duration
-Cumulative=false                               ; boolean
-Cumulative.MaxCount=-1                         ; integer
-Powered=false                                  ; boolean
-DiscardOn=none                                 ; list of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
-DiscardOn.RangeOverride=                       ; floating point value, distance in cells
-PenetratesIronCurtain=false                    ; boolean
-PenetratesForceShield=                         ; boolean
-Animation=                                     ; Animation
-Animation.ResetOnReapply=false                 ; boolean
-Animation.OfflineAction=Hides                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-Animation.TemporalAction=None                  ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-Animation.UseInvokerAsOwner=false              ; boolean
-Animation.HideIfAttachedWith=                  ; List of AttachEffectTypes
-CumulativeAnimations=                          ; list of animations
-CumulativeAnimations.RestartOnChange=true      ; boolean
-ExpireWeapon=                                  ; WeaponType
-ExpireWeapon.TriggerOn=expire                  ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
-ExpireWeapon.CumulativeOnlyOnce=false          ; boolean
-Tint.Color=                                    ; integer - R,G,B
-Tint.Intensity=                                ; floating point value
-Tint.VisibleToHouses=all                       ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-FirepowerMultiplier=1.0                        ; floating point value
-ArmorMultiplier=1.0                            ; floating point value
-SpeedMultiplier=1.0                            ; floating point value
-ROFMultiplier=1.0                              ; floating point value
-ROFMultiplier.ApplyOnCurrentTimer=true         ; boolean
-Cloakable=false                                ; boolean
-ForceDecloak=false                             ; boolean
-WeaponRange.Multiplier=1.0                     ; floating point value
-WeaponRange.ExtraRange=0.0                     ; floating point value
-WeaponRange.AllowWeapons=                      ; list of WeaponTypes
-WeaponRange.DisallowWeapons=                   ; list of WeaponTypes
-Crit.Multiplier=1.0                            ; floating point value
-Crit.ExtraChance=0.0                           ; floating point value
-Crit.AllowWarheads=                            ; list of WarheadTypes
-Crit.DisallowWarheads=                         ; list of WarheadTypes
-RevengeWeapon=                                 ; WeaponType
-RevengeWeapon.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-ReflectDamage=false                            ; boolean
-ReflectDamage.Warhead=                         ; WarheadType
-ReflectDamage.Warhead.Detonate=false           ; WarheadType
-ReflectDamage.Multiplier=1.0                   ; floating point value, percents or absolute
-ReflectDamage.AffectsHouses=all                ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-DisableWeapons=false                           ; boolean
-Groups=                                        ; comma-separated list of strings (group IDs)
-
-[SOMETECHNO]                                   ; TechnoType
-AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
-AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.Delays=                           ; integer - delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.InitialDelays=                    ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
-AttachEffect.RecreationDelays=                 ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
-OpenTopped.UseTransportRangeModifiers=false    ; boolean
-OpenTopped.CheckTransportDisableWeapons=false  ; boolean
-
-[SOMEWEAPON]                                   ; WeaponType
-AttachEffect.RequiredTypes=                    ; List of AttachEffectTypes
-AttachEffect.DisallowedTypes=                  ; List of AttachEffectTypes
-AttachEffect.RequiredGroups=                   ; comma-separated list of strings (group IDs)
-AttachEffect.DisallowedGroups=                 ; comma-separated list of strings (group IDs)
-AttachEffect.RequiredMinCounts=                ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.RequiredMaxCounts=                ; integer - maximum required instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.DisallowedMinCounts=              ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.DisallowedMaxCounts=              ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.IgnoreFromSameSource=false        ; boolean
-AttachEffect.CheckOnFirer=false                ; boolean
-
-[SOMEWARHEAD]
-AttachEffect.AttachTypes=                      ; List of AttachEffectTypes
-AttachEffect.RemoveTypes=                      ; List of AttachEffectTypes
-AttachEffect.RemoveGroups=                     ; comma-separated list of strings (group IDs)
-AttachEffect.CumulativeRemoveMinCounts=        ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.CumulativeRemoveMaxCounts=        ; integer - maximum removed instance count (comma-separated) for cumulative types in order from first to last.
-AttachEffect.DurationOverrides=                ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
-SuppressReflectDamage=false                    ; boolean
-SuppressReflectDamage.Types=                   ; List of AttachEffectTypes
+[SOMEATTACHEFFECT]                                 ; AttachEffectType
+Duration=0                                         ; integer - game frames or negative value for indefinite duration
+Cumulative=false                                   ; boolean
+Cumulative.MaxCount=-1                             ; integer
+Powered=false                                      ; boolean
+DiscardOn=none                                     ; list of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
+DiscardOn.RangeOverride=                           ; floating point value, distance in cells
+PenetratesIronCurtain=false                        ; boolean
+PenetratesForceShield=                             ; boolean
+Animation=                                         ; Animation
+Animation.ResetOnReapply=false                     ; boolean
+Animation.OfflineAction=Hides                      ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.TemporalAction=None                      ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
+Animation.UseInvokerAsOwner=false                  ; boolean
+Animation.HideIfAttachedWith=                      ; List of AttachEffectTypes
+CumulativeAnimations=                              ; list of animations
+CumulativeAnimations.RestartOnChange=true          ; boolean
+ExpireWeapon=                                      ; WeaponType
+ExpireWeapon.TriggerOn=expire                      ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
+ExpireWeapon.CumulativeOnlyOnce=false              ; boolean
+Tint.Color=                                        ; integer - R,G,B
+Tint.Intensity=                                    ; floating point value
+Tint.VisibleToHouses=all                           ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+FirepowerMultiplier=1.0                            ; floating point value
+ArmorMultiplier=1.0                                ; floating point value
+SpeedMultiplier=1.0                                ; floating point value
+ROFMultiplier=1.0                                  ; floating point value
+ROFMultiplier.ApplyOnCurrentTimer=true             ; boolean
+Cloakable=false                                    ; boolean
+ForceDecloak=false                                 ; boolean
+WeaponRange.Multiplier=1.0                         ; floating point value
+WeaponRange.ExtraRange=0.0                         ; floating point value
+WeaponRange.AllowWeapons=                          ; list of WeaponTypes
+WeaponRange.DisallowWeapons=                       ; list of WeaponTypes
+Crit.Multiplier=1.0                                ; floating point value
+Crit.ExtraChance=0.0                               ; floating point value
+Crit.AllowWarheads=                                ; list of WarheadTypes
+Crit.DisallowWarheads=                             ; list of WarheadTypes
+RevengeWeapon=                                     ; WeaponType
+RevengeWeapon.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage=false                                ; boolean
+ReflectDamage.Warhead=                             ; WarheadType
+ReflectDamage.Warhead.Detonate=false               ; WarheadType
+ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
+ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisableWeapons=false                               ; boolean
+Groups=                                            ; comma-separated list of strings (group IDs)
+                                                   
+[SOMETECHNO]                                       ; TechnoType
+AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
+AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.Delays=                               ; integer - delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.InitialDelays=                        ; integer - initial delays (comma-separated) for AttachTypes in order from first to last.
+AttachEffect.RecreationDelays=                     ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
+OpenTopped.UseTransportRangeModifiers=false        ; boolean
+OpenTopped.CheckTransportDisableWeapons=false      ; boolean
+                                                   
+[SOMEWEAPON]                                       ; WeaponType
+AttachEffect.RequiredTypes=                        ; List of AttachEffectTypes
+AttachEffect.DisallowedTypes=                      ; List of AttachEffectTypes
+AttachEffect.RequiredGroups=                       ; comma-separated list of strings (group IDs)
+AttachEffect.DisallowedGroups=                     ; comma-separated list of strings (group IDs)
+AttachEffect.RequiredMinCounts=                    ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.RequiredMaxCounts=                    ; integer - maximum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMinCounts=                  ; integer - minimum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DisallowedMaxCounts=                  ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.IgnoreFromSameSource=false            ; boolean
+AttachEffect.CheckOnFirer=false                    ; boolean
+                                                   
+[SOMEWARHEAD]                                      
+AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
+AttachEffect.CumulativeRefreshAll=false            ; boolean
+AttachEffect.CumulativeRefreshAll.OnAttach=false   ; boolean
+AttachEffect.CumulativeRefreshSameSourceOnly=true  ; boolean
+AttachEffect.RemoveTypes=                          ; List of AttachEffectTypes
+AttachEffect.RemoveGroups=                         ; comma-separated list of strings (group IDs)
+AttachEffect.CumulativeRemoveMinCounts=            ; integer - minimum required instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.CumulativeRemoveMaxCounts=            ; integer - maximum removed instance count (comma-separated) for cumulative types in order from first to last.
+AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
+SuppressReflectDamage=false                        ; boolean
+SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
 ```
 
 ### Custom Radiation Types
@@ -470,6 +476,23 @@ In `artmd.ini`:
 AttachedSystem=  ; ParticleSystem
 ```
 
+### Customizable animation visibility settings
+
+- It is now possible to customize which players can see an animation using `VisibleTo`.
+  - `VisibleTo.ConsiderInvokerAsOwner`, if set, makes it so that animation's invoker house is considered as owner for purposes of `VisibleTo` instead of owning house of TechnoType it is attached to or animation's owning house. On most animations the they are the same, but it can be different for some.
+  - Note that this is a purely visual feature, any logic attached to these animations like damage is still processed for all players.
+- `RestrictVisibilityIfCloaked`, if set to true, makes so that attached animations or aircraft `Trailer` animations (due to technical constraints, spawned missile trailers are exempt from this) on cloaked objects are only visible to observers and players who can currently detect them.
+- `DetachOnCloak` can be set to false to override vanilla game behaviour where attached animations are removed from cloaked objects.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                              ; AnimationType
+VisibleTo=all                           ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleTo.ConsiderInvokerAsOwner=false  ; boolean
+RestrictVisibilityIfCloaked=false       ; boolean
+DetachOnCloak=true                      ; boolean
+```
+
 ### Play sound as a detached sound event
 
 - It is now possible for animation to play a sound that is not attached to an audio event handler by using `DetachedReport`. By default animation `Report/StartSound` is played by an audio event handler, which allows the sound to loop and play at correct location even if it changes after its initial creation. This can also cause issues with animations that chain different types through `Next`, as the audio event handler resets when the animation restarts.
@@ -481,6 +504,21 @@ DetachedReport=  ; sound entry
 ```
 
 ## Buildings
+
+### Build area customizations
+
+- There are now additional customizations available for building placement next to other buildings.
+  - `Adjacent.Allowed` lists BuildingTypes this BuildingType can be placed off (within distance defined by `Adjacent`). If empty, any BuildingType not listed in `Adjacent.Disallowed` is okay.
+  - `Adjacent.Disallowed` lists BuildingTypes this BuildingType cannot be placed next to. If empty, any BuildingTypes are okay as long as `Adjacent.Allowed` is empty or they are listed on it.
+  - If `NoBuildAreaOnBuildup` is set to true, no building can be built next to this building regardless of any other settings if it is currently displaying its buildup animation.
+  
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]              ; BuildingType
+Adjacent.Allowed=           ; list of BuildingTypes
+Adjacent.Disallowed=        ; list of BuildingTypes
+NoBuildAreaOnBuildup=false  ; boolean
+```
 
 ### Extended building upgrades
 
@@ -500,6 +538,17 @@ In `rulesmd.ini`:
 [UPGRADENAME]       ; BuildingType
 PowersUp.Owner=Self ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PowersUp.Buildings= ; list of BuildingTypes
+```
+
+### Destroyable pathfinding obstacles
+
+- It is possible to make buildings be considered pathfinding obstacles that can be destroyed by setting `IsDestroyableBlockage` to true. What this does is make the building be considered impassable and impenetrable pathfinding obstacle to every unit that is not flying or have appropriate `MovementZone` (ones that allow destroyable obstacles to be overcome, e.g `(Infantry|Amphibious)Destroyer`) akin to wall overlays and TerrainTypes.
+  - Keep in mind that if an unit has appropriate `MovementZone` but no means to actually destroy an obstacle (such as a weapon that can fire and deal damage at them), they will get stuck trying to go through them instead of pathing around.
+  
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]               ; BuildingType
+IsDestroyableObstacle=false  ; boolean
 ```
 
 ### Power plant enhancer
@@ -699,7 +748,7 @@ Trajectory.Straight.PassThrough=false          ; boolean
   - `Trajectory.Bombard.Height` controls the height of the turning point.
   - `Trajectory.Bombard.FallPercent` controls the distance of the turning point by its percentage of the total distance between attacker and intended target. If set to 0%, then it'll fly up vertically. If set to 100%, then it'll travel to the top of the intended target.
     - For each launch the turning point percentage could add or minus a random value, which is not greater than `Trajectory.Bombard.FallPercentShift`. If set to 0%, random shift will be disabled.
-    - You can also makes the turning point scatter randomly in a circle with `Trajectory.Bombard.FallScatter.Max` as its radius. If set to 0, random scatter will be disabled. `Trajectory.Bombard.FallScatter.Min` can be used to determine the minimum radius of the circle.
+    - You can also makes the turning point scatter randomly in a circle with `Trajectory.Bombard.FallScatter.Max` as its radius. If set to 0, random scatter will be disabled. `Trajectory.Bombard.FallScatter.Min` can be used to determine the minimum radius of the circle. If `Trajectory.Bombard.FallScatter.Linear` set to true, the random scatter will be limited to the line that is vertical to the original direction of the projectile.
   - `Trajectory.Bombard.FreeFallOnTarget` controls how it'll hit the intended target. If set to true, the projectile will be respawned above the intended target and free fall. If set to false, the projectile will travel to the intended target from the turning point.
   - `Trajectory.Bombard.NoLaunch` controls whether the attacker will fire the projectile by itself. If set to true, projectile will directly fall from the turning point.
   - `Trajectory.Bombard.FallSpeed` controls the initial speed of the projectile after it turns. If set to 0.0, then it'll use `Trajectory.Speed`. Can't work when `Trajectory.Bombard.FreeFallOnTarget` set to true.
@@ -725,6 +774,7 @@ Trajectory.Bombard.FallPercent=1.0            ; double
 Trajectory.Bombard.FallPercentShift=0.0       ; double
 Trajectory.Bombard.FallScatter.Max=0.0        ; floating point value
 Trajectory.Bombard.FallScatter.Min=0.0        ; floating point value
+Trajectory.Bombard.FallScatter.Linear=false   ; boolean
 Trajectory.Bombard.FreeFallOnTarget=true      ; boolean
 Trajectory.Bombard.NoLaunch=false             ; boolean
 Trajectory.Bombard.FallSpeed=0.0              ; double
@@ -835,6 +885,24 @@ ConvertN.AffectedHouses=owner   ; list of Affected House Enumeration (none|owner
 Convert.From=                   ; list of TechnoTypes
 Convert.To=                     ; TechnoType
 Convert.AffectedHouses=owner    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+### EMPulse settings
+
+- It is possible to customize which weapon a building with `EMPulseCannon=true` fires when an associated `Type=EMPulse` superweapon (**only** if `EMPulse.TargetSelf=false` or omitted) is fired by setting `EMPulse.WeaponIndex`.
+  - Note that if you fire another `Type=EMPulse` superweapon with different weapon index that the same building is capable of launching before the first weapon was fired, the latter superweapon's settings will take precedence.
+  - Additionally, due to technical limitations the targeting constraints will always default to primary weapon's `Range/MinimumRange` unless `SW.RangeMinimum/SW.RangeMaximum` are explicitly set.
+- Is is now also possible to have all other `Type=EMPulse` superweapons that can be fired by same buildings as current one be put on hold until first of the buildings currently set to fire goes off if the firing superweapon has `EMPulse.SuspendOthers=true`.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                     ; SuperWeapon
+EMPulse.WeaponIndex=0        ; integer, weapon slot index
+EMPulse.SuspendOthers=false  ; boolean
+```
+
+```{note}
+`Type=EMPulse` superweapon and any associated keys are [Ares features](https://ares-developers.github.io/Ares-docs/new/superweapons/types/empulse.html).
 ```
 
 ### LimboDelivery
