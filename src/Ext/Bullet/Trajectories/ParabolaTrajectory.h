@@ -22,8 +22,6 @@ public:
 		, ThrowHeight { 600 }
 		, LaunchAngle { 30.0 }
 		, LeadTimeCalculate { false }
-		, LeadTimeSimplify { false }
-		, LeadTimeMultiplier { 1.0 }
 		, DetonationAngle { -90.0 }
 		, DetonationHeight { -1 }
 		, BounceTimes { 0 }
@@ -50,8 +48,6 @@ public:
 	Valueable<int> ThrowHeight;
 	Valueable<double> LaunchAngle;
 	Valueable<bool> LeadTimeCalculate;
-	Valueable<bool> LeadTimeSimplify;
-	Valueable<double> LeadTimeMultiplier;
 	Valueable<double> DetonationAngle;
 	Valueable<int> DetonationHeight;
 	Valueable<int> BounceTimes;
@@ -86,7 +82,7 @@ public:
 		, LastTargetCoord {}
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
-		, WaitOneFrame {}
+		, WaitOneFrame { 0 }
 		, LastVelocity {}
 	{ }
 
@@ -111,7 +107,7 @@ public:
 	CoordStruct LastTargetCoord;
 	int CurrentBurst;
 	int CountOfBurst;
-	CDTimerClass WaitOneFrame;
+	int WaitOneFrame;
 	BulletVelocity LastVelocity;
 
 private:

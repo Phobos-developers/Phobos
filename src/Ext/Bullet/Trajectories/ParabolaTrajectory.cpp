@@ -20,8 +20,6 @@ void ParabolaTrajectoryType::Serialize(T& Stm)
 		.Process(this->ThrowHeight)
 		.Process(this->LaunchAngle)
 		.Process(this->LeadTimeCalculate)
-		.Process(this->LeadTimeSimplify)
-		.Process(this->LeadTimeMultiplier)
 		.Process(this->DetonationAngle)
 		.Process(this->DetonationHeight)
 		.Process(this->BounceTimes)
@@ -76,8 +74,6 @@ void ParabolaTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->ThrowHeight.Read(exINI, pSection, "Trajectory.Parabola.ThrowHeight");
 	this->LaunchAngle.Read(exINI, pSection, "Trajectory.Parabola.LaunchAngle");
 	this->LeadTimeCalculate.Read(exINI, pSection, "Trajectory.Parabola.LeadTimeCalculate");
-	this->LeadTimeSimplify.Read(exINI, pSection, "Trajectory.Parabola.LeadTimeSimplify");
-	this->LeadTimeMultiplier.Read(exINI, pSection, "Trajectory.Parabola.LeadTimeMultiplier");
 	this->DetonationAngle.Read(exINI, pSection, "Trajectory.Parabola.DetonationAngle");
 	this->DetonationHeight.Read(exINI, pSection, "Trajectory.Parabola.DetonationHeight");
 	this->BounceTimes.Read(exINI, pSection, "Trajectory.Parabola.BounceTimes");
@@ -156,12 +152,12 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	if (!pType->LeadTimeCalculate || !pTarget || resetTarget)
 		this->PrepareForOpenFire(pBullet);
 	else
-		this->WaitOneFrame.Start(1);
+		this->WaitOneFrame = 2;
 }
 
 bool ParabolaTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (this->WaitOneFrame.IsTicking() && this->BulletPrepareCheck(pBullet))
+	if (this->WaitOneFrame && this->BulletPrepareCheck(pBullet))
 		return false;
 
 	if (this->BulletDetonatePreCheck(pBullet))
@@ -305,11 +301,22 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 
 bool ParabolaTrajectory::BulletPrepareCheck(BulletClass* pBullet)
 {
-	if (this->WaitOneFrame.HasTimeLeft())
-		return true;
+	// The time between bullets' Unlimbo() and Update() is completely uncertain.
+	// Technos will update its location after firing, which may result in inaccurate
+	// target position recorded by the LastTargetCoord in Unlimbo(). Therefore, it's
+	// necessary to record the position during the first Update(). - CrimRecya
+	if (this->WaitOneFrame == 2)
+	{
+		if (const AbstractClass* const pTarget = pBullet->Target)
+		{
+			this->LastTargetCoord = pTarget->GetCoords();
+			this->WaitOneFrame = 1;
+			return true;
+		}
+	}
 
+	this->WaitOneFrame = 0;
 	this->PrepareForOpenFire(pBullet);
-	this->WaitOneFrame.Stop();
 
 	return false;
 }
@@ -317,65 +324,8 @@ bool ParabolaTrajectory::BulletPrepareCheck(BulletClass* pBullet)
 void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, CoordStruct* pSourceCoords, double gravity)
 {
 	const ParabolaTrajectoryType* const pType = this->Type;
-
-	if (pType->LeadTimeSimplify) // Only simple guess, not exact solution
-	{
-		int leadTime = 0;
-
-		// Step 1: Guess the time of encounter between the projectile and the target based on known conditions
-		// Directly assume that the distance between the position where the projectile hits the target and the starting point is 4 grids
-		switch (pType->OpenFireMode)
-		{
-		case ParabolaFireMode::Height:
-		case ParabolaFireMode::HeightAndAngle:
-		{
-			// Assuming equal height
-			leadTime = static_cast<int>(sqrt((this->ThrowHeight << 1) / gravity) * 1.25);
-			break;
-		}
-		case ParabolaFireMode::Angle:
-		{
-			double radian = pType->LaunchAngle * Math::Pi / 180.0;
-			radian = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? (Math::HalfPi / 3) : radian;
-			const double factor = Math::cos(radian);
-
-			// Check if the angle is appropriate
-			if (abs(factor) < 1e-10)
-				break;
-
-			const double mult = Math::sin(2 * radian);
-
-			// Check if the angle is appropriate again
-			if (abs(mult) < 1e-10)
-				break;
-
-			const double velocity = sqrt((Unsorted::LeptonsPerCell << 2) * gravity / mult);
-
-			// Assuming equal height
-			leadTime = static_cast<int>((Unsorted::LeptonsPerCell << 2) / (velocity * factor));
-			break;
-		}
-		default:
-		{
-			// Assuming equal height
-			leadTime = static_cast<int>((Unsorted::LeptonsPerCell << 2) / pType->Trajectory_Speed);
-			break;
-		}
-		}
-
-		// Step 2: Substitute the time into the calculation of the attack coordinates
-		pBullet->TargetCoords += (pBullet->Target->GetCoords() - this->LastTargetCoord) * (pType->LeadTimeMultiplier * leadTime);
-
-		// Step 3: Calculate the parabolic starting point vector
-		this->CalculateBulletVelocityRightNow(pBullet, pSourceCoords, gravity);
-		return;
-	}
-
 	CoordStruct targetCoords = pBullet->Target->GetCoords();
 	CoordStruct offsetCoords = pBullet->TargetCoords - targetCoords;
-
-	// A coefficient that should not exist here normally, but even so, there are still errors
-	const double speedFixMult = pType->LeadTimeMultiplier * 0.75;
 
 	switch (pType->OpenFireMode)
 	{
@@ -385,7 +335,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		const double meetTime = this->SearchFixedHeightMeetTime(pSourceCoords, &targetCoords, &offsetCoords, gravity);
 
 		// Step 2: Substitute the time into the calculation of the attack coordinates
-		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * (speedFixMult * meetTime);
+		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * meetTime;
 		const CoordStruct destinationCoords = pBullet->TargetCoords - *pSourceCoords;
 
 		// Step 3: Check if it is an unsolvable solution
@@ -417,7 +367,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		const double meetTime = this->SearchFixedAngleMeetTime(pSourceCoords, &targetCoords, &offsetCoords, radian, gravity);
 
 		// Step 3: Substitute the time into the calculation of the attack coordinates
-		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * (speedFixMult * meetTime);
+		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * meetTime;
 		const CoordStruct destinationCoords = pBullet->TargetCoords - *pSourceCoords;
 
 		// Step 4: Check if it is an unsolvable solution
@@ -445,7 +395,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		const double meetTime = this->SolveFixedSpeedMeetTime(pSourceCoords, &targetCoords, &offsetCoords, pType->Trajectory_Speed);
 
 		// Step 2: Substitute the time into the calculation of the attack coordinates
-		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * (speedFixMult * meetTime);
+		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * meetTime;
 		const CoordStruct destinationCoords = pBullet->TargetCoords - *pSourceCoords;
 
 		// Step 3: Check if it is an unsolvable solution
@@ -477,7 +427,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		const double meetTime = this->SearchFixedHeightMeetTime(pSourceCoords, &targetCoords, &offsetCoords, gravity);
 
 		// Step 2: Substitute the time into the calculation of the attack coordinates
-		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * (speedFixMult * meetTime);
+		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * meetTime;
 		const CoordStruct destinationCoords = pBullet->TargetCoords - *pSourceCoords;
 
 		// Step 3: Check if it is an unsolvable solution
@@ -513,7 +463,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		const double meetTime = this->SolveFixedSpeedMeetTime(pSourceCoords, &targetCoords, &offsetCoords, pType->Trajectory_Speed);
 
 		// Step 2: Substitute the time into the calculation of the attack coordinates
-		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * (speedFixMult * meetTime);
+		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * meetTime;
 		const CoordStruct destinationCoords = pBullet->TargetCoords - *pSourceCoords;
 
 		// Step 3: Check if it is an unsolvable solution
@@ -548,7 +498,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(BulletClass* pBullet, C
 		const double meetTime = this->SolveFixedSpeedMeetTime(pSourceCoords, &targetCoords, &offsetCoords, pType->Trajectory_Speed);
 
 		// Step 2: Substitute the time into the calculation of the attack coordinates
-		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * (speedFixMult * meetTime);
+		pBullet->TargetCoords += (targetCoords - this->LastTargetCoord) * meetTime;
 		const CoordStruct destinationCoords = pBullet->TargetCoords - *pSourceCoords;
 
 		// Step 3: Check if it is an unsolvable solution
