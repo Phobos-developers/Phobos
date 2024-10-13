@@ -76,7 +76,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 				if (pHouse->CanTransactMoney(pSWExt->Money_Amount) && (!this->LaunchSW_RealLaunch || (pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended)))
 				{
-					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
+					if ((this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell))
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
 						if (this->LaunchSW_DisplayMoney && pSWExt->Money_Amount != 0)
