@@ -115,3 +115,26 @@ DEFINE_HOOK(0x711FDF, TechnoTypeClass_RefundAmount_FactoryPlant, 0x8)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x71464A, TechnoTypeClass_ReadINI_Speed, 0x7)
+{
+	enum { SkipGameCode = 0x71469F };
+
+	GET(TechnoTypeClass*, pThis, EBP);
+	GET(CCINIClass*, pINI, ESI);
+	GET(char*, pSection, EBX);
+	GET(int, eliteAirstrikeRechargeTime, EAX);
+
+	// Restore overridden instructions.
+	pThis->EliteAirstrikeRechargeTime = eliteAirstrikeRechargeTime;
+
+	double parsedSpeed = pINI->ReadDouble(pSection, "Speed", -1.0);
+
+	if (parsedSpeed != -1.0)
+	{
+		int speed = Game::F2I((Math::min(parsedSpeed, 100.0) * 256.0) / 100.0);
+		pThis->Speed = Math::min(speed, 255);
+	}
+
+	return SkipGameCode;
+}
