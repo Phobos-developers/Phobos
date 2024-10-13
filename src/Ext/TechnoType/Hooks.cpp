@@ -130,7 +130,7 @@ DEFINE_HOOK(0x71464A, TechnoTypeClass_ReadINI_Speed, 0x7)
 
 	double parsedSpeed = pINI->ReadDouble(pSection, "Speed", -1.0);
 
-	if (parsedSpeed != -1.0)
+	if (parsedSpeed >= 0.0)
 	{
 		int speed = Game::F2I((Math::min(parsedSpeed, 100.0) * 256.0) / 100.0);
 		pThis->Speed = Math::min(speed, 255);
