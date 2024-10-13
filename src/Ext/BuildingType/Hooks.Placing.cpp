@@ -84,7 +84,7 @@ DEFINE_HOOK(0x4A8F21, MapClass_PassesProximityCheck_BaseNormalExtra, 0x9)
 	enum { CheckCompleted = 0x4A904E };
 
 	GET(const CellStruct* const, pFoundationTopLeft, EDI);
-	GET(const BuildingTypeClass* const, pBuildingType, ESI);
+	GET(const BuildingTypeClass* const, pBuildBldType, ESI);
 	GET_STACK(const int, idxHouse, STACK_OFFSET(0x30, 0x8));
 
 	const bool differentColor = RulesExt::Global()->CheckExpandPlaceGrid;
@@ -96,14 +96,15 @@ DEFINE_HOOK(0x4A8F21, MapClass_PassesProximityCheck_BaseNormalExtra, 0x9)
 
 	if (Game::IsActive)
 	{
-		const short foundationWidth = pBuildingType->GetFoundationWidth();
-		const short foundationHeight = pBuildingType->GetFoundationHeight(false);
+		const short foundationWidth = pBuildBldType->GetFoundationWidth();
+		const short foundationHeight = pBuildBldType->GetFoundationHeight(false);
 		const short topLeftX = pFoundationTopLeft->X;
 		const short topLeftY = pFoundationTopLeft->Y;
 		const short bottomRightX = topLeftX + foundationWidth;
 		const short bottomRightY = topLeftY + foundationHeight;
 
-		const short buildingAdjacent = static_cast<short>(pBuildingType->Adjacent + 1);
+		BuildingTypeExt::ExtData* const pBuildBldTypeExt = BuildingTypeExt::ExtMap.Find(pBuildBldType);
+		const short buildingAdjacent = static_cast<short>(pBuildBldType->Adjacent + 1);
 		const short leftX = topLeftX - buildingAdjacent;
 		const short topY = topLeftY - buildingAdjacent;
 		const short rightX = bottomRightX + buildingAdjacent;
@@ -126,42 +127,54 @@ DEFINE_HOOK(0x4A8F21, MapClass_PassesProximityCheck_BaseNormalExtra, 0x9)
 						{
 							if (curX < topLeftX || curX >= bottomRightX || curY < topLeftY || curY >= bottomRightY)
 							{
-								BuildingClass* const pBuilding = static_cast<BuildingClass*>(pObject);
+								BuildingClass* const pCellBld = static_cast<BuildingClass*>(pObject);
+								BuildingTypeClass* const pCellBldType = pCellBld->Type;
+								const Mission mission = pCellBld->CurrentMission;
 
-								if (HouseClass* const pOwner = pBuilding->Owner)
+								if (mission != Mission::Construction && mission != Mission::Selling && !BuildingTypeExt::ExtMap.Find(pCellBldType)->NoBuildAreaOnBuildup)
 								{
-									if (pOwner->ArrayIndex == idxHouse && pBuilding->Type->BaseNormal)
+									auto const& pBuildingsAllowed = pBuildBldTypeExt->Adjacent_Allowed;
+
+									if (!pBuildingsAllowed.size() || pBuildingsAllowed.Contains(pCellBldType))
 									{
-										do
+										auto const& pBuildingsDisallowed = pBuildBldTypeExt->Adjacent_Disallowed;
+
+										if (!pBuildingsDisallowed.size() || !pBuildingsDisallowed.Contains(pCellBldType))
 										{
-											if (CAN_USE_ARES && AresHelper::CanUseAres) // Restore Ares MapClass_CanBuildingTypeBePlacedHere_Ignore
+											if (HouseClass* const pOwner = pCellBld->Owner)
 											{
-												struct DummyAresBuildingExt // Temp Ares Building Ext
+												if (pOwner->ArrayIndex == idxHouse && pCellBldType->BaseNormal)
 												{
-													char _[0xE];
-													bool unknownExtBool;
-												};
+													if (CAN_USE_ARES && AresHelper::CanUseAres) // Restore Ares MapClass_CanBuildingTypeBePlacedHere_Ignore
+													{
+														struct DummyAresBuildingExt // Temp Ares Building Ext
+														{
+															char _[0xE];
+															bool unknownExtBool;
+														};
 
-												struct DummyBuildingClass // Temp Building Class
-												{
-													char _[0x71C];
-													DummyAresBuildingExt* align_71C;
-												};
+														struct DummyBuildingClass // Temp Building Class
+														{
+															char _[0x71C];
+															DummyAresBuildingExt* align_71C;
+														};
 
-												if (const DummyAresBuildingExt* pAresBuildingExt = reinterpret_cast<DummyBuildingClass*>(pBuilding)->align_71C)
+														if (const DummyAresBuildingExt* pAresBuildingExt = reinterpret_cast<DummyBuildingClass*>(pCellBld)->align_71C)
+															baseNormal = !pAresBuildingExt->unknownExtBool;
+														else
+															baseNormal = true;
+													}
+													else
+													{
+														baseNormal = true;
+													}
+												}
+												else if (RulesClass::Instance->BuildOffAlly && pOwner->IsAlliedWith(HouseClass::Array->Items[idxHouse]) && pCellBldType->EligibileForAllyBuilding)
 												{
-													baseNormal = !pAresBuildingExt->unknownExtBool;
-													break;
+													baseNormal = true;
 												}
 											}
-
-											baseNormal = true;
 										}
-										while (false);
-									}
-									else if (RulesClass::Instance->BuildOffAlly && pOwner->IsAlliedWith(HouseClass::Array->Items[idxHouse]) && pBuilding->Type->EligibileForAllyBuilding)
-									{
-										baseNormal = true;
 									}
 								}
 							}
@@ -452,7 +465,6 @@ DEFINE_HOOK(0x47EF52, CellClass_DrawPlaceGrid_DrawGrids, 0x6)
 	const short minY = cell.Y - range;
 
 	bool green = false;
-
 	auto const cells = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->BaseNormalCells;
 
 	for (auto const& baseCell : cells)
@@ -634,7 +646,10 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 
 	BuildingTypeClass* const pBuildingType = pBuilding->Type;
 
-	if (topLeftCell != Make_Global<CellStruct>(0x89C8B0) && !pBuildingType->PlaceAnywhere)
+	if (RulesExt::Global()->AIForbidConYard && pBuildingType->ConstructionYard)
+		return CanNotBuild;
+
+	if (topLeftCell != CellStruct::Empty && !pBuildingType->PlaceAnywhere)
 	{
 		HouseClass* const pHouse = pFactory->Owner;
 
