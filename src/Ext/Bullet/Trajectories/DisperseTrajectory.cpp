@@ -1,6 +1,6 @@
 #include "DisperseTrajectory.h"
 // #include "StraightTrajectory.h" // TODO If merge #1294
-// #include "BombardTrajectory.h" // TODO If merge #????
+// #include "BombardTrajectory.h" // TODO If merge #1404
 // #include "ParabolaTrajectory.h" // TODO If merge #1374
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
@@ -1061,7 +1061,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 				}
 			}*/
-/*			else if (flag == TrajectoryFlag::Bombard) // TODO If merge #????
+/*			else if (flag == TrajectoryFlag::Bombard) // TODO If merge #1404
 			{
 				BombardTrajectory* const pTrajectory = static_cast<BombardTrajectory*>(pBulletExt->Trajectory.get());
 				const BombardTrajectoryType* const pTrajType = pTrajectory->Type;
