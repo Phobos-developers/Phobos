@@ -646,9 +646,6 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 
 	BuildingTypeClass* const pBuildingType = pBuilding->Type;
 
-	if (RulesExt::Global()->AIForbidConYard && pBuildingType->ConstructionYard)
-		return CanNotBuild;
-
 	if (topLeftCell != CellStruct::Empty && !pBuildingType->PlaceAnywhere)
 	{
 		HouseClass* const pHouse = pFactory->Owner;
