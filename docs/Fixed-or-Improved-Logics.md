@@ -921,21 +921,24 @@ AIAllToHunt=true          ; boolean
 GatherWhenMCVDeploy=true  ; boolean
 ```
 
-### Subterranean unit travel height
+### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
+- It is also possible to change subterranean units to use their `Speed` and any speed modifiers when traveling underground, instead of hardcoded speed setting that would be roughly between `Speed=7` and `Speed=8`.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
+SubterraneanHeight=-256     ; integer, height in leptons (1/256th of a cell)
+SubterraneanUseSpeed=false  ; boolean
 
-[SOMETECHNO]             ; TechnoType
-SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
+[SOMETECHNO]                ; TechnoType
+SubterraneanHeight=         ; integer, height in leptons (1/256th of a cell)
+SubterraneanUseSpeed=       ; boolean
 ```
 
 ```{warning}
-This expects negative values to be used and may behave erratically if set to above -50.
+SubterraneanHeight expects negative values to be used and may behave erratically if set to above -50.
 ```
 
 ### Voxel body multi-section shadows
