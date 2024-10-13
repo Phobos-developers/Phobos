@@ -77,7 +77,7 @@ DEFINE_HOOK(0x483DDF, CellClass_CheckPassability_PassableTerrain, 0x6)
 // Passable TerrainTypes Hook #4 - Make passable for vehicles.
 DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 {
-	enum { ReturnPassable = 0x73FD37, SkipTerrainChecks = 0x73FA7C };
+	enum { SkipTerrainChecks = 0x73FA7C };
 
 	GET(AbstractClass*, pTarget, ESI);
 
