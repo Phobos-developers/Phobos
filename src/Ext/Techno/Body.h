@@ -129,6 +129,20 @@ public:
 		~ExtContainer();
 	};
 
+	struct DrawFrameStruct
+	{
+		int TopLength;
+		int TopFrame;
+		SHPStruct* TopPipSHP;
+		int MidLength;
+		int MidFrame;
+		SHPStruct* MidPipSHP;
+		int MaxLength;
+		int BrdFrame;
+		Point2D* Location;
+		RectangleStruct* Bounds;
+	};
+
 	static ExtContainer ExtMap;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
@@ -170,6 +184,12 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
+	static void DrawFactoryProgress(BuildingClass* pThis, RectangleStruct* pBounds, Point2D basePosition);
+	static void DrawSuperProgress(BuildingClass* pThis, RectangleStruct* pBounds, Point2D basePosition);
+	static void DrawIronCurtainProgress(TechnoClass* pThis, RectangleStruct* pBounds, Point2D basePosition, bool isBuilding, bool isInfantry);
+	static void DrawTemporalProgress(TechnoClass* pThis, RectangleStruct* pBounds, Point2D basePosition, bool isBuilding, bool isInfantry);
+	static void DrawVanillaStyleFootBar(DrawFrameStruct* pDraw);
+	static void DrawVanillaStyleBuildingBar(DrawFrameStruct* pDraw);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
