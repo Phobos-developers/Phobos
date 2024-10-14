@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
+#include <SpawnManagerClass.h>
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
@@ -113,6 +114,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_DisallowedMaxCounts.Read(exINI, pSection, "AttachEffect.DisallowedMaxCounts");
 	this->AttachEffect_CheckOnFirer.Read(exINI, pSection, "AttachEffect.CheckOnFirer");
 	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
+	this->KeepRange.Read(exINI, pSection, "KeepRange");
+	this->KeepRange_AllowAI.Read(exINI, pSection, "KeepRange.AllowAI");
+	this->KeepRange_AllowPlayer.Read(exINI, pSection, "KeepRange.AllowPlayer");
 	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
 }
 
@@ -157,6 +161,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_DisallowedMaxCounts)
 		.Process(this->AttachEffect_CheckOnFirer)
 		.Process(this->AttachEffect_IgnoreFromSameSource)
+		.Process(this->KeepRange)
+		.Process(this->KeepRange_AllowAI)
+		.Process(this->KeepRange_AllowPlayer)
 		.Process(this->KickOutPassengers)
 		;
 };
@@ -283,6 +290,63 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 	range += extraRange;
 
 	return Math::max(range, 0);
+}
+
+int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool mode)
+{
+	if (!pThis || !pFirer)
+		return 0;
+
+	AbstractType const absType = pFirer->WhatAmI();
+	WeaponTypeExt::ExtData* const pExt = WeaponTypeExt::ExtMap.Find(pThis);
+	int keepRange = pExt->KeepRange.Get();
+
+	if (!keepRange || (absType != AbstractType::Infantry && absType != AbstractType::Unit))
+		return 0;
+
+	if (pFirer->Owner && pFirer->Owner->IsControlledByHuman())
+	{
+		if (!pExt->KeepRange_AllowPlayer)
+			return 0;
+	}
+	else if (!pExt->KeepRange_AllowAI)
+	{
+		return 0;
+	}
+
+	if (!pFirer->RearmTimer.InProgress())
+	{
+		SpawnManagerClass* const spawnManager = pFirer->SpawnManager;
+
+		if (!spawnManager || spawnManager->Status != SpawnManagerStatus::CoolDown)
+			return 0;
+
+		const int spawnsNumber = pFirer->GetTechnoType()->SpawnsNumber;
+
+		for (int i = 0; i < spawnsNumber; i++)
+		{
+			if (spawnManager->SpawnedNodes[i]->Status == SpawnNodeStatus::Returning)
+				return 0;
+		}
+	}
+
+	if (mode)
+	{
+		if (keepRange > 0)
+			return keepRange;
+	}
+	else if (keepRange < 0)
+	{
+		const int checkRange = -keepRange - 128;
+		AbstractClass* const pTarget = pFirer->Target;
+
+		if (pTarget && static_cast<int>(pFirer->GetCoords().DistanceFrom(pTarget->GetCoords())) >= checkRange)
+			return (checkRange > 128) ? checkRange : 128;
+		else
+			return -keepRange;
+	}
+
+	return 0;
 }
 
 // =============================
