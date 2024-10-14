@@ -177,6 +177,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers.
 - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
+- Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 
 ## Fixes / interactions with other extensions
 
@@ -925,17 +926,17 @@ GatherWhenMCVDeploy=true  ; boolean
 ### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
-- It is also possible to change subterranean units to use their `Speed` and any speed modifiers when traveling underground, instead of hardcoded speed setting that would be roughly between `Speed=7` and `Speed=8`.
+- Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used. This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General]`->`TunnelSpeed`.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-SubterraneanHeight=-256     ; integer, height in leptons (1/256th of a cell)
-SubterraneanUseSpeed=false  ; boolean
-
-[SOMETECHNO]                ; TechnoType
-SubterraneanHeight=         ; integer, height in leptons (1/256th of a cell)
-SubterraneanUseSpeed=       ; boolean
+SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
+SubterraneanSpeed=7.5    ; floating point value
+                         
+[SOMETECHNO]             ; TechnoType
+SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
+SubterraneanSpeed=-1     ; floating point value
 ```
 
 ```{warning}

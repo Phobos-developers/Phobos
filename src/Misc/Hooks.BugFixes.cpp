@@ -910,21 +910,22 @@ DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9
 	GET(TunnelLocomotionClass* const, pLoco, ESI);
 	GET(int const, distance, EAX);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pLoco->LinkedTo->GetTechnoType());
-	int currentSpeed = 19;
-
 	// The movement speed was actually also hardcoded here to 19, so the distance check made sense
-	// It can now be lifted by setting this key on TechnoType or globally - Starkku
-	if (pTypeExt->SubterraneanUseSpeed.Get(RulesExt::Global()->SubterraneanUseSpeed))
-	{
-		// Subterranean locomotor doesn't normally use this so it would be 0.0 here and cause issues.
-		pLoco->LinkedTo->SpeedPercentage = 1.0;
-		currentSpeed = pLoco->LinkedTo->GetCurrentSpeed();
-	}
+	// It can now be customized globally or per TechnoType however - Starkku
+	auto const pType = pLoco->LinkedTo->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	int speed = pTypeExt->SubterraneanSpeed >= 0 ? pTypeExt->SubterraneanSpeed : RulesExt::Global()->SubterraneanSpeed;
 
-	TunnelLocomotionClass::TunnelMovementSpeed = currentSpeed;
+	// Calculate speed multipliers.
+	pLoco->LinkedTo->SpeedPercentage = 1.0; // Subterranean locomotor doesn't normally use this so it would be 0.0 here and cause issues.
+	int maxSpeed = pType->Speed;
+	pType->Speed = speed;
+	speed = pLoco->LinkedTo->GetCurrentSpeed();
+	pType->Speed = maxSpeed;
 
-	return distance >= currentSpeed + 1 ? KeepMoving : CloseEnough;
+	TunnelLocomotionClass::TunnelMovementSpeed = speed;
+
+	return distance >= speed + 1 ? KeepMoving : CloseEnough;
 }
 
 DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)

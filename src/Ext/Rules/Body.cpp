@@ -78,7 +78,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ChronoSphereDelay.Read(exINI, GameStrings::General, "ChronoSphereDelay");
 	this->AIChronoSphereSW.Read(exINI, GameStrings::General, "AIChronoSphereSW");
 	this->AIChronoWarpSW.Read(exINI, GameStrings::General, "AIChronoWarpSW");
-	this->SubterraneanUseSpeed.Read(exINI, GameStrings::General, "SubterraneanUseSpeed");
+
+	exINI.ReadSpeed(GameStrings::General, "SubterraneanSpeed", &this->SubterraneanSpeed);
 	this->SubterraneanHeight.Read(exINI, GameStrings::General, "SubterraneanHeight");
 	this->AISuperWeaponDelay.Read(exINI, GameStrings::General, "AISuperWeaponDelay");
 	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
@@ -286,7 +287,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoSphereDelay)
 		.Process(this->AIChronoSphereSW)
 		.Process(this->AIChronoWarpSW)
-		.Process(this->SubterraneanUseSpeed)
+		.Process(this->SubterraneanSpeed)
 		.Process(this->SubterraneanHeight)
 		.Process(this->AISuperWeaponDelay)
 		.Process(this->UseGlobalRadApplicationDelay)
