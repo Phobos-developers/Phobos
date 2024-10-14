@@ -22,6 +22,7 @@ public:
 	public:
 
 		Valueable<double> DiskLaser_Radius;
+		Valueable<Leptons> ProjectileRange;
 		Valueable<RadTypeClass*> RadType;
 		Valueable<bool> Bolt_Disable1;
 		Valueable<bool> Bolt_Disable2;
@@ -61,6 +62,7 @@ public:
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
+			, ProjectileRange { Leptons(100000) }
 			, RadType {}
 			, Bolt_Disable1 { false }
 			, Bolt_Disable2 { false }

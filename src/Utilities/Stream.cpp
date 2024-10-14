@@ -89,7 +89,8 @@ bool PhobosStreamReader::RegisterChange(void* newPtr)
 	static_assert(sizeof(long) == sizeof(void*), "long and void* need to be of same size.");
 
 	long oldPtr = 0;
-	if (this->Load(oldPtr)) {
+	if (this->Load(oldPtr))
+	{
 		if (SUCCEEDED(SwizzleManagerClass::Instance().Here_I_Am(oldPtr, newPtr)))
 			return true;
 

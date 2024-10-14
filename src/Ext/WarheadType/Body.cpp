@@ -254,12 +254,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
-	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
-	this->AttachEffect_RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
-	exINI.ParseStringList(this->AttachEffect_RemoveGroups, pSection, "AttachEffect.RemoveGroups");
-	this->AttachEffect_CumulativeRemoveMinCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMinCounts");
-	this->AttachEffect_CumulativeRemoveMaxCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMaxCounts");
-	this->AttachEffect_DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
+	this->CombatLightDetailLevel.Read(exINI, pSection, "CombatLightDetailLevel");
+	this->CombatLightChance.Read(exINI, pSection, "CombatLightChance");
+	this->Particle_AlphaImageIsLightFlash.Read(exINI, pSection, "Particle.AlphaImageIsLightFlash");
 
 	this->DamageOwnerMultiplier.Read(exINI, pSection, "DamageOwnerMultiplier");
 	this->DamageAlliesMultiplier.Read(exINI, pSection, "DamageAlliesMultiplier");
@@ -272,6 +269,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
+
+	// AttachEffect
+	this->AttachEffects.LoadFromINI(pINI, pSection);
 
 #ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 	this->InflictLocomotor.Read(exINI, pSection, "InflictLocomotor");
@@ -316,9 +316,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Convert_Pairs.size() > 0
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
-		|| this->AttachEffect_AttachTypes.size() > 0
-		|| this->AttachEffect_RemoveTypes.size() > 0
-		|| this->AttachEffect_RemoveGroups.size() > 0
+		|| this->AttachEffects.AttachTypes.size() > 0
+		|| this->AttachEffects.RemoveTypes.size() > 0
+		|| this->AttachEffects.RemoveGroups.size() > 0
 	);
 
 	char tempBuffer[32];
@@ -471,13 +471,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
 		.Process(this->Convert_Pairs)
-
-		.Process(this->AttachEffect_AttachTypes)
-		.Process(this->AttachEffect_RemoveTypes)
-		.Process(this->AttachEffect_RemoveGroups)
-		.Process(this->AttachEffect_CumulativeRemoveMinCounts)
-		.Process(this->AttachEffect_CumulativeRemoveMaxCounts)
-		.Process(this->AttachEffect_DurationOverrides)
+		.Process(this->AttachEffects)
 
 		.Process(this->SuppressRevengeWeapons)
 		.Process(this->SuppressRevengeWeapons_Types)
@@ -492,6 +486,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageEnemiesMultiplier)
 
 		.Process(this->Nonprovocative)
+
+		.Process(this->CombatLightDetailLevel)
+		.Process(this->CombatLightChance)
+		.Process(this->Particle_AlphaImageIsLightFlash)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
