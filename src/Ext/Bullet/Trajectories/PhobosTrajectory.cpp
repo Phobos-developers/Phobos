@@ -62,6 +62,10 @@ void TrajectoryTypePointer::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	if (_ptr)
 	{
 		_ptr->Trajectory_Speed.Read(exINI, pSection, "Trajectory.Speed");
+
+		if (abs(_ptr->Trajectory_Speed) < 1e-10)
+			_ptr->Trajectory_Speed = 0.001;
+
 		_ptr->Read(pINI, pSection);
 	}
 }
@@ -279,7 +283,7 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 
-	if (pTypeExt && pTypeExt->TrajectoryType)
+	if (pTypeExt && pTypeExt->TrajectoryType && !pExt->Trajectory)
 	{
 		pExt->Trajectory = pTypeExt->TrajectoryType->CreateInstance();
 		pExt->Trajectory->OnUnlimbo(pThis, pCoord, pVelocity);
