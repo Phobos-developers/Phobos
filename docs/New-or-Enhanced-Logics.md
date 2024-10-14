@@ -1354,6 +1354,18 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### Recount burst index
+- You can now make technos recount their current burst index when change the firing weapon. Defaults to `[General]` -> `RecountBurst`, which defaults to false.
+
+In `rulesmd.ini`:
+```ini
+[General]
+RecountBurst=false  ; boolean
+
+[SOMETECHNO]        ; TechnoType
+RecountBurst=       ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound

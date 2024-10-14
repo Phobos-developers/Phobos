@@ -215,6 +215,8 @@ public:
 
 		AEAttachInfoTypeClass AttachEffects;
 
+		Nullable<bool> RecountBurst;
+
 		ValueableVector<TechnoTypeClass*> BuildLimitGroup_Types;
 		ValueableVector<int> BuildLimitGroup_Nums;
 		Valueable<int> BuildLimitGroup_Factor;
@@ -439,6 +441,8 @@ public:
 			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 
 			, AttachEffects {}
+
+			, RecountBurst {}
 
 			, BuildLimitGroup_Types {}
 			, BuildLimitGroup_Nums {}
