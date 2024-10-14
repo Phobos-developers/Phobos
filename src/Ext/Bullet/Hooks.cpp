@@ -305,9 +305,9 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 	}
 	else if (auto const pExt = BulletAITemp::ExtData)
 	{
-		if (pExt->Trajectory)
+		if (auto pTraj = pExt->Trajectory.get())
 		{
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+			if (pTraj->Flag() == TrajectoryFlag::Straight)
 			{
 				R->EAX(pThis->Type);
 				return SkipChecks;
@@ -336,7 +336,7 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	}
 	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
+		if (pExt->Trajectory && pExt->Trajectory->Flag() == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
 		{
 			R->EAX(pThis->Type);
 			return SkipChecks;
@@ -367,7 +367,7 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	// Fixes issues with walls etc.
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
+		if (pExt->Trajectory && pExt->Trajectory->Flag() == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
 			return SkipSetCoordinate;
 	}
 
@@ -382,7 +382,7 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+		if (pExt->Trajectory && pExt->Trajectory->Flag() == TrajectoryFlag::Straight)
 			return SkipCheck;
 	}
 
