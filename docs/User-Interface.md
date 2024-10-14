@@ -45,7 +45,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1.
-  
+
 In `rulesmd.ini`:
 ```ini
 [DigitalDisplayTypes]
@@ -129,6 +129,29 @@ In `rulesmd.ini`:
 ```ini
 [SOMENAME]            ; TechnoType
 HealthBar.Hide=false  ; boolean
+```
+
+### Light flash effect toggling
+
+- It is possible to toggle certain light flash effects off. These light flash effects include:
+  - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
+  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual]` -> `WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
+    - Additionally these alpha images are not created if `[AudioVisual]`->`LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
+  
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+WarheadParticleAlphaImageIsLightFlash=false  ; boolean
+LightFlashAlphaImageDetailLevel=0            ; integer
+
+[SOMEWARHEAD]                                ; WarheadType
+Particle.AlphaImageIsLightFlash=             ; boolean
+```                                          
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+HideLightFlashEffects=false  ; boolean
 ```
 
 ### Low priority for box selection
