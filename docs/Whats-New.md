@@ -443,6 +443,7 @@ New:
 - Option for Warhead to remove all shield types at once (by Starkku)
 - Allow customizing voxel light source position (by Kerbiter, Morton, based on knowledge of thomassnedon)
 - Option to fix voxel light source being offset and incorrectly tilting on slopes (by Kerbiter)
+- Optimize aircrafts stop action and allow they using area guard and attack moving (by CrimRecya)
 - AI superweapon delay timer customization (by Starkku)
 - Disabling `MultipleFactory` bonus from specific BuildingType (by Starkku)
 - Customizable ChronoSphere teleport delays for units (by Starkku)
