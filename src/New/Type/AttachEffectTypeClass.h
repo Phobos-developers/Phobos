@@ -4,8 +4,22 @@
 #include <unordered_map>
 
 #include <Utilities/Enumerable.h>
-#include <Utilities/Template.h>
 #include <Utilities/TemplateDef.h>
+
+// AE discard condition
+enum class DiscardCondition : unsigned char
+{
+	None = 0x0,
+	Entry = 0x1,
+	Move = 0x2,
+	Stationary = 0x4,
+	Drain = 0x8,
+	InRange = 0x10,
+	OutOfRange = 0x20,
+	Firing = 0x40
+};
+
+MAKE_ENUM_FLAGS(DiscardCondition);
 
 class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 {
@@ -99,7 +113,7 @@ public:
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
 		, RevengeWeapon {}
-		, RevengeWeapon_AffectsHouses{ AffectedHouse::All }
+		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		, ReflectDamage { false }
 		, ReflectDamage_Warhead {}
 		, ReflectDamage_Warhead_Detonate { false }
@@ -135,3 +149,69 @@ private:
 	void AddToGroupsMap();
 };
 
+// Container for AttachEffect attachment for an individual effect passed to AE attach function.
+struct AEAttachParams
+{
+	int DurationOverride;
+	int Delay;
+	int InitialDelay;
+	int RecreationDelay;
+	bool CumulativeRefreshAll;
+	bool CumulativeRefreshAll_OnAttach;
+	bool CumulativeRefreshSameSourceOnly;
+
+	AEAttachParams() :
+		DurationOverride { 0 }
+		, Delay { 0 }
+		, InitialDelay { 0 }
+		, RecreationDelay { -1 }
+		, CumulativeRefreshAll { false }
+		, CumulativeRefreshAll_OnAttach { false }
+		, CumulativeRefreshSameSourceOnly { true }
+	{
+	}
+};
+
+// Container for AttachEffect attachment info parsed from INI.
+class AEAttachInfoTypeClass
+{
+public:
+	ValueableVector<AttachEffectTypeClass*> AttachTypes;
+	Valueable<bool> CumulativeRefreshAll;
+	Valueable<bool> CumulativeRefreshAll_OnAttach;
+	Valueable<bool> CumulativeRefreshSameSourceOnly;
+	ValueableVector<AttachEffectTypeClass*> RemoveTypes;
+	std::vector<std::string> RemoveGroups;
+	ValueableVector<int> CumulativeRemoveMinCounts;
+	ValueableVector<int> CumulativeRemoveMaxCounts;
+	ValueableVector<int> DurationOverrides;
+	ValueableVector<int> Delays;
+	ValueableVector<int> InitialDelays;
+	NullableVector<int> RecreationDelays;
+
+	void LoadFromINI(CCINIClass* pINI, const char* pSection);
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+	AEAttachParams GetAttachParams(unsigned int index, bool selfOwned) const;
+
+	AEAttachInfoTypeClass() :
+		AttachTypes {}
+		, CumulativeRefreshAll { false }
+		, CumulativeRefreshAll_OnAttach { false }
+		, CumulativeRefreshSameSourceOnly { true }
+		, RemoveTypes {}
+		, RemoveGroups {}
+		, CumulativeRemoveMinCounts {}
+		, CumulativeRemoveMaxCounts {}
+		, DurationOverrides {}
+		, Delays {}
+		, InitialDelays {}
+		, RecreationDelays {}
+	{
+	}
+
+private:
+	template <typename T>
+	bool Serialize(T& stm);
+};

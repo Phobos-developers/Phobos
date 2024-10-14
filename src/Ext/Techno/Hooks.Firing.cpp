@@ -340,7 +340,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 {
 	enum { Illegal = 0x6FC86A, OutOfRange = 0x6FC0DF, Continue = 0x6FC5D5 };
 
-//	GET(TechnoClass*, pThis, ESI);
+	// GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTransport, EAX);
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
@@ -437,6 +437,24 @@ DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
 		}
 
 		pExt->LastWeaponType = pWeapon;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DiscardAEOnFire, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->AE.HasOnFireDiscardables)
+	{
+		for (const auto& attachEffect : pExt->AttachedEffects)
+		{
+			if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
+				attachEffect->ShouldBeDiscarded = true;
+		}
 	}
 
 	return 0;
@@ -927,4 +945,3 @@ DEFINE_JUMP(CALL6, 0x6F8CE3, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponWrapper
 DEFINE_JUMP(CALL6, 0x6F8DD2, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponRangeWrapper));
 
 #pragma endregion
-
