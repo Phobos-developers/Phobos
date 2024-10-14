@@ -221,6 +221,7 @@ DEFINE_HOOK(0x414F10, AircraftClass_AI_Trailer, 0x5)
 		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
 		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
 		pTrailerAnimExt->SetInvoker(pThis);
+		pTrailerAnimExt->IsTechnoTrailerAnim = true;
 	}
 
 	return SkipGameCode;

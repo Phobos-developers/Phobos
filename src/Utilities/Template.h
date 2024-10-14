@@ -415,20 +415,17 @@ public:
 	explicit Damageable(T const& all)
 		noexcept(noexcept(T { all }))
 		: BaseValue { all }
-	{
-	}
+	{ }
 
 	explicit Damageable(T const& undamaged, T const& damaged)
 		noexcept(noexcept(T { undamaged }) && noexcept(T { damaged }))
 		: BaseValue { undamaged }, ConditionYellow { damaged }
-	{
-	}
+	{ }
 
 	explicit Damageable(T const& green, T const& yellow, T const& red)
 		noexcept(noexcept(T { green }) && noexcept(T { yellow }) && noexcept(T { red }))
 		: BaseValue { green }, ConditionYellow { yellow }, ConditionRed { red }
-	{
-	}
+	{ }
 
 	inline void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag, const char* pSingleFlag = nullptr);
 
@@ -481,5 +478,3 @@ class PartialVector3D : public Vector3D<T> // Same as Vector3D except parsing on
 public:
 	size_t ValueCount;
 };
-
-

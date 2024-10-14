@@ -239,6 +239,104 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 	}
 }
 
+void AnimExt::SpawnFireAnims(AnimClass* pThis)
+{
+	auto const pType = pThis->Type;
+	auto const pExt = AnimExt::ExtMap.Find(pThis);
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+	auto const coords = pThis->GetCoords();
+
+	auto SpawnAnim = [&coords, pThis, pExt](AnimTypeClass* pType, int distance, bool constrainToCellSpots, bool attach)
+		{
+			if (!pType)
+				return;
+
+			CoordStruct newCoords = coords;
+
+			if (distance > 0)
+			{
+				newCoords = MapClass::GetRandomCoordsNear(coords, distance, false);
+
+				if (constrainToCellSpots)
+					newCoords = MapClass::PickInfantrySublocation(newCoords, true);
+			}
+
+			auto const loopCount = ScenarioClass::Instance->Random.RandomRanged(1, 2);
+			auto const pAnim = GameCreate<AnimClass>(pType, newCoords, 0, loopCount, 0x600u, 0, false);
+			pAnim->Owner = pThis->Owner;
+			auto const pExtNew = AnimExt::ExtMap.Find(pAnim);
+			pExtNew->Invoker = pExt->Invoker;
+			pExtNew->InvokerHouse = pExt->InvokerHouse;
+
+			if (attach && pThis->OwnerObject)
+				pAnim->SetOwnerObject(pThis->OwnerObject);
+		};
+
+	auto LoopAnims = [&coords, SpawnAnim](std::vector<AnimTypeClass*> const& anims, std::vector<double> const& chances, std::vector<double> const& distances,
+		int count, AnimTypeClass* defaultAnimType, double defaultChance0, double defaultChanceRest, int defaultDistance0, int defaultDistanceRest, bool constrainToCellSpots, bool attach)
+		{
+			double chance = 0.0;
+			int distance = 0;
+			AnimTypeClass* pAnimType = nullptr;
+
+			for (size_t i = 0; i < static_cast<unsigned int>(count); i++)
+			{
+				if (chances.size() > 0 && chances.size() > i)
+					chance = chances[i];
+				else if (chances.size() > 0)
+					chance = chances[chances.size() - 1];
+				else
+					chance = i == 0 ? defaultChance0 : defaultChanceRest;
+
+				if (chance < ScenarioClass::Instance->Random.RandomDouble())
+					continue;
+
+				if (anims.size() > 1)
+					pAnimType = anims[ScenarioClass::Instance->Random.RandomRanged(0, anims.size() - 1)];
+				else if (anims.size() > 0)
+					pAnimType = anims[0];
+				else
+					pAnimType = defaultAnimType;
+
+				if (distances.size() > 0 && distances.size() < i)
+					distance = static_cast<int>(distances[i] * Unsorted::LeptonsPerCell);
+				else if (distances.size() > 0)
+					distance = static_cast<int>(distances[distances.size() - 1] * Unsorted::LeptonsPerCell);
+				else
+					distance = i == 0 ? defaultDistance0 : defaultDistanceRest;
+
+				SpawnAnim(pAnimType, distance, constrainToCellSpots, attach);
+			}
+		};
+
+	auto const disallowedLandTypes = pTypeExt->FireAnimDisallowedLandTypes.Get(pType->Scorch ? LandTypeFlags::DefaultDisallowed : LandTypeFlags::None);
+
+	if (IsLandTypeInFlags(disallowedLandTypes, pThis->GetCell()->LandType))
+		return;
+
+	std::vector<AnimTypeClass*> anims = pTypeExt->SmallFireAnims;
+	std::vector<double> chances = pTypeExt->SmallFireChances;
+	std::vector<double> distances = pTypeExt->SmallFireDistances;
+	bool constrainToCellSpots = pTypeExt->ConstrainFireAnimsToCellSpots;
+	bool attach = pTypeExt->AttachFireAnimsToParent.Get(pType->Scorch);
+	int smallCount = pTypeExt->SmallFireCount.Get(1 + pType->Flamer);
+
+	if (pType->Flamer)
+	{
+		LoopAnims(anims, chances, distances, smallCount, RulesClass::Instance->SmallFire, 0.5, 1.0, 64, 160, constrainToCellSpots, attach);
+
+		anims = pTypeExt->LargeFireAnims;
+		chances = pTypeExt->LargeFireChances;
+		distances = pTypeExt->LargeFireDistances;
+
+		LoopAnims(anims, chances, distances, pTypeExt->LargeFireCount, RulesClass::Instance->LargeFire, 0.5, 0.5, 112, 112, constrainToCellSpots, attach);
+	}
+	else if (pType->Scorch)
+	{
+		LoopAnims(anims, chances, distances, smallCount, RulesClass::Instance->SmallFire, 1.0, 1.0, 0, 0, constrainToCellSpots, attach);
+	}
+}
+
 // =============================
 // load / save
 
@@ -254,6 +352,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->InvokerHouse)
 		.Process(this->AttachedSystem)
 		.Process(this->ParentBuilding)
+		.Process(this->IsTechnoTrailerAnim)
 		;
 }
 
@@ -282,6 +381,12 @@ void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
 
+		if (!pExt)
+		{
+			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
+			Debug::FatalErrorAndExit("AnimExt::InvalidateTechnoPointers: Animation of type [%s] has no ExtData!", ID);
+		}
+
 		if (pExt->Invoker == pTechno)
 			pExt->Invoker = nullptr;
 
@@ -295,6 +400,12 @@ void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSys
 	for (auto const& pAnim : *AnimClass::Array)
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+
+		if (!pExt)
+		{
+			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
+			Debug::FatalErrorAndExit("AnimExt::InvalidateParticleSystemPointers: Animation of type [%s] has no ExtData!", ID);
+		}
 
 		if (pExt->AttachedSystem == pParticleSystem)
 			pExt->AttachedSystem = nullptr;
