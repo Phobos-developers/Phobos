@@ -6,6 +6,7 @@
 #include <GameOptionsClass.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <TacticalClass.h>
 
@@ -139,7 +140,78 @@ DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
+#pragma region EMPulseCannon
+
+namespace EMPulseCannonTemp
+{
+	int weaponIndex = 0;
+}
+
+DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
+{
+	enum { SkipGameCode = 0x44CEF8 };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	int weaponIndex = 0;
+	auto const pExt = BuildingExt::ExtMap.Find(pThis);
+
+	if (!pExt->EMPulseSW)
+		return 0;
+
+	auto const pSWExt = SWTypeExt::ExtMap.Find(pExt->EMPulseSW->Type);
+
+	if (pSWExt->EMPulse_WeaponIndex >= 0)
+	{
+		weaponIndex = pSWExt->EMPulse_WeaponIndex;
+	}
+	else
+	{
+		auto const pCell = MapClass::Instance->TryGetCellAt(pThis->Owner->EMPTarget);
+
+		if (pCell)
+		{
+			AbstractClass* pTarget = pCell;
+
+			if (auto const pObject = pCell->GetContent())
+				pTarget = pObject;
+
+			weaponIndex = pThis->SelectWeapon(pTarget);
+		}
+	}
+
+	if (pSWExt->EMPulse_SuspendOthers)
+	{
+		auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
+
+		if (pHouseExt->SuspendedEMPulseSWs.count(pExt->EMPulseSW))
+		{
+			for (auto const& pSuper : pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW])
+			{
+				pSuper->IsSuspended = false;
+			}
+
+			pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW].clear();
+			pHouseExt->SuspendedEMPulseSWs.erase(pExt->EMPulseSW);
+		}
+	}
+
+	pExt->EMPulseSW = nullptr;
+	EMPulseCannonTemp::weaponIndex = weaponIndex;
+	R->EAX(pThis->GetWeapon(weaponIndex));
+	return SkipGameCode;
+}
+
+CoordStruct* __fastcall BuildingClass_GetFireCoords_Wrapper(BuildingClass* pThis, void* _, CoordStruct* pCrd, int weaponIndex)
+{
+	auto coords = MapClass::Instance->GetCellAt(pThis->Owner->EMPTarget)->GetCellCoords();
+	pCrd = pThis->GetFLH(&coords, EMPulseCannonTemp::weaponIndex, *pCrd);
+	return pCrd;
+}
+
+DEFINE_JUMP(CALL6, 0x44D1F9, GET_OFFSET(BuildingClass_GetFireCoords_Wrapper));
+
+DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPulseBulletWeapon, 0x8)
 {
 	GET(WeaponTypeClass*, pWeapon, EBP);
 	GET_STACK(BulletClass*, pBullet, STACK_OFFSET(0xF0, -0xA4));
@@ -148,6 +220,8 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
 
 	return 0;
 }
+
+#pragma endregion
 
 DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
 {
@@ -268,10 +342,14 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 	GET_STACK(DWORD const, calledby, 0x18);
 
 	TechnoClass* pTechno = pFactory->Object;
-	if(calledby<0x7F0000)
-	// Replace the old log with this to figure out where keeps flushing the stream
-	Debug::LogGame("(%08x) : %s is abandoning production of %s[%s]\n",
-		calledby-5, pFactory->Owner->PlainName, pTechno->GetType()->Name, pTechno->get_ID());
+	if (calledby < 0x7F0000) // Replace the old log with this to figure out where keeps flushing the stream
+	{
+		Debug::LogGame("(%08x) : %s is abandoning production of %s[%s]\n"
+			, calledby - 5
+			, pFactory->Owner->PlainName
+			, pTechno->GetType()->Name
+			, pTechno->get_ID());
+	}
 
 	auto pRulesExt = RulesExt::Global();
 
@@ -421,7 +499,7 @@ DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 			return SkipSetShouldRebuild;
 
 		// Per-house dehardcoding: BaseNodes + SW-Delivery
-		if (!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance->Difficulty])
+		if (!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance->Difficulty].Get(RulesExt::Global()->RepairBaseNodes))
 			return SkipSetShouldRebuild;
 	}
 	// Vanilla instruction: always repairable in other game modes
@@ -531,6 +609,167 @@ DEFINE_HOOK(0x449149, BuildingClass_Captured_FactoryPlant2, 0x6)
 		pHouseExt->RestrictedFactoryPlants.push_back(pThis);
 
 		return Skip;
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region DestroyableObstacle
+
+template <bool remove = false>
+static void RecalculateCells(BuildingClass* pThis)
+{
+	auto const cells = BuildingExt::GetFoundationCells(pThis, pThis->GetMapCoords());
+
+	auto& map = MapClass::Instance;
+
+	for (auto const& cell : cells)
+	{
+		if (auto pCell = map->TryGetCellAt(cell))
+		{
+			pCell->RecalcAttributes(DWORD(-1));
+
+			if constexpr (remove)
+				map->ResetZones(cell);
+			else
+				map->RecalculateZones(cell);
+
+			map->RecalculateSubZones(cell);
+
+		}
+	}
+}
+
+DEFINE_HOOK(0x440D01, BuildingClass_Unlimbo_DestroyableObstacle, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->IsDestroyableObstacle)
+		RecalculateCells(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x445D87, BuildingClass_Limbo_DestroyableObstacle, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->IsDestroyableObstacle)
+		RecalculateCells<true>(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x483D8E, CellClass_CheckPassability_DestroyableObstacle, 0x6)
+{
+	enum { IsBlockage = 0x483CD4 };
+
+	GET(BuildingClass*, pBuilding, ESI);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
+	if (pTypeExt->IsDestroyableObstacle)
+		return IsBlockage;
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region UnitRepair
+
+namespace UnitRepairTemp
+{
+	bool SeparateRepair = false;
+}
+
+DEFINE_HOOK(0x44C836, BuildingClass_Mission_Repair_UnitReload, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	if (pThis->Type->UnitReload)
+	{
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+		if (pTypeExt->Units_RepairRate.isset())
+		{
+			double repairRate = pTypeExt->Units_RepairRate.Get();
+
+			if (repairRate < 0.0)
+				return 0;
+
+			int rate = static_cast<int>(Math::max(repairRate * 900, 1));
+
+			if (!(Unsorted::CurrentFrame % rate))
+			{
+				UnitRepairTemp::SeparateRepair = true;
+
+				for (auto i = 0; i < pThis->RadioLinks.Capacity; ++i)
+				{
+					if (auto const pLink = pThis->GetNthLink(i))
+					{
+						if (!pLink->IsInAir() && pThis->SendCommand(RadioCommand::QueryMoving, pLink) == RadioCommand::AnswerPositive)
+							pThis->SendCommand(RadioCommand::RequestRepair, pLink);
+					}
+				}
+
+				UnitRepairTemp::SeparateRepair = false;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44BD38, BuildingClass_Mission_Repair_UnitRepair, 0x6)
+{
+	enum { SkipGameCode = 0x44BD3E };
+
+	GET(BuildingClass*, pThis, EBP);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	double repairRate = pTypeExt->Units_RepairRate.Get(RulesClass::Instance->URepairRate);
+	__asm { fld repairRate }
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x6F4D1A, TechnoClass_ReceiveCommand_Repair, 0x5)
+{
+	enum { AnswerNegative = 0x6F4CB4 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, repairStep, EAX);
+	GET_STACK(TechnoClass*, pFrom, STACK_OFFSET(0x18, 0x4));
+
+	if (auto const pBuilding = abstract_cast<BuildingClass*>(pFrom))
+	{
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
+		if (pBuilding->Type->UnitReload && pTypeExt->Units_RepairRate.isset() && !UnitRepairTemp::SeparateRepair)
+			return AnswerNegative;
+
+		repairStep = pTypeExt->Units_RepairStep.Get(repairStep);
+		double repairPercent = pTypeExt->Units_RepairPercent.Get(RulesClass::Instance->RepairPercent);
+		int repairCost = 0;
+
+		if (!pTypeExt->Units_DisableRepairCost)
+		{
+			auto const pType = pThis->GetTechnoType();
+			repairCost = static_cast<int>((pType->GetCost() / (pType->Strength / static_cast<double>(repairStep))) * repairPercent);
+
+			if (repairCost < 1)
+				repairCost = 1;
+		}
+
+		R->EAX(repairStep);
+		R->EBX(repairCost);
 	}
 
 	return 0;

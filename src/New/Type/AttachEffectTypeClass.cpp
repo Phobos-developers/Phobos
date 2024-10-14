@@ -49,7 +49,7 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(co
 		}
 	}
 
-	return std::vector<AttachEffectTypeClass*> (types.begin(), types.end());;
+	return std::vector<AttachEffectTypeClass*>(types.begin(), types.end());;
 }
 
 AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount) const
@@ -106,6 +106,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Animation.Read(exINI, pSection, "Animation");
 	this->CumulativeAnimations.Read(exINI, pSection, "CumulativeAnimations");
+	this->CumulativeAnimations_RestartOnChange.Read(exINI, pSection, "CumulativeAnimations.RestartOnChange");
 	this->Animation_ResetOnReapply.Read(exINI, pSection, "Animation.ResetOnReapply");
 	this->Animation_OfflineAction.Read(exINI, pSection, "Animation.OfflineAction");
 	this->Animation_TemporalAction.Read(exINI, pSection, "Animation.TemporalAction");
@@ -169,6 +170,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->PenetratesForceShield)
 		.Process(this->Animation)
 		.Process(this->CumulativeAnimations)
+		.Process(this->CumulativeAnimations_RestartOnChange)
 		.Process(this->Animation_ResetOnReapply)
 		.Process(this->Animation_OfflineAction)
 		.Process(this->Animation_TemporalAction)
@@ -217,3 +219,145 @@ void AttachEffectTypeClass::SaveToStream(PhobosStreamWriter& Stm)
 {
 	this->Serialize(Stm);
 }
+
+// AE type-related enum etc. parsers
+namespace detail
+{
+	template <>
+	inline bool read<DiscardCondition>(DiscardCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = DiscardCondition::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "none"))
+				{
+					parsed |= DiscardCondition::None;
+				}
+				else if (!_strcmpi(cur, "entry"))
+				{
+					parsed |= DiscardCondition::Entry;
+				}
+				else if (!_strcmpi(cur, "move"))
+				{
+					parsed |= DiscardCondition::Move;
+				}
+				else if (!_strcmpi(cur, "stationary"))
+				{
+					parsed |= DiscardCondition::Stationary;
+				}
+				else if (!_strcmpi(cur, "drain"))
+				{
+					parsed |= DiscardCondition::Drain;
+				}
+				else if (!_strcmpi(cur, "inrange"))
+				{
+					parsed |= DiscardCondition::InRange;
+				}
+				else if (!_strcmpi(cur, "outofrange"))
+				{
+					parsed |= DiscardCondition::OutOfRange;
+				}
+				else if (!_strcmpi(cur, "firing"))
+				{
+					parsed |= DiscardCondition::Firing;
+				}
+				else
+				{
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+}
+
+// AEAttachInfoTypeClass
+
+void AEAttachInfoTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
+{
+	INI_EX exINI(pINI);
+
+	this->AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
+	this->CumulativeRefreshAll.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll");
+	this->CumulativeRefreshAll_OnAttach.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll.OnAttach");
+	this->CumulativeRefreshSameSourceOnly.Read(exINI, pSection, "AttachEffect.CumulativeRefreshSameSourceOnly");
+	this->RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
+	exINI.ParseStringList(this->RemoveGroups, pSection, "AttachEffect.RemoveGroups");
+	this->CumulativeRemoveMinCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMinCounts");
+	this->CumulativeRemoveMaxCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMaxCounts");
+	this->DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
+	this->Delays.Read(exINI, pSection, "AttachEffect.Delays");
+	this->InitialDelays.Read(exINI, pSection, "AttachEffect.InitialDelays");
+	this->RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
+}
+
+AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool selfOwned) const
+{
+	AEAttachParams info { };
+
+	if (this->DurationOverrides.size() > 0)
+		info.DurationOverride = this->DurationOverrides[this->DurationOverrides.size() > index ? index : this->DurationOverrides.size() - 1];
+
+	if (selfOwned)
+	{
+		if (this->Delays.size() > 0)
+			info.Delay = this->Delays[this->Delays.size() > index ? index : this->Delays.size() - 1];
+
+		if (this->InitialDelays.size() > 0)
+			info.InitialDelay = this->InitialDelays[this->InitialDelays.size() > index ? index : this->InitialDelays.size() - 1];
+
+		if (this->RecreationDelays.size() > 0)
+			info.RecreationDelay = this->RecreationDelays[this->RecreationDelays.size() > index ? index : this->RecreationDelays.size() - 1];
+	}
+	else
+	{
+		info.CumulativeRefreshAll = this->CumulativeRefreshAll;
+		info.CumulativeRefreshAll_OnAttach = this->CumulativeRefreshAll_OnAttach;
+		info.CumulativeRefreshSameSourceOnly = this->CumulativeRefreshSameSourceOnly;
+	}
+
+	return info;
+}
+
+#pragma region(save/load)
+
+template <class T>
+bool AEAttachInfoTypeClass::Serialize(T& stm)
+{
+	return stm
+		.Process(this->AttachTypes)
+		.Process(this->CumulativeRefreshAll)
+		.Process(this->CumulativeRefreshAll_OnAttach)
+		.Process(this->CumulativeRefreshSameSourceOnly)
+		.Process(this->RemoveTypes)
+		.Process(this->RemoveGroups)
+		.Process(this->CumulativeRemoveMinCounts)
+		.Process(this->CumulativeRemoveMaxCounts)
+		.Process(this->DurationOverrides)
+		.Process(this->Delays)
+		.Process(this->InitialDelays)
+		.Process(this->RecreationDelays)
+		.Success();
+}
+
+bool AEAttachInfoTypeClass::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool AEAttachInfoTypeClass::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<AEAttachInfoTypeClass*>(this)->Serialize(stm);
+}
+
+#pragma endregion(save/load)
