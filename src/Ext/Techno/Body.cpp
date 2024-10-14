@@ -6,6 +6,7 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -404,7 +405,7 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 
 					if (minSize > 0)
 					{
-						if (cumulativeCount < minCounts->at(typeCounter-1 >= minSize ? minSize - 1 : typeCounter - 1))
+						if (cumulativeCount < minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1))
 							continue;
 					}
 					if (maxSize > 0)
@@ -500,6 +501,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitIdleTurretROT)
 		.Process(this->UnitIdleActionTimer)
 		.Process(this->UnitIdleActionGapTimer)
+		.Process(this->IsDetachingForCloak)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->HasRemainingWarpInDelay)
 		.Process(this->LastWarpInDelay)
@@ -584,4 +586,3 @@ DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 
 	return 0;
 }
-

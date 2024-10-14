@@ -34,7 +34,7 @@ void AresHelper::GetGameModulesBaseAddresses()
 	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, GetProcessId(hCurrentProcess));
 	if (hSnap != INVALID_HANDLE_VALUE)
 	{
-		MODULEENTRY32 modEntry{ };
+		MODULEENTRY32 modEntry { };
 		modEntry.dwSize = sizeof(modEntry);
 		if (Module32First(hSnap, &modEntry))
 		{
@@ -57,7 +57,7 @@ void AresHelper::GetGameModulesBaseAddresses()
 				Debug::LogDeferred("Module %s base address : 0x%p.\n", originalModuleName, modEntry.modBaseAddr);
 				if (!_strcmpi(originalModuleName, "Ares.dll"))
 					AresBaseAddress = (uintptr_t)modEntry.modBaseAddr;
-				else if(!_strcmpi(originalModuleName, PHOBOS_DLL))
+				else if (!_strcmpi(originalModuleName, PHOBOS_DLL))
 					PhobosBaseAddress = (uintptr_t)modEntry.modBaseAddr;
 			}
 			while (Module32Next(hSnap, &modEntry));
@@ -86,7 +86,7 @@ void AresHelper::Init()
 	{
 		AresVersion = AresTimestampBytes.at(TimeDateStamp);
 	}
-	catch(std::exception)
+	catch (std::exception)
 	{
 		AresVersion = Version::Unknown;
 	}
@@ -108,7 +108,7 @@ void AresHelper::Init()
 	constexpr const wchar_t* ARES_DLL = L"Ares.dll";
 	if (CanUseAres && GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, ARES_DLL, &AresDllHmodule))
 	{
-		for(auto x: AresFunctionOffsets.at(AresVersion))
+		for (auto x : AresFunctionOffsets.at(AresVersion))
 			if (x.second > 0)
 				AresFunctionOffsetsFinal[x.first] = AresBaseAddress + x.second;
 			else
