@@ -88,21 +88,27 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		if (pType->SecretLab)
 			pOwner->SecretLabs.AddItem(pBuilding);
 
+		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+
 		if (pType->FactoryPlant)
 		{
-			pOwner->FactoryPlants.AddItem(pBuilding);
-			pOwner->CalculateCostMultipliers();
+			if (pBuildingExt->TypeExtData->FactoryPlant_AllowTypes.size() > 0 || pBuildingExt->TypeExtData->FactoryPlant_DisallowTypes.size() > 0)
+			{
+				pOwnerExt->RestrictedFactoryPlants.push_back(pBuilding);
+			}
+			else
+			{
+				pOwner->FactoryPlants.AddItem(pBuilding);
+				pOwner->CalculateCostMultipliers();
+			}
 		}
 
 		// BuildingClass::Place is already called in DiscoveredBy
 		// it added OrePurifier and xxxGainSelfHeal to House counter already
 
-		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
-
 		// LimboKill ID
 		pBuildingExt->LimboID = ID;
-
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 
 		// Add building to list of owned limbo buildings
 		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
