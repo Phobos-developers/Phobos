@@ -91,6 +91,7 @@ public:
 		static bool ShowHarvesterCounter;
 		static bool ShowWeedsCounter;
 		static bool ShowPlanningPath;
+		static bool HideLightFlashEffects;
 	};
 
 	class Misc

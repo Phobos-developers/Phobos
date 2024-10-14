@@ -32,7 +32,7 @@ public:
 	void HelpText(TechnoTypeClass* pType);
 	void HelpText(SuperClass* pSuper);
 
-// Properties
+	// Properties
 private:
 	std::wstring TextBuffer {};
 
