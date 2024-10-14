@@ -142,6 +142,10 @@ public:
 		Valueable<double> CombatLightChance;
 		Nullable<bool> Particle_AlphaImageIsLightFlash;
 
+		Nullable<double> DamageOwnerMultiplier;
+		Nullable<double> DamageAlliesMultiplier;
+		Nullable<double> DamageEnemiesMultiplier;
+
 		Valueable<bool> SuppressRevengeWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
 		Valueable<bool> SuppressReflectDamage;
@@ -290,6 +294,10 @@ public:
 			, CombatLightDetailLevel {}
 			, CombatLightChance { 1.0 }
 			, Particle_AlphaImageIsLightFlash {}
+
+			, DamageOwnerMultiplier {}
+			, DamageAlliesMultiplier {}
+			, DamageEnemiesMultiplier {}
 
 			, SuppressRevengeWeapons { false }
 			, SuppressRevengeWeapons_Types {}

@@ -17,30 +17,50 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
+	if (!*args->Damage || args->IgnoreDefenses)
+		return 0;
+
+	//Calculate Damage Multiplier
+	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH))
+	{
+		const auto pFirerHouse = pThis->Owner;
+		const auto pTargetHouse = args->SourceHouse;
+		double multiplier = 1.0;
+
+		if (!pFirerHouse || !pTargetHouse || !pFirerHouse->IsAlliedWith(pTargetHouse))
+			multiplier = pWHExt->DamageEnemiesMultiplier.Get(RulesExt::Global()->DamageEnemiesMultiplier);
+		else if (pFirerHouse != pTargetHouse)
+			multiplier = pWHExt->DamageAlliesMultiplier.Get(RulesExt::Global()->DamageAlliesMultiplier);
+		else
+			multiplier = pWHExt->DamageOwnerMultiplier.Get(RulesExt::Global()->DamageOwnerMultiplier);
+
+		if (multiplier != 1.0)
+		{
+			const int sgnDamage = *args->Damage > 0 ? 1 : -1;
+			const int calculateDamage = static_cast<int>(*args->Damage * multiplier);
+			*args->Damage = calculateDamage ? calculateDamage : sgnDamage;
+		}
+	}
+
+	//Shield Receive Damage
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	int nDamageLeft = *args->Damage;
-
-	if (!args->IgnoreDefenses)
+	if (const auto pShieldData = pExt->Shield.get())
 	{
-		if (const auto pShieldData = pExt->Shield.get())
+		if (!pShieldData->IsActive())
+			return 0;
+
+		const int nDamageLeft = pShieldData->ReceiveDamage(args);
+		if (nDamageLeft >= 0)
 		{
-			if (!pShieldData->IsActive())
-				return 0;
+			*args->Damage = nDamageLeft;
 
-			nDamageLeft = pShieldData->ReceiveDamage(args);
-
-			if (nDamageLeft >= 0)
-			{
-				*args->Damage = nDamageLeft;
-
-				if (auto pTag = pThis->AttachedTag)
-					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
-			}
-
-			if (nDamageLeft == 0)
-				RD::SkipLowDamageCheck = true;
+			if (auto pTag = pThis->AttachedTag)
+				pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
 		}
+
+		if (nDamageLeft == 0)
+			RD::SkipLowDamageCheck = true;
 	}
 
 	return 0;
