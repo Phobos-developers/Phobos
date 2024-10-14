@@ -166,9 +166,22 @@ public:
 		Valueable<SHPStruct*> ProgressDisplay_Others_PipsShape;
 		Valueable<SHPStruct*> ProgressDisplay_Buildings_PipsShape;
 
+		Valueable<double> AircraftLevelLightMultiplier;
+		Valueable<double> JumpjetLevelLightMultiplier;
+
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<bool> GatherWhenMCVDeploy;
+		Valueable<bool> AIFireSale;
+		Valueable<int> AIFireSaleDelay;
+		Valueable<bool> AIAllToHunt;
+		Valueable<bool> RepairBaseNodes;
+
+		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
+		Valueable<int> CombatLightDetailLevel;
+		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -293,9 +306,19 @@ public:
 			, TemporalLifeDisplay_Buildings_Pips { 5 }
 			, ProgressDisplay_Others_PipsShape { FileSystem::PIPS_SHP }
 			, ProgressDisplay_Buildings_PipsShape { FileSystem::PIPS_SHP }
+			, AircraftLevelLightMultiplier { 1.0 }
+			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
 			, UseFixedVoxelLighting { false }
+			, GatherWhenMCVDeploy { true }
+			, AIFireSale { true }
+			, AIFireSaleDelay { 0 }
+			, AIAllToHunt { true }
+			, RepairBaseNodes { false }
+			, WarheadParticleAlphaImageIsLightFlash { false }
+			, CombatLightDetailLevel { 0 }
+			, LightFlashAlphaImageDetailLevel { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

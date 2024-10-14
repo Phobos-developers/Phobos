@@ -30,8 +30,12 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	if (auto pImage = pType->AlphaImage)
 	{
 		auto [xy, _] = TacticalClass::Instance->CoordsToClient(pLinked->Location);
-		RectangleStruct Dirty = { xy.X - (pImage->Width / 2) , xy.Y - (pImage->Height / 2),
-		  pImage->Width, pImage->Height };
+		RectangleStruct Dirty = {
+			xy.X - (pImage->Width / 2),
+			xy.Y - (pImage->Height / 2),
+			pImage->Width,
+			pImage->Height
+		};
 		TacticalClass::Instance->RegisterDirtyArea(Dirty, true);
 	}
 

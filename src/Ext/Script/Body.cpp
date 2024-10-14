@@ -23,8 +23,7 @@ void ScriptExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 // container
 
 ScriptExt::ExtContainer::ExtContainer() : Container("ScriptClass")
-{
-}
+{ }
 
 ScriptExt::ExtContainer::~ExtContainer() = default;
 
