@@ -282,6 +282,24 @@ In `aimd.ini`:
 x=10104,n         ; integer, additional distance in cells
 ```
 
+##### `10105` Repair Destroyed Bridge
+
+- Picks a Bridge Repair Hut from the map that is linked with a bridge with destroyed sections and is reachable by engineers and then send the Taskforce against it.
+- Puts nonengineers into Area Guard mode when they arrive near the Bridge Repair Hut location.
+
+In `aimd.ini`:
+```ini
+[SOMESCRIPTTYPE]  ; ScriptType
+x=10105,n         ; integer, mode for selecting Bridge Repair Huts
+```
+- The possible argument values are:
+
+| *Argument* | *Target priority*  |
+| :--------: | :----------------: |
+| 0          | Pick the closest   |
+| 1          | Pick the Farthest  |
+| -1         | Pick Random        |
+
 ### `12000-12999` Suplementary/Setup Pre-actions
 
 #### `12000` Wait if No Target Found

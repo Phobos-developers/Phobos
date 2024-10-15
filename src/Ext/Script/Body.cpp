@@ -215,6 +215,10 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		// Chronoshift to enemy base, argument is additional distance modifier
 		ScriptExt::ChronoshiftToEnemyBase(pTeam, argument);
 		break;
+	case PhobosScripts::RepairDestroyedBridge:
+		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
+		ScriptExt::RepairDestroyedBridge(pTeam, -1);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
@@ -1299,3 +1303,5 @@ void ScriptExt::Log(const char* pFormat, ...)
 	Debug::LogWithVArgs(pFormat, args);
 	va_end(args);
 }
+
+
