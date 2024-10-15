@@ -172,6 +172,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first.
 - Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) are now correctly parsed for Lunar theater.
+- Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
+- Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 
 ## Fixes / interactions with other extensions
 
@@ -917,21 +919,24 @@ AIAllToHunt=true          ; boolean
 GatherWhenMCVDeploy=true  ; boolean
 ```
 
-### Subterranean unit travel height
+### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
+- Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used. This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General]`->`TunnelSpeed`.
 
 In `rulesmd.ini`:
 ```ini
 [General]
 SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
-
+SubterraneanSpeed=7.5    ; floating point value
+                         
 [SOMETECHNO]             ; TechnoType
 SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
+SubterraneanSpeed=-1     ; floating point value
 ```
 
 ```{warning}
-This expects negative values to be used and may behave erratically if set to above -50.
+SubterraneanHeight expects negative values to be used and may behave erratically if set to above -50.
 ```
 
 ### Voxel body multi-section shadows
