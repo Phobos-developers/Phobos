@@ -32,7 +32,6 @@
 
 #pragma once
 
-#include <Phobos.h>
 #include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
@@ -88,7 +87,7 @@ enum class LandTypeFlags : unsigned short
 
 MAKE_ENUM_FLAGS(LandTypeFlags);
 
-inline bool IsLandTypeInFlags(LandTypeFlags flags, LandType type)
+constexpr bool IsLandTypeInFlags(LandTypeFlags flags, LandType type)
 {
 	return (bool)((LandTypeFlags)(1 << (char)type) & flags);
 }
