@@ -137,7 +137,7 @@ HealthBar.Hide=false  ; boolean
   - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
   - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual]` -> `WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
     - Additionally these alpha images are not created if `[AudioVisual]`->`LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
-  
+
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
@@ -146,7 +146,7 @@ LightFlashAlphaImageDetailLevel=0            ; integer
 
 [SOMEWARHEAD]                                ; WarheadType
 Particle.AlphaImageIsLightFlash=             ; boolean
-```                                          
+```
 
 In `RA2MD.ini`:
 ```ini
@@ -587,3 +587,16 @@ In `RA2MD.ini`:
 [Phobos]
 SaveGameOnScenarioStart=true ; boolean
 ```
+
+
+### Forbid saving game
+
+Game save can be forbidden in singleplayer games as some sort of "hardcore" mode. All existing save/load functionalities will be disabled.
+- When trying to click the save button, a message box with `TXT_HARDCORE_NOSAVE` CSF entry will appear instead of saving the game.
+- Scenarios successions will be disabled as well.
+- On the loading screen, the single-frame `hardcorelogo.shp` (for `Palette.pal`) will be drawn on the top right corner of the screen. If not present, the text with csf `TXT_HARDCORE_MODE` will be displayed instead.
+In `RA2MD.ini`:
+```ini
+ [Phobos]
+ NoSaveLoad=false  ; boolean
+ ```
