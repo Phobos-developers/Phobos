@@ -232,7 +232,7 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 
 	HouseClass* const pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 
-	if (pType->WeaponCount != 0 && (!pType->WeaponScope.Get() || pBullet->TargetCoords.DistanceFrom(pBullet->Location) <= pType->WeaponScope.Get()) && (!pOwner || this->PrepareDisperseWeapon(pBullet, pOwner)))
+	if (this->WeaponCount != 0 && (!pType->WeaponScope.Get() || pBullet->TargetCoords.DistanceFrom(pBullet->Location) <= pType->WeaponScope.Get()) && (!pOwner || this->PrepareDisperseWeapon(pBullet, pOwner)))
 		return true;
 
 	if (pType->UniqueCurve ? this->CurveVelocityChange(pBullet) : this->NotCurveVelocityChange(pBullet, pOwner))
