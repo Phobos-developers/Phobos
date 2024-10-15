@@ -26,7 +26,7 @@ void ShapeTextPrinter::PrintShape
 		}
 		else
 		{
-			int signIndex = SignSequence.find(text[i]);
+			size_t signIndex = SignSequence.find(text[i]);
 
 			if (signIndex < SignSequence.size())
 				frame = data.BaseExtraFrame + signIndex;
