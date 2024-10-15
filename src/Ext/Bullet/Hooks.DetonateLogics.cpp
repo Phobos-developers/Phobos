@@ -9,18 +9,6 @@
 #include <AircraftClass.h>
 #include <TacticalClass.h>
 
-DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
-{
-	GET(BulletClass*, pThis, ESI);
-
-	auto pTypeExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
-	auto pControlledAnimType = pTypeExt->MindControl_Anim.Get(RulesClass::Instance->ControlledAnimationType);
-
-	R->AL(CaptureManagerExt::CaptureUnit(pThis->Owner->CaptureManager, pThis->Target, pControlledAnimType));
-
-	return 0x4692D5;
-}
-
 DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 {
 	enum { SkipShaking = 0x469130 };
@@ -28,15 +16,26 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 	GET(WarheadTypeClass*, pWarhead, EAX);
 	GET_BASE(CoordStruct*, pCoords, 0x8);
 
-	if (auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
-	{
-		auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
 
-		if (pExt->ShakeIsLocal && !visible)
-			return SkipShaking;
-	}
+	if (pWHExt->ShakeIsLocal && !visible)
+		return SkipShaking;
 
 	return 0;
+}
+
+DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
+{
+	enum { SkipGameCode = 0x4692D5 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
+	auto const pControlledAnimType = pWHExt->MindControl_Anim.Get(RulesClass::Instance->ControlledAnimationType);
+	R->AL(CaptureManagerExt::CaptureUnit(pThis->Owner->CaptureManager, pThis->Target, pControlledAnimType));
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
@@ -44,11 +43,8 @@ DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 	GET(BulletClass*, pThis, ESI);
 	GET(HouseClass*, pHouse, ECX);
 
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
-	{
-		if (!pHouse)
-			R->ECX(pExt->FirerHouse);
-	}
+	if (!pHouse)
+		R->ECX(BulletExt::ExtMap.Find(pThis)->FirerHouse);
 
 	return 0;
 }
@@ -154,10 +150,9 @@ DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris_Checks, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 	bool isLand = pThis->GetCell()->LandType != LandType::Water;
 
-	if (!isLand && pWHExt->Debris_Conventional)
+	if (!isLand && WarheadTypeExt::ExtMap.Find(pThis->WH)->Debris_Conventional)
 		return SkipGameCode;
 
 	// Fix the debris count to be in range of Min, Max instead of Min, Max-1.
@@ -173,8 +168,8 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 	GET(BulletClass*, pThis, ESI);
 	GET(int, debrisCount, EBX);
 
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
-	auto debrisAnims = pWHExt->DebrisAnims.GetElements(RulesClass::Instance->MetallicDebris);
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
+	auto const debrisAnims = pWHExt->DebrisAnims.GetElements(RulesClass::Instance->MetallicDebris);
 
 	if (debrisAnims.size() < 1)
 		return SkipGameCode;
@@ -182,11 +177,10 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 	while (debrisCount > 0)
 	{
 		int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, debrisAnims.size() - 1);
+		auto const pAnim = GameCreate<AnimClass>(debrisAnims[debrisIndex], pThis->GetCoords());
 
-		auto anim = GameCreate<AnimClass>(debrisAnims[debrisIndex], pThis->GetCoords());
-
-		if (anim && pThis->Owner)
-			anim->Owner = pThis->Owner->Owner;
+		if (pThis->Owner)
+			pAnim->Owner = pThis->Owner->Owner;
 
 		debrisCount--;
 	}
