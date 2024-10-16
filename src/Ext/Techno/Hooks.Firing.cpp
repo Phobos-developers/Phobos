@@ -102,6 +102,42 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Disguised;
 		}
+		else if (!pTypeExt->ForceWeapon_InRange.empty())
+		{
+			for (size_t i = 0; i < pTypeExt->ForceWeapon_InRange.size(); i++)
+			{
+				int distance = 0;
+
+				// Value below 0 means Range won't be overriden
+				if (i < pTypeExt->ForceWeapon_InRange_Overrides.size() && pTypeExt->ForceWeapon_InRange_Overrides[i] > 0)
+					distance = static_cast<int>(pTypeExt->ForceWeapon_InRange_Overrides[i] * 256.0);
+
+				if (pTypeExt->ForceWeapon_InRange[i] >= 0)
+				{
+					auto const pWeapon = pThis->GetWeapon(pTypeExt->ForceWeapon_InRange[i])->WeaponType;
+					distance = distance > 0 ? distance : pWeapon->Range;
+
+					if (pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers)
+						distance = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis, distance);
+
+					if (pThis->DistanceFrom(pTarget) <= distance)
+					{
+						forceWeaponIndex = pTypeExt->ForceWeapon_InRange[i];
+						break;
+					}
+				}
+				else
+				{
+					// Apply range modifiers regardless of weapon
+					if (pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers)
+						distance = WeaponTypeExt::GetRangeWithModifiers(nullptr, pThis, distance);
+
+					// Don't force weapon if range satisfied
+					if (pThis->DistanceFrom(pTarget) <= distance)
+						break;
+				}
+			}
+		}
 
 		if (forceWeaponIndex >= 0)
 		{
