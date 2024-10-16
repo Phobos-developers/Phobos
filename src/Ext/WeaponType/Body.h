@@ -29,7 +29,7 @@ public:
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Bolt_Arcs;
 		Nullable<bool> Strafing;
-		Valueable<int> Strafing_Shots;
+		Nullable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
 		Valueable<bool> Strafing_UseAmmoPerShot;
 		Valueable<AffectedTarget> CanTarget;
@@ -69,7 +69,7 @@ public:
 			, Bolt_Disable3 { false }
 			, Bolt_Arcs { 8 }
 			, Strafing { }
-			, Strafing_Shots { 5 }
+			, Strafing_Shots {}
 			, Strafing_SimulateBurst { false }
 			, Strafing_UseAmmoPerShot { false }
 			, CanTarget { AffectedTarget::All }

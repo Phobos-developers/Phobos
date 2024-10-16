@@ -103,24 +103,24 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	// ToolTips
 	{
 		Phobos::UI::ExtendedToolTips =
-			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
+			pINI_UIMD->ReadBool(GameStrings::ToolTips, "ExtendedToolTips", false);
 
 		Phobos::UI::AnchoredToolTips =
-			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "AnchoredToolTips", false);
+			pINI_UIMD->ReadBool(GameStrings::ToolTips, "AnchoredToolTips", false);
 
 		Phobos::UI::MaxToolTipWidth =
-			pINI_UIMD->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
+			pINI_UIMD->ReadInteger(GameStrings::ToolTips, "MaxWidth", 0);
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(GameStrings::ToolTips, "CostLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::CostLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"$");
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(GameStrings::ToolTips, "PowerLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1"); // ⚡
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "PowerBlackoutLabel", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(GameStrings::ToolTips, "PowerBlackoutLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::PowerBlackoutLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1\u274c"); // ⚡❌
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(GameStrings::ToolTips, "TimeLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u231a"); // ⌚
 	}
 
