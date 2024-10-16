@@ -439,7 +439,8 @@ DEFINE_HOOK(0x4C762A, EventClass_RespondToEvent_StopAircraftAction, 0x6)
 		if (pTechno->vt_entry_4C4()) // pTechno->MegaMissionIsAttackMove()
 			pTechno->vt_entry_4A8(); // pTechno->ClearMegaMissionData()
 
-		pTechno->EnterIdleMode(false, true);
+		if (pTechno->GetHeight() == static_cast<AircraftClass*>(pTechno)->Type->GetFlightLevel())
+			pTechno->EnterIdleMode(false, true);
 	}
 
 	return 0;
