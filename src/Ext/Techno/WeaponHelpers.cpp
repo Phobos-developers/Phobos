@@ -198,3 +198,44 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 
 	return weaponIndex;
 }
+
+int TechnoExt::ApplyForceWeaponInRange(TechnoClass* pThis, std::vector<int> weaponIndices, std::vector<double> rangeOverrides, bool applyRangeModifiers, int currentDistance)
+{
+	int forceWeaponIndex = -1;
+
+	for (size_t i = 0; i < weaponIndices.size(); i++)
+	{
+		int distance = 0;
+
+		// Value below 0 means Range won't be overriden
+		if (i < rangeOverrides.size() && rangeOverrides[i] > 0)
+			distance = static_cast<int>(rangeOverrides[i] * 256.0);
+
+		if (weaponIndices[i] >= 0)
+		{
+			auto const pWeapon = pThis->GetWeapon(weaponIndices[i])->WeaponType;
+			distance = distance > 0 ? distance : pWeapon->Range;
+
+			if (applyRangeModifiers)
+				distance = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis, distance);
+
+			if (currentDistance <= distance)
+			{
+				forceWeaponIndex = weaponIndices[i];
+				break;
+			}
+		}
+		else
+		{
+			// Apply range modifiers regardless of weapon
+			if (applyRangeModifiers)
+				distance = WeaponTypeExt::GetRangeWithModifiers(nullptr, pThis, distance);
+
+			// Don't force weapon if range satisfied
+			if (currentDistance <= distance)
+				break;
+		}
+	}
+
+	return forceWeaponIndex;
+}

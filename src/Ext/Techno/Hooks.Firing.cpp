@@ -75,16 +75,20 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 
 	GET(TechnoClass*, pThis, ECX);
 
-	if (pThis && pThis->Target)
+	if (!pThis)
+		return 0;
+
+	int forceWeaponIndex = -1;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pThis->Target)
 	{
 		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
 
 		if (!pTarget)
 			return 0;
 
-		int forceWeaponIndex = -1;
 		auto const pTargetType = pTarget->GetTechnoType();
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 		if (pTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
 			pTargetType->Cloakable && pTargetType->Naval &&
@@ -102,12 +106,18 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Disguised;
 		}
-
-		if (forceWeaponIndex >= 0)
+		else if (!pTypeExt->ForceWeapon_InRange.empty())
 		{
-			R->EAX(forceWeaponIndex);
-			return UseWeaponIndex;
+			int currentDistance = pThis->DistanceFrom(pTarget);
+			forceWeaponIndex = TechnoExt::ApplyForceWeaponInRange(pThis, pTypeExt->ForceWeapon_InRange, pTypeExt->ForceWeapon_InRange_Overrides,
+				pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers, currentDistance);
 		}
+	}
+
+	if (forceWeaponIndex >= 0)
+	{
+		R->EAX(forceWeaponIndex);
+		return UseWeaponIndex;
 	}
 
 	return 0;
