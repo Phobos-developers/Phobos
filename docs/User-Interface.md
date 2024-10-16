@@ -137,7 +137,7 @@ HealthBar.Hide=false  ; boolean
   - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
   - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual]` -> `WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
     - Additionally these alpha images are not created if `[AudioVisual]`->`LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
-  
+
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
@@ -146,7 +146,7 @@ LightFlashAlphaImageDetailLevel=0            ; integer
 
 [SOMEWARHEAD]                                ; WarheadType
 Particle.AlphaImageIsLightFlash=             ; boolean
-```                                          
+```
 
 In `RA2MD.ini`:
 ```ini
@@ -390,7 +390,7 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
   - `CameoOverlayShapes` controls the drawn image file.
   - `CameoOverlayFrames` controls which frame in `CameoOverlayShapes` to draw in three different situations: currently owned this building type, grey cameo and have its prerequisite, grey cameo but have no prerequisite (The last situation requires `AlwaysExistTheCameo` to be true). When set to a negative number, it means that there is no need to draw under the corresponding conditions.
   - `CameoOverlayPalette` the color palette used when drawing `CameoOverlayShapes`.
-  - If `PrerequisiteForCameo` is not set, the grey cameo will only show when `AIBasePlanningSide` is satisfied. If set a techno type, the grey cameo will show if you have a techno in this type or this type's `TechnoLevel`, `Owner`, `RequiredHouses` and `ForbiddenHouses` is satisfied.
+  - If `PrerequisiteForCameo` is not set, the grey cameo will only show when `AIBasePlanningSide` is satisfied. If set a techno type, the grey cameo will show if you have a techno in this type or this type's `TechnoLevel`, `Owner`, `RequiredHouses`, `ForbiddenHouses` and `PrerequisiteForCameo` is satisfied.
   - The `UIExtraDescription` is like `UIDescription`, but this only appearing when the techno is truly unbuildable.
 
 In `rulesmd.ini`:

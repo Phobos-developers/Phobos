@@ -838,6 +838,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitBaseForAllyBuilding)
 		.Process(this->AlwaysExistTheCameo)
 		.Process(this->PrerequisiteForCameo)
+		.Process(this->CameoCheckMutex)
 		.Process(this->UIExtraDescription)
 
 		.Process(this->Wake)

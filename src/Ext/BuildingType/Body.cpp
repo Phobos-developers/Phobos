@@ -99,6 +99,44 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	return isUpgrade ? result : -1;
 }
 
+bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const TechnoTypeClass* const pType, const TechnoTypeClass* const pPreType)
+{
+	const int techLevel = pType->TechLevel;
+
+	if (techLevel <= 0 || techLevel > Game::TechLevel)
+		return false;
+
+	if (!pHouse->InOwners(pType))
+		return false;
+
+	if (!pHouse->InRequiredHouses(pType))
+		return false;
+
+	if (pHouse->InForbiddenHouses(pType))
+		return false;
+
+	if (!pPreType)
+	{
+		const int sideIndex = pType->AIBasePlanningSide;
+
+		return (sideIndex == -1 || sideIndex == pHouse->Type->SideIndex);
+	}
+
+	if (pHouse->CountOwnedAndPresent(pPreType))
+		return true;
+
+	TechnoTypeExt::ExtData* const pPreTypeExt = TechnoTypeExt::ExtMap.Find(pPreType);
+
+	if (pPreTypeExt->CameoCheckMutex)
+		return false;
+
+	pPreTypeExt->CameoCheckMutex = true;
+	const bool exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pPreType, pPreTypeExt->PrerequisiteForCameo);
+	pPreTypeExt->CameoCheckMutex = false;
+
+	return exist;
+}
+
 // Check the cameo change
 CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pHouse, const TechnoTypeClass* const pType, CanBuildResult canBuild)
 {
@@ -110,61 +148,16 @@ CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pH
 
 		if (canBuild == CanBuildResult::Unbuildable) // Unbuildable + Satisfy basic limitations = Change it to TemporarilyUnbuildable
 		{
-			do // Avoid too many nested ifs
+			pTypeExt->CameoCheckMutex = true;
+			const bool exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pType, pTypeExt->PrerequisiteForCameo);
+			pTypeExt->CameoCheckMutex = false;
+
+			if (exist)
 			{
-				const int techLevel = pType->TechLevel;
-
-				if (techLevel <= 0 || techLevel > Game::TechLevel)
-					break;
-
-				if (!pHouse->InOwners(pType))
-					break;
-
-				if (!pHouse->InRequiredHouses(pType))
-					break;
-
-				if (pHouse->InForbiddenHouses(pType))
-					break;
-
-				TechnoTypeClass* const cameoPrerequisite = pTypeExt->PrerequisiteForCameo;
-
-				if (!cameoPrerequisite)
-				{
-					const int sideIndex = pType->AIBasePlanningSide;
-
-					if (sideIndex != -1 && sideIndex != pHouse->Type->SideIndex)
-						break;
-				}
-				else if (cameoPrerequisite == pType)
-				{
-					break;
-				}
-				else if (!pHouse->CountOwnedAndPresent(cameoPrerequisite))
-				{
-					const int preTechLevel = cameoPrerequisite->TechLevel;
-
-					if (preTechLevel <= 0 || preTechLevel > Game::TechLevel)
-						break;
-
-					if (!pHouse->InOwners(cameoPrerequisite))
-						break;
-
-					if (!pHouse->InRequiredHouses(cameoPrerequisite))
-						break;
-
-					if (pHouse->InForbiddenHouses(cameoPrerequisite))
-						break;
-				}
-
 				if (std::find(vec.begin(), vec.end(), pTypeExt) == vec.end()) // … + Not in the list = Need to add it into list
 				{
 					vec.push_back(pTypeExt);
 					SidebarClass::Instance->SidebarNeedsRepaint();
-					BuildCat buildCat = BuildCat::DontCare;
-
-					if (auto const pBuildingType = abstract_cast<BuildingTypeClass const* const>(pType))
-						buildCat = pBuildingType->BuildCat;
-
 					EventClass event
 					(
 						pHouse->ArrayIndex,
@@ -178,7 +171,6 @@ CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pH
 
 				canBuild = CanBuildResult::TemporarilyUnbuildable;
 			}
-			while (false);
 		}
 		else if (std::find(vec.begin(), vec.end(), pTypeExt) != vec.end()) // Not Unbuildable + In the list = remove it from the list and play EVA
 		{
@@ -220,9 +212,9 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 	for (auto pFoundation = pBuildingType->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
-		CellStruct currentCoord = topLeftCell + *pFoundation;
+		CellStruct currentCell = topLeftCell + *pFoundation;
 
-		if (CellClass* const pCell = MapClass::Instance->GetCellAt(currentCoord))
+		if (CellClass* const pCell = MapClass::Instance->GetCellAt(currentCell))
 		{
 			ObjectClass* pObject = pCell->FirstObject;
 
@@ -565,7 +557,6 @@ void BuildingTypeExt::DrawAdjacentLines()
 	const CellStruct topLeft = DisplayClass::Instance->CurrentFoundation_CenterCell + DisplayClass::Instance->CurrentFoundation_TopLeftOffset;
 	const CellStruct min { topLeft.X - adjacent, topLeft.Y - adjacent };
 	const CellStruct max { topLeft.X + foundation.X + adjacent - 1, topLeft.Y + foundation.Y + adjacent - 1 };
-	const COLORREF color = Drawing::RGB_To_Int(ColorStruct { static_cast<BYTE>(255), static_cast<BYTE>(255), static_cast<BYTE>(255) });
 
 	RectangleStruct rect = DSurface::Temp->GetRect();
 	rect.Height -= 32;

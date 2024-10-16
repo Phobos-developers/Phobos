@@ -230,6 +230,7 @@ public:
 		Valueable<bool> UnitBaseForAllyBuilding;
 		Nullable<bool> AlwaysExistTheCameo;
 		Valueable<TechnoTypeClass*> PrerequisiteForCameo;
+		bool CameoCheckMutex; // Not read from ini
 		Valueable<CSFText> UIExtraDescription;
 
 		Nullable<AnimTypeClass*> Wake;
@@ -462,6 +463,7 @@ public:
 			, UnitBaseForAllyBuilding { false }
 			, AlwaysExistTheCameo {}
 			, PrerequisiteForCameo {}
+			, CameoCheckMutex { false }
 			, UIExtraDescription {}
 
 			, Wake { }
