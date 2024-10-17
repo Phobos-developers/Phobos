@@ -2,6 +2,7 @@
 
 #include <TacticalClass.h>
 #include <SpawnManagerClass.h>
+#include <Ext/SWType/Body.h>
 
 #include <Utilities/EnumFunctions.h>
 
@@ -331,12 +332,15 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
 			continue;
 
+		if (!pDisplayType->VisibleInSpecialState && (pThis->TemporalTargetingMe || pThis->IsIronCurtained()))
+			continue;
+
 		int value = -1;
-		int maxValue = -1;
+		int maxValue = 0;
 
 		GetValuesForDisplay(pThis, pDisplayType->InfoType, value, maxValue);
 
-		if (value == -1 || maxValue == -1)
+		if (value == -1 || maxValue == 0)
 			continue;
 
 		if (pDisplayType->ValueScaleDivisor > 1)
@@ -453,8 +457,163 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (!pType->IsGattling)
 			return;
 
-		value = pThis->CurrentGattlingStage;
+		value = pThis->GattlingValue == 0 ? 0 : pThis->CurrentGattlingStage + 1;
 		maxValue = pType->WeaponStages;
+		break;
+	}
+	case DisplayInfoType::ROF:
+	{
+		if (!pThis->GetWeapon(0) || !pThis->GetWeapon(0)->WeaponType)
+			return;
+
+		value = pThis->RearmTimer.GetTimeLeft();
+		maxValue = pThis->ChargeTurretDelay;
+		break;
+	}
+	case DisplayInfoType::Reload:
+	{
+		if (pType->Ammo <= 0)
+			return;
+
+		value = (pThis->Ammo >= pType->Ammo) ? 0 : pThis->ReloadTimer.GetTimeLeft();
+		maxValue = pThis->ReloadTimer.TimeLeft;
+		break;
+	}
+	case DisplayInfoType::SpawnTimer:
+	{
+		if (!pThis->SpawnManager || !pType->Spawns || pType->SpawnsNumber <= 0)
+			return;
+
+		value = 0;
+
+		for (int i = 0; i < pType->SpawnsNumber; i++)
+		{
+			if (pThis->SpawnManager->SpawnedNodes[i]->Status != SpawnNodeStatus::Dead)
+				continue;
+
+			const int thisValue = pThis->SpawnManager->SpawnedNodes[i]->SpawnTimer.GetTimeLeft();
+
+			if (thisValue < value || !value)
+				value = thisValue;
+		}
+
+		maxValue = pThis->SpawnManager->RegenRate;
+		break;
+	}
+	case DisplayInfoType::GattlingTimer:
+	{
+		if (!pType->IsGattling)
+			return;
+
+		const int thisStage = pThis->CurrentGattlingStage;
+		Point2D values = Point2D::Empty;
+
+		if (pThis->Veterancy.IsElite())
+		{
+			if (thisStage > 0)
+				values = Point2D{ (pThis->GattlingValue - pType->EliteStage[thisStage - 1]), (pType->EliteStage[thisStage] - pType->EliteStage[thisStage - 1]) };
+			else
+				values = Point2D{ pThis->GattlingValue, pType->EliteStage[thisStage] };
+		}
+		else
+		{
+			if (thisStage > 0)
+				values = Point2D{ (pThis->GattlingValue - pType->WeaponStage[thisStage - 1]), (pType->WeaponStage[thisStage] - pType->WeaponStage[thisStage - 1]) };
+			else
+				values = Point2D{ pThis->GattlingValue, pType->WeaponStage[thisStage] };
+		}
+
+		value = values.X;
+		maxValue = values.Y;
+		break;
+	}
+	case DisplayInfoType::ProduceCash:
+	{
+		if (pThis->WhatAmI() != AbstractType::Building)
+			return;
+
+		const auto pBuildingType = static_cast<BuildingTypeClass*>(pType);
+		const auto pBuilding = static_cast<BuildingClass*>(pThis);
+
+		if (pBuildingType->ProduceCashAmount <= 0)
+			return;
+
+		value = pBuilding->CashProductionTimer.GetTimeLeft();
+		maxValue = pBuilding->CashProductionTimer.TimeLeft;
+		break;
+	}
+	case DisplayInfoType::PassengerKill:
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (!pTypeExt || !pTypeExt->PassengerDeletionType)
+			return;
+
+		value = pExt->PassengerDeletionTimer.GetTimeLeft();
+		maxValue = pExt->PassengerDeletionTimer.TimeLeft;
+		break;
+	}
+	case DisplayInfoType::AutoDeath:
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (!pTypeExt || !pTypeExt->AutoDeath_Behavior.isset())
+			return;
+
+		Point2D values = Point2D::Empty;
+
+		if (pTypeExt->AutoDeath_AfterDelay > 0)
+			values = Point2D{ pExt->AutoDeathTimer.GetTimeLeft(), pExt->AutoDeathTimer.TimeLeft };
+		else if (pTypeExt->AutoDeath_OnAmmoDepletion && pType->Ammo > 0)
+			values = Point2D{ pThis->Ammo, pType->Ammo };
+
+		value = values.X;
+		maxValue = values.Y;
+		break;
+	}
+	case DisplayInfoType::SuperWeapon:
+	{
+		if (pThis->WhatAmI() != AbstractType::Building || !pThis->Owner)
+			return;
+
+		const auto pBuildingType = static_cast<BuildingTypeClass*>(pType);
+		const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+		SuperClass* pSuper = nullptr;
+
+		if (pBuildingType->SuperWeapon != -1)
+			pSuper = pThis->Owner->Supers.GetItem(pBuildingType->SuperWeapon);
+		else if (pBuildingType->SuperWeapon2 != -1)
+			pSuper = pThis->Owner->Supers.GetItem(pBuildingType->SuperWeapon2);
+		else if (pBuildingTypeExt->SuperWeapons.size() > 0)
+			pSuper = pThis->Owner->Supers.GetItem(pBuildingTypeExt->SuperWeapons[0]);
+
+		if (!pSuper)
+			return;
+
+		value = pSuper->RechargeTimer.GetTimeLeft();
+		maxValue = pSuper->RechargeTimer.TimeLeft;
+		break;
+	}
+	case DisplayInfoType::IronCurtain:
+	{
+		if (!pThis->IsIronCurtained())
+			return;
+
+		const CDTimerClass* const timer = &pThis->IronCurtainTimer;
+
+		value = timer->GetTimeLeft();
+		maxValue = timer->TimeLeft;
+		break;
+	}
+	case DisplayInfoType::TemporalLife:
+	{
+		const TemporalClass* const pTemporal = pThis->TemporalTargetingMe;
+
+		if (!pTemporal)
+			return;
+
+		value = pTemporal->WarpRemaining;
+		maxValue = pType->Strength * 10;
 		break;
 	}
 	default:

@@ -10,6 +10,7 @@ class DigitalDisplayTypeClass final : public Enumerable<DigitalDisplayTypeClass>
 public:
 	Damageable<ColorStruct> Text_Color;
 	Valueable<bool> Text_Background;
+	Valueable<bool> VisibleInSpecialState;
 	Valueable<Vector2D<int>> Offset;
 	Nullable<Vector2D<int>> Offset_ShieldDelta;
 	Valueable<TextAlign> Align;
@@ -18,6 +19,7 @@ public:
 	Valueable<SHPStruct*> Shape;
 	CustomPalette Palette;
 	Nullable<Vector2D<int>> Shape_Spacing;
+	Valueable<bool> Shape_PercentageFrame;
 	Valueable<bool> Percentage;
 	Nullable<bool> HideMaxValue;
 	Valueable<bool> VisibleToHouses_Observer;
@@ -28,6 +30,7 @@ public:
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
 		, Text_Color({ 0, 255, 0 }, { 255,255,0 }, { 255,0,0 })
 		, Text_Background(false)
+		, VisibleInSpecialState(true)
 		, Offset({ 0, 0 })
 		, Offset_ShieldDelta()
 		, Align(TextAlign::Right)
@@ -36,6 +39,7 @@ public:
 		, Shape(nullptr)
 		, Palette()
 		, Shape_Spacing()
+		, Shape_PercentageFrame(false)
 		, Percentage(false)
 		, HideMaxValue()
 		, VisibleToHouses_Observer(true)

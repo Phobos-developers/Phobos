@@ -37,10 +37,11 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
  - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
     - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
   - By default, values are displayed in `current/maximum` format (i.e. 20/40). `HideMaxValue=yes` will make the counter show only the current value (i.e. 20). `Percentage=yes` changes the format to `percent%` (i.e. 50%).
-  - `CanSee` and `CanSee.Observer` can limit visibility to specific players.
+  - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
+    - `VisibleInSpecialState` controls whether this display type will show when the owner is in ironcurtain or is attacked by a temporal weapon.
   - The digits can be either a custom shape (.shp) or text drawn using the game font. This depends on whether `Shape` is set.
     - `Text.Color`, `Text.Color.ConditionYellow` and `Text.Color.ConditionRed` allow customization of the font color. `Text.Background=yes` will additionally draw a black rectangle background.
-    - When using shapes, a custom palette can be specified with `Palette`. `Shape.Spacing` controls pixel buffer between characters.
+    - When using shapes, a custom palette can be specified with `Palette`. `Shape.Spacing` controls pixel buffer between characters. If `Shape.PercentageFrame` set to true, it will only draw one frame that corresponds to total frames by percentage.
     - Frames 0-9 will be used as digits when the owner's health bar is green, 10-19 when yellow, 20-29 when red. For `/` and `%` characters, frame numbers are 30-31, 32-33, 34-35, respectively.
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
@@ -59,7 +60,7 @@ Aircraft.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
 
 [SOMEDIGITALDISPLAYTYPE]                ; DigitalDisplayType
 ; Generic
-InfoType=Health                         ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage)
+InfoType=Health                         ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage|ROF|Reload|SpawnTimer|GattlingTimer|ProduceCash|PassengerKill|AutoDeath|SuperWeapon|IronCurtain|TemporalLife)
 Offset=0,0                              ; integers - horizontal, vertical
 Offset.ShieldDelta=                     ; integers - horizontal, vertical
 Align=right                             ; Text alignment enumeration (left|right|center/centre)
@@ -70,6 +71,7 @@ Percentage=false                        ; boolean
 HideMaxValue=false                      ; boolean
 VisibleToHouses=owner                   ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true           ; boolean
+VisibleInSpecialState=true              ; boolean
 ValueScaleDivisor=1                     ; integer
 ; Text
 Text.Color=0,255,0                      ; integers - Red, Green, Blue
@@ -80,6 +82,7 @@ Text.Background=false                   ; boolean
 Shape=                                  ; filename with .shp extension, if not present, game-drawn text will be used instead
 Palette=palette.pal                     ; filename with .pal extension
 Shape.Spacing=                          ; integers - horizontal, vertical spacing between digits
+Shape.PercentageFrame=false             ; boolean
 
 [SOMETECHNOTYPE]
 DigitalDisplay.Disable=false            ; boolean
