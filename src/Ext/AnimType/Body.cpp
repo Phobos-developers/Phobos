@@ -120,6 +120,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->VisibleTo_ConsiderInvokerAsOwner.Read(exINI, pID, "VisibleTo.ConsiderInvokerAsOwner");
 	this->RestrictVisibilityIfCloaked.Read(exINI, pID, "RestrictVisibilityIfCloaked");
 	this->DetachOnCloak.Read(exINI, pID, "DetachOnCloak");
+	this->Translucency_Cloaked.Read(exINI, pID, "Translucency.Cloaked");
 	this->ConstrainFireAnimsToCellSpots.Read(exINI, pID, "ConstrainFireAnimsToCellSpots");
 	this->FireAnimDisallowedLandTypes.Read(exINI, pID, "FireAnimDisallowedLandTypes");
 	this->AttachFireAnimsToParent.Read(exINI, pID, "AttachFireAnimsToParent");
@@ -131,6 +132,9 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->LargeFireAnims.Read(exINI, pID, "LargeFireAnims");
 	this->LargeFireChances.Read(exINI, pID, "LargeFireChances");
 	this->LargeFireDistances.Read(exINI, pID, "LargeFireDistances");
+
+	if (this->OwnerObject()->Translucent)
+		this->Translucent_Keyframes.Read(exINI, pID, "Translucent.%s", this->OwnerObject()->End);
 }
 
 template <typename T>
@@ -174,6 +178,8 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VisibleTo_ConsiderInvokerAsOwner)
 		.Process(this->RestrictVisibilityIfCloaked)
 		.Process(this->DetachOnCloak)
+		.Process(this->Translucency_Cloaked)
+		.Process(this->Translucent_Keyframes)
 		.Process(this->ConstrainFireAnimsToCellSpots)
 		.Process(this->FireAnimDisallowedLandTypes)
 		.Process(this->AttachFireAnimsToParent)

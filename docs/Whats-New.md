@@ -457,6 +457,7 @@ New:
 - Customizing effect of level lighting on air units (by Starkku)
 - Reimplemented `Airburst` & `Splits` logic with more customization options (by Starkku)
 - Buildings considered as destroyable pathfinding obstacles (by Starkku)
+- Animation transparency customization settings (by Starkku)
 - Animation visibility customization settings (by Starkku)
 - Light effect customizations (by Starkku)
 - Building unit repair customizations (by Starkku)

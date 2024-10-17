@@ -246,6 +246,7 @@
     <ClInclude Include="src\Ext\VoxelAnimType\Body.h" />
     <ClInclude Include="src\Ext\VoxelAnim\Body.h" />
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
+    <ClInclude Include="src\Utilities\Interpolation.h" />
     <ClInclude Include="src\Utilities\Savegame.h" />
     <ClInclude Include="src\Utilities\SavegameDef.h" />
     <ClInclude Include="src\Utilities\ShapeTextPrinter.h" />

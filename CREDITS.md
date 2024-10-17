@@ -245,6 +245,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizing effect of level lighting on air units
   - Reimplemented `Airburst` & `Splits` logic with more customization options
   - Buildings considered as destroyable pathfinding obstacles
+  - Animation transparency customization settings
   - Animation visibility customization settings
   - Light effect customizations
   - Building unit repair customizations

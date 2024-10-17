@@ -476,6 +476,22 @@ In `artmd.ini`:
 AttachedSystem=  ; ParticleSystem
 ```
 
+### Customizable animation transparency settings
+
+- `Translucency.Cloaked` can be used to override `Translucency` on animations attached to currently cloaked TechnoTypes.
+- `Translucent=true` animated transparency is now fully controllable via new keyframe settings. Read more about the keyframe system [here](Miscellanous.md#keyframe-animations).
+  - If interpolation is enabled, the keyframe values are clamped to valid transparency values (0,25,50 and 75), e.g a value of 1.5 would become 0 and 56.525 would become 50 and so on.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                          ; AnimationType
+Translucency.Cloaked=               ; integer - only accepted values are 75, 50, 25 and 0.
+Translucent.KeyframeN.Value=        ; integer - only accepted values are 75, 50, 25 and 0.
+Translucent.KeyframeN.Percentage=   ; floating point value, percents or absolute
+Translucent.KeyframeN.Absolute=     ; integer, zero-based frame index
+Translucent.Interpolation=none      ; Interpolation mode (none|linear)
+```
+
 ### Customizable animation visibility settings
 
 - It is now possible to customize which players can see an animation using `VisibleTo`.

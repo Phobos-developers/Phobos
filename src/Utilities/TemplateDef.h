@@ -40,6 +40,7 @@
 #include "Enum.h"
 #include "Constructs.h"
 #include "SavegameDef.h"
+#include "Interpolation.h"
 
 #include <InfantryTypeClass.h>
 #include <AircraftTypeClass.h>
@@ -55,6 +56,8 @@
 #include <LocomotionClass.h>
 
 #include <Locomotion/TestLocomotionClass.h>
+
+#include <unordered_set>
 
 namespace detail
 {
@@ -994,7 +997,6 @@ namespace detail
 		return value.Read(parser, pSection, pKey);
 	}
 
-
 	template <>
 	inline bool read<IronCurtainEffect>(IronCurtainEffect& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
@@ -1195,6 +1197,30 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	}
 
 	template <>
+	inline bool read<InterpolationMode>(InterpolationMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "none") == 0)
+			{
+				value = InterpolationMode::None;
+			}
+			else if (_strcmpi(str, "linear") == 0)
+			{
+				value = InterpolationMode::Linear;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Expected an interpolation mode");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<HorizontalPosition>(HorizontalPosition& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
@@ -1380,7 +1406,6 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	}
 }
 
-
 // Valueable
 
 template <typename T>
@@ -1483,7 +1508,6 @@ void __declspec(noinline) NullableIdx<Lookuper>::Read(INI_EX& parser, const char
 		}
 	}
 }
-
 
 // Promotable
 
@@ -1678,7 +1702,6 @@ void __declspec(noinline) ValueableIdxVector<Lookuper>::Read(INI_EX& parser, con
 	}
 }
 
-
 // NullableIdxVector
 
 template <typename Lookuper>
@@ -1733,4 +1756,211 @@ bool Damageable<T>::Save(PhobosStreamWriter& Stm) const
 	return Savegame::WritePhobosStream(Stm, this->BaseValue)
 		&& Savegame::WritePhobosStream(Stm, this->ConditionYellow)
 		&& Savegame::WritePhobosStream(Stm, this->ConditionRed);
+}
+
+// MultiflagValueableVector
+
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
+void __declspec(noinline) MultiflagValueableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs)
+{
+	char flagName[0x40];
+	for (size_t i = 0; ; ++i)
+	{
+		T dataEntry {};
+
+		// we expect %d for array number then %s for the subflag name, so we replace %s with itself (but escaped)
+		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%s");
+
+		if (!dataEntry.Read(parser, pSection, flagName, extraArgs...))
+		{
+			if (i < this->size())
+				continue;
+			else
+				break;
+		}
+
+		if (this->size() > i)
+			this->at(i) = dataEntry;
+		else
+			this->push_back(dataEntry);
+	}
+}
+
+// MultiflagNullableVector
+
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
+void __declspec(noinline) MultiflagNullableVector<T, TExtraArgs...>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs)
+{
+	char flagName[0x40];
+	for (size_t i = 0; ; ++i)
+	{
+		T dataEntry {};
+
+		// we expect %d for array number then %s for the subflag name, so we replace %s with itself (but escaped)
+		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, i, "%s");
+
+		if (!dataEntry.Read(parser, pSection, flagName, extraArgs...))
+		{
+			if (i < this->size())
+				continue;
+			else
+				break;
+		}
+
+		if (this->size() > i)
+			this->at(i) = dataEntry;
+		else
+			this->push_back(dataEntry);
+
+		this->hasValue = true;
+	}
+}
+
+// Animatable
+
+// Animatable::KeyframeDataEntry
+
+template <typename TValue>
+bool __declspec(noinline) Animatable<TValue>::KeyframeDataEntry::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength)
+{
+	char flagName[0x40];
+
+	Nullable<double> percentageTemp {};
+	Nullable<absolute_length_t> absoluteTemp {};
+
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Percentage");
+	percentageTemp.Read(parser, pSection, flagName);
+
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Absolute");
+	absoluteTemp.Read(parser, pSection, flagName);
+
+	if (!percentageTemp.isset() && !absoluteTemp.isset())
+		return false;
+
+	if (absoluteTemp.isset())
+		this->Percentage = (double)absoluteTemp / absoluteLength;
+	else
+		this->Percentage = percentageTemp;
+
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Value");
+	this->Value.Read(parser, pSection, flagName);
+
+	return true;
+};
+
+template <typename TValue>
+bool Animatable<TValue>::KeyframeDataEntry::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Savegame::ReadPhobosStream(Stm, this->Percentage, RegisterForChange)
+		&& Savegame::ReadPhobosStream(Stm, this->Value, RegisterForChange);
+}
+
+template <typename TValue>
+bool Animatable<TValue>::KeyframeDataEntry::Save(PhobosStreamWriter& Stm) const
+{
+	return Savegame::WritePhobosStream(Stm, this->Percentage)
+		&& Savegame::WritePhobosStream(Stm, this->Value);
+}
+
+template <typename TValue>
+TValue Animatable<TValue>::Get(double const percentage) const noexcept
+{
+	// This currently assumes the keyframes are ordered and there are no duplicates for same frame/percentage.
+	// Thing is still far from lightweight as searching for the correct items requires going through the vector.
+
+	TValue match {};
+
+	if (!this->KeyframeData.size())
+		return match;
+
+	double startPercentage = 0.0;
+	int i = this->KeyframeData.size() - 1;
+
+	for (; i >= 0; i--)
+	{
+		auto const& value = this->KeyframeData[i];
+
+		if (percentage >= value.Percentage)
+		{
+			startPercentage = value.Percentage;
+			match = value.Value;
+			break;
+		}
+	}
+
+	// Only interpolate if an interpolation mode is enabled and there's keyframes remaining.
+	if (this->InterpolationMode != InterpolationMode::None && i >= 0 && (size_t)(i + 1) < this->KeyframeData.size())
+	{
+		auto const& value = this->KeyframeData[i + 1];
+		TValue nextValue = value.Value;
+		double progressPercentage = (percentage - startPercentage) / (value.Percentage - startPercentage);
+		return detail::interpolate(match, nextValue, progressPercentage, this->InterpolationMode);
+	}
+
+	return match;
+}
+
+template <typename TValue>
+void __declspec(noinline) Animatable<TValue>::Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength)
+{
+	char flagName[0x40];
+
+	// we expect "BaseFlagName.%s" here
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Keyframe%d.%s");
+	this->KeyframeData.Read(parser, pSection, flagName, absoluteLength);
+
+	_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Interpolation");
+	detail::read(this->InterpolationMode, parser, pSection, flagName);
+
+	// Error handling
+	bool foundError = false;
+	double lastPercentage = -DBL_MAX;
+	std::unordered_set<double> percentages;
+
+	for (size_t i = 0; i < this->KeyframeData.size(); i++)
+	{
+		auto const& value = this->KeyframeData[i];
+		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "Keyframe%d");
+		_snprintf_s(flagName, sizeof(flagName), flagName, i);
+
+		if (percentages.contains(value.Percentage))
+		{
+			Debug::Log("[Developer warning] [%s] %s has duplicated keyframe %.3f.\n", pSection, flagName, value.Percentage);
+			foundError = true;
+		}
+
+		if (lastPercentage > value.Percentage)
+		{
+			Debug::Log("[Developer warning] [%s] %s has keyframe out of order (%.3f after previous keyframe of %.3f).\n", pSection, flagName, value.Percentage, lastPercentage);
+			foundError = true;
+		}
+
+		percentages.insert(value.Percentage);
+		lastPercentage = value.Percentage;
+	}
+
+	if (foundError)
+	{
+		_snprintf_s(flagName, sizeof(flagName), pBaseFlag, "%s");
+		int len = strlen(pBaseFlag);
+
+		if (len >= 4)
+			flagName[len - 3] = '\0';
+
+		Debug::FatalErrorAndExit("[%s] %s has invalid keyframe data defined. Check debug log for more details.\n", pSection, flagName);
+	}
+};
+
+template <typename TValue>
+bool Animatable<TValue>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Savegame::ReadPhobosStream(Stm, this->KeyframeData, RegisterForChange);
+}
+
+template <typename TValue>
+bool Animatable<TValue>::Save(PhobosStreamWriter& Stm) const
+{
+	return Savegame::WritePhobosStream(Stm, this->KeyframeData);
 }

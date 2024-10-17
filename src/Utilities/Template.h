@@ -38,6 +38,7 @@
 #include <FootClass.h>
 
 #include "Savegame.h"
+#include "Enum.h"
 
 class INI_EX;
 
@@ -478,3 +479,62 @@ class PartialVector3D : public Vector3D<T> // Same as Vector3D except parsing on
 public:
 	size_t ValueCount;
 };
+
+// Designates that the type can read it's value from multiple flags.
+template<typename T, typename... TExtraArgs>
+concept MultiflagReadable = requires(T obj, INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs)
+{
+	{ obj.Read(parser, pSection, pBaseFlag, extraArgs...) } -> std::same_as<bool>;
+};
+
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
+class MultiflagValueableVector : public ValueableVector<T>
+{
+public:
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs);
+};
+template<typename T, typename... TExtraArgs>
+requires MultiflagReadable<T, TExtraArgs...>
+class MultiflagNullableVector : public NullableVector<T>
+{
+public:
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, TExtraArgs&... extraArgs);
+};
+
+template<typename TValue>
+class Animatable
+{
+public:
+	using absolute_length_t = int;
+
+	class KeyframeDataEntry
+	{
+	public:
+		double Percentage;
+		Valueable<TValue> Value;
+
+		inline bool Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0));
+
+		inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+
+		inline bool Save(PhobosStreamWriter& Stm) const;
+	};
+
+	InterpolationMode InterpolationMode;
+	MultiflagValueableVector<KeyframeDataEntry, absolute_length_t> KeyframeData;
+
+	// TODO ctors and stuff
+
+	inline TValue Get(double const percentage) const noexcept;
+
+	inline void Read(INI_EX& parser, const char* const pSection, const char* const pBaseFlag, absolute_length_t absoluteLength = absolute_length_t(0));
+
+	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+
+	inline bool Save(PhobosStreamWriter& Stm) const;
+};
+
+static_assert(Savegame::ImplementsSaveLoad<Animatable<std::monostate>::KeyframeDataEntry>);
+
+static_assert(Savegame::ImplementsSaveLoad<Animatable<std::monostate>>);

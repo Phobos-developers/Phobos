@@ -413,6 +413,90 @@ DEFINE_HOOK(0x423061, AnimClass_DrawIt_Visibility, 0x6)
 	return 0;
 }
 
+// Reverse-engineered from YR with exception of new additions.
+DEFINE_HOOK(0x42308D, AnimClass_DrawIt_Transparency, 0x6)
+{
+	enum { SkipGameCode = 0x4230FE, ReturnFromFunction = 0x4238A3 };
+
+	GET(AnimClass*, pThis, ESI);
+	GET(BlitterFlags, flags, EBX);
+
+	auto const pType = pThis->Type;
+	int translucencyLevel = pThis->TranslucencyLevel; // Used by building animations when building needs to be drawn partially transparent. >= 15 means animation skips drawing.
+
+	if (!pType->Translucent)
+	{
+		auto translucency = pThis->Type->Translucency;
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+
+		// New addition: Different Translucency animation for attached animations on cloaked objects
+		if (pTypeExt->Translucency_Cloaked.isset())
+		{
+			if (auto const pTechno = abstract_cast<TechnoClass*>(pThis->OwnerObject))
+			{
+				if (pTechno->CloakState == CloakState::Cloaked || pTechno->CloakState == CloakState::Cloaking)
+					translucency = pTypeExt->Translucency_Cloaked.Get();
+			}
+		}
+
+		if (translucency <= 0)
+		{
+			// Translucency <= 0, map translucencyLevel to transparency blitter flags
+			if (translucencyLevel)
+			{
+				if (translucencyLevel > 15)
+					return ReturnFromFunction;
+				else if (translucencyLevel > 10)
+					flags |= BlitterFlags::TransLucent50;
+				else if (translucencyLevel > 5)
+					flags |= BlitterFlags::TransLucent50;
+				else
+					flags |= BlitterFlags::TransLucent25;
+			}
+		}
+		else
+		{
+			// Translucency > 0, map Translucency to transparency blitter flags
+			if (translucencyLevel >= 15)
+				return ReturnFromFunction;
+			else if (translucency == 75)
+				flags |= BlitterFlags::TransLucent75;
+			else if (translucency == 50)
+				flags |= BlitterFlags::TransLucent50;
+			else if (translucency == 25)
+				flags |= BlitterFlags::TransLucent25;
+		}
+	}
+	else
+	{
+		if (translucencyLevel >= 15)
+			return ReturnFromFunction;
+
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+		int currentFrame = pThis->Animation.Value;
+		int frames = pType->End;
+
+		// New addition: Keyframeable Translucent stages.
+		if (pTypeExt->Translucent_Keyframes.KeyframeData.size() > 0)
+		{
+			flags |= pTypeExt->Translucent_Keyframes.Get(static_cast<double>(currentFrame) / frames);
+		}
+		else
+		{
+			// No keyframes -> default behaviour.
+			if (currentFrame > frames * 0.6)
+				flags |= BlitterFlags::TransLucent75;
+			else if (currentFrame > frames * 0.4)
+				flags |= BlitterFlags::TransLucent50;
+			else if (currentFrame > frames * 0.2)
+				flags |= BlitterFlags::TransLucent25;
+		}
+	}
+
+	R->EBX(flags);
+	return SkipGameCode;
+}
+
 #pragma region AltPalette
 
 // Fix AltPalette anims not using owner color scheme.
