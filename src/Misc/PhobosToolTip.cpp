@@ -6,7 +6,6 @@
 #include <BuildingClass.h>
 #include <UnitClass.h>
 #include <InfantryClass.h>
-#include <HouseClass.h>
 
 #include <GameOptionsClass.h>
 #include <CCToolTip.h>
@@ -17,6 +16,7 @@
 
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>
+#include <Ext/House/Body.h>
 
 #include <sstream>
 #include <iomanip>
@@ -90,9 +90,9 @@ inline const wchar_t* PhobosToolTip::GetBuffer() const
 void PhobosToolTip::HelpText(BuildType& cameo)
 {
 	if (cameo.ItemType == AbstractType::Special)
-		this->HelpText(HouseClass::CurrentPlayer->Supers.Items[cameo.ItemIndex]);
+		this->HelpText_Super(cameo.ItemIndex);
 	else
-		this->HelpText(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
+		this->HelpText_Techno(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
 }
 
 inline static int TickTimeToSeconds(int tickTime)
@@ -110,7 +110,7 @@ inline static int TickTimeToSeconds(int tickTime)
 	return tickTime / (60 / GameOptionsClass::Instance->GameSpeed);
 }
 
-void PhobosToolTip::HelpText(TechnoTypeClass* pType)
+void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 {
 	if (!pType)
 		return;
@@ -145,13 +145,14 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 	this->TextBuffer = oss.str();
 }
 
-void PhobosToolTip::HelpText(SuperClass* pSuper)
+void PhobosToolTip::HelpText_Super(int swidx)
 {
+	auto pSuper = HouseClass::CurrentPlayer->Supers.Items[swidx];
 	auto const pData = SWTypeExt::ExtMap.Find(pSuper->Type);
 
 	std::wostringstream oss;
 	oss << pSuper->Type->UIName;
-	bool showCost = false;
+	bool showSth = false;
 
 	if (int nCost = std::abs(pData->Money_Amount))
 	{
@@ -161,21 +162,35 @@ void PhobosToolTip::HelpText(SuperClass* pSuper)
 			oss << '+';
 
 		oss << Phobos::UI::CostLabel << nCost;
-		showCost = true;
+		showSth = true;
 	}
 
 	int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());
 	if (rechargeTime > 0)
 	{
-		if (!showCost)
+		if (!showSth)
 			oss << L"\n";
 
 		int nSec = rechargeTime % 60;
 		int nMin = rechargeTime / 60;
 
-		oss << (showCost ? L" " : L"") << Phobos::UI::TimeLabel
+		oss << (showSth ? L" " : L"") << Phobos::UI::TimeLabel
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 			<< std::setw(2) << std::setfill(L'0') << nSec;
+		showSth = true;
+	}
+
+	auto const& sw_ext = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->SuperExts[swidx];
+	int sw_shots = pData->SW_Shots;
+	int remain_shots = pData->SW_Shots - sw_ext.ShotCount;
+	if (sw_shots > 0)
+	{
+		if (!showSth)
+			oss << L"\n";
+
+		wchar_t buffer[64];
+		swprintf_s(buffer, Phobos::UI::SWShotsFormat, remain_shots, sw_shots);
+		oss << (showSth ? L" " : L"") << buffer;
 	}
 
 	if (auto pDesc = this->GetUIDescription(pData))
