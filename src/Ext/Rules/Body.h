@@ -154,6 +154,13 @@ public:
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
 
+		Valueable<bool> UnitIdleRotateTurret;
+		Valueable<bool> UnitIdlePointToMouse;
+		Valueable<int> UnitIdleActionRestartMin;
+		Valueable<int> UnitIdleActionRestartMax;
+		Valueable<int> UnitIdleActionIntervalMin;
+		Valueable<int> UnitIdleActionIntervalMax;
+
 		Valueable<bool> GatherWhenMCVDeploy;
 		Valueable<bool> AIFireSale;
 		Valueable<int> AIFireSaleDelay;
@@ -269,6 +276,12 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, UnitIdleRotateTurret { false }
+			, UnitIdlePointToMouse { false }
+			, UnitIdleActionRestartMin { 150 }
+			, UnitIdleActionRestartMax { 300 }
+			, UnitIdleActionIntervalMin { 150 }
+			, UnitIdleActionIntervalMax { 450 }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
