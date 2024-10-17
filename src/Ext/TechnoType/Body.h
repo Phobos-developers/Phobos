@@ -149,6 +149,9 @@ public:
 		Valueable<int> ForceWeapon_Naval_Decloaked;
 		Valueable<int> ForceWeapon_Cloaked;
 		Valueable<int> ForceWeapon_Disguised;
+		ValueableVector<int> ForceWeapon_InRange;
+		ValueableVector<double> ForceWeapon_InRange_Overrides;
+		Valueable<bool> ForceWeapon_InRange_ApplyRangeModifiers;
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
@@ -367,6 +370,9 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
+			, ForceWeapon_InRange {}
+			, ForceWeapon_InRange_Overrides {}
+			, ForceWeapon_InRange_ApplyRangeModifiers { false }
 
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
