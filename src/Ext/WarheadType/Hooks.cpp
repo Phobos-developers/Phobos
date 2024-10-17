@@ -343,3 +343,18 @@ DEFINE_HOOK(0x442956, BuildingClass_ReceiveDamage_Nonprovocative2, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4D73DE, FootClass_ReceiveDamage_RemoveParasite, 0x5)
+{
+	enum { Continue = 0x4D73E3, Skip = 0x4D7413 };
+
+	GET(WarheadTypeClass*, pWarhead, EBP);
+	GET(int*, damage, EDI);
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (!pTypeExt->RemoveParasite.Get(*damage < 0))
+		return Skip;
+
+	return Continue;
+}
