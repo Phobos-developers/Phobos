@@ -180,6 +180,46 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+
+	if (pSource)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		auto const pTypeExt = pExt->TypeExtData;
+		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+		bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
+
+		if (pTypeExt && pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		{
+			if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
+				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
+		}
+
+		for (auto& attachEffect : pExt->AttachedEffects)
+		{
+			if (!attachEffect->IsActive())
+				continue;
+
+			auto const pType = attachEffect->GetType();
+
+			if (!pType->RevengeWeapon)
+				continue;
+
+			if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
+				continue;
+
+			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
+		}
+	}
+
+	return 0;
+}
+
 // Issue #237 NotHuman additional animations support
 // Author: Otamaa
 DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
@@ -307,6 +347,16 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 }
 
 DEFINE_JUMP(VTABLE, 0x7EB1AC, 0x4DEAE0); // Redirect InfantryClass::IronCurtain to FootClass::IronCurtain
+
+DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		return pExt->NoManualMove ? 0x700C62 : 0;
+
+	return 0;
+}
 
 namespace MapZoneTemp
 {
