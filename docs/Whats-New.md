@@ -463,6 +463,7 @@ New:
 - Toggle to disallow buildings from providing build area during buildup (by Starkku)
 - Allow customizing which building types provide build area for a building (by Starkku)
 - `Scorch` / `Flamer` fire animation customization (by Starkku)
+- Shield armor inheritance customization (by Ollerus)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
