@@ -146,7 +146,6 @@ public:
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo = false);
-	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);

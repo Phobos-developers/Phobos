@@ -78,16 +78,23 @@ DEFINE_HOOK(0x4403D4, BuildingClass_AI_ChronoSparkle, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
+DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 {
-	GET(UnitClass*, pUnit, EBP);
-	GET(BuildingClass*, pStructure, EBX);
+	GET(BuildingClass*, pBuilding, ESI);
+	if (auto const pInf = abstract_cast<InfantryClass*>(R->EDI<FootClass*>()))
+	{
+		if (pBuilding && pBuilding->Type->Cloning)
+		{
+			if (auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+			{
+				double percentage = GeneralUtils::GetRangedRandomOrSingleValue(pTypeExt->InitialStrength_Cloning);
+				int strength = Math::clamp(static_cast<int>(pInf->Type->Strength * percentage), 1, pInf->Type->Strength);
 
-	if (pUnit->Type->DeployToFire && pUnit->Target)
-		pStructure->LastTarget = pUnit->Target;
-
-	if (auto pStructureExt = BuildingExt::ExtMap.Find(pStructure))
-		pStructureExt->DeployedTechno = true;
+				pInf->Health = strength;
+				pInf->EstimatedHealth = strength;
+			}
+		}
+	}
 
 	return 0;
 }

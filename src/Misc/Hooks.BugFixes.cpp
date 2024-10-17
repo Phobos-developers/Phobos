@@ -994,3 +994,4 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 
 // Patch tileset parsing to not reset certain tileset indices for Lunar theater.
 DEFINE_JUMP(LJMP, 0x546C8B, 0x546CBF);
+

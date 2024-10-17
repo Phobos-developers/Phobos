@@ -45,7 +45,6 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateAttachEffects();
 }
 
-
 void TechnoExt::ExtData::ApplyInterceptor()
 {
 	auto const pThis = this->OwnerObject();
