@@ -368,6 +368,9 @@ This page lists all the individual contributions to the project by their author.
   - Allow to change the speed of gas particles
 - **CrimRecya**
   - Fix `LimboKill` not working reliably
+  - Units will not always stuck in the factory
+- **TaranDahl**
+  - Units are now unable to kick out from a factory that is in construction process
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude

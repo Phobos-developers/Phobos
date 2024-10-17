@@ -344,6 +344,51 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 	return true;
 }
 
+void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
+{
+	if (TechnoClass* const pTechno = pThis->GetNthLink())
+	{
+		if (UnitClass* const pUnit = abstract_cast<UnitClass*>(pTechno))
+		{
+			if (!pUnit->unknown_bool_418 && pUnit->GetCurrentSpeed() <= 0)
+			{
+				if (TeamClass* const pTeam = pUnit->Team)
+					pTeam->LiberateMember(pUnit);
+
+				pThis->SendCommand(RadioCommand::NotifyUnlink, pUnit);
+				pUnit->QueueMission(Mission::Guard, false);
+				return; // one after another
+			}
+		}
+	}
+
+	CoordStruct buffer = CoordStruct::Empty;
+
+	if (CellClass* const pCell = MapClass::Instance->GetCellAt(*pThis->GetExitCoords(&buffer, 0)))
+	{
+		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (UnitClass* const pUnit = abstract_cast<UnitClass*>(pObject))
+			{
+				if (pThis->Owner != pUnit->Owner || pUnit->unknown_bool_418)
+					continue;
+
+				const int height = pUnit->GetHeight();
+
+				if (height < 0 || height > Unsorted::CellHeight)
+					continue;
+
+				if (TeamClass* const pTeam = pUnit->Team)
+					pTeam->LiberateMember(pUnit);
+
+				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
+				pThis->QueueMission(Mission::Unload, false);
+				return; // one after another
+			}
+		}
+	}
+}
+
 // Get all cells covered by the building, optionally including those covered by OccupyHeight.
 const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* const pThis, CellStruct const baseCoords, bool includeOccupyHeight)
 {
