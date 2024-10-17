@@ -702,9 +702,10 @@ Trajectory.Speed=100.0  ; floating point value
     - `Trajectory.Straight.ProximityFlight` controls whether to count units in the air.
   - `Trajectory.Straight.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircrafts on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
   - `Trajectory.Straight.ThroughBuilding` controls whether the projectile will not be obstructed by buildings. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.Straight.ProximityImpact` times, it will also detonate a `Trajectory.Straight.ProximityImpact` at the location of the obstacle.
-  - `Trajectory.Straight.EdgeAttenuation` controls the edge attenuation ratio of projectile damage, includes `Trajectory.Straight.Damage`. Can NOT be set to a negative integer.
   - `Trajectory.Straight.SubjectToGround` controls whether the projectile should explode when it hits the ground. Note that this will not make AI search for suitable attack locations.
   - `Trajectory.Straight.ConfineAtHeight` controls the height above ground that projectile will try to travel as it can. It can not move down from the cliff by setting `SubjectToCliffs=yes`. It can be cancelled by setting as a non positive integer. It will be forcibly cancelled by setting `Trajectory.Speed` above 256.
+  - `Trajectory.Straight.EdgeAttenuation` controls the edge attenuation ratio of projectile damage (includes all types of the trajectory's damage), that is, the actual damage caused will be this value multiplied by the ratio of the current distance to the weapon's range. Can NOT be set to a negative integer.
+  - `Trajectory.Straight.CountAttenuation` controls the attenuation coefficient of projectile damage (includes all types of the trajectory's damage), that is, how many times the next damage after each bounce is the damage just caused. Can NOT be set to a negative integer.
 
 In `rulesmd.ini`:
 ```ini
@@ -736,9 +737,10 @@ Trajectory.Straight.ProximityAllies=false       ; boolean
 Trajectory.Straight.ProximityFlight=false       ; boolean
 Trajectory.Straight.ThroughVehicles=true        ; boolean
 Trajectory.Straight.ThroughBuilding=true        ; boolean
-Trajectory.Straight.EdgeAttenuation=1.0         ; floating point value
 Trajectory.Straight.SubjectToGround=false       ; boolean
 Trajectory.Straight.ConfineAtHeight=0           ; integer
+Trajectory.Straight.EdgeAttenuation=1.0         ; floating point value
+Trajectory.Straight.CountAttenuation=1.0        ; floating point value
 ```
 
 ```{note}

@@ -35,6 +35,7 @@ public:
 		, SubjectToGround { false }
 		, ConfineAtHeight { 0 }
 		, EdgeAttenuation { 1.0 }
+		, CountAttenuation { 1.0 }
 	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -72,6 +73,7 @@ public:
 	Valueable<bool> SubjectToGround;
 	Valueable<int> ConfineAtHeight;
 	Valueable<double> EdgeAttenuation;
+	Valueable<double> CountAttenuation;
 
 private:
 	template <typename T>
@@ -85,10 +87,12 @@ public:
 
 	StraightTrajectory(StraightTrajectoryType const* trajType) : Type { trajType }
 		, DetonationDistance { trajType->DetonationDistance }
+		, PassDetonateDamage { trajType->PassDetonateDamage }
 		, PassDetonateTimer {}
 		, OffsetCoord { trajType->OffsetCoord.Get() }
 		, UseDisperseBurst { trajType->UseDisperseBurst }
 		, ProximityImpact { trajType->ProximityImpact }
+		, ProximityDamage { trajType->ProximityDamage }
 		, RemainingDistance { 1 }
 		, ExtraCheck { nullptr }
 		, LastCasualty {}
@@ -118,10 +122,12 @@ public:
 
 	const StraightTrajectoryType* Type;
 	Leptons DetonationDistance;
+	int PassDetonateDamage;
 	CDTimerClass PassDetonateTimer;
 	CoordStruct OffsetCoord;
 	bool UseDisperseBurst;
 	int ProximityImpact;
+	int ProximityDamage;
 	int RemainingDistance;
 	TechnoClass* ExtraCheck;
 	std::vector<CasualtyData> LastCasualty;
@@ -143,6 +149,7 @@ private:
 	bool BulletDetonatePreCheck(BulletClass* pBullet, double straightSpeed);
 	void BulletDetonateLastCheck(BulletClass* pBullet, HouseClass* pOwner, double straightSpeed);
 	bool CheckThroughAndSubjectInCell(BulletClass* pBullet, CellClass* pCell, HouseClass* pOwner);
+	void CalculateNewDamage(BulletClass* pBullet);
 	void PassWithDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
 	void PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
 	std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet);
