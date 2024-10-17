@@ -106,6 +106,21 @@ DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
+{
+	enum { SkipCheck = 0x442268 };
+
+	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x9C, 0x4));
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH))
+	{
+		if (pWHExt->AllowDamageOnSelf)
+			return SkipCheck;
+	}
+
+	return 0;
+}
+
 #pragma region Fix_WW_Strength_ReceiveDamage_C4Warhead_Misuses
 
 // Suicide=yes behavior on WeaponTypes

@@ -87,6 +87,7 @@
     <ClCompile Include="src\Ext\Building\Hooks.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Grinding.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Refinery.cpp" />
+    <ClCompile Include="src\Ext\Building\Hooks.Production.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Selling.cpp" />
     <ClCompile Include="src\Ext\BulletType\Body.cpp" />
     <ClCompile Include="src\Ext\Bullet\Body.cpp" />
