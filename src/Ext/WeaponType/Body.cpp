@@ -114,6 +114,16 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_CheckOnFirer.Read(exINI, pSection, "AttachEffect.CheckOnFirer");
 	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
 	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
+	this->DelayedFire_Duration.Read(exINI, pSection, "DelayedFire.Duration");
+	this->DelayedFire_SkipInTransport.Read(exINI, pSection, "DelayedFire.SkipInTransport");
+	this->DelayedFire_Animation.Read(exINI, pSection, "DelayedFire.Animation");
+	this->DelayedFire_OpenToppedAnimation.Read(exINI, pSection, "DelayedFire.OpenToppedAnimation");
+	this->DelayedFire_AnimIsAttached.Read(exINI, pSection, "DelayedFire.AnimIsAttached");
+	this->DelayedFire_CenterAnimOnFirer.Read(exINI, pSection, "DelayedFire.CenterAnimOnFirer");
+	this->DelayedFire_RemoveAnimOnNoDelay.Read(exINI, pSection, "DelayedFire.RemoveAnimOnNoDelay");
+	this->DelayedFire_PauseFiringSequence.Read(exINI, pSection, "DelayedFire.PauseFiringSequence");
+	this->DelayedFire_OnlyOnInitialBurst.Read(exINI, pSection, "DelayedFire.OnlyOnInitialBurst");
+	this->DelayedFire_AnimOffset.Read(exINI, pSection, "DelayedFire.AnimOffset");
 }
 
 template <typename T>
@@ -158,6 +168,16 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_CheckOnFirer)
 		.Process(this->AttachEffect_IgnoreFromSameSource)
 		.Process(this->KickOutPassengers)
+		.Process(this->DelayedFire_Duration)
+		.Process(this->DelayedFire_SkipInTransport)
+		.Process(this->DelayedFire_Animation)
+		.Process(this->DelayedFire_OpenToppedAnimation)
+		.Process(this->DelayedFire_AnimIsAttached)
+		.Process(this->DelayedFire_CenterAnimOnFirer)
+		.Process(this->DelayedFire_RemoveAnimOnNoDelay)
+		.Process(this->DelayedFire_PauseFiringSequence)
+		.Process(this->DelayedFire_OnlyOnInitialBurst)
+		.Process(this->DelayedFire_AnimOffset)
 		;
 };
 

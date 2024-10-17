@@ -59,6 +59,16 @@ public:
 		Valueable<bool> AttachEffect_CheckOnFirer;
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
 		Valueable<bool> KickOutPassengers;
+		Nullable<PartialVector2D<int>> DelayedFire_Duration;
+		Valueable<bool> DelayedFire_SkipInTransport;
+		Valueable<AnimTypeClass*> DelayedFire_Animation;
+		Nullable<AnimTypeClass*> DelayedFire_OpenToppedAnimation;
+		Valueable<bool> DelayedFire_AnimIsAttached;
+		Valueable<bool> DelayedFire_CenterAnimOnFirer;
+		Valueable<bool> DelayedFire_RemoveAnimOnNoDelay;
+		Valueable<bool> DelayedFire_PauseFiringSequence;
+		Valueable<bool> DelayedFire_OnlyOnInitialBurst;
+		Nullable<CoordStruct> DelayedFire_AnimOffset;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -99,6 +109,16 @@ public:
 			, AttachEffect_CheckOnFirer { false }
 			, AttachEffect_IgnoreFromSameSource { false }
 			, KickOutPassengers { true }
+			, DelayedFire_Duration {}
+			, DelayedFire_SkipInTransport { false }
+			, DelayedFire_Animation {}
+			, DelayedFire_OpenToppedAnimation {}
+			, DelayedFire_AnimIsAttached { true }
+			, DelayedFire_CenterAnimOnFirer { false }
+			, DelayedFire_RemoveAnimOnNoDelay { false }
+			, DelayedFire_PauseFiringSequence { false }
+			, DelayedFire_OnlyOnInitialBurst { false }
+			, DelayedFire_AnimOffset {}
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
