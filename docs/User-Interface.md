@@ -276,6 +276,29 @@ In `rulesmd.ini`:
 SelectionFlashDuration=0  ; integer, number of frames
 ```
 
+### Units Rotate Turret When in Idle Action
+
+- Now unit with turret without `TurretSpins=true` can looks more vivid when it is in idle.
+  - `UnitIdleRotateTurret` controls whether units can rotate their turrets when in idle. Defaults to `[AudioVisual]` -> `UnitIdleRotateTurret`.
+  - `UnitIdlePointToMouse` controls whether units will turn their turrets to your mouse when in idle. Defaults to `[AudioVisual]` -> `UnitIdlePointToMouse`.
+  - `UnitIdleActionRestartMin` and `UnitIdleActionRestartMax` control the delay from idle to action occurrence together.
+  - `UnitIdleActionIntervalMin` and `UnitIdleActionIntervalMax` control the delay between every idle actions together.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+UnitIdleRotateTurret=false      ; boolean
+UnitIdlePointToMouse=false      ; boolean
+UnitIdleActionRestartMin=150    ; integer, number of frames
+UnitIdleActionRestartMax=300    ; integer, number of frames
+UnitIdleActionIntervalMin=150   ; integer, number of frames
+UnitIdleActionIntervalMax=450   ; integer, number of frames
+
+[SOMETECHNO]                    ; TechnoType
+UnitIdleRotateTurret=           ; boolean
+UnitIdlePointToMouse=           ; boolean
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers

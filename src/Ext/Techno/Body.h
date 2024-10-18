@@ -50,6 +50,12 @@ public:
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
 
+		bool UnitIdleAction;
+		bool UnitIdleActionSelected;
+		bool UnitIdleIsSelected;
+		CDTimerClass UnitIdleActionTimer;
+		CDTimerClass UnitIdleActionGapTimer;
+
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
@@ -83,6 +89,11 @@ public:
 			, WHAnimRemainingCreationInterval { 0 }
 			, CanCurrentlyDeployIntoBuilding { false }
 			, FiringObstacleCell {}
+			, UnitIdleAction { false }
+			, UnitIdleActionSelected { false }
+			, UnitIdleIsSelected { 0 }
+			, UnitIdleActionTimer {}
+			, UnitIdleActionGapTimer {}
 			, IsDetachingForCloak { false }
 			, OriginalPassengerOwner {}
 			, HasRemainingWarpInDelay { false }
@@ -111,6 +122,11 @@ public:
 		void UpdateSelfOwnedAttachEffects();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
+		void InitializeUnitIdleAction();
+		void StopIdleAction();
+		void ApplyIdleAction();
+		void ManualIdleAction();
+		void StopRotateWithNewROT(int ROT = -1);
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }

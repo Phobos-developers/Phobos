@@ -12,6 +12,8 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
+#include <WWMouseClass.h>
+#include <TacticalClass.h>
 
 // TechnoClass_AI_0x6F9E50
 // It's not recommended to do anything more here it could have a better place for performance consideration
@@ -590,6 +592,123 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 	{
 		this->MindControlRingAnimType = nullptr;
 	}
+}
+
+void TechnoExt::ExtData::StopIdleAction()
+{
+	if (!this->UnitIdleAction)
+		return;
+
+	if (this->UnitIdleActionTimer.IsTicking())
+		this->UnitIdleActionTimer.Stop();
+
+	if (this->UnitIdleActionGapTimer.IsTicking())
+	{
+		this->UnitIdleActionGapTimer.Stop();
+		TechnoTypeExt::ExtData* const pTypeExt = this->TypeExtData;
+		this->StopRotateWithNewROT(pTypeExt->TurretROT.Get(pTypeExt->OwnerObject()->ROT));
+	}
+}
+
+void TechnoExt::ExtData::ApplyIdleAction()
+{
+	TechnoClass* const pThis = this->OwnerObject();
+	FacingClass* const turret = &pThis->SecondaryFacing;
+
+	if (this->UnitIdleActionTimer.Completed()) // Set first direction
+	{
+		this->UnitIdleActionTimer.Stop();
+		this->UnitIdleActionGapTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->UnitIdleActionIntervalMin, RulesExt::Global()->UnitIdleActionIntervalMax));
+		bool noNeedTurnForward = false;
+
+		if (UnitClass* const pUnit = specific_cast<UnitClass*>(pThis))
+			noNeedTurnForward = pUnit->BunkerLinkedItem || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
+		else if (pThis->WhatAmI() == AbstractType::Building)
+			noNeedTurnForward = true;
+
+		const double extraRadian = ScenarioClass::Instance->Random.RandomDouble() - 0.5;
+
+		DirStruct unitIdleFacingDirection;
+		unitIdleFacingDirection.SetRadian<32>(pThis->PrimaryFacing.Current().GetRadian<32>() + (noNeedTurnForward ? extraRadian * Math::TwoPi : extraRadian));
+
+		this->StopRotateWithNewROT(ScenarioClass::Instance->Random.RandomRanged(2,4) >> 1);
+		turret->SetDesired(unitIdleFacingDirection);
+	}
+	else if (this->UnitIdleActionGapTimer.IsTicking()) // Check change direction
+	{
+		if (!this->UnitIdleActionGapTimer.HasTimeLeft()) // Set next direction
+		{
+			this->UnitIdleActionGapTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->UnitIdleActionIntervalMin, RulesExt::Global()->UnitIdleActionIntervalMax));
+			bool noNeedTurnForward = false;
+
+			if (UnitClass* const pUnit = specific_cast<UnitClass*>(pThis))
+				noNeedTurnForward = pUnit->BunkerLinkedItem || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
+			else if (pThis->WhatAmI() == AbstractType::Building)
+				noNeedTurnForward = true;
+
+			const double extraRadian = ScenarioClass::Instance->Random.RandomDouble() - 0.5;
+
+			DirStruct unitIdleFacingDirection;
+			unitIdleFacingDirection.SetRadian<32>(pThis->PrimaryFacing.Current().GetRadian<32>() + (noNeedTurnForward ? extraRadian * Math::TwoPi : extraRadian));
+
+			this->StopRotateWithNewROT(ScenarioClass::Instance->Random.RandomRanged(2,4) >> 1);
+			turret->SetDesired(unitIdleFacingDirection);
+		}
+	}
+	else if (!this->UnitIdleActionTimer.IsTicking()) // In idle now
+	{
+		this->UnitIdleActionTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->UnitIdleActionRestartMin, RulesExt::Global()->UnitIdleActionRestartMax));
+		bool noNeedTurnForward = false;
+
+		if (UnitClass* const pUnit = specific_cast<UnitClass*>(pThis))
+			noNeedTurnForward = pUnit->BunkerLinkedItem || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
+		else if (pThis->WhatAmI() == AbstractType::Building)
+			noNeedTurnForward = true;
+
+		if (!noNeedTurnForward)
+			turret->SetDesired(pThis->PrimaryFacing.Current());
+	}
+}
+
+void TechnoExt::ExtData::ManualIdleAction()
+{
+	TechnoClass* const pThis = this->OwnerObject();
+	FacingClass* const turret = &pThis->SecondaryFacing;
+
+	if (pThis->IsSelected)
+	{
+		this->StopIdleAction();
+		this->UnitIdleIsSelected = true;
+		const CoordStruct mouseCoords = TacticalClass::Instance->ClientToCoords(WWMouseClass::Instance->XY1);
+
+		if (mouseCoords != CoordStruct::Empty) // Mouse in tactical
+		{
+			CoordStruct technoCoords = this->OwnerObject()->GetCoords();
+			const int offset = -static_cast<int>(technoCoords.Z * 1.25);
+			const double nowRadian = Math::atan2(technoCoords.Y + offset - mouseCoords.Y, mouseCoords.X - technoCoords.X - offset);
+			DirStruct unitIdleFacingDirection;
+			unitIdleFacingDirection.SetRadian<32>(nowRadian);
+			turret->SetDesired(unitIdleFacingDirection);
+		}
+	}
+	else if (this->UnitIdleIsSelected) // Immediately stop when is not selected
+	{
+		this->UnitIdleIsSelected = false;
+		this->StopRotateWithNewROT();
+	}
+}
+
+void TechnoExt::ExtData::StopRotateWithNewROT(int ROT)
+{
+	FacingClass* const turret = &this->OwnerObject()->SecondaryFacing;
+
+	const DirStruct currentFacingDirection = turret->Current();
+	turret->DesiredFacing = currentFacingDirection;
+	turret->StartFacing = currentFacingDirection;
+	turret->RotationTimer.Start(0);
+
+	if (ROT >= 0)
+		turret->SetROT(ROT);
 }
 
 void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
