@@ -411,7 +411,7 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 		{
 			if (const CellClass* const pCell = MapClass::Instance->GetCellAt(*thisCell + CellClass::Coord2Cell(retargetCoords)))
 			{
-				ObjectClass* pObject = pCell->FirstObject;
+				ObjectClass* pObject = pCell->GetContent();
 
 				while (pObject)
 				{
