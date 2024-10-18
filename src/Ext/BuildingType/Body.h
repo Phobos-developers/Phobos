@@ -64,7 +64,7 @@ public:
 		Valueable<int> SellBuildupLength;
 		Valueable<bool> IsDestroyableObstacle;
 
-		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
+		std::vector<std::optional<DirType>> AircraftDockingDirs;
 
 		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
 		ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
