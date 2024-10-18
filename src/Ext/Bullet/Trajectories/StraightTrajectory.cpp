@@ -424,16 +424,16 @@ int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 		CellClass* const pCell = pTechno->GetCell();
 		sourceCellZ = pCell->Level * Unsorted::LevelHeight;
 
-		if (pTechno->OnBridge && pCell->ContainsBridge())
+		if (pCell->ContainsBridge())
 			sourceCellZ += CellClass::BridgeHeight;
 	}
 
-	if (TechnoClass* const pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+	if (ObjectClass* const pTarget = abstract_cast<ObjectClass*>(pBullet->Target))
 	{
 		CellClass* const pCell = pTarget->GetCell();
 		targetCellZ = pCell->Level * Unsorted::LevelHeight;
 
-		if (pTarget->OnBridge && pCell->ContainsBridge())
+		if (pCell->ContainsBridge())
 			targetCellZ += CellClass::BridgeHeight;
 	}
 
@@ -612,7 +612,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, CellClass* pCell, HouseClass* pOwner)
 {
 	const StraightTrajectoryType* const pType = this->Type;
-	ObjectClass* pObject = pCell->FirstObject;
+	ObjectClass* pObject = pCell->GetContent();
 	TechnoClass* pNearest = nullptr;
 
 	while (pObject)
@@ -748,7 +748,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 	for (auto const& pRecCell : recCellClass)
 	{
-		ObjectClass* pObject = pRecCell->FirstObject;
+		ObjectClass* pObject = pRecCell->GetContent();
 
 		while (pObject)
 		{
