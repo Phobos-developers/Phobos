@@ -2,6 +2,7 @@
 
 #include <OverlayTypeClass.h>
 
+#include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
@@ -197,4 +198,42 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	}
 
 	return weaponIndex;
+}
+
+void TechnoExt::ApplyRevengeWeapon(TechnoClass* pSource, TechnoClass* pOwner, WarheadTypeClass* pWH, RevengeWeaponCondition condition)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pOwner);
+	auto const pTypeExt = pExt->TypeExtData;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	auto const pRevengeWeapon = pWHExt->RevengeWeapon.Get(pTypeExt->RevengeWeapon);
+	auto const affectedHouses = pWHExt->RevengeWeapon_AffectsHouses.Get(pTypeExt->RevengeWeapon_AffectsHouses);
+	const bool shieldBreakFire = pWHExt->RevengeWeapon_CanFire_ShieldBreak.Get(pTypeExt->RevengeWeapon_CanFire_ShieldBreak);
+	const bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
+
+	if ((condition != RevengeWeaponCondition::ShieldBreak || shieldBreakFire)
+		&& pRevengeWeapon && EnumFunctions::CanTargetHouse(affectedHouses, pOwner->Owner, pSource->Owner))
+	{
+		if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pRevengeWeapon)))
+			WeaponTypeExt::DetonateAt(pRevengeWeapon, pSource, pOwner);
+	}
+
+	for (auto& attachEffect : pExt->AttachedEffects)
+	{
+		if (!attachEffect->IsActive())
+			continue;
+
+		auto const pType = attachEffect->GetType();
+
+		if (condition == RevengeWeaponCondition::ShieldBreak && !shieldBreakFire)
+			continue;
+
+		if (!pType->RevengeWeapon)
+			continue;
+
+		if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
+			continue;
+
+		if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pOwner->Owner, pSource->Owner))
+			WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pOwner);
+	}
 }

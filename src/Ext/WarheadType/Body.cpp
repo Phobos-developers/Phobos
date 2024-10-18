@@ -264,6 +264,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
 	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
 
+	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
+	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	this->RevengeWeapon_CanFire_ShieldBreak.Read(exINI, pSection, "RevengeWeapon.CanFire.ShieldBreak");
+	this->Shield_RevengeWeapon.Read<true>(exINI, pSection, "Shield.RevengeWeapon");
+	this->Shield_RevengeWeapon_AffectsHouses.Read(exINI, pSection, "Shield.RevengeWeapon.AffectsHouses");
+	this->Shield_RevengeWeapon_AllFire.Read(exINI, pSection, "Shield.RevengeWeapon.AllFire");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -495,6 +502,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
+
+		.Process(this->RevengeWeapon)
+		.Process(this->RevengeWeapon_AffectsHouses)
+		.Process(this->RevengeWeapon_CanFire_ShieldBreak)
+		.Process(this->Shield_RevengeWeapon)
+		.Process(this->Shield_RevengeWeapon_AffectsHouses)
+		.Process(this->Shield_RevengeWeapon_AllFire)
 		;
 }
 

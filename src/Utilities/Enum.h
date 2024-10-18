@@ -291,6 +291,12 @@ enum class DisplayInfoType : BYTE
 	GattlingStage = 9
 };
 
+enum class RevengeWeaponCondition : BYTE
+{
+	Death = 0,
+	ShieldBreak = 1
+};
+
 class MouseCursorHotSpotX
 {
 public:

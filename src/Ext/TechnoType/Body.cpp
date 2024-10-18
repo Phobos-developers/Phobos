@@ -448,6 +448,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	this->RevengeWeapon_CanFire_ShieldBreak.Read(exINI, pSection, "RevengeWeapon.CanFire.ShieldBreak");
 
 	this->BuildLimitGroup_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
 	this->BuildLimitGroup_Nums.Read(exINI, pSection, "BuildLimitGroup.Nums");
@@ -812,6 +813,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
+		.Process(this->RevengeWeapon_CanFire_ShieldBreak)
 
 		.Process(this->AttachEffects)
 

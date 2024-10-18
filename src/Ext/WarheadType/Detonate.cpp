@@ -153,7 +153,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (!this->CanTargetHouse(pHouse, pTarget) || !this->CanAffectTarget(pTarget, pTargetExt))
 		return;
 
-	this->ApplyShieldModifiers(pTarget, pTargetExt);
+	this->ApplyShieldModifiers(pTarget, pOwner, pTargetExt);
 
 	if (this->RemoveDisguise)
 		this->ApplyRemoveDisguise(pHouse, pTarget);
@@ -180,7 +180,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 }
 
-void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr)
+void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoClass* pOwner, TechnoExt::ExtData* pTargetExt = nullptr)
 {
 	if (!pTargetExt)
 		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
@@ -250,7 +250,10 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 				};
 
 			if (this->Shield_Break && pTargetExt->Shield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
+			{
 				pTargetExt->Shield->BreakShield(this->Shield_BreakAnim, this->Shield_BreakWeapon);
+				pTargetExt->Shield->ShieldRevengeWeapon(pOwner, pTarget, this->OwnerObject());
+			}
 
 			if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
 			{

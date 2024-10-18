@@ -94,6 +94,10 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
 	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
+
+	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
+	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	this->RevengeWeapon_AllFire.Read(exINI, pSection, "RevengeWeapon.AllFire");
 }
 
 template <typename T>
@@ -141,6 +145,9 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)
+		.Process(this->RevengeWeapon)
+		.Process(this->RevengeWeapon_AffectsHouses)
+		.Process(this->RevengeWeapon_AllFire)
 		;
 }
 

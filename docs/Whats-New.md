@@ -464,6 +464,7 @@ New:
 - Allow customizing which building types provide build area for a building (by Starkku)
 - `Scorch` / `Flamer` fire animation customization (by Starkku)
 - Warheads parasite removal customization (by Starkku)
+- `RevengeWeapon` for shield breaking & overridden by warheads (by Ollerus)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

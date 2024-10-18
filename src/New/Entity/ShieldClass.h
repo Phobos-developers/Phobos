@@ -21,6 +21,7 @@ public:
 	bool CanBeTargeted(WeaponTypeClass* pWeapon) const;
 	bool CanBePenetrated(WarheadTypeClass* pWarhead) const;
 	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
+	void ShieldRevengeWeapon(TechnoClass* pSource, TechnoClass* pOwner, WarheadTypeClass* pWH);
 
 	void SetRespawn(int duration, double amount, int rate, bool resetTimer);
 	void SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer);

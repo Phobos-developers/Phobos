@@ -5,6 +5,7 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 #include <Utilities/GeneralUtils.h>
 #include <AnimClass.h>
@@ -164,22 +165,25 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		}
 	}
 
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-	bool IC = pWHExt->CanAffectInvulnerable(this->Techno);
+	auto const pWH = args->WH;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	auto const pTechno = this->Techno;
+	auto const pSource = args->Attacker;
+	const bool IC = pWHExt->CanAffectInvulnerable(pTechno);
 
-	if (!IC || CanBePenetrated(args->WH) || this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
+	if (!IC || CanBePenetrated(pWH) || pTechno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(pTechno, pSource))
 		return *args->Damage;
 
 	int nDamage = 0;
 	int shieldDamage = 0;
 	int healthDamage = 0;
 
-	if (pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
+	if (pWHExt->CanTargetHouse(args->SourceHouse, pTechno) && !pWH->Temporal)
 	{
 		if (*args->Damage > 0)
-			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->GetArmorType(), args->DistanceToEpicenter);
+			nDamage = MapClass::GetTotalDamage(*args->Damage, pWH, this->GetArmorType(), args->DistanceToEpicenter);
 		else
-			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->GetArmorType(), args->DistanceToEpicenter);
+			nDamage = -MapClass::GetTotalDamage(-*args->Damage, pWH, this->GetArmorType(), args->DistanceToEpicenter);
 
 		bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(this->Type);
 		double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(this->Type->AbsorbPercent) : this->Type->AbsorbPercent;
@@ -198,7 +202,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	shieldDamage = Math::clamp(shieldDamage, minDmg, maxDmg);
 
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
-		GeneralUtils::DisplayDamageNumberString(shieldDamage, DamageDisplayType::Shield, this->Techno->GetRenderCoords(), TechnoExt::ExtMap.Find(this->Techno)->DamageNumberOffset);
+		GeneralUtils::DisplayDamageNumberString(shieldDamage, DamageDisplayType::Shield, pTechno->GetRenderCoords(), TechnoExt::ExtMap.Find(pTechno)->DamageNumberOffset);
 
 	if (shieldDamage > 0)
 	{
@@ -225,16 +229,17 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			this->ResponseAttack();
 
 		if (pWHExt->DecloakDamagedTargets)
-			this->Techno->Uncloak(false);
+			pTechno->Uncloak(false);
 
 		int residueDamage = shieldDamage - this->HP;
 
 		if (residueDamage >= 0)
 		{
 			int actualResidueDamage = Math::max(0, int((double)(originalShieldDamage - this->HP) /
-				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetArmorType()))); //only absord percentage damage
+				GeneralUtils::GetWarheadVersusArmor(pWH, this->GetArmorType()))); //only absord percentage damage
 
 			this->BreakShield(pWHExt->Shield_BreakAnim, pWHExt->Shield_BreakWeapon.Get(nullptr));
+			this->ShieldRevengeWeapon(pSource, pTechno, pWH);
 
 			return this->Type->AbsorbOverDamage ? healthDamage : actualResidueDamage + healthDamage;
 		}
@@ -259,7 +264,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 						flags |= SpotlightFlags::NoBlue;
 				}
 
-				MapClass::FlashbangWarheadAt(size, args->WH, this->Techno->Location, true, flags);
+				MapClass::FlashbangWarheadAt(size, pWH, pTechno->Location, true, flags);
 			}
 
 			if (!pWHExt->Shield_SkipHitAnim)
@@ -280,7 +285,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		{
 			int result = *args->Damage;
 
-			if (result * GeneralUtils::GetWarheadVersusArmor(args->WH, this->Techno->GetTechnoType()->Armor) > 0)
+			if (result * GeneralUtils::GetWarheadVersusArmor(pWH, pTechno->GetTechnoType()->Armor) > 0)
 				result = 0;
 
 			return result;
@@ -701,6 +706,29 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 
 	if (pWeaponType)
 		TechnoExt::FireWeaponAtSelf(this->Techno, pWeaponType);
+}
+
+void ShieldClass::ShieldRevengeWeapon(TechnoClass* pSource, TechnoClass* pOwner, WarheadTypeClass* pWH)
+{
+	if (!pSource)
+		return;
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	const auto pWeaponType = pWHExt->Shield_RevengeWeapon.Get(this->Type->RevengeWeapon.Get(nullptr));
+	const auto affectedHouses = pWHExt->Shield_RevengeWeapon_AffectsHouses.Get(this->Type->RevengeWeapon_AffectsHouses);
+	const bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
+
+	if (pWeaponType && EnumFunctions::CanTargetHouse(affectedHouses, pOwner->Owner, pSource->Owner))
+	{
+		if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pWeaponType)))
+			WeaponTypeExt::DetonateAt(pWeaponType, pSource, pOwner);
+	}
+
+	// Handle other revenge weapons
+	if (!pWHExt->Shield_RevengeWeapon_AllFire.Get(this->Type->RevengeWeapon_AllFire))
+		return;
+
+	TechnoExt::ApplyRevengeWeapon(pSource, pOwner, pWH, RevengeWeaponCondition::ShieldBreak);
 }
 
 void ShieldClass::RespawnShield()

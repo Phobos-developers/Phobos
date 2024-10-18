@@ -44,6 +44,7 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
+    - `RevengeWeapon.CanFire.ShieldBreak` can be used to determine whether this revenge weapon should be fired upon a [shield](#shields) is broken if the ShieldType has `RevengeWeapon.AllFire` set to true.
   - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage]`->`C4Warhead`. If `ReflectDamage.Warhead` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
@@ -118,6 +119,7 @@ Crit.AllowWarheads=                                ; list of WarheadTypes
 Crit.DisallowWarheads=                             ; list of WarheadTypes
 RevengeWeapon=                                     ; WeaponType
 RevengeWeapon.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.CanFire.ShieldBreak=true             ; boolean
 ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
@@ -316,6 +318,9 @@ ImmuneToCrit=no                             ; boolean
 Tint.Color=                                 ; integer - R,G,B
 Tint.Intensity=0.0                          ; floating point value
 Tint.VisibleToHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon=                              ; WeaponType
+RevengeWeapon.AffectsHouses=all             ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.AllFire=false                 ; boolean
 
 [SOMETECHNO]                                ; TechnoType
 ShieldType=SOMESHIELDTYPE                   ; ShieldType; none by default
@@ -334,6 +339,9 @@ Shield.ReceivedDamage.Minimum=              ; integer
 Shield.ReceivedDamage.Maximum=              ; integer
 Shield.ReceivedDamage.MinMultiplier=1.0     ; floating point value
 Shield.ReceivedDamage.MaxMultiplier=1.0     ; floating point value
+Shield.RevengeWeapon=                       ; WeaponType
+Shield.RevengeWeapon.AffectsHouses=         ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Shield.RevengeWeapon.AllFire=               ; boolean
 Shield.Respawn.Duration=0                   ; integer, game frames
 Shield.Respawn.Amount=0.0                   ; floating point value, percents or absolute
 Shield.Respawn.Rate=-1.0                    ; floating point value, ingame minutes
@@ -384,6 +392,10 @@ Shield.InheritStateOnReplace=false          ; boolean
 - `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
 - `HitFlash`, if set to true, makes it so that a light flash is generated when the shield is attacked by a Warhead unless it has `Shield.HitFlash=false`. Size of the flash is determined by damage dealt, unless `HitFlash.FixedSize` is set to a number, in which case that value is used instead (range of values that produces visible effect are increments of 4 from 81 to 252, anything higher or below does not have effect). Color can be customized via `HitFlash.Red/Green/Blue`. If `HitFlash.Black` is set to true, the generated flash will be black regardless of other color settings.
 - `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
+- `RevengeWeapon`, if set, will be fired on whoever dealt the damage that broke the shield. If it's broken by sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
+  - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that broke the shield is allowed to come from to fire the weapon.
+  - If `RevengeWeapon.AllFire` set to true, all `RevengeWeapon` the TechnoType has will be fired if its `RevengeWeapon.CanFire.ShieldBreak` set to true, including those on its own or granted by [attached effects](#attached-effects).
+  - Ìf a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
 - `PassPercent` controls the percentage of damage that will *not* be absorbed by the shield, and will be dealt to the unit directly even if the shield is active. Defaults to 0.0 - no penetration.
 - `ReceivedDamage.Minimum` & `ReceivedDamage.Maximum` control the minimum and maximum amount of damage that can be dealt to shield in a single hit. This is applied after armor type and `AbsorbPercent` adjustments. If `AbsorbOverDamage=false`, the residual damage dealt to the TechnoType is still based on the original damage before the clamping to the range.
@@ -406,6 +418,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Shield.HitAnim` will be displayed instead of ShieldType `HitAnim` if set when Warhead hits the shield.
   - If `Shield.SkipHitAnim` is set to true, no hit anim is shown when the Warhead damages the shield whatsoever.
   - `Shield.BreakWeapon` will be fired instead of ShieldType `BreakWeapon` if the shield is broken by the Warhead, either through damage or `Shield.Break`.
+  - `Shield.RevengeWeapon` will be fired instead of ShieldType `RevengeWeapon` if the shield is broken by the Warhead. `Shield.RevengeWeapon.AffectsHouses` and `Shield.RevengeWeapon.AllFire` override the `RevengeWeapon.AffectsHouses` and `RevengeWeapon.AllFire` respectively for this shield breaking as well, if set.
   - `Shield.AbsorbPercent` overrides the `AbsorbPercent` value set in the ShieldType that is being damaged.
   - `Shield.PassPercent` overrides the `PassPercent` value set in the ShieldType that is being damaged.
   - `Shield.ReceivedDamage.Minimum` & `Shield.ReceivedDamage.Maximum` override the values set in in the ShieldType that is being damaged.
@@ -1261,18 +1274,24 @@ Promote.IncludeSpawns=false  ; boolean
 
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
   - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
+  - `RevengeWeapon.CanFire.ShieldBreak` can be used to determine whether this revenge weapon should be fired upon a [shield](#shields) is broken if the ShieldType has `RevengeWeapon.AllFire` set to true.
   - It is possible to grant revenge weapons through [attached effects](#attached-effects) as well.
+  - If a Warhead has `RevengeWeapon` set, it will be fired instead of TechnoType `RevengeWeapon` if it's killed by the Warhead. `RevengeWeapon.AffectsHouses` and `RevengeWeapon.CanFire.ShieldBreak` override TechnoType `RevengeWeapon.AffectsHouses` and `RevengeWeapon.CanFire.ShieldBreak` respectively for this kill as well, if set. Can't override revenge weapon settings granted by [attached effects](#attached-effects).
   - Ìf a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                    ; TechnoType
-RevengeWeapon=                  ; WeaponType
-RevengeWeapon.AffectsHouses=all ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+[SOMETECHNO]                            ; TechnoType
+RevengeWeapon=                          ; WeaponType
+RevengeWeapon.AffectsHouses=all         ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.CanFire.ShieldBreak=true  ; boolean
 
-[SOMEWARHEAD]                   ; WarheadType
-SuppressRevengeWeapons=false    ; boolean
-SuppressRevengeWeapons.Types=   ; List of WeaponTypes
+[SOMEWARHEAD]                           ; WarheadType
+RevengeWeapon=                          ; WeaponType
+RevengeWeapon.AffectsHouses=            ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.CanFire.ShieldBreak=      ; boolean
+SuppressRevengeWeapons=false            ; boolean
+SuppressRevengeWeapons.Types=           ; List of WeaponTypes
 ```
 
 ### Weapons fired on warping in / out

@@ -83,6 +83,13 @@ public:
 		Valueable<double> Shield_ReceivedDamage_MinMultiplier;
 		Valueable<double> Shield_ReceivedDamage_MaxMultiplier;
 
+		Nullable<WeaponTypeClass*> RevengeWeapon;
+		Nullable<AffectedHouse> RevengeWeapon_AffectsHouses;
+		Nullable<bool> RevengeWeapon_CanFire_ShieldBreak;
+		Nullable<WeaponTypeClass*> Shield_RevengeWeapon;
+		Nullable<AffectedHouse> Shield_RevengeWeapon_AffectsHouses;
+		Nullable<bool> Shield_RevengeWeapon_AllFire;
+
 		Valueable<int> Shield_Respawn_Duration;
 		Nullable<double> Shield_Respawn_Amount;
 		Valueable<int> Shield_Respawn_Rate;
@@ -232,6 +239,13 @@ public:
 			, Shield_ReceivedDamage_MinMultiplier { 1.0 }
 			, Shield_ReceivedDamage_MaxMultiplier { 1.0 }
 
+			, RevengeWeapon {}
+			, RevengeWeapon_AffectsHouses {}
+			, RevengeWeapon_CanFire_ShieldBreak {}
+			, Shield_RevengeWeapon {}
+			, Shield_RevengeWeapon_AffectsHouses {}
+			, Shield_RevengeWeapon_AllFire {}
+
 			, Shield_Respawn_Duration { 0 }
 			, Shield_Respawn_Amount { 0.0 }
 			, Shield_Respawn_Rate { -1 }
@@ -343,7 +357,7 @@ public:
 		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
-		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
+		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoClass* pOwner, TechnoExt::ExtData* pTargetExt);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		double GetCritChance(TechnoClass* pFirer) const;
 	};

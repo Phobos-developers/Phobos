@@ -142,6 +142,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	this->RevengeWeapon_CanFire_ShieldBreak.Read(exINI, pSection, "RevengeWeapon.CanFire.ShieldBreak");
 
 	this->ReflectDamage.Read(exINI, pSection, "ReflectDamage");
 	this->ReflectDamage_Warhead.Read(exINI, pSection, "ReflectDamage.Warhead");
@@ -199,6 +200,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Crit_DisallowWarheads)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
+		.Process(this->RevengeWeapon_CanFire_ShieldBreak)
 		.Process(this->ReflectDamage)
 		.Process(this->ReflectDamage_Warhead)
 		.Process(this->ReflectDamage_Warhead_Detonate)

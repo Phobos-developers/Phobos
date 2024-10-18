@@ -56,6 +56,10 @@ public:
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
 
+	Nullable<WeaponTypeClass*> RevengeWeapon;
+	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+	Valueable<bool> RevengeWeapon_AllFire;
+
 public:
 	ShieldTypeClass(const char* const pTitle) : Enumerable<ShieldTypeClass>(pTitle)
 		, Strength { 0 }
@@ -100,6 +104,9 @@ public:
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
+		, RevengeWeapon {}
+		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+		, RevengeWeapon_AllFire { false }
 	{ };
 
 	void LoadFromINI(CCINIClass* pINI);
