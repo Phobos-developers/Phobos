@@ -65,6 +65,18 @@ public:
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
 
+		Valueable<bool> CheckUnitBaseNormal;
+		Valueable<bool> AlwaysExistTheCameo;
+		Valueable<bool> BuildingStatisticsCameo;
+		Valueable<SHPStruct*> CameoOverlayShapes;
+		Valueable<Vector3D<int>> CameoOverlayFrames;
+		CustomPalette CameoOverlayPalette;
+		Valueable<bool> ExpandBuildingPlace;
+		Valueable<bool> DrawAdjacentBoundary;
+		Valueable<bool> CheckExpandPlaceGrid;
+		Valueable<Vector3D<int>> ExpandLandGridFrames;
+		Valueable<Vector3D<int>> ExpandWaterGridFrames;
+
 		Nullable<double> ConditionYellow_Terrain;
 		Nullable<double> Shield_ConditionYellow;
 		Nullable<double> Shield_ConditionRed;
@@ -195,6 +207,18 @@ public:
 			, PlacementGrid_TranslucencyWithPreview { }
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
+
+			, CheckUnitBaseNormal { false }
+			, AlwaysExistTheCameo { false }
+			, BuildingStatisticsCameo { false }
+			, CameoOverlayShapes { FileSystem::PIPS_SHP }
+			, CameoOverlayFrames { { -1, -1, -1 } }
+			, CameoOverlayPalette {}
+			, ExpandBuildingPlace { false }
+			, DrawAdjacentBoundary { false }
+			, CheckExpandPlaceGrid { false }
+			, ExpandLandGridFrames { { 1, 0, 0 } }
+			, ExpandWaterGridFrames { { 1, 0, 0 } }
 
 			, Shield_ConditionYellow { }
 			, Shield_ConditionRed { }

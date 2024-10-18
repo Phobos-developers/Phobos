@@ -95,6 +95,18 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
 
+	this->CheckUnitBaseNormal.Read(exINI, GameStrings::General, "CheckUnitBaseNormal");
+	this->AlwaysExistTheCameo.Read(exINI, GameStrings::AudioVisual, "AlwaysExistTheCameo");
+	this->BuildingStatisticsCameo.Read(exINI, GameStrings::AudioVisual, "BuildingStatisticsCameo");
+	this->CameoOverlayShapes.Read(exINI, GameStrings::AudioVisual, "CameoOverlayShapes");
+	this->CameoOverlayFrames.Read(exINI, GameStrings::AudioVisual, "CameoOverlayFrames");
+	this->CameoOverlayPalette.LoadFromINI(pINI, GameStrings::AudioVisual, "CameoOverlayPalette");
+	this->ExpandBuildingPlace.Read(exINI, GameStrings::General, "ExpandBuildingPlace");
+	this->DrawAdjacentBoundary.Read(exINI, GameStrings::AudioVisual, "DrawAdjacentBoundary");
+	this->CheckExpandPlaceGrid.Read(exINI, GameStrings::AudioVisual, "CheckExpandPlaceGrid");
+	this->ExpandLandGridFrames.Read(exINI, GameStrings::AudioVisual, "ExpandLandGridFrames");
+	this->ExpandWaterGridFrames.Read(exINI, GameStrings::AudioVisual, "ExpandWaterGridFrames");
+
 	this->ConditionYellow_Terrain.Read(exINI, GameStrings::AudioVisual, "ConditionYellow.Terrain");
 	this->Shield_ConditionYellow.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionYellow");
 	this->Shield_ConditionRed.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionRed");
@@ -302,6 +314,17 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementGrid_TranslucencyWithPreview)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Translucency)
+		.Process(this->CheckUnitBaseNormal)
+		.Process(this->AlwaysExistTheCameo)
+		.Process(this->BuildingStatisticsCameo)
+		.Process(this->CameoOverlayShapes)
+		.Process(this->CameoOverlayFrames)
+		.Process(this->CameoOverlayPalette)
+		.Process(this->ExpandBuildingPlace)
+		.Process(this->DrawAdjacentBoundary)
+		.Process(this->CheckExpandPlaceGrid)
+		.Process(this->ExpandLandGridFrames)
+		.Process(this->ExpandWaterGridFrames)
 		.Process(this->ConditionYellow_Terrain)
 		.Process(this->Shield_ConditionYellow)
 		.Process(this->Shield_ConditionRed)
