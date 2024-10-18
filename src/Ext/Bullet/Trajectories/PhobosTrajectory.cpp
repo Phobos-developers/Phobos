@@ -5,8 +5,8 @@
 #include <BulletClass.h>
 #include <Helpers/Macro.h>
 
-#include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
+#include "BombardTrajectory.h"
 
 TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 {
@@ -62,6 +62,10 @@ void TrajectoryTypePointer::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	if (_ptr)
 	{
 		_ptr->Trajectory_Speed.Read(exINI, pSection, "Trajectory.Speed");
+
+		if (abs(_ptr->Trajectory_Speed) < 1e-10)
+			_ptr->Trajectory_Speed = 0.001;
+
 		_ptr->Read(pINI, pSection);
 	}
 }
