@@ -231,6 +231,7 @@ public:
 
 		Nullable<bool> UnitIdleRotateTurret;
 		Nullable<bool> UnitIdlePointToMouse;
+		Nullable<int> TurretROT;
 
 		struct LaserTrailDataEntry
 		{
@@ -459,6 +460,7 @@ public:
 
 			, UnitIdleRotateTurret {}
 			, UnitIdlePointToMouse {}
+			, TurretROT {}
 		{ }
 
 		virtual ~ExtData() = default;

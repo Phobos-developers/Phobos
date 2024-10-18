@@ -464,6 +464,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->UnitIdleRotateTurret.Read(exINI, pSection, "UnitIdleRotateTurret");
 	this->UnitIdlePointToMouse.Read(exINI, pSection, "UnitIdlePointToMouse");
+	this->TurretROT.Read(exINI, pSection, "TurretROT");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -834,6 +835,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->UnitIdleRotateTurret)
 		.Process(this->UnitIdlePointToMouse)
+		.Process(this->TurretROT)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -53,7 +53,6 @@ public:
 		bool UnitIdleAction;
 		bool UnitIdleActionSelected;
 		bool UnitIdleIsSelected;
-		int UnitIdleTurretROT; // If TypeExt get the Ares TurretROT, this can be replaced
 		CDTimerClass UnitIdleActionTimer;
 		CDTimerClass UnitIdleActionGapTimer;
 
@@ -92,7 +91,6 @@ public:
 			, FiringObstacleCell {}
 			, UnitIdleAction { false }
 			, UnitIdleActionSelected { false }
-			, UnitIdleTurretROT { 0 }
 			, UnitIdleIsSelected { 0 }
 			, UnitIdleActionTimer {}
 			, UnitIdleActionGapTimer {}
@@ -125,7 +123,9 @@ public:
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 		void InitializeUnitIdleAction();
-		void ApplyUnitIdleAction();
+		void StopIdleAction();
+		void ApplyIdleAction();
+		void ManualIdleAction();
 		void StopRotateWithNewROT(int ROT = -1);
 
 		virtual ~ExtData() override;

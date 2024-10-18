@@ -150,25 +150,24 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 
 void TechnoExt::ExtData::InitializeUnitIdleAction()
 {
-	auto const pThis = this->OwnerObject();
+	TechnoClass* const pThis = this->OwnerObject();
 
 	if (pThis->WhatAmI() != AbstractType::Unit || !pThis->HasTurret())
 		return;
 
-	auto const pType = pThis->GetTechnoType();
+	TechnoTypeClass* const pType = pThis->GetTechnoType();
+	TechnoTypeExt::ExtData* const pTypeExt = this->TypeExtData;
 
-	if (this->TypeExtData->AutoFire || pType->TurretSpins)
+	if (pTypeExt->AutoFire || pType->TurretSpins)
 		return;
 
-	if (this->TypeExtData->UnitIdleRotateTurret.Get(RulesExt::Global()->UnitIdleRotateTurret))
+	if (pTypeExt->UnitIdleRotateTurret.Get(RulesExt::Global()->UnitIdleRotateTurret))
 		this->UnitIdleAction = true;
-
-	this->UnitIdleTurretROT = static_cast<int>(pThis->SecondaryFacing.ROT.GetDir());
 
 	if (!SessionClass::IsSingleplayer())
 		return;
 
-	if (this->TypeExtData->UnitIdlePointToMouse.Get(RulesExt::Global()->UnitIdlePointToMouse))
+	if (pTypeExt->UnitIdlePointToMouse.Get(RulesExt::Global()->UnitIdlePointToMouse))
 		this->UnitIdleActionSelected = true;
 }
 
