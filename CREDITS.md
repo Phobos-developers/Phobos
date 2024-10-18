@@ -251,6 +251,7 @@ This page lists all the individual contributions to the project by their author.
   - Build area customizations
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
+  - Frame CRC generation rewrite
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
