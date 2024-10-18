@@ -466,6 +466,18 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+void TechnoExt::ExtData::ResetDelayedFireTimer()
+{
+	this->DelayedFireTimer.Stop();
+	this->DelayedFireWeaponIndex = -1;
+
+	if (this->CurrentDelayedFireAnim)
+	{
+		if (AnimExt::ExtMap.Find(this->CurrentDelayedFireAnim)->DelayedFireRemoveOnNoDelay)
+			this->CurrentDelayedFireAnim->UnInit();
+	}
+}
+
 // =============================
 // load / save
 
@@ -500,6 +512,11 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasRemainingWarpInDelay)
 		.Process(this->LastWarpInDelay)
 		.Process(this->IsBeingChronoSphered)
+		.Process(this->FiringSequencePaused)
+		.Process(this->DelayedFireTimer)
+		.Process(this->DelayedFireWeaponIndex)
+		.Process(this->CurrentDelayedFireAnim)
+		.Process(this->CustomFiringOffset)
 		;
 }
 
@@ -577,6 +594,19 @@ DEFINE_HOOK(0x70C249, TechnoClass_Load_Suffix, 0x5)
 DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 {
 	TechnoExt::ExtMap.SaveStatic();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x710415, TechnoClass_DetachAnim, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET(AbstractClass*, pTarget, EAX);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->CurrentDelayedFireAnim == pTarget)
+		pExt->CurrentDelayedFireAnim = nullptr;
 
 	return 0;
 }
