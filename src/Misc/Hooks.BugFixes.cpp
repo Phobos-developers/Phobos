@@ -990,3 +990,8 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 
 // Patch tileset parsing to not reset certain tileset indices for Lunar theater.
 DEFINE_JUMP(LJMP, 0x546C8B, 0x546CBF);
+
+// Skip the Disappear func calling in cloak process.
+// Disappear announces the techno's pointer invalid and make the references in bullet or missile spawns null.
+DEFINE_JUMP(LJMP, 0x703789, 0x703795);
+DEFINE_JUMP(LJMP, 0x6FBBC3, 0x6FBBCE);
