@@ -127,8 +127,11 @@ DEFINE_HOOK(0x54C64B, JumpjetLocomotionClass_ProcessState_ClearDestination, 0x7)
 {
 	GET(FootClass* const, pThis, ECX);
 
-	pThis->SetDestination(nullptr, true);
-	pThis->QueueMission(Mission::Guard, true);
+	if (pThis->Destination == pThis->GetCell())
+	{
+		pThis->SetDestination(nullptr, true);
+		pThis->QueueMission(Mission::Guard, true);
+	}
 
 	return 0;
 }
