@@ -28,7 +28,7 @@ public:
 	bool ResetIfRecreatable();
 	bool IsSelfOwned() const { return this->Source == this->Techno; }
 	bool HasExpired() const;
-	bool AllowedToBeActive() const;
+	bool ShouldBeDiscardedNow() const;
 	bool IsActive() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
 

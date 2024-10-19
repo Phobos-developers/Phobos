@@ -1095,51 +1095,6 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<ExpireWeaponCondition>(ExpireWeaponCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
-	{
-		if (parser.ReadString(pSection, pKey))
-		{
-			auto parsed = ExpireWeaponCondition::None;
-
-			auto str = parser.value();
-			char* context = nullptr;
-			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
-			{
-				if (!_strcmpi(cur, "none"))
-				{
-					parsed |= ExpireWeaponCondition::None;
-				}
-				else if (!_strcmpi(cur, "expire"))
-				{
-					parsed |= ExpireWeaponCondition::Expire;
-				}
-				else if (!_strcmpi(cur, "remove"))
-				{
-					parsed |= ExpireWeaponCondition::Remove;
-				}
-				else if (!_strcmpi(cur, "death"))
-				{
-					parsed |= ExpireWeaponCondition::Death;
-				}
-				else if (!_strcmpi(cur, "all"))
-				{
-					parsed |= ExpireWeaponCondition::All;
-				}
-				else
-				{
-					Debug::INIParseFailed(pSection, pKey, cur, "Expected a expire weapon trigger condition type");
-					return false;
-				}
-			}
-
-			value = parsed;
-			return true;
-		}
-
-		return false;
-	}
-
-	template <>
 	inline bool read<CLSID>(CLSID& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (!parser.ReadString(pSection, pKey))
