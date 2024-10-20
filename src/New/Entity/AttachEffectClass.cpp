@@ -121,7 +121,7 @@ void AttachEffectClass::AI()
 
 	if (this->NeedsDurationRefresh)
 	{
-		if (AllowedToBeActive())
+		if (!this->ShouldBeDiscardedNow())
 		{
 			this->RefreshDuration();
 			this->NeedsDurationRefresh = false;
@@ -142,7 +142,7 @@ void AttachEffectClass::AI()
 
 		if (this->Delay > 0)
 			this->KillAnim();
-		else if (AllowedToBeActive())
+		else if (!this->ShouldBeDiscardedNow())
 			this->RefreshDuration();
 		else
 			this->NeedsDurationRefresh = true;
@@ -406,10 +406,10 @@ bool AttachEffectClass::HasExpired() const
 	return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration;
 }
 
-bool AttachEffectClass::AllowedToBeActive() const
+bool AttachEffectClass::ShouldBeDiscardedNow() const
 {
 	if (this->ShouldBeDiscarded)
-		return false;
+		return true;
 
 	auto const pTechno = this->Techno;
 
@@ -418,14 +418,14 @@ bool AttachEffectClass::AllowedToBeActive() const
 		bool isMoving = pFoot->Locomotor->Is_Really_Moving_Now();
 
 		if (isMoving && (this->Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
-			return false;
+			return true;
 
 		if (!isMoving && (this->Type->DiscardOn & DiscardCondition::Stationary) != DiscardCondition::None)
-			return false;
+			return true;
 	}
 
 	if (pTechno->DrainingMe && (this->Type->DiscardOn & DiscardCondition::Drain) != DiscardCondition::None)
-		return false;
+		return true;
 
 	if (pTechno->Target)
 	{
@@ -452,11 +452,11 @@ bool AttachEffectClass::AllowedToBeActive() const
 			int distanceFromTgt = pTechno->DistanceFrom(pTechno->Target);
 
 			if ((inRange && distanceFromTgt <= distance) || (outOfRange && distanceFromTgt >= distance))
-				return false;
+				return true;
 		}
 	}
 
-	return true;
+	return false;
 }
 
 bool AttachEffectClass::IsActive() const

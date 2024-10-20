@@ -35,7 +35,7 @@ public:
 		int GrindingWeapon_AccumulatedCredits;
 		BuildingClass* CurrentAirFactory;
 		int AccumulatedIncome;
-		OptionalStruct<int, true> CurrentLaserWeaponIndex;
+		std::optional<int> CurrentLaserWeaponIndex;
 		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
 		SuperClass* EMPulseSW;
 
