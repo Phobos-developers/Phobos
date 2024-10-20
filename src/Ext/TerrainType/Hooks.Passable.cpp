@@ -6,11 +6,6 @@
 
 #include <Utilities/GeneralUtils.h>
 
-constexpr bool IS_CELL_OCCUPIED(CellClass* pCell)
-{
-	return pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false);
-}
-
 // Passable TerrainTypes Hook #1 - Do not set occupy bits.
 DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
 {
