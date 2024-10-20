@@ -419,18 +419,22 @@ DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
 
 	if (TechnoExt::ExtData* const pExt = TechnoExt::ExtMap.Find(pThis))
 	{
-		if (pExt->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst) && pWeapon != pExt->LastWeaponType)
+		if (pThis->CurrentBurstIndex && pWeapon != pExt->LastWeaponType && pExt->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst))
 		{
-			if (pExt->LastWeaponType && pThis->CurrentBurstIndex)
+			if (pExt->LastWeaponType)
 			{
 				const double ratio = static_cast<double>(pThis->CurrentBurstIndex) / pExt->LastWeaponType->Burst;
-				const int rof = static_cast<int>(ratio * pExt->LastWeaponType->ROF * pExt->AE.ROFMultiplier);
-				pThis->ChargeTurretDelay = rof;
-				pThis->RearmTimer.Start(rof);
-				pThis->CurrentBurstIndex = 0;
-				pExt->LastWeaponType = pWeapon;
+				const int rof = static_cast<int>(ratio * pExt->LastWeaponType->ROF * pExt->AE.ROFMultiplier) - (Unsorted::CurrentFrame - pThis->unknown_int_120);
 
-				return CanNotFire;
+				if (rof > 0)
+				{
+					pThis->ChargeTurretDelay = rof;
+					pThis->RearmTimer.Start(rof);
+					pThis->CurrentBurstIndex = 0;
+					pExt->LastWeaponType = pWeapon;
+
+					return CanNotFire;
+				}
 			}
 
 			pThis->CurrentBurstIndex = 0;

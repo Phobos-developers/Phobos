@@ -43,6 +43,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
 	this->UpdateAttachEffects();
+	this->UpdateRecountBurst();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -589,6 +590,30 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 	else if (this->MindControlRingAnimType)
 	{
 		this->MindControlRingAnimType = nullptr;
+	}
+}
+
+void TechnoExt::ExtData::UpdateRecountBurst()
+{
+	TechnoClass* const pThis = this->OwnerObject();
+
+	if (pThis->CurrentBurstIndex && !pThis->Target && this->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst))
+	{
+		WeaponTypeClass* const pWeapon = this->LastWeaponType;
+
+		if (pWeapon && pThis->unknown_int_120 + std::max(pWeapon->ROF, 30) <= Unsorted::CurrentFrame)
+		{
+			const double ratio = static_cast<double>(pThis->CurrentBurstIndex) / pWeapon->Burst;
+			const int rof = static_cast<int>(ratio * pWeapon->ROF * this->AE.ROFMultiplier) - std::max(pWeapon->ROF, 30);
+
+			if (rof > 0)
+			{
+				pThis->ChargeTurretDelay = rof;
+				pThis->RearmTimer.Start(rof);
+			}
+
+			pThis->CurrentBurstIndex = 0;
+		}
 	}
 }
 
