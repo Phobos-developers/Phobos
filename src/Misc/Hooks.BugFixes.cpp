@@ -47,6 +47,10 @@
 DEFINE_JUMP(LJMP, 0x545CE2, 0x545CE9) //Phobos_BugFixes_Tileset255_RemoveNonMMArrayFill
 DEFINE_JUMP(LJMP, 0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 
+// Patches TechnoClass::Kill_Cargo/KillPassengers (push ESI -> push EBP)
+// Fixes recursive passenger kills not being accredited
+// to proper techno but to their transports
+DEFINE_PATCH(0x707CF2, 0x55);
 
 // WWP's shit code! Wrong check.
 // To avoid units dying when they are already dead.
@@ -990,3 +994,4 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 
 // Patch tileset parsing to not reset certain tileset indices for Lunar theater.
 DEFINE_JUMP(LJMP, 0x546C8B, 0x546CBF);
+

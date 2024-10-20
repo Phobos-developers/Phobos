@@ -21,6 +21,20 @@ enum class DiscardCondition : unsigned char
 
 MAKE_ENUM_FLAGS(DiscardCondition);
 
+// AE expire weapon condition
+enum class ExpireWeaponCondition : unsigned char
+{
+	None = 0x0,
+	Expire = 0x1,
+	Remove = 0x2,
+	Death = 0x4,
+	Discard = 0x8,
+
+	All = 0xFF,
+};
+
+MAKE_ENUM_FLAGS(ExpireWeaponCondition);
+
 class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 {
 	static std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> GroupsMap;
