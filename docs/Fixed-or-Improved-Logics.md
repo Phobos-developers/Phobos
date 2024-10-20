@@ -1375,15 +1375,17 @@ AllowDamageOnSelf=false  ; boolean
 
 - You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual]` -> `CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead, latter defaults to former.
 - You can now set a percentage chance a combat light effect is shown on Warhead impact by setting `CombatLightChance`.
+- Setting `CLIsBlack` to true on Warhead will now turn the flash black like on hitting an Iron Curtained object, irregardless of other color settings.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-CombatLightDetailLevel=0                     ; integer
-
-[SOMEWARHEAD]                                ; WarheadType
-CombatLightDetailLevel=                      ; integer
-CombatLightChance=1.0                        ; floating point value, percents or absolute (0.0-1.0)
+CombatLightDetailLevel=0  ; integer
+                          
+[SOMEWARHEAD]             ; WarheadType
+CombatLightDetailLevel=   ; integer
+CombatLightChance=1.0     ; floating point value, percents or absolute (0.0-1.0)
+CLIsBlack=false           ; boolean
 ```
 
 ### Customizing decloak on damaging targets

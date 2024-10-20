@@ -141,6 +141,7 @@ public:
 
 		Nullable<int> CombatLightDetailLevel;
 		Valueable<double> CombatLightChance;
+		Valueable<bool> CLIsBlack;
 		Nullable<bool> Particle_AlphaImageIsLightFlash;
 
 		Valueable<bool> SuppressRevengeWeapons;
@@ -291,6 +292,7 @@ public:
 
 			, CombatLightDetailLevel {}
 			, CombatLightChance { 1.0 }
+		    , CLIsBlack { false }
 			, Particle_AlphaImageIsLightFlash {}
 
 			, SuppressRevengeWeapons { false }

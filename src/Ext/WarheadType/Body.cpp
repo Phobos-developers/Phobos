@@ -257,6 +257,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->CombatLightDetailLevel.Read(exINI, pSection, "CombatLightDetailLevel");
 	this->CombatLightChance.Read(exINI, pSection, "CombatLightChance");
+	this->CLIsBlack.Read(exINI, pSection, "CLIsBlack");
 	this->Particle_AlphaImageIsLightFlash.Read(exINI, pSection, "Particle.AlphaImageIsLightFlash");
 
 	this->SuppressRevengeWeapons.Read(exINI, pSection, "SuppressRevengeWeapons");
@@ -483,6 +484,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->CombatLightChance)
+		.Process(this->CLIsBlack)
 		.Process(this->Particle_AlphaImageIsLightFlash)
 
 		// Ares tags
