@@ -363,8 +363,10 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 	}
 
 	CoordStruct buffer = CoordStruct::Empty;
+	CellClass* pCell = MapClass::Instance->GetCellAt(*pThis->GetExitCoords(&buffer, 0));
+	int i = 0;
 
-	if (CellClass* const pCell = MapClass::Instance->GetCellAt(*pThis->GetExitCoords(&buffer, 0)))
+	while (true)
 	{
 		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
@@ -386,6 +388,11 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 				return; // one after another
 			}
 		}
+
+		if (++i >= 2)
+			return; // no stuck
+
+		pCell = pCell->GetNeighbourCell(FacingType::East);
 	}
 }
 
