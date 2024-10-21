@@ -1,10 +1,14 @@
 #include <Misc/SyncLogging.h>
 
 #include <AircraftClass.h>
-#include <InfantryClass.h>
+#include <AnimClass.h>
+#include <EventClass.h>
 #include <HouseClass.h>
+#include <InfantryClass.h>
+#include <ParticleClass.h>
 #include <Unsorted.h>
 
+#include <Ext/AnimType/Body.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
@@ -21,7 +25,6 @@ SyncLogEventBuffer<TargetChangeSyncLogEvent, TargetChanges_Size> SyncLogger::Tar
 SyncLogEventBuffer<TargetChangeSyncLogEvent, DestinationChanges_Size> SyncLogger::DestinationChanges;
 SyncLogEventBuffer<MissionOverrideSyncLogEvent, MissionOverrides_Size> SyncLogger::MissionOverrides;
 SyncLogEventBuffer<AnimCreationSyncLogEvent, AnimCreations_Size> SyncLogger::AnimCreations;
-
 
 void __forceinline MakeCallerRelative(unsigned int& caller)
 {
@@ -527,3 +530,105 @@ DEFINE_HOOK(0x683AB0, ScenarioClass_Start_DisableSyncLog, 0x6)
 
 	return 0;
 }
+
+#pragma region FrameCRC
+
+static bool IsHashable(ObjectClass* pObj)
+{
+	auto const rtti = pObj->WhatAmI();
+
+	if (rtti == AbstractType::Anim)
+	{
+		if (pObj->UniqueID == -2)
+			return false;
+
+		auto const pAnim = static_cast<AnimClass*>(pObj);
+		auto const pType = pAnim->Type;
+
+		if (pType->Damage != 0.0 || pType->Bouncer || pType->IsMeteor || pType->IsTiberium || pType->TiberiumChainReaction
+			|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::ExtMap.Find(pType)->CreateUnit)
+		{
+			return true;
+		}
+
+		return false;
+	}
+	else if (rtti == AbstractType::Particle)
+	{
+		auto const pParticle = static_cast<ParticleClass*>(pObj);
+		auto const pType = pParticle->Type;
+
+		if (pType->Damage)
+			return true;
+
+		return false;
+	}
+
+	return true;
+}
+
+static void __forceinline AddCRC(DWORD* crc, unsigned int val)
+{
+	*crc = val + (*crc >> 31) + (*crc << 1);
+}
+
+static int __forceinline GetCoordHash(CoordStruct location)
+{
+	return location.X / 10 + ((location.Y / 10) << 16);
+}
+
+void __fastcall ComputeGameCRC()
+{
+	auto& GameCRC = EventClass::CurrentFrameCRC.get();
+	GameCRC = 0;
+
+	for (auto const pInf : *InfantryClass::Array)
+	{
+		int primaryFacing = pInf->PrimaryFacing.Current().GetValue<8>();
+		AddCRC(&GameCRC, GetCoordHash(pInf->Location) + primaryFacing);
+	}
+
+	for (auto const pUnit : *UnitClass::Array)
+	{
+		int primaryFacing = pUnit->PrimaryFacing.Current().GetValue<8>();
+		int secondaryFacing = pUnit->SecondaryFacing.Current().GetValue<8>();
+		AddCRC(&GameCRC, GetCoordHash(pUnit->Location) + primaryFacing + secondaryFacing);
+	}
+
+	for (auto const pBuilding : *BuildingClass::Array)
+	{
+		int primaryFacing = pBuilding->PrimaryFacing.Current().GetValue<8>();
+		AddCRC(&GameCRC, GetCoordHash(pBuilding->Location) + primaryFacing);
+	}
+
+	for (auto const pHouse : *HouseClass::Array)
+	{
+		AddCRC(&GameCRC, pHouse->MapIsClear);
+	}
+
+	for (int i = 0; i < 5; i++)
+	{
+		auto const layer = DisplayClass::GetLayer((Layer)i);
+
+		for (auto const pObj : *layer)
+		{
+			if (IsHashable(pObj))
+				AddCRC(&GameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
+		}
+	}
+
+	auto const& logic = LogicClass::Instance.get();
+	for (auto const pObj : logic)
+	{
+		if (IsHashable(pObj))
+			AddCRC(&GameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
+	}
+
+	AddCRC(&GameCRC, ScenarioClass::Instance->Random.Random());
+	Game::LogFrameCRC(Unsorted::CurrentFrame % 256);
+}
+
+DEFINE_JUMP(CALL, 0x64731C, GET_OFFSET(ComputeGameCRC));
+DEFINE_JUMP(CALL, 0x647684, GET_OFFSET(ComputeGameCRC));
+
+#pragma endregion
