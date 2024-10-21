@@ -301,41 +301,42 @@ void __declspec(naked) _CCToolTip_Draw2_FillRect_RET()
 }
 DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 {
-	if (PhobosToolTip::Instance.IsCameo)
+	GET(SurfaceExt*, pThis, ESI);
+	LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
+
+	const bool isCameo = PhobosToolTip::Instance.IsCameo;
+
+	if (isCameo && Phobos::UI::AnchoredToolTips && PhobosToolTip::Instance.IsEnabled() && Phobos::Config::ToolTipDescriptions)
 	{
-		GET(SurfaceExt*, pThis, ESI);
-		LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
+		LEA_STACK(LTRBStruct*, a2, STACK_OFFSET(0x44, -0x20));
+		auto x = DSurface::SidebarBounds->X - pRect->Width - 2;
+		pRect->X = x;
+		a2->Left = x;
+		pRect->Y -= 40;
+		a2->Top -= 40;
+	}
 
-		if (Phobos::UI::AnchoredToolTips && PhobosToolTip::Instance.IsEnabled() && Phobos::Config::ToolTipDescriptions)
-		{
-			LEA_STACK(LTRBStruct*, a2, STACK_OFFSET(0x44, -0x20));
-			auto x = DSurface::SidebarBounds->X - pRect->Width - 2;
-			pRect->X = x;
-			a2->Left = x;
-			pRect->Y -= 40;
-			a2->Top -= 40;
-		}
+	// Should we make some SideExt items as static to improve the effeciency?
+	// Though it might not be a big improvement... - secsome
+	const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
 
-		// Should we make some SideExt items as static to improve the effeciency?
-		// Though it might not be a big improvement... - secsome
-		const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
-		if (auto const pSide = SideClass::Array->GetItemOrDefault(nPlayerSideIndex))
+	if (auto const pSide = SideClass::Array->GetItemOrDefault(nPlayerSideIndex))
+	{
+		if (auto const pData = SideExt::ExtMap.Find(pSide))
 		{
-			if (auto const pData = SideExt::ExtMap.Find(pSide))
-			{
-				// Could this flag be lazy?
+			// Could this flag be lazy?
+			if (isCameo)
 				SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
 
-				pThis->FillRectTrans(pRect,
-					pData->ToolTip_Background_Color.GetEx(&RulesExt::Global()->ToolTip_Background_Color),
-					pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity)
-				);
+			pThis->FillRectTrans(pRect,
+				pData->ToolTip_Background_Color.GetEx(&RulesExt::Global()->ToolTip_Background_Color),
+				pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity)
+			);
 
-				if (Phobos::Config::ToolTipBlur)
-					pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));
+			if (Phobos::Config::ToolTipBlur)
+				pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));
 
-				return (int)_CCToolTip_Draw2_FillRect_RET;
-			}
+			return (int)_CCToolTip_Draw2_FillRect_RET;
 		}
 	}
 
