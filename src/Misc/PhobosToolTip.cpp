@@ -319,7 +319,6 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	// Should we make some SideExt items as static to improve the effeciency?
 	// Though it might not be a big improvement... - secsome
 	const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
-
 	if (auto const pSide = SideClass::Array->GetItemOrDefault(nPlayerSideIndex))
 	{
 		if (auto const pData = SideExt::ExtMap.Find(pSide))
