@@ -475,3 +475,32 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
+
+
+DEFINE_HOOK(0x6FABC4, TechnoClass_AI_AnimationPaused, 0x6)
+{
+	enum { SkipGameCode = 0x6FAC31 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->FiringSequencePaused)
+		return SkipGameCode;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FCDD2, TechnoClass_AssignTarget_Changed, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(AbstractClass*, pNewTarget, EDI);
+
+	if (!pNewTarget)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->ResetDelayedFireTimer();
+	}
+
+	return 0;
+}
