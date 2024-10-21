@@ -336,3 +336,52 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_DrawPips_SelfHealGain, 0x5)
 
 	return SkipGameDrawing;
 }
+
+DEFINE_HOOK(0x6F64C1, TechnoClass_DrawHealthBar_BuildingHealthBar, 0xA)
+{
+	enum { Continue = 0x6F64CB, Skip = 0x6F683C };
+	GET(TechnoClass*, pThis, ESI);
+
+	R->EAX(pThis->GetTechnoType());
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if(pThis->WhatAmI() == AbstractType::Building && pTypeExt->HealthBar_BarType)
+		return Skip;
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x6F6846, TechnoClass_DrawHealthBar_CustomHealthBar, 0x6)
+{
+	enum { Continue = 0x6F68E8, ContinueInf = 0x6F6852, Skip = 0x6F6A58 };
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	bool pThisIsInf = pThis->WhatAmI() == AbstractType::Infantry;
+
+	if(!pTypeExt->HealthBar_BarType)
+	{
+		R->AL(pThis->IsSelected);
+		if(pThisIsInf)
+			return ContinueInf;
+		return Continue;
+	}
+
+	const auto thisHBType = pTypeExt->HealthBar_BarType.Get();
+
+	Point2D position = *pLocation;
+
+	if(pThis->WhatAmI() == AbstractType::Building)
+		position.Y -= (static_cast<BuildingClass*>(pThis)->Type->Height + 1) * Unsorted::CellHeightInPixels / 2;
+	else
+		position.Y -= pThisIsInf ? 25 : 26;
+
+	position.Y += pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	TechnoExt::DrawBar(pThis, thisHBType, position, pBound, pThis->GetHealthPercentage(), RulesClass::Instance->ConditionYellow, RulesClass::Instance->ConditionRed);
+
+	R->EDI(pLocation);
+	return Skip;
+}
