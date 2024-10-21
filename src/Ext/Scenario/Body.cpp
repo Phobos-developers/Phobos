@@ -132,7 +132,8 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (!SP_MCVRedeploy.isset())
 			SP_MCVRedeploy.Read(ruINI, GameStrings::Basic, GameStrings::MCVRedeploys);
 		GameModeOptionsClass::Instance->MCVRedeploy = SP_MCVRedeploy.Get(false);
-
+		if (Phobos::Config::NoSaveLoad)
+			ScenarioClass::Instance->EndOfGame = true;
 		CCINIClass* pINI_MISSIONMD = CCINIClass::LoadINIFile(GameStrings::MISSIONMD_INI);
 		auto const scenarioName = pThis->FileName;
 

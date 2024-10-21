@@ -5,7 +5,8 @@
 #include <SessionClass.h>
 #include <MessageListClass.h>
 #include <HouseClass.h>
-
+#include <LoadOptionsClass.h>
+#include <WWMessageBox.h>
 #include <Utilities/Parser.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Patch.h>
@@ -54,6 +55,7 @@ bool Phobos::Config::ShowHarvesterCounter = false;
 bool Phobos::Config::ShowPowerDelta = true;
 bool Phobos::Config::ShowWeedsCounter = false;
 bool Phobos::Config::HideLightFlashEffects = true;
+bool Phobos::Config::NoSaveLoad = false;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -91,6 +93,14 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	}
 
 	Phobos::Config::ShowDesignatorRange = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowDesignatorRange", false);
+
+	Phobos::Config::NoSaveLoad = CCINIClass::INI_RA2MD->ReadBool("Phobos", "NoSaveLoad", false);
+
+	if (Phobos::Config::NoSaveLoad)
+	{
+		Patch::Apply_LJMP(0x55DBCD, 0x55DC99); // Disable MainLoop_SaveGame
+
+	}
 
 	CCINIClass* pINI_UIMD = CCINIClass::LoadINIFile(GameStrings::UIMD_INI);
 
@@ -256,7 +266,7 @@ DEFINE_HOOK(0x55DBCD, MainLoop_SaveGame, 0x6)
 	enum { SkipSave = 0x55DC99, InitialSave = 0x55DBE6 };
 
 	bool& scenario_saved = *reinterpret_cast<bool*>(0xABCE08);
-	if (SessionClass::IsSingleplayer() && !scenario_saved)
+	if (SessionClass::IsSingleplayer() && !scenario_saved && !Phobos::Config::NoSaveLoad)
 	{
 		scenario_saved = true;
 		if (Phobos::ShouldQuickSave)
@@ -270,4 +280,24 @@ DEFINE_HOOK(0x55DBCD, MainLoop_SaveGame, 0x6)
 	}
 
 	return SkipSave;
+}
+
+// Yeah I know you are going to say Ares pre 0.A had similar save/load button disable, but better not use that less informative approach
+DEFINE_HOOK(0x558DDC, LoadOptionsClass_MakeDlg_NoSL, 0x5)
+{
+	GET(LoadOptionsClass*, self, ESI);
+	if (Phobos::Config::NoSaveLoad)
+	{
+		if (self->Mode == LoadOptionsMode::Save || self->Mode == LoadOptionsMode::Load)
+		{
+			WWMessageBox::Instance->Process(
+				GeneralUtils::LoadStringUnlessMissing(
+					"TXT_HARDCORE_NOSAVE",L"Hard-Core mode on, save/load forbidden!"),
+				StringTable::LoadString(GameStrings::TXT_OK),
+				nullptr, nullptr
+			);
+			return 0x558EA9;
+		}
+	}
+	return 0;
 }

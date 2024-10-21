@@ -16,9 +16,11 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	// Load it after Ares'
 
 	MakeCommand<NextIdleHarvesterCommandClass>();
-	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
+
+	if (!Phobos::Config::NoSaveLoad)
+		MakeCommand<QuickSaveCommandClass>();
 
 	if (Phobos::Config::DevelopmentCommands)
 	{
