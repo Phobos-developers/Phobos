@@ -738,11 +738,11 @@ Trajectory.Bombard.Height=0.0  ; double
     - `Trajectory.Disperse.WeaponTimer` controls the initial delay for dispersing the weapons defined by `Trajectory.Disperse.Weapons`.
     - `Trajectory.Disperse.WeaponScope` controls the weapon dispersing timer to start counting only within this distance of reaching the target. Set to 0 to disable this function. Set to a negative value means it will only disperse the weapon at most once before detonation.
     - `Trajectory.Disperse.WeaponSeparate` controls whether the projectile no longer fire all the weapons in `Trajectory.Disperse.Weapons` at once and instead fire a group of weapons in the list order, following `Trajectory.Disperse.WeaponBurst`.
-    - `Trajectory.Disperse.WeaponRetarget` controls whether the dispersed weapons will find new targets on their own. Using the range of weapons to search new targets.
-    - `Trajectory.Disperse.WeaponLocation` controls whether the dispersed weapons will search for new targets at the center of the spreading position, otherwise they will focus on the original target. If a suitable target cannot be found, it will randomly attack the ground.
+    - `Trajectory.Disperse.WeaponRetarget` controls whether the dispersed weapons will find new targets on their own. Using the `Range`, `CanTarget`, required `AttachedEffects` of weapons to search new targets.
+    - `Trajectory.Disperse.WeaponLocation` controls whether the dispersed weapons will search for new targets at the center of the spreading position, otherwise they will focus on the original target.
     - `Trajectory.Disperse.WeaponTendency` controls whether the dispersed weapons will choose the original target as the first new target in each group of weapons.
     - `Trajectory.Disperse.WeaponToAllies` controls whether the dispersed weapons will choose allies as targets when searching for new targets.
-    - `Trajectory.Disperse.WeaponToGround` controls whether the dispersed weapons will only choose the ground as their targets.
+    - `Trajectory.Disperse.WeaponDoRepeat` controls whether the dispersed weapons will select duplicate targets when the number of targets is insufficient. If it is set to true and the weapon can select both the technos and the ground as targets, the technos will be prioritized, then if all non-repeating technos have been selected and the weapon can still be launched at this time (in each round of salvo), it will start selecting duplicate technos. If it is set to false and the weapon can select both the technos and the ground as targets, the technos will be prioritized, followed by the ground cells, then if all non-repeating technos have been selected and the weapon can still be launched at this time (in each round of salvo), it will stop firing remaining bursts.
 
 In `rulesmd.ini`:
 ```ini
@@ -779,7 +779,7 @@ Trajectory.Disperse.WeaponRetarget=false        ; boolean
 Trajectory.Disperse.WeaponLocation=false        ; boolean
 Trajectory.Disperse.WeaponTendency=false        ; boolean
 Trajectory.Disperse.WeaponToAllies=false        ; boolean
-Trajectory.Disperse.WeaponToGround=false        ; boolean
+Trajectory.Disperse.WeaponDoRepeat=false        ; boolean
 ```
 
 ```{note}

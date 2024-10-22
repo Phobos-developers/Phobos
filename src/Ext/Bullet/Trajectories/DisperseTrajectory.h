@@ -39,7 +39,7 @@ public:
 		, WeaponLocation { false }
 		, WeaponTendency { false }
 		, WeaponToAllies { false }
-		, WeaponToGround { false }
+		, WeaponDoRepeat { false }
 	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -80,7 +80,7 @@ public:
 	Valueable<bool> WeaponLocation;
 	Valueable<bool> WeaponTendency;
 	Valueable<bool> WeaponToAllies;
-	Valueable<bool> WeaponToGround;
+	Valueable<bool> WeaponDoRepeat;
 
 private:
 	template <typename T>
@@ -150,13 +150,12 @@ private:
 	bool CalculateBulletVelocity(BulletClass* pBullet, double trajectorySpeed);
 	bool BulletRetargetTechno(BulletClass* pBullet, HouseClass* pOwner);
 	bool CheckTechnoIsInvalid(TechnoClass* pTechno);
-	bool CheckWeaponCanTarget(WeaponTypeExt::ExtData* pWeaponExt, TechnoClass* pFirer, TechnoClass* pTarget, HouseClass* pFirerHouse, HouseClass* pTargetHouse);
+	bool CheckWeaponCanTarget(WeaponTypeExt::ExtData* pWeaponExt, TechnoClass* pFirer, TechnoClass* pTarget);
 	bool CurveVelocityChange(BulletClass* pBullet);
 	bool NotCurveVelocityChange(BulletClass* pBullet, HouseClass* pOwner);
 	bool StandardVelocityChange(BulletClass* pBullet);
 	bool ChangeBulletVelocity(BulletClass* pBullet, CoordStruct targetLocation, double turningRadius, bool curve);
 	bool PrepareDisperseWeapon(BulletClass* pBullet, HouseClass* pOwner);
-	std::vector<TechnoClass*> GetValidTechnosInSame(std::vector<TechnoClass*> technos, TechnoClass* pFirer, HouseClass* pOwner, WeaponTypeClass* pWeapon, AbstractClass* pTarget);
 	void CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst);
 	void DisperseBurstSubstitution(BulletClass* pBullet, CoordStruct axis, double rotateCoord, int curBurst, int maxBurst, bool mirror);
 };
