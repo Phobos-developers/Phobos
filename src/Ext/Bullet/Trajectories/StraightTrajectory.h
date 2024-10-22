@@ -95,7 +95,7 @@ public:
 		, ProximityDamage { trajType->ProximityDamage }
 		, RemainingDistance { 1 }
 		, ExtraCheck { nullptr }
-		, LastCasualty {}
+		, TheCasualty {}
 		, FirepowerMult { 1.0 }
 		, AttenuationRange { 0 }
 		, LastTargetCoord {}
@@ -114,12 +114,6 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
-	struct CasualtyData
-	{
-		TechnoClass* pCasualty; // Cannot be used, only for comparison purposes
-		int RemainTime;
-	};
-
 	const StraightTrajectoryType* Type;
 	Leptons DetonationDistance;
 	int PassDetonateDamage;
@@ -130,7 +124,7 @@ public:
 	int ProximityDamage;
 	int RemainingDistance;
 	TechnoClass* ExtraCheck;
-	std::vector<CasualtyData> LastCasualty;
+	std::map<TechnoClass*, int> TheCasualty;
 	double FirepowerMult;
 	int AttenuationRange;
 	CoordStruct LastTargetCoord;

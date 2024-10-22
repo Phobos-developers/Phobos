@@ -120,7 +120,7 @@ void StraightTrajectory::Serialize(T& Stm)
 		.Process(this->ProximityDamage)
 		.Process(this->RemainingDistance)
 		.Process(this->ExtraCheck)
-		.Process(this->LastCasualty)
+		.Process(this->TheCasualty)
 		.Process(this->FirepowerMult)
 		.Process(this->AttenuationRange)
 		.Process(this->LastTargetCoord)
@@ -146,7 +146,6 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 {
 	const StraightTrajectoryType* const pType = this->Type;
 	this->PassDetonateTimer.Start(pType->PassDetonateTimer > 0 ? pType->PassDetonateTimer : 0);
-	this->LastCasualty.reserve(1);
 	this->LastTargetCoord = pBullet->TargetCoords;
 	pBullet->Velocity = BulletVelocity::Empty;
 	TechnoClass* const pOwner = pBullet->Owner;
@@ -170,8 +169,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 
 	if (pOwner)
 	{
-		const CasualtyData TheOwner {pOwner, 20};
-		this->LastCasualty.push_back(TheOwner);
+		this->TheCasualty[pOwner] = 20;
 		this->FirepowerMult = pOwner->FirepowerMultiplier;
 		this->CurrentBurst = pOwner->CurrentBurstIndex;
 
@@ -707,16 +705,16 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 	if (this->PassDetonateTimer.Completed())
 	{
 		const StraightTrajectoryType* const pType = this->Type;
+		WarheadTypeClass* pWH = pType->PassDetonateWarhead;
+
+		if (!pWH)
+			return;
+
 		this->PassDetonateTimer.Start(pType->PassDetonateDelay > 0 ? pType->PassDetonateDelay : 1);
 		CoordStruct detonateCoords = pBullet->Location;
 
 		if (pType->PassDetonateLocal)
 			detonateCoords.Z = MapClass::Instance->GetCellFloorHeight(detonateCoords);
-
-		WarheadTypeClass* pWH = pType->PassDetonateWarhead;
-
-		if (!pWH)
-			return;
 
 		const int damage = this->GetTheTrueDamage(this->PassDetonateDamage, pBullet, nullptr, false);
 		WarheadTypeExt::DetonateAt(pWH, detonateCoords, pBullet->Owner, damage, pOwner);
@@ -728,6 +726,10 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner)
 {
 	const StraightTrajectoryType* const pType = this->Type;
+	WarheadTypeClass* pWH = pType->ProximityWarhead;
+
+	if (!pWH)
+		return;
 
 	//Step 1: Find valid targets on the ground within range.
 	std::vector<CellClass*> recCellClass = this->GetCellsInProximityRadius(pBullet);
@@ -755,7 +757,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			TechnoClass* const pTechno = abstract_cast<TechnoClass*>(pObject);
 			pObject = pObject->NextObject;
 
-			if (!pTechno || !pTechno->IsAlive || !pTechno->IsOnMap || pTechno->Health <= 0)
+			if (!pTechno || !pTechno->IsAlive || !pTechno->IsOnMap || pTechno->Health <= 0 || pTechno->InLimbo || pTechno->IsSinking)
 				continue;
 
 			const AbstractType technoType = pTechno->WhatAmI();
@@ -806,7 +808,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 		for (TechnoClass* pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
-			if (!pTechno->IsAlive || !pTechno->IsOnMap || pTechno->Health <= 0)
+			if (!pTechno->IsAlive || !pTechno->IsOnMap || pTechno->Health <= 0 || pTechno->InLimbo || pTechno->IsSinking)
 				continue;
 
 			if (!pType->ProximityAllies && pOwner->IsAlliedWith(pTechno->Owner) && !(pTargetTechno && pTechno == pTargetTechno))
@@ -841,85 +843,31 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	}
 
 	//Step 3: Record each target without repetition.
-	const size_t iMax = this->LastCasualty.size();
-	const size_t jMax = validTechnos.size();
-	const size_t capacity = iMax + jMax;
-
-	std::sort(&validTechnos[0], &validTechnos[jMax]);
-	std::vector<CasualtyData> casualty;
-	casualty.reserve(capacity);
 	std::vector<TechnoClass*> casualtyChecked;
-	casualtyChecked.reserve(capacity);
+	casualtyChecked.reserve(std::max(validTechnos.size(), this->TheCasualty.size()));
 
-	size_t i = 0;
-	size_t j = 0;
-	TechnoClass* pThis = nullptr;
-	TechnoClass* pLast = nullptr;
-	int thisTime = 0;
-	bool check = false;
-
-	for (size_t k = 0; k < capacity; ++k) //Merge, and avoid using wild pointers
+	for (auto const& [pTechno, remainTime] : this->TheCasualty)
 	{
-		if (i < iMax && j < jMax)
-		{
-			if (this->LastCasualty[i].pCasualty < validTechnos[j])
-			{
-				check = false; // Don't know whether wild
-				pThis = this->LastCasualty[i].pCasualty;
-				thisTime = this->LastCasualty[i].RemainTime;
-				++i;
-			}
-			else if (this->LastCasualty[i].pCasualty > validTechnos[j])
-			{
-				check = true; // Not duplicated and not wild
-				pThis = validTechnos[j];
-				thisTime = 20;
-				++j;
-			}
-			else // this->LastCasualty[i].pCasualty == validTechnos[j]
-			{
-				check = false; // Duplicated and not wild
-				pThis = validTechnos[j];
-				thisTime = 20;
-				++i;
-				++j;
-			}
-		}
-		else if (i < iMax)
-		{
-			check = false; // Don't know whether wild
-			pThis = this->LastCasualty[i].pCasualty;
-			thisTime = this->LastCasualty[i].RemainTime;
-			++i;
-		}
-		else if (j < jMax)
-		{
-			check = true; // Not duplicated and not wild
-			pThis = validTechnos[j];
-			thisTime = 20;
-			++j;
-		}
+		if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0 && !pTechno->InLimbo && !pTechno->IsSinking && remainTime > 0)
+			this->TheCasualty[pTechno] = remainTime - 1;
 		else
-		{
-			break; // No technos left
-		}
-
-		if (pThis && pThis != pLast)
-		{
-			if (check) // Not duplicated pointer, and not wild pointer
-				casualtyChecked.push_back(pThis);
-
-			if (--thisTime > 0) // Record 20 frames
-			{
-				const CasualtyData thisCasualty {pThis, thisTime};
-				casualty.push_back(thisCasualty);
-			}
-
-			pLast = pThis;
-		}
+			casualtyChecked.push_back(pTechno);
 	}
 
-	this->LastCasualty = casualty; // Record vector for next check
+	for (auto const& pTechno : casualtyChecked)
+	{
+		this->TheCasualty.erase(pTechno);
+	}
+
+	casualtyChecked.clear();
+
+	for (auto const& pTechno : validTechnos)
+	{
+		if (this->TheCasualty.contains(pTechno))
+			this->TheCasualty[pTechno] = 20;
+		else
+			casualtyChecked.push_back(pTechno);
+	}
 
 	//Step 4: Detonate warheads in sequence based on distance.
 	const size_t casualtySize = casualtyChecked.size();
@@ -931,13 +879,9 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		});
 	}
 
-	WarheadTypeClass* pWH = pType->ProximityWarhead;
-
-	if (!pWH)
-		return;
-
 	for (auto const& pTechno : casualtyChecked)
 	{
+		this->TheCasualty[pTechno] = 20;
 		int damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, pType->ProximityMedial ? nullptr : pTechno, false);
 
 		if (pType->ProximityDirect)
