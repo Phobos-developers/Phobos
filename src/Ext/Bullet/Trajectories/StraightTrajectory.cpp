@@ -149,9 +149,8 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->LastTargetCoord = pBullet->TargetCoords;
 	pBullet->Velocity = BulletVelocity::Empty;
 	TechnoClass* const pOwner = pBullet->Owner;
-	WeaponTypeClass* const pWeapon = pBullet->WeaponType;
 
-	if (pWeapon)
+	if (WeaponTypeClass* const pWeapon = pBullet->WeaponType)
 	{
 		this->AttenuationRange = pWeapon->Range;
 		this->CountOfBurst = pWeapon->Burst;
@@ -169,7 +168,6 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 
 	if (pOwner)
 	{
-		this->TheCasualty[pOwner] = 20;
 		this->FirepowerMult = pOwner->FirepowerMultiplier;
 		this->CurrentBurst = pOwner->CurrentBurstIndex;
 
@@ -845,6 +843,9 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	//Step 3: Record each target without repetition.
 	std::vector<TechnoClass*> casualtyChecked;
 	casualtyChecked.reserve(std::max(validTechnos.size(), this->TheCasualty.size()));
+
+	if (pBullet->Owner)
+		this->TheCasualty[pBullet->Owner] = 20;
 
 	for (auto const& [pTechno, remainTime] : this->TheCasualty)
 	{
