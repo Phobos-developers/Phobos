@@ -160,9 +160,6 @@ void TechnoExt::ExtData::InitializeDisplayInfo()
 	else if (pSecondary && pSecondary->WeaponType)
 		pThis->ChargeTurretDelay = pSecondary->WeaponType->ROF;
 
-	if (pType->Ammo > 0)
-		pThis->ReloadTimer.TimeLeft = pType->Reload;
-
 	if (auto pTypeExt = this->TypeExtData)
 	{
 		auto pDelType = pTypeExt->PassengerDeletionType.get();

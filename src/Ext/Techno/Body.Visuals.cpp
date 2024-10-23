@@ -476,7 +476,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 			return;
 
 		value = (pThis->Ammo >= pType->Ammo) ? 0 : pThis->ReloadTimer.GetTimeLeft();
-		maxValue = pThis->ReloadTimer.TimeLeft;
+		maxValue = (pThis->Ammo || pType->EmptyReload <= 0) ? pType->Reload : pType->EmptyReload;
 		break;
 	}
 	case DisplayInfoType::SpawnTimer:
