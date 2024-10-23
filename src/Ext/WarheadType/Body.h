@@ -61,6 +61,7 @@ public:
 		Valueable<AffectedHouse> Crit_AffectsHouses;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
 		Nullable<bool> Crit_AnimList_PickRandom;
+		Nullable<bool> Crit_AnimList_CreateAll;
 		ValueableVector<AnimTypeClass*> Crit_ActiveChanceAnims;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
 		Valueable<double> Crit_AffectBelowPercent;
@@ -212,6 +213,7 @@ public:
 			, Crit_AffectsHouses { AffectedHouse::All }
 			, Crit_AnimList {}
 			, Crit_AnimList_PickRandom {}
+			, Crit_AnimList_CreateAll {}
 			, Crit_ActiveChanceAnims {}
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }

@@ -237,9 +237,25 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 			auto types = make_iterator_single(pAnimType);
 
 			if (pWHExt->SplashList_CreateAll && pWHExt->Splashed)
+			{
 				types = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
-			else if (pWHExt->AnimList_CreateAll && !pWHExt->Splashed)
-				types = pWHExt->OwnerObject()->AnimList;
+			}
+			else if (!pWHExt->Splashed)
+			{
+				bool createAll = pWHExt->AnimList_CreateAll;
+
+				if (pWHExt->Crit_Active && !pWHExt->Crit_AnimOnAffectedTargets)
+				{
+					createAll = pWHExt->Crit_AnimList_CreateAll.Get(createAll);
+
+					if (createAll)
+						types = pWHExt->Crit_AnimList;
+				}
+				else if (createAll)
+				{
+					types = pWHExt->OwnerObject()->AnimList;
+				}
+			}
 
 			for (auto const& pType : types)
 			{

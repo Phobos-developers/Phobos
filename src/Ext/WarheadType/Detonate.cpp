@@ -9,11 +9,12 @@
 #include <BitFont.h>
 #include <SuperClass.h>
 
-#include <Utilities/Helpers.Alex.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <Utilities/Helpers.Alex.h>
 #include <Utilities/EnumFunctions.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
@@ -102,12 +103,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 	}
 
+	this->Crit_Active = false;
 	this->Crit_CurrentChance = this->GetCritChance(pOwner);
 
 	if (this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0)
 	{
-		this->Crit_Active = false;
-
 		if (!this->Crit_ApplyChancePerTarget)
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
@@ -330,10 +330,24 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 
 	if (this->Crit_AnimOnAffectedTargets && this->Crit_AnimList.size())
 	{
-		int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(this->AnimList_PickRandom) ?
-			ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
+		if (!this->Crit_AnimList_CreateAll.Get(false))
+		{
+			int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(false) ?
+				ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
 
-		GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
+			auto const pAnim = GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
+			pAnim->Owner = pHouse;
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
+		}
+		else
+		{
+			for (auto const& pType : this->Crit_AnimList)
+			{
+				auto const pAnim = GameCreate<AnimClass>(pType, pTarget->Location);
+				pAnim->Owner = pHouse;
+				AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
+			}
+		}
 	}
 
 	auto damage = this->Crit_ExtraDamage.Get();

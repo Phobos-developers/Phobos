@@ -1398,8 +1398,8 @@ RemoveMindControl=false  ; boolean
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
   - `Crit.AffectBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
-  - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
-    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
+  - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list. If `Crit.AnimList.CreateAll` is set (defaults to `AnimList.CreateAll`), all animations from the list are created.
+    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
   - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
   - `ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them immune to critical hits.
@@ -1417,6 +1417,7 @@ Crit.AffectsHouses=all              ; list of Affected House Enumeration (none|o
 Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                      ; list of animations
 Crit.AnimList.PickRandom=           ; boolean
+Crit.AnimList.CreateAll=            ; boolean
 Crit.ActiveChanceAnims=             ; list of animations
 Crit.AnimOnAffectedTargets=false    ; boolean
 Crit.SuppressWhenIntercepted=false  ; boolean

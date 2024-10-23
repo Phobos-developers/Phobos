@@ -186,6 +186,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_AffectsHouses.Read(exINI, pSection, "Crit.AffectsHouses");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
+	this->Crit_AnimList_CreateAll.Read(exINI, pSection, "Crit.AnimList.CreateAll");
 	this->Crit_ActiveChanceAnims.Read(exINI, pSection, "Crit.ActiveChanceAnims");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
 	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
@@ -402,6 +403,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AffectsHouses)
 		.Process(this->Crit_AnimList)
 		.Process(this->Crit_AnimList_PickRandom)
+		.Process(this->Crit_AnimList_CreateAll)
 		.Process(this->Crit_ActiveChanceAnims)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
