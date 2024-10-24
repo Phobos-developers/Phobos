@@ -434,15 +434,37 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	return CanExistHere; // Continue check the overlays .etc
 }
 
-// Buildable-upon TechnoTypes Hook #2-1 -> sub_47EC90 - Record cell before draw it
+// Buildable-upon TechnoTypes Hook #2-1 -> sub_47EC90 - Record cell before draw it then skip vanilla AltFlags check
 DEFINE_HOOK(0x47EEBC, CellClass_DrawPlaceGrid_RecordCell, 0x6)
 {
-	GET(CellClass* const, pCell, ESI);
+	enum { DontDrawAlt = 0x47EF1A, DrawVanillaAlt = 0x47EED6 };
 
-	if (RulesExt::Global()->CheckExpandPlaceGrid)
+	GET(CellClass* const, pCell, ESI);
+	GET(const bool, zero, EDX);
+
+	RulesExt::ExtData* const pRules = RulesExt::Global();
+	BlitterFlags flags = BlitterFlags::Centered | BlitterFlags::bf_400;
+
+	if (pRules->CheckExpandPlaceGrid)
 		BuildOnOccupiersHelpers::CurrentCell = pCell;
 
-	return 0;
+	if (!(pCell->AltFlags & AltCellFlags::ContainsBuilding))
+	{
+		if (!pRules->ExpandBuildingPlace)
+		{
+			R->EDX<BlitterFlags>(flags | (zero ? BlitterFlags::Zero : BlitterFlags::Nonzero));
+			return DrawVanillaAlt;
+		}
+		else if (BuildingTypeClass* const pType = abstract_cast<BuildingTypeClass*>(reinterpret_cast<ObjectTypeClass*>(DisplayClass::Instance->unknown_1194)))
+		{
+			R->Stack<bool>(STACK_OFFSET(0x30, -0x1D), pCell->CanThisExistHere(pType->SpeedType, pType, HouseClass::CurrentPlayer));
+			R->EDX<BlitterFlags>(flags | BlitterFlags::TransLucent75);
+			return DontDrawAlt;
+		}
+	}
+
+	R->EDX<BlitterFlags>(flags | (zero ? BlitterFlags::Zero : BlitterFlags::Nonzero));
+	return DontDrawAlt;
 }
 
 // Buildable-upon TechnoTypes Hook #2-2 -> sub_47EC90 - Draw different color grid
@@ -546,14 +568,20 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 						if (!(pHouseExt->CurrentBuildingTimes % 5) && BuildingTypeExt::CleanUpBuildingSpace(pBuildingType, topLeftCell, pHouse))
 							break; // No place for cleaning
 
-						if (pHouse == HouseClass::CurrentPlayer)
+						if (pHouse == HouseClass::CurrentPlayer && pHouseExt->CurrentBuildingTimes == 30)
 						{
-							if (DisplayClass::Instance->unknown_1194)
-								DisplayClass::Instance->SetActiveFoundation(nullptr);
+							DisplayClass::Instance->SetActiveFoundation(nullptr);
+							DisplayClass::Instance->CurrentBuilding = nullptr;
+							DisplayClass::Instance->CurrentBuildingType = nullptr;
+							DisplayClass::Instance->unknown_11AC = 0xFFFFFFFF;
 
-							reinterpret_cast<void(__thiscall*)(DisplayClass*, CellStruct*)>(0x4A8D50)(DisplayClass::Instance, nullptr); // Clear CurrentFoundation_Data
-							DisplayClass::Instance->unknown_1190 = 0;
-							DisplayClass::Instance->unknown_1194 = 0;
+						/*	if (!Unsorted::ArmageddonMode) // To reserve for drawing grids
+							{
+								reinterpret_cast<void(__thiscall*)(DisplayClass*, CellStruct*)>(0x4A8D50)(DisplayClass::Instance, nullptr); // Clear CurrentFoundationCopy_Data
+								DisplayClass::Instance->unknown_1190 = 0;
+								DisplayClass::Instance->unknown_1194 = 0;
+								DisplayClass::Instance->unknown_1198 = -1;
+							}*/
 						}
 
 						pFactory->SendToFirstLink(RadioCommand::NotifyUnlink);
@@ -954,10 +982,11 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 		if (pPlayer->IsObserver() || pPlayer->IsAlliedWith(pHouse))
 		{
 			const HouseExt::ExtData* const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+			const bool isPlayer = pHouse == pPlayer;
 
-			if (BuildingTypeClass* const pType = pHouseExt->CurrentBuildingType)
+			if (BuildingTypeClass* const pType = isPlayer ? abstract_cast<BuildingTypeClass*>(reinterpret_cast<ObjectTypeClass*>(DisplayClass::Instance->unknown_1194)) : pHouseExt->CurrentBuildingType)
 			{
-				if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(pHouseExt->CurrentBuildingTopLeft))
+				if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(isPlayer ? DisplayClass::Instance->CurrentFoundationCopy_TopLeftOffset + DisplayClass::Instance->CurrentFoundationCopy_CenterCell : pHouseExt->CurrentBuildingTopLeft))
 				{
 					SHPStruct* pImage = pType->LoadBuildup();
 					int imageFrame = 0;
@@ -969,7 +998,7 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 
 					if (pImage)
 					{
-						BlitterFlags blitFlags = TranslucencyLevel(75) | BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
+						BlitterFlags blitFlags = BlitterFlags::TransLucent50 | BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
 						RectangleStruct rect = DSurface::Temp->GetRect();
 						rect.Height -= 32;
 						Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
@@ -1009,7 +1038,7 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 
 								if (pImage)
 								{
-									BlitterFlags blitFlags = TranslucencyLevel(75) | BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
+									BlitterFlags blitFlags = BlitterFlags::TransLucent50 | BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
 									RectangleStruct rect = DSurface::Temp->GetRect();
 									rect.Height -= 32;
 									Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
