@@ -190,7 +190,11 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
 
 		this->SpyEffect_VictimSuperWeapon.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon");
+		this->SpyEffect_VictimSuperWeapon_UseDeferment.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon.UseDeferment");
+		this->SpyEffect_VictimSuperWeapon_ExtraDeferment.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon.ExtraDeferment");
 		this->SpyEffect_InfiltratorSuperWeapon.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon");
+		this->SpyEffect_InfiltratorSuperWeapon_UseDeferment.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon.UseDeferment");
+		this->SpyEffect_InfiltratorSuperWeapon_ExtraDeferment.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon.ExtraDeferment");
 	}
 
 	if (pThis->MaxNumberOccupants > 10)
@@ -268,7 +272,11 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementPreview_Translucency)
 		.Process(this->SpyEffect_Custom)
 		.Process(this->SpyEffect_VictimSuperWeapon)
+		.Process(this->SpyEffect_VictimSuperWeapon_UseDeferment)
+		.Process(this->SpyEffect_VictimSuperWeapon_ExtraDeferment)
 		.Process(this->SpyEffect_InfiltratorSuperWeapon)
+		.Process(this->SpyEffect_InfiltratorSuperWeapon_UseDeferment)
+		.Process(this->SpyEffect_InfiltratorSuperWeapon_ExtraDeferment)
 		.Process(this->ConsideredVehicle)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)

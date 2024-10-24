@@ -115,6 +115,30 @@ void ScenarioExt::ExtData::UpdateTransportReloaders()
 	}
 }
 
+void ScenarioExt::ExtData::UpdateLaunchSWs()
+{
+	std::vector<SWFireState>::iterator it;
+
+	for (it = this->LaunchSWs.begin(); it != this->LaunchSWs.end(); )
+	{
+		auto const pSWFireType = it;
+
+		if (pSWFireType->deferment.Completed())
+		{
+			pSWFireType->SW->SetReadiness(true);
+			pSWFireType->SW->Launch(pSWFireType->cell, pSWFireType->playerControl);
+			pSWFireType->SW->Reset();
+			pSWFireType->SW->RechargeTimer.StartTime = pSWFireType->oldstart;
+			pSWFireType->SW->RechargeTimer.TimeLeft = pSWFireType->oldleft;
+			it = this->LaunchSWs.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -163,6 +187,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->BriefingTheme)
 		.Process(this->AutoDeathObjects)
 		.Process(this->TransportReloaders)
+		.Process(this->LaunchSWs)
 		;
 }
 
@@ -188,6 +213,34 @@ bool ScenarioExt::SaveGlobals(PhobosStreamWriter& Stm)
 	return Stm.Success();
 }
 
+// SW Deferment
+
+#pragma region(save/load)
+
+template <class T>
+bool SWFireState::Serialize(T& stm)
+{
+	return stm
+		.Process(this->SW)
+		.Process(this->deferment)
+		.Process(this->cell)
+		.Process(this->playerControl)
+		.Process(this->oldstart)
+		.Process(this->oldleft)
+		.Success();
+}
+
+bool SWFireState::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool SWFireState::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<SWFireState*>(this)->Serialize(stm);
+}
+
+#pragma endregion(save/load)
 
 // =============================
 // container hooks
@@ -271,6 +324,7 @@ DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
 
 	ScenarioExt::Global()->UpdateAutoDeathObjectsInLimbo();
 	ScenarioExt::Global()->UpdateTransportReloaders();
+	ScenarioExt::Global()->UpdateLaunchSWs();
 
 	return 0;
 }

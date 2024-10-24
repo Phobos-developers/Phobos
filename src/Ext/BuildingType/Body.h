@@ -57,7 +57,11 @@ public:
 
 		Valueable<bool> SpyEffect_Custom;
 		ValueableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
+		Valueable<bool> SpyEffect_VictimSuperWeapon_UseDeferment;
+		Valueable<int> SpyEffect_VictimSuperWeapon_ExtraDeferment;
 		ValueableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
+		Valueable<bool> SpyEffect_InfiltratorSuperWeapon_UseDeferment;
+		Valueable<int> SpyEffect_InfiltratorSuperWeapon_ExtraDeferment;
 
 		Nullable<bool> ConsideredVehicle;
 		Valueable<bool> ZShapePointMove_OnBuildup;
@@ -111,7 +115,11 @@ public:
 			, PlacementPreview_Translucency {}
 			, SpyEffect_Custom { false }
 			, SpyEffect_VictimSuperWeapon {}
+			, SpyEffect_VictimSuperWeapon_UseDeferment { false }
+			, SpyEffect_VictimSuperWeapon_ExtraDeferment { 0 }
 			, SpyEffect_InfiltratorSuperWeapon {}
+			, SpyEffect_InfiltratorSuperWeapon_UseDeferment { false }
+			, SpyEffect_InfiltratorSuperWeapon_ExtraDeferment { 0 }
 			, ConsideredVehicle {}
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }

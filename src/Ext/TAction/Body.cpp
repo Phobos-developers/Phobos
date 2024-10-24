@@ -400,13 +400,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		{
 			if (auto const pSuper = pHouse->Supers.GetItem(swIdx))
 			{
-				int oldstart = pSuper->RechargeTimer.StartTime;
-				int oldleft = pSuper->RechargeTimer.TimeLeft;
-				pSuper->SetReadiness(true);
-				pSuper->Launch(targetLocation, false);
-				pSuper->Reset();
-				pSuper->RechargeTimer.StartTime = oldstart;
-				pSuper->RechargeTimer.TimeLeft = oldleft;
+				ScenarioExt::Global()->LaunchSWs.push_back(SWFireState(pSuper, 0, targetLocation, false, false));
 			}
 		}
 	}

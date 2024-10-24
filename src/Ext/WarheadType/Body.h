@@ -116,6 +116,8 @@ public:
 		Valueable<bool> LaunchSW_RealLaunch;
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
 		Valueable<bool> LaunchSW_IgnoreDesignators;
+		Valueable<bool> LaunchSW_UseDeferment;
+		Valueable<int> LaunchSW_ExtraDeferment;
 		Valueable<bool> LaunchSW_DisplayMoney;
 		Valueable<AffectedHouse> LaunchSW_DisplayMoney_Houses;
 		Valueable<Point2D> LaunchSW_DisplayMoney_Offset;
@@ -268,6 +270,8 @@ public:
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
 			, LaunchSW_IgnoreDesignators { true }
+			, LaunchSW_UseDeferment { false }
+			, LaunchSW_ExtraDeferment { 0 }
 			, LaunchSW_DisplayMoney { false }
 			, LaunchSW_DisplayMoney_Houses { AffectedHouse::All }
 			, LaunchSW_DisplayMoney_Offset { { 0, 0 } }

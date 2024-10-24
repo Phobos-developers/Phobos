@@ -568,14 +568,20 @@ PowerPlantEnhancer.Factor=1.0      ; floating point value
 
 - Additional espionage bonuses can be toggled with `SpyEffect.Custom`.
   - `SpyEffect.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
+    - `SpyEffect.VictimSuperWeapon.UseDeferment` delays the launch by a certain amount of frames determined by the superweapon's `SW.Deferment` if set to true, while `SpyEffect.VictimSuperWeapon.ExtraDeferment` adds an extra value to this delay.
   - `SpyEffect.InfiltratorSuperWeapon` behaves the same as above, with the Super Weapon's owner being the owner of the spying unit.
+    - `SpyEffect.InfiltratorSuperWeapon.UseDeferment` delays the launch by a certain amount of frames determined by the superweapon's `SW.Deferment` if set to true, while `SpyEffect.InfiltratorSuperWeapon.ExtraDeferment` adds an extra value to this delay.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]                     ; BuildingType
-SpyEffect.Custom=false            ; boolean
-SpyEffect.VictimSuperWeapon=      ; SuperWeaponType
-SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
+[SOMEBUILDING]                                        ; BuildingType
+SpyEffect.Custom=false                                ; boolean
+SpyEffect.VictimSuperWeapon=                          ; SuperWeaponType
+SpyEffect.VictimSuperWeapon.UseDeferment=false        ; boolean
+SpyEffect.VictimSuperWeapon.ExtraDeferment=0          ; integer
+SpyEffect.InfiltratorSuperWeapon=                     ; SuperWeaponType
+SpyEffect.InfiltratorSuperWeapon.UseDeferment=false   ; boolean
+SpyEffect.InfiltratorSuperWeapon.ExtraDeferment=0     ; integer
 ```
 
 ## Infantry
@@ -910,6 +916,7 @@ Superweapons can now launch other superweapons at the same target. Launched type
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
   - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
   - `SW.Next.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
+  - `SW.Next.UseDeferment` delays the launch by a certain amount of frames determined by the next superweapon's `SW.Deferment` if set to true, while `SW.Next.ExtraDeferment` adds an extra value to this delay.
 
 In `rulesmd.ini`:
 ```ini
@@ -920,6 +927,8 @@ SW.Next.IgnoreInhibitors=false  ; boolean
 SW.Next.IgnoreDesignators=true  ; boolean
 SW.Next.RollChances=            ; List of percentages.
 SW.Next.RandomWeightsN=         ; List of integers.
+SW.Next.UseDeferment=false      ; boolean
+SW.Next.ExtraDeferment=0        ; integer
 ```
 
 ### Warhead or Weapon detonation at target cell
@@ -1546,6 +1555,7 @@ PenetratesForceShield=       ; boolean
   - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons. Otherwise they will be launched out of nowhere.
   - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
   - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
+  - `LaunchSW.UseDeferment` delays the launch by a certain amount of frames determined by the superweapon's `SW.Deferment` if set to true, while `LaunchSW.ExtraDeferment` adds an extra value to this delay.
   - `LaunchSW.DisplayMoney` can be set to display the amount of credits given or deducted by the launched superweapon by `Money.Amount`. The number is displayed in green if given, red if deducted and will move upwards after appearing.
     - `LaunchSW.DisplayMoney.Houses` determines which houses can see the credits display.
     - `LaunchSW.DisplayMoney.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at superweapon's target cell.
@@ -1565,6 +1575,8 @@ LaunchSW=                         ; list of superweapons
 LaunchSW.RealLaunch=true          ; boolean
 LaunchSW.IgnoreInhibitors=false   ; boolean
 LaunchSW.IgnoreDesignators=true   ; boolean
+LaunchSW.UseDeferment=false       ; boolean
+LaunchSW.ExtraDeferment=0         ; integer
 LaunchSW.DisplayMoney=false       ; boolean
 LaunchSW.DisplayMoney.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default

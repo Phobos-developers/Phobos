@@ -3,6 +3,8 @@
 #include <BitFont.h>
 
 #include <Utilities/EnumFunctions.h>
+#include <Ext/SWType/Body.h>
+#include <Ext/Scenario/Body.h>
 
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
@@ -300,6 +302,7 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore)
 {
 	auto pVictimHouse = this->OwnerObject()->Owner;
+	auto const pTypeExt = this->TypeExtData;
 	this->AccumulatedIncome += pVictimHouse->Available_Money() - moneybefore;
 
 	if (!pVictimHouse->IsControlledByHuman() && !RulesExt::Global()->DisplayIncome_AllowAI)
@@ -308,37 +311,36 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 		FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
 				pVictimHouse,
-				this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
+				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
 				this->OwnerObject()->GetRenderCoords(),
-				this->TypeExtData->DisplayIncome_Offset
+				pTypeExt->DisplayIncome_Offset
 		);
 	}
 
-	if (!this->TypeExtData->SpyEffect_Custom)
+	if (!pTypeExt->SpyEffect_Custom)
 		return false;
 
 	if (pInfiltratorHouse != pVictimHouse)
 	{
 		// I assume you were not launching for real, Morton
 
-		auto launchTheSWHere = [this](SuperClass* const pSuper, HouseClass* const pHouse)->void
+		auto launchTheSWHere = [this](SuperClass* const pSuper, HouseClass* const pHouse, bool useDeferment, int extraDeferment)->void
 			{
-				int oldstart = pSuper->RechargeTimer.StartTime;
-				int oldleft = pSuper->RechargeTimer.TimeLeft;
-				pSuper->SetReadiness(true);
-				pSuper->Launch(CellClass::Coord2Cell(this->OwnerObject()->GetCenterCoords()), pHouse->IsCurrentPlayer());
-				pSuper->Reset();
-				pSuper->RechargeTimer.StartTime = oldstart;
-				pSuper->RechargeTimer.TimeLeft = oldleft;
+				auto const pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+				int deferment = extraDeferment + (useDeferment ? pSWExt->SW_Deferment : 0);
+				ScenarioExt::Global()->LaunchSWs.push_back(SWFireState(pSuper, deferment,
+					CellClass::Coord2Cell(this->OwnerObject()->GetCenterCoords()), pHouse->IsCurrentPlayer(), false));
 			};
 
-		int idx = this->TypeExtData->SpyEffect_VictimSuperWeapon;
+		int idx = pTypeExt->SpyEffect_VictimSuperWeapon;
 		if (idx >= 0)
-			launchTheSWHere(pVictimHouse->Supers.Items[idx], pVictimHouse);
+			launchTheSWHere(pVictimHouse->Supers.Items[idx], pVictimHouse,
+				pTypeExt->SpyEffect_VictimSuperWeapon_UseDeferment, pTypeExt->SpyEffect_VictimSuperWeapon_ExtraDeferment);
 
-		idx = this->TypeExtData->SpyEffect_InfiltratorSuperWeapon;
+		idx = pTypeExt->SpyEffect_InfiltratorSuperWeapon;
 		if (idx >= 0)
-			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx], pInfiltratorHouse);
+			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx], pInfiltratorHouse,
+				pTypeExt->SpyEffect_InfiltratorSuperWeapon_UseDeferment, pTypeExt->SpyEffect_InfiltratorSuperWeapon_ExtraDeferment);
 	}
 
 	return true;

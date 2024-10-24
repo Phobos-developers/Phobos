@@ -13,6 +13,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/EnumFunctions.h>
@@ -83,20 +84,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						if (this->LaunchSW_DisplayMoney && pSWExt->Money_Amount != 0)
 							FlyingStrings::AddMoneyString(pSWExt->Money_Amount, pHouse, this->LaunchSW_DisplayMoney_Houses, coords, this->LaunchSW_DisplayMoney_Offset);
 
-						int oldstart = pSuper->RechargeTimer.StartTime;
-						int oldleft = pSuper->RechargeTimer.TimeLeft;
 						// If you don't set it ready, NewSWType::Active will give false in Ares if RealLaunch=false
 						// and therefore it will reuse the vanilla routine, which will crash inside of it
-						pSuper->SetReadiness(true);
 						// TODO: Can we use ClickFire instead of Launch?
-						pSuper->Launch(cell, pHouse->IsCurrentPlayer());
-						pSuper->Reset();
-
-						if (!this->LaunchSW_RealLaunch)
-						{
-							pSuper->RechargeTimer.StartTime = oldstart;
-							pSuper->RechargeTimer.TimeLeft = oldleft;
-						}
+						int deferment = this->LaunchSW_ExtraDeferment + (this->LaunchSW_UseDeferment ? pSWExt->SW_Deferment : 0);
+						ScenarioExt::Global()->LaunchSWs.push_back(SWFireState(pSuper, deferment, cell, pHouse->IsCurrentPlayer(), this->LaunchSW_RealLaunch));
 					}
 				}
 			}

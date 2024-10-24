@@ -37,6 +37,7 @@ public:
 		Valueable<bool> SW_InitialReady;
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 		Valueable<int> SW_MaxCount;
+		Valueable<int> SW_Deferment;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -51,6 +52,8 @@ public:
 		Valueable<bool> SW_Next_IgnoreInhibitors;
 		Valueable<bool> SW_Next_IgnoreDesignators;
 		ValueableVector<float> SW_Next_RollChances;
+		Valueable<bool> SW_Next_UseDeferment;
+		Valueable<int> SW_Next_ExtraDeferment;
 
 		Valueable<int> ShowTimer_Priority;
 
@@ -93,6 +96,7 @@ public:
 			, SW_InitialReady { false }
 			, SW_PostDependent {}
 			, SW_MaxCount { -1 }
+			, SW_Deferment { 0 }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -113,6 +117,8 @@ public:
 			, SW_Next_IgnoreDesignators { true }
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
+			, SW_Next_UseDeferment { false }
+			, SW_Next_ExtraDeferment { 0 }
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }

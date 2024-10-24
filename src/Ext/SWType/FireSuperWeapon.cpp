@@ -250,16 +250,8 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 					if ((this->SW_Next_IgnoreInhibitors || !pNextTypeExt->HasInhibitor(pHouse, cell))
 						&& (this->SW_Next_IgnoreDesignators || pNextTypeExt->HasDesignator(pHouse, cell)))
 					{
-						int oldstart = pSuper->RechargeTimer.StartTime;
-						int oldleft = pSuper->RechargeTimer.TimeLeft;
-						pSuper->SetReadiness(true);
-						pSuper->Launch(cell, pHouse->IsCurrentPlayer());
-						pSuper->Reset();
-						if (!this->SW_Next_RealLaunch)
-						{
-							pSuper->RechargeTimer.StartTime = oldstart;
-							pSuper->RechargeTimer.TimeLeft = oldleft;
-						}
+						int deferment = this->SW_Next_ExtraDeferment + (this->SW_Next_UseDeferment ? pNextTypeExt->SW_Deferment : 0);
+						ScenarioExt::Global()->LaunchSWs.push_back(SWFireState(pSuper, deferment, cell, pHouse->IsCurrentPlayer(), this->SW_Next_RealLaunch));
 					}
 				}
 			}
