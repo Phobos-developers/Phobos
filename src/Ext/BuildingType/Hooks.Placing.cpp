@@ -580,7 +580,6 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 								reinterpret_cast<void(__thiscall*)(DisplayClass*, CellStruct*)>(0x4A8D50)(DisplayClass::Instance, nullptr); // Clear CurrentFoundationCopy_Data
 								DisplayClass::Instance->unknown_1190 = 0;
 								DisplayClass::Instance->unknown_1194 = 0;
-								DisplayClass::Instance->unknown_1198 = -1;
 							}*/
 						}
 
@@ -749,13 +748,29 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 		{
 			BuildingClass* const pCellBuilding = pCell->GetBuilding();
 
-			if (!reinterpret_cast<bool(__thiscall*)(BuildingClass*, BuildingTypeClass*, HouseClass*)>(0x452670)(pCellBuilding, pBuildingType, pHouse)) // CanUpgradeBuilding
+			if (!pCellBuilding || !reinterpret_cast<bool(__thiscall*)(BuildingClass*, BuildingTypeClass*, HouseClass*)>(0x452670)(pCellBuilding, pBuildingType, pHouse)) // CanUpgradeBuilding
 				return CanNotBuild;
 		}
 	}
 
 	if (pBuilding->Unlimbo(CoordStruct{ (topLeftCell.X << 8) + 128, (topLeftCell.Y << 8) + 128, 0 }, DirType::North))
+	{
+		BuildingTypeClass* const pFactoryType = pFactory->Type;
+
+		if (pFactoryType->ConstructionYard)
+		{
+			pFactory->DestroyNthAnim(BuildingAnimSlot::PreProduction);
+			pFactory->DestroyNthAnim(BuildingAnimSlot::Idle);
+
+			const bool damaged = pFactory->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+			const char* const pAnimName = damaged ? pFactoryType->BuildingAnim[8].Damaged : pFactoryType->BuildingAnim[8].Anim;
+
+			if (pAnimName && *pAnimName)
+				pFactory->PlayAnim(pAnimName, BuildingAnimSlot::Production, damaged, false);
+		}
+
 		return CanBuild;
+	}
 
 	return CanNotBuild;
 }
