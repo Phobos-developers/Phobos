@@ -3,6 +3,7 @@
 #include <TechnoClass.h>
 #include <TunnelLocomotionClass.h>
 
+#include <Ext/Building/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
@@ -66,6 +67,20 @@ void UnitDeployConvertHelpers::ChangeAmmoOnUnloading(REGISTERS* R)
 	}
 
 	R->AL(pThis->Deployed);
+}
+
+DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
+{
+	GET(UnitClass*, pUnit, EBP);
+	GET(BuildingClass*, pStructure, EBX);
+
+	if (pUnit->Type->DeployToFire && pUnit->Target)
+		pStructure->LastTarget = pUnit->Target;
+
+	if (auto pStructureExt = BuildingExt::ExtMap.Find(pStructure))
+		pStructureExt->DeployedTechno = true;
+
+	return 0;
 }
 
 DEFINE_HOOK(0x73FFE6, UnitClass_WhatAction_RemoveDeploying, 0xA)
