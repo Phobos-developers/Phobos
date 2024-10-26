@@ -267,6 +267,8 @@ void RulesExt::FillDefaultPrerequisites()
 
 	CCINIClass::INI_Rules;
 	DynamicVectorClass<int> empty;
+	RulesExt::Global()->GenericPrerequisitesNames.AddItem("-"); // Official index: 0
+	RulesExt::Global()->GenericPrerequisites.AddItem(empty);
 
 	RulesExt::Global()->GenericPrerequisitesNames.AddItem("POWER"); // Official index: -1
 	RulesExt::Global()->GenericPrerequisites.AddItem(RulesClass::Instance->PrerequisitePower);

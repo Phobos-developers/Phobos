@@ -166,22 +166,22 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 				if (percentageUnclassifiedTriggers > 0.0 && categoryDice <= unclassifiedValue)
 				{
 					validCategory = teamCategory::Unclassified;
-					Debug::Log("New AI team category selection: dice %d <= %d (MIXED)\n", categoryDice, unclassifiedValue);
+					//Debug::Log("New AI team category selection: dice %d <= %d (MIXED)\n", categoryDice, unclassifiedValue);
 				}
 				else if (percentageGroundTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue))
 				{
 					validCategory = teamCategory::Ground;
-					Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + GROUND: %d%%)\n", categoryDice, (unclassifiedValue + groundValue), unclassifiedValue, groundValue);
+					//Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + GROUND: %d%%)\n", categoryDice, (unclassifiedValue + groundValue), unclassifiedValue, groundValue);
 				}
 				else if (percentageAirTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue + airValue))
 				{
 					validCategory = teamCategory::Air;
-					Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + ground: %d%% + AIR: %d%%)\n", categoryDice, (unclassifiedValue + groundValue + airValue), unclassifiedValue, groundValue, airValue);
+					//Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + ground: %d%% + AIR: %d%%)\n", categoryDice, (unclassifiedValue + groundValue + airValue), unclassifiedValue, groundValue, airValue);
 				}
 				else if (percentageNavalTriggers > 0.0 && categoryDice <= (unclassifiedValue + groundValue + airValue + navalValue))
 				{
 					validCategory = teamCategory::Naval;
-					Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + ground: %d%% + air: %d%% + NAVAL: %d%%)\n", categoryDice, (unclassifiedValue + groundValue + airValue + navalValue), unclassifiedValue, groundValue, airValue, navalValue);
+					//Debug::Log("New AI team category selection: dice %d <= %d (mixed: %d%% + ground: %d%% + air: %d%% + NAVAL: %d%%)\n", categoryDice, (unclassifiedValue + groundValue + airValue + navalValue), unclassifiedValue, groundValue, airValue, navalValue);
 				}
 				else
 				{
@@ -197,7 +197,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		int parentCountrySideTypeIdx = pHouse->Type->FindParentCountry()->SideIndex;
 		int sideTypeIdx = parentCountrySideTypeIdx >= 0 ? parentCountrySideTypeIdx + 1 : pHouse->Type->SideIndex + 1; // Side indexes in AITriggers section are 1-based
-		int sideIdx = pHouse->SideIndex + 1; // Side indexes in AITriggers section are 1-based
+		int sideIdx = pHouse->SideIndex + 1; // Side indexes in AITriggers section are 1-based -> unused variable!!
 
 		auto houseDifficulty = pHouse->AIDifficulty;
 		int minBaseDefenseTeams = RulesClass::Instance->MinimumAIDefensiveTeams.GetItem((int)houseDifficulty);
@@ -263,11 +263,11 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			onlyPickDefensiveTeams = true;
 
 		if (hasReachedMaxDefensiveTeamsLimit)
-			Debug::Log("DEBUG: House [%s] (idx: %d) reached the MaximumAIDefensiveTeams value!\n", pHouse->Type->ID, pHouse->ArrayIndex);
+			Debug::Log("AITeamsSelector - House [%s] (idx: %d) reached the MaximumAIDefensiveTeams value!\n", pHouse->Type->ID, pHouse->ArrayIndex);
 
 		if (hasReachedMaxTeamsLimit)
 		{
-			Debug::Log("DEBUG: House [%s] (idx: %d) reached the TotalAITeamCap value!\n", pHouse->Type->ID, pHouse->ArrayIndex);
+			Debug::Log("AITeamsSelector - House [%s] (idx: %d) reached the TotalAITeamCap value!\n", pHouse->Type->ID, pHouse->ArrayIndex);
 			return SkipCode;
 		}
 
@@ -341,6 +341,18 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			// Ignore the deactivated triggers
 			if (pTrigger->IsEnabled)
 			{
+				//pTrigger->OwnerHouseType;
+				if (pTrigger->TechLevel > pHouse->TechLevel)
+					continue;
+
+				// ignore it if isn't set for the house AI difficulty
+				if ((int)houseDifficulty == 0 && !pTrigger->Enabled_Hard
+					|| (int)houseDifficulty == 1 && !pTrigger->Enabled_Normal
+					|| (int)houseDifficulty == 2 && !pTrigger->Enabled_Easy)
+				{
+					continue;
+				}
+
 				// The trigger must be compatible with the owner
 				if ((triggerHouse == -1 || houseTypeIdx == triggerHouse) && (triggerSide == 0 || sideTypeIdx == triggerSide))
 				{
@@ -369,6 +381,30 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 							std::vector<TechnoTypeClass*> list;
 							list.push_back(pTrigger->ConditionObject);
 							bool isConditionMet = TeamExt::HouseOwns(pTrigger, pHouse, false, list);
+
+							if (!isConditionMet)
+								continue;
+						}// TO-DO: Case 2 & 3: https://modenc.renegadeprojects.com/AITriggerTypes
+						else if ((int)pTrigger->ConditionType == 4)
+						{
+							// Simulate case 5: "Enemy house economy threshold?"
+							bool isConditionMet = pTrigger->HouseCredits(nullptr, targetHouse);
+
+							if (!isConditionMet)
+								continue;
+						}
+						else if ((int)pTrigger->ConditionType == 5)
+						{
+							// Simulate case 5: "Iron Courtain is charged?"
+							bool isConditionMet = pTrigger->IronCurtainCharged(pHouse, nullptr);
+
+							if (!isConditionMet)
+								continue;
+						}
+						else if ((int)pTrigger->ConditionType == 6)
+						{
+							// Simulate case 6: "Chronosphere is charged?"
+							bool isConditionMet = pTrigger->ChronoSphereCharged(pHouse, nullptr);
 
 							if (!isConditionMet)
 								continue;
@@ -401,7 +437,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 9)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
+							if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 9: Like in case 0 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the enemy.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
@@ -414,7 +450,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 10)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
+							if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 10: Like in case 1 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the house.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
@@ -427,7 +463,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 11)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
+							if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 11: Like in case 7 but instead of 1 unit for comparisons there is a full list from [AITargetTypes] owned by the Civilians.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
@@ -440,7 +476,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 12)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
+							if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 12: Like in case 0 & 9 but instead of a specific enemy this checks in all enemies.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
@@ -453,7 +489,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 13)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
+							if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 13: Like in case 1 & 10 but instead checking the house now checks the allies.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
@@ -466,7 +502,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 14)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
+							if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 14: Like in case 9 but instead of meet any comparison now is required all.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
@@ -479,7 +515,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 15)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
+							if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 15: Like in case 10 but instead of meet any comparison now is required all.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
@@ -492,7 +528,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 16)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
+							if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 16: Like in case 11 but instead of meet any comparison now is required all.
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
@@ -505,7 +541,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 						}
 						else if ((int)pTrigger->ConditionType == 17)
 						{
-							if (pTrigger->Conditions[3].ComparatorOperand < RulesExt::Global()->AITargetTypesLists.size())
+							if (pTrigger->Conditions[3].ComparatorOperand < (int)RulesExt::Global()->AITargetTypesLists.size())
 							{
 								// New case 17: Like in case 14 but instead of meet any comparison now is required all. Check all enemies
 								// Caution: Little Endian hexadecimal value stored here: 00000000000000000000000000000000000000000000000000000000AABBCCDD; examples: 255 is 0xFF (in AA) and 256 is 0x0001 (in AABB)
@@ -646,12 +682,12 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					{
 						for (auto entry : pTriggerTeam1Type->TaskForce->Entries)
 						{
+							if (!entry.Type)
+								continue;
+
 							// Check if each unit in the taskforce meets the structure prerequisites
 							if (entry.Amount > 0)
 							{
-								if (!entry.Type)
-									continue;
-
 								TechnoTypeClass* object = entry.Type;
 								bool canBeBuilt = HouseExt::PrerequisitesMet(pHouse, object, ownedBuildings, false);
 
@@ -678,10 +714,15 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 						for (auto entry : pTriggerTeam1Type->TaskForce->Entries)
 						{
+							if (!entry.Type)
+								continue;
+
 							// Check if each unit in the taskforce has the available recruitable units in the map
 							if (allObjectsCanBeBuiltOrRecruited && entry.Type && entry.Amount > 0)
 							{
-								if (ownedRecruitables.count(entry.Type) < entry.Amount)
+								int recruits = ownedRecruitables.count(entry.Type) > 0 ? ownedRecruitables[entry.Type] : 0;
+
+								if (recruits < entry.Amount)
 								{
 									allObjectsCanBeBuiltOrRecruited = false;
 									break;
@@ -791,30 +832,30 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			switch (validCategory)
 			{
 			case teamCategory::Ground:
-				Debug::Log("DEBUG: This time only will be picked GROUND teams.\n");
+				Debug::Log("AITeamsSelector - This time only will be picked GROUND teams.\n");
 				break;
 
 			case teamCategory::Unclassified:
-				Debug::Log("DEBUG: This time only will be picked MIXED teams.\n");
+				Debug::Log("AITeamsSelector - This time only will be picked MIXED teams.\n");
 				break;
 
 			case teamCategory::Naval:
-				Debug::Log("DEBUG: This time only will be picked NAVAL teams.\n");
+				Debug::Log("AITeamsSelector - This time only will be picked NAVAL teams.\n");
 				break;
 
 			case teamCategory::Air:
-				Debug::Log("DEBUG: This time only will be picked AIR teams.\n");
+				Debug::Log("AITeamsSelector - This time only will be picked AIR teams.\n");
 				break;
 
 			default:
-				Debug::Log("DEBUG: This time teams categories are DISABLED.\n");
+				Debug::Log("AITeamsSelector - This time teams categories are DISABLED.\n");
 				break;
 			}
 		}
 
 		if (validTriggerCandidates.Count == 0)
 		{
-			Debug::Log("DEBUG: [%s] (idx: %d) No valid triggers for now. A new attempt will be done later...\n", pHouse->Type->ID, pHouse->ArrayIndex);
+			Debug::Log("AITeamsSelector - [%s] (idx: %d) No valid triggers for now. A new attempt will be done later...\n", pHouse->Type->ID, pHouse->ArrayIndex);
 			return SkipCode;
 		}
 
@@ -823,12 +864,12 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			|| (validCategory == teamCategory::Air && totalAirCategoryTriggers == 0)
 			|| (validCategory == teamCategory::Naval && totalNavalCategoryTriggers == 0))
 		{
-			Debug::Log("DEBUG: [%s] (idx: %d) No valid triggers of this category. A new attempt should be done later...\n", pHouse->Type->ID, pHouse->ArrayIndex);
+			Debug::Log("AITeamsSelector - [%s] (idx: %d) No valid triggers of this category. A new attempt should be done later...\n", pHouse->Type->ID, pHouse->ArrayIndex);
 
 			if (!isFallbackEnabled)
 				return SkipCode;
 
-			Debug::Log("... but fallback mode is enabled so now will be checked all available triggers.\n");
+			Debug::Log("... but FALLBACK MODE is enabled so now will be checked all available triggers.\n");
 			validCategory = teamCategory::None;
 		}
 
@@ -841,13 +882,13 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		{
 		case teamCategory::None:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeight) * 1.0;
-			/*Debug::Log("Weight Dice: %f\n", weightDice);
+			Debug::Log("AITeamsSelector - Weight Dice: %f\n", weightDice);
 
 			// Debug
-			Debug::Log("DEBUG: Candidate AI triggers list:\n");
+			/*Debug::Log("DEBUG: Candidate AI triggers list:\n");
 			for (TriggerElementWeight element : validTriggerCandidates)
 			{
-				Debug::Log("Weight: %f, [%s][%s]: %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Team1->Name);
+				Debug::Log("Selection weight: %f, [%s][%s](CW: %f): %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Weight_Current, element.Trigger->Team1->Name);
 			}*/
 
 			for (auto element : validTriggerCandidates)
@@ -864,13 +905,13 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		case teamCategory::Ground:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightGroundOnly) * 1.0;
-			/*Debug::Log("Weight Dice: %f\n", weightDice);
+			Debug::Log("AITeamsSelector - Weight Dice: %f\n", weightDice);
 
 			// Debug
-			Debug::Log("DEBUG: Candidate AI triggers list:\n");
+			/*Debug::Log("DEBUG: Candidate AI triggers list:\n");
 			for (TriggerElementWeight element : validTriggerCandidatesGroundOnly)
 			{
-				Debug::Log("Weight: %f, [%s][%s]: %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Team1->Name);
+				Debug::Log("Selection weight: %f, [%s][%s](CW: %f): %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Weight_Current, element.Trigger->Team1->Name);
 			}*/
 
 			for (auto element : validTriggerCandidatesGroundOnly)
@@ -887,13 +928,13 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		case teamCategory::Unclassified:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightUnclassifiedOnly) * 1.0;
-			/*Debug::Log("Weight Dice: %f\n", weightDice);
+			Debug::Log("AITeamsSelector - Weight Dice: %f\n", weightDice);
 
 			// Debug
-			Debug::Log("DEBUG: Candidate AI triggers list:\n");
+			/*Debug::Log("DEBUG: Candidate AI triggers list:\n");
 			for (TriggerElementWeight element : validTriggerCandidatesUnclassifiedOnly)
 			{
-				Debug::Log("Weight: %f, [%s][%s]: %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Team1->Name);
+				Debug::Log("Selection weight: %f, [%s][%s](CW: %f): %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Weight_Current, element.Trigger->Team1->Name);
 			}*/
 
 			for (auto element : validTriggerCandidatesUnclassifiedOnly)
@@ -910,13 +951,13 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		case teamCategory::Naval:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightNavalOnly) * 1.0;
-			/*Debug::Log("Weight Dice: %f\n", weightDice);
+			Debug::Log("AITeamsSelector - Weight Dice: %f\n", weightDice);
 
 			// Debug
-			Debug::Log("DEBUG: Candidate AI triggers list:\n");
+			/*Debug::Log("DEBUG: Candidate AI triggers list:\n");
 			for (TriggerElementWeight element : validTriggerCandidatesNavalOnly)
 			{
-				Debug::Log("Weight: %f, [%s][%s]: %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Team1->Name);
+				Debug::Log("Selection weight: %f, [%s][%s](CW: %f): %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Weight_Current, element.Trigger->Team1->Name);
 			}*/
 
 			for (auto element : validTriggerCandidatesNavalOnly)
@@ -933,13 +974,13 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		case teamCategory::Air:
 			weightDice = ScenarioClass::Instance->Random.RandomRanged(0, (int)totalWeightAirOnly) * 1.0;
-			/*Debug::Log("Weight Dice: %f\n", weightDice);
+			Debug::Log("AITeamsSelector - Weight Dice: %f\n", weightDice);
 
 			// Debug
-			Debug::Log("DEBUG: Candidate AI triggers list:\n");
+			/*Debug::Log("DEBUG: Candidate AI triggers list:\n");
 			for (TriggerElementWeight element : validTriggerCandidatesAirOnly)
 			{
-				Debug::Log("Weight: %f, [%s][%s]: %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Team1->Name);
+				Debug::Log("Selection weight: %f, [%s][%s](CW: %f): %s\n", element.Weight, element.Trigger->ID, element.Trigger->Team1->ID, element.Trigger->Weight_Current, element.Trigger->Team1->Name);
 			}*/
 
 			for (auto element : validTriggerCandidatesAirOnly)
@@ -960,7 +1001,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		if (!selectedTrigger)
 		{
-			Debug::Log("AI Team Selector: House [%s] (idx: %d) failed to select Trigger. A new attempt Will be done later...\n", pHouse->Type->ID, pHouse->ArrayIndex);
+			Debug::Log("AITeamsSelector - House [%s] (idx: %d) failed to select Trigger. A new attempt Will be done later...\n", pHouse->Type->ID, pHouse->ArrayIndex);
 			return SkipCode;
 		}
 
@@ -972,7 +1013,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		}
 
 		// We have a winner trigger here
-		Debug::Log("AI Team Selector: House [%s] (idx: %d) selected trigger [%s].\n", pHouse->Type->ID, pHouse->ArrayIndex, selectedTrigger->ID);
+		Debug::Log("AITeamsSelector - House [%s] (idx: %d) selected trigger [%s]: %s.\n", pHouse->Type->ID, pHouse->ArrayIndex, selectedTrigger->ID, selectedTrigger->Team1->Name);
 
 		// Team 1 creation
 		auto pTriggerTeam1Type = selectedTrigger->Team1;
@@ -1064,13 +1105,13 @@ bool TeamExt::HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool alli
 	return result;
 }
 
-bool TeamExt::EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pEnemy, bool onlySelectedEnemy, std::vector<TechnoTypeClass*> list)
+bool TeamExt::EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClass* pSpecificEnemy, bool onlySelectedEnemy, std::vector<TechnoTypeClass*> list)
 {
 	bool result = false;
 	int counter = 0;
 
-	if (pEnemy && pHouse->IsAlliedWith(pEnemy) && !onlySelectedEnemy)
-		pEnemy = nullptr;
+	pSpecificEnemy = pSpecificEnemy && pHouse->IsAlliedWith(pSpecificEnemy) ? nullptr : pSpecificEnemy;
+	pSpecificEnemy = onlySelectedEnemy ? pSpecificEnemy : nullptr;
 
 	// Count all objects of the list, like an OR operator
 	for (auto const pItem : list)
@@ -1079,10 +1120,11 @@ bool TeamExt::EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClas
 		{
 			if (!TechnoExt::IsValidTechno(pObject)) continue;
 
-			if (pObject->Owner != pHouse
-				&& (!pEnemy || (pEnemy && !pHouse->IsAlliedWith(pEnemy)))
-				&& !pObject->Owner->Type->MultiplayPassive
-				&& pObject->GetTechnoType() == pItem)
+			const auto pItemType = pObject->GetTechnoType();
+			if (pItemType == pItem
+				&& pObject->Owner != pHouse
+				&& (!pSpecificEnemy && !pHouse->IsAlliedWith(pObject->Owner) || (pSpecificEnemy && pSpecificEnemy == pObject->Owner))
+				&& !pObject->Owner->Type->MultiplayPassive)
 			{
 				counter++;
 			}

@@ -205,8 +205,8 @@ bool HouseExt::HasGenericPrerequisite(int idx, std::map<BuildingTypeClass*, int>
 
 int HouseExt::FindGenericPrerequisite(const char* id)
 {
-	if (TechnoTypeClass::FindIndex(id) >= 0)
-		return 0;
+	if (BuildingTypeClass::FindIndex(id) >= 0)
+		return INT32_MAX;
 
 	if (RulesExt::Global()->GenericPrerequisitesNames.Count == 0)
 		RulesExt::FillDefaultPrerequisites(); // needed!
@@ -215,10 +215,10 @@ int HouseExt::FindGenericPrerequisite(const char* id)
 	for (auto str : RulesExt::Global()->GenericPrerequisitesNames)
 	{
 		if (_strcmpi(id, str) == 0)
-			return (-1 * i);
+			return i;
 
-		++i;
+		--i;
 	}
 
-	return 0;
+	return INT32_MAX; // Error
 }
