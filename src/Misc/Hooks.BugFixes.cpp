@@ -222,7 +222,7 @@ DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
 DEFINE_HOOK(0x6DAAB2, TacticalClass_DrawRallyPointLines_NoUndeployBlyat, 0x6)
 {
 	GET(BuildingClass*, pBld, EDI);
-	if (pBld->Focus && pBld->CurrentMission != Mission::Selling)
+	if (pBld->ArchiveTarget && pBld->CurrentMission != Mission::Selling)
 		return 0x6DAAC0;
 	return 0x6DAD45;
 }
