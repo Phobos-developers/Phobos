@@ -573,9 +573,9 @@ PowerPlantEnhancer.Factor=1.0      ; floating point value
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                     ; BuildingType
-SpyEffect.Custom=false            ; boolean
-SpyEffect.VictimSuperWeapon=      ; SuperWeaponType
-SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
+SpyEffect.Custom=false             ; boolean
+SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
+SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
 ## Infantry
@@ -586,7 +586,7 @@ SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
 
 In `artmd.ini`:
 ```ini
-[SOMEINFANTRY]             ; InfantryType
+[SOMEINFANTRY]             ; InfantryType image
 PronePrimaryFireFLH=       ; integer - Forward,Lateral,Height
 ProneSecondaryFireFLH=     ; integer - Forward,Lateral,Height
 DeployedPrimaryFireFLH=    ; integer - Forward,Lateral,Height
@@ -633,7 +633,6 @@ Ammo.Shared=no        ; boolean
 Ammo.Shared.Group=-1  ; integer
 ```
 
-
 ### Slaves' house decision customization when owner is killed
 
 - You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterKilled`:
@@ -658,6 +657,16 @@ In `rulesmd.ini`
 ```ini
 [SOMEINFANTRY]  ; Slave type
 SlavesFreeSound=      ; sound entry
+```
+
+### Use land sequences even in water
+
+- Setting `OnlyUseLandSequences` to true will make infantry display only the regular sequences used on land even if it is in water.
+
+In `artmd.ini`
+```ini
+[SOMEINFANTRY]              ; InfantryType image
+OnlyUseLandSequences=false  ; boolean
 ```
 
 ## Projectiles
