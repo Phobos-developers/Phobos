@@ -995,3 +995,15 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 // Patch tileset parsing to not reset certain tileset indices for Lunar theater.
 DEFINE_JUMP(LJMP, 0x546C8B, 0x546CBF);
 
+// Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes - Starkku
+DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
+{
+	enum { SkipResetTarget = 0x6FA472 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->GetTechnoType()->AttackFriendlies)
+		return SkipResetTarget;
+
+	return 0;
+}
