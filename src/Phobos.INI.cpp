@@ -38,6 +38,7 @@ bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
 bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
+bool Phobos::Config::ShowPlanningPath = false;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::ShowPlacementPreview = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
@@ -52,6 +53,7 @@ bool Phobos::Config::ShowBriefing = true;
 bool Phobos::Config::ShowHarvesterCounter = false;
 bool Phobos::Config::ShowPowerDelta = true;
 bool Phobos::Config::ShowWeedsCounter = false;
+bool Phobos::Config::HideLightFlashEffects = true;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };
@@ -72,6 +74,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ShowPowerDelta = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPowerDelta", true);
 	Phobos::Config::ShowHarvesterCounter = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowHarvesterCounter", true);
 	Phobos::Config::ShowWeedsCounter = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowWeedsCounter", true);
+	Phobos::Config::HideLightFlashEffects = CCINIClass::INI_RA2MD->ReadBool("Phobos", "HideLightFlashEffects", false);
 
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
 	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD->ReadInteger("Phobos", "CampaignDefaultGameSpeed", 4);
@@ -100,24 +103,24 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	// ToolTips
 	{
 		Phobos::UI::ExtendedToolTips =
-			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "ExtendedToolTips", false);
+			pINI_UIMD->ReadBool(GameStrings::ToolTips, "ExtendedToolTips", false);
 
 		Phobos::UI::AnchoredToolTips =
-			pINI_UIMD->ReadBool(TOOLTIPS_SECTION, "AnchoredToolTips", false);
+			pINI_UIMD->ReadBool(GameStrings::ToolTips, "AnchoredToolTips", false);
 
 		Phobos::UI::MaxToolTipWidth =
-			pINI_UIMD->ReadInteger(TOOLTIPS_SECTION, "MaxWidth", 0);
+			pINI_UIMD->ReadInteger(GameStrings::ToolTips, "MaxWidth", 0);
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "CostLabel", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(GameStrings::ToolTips, "CostLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::CostLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"$");
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "PowerLabel", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(GameStrings::ToolTips, "PowerLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::PowerLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1"); // ⚡
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "PowerBlackoutLabel", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(GameStrings::ToolTips, "PowerBlackoutLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::PowerBlackoutLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1\u274c"); // ⚡❌
 
-		pINI_UIMD->ReadString(TOOLTIPS_SECTION, "TimeLabel", NONE_STR, Phobos::readBuffer);
+		pINI_UIMD->ReadString(GameStrings::ToolTips, "TimeLabel", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::TimeLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u231a"); // ⌚
 	}
 
@@ -211,6 +214,8 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 #ifndef DEBUG
 	Phobos::Config::DevelopmentCommands = pINI_RULESMD->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 #endif
+	Phobos::Config::ShowPlanningPath = pINI_RULESMD->ReadBool("GlobalControls", "DebugPlanningPaths", Phobos::Config::ShowPlanningPath);
+
 	return 0;
 }
 

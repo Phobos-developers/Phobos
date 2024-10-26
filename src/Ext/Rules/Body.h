@@ -99,6 +99,8 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Navy;
 		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
+		Valueable<bool> EnablePowerSurplus;
+
 		Valueable<bool> DisplayIncome;
 		Valueable<bool> DisplayIncome_AllowAI;
 		Valueable<AffectedHouse> DisplayIncome_Houses;
@@ -145,9 +147,22 @@ public:
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Valueable<double> AircraftLevelLightMultiplier;
+		Valueable<double> JumpjetLevelLightMultiplier;
+
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<bool> GatherWhenMCVDeploy;
+		Valueable<bool> AIFireSale;
+		Valueable<int> AIFireSaleDelay;
+		Valueable<bool> AIAllToHunt;
+		Valueable<bool> RepairBaseNodes;
+
+		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
+		Valueable<int> CombatLightDetailLevel;
+		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		DynamicVectorClass<DynamicVectorClass<int>> GenericPrerequisites;
 		DynamicVectorClass<const char*> GenericPrerequisitesNames;
@@ -224,6 +239,9 @@ public:
 			, ForbidParallelAIQueues_Infantry { false }
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
+
+			, EnablePowerSurplus { false }
+
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
@@ -273,9 +291,19 @@ public:
 			, NewTeamsSelector_AirCategoryPercentage { 0.25 }
 			, DropPodTrailer { }
 			, PodImage { }
+			, AircraftLevelLightMultiplier { 1.0 }
+			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
 			, UseFixedVoxelLighting { false }
+			, GatherWhenMCVDeploy { true }
+			, AIFireSale { true }
+			, AIFireSaleDelay { 0 }
+			, AIAllToHunt { true }
+			, RepairBaseNodes { false }
+			, WarheadParticleAlphaImageIsLightFlash { false }
+			, CombatLightDetailLevel { 0 }
+			, LightFlashAlphaImageDetailLevel { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -578,27 +578,27 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 		{
 		case AbstractType::BuildingType:
 			if (((BuildingTypeClass*)pTechnoType)->BuildCat == BuildCat::Combat)
-				currentMult -= pBuilding->Type->DefensesCostBonus;
+				currentMult = pBuilding->Type->DefensesCostBonus;
 			else
-				currentMult -= pBuilding->Type->BuildingsCostBonus;
+				currentMult = pBuilding->Type->BuildingsCostBonus;
 			break;
 		case AbstractType::AircraftType:
-			currentMult -= pBuilding->Type->AircraftCostBonus;
+			currentMult = pBuilding->Type->AircraftCostBonus;
 			break;
 		case AbstractType::InfantryType:
-			currentMult -= pBuilding->Type->InfantryCostBonus;
+			currentMult = pBuilding->Type->InfantryCostBonus;
 			break;
 		case AbstractType::UnitType:
-			currentMult -= pBuilding->Type->UnitsCostBonus;
+			currentMult = pBuilding->Type->UnitsCostBonus;
 			break;
 		default:
 			break;
 		}
 
-		mult *= (1.0f - currentMult * pTechnoTypeExt->FactoryPlant_Multiplier);
+		mult *= currentMult;
 	}
 
-	return mult;
+	return 1.0f - ((1.0f - mult) * pTechnoTypeExt->FactoryPlant_Multiplier);
 }
 
 void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
@@ -610,10 +610,13 @@ void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	ValueableVector<bool> readBaseNodeRepairInfo;
 	readBaseNodeRepairInfo.Read(exINI, pSection, "RepairBaseNodes");
 	size_t nWritten = readBaseNodeRepairInfo.size();
-	if (nWritten > 0)
+
+	if (nWritten <= 3)
 	{
-		for (size_t i = 0; i < 3; i++)
-			this->RepairBaseNodes[i] = readBaseNodeRepairInfo[i < nWritten ? i : nWritten - 1];
+		for (size_t i = 0; i < nWritten; i++)
+		{
+			this->RepairBaseNodes[i] = readBaseNodeRepairInfo[i];
+		}
 	}
 }
 
@@ -645,6 +648,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->NumWarFactories_NonMFB)
 		.Process(this->NumConYards_NonMFB)
 		.Process(this->NumShipyards_NonMFB)
+		.Process(this->AIFireSaleDelayTimer)
+		.Process(this->SuspendedEMPulseSWs)
 		.Process(this->AITriggers_ValidList)
 		;
 }
@@ -702,8 +707,7 @@ void HouseExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 // container
 
 HouseExt::ExtContainer::ExtContainer() : Container("HouseClass")
-{
-}
+{ }
 
 HouseExt::ExtContainer::~ExtContainer() = default;
 
@@ -715,6 +719,10 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 	GET(HouseClass*, pItem, EAX);
 
 	HouseExt::ExtMap.TryAllocate(pItem);
+
+	if (RulesExt::Global()->EnablePowerSurplus)
+		pItem->PowerSurplus = RulesClass::Instance->PowerSurplus;
+
 	return 0;
 }
 
@@ -723,6 +731,7 @@ DEFINE_HOOK(0x4F7371, HouseClass_DTOR, 0x6)
 	GET(HouseClass*, pItem, ESI);
 
 	HouseExt::ExtMap.Remove(pItem);
+
 	return 0;
 }
 
@@ -740,12 +749,14 @@ DEFINE_HOOK(0x503040, HouseClass_SaveLoad_Prefix, 0x5)
 DEFINE_HOOK(0x504069, HouseClass_Load_Suffix, 0x7)
 {
 	HouseExt::ExtMap.LoadStatic();
+
 	return 0;
 }
 
 DEFINE_HOOK(0x5046DE, HouseClass_Save_Suffix, 0x7)
 {
 	HouseExt::ExtMap.SaveStatic();
+
 	return 0;
 }
 
