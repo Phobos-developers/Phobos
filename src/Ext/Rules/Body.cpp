@@ -144,6 +144,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ForbidParallelAIQueues_Navy.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Navy");
 	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
 
+	this->EnablePowerSurplus.Read(exINI, GameStrings::AI, "EnablePowerSurplus");
+
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "IronCurtain.EffectOnOrganics");
 	this->IronCurtain_KillOrganicsWarhead.Read<true>(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
@@ -185,12 +187,25 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
 	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
+	this->AircraftLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "AircraftLevelLightMultiplier");
+	this->JumpjetLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "JumpjetLevelLightMultiplier");
+
 	this->VoxelLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelLightSource");
 	// this->VoxelShadowLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelShadowLightSource");
 
 	this->ReplaceVoxelLightSources();
 
 	this->UseFixedVoxelLighting.Read(exINI, GameStrings::AudioVisual, "UseFixedVoxelLighting");
+
+	this->GatherWhenMCVDeploy.Read(exINI, GameStrings::General, "GatherWhenMCVDeploy");
+	this->AIFireSale.Read(exINI, GameStrings::General, "AIFireSale");
+	this->AIFireSaleDelay.Read(exINI, GameStrings::General, "AIFireSaleDelay");
+	this->AIAllToHunt.Read(exINI, GameStrings::General, "AIAllToHunt");
+	this->RepairBaseNodes.Read(exINI, GameStrings::Basic, "RepairBaseNodes");
+
+	this->WarheadParticleAlphaImageIsLightFlash.Read(exINI, GameStrings::AudioVisual, "WarheadParticleAlphaImageIsLightFlash");
+	this->CombatLightDetailLevel.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel");
+	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -339,6 +354,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForbidParallelAIQueues_Infantry)
 		.Process(this->ForbidParallelAIQueues_Navy)
 		.Process(this->ForbidParallelAIQueues_Vehicle)
+		.Process(this->EnablePowerSurplus)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_EffectOnOrganics)
 		.Process(this->IronCurtain_KillOrganicsWarhead)
@@ -378,9 +394,19 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
 		.Process(this->PodImage)
+		.Process(this->AircraftLevelLightMultiplier)
+		.Process(this->JumpjetLevelLightMultiplier)
 		.Process(this->VoxelLightSource)
 		// .Process(this->VoxelShadowLightSource)
 		.Process(this->UseFixedVoxelLighting)
+		.Process(this->GatherWhenMCVDeploy)
+		.Process(this->AIFireSale)
+		.Process(this->AIFireSaleDelay)
+		.Process(this->AIAllToHunt)
+		.Process(this->RepairBaseNodes)
+		.Process(this->WarheadParticleAlphaImageIsLightFlash)
+		.Process(this->CombatLightDetailLevel)
+		.Process(this->LightFlashAlphaImageDetailLevel)
 		;
 }
 

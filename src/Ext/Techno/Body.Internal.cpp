@@ -152,13 +152,11 @@ void TechnoExt::ExtData::InitializeAttachEffects()
 {
 	if (auto pTypeExt = this->TypeExtData)
 	{
-		if (pTypeExt->AttachEffect_AttachTypes.size() < 1)
+		if (pTypeExt->AttachEffects.AttachTypes.size() < 1)
 			return;
 
 		auto const pThis = this->OwnerObject();
-
-		AttachEffectClass::Attach(pTypeExt->AttachEffect_AttachTypes, pThis, pThis->Owner, pThis, pThis,
-			pTypeExt->AttachEffect_DurationOverrides, pTypeExt->AttachEffect_Delays, pTypeExt->AttachEffect_InitialDelays, pTypeExt->AttachEffect_RecreationDelays);
+		AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 	}
 }
 
