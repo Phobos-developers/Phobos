@@ -214,11 +214,7 @@ public:
 		Valueable<WeaponTypeClass*> RevengeWeapon;
 		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 
-		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
-		ValueableVector<int> AttachEffect_DurationOverrides;
-		ValueableVector<int> AttachEffect_Delays;
-		ValueableVector<int> AttachEffect_InitialDelays;
-		NullableVector<int> AttachEffect_RecreationDelays;
+		AEAttachInfoTypeClass AttachEffects;
 
 		ValueableVector<TechnoTypeClass*> BuildLimitGroup_Types;
 		ValueableVector<int> BuildLimitGroup_Nums;
@@ -249,7 +245,7 @@ public:
 		};
 
 		std::vector<LaserTrailDataEntry> LaserTrailData;
-
+		Valueable<bool> OnlyUseLandSequences;
 		Nullable<CoordStruct> PronePrimaryFireFLH;
 		Nullable<CoordStruct> ProneSecondaryFireFLH;
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
@@ -258,6 +254,7 @@ public:
 		std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -381,6 +378,8 @@ public:
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
 
+			, OnlyUseLandSequences { false }
+
 			, PronePrimaryFireFLH {}
 			, ProneSecondaryFireFLH {}
 			, DeployedPrimaryFireFLH {}
@@ -419,13 +418,13 @@ public:
 			, EmptyAmmoPipFrame { -1 }
 			, AmmoPipWrapStartFrame { 14 }
 			, AmmoPipSize {}
-			, AmmoPipOffset {{ 0,0 }}
+			, AmmoPipOffset { { 0,0 } }
 
 			, ShowSpawnsPips { true }
 			, SpawnsPipFrame { 1 }
 			, EmptySpawnsPipFrame { 0 }
 			, SpawnsPipSize {}
-			, SpawnsPipOffset {{ 0,0 }}
+			, SpawnsPipOffset { { 0,0 } }
 
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
@@ -444,11 +443,7 @@ public:
 			, RevengeWeapon {}
 			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 
-			, AttachEffect_AttachTypes {}
-			, AttachEffect_DurationOverrides {}
-			, AttachEffect_Delays {}
-			, AttachEffect_InitialDelays {}
-			, AttachEffect_RecreationDelays {}
+			, AttachEffects {}
 
 			, BuildLimitGroup_Types {}
 			, BuildLimitGroup_Nums {}
@@ -498,6 +493,10 @@ public:
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
+
+	static TechnoClass* CreateUnit(TechnoTypeClass* pType, CoordStruct location, DirType facing, DirType* secondaryFacing, HouseClass* pOwner,
+		TechnoClass* pInvoker = nullptr, HouseClass* pInvokerHouse = nullptr, AnimTypeClass* pSpawnAnimType = nullptr, int spawnHeight = -1,
+		bool alwaysOnGround = false, bool checkPathfinding = false, bool parachuteIfInAir = false, Mission mission = Mission::Guard, Mission* missionAI = nullptr);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
