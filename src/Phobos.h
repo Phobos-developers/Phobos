@@ -11,7 +11,6 @@ class AbstractClass;
 
 constexpr auto NONE_STR = "<none>";
 constexpr auto NONE_STR2 = "none";
-constexpr auto TOOLTIPS_SECTION = "ToolTips";
 constexpr auto SIDEBAR_SECTION = "Sidebar";
 constexpr auto UISETTINGS_SECTION = "UISettings";
 
@@ -29,7 +28,7 @@ public:
 	static const size_t readLength = 2048;
 	static char readBuffer[readLength];
 	static wchar_t wideBuffer[readLength];
-	static const char readDelims[4];
+	static constexpr auto readDelims = ",";
 
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
@@ -65,6 +64,7 @@ public:
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
 		static const wchar_t* ShowBriefingResumeButtonLabel;
+		static const wchar_t* SWShotsFormat;
 		static char ShowBriefingResumeButtonStatusLabel[0x20];
 	};
 
@@ -90,6 +90,8 @@ public:
 		static bool ShowPowerDelta;
 		static bool ShowHarvesterCounter;
 		static bool ShowWeedsCounter;
+		static bool ShowPlanningPath;
+		static bool HideLightFlashEffects;
 	};
 
 	class Misc
