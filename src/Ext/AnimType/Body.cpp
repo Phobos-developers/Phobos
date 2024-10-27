@@ -48,29 +48,28 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 
 		if (pAnimType)
 		{
-			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
+			auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
+
+			//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
+			//	? pThis->GetOriginalOwner() : pThis->Owner;
+
+			auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
+			auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
+
+			pAnimExt->SetInvoker(pThis);
+			pAnimExt->FromDeathUnit = true;
+
+			if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
+				pAnimExt->DeathUnitFacing = facing;
+
+			if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
 			{
-				//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
-				//	? pThis->GetOriginalOwner() : pThis->Owner;
-
-				auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-				auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
-
-				pAnimExt->SetInvoker(pThis);
-				pAnimExt->FromDeathUnit = true;
-
-				if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
-					pAnimExt->DeathUnitFacing = facing;
-
-				if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
+				if (pThis->HasTurret())
 				{
-					if (pThis->HasTurret())
-					{
-						pAnimExt->DeathUnitHasTurret = true;
-						pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.Current();
-					}
+					pAnimExt->DeathUnitHasTurret = true;
+					pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.Current();
 				}
 			}
 		}

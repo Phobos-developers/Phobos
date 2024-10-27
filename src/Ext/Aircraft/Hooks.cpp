@@ -216,13 +216,11 @@ DEFINE_HOOK(0x414F10, AircraftClass_AI_Trailer, 0x5)
 	GET(AircraftClass*, pThis, ESI);
 	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x40, -0xC));
 
-	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1))
-	{
-		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
-		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
-		pTrailerAnimExt->SetInvoker(pThis);
-		pTrailerAnimExt->IsTechnoTrailerAnim = true;
-	}
+	auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1);
+	auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+	AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
+	pTrailerAnimExt->SetInvoker(pThis);
+	pTrailerAnimExt->IsTechnoTrailerAnim = true;
 
 	return SkipGameCode;
 }

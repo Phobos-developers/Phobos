@@ -650,6 +650,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->NumShipyards_NonMFB)
 		.Process(this->AIFireSaleDelayTimer)
 		.Process(this->SuspendedEMPulseSWs)
+		.Process(this->SuperExts)
 		.Process(this->AITriggers_ValidList)
 		;
 }

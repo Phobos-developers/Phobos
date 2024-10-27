@@ -270,20 +270,17 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 					animCoords = MapClass::GetRandomCoordsNear(animCoords, distance, false);
 				}
 
-				if (auto const pAnim = GameCreate<AnimClass>(pType, animCoords, 0, 1, 0x2600, -15, false))
+				auto const pAnim = GameCreate<AnimClass>(pType, animCoords, 0, 1, 0x2600, -15, false);
+				createdAnim = true;
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+
+				if (!pAnim->Owner)
+					pAnim->Owner = pInvoker;
+
+				if (pThis->Owner)
 				{
-					createdAnim = true;
-
-					AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
-
-					if (!pAnim->Owner)
-						pAnim->Owner = pInvoker;
-
-					if (pThis->Owner)
-					{
-						auto pExt = AnimExt::ExtMap.Find(pAnim);
-						pExt->SetInvoker(pThis->Owner);
-					}
+					auto pExt = AnimExt::ExtMap.Find(pAnim);
+					pExt->SetInvoker(pThis->Owner);
 				}
 			}
 		}
