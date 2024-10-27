@@ -17,27 +17,28 @@
 
 void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 {
-	if (auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type))
-	{
-		if (pTypeExt->LimboDelivery_Types.size() > 0)
-			pTypeExt->ApplyLimboDelivery(pSW->Owner);
+	auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
 
-		if (pTypeExt->LimboKill_IDs.size() > 0)
-			pTypeExt->ApplyLimboKill(pSW->Owner);
+	if (pTypeExt->LimboDelivery_Types.size() > 0)
+		pTypeExt->ApplyLimboDelivery(pSW->Owner);
 
-		if (pTypeExt->Detonate_Warhead || pTypeExt->Detonate_Weapon)
-			pTypeExt->ApplyDetonation(pSW->Owner, cell);
+	if (pTypeExt->LimboKill_IDs.size() > 0)
+		pTypeExt->ApplyLimboKill(pSW->Owner);
 
-		if (pTypeExt->SW_Next.size() > 0)
-			pTypeExt->ApplySWNext(pSW, cell);
+	if (pTypeExt->Detonate_Warhead || pTypeExt->Detonate_Weapon)
+		pTypeExt->ApplyDetonation(pSW->Owner, cell);
 
-		if (pTypeExt->Convert_Pairs.size() > 0)
-			pTypeExt->ApplyTypeConversion(pSW);
+	if (pTypeExt->SW_Next.size() > 0)
+		pTypeExt->ApplySWNext(pSW, cell);
 
-		if (static_cast<int>(pSW->Type->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
-			pTypeExt->HandleEMPulseLaunch(pSW, cell);
-	}
+	if (pTypeExt->Convert_Pairs.size() > 0)
+		pTypeExt->ApplyTypeConversion(pSW);
 
+	if (static_cast<int>(pSW->Type->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
+		pTypeExt->HandleEMPulseLaunch(pSW, cell);
+
+	auto& sw_ext = HouseExt::ExtMap.Find(pSW->Owner)->SuperExts[pSW->Type->ArrayIndex];
+	sw_ext.ShotCount++;
 }
 
 // ====================================================

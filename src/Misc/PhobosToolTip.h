@@ -29,8 +29,8 @@ public:
 	inline const wchar_t* GetBuffer() const;
 
 	void HelpText(BuildType& cameo);
-	void HelpText(TechnoTypeClass* pType);
-	void HelpText(SuperClass* pSuper);
+	void HelpText_Techno(TechnoTypeClass* pType);
+	void HelpText_Super(int swidx);
 
 	// Properties
 private:

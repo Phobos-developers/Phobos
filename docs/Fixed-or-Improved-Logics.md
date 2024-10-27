@@ -1384,7 +1384,7 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 CombatLightDetailLevel=0  ; integer
-                          
+
 [SOMEWARHEAD]             ; WarheadType
 CombatLightDetailLevel=   ; integer
 CombatLightChance=1.0     ; floating point value, percents or absolute (0.0-1.0)

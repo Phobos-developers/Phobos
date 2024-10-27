@@ -28,8 +28,7 @@ void AnimExt::ExtData::CreateAttachedSystem()
 
 	if (pTypeExt && pTypeExt->AttachedSystem && !this->AttachedSystem)
 	{
-		if (auto const pSystem = GameCreate<ParticleSystemClass>(pTypeExt->AttachedSystem.Get(), pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr))
-			this->AttachedSystem = pSystem;
+		this->AttachedSystem = GameCreate<ParticleSystemClass>(pTypeExt->AttachedSystem.Get(), pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr);
 	}
 }
 
@@ -203,8 +202,8 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 
 		if (pExpireAnim)
 		{
-			if (auto pAnim = GameCreate<AnimClass>(pExpireAnim, nLocation, 0, 1, 0x2600u, 0, 0))
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+			auto pAnim = GameCreate<AnimClass>(pExpireAnim, nLocation, 0, 1, 0x2600u, 0, 0);
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
 		}
 	}
 	else
@@ -228,14 +227,14 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 
 	if (pWakeAnimToUse)
 	{
-		if (auto const pWakeAnimCreated = GameCreate<AnimClass>(pWakeAnimToUse, nLocation, 0, 1, 0x600u, false))
-			AnimExt::SetAnimOwnerHouseKind(pWakeAnimCreated, pOwner, nullptr, false, true);
+		auto const pWakeAnimCreated = GameCreate<AnimClass>(pWakeAnimToUse, nLocation, 0, 1, 0x600u, false);
+		AnimExt::SetAnimOwnerHouseKind(pWakeAnimCreated, pOwner, nullptr, false, true);
 	}
 
 	if (pSplashAnimToUse)
 	{
-		if (auto const pSplashAnimCreated = GameCreate<AnimClass>(pSplashAnimToUse, nLocation, 0, 1, 0x600u, false))
-			AnimExt::SetAnimOwnerHouseKind(pSplashAnimCreated, pOwner, nullptr, false, true);
+		auto const pSplashAnimCreated = GameCreate<AnimClass>(pSplashAnimToUse, nLocation, 0, 1, 0x600u, false);
+		AnimExt::SetAnimOwnerHouseKind(pSplashAnimCreated, pOwner, nullptr, false, true);
 	}
 }
 
