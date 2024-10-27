@@ -199,20 +199,16 @@ DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
 
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		if (auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
+		auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
 			pThis->Location, 0, 1, 0x600, 0,
-			!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false))
-		{
-			pThis->DeployAnim = pAnim;
-			pAnim->SetOwnerObject(pThis);
+			!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false);
 
-			if (pExt->DeployingAnim_UseUnitDrawer)
-				return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;
-		}
-		else
-		{
-			pThis->DeployAnim = nullptr;
-		}
+		pThis->DeployAnim = pAnim;
+		pAnim->SetOwnerObject(pThis);
+
+		if (pExt->DeployingAnim_UseUnitDrawer)
+			return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;
+
 	}
 
 	return isDeploying ? Deploy : Undeploy;
