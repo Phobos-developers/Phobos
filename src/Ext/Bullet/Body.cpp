@@ -98,27 +98,28 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 
 	auto const it = std::find_if(RadSiteClass::Array->begin(), RadSiteClass::Array->end(),
-			[=](auto const pSite)
+		[=](auto const pSite)
 		{
 			auto const pRadExt = RadSiteExt::ExtMap.Find(pSite);
 
-	if (pRadExt->Type != pRadType)
-		return false;
+			if (pRadExt->Type != pRadType)
+				return false;
 
-	if (MapClass::Instance->TryGetCellAt(pSite->BaseCell) != MapClass::Instance->TryGetCellAt(Cell))
-		return false;
+			if (MapClass::Instance->TryGetCellAt(pSite->BaseCell) != MapClass::Instance->TryGetCellAt(Cell))
+				return false;
 
-	if (Spread != pSite->Spread)
-		return false;
+			if (Spread != pSite->Spread)
+				return false;
 
-	if (pWeapon != pRadExt->Weapon)
-		return false;
+			if (pWeapon != pRadExt->Weapon)
+				return false;
 
-	if (pRadExt->RadInvoker && pThis->Owner)
-		return pRadExt->RadInvoker == pThis->Owner;
+			if (pRadExt->RadInvoker && pThis->Owner)
+				return pRadExt->RadInvoker == pThis->Owner;
 
-	return true;
-			});
+			return true;
+		}
+	);
 
 	if (it != RadSiteClass::Array->end())
 	{
@@ -173,9 +174,9 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->SnappedToTarget)
 		.Process(this->DamageNumberOffset)
-		;
 
-	this->Trajectory = PhobosTrajectory::ProcessFromStream(Stm, this->Trajectory);
+		.Process(this->Trajectory) // Keep this shit at last
+		;
 }
 
 void BulletExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -212,10 +213,6 @@ DEFINE_HOOK(0x4664BA, BulletClass_CTOR, 0x5)
 DEFINE_HOOK(0x4665E9, BulletClass_DTOR, 0xA)
 {
 	GET(BulletClass*, pItem, ESI);
-
-	if (auto pTraj = BulletExt::ExtMap.Find(pItem)->Trajectory)
-		DLLDelete(pTraj);
-
 	BulletExt::ExtMap.Remove(pItem);
 	return 0;
 }
