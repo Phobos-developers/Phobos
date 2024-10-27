@@ -30,12 +30,15 @@ public:
 		Valueable<bool> SW_AnyDesignator;
 		Valueable<double> SW_RangeMinimum;
 		Valueable<double> SW_RangeMaximum;
+		Valueable<int> SW_Shots;
+
 		DWORD SW_RequiredHouses;
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
 		Valueable<bool> SW_InitialReady;
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
+		Valueable<int> SW_MaxCount;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -60,6 +63,8 @@ public:
 		Valueable<bool> Detonate_AtFirer;
 		Valueable<bool> ShowDesignatorRange;
 
+		Valueable<int> TabIndex;
+
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_GrantOneTime_RandomWeightsData;
@@ -70,6 +75,11 @@ public:
 		Valueable<int> UseWeeds_Amount;
 		Valueable<bool> UseWeeds_StorageTimer;
 		Valueable<double> UseWeeds_ReadinessAnimationPercentage;
+
+		Valueable<int> EMPulse_WeaponIndex;
+		Valueable<bool> EMPulse_SuspendOthers;
+		ValueableVector<BuildingTypeClass*> EMPulse_Cannons;
+		Valueable<bool> EMPulse_TargetSelf;
 
 		ValueableIdxVector<SuperWeaponTypeClass> SW_GrantOneTime;
 		Nullable<bool> SW_GrantOneTime_InitialReady;
@@ -93,6 +103,8 @@ public:
 			, SW_NegBuildings {}
 			, SW_InitialReady { false }
 			, SW_PostDependent {}
+			, SW_MaxCount { -1 }
+			, SW_Shots { -1 }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -116,10 +128,15 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+			, TabIndex { 1 }
 			, UseWeeds { false }
 			, UseWeeds_Amount { RulesClass::Instance->WeedCapacity }
 			, UseWeeds_StorageTimer { false }
 			, UseWeeds_ReadinessAnimationPercentage { 0.9 }
+			, EMPulse_WeaponIndex { 0 }
+			, EMPulse_SuspendOthers { false }
+			, EMPulse_Cannons {}
+			, EMPulse_TargetSelf { false }
 			, SW_GrantOneTime {}
 			, SW_GrantOneTime_InitialReady {}
 			, SW_GrantOneTime_ReadyIfExists {}
@@ -147,6 +164,9 @@ public:
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
 		void ApplyTypeConversion(SuperClass* pSW);
+		void HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) const;
+		std::vector<BuildingClass*> GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const;
+		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;
 
 		void GrantOneTimeFromList(SuperClass* pSW);
 
