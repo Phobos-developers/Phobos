@@ -124,7 +124,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		if (cellSpread)
 		{
 			for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
-				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted, pBulletExt);
 		}
 		else if (pBullet)
 		{
@@ -133,7 +133,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				// Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
 				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4)
-					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
+					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted, pBulletExt);
 			}
 		}
 		else if (this->DamageAreaTarget)
@@ -144,7 +144,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
+void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted, BulletExt::ExtData* pBulletExt)
 {
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking)
 		return;
