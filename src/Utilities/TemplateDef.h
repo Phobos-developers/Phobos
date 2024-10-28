@@ -53,9 +53,7 @@
 #include <VoxClass.h>
 #include <CRT.h>
 #include <LocomotionClass.h>
-#ifdef CUSTOM_LOCO_EXAMPLE_ENABLED
 #include <Locomotion/TestLocomotionClass.h>
-#endif
 
 namespace detail
 {
