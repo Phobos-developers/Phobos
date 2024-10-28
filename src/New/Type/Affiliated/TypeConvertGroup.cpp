@@ -95,7 +95,7 @@ bool TypeConvertGroup::Save(PhobosStreamWriter& stm) const
 	return const_cast<TypeConvertGroup*>(this)->Serialize(stm);
 }
 
-void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI, const char* pSection,AffectedHouse defaultAffectHouse)
+void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI, const char* pSection, AffectedHouse defaultAffectHouse)
 {
 	for (size_t i = 0; ; ++i)
 	{

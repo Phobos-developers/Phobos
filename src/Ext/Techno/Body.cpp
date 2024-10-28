@@ -6,10 +6,12 @@
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Script/Body.h>
 
 #include <Utilities/AresFunctions.h>
+#include <Ext/CaptureManager/Body.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
@@ -33,6 +35,72 @@ TechnoExt::ExtData::~ExtData()
 	}
 
 	AnimExt::InvalidateTechnoPointers(pThis);
+}
+
+void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
+{
+	auto pAnimType = pTechnoFrom->MindControlRingAnim ?
+		pTechnoFrom->MindControlRingAnim->Type : TechnoExt::ExtMap.Find(pTechnoFrom)->MindControlRingAnimType;
+
+	if (auto Controller = pTechnoFrom->MindControlledBy)
+	{
+		if (auto Manager = Controller->CaptureManager)
+		{
+			CaptureManagerExt::FreeUnit(Manager, pTechnoFrom, true);
+
+			if (CaptureManagerExt::CaptureUnit(Manager, pTechnoTo, false, pAnimType, true))
+			{
+				if (auto pBld = abstract_cast<BuildingClass*>(pTechnoTo))
+				{
+					// Capturing the building after unlimbo before buildup has finished or even started appears to throw certain things off,
+					// Hopefully this is enough to fix most of it like anims playing prematurely etc.
+					pBld->ActuallyPlacedOnMap = false;
+					pBld->DestroyNthAnim(BuildingAnimSlot::All);
+
+					pBld->BeginMode(BStateType::Construction);
+					pBld->QueueMission(Mission::Construction, false);
+				}
+			}
+			else
+			{
+				int nSound = pTechnoTo->GetTechnoType()->MindClearedSound;
+				if (nSound == -1)
+					nSound = RulesClass::Instance->MindClearedSound;
+
+				if (nSound != -1)
+					VocClass::PlayIndexAtPos(nSound, pTechnoTo->Location);
+			}
+		}
+	}
+	else if (auto MCHouse = pTechnoFrom->MindControlledByHouse)
+	{
+		pTechnoTo->MindControlledByHouse = MCHouse;
+		pTechnoFrom->MindControlledByHouse = nullptr;
+	}
+	else if (pTechnoFrom->MindControlledByAUnit) // Perma MC
+	{
+		pTechnoTo->MindControlledByAUnit = true;
+
+		auto const pBuilding = abstract_cast<BuildingClass*>(pTechnoTo);
+		CoordStruct location = pTechnoTo->GetCoords();
+
+		location.Z += pBuilding
+			? pBuilding->Type->Height * Unsorted::LevelHeight
+			: pTechnoTo->GetTechnoType()->MindControlRingOffset;
+
+		auto const pAnim = pAnimType
+			? GameCreate<AnimClass>(pAnimType, location, 0, 1)
+			: nullptr;
+
+		if (pAnim)
+		{
+			if (pBuilding)
+				pAnim->ZAdjust = -1024;
+
+			pTechnoTo->MindControlRingAnim = pAnim;
+			pAnim->SetOwnerObject(pTechnoTo);
+		}
+	}
 }
 
 bool TechnoExt::IsActive(TechnoClass* pThis)
@@ -440,7 +508,7 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 
 					if (minSize > 0)
 					{
-						if (cumulativeCount < minCounts->at(typeCounter-1 >= minSize ? minSize - 1 : typeCounter - 1))
+						if (cumulativeCount < minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1))
 							continue;
 					}
 					if (maxSize > 0)
@@ -541,10 +609,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsBurrowed)
 		.Process(this->HasBeenPlacedOnMap)
 		.Process(this->DeployFireTimer)
+		.Process(this->SkipTargetChangeResetSequence)
 		.Process(this->ForceFullRearmDelay)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
 		.Process(this->FiringObstacleCell)
+		.Process(this->IsDetachingForCloak)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->HasRemainingWarpInDelay)
 		.Process(this->LastWarpInDelay)
@@ -635,4 +705,3 @@ DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 
 	return 0;
 }
-

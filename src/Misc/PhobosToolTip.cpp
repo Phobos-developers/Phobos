@@ -6,7 +6,6 @@
 #include <BuildingClass.h>
 #include <UnitClass.h>
 #include <InfantryClass.h>
-#include <HouseClass.h>
 
 #include <GameOptionsClass.h>
 #include <CCToolTip.h>
@@ -17,6 +16,7 @@
 
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>
+#include <Ext/House/Body.h>
 
 #include <sstream>
 #include <iomanip>
@@ -90,9 +90,9 @@ inline const wchar_t* PhobosToolTip::GetBuffer() const
 void PhobosToolTip::HelpText(BuildType& cameo)
 {
 	if (cameo.ItemType == AbstractType::Special)
-		this->HelpText(HouseClass::CurrentPlayer->Supers.Items[cameo.ItemIndex]);
+		this->HelpText_Super(cameo.ItemIndex);
 	else
-		this->HelpText(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
+		this->HelpText_Techno(ObjectTypeClass::GetTechnoType(cameo.ItemType, cameo.ItemIndex));
 }
 
 inline static int TickTimeToSeconds(int tickTime)
@@ -110,7 +110,7 @@ inline static int TickTimeToSeconds(int tickTime)
 	return tickTime / (60 / GameOptionsClass::Instance->GameSpeed);
 }
 
-void PhobosToolTip::HelpText(TechnoTypeClass* pType)
+void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 {
 	if (!pType)
 		return;
@@ -145,13 +145,14 @@ void PhobosToolTip::HelpText(TechnoTypeClass* pType)
 	this->TextBuffer = oss.str();
 }
 
-void PhobosToolTip::HelpText(SuperClass* pSuper)
+void PhobosToolTip::HelpText_Super(int swidx)
 {
+	auto pSuper = HouseClass::CurrentPlayer->Supers.Items[swidx];
 	auto const pData = SWTypeExt::ExtMap.Find(pSuper->Type);
 
 	std::wostringstream oss;
 	oss << pSuper->Type->UIName;
-	bool showCost = false;
+	bool showSth = false;
 
 	if (int nCost = std::abs(pData->Money_Amount))
 	{
@@ -161,21 +162,35 @@ void PhobosToolTip::HelpText(SuperClass* pSuper)
 			oss << '+';
 
 		oss << Phobos::UI::CostLabel << nCost;
-		showCost = true;
+		showSth = true;
 	}
 
 	int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());
 	if (rechargeTime > 0)
 	{
-		if (!showCost)
+		if (!showSth)
 			oss << L"\n";
 
 		int nSec = rechargeTime % 60;
 		int nMin = rechargeTime / 60;
 
-		oss << (showCost ? L" " : L"") << Phobos::UI::TimeLabel
+		oss << (showSth ? L" " : L"") << Phobos::UI::TimeLabel
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 			<< std::setw(2) << std::setfill(L'0') << nSec;
+		showSth = true;
+	}
+
+	auto const& sw_ext = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->SuperExts[swidx];
+	int sw_shots = pData->SW_Shots;
+	int remain_shots = pData->SW_Shots - sw_ext.ShotCount;
+	if (sw_shots > 0)
+	{
+		if (!showSth)
+			oss << L"\n";
+
+		wchar_t buffer[64];
+		swprintf_s(buffer, Phobos::UI::SWShotsFormat, remain_shots, sw_shots);
+		oss << (showSth ? L" " : L"") << buffer;
 	}
 
 	if (auto pDesc = this->GetUIDescription(pData))
@@ -301,41 +316,41 @@ void __declspec(naked) _CCToolTip_Draw2_FillRect_RET()
 }
 DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 {
-	if (PhobosToolTip::Instance.IsCameo)
+	GET(SurfaceExt*, pThis, ESI);
+	LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
+
+	const bool isCameo = PhobosToolTip::Instance.IsCameo;
+
+	if (isCameo && Phobos::UI::AnchoredToolTips && PhobosToolTip::Instance.IsEnabled() && Phobos::Config::ToolTipDescriptions)
 	{
-		GET(SurfaceExt*, pThis, ESI);
-		LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
+		LEA_STACK(LTRBStruct*, a2, STACK_OFFSET(0x44, -0x20));
+		auto x = DSurface::SidebarBounds->X - pRect->Width - 2;
+		pRect->X = x;
+		a2->Left = x;
+		pRect->Y -= 40;
+		a2->Top -= 40;
+	}
 
-		if (Phobos::UI::AnchoredToolTips && PhobosToolTip::Instance.IsEnabled() && Phobos::Config::ToolTipDescriptions)
+	// Should we make some SideExt items as static to improve the effeciency?
+	// Though it might not be a big improvement... - secsome
+	const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
+	if (auto const pSide = SideClass::Array->GetItemOrDefault(nPlayerSideIndex))
+	{
+		if (auto const pData = SideExt::ExtMap.Find(pSide))
 		{
-			LEA_STACK(LTRBStruct*, a2, STACK_OFFSET(0x44, -0x20));
-			auto x = DSurface::SidebarBounds->X - pRect->Width - 2;
-			pRect->X = x;
-			a2->Left = x;
-			pRect->Y -= 40;
-			a2->Top -= 40;
-		}
-
-		// Should we make some SideExt items as static to improve the effeciency?
-		// Though it might not be a big improvement... - secsome
-		const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
-		if (auto const pSide = SideClass::Array->GetItemOrDefault(nPlayerSideIndex))
-		{
-			if (auto const pData = SideExt::ExtMap.Find(pSide))
-			{
-				// Could this flag be lazy?
+			// Could this flag be lazy?
+			if (isCameo)
 				SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
 
-				pThis->FillRectTrans(pRect,
-					pData->ToolTip_Background_Color.GetEx(&RulesExt::Global()->ToolTip_Background_Color),
-					pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity)
-				);
+			pThis->FillRectTrans(pRect,
+				pData->ToolTip_Background_Color.GetEx(&RulesExt::Global()->ToolTip_Background_Color),
+				pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity)
+			);
 
-				if (Phobos::Config::ToolTipBlur)
-					pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));
+			if (Phobos::Config::ToolTipBlur)
+				pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));
 
-				return (int)_CCToolTip_Draw2_FillRect_RET;
-			}
+			return (int)_CCToolTip_Draw2_FillRect_RET;
 		}
 	}
 
