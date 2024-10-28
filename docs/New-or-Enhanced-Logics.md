@@ -1579,6 +1579,16 @@ LaunchSW.DisplayMoney.Houses=all  ; Affected House Enumeration (none|owner/self|
 LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
+### Modify Ammo on impact
+
+- Warheads can now modify ammo of the affected objects.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]   ; Warhead
+AmmoModifier=0  ; integer
+```
+
 ### Parasite removal
 
 - By default if unit takes negative damage from a Warhead (before `Verses` are calculated), any parasites infecting it are removed and deleted. This behaviour can now be customized to disable the removal for negative damage, or enable it for any arbitrary warhead.
