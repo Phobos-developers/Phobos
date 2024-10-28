@@ -447,17 +447,6 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 		Game::DestroyVoxelCaches();
 }
 
-
-bool RulesExt::LoadGlobals(PhobosStreamReader& Stm)
-{
-	return Stm.Success();
-}
-
-bool RulesExt::SaveGlobals(PhobosStreamWriter& Stm)
-{
-	return Stm.Success();
-}
-
 // =============================
 // container hooks
 
