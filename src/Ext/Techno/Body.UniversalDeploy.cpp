@@ -921,6 +921,11 @@ bool TechnoExt::Techno2TechnoPropertiesTransfer(TechnoClass* pOld, TechnoClass* 
 
 	if (pOldExt->Convert_UniversalDeploy_RememberTarget)
 		pNew->SetTarget(pOldExt->Convert_UniversalDeploy_RememberTarget);
+	else if (isOldBuilding && isNewBuilding && !ScriptExt::IsUnitArmed(pNew))
+	{
+		pNew->SetTarget(nullptr);
+		pNew->QueueMission(Mission::Guard, false);
+	}
 
 	// Transfer Iron Courtain effect, if applied
 	TechnoExt::SyncInvulnerability(pOld, pNew);

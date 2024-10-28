@@ -32,6 +32,9 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 
 void TypeConvertGroup::UniversalConvert(TechnoClass* pTarget, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner, AnimTypeClass* pAnimType)
 {
+	if (!pTarget)
+		return;
+
 	for (const auto& [fromTypes, toType, affectedHouses] : convertPairs)
 	{
 		if (!toType.isset() || !toType.Get()) continue;
@@ -40,6 +43,7 @@ void TypeConvertGroup::UniversalConvert(TechnoClass* pTarget, const std::vector<
 		isValidTechno &= ScriptExt::IsUnitAvailable(pTarget, false);
 
 		if (!isValidTechno) continue;
+
 		auto const pTargetType = pTarget->GetTechnoType();
 
 		if (!pTargetType || !pTarget->Owner) continue;
