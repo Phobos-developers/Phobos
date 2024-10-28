@@ -333,7 +333,4 @@ public:
 		Global()->InvalidatePointer(ptr, removed);
 	}
 
-	static bool LoadGlobals(PhobosStreamReader& Stm);
-	static bool SaveGlobals(PhobosStreamWriter& Stm);
-
 };
