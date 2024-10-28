@@ -209,5 +209,5 @@ public:
 	//static void CreateUniversalDeployAnimation(TechnoClass* pThis, AnimTypeClass* pAnimType = nullptr);
 	static bool Techno2TechnoPropertiesTransfer(TechnoClass* pNew = nullptr, TechnoClass* pOld = nullptr);
 	//static void UpdateUniversalDeploy(TechnoClass* pThis);
-	static void PassengersTransfer(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
+	static void PassengersTransfer(TechnoClass* pFrom, TechnoClass* pTo = nullptr, bool forceFullTransfer = true, bool dontCheckInvalidOccupiers = true);
 };
