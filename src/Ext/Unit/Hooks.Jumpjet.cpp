@@ -8,6 +8,7 @@
 // Jumpjets stuck at FireError::FACING because Jumpjet has its own facing just for JumpjetTurnRate
 // We should not touch the linked unit's PrimaryFacing when it's moving and just let the loco sync this shit in 54D692
 // The body facing never actually turns, it just syncs
+// Whatever, now let's totally forget PrimaryFacing and only use that loco facing
 DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
@@ -176,7 +177,7 @@ DEFINE_HOOK(0x70B649, TechnoClass_RigidBodyDynamics_NoTiltCrashBlyat, 0x6)
 }
 
 // Just rewrite this completely to avoid headache
-Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
+Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, int* pIndex)
 {
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iloco);
@@ -185,19 +186,15 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	bool const onGround = pThis->State == JumpjetLocomotionClass::State::Grounded;
 	// Man, what can I say, you don't want to stick your rotor into the ground
 	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
-
-	if (onGround && pIndex && pIndex->Is_Valid_Key())
-		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
-
-	*ret = Matrix3D::VoxelRampMatrix[onGround ? slope_idx : 0] * pThis->LocomotionClass::Draw_Matrix(pIndex);
-
+	*ret = Matrix3D::VoxelRampMatrix[onGround ? slope_idx : 0];
+	auto curf = pThis->LocomotionFacing.Current();
+	ret->RotateZ((float)curf.GetRadian<32>());
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
 
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
-		if (pIndex)
-			pIndex->Invalidate();
+		if (pIndex) *pIndex = -1;
 
 		if (onGround)
 		{
@@ -218,6 +215,14 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 			ret->RotateY(arf);
 		}
 	}
+
+	if (pIndex && *pIndex != -1)
+	{
+		if (onGround) *pIndex = slope_idx + (*pIndex << 6);
+		*pIndex *= 32;
+		*pIndex |= curf.GetFacing<32>();
+	}
+
 	return ret;
 }
 
