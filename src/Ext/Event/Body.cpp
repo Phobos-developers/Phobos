@@ -14,8 +14,8 @@ void EventExt::RespondEvent()
 {
 	switch (this->Type)
 	{
-	case EventTypeExt::SyncStopTarNav:
-		TechnoExt::HandleStopTarNav(this);
+	case EventTypeExt::SyncStopRandomTargetTarNav:
+		TechnoExt::HandleStopRandomTargetTarNav(this);
 		break;
 	}
 }
@@ -24,8 +24,8 @@ size_t EventExt::GetDataSize(EventTypeExt type)
 {
 	switch (type)
 	{
-	case EventTypeExt::SyncStopTarNav:
-		return sizeof(EventExt::SyncStopTarNav);
+	case EventTypeExt::SyncStopRandomTargetTarNav:
+		return sizeof(EventExt::SyncStopRandomTargetTarNav);
 	}
 
 	return 0;

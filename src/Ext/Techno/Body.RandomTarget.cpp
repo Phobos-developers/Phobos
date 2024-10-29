@@ -220,7 +220,38 @@ TechnoClass* TechnoExt::FindRandomTarget(TechnoClass* pThis)
 	return selection;
 }
 
+void TechnoExt::SendStopRandomTargetTarNav(TechnoClass* pThis)
+{
+	auto pFoot = abstract_cast<FootClass*>(pThis);
 
+	EventExt event;
+	event.Type = EventTypeExt::SyncStopRandomTargetTarNav;
+	event.HouseIndex = (char)HouseClass::CurrentPlayer->ArrayIndex;
+	event.Frame = Unsorted::CurrentFrame;
 
+	event.AddEvent();
+}
 
+void TechnoExt::HandleStopRandomTargetTarNav(EventExt* event)
+{
+	int technoUniqueID = event->SyncStopRandomTargetTarNav.TechnoUniqueID;
 
+	for (auto pTechno : *TechnoClass::Array)
+	{
+		if (pTechno && pTechno->UniqueID == technoUniqueID)
+		{
+			auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+
+			pExt->CurrentRandomTarget = nullptr;
+			pExt->OriginalTarget = nullptr;
+			pTechno->ForceMission(Mission::Guard);
+
+			auto pFoot = abstract_cast<FootClass*>(pTechno);
+
+			if (pFoot->Locomotor->Is_Moving_Now())
+				pFoot->StopMoving();
+
+			break;
+		}
+	}
+}

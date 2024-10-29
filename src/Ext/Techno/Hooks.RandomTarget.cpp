@@ -162,7 +162,7 @@ DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected_ClearRetargets, 0x5)
 		{
 			if (SessionClass::IsMultiplayer())
 			{
-				TechnoExt::SendStopTarNav(pTechno); // Prevent desyncs!
+				TechnoExt::SendStopRandomTargetTarNav(pTechno); // Prevent desyncs!
 			}
 			else
 			{

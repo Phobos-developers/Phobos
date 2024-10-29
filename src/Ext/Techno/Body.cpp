@@ -483,42 +483,6 @@ bool TechnoExt::IsValidTechno(TechnoClass* pTechno)
 	return isValid;
 }
 
-void TechnoExt::SendStopTarNav(TechnoClass* pThis)
-{
-	auto pFoot = abstract_cast<FootClass*>(pThis);
-
-	EventExt event;
-	event.Type = EventTypeExt::SyncStopTarNav;
-	event.HouseIndex = (char)HouseClass::CurrentPlayer->ArrayIndex;
-	event.Frame = Unsorted::CurrentFrame;
-
-	event.AddEvent();
-}
-
-void TechnoExt::HandleStopTarNav(EventExt* event)
-{
-	int technoUniqueID = event->SyncStopTarNav.TechnoUniqueID;
-
-	for (auto pTechno : *TechnoClass::Array)
-	{
-		if (pTechno && pTechno->UniqueID == technoUniqueID)
-		{
-			auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-
-			pExt->CurrentRandomTarget = nullptr;
-			pExt->OriginalTarget = nullptr;
-			pTechno->ForceMission(Mission::Guard);
-
-			auto pFoot = abstract_cast<FootClass*>(pTechno);
-
-			if (pFoot->Locomotor->Is_Moving_Now())
-				pFoot->StopMoving();
-
-			break;
-		}
-	}
-}
-
 // =============================
 // load / save
 

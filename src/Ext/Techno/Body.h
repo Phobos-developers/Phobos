@@ -199,6 +199,6 @@ public:
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
 
-	static void SendStopTarNav(TechnoClass* pThis);
-	static void HandleStopTarNav(EventExt* event);
+	static void SendStopRandomTargetTarNav(TechnoClass* pThis);
+	static void HandleStopRandomTargetTarNav(EventExt* event);
 };

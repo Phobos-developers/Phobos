@@ -10,10 +10,10 @@ enum class EventTypeExt : uint8_t
 	// CnCNet reserved Events from 0x30 to 0x3F
 	// Ares used Events 0x60 and 0x61
 
-	SyncStopTarNav = 0x49,
+	SyncStopRandomTargetTarNav = 0x49,
 
-	FIRST = SyncStopTarNav,
-	LAST = SyncStopTarNav
+	FIRST = SyncStopRandomTargetTarNav,
+	LAST = SyncStopRandomTargetTarNav
 };
 
 #pragma pack(push, 1)
@@ -28,10 +28,10 @@ public:
 	{
 		char DataBuffer[104];
 
-		struct SyncStopTarNav
+		struct SyncStopRandomTargetTarNav
 		{
 			int TechnoUniqueID;
-		} SyncStopTarNav;
+		} SyncStopRandomTargetTarNav;
 	};
 
 	bool AddEvent();
