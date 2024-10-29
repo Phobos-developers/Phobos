@@ -61,7 +61,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 	pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
 
-	if (!TechnoExt::IsUnitAvailable(pFocus, true))
+	if (!ScriptExt::IsUnitAvailable(pFocus, true))
 	{
 		pTeam->Focus = nullptr;
 		pFocus = nullptr;
@@ -115,7 +115,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 	for (auto pFoot = pTeam->FirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 	{
-		if (TechnoExt::IsUnitAvailable(pFoot, true))
+		if (ScriptExt::IsUnitAvailable(pFoot, true))
 		{
 			auto const pTechnoType = pFoot->GetTechnoType();
 
@@ -143,7 +143,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	// Find the Leader
 	pLeaderUnit = pTeamData->TeamLeader;
 
-	if (!TechnoExt::IsUnitAvailable(pLeaderUnit, true))
+	if (!ScriptExt::IsUnitAvailable(pLeaderUnit, true))
 	{
 		pLeaderUnit = FindTheTeamLeader(pTeam);
 		pTeamData->TeamLeader = pLeaderUnit;
@@ -299,7 +299,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 		bool isAirOK = pFocus->IsInAir() && leaderWeaponsHaveAA;
 		bool isGroundOK = !pFocus->IsInAir() && leaderWeaponsHaveAG;
 
-		if (TechnoExt::IsUnitAvailable(pFocus, true)
+		if (ScriptExt::IsUnitAvailable(pFocus, true)
 			&& !pFocus->GetTechnoType()->Immune
 			&& (isAirOK || isGroundOK)
 			&& (!pLeaderUnit->Owner->IsAlliedWith(pFocus) || IsUnitMindControlledFriendly(pLeaderUnit->Owner, pFocus)))
@@ -310,7 +310,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 			{
 				auto const pTechnoType = pFoot->GetTechnoType();
 
-				if (TechnoExt::IsUnitAvailable(pFoot, true))
+				if (ScriptExt::IsUnitAvailable(pFoot, true))
 				{
 					// Aircraft case 1
 					if ((pFoot->WhatAmI() == AbstractType::Aircraft
@@ -486,7 +486,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 			continue;
 
 		if (object != pTechno
-			&& TechnoExt::IsUnitAvailable(object, true)
+			&& ScriptExt::IsUnitAvailable(object, true)
 			&& !objectType->Immune
 			&& !object->TemporalTargetingMe
 			&& !object->BeingWarpedOut
@@ -1168,7 +1168,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, bool repeatAction, 
 					auto const pFirstUnit = pTeam->FirstUnit;
 
 					if (pTechnoType == objectFromList
-						&& TechnoExt::IsUnitAvailable(pTechno, true)
+						&& ScriptExt::IsUnitAvailable(pTechno, true)
 						&& (!pFirstUnit->Owner->IsAlliedWith(pTechno) || IsUnitMindControlledFriendly(pFirstUnit->Owner, pTechno)))
 					{
 						validIndexes.push_back(j);

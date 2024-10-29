@@ -1033,7 +1033,7 @@ void TechnoExt::ExtData::UpdateRandomTargets()
 		bool isValidTechno = pCurrRandTarget
 			&& pCurrRandTarget->IsAlive
 			&& pCurrRandTarget->Health > 0
-			&& TechnoExt::IsUnitAvailable(pCurrRandTarget, true)
+			&& ScriptExt::IsUnitAvailable(pCurrRandTarget, true)
 			&& (pCurrRandTarget->WhatAmI() == AbstractType::Infantry
 				|| pCurrRandTarget->WhatAmI() == AbstractType::Unit
 				|| pCurrRandTarget->WhatAmI() == AbstractType::Building
@@ -1051,7 +1051,7 @@ void TechnoExt::ExtData::UpdateRandomTargets()
 	if (pThis->Target
 		&& pThis->SpawnManager
 		&& this->CurrentRandomTarget
-		&& IsUnitAvailable(static_cast<TechnoClass*>(this->CurrentRandomTarget), true))
+		&& ScriptExt::IsUnitAvailable(static_cast<TechnoClass*>(this->CurrentRandomTarget), true))
 	{
 		for (auto pSpawn : pThis->SpawnManager->SpawnedNodes)
 		{
@@ -1075,9 +1075,9 @@ void TechnoExt::ExtData::UpdateRandomTargets()
 		}
 	}
 
-	if (this->OriginalTarget && !pThis->Target && IsUnitAvailable(static_cast<TechnoClass*>(this->OriginalTarget), true) && !pThis->IsInAir())
+	if (this->OriginalTarget && !pThis->Target && ScriptExt::IsUnitAvailable(static_cast<TechnoClass*>(this->OriginalTarget), true) && !pThis->IsInAir())
 	{
-		if (this->CurrentRandomTarget && IsUnitAvailable(this->CurrentRandomTarget, true))
+		if (this->CurrentRandomTarget && ScriptExt::IsUnitAvailable(this->CurrentRandomTarget, true))
 			pThis->SetTarget(this->CurrentRandomTarget);
 		else
 			pThis->SetTarget(this->OriginalTarget);
