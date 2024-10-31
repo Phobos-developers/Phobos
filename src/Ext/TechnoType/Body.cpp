@@ -560,6 +560,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->DeployedWeaponBurstFLHs, this->EliteDeployedWeaponBurstFLHs, "Deployed");
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->CrouchedWeaponBurstFLHs, this->EliteCrouchedWeaponBurstFLHs, "Prone");
 
+	this->OnlyUseLandSequences.Read(exArtINI, pArtSection, "OnlyUseLandSequences");
 
 	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
@@ -754,6 +755,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
 
+		.Process(this->OnlyUseLandSequences)
+
 		.Process(this->PronePrimaryFireFLH)
 		.Process(this->ProneSecondaryFireFLH)
 		.Process(this->DeployedPrimaryFireFLH)
@@ -856,26 +859,6 @@ void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<TechnoTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
-}
-
-bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Load(PhobosStreamReader& stm, bool registerForChange)
-{
-	return this->Serialize(stm);
-}
-
-bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Save(PhobosStreamWriter& stm) const
-{
-	return const_cast<LaserTrailDataEntry*>(this)->Serialize(stm);
-}
-
-template <typename T>
-bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Serialize(T& stm)
-{
-	return stm
-		.Process(this->idxType)
-		.Process(this->FLH)
-		.Process(this->IsOnTurret)
-		.Success();
 }
 
 // =============================

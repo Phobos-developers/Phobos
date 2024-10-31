@@ -564,6 +564,7 @@ Sidebar.GDIPositions=  ; boolean
 - Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips.
 - TechnoType's tooltip would display it's name, cost, power, build time and description (when applicable).
 - SWType's tooltip would display it's name, cost,  and recharge time (when applicable).
+  - If `SW.Shots` from Ares is used, a C-style format string default to `Shots: %d` is appended. The format is customizable in csf. If a 2-parameter format (like `%d/%d shots left`) is used, the second integer is `SW.Shots`.
 - Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default.
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
@@ -578,6 +579,7 @@ CostLabel=<none>           ; CSF entry key
 PowerLabel=<none>          ; CSF entry key
 PowerBlackoutLabel=<none>  ; CSF entry key
 TimeLabel=<none>           ; CSF entry key
+SWShotsFormat=<none>       ; CSF entry key
 MaxWidth=0                 ; integer, pixels
 ```
 In `rulesmd.ini`:

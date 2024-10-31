@@ -172,6 +172,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first.
 - Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) are now correctly parsed for Lunar theater.
+- Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being displayed in water instead of `WetAttack`.
+- Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings.
 
 ## Fixes / interactions with other extensions
 
@@ -1411,15 +1413,17 @@ AllowDamageOnSelf=false  ; boolean
 
 - You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual]` -> `CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead, latter defaults to former.
 - You can now set a percentage chance a combat light effect is shown on Warhead impact by setting `CombatLightChance`.
+- Setting `CLIsBlack` to true on Warhead will now turn the flash black like on hitting an Iron Curtained object, irregardless of other color settings.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-CombatLightDetailLevel=0                     ; integer
+CombatLightDetailLevel=0  ; integer
 
-[SOMEWARHEAD]                                ; WarheadType
-CombatLightDetailLevel=                      ; integer
-CombatLightChance=1.0                        ; floating point value, percents or absolute (0.0-1.0)
+[SOMEWARHEAD]             ; WarheadType
+CombatLightDetailLevel=   ; integer
+CombatLightChance=1.0     ; floating point value, percents or absolute (0.0-1.0)
+CLIsBlack=false           ; boolean
 ```
 
 ### Customizing decloak on damaging targets

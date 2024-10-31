@@ -237,9 +237,25 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 			auto types = make_iterator_single(pAnimType);
 
 			if (pWHExt->SplashList_CreateAll && pWHExt->Splashed)
+			{
 				types = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
-			else if (pWHExt->AnimList_CreateAll && !pWHExt->Splashed)
-				types = pWHExt->OwnerObject()->AnimList;
+			}
+			else if (!pWHExt->Splashed)
+			{
+				bool createAll = pWHExt->AnimList_CreateAll;
+
+				if (pWHExt->Crit_Active && !pWHExt->Crit_AnimOnAffectedTargets)
+				{
+					createAll = pWHExt->Crit_AnimList_CreateAll.Get(createAll);
+
+					if (createAll)
+						types = pWHExt->Crit_AnimList;
+				}
+				else if (createAll)
+				{
+					types = pWHExt->OwnerObject()->AnimList;
+				}
+			}
 
 			for (auto const& pType : types)
 			{
@@ -254,20 +270,17 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 					animCoords = MapClass::GetRandomCoordsNear(animCoords, distance, false);
 				}
 
-				if (auto const pAnim = GameCreate<AnimClass>(pType, animCoords, 0, 1, 0x2600, -15, false))
+				auto const pAnim = GameCreate<AnimClass>(pType, animCoords, 0, 1, 0x2600, -15, false);
+				createdAnim = true;
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+
+				if (!pAnim->Owner)
+					pAnim->Owner = pInvoker;
+
+				if (pThis->Owner)
 				{
-					createdAnim = true;
-
-					AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
-
-					if (!pAnim->Owner)
-						pAnim->Owner = pInvoker;
-
-					if (pThis->Owner)
-					{
-						auto pExt = AnimExt::ExtMap.Find(pAnim);
-						pExt->SetInvoker(pThis->Owner);
-					}
+					auto pExt = AnimExt::ExtMap.Find(pAnim);
+					pExt->SetInvoker(pThis->Owner);
 				}
 			}
 		}

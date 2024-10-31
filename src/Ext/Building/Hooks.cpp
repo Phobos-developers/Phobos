@@ -64,8 +64,7 @@ DEFINE_HOOK(0x4403D4, BuildingClass_AI_ChronoSparkle, 0x6)
 					coords.Y += offset.Y;
 					coords += renderCoords;
 
-					if (auto const pAnim = GameCreate<AnimClass>(RulesClass::Instance->ChronoSparkle1, coords))
-						pAnim->ZAdjust = -200;
+					GameCreate<AnimClass>(RulesClass::Instance->ChronoSparkle1, coords)->ZAdjust = -200;
 				}
 			}
 		}

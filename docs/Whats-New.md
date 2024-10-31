@@ -21,6 +21,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Critical hit animations created by `Crit.AnimOnAffectedTargets=true` Warheads no longer default to `AnimList.PickRandom` if `Crit.AnimList.PickRandom` is not set.
 - `SelfHealGainType` value `none` has been changed to `noheal` due to `none` being treated as a blank string and not parsed by the game.
 - Affected target enum (`CanTarget`, `Crit.Affects` et al) now considers buildings considered vehicles (`ConsideredVehicle=true` or not set in conjunction with `UndeploysInto` & 1x1 foundation) as units instead of buildings.
 - If `CreateUnit.AlwaysSpawnOnGround` is set to false, jumpjet vehicles created will now automatically take off instead of staying on ground. Set to true to force spawn on ground.
@@ -467,6 +468,7 @@ New:
 - Allow customizing which building types provide build area for a building (by Starkku)
 - `Scorch` / `Flamer` fire animation customization (by Starkku)
 - Warheads parasite removal customization (by Starkku)
+- Allow infantry to use land sequences in water (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -545,6 +547,8 @@ Vanilla fixes:
 - Projectiles created from `AirburstWeapon` now remember their WeaponType and can apply radiation etc. (by Starkku)
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first (by Starkku)
 - Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) are now correctly parsed for Lunar theater (by Starkku)
+- Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being displayed in water instead of `WetAttack` (by Starkku)
+- Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -599,6 +603,7 @@ Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed (by Starkku)
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
+- Appended Ares' `SW.Shots` usage to extended tooltips (by Trsdy)
 </details>
 
 ### 0.3.0.1

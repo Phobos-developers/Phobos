@@ -330,6 +330,7 @@ This page lists all the individual contributions to the project by their author.
    - Skippable game save on scenario start
    - `InfDeath=9` versus jumpjet infantry 0 damage fix
    - Skip rally point line drawing when undeploying a building
+   - Ares' `SW.Shots` hint on extended tooltips
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
