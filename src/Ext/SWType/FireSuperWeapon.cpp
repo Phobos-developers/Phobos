@@ -11,7 +11,6 @@
 #include "Ext/House/Body.h"
 #include "Ext/WarheadType/Body.h"
 #include "Ext/WeaponType/Body.h"
-#include <Ext/Scenario/Body.h>
 
 // ============= New SuperWeapon Effects================
 
@@ -59,76 +58,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 			return;
 	}
 
-	if (auto const pBuilding = static_cast<BuildingClass*>(pType->CreateObject(pOwner)))
-	{
-		// All of these are mandatory
-		pBuilding->InLimbo = false;
-		pBuilding->IsAlive = true;
-		pBuilding->IsOnMap = true;
-
-		// For reasons beyond my comprehension, the discovery logic is checked for certain logics like power drain/output in campaign only.
-		// Normally on unlimbo the buildings are revealed to current player if unshrouded or if game is a campaign and to non-player houses always.
-		// Because of the unique nature of LimboDelivered buildings, this has been adjusted to always reveal to the current player in singleplayer
-		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist - Starkku
-		if (SessionClass::IsCampaign())
-			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
-
-		pBuilding->DiscoveredBy(pOwner);
-
-		pOwner->RegisterGain(pBuilding, false);
-		pOwner->UpdatePower();
-		pOwner->RecheckTechTree = true;
-		pOwner->RecheckPower = true;
-		pOwner->RecheckRadar = true;
-		pOwner->Buildings.AddItem(pBuilding);
-
-		// Different types of building logics
-		if (pType->ConstructionYard)
-			pOwner->ConYards.AddItem(pBuilding); // why would you do that????
-
-		if (pType->SecretLab)
-			pOwner->SecretLabs.AddItem(pBuilding);
-
-		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
-
-		if (pType->FactoryPlant)
-		{
-			if (pBuildingExt->TypeExtData->FactoryPlant_AllowTypes.size() > 0 || pBuildingExt->TypeExtData->FactoryPlant_DisallowTypes.size() > 0)
-			{
-				pOwnerExt->RestrictedFactoryPlants.push_back(pBuilding);
-			}
-			else
-			{
-				pOwner->FactoryPlants.AddItem(pBuilding);
-				pOwner->CalculateCostMultipliers();
-			}
-		}
-
-		// BuildingClass::Place is already called in DiscoveredBy
-		// it added OrePurifier and xxxGainSelfHeal to House counter already
-
-		// LimboKill ID
-		pBuildingExt->LimboID = ID;
-
-		// Add building to list of owned limbo buildings
-		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
-
-		if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
-			pOwnerExt->AddToLimboTracking(pBuilding->Type);
-
-		auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
-		auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
-
-		if (pTechnoTypeExt->AutoDeath_Behavior.isset())
-		{
-			ScenarioExt::Global()->AutoDeathObjects.push_back(pTechnoExt);
-
-			if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
-				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
-		}
-
-	}
+	BuildingTypeExt::CreateLimboBuilding(nullptr, pType, pOwner, ID);
 }
 
 void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
@@ -176,9 +106,8 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 				for (auto it = vec.begin(); it != vec.end(); )
 				{
 					BuildingClass* const pBuilding = *it;
-					auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
 
-					if (pBuildingExt->LimboID == limboKillID)
+					if (BuildingTypeExt::DeleteLimboBuilding(pBuilding, limboKillID))
 					{
 						it = vec.erase(it);
 						pBuilding->Stun();

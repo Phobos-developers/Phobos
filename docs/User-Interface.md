@@ -282,10 +282,14 @@ SelectionFlashDuration=0  ; integer, number of frames
   - `ExpandLandGridFrames` controls the placing grids frames on non-water cell. The three numbers respectively represent "Some technos that can command departure have occupied this area", "This cell is actually beyond the scope, but there is still at least one cell inside the entire region" and "Here is no problem, everything is OK".
   - `ExpandWaterGridFrames` controls the placing grids frames on water cell. Each item corresponds to the same as above.
 
+In `ra2md.ini`:
+```ini
+DrawAdjacentBoundary=false     ; boolean
+```
+
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-DrawAdjacentBoundary=false     ; boolean
 CheckExpandPlaceGrid=false     ; boolean
 ExpandLandGridFrames=1,0,0     ; integer, zero-based frame index - have technos, near boundary, is normal
 ExpandWaterGridFrames=1,0,0    ; integer, zero-based frame index - have technos, near boundary, is normal
@@ -393,11 +397,15 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
   - If `PrerequisiteForCameo` is not set, the grey cameo will only show when `AIBasePlanningSide` is satisfied. If set a techno type, the grey cameo will show if you have a techno in this type or this type's `TechnoLevel`, `Owner`, `RequiredHouses`, `ForbiddenHouses` and `PrerequisiteForCameo` is satisfied.
   - The `UIExtraDescription` is like `UIDescription`, but this only appearing when the techno is truly unbuildable.
 
+In `ra2md.ini`:
+```ini
+BuildingStatisticsCameo=false    ; boolean
+```
+
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 AlwaysExistTheCameo=false        ; boolean
-BuildingStatisticsCameo=false    ; boolean
 CameoOverlayShapes=pips.shp      ; filename - including the .shp extension
 CameoOverlayFrames=-1,-1,-1      ; integer - owned this building, grey and have its prerequisite, grey but have no prerequisite
 CameoOverlayPalette=palette.pal  ; filename - including the .pal extension

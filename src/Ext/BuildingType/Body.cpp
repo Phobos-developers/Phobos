@@ -1,10 +1,13 @@
 #include "Body.h"
+
 #include <EventClass.h>
-#include <TunnelLocomotionClass.h>
-#include <Ext/House/Body.h>
-#include <Utilities/GeneralUtils.h>
-#include <Ext/SWType/Body.h>
 #include <TacticalClass.h>
+#include <TunnelLocomotionClass.h>
+
+#include <Utilities/GeneralUtils.h>
+#include <Ext/House/Body.h>
+#include <Ext/SWType/Body.h>
+#include <Ext/Scenario/Body.h>
 
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 
@@ -620,6 +623,189 @@ void BuildingTypeExt::DrawAdjacentLines()
 	}
 }
 
+bool BuildingTypeExt::AutoUpgradeBuilding(BuildingClass* pBuilding)
+{
+	BuildingTypeClass* const pBuildingType = pBuilding->Type;
+
+	if (BuildingTypeExt::ExtData* const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType))
+	{
+		if (pTypeExt->AutoUpgrade)
+		{
+			HouseClass* const pHouse = pBuilding->Owner;
+			HouseExt::ExtData* const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+			const int size = pTypeExt->PowersUp_Buildings.size();
+
+			std::vector<BuildingTypeClass*> upgradeBuildings;
+			upgradeBuildings.reserve(size + 1);
+
+			if (BuildingTypeClass* const pUpgrade = BuildingTypeClass::Find(pBuildingType->PowersUpBuilding))
+				upgradeBuildings.push_back(pUpgrade);
+
+			if (size)
+			{
+				for (auto const& pUpgrade : pTypeExt->PowersUp_Buildings)
+				{
+					if (pUpgrade)
+						upgradeBuildings.push_back(pUpgrade);
+				}
+			}
+
+			for (auto const& pOwned : pHouse->Buildings)
+			{
+				for (auto const& pUpgradeType : upgradeBuildings)
+				{
+					if (pOwned->Type == pUpgradeType && pOwned->IsAlive && pOwned->Health > 0 && pOwned->IsOnMap && !pOwned->InLimbo && pOwned->CurrentMission != Mission::Selling)
+					{
+						if (reinterpret_cast<bool(__thiscall*)(BuildingClass*, BuildingTypeClass*, HouseClass*)>(0x452670)(pOwned, pBuildingType, pHouse))
+						{
+							const CellStruct cell = pOwned->GetMapCoords();
+
+							if (cell != CellStruct::Empty && !pHouseExt->OwnsLimboDeliveredBuilding(pOwned))
+							{
+								EventClass event
+								(
+									pHouse->ArrayIndex,
+									EventType::Place,
+									AbstractType::Building,
+									pBuildingType->GetArrayIndex(),
+									pBuildingType->Naval,
+									cell
+								);
+								EventClass::AddEvent(event);
+
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+bool BuildingTypeExt::BuildLimboBuilding(BuildingClass* pBuilding)
+{
+	BuildingTypeClass* const pBuildingType = pBuilding->Type;
+
+	if (BuildingTypeExt::ExtData* const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType))
+	{
+		if (pTypeExt->LimboBuild)
+		{
+			EventClass event
+			(
+				pBuilding->Owner->ArrayIndex,
+				EventType::Place,
+				AbstractType::Building,
+				pBuildingType->GetArrayIndex(),
+				pBuildingType->Naval,
+				CellStruct { 1, 1 }
+			);
+			EventClass::AddEvent(event);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void BuildingTypeExt::CreateLimboBuilding(BuildingClass* pBuilding, BuildingTypeClass* pType, HouseClass* pOwner, int ID)
+{
+	if (pBuilding || (pBuilding = static_cast<BuildingClass*>(pType->CreateObject(pOwner)), pBuilding))
+	{
+		// All of these are mandatory
+		pBuilding->InLimbo = false;
+		pBuilding->IsAlive = true;
+		pBuilding->IsOnMap = true;
+
+		// For reasons beyond my comprehension, the discovery logic is checked for certain logics like power drain/output in campaign only.
+		// Normally on unlimbo the buildings are revealed to current player if unshrouded or if game is a campaign and to non-player houses always.
+		// Because of the unique nature of LimboDelivered buildings, this has been adjusted to always reveal to the current player in singleplayer
+		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist - Starkku
+		if (SessionClass::IsCampaign())
+			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
+
+		pBuilding->DiscoveredBy(pOwner);
+
+		pOwner->RegisterGain(pBuilding, false);
+		pOwner->UpdatePower();
+		pOwner->RecheckTechTree = true;
+		pOwner->RecheckPower = true;
+		pOwner->RecheckRadar = true;
+		pOwner->Buildings.AddItem(pBuilding);
+
+		// Different types of building logics
+		if (pType->ConstructionYard)
+			pOwner->ConYards.AddItem(pBuilding); // why would you do that????
+
+		if (pType->SecretLab)
+			pOwner->SecretLabs.AddItem(pBuilding);
+
+		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+
+		if (pType->FactoryPlant)
+		{
+			if (pBuildingExt->TypeExtData->FactoryPlant_AllowTypes.size() > 0 || pBuildingExt->TypeExtData->FactoryPlant_DisallowTypes.size() > 0)
+			{
+				pOwnerExt->RestrictedFactoryPlants.push_back(pBuilding);
+			}
+			else
+			{
+				pOwner->FactoryPlants.AddItem(pBuilding);
+				pOwner->CalculateCostMultipliers();
+			}
+		}
+
+		// BuildingClass::Place is already called in DiscoveredBy
+		// it added OrePurifier and xxxGainSelfHeal to House counter already
+
+		// LimboKill ID
+		pBuildingExt->LimboID = ID;
+
+		// Add building to list of owned limbo buildings
+		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
+
+		if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+			pOwnerExt->AddToLimboTracking(pBuilding->Type);
+
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
+		auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
+
+		if (pTechnoTypeExt->AutoDeath_Behavior.isset())
+		{
+			ScenarioExt::Global()->AutoDeathObjects.push_back(pTechnoExt);
+
+			if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
+				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
+		}
+	}
+}
+
+bool BuildingTypeExt::DeleteLimboBuilding(BuildingClass* pBuilding, int ID)
+{
+	BuildingExt::ExtData* const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+
+	if (pBuildingExt->LimboID != ID)
+		return false;
+
+	if (pBuildingExt->TypeExtData->LimboBuildID == ID)
+	{
+		HouseClass* const pHouse = pBuilding->Owner;
+		const int index = pBuilding->Type->ArrayIndex;
+
+		for (auto& pBaseNode : pHouse->Base.BaseNodes)
+		{
+			if (pBaseNode.BuildingTypeIndex == index)
+				pBaseNode.Placed = false;
+		}
+	}
+
+	return true;
+}
+
 void BuildingTypeExt::ExtData::Initialize()
 { }
 
@@ -671,6 +857,10 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
 	this->IsDestroyableObstacle.Read(exINI, pSection, "IsDestroyableObstacle");
+
+	this->AutoUpgrade.Read(exINI, pSection, "AutoUpgrade");
+	this->LimboBuild.Read(exINI, pSection, "LimboBuild");
+	this->LimboBuildID.Read(exINI, pSection, "LimboBuildID");
 
 	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
 	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
@@ -795,6 +985,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ConsideredVehicle)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
+		.Process(this->AutoUpgrade)
+		.Process(this->LimboBuild)
+		.Process(this->LimboBuildID)
 		.Process(this->AircraftDockingDirs)
 		.Process(this->FactoryPlant_AllowTypes)
 		.Process(this->FactoryPlant_DisallowTypes)
