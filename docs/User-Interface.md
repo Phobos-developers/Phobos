@@ -284,6 +284,7 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 In `ra2md.ini`:
 ```ini
+[Phobos]
 DrawAdjacentBoundary=false     ; boolean
 ```
 
@@ -399,6 +400,7 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 
 In `ra2md.ini`:
 ```ini
+[Phobos]
 BuildingStatisticsCameo=false    ; boolean
 ```
 
