@@ -1118,7 +1118,7 @@ DEFINE_HOOK(0x4C7665, EventClass_RespondToEvent_StopDeployInIdleEvent, 0x6)
 }
 
 // Buildable-upon TechnoTypes Hook #11 -> sub_4F8440 - Check whether can place again in each house
-DEFINE_HOOK(0x4F8DB1, HouseClass_AI_CheckHangUpBuilding, 0x6)
+DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 {
 	GET(const HouseClass* const, pHouse, ESI);
 
@@ -1175,20 +1175,26 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_AI_CheckHangUpBuilding, 0x6)
 			for (auto it = vec.begin(); it != vec.end(); )
 			{
 				UnitClass* const pUnit = *it;
-				TechnoExt::ExtData* const pExt = TechnoExt::ExtMap.Find(pUnit);
 
-				if (pExt && !pUnit->InLimbo && pUnit->IsAlive && pUnit->Health && !pUnit->IsSinking && !pUnit->Destination && pUnit->Owner == pHouse
-					&& pUnit->Type && pUnit->Type->DeploysInto && pUnit->CurrentMission == Mission::Guard) // No need to invalidate pointer
+				if (!pUnit->InLimbo && pUnit->IsOnMap && !pUnit->IsSinking && pUnit->Owner == pHouse && !pUnit->Destination && pUnit->CurrentMission == Mission::Guard && !pUnit->ParasiteEatingMe && !pUnit->TemporalTargetingMe)
 				{
-					if (!(pExt->UnitAutoDeployTimer.GetTimeLeft() % 8))
-						pUnit->QueueMission(Mission::Unload, true);
+					if (UnitTypeClass* const pType = pUnit->Type)
+					{
+						if (pType->DeploysInto)
+						{
+							if (TechnoExt::ExtData* const pExt = TechnoExt::ExtMap.Find(pUnit))
+							{
+								if (!(pExt->UnitAutoDeployTimer.GetTimeLeft() % 8))
+									pUnit->QueueMission(Mission::Unload, true);
 
-					++it;
+								++it;
+								continue;
+							}
+						}
+					}
 				}
-				else
-				{
-					it = vec.erase(it);
-				}
+
+				it = vec.erase(it);
 			}
 		}
 	}
