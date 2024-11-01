@@ -158,8 +158,11 @@ public:
 		Valueable<bool> AIFireSale;
 		Valueable<int> AIFireSaleDelay;
 		Valueable<bool> AIAllToHunt;
-		ValueableVector<bool> RepairBaseNodes;
-		Valueable<bool> MCVRedeploysInCampaign;
+		Valueable<bool> RepairBaseNodes;
+
+		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
+		Valueable<int> CombatLightDetailLevel;
+		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		Nullable<int> AINormalTargetingDelay;
 		Nullable<int> PlayerNormalTargetingDelay;
@@ -280,8 +283,10 @@ public:
 			, AIFireSale { true }
 			, AIFireSaleDelay { 0 }
 			, AIAllToHunt { true }
-			, RepairBaseNodes {}
-			, MCVRedeploysInCampaign { false }
+			, RepairBaseNodes { false }
+			, WarheadParticleAlphaImageIsLightFlash { false }
+			, CombatLightDetailLevel { 0 }
+			, LightFlashAlphaImageDetailLevel { 0 }
 			, AINormalTargetingDelay {}
 			, PlayerNormalTargetingDelay {}
 			, AIGuardAreaTargetingDelay {}
@@ -335,8 +340,5 @@ public:
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
-
-	static bool LoadGlobals(PhobosStreamReader& Stm);
-	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 };

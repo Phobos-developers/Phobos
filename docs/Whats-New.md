@@ -21,6 +21,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Critical hit animations created by `Crit.AnimOnAffectedTargets=true` Warheads no longer default to `AnimList.PickRandom` if `Crit.AnimList.PickRandom` is not set.
 - `SelfHealGainType` value `none` has been changed to `noheal` due to `none` being treated as a blank string and not parsed by the game.
 - Affected target enum (`CanTarget`, `Crit.Affects` et al) now considers buildings considered vehicles (`ConsideredVehicle=true` or not set in conjunction with `UndeploysInto` & 1x1 foundation) as units instead of buildings.
 - If `CreateUnit.AlwaysSpawnOnGround` is set to false, jumpjet vehicles created will now automatically take off instead of staying on ground. Set to true to force spawn on ground.
@@ -89,6 +90,7 @@ ShowWeedsCounter=true            ; boolean
 ToolTipDescriptions=true         ; boolean
 ToolTipBlur=false                ; boolean
 SaveGameOnScenarioStart=true     ; boolean
+HideLightFlashEffects=false      ; boolean
 ```
 
 ### For Map Editor (Final Alert 2)
@@ -345,7 +347,7 @@ New:
 - OpenTopped transport target sharing customization (by Starkku)
 - Vanish animation for `AutoDeath.Behavior=vanish` (by Starkku)
 - `AAOnly` for projectiles (by Starkku)
-- `CreateUnit` improvements & additions (units spawning in air, spawn animation) (by Starkku)
+- `CreateUnit` improvements & additions (can spawn infantry and aircraft, units spawning in air, spawn animation) (by Starkku)
 - Option to center pause menu background (by Starkku)
 - LaunchSW.DisplayMoney (by Starkku)
 - Disguise logic improvements (by Starkku)
@@ -450,10 +452,20 @@ New:
 - Custom object palettes for TerrainTypes (by Starkku)
 - Forbidding parallel AI queues for specific TechnoTypes (by Starkku)
 - Nonprovocative Warheads (by Starkku)
-- Option to restore `PowerSurplus` setting for AI (by Starkku)
+- Buildings considered as destroyable pathfinding obstacles (by Starkku)
 - `FireOnce` infantry sequence reset toggle (by Starkku)
 - Assign Super Weapon cameo to any sidebar tab (by NetsuNegi)
 - Customizing effect of level lighting on air units (by Starkku)
+- Reimplemented `Airburst` & `Splits` logic with more customization options (by Starkku)
+- Buildings considered as destroyable pathfinding obstacles (by Starkku)
+- Animation visibility customization settings (by Starkku)
+- Light effect customizations (by Starkku)
+- Building unit repair customizations (by Starkku)
+- Toggle to disallow buildings from providing build area during buildup (by Starkku)
+- Allow customizing which building types provide build area for a building (by Starkku)
+- `Scorch` / `Flamer` fire animation customization (by Starkku)
+- Warheads parasite removal customization (by Starkku)
+- Allow infantry to use land sequences in water (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -497,7 +509,6 @@ Vanilla fixes:
 - Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings (by Starkku)
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy (by Starkku)
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false` (by Starkku)
-- `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting (by Starkku)
 - Fixed position and layer of info tip and reveal production cameo on selected building (by Belonit)
 - Fixed `TurretOffset` to be supported for SHP vehicles (by TwinkleStar)
 - `Powered`/`PoweredSpecial` buildings' powered anims will update as usual when being captured by enemies (by Trsdy)
@@ -530,6 +541,12 @@ Vanilla fixes:
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them (by Starkku)
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes (by Starkku)
 - Skip target scanning function calling for unarmed technos (by TaranDahl and solar-III)
+- Removed the 0 damage effect from `InfDeath=9` warheads to in-air infantries (by Trsdy)
+- Projectiles created from `AirburstWeapon` now remember their WeaponType and can apply radiation etc. (by Starkku)
+- Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first (by Starkku)
+- Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) are now correctly parsed for Lunar theater (by Starkku)
+- Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being displayed in water instead of `WetAttack` (by Starkku)
+- Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -573,13 +590,18 @@ Phobos fixes:
 - Fixed Phobos Warhead effects not reliably being applied on damage area as opposed to full weapon-based Warhead detonation (by Starkku)
 - Fix `LimboKill` not working reliably (by CrimRecya)
 - Fixed `SelfHealGainType=none` not working (changed to `noheal`) (by Starkku)
+- Fixed AircraftTypes gaining self-healing from `UnitsGainSelfHeal` by default (while not displaying the pip) when they should not (by Starkku)
+- Fixed `LaunchSW.IgnoreInhibitors` and `SW.Next.IgnoreInhibitors` overriding corresponding `IgnoreDesignators` settings (by Ollerus)
 
 Fixes / interactions with other extensions:
+- Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.
+- Weapons fired by EMPulse superweapons *(Ares feature)* now respect `Floater` and Phobos-added `Gravity` setting (by Starkku)
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely (by Starkku)
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active (by Starkku)
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed (by Starkku)
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
+- Appended Ares' `SW.Shots` usage to extended tooltips (by Trsdy)
 </details>
 
 ### 0.3.0.1
@@ -782,6 +804,9 @@ Phobos fixes:
 - Fixed a game crash when checking BuildLimit if Phobos is running without Ares (by Belonit)
 - Corrected the misinterpretation in the definition of `DiskLaser.Radius` (by Trsdy)
 - Fixed GlobalVariables failed working among scenarios (by Trsdy)
+
+Fixes / interactions with other extensions:
+- Weapons fired by EMPulse superweapons *(Ares feature)* without `EMPulse.TargetSelf=true` can now create radiation (by Starkku)
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)

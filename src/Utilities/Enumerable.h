@@ -1,29 +1,24 @@
 #pragma once
 
-#include <Phobos.CRT.h>
 #include "Savegame.h"
 #include "Constructs.h"
 
 #include <algorithm>
-#include <memory>
 #include <vector>
 
-#include <ArrayClasses.h>
 #include <CCINIClass.h>
 #include "Swizzle.h"
 
 template <typename T> class Enumerable
 {
-	typedef std::vector<std::unique_ptr<T>> container_t;
-
 public:
-	static container_t Array;
+	inline static std::vector<T> Array;
 
 	static int FindIndex(const char* Title)
 	{
-		auto result = std::find_if(Array.begin(), Array.end(), [Title](std::unique_ptr<T>& Item)
+		auto result = std::find_if(Array.begin(), Array.end(), [Title](const T& Item)
 			{
-				return !_strcmpi(Item->Name, Title);
+				return !_strcmpi(Item.Name, Title);
 			});
 
 		if (result == Array.end())
@@ -35,17 +30,17 @@ public:
 	static T* Find(const char* Title)
 	{
 		auto result = FindIndex(Title);
-		return (result < 0) ? nullptr : Array[static_cast<size_t>(result)].get();
+		return (result < 0) ? nullptr : &Array[static_cast<size_t>(result)];
 	}
 
 	static T* FindOrAllocate(const char* Title)
 	{
-		if (T* find = Find(Title))
-			return find;
+		if (T* found = Find(Title))
+			return found;
+		static_assert(std::constructible_from<T, const char*>);
+		Array.emplace_back(Title);
 
-		Array.push_back(std::make_unique<T>(Title));
-
-		return Array.back().get();
+		return &Array.back();
 	}
 
 	static void Clear()
@@ -64,8 +59,8 @@ public:
 				FindOrAllocate(Phobos::readBuffer);
 		}
 
-		for (const auto& item : Array)
-			item->LoadFromINI(pINI);
+		for (auto& item : Array)
+			item.LoadFromINI(pINI);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm)
@@ -77,7 +72,8 @@ public:
 			return false;
 
 
-		for (size_t i = 0; i < Count; ++i) {
+		for (size_t i = 0; i < Count; ++i)
+		{
 			void* oldPtr = nullptr;
 			decltype(Name) name;
 
@@ -97,12 +93,12 @@ public:
 	{
 		Stm.Save(Array.size());
 
-		for (const auto& item : Array)
+		for (auto& item : Array)
 		{
 			// write old pointer and name, then delegate
-			Stm.Save(item.get());
-			Stm.Save(item->Name);
-			item->SaveToStream(Stm);
+			Stm.Save(&item);
+			Stm.Save(item.Name);
+			item.SaveToStream(Stm);
 		}
 
 		return true;
@@ -115,14 +111,11 @@ public:
 		this->Name = Title;
 	}
 
-	void LoadFromINI(CCINIClass* pINI) { static_cast<T*>(this)->LoadFromINI(pINI); }//=0;
+	void LoadFromINI(CCINIClass* pINI) = delete;
 
-	void LoadFromStream(PhobosStreamReader& Stm) { static_cast<T*>(this)->LoadFromStream(Stm); }//=0;
+	void LoadFromStream(PhobosStreamReader& Stm) = delete;
 
-	void SaveToStream(PhobosStreamWriter& Stm) { static_cast<T*>(this)->SaveToStream(Stm); } //=0;
+	void SaveToStream(PhobosStreamWriter& Stm) = delete;
 
 	PhobosFixedString<32> Name;
 };
-
-template <typename T>
-Enumerable<T>::container_t Enumerable<T>::Array;

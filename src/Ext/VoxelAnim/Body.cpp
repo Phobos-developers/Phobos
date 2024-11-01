@@ -15,14 +15,11 @@ void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
 
 	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
 	{
-		if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
-		{
-			pThisExt->LaserTrails.push_back(LaserTrailClass { pLaserType, pThis->OwnerHouse });
-		}
+		pThisExt->LaserTrails.push_back(LaserTrailClass { &LaserTrailTypeClass::Array[idxTrail], pThis->OwnerHouse });
 	}
 }
 
-void VoxelAnimExt::ExtData::Initialize() {}
+void VoxelAnimExt::ExtData::Initialize() { }
 
 // =============================
 // load / save
@@ -61,7 +58,7 @@ bool VoxelAnimExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-VoxelAnimExt::ExtContainer::ExtContainer() : Container("VoxelAnimClass") {}
+VoxelAnimExt::ExtContainer::ExtContainer() : Container("VoxelAnimClass") { }
 VoxelAnimExt::ExtContainer::~ExtContainer() = default;
 
 // =============================

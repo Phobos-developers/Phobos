@@ -243,6 +243,14 @@ This page lists all the individual contributions to the project by their author.
   - Forbidding parallel AI queues for specific TechnoTypes
   - Nonprovocative Warheads
   - Customizing effect of level lighting on air units
+  - Reimplemented `Airburst` & `Splits` logic with more customization options
+  - Buildings considered as destroyable pathfinding obstacles
+  - Animation visibility customization settings
+  - Light effect customizations
+  - Building unit repair customizations
+  - Build area customizations
+  - `Scorch` / `Flamer` fire animation customization
+  - EM Pulse cannon logic improvements
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -320,7 +328,9 @@ This page lists all the individual contributions to the project by their author.
    - Droppod properties dehardcode
    - Waypoint entering building together with engineer/agent bug fix
    - Skippable game save on scenario start
+   - `InfDeath=9` versus jumpjet infantry 0 damage fix
    - Skip rally point line drawing when undeploying a building
+   - Ares' `SW.Shots` hint on extended tooltips
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -366,7 +376,7 @@ This page lists all the individual contributions to the project by their author.
 - **TaranDahl (航味麻酱)**
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
-  - Global value of `RepairBaseNodes` and `MCVRedeploys`
+  - Global value of `RepairBaseNodes`
   - Target scanning delay customization (code)
   - Skip target scanning function calling for unarmed technos (code)
 - **solar-III (凤九歌)**

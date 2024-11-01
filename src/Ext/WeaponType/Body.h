@@ -22,13 +22,14 @@ public:
 	public:
 
 		Valueable<double> DiskLaser_Radius;
+		Valueable<Leptons> ProjectileRange;
 		Valueable<RadTypeClass*> RadType;
 		Valueable<bool> Bolt_Disable1;
 		Valueable<bool> Bolt_Disable2;
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Bolt_Arcs;
 		Nullable<bool> Strafing;
-		Valueable<int> Strafing_Shots;
+		Nullable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
 		Valueable<bool> Strafing_UseAmmoPerShot;
 		Valueable<AffectedTarget> CanTarget;
@@ -61,13 +62,14 @@ public:
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
+			, ProjectileRange { Leptons(100000) }
 			, RadType {}
 			, Bolt_Disable1 { false }
 			, Bolt_Disable2 { false }
 			, Bolt_Disable3 { false }
 			, Bolt_Arcs { 8 }
 			, Strafing { }
-			, Strafing_Shots { 5 }
+			, Strafing_Shots {}
 			, Strafing_SimulateBurst { false }
 			, Strafing_UseAmmoPerShot { false }
 			, CanTarget { AffectedTarget::All }
