@@ -1021,65 +1021,114 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		pThis->Uncloak(true);
 }
 
+// Checking & cleanning RandomTargets data, if necessary
 void TechnoExt::ExtData::UpdateRandomTargets()
 {
-	auto const pThis = this->OwnerObject();
-	if (!pThis || !IsValidTechno(pThis))
+	auto pThis = this->OwnerObject();
+	
+	if (!pThis || pThis->RearmTimer.GetTimeLeft() > 0)// || !pThis->Target)
 		return;
 
-	if (this->CurrentRandomTarget)
-	{
-		auto const pCurrRandTarget = this->CurrentRandomTarget;
-		bool isValidTechno = pCurrRandTarget
-			&& pCurrRandTarget->IsAlive
-			&& pCurrRandTarget->Health > 0
-			&& ScriptExt::IsUnitAvailable(pCurrRandTarget, true)
-			&& (pCurrRandTarget->WhatAmI() == AbstractType::Infantry
-				|| pCurrRandTarget->WhatAmI() == AbstractType::Unit
-				|| pCurrRandTarget->WhatAmI() == AbstractType::Building
-				|| pCurrRandTarget->WhatAmI() == AbstractType::Aircraft);
+	bool hasWeapons = ScriptExt::IsUnitArmed(pThis);
+	if (!hasWeapons)
+		return;
 
-		if (!isValidTechno)
-		{
-			bool isValidOriginalTarget = TechnoExt::IsValidTechno(abstract_cast<TechnoClass*>(this->OriginalTarget));
-			this->CurrentRandomTarget = nullptr;
-			pThis->Target = isValidOriginalTarget ? this->OriginalTarget : nullptr;
-			this->OriginalTarget = nullptr;
-		}
+	auto pExt = this;
+	bool isBuilding = pThis->WhatAmI() != AbstractType::Building;
+	auto const pType = this->TypeExtData->OwnerObject();
+	auto const pTypeExt = this->TypeExtData;
+	int weaponIndex = pExt->OriginalTargetWeaponIndex;
+
+	if (weaponIndex < 0)
+		return;
+
+	// Distance & weapon checks
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	if (!pWeapon)
+		return;
+
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	if (!pWeaponExt || pWeaponExt->RandomTarget <= 0.0)
+		return;
+
+	if (!IsValidTechno(pExt->CurrentRandomTarget))
+	{
+		pExt->ResetRandomTarget = false;
+		pExt->CurrentRandomTarget = nullptr;
 	}
 
-	if (pThis->Target
-		&& pThis->SpawnManager
-		&& this->CurrentRandomTarget
-		&& ScriptExt::IsUnitAvailable(static_cast<TechnoClass*>(this->CurrentRandomTarget), true))
+	// Make sure random targets are off if original target is destroyed or not exists
+	if (!IsValidTechno(pExt->OriginalTarget))
 	{
+		pExt->ResetRandomTarget = false;
+		pExt->CurrentRandomTarget = nullptr;
+		pExt->OriginalTarget = nullptr;
+
+		if (pExt->OriginalTargetWeaponIndex >= 0)
+			pThis->SetTarget(nullptr);
+
+		pExt->OriginalTargetWeaponIndex = -1;
+
+		if (pThis->SpawnManager)
+			pThis->SpawnManager->ResetTarget();
+
+		return;
+	}
+
+	// Check: force if the target must be reset or the object's target differs from the current random target
+	if (pExt->ResetRandomTarget || weaponIndex < 0 || (pExt->CurrentRandomTarget && pExt->CurrentRandomTarget != pThis->Target))
+	{
+		pExt->ResetRandomTarget = false;
+		pExt->CurrentRandomTarget = nullptr;
+		//pExt->OriginalTargetWeaponIndex = -1;
+		pThis->Target = pExt->OriginalTarget;
+
+		if (pThis->SpawnManager)
+			pThis->SpawnManager->ResetTarget();
+
+		return;
+	}
+
+	int minimumRange = pWeapon->MinimumRange;
+	int range = pWeapon->Range;
+	range += pExt->OriginalTarget->IsInAir() ? pType->AirRangeBonus : 0;
+	int distanceToOriginalTarget = pThis->DistanceFrom(pExt->OriginalTarget);
+	int distanceToCurrentRandomTarget = pExt->CurrentRandomTarget ? pThis->DistanceFrom(pExt->CurrentRandomTarget) : 0;
+	int isInvalidRangeForTheBuilding = distanceToCurrentRandomTarget > range || distanceToCurrentRandomTarget < minimumRange;
+
+	if (distanceToOriginalTarget < minimumRange
+		|| distanceToOriginalTarget > range
+		|| (isBuilding && pExt->CurrentRandomTarget) && isInvalidRangeForTheBuilding)
+	{
+		pExt->ResetRandomTarget = false;
+		pExt->CurrentRandomTarget = nullptr;
+		pThis->SetTarget(pExt->OriginalTarget);
+		pExt->OriginalTarget = nullptr;
+		pExt->OriginalTargetWeaponIndex = -1;
+		//pThis->SetTarget(nullptr);
+	}
+
+	if (pThis->SpawnManager)
+	{
+		if (!pExt->OriginalTarget)
+			pThis->SpawnManager->ResetTarget();
+
 		for (auto pSpawn : pThis->SpawnManager->SpawnedNodes)
 		{
-			if (!pSpawn->Unit)
+			if (!pSpawn->Unit || pSpawn->IsSpawnMissile)
 				continue;
 
 			auto pSpawnExt = TechnoExt::ExtMap.Find(pSpawn->Unit);
-			if (!pSpawnExt)
-				continue;
+			pSpawnExt->OriginalTarget = pExt->OriginalTarget;
 
-			if (!pSpawnExt->CurrentRandomTarget)
+			if (!pSpawnExt->OriginalTarget)
 			{
-				pSpawnExt->CurrentRandomTarget = TechnoExt::FindRandomTarget(pThis);
-				pSpawn->Unit->Target = pSpawnExt->CurrentRandomTarget;
-			}
-			else if (pSpawn->Status == SpawnNodeStatus::Preparing && pSpawn->Unit->IsInAir())
-			{
-				if (!pSpawn->Unit->Target && pSpawnExt->CurrentRandomTarget)
-					pSpawn->Unit->Target = pSpawnExt->CurrentRandomTarget;
+				pSpawnExt->ResetRandomTarget = false;
+				pSpawnExt->CurrentRandomTarget = nullptr;
+				pSpawnExt->OriginalTarget = nullptr;
+				pSpawnExt->OriginalTargetWeaponIndex = -1;
+				pSpawn->Unit->SetTarget(nullptr);
 			}
 		}
-	}
-
-	if (this->OriginalTarget && !pThis->Target && ScriptExt::IsUnitAvailable(static_cast<TechnoClass*>(this->OriginalTarget), true) && !pThis->IsInAir())
-	{
-		if (this->CurrentRandomTarget && ScriptExt::IsUnitAvailable(this->CurrentRandomTarget, true))
-			pThis->SetTarget(this->CurrentRandomTarget);
-		else
-			pThis->SetTarget(this->OriginalTarget);
 	}
 }

@@ -115,7 +115,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
 	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
 	this->RandomTarget.Read(exINI, pSection, "RandomTarget");
-	this->RandomTarget_DistributeBurst.Read(exINI, pSection, "RandomTarget.DistributeBurst");
+	//this->RandomTarget_DistributeBurst.Read(exINI, pSection, "RandomTarget.DistributeBurst");
 	this->RandomTarget_Spawners_MultipleTargets.Read(exINI, pSection, "RandomTarget.Spawners.MultipleTargets");
 }
 
@@ -162,7 +162,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_IgnoreFromSameSource)
 		.Process(this->KickOutPassengers)
 		.Process(this->RandomTarget)
-		.Process(this->RandomTarget_DistributeBurst)
+		//.Process(this->RandomTarget_DistributeBurst)
 		.Process(this->RandomTarget_Spawners_MultipleTargets)
 		;
 };

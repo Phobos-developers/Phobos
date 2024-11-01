@@ -51,6 +51,7 @@ public:
 		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
+		int OriginalTargetWeaponIndex;
 		AbstractClass* OriginalTarget;
 		bool ResetRandomTarget;
 		TechnoClass* CurrentRandomTarget;
@@ -96,6 +97,7 @@ public:
 			, OriginalTarget { nullptr }
 			, ResetRandomTarget { false }
 			, CurrentRandomTarget { nullptr }
+			, OriginalTargetWeaponIndex { -1 }
 		{ }
 
 		void OnEarlyUpdate();
@@ -185,9 +187,10 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
-	static bool UpdateRandomTarget(TechnoClass* pThis = nullptr);
+	static void NewRandomTarget(TechnoClass* pThis = nullptr);
 	static TechnoClass* FindRandomTarget(TechnoClass* pThis = nullptr);
 	static bool IsValidTechno(TechnoClass* pTechno);
+	static bool IsValidTechno(AbstractClass* pObject);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

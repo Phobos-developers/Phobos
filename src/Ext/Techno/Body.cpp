@@ -467,6 +467,11 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+bool TechnoExt::IsValidTechno(AbstractClass* pObject)
+{
+	return IsValidTechno(abstract_cast<TechnoClass*>(pObject));
+}
+
 bool TechnoExt::IsValidTechno(TechnoClass* pTechno)
 {
 	if (!pTechno)
@@ -517,6 +522,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasRemainingWarpInDelay)
 		.Process(this->LastWarpInDelay)
 		.Process(this->IsBeingChronoSphered)
+		.Process(this->OriginalTargetWeaponIndex)
 		.Process(this->OriginalTarget)
 		.Process(this->ResetRandomTarget)
 		.Process(this->CurrentRandomTarget)
