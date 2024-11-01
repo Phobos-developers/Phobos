@@ -1500,6 +1500,21 @@ In `rulesmd.ini`
 FireOnce.ResetSequence=true  ; boolean
 ```
 
+### Force techno targeting in distributed frames to improve performance
+
+- When you create many techno in a same frame (f.ex. starting the game with a campaign map that initially has a large number of technos), they will always scan for target in a synchronous period, causing the game lagging. Increasing targeting delay will not make things better, as their targeting are still synchronized.
+- It is now possible to force them targeting seperatly. When a techno spawn, they generate a random number in \[0,15\]. Only when the current frame number is congruent with its own number under modulo 16, will it do targeting.
+
+In `rulesmd.ini`
+```ini
+[General]
+DistributeTargetingFrame=false  ; boolean
+```
+
+```{warning}
+The techno can only do targeting when both the check here and the check of targeting delay time are passed. In actual performance, the targeting delay will randomly increase from the defined delay.
+```
+
 ### Single-color lasers
 
 ![image](_static/images/issinglecolor.gif)
@@ -1531,6 +1546,7 @@ AINormalTargetingDelay=              ; integer, game frames
 PlayerNormalTargetingDelay=          ; integer, game frames
 AIGuardAreaTargetingDelay=           ; integer, game frames
 PlayerGuardAreaTargetingDelay=       ; integer, game frames
+```
 
 ### Toggle-able ElectricBolt visuals
 

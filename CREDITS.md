@@ -379,6 +379,7 @@ This page lists all the individual contributions to the project by their author.
   - Global value of `RepairBaseNodes`
   - Target scanning delay customization (code)
   - Skip target scanning function calling for unarmed technos (code)
+  - Force techno targeting in distributed frames to improve performance
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
