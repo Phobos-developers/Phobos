@@ -120,22 +120,6 @@ DEFINE_HOOK(0x736990, UnitClass_UpdateRotation_TurretFacing_EMP, 0x6)
 	return 0;
 }
 
-// Bugfix: Align jumpjet turret's facing with body's
-DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_Jumpjet, 0x6)
-{
-	GET(UnitClass* const, pThis, ESI);
-	enum { SkipCheckDestination = 0x736BCA, GetDirectionTowardsDestination = 0x736BBB };
-	// When jumpjets arrived at their FootClass::Destination, they seems stuck at the Move mission
-	// and therefore the turret facing was set to DirStruct{atan2(0,0)}==DirType::East at 0x736BBB
-	// that's why they will come back to normal when giving stop command explicitly
-	// so the best way is to fix the Mission if necessary, but I don't know how to do it
-	// so I skipped jumpjets check temporarily
-	if (!pThis->Type->TurretSpins && locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
-		return SkipCheckDestination;
-
-	return 0;
-}
-
 // Bugfix: Jumpjet detect cloaked objects beneath
 DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
 {
