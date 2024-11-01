@@ -56,18 +56,13 @@ void StraightTrajectory::Serialize(T& Stm)
 
 bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	this->PhobosTrajectory::Load(Stm, false);
 	this->Serialize(Stm);
-
 	return true;
 }
 
 bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 {
-	this->PhobosTrajectory::Save(Stm);
-
 	const_cast<StraightTrajectory*>(this)->Serialize(Stm);
-
 	return true;
 }
 
@@ -82,8 +77,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
 	pBullet->Velocity.Z = this->GetVelocityZ(pBullet);
-	pBullet->Velocity *= this->Speed / pBullet->Velocity.Magnitude();
-
+	pBullet->Velocity *= this->Type->Trajectory_Speed / pBullet->Velocity.Magnitude();
 }
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)

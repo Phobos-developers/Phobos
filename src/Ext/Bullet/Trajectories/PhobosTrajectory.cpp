@@ -84,11 +84,11 @@ bool TrajectoryTypePointer::Load(PhobosStreamReader& Stm, bool RegisterForChange
 bool TrajectoryTypePointer::Save(PhobosStreamWriter& Stm) const
 {
 	auto* raw = get();
-	Stm.Process(raw);
+	Stm.Save(raw);
 	if (raw)
 	{
 		auto rtti = raw->Flag();
-		Stm.Process(rtti);
+		Stm.Save(rtti);
 		return raw->Save(Stm);
 	}
 	return true;
@@ -126,11 +126,11 @@ bool TrajectoryPointer::Load(PhobosStreamReader& Stm, bool registerForChange)
 bool TrajectoryPointer::Save(PhobosStreamWriter& Stm) const
 {
 	auto* raw = get();
-	Stm.Process(raw);
+	Stm.Save(raw);
 	if (raw)
 	{
 		auto rtti = raw->Flag();
-		Stm.Process(rtti);
+		Stm.Save(rtti);
 		return raw->Save(Stm);
 	}
 	return true;
@@ -149,22 +149,6 @@ bool PhobosTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
 	Stm
 		.Process(this->Trajectory_Speed);
-	return true;
-}
-
-bool PhobosTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
-{
-	Stm
-		.Process(this->Speed)
-		;
-	return true;
-}
-
-bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
-{
-	Stm
-		.Process(this->Speed)
-		;
 	return true;
 }
 

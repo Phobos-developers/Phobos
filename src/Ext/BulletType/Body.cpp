@@ -53,6 +53,19 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, pSection, "Arcing.AllowElevationInaccuracy");
 	this->ReturnWeapon.Read<true>(exINI, pSection, "ReturnWeapon");
 
+	this->Splits.Read(exINI, pSection, "Splits");
+	this->AirburstSpread.Read(exINI, pSection, "AirburstSpread");
+	this->RetargetAccuracy.Read(exINI, pSection, "RetargetAccuracy");
+	this->RetargetSelf.Read(exINI, pSection, "RetargetSelf");
+	this->RetargetSelf_Probability.Read(exINI, pSection, "RetargetSelf.Probability");
+	this->AroundTarget.Read(exINI, pSection, "AroundTarget");
+	this->Airburst_UseCluster.Read(exINI, pSection, "Airburst.UseCluster");
+	this->Airburst_RandomClusters.Read(exINI, pSection, "Airburst.RandomClusters");
+	this->Splits_TargetingDistance.Read(exINI, pSection, "Splits.TargetingDistance");
+	this->Splits_TargetCellRange.Read(exINI, pSection, "Splits.TargetCellRange");
+	this->Splits_UseWeaponTargeting.Read(exINI, pSection, "Splits.UseWeaponTargeting");
+	this->AirburstWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AirburstWeapon.ApplyFirepowerMult");
+
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
 	this->BallisticScatter_Max.Read(exINI, pSection, "BallisticScatter.Max");
@@ -125,6 +138,18 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AAOnly)
 		.Process(this->Arcing_AllowElevationInaccuracy)
 		.Process(this->ReturnWeapon)
+		.Process(this->Splits)
+		.Process(this->AirburstSpread)
+		.Process(this->RetargetAccuracy)
+		.Process(this->RetargetSelf)
+		.Process(this->RetargetSelf_Probability)
+		.Process(this->AroundTarget)
+		.Process(this->Airburst_UseCluster)
+		.Process(this->Airburst_RandomClusters)
+		.Process(this->Splits_TargetingDistance)
+		.Process(this->Splits_TargetCellRange)
+		.Process(this->Splits_UseWeaponTargeting)
+		.Process(this->AirburstWeapon_ApplyFirepowerMult)
 
 
 		.Process(this->TrajectoryType) // just keep this shit at last

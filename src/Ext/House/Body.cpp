@@ -578,27 +578,27 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 		{
 		case AbstractType::BuildingType:
 			if (((BuildingTypeClass*)pTechnoType)->BuildCat == BuildCat::Combat)
-				currentMult -= pBuilding->Type->DefensesCostBonus;
+				currentMult = pBuilding->Type->DefensesCostBonus;
 			else
-				currentMult -= pBuilding->Type->BuildingsCostBonus;
+				currentMult = pBuilding->Type->BuildingsCostBonus;
 			break;
 		case AbstractType::AircraftType:
-			currentMult -= pBuilding->Type->AircraftCostBonus;
+			currentMult = pBuilding->Type->AircraftCostBonus;
 			break;
 		case AbstractType::InfantryType:
-			currentMult -= pBuilding->Type->InfantryCostBonus;
+			currentMult = pBuilding->Type->InfantryCostBonus;
 			break;
 		case AbstractType::UnitType:
-			currentMult -= pBuilding->Type->UnitsCostBonus;
+			currentMult = pBuilding->Type->UnitsCostBonus;
 			break;
 		default:
 			break;
 		}
 
-		mult *= (1.0f - currentMult * pTechnoTypeExt->FactoryPlant_Multiplier);
+		mult *= currentMult;
 	}
 
-	return mult;
+	return 1.0f - ((1.0f - mult) * pTechnoTypeExt->FactoryPlant_Multiplier);
 }
 
 void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
@@ -649,6 +649,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->NumConYards_NonMFB)
 		.Process(this->NumShipyards_NonMFB)
 		.Process(this->AIFireSaleDelayTimer)
+		.Process(this->SuspendedEMPulseSWs)
+		.Process(this->SuperExts)
 		;
 }
 

@@ -40,6 +40,11 @@
   background-color: #23242b !important;
 }
 
+.rst-content .highlighted {
+  background: #4020A8;
+  box-shadow: 0 0 0 2px #4020A8;
+}
+
 .wy-menu-vertical li.current > a button.toctree-expand {
   color: #d9d9d9;
 }

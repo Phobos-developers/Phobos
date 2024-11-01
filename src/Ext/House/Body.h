@@ -54,6 +54,14 @@ public:
 		int NumConYards_NonMFB;
 		int NumShipyards_NonMFB;
 
+		std::map<SuperClass*, std::vector<SuperClass*>> SuspendedEMPulseSWs;
+		// standalone? no need and not a good idea
+		struct SWExt
+		{
+			int ShotCount;
+		};
+		std::vector<SWExt> SuperExts;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -77,6 +85,8 @@ public:
 			, NumConYards_NonMFB { 0 }
 			, NumShipyards_NonMFB { 0 }
 			, AIFireSaleDelayTimer {}
+			, SuspendedEMPulseSWs {}
+			, SuperExts(SuperWeaponTypeClass::Array->Count)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
