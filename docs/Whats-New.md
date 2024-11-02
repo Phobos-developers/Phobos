@@ -373,7 +373,6 @@ New:
 - Unhardcoded timer blinking color scheme (by Starkku)
 - Customizing shield self-healing timer restart when shield is damaged (by Starkku)
 - Customizing minimum & maximum amount of damage shield can take from a single hit (by Starkku)
-- Players can now be given ownership of preplaced buildings in Skirmish and Multiplayer in maps using houses of the format <Player @ X> where X goes from A to H for spawn positions 1-8 (by ZivDero)
 - `AutoDeath.Technos(Dont)Exist` can optionally track limboed (not physically on map, e.g transports etc) technos (by Starkku)
 - Wall overlay `Palette` support (by Starkku)
 - Show designator & inhibitor range (by Morton)
