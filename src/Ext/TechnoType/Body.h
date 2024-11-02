@@ -233,6 +233,7 @@ public:
 		Nullable<int> PlayerNormalTargetingDelay;
 		Nullable<int> AIGuardAreaTargetingDelay;
 		Nullable<int> PlayerGuardAreaTargetingDelay;
+		Nullable<bool> DistributeTargetingFrame;
 
 		struct LaserTrailDataEntry
 		{
@@ -460,6 +461,7 @@ public:
 			, PlayerNormalTargetingDelay {}
 			, AIGuardAreaTargetingDelay {}
 			, PlayerGuardAreaTargetingDelay {}
+			, DistributeTargetingFrame {}
 		{ }
 
 		virtual ~ExtData() = default;
