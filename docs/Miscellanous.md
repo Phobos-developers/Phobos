@@ -79,6 +79,26 @@ Teleport | `{4A582747-9839-11d1-B709-00A024DDAFD1}` |
 Mech     | `{55D141B8-DB94-11d1-AC98-006008055BB5}` |
 Ship     | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
 
+### Insignia Type
+
+- It is now possible to define the properties of insignia in an entity, so that all properties in it will be used once it's applied to a techno.
+
+In `rulesmd.ini`:
+```ini
+[InsigniaTypes]
+0=SOMEINSIGNIATYPE
+
+[SOMEINSIGNIATYPE]						 ; InsigniaType
+Insignia=                                ; filename - excluding the .shp extension
+Insignia.Rookie=                         ; filename - excluding the .shp extension
+Insignia.Veteran=                        ; filename - excluding the .shp extension
+Insignia.Elite=                          ; filename - excluding the .shp extension
+InsigniaFrame=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
+```
+
 ## Game Speed
 
 ### Single player game speed

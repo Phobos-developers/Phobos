@@ -152,8 +152,8 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 		auto& frames = pTechnoTypeExt->InsigniaFrames_Weapon[weaponIndex];
 
-		if (frames != Vector3D<int>(-1, -1, -1))
-			insigniaFrames = frames;
+		if (frames.isset() && frames.Get() != Vector3D<int>(-1, -1, -1))
+			insigniaFrames = frames.Get();
 	}
 
 	if (pVeterancy->IsVeteran())
