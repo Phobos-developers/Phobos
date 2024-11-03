@@ -2,7 +2,9 @@
 #include "SWSidebarClass.h"
 #include <EventClass.h>
 #include <CCToolTip.h>
+#include <CommandClass.h>
 #include <GameOptionsClass.h>
+#include <UI.h>
 
 #include <Ext/SWType/Body.h>
 #include <Utilities/AresFunctions.h>
@@ -12,7 +14,7 @@ TacticalButtonClass::TacticalButtonClass(unsigned int id, int superIdx, int x, i
 	: ControlClass(id, x, y, width, height, GadgetFlag::LeftPress, true)
 	, SuperIndex(superIdx)
 {
-	if (const auto backColumn = SWSidebarClass::Global()->Columns.back())
+	if (const auto backColumn = SWSidebarClass::Instance.Columns.back())
 		backColumn->Buttons.emplace_back(this);
 }
 
@@ -75,18 +77,30 @@ bool TacticalButtonClass::Draw(bool forced)
 
 	if (ready && this->ColumnIndex == 0)
 	{
-		auto& buttons = SWSidebarClass::Global()->Columns[this->ColumnIndex]->Buttons;
-		const int distance = std::distance(buttons.begin(), std::find(buttons.begin(), buttons.end(), this));
+		auto& buttons = SWSidebarClass::Instance.Columns[this->ColumnIndex]->Buttons;
+		const int buttonId = std::distance(buttons.begin(), std::find(buttons.begin(), buttons.end(), this));
 
-		if (distance < 10 && !SWSidebarClass::Global()->KeyCodeText[distance].empty())
+		if (buttonId < 10)
 		{
-			const auto buffer = SWSidebarClass::Global()->KeyCodeText[distance].c_str();
+			unsigned short hotkey = 0;
+			for (int i = 0; i < CommandClass::Hotkeys->IndexCount; i++)
+			{
+				if (CommandClass::Hotkeys->IndexTable[i].Data == SWSidebarClass::Commands[buttonId])
+					hotkey = CommandClass::Hotkeys->IndexTable[i].ID;
+			}
+
 			Point2D textLoc = { location.X + this->Width / 2, location.Y };
 			const COLORREF foreColor = Drawing::RGB_To_Int(Drawing::TooltipColor);
-			TextPrintType printType = TextPrintType::FullShadow | TextPrintType::Point8 | TextPrintType::Background | TextPrintType::Center;
+			constexpr TextPrintType printType = TextPrintType::FullShadow | TextPrintType::Point8 | TextPrintType::Background | TextPrintType::Center;
 
-			pSurface->DrawTextA(buffer, &bounds, &textLoc, foreColor, 0, printType);
-			drawReadiness = false;
+			wchar_t buffer[64];
+			UI::GetKeyboardKeyString(hotkey, buffer);
+
+			if (std::wcslen(buffer))
+			{
+				pSurface->DrawTextA(buffer, &bounds, &textLoc, foreColor, 0, printType);
+				drawReadiness = false;
+			}
 		}
 	}
 
@@ -96,7 +110,7 @@ bool TacticalButtonClass::Draw(bool forced)
 		{
 			Point2D textLoc = { location.X + this->Width / 2, location.Y };
 			const COLORREF foreColor = Drawing::RGB_To_Int(Drawing::TooltipColor);
-			TextPrintType printType = TextPrintType::FullShadow | TextPrintType::Point8 | TextPrintType::Background | TextPrintType::Center;
+			constexpr TextPrintType printType = TextPrintType::FullShadow | TextPrintType::Point8 | TextPrintType::Background | TextPrintType::Center;
 
 			pSurface->DrawTextA(buffer, &bounds, &textLoc, foreColor, 0, printType);
 		}
@@ -117,8 +131,8 @@ void TacticalButtonClass::OnMouseEnter()
 		return;
 
 	this->IsHovering = true;
-	SWSidebarClass::Global()->CurrentButton = this;
-	SWSidebarClass::Global()->Columns[this->ColumnIndex]->OnMouseEnter();
+	SWSidebarClass::Instance.CurrentButton = this;
+	SWSidebarClass::Instance.Columns[this->ColumnIndex]->OnMouseEnter();
 	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
 }
 
@@ -128,8 +142,8 @@ void TacticalButtonClass::OnMouseLeave()
 		return;
 
 	this->IsHovering = false;
-	SWSidebarClass::Global()->CurrentButton = nullptr;
-	SWSidebarClass::Global()->Columns[this->ColumnIndex]->OnMouseLeave();
+	SWSidebarClass::Instance.CurrentButton = nullptr;
+	SWSidebarClass::Instance.Columns[this->ColumnIndex]->OnMouseLeave();
 	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
 	CCToolTip::Instance->MarkToRedraw(CCToolTip::Instance->CurrentToolTipData);
 }
@@ -210,12 +224,12 @@ bool TacticalButtonClass::LaunchSuper() const
 ToggleSWButtonClass::ToggleSWButtonClass(unsigned int id, int x, int y, int width, int height)
 	: ControlClass(id, x, y, width, height, static_cast<GadgetFlag>((int)GadgetFlag::LeftPress | (int)GadgetFlag::LeftRelease), true)
 {
-	SWSidebarClass::Global()->ToggleButton = this;
+	SWSidebarClass::Instance.ToggleButton = this;
 }
 
 bool ToggleSWButtonClass::Draw(bool forced)
 {
-	auto& columns = SWSidebarClass::Global()->Columns;
+	auto& columns = SWSidebarClass::Instance.Columns;
 
 	if (columns.empty())
 		return false;
@@ -243,7 +257,7 @@ bool ToggleSWButtonClass::Draw(bool forced)
 
 void ToggleSWButtonClass::OnMouseEnter()
 {
-	auto& columns = SWSidebarClass::Global()->Columns;
+	auto& columns = SWSidebarClass::Instance.Columns;
 
 	if (columns.empty())
 		return;
@@ -254,7 +268,7 @@ void ToggleSWButtonClass::OnMouseEnter()
 
 void ToggleSWButtonClass::OnMouseLeave()
 {
-	auto& columns = SWSidebarClass::Global()->Columns;
+	auto& columns = SWSidebarClass::Instance.Columns;
 
 	if (columns.empty())
 		return;
@@ -267,7 +281,7 @@ void ToggleSWButtonClass::OnMouseLeave()
 
 bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 {
-	auto& columns = SWSidebarClass::Global()->Columns;
+	auto& columns = SWSidebarClass::Instance.Columns;
 
 	if (columns.empty())
 		return false;
@@ -288,12 +302,12 @@ bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 void ToggleSWButtonClass::UpdatePosition()
 {
 	Point2D position = Point2D::Empty;
-	auto& columns = SWSidebarClass::Global()->Columns;
+	auto& columns = SWSidebarClass::Instance.Columns;
 
 	if (!columns.empty())
 	{
 		const auto backColumn = columns.back();
-		position.X = SWSidebarClass::Global()->IsEnabled() ? backColumn->X + backColumn->Width : 0;
+		position.X = SWSidebarClass::Instance.IsEnabled() ? backColumn->X + backColumn->Width : 0;
 		position.Y = backColumn->Y + (backColumn->Height - this->Height) / 2;
 	}
 	else
@@ -309,8 +323,8 @@ bool ToggleSWButtonClass::SwitchSidebar()
 {
 	SidebarExt::Global()->SWSidebar_Enable = !SidebarExt::Global()->SWSidebar_Enable;
 
-	if (const auto toggleButton = SWSidebarClass::Global()->ToggleButton)
+	if (const auto toggleButton = SWSidebarClass::Instance.ToggleButton)
 		toggleButton->UpdatePosition();
 
-	return SWSidebarClass::Global()->IsEnabled();
+	return SWSidebarClass::Instance.IsEnabled();
 }

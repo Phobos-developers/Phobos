@@ -222,7 +222,7 @@ DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_HelpText, 0x6)
 	if (!SWSidebarClass::IsEnabled())
 		return 0;
 
-	const auto button = SWSidebarClass::Global()->CurrentButton;
+	const auto button = SWSidebarClass::Instance.CurrentButton;
 
 	if (!button)
 		return 0;
@@ -235,7 +235,7 @@ DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_HelpText, 0x6)
 
 DEFINE_HOOK(0x72426F, ToolTipManager_ProcessMessage_SetDelay, 0x5)
 {
-	if (SWSidebarClass::IsEnabled() && SWSidebarClass::Global()->CurrentButton)
+	if (SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentButton)
 		R->EDX(0);
 
 	return 0;
@@ -243,14 +243,14 @@ DEFINE_HOOK(0x72426F, ToolTipManager_ProcessMessage_SetDelay, 0x5)
 
 DEFINE_HOOK(0x72428C, ToolTipManager_ProcessMessage_Redraw, 0x5)
 {
-	return SWSidebarClass::IsEnabled() && SWSidebarClass::Global()->CurrentButton ? 0x724297 : 0;
+	return SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentButton ? 0x724297 : 0;
 }
 
 DEFINE_HOOK(0x724B2E, ToolTipManager_SetX, 0x6)
 {
 	if (SWSidebarClass::IsEnabled())
 	{
-		if (const auto button = SWSidebarClass::Global()->CurrentButton)
+		if (const auto button = SWSidebarClass::Instance.CurrentButton)
 		{
 			R->EDX(button->X + button->Width);
 			R->EAX(button->Y + 27);

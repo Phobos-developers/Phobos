@@ -2,6 +2,7 @@
 #include "TacticalButtonClass.h"
 #include "SWColumnClass.h"
 #include <Ext/Sidebar/Body.h>
+#include <CommandClass.h>
 
 class SWSidebarClass
 {
@@ -14,23 +15,15 @@ public:
 	bool AddButton(int superIdx);
 	void SortButtons();
 
-	void RecordHotkey(int buttonIndex, int key);
 	int GetMaximumButtonCount();
 
 	static bool IsEnabled();
 
-private:
-	static std::unique_ptr<SWSidebarClass> Instance;
-	static PhobosMap<int, const wchar_t*> KeyboardCodeTextMap;
+	static SWSidebarClass Instance;
 
 public:
 	static void Allocate();
 	static void Remove();
-
-	static SWSidebarClass* Global()
-	{
-		return Instance.get();
-	}
 
 	static void Clear()
 	{
@@ -43,6 +36,5 @@ public:
 	TacticalButtonClass* CurrentButton { nullptr };
 	ToggleSWButtonClass* ToggleButton { nullptr };
 
-	std::wstring KeyCodeText[10] {};
-	int KeyCodeData[10] {};
+	static CommandClass* Commands[10];
 };

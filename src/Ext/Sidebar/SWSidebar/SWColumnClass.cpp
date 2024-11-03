@@ -7,7 +7,7 @@
 SWColumnClass::SWColumnClass(unsigned int id, int x, int y, int width, int height)
 	: ControlClass(id, x, y, width, height, static_cast<GadgetFlag>(0), true)
 {
-	auto& columns = SWSidebarClass::Global()->Columns;
+	auto& columns = SWSidebarClass::Instance.Columns;
 	columns.emplace_back(this);
 
 	this->MaxButtons = Phobos::UI::ExclusiveSWSidebar_Max - (static_cast<int>(columns.size()) - 1);
@@ -57,12 +57,12 @@ void SWColumnClass::OnMouseEnter()
 	if (!SWSidebarClass::IsEnabled())
 		return;
 
-	SWSidebarClass::Global()->CurrentColumn = this;
+	SWSidebarClass::Instance.CurrentColumn = this;
 }
 
 void SWColumnClass::OnMouseLeave()
 {
-	SWSidebarClass::Global()->CurrentColumn = nullptr;
+	SWSidebarClass::Instance.CurrentColumn = nullptr;
 }
 
 bool SWColumnClass::Clicked(DWORD* pKey, GadgetFlag flags, int x, int y, KeyModifier modifier)
@@ -103,7 +103,7 @@ bool SWColumnClass::AddButton(int superIdx)
 
 	auto& buttons = this->Buttons;
 
-	if (static_cast<int>(buttons.size()) >= this->MaxButtons && !SWSidebarClass::Global()->AddColumn())
+	if (static_cast<int>(buttons.size()) >= this->MaxButtons && !SWSidebarClass::Instance.AddColumn())
 		return false;
 
 	const auto button = DLLCreate<TacticalButtonClass>(TacticalButtonClass::StartID + superIdx, superIdx, 0, 0, 60, 48);
@@ -113,7 +113,7 @@ bool SWColumnClass::AddButton(int superIdx)
 
 	button->Zap();
 	GScreenClass::Instance->AddButton(button);
-	SWSidebarClass::Global()->SortButtons();
+	SWSidebarClass::Instance.SortButtons();
 	return true;
 }
 
@@ -126,12 +126,12 @@ bool SWColumnClass::RemoveButton(int superIdx)
 	if (it == buttons.end())
 		return false;
 
-	AnnounceInvalidPointer(SWSidebarClass::Global()->CurrentButton, *it);
+	AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentButton, *it);
 	GScreenClass::Instance->RemoveButton(*it);
 
 	DLLDelete(*it);
 	buttons.erase(it);
-	SWSidebarClass::Global()->SortButtons();
+	SWSidebarClass::Instance.SortButtons();
 	return true;
 }
 

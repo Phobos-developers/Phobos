@@ -7,10 +7,11 @@
 #include <Utilities/Debug.h>
 
 template <typename T>
-void MakeCommand()
+T* MakeCommand()
 {
 	T* command = GameCreate<T>();
 	CommandClass::Array->AddItem(command);
+	return command;
 };
 
 #define CATEGORY_TEAM StringTable::LoadString(GameStrings::TXT_TEAM)
