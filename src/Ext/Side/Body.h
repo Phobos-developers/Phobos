@@ -37,6 +37,11 @@ public:
 		Nullable<float> ToolTip_Background_BlurSize;
 		Valueable<int> BriefingTheme;
 
+		PhobosPCXFile ExclusiveSWSidebar_TopPCX;
+		PhobosPCXFile ExclusiveSWSidebar_CenterPCX;
+		PhobosPCXFile ExclusiveSWSidebar_BottomPCX;
+		Valueable<SHPStruct*> ExclusiveSWSidebar_ToggleShape;
+
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
 			, Sidebar_GDIPositions { false }
@@ -58,6 +63,10 @@ public:
 			, ToolTip_Background_Opacity { }
 			, ToolTip_Background_BlurSize { }
 			, BriefingTheme { -1 }
+			, ExclusiveSWSidebar_TopPCX { }
+			, ExclusiveSWSidebar_CenterPCX { }
+			, ExclusiveSWSidebar_BottomPCX { }
+			, ExclusiveSWSidebar_ToggleShape { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;

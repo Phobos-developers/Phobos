@@ -578,6 +578,39 @@ In `RA2MD.ini`:
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
 ```
+
+### Exclusive SuperWeapon Sidebar
+
+- It is possible to put sw cameos on the left of screen like C&C3 when `ExclusiveSuperWeaponSidebar` is true.
+- In theory, it should be compatible with Ares
+- Cameos arranged in a pyramid shape.
+- `ExclusiveSWSidebar.Interval` specific how many leptons between two columns.
+- `ExclusiveSuperWeaponSidebar.Max` controls the maximum number of icons on the leftmost side, which also depends on the current game resolution.
+- `ExclusiveSWSidebar.MaxColumn` controls that maximum count of columns.
+- You can also launch first 10 SW by hotkey.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+ExclusiveSWSidebar=false            ; boolean
+ExclusiveSWSidebar.Interval=0       ; integer
+ExclusiveSWSidebar.Max=0            ; integer
+ExclusiveSWSidebar.MaxColumn=       ; integer
+```
+
+In `rulesmd.ini`
+```ini
+[SOMESIDE]
+ExclusiveSWSidebar.TopPCX=          ; filename - including the .pcx extension
+ExclusiveSWSidebar.CenterPCX=       ; filename - including the .pcx extension
+ExclusiveSWSidebar.BottomPCX=       ; filename - including the .pcx extension
+ExclusiveSWSidebar.ToggleShape=     ; filename - including the .shp extension
+
+[SOMESW]
+AllowInExclusiveSidebar=true        ; boolean
+ExclusiveSidebar.PriorityHouses=    ; list of house types
+ExclusiveSidebar.RequiredHouses=    ; list of house types
+```
 ## Miscellanous
 
 ### Skip saving game on starting a new campaign

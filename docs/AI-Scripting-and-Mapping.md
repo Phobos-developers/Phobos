@@ -27,6 +27,12 @@ In rulesmd.ini:
 RepairBaseNodes=false              ; boolean
 ```
 
+In rulesmd.ini:
+```ini
+[General]
+RepairBaseNodes=false,false,false  ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
+```
+
 In map file:
 ```ini
 [Country House]

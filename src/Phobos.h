@@ -55,6 +55,10 @@ public:
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
 		static bool CenterPauseMenuBackground;
+		static bool ExclusiveSWSidebar;
+		static int ExclusiveSWSidebar_Interval;
+		static int ExclusiveSWSidebar_Max;
+		static int ExclusiveSWSidebar_MaxColumn;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
 
