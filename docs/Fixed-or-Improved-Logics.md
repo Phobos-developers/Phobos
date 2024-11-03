@@ -173,6 +173,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) are now correctly parsed for Lunar theater.
 - Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being displayed in water instead of `WetAttack`.
 - Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings.
+- `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps.
 
 ## Fixes / interactions with other extensions
 
