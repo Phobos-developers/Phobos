@@ -474,6 +474,9 @@ DEFINE_HOOK(0x6F4D1A, TechnoClass_ReceiveCommand_Repair, 0x5)
 	GET(int, repairStep, EAX);
 	GET_STACK(TechnoClass*, pFrom, STACK_OFFSET(0x18, 0x4));
 
+	if (pThis->WhatAmI() == AbstractType::Infantry)
+		return 0;
+
 	if (auto const pBuilding = abstract_cast<BuildingClass*>(pFrom))
 	{
 		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
