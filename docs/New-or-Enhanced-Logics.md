@@ -844,7 +844,7 @@ Trajectory.Disperse.WeaponDoRepeat=false        ; boolean
 - Make sure you set a low `Trajectory.Disperse.RetargetRadius` value unless necessary. If you set `Trajectory.Disperse.WeaponRetarget=true`, also make sure you set `Trajectory.Disperse.Weapons` a low `Range` value unless necessary.
 - This does not properly support `Arcing=true` projectiles.
 - Note that the listed Weapons in `Trajectory.Disperse.Weapons` must be listed in `[WeaponTypes]` for them to work.
-- `Trajectory.Disperse.Weapons` now not support customized `LaserThickness`, `Bolt.ColorN`, `Bolt.DisableN`, `Bolt.Arcs`, `Beam.Color`, `Beam.Duration`  and `Beam.Amplitude`.
+- `Trajectory.Disperse.Weapons` now not support customized `LaserThickness`, `Bolt.ColorN`, `Beam.Color`, `Beam.Duration`  and `Beam.Amplitude`.
 ```
 
 ### Shrapnel enhancements
