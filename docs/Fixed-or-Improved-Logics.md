@@ -1454,6 +1454,17 @@ AmbientDamage.Warhead=            ; WarheadType
 AmbientDamage.IgnoreTarget=false  ; boolean
 ```
 
+### Charge turret delays
+
+- It is now possible to customize the delay of `IsChargeTurret=true` unit turret animation per weapon, per `Burst` shot instead of defaulting to weapon's rearm timer (`ROF`, `BurstDelays` etc). Delay in the list corresponding to burst shot is used, or last delay listed if number of listed values is lower than the current burst index. Delay of 0 or less means previous delay, if applicable, is not restarted.
+  - Note that unlike the default rearm timer that uses `ROF`, any modifiers are not applied to explicitly set charge turret delays.
+
+  In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]          ; WeaponType
+ChargeTurret.Delays=  ; list of integers - game frames
+```
+
 ### Customizable disk laser radius
 
 ![image](_static/images/disklaser-radius-values-01.gif)

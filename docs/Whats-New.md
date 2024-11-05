@@ -466,6 +466,7 @@ New:
 - Warheads parasite removal customization (by Starkku)
 - Allow infantry to use land sequences in water (by Starkku)
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps (by Starkku)
+- Allow customizing charge turret delays per burst on a weapon (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
