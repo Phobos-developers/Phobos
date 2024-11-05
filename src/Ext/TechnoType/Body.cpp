@@ -6,6 +6,7 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <New/Type/InsigniaTypeClass.h>
 
 #include <Utilities/GeneralUtils.h>
 
@@ -372,14 +373,27 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		for (size_t i = 0; i < passengers; i++)
 		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Passengers%d.%s", i, "%s");
-			this->Insignia_Passengers[i].Read(exINI, pSection, tempBuffer);
+			Nullable<InsigniaTypeClass*> InsigniaType_Passengers;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaType.Passengers%d", i);
+			InsigniaType_Passengers.Read(exINI, pSection, tempBuffer);
 
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Passengers%d.%s", i, "%s");
-			this->InsigniaFrame_Passengers[i].Read(exINI, pSection, tempBuffer);
+			if (InsigniaType_Passengers.isset())
+			{
+				this->Insignia_Passengers[i] = InsigniaType_Passengers.Get()->Insignia;
+				this->InsigniaFrame_Passengers[i] = InsigniaType_Passengers.Get()->InsigniaFrame;
+				this->InsigniaFrames_Passengers[i] = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
+			}
+			else
+			{
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Passengers%d.%s", i, "%s");
+				this->Insignia_Passengers[i].Read(exINI, pSection, tempBuffer);
 
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Passengers%d", i);
-			this->InsigniaFrames_Passengers[i].Read(exINI, pSection, tempBuffer);
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Passengers%d.%s", i, "%s");
+				this->InsigniaFrame_Passengers[i].Read(exINI, pSection, tempBuffer);
+
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Passengers%d", i);
+				this->InsigniaFrames_Passengers[i].Read(exINI, pSection, tempBuffer);
+			}
 		}
 	}
 

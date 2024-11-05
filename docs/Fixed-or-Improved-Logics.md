@@ -518,6 +518,7 @@ Due to technical constraints, these settings do not apply to buildings teleporte
     - A shorthand `InsigniaFrames` can be used to list them in order from rookie, veteran and elite instead as well. `InsigniaFrame(.Rookie|Veteran|Elite)` takes priority over this.
   - Normal insignia can be overridden for specific weapon modes of `Gunner=true` units by setting `Insignia(.Frame/.Frames).WeaponN` where `N` stands for 1-based weapon mode index. If not set, defaults to non-mode specific insignia settings.
   - Normal insignia can be overridden when its current passenger size reaches a certain amount by setting `Insignia(.Frame/.Frames).PassengersN` where `N` stands for the current passenger size amount (from 0 to `Passengers` of the transport). If not set, defaults to non-passenger specific insignia settings. Will be overridden by weapon mode insignia settings, if set.
+    - These settings will be overriden by the properties set in [InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType.PassengersN` is set.
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true.
   - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
   - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
@@ -563,6 +564,7 @@ InsigniaFrame.PassengersN.Veteran=-1     ; int, frame of insignia shp (zero-base
 InsigniaFrame.PassengersN.Elite=-1       ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrames.WeaponN=-1,-1,-1          ; int, frames of insignia shp (zero-based) or -1 for default
 InsigniaFrames.PassengersN=-1,-1,-1      ; int, frames of insignia shp (zero-based) or -1 for default
+InsigniaType.PassengersN=                ; InsigniaType
 Insignia.ShowEnemy=                      ; boolean
 ```
 
