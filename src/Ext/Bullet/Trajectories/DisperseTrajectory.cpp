@@ -1299,7 +1299,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 			pEBolt->AlternateColor = pWeapon->IsAlternateColor;
 
 			//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
-			//Although I can reread the Ares tags but how to do with Bolt_Disable1, Bolt_Disable2, Bolt_Disable3, Bolt_Arcs(Phobos)
+			WeaponTypeExt::BoltWeaponMap[pEBolt] = WeaponTypeExt::ExtMap.Find(pWeapon);
 			pEBolt->Fire(pBullet->Location, pTarget->GetCoords(), 0);
 		}
 	}
