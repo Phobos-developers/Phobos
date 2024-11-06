@@ -288,7 +288,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		{
 			if (pType->NoSpawnAlt && pThis->SpawnManager && pThis->SpawnManager->CountDockedSpawns() == 0)
 			{
-				if (CAN_USE_ARES && AresHelper::CanUseAres)
+				if (AresHelper::CanUseAres)
 				{
 					vxl_index_key.Invalidate();// I'd just assume most of the time we have spawn
 					return &reinterpret_cast<DummyExtHere*>(pType->align_2FC)->NoSpawnAltVXL;
@@ -373,7 +373,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			if (idx < 18)
 				return &pType->ChargerTurrets[idx];
 
-			if (CAN_USE_ARES && AresHelper::CanUseAres)
+			if (AresHelper::CanUseAres)
 			{
 				auto* aresTypeExt = reinterpret_cast<DummyExtHere*>(pType->align_2FC);
 				return &aresTypeExt->ChargerTurrets[idx - 18];
@@ -390,7 +390,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			if (idx < 18)
 				return &pType->ChargerBarrels[idx];
 
-			if (CAN_USE_ARES && AresHelper::CanUseAres)
+			if (AresHelper::CanUseAres)
 			{
 				auto* aresTypeExt = reinterpret_cast<DummyExtHere*>(pType->align_2FC);
 				return &aresTypeExt->ChargerBarrels[idx - 18];
