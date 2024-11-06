@@ -76,7 +76,7 @@ public:
 		Nullable<double> Units_RepairRate;
 		Nullable<int> Units_RepairStep;
 		Nullable<double> Units_RepairPercent;
-		Valueable<bool> Units_DisableRepairCost;
+		Nullable<bool> Units_UseRepairCost;
 
 		Valueable<bool> NoBuildAreaOnBuildup;
 		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
@@ -129,7 +129,7 @@ public:
 			, Units_RepairRate {}
 			, Units_RepairStep {}
 			, Units_RepairPercent {}
-			, Units_DisableRepairCost { false }
+			, Units_UseRepairCost {}
 			, NoBuildAreaOnBuildup { false }
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}

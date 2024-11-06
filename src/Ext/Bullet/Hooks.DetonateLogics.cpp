@@ -299,6 +299,8 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct*, coords, 0x8);
 
+	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+
 	// Extra warheads
 	if (pThis->WeaponType)
 	{
@@ -308,7 +310,6 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		for (size_t i = 0; i < pWeaponExt->ExtraWarheads.size(); i++)
 		{
 			auto const pWH = pWeaponExt->ExtraWarheads[i];
-			auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 			int damage = defaultDamage;
 			size_t size = pWeaponExt->ExtraWarheads_DamageOverrides.size();
 
@@ -359,10 +360,8 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 				pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
 				pBullet->WeaponType = pWeapon;
-				auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-				pBulletExt->FirerHouse = pBulletExt->FirerHouse;
-
 				pBullet->MoveTo(pThis->Location, BulletVelocity::Empty);
+				BulletExt::ExtMap.Find(pBullet)->FirerHouse = pOwner;
 			}
 		}
 	}

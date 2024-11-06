@@ -651,4 +651,56 @@ DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)  // Hover
 	return R->Origin() + 0xC;
 }
 
+// Just rewrite this completely to avoid headache
+Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, int* pIndex)
+{
+	__assume(iloco != nullptr);
+	auto const pThis = static_cast<JumpjetLocomotionClass*>(iloco);
+	auto linked = pThis->LinkedTo;
+	// no more TiltCrashJumpjet, do that above svp
+	bool const onGround = pThis->State == JumpjetLocomotionClass::State::Grounded;
+	// Man, what can I say, you don't want to stick your rotor into the ground
+	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
+	*ret = Matrix3D::VoxelRampMatrix[onGround ? slope_idx : 0];
+	auto curf = pThis->LocomotionFacing.Current();
+	ret->RotateZ((float)curf.GetRadian<32>());
+	float arf = linked->AngleRotatedForwards;
+	float ars = linked->AngleRotatedSideways;
+
+	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+	{
+		if (pIndex) *pIndex = -1;
+
+		if (onGround)
+		{
+			double scalex = linked->GetTechnoType()->VoxelScaleX;
+			double scaley = linked->GetTechnoType()->VoxelScaleY;
+			Matrix3D pre = Matrix3D::GetIdentity();
+			pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
+			ret->TranslateX(float(Math::sgn(arf) * (scaley * (1 - Math::cos(arf)))));
+			ret->TranslateY(float(Math::sgn(-ars) * (scalex * (1 - Math::cos(ars)))));
+			ret->RotateX(ars);
+			ret->RotateY(arf);
+			*ret = pre * *ret;
+		}
+		else
+		{
+			// No more translation because I don't like it
+			ret->RotateX(ars);
+			ret->RotateY(arf);
+		}
+	}
+
+	if (pIndex && *pIndex != -1)
+	{
+		if (onGround) *pIndex = slope_idx + (*pIndex << 6);
+		*pIndex *= 32;
+		*pIndex |= curf.GetFacing<32>();
+	}
+
+	return ret;
+}
+
+DEFINE_JUMP(VTABLE, 0x7ECD8C, GET_OFFSET(JumpjetLocomotionClass_Draw_Matrix));
+
 #pragma endregion
