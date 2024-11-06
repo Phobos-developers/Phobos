@@ -232,7 +232,7 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 // BTW, who said it was merely a Type pointer replacement and he could make a better one than Ares?
 bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 {
-	if (IS_ARES_FUN_AVAILABLE(ConvertTypeTo))
+	if (AresFunctions::ConvertTypeTo)
 		return AresFunctions::ConvertTypeTo(pThis, pToType);
 	// In case not using Ares 3.0. Only update necessary vanilla properties
 	AbstractType rtti;

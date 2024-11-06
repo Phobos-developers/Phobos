@@ -738,14 +738,14 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		if (IS_ARES_FUN_AVAILABLE(SpawnSurvivors))
+		if (AresFunctions::SpawnSurvivors)
 		{
 			switch (pThis->WhatAmI())
 			{
 			case AbstractType::Unit:
 			case AbstractType::Aircraft:
 				AresFunctions::SpawnSurvivors(static_cast<FootClass*>(pThis), nullptr, false, false);
-			default:break;
+			default:;
 			}
 		}
 		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pThis->Owner);
