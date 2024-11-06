@@ -627,6 +627,9 @@ bool BuildingTypeExt::AutoUpgradeBuilding(BuildingClass* pBuilding)
 {
 	BuildingTypeClass* const pBuildingType = pBuilding->Type;
 
+	if (!pBuildingType->PowersUpBuilding[0])
+		return false;
+
 	if (BuildingTypeExt::ExtData* const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType))
 	{
 		if (pTypeExt->AutoUpgrade)

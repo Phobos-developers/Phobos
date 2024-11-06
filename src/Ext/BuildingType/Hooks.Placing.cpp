@@ -680,10 +680,13 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 				while (false);
 			}
 
-			pHouseExt->CurrentBuildingType = nullptr;
-			pHouseExt->CurrentBuildingTimes = 0;
-			pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
-			pHouseExt->CurrentBuildingTimer.Stop();
+			if (!pBuildingType->PowersUpBuilding[0] || !pTypeExt->AutoUpgrade)
+			{
+				pHouseExt->CurrentBuildingType = nullptr;
+				pHouseExt->CurrentBuildingTimes = 0;
+				pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
+				pHouseExt->CurrentBuildingTimer.Stop();
+			}
 		}
 	}
 
@@ -723,9 +726,10 @@ DEFINE_HOOK(0x4FB319, HouseClass_UnitFromFactory_SkipMouseClear, 0x5)
 
 	if (BuildingClass* const pBuilding = abstract_cast<BuildingClass*>(pTechno))
 	{
-		BuildingTypeExt::ExtData* const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+		BuildingTypeClass* const pType = pBuilding->Type;
+		BuildingTypeExt::ExtData* const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 
-		if (pTypeExt->AutoUpgrade && DisplayClass::Instance->CurrentBuilding != pBuilding)
+		if (pType->PowersUpBuilding[0] && pTypeExt->AutoUpgrade && DisplayClass::Instance->CurrentBuilding != pBuilding)
 			return SkipGameCode;
 	}
 
@@ -744,7 +748,7 @@ DEFINE_HOOK(0x4FAB83, HouseClass_AbandonProductionOf_SkipMouseClear, 0x7)
 		BuildingTypeClass* const pType = BuildingTypeClass::Array->Items[index];
 		BuildingTypeExt::ExtData* const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 
-		if (pTypeExt->AutoUpgrade && DisplayClass::Instance->CurrentBuildingType != pType)
+		if (pType->PowersUpBuilding[0] && pTypeExt->AutoUpgrade && DisplayClass::Instance->CurrentBuildingType != pType)
 			return SkipGameCode;
 	}
 
@@ -1004,7 +1008,7 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 	BuildingTypeClass* const pBuildingType = pUnit->Type->DeploysInto;
 	HouseExt::ExtData* const pHouseExt = HouseExt::ExtMap.Find(pUnit->Owner);
 	auto& vec = pHouseExt->OwnedDeployingUnits;
-	CellStruct topLeftCell = CellClass::Coord2Cell(pUnit->GetCoords()); // pUnit->GetMapCoords() -> desync
+	CellStruct topLeftCell = CellClass::Coord2Cell(pUnit->GetCoords());
 
 	if (pBuildingType->GetFoundationWidth() > 2 || pBuildingType->GetFoundationHeight(false) > 2)
 		topLeftCell -= CellStruct { 1, 1 };
@@ -1298,7 +1302,7 @@ DEFINE_HOOK(0x6A8E34, StripClass_Update_AutoBuildBuildings, 0x7)
 
 	GET(BuildingClass* const, pBuilding, ESI);
 
-	return (RulesExt::Global()->ExpandBuildingPlace && (BuildingTypeExt::BuildLimboBuilding(pBuilding) || (pBuilding->Type->PowersUpBuilding[0] && BuildingTypeExt::AutoUpgradeBuilding(pBuilding)))) ? SkipSetStripShortCut : 0;
+	return (RulesExt::Global()->ExpandBuildingPlace && (BuildingTypeExt::BuildLimboBuilding(pBuilding) || BuildingTypeExt::AutoUpgradeBuilding(pBuilding))) ? SkipSetStripShortCut : 0;
 }
 
 // Limbo Build Hook -> sub_42EB50 - Check Base Node
