@@ -175,7 +175,7 @@ DEFINE_HOOK(0x4A8F21, MapClass_PassesProximityCheck_BaseNormalExtra, 0x9)
 											{
 												if (pOwner->ArrayIndex == idxHouse && pCellBldType->BaseNormal)
 												{
-													if (CAN_USE_ARES && AresHelper::CanUseAres) // Restore Ares MapClass_CanBuildingTypeBePlacedHere_Ignore
+													if (AresHelper::CanUseAres) // Restore Ares MapClass_CanBuildingTypeBePlacedHere_Ignore
 													{
 														struct DummyAresBuildingExt // Temp Ares Building Ext
 														{
