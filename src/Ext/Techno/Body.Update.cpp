@@ -983,6 +983,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool hasTint = false;
 	bool reflectsDamage = false;
 	bool hasOnFireDiscardables = false;
+	bool hasRestrictedArmorMultipliers = false;
 
 	for (const auto& attachEffect : this->AttachedEffects)
 	{
@@ -1001,6 +1002,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
+		hasRestrictedArmorMultipliers |= (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0));
 	}
 
 	this->AE.FirepowerMultiplier = firepower;
@@ -1014,6 +1016,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	this->AE.HasTint = hasTint;
 	this->AE.ReflectDamage = reflectsDamage;
 	this->AE.HasOnFireDiscardables = hasOnFireDiscardables;
+	this->AE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
