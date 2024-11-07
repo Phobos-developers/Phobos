@@ -270,11 +270,11 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 	{
 		R->EAX(true);
 	}
-	else if (TechnoTypeExt::ExtData* const pTypeExt = TechnoTypeExt::ExtMap.Find(pType)) // The types exist in the list means that they are not buildable now
+	else if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType)) // The types exist in the list means that they are not buildable now
 	{
 		if (pTypeExt->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
 		{
-			if (auto const pHouseExt = HouseExt::ExtMap.Find(pThis))
+			if (const auto pHouseExt = HouseExt::ExtMap.Find(pThis))
 			{
 				auto& vec = pHouseExt->OwnedExistCameoTechnoTypes;
 
@@ -295,7 +295,7 @@ DEFINE_HOOK(0x6A640B, SideBarClass_AddCameo_DoNotPlayEVA, 0x5)
 	GET(AbstractType, absType, ESI);
 	GET(int, idxType, EBP);
 
-	if (auto const pType = ObjectTypeClass::GetTechnoType(absType, idxType))
+	if (const auto pType = ObjectTypeClass::GetTechnoType(absType, idxType))
 	{
 		if (TechnoTypeExt::ExtMap.Find(pType)->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
 			return SkipPlaying;

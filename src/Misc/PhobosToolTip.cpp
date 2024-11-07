@@ -123,7 +123,7 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 		return;
 
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
-	HouseClass* const pHouse = HouseClass::CurrentPlayer;
+	auto const pHouse = HouseClass::CurrentPlayer.get();
 
 	int nBuildTime = TickTimeToSeconds(this->GetBuildTime(pType));
 	int nSec = nBuildTime % 60;
