@@ -346,13 +346,13 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 
 void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
-	if (TechnoClass* const pTechno = pThis->GetNthLink())
+	if (const auto pTechno = pThis->GetNthLink())
 	{
-		if (UnitClass* const pUnit = abstract_cast<UnitClass*>(pTechno))
+		if (const auto pUnit = abstract_cast<UnitClass*>(pTechno))
 		{
 			if (!pUnit->unknown_bool_418 && pUnit->GetCurrentSpeed() <= 0)
 			{
-				if (TeamClass* const pTeam = pUnit->Team)
+				if (const auto pTeam = pUnit->Team)
 					pTeam->LiberateMember(pUnit);
 
 				pThis->SendCommand(RadioCommand::NotifyUnlink, pUnit);
@@ -362,25 +362,25 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 		}
 	}
 
-	CoordStruct buffer = CoordStruct::Empty;
-	CellClass* pCell = MapClass::Instance->GetCellAt(*pThis->GetExitCoords(&buffer, 0));
+	auto buffer = CoordStruct::Empty;
+	auto pCell = MapClass::Instance->GetCellAt(*pThis->GetExitCoords(&buffer, 0));
 	int i = 0;
 
 	while (true)
 	{
-		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
-			if (UnitClass* const pUnit = abstract_cast<UnitClass*>(pObject))
+			if (const auto pUnit = abstract_cast<UnitClass*>(pObject))
 			{
 				if (pThis->Owner != pUnit->Owner || pUnit->unknown_bool_418)
 					continue;
 
-				const int height = pUnit->GetHeight();
+				const auto height = pUnit->GetHeight();
 
 				if (height < 0 || height > Unsorted::CellHeight)
 					continue;
 
-				if (TeamClass* const pTeam = pUnit->Team)
+				if (const auto pTeam = pUnit->Team)
 					pTeam->LiberateMember(pUnit);
 
 				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
