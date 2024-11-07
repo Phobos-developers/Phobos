@@ -675,29 +675,29 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 	GET(int, OriginalZ, EAX);
 	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (!pExt)
 		return 0;
 
-	auto const pTypeExt = pExt->TypeExtData;
+	const auto pTypeExt = pExt->TypeExtData;
 
 	if (weaponIndex < 0)
 	{
-		FootClass* currentPassenger = pThis->Passengers.FirstPassenger;
-		const int passengerIndex = -weaponIndex - 1;
+		auto currentPassenger = pThis->Passengers.FirstPassenger;
+		const auto passengerIndex = -weaponIndex - 1;
 
 		for (int i = 0; i < passengerIndex && currentPassenger; i++)
 			currentPassenger = abstract_cast<FootClass*>(currentPassenger->NextObject);
 
-		if (auto const pPassengerExt = TechnoExt::ExtMap.Find(currentPassenger))
+		if (const auto pPassengerExt = TechnoExt::ExtMap.Find(currentPassenger))
 			pPassengerExt->LastWeaponFLH = { OriginalX, OriginalY, OriginalZ };
 
 		return 0;
 	}
 
 	bool FLHFound = false;
-	CoordStruct FLH = CoordStruct::Empty;
+	auto FLH = CoordStruct::Empty;
 
 	FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound, pTypeExt);
 	BurstFLHTemp::FLHFound = FLHFound;
