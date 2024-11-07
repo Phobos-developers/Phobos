@@ -591,16 +591,16 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 
 void TechnoExt::ExtData::UpdateRecountBurst()
 {
-	TechnoClass* const pThis = this->OwnerObject();
+	const auto pThis = this->OwnerObject();
 
 	if (pThis->CurrentBurstIndex && !pThis->Target && this->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst))
 	{
-		WeaponTypeClass* const pWeapon = this->LastWeaponType;
+		const auto pWeapon = this->LastWeaponType;
 
 		if (pWeapon && pWeapon->Burst && pThis->unknown_int_120 + std::max(pWeapon->ROF, 30) <= Unsorted::CurrentFrame)
 		{
-			const double ratio = static_cast<double>(pThis->CurrentBurstIndex) / pWeapon->Burst;
-			const int rof = static_cast<int>(ratio * pWeapon->ROF * this->AE.ROFMultiplier) - std::max(pWeapon->ROF, 30);
+			const auto ratio = static_cast<double>(pThis->CurrentBurstIndex) / pWeapon->Burst;
+			const auto rof = static_cast<int>(ratio * pWeapon->ROF * this->AE.ROFMultiplier) - std::max(pWeapon->ROF, 30);
 
 			if (rof > 0)
 			{

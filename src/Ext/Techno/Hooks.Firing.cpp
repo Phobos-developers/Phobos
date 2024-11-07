@@ -417,14 +417,14 @@ DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET(TechnoClass* const, pThis, ESI);
 
-	if (TechnoExt::ExtData* const pExt = TechnoExt::ExtMap.Find(pThis))
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
 		if (pThis->CurrentBurstIndex && pWeapon != pExt->LastWeaponType && pExt->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst))
 		{
 			if (pExt->LastWeaponType && pExt->LastWeaponType->Burst)
 			{
-				const double ratio = static_cast<double>(pThis->CurrentBurstIndex) / pExt->LastWeaponType->Burst;
-				const int rof = static_cast<int>(ratio * pExt->LastWeaponType->ROF * pExt->AE.ROFMultiplier) - (Unsorted::CurrentFrame - pThis->unknown_int_120);
+				const auto ratio = static_cast<double>(pThis->CurrentBurstIndex) / pExt->LastWeaponType->Burst;
+				const auto rof = static_cast<int>(ratio * pExt->LastWeaponType->ROF * pExt->AE.ROFMultiplier) - (Unsorted::CurrentFrame - pThis->unknown_int_120);
 
 				if (rof > 0)
 				{
