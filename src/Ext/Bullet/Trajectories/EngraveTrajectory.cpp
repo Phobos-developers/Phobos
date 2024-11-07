@@ -104,11 +104,11 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	const EngraveTrajectoryType* const pType = this->Type;
+	const auto pType = this->Type;
 	this->LaserTimer.Start(0);
 	this->DamageTimer.Start(0);
 	this->FLHCoord = pBullet->SourceCoords;
-	TechnoClass* const pTechno = pBullet->Owner;
+	const auto pTechno = pBullet->Owner;
 
 	if (pTechno)
 	{
@@ -127,10 +127,10 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		this->SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords);
 	}
 
-	double coordDistance = pBullet->Velocity.Magnitude();
+	auto coordDistance = pBullet->Velocity.Magnitude();
 	pBullet->Velocity *= (coordDistance > 1e-10) ? (pType->Trajectory_Speed / coordDistance) : 0;
 
-	WeaponTypeClass* const pWeapon = pBullet->WeaponType;
+	const auto pWeapon = pBullet->WeaponType;
 
 	if (pType->ApplyRangeModifiers && pWeapon && pTechno)
 		coordDistance = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno, static_cast<int>(coordDistance)));
@@ -141,7 +141,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 {
-	TechnoClass* const pTechno = pBullet->Owner;
+	const auto pTechno = pBullet->Owner;
 
 	if ((!pTechno && !this->NotMainWeapon) || this->TechnoInLimbo != static_cast<bool>(pTechno->Transporter))
 		return true;
@@ -149,7 +149,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 	if (--this->TheDuration < 0 || this->PlaceOnCorrectHeight(pBullet))
 		return true;
 
-	HouseClass* const pOwner = pTechno->Owner;
+	const auto pOwner = pTechno->Owner;
 
 	if (this->Type->IsLaser && this->LaserTimer.Completed())
 		this->DrawEngraveLaser(pBullet, pTechno, pOwner);
@@ -182,7 +182,7 @@ TrajectoryCheckReturnType EngraveTrajectory::OnAITechnoCheck(BulletClass* pBulle
 
 void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno)
 {
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pTechno);
+	const auto pExt = TechnoExt::ExtMap.Find(pTechno);
 
 	if (!pExt || !pExt->LastWeaponType || pExt->LastWeaponType->Projectile != pBullet->Type)
 	{
@@ -191,7 +191,7 @@ void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTe
 	}
 	else if (pTechno->WhatAmI() == AbstractType::Building)
 	{
-		const BuildingClass* const pBuilding = static_cast<BuildingClass*>(pTechno);
+		const auto pBuilding = static_cast<BuildingClass*>(pTechno);
 		Matrix3D mtx;
 		mtx.MakeIdentity();
 
@@ -202,7 +202,7 @@ void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTe
 		}
 
 		mtx.Translate(static_cast<float>(pExt->LastWeaponFLH.X), static_cast<float>(pExt->LastWeaponFLH.Y), static_cast<float>(pExt->LastWeaponFLH.Z));
-		auto const result = mtx.GetTranslation();
+		const auto result = mtx.GetTranslation();
 		this->BuildingCoord = pBullet->SourceCoords - pBuilding->GetCoords() - CoordStruct { static_cast<int>(result.X), -static_cast<int>(result.Y), static_cast<int>(result.Z) };
 	}
 
@@ -223,7 +223,7 @@ void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno)
 
 void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget)
 {
-	const double rotateAngle = Math::atan2(theTarget.Y - theSource.Y , theTarget.X - theSource.X);
+	const auto rotateAngle = Math::atan2(theTarget.Y - theSource.Y , theTarget.X - theSource.X);
 
 	if (this->SourceCoord.X != 0 || this->SourceCoord.Y != 0)
 	{
@@ -245,10 +245,10 @@ void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct th
 
 int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, CoordStruct coord)
 {
-	if (const CellClass* const pCell = MapClass::Instance->GetCellAt(coord))
+	if (const auto pCell = MapClass::Instance->GetCellAt(coord))
 	{
-		const int onFloor = MapClass::Instance->GetCellFloorHeight(coord);
-		const int onBridge = pCell->GetCoordsWithBridge().Z;
+		const auto onFloor = MapClass::Instance->GetCellFloorHeight(coord);
+		const auto onBridge = pCell->GetCoordsWithBridge().Z;
 
 		if (pBullet->SourceCoords.Z >= onBridge || pBullet->TargetCoords.Z >= onBridge)
 			return onBridge;
@@ -261,7 +261,7 @@ int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, CoordStruct coo
 
 bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 {
-	CoordStruct bulletCoords = pBullet->Location;
+	auto bulletCoords = pBullet->Location;
 	CoordStruct futureCoords
 	{
 		bulletCoords.X + static_cast<int>(pBullet->Velocity.X),
@@ -269,7 +269,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 		bulletCoords.Z + static_cast<int>(pBullet->Velocity.Z)
 	};
 
-	const int checkDifference = this->GetFloorCoordHeight(pBullet, futureCoords) - futureCoords.Z;
+	const auto checkDifference = this->GetFloorCoordHeight(pBullet, futureCoords) - futureCoords.Z;
 
 	if (abs(checkDifference) >= 384)
 	{
@@ -283,7 +283,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 		}
 		else
 		{
-			const int nowDifference = bulletCoords.Z - this->GetFloorCoordHeight(pBullet, bulletCoords);
+			const auto nowDifference = bulletCoords.Z - this->GetFloorCoordHeight(pBullet, bulletCoords);
 
 			if (nowDifference >= 256)
 			{
@@ -302,10 +302,10 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 
 void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
-	const EngraveTrajectoryType* const pType = this->Type;
+	const auto pType = this->Type;
 	this->LaserTimer.Start(pType->LaserDelay > 0 ? pType->LaserDelay : 1);
 	LaserDrawClass* pLaser;
-	CoordStruct fireCoord = pTechno->GetCoords();
+	auto fireCoord = pTechno->GetCoords();
 
 	if (this->NotMainWeapon)
 	{
@@ -320,7 +320,7 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 	}
 	else
 	{
-		const BuildingClass* const pBuilding = static_cast<BuildingClass*>(pTechno);
+		const auto pBuilding = static_cast<BuildingClass*>(pTechno);
 		Matrix3D mtx;
 		mtx.MakeIdentity();
 
@@ -331,7 +331,7 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 		}
 
 		mtx.Translate(static_cast<float>(this->FLHCoord.X), static_cast<float>(this->FLHCoord.Y), static_cast<float>(this->FLHCoord.Z));
-		auto const result = mtx.GetTranslation();
+		const auto result = mtx.GetTranslation();
 		fireCoord = pBuilding->GetCoords() + this->BuildingCoord + CoordStruct { static_cast<int>(result.X), -static_cast<int>(result.Y), static_cast<int>(result.Z) };
 	}
 
@@ -357,7 +357,7 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 
 void EngraveTrajectory::DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
-	const EngraveTrajectoryType* const pType = this->Type;
+	const auto pType = this->Type;
 	this->DamageTimer.Start(pType->DamageDelay > 0 ? pType->DamageDelay : 1);
 	WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, pBullet->Health, pOwner);
 }
