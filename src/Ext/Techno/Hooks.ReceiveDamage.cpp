@@ -15,6 +15,32 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+
+	//Calculate Damage Multiplier
+	if (pWHExt && !args->IgnoreDefenses && *args->Damage)
+	{
+		const auto pRules = RulesExt::Global();
+		const auto pFirerHouse = pThis->Owner;
+		const auto pTargetHouse = args->SourceHouse;
+		double multiplier = 1.0;
+
+		if (!pFirerHouse || !pTargetHouse || !pFirerHouse->IsAlliedWith(pTargetHouse))
+			multiplier = pWHExt->DamageEnemiesMultiplier.Get(pRules->DamageEnemiesMultiplier);
+		else if (pFirerHouse != pTargetHouse)
+			multiplier = pWHExt->DamageAlliesMultiplier.Get(pRules->DamageAlliesMultiplier);
+		else
+			multiplier = pWHExt->DamageOwnerMultiplier.Get(pRules->DamageOwnerMultiplier);
+
+		if (multiplier != 1.0)
+		{
+			const auto sgnDamage = *args->Damage > 0 ? 1 : -1;
+			const auto calculateDamage = static_cast<int>(*args->Damage * multiplier);
+			*args->Damage = calculateDamage ? calculateDamage : sgnDamage;
+		}
+	}
+
+	//Shield Receive Damage
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	int nDamageLeft = *args->Damage;
