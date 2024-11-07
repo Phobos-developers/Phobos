@@ -34,7 +34,8 @@ This page describes all the engine features that are either new and introduced b
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
-    - If `ROFMultiplier.ApplyOnCurrentTimer` is set to true, `ROFMultiplier` is applied on currently running reload timer (if any) when the effect is first applied.
+    - `ArmorMultiplier.AllowWarheads` and `ArmorMultiplier.DisallowWarheads` can be used to restrict which Warheads the armor multiplier is applied to when dealing damage.
+    - If `ROFMultiplier.ApplyOnCurrentTimer` is set to true, `ROFMultiplier` is applied on currently running reload timer (if any) when the effect is first applied.  
   - If `Cloakable` is set to true, the object the effect is attached to is granted ability to cloak itself for duration of the effect.
   - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
   - `WeaponRange.Multiplier` and `WeaponRange.ExtraRange` can be used to multiply the weapon firing range of the object the effect is attached to, or give it an increase / decrease (measured in cells), respectively. `ExtraRange` is cumulatively applied from all attached effects after all `Multiplier` values have been applied.
@@ -103,6 +104,8 @@ Tint.Intensity=                                    ; floating point value
 Tint.VisibleToHouses=all                           ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 FirepowerMultiplier=1.0                            ; floating point value
 ArmorMultiplier=1.0                                ; floating point value
+ArmorMultiplier.AllowWarheads=                     ; list of WarheadTypes
+ArmorMultiplier.DisallowWarheads=                  ; list of WarheadTypes
 SpeedMultiplier=1.0                                ; floating point value
 ROFMultiplier=1.0                                  ; floating point value
 ROFMultiplier.ApplyOnCurrentTimer=true             ; boolean
@@ -573,9 +576,9 @@ PowerPlantEnhancer.Factor=1.0      ; floating point value
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                     ; BuildingType
-SpyEffect.Custom=false            ; boolean
-SpyEffect.VictimSuperWeapon=      ; SuperWeaponType
-SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
+SpyEffect.Custom=false             ; boolean
+SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
+SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
 ## Infantry
@@ -586,7 +589,7 @@ SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
 
 In `artmd.ini`:
 ```ini
-[SOMEINFANTRY]             ; InfantryType
+[SOMEINFANTRY]             ; InfantryType image
 PronePrimaryFireFLH=       ; integer - Forward,Lateral,Height
 ProneSecondaryFireFLH=     ; integer - Forward,Lateral,Height
 DeployedPrimaryFireFLH=    ; integer - Forward,Lateral,Height
@@ -633,7 +636,6 @@ Ammo.Shared=no        ; boolean
 Ammo.Shared.Group=-1  ; integer
 ```
 
-
 ### Slaves' house decision customization when owner is killed
 
 - You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterKilled`:
@@ -658,6 +660,16 @@ In `rulesmd.ini`
 ```ini
 [SOMEINFANTRY]  ; Slave type
 SlavesFreeSound=      ; sound entry
+```
+
+### Use land sequences even in water
+
+- Setting `OnlyUseLandSequences` to true will make infantry display only the regular sequences used on land even if it is in water.
+
+In `artmd.ini`
+```ini
+[SOMEINFANTRY]              ; InfantryType image
+OnlyUseLandSequences=false  ; boolean
 ```
 
 ## Projectiles
@@ -1411,8 +1423,8 @@ RemoveMindControl=false  ; boolean
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
   - `Crit.AffectBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
-  - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
-    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
+  - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list. If `Crit.AnimList.CreateAll` is set (defaults to `AnimList.CreateAll`), all animations from the list are created.
+    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
   - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
   - `ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them immune to critical hits.
@@ -1430,6 +1442,7 @@ Crit.AffectsHouses=all              ; list of Affected House Enumeration (none|o
 Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                      ; list of animations
 Crit.AnimList.PickRandom=           ; boolean
+Crit.AnimList.CreateAll=            ; boolean
 Crit.ActiveChanceAnims=             ; list of animations
 Crit.AnimOnAffectedTargets=false    ; boolean
 Crit.SuppressWhenIntercepted=false  ; boolean

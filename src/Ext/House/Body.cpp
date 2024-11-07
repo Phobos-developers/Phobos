@@ -361,28 +361,6 @@ void HouseExt::GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSph
 	}
 }
 
-// Gives player houses names based on their spawning spot
-void HouseExt::SetSkirmishHouseName(HouseClass* pHouse)
-{
-	int spawn_position = pHouse->GetSpawnPosition();
-
-	// Default behaviour if something went wrong
-	if (spawn_position < 0 || spawn_position > 7)
-	{
-		if (pHouse->IsHumanPlayer)
-			sprintf(pHouse->PlainName, "<human player>");
-		else
-			sprintf(pHouse->PlainName, "Computer");
-	}
-	else
-	{
-		const char letters[9] = "ABCDEFGH";
-		sprintf(pHouse->PlainName, "<Player @ %c>", letters[spawn_position]);
-	}
-
-	Debug::Log("%s, %ls, position %d\n", pHouse->PlainName, pHouse->UIName, spawn_position);
-}
-
 // Ares
 HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRandom, HouseClass* const pDefault, HouseClass* const pInvoker, HouseClass* const pVictim)
 {
@@ -650,6 +628,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->NumShipyards_NonMFB)
 		.Process(this->AIFireSaleDelayTimer)
 		.Process(this->SuspendedEMPulseSWs)
+		.Process(this->SuperExts)
 		;
 }
 

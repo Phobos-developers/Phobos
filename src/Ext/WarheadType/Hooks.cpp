@@ -212,13 +212,11 @@ DEFINE_HOOK(0x48922D, GetTotalDamage_NegativeDamageModifiers2, 0x5)
 	{
 		NegativeDamageTemp::ApplyNegativeDamageModifiers = false;
 		R->ECX(damage);
-
 	}
 	else
 	{
 		R->ECX(damage < 0 ? 0 : damage);
 	}
-
 
 	return SkipGameCode;
 }
