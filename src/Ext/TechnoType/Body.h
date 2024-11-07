@@ -238,17 +238,11 @@ public:
 			ValueableIdx<LaserTrailTypeClass> idxType;
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
-
-			bool Load(PhobosStreamReader& stm, bool registerForChange);
-			bool Save(PhobosStreamWriter& stm) const;
-
-		private:
-			template <typename T>
-			bool Serialize(T& stm);
+			LaserTrailTypeClass* GetType() const { return &LaserTrailTypeClass::Array[idxType]; }
 		};
 
 		std::vector<LaserTrailDataEntry> LaserTrailData;
-
+		Valueable<bool> OnlyUseLandSequences;
 		Nullable<CoordStruct> PronePrimaryFireFLH;
 		Nullable<CoordStruct> ProneSecondaryFireFLH;
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
@@ -257,6 +251,7 @@ public:
 		std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -378,6 +373,8 @@ public:
 			, SelfHealGainType {}
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
+
+			, OnlyUseLandSequences { false }
 
 			, PronePrimaryFireFLH {}
 			, ProneSecondaryFireFLH {}

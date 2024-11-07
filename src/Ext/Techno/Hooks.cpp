@@ -85,6 +85,38 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 	return aresProcess();
 }
 
+DEFINE_HOOK(0x6FA540, TechnoClass_AI_ChargeTurret, 0x6)
+{
+	enum { SkipGameCode = 0x6FA5BE };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->ChargeTurretDelay <= 0)
+	{
+		pThis->CurrentTurretNumber = 0;
+		return SkipGameCode;
+	}
+
+	auto const pType = pThis->GetTechnoType();
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	int timeLeft = pThis->RearmTimer.GetTimeLeft();
+
+	if (pExt->ChargeTurretTimer.HasStarted())
+		timeLeft = pExt->ChargeTurretTimer.GetTimeLeft();
+	else if (pExt->ChargeTurretTimer.Expired())
+		pExt->ChargeTurretTimer.Stop();
+
+	int turretCount = pType->TurretCount;
+	int turretIndex = Math::max(0, timeLeft * turretCount / pThis->ChargeTurretDelay);
+
+	if (turretIndex >= turretCount)
+		turretIndex = turretCount - 1;
+
+	pThis->CurrentTurretNumber = turretIndex;
+
+	return SkipGameCode;
+}
+
 #pragma endregion
 
 #pragma region Init
@@ -275,15 +307,51 @@ DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x6FDC87, TechnoClass_ArmorMultiplier, 0x6) // TechnoClass_AdjustDamage
-DEFINE_HOOK(0x701966, TechnoClass_ArmorMultiplier, 0x6)       // TechnoClass_ReceiveDamage
+static int CalculateArmorMultipliers(TechnoClass* pThis, int damage, WarheadTypeClass* pWarhead)
 {
-	TechnoClass* pThis = R->Origin() == 0x701966 ? R->ESI<TechnoClass*>() : R->EDI<TechnoClass*>();
-	GET(int, damage, EAX);
-
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	damage = static_cast<int>(damage / pExt->AE.ArmorMultiplier);
-	R->EAX(damage);
+	double mult = pExt->AE.ArmorMultiplier;
+
+	if (pExt->AE.HasRestrictedArmorMultipliers)
+	{
+		for (auto const& attachEffect : pExt->AttachedEffects)
+		{
+			if (!attachEffect->IsActive())
+				continue;
+
+			auto const type = attachEffect->GetType();
+
+			if (type->ArmorMultiplier_DisallowWarheads.Contains(pWarhead))
+				continue;
+
+			if (type->ArmorMultiplier_AllowWarheads.size() > 0 && !type->ArmorMultiplier_AllowWarheads.Contains(pWarhead))
+				continue;
+
+			mult *= type->ArmorMultiplier;
+		}
+	}
+
+	return static_cast<int>(damage / mult);
+}
+
+DEFINE_HOOK(0x6FDC87, TechnoClass_AdjustDamage_ArmorMultiplier, 0x6)
+{
+	GET(TechnoClass*, pTarget, EDI);
+	GET(int, damage, EAX);
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, 0x8));
+
+	R->EAX(CalculateArmorMultipliers(pTarget, damage, pWeapon->Warhead));
+
+	return 0;
+}
+
+DEFINE_HOOK(0x701966, TechnoClass_ReceiveDamage_ArmorMultiplier, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, damage, EAX);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+
+	R->EAX(CalculateArmorMultipliers(pThis, damage, pWarhead));
 
 	return 0;
 }

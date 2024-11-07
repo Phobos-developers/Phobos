@@ -15,11 +15,7 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 	{
 		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
-			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
-			{
-				this->LaserTrails.push_back(
-					LaserTrailClass { pLaserType, this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret });
-			}
+			this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
 		}
 	}
 }

@@ -237,9 +237,25 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 			auto types = make_iterator_single(pAnimType);
 
 			if (pWHExt->SplashList_CreateAll && pWHExt->Splashed)
+			{
 				types = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
-			else if (pWHExt->AnimList_CreateAll && !pWHExt->Splashed)
-				types = pWHExt->OwnerObject()->AnimList;
+			}
+			else if (!pWHExt->Splashed)
+			{
+				bool createAll = pWHExt->AnimList_CreateAll;
+
+				if (pWHExt->Crit_Active && !pWHExt->Crit_AnimOnAffectedTargets)
+				{
+					createAll = pWHExt->Crit_AnimList_CreateAll.Get(createAll);
+
+					if (createAll)
+						types = pWHExt->Crit_AnimList;
+				}
+				else if (createAll)
+				{
+					types = pWHExt->OwnerObject()->AnimList;
+				}
+			}
 
 			for (auto const& pType : types)
 			{
@@ -254,20 +270,17 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 					animCoords = MapClass::GetRandomCoordsNear(animCoords, distance, false);
 				}
 
-				if (auto const pAnim = GameCreate<AnimClass>(pType, animCoords, 0, 1, 0x2600, -15, false))
+				auto const pAnim = GameCreate<AnimClass>(pType, animCoords, 0, 1, 0x2600, -15, false);
+				createdAnim = true;
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+
+				if (!pAnim->Owner)
+					pAnim->Owner = pInvoker;
+
+				if (pThis->Owner)
 				{
-					createdAnim = true;
-
-					AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
-
-					if (!pAnim->Owner)
-						pAnim->Owner = pInvoker;
-
-					if (pThis->Owner)
-					{
-						auto pExt = AnimExt::ExtMap.Find(pAnim);
-						pExt->SetInvoker(pThis->Owner);
-					}
+					auto pExt = AnimExt::ExtMap.Find(pAnim);
+					pExt->SetInvoker(pThis->Owner);
 				}
 			}
 		}
@@ -286,6 +299,8 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct*, coords, 0x8);
 
+	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+
 	// Extra warheads
 	if (pThis->WeaponType)
 	{
@@ -295,7 +310,6 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		for (size_t i = 0; i < pWeaponExt->ExtraWarheads.size(); i++)
 		{
 			auto const pWH = pWeaponExt->ExtraWarheads[i];
-			auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 			int damage = defaultDamage;
 			size_t size = pWeaponExt->ExtraWarheads_DamageOverrides.size();
 
@@ -346,10 +360,8 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 				pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
 				pBullet->WeaponType = pWeapon;
-				auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-				pBulletExt->FirerHouse = pBulletExt->FirerHouse;
-
 				pBullet->MoveTo(pThis->Location, BulletVelocity::Empty);
+				BulletExt::ExtMap.Find(pBullet)->FirerHouse = pOwner;
 			}
 		}
 	}
