@@ -241,18 +241,18 @@ namespace JumpjetRushHelpers
 
 int JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(Point2D location)
 {
-	CellClass* const pCell = MapClass::Instance->TryGetCellAt(CellStruct{ static_cast<short>(location.X >> 8), static_cast<short>(location.Y >> 8) });
+	const auto pCell = MapClass::Instance->TryGetCellAt(CellStruct{ static_cast<short>(location.X >> 8), static_cast<short>(location.Y >> 8) });
 
 	if (!pCell)
 		return -1;
 
-	int height = pCell->GetFloorHeight(Point2D{ location.X & 0xFF, location.Y & 0xFF });
+	auto height = pCell->GetFloorHeight(Point2D{ location.X & 0xFF, location.Y & 0xFF });
 
-	for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+	for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 	{
-		if (BuildingClass* const pBuilding = abstract_cast<BuildingClass*>(pObject))
+		if (const auto pBuilding = abstract_cast<BuildingClass*>(pObject))
 		{
-			CoordStruct dim2 = CoordStruct::Empty;
+			auto dim2 = CoordStruct::Empty;
 			pBuilding->Type->Dimension2(&dim2);
 			return dim2.Z + height;
 		}
@@ -261,7 +261,7 @@ int JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(Point2D location)
 	if (pCell->FindTechnoNearestTo(Point2D::Empty, false))
 		height += 85; // Vanilla
 
-	if (pCell->Flags & CellFlags::BridgeHead)
+	if (pCell->ContainsBridge())
 		height += CellClass::BridgeHeight;
 
 	return height;
@@ -269,26 +269,26 @@ int JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(Point2D location)
 
 int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* pThis)
 {
-	FootClass* const pFoot = pThis->LinkedTo;
-	const CoordStruct location = pFoot->Location;
-	const int curHeight = location.Z - pFoot->GetTechnoType()->JumpjetHeight;
-	Point2D curCoord = { location.X, location.Y };
-	int maxHeight = JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(curCoord);
+	const auto pFoot = pThis->LinkedTo;
+	const auto location = pFoot->Location;
+	const auto curHeight = location.Z - pFoot->GetTechnoType()->JumpjetHeight;
+	auto curCoord = Point2D { location.X, location.Y };
+	auto maxHeight = JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(curCoord);
 
 	if (pThis->State == JumpjetLocomotionClass::State::Cruising)
 	{
-		const double checkLength = CellClass::BridgeHeight / pThis->Climb * pThis->CurrentSpeed;
-		const double angle = -pThis->LocomotionFacing.Current().GetRadian<32>();
-		Point2D stepCoord { static_cast<int>(checkLength * cos(angle)), static_cast<int>(checkLength * sin(angle)) };
-		const int largeStep = Math::max(abs(stepCoord.X), abs(stepCoord.Y));
+		const auto checkLength = CellClass::BridgeHeight / pThis->Climb * pThis->CurrentSpeed;
+		const auto angle = -pThis->LocomotionFacing.Current().GetRadian<32>();
+		auto stepCoord = Point2D { static_cast<int>(checkLength * cos(angle)), static_cast<int>(checkLength * sin(angle)) };
+		const auto largeStep = Math::max(abs(stepCoord.X), abs(stepCoord.Y));
 
 		if (largeStep)
 		{
-			const double stepMult = static_cast<double>(Unsorted::LeptonsPerCell / 2) / largeStep;
+			const auto stepMult = static_cast<double>(Unsorted::LeptonsPerCell / 2) / largeStep;
 			stepCoord = { static_cast<int>(stepCoord.X * stepMult), static_cast<int>(stepCoord.Y * stepMult) };
 
 			curCoord += stepCoord;
-			int height = JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(curCoord);
+			auto height = JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(curCoord);
 
 			if (height > maxHeight)
 				maxHeight = height;
@@ -298,7 +298,7 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 			if (maxHeight <= curHeight)
 				JumpjetRushHelpers::Skip = true;
 
-			const int checkStep = (largeStep >> 7) + ((largeStep & 0x7F) ? 2 : 1); // Math::ceil(largeStep / (Unsorted::LeptonsPerCell / 2)) + 1
+			const auto checkStep = (largeStep >> 7) + ((largeStep & 0x7F) ? 2 : 1); // Math::ceil(largeStep / (Unsorted::LeptonsPerCell / 2)) + 1
 
 			for (int i = 0; i < checkStep && height >= 0; ++i)
 			{
