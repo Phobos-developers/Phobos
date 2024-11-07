@@ -111,22 +111,30 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 	GET_STACK(const RectangleStruct, boundingRect, STACK_OFFSET(0x48C, -0x3E0));
 	GET_STACK(TechnoTypeClass* const, pType, STACK_OFFSET(0x48C, -0x458));
 
-	const Point2D position { destX + 30, destY + 24 };
 	HouseClass* const pHouse = HouseClass::CurrentPlayer;
-	const RulesExt::ExtData* const pRulesExt = RulesExt::Global();
-	const CoordStruct frames = pRulesExt->CameoOverlayFrames;
+	const auto position = Point2D { destX + 30, destY + 24 };
+	const auto pRulesExt = RulesExt::Global();
+	const auto frames = pRulesExt->CameoOverlayFrames.Get();
 
 	if (greyCameo) // Only draw extras over grey cameos
 	{
-		int frame = frames.Y;
-		TechnoTypeExt::ExtData* const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto frame = frames.Y;
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (pTypeExt && pTypeExt->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
 		{
 			auto& vec = HouseExt::ExtMap.Find(pHouse)->OwnedExistCameoTechnoTypes;
 
 			if (std::find(vec.begin(), vec.end(), pTypeExt) != vec.end())
+			{
+				if (const auto CameoPCX = pTypeExt->GreyCameoPCX.GetSurface())
+				{
+					auto drawRect = RectangleStruct { destX, destY, 60, 48 };
+					PCX::Instance->BlitToSurface(&drawRect, DSurface::Sidebar, CameoPCX);
+				}
+
 				frame = frames.Z;
+			}
 		}
 
 		if (frame >= 0)
@@ -144,11 +152,11 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 		}
 	}
 
-	BuildingTypeClass* const pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+	const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
 
 	if (pBuildingType) // Only count owned buildings
 	{
-		int count = BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse);
+		auto count = BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse);
 
 		if (count == -1)
 			count = pHouse->CountOwnedAndPresent(pBuildingType);
@@ -169,14 +177,13 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 					1000, 0, 0, 0, 0, 0);
 			}
 
-			if (pRulesExt->BuildingStatisticsCameo)
+			if (Phobos::Config::BuildingStatisticsCameo)
 			{
 				GET_STACK(RectangleStruct, surfaceRect, STACK_OFFSET(0x48C, -0x438));
 
 				const COLORREF color = Drawing::RGB_To_Int(Drawing::TooltipColor);
-				const TextPrintType printType = TextPrintType::Background |
-					TextPrintType::Right | TextPrintType::FullShadow | TextPrintType::Point8;
-				Point2D textPosition { destX + 60, destY + 1 };
+				const TextPrintType printType = TextPrintType::Background | TextPrintType::Right | TextPrintType::FullShadow | TextPrintType::Point8;
+				auto textPosition = Point2D { destX + 60, destY + 1 };
 
 				wchar_t text[0x20];
 				swprintf_s(text, L"%d", count);

@@ -517,6 +517,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exArtINI(CCINIClass::INI_Art);
 	auto pArtSection = pThis->ImageFile;
 
+	this->GreyCameoPCX.Read(&CCINIClass::INI_Art, pArtSection, "GreyCameoPCX");
+
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 	this->TurretShadow.Read(exArtINI, pArtSection, "TurretShadow");
 	ValueableVector<int> shadow_indices;
@@ -843,6 +845,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PrerequisiteForCameo)
 		.Process(this->CameoCheckMutex)
 		.Process(this->UIExtraDescription)
+		.Process(this->GreyCameoPCX)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)

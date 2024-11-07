@@ -232,6 +232,7 @@ public:
 		Valueable<TechnoTypeClass*> PrerequisiteForCameo;
 		bool CameoCheckMutex; // Not read from ini
 		Valueable<CSFText> UIExtraDescription;
+		PhobosPCXFile GreyCameoPCX;
 
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
@@ -462,6 +463,7 @@ public:
 			, PrerequisiteForCameo {}
 			, CameoCheckMutex { false }
 			, UIExtraDescription {}
+			, GreyCameoPCX {}
 
 			, Wake { }
 			, Wake_Grapple { }

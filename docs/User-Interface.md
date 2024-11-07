@@ -390,7 +390,7 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 ### Show cameo when unbuildable
 
 - A setting that allows you to preview information. This feature can be used as before, playing "new construction options" and clearing the specific production queue when prerequisites loss.
-  - `AlwaysExistTheCameo` controls whether you can see the cameo when the prerequisite have not satisfied (`TechnoLevel`, `Owner`, `RequiredHouses` and `ForbiddenHouses` should be satisfied). Defaults to `[AudioVisual]` -> `AlwaysExistTheCameo`.
+  - `AlwaysExistTheCameo` controls whether you can see the cameo when the prerequisite have not satisfied (`TechnoLevel`, `Owner`, `RequiredHouses` and `ForbiddenHouses` should be satisfied). Defaults to `[AudioVisual]` -> `AlwaysExistTheCameo`. The `GreyCameoPCX` is an additional image drawn on top of the cameo in this state.
   - `BuildingStatisticsCameo` controls whether the number of buildings of this type that you currently own needs to be displayed in the upper right corner of the building cameo (requires the cameo exist).
   - `CameoOverlayShapes` controls the drawn image file.
   - `CameoOverlayFrames` controls which frame in `CameoOverlayShapes` to draw in three different situations: currently owned this building type, grey cameo and have its prerequisite, grey cameo but have no prerequisite (The last situation requires `AlwaysExistTheCameo` to be true). When set to a negative number, it means that there is no need to draw under the corresponding conditions.
@@ -416,6 +416,12 @@ CameoOverlayPalette=palette.pal  ; filename - including the .pal extension
 AlwaysExistTheCameo=             ; boolean
 PrerequisiteForCameo=            ; TechnoType
 UIExtraDescription=              ; CSF entry key
+```
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType
+GreyCameoPCX=                    ; PCX filename - including the .pcx extension
 ```
 
 ### Harvester counter
