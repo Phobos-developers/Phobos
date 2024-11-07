@@ -248,6 +248,8 @@ public:
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
+		Valueable<int> DigitalDisplay_Health_FakeStrength;
+		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -450,6 +452,9 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+
+			, DigitalDisplay_Health_FakeStrength { -1 }
+			, DigitalDisplay_Health_FakeAtDisguise { true }
 		{ }
 
 		virtual ~ExtData() = default;

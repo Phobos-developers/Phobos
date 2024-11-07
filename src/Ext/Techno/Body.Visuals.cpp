@@ -371,6 +371,10 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		value = pThis->Health;
 		maxValue = pType->Strength;
+
+		if (!pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
+			GetDigitalDisplayFakeHealth(pThis, value, maxValue);
+
 		break;
 	}
 	case DisplayInfoType::Shield:
@@ -463,5 +467,24 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		maxValue = pType->Strength;
 		break;
 	}
+	}
+}
+
+void TechnoExt::GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue)
+{
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	int newMaxValue = pTypeExt->DigitalDisplay_Health_FakeStrength;
+
+	if (pThis->Disguised && pTypeExt->DigitalDisplay_Health_FakeAtDisguise)
+	{
+		if (const auto pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+			newMaxValue = pType->Strength;
+	}
+
+	if (newMaxValue >= 0)
+	{
+		double ratio = static_cast<double>(value) / maxValue;
+		value = static_cast<int>(ratio * newMaxValue);
+		maxValue = newMaxValue;
 	}
 }
