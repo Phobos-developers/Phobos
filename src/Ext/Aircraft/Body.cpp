@@ -87,11 +87,11 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 
 			if (docks > 0 && linkIndex >= 0 && linkIndex < docks)
 			{
-				if (!pBuildingTypeExt->AircraftDockingDirs[linkIndex].empty())
-					return pBuildingTypeExt->AircraftDockingDirs[linkIndex].get();
+				if (pBuildingTypeExt->AircraftDockingDirs[linkIndex].has_value())
+					return *pBuildingTypeExt->AircraftDockingDirs[linkIndex];
 			}
-			else if (docks > 0 && !pBuildingTypeExt->AircraftDockingDirs[0].empty())
-				return pBuildingTypeExt->AircraftDockingDirs[0].get();
+			else if (docks > 0 && pBuildingTypeExt->AircraftDockingDirs[0].has_value())
+				return *pBuildingTypeExt->AircraftDockingDirs[0];
 		}
 		else if (!pThis->Type->AirportBound)
 			return pLink->PrimaryFacing.Current().GetDir();
@@ -102,5 +102,5 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 	if (!pThis->Type->AirportBound && landingDir < 0)
 		return pThis->PrimaryFacing.Current().GetDir();
 
-	return static_cast<DirType>(Math::clamp(landingDir, 0, 255));
+	return static_cast<DirType>(std::clamp(landingDir, 0, 255));
 }

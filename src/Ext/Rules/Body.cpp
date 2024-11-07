@@ -201,6 +201,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AIAllToHunt.Read(exINI, GameStrings::General, "AIAllToHunt");
 	this->RepairBaseNodes.Read(exINI, GameStrings::Basic, "RepairBaseNodes");
 
+	this->WarheadParticleAlphaImageIsLightFlash.Read(exINI, GameStrings::AudioVisual, "WarheadParticleAlphaImageIsLightFlash");
+	this->CombatLightDetailLevel.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel");
+	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -379,6 +383,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AIFireSaleDelay)
 		.Process(this->AIAllToHunt)
 		.Process(this->RepairBaseNodes)
+		.Process(this->WarheadParticleAlphaImageIsLightFlash)
+		.Process(this->CombatLightDetailLevel)
+		.Process(this->LightFlashAlphaImageDetailLevel)
 		;
 }
 
@@ -419,17 +426,6 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 
 	if (needCacheFlush)
 		Game::DestroyVoxelCaches();
-}
-
-
-bool RulesExt::LoadGlobals(PhobosStreamReader& Stm)
-{
-	return Stm.Success();
-}
-
-bool RulesExt::SaveGlobals(PhobosStreamWriter& Stm)
-{
-	return Stm.Success();
 }
 
 // =============================
