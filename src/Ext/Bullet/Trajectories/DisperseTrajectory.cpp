@@ -1165,7 +1165,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 
 				//The created bullet's velocity calculation has been completed, so we should stack the calculations.
-				if (!pTrajType->UniqueCurve && pTrajectory->PreAimCoord != CoordStruct::Empty && pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
+				if (pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1 && !pTrajType->UniqueCurve && pTrajectory->PreAimCoord != CoordStruct::Empty)
 					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 			}
 /*			else if (flag == TrajectoryFlag::Straight) // TODO If merge #1294
@@ -1175,15 +1175,18 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 
 				//The straight trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
-				if (pTrajType->LeadTimeCalculate && abstract_cast<FootClass*>(pTarget))
+				if (pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
 				{
-					pTrajectory->CurrentBurst = curBurst;
-					pTrajectory->CountOfBurst = maxBurst;
-					pTrajectory->UseDisperseBurst = false;
-				}
-				else if (pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
-				{
-					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
+					if (pTrajType->LeadTimeCalculate && abstract_cast<FootClass*>(pTarget))
+					{
+						pTrajectory->CurrentBurst = curBurst;
+						pTrajectory->CountOfBurst = maxBurst;
+						pTrajectory->UseDisperseBurst = false;
+					}
+					else
+					{
+						this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
+					}
 				}
 			}*/
 /*			else if (flag == TrajectoryFlag::Bombard) // TODO If merge #1404
@@ -1192,12 +1195,14 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				const auto pTrajType = pTrajectory->Type;
 
 				//The bombard trajectory bullets without NoLaunch and FreeFallOnTarget can change the velocity.
-				if (!(pTrajType->NoLaunch && pTrajType->FreeFallOnTarget) && pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
+				if (pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1 && (!pTrajType->NoLaunch || !pTrajType->FreeFallOnTarget))
 				{
 					pTrajectory->CurrentBurst = curBurst;
 					pTrajectory->CountOfBurst = maxBurst;
 					pTrajectory->UseDisperseBurst = false;
-					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
+
+					if (!pTrajType->NoLaunch || !pTrajType->LeadTimeCalculate || !abstract_cast<FootClass*>(pTarget))
+						this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 				}
 			}*/
 /*			else if (flag == TrajectoryFlag::Parabola) // TODO If merge #1374
@@ -1206,15 +1211,18 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				const auto pTrajType = pTrajectory->Type;
 
 				//The parabola trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
-				if (pTrajType->LeadTimeCalculate && abstract_cast<FootClass*>(pTarget))
+				if (pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
 				{
-					pTrajectory->CurrentBurst = curBurst;
-					pTrajectory->CountOfBurst = maxBurst;
-					pTrajectory->UseDisperseBurst = false;
-				}
-				else if (pTrajectory->UseDisperseBurst && abs(pTrajType->RotateCoord) > 1e-10 && maxBurst > 1)
-				{
-					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
+					if (pTrajType->LeadTimeCalculate && abstract_cast<FootClass*>(pTarget))
+					{
+						pTrajectory->CurrentBurst = curBurst;
+						pTrajectory->CountOfBurst = maxBurst;
+						pTrajectory->UseDisperseBurst = false;
+					}
+					else
+					{
+						this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
+					}
 				}
 			}*/
 		}
