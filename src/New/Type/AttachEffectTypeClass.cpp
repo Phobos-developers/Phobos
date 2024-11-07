@@ -123,6 +123,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->FirepowerMultiplier.Read(exINI, pSection, "FirepowerMultiplier");
 	this->ArmorMultiplier.Read(exINI, pSection, "ArmorMultiplier");
+	this->ArmorMultiplier_AllowWarheads.Read(exINI, pSection, "ArmorMultiplier.AllowWarheads");
+	this->ArmorMultiplier_DisallowWarheads.Read(exINI, pSection, "ArmorMultiplier.DisallowWarheads");
 	this->SpeedMultiplier.Read(exINI, pSection, "SpeedMultiplier");
 	this->ROFMultiplier.Read(exINI, pSection, "ROFMultiplier");
 	this->ROFMultiplier_ApplyOnCurrentTimer.Read(exINI, pSection, "ROFMultiplier.ApplyOnCurrentTimer");
@@ -184,6 +186,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Tint_VisibleToHouses)
 		.Process(this->FirepowerMultiplier)
 		.Process(this->ArmorMultiplier)
+		.Process(this->ArmorMultiplier_AllowWarheads)
+		.Process(this->ArmorMultiplier_DisallowWarheads)
 		.Process(this->SpeedMultiplier)
 		.Process(this->ROFMultiplier)
 		.Process(this->ROFMultiplier_ApplyOnCurrentTimer)
@@ -269,6 +273,55 @@ namespace detail
 				else
 				{
 					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<ExpireWeaponCondition>(ExpireWeaponCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = ExpireWeaponCondition::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "none"))
+				{
+					parsed |= ExpireWeaponCondition::None;
+				}
+				else if (!_strcmpi(cur, "expire"))
+				{
+					parsed |= ExpireWeaponCondition::Expire;
+				}
+				else if (!_strcmpi(cur, "remove"))
+				{
+					parsed |= ExpireWeaponCondition::Remove;
+				}
+				else if (!_strcmpi(cur, "death"))
+				{
+					parsed |= ExpireWeaponCondition::Death;
+				}
+				else if (!_strcmpi(cur, "discard"))
+				{
+					parsed |= ExpireWeaponCondition::Discard;
+				}
+				else if (!_strcmpi(cur, "all"))
+				{
+					parsed |= ExpireWeaponCondition::All;
+				}
+				else
+				{
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a expire weapon trigger condition type");
 					return false;
 				}
 			}

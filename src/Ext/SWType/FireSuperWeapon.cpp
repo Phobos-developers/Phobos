@@ -17,27 +17,28 @@
 
 void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 {
-	if (auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type))
-	{
-		if (pTypeExt->LimboDelivery_Types.size() > 0)
-			pTypeExt->ApplyLimboDelivery(pSW->Owner);
+	auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
 
-		if (pTypeExt->LimboKill_IDs.size() > 0)
-			pTypeExt->ApplyLimboKill(pSW->Owner);
+	if (pTypeExt->LimboDelivery_Types.size() > 0)
+		pTypeExt->ApplyLimboDelivery(pSW->Owner);
 
-		if (pTypeExt->Detonate_Warhead || pTypeExt->Detonate_Weapon)
-			pTypeExt->ApplyDetonation(pSW->Owner, cell);
+	if (pTypeExt->LimboKill_IDs.size() > 0)
+		pTypeExt->ApplyLimboKill(pSW->Owner);
 
-		if (pTypeExt->SW_Next.size() > 0)
-			pTypeExt->ApplySWNext(pSW, cell);
+	if (pTypeExt->Detonate_Warhead || pTypeExt->Detonate_Weapon)
+		pTypeExt->ApplyDetonation(pSW->Owner, cell);
 
-		if (pTypeExt->Convert_Pairs.size() > 0)
-			pTypeExt->ApplyTypeConversion(pSW);
+	if (pTypeExt->SW_Next.size() > 0)
+		pTypeExt->ApplySWNext(pSW, cell);
 
-		if (static_cast<int>(pSW->Type->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
-			pTypeExt->HandleEMPulseLaunch(pSW, cell);
-	}
+	if (pTypeExt->Convert_Pairs.size() > 0)
+		pTypeExt->ApplyTypeConversion(pSW);
 
+	if (static_cast<int>(pSW->Type->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
+		pTypeExt->HandleEMPulseLaunch(pSW, cell);
+
+	auto& sw_ext = HouseExt::ExtMap.Find(pSW->Owner)->SuperExts[pSW->Type->ArrayIndex];
+	sw_ext.ShotCount++;
 }
 
 // ====================================================
@@ -88,21 +89,27 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		if (pType->SecretLab)
 			pOwner->SecretLabs.AddItem(pBuilding);
 
+		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+
 		if (pType->FactoryPlant)
 		{
-			pOwner->FactoryPlants.AddItem(pBuilding);
-			pOwner->CalculateCostMultipliers();
+			if (pBuildingExt->TypeExtData->FactoryPlant_AllowTypes.size() > 0 || pBuildingExt->TypeExtData->FactoryPlant_DisallowTypes.size() > 0)
+			{
+				pOwnerExt->RestrictedFactoryPlants.push_back(pBuilding);
+			}
+			else
+			{
+				pOwner->FactoryPlants.AddItem(pBuilding);
+				pOwner->CalculateCostMultipliers();
+			}
 		}
 
 		// BuildingClass::Place is already called in DiscoveredBy
 		// it added OrePurifier and xxxGainSelfHeal to House counter already
 
-		auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
-
 		// LimboKill ID
 		pBuildingExt->LimboID = ID;
-
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 
 		// Add building to list of owned limbo buildings
 		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);

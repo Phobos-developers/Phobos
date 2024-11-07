@@ -54,9 +54,11 @@ DEFINE_HOOK(0x48A62E, DoFlash_CombatLightOptions, 0x6)
 	if (Phobos::Config::HideLightFlashEffects)
 		return SkipFlash;
 
-	GET(int, currentDetailLevel, EAX);
 	GET(WarheadTypeClass*, pWH, EDI);
+	GET(int, currentDetailLevel, EAX);
+	GET(int, damage, ECX);
 
+	R->ESI(damage); // Restore overridden instructions.
 	int detailLevel = RulesExt::Global()->CombatLightDetailLevel;
 
 	if (pWH)
@@ -66,6 +68,9 @@ DEFINE_HOOK(0x48A62E, DoFlash_CombatLightOptions, 0x6)
 
 		if (pWHExt->CombatLightChance < Randomizer::Global->RandomDouble())
 			return SkipFlash;
+
+		if (pWHExt->CLIsBlack)
+			R->EBX(SpotlightFlags::NoColor);
 	}
 
 	if (detailLevel <= currentDetailLevel)
