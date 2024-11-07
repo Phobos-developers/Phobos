@@ -163,7 +163,7 @@ DEFINE_HOOK(0x6F737F, TechnoClass_InRange_WeaponMinimumRange, 0x6)
 
 	auto pTechno = InRangeTemp::Techno;
 
-	if (const int keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pTechno, true))
+	if (const auto keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pTechno, true))
 		R->ECX(keepRange);
 	else
 		return 0;

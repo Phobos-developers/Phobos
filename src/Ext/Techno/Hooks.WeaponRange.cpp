@@ -66,7 +66,7 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange_WeaponRange, 0x6)
 
 	int range = 0;
 
-	if (const int keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pThis, false))
+	if (const auto keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pThis, false))
 		range = keepRange;
 	else
 		range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);

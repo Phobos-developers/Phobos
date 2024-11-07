@@ -299,9 +299,9 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 	if (!pThis || !pFirer)
 		return 0;
 
-	AbstractType const absType = pFirer->WhatAmI();
-	WeaponTypeExt::ExtData* const pExt = WeaponTypeExt::ExtMap.Find(pThis);
-	int keepRange = pExt->KeepRange.Get();
+	const auto absType = pFirer->WhatAmI();
+	const auto pExt = WeaponTypeExt::ExtMap.Find(pThis);
+	const auto keepRange = pExt->KeepRange.Get();
 
 	if (!keepRange || (absType != AbstractType::Infantry && absType != AbstractType::Unit))
 		return 0;
@@ -318,12 +318,12 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 
 	if (!pFirer->RearmTimer.InProgress())
 	{
-		SpawnManagerClass* const spawnManager = pFirer->SpawnManager;
+		const auto spawnManager = pFirer->SpawnManager;
 
 		if (!spawnManager || spawnManager->Status != SpawnManagerStatus::CoolDown)
 			return 0;
 
-		const int spawnsNumber = pFirer->GetTechnoType()->SpawnsNumber;
+		const auto spawnsNumber = pFirer->GetTechnoType()->SpawnsNumber;
 
 		for (int i = 0; i < spawnsNumber; i++)
 		{
@@ -339,8 +339,8 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 	}
 	else if (keepRange < 0)
 	{
-		const int checkRange = -keepRange - 128;
-		AbstractClass* const pTarget = pFirer->Target;
+		const auto checkRange = -keepRange - 128;
+		const auto pTarget = pFirer->Target;
 
 		if (pTarget && static_cast<int>(pFirer->GetCoords().DistanceFrom(pTarget->GetCoords())) >= checkRange)
 			return (checkRange > 128) ? checkRange : 128;
