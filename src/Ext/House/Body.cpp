@@ -361,28 +361,6 @@ void HouseExt::GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSph
 	}
 }
 
-// Gives player houses names based on their spawning spot
-void HouseExt::SetSkirmishHouseName(HouseClass* pHouse)
-{
-	int spawn_position = pHouse->GetSpawnPosition();
-
-	// Default behaviour if something went wrong
-	if (spawn_position < 0 || spawn_position > 7)
-	{
-		if (pHouse->IsHumanPlayer)
-			sprintf(pHouse->PlainName, "<human player>");
-		else
-			sprintf(pHouse->PlainName, "Computer");
-	}
-	else
-	{
-		const char letters[9] = "ABCDEFGH";
-		sprintf(pHouse->PlainName, "<Player @ %c>", letters[spawn_position]);
-	}
-
-	Debug::Log("%s, %ls, position %d\n", pHouse->PlainName, pHouse->UIName, spawn_position);
-}
-
 // Ares
 HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRandom, HouseClass* const pDefault, HouseClass* const pInvoker, HouseClass* const pVictim)
 {
@@ -578,27 +556,27 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 		{
 		case AbstractType::BuildingType:
 			if (((BuildingTypeClass*)pTechnoType)->BuildCat == BuildCat::Combat)
-				currentMult -= pBuilding->Type->DefensesCostBonus;
+				currentMult = pBuilding->Type->DefensesCostBonus;
 			else
-				currentMult -= pBuilding->Type->BuildingsCostBonus;
+				currentMult = pBuilding->Type->BuildingsCostBonus;
 			break;
 		case AbstractType::AircraftType:
-			currentMult -= pBuilding->Type->AircraftCostBonus;
+			currentMult = pBuilding->Type->AircraftCostBonus;
 			break;
 		case AbstractType::InfantryType:
-			currentMult -= pBuilding->Type->InfantryCostBonus;
+			currentMult = pBuilding->Type->InfantryCostBonus;
 			break;
 		case AbstractType::UnitType:
-			currentMult -= pBuilding->Type->UnitsCostBonus;
+			currentMult = pBuilding->Type->UnitsCostBonus;
 			break;
 		default:
 			break;
 		}
 
-		mult *= (1.0f - currentMult * pTechnoTypeExt->FactoryPlant_Multiplier);
+		mult *= currentMult;
 	}
 
-	return mult;
+	return 1.0f - ((1.0f - mult) * pTechnoTypeExt->FactoryPlant_Multiplier);
 }
 
 void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
@@ -649,6 +627,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->NumConYards_NonMFB)
 		.Process(this->NumShipyards_NonMFB)
 		.Process(this->AIFireSaleDelayTimer)
+		.Process(this->SuspendedEMPulseSWs)
+		.Process(this->SuperExts)
 		;
 }
 

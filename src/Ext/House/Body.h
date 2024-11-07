@@ -54,6 +54,14 @@ public:
 		int NumConYards_NonMFB;
 		int NumShipyards_NonMFB;
 
+		std::map<SuperClass*, std::vector<SuperClass*>> SuspendedEMPulseSWs;
+		// standalone? no need and not a good idea
+		struct SWExt
+		{
+			int ShotCount;
+		};
+		std::vector<SWExt> SuperExts;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -77,6 +85,8 @@ public:
 			, NumConYards_NonMFB { 0 }
 			, NumShipyards_NonMFB { 0 }
 			, AIFireSaleDelayTimer {}
+			, SuspendedEMPulseSWs {}
+			, SuperExts(SuperWeaponTypeClass::Array->Count)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
@@ -134,7 +144,6 @@ public:
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
 	static void GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSphere, SuperClass*& pSuperCWarp);
-	static void SetSkirmishHouseName(HouseClass* pHouse);
 
 	static bool IsDisabledFromShell(
 	HouseClass const* pHouse, BuildingTypeClass const* pItem);
