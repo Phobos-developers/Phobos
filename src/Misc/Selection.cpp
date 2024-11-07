@@ -48,7 +48,8 @@ public:
 			int nLocalY = selectable.Y - pThis->TacticalPos.Y;
 
 			if ((nLocalX >= pRect->Left && nLocalX < pRect->Right + pRect->Left) &&
-				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top)) {
+				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top))
+			{
 				return true;
 			}
 		}
@@ -65,8 +66,8 @@ public:
 		return false;
 	}
 
-	static // Reversed from Tactical::Select
-	void Tactical_SelectFiltered(TacticalClass* pThis, LTRBStruct* pRect, callback_type check_callback, bool bPriorityFiltering)
+	// Reversed from Tactical::Select
+	static void Tactical_SelectFiltered(TacticalClass* pThis, LTRBStruct* pRect, callback_type check_callback, bool bPriorityFiltering)
 	{
 		Unsorted::MoveFeedback = true;
 
@@ -103,10 +104,11 @@ public:
 		Unsorted::MoveFeedback = true;
 	}
 
-	static // Reversed from Tactical::MakeSelection
-	void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void*_, callback_type check_callback)
+	// Reversed from Tactical::MakeSelection
+	static void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void* _, callback_type check_callback)
 	{
-		if (pThis->Band.Left || pThis->Band.Top) {
+		if (pThis->Band.Left || pThis->Band.Top)
+		{
 			int nLeft = pThis->Band.Left;
 			int nRight = pThis->Band.Right;
 			int nTop = pThis->Band.Top;

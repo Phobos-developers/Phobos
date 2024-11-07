@@ -45,7 +45,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1.
-  
+
 In `rulesmd.ini`:
 ```ini
 [DigitalDisplayTypes]
@@ -129,6 +129,29 @@ In `rulesmd.ini`:
 ```ini
 [SOMENAME]            ; TechnoType
 HealthBar.Hide=false  ; boolean
+```
+
+### Light flash effect toggling
+
+- It is possible to toggle certain light flash effects off. These light flash effects include:
+  - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
+  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual]` -> `WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
+    - Additionally these alpha images are not created if `[AudioVisual]`->`LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+WarheadParticleAlphaImageIsLightFlash=false  ; boolean
+LightFlashAlphaImageDetailLevel=0            ; integer
+
+[SOMEWARHEAD]                                ; WarheadType
+Particle.AlphaImageIsLightFlash=             ; boolean
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+HideLightFlashEffects=false  ; boolean
 ```
 
 ### Low priority for box selection
@@ -500,6 +523,7 @@ Sidebar.GDIPositions=  ; boolean
 - Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips.
 - TechnoType's tooltip would display it's name, cost, power, build time and description (when applicable).
 - SWType's tooltip would display it's name, cost,  and recharge time (when applicable).
+  - If `SW.Shots` from Ares is used, a C-style format string default to `Shots: %d` is appended. The format is customizable in csf. If a 2-parameter format (like `%d/%d shots left`) is used, the second integer is `SW.Shots`.
 - Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default.
 - Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
 - The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
@@ -514,6 +538,7 @@ CostLabel=<none>           ; CSF entry key
 PowerLabel=<none>          ; CSF entry key
 PowerBlackoutLabel=<none>  ; CSF entry key
 TimeLabel=<none>           ; CSF entry key
+SWShotsFormat=<none>       ; CSF entry key
 MaxWidth=0                 ; integer, pixels
 ```
 In `rulesmd.ini`:
