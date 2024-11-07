@@ -1,5 +1,5 @@
 #include "AresHelper.h"
-
+#include "AresFunctions.h"
 #include <Phobos.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
@@ -15,7 +15,6 @@ uintptr_t AresHelper::AresBaseAddress = 0x0;
 HMODULE AresHelper::AresDllHmodule = nullptr;
 AresHelper::Version AresHelper::AresVersion = AresHelper::Version::Unknown;
 bool AresHelper::CanUseAres = false;
-AresHelper::AresFunctionMap AresHelper::AresFunctionOffsetsFinal;
 
 const AresHelper::AresTimestampMap AresHelper::AresTimestampBytes =
 {
@@ -96,22 +95,14 @@ void AresHelper::Init()
 	{
 	case Version::Ares30:
 		Debug::LogDeferred("[Phobos] Detected Ares 3.0.\n");
+		AresFunctions::InitAres3_0();
 		break;
 	case Version::Ares30p:
 		Debug::LogDeferred("[Phobos] Detected Ares 3.0p1.\n");
+		AresFunctions::InitAres3_0p1();
 		break;
 	default:
 		Debug::LogDeferred("[Phobos] Detected a version of Ares that is not supported by Phobos. Disabling integration.\n");
 		break;
-	}
-
-	constexpr const wchar_t* ARES_DLL = L"Ares.dll";
-	if (CanUseAres && GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, ARES_DLL, &AresDllHmodule))
-	{
-		for (auto x : AresFunctionOffsets.at(AresVersion))
-			if (x.second > 0)
-				AresFunctionOffsetsFinal[x.first] = AresBaseAddress + x.second;
-			else
-				AresFunctionOffsetsFinal[x.first] = 0;
 	}
 }
