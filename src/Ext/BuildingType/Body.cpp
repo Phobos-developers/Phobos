@@ -104,7 +104,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const TechnoTypeClass* const pType, const TechnoTypeClass* const pPreType)
 {
-	const int techLevel = pType->TechLevel;
+	const auto techLevel = pType->TechLevel;
 
 	if (techLevel <= 0 || techLevel > Game::TechLevel)
 		return false;
@@ -120,7 +120,7 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const
 
 	if (!pPreType)
 	{
-		const int sideIndex = pType->AIBasePlanningSide;
+		const auto sideIndex = pType->AIBasePlanningSide;
 
 		return (sideIndex == -1 || sideIndex == pHouse->Type->SideIndex);
 	}
@@ -128,13 +128,13 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const
 	if (pHouse->CountOwnedAndPresent(pPreType))
 		return true;
 
-	TechnoTypeExt::ExtData* const pPreTypeExt = TechnoTypeExt::ExtMap.Find(pPreType);
+	const auto pPreTypeExt = TechnoTypeExt::ExtMap.Find(pPreType);
 
 	if (pPreTypeExt->CameoCheckMutex)
 		return false;
 
 	pPreTypeExt->CameoCheckMutex = true;
-	const bool exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pPreType, pPreTypeExt->PrerequisiteForCameo);
+	const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pPreType, pPreTypeExt->PrerequisiteForCameo);
 	pPreTypeExt->CameoCheckMutex = false;
 
 	return exist;
@@ -143,7 +143,7 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const
 // Check the cameo change
 CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pHouse, const TechnoTypeClass* const pType, CanBuildResult canBuild)
 {
-	TechnoTypeExt::ExtData* const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
 	{
@@ -152,7 +152,7 @@ CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pH
 		if (canBuild == CanBuildResult::Unbuildable) // Unbuildable + Satisfy basic limitations = Change it to TemporarilyUnbuildable
 		{
 			pTypeExt->CameoCheckMutex = true;
-			const bool exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pType, pTypeExt->PrerequisiteForCameo);
+			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pType, pTypeExt->PrerequisiteForCameo);
 			pTypeExt->CameoCheckMutex = false;
 
 			if (exist)
@@ -161,7 +161,7 @@ CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pH
 				{
 					vec.push_back(pTypeExt);
 					SidebarClass::Instance->SidebarNeedsRepaint();
-					EventClass event
+					const EventClass event
 					(
 						pHouse->ArrayIndex,
 						EventType::AbandonAll,
@@ -207,7 +207,7 @@ bool BuildingTypeExt::CheckOccupierCanLeave(HouseClass* pBuildingHouse, HouseCla
 bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, CellStruct topLeftCell, HouseClass* pHouse, TechnoClass* pExceptTechno)
 {
 	// Step 1: Find the technos inside of the building place grid.
-	CellStruct infantryCount { 0, 0 };
+	auto infantryCount = CellStruct::Empty;
 	std::vector<TechnoClass*> checkedTechnos;
 	checkedTechnos.reserve(24);
 	std::vector<CellClass*> checkedCells;
@@ -215,24 +215,24 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 	for (auto pFoundation = pBuildingType->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
-		CellStruct currentCell = topLeftCell + *pFoundation;
+		auto currentCell = topLeftCell + *pFoundation;
 
-		if (CellClass* const pCell = MapClass::Instance->GetCellAt(currentCell))
+		if (const auto pCell = MapClass::Instance->GetCellAt(currentCell))
 		{
-			ObjectClass* pObject = pCell->FirstObject;
+			auto pObject = pCell->FirstObject;
 
 			while (pObject)
 			{
-				AbstractType const absType = pObject->WhatAmI();
+				const auto absType = pObject->WhatAmI();
 
 				if (absType == AbstractType::Infantry || absType == AbstractType::Unit)
 				{
-					TechnoClass* const pCellTechno = static_cast<TechnoClass*>(pObject);
-					auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pCellTechno->GetTechnoType());
+					const auto pCellTechno = static_cast<TechnoClass*>(pObject);
+					const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pCellTechno->GetTechnoType());
 
 					if ((!pTypeExt || !pTypeExt->CanBeBuiltOn) && pCellTechno != pExceptTechno) // No need to check house
 					{
-						const FootClass* pFoot = static_cast<FootClass*>(pCellTechno);
+						const auto pFoot = static_cast<FootClass*>(pCellTechno);
 
 						if (pFoot->GetCurrentSpeed() <= 0 || (locomotion_cast<TunnelLocomotionClass*>(pFoot->Locomotor) && !pFoot->Locomotor->Is_Moving()))
 						{
@@ -260,9 +260,9 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 	for (auto pFoundation = pBuildingType->FoundationOutside; *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
-		CellStruct searchCell = topLeftCell + *pFoundation;
+		auto searchCell = topLeftCell + *pFoundation;
 
-		if (CellClass* const pSearchCell = MapClass::Instance->GetCellAt(searchCell))
+		if (const auto pSearchCell = MapClass::Instance->GetCellAt(searchCell))
 		{
 			if (std::find(checkedCells.begin(), checkedCells.end(), pSearchCell) == checkedCells.end() // TODO If there is a cellflag that can be used …
 				&& !pSearchCell->GetBuilding()
@@ -282,11 +282,11 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 		int minA = INT_MAX;
 		int minB = INT_MAX;
 
-		for (auto const& pOptionalCell : optionalCells) // If there are many valid cells at start, it means most of occupiers will near to the edge
+		for (const auto& pOptionalCell : optionalCells) // If there are many valid cells at start, it means most of occupiers will near to the edge
 		{
 			if (minA > 65536) // If distance squared is lower or equal to 256^2, then no need to calculate any more because it is on the edge
 			{
-				int curA = static_cast<int>(pTechnoA->GetMapCoords().DistanceFromSquared(pOptionalCell->MapCoords));
+				auto curA = static_cast<int>(pTechnoA->GetMapCoords().DistanceFromSquared(pOptionalCell->MapCoords));
 
 				if (curA < minA)
 					minA = curA;
@@ -294,7 +294,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 			if (minB > 65536)
 			{
-				int curB = static_cast<int>(pTechnoB->GetMapCoords().DistanceFromSquared(pOptionalCell->MapCoords));
+				auto curB = static_cast<int>(pTechnoB->GetMapCoords().DistanceFromSquared(pOptionalCell->MapCoords));
 
 				if (curB < minB)
 					minB = curB;
@@ -327,7 +327,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 	do
 	{
 		// Step 4.1: Push the technos discovered just now back to the vector.
-		for (auto const& pRecheckedTechno : reCheckedTechnos)
+		for (const auto& pRecheckedTechno : reCheckedTechnos)
 		{
 			if (pRecheckedTechno->WhatAmI() == AbstractType::Infantry)
 				++infantryCount.X;
@@ -338,16 +338,16 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 		reCheckedTechnos.clear();
 
 		// Step 4.2: Check the techno vector.
-		for (auto const& pCheckedTechno : checkedTechnos)
+		for (const auto& pCheckedTechno : checkedTechnos)
 		{
 			CellClass* pDestinationCell = nullptr;
 
 			// Step 4.2.1: Search the closest valid cell to be the destination.
 			do
 			{
-				const CellStruct location = pCheckedTechno->GetMapCoords();
+				const auto location = pCheckedTechno->GetMapCoords();
 				const bool isInfantry = pCheckedTechno->WhatAmI() == AbstractType::Infantry;
-				TechnoTypeClass* const pCheckedType = pCheckedTechno->GetTechnoType();
+				const auto pCheckedType = pCheckedTechno->GetTechnoType();
 
 				if (isInfantry) // Try to maximizing cells utilization
 				{
@@ -380,9 +380,9 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 				std::sort(&optionalCells[0], &optionalCells[optionalCells.size()],[location](CellClass* pCellA, CellClass* pCellB){
 					return pCellA->MapCoords.DistanceFromSquared(location) < pCellB->MapCoords.DistanceFromSquared(location);
 				});
-				const double minDistanceSquared = optionalCells[0]->MapCoords.DistanceFromSquared(location);
+				const auto minDistanceSquared = optionalCells[0]->MapCoords.DistanceFromSquared(location);
 
-				for (auto const& pOptionalCell : optionalCells) // Prioritize selecting empty cells
+				for (const auto& pOptionalCell : optionalCells) // Prioritize selecting empty cells
 				{
 					if (!pOptionalCell->FirstObject && pOptionalCell->IsClearToMove(pCheckedType->SpeedType, true, true, -1, pCheckedType->MovementZone, -1, false))
 					{
@@ -404,20 +404,20 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 					std::vector<CellClass*> deleteCells;
 					deleteCells.reserve(8);
 
-					for (auto const& pOptionalCell : optionalCells)
+					for (const auto& pOptionalCell : optionalCells)
 					{
-						ObjectClass* pCurObject = pOptionalCell->FirstObject;
+						auto pCurObject = pOptionalCell->FirstObject;
 						std::vector<TechnoClass*> optionalTechnos;
 						optionalTechnos.reserve(4);
 						bool valid = true;
 
 						while (pCurObject)
 						{
-							AbstractType const absType = pCurObject->WhatAmI();
+							const auto absType = pCurObject->WhatAmI();
 
 							if (absType == AbstractType::Infantry || absType == AbstractType::Unit)
 							{
-								TechnoClass* const pCurTechno = static_cast<TechnoClass*>(pCurObject);
+								const auto pCurTechno = static_cast<TechnoClass*>(pCurObject);
 
 								if (!BuildingTypeExt::CheckOccupierCanLeave(pHouse, pCurTechno->Owner)) // Means invalid for all
 								{
@@ -434,7 +434,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 						if (valid && pOptionalCell->IsClearToMove(pCheckedType->SpeedType, true, true, -1, pCheckedType->MovementZone, -1, false))
 						{
-							for (auto const& pOptionalTechno : optionalTechnos)
+							for (const auto& pOptionalTechno : optionalTechnos)
 							{
 								reCheckedTechnos.push_back(pOptionalTechno);
 							}
@@ -450,7 +450,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 						}
 					}
 
-					for (auto const& pDeleteCell : deleteCells) // Mark the invalid cells
+					for (const auto& pDeleteCell : deleteCells) // Mark the invalid cells
 					{
 						checkedCells.push_back(pDeleteCell);
 						optionalCells.erase(std::remove(optionalCells.begin(), optionalCells.end(), pDeleteCell), optionalCells.end());
@@ -468,13 +468,13 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 				if (std::find(optionalCells.begin(), optionalCells.end(), pDestinationCell) != optionalCells.end())
 				{
 					optionalCells.erase(std::remove(optionalCells.begin(), optionalCells.end(), pDestinationCell), optionalCells.end());
-					CellStruct searchCell = pDestinationCell->MapCoords - CellStruct { 1, 1 };
+					auto searchCell = pDestinationCell->MapCoords - CellStruct { 1, 1 };
 
 					for (int i = 0; i < 4; ++i)
 					{
 						for (int j = 0; j < 2; ++j)
 						{
-							if (CellClass* const pSearchCell = MapClass::Instance->GetCellAt(searchCell))
+							if (const auto pSearchCell = MapClass::Instance->GetCellAt(searchCell))
 							{
 								if (std::find(checkedCells.begin(), checkedCells.end(), pSearchCell) == checkedCells.end()
 									&& std::find(optionalCells.begin(), optionalCells.end(), pSearchCell) == optionalCells.end()
@@ -493,7 +493,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 					}
 				}
 
-				const TechnoWithDestination thisOrder { pCheckedTechno, pDestinationCell };
+				const auto thisOrder = TechnoWithDestination { pCheckedTechno, pDestinationCell };
 				finalOrder.push_back(thisOrder);
 			}
 			else // Can not build
@@ -507,16 +507,16 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 	while (reCheckedTechnos.size());
 
 	// Step 5: Confirm command execution.
-	for (auto const& pThisOrder : finalOrder)
+	for (const auto& pThisOrder : finalOrder)
 	{
-		TechnoClass* const pCheckedTechno = pThisOrder.techno;
-		CellClass* const pDestinationCell = pThisOrder.destination;
-		AbstractType const absType = pCheckedTechno->WhatAmI();
+		const auto pCheckedTechno = pThisOrder.techno;
+		const auto pDestinationCell = pThisOrder.destination;
+		const auto absType = pCheckedTechno->WhatAmI();
 		pCheckedTechno->ForceMission(Mission::Guard);
 
 		if (absType == AbstractType::Infantry)
 		{
-			InfantryClass* const pInfantry = static_cast<InfantryClass*>(pCheckedTechno);
+			const auto pInfantry = static_cast<InfantryClass*>(pCheckedTechno);
 
 			if (pInfantry->IsDeployed())
 				pInfantry->PlayAnim(Sequence::Undeploy, true);
@@ -526,7 +526,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 		}
 		else if (absType == AbstractType::Unit)
 		{
-			UnitClass* const pUnit = static_cast<UnitClass*>(pCheckedTechno);
+			const auto pUnit = static_cast<UnitClass*>(pCheckedTechno);
 
 			if (pUnit->Deployed)
 				pUnit->Undeploy();
@@ -541,34 +541,34 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 void BuildingTypeExt::DrawAdjacentLines()
 {
-	BuildingClass* const pBuilding = abstract_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding);
+	const auto pBuilding = abstract_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding);
 
 	if (!pBuilding)
 		return;
 
-	BuildingTypeClass* const pType = pBuilding->Type;
-	const short adjacent = static_cast<short>(pType->Adjacent + 1);
+	const auto pType = pBuilding->Type;
+	const auto adjacent = static_cast<short>(pType->Adjacent + 1);
 
 	if (adjacent <= 0)
 		return;
 
-	const CellStruct foundation { pType->GetFoundationWidth(), pType->GetFoundationHeight(false) };
+	const auto foundation = CellStruct { pType->GetFoundationWidth(), pType->GetFoundationHeight(false) };
 
 	if (foundation == CellStruct::Empty)
 		return;
 
-	const CellStruct topLeft = DisplayClass::Instance->CurrentFoundation_CenterCell + DisplayClass::Instance->CurrentFoundation_TopLeftOffset;
-	const CellStruct min { topLeft.X - adjacent, topLeft.Y - adjacent };
-	const CellStruct max { topLeft.X + foundation.X + adjacent - 1, topLeft.Y + foundation.Y + adjacent - 1 };
+	const auto topLeft = DisplayClass::Instance->CurrentFoundation_CenterCell + DisplayClass::Instance->CurrentFoundation_TopLeftOffset;
+	const auto min = CellStruct { static_cast<short>(topLeft.X - adjacent), static_cast<short>(topLeft.Y - adjacent) };
+	const auto max = CellStruct { static_cast<short>(topLeft.X + foundation.X + adjacent - 1), static_cast<short>(topLeft.Y + foundation.Y + adjacent - 1) };
 
-	RectangleStruct rect = DSurface::Temp->GetRect();
+	auto rect = DSurface::Temp->GetRect();
 	rect.Height -= 32;
 
-	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(min))
+	if (const auto pCell = MapClass::Instance->TryGetCellAt(min))
 	{
-		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
+		auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
 		point.Y -= 1;
-		Point2D nextPoint = point;
+		auto nextPoint = point;
 
 		point.Y -= 14;
 		nextPoint.X += 29;
@@ -579,11 +579,11 @@ void BuildingTypeExt::DrawAdjacentLines()
 		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
 	}
 
-	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(CellStruct{ min.X, max.Y }))
+	if (const auto pCell = MapClass::Instance->TryGetCellAt(CellStruct{ min.X, max.Y }))
 	{
-		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
+		auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
 		point.X -= 1;
-		Point2D nextPoint = point;
+		auto nextPoint = point;
 
 		point.X -= 29;
 		nextPoint.Y += 14;
@@ -594,10 +594,10 @@ void BuildingTypeExt::DrawAdjacentLines()
 		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
 	}
 
-	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(max))
+	if (const auto pCell = MapClass::Instance->TryGetCellAt(max))
 	{
-		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
-		Point2D nextPoint = point;
+		auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
+		auto nextPoint = point;
 
 		point.Y += 14;
 		nextPoint.X += 29;
@@ -608,10 +608,10 @@ void BuildingTypeExt::DrawAdjacentLines()
 		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
 	}
 
-	if (const CellClass* const pCell = MapClass::Instance->TryGetCellAt(CellStruct{ max.X, min.Y }))
+	if (const auto pCell = MapClass::Instance->TryGetCellAt(CellStruct{ max.X, min.Y }))
 	{
-		Point2D point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
-		Point2D nextPoint = point;
+		auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
+		auto nextPoint = point;
 
 		point.X += 29;
 		nextPoint.Y += 14;
@@ -625,47 +625,47 @@ void BuildingTypeExt::DrawAdjacentLines()
 
 bool BuildingTypeExt::AutoUpgradeBuilding(BuildingClass* pBuilding)
 {
-	BuildingTypeClass* const pBuildingType = pBuilding->Type;
+	const auto pBuildingType = pBuilding->Type;
 
 	if (!pBuildingType->PowersUpBuilding[0])
 		return false;
 
-	if (BuildingTypeExt::ExtData* const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType))
+	if (const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType))
 	{
 		if (pTypeExt->AutoUpgrade)
 		{
-			HouseClass* const pHouse = pBuilding->Owner;
-			HouseExt::ExtData* const pHouseExt = HouseExt::ExtMap.Find(pHouse);
-			const int size = pTypeExt->PowersUp_Buildings.size();
+			const auto pHouse = pBuilding->Owner;
+			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+			const auto size = pTypeExt->PowersUp_Buildings.size();
 
 			std::vector<BuildingTypeClass*> upgradeBuildings;
 			upgradeBuildings.reserve(size + 1);
 
-			if (BuildingTypeClass* const pUpgrade = BuildingTypeClass::Find(pBuildingType->PowersUpBuilding))
+			if (const auto pUpgrade = BuildingTypeClass::Find(pBuildingType->PowersUpBuilding))
 				upgradeBuildings.push_back(pUpgrade);
 
 			if (size)
 			{
-				for (auto const& pUpgrade : pTypeExt->PowersUp_Buildings)
+				for (const auto& pUpgrade : pTypeExt->PowersUp_Buildings)
 				{
 					if (pUpgrade)
 						upgradeBuildings.push_back(pUpgrade);
 				}
 			}
 
-			for (auto const& pOwned : pHouse->Buildings)
+			for (const auto& pOwned : pHouse->Buildings)
 			{
-				for (auto const& pUpgradeType : upgradeBuildings)
+				for (const auto& pUpgradeType : upgradeBuildings)
 				{
 					if (pOwned->Type == pUpgradeType && pOwned->IsAlive && pOwned->Health > 0 && pOwned->IsOnMap && !pOwned->InLimbo && pOwned->CurrentMission != Mission::Selling)
 					{
 						if (reinterpret_cast<bool(__thiscall*)(BuildingClass*, BuildingTypeClass*, HouseClass*)>(0x452670)(pOwned, pBuildingType, pHouse))
 						{
-							const CellStruct cell = pOwned->GetMapCoords();
+							const auto cell = pOwned->GetMapCoords();
 
 							if (cell != CellStruct::Empty && !pHouseExt->OwnsLimboDeliveredBuilding(pOwned))
 							{
-								EventClass event
+								const EventClass event
 								(
 									pHouse->ArrayIndex,
 									EventType::Place,
@@ -690,13 +690,13 @@ bool BuildingTypeExt::AutoUpgradeBuilding(BuildingClass* pBuilding)
 
 bool BuildingTypeExt::BuildLimboBuilding(BuildingClass* pBuilding)
 {
-	BuildingTypeClass* const pBuildingType = pBuilding->Type;
+	const auto pBuildingType = pBuilding->Type;
 
-	if (BuildingTypeExt::ExtData* const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType))
+	if (const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType))
 	{
 		if (pTypeExt->LimboBuild)
 		{
-			EventClass event
+			const EventClass event
 			(
 				pBuilding->Owner->ArrayIndex,
 				EventType::Place,
@@ -789,15 +789,15 @@ void BuildingTypeExt::CreateLimboBuilding(BuildingClass* pBuilding, BuildingType
 
 bool BuildingTypeExt::DeleteLimboBuilding(BuildingClass* pBuilding, int ID)
 {
-	BuildingExt::ExtData* const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+	const auto pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
 
 	if (pBuildingExt->LimboID != ID)
 		return false;
 
 	if (pBuildingExt->TypeExtData->LimboBuildID == ID)
 	{
-		HouseClass* const pHouse = pBuilding->Owner;
-		const int index = pBuilding->Type->ArrayIndex;
+		const auto pHouse = pBuilding->Owner;
+		const auto index = pBuilding->Type->ArrayIndex;
 
 		for (auto& pBaseNode : pHouse->Base.BaseNodes)
 		{
