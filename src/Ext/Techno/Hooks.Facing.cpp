@@ -14,7 +14,7 @@ DEFINE_HOOK(0x7369A5, UnitClass_UpdateRotation_CheckTurnToTarget, 0x6)
 	if (!pThis->unknown_bool_6AF)
 		return ContinueGameCode;
 
-	if (TechnoExt::ExtData* const pExt = TechnoExt::ExtMap.Find(pThis))
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
 		if (pExt->UnitIdleActionTimer.IsTicking() || pExt->UnitIdleActionGapTimer.IsTicking() || pExt->UnitIdleIsSelected)
 			return ContinueGameCode;
@@ -30,11 +30,11 @@ DEFINE_HOOK(0x7369D6, UnitClass_UpdateRotation_StopUnitIdleAction, 0xA)
 	GET(UnitClass* const, pThis, ESI);
 	GET_STACK(DirStruct, dir, STACK_OFFSET(0x10, -0x8));
 
-	if (WeaponStruct* const pWeaponStruct = pThis->GetTurretWeapon())
+	if (const auto pWeaponStruct = pThis->GetTurretWeapon())
 	{
-		if (WeaponTypeClass* const pWeapon = pWeaponStruct->WeaponType)
+		if (const auto pWeapon = pWeaponStruct->WeaponType)
 		{
-			if (TechnoExt::ExtData* const pExt = TechnoExt::ExtMap.Find(pThis))
+			if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 				pExt->StopIdleAction();
 
 			if (!pWeapon->OmniFire)
@@ -59,7 +59,7 @@ DEFINE_HOOK(0x736AFB, UnitClass_UpdateRotation_CheckTurnToForward, 0x6)
 	// Repeatedly judging TurretSpins and IsRotating() is unnecessary
 	pThis->unknown_bool_6AF = true;
 
-	if (TechnoExt::ExtData* const pExt = TechnoExt::ExtMap.Find(pThis))
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
 		if (pExt->UnitIdleActionTimer.IsTicking() || pExt->UnitIdleActionGapTimer.IsTicking() || pExt->UnitIdleIsSelected)
 			return ContinueGameCode;
@@ -74,9 +74,9 @@ DEFINE_HOOK(0x736B7E, UnitClass_UpdateRotation_ApplyUnitIdleAction, 0xA)
 
 	GET(UnitClass* const, pThis, ESI);
 
-	WeaponStruct* const pWeaponStruct = pThis->GetTurretWeapon();
-	TechnoExt::ExtData* const pExt = TechnoExt::ExtMap.Find(pThis);
-	const Mission currentMission = pThis->CurrentMission;
+	const auto pWeaponStruct = pThis->GetTurretWeapon();
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto currentMission = pThis->CurrentMission;
 
 	if ((pWeaponStruct && pWeaponStruct->WeaponType && pWeaponStruct->TurretLocked) || (currentMission == Mission::Harmless && pThis->Owner == HouseClass::FindSpecial()))
 	{
