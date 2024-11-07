@@ -96,6 +96,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
+	this->ChargeTurret_Delays.Read(exINI, pSection, "ChargeTurret.Delays");
 	this->OmniFire_TurnToTarget.Read(exINI, pSection, "OmniFire.TurnToTarget");
 	this->FireOnce_ResetSequence.Read(exINI, pSection, "FireOnce.ResetSequence");
 	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
@@ -143,6 +144,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)
 		.Process(this->ROF_RandomDelay)
+		.Process(this->ChargeTurret_Delays)
 		.Process(this->OmniFire_TurnToTarget)
 		.Process(this->FireOnce_ResetSequence)
 		.Process(this->ExtraWarheads)
