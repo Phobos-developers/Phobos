@@ -28,7 +28,7 @@ public:
 	bool ResetIfRecreatable();
 	bool IsSelfOwned() const { return this->Source == this->Techno; }
 	bool HasExpired() const;
-	bool AllowedToBeActive() const;
+	bool ShouldBeDiscardedNow() const;
 	bool IsActive() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
 
@@ -94,6 +94,7 @@ struct AttachEffectTechnoProperties
 	bool HasTint;
 	bool ReflectDamage;
 	bool HasOnFireDiscardables;
+	bool HasRestrictedArmorMultipliers;
 
 	AttachEffectTechnoProperties() :
 		FirepowerMultiplier { 1.0 }
@@ -107,5 +108,6 @@ struct AttachEffectTechnoProperties
 		, HasTint { false }
 		, ReflectDamage { false }
 		, HasOnFireDiscardables { false }
+		, HasRestrictedArmorMultipliers { false }
 	{ }
 };
