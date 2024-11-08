@@ -160,7 +160,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
 - Fixed disguised units not using the correct palette if target has custom palette.
 - Fixed `MovementZone=Subterannean` harvesters being unable to find docks if in area enclosed by water, cliffs etc.
-- Now, when a `stop` command (S) is issued to an aircraft, the aircraft will immediately return to the airport. When a `guard` command (G) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted (Note that if the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time). When a `attack move` command (Ctrl+Shift) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammos are depleted or the destination is reached, it will return (Note that if the  automatically selected target is destroyed but ammos are not depleted yet during the process, the aircraft will continue to go to the destination).
 - Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
 - Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading.
 - The otherwise unused setting `[AI]` -> `PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI]` -> `EnablePowerSurplus` to true.
@@ -222,6 +221,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEAIRCRAFT]  ; AircraftType
 LandingDir=     ; Direction type (integers from 0-255). Accepts negative values as a special case.
+```
+
+### Expand Aircraft Mission
+
+- Now, when a `stop` command (S) is issued to an aircraft, the aircraft will immediately return to the airport. When a `guard` command (G) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted (Note that if the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time). When a `attack move` command (Ctrl+Shift) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammos are depleted or the destination is reached, it will return (Note that if the  automatically selected target is destroyed but ammos are not depleted yet during the process, the aircraft will continue to go to the destination).
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExpandAircraftMission=     ; boolean
 ```
 
 ## Animations
