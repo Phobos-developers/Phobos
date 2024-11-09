@@ -395,8 +395,8 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
   - `Cameo.OverlayShapes` controls the drawn image file.
   - `Cameo.OverlayFrames` controls which frame in `Cameo.OverlayShapes` to draw in three different situations: currently owned this building type, grey cameo and have its prerequisite, grey cameo but have no prerequisite (The last situation requires `Cameo.AlwaysExist` to be true). When set to a negative number, it means that there is no need to draw under the corresponding conditions.
   - `Cameo.OverlayPalette` the color palette used when drawing `Cameo.OverlayShapes`.
-  - If `Cameo.AuxTechno` is not set, the grey cameo will only show when `AIBasePlanningSide` is satisfied. If set a techno type, the grey cameo will show if you have a techno in this type **or** this type's `TechnoLevel`, `Owner`, `RequiredHouses`, `ForbiddenHouses`, `Cameo.AuxTechno` (if set, otherwise use `AIBasePlanningSide`) and `Cameo.NegTechno` (if set) is satisfied.
-  - If `Cameo.NegTechno` is set, the grey cameo will not show when you have a techno in this type.
+  - If `Cameo.AuxTechnos` is not set, in addition to basic conditions, the grey cameo will only show when `AIBasePlanningSide` condition is satisfied. Otherwise, the grey cameo will only show when at least one of these types is owned by you or its `TechnoLevel`, `Owner`, `RequiredHouses`, `ForbiddenHouses`, `Cameo.AuxTechnos` (use `AIBasePlanningSide` if not set) and `Cameo.NegTechnos` (if set) conditions are satisfied.
+  - If `Cameo.NegTechnos` is set, the grey cameo will not show when you have a techno in one of these types.
   - The `UIDescription.Unbuildable` is like `UIDescription`, but this only appearing when the techno is truly unbuildable.
 
 In `ra2md.ini`:
@@ -415,8 +415,8 @@ Cameo.OverlayPalette=palette.pal ; filename - including the .pal extension
 
 [SOMETECHNO]                     ; TechnoType
 Cameo.AlwaysExist=               ; boolean
-Cameo.AuxTechno=                 ; TechnoType
-Cameo.NegTechno=                 ; TechnoType
+Cameo.AuxTechnos=                ; List of TechnoTypes
+Cameo.NegTechnos=                ; List of TechnoTypes
 UIDescription.Unbuildable=       ; CSF entry key
 ```
 

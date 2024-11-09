@@ -5,6 +5,7 @@
 #include <TunnelLocomotionClass.h>
 
 #include <Utilities/GeneralUtils.h>
+#include <Ext/TechnoType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -102,8 +103,9 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	return isUpgrade ? result : -1;
 }
 
-bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const TechnoTypeClass* const pType, const TechnoTypeClass* const pAuxType, const TechnoTypeClass* const pNegType)
+bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const TechnoTypeExt::ExtData* const pTypeExt)
 {
+	const auto pType = pTypeExt->OwnerObject();
 	const auto techLevel = pType->TechLevel;
 
 	if (techLevel <= 0 || techLevel > Game::TechLevel)
@@ -118,25 +120,45 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const
 	if (pHouse->InForbiddenHouses(pType))
 		return false;
 
-	if (pNegType && pHouse->CountOwnedAndPresent(pNegType))
-		return false;
+	const auto& pNegTypes = pTypeExt->Cameo_NegTechno;
 
-	if (!pAuxType)
-		return (pType->AIBasePlanningSide == -1 || pType->AIBasePlanningSide == pHouse->Type->SideIndex);
+	if (pNegTypes.size())
+	{
+		for (const auto& pNegType : pNegTypes)
+		{
+			if (pNegType && pHouse->CountOwnedAndPresent(pNegType))
+				return false;
+		}
+	}
 
-	const auto pAuxTypeExt = TechnoTypeExt::ExtMap.Find(pAuxType);
+	const auto& pAuxTypes = pTypeExt->Cameo_AuxTechno;
 
-	if (pAuxTypeExt->CameoCheckMutex)
-		return false;
+	if (!pAuxTypes.size())
+	{
+		const auto sideIndex = pType->AIBasePlanningSide;
 
-	if (pHouse->CountOwnedAndPresent(pAuxType))
-		return true;
+		return (sideIndex == -1 || sideIndex == pHouse->Type->SideIndex);
+	}
 
-	pAuxTypeExt->CameoCheckMutex = true;
-	const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pAuxType, pAuxTypeExt->Cameo_AuxTechno, pAuxTypeExt->Cameo_NegTechno);
-	pAuxTypeExt->CameoCheckMutex = false;
+	for (const auto& pAuxType : pAuxTypes)
+	{
+		const auto pAuxTypeExt = TechnoTypeExt::ExtMap.Find(pAuxType);
 
-	return exist;
+		if (pAuxTypeExt && !pAuxTypeExt->CameoCheckMutex)
+		{
+			if (pHouse->CountOwnedAndPresent(pAuxType))
+				return true;
+
+			pAuxTypeExt->CameoCheckMutex = true;
+			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pAuxTypeExt);
+			pAuxTypeExt->CameoCheckMutex = false;
+
+			if (exist)
+				return true;
+		}
+	}
+
+	return false;
 }
 
 // Check the cameo change
@@ -151,7 +173,7 @@ CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pH
 		if (canBuild == CanBuildResult::Unbuildable) // Unbuildable + Satisfy basic limitations = Change it to TemporarilyUnbuildable
 		{
 			pTypeExt->CameoCheckMutex = true;
-			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pType, pTypeExt->Cameo_AuxTechno, pTypeExt->Cameo_NegTechno);
+			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pTypeExt);
 			pTypeExt->CameoCheckMutex = false;
 
 			if (exist)
@@ -164,7 +186,7 @@ CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pH
 					(
 						pHouse->ArrayIndex,
 						EventType::AbandonAll,
-						(int)pType->WhatAmI(),
+						static_cast<int>(pType->WhatAmI()),
 						pType->GetArrayIndex(),
 						pType->Naval
 					);
