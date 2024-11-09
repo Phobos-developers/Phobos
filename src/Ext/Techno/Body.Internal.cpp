@@ -146,13 +146,13 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 
 void TechnoExt::ExtData::InitializeUnitIdleAction()
 {
-	TechnoClass* const pThis = this->OwnerObject();
+	const auto pThis = this->OwnerObject();
 
 	if (pThis->WhatAmI() != AbstractType::Unit || !pThis->HasTurret())
 		return;
 
-	TechnoTypeClass* const pType = pThis->GetTechnoType();
-	TechnoTypeExt::ExtData* const pTypeExt = this->TypeExtData;
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = this->TypeExtData;
 
 	if (pTypeExt->AutoFire || pType->TurretSpins)
 		return;
