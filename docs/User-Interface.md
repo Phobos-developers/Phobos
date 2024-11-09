@@ -278,22 +278,22 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 ### More display styles for placing grids
 
-- This feature is highly compatible with `ExpandBuildingPlace`. If set `DrawAdjacentBoundary` to true, it will display the four corners of the `Adjacent` boundary. If set `CheckExpandPlaceGrid` to true, it will display the placing grids with `place.shp` and following corresponding frame number.
-  - `ExpandLandGridFrames` controls the placing grids frames on non-water cell. The three numbers respectively represent "Some technos that can command departure have occupied this area", "This cell is actually beyond the scope, but there is still at least one cell inside the entire region" and "Here is no problem, everything is OK".
-  - `ExpandWaterGridFrames` controls the placing grids frames on water cell. Each item corresponds to the same as above.
+- This feature is highly compatible with `ExpandBuildingPlace`. If set `DrawAdjacentBoundary` to true, it will display the four corners of the `Adjacent` boundary. If set `PlacementGrid.Expand` to true, it will display the placing grids with `place.shp` and following corresponding frame number.
+  - `PlacementGrid.LandFrames` controls the placing grids frames on non-water cell. The three numbers respectively represent "Some technos that can command departure have occupied this area", "This cell is actually beyond the scope, but there is still at least one cell inside the entire region" and "Here is no problem, everything is OK".
+  - `PlacementGrid.WaterFrames` controls the placing grids frames on water cell. Each item corresponds to the same as above.
 
 In `ra2md.ini`:
 ```ini
 [Phobos]
-DrawAdjacentBoundary=false     ; boolean
+DrawAdjacentBoundary=false       ; boolean
 ```
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-CheckExpandPlaceGrid=false     ; boolean
-ExpandLandGridFrames=1,0,0     ; integer, zero-based frame index - have technos, near boundary, is normal
-ExpandWaterGridFrames=1,0,0    ; integer, zero-based frame index - have technos, near boundary, is normal
+PlacementGrid.Expand=false       ; boolean
+PlacementGrid.LandFrames=1,0,0   ; integer, zero-based frame index - have technos, near boundary, is normal
+PlacementGrid.WaterFrames=1,0,0  ; integer, zero-based frame index - have technos, near boundary, is normal
 ```
 
 ## Hotkey Commands
@@ -390,32 +390,34 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 ### Show cameo when unbuildable
 
 - A setting that allows you to preview information. This feature can be used as before, playing "new construction options" and clearing the specific production queue when prerequisites loss.
-  - `AlwaysExistTheCameo` controls whether you can see the cameo when the prerequisite have not satisfied (`TechnoLevel`, `Owner`, `RequiredHouses` and `ForbiddenHouses` should be satisfied). Defaults to `[AudioVisual]` -> `AlwaysExistTheCameo`. The `GreyCameoPCX` is an additional image drawn on top of the cameo in this state.
-  - `BuildingStatisticsCameo` controls whether the number of buildings of this type that you currently own needs to be displayed in the upper right corner of the building cameo (requires the cameo exist).
-  - `CameoOverlayShapes` controls the drawn image file.
-  - `CameoOverlayFrames` controls which frame in `CameoOverlayShapes` to draw in three different situations: currently owned this building type, grey cameo and have its prerequisite, grey cameo but have no prerequisite (The last situation requires `AlwaysExistTheCameo` to be true). When set to a negative number, it means that there is no need to draw under the corresponding conditions.
-  - `CameoOverlayPalette` the color palette used when drawing `CameoOverlayShapes`.
-  - If `PrerequisiteForCameo` is not set, the grey cameo will only show when `AIBasePlanningSide` is satisfied. If set a techno type, the grey cameo will show if you have a techno in this type or this type's `TechnoLevel`, `Owner`, `RequiredHouses`, `ForbiddenHouses` and `PrerequisiteForCameo` is satisfied.
-  - The `UIExtraDescription` is like `UIDescription`, but this only appearing when the techno is truly unbuildable.
+  - `Cameo.AlwaysExist` controls whether you can see the cameo when the prerequisite have not satisfied (`TechnoLevel`, `Owner`, `RequiredHouses` and `ForbiddenHouses` should be satisfied). Defaults to `[AudioVisual]` -> `Cameo.AlwaysExist`.
+  - `ShowBuildingStatistics` controls whether the number of buildings of this type that you currently own needs to be displayed in the upper right corner of the building cameo (requires the cameo exist).
+  - `Cameo.OverlayShapes` controls the drawn image file.
+  - `Cameo.OverlayFrames` controls which frame in `Cameo.OverlayShapes` to draw in three different situations: currently owned this building type, grey cameo and have its prerequisite, grey cameo but have no prerequisite (The last situation requires `Cameo.AlwaysExist` to be true). When set to a negative number, it means that there is no need to draw under the corresponding conditions.
+  - `Cameo.OverlayPalette` the color palette used when drawing `Cameo.OverlayShapes`.
+  - If `Cameo.AuxTechno` is not set, the grey cameo will only show when `AIBasePlanningSide` is satisfied. If set a techno type, the grey cameo will show if you have a techno in this type **or** this type's `TechnoLevel`, `Owner`, `RequiredHouses`, `ForbiddenHouses`, `Cameo.AuxTechno` (if set, otherwise use `AIBasePlanningSide`) and `Cameo.NegTechno` (if set) is satisfied.
+  - If `Cameo.NegTechno` is set, the grey cameo will not show when you have a techno in this type.
+  - The `UIDescription.Unbuildable` is like `UIDescription`, but this only appearing when the techno is truly unbuildable.
 
 In `ra2md.ini`:
 ```ini
 [Phobos]
-BuildingStatisticsCameo=false    ; boolean
+ShowBuildingStatistics=false     ; boolean
 ```
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-AlwaysExistTheCameo=false        ; boolean
-CameoOverlayShapes=pips.shp      ; filename - including the .shp extension
-CameoOverlayFrames=-1,-1,-1      ; integer - owned this building, grey and have its prerequisite, grey but have no prerequisite
-CameoOverlayPalette=palette.pal  ; filename - including the .pal extension
+Cameo.AlwaysExist=false          ; boolean
+Cameo.OverlayShapes=pips.shp     ; filename - including the .shp extension
+Cameo.OverlayFrames=-1,-1,-1     ; integer - owned this building, grey and have its prerequisite, grey but have no prerequisite
+Cameo.OverlayPalette=palette.pal ; filename - including the .pal extension
 
 [SOMETECHNO]                     ; TechnoType
-AlwaysExistTheCameo=             ; boolean
-PrerequisiteForCameo=            ; TechnoType
-UIExtraDescription=              ; CSF entry key
+Cameo.AlwaysExist=               ; boolean
+Cameo.AuxTechno=                 ; TechnoType
+Cameo.NegTechno=                 ; TechnoType
+UIDescription.Unbuildable=       ; CSF entry key
 ```
 
 In `artmd.ini`:

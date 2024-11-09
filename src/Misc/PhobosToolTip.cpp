@@ -35,17 +35,17 @@ inline const wchar_t* PhobosToolTip::GetUIDescription(TechnoTypeExt::ExtData* pD
 		: nullptr;
 }
 
+inline const wchar_t* PhobosToolTip::GetUnbuildableUIDescription(TechnoTypeExt::ExtData* pData) const
+{
+	return Phobos::Config::ToolTipDescriptions && !pData->UIDescription_Unbuildable.Get().empty()
+		? pData->UIDescription_Unbuildable.Get().Text
+		: nullptr;
+}
+
 inline const wchar_t* PhobosToolTip::GetUIDescription(SWTypeExt::ExtData* pData) const
 {
 	return Phobos::Config::ToolTipDescriptions && !pData->UIDescription.Get().empty()
 		? pData->UIDescription.Get().Text
-		: nullptr;
-}
-
-inline const wchar_t* PhobosToolTip::GetUIExtraDescription(TechnoTypeExt::ExtData* pData) const
-{
-	return Phobos::Config::ToolTipDescriptions && !pData->UIExtraDescription.Get().empty()
-		? pData->UIExtraDescription.Get().Text
 		: nullptr;
 }
 
@@ -150,13 +150,13 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 	if (auto pDesc = this->GetUIDescription(pData))
 		oss << L"\n" << pDesc;
 
-	if (pData->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo) && pHouse)
+	if (pData->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist) && pHouse)
 	{
 		auto& vec = HouseExt::ExtMap.Find(pHouse)->OwnedExistCameoTechnoTypes;
 
 		if (std::find(vec.begin(), vec.end(), pData) != vec.end())
 		{
-			if (auto pExDesc = this->GetUIExtraDescription(pData))
+			if (auto pExDesc = this->GetUnbuildableUIDescription(pData))
 				oss << L"\n" << pExDesc;
 		}
 	}

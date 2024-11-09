@@ -102,7 +102,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	return isUpgrade ? result : -1;
 }
 
-bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const TechnoTypeClass* const pType, const TechnoTypeClass* const pPreType)
+bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const TechnoTypeClass* const pType, const TechnoTypeClass* const pAuxType, const TechnoTypeClass* const pNegType)
 {
 	const auto techLevel = pType->TechLevel;
 
@@ -118,24 +118,23 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const
 	if (pHouse->InForbiddenHouses(pType))
 		return false;
 
-	if (!pPreType)
-	{
-		const auto sideIndex = pType->AIBasePlanningSide;
-
-		return (sideIndex == -1 || sideIndex == pHouse->Type->SideIndex);
-	}
-
-	if (pHouse->CountOwnedAndPresent(pPreType))
-		return true;
-
-	const auto pPreTypeExt = TechnoTypeExt::ExtMap.Find(pPreType);
-
-	if (pPreTypeExt->CameoCheckMutex)
+	if (pNegType && pHouse->CountOwnedAndPresent(pNegType))
 		return false;
 
-	pPreTypeExt->CameoCheckMutex = true;
-	const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pPreType, pPreTypeExt->PrerequisiteForCameo);
-	pPreTypeExt->CameoCheckMutex = false;
+	if (!pAuxType)
+		return (pType->AIBasePlanningSide == -1 || pType->AIBasePlanningSide == pHouse->Type->SideIndex);
+
+	const auto pAuxTypeExt = TechnoTypeExt::ExtMap.Find(pAuxType);
+
+	if (pAuxTypeExt->CameoCheckMutex)
+		return false;
+
+	if (pHouse->CountOwnedAndPresent(pAuxType))
+		return true;
+
+	pAuxTypeExt->CameoCheckMutex = true;
+	const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pAuxType, pAuxTypeExt->Cameo_AuxTechno, pAuxTypeExt->Cameo_NegTechno);
+	pAuxTypeExt->CameoCheckMutex = false;
 
 	return exist;
 }
@@ -145,14 +144,14 @@ CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pH
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (pTypeExt->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
+	if (pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
 	{
 		auto& vec = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->OwnedExistCameoTechnoTypes;
 
 		if (canBuild == CanBuildResult::Unbuildable) // Unbuildable + Satisfy basic limitations = Change it to TemporarilyUnbuildable
 		{
 			pTypeExt->CameoCheckMutex = true;
-			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pType, pTypeExt->PrerequisiteForCameo);
+			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pType, pTypeExt->Cameo_AuxTechno, pTypeExt->Cameo_NegTechno);
 			pTypeExt->CameoCheckMutex = false;
 
 			if (exist)

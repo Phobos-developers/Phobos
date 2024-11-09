@@ -272,7 +272,7 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 	}
 	else if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType)) // The types exist in the list means that they are not buildable now
 	{
-		if (pTypeExt->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
+		if (pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
 		{
 			if (const auto pHouseExt = HouseExt::ExtMap.Find(pThis))
 			{
@@ -287,7 +287,7 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 	return 0;
 }
 
-// All technos have AlwaysExistTheCameo=true need to change the EVA_NewConstructionOptions playing time
+// All technos have Cameo_AlwaysExist=true need to change the EVA_NewConstructionOptions playing time
 DEFINE_HOOK(0x6A640B, SideBarClass_AddCameo_DoNotPlayEVA, 0x5)
 {
 	enum { SkipPlaying = 0x6A641A };
@@ -297,7 +297,7 @@ DEFINE_HOOK(0x6A640B, SideBarClass_AddCameo_DoNotPlayEVA, 0x5)
 
 	if (const auto pType = ObjectTypeClass::GetTechnoType(absType, idxType))
 	{
-		if (TechnoTypeExt::ExtMap.Find(pType)->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
+		if (TechnoTypeExt::ExtMap.Find(pType)->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
 			return SkipPlaying;
 	}
 

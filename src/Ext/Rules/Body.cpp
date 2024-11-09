@@ -95,16 +95,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
 
-	this->CheckUnitBaseNormal.Read(exINI, GameStrings::General, "CheckUnitBaseNormal");
-	this->AlwaysExistTheCameo.Read(exINI, GameStrings::AudioVisual, "AlwaysExistTheCameo");
-	this->CameoOverlayShapes.Read(exINI, GameStrings::AudioVisual, "CameoOverlayShapes");
-	this->CameoOverlayFrames.Read(exINI, GameStrings::AudioVisual, "CameoOverlayFrames");
-	this->CameoOverlayPalette.LoadFromINI(pINI, GameStrings::AudioVisual, "CameoOverlayPalette");
-	this->ExpandBuildingPlace.Read(exINI, GameStrings::General, "ExpandBuildingPlace");
-	this->CheckExpandPlaceGrid.Read(exINI, GameStrings::AudioVisual, "CheckExpandPlaceGrid");
-	this->ExpandLandGridFrames.Read(exINI, GameStrings::AudioVisual, "ExpandLandGridFrames");
-	this->ExpandWaterGridFrames.Read(exINI, GameStrings::AudioVisual, "ExpandWaterGridFrames");
-
 	this->ConditionYellow_Terrain.Read(exINI, GameStrings::AudioVisual, "ConditionYellow.Terrain");
 	this->Shield_ConditionYellow.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionYellow");
 	this->Shield_ConditionRed.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionRed");
@@ -144,6 +134,16 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (AirShadowBaseScale.isset() && AirShadowBaseScale.Get() > 0.98 && this->HeightShadowScaling.Get())
 		this->HeightShadowScaling = false;
 	this->HeightShadowScaling_MinScale.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling.MinScale");
+
+	this->CheckUnitBaseNormal.Read(exINI, GameStrings::General, "CheckUnitBaseNormal");
+	this->Cameo_AlwaysExist.Read(exINI, GameStrings::AudioVisual, "Cameo.AlwaysExist");
+	this->Cameo_OverlayShapes.Read(exINI, GameStrings::AudioVisual, "Cameo.OverlayShapes");
+	this->Cameo_OverlayFrames.Read(exINI, GameStrings::AudioVisual, "Cameo.OverlayFrames");
+	this->Cameo_OverlayPalette.LoadFromINI(pINI, GameStrings::AudioVisual, "Cameo.OverlayPalette");
+	this->ExpandBuildingPlace.Read(exINI, GameStrings::General, "ExpandBuildingPlace");
+	this->PlacementGrid_Expand.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.Expand");
+	this->PlacementGrid_LandFrames.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.LandFrames");
+	this->PlacementGrid_WaterFrames.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.WaterFrames");
 
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
 	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Aircraft");
@@ -312,15 +312,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementGrid_TranslucencyWithPreview)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Translucency)
-		.Process(this->CheckUnitBaseNormal)
-		.Process(this->AlwaysExistTheCameo)
-		.Process(this->CameoOverlayShapes)
-		.Process(this->CameoOverlayFrames)
-		.Process(this->CameoOverlayPalette)
-		.Process(this->ExpandBuildingPlace)
-		.Process(this->CheckExpandPlaceGrid)
-		.Process(this->ExpandLandGridFrames)
-		.Process(this->ExpandWaterGridFrames)
 		.Process(this->ConditionYellow_Terrain)
 		.Process(this->Shield_ConditionYellow)
 		.Process(this->Shield_ConditionRed)
@@ -346,6 +337,15 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AirShadowBaseScale_log)
 		.Process(this->HeightShadowScaling)
 		.Process(this->HeightShadowScaling_MinScale)
+		.Process(this->CheckUnitBaseNormal)
+		.Process(this->Cameo_AlwaysExist)
+		.Process(this->Cameo_OverlayShapes)
+		.Process(this->Cameo_OverlayFrames)
+		.Process(this->Cameo_OverlayPalette)
+		.Process(this->ExpandBuildingPlace)
+		.Process(this->PlacementGrid_Expand)
+		.Process(this->PlacementGrid_LandFrames)
+		.Process(this->PlacementGrid_WaterFrames)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)

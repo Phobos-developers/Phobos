@@ -77,7 +77,7 @@ public:
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
 		static bool DigitalDisplay_Enable;
-		static bool BuildingStatisticsCameo;
+		static bool ShowBuildingStatistics;
 		static bool DrawAdjacentBoundary;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;

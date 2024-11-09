@@ -114,14 +114,14 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 	const auto pHouse = HouseClass::CurrentPlayer.get();
 	const auto position = Point2D { destX + 30, destY + 24 };
 	const auto pRulesExt = RulesExt::Global();
-	const auto frames = pRulesExt->CameoOverlayFrames.Get();
+	const auto frames = pRulesExt->Cameo_OverlayFrames.Get();
 
 	if (greyCameo) // Only draw extras over grey cameos
 	{
 		auto frame = frames.Y;
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-		if (pTypeExt && pTypeExt->AlwaysExistTheCameo.Get(RulesExt::Global()->AlwaysExistTheCameo))
+		if (pTypeExt && pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
 		{
 			auto& vec = HouseExt::ExtMap.Find(pHouse)->OwnedExistCameoTechnoTypes;
 
@@ -140,8 +140,8 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 		if (frame >= 0)
 		{
 			DSurface::Sidebar->DrawSHP(
-				pRulesExt->CameoOverlayPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
-				pRulesExt->CameoOverlayShapes,
+				pRulesExt->Cameo_OverlayPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
+				pRulesExt->Cameo_OverlayShapes,
 				frame,
 				&position,
 				&boundingRect,
@@ -166,8 +166,8 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 			if (frames.X >= 0)
 			{
 				DSurface::Sidebar->DrawSHP(
-					pRulesExt->CameoOverlayPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
-					pRulesExt->CameoOverlayShapes,
+					pRulesExt->Cameo_OverlayPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
+					pRulesExt->Cameo_OverlayShapes,
 					frames.X,
 					&position,
 					&boundingRect,
@@ -177,7 +177,7 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 					1000, 0, 0, 0, 0, 0);
 			}
 
-			if (Phobos::Config::BuildingStatisticsCameo)
+			if (Phobos::Config::ShowBuildingStatistics)
 			{
 				GET_STACK(RectangleStruct, surfaceRect, STACK_OFFSET(0x48C, -0x438));
 

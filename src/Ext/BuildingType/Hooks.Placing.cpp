@@ -117,7 +117,7 @@ DEFINE_HOOK(0x4A8F21, MapClass_PassesProximityCheck_BaseNormalExtra, 0x9)
 	GET(const BuildingTypeClass* const, pBuildBldType, ESI);
 	GET_STACK(const int, idxHouse, STACK_OFFSET(0x30, 0x8));
 
-	const auto differentColor = RulesExt::Global()->CheckExpandPlaceGrid.Get();
+	const auto differentColor = RulesExt::Global()->PlacementGrid_Expand.Get();
 	bool isInAdjacent = false;
 	auto& vec = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->BaseNormalCells;
 
@@ -480,7 +480,7 @@ DEFINE_HOOK(0x47EEBC, CellClass_DrawPlaceGrid_RecordCell, 0x6)
 	const auto pRules = RulesExt::Global();
 	BlitterFlags flags = BlitterFlags::Centered | BlitterFlags::bf_400;
 
-	if (pRules->CheckExpandPlaceGrid)
+	if (pRules->PlacementGrid_Expand)
 		BuildOnOccupiersHelpers::CurrentCell = pCell;
 
 	if (!(pCell->AltFlags & AltCellFlags::ContainsBuilding))
@@ -507,7 +507,7 @@ DEFINE_HOOK(0x47EF52, CellClass_DrawPlaceGrid_DrawGrids, 0x6)
 {
 	const auto pRules = RulesExt::Global();
 
-	if (!pRules->CheckExpandPlaceGrid)
+	if (!pRules->PlacementGrid_Expand)
 		return 0;
 
 	const auto pCell = BuildOnOccupiersHelpers::CurrentCell;
@@ -539,7 +539,7 @@ DEFINE_HOOK(0x47EF52, CellClass_DrawPlaceGrid_DrawGrids, 0x6)
 	const auto foot = BuildOnOccupiersHelpers::Exist;
 	BuildOnOccupiersHelpers::Exist = false;
 	const bool land = pCell->LandType != LandType::Water;
-	const auto frames = land ? pRules->ExpandLandGridFrames.Get() : pRules->ExpandWaterGridFrames.Get();
+	const auto frames = land ? pRules->PlacementGrid_LandFrames.Get() : pRules->PlacementGrid_WaterFrames.Get();
 	auto frame = foot ? frames.X : (green ? frames.Z : frames.Y);
 
 	if (frame >= Make_Global<SHPStruct*>(0x8A03FC)->Frames) // place.shp

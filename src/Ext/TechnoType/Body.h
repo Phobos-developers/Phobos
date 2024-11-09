@@ -228,10 +228,11 @@ public:
 		Valueable<bool> CanBeBuiltOn;
 		Valueable<bool> UnitBaseNormal;
 		Valueable<bool> UnitBaseForAllyBuilding;
-		Nullable<bool> AlwaysExistTheCameo;
-		Valueable<TechnoTypeClass*> PrerequisiteForCameo;
+		Nullable<bool> Cameo_AlwaysExist;
+		Valueable<TechnoTypeClass*> Cameo_AuxTechno;
+		Valueable<TechnoTypeClass*> Cameo_NegTechno;
 		bool CameoCheckMutex; // Not read from ini
-		Valueable<CSFText> UIExtraDescription;
+		Valueable<CSFText> UIDescription_Unbuildable;
 		PhobosPCXFile GreyCameoPCX;
 
 		Nullable<AnimTypeClass*> Wake;
@@ -459,10 +460,11 @@ public:
 			, CanBeBuiltOn { false }
 			, UnitBaseNormal { false }
 			, UnitBaseForAllyBuilding { false }
-			, AlwaysExistTheCameo {}
-			, PrerequisiteForCameo {}
+			, Cameo_AlwaysExist {}
+			, Cameo_AuxTechno {}
+			, Cameo_NegTechno {}
 			, CameoCheckMutex { false }
-			, UIExtraDescription {}
+			, UIDescription_Unbuildable {}
 			, GreyCameoPCX {}
 
 			, Wake { }
