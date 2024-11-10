@@ -1,5 +1,5 @@
 #pragma once
-#include "TacticalButtonClass.h"
+#include "SWButtonClass.h"
 #include "SWColumnClass.h"
 #include <Ext/Sidebar/Body.h>
 #include <CommandClass.h>
@@ -33,7 +33,7 @@ public:
 public:
 	std::vector<SWColumnClass*> Columns {};
 	SWColumnClass* CurrentColumn { nullptr };
-	TacticalButtonClass* CurrentButton { nullptr };
+	SWButtonClass* CurrentButton { nullptr };
 	ToggleSWButtonClass* ToggleButton { nullptr };
 
 	static CommandClass* Commands[10];

@@ -1,5 +1,5 @@
 #pragma once
-#include "TacticalButtonClass.h"
+#include "SWButtonClass.h"
 #include <ControlClass.h>
 
 #include <vector>
@@ -23,6 +23,6 @@ public:
 
 	void SetHeight(int height);
 
-	std::vector<TacticalButtonClass*> Buttons {};
+	std::vector<SWButtonClass*> Buttons {};
 	int MaxButtons { 0 };
 };

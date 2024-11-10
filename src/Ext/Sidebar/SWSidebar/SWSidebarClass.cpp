@@ -18,7 +18,7 @@ bool SWSidebarClass::AddColumn()
 	if (static_cast<int>(columns.size()) >= Phobos::UI::ExclusiveSWSidebar_MaxColumn)
 		return false;
 
-	const auto column = DLLCreate<SWColumnClass>(TacticalButtonClass::StartID + SuperWeaponTypeClass::Array->Count + 1 + static_cast<int>(columns.size()), 0, 0, 60 + Phobos::UI::ExclusiveSWSidebar_Interval, 48);
+	const auto column = DLLCreate<SWColumnClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count + 1 + static_cast<int>(columns.size()), 0, 0, 60 + Phobos::UI::ExclusiveSWSidebar_Interval, 48);
 
 	if (!column)
 		return false;
@@ -79,7 +79,7 @@ bool SWSidebarClass::AddButton(int superIdx)
 	if (columns.empty() && !this->AddColumn())
 		return false;
 
-	if (std::any_of(columns.begin(), columns.end(), [superIdx](SWColumnClass* column) { return std::any_of(column->Buttons.begin(), column->Buttons.end(), [superIdx](TacticalButtonClass* button) { return button->SuperIndex == superIdx; }); }))
+	if (std::any_of(columns.begin(), columns.end(), [superIdx](SWColumnClass* column) { return std::any_of(column->Buttons.begin(), column->Buttons.end(), [superIdx](SWButtonClass* button) { return button->SuperIndex == superIdx; }); }))
 		return true;
 
 	const bool success = columns.back()->AddButton(superIdx);
@@ -113,7 +113,7 @@ void SWSidebarClass::SortButtons()
 		return;
 	}
 
-	std::vector<TacticalButtonClass*> vec_Buttons;
+	std::vector<SWButtonClass*> vec_Buttons;
 	vec_Buttons.reserve(this->GetMaximumButtonCount());
 
 	for (const auto column : columns)
@@ -124,7 +124,7 @@ void SWSidebarClass::SortButtons()
 		column->ClearButtons(false);
 	}
 
-	std::stable_sort(vec_Buttons.begin(), vec_Buttons.end(), [](TacticalButtonClass* const a, TacticalButtonClass* const b)
+	std::stable_sort(vec_Buttons.begin(), vec_Buttons.end(), [](SWButtonClass* const a, SWButtonClass* const b)
 		{
 			return BuildType::SortsBefore(AbstractType::Special, a->SuperIndex, AbstractType::Special, b->SuperIndex);
 		});
@@ -259,7 +259,7 @@ DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeSWSidebar, 0x5)
 	{
 		if (const auto toggleShape = pSideExt->ExclusiveSWSidebar_ToggleShape.Get())
 		{
-			if (const auto toggleButton = DLLCreate<ToggleSWButtonClass>(TacticalButtonClass::StartID + SuperWeaponTypeClass::Array->Count, 0, 0, toggleShape->Width, toggleShape->Height))
+			if (const auto toggleButton = DLLCreate<ToggleSWButtonClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count, 0, 0, toggleShape->Width, toggleShape->Height))
 			{
 				toggleButton->Zap();
 				GScreenClass::Instance->AddButton(toggleButton);

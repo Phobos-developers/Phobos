@@ -26,10 +26,15 @@ bool SWColumnClass::Draw(bool forced)
 
 	if (centerPCX)
 	{
-		RectangleStruct backRect = { this->X, this->Y, centerPCX->GetWidth(), centerPCX->GetHeight() };
+		RectangleStruct backRect = { this->X, 0, centerPCX->GetWidth(), centerPCX->GetHeight() };
 		backRect.Width = centerPCX->GetWidth();
 		backRect.Height = centerPCX->GetHeight();
-		PCX::Instance->BlitToSurface(&backRect, pSurface, centerPCX);
+
+		for (const auto button : this->Buttons)
+		{
+			backRect.Y = button->Y;
+			PCX::Instance->BlitToSurface(&backRect, pSurface, centerPCX);
+		}
 	}
 
 	if (const auto topPCX = pSideExt->ExclusiveSWSidebar_TopPCX.GetSurface())
@@ -106,7 +111,7 @@ bool SWColumnClass::AddButton(int superIdx)
 	if (static_cast<int>(buttons.size()) >= this->MaxButtons && !SWSidebarClass::Instance.AddColumn())
 		return false;
 
-	const auto button = DLLCreate<TacticalButtonClass>(TacticalButtonClass::StartID + superIdx, superIdx, 0, 0, 60, 48);
+	const auto button = DLLCreate<SWButtonClass>(SWButtonClass::StartID + superIdx, superIdx, 0, 0, 60, 48);
 
 	if (!button)
 		return false;
@@ -121,7 +126,7 @@ bool SWColumnClass::RemoveButton(int superIdx)
 {
 	auto& buttons = this->Buttons;
 
-	const auto it = std::find_if(buttons.begin(), buttons.end(), [superIdx](TacticalButtonClass* const button) { return button->SuperIndex == superIdx; });
+	const auto it = std::find_if(buttons.begin(), buttons.end(), [superIdx](SWButtonClass* const button) { return button->SuperIndex == superIdx; });
 
 	if (it == buttons.end())
 		return false;

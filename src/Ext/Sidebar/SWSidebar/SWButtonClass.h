@@ -1,13 +1,13 @@
 #pragma once
 #include <ControlClass.h>
 
-class TacticalButtonClass : public ControlClass
+class SWButtonClass : public ControlClass
 {
 public:
-	TacticalButtonClass() = default;
-	TacticalButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height);
+	SWButtonClass() = default;
+	SWButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height);
 
-	~TacticalButtonClass() = default;
+	~SWButtonClass() = default;
 
 	virtual bool Draw(bool forced) override;
 	virtual void OnMouseEnter() override;

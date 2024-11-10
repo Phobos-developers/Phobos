@@ -1,4 +1,4 @@
-#include "TacticalButtonClass.h"
+#include "SWButtonClass.h"
 #include "SWSidebarClass.h"
 #include <EventClass.h>
 #include <CCToolTip.h>
@@ -10,7 +10,7 @@
 #include <Utilities/AresFunctions.h>
 #include <Ext/Side/Body.h>
 
-TacticalButtonClass::TacticalButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
+SWButtonClass::SWButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
 	: ControlClass(id, x, y, width, height, GadgetFlag::LeftPress, true)
 	, SuperIndex(superIdx)
 {
@@ -18,7 +18,7 @@ TacticalButtonClass::TacticalButtonClass(unsigned int id, int superIdx, int x, i
 		backColumn->Buttons.emplace_back(this);
 }
 
-bool TacticalButtonClass::Draw(bool forced)
+bool SWButtonClass::Draw(bool forced)
 {
 	if (!forced)
 		return false;
@@ -125,7 +125,7 @@ bool TacticalButtonClass::Draw(bool forced)
 	return true;
 }
 
-void TacticalButtonClass::OnMouseEnter()
+void SWButtonClass::OnMouseEnter()
 {
 	if (!SWSidebarClass::IsEnabled())
 		return;
@@ -136,7 +136,7 @@ void TacticalButtonClass::OnMouseEnter()
 	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
 }
 
-void TacticalButtonClass::OnMouseLeave()
+void SWButtonClass::OnMouseLeave()
 {
 	if (!SWSidebarClass::IsEnabled())
 		return;
@@ -148,7 +148,7 @@ void TacticalButtonClass::OnMouseLeave()
 	CCToolTip::Instance->MarkToRedraw(CCToolTip::Instance->CurrentToolTipData);
 }
 
-bool TacticalButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
+bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 {
 	if ((int)flags & (int)GadgetFlag::LeftPress)
 	{
@@ -159,12 +159,12 @@ bool TacticalButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 	return this->ControlClass::Action(flags, pKey, KeyModifier::None);
 }
 
-void TacticalButtonClass::SetColumn(int column)
+void SWButtonClass::SetColumn(int column)
 {
 	this->ColumnIndex = column;
 }
 
-bool TacticalButtonClass::LaunchSuper() const
+bool SWButtonClass::LaunchSuper() const
 {
 	const auto pCurrent = HouseClass::CurrentPlayer();
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];

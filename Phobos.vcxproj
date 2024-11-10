@@ -21,7 +21,7 @@
     <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWColumnClass.cpp" />
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWSidebarClass.cpp" />
-    <ClCompile Include="src\Ext\Sidebar\SWSidebar\TacticalButtonClass.cpp" />
+    <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWButtonClass.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
     <ClCompile Include="src\New\Type\AttachEffectTypeClass.cpp" />
     <ClCompile Include="src\Commands\Commands.cpp" />
@@ -191,7 +191,7 @@
     <ClInclude Include="src\Commands\ToggleSWSidebar.h" />
     <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWColumnClass.h" />
     <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWSidebarClass.h" />
-    <ClInclude Include="src\Ext\Sidebar\SWSidebar\TacticalButtonClass.h" />
+    <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWButtonClass.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />
     <ClInclude Include="src\Commands\FrameByFrame.h" />
