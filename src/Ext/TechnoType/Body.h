@@ -229,8 +229,8 @@ public:
 		Valueable<bool> UnitBaseNormal;
 		Valueable<bool> UnitBaseForAllyBuilding;
 		Nullable<bool> Cameo_AlwaysExist;
-		ValueableVector<TechnoTypeClass*> Cameo_AuxTechno;
-		ValueableVector<TechnoTypeClass*> Cameo_NegTechno;
+		ValueableVector<TechnoTypeClass*> Cameo_AuxTechnos;
+		ValueableVector<TechnoTypeClass*> Cameo_NegTechnos;
 		bool CameoCheckMutex; // Not read from ini
 		Valueable<CSFText> UIDescription_Unbuildable;
 		PhobosPCXFile GreyCameoPCX;
@@ -461,8 +461,8 @@ public:
 			, UnitBaseNormal { false }
 			, UnitBaseForAllyBuilding { false }
 			, Cameo_AlwaysExist {}
-			, Cameo_AuxTechno {}
-			, Cameo_NegTechno {}
+			, Cameo_AuxTechnos {}
+			, Cameo_NegTechnos {}
 			, CameoCheckMutex { false }
 			, UIDescription_Unbuildable {}
 			, GreyCameoPCX {}

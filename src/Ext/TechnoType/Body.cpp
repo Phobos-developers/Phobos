@@ -463,8 +463,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UnitBaseNormal.Read(exINI, pSection, "UnitBaseNormal");
 	this->UnitBaseForAllyBuilding.Read(exINI, pSection, "UnitBaseForAllyBuilding");
 	this->Cameo_AlwaysExist.Read(exINI, pSection, "Cameo.AlwaysExist");
-	this->Cameo_AuxTechno.Read(exINI, pSection, "Cameo.AuxTechno");
-	this->Cameo_NegTechno.Read(exINI, pSection, "Cameo.NegTechno");
+	this->Cameo_AuxTechnos.Read(exINI, pSection, "Cameo.AuxTechnos");
+	this->Cameo_NegTechnos.Read(exINI, pSection, "Cameo.NegTechnos");
 	this->UIDescription_Unbuildable.Read(exINI, pSection, "UIDescription.Unbuildable");
 
 	this->Wake.Read(exINI, pSection, "Wake");
@@ -843,8 +843,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitBaseNormal)
 		.Process(this->UnitBaseForAllyBuilding)
 		.Process(this->Cameo_AlwaysExist)
-		.Process(this->Cameo_AuxTechno)
-		.Process(this->Cameo_NegTechno)
+		.Process(this->Cameo_AuxTechnos)
+		.Process(this->Cameo_NegTechnos)
 		.Process(this->CameoCheckMutex)
 		.Process(this->UIDescription_Unbuildable)
 		.Process(this->GreyCameoPCX)

@@ -120,7 +120,7 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const
 	if (pHouse->InForbiddenHouses(pType))
 		return false;
 
-	const auto& pNegTypes = pTypeExt->Cameo_NegTechno;
+	const auto& pNegTypes = pTypeExt->Cameo_NegTechnos;
 
 	if (pNegTypes.size())
 	{
@@ -131,7 +131,7 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const
 		}
 	}
 
-	const auto& pAuxTypes = pTypeExt->Cameo_AuxTechno;
+	const auto& pAuxTypes = pTypeExt->Cameo_AuxTechnos;
 
 	if (!pAuxTypes.size())
 	{
