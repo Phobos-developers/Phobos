@@ -162,7 +162,7 @@ DEFINE_HOOK(0x4A8F21, MapClass_PassesProximityCheck_BaseNormalExtra, 0x9)
 								const auto pCellBldType = pCellBld->Type;
 								const auto mission = pCellBld->CurrentMission;
 
-								if (mission != Mission::Construction && mission != Mission::Selling && !BuildingTypeExt::ExtMap.Find(pCellBldType)->NoBuildAreaOnBuildup)
+								if (mission != Mission::Construction || !BuildingTypeExt::ExtMap.Find(pCellBldType)->NoBuildAreaOnBuildup)
 								{
 									const auto& pBuildingsAllowed = pBuildBldTypeExt->Adjacent_Allowed;
 
