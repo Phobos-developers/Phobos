@@ -251,6 +251,7 @@ This page lists all the individual contributions to the project by their author.
   - Build area customizations
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
+  - `<Player @ X>` as owner for pre-placed objects
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -363,7 +364,6 @@ This page lists all the individual contributions to the project by their author.
   - Flashing Technos on selecting
   - Promotion animation
 - **ZivDero**
-  - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
