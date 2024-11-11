@@ -543,24 +543,25 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
-
 DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 {
 	GET(ObjectClass*, pThis, ESI);
 
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pThis))
 	{
-		if (!pTechno->GetCell() ||
-			!pTechno->GetCell()->IsClearToMove(pTechno->GetTechnoType()->SpeedType,
-				false, false, -1, pTechno->GetTechnoType()->MovementZone,
-				pTechno->GetCell()->GetLevel(), pTechno->GetCell()->ContainsBridge()))
+		auto pCell = pTechno->GetCell();
+
+		if (!pCell ||
+			!pCell->IsClearToMove(pTechno->GetTechnoType()->SpeedType,
+			true, true, -1, pTechno->GetTechnoType()->MovementZone,
+				pCell->GetLevel(), pCell->ContainsBridge()))
 			return 0;
 
 		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
 		{
 			double ratio = 0.0;
 
-			if (pTechno->GetCell()->Tile_Is_Water() && !pTechno->OnBridge)
+			if (pCell->Tile_Is_Water() && !pTechno->OnBridge)
 				ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
 			else
 				ratio = pTypeExt->FallingDownDamage.Get();
@@ -584,11 +585,15 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 				{
 					auto pInf = abstract_cast<InfantryClass*>(pTechno);
 
-					if (pTechno->GetCell()->Tile_Is_Water() && pInf->SequenceAnim != Sequence::Swim)
+					if (pCell->Tile_Is_Water() && pInf->SequenceAnim != Sequence::Swim)
 						pInf->PlayAnim(Sequence::Swim, true, false);
-					else if (!pTechno->GetCell()->Tile_Is_Water() && pInf->SequenceAnim != Sequence::Guard)
+					else if (!pCell->Tile_Is_Water() && pInf->SequenceAnim != Sequence::Guard)
 						pInf->PlayAnim(Sequence::Guard, true, false);
 				}
+			}
+			else
+			{
+				pTechno->UpdatePosition(PCPType::During);
 			}
 
 			return 0x5F405B;
