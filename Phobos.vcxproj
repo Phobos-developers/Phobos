@@ -22,6 +22,7 @@
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWColumnClass.cpp" />
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWSidebarClass.cpp" />
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWButtonClass.cpp" />
+    <ClCompile Include="src\Ext\TechnoType\Hooks.MatrixOp.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
     <ClCompile Include="src\New\Type\AttachEffectTypeClass.cpp" />
     <ClCompile Include="src\Commands\Commands.cpp" />
@@ -117,7 +118,6 @@
     <ClCompile Include="src\Ext\Side\Hooks.SidebarGDIPositions.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.Teleport.cpp" />
-    <ClCompile Include="src\Ext\TechnoType\Hooks.Drawing.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.Internal.cpp" />
