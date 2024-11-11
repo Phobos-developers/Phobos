@@ -4,8 +4,6 @@
 
 #include <string>
 
-#define CAN_USE_ARES 1
-
 class CCINIClass;
 class AbstractClass;
 
