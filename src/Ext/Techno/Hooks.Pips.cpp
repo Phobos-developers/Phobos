@@ -18,8 +18,6 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 			pShieldData->DrawShieldBar(length, pLocation, pBound);
 	}
 
-	TechnoExt::ProcessDigitalDisplays(pThis);
-
 	return 0;
 }
 
@@ -40,28 +38,47 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 		}
 	}
 
-	TechnoExt::ProcessDigitalDisplays(pThis);
-
 	return 0;
 }
 
 DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
 {
-	enum { SkipGameCode = 0x6F5388 };
+	enum { SkipAll = 0x6F5EE3, DrawBubble = 0x6F5E8D };
 
 	GET(TechnoClass*, pThis, EBP);
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x98, 0x4));
 	GET(RectangleStruct*, pBounds, ESI);
 
+	bool isSelected = pThis->IsSelected || pThis->IsMouseHovering;
+
 	if (pThis->VisualCharacter(false, nullptr) != VisualType::Hidden)
 	{
-		if (RulesExt::Global()->DrawInsignia_OnlyOnSelected.Get() && !pThis->IsSelected && !pThis->IsMouseHovering)
-			return SkipGameCode;
-		else
+		if (isSelected || !RulesExt::Global()->DrawInsignia_OnlyOnSelected.Get())
 			TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
 	}
 
-	return SkipGameCode;
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->TypeExtData->HealthBar_Hide)
+		return SkipAll;
+
+	bool canDrawHealthBar = isSelected || (!pThis->IsSurfaced() && pThis->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex));
+
+	// TODO: Rewrite everything from here completely:
+	// * Health bar (small overhead)
+	// * Shield bar (massive overhead since digital display merged)
+	// * Extra progress bars
+	//   * IC, Temporal, ROF, Reload, Factory progress, SW progress, ...
+	// * Digitals
+
+	constexpr bool disguiseCheckUnused = true;
+	if (canDrawHealthBar)
+		pThis->DrawHealthBar(pLocation, pBounds, disguiseCheckUnused); // Especially you
+	
+	if (isSelected && Phobos::Config::DigitalDisplay_Enable)
+		TechnoExt::ProcessDigitalDisplays(pThis);
+
+	return DrawBubble;
 }
 
 DEFINE_HOOK(0x709B2E, TechnoClass_DrawPips_Sizes, 0x5)

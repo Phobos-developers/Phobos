@@ -273,9 +273,6 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 
 void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 {
-	if (!Phobos::Config::DigitalDisplay_Enable)
-		return;
-
 	const auto pType = pThis->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
