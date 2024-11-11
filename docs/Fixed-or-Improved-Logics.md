@@ -1216,7 +1216,7 @@ Ammo.DeployUnlockMaximumAmount=-1    ; integer
 ```
 
 ```{warning}
-Auto-deploy feature requires `Convert.Deploy` from [Ares鈥� Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
+Auto-deploy feature requires `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
 ```
 
 ### `IsSimpleDeployer` vehicle ammo change on deploy
@@ -1502,11 +1502,10 @@ FireOnce.ResetSequence=true  ; boolean
 
 ### Force techno targeting in distributed frames to improve performance
 
-- When you create many techno in a same frame (f.ex. starting the game with a campaign map that initially has a large number of technos), they will always scan for target in a synchronous period, causing the game lagging. Increasing targeting delay will not make things better, as their targeting are still synchronized.
-- It is now possible to force them targeting seperatly. When a techno spawn, they generate a random number in \[0,15\].
-- If `DistributeTargetingFrame=true` is set, only when the current frame number is congruent with the technos own number under modulo 16, will it do targeting.
-- You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI (Players are not likely to have so many technos.).
-- For technos with low ROF (f.ex. Tanya), this will significantly reduce their efficiency in killing enemies. Turn the same flag off on techno to prevent it.
+- When you create many technos in a same frame (i.e. starting the game with a campaign map that initially has a large number of technos), they will always scan for targets in a synchronous period, causing game lag. Increasing targeting delay alone will not make things better, as their targeting is still synchronized.
+- It is now possible to force them to seek targets separately. When a techno spawns, it will generate a random number in \[0,15\]. If `DistributeTargetingFrame=true` is set, only when the current frame number is congruent with the technos own number under modulo 16, will it do targeting.
+  - You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI (Players are not likely to have so many technos.)
+  - For technos with low ROF (i.e. Tanya), this will significantly reduce their efficiency in killing enemies.
 
 In `rulesmd.ini`
 ```ini
@@ -1514,7 +1513,7 @@ In `rulesmd.ini`
 DistributeTargetingFrame=false         ; boolean
 DistributeTargetingFrame.AIOnly=true   ; boolean
 
-[SomeTechno]
+[SOMETECHNO]                           ; TechnoType
 DistributeTargetingFrame=              ; boolean
 ```
 
