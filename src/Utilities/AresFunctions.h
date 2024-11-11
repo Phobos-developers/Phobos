@@ -19,8 +19,9 @@ public:
 	static bool(__thiscall* IsTargetConstraintsEligible)(void*, HouseClass*, bool);
 
 	static void*(__thiscall* SWTypeExtMap_Find)(void*, SuperWeaponTypeClass*);
-private:
+
 	static void* SWTypeExtMap;
+private:
 
 	static constexpr bool _maybe = false;
 
