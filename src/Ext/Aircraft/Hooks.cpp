@@ -48,18 +48,19 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 	}
 
 	int fireCount = pThis->MissionStatus - 4;
+	int strafingShots = pWeaponExt->Strafing_Shots.Get(5);
 
-	if (pWeaponExt->Strafing_Shots > 5)
+	if (strafingShots > 5)
 	{
 		if (pThis->MissionStatus == (int)AirAttackStatus::FireAtTarget3_Strafe)
 		{
-			int remainingShots = pWeaponExt->Strafing_Shots - 3 - pExt->Strafe_BombsDroppedThisRound;
+			int remainingShots = strafingShots - 3 - pExt->Strafe_BombsDroppedThisRound;
 
 			if (remainingShots > 0)
 				pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget2_Strafe;
 		}
 	}
-	else if (fireCount > 1 && pWeaponExt->Strafing_Shots < fireCount)
+	else if (fireCount > 1 && strafingShots < fireCount)
 	{
 		if (!pThis->Ammo)
 			pThis->IsLocked = false;
@@ -215,12 +216,11 @@ DEFINE_HOOK(0x414F10, AircraftClass_AI_Trailer, 0x5)
 	GET(AircraftClass*, pThis, ESI);
 	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x40, -0xC));
 
-	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1))
-	{
-		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
-		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
-		pTrailerAnimExt->SetInvoker(pThis);
-	}
+	auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1);
+	auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+	AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
+	pTrailerAnimExt->SetInvoker(pThis);
+	pTrailerAnimExt->IsTechnoTrailerAnim = true;
 
 	return SkipGameCode;
 }
@@ -298,31 +298,6 @@ DEFINE_HOOK(0x44402E, BuildingClass_ExitObject_PoseDir2, 0x5)
 
 #pragma endregion
 
-DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
-{
-	GET(ILocomotion*, iloco, ESI);
-	__assume(iloco != nullptr);
-	auto loco = static_cast<FlyLocomotionClass*>(iloco);
-	auto pThis = static_cast<AircraftClass*>(loco->LinkedTo);
-	if (pThis->GetHeight() <= 0)
-	{
-		REF_STACK(Matrix3D, mat, STACK_OFFSET(0x38, -0x30));
-		auto slope_idx = MapClass::Instance->GetCellAt(pThis->Location)->SlopeIndex;
-		mat = Matrix3D::VoxelRampMatrix[slope_idx] * mat;
-		float ars = pThis->AngleRotatedSideways;
-		float arf = pThis->AngleRotatedForwards;
-		if (std::abs(ars) > 0.005 || std::abs(arf) > 0.005)
-		{
-			mat.TranslateZ(float(std::abs(Math::sin(ars)) * pThis->Type->VoxelScaleX
-				+ std::abs(Math::sin(arf)) * pThis->Type->VoxelScaleY));
-			R->ECX(pThis);
-			return 0x4CF6AD;
-		}
-	}
-
-	return 0x4CF6A0;
-}
-
 DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 {
 	enum { SkipKickOutPassengers = 0x415F08 };
@@ -341,4 +316,70 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 		return 0;
 
 	return SkipKickOutPassengers;
+}
+
+static __forceinline bool CheckSpyPlaneCameraCount(AircraftClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType);
+
+	if (!pWeaponExt->Strafing_Shots.isset())
+		return true;
+
+	if (pExt->Strafe_BombsDroppedThisRound >= pWeaponExt->Strafing_Shots)
+		return false;
+
+	pExt->Strafe_BombsDroppedThisRound++;
+
+	return true;
+}
+
+DEFINE_HOOK(0x415666, AircraftClass_Mission_SpyPlaneApproach_MaxCount, 0x6)
+{
+	enum { Skip = 0x41570C };
+
+	GET(AircraftClass*, pThis, ESI);
+
+	if (!CheckSpyPlaneCameraCount(pThis))
+		return Skip;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4157EB, AircraftClass_Mission_SpyPlaneOverfly_MaxCount, 0x6)
+{
+	enum { Skip = 0x415863 };
+
+	GET(AircraftClass*, pThis, ESI);
+
+	if (!CheckSpyPlaneCameraCount(pThis))
+		return Skip;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
+{
+	enum { SkipResponse = 0x709015 };
+
+	GET(TechnoClass*, pThis, ECX);
+
+	if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+	{
+		if (pAircraft->Type->Carryall && pAircraft->HasAnyLink() &&
+			generic_cast<FootClass*>(pAircraft->Destination))
+		{
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
+
+			if (pTypeExt->VoicePickup.isset())
+			{
+				pThis->QueueVoice(pTypeExt->VoicePickup.Get());
+
+				R->EAX(1);
+				return SkipResponse;
+			}
+		}
+	}
+
+	return 0;
 }

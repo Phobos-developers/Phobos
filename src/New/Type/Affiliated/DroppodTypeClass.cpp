@@ -173,7 +173,7 @@ DEFINE_HOOK(0x4B607D, DroppodLocomotionClass_ILoco_MoveTo, 0x8)
 
 	auto const lThis = static_cast<DropPodLocomotionClass*>(iloco);
 	auto const pLinked = lThis->LinkedTo;
-	const auto podType= TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType())->DroppodType.get();
+	const auto podType = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType())->DroppodType.get();
 
 	if (!podType)
 		return 0;

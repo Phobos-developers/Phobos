@@ -2,9 +2,9 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-PhobosTrajectory* StraightTrajectoryType::CreateInstance() const
+std::unique_ptr<PhobosTrajectory> StraightTrajectoryType::CreateInstance() const
 {
-	return new StraightTrajectory(this);
+	return std::make_unique<StraightTrajectory>(this);
 }
 
 template<typename T>
@@ -48,52 +48,41 @@ void StraightTrajectory::Serialize(T& Stm)
 	Stm
 		.Process(this->DetonationDistance)
 		.Process(this->TargetSnapDistance)
-		.Process(this->PassThrough)
 		.Process(this->FirerZPosition)
 		.Process(this->TargetZPosition)
+		.Process(this->Type)
 		;
 }
 
 bool StraightTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	this->PhobosTrajectory::Load(Stm, false);
 	this->Serialize(Stm);
-
 	return true;
 }
 
 bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 {
-	this->PhobosTrajectory::Save(Stm);
-
 	const_cast<StraightTrajectory*>(this)->Serialize(Stm);
-
 	return true;
 }
 
 void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	auto const pType = this->GetTrajectoryType<StraightTrajectoryType>(pBullet);
-	this->DetonationDistance = pType->DetonationDistance;
-
-	if (pType->ApplyRangeModifiers)
+	if (this->Type->ApplyRangeModifiers)
 		this->DetonationDistance = Leptons(WeaponTypeExt::GetRangeWithModifiers(pBullet->WeaponType, pBullet->Owner, this->DetonationDistance));
 
-	this->TargetSnapDistance = pType->TargetSnapDistance;
-	this->PassThrough = pType->PassThrough;
 	this->FirerZPosition = this->GetFirerZPosition(pBullet);
 	this->TargetZPosition = this->GetTargetZPosition(pBullet);
 
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
 	pBullet->Velocity.Z = this->GetVelocityZ(pBullet);
-	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
-
+	pBullet->Velocity *= this->Type->Trajectory_Speed / pBullet->Velocity.Magnitude();
 }
 
 bool StraightTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (this->PassThrough)
+	if (this->Type->PassThrough)
 	{
 		pBullet->Data.Distance = INT_MAX;
 		int maxTravelDistance = this->DetonationDistance > 0 ? this->DetonationDistance : INT_MAX;
@@ -111,7 +100,7 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 
 void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
-	if (this->PassThrough)
+	if (this->Type->PassThrough)
 		return;
 
 	auto pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
@@ -132,7 +121,7 @@ void StraightTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpe
 
 TrajectoryCheckReturnType StraightTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)
 {
-	if (this->PassThrough)
+	if (this->Type->PassThrough)
 	{
 		if (this->FirerZPosition > this->TargetZPosition && pBullet->Location.Z <= pBullet->TargetCoords.Z)
 			return TrajectoryCheckReturnType::Detonate; // Detonate projectile.
@@ -154,7 +143,7 @@ int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 {
 	int velocity = pBullet->TargetCoords.Z - pBullet->SourceCoords.Z;
 
-	if (!this->PassThrough)
+	if (!this->Type->PassThrough)
 		return velocity;
 
 	if (this->FirerZPosition == this->TargetZPosition)
