@@ -181,6 +181,10 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 					if (pBuildingExt->LimboID == limboKillID)
 					{
 						it = vec.erase(it);
+
+						if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+							HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
+
 						pBuilding->Stun();
 						pBuilding->Limbo();
 						pBuilding->RegisterDestruction(nullptr);
