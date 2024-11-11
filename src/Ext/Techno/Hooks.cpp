@@ -570,7 +570,7 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 			if (ratio < 0.0)
 				pDamage = int(pThis->Health * abs(ratio));
 			else if (ratio >= 0.0 && ratio <= 1.0)
-				pDamage = int(pThis->GetTechnoType()->Strength * abs(ratio));
+				pDamage = int(pThis->GetTechnoType()->Strength * ratio);
 			else
 				pDamage = int(ratio);
 
