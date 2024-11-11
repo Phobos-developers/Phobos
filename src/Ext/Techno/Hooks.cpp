@@ -543,3 +543,57 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
+
+DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
+{
+	GET(ObjectClass*, pThis, ESI);
+
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pThis))
+	{
+		if (!pTechno->GetCell() ||
+			!pTechno->GetCell()->IsClearToMove(pTechno->GetTechnoType()->SpeedType,
+				false, false, -1, pTechno->GetTechnoType()->MovementZone,
+				pTechno->GetCell()->GetLevel(), pTechno->GetCell()->ContainsBridge()))
+			return 0;
+
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
+		{
+			double ratio = 0.0;
+
+			if (pTechno->GetCell()->Tile_Is_Water() && !pTechno->OnBridge)
+				ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
+			else
+				ratio = pTypeExt->FallingDownDamage.Get();
+
+			int pDamage = 0;
+
+			if (ratio < 0.0)
+				pDamage = int(pThis->Health * abs(ratio));
+			else if (ratio >= 0.0 && ratio <= 1.0)
+				pDamage = int(pThis->GetTechnoType()->Strength * abs(ratio));
+			else
+				pDamage = int(ratio);
+
+			pThis->ReceiveDamage(&pDamage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
+
+			if (pThis->Health > 0 && pThis->IsAlive)
+			{
+				pThis->IsABomb = false;
+
+				if (pThis->WhatAmI() == AbstractType::Infantry)
+				{
+					auto pInf = abstract_cast<InfantryClass*>(pTechno);
+
+					if (pTechno->GetCell()->Tile_Is_Water() && pInf->SequenceAnim != Sequence::Swim)
+						pInf->PlayAnim(Sequence::Swim, true, false);
+					else if (!pTechno->GetCell()->Tile_Is_Water() && pInf->SequenceAnim != Sequence::Guard)
+						pInf->PlayAnim(Sequence::Guard, true, false);
+				}
+			}
+
+			return 0x5F405B;
+		}
+	}
+
+	return 0;
+}
