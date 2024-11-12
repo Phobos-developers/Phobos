@@ -411,7 +411,7 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 	{
 		needCacheFlush = true;
 		auto source = this->VoxelLightSource.Get().Normalized();
-		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix.get() * source;
+		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix() * source;
 	}
 
 	/*
@@ -420,7 +420,7 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 	{
 		needCacheFlush = true;
 		auto source = this->VoxelShadowLightSource.Get().Normalized();
-		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix.get() * source;
+		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix() * source;
 	}
 	*/
 
