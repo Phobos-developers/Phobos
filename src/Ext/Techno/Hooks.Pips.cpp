@@ -3,44 +3,6 @@
 #include <TiberiumClass.h>
 #include "Body.h"
 
-DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET(int, length, EBX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (const auto pShieldData = pExt->Shield.get())
-	{
-		if (pShieldData->IsAvailable())
-			pShieldData->DrawShieldBar(length, pLocation, pBound);
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (const auto pShieldData = pExt->Shield.get())
-	{
-		if (pShieldData->IsAvailable())
-		{
-			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-			pShieldData->DrawShieldBar(length, pLocation, pBound);
-		}
-	}
-
-	return 0;
-}
-
 DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
 {
 	enum { SkipAll = 0x6F5EE3, DrawBubble = 0x6F5E8D };
@@ -71,12 +33,45 @@ DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
 	//   * IC, Temporal, ROF, Reload, Factory progress, SW progress, ...
 	// * Digitals
 
+	int length;
+	if (auto pBld = specific_cast<BuildingClass*>(pThis))
+	{
+		int height = pBld->Type->GetFoundationHeight(false);
+		length= height * 7 + height / 2;
+		/*
+		auto DrawBuildingBar = [pBld, pLocation, pBounds,length](double percent,int pip_frame, int)
+		{
+
+		};
+		*/
+	}else
+	{
+		length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+		/*
+		auto DrawFootBar = [pThis, pLocation, pBounds, length](double percent, int pip_frame, int)
+		{
+
+		};
+		*/
+	}
+
 	constexpr bool disguiseCheckUnused = true;
 	if (canDrawHealthBar)
-		pThis->DrawHealthBar(pLocation, pBounds, disguiseCheckUnused); // Especially you
-	
+	{
+		pThis->DrawHealthBar(pLocation, pBounds, disguiseCheckUnused); // Rewrite everything in it
+		// HP, Pips
+		if (const auto pShieldData = pExt->Shield.get())
+		{
+			if (pShieldData->IsAvailable())
+				pShieldData->DrawShieldBar(length, pLocation, pBounds);
+		}
+	}
+
 	if (isSelected && Phobos::Config::DigitalDisplay_Enable)
 		TechnoExt::ProcessDigitalDisplays(pThis);
+
+	R->EDI(pLocation);
+	R->ESI(pBounds);
 
 	return DrawBubble;
 }
