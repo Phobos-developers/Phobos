@@ -513,9 +513,11 @@ void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLoca
 		position.Y += drawBackwards ? (int)round(sectionAmount * sectionOffset.Y / 2) : -(int)round(sectionAmount * sectionOffset.Y / 2);
 	}
 
-	if(drawBackwards)
-		for(int i = 0; i < (sectionAmount - sectionsToDraw); ++i)
+	if (drawBackwards)
+	{
+		for (int i = 0; i < (sectionAmount - sectionsToDraw); ++i)
 			position -= sectionOffset;
+	}
 
 	for(int i = 0; i < sectionsToDraw; ++i)
 	{
