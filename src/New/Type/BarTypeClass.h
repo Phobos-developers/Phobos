@@ -29,13 +29,13 @@ public:
 		, BoardFG_File { }
 		, BoardFG_ShowWhenNotSelected { false }
 		, BoardFG_Translucency { }
-		, Board_Offset { { 0,0 } }
-		, Bar_Offset { { 0,0 } }
+		, Board_Offset { { 0, 0 } }
+		, Bar_Offset { { 0, 0 } }
 		, Sections_DrawBackwards { false }
-		, Sections_Pips { { 16,17,18 } }
+		, Sections_Pips { { 16, 17, 18 } }
 		, Sections_EmptyPip { -1 }
 		, Sections_Amount { 17 }
-		, Sections_PositionDelta { { 2,0 } }
+		, Sections_PositionDelta { { 2, 0 } }
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);
