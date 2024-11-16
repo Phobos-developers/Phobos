@@ -526,7 +526,7 @@ void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLoca
 				frameIdxa, &position, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
-	if(barType->BoardFG_File && (pThis->IsSelected || barType->BoardFG_ShowWhenNotSelected))
+	if (barType->BoardFG_File && (pThis->IsSelected || barType->BoardFG_ShowWhenNotSelected))
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->BoardFG_File.Get(),
 				0, &boardPosition, pBounds, BlitterFlags(0xE00) | blitFlagsFG, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }
