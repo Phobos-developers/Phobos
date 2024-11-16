@@ -301,7 +301,7 @@ DEFINE_HOOK(0x6F6846, TechnoClass_DrawHealthBar_CustomHealthBar, 0x6)
 
 	bool pThisIsInf = pThis->WhatAmI() == AbstractType::Infantry;
 
-	if(!pTypeExt->HealthBar_BarType)
+	if (!pTypeExt->HealthBar_BarType)
 	{
 		R->AL(pThis->IsSelected);
 		if (pThisIsInf)
