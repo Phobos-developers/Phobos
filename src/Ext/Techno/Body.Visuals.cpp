@@ -519,7 +519,7 @@ void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLoca
 			position -= sectionOffset;
 	}
 
-	for(int i = 0; i < sectionsToDraw; ++i)
+	for (int i = 0; i < sectionsToDraw; ++i)
 	{
 		position += drawBackwards ? -sectionOffset : sectionOffset;
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP(),
