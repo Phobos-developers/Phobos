@@ -294,6 +294,7 @@ DEFINE_HOOK(0x6F64C1, TechnoClass_DrawHealthBar_BuildingHealthBar, 0xA)
 DEFINE_HOOK(0x6F6846, TechnoClass_DrawHealthBar_CustomHealthBar, 0x6)
 {
 	enum { Continue = 0x6F68E8, ContinueInf = 0x6F6852, Skip = 0x6F6A58 };
+
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
