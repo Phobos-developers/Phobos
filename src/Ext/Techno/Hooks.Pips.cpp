@@ -279,6 +279,7 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_DrawPips_SelfHealGain, 0x5)
 DEFINE_HOOK(0x6F64C1, TechnoClass_DrawHealthBar_BuildingHealthBar, 0xA)
 {
 	enum { Continue = 0x6F64CB, Skip = 0x6F683C };
+
 	GET(TechnoClass*, pThis, ESI);
 
 	R->EAX(pThis->GetTechnoType());
