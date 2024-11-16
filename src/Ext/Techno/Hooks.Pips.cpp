@@ -286,7 +286,7 @@ DEFINE_HOOK(0x6F64C1, TechnoClass_DrawHealthBar_BuildingHealthBar, 0xA)
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if(pThis->WhatAmI() == AbstractType::Building && pTypeExt->HealthBar_BarType)
+	if (pThis->WhatAmI() == AbstractType::Building && pTypeExt->HealthBar_BarType)
 		return Skip;
 
 	return Continue;
