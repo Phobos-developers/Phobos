@@ -304,7 +304,7 @@ DEFINE_HOOK(0x6F6846, TechnoClass_DrawHealthBar_CustomHealthBar, 0x6)
 	if(!pTypeExt->HealthBar_BarType)
 	{
 		R->AL(pThis->IsSelected);
-		if(pThisIsInf)
+		if (pThisIsInf)
 			return ContinueInf;
 		return Continue;
 	}
