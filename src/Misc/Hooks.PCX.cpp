@@ -83,6 +83,30 @@ DEFINE_HOOK(0x552FCB, LoadProgressMgr_Draw_PCXLoadingScreen_Campaign, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x553076,LoadProgressMgr_Draw_ExtraText_Campaign,0x5)
+{
+	GET(LoadProgressManager*, self, EBP);
+	if(Phobos::Config::NoSaveLoad)
+	{
+		Point2D pos
+		{
+			self->TitleBarRect.X + self->TitleBarRect.Width - 100,
+			self->TitleBarRect.Y + 10
+		};
+		LEA_STACK(RectangleStruct*, pBnd, STACK_OFFSET(0x1268,-0x1204));
+		if(auto logo = FileSystem::LoadSHPFile("hardcorelogo.shp"))
+		{
+			self->ProgressSurface->DrawSHP(FileSystem::PALETTE_PAL,logo,0,&pos,pBnd,BlitterFlags::bf_400,0,0,ZGradient::Ground,1000,0,nullptr,0,0,0);
+		}
+		else
+		{
+			auto msg = GeneralUtils::LoadStringUnlessMissing("TXT_HARDCORE_MODE",L"HARDCORE");
+			self->ProgressSurface->DrawTextA(msg,&pos,COLOR_RED);
+		}
+	}
+	return 0;
+}
+
 DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 {
 	GET_STACK(SHPStruct*, pCameo, STACK_OFFSET(0x48C, -0x444));
