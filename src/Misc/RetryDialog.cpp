@@ -6,6 +6,7 @@
 #include <GameOptionsClass.h>
 #include <GScreenClass.h>
 #include <EvadeClass.h>
+#include <Phobos.h>
 
 namespace RetryDialogFlag
 {
@@ -15,6 +16,12 @@ namespace RetryDialogFlag
 DEFINE_HOOK(0x686092, DoLose_RetryDialogForCampaigns, 0x7)
 {
 	enum { OK = 0x6860F6, Cancel = 0x6860EE, LoadGame = 0x686231 };
+
+	if(Phobos::Config::NoSaveLoad)
+	{
+		WWMessageBox::Instance->Process(L"GG",StringTable::LoadString(GameStrings::TXT_OK),nullptr,nullptr);
+		return Cancel;
+	}
 
 	while (true)
 	{

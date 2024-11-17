@@ -37,6 +37,12 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 		);
 	};
 
+	if(Phobos::Config::NoSaveLoad)
+	{
+		PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
+		return;
+	}
+
 	if (SessionClass::IsSingleplayer())
 	{
 		*reinterpret_cast<bool*>(0xABCE08) = false;
