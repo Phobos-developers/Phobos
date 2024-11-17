@@ -23,16 +23,6 @@
 #include <RocketLocomotionClass.h>
 #include <TunnelLocomotionClass.h>
 
-DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
-{
-	GET(TechnoClass*, pThis, ECX);
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData && pTypeData->HealthBar_Hide)
-		return 0x6F6AB6;
-
-	return 0;
-}
-
 DEFINE_HOOK(0x6F3C56, TechnoClass_GetFLH_TurretMultiOffset, 0x0)
 {
 	LEA_STACK(Matrix3D*, mtx, STACK_OFFSET(0xD8, -0x90));

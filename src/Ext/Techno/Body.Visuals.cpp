@@ -470,10 +470,10 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 }
 
-void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLocation, RectangleStruct* pBounds, double barPercentage, double yellowCond, double redCond)
+void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLocation, RectangleStruct* pBounds, double barPercentage, double conditionYellow, double conditionRed)
 {
-	const BlitterFlags blitFlagsBG = barType->BoardBG_Translucency.Get(0);
-	const BlitterFlags blitFlagsFG = barType->BoardFG_Translucency.Get(0);
+	const BlitterFlags blitFlagsBG = barType->Board_Background_Translucency.Get(0);
+	const BlitterFlags blitFlagsFG = barType->Board_Foreground_Translucency.Get(0);
 	const Point2D sectionOffset = barType->Sections_PositionDelta;
 	const Vector3D<int> sectionFrames = barType->Sections_Pips;
 	const int sectionAmount = barType->Sections_Amount;
@@ -482,35 +482,34 @@ void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLoca
 	int sectionsToDraw = (int)round(sectionAmount * barPercentage);
 	sectionsToDraw = sectionsToDraw == 0 ? 1 : sectionsToDraw;
 	int frameIdxa = sectionFrames.Z;
+	int sign = drawBackwards ? 1 : -1;
 
-	if (barPercentage > yellowCond)
+	if (barPercentage > conditionYellow)
 		frameIdxa = sectionFrames.X;
-	else if (barPercentage > redCond)
+	else if (barPercentage > conditionRed)
 		frameIdxa = sectionFrames.Y;
 
 	pLocation += barType->Bar_Offset;
 	Point2D boardPosition = pLocation + barType->Board_Offset;
 
-	if(barType->BoardBG_File && (pThis->IsSelected || barType->BoardBG_ShowWhenNotSelected))
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->BoardBG_File.Get(),
+	if (barType->Board_Background_File && (pThis->IsSelected || barType->Board_Background_ShowWhenNotSelected))
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Board_Background_File.Get(),
 				0, &boardPosition, pBounds, BlitterFlags(0xE00) | blitFlagsBG, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 
 	Point2D position = pLocation;
-	position.X += drawBackwards ? (int)round(sectionAmount * sectionOffset.X / 2) : -(int)round(sectionAmount * sectionOffset.X / 2);
-	position.Y += drawBackwards ? (int)round(sectionAmount * sectionOffset.Y / 2) : -(int)round(sectionAmount * sectionOffset.Y / 2);
+	position += {sign * (int)round(sectionAmount * sectionOffset.X / 2), sign * (int)round(sectionAmount * sectionOffset.Y / 2)};
 
 	if (sectionEmptyFrame != -1)
 	{
 		for (int i = 0; i < sectionAmount; ++i)
 		{
-			position += drawBackwards ? -sectionOffset : sectionOffset;
-			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP(),
+			position -= {sign * sectionOffset.X, sign * sectionOffset.Y};
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Sections_Pips_File.Get(),
 					sectionEmptyFrame, &position, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 		
 		position = pLocation;
-		position.X += drawBackwards ? (int)round(sectionAmount * sectionOffset.X / 2) : -(int)round(sectionAmount * sectionOffset.X / 2);
-		position.Y += drawBackwards ? (int)round(sectionAmount * sectionOffset.Y / 2) : -(int)round(sectionAmount * sectionOffset.Y / 2);
+		position += {sign * (int)round(sectionAmount * sectionOffset.X / 2), sign * (int)round(sectionAmount * sectionOffset.Y / 2)};
 	}
 
 	if (drawBackwards)
@@ -521,12 +520,12 @@ void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLoca
 
 	for (int i = 0; i < sectionsToDraw; ++i)
 	{
-		position += drawBackwards ? -sectionOffset : sectionOffset;
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP(),
+		position -= {sign * sectionOffset.X, sign * sectionOffset.Y};
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Sections_Pips_File.Get(),
 				frameIdxa, &position, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
-	if (barType->BoardFG_File && (pThis->IsSelected || barType->BoardFG_ShowWhenNotSelected))
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->BoardFG_File.Get(),
-				0, &boardPosition, pBounds, BlitterFlags(0xE00) | blitFlagsFG, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	if (barType->Board_Foreground_File && (pThis->IsSelected || barType->Board_Foreground_ShowWhenNotSelected))
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Board_Foreground_File.Get(),
+				0, &boardPosition, pBounds, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }

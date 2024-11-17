@@ -234,7 +234,8 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
-		Valueable<BarTypeClass*> HealthBar_BarType;
+		Nullable<BarTypeClass*> HealthBar_BarType;
+		Nullable<BarTypeClass*> ShieldBar_BarType;
 
 		struct LaserTrailDataEntry
 		{
@@ -465,7 +466,8 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
-			, HealthBar_BarType {}
+			, HealthBar_BarType { }
+			, ShieldBar_BarType { }
 		{ }
 
 		virtual ~ExtData() = default;

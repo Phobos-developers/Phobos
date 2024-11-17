@@ -320,6 +320,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 
 	this->HealthBar_BarType.Read(exINI, pSection, "HealthBar.BarType");
+	this->ShieldBar_BarType.Read(exINI, pSection, "ShieldBar.BarType");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -692,6 +693,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake_Sinking)
 
 		.Process(this->HealthBar_BarType)
+		.Process(this->ShieldBar_BarType)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

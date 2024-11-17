@@ -276,53 +276,56 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_DrawPips_SelfHealGain, 0x5)
 	return SkipGameDrawing;
 }
 
-DEFINE_HOOK(0x6F64C1, TechnoClass_DrawHealthBar_BuildingHealthBar, 0xA)
+DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 {
-	enum { Continue = 0x6F64CB, Skip = 0x6F683C };
+	enum { Skip = 0x6F6AB6 };
 
-	GET(TechnoClass*, pThis, ESI);
-
-	R->EAX(pThis->GetTechnoType());
-
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pThis->WhatAmI() == AbstractType::Building && pTypeExt->HealthBar_BarType)
-		return Skip;
-
-	return Continue;
-}
-
-DEFINE_HOOK(0x6F6846, TechnoClass_DrawHealthBar_CustomHealthBar, 0x6)
-{
-	enum { Continue = 0x6F68E8, ContinueInf = 0x6F6852, Skip = 0x6F6A58 };
-
-	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pThis, ECX);
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	bool pThisIsInf = pThis->WhatAmI() == AbstractType::Infantry;
+	if (pTypeExt && pTypeExt->HealthBar_Hide)
+		return Skip;
 
 	if (!pTypeExt->HealthBar_BarType)
+		return 0;
+
+	const bool pThisIsInf = pThis->WhatAmI() == AbstractType::Infantry;
+	const bool pThisIsBld = pThis->WhatAmI() == AbstractType::Building;
+	const auto thisHBType = pTypeExt->HealthBar_BarType.Get();
+	const auto thisSBType = pTypeExt->ShieldBar_BarType.Get();
+	Point2D position = *pLocation;
+	int length = pThisIsInf ? 8 : 17;
+
+	if (pThisIsBld)
 	{
-		R->AL(pThis->IsSelected);
-		if (pThisIsInf)
-			return ContinueInf;
-		return Continue;
+		position.Y -= (static_cast<BuildingClass*>(pThis)->Type->Height + 1) * Unsorted::CellHeightInPixels / 2;
+		const int pThisBldTypeWidth = static_cast<BuildingClass*>(pThis)->Type->GetFoundationWidth();
+		length = pThisBldTypeWidth * 7 + (pThisBldTypeWidth / 2);
+	}
+	else
+	{
+		position.Y -= pThisIsInf ? 25 : 26;
+		position.Y += pThis->GetTechnoType()->PixelSelectionBracketDelta;
 	}
 
-	const auto thisHBType = pTypeExt->HealthBar_BarType.Get();
-
-	Point2D position = *pLocation;
-
-	if(pThis->WhatAmI() == AbstractType::Building)
-		position.Y -= (static_cast<BuildingClass*>(pThis)->Type->Height + 1) * Unsorted::CellHeightInPixels / 2;
-	else
-		position.Y -= pThisIsInf ? 25 : 26;
-
-	position.Y += pThis->GetTechnoType()->PixelSelectionBracketDelta;
 	TechnoExt::DrawBar(pThis, thisHBType, position, pBound, pThis->GetHealthPercentage(), RulesClass::Instance->ConditionYellow, RulesClass::Instance->ConditionRed);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	R->EDI(pLocation);
+	if (const auto pShieldData = pExt->Shield.get())
+	{
+		if (pShieldData->IsAvailable() && (pShieldData->GetHP() > 0))
+		{
+			if(thisSBType)
+				TechnoExt::DrawBar(pThis, thisSBType, position, pBound, pShieldData->GetHealthRatio(), pShieldData->GetType()->GetConditionYellow(), pShieldData->GetType()->GetConditionRed());
+			else
+				pShieldData->DrawShieldBar(length, pLocation, pBound);
+		}
+	}
+
+	TechnoExt::ProcessDigitalDisplays(pThis);
+
 	return Skip;
 }

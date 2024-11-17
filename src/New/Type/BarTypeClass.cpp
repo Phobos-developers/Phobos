@@ -17,15 +17,16 @@ void BarTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	this->BoardBG_File.Read(exINI, section, "BoardBG.File");
-	this->BoardBG_ShowWhenNotSelected.Read(exINI, section, "BoardBG.ShowWhenNotSelected");
-	this->BoardBG_Translucency.Read(exINI, section, "BoardBG.Translucency");
-	this->BoardFG_File.Read(exINI, section, "BoardFG.File");
-	this->BoardFG_ShowWhenNotSelected.Read(exINI, section, "BoardFG.ShowWhenNotSelected");
-	this->BoardFG_Translucency.Read(exINI, section, "BoardFG.Translucency");
+	this->Board_Background_File.Read(exINI, section, "Board.Background.File");
+	this->Board_Background_ShowWhenNotSelected.Read(exINI, section, "Board.Background.ShowWhenNotSelected");
+	this->Board_Background_Translucency.Read(exINI, section, "Board.Background.Translucency");
+	this->Board_Foreground_File.Read(exINI, section, "Board.Foreground.File");
+	this->Board_Foreground_ShowWhenNotSelected.Read(exINI, section, "Board.Foreground.ShowWhenNotSelected");
+	this->Board_Foreground_Translucency.Read(exINI, section, "Board.Foreground.Translucency");
 	this->Board_Offset.Read(exINI, section, "Board.Offset");
 	this->Bar_Offset.Read(exINI, section, "Bar.Offset");
 	this->Sections_DrawBackwards.Read(exINI, section, "Sections.DrawBackwards");
+	this->Sections_Pips_File.Read(exINI, section, "Sections.Pips.File");
 	this->Sections_Pips.Read(exINI, section, "Sections.Pips");
 	this->Sections_EmptyPip.Read(exINI, section, "Sections.EmptyPip");
 	this->Sections_Amount.Read(exINI, section, "Sections.Amount");
@@ -37,15 +38,16 @@ template <typename T>
 void BarTypeClass::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->BoardBG_File)
-		.Process(this->BoardBG_ShowWhenNotSelected)
-		.Process(this->BoardBG_Translucency)
-		.Process(this->BoardFG_File)
-		.Process(this->BoardFG_ShowWhenNotSelected)
-		.Process(this->BoardFG_Translucency)
+		.Process(this->Board_Background_File)
+		.Process(this->Board_Background_ShowWhenNotSelected)
+		.Process(this->Board_Background_Translucency)
+		.Process(this->Board_Foreground_File)
+		.Process(this->Board_Foreground_ShowWhenNotSelected)
+		.Process(this->Board_Foreground_Translucency)
 		.Process(this->Board_Offset)
 		.Process(this->Bar_Offset)
 		.Process(this->Sections_DrawBackwards)
+		.Process(this->Sections_Pips_File)
 		.Process(this->Sections_Pips)
 		.Process(this->Sections_EmptyPip)
 		.Process(this->Sections_Amount)
