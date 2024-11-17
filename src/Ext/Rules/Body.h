@@ -144,6 +144,7 @@ public:
 		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
 		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
+		Valueable<bool> DrawInsignia_RespectPixelSelectionBracketDelta;
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
@@ -258,6 +259,7 @@ public:
 			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
 			, DrawInsignia_AdjustPos_BuildingsAnchor {}
 			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
+			, DrawInsignia_RespectPixelSelectionBracketDelta { { false } }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
