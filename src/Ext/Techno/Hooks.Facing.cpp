@@ -56,7 +56,7 @@ DEFINE_HOOK(0x736AFB, UnitClass_UpdateRotation_CheckTurnToForward, 0x6)
 
 	GET(UnitClass* const, pThis, ESI);
 
-	// Repeatedly judging TurretSpins and IsRotating() is unnecessary
+	// Repeatedly check TurretSpins and IsRotating() seems unnecessary
 	pThis->unknown_bool_6AF = true;
 
 	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
@@ -105,10 +105,10 @@ DEFINE_HOOK(0x736B7E, UnitClass_UpdateRotation_ApplyUnitIdleAction, 0xA)
 				// Idle main
 				if (pExt && pExt->UnitIdleAction && (currentMission == Mission::Guard || currentMission == Mission::Sticky))
 					pExt->ApplyIdleAction();
-				else
+				else if (pThis->Type->Speed) // What DisallowMoving used to skip
 					pThis->SecondaryFacing.SetDesired(pThis->PrimaryFacing.Current());
 			}
-			else
+			else if (pThis->Type->Speed) // What DisallowMoving used to skip
 			{
 				// Turn to destination
 				if (pExt)

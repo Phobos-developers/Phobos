@@ -617,8 +617,8 @@ void TechnoExt::ExtData::ApplyIdleAction()
 		this->UnitIdleActionGapTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->UnitIdleActionIntervalMin, RulesExt::Global()->UnitIdleActionIntervalMax));
 		bool noNeedTurnForward = false;
 
-		if (const auto pUnit = specific_cast<UnitClass*>(pThis))
-			noNeedTurnForward = pUnit->BunkerLinkedItem || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
+		if (const auto pUnit = abstract_cast<UnitClass*>(pThis))
+			noNeedTurnForward = pUnit->BunkerLinkedItem || !pUnit->Type->Speed || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
 		else if (pThis->WhatAmI() == AbstractType::Building)
 			noNeedTurnForward = true;
 
@@ -637,8 +637,8 @@ void TechnoExt::ExtData::ApplyIdleAction()
 			this->UnitIdleActionGapTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->UnitIdleActionIntervalMin, RulesExt::Global()->UnitIdleActionIntervalMax));
 			bool noNeedTurnForward = false;
 
-			if (const auto pUnit = specific_cast<UnitClass*>(pThis))
-				noNeedTurnForward = pUnit->BunkerLinkedItem || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
+			if (const auto pUnit = abstract_cast<UnitClass*>(pThis))
+				noNeedTurnForward = pUnit->BunkerLinkedItem || !pUnit->Type->Speed || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
 			else if (pThis->WhatAmI() == AbstractType::Building)
 				noNeedTurnForward = true;
 
@@ -656,8 +656,8 @@ void TechnoExt::ExtData::ApplyIdleAction()
 		this->UnitIdleActionTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->UnitIdleActionRestartMin, RulesExt::Global()->UnitIdleActionRestartMax));
 		bool noNeedTurnForward = false;
 
-		if (const auto pUnit = specific_cast<UnitClass*>(pThis))
-			noNeedTurnForward = pUnit->BunkerLinkedItem || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
+		if (const auto pUnit = abstract_cast<UnitClass*>(pThis))
+			noNeedTurnForward = pUnit->BunkerLinkedItem || !pUnit->Type->Speed || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
 		else if (pThis->WhatAmI() == AbstractType::Building)
 			noNeedTurnForward = true;
 
