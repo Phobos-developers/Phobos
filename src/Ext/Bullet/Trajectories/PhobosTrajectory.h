@@ -1,12 +1,9 @@
 #pragma once
 
-#include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Savegame.h>
 
 #include <BulletClass.h>
-
-class BulletTypeExt;
 
 enum class TrajectoryFlag : int
 {
@@ -34,7 +31,7 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 	virtual TrajectoryFlag Flag() const = 0;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) = 0;
-	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const = 0;
+	[[nodiscard]] virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const = 0;
 
 	Valueable<double> Trajectory_Speed { 100.0 };
 };
