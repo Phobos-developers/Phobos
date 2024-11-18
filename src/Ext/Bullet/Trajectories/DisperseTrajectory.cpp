@@ -486,7 +486,7 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 	}
 	else
 	{
-		const auto airTracker = &AircraftTrackerClass::Instance.get();
+		const auto airTracker = &AircraftTrackerClass::Instance;
 		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(retargetCoords), Game::F2I(pType->RetargetRadius));
 
 		for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
@@ -984,7 +984,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 				if (checkTechnos)
 				{
 					const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-					const auto airTracker = &AircraftTrackerClass::Instance.get();
+					const auto airTracker = &AircraftTrackerClass::Instance;
 					airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(centerCoords), Game::F2I(static_cast<double>(pWeapon->Range) / Unsorted::LeptonsPerCell));
 
 					for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
