@@ -32,12 +32,6 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
-void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor)
-{
-	if (auto ext = TechnoTypeExt::ExtMap.Find(pType))
-		ext->ApplyTurretOffset(mtx, factor);
-}
-
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
