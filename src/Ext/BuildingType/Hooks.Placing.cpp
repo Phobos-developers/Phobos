@@ -738,10 +738,7 @@ DEFINE_HOOK(0x4FB319, HouseClass_UnitFromFactory_SkipMouseClear, 0x5)
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 	{
-		const auto pType = pBuilding->Type;
-		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-
-		if (pType->PowersUpBuilding[0] && pTypeExt->AutoUpgrade && DisplayClass::Instance->CurrentBuilding != pBuilding)
+		if (RulesExt::Global()->ExpandBuildingPlace && DisplayClass::Instance->CurrentBuildingType != pBuilding->Type)
 			return SkipGameCode;
 	}
 
@@ -755,16 +752,7 @@ DEFINE_HOOK(0x4FAB83, HouseClass_AbandonProductionOf_SkipMouseClear, 0x7)
 
 	GET(const int, index, EBX);
 
-	if (index >= 0)
-	{
-		const auto pType = BuildingTypeClass::Array->Items[index];
-		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-
-		if (pType->PowersUpBuilding[0] && pTypeExt->AutoUpgrade && DisplayClass::Instance->CurrentBuildingType != pType)
-			return SkipGameCode;
-	}
-
-	return 0;
+	return (RulesExt::Global()->ExpandBuildingPlace && index >= 0 && BuildingTypeClass::Array->Items[index] != DisplayClass::Instance->CurrentBuildingType) ? SkipGameCode : 0;
 }
 
 // Buildable-upon TechnoTypes Hook #5 -> sub_4C9FF0 - Restart timer and clear buffer when abandon building production
