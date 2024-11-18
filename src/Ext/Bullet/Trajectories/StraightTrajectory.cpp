@@ -864,10 +864,10 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 	for (const auto& pTechno : validTechnos)
 	{
-		if (this->TheCasualty.contains(pTechno))
-			this->TheCasualty[pTechno] = 20;
-		else
+		if (!this->TheCasualty.contains(pTechno))
 			casualtyChecked.push_back(pTechno);
+
+		this->TheCasualty[pTechno] = 20;
 	}
 
 	//Step 4: Detonate warheads in sequence based on distance.
@@ -882,7 +882,6 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 	for (const auto& pTechno : casualtyChecked)
 	{
-		this->TheCasualty[pTechno] = 20;
 		auto damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, pType->ProximityMedial ? nullptr : pTechno, false);
 
 		if (pType->ProximityDirect)
