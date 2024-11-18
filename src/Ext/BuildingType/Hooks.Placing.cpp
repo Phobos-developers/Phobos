@@ -605,10 +605,9 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 		}
 		else
 		{
-			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-
 			if (!pBuildingType->PlaceAnywhere && !pBuildingType->PowersUpBuilding[0])
 			{
+				const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 				bool canBuild = true;
 				bool noOccupy = true;
 
@@ -618,9 +617,14 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 					const auto pCell = pDisplay->GetCellAt(currentCoord);
 
 					if (!pCell->CanThisExistHere(pBuildingType->SpeedType, pBuildingType, pHouse))
+					{
 						canBuild = false;
+						break;
+					}
 					else if (BuildOnOccupiersHelpers::Exist)
+					{
 						noOccupy = false;
+					}
 				}
 
 				BuildOnOccupiersHelpers::Exist = false;
@@ -655,15 +659,14 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 								pDisplay->CurrentBuildingType = nullptr;
 								pDisplay->unknown_11AC = 0xFFFFFFFF;
 
-							/*	if (!Unsorted::ArmageddonMode) // To reserve for drawing grids
+								if (!Unsorted::ArmageddonMode)
 								{
 									reinterpret_cast<void(__thiscall*)(DisplayClass*, CellStruct*)>(0x4A8D50)(pDisplay, nullptr); // Clear CurrentFoundationCopy_Data
 									pDisplay->unknown_1190 = 0;
 									pDisplay->unknown_1194 = 0;
-								}*/
+								}
 							}
 
-							pFactory->SendToFirstLink(RadioCommand::NotifyUnlink);
 							--pHouseExt->CurrentBuildingTimes;
 							pHouseExt->CurrentBuildingTimer.Start(8);
 
@@ -671,26 +674,30 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 						}
 						while (false);
 					}
-					else if (pHouseExt->CurrentBuildingTopLeft == CellStruct::Empty)
+
+					if (pHouseExt->CurrentBuildingType == pBuildingType)
 					{
-						BuildOnOccupiersHelpers::Mouse = true;
+						pHouseExt->CurrentBuildingType = nullptr;
+						pHouseExt->CurrentBuildingTimes = 0;
+						pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
+						pHouseExt->CurrentBuildingTimer.Stop();
+
+						if (pHouseExt->CurrentBuildingTimes != 30)
+							return CanNotBuild;
 					}
 
+					BuildOnOccupiersHelpers::Mouse = true;
+					return CanNotBuild;
+				}
+				while (false);
+
+				if (pHouseExt->CurrentBuildingType == pBuildingType)
+				{
 					pHouseExt->CurrentBuildingType = nullptr;
 					pHouseExt->CurrentBuildingTimes = 0;
 					pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
 					pHouseExt->CurrentBuildingTimer.Stop();
-					return CanNotBuild;
 				}
-				while (false);
-			}
-
-			if (!pBuildingType->PowersUpBuilding[0] || !pTypeExt->AutoUpgrade)
-			{
-				pHouseExt->CurrentBuildingType = nullptr;
-				pHouseExt->CurrentBuildingTimes = 0;
-				pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
-				pHouseExt->CurrentBuildingTimer.Stop();
 			}
 		}
 	}
@@ -849,9 +856,14 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 				const auto pCell = MapClass::Instance->GetCellAt(currentCoord);
 
 				if (!pCell->CanThisExistHere(pBuildingType->SpeedType, pBuildingType, pHouse))
+				{
 					canBuild = false;
+					break;
+				}
 				else if (BuildOnOccupiersHelpers::Exist)
+				{
 					noOccupy = false;
+				}
 			}
 
 			BuildOnOccupiersHelpers::Exist = false;
@@ -1029,9 +1041,14 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 			const auto pCell = MapClass::Instance->GetCellAt(currentCoord);
 
 			if (!pCell->CanThisExistHere(pBuildingType->SpeedType, pBuildingType, pUnit->Owner))
+			{
 				canBuild = false;
+				break;
+			}
 			else if (BuildOnOccupiersHelpers::Exist)
+			{
 				noOccupy = false;
+			}
 		}
 
 		BuildOnOccupiersHelpers::Exist = false;
@@ -1219,33 +1236,38 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 		{
 			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 			const bool isPlayer = pHouse == pPlayer;
-			const auto pDisplay = DisplayClass::Instance.get();
-
-			if (const auto pType = isPlayer ? abstract_cast<BuildingTypeClass*>(reinterpret_cast<ObjectTypeClass*>(pDisplay->unknown_1194)) : pHouseExt->CurrentBuildingType)
+			const auto pDisplay = DisplayClass::Instance();
 			{
-				if (const auto pCell = pDisplay->TryGetCellAt(isPlayer ? pDisplay->CurrentFoundationCopy_TopLeftOffset + pDisplay->CurrentFoundationCopy_CenterCell : pHouseExt->CurrentBuildingTopLeft))
+				auto pType = pHouseExt->CurrentBuildingType;
+
+				if (pType || (isPlayer && (pType = abstract_cast<BuildingTypeClass*>(reinterpret_cast<ObjectTypeClass*>(pDisplay->unknown_1194)), pType)))
 				{
-					auto pImage = pType->LoadBuildup();
-					int imageFrame = 0;
+					auto pCell = pDisplay->TryGetCellAt(pHouseExt->CurrentBuildingTopLeft);
 
-					if (pImage)
-						imageFrame = ((pImage->Frames / 2) - 1);
-					else
-						pImage = pType->GetImage();
-
-					if (pImage)
+					if (pCell || (isPlayer && (pCell = pDisplay->TryGetCellAt(pDisplay->CurrentFoundationCopy_TopLeftOffset + pDisplay->CurrentFoundationCopy_CenterCell), pCell)))
 					{
-						BlitterFlags blitFlags = BlitterFlags::TransLucent50 | BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
-						auto rect = DSurface::Temp->GetRect();
-						rect.Height -= 32;
-						auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
-						point.Y -= 15;
+						auto pImage = pType->LoadBuildup();
+						int imageFrame = 0;
 
-						const auto ColorSchemeIndex = pHouse->ColorSchemeIndex;
-						const auto Palettes = pType->Palette;
-						const auto pColor = Palettes ? Palettes->Items[ColorSchemeIndex] : ColorScheme::Array->Items[ColorSchemeIndex];
+						if (pImage)
+							imageFrame = ((pImage->Frames / 2) - 1);
+						else
+							pImage = pType->GetImage();
 
-						DSurface::Temp->DrawSHP(pColor->LightConvert, pImage, imageFrame, &point, &rect, blitFlags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+						if (pImage)
+						{
+							BlitterFlags blitFlags = BlitterFlags::TransLucent75 | BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
+							auto rect = DSurface::Temp->GetRect();
+							rect.Height -= 32;
+							auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
+							point.Y -= 15;
+
+							const auto ColorSchemeIndex = pHouse->ColorSchemeIndex;
+							const auto Palettes = pType->Palette;
+							const auto pColor = Palettes ? Palettes->Items[ColorSchemeIndex] : ColorScheme::Array->Items[ColorSchemeIndex];
+
+							DSurface::Temp->DrawSHP(pColor->LightConvert, pImage, imageFrame, &point, &rect, blitFlags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+						}
 					}
 				}
 			}
@@ -1275,7 +1297,7 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 
 								if (pImage)
 								{
-									BlitterFlags blitFlags = BlitterFlags::TransLucent50 | BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
+									BlitterFlags blitFlags = BlitterFlags::TransLucent75 | BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
 									auto rect = DSurface::Temp->GetRect();
 									rect.Height -= 32;
 									auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
