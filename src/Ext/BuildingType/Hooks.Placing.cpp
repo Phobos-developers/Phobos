@@ -564,7 +564,7 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 		const auto pBuilding = static_cast<BuildingClass*>(pTechno);
 		const auto pBuildingType = pBuilding->Type;
 		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
-		const auto pDisplay = DisplayClass::Instance.get();
+		const auto pDisplay = DisplayClass::Instance();
 
 		if (pTypeExt->LimboBuild)
 		{
@@ -1228,7 +1228,7 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 // Buildable-upon TechnoTypes Hook #12 -> sub_6D5030 - Draw the placing building preview
 DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 {
-	const auto pPlayer = HouseClass::CurrentPlayer.get();
+	const auto pPlayer = HouseClass::CurrentPlayer();
 
 	for (const auto& pHouse : *HouseClass::Array)
 	{

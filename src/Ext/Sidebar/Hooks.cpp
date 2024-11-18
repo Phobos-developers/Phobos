@@ -111,7 +111,7 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 	GET_STACK(const RectangleStruct, boundingRect, STACK_OFFSET(0x48C, -0x3E0));
 	GET_STACK(TechnoTypeClass* const, pType, STACK_OFFSET(0x48C, -0x458));
 
-	const auto pHouse = HouseClass::CurrentPlayer.get();
+	const auto pHouse = HouseClass::CurrentPlayer();
 	const auto position = Point2D { destX + 30, destY + 24 };
 	const auto pRulesExt = RulesExt::Global();
 	const auto frames = pRulesExt->Cameo_OverlayFrames.Get();
