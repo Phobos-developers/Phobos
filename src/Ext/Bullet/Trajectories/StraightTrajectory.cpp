@@ -801,7 +801,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	//Step 2: Find valid targets in the air within range if necessary.
 	if (pType->ProximityFlight)
 	{
-		const auto airTracker = &AircraftTrackerClass::Instance.get();
+		const auto airTracker = &AircraftTrackerClass::Instance;
 		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5), static_cast<int>((pType->ProximityRadius.Get() + pType->Trajectory_Speed / 2) / Unsorted::LeptonsPerCell));
 
 		for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
