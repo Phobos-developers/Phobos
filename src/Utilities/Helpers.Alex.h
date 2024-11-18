@@ -245,7 +245,7 @@ namespace Helpers
 			// Starkku: Reimplemented using AircraftTrackerClass.
 			if (includeInAir)
 			{
-				auto const airTracker = &AircraftTrackerClass::Instance.get();
+				auto const airTracker = &AircraftTrackerClass::Instance;
 				airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
 
 				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
@@ -413,13 +413,13 @@ namespace Helpers
 		}
 
 		template <typename Value, typename Option>
-		inline bool is_any_of(Value&& value, Option&& option)
+		constexpr bool is_any_of(Value&& value, Option&& option)
 		{
 			return value == option;
 		}
 
 		template <typename Value, typename Option, typename... Options>
-		inline bool is_any_of(Value&& value, Option&& first_option, Options&&... other_options)
+		constexpr bool is_any_of(Value&& value, Option&& first_option, Options&&... other_options)
 		{
 			return value == first_option || is_any_of(std::forward<Value>(value), std::forward<Options>(other_options)...);
 		}
