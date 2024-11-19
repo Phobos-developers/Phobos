@@ -394,7 +394,7 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 	if (!check)
 		return false;
 
-	if (pType->RetargetRadius < 1e-10)
+	if (pType->RetargetRadius < 0)
 		return true;
 
 	const auto retargetRange = pType->RetargetRadius * Unsorted::LeptonsPerCell;
@@ -669,7 +669,7 @@ bool DisperseTrajectory::NotCurveVelocityChange(BulletClass* pBullet, HouseClass
 
 	if (!pType->LockDirection || !this->InStraight)
 	{
-		if (abs(pType->RetargetRadius) < 1e-10 && this->BulletRetargetTechno(pBullet, pOwner))
+		if (pType->RetargetRadius != 0 && this->BulletRetargetTechno(pBullet, pOwner))
 			return true;
 
 		if (this->PreAimDistance <= 1e-10 && this->StandardVelocityChange(pBullet))
