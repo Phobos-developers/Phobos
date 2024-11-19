@@ -403,7 +403,7 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 
 	if (this->InStraight)
 	{
-		const auto futureVelocity = pBullet->Velocity * (retargetRange / pType->LaunchSpeed);
+		const auto futureVelocity = pBullet->Velocity * (retargetRange / this->Speed);
 		retargetCoords.X = pBullet->Location.X + static_cast<int>(futureVelocity.X);
 		retargetCoords.Y = pBullet->Location.Y + static_cast<int>(futureVelocity.Y);
 		retargetCoords.Z = pBullet->Location.Z;
