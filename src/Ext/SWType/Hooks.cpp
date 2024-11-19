@@ -2,6 +2,8 @@
 
 #include <SuperClass.h>
 
+#include <Ext/House/Body.h>
+
 // Ares hooked at 0x6CC390 and jumped to 0x6CDE40
 // If a super is not handled by Ares however, we do it at the original entry point
 DEFINE_HOOK_AGAIN(0x6CC390, SuperClass_Place_FireExt, 0x6)
