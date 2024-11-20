@@ -584,9 +584,9 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 	if (pTypeExt && pTypeExt->AttackMove_Follow)
 	{
-		auto pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pThis->GetGuardRange(2), pTypeExt->AttackMove_Follow_IncludeAir);
+		auto pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), (double)pThis->GetGuardRange(2) / 256, pTypeExt->AttackMove_Follow_IncludeAir);
 		TechnoClass* pClosestTarget = nullptr;
-		double closestRange = 1024;
+		int closestRange = 256 * 256;
 
 		for (auto pTechno : pTechnoVectors)
 		{
@@ -596,8 +596,9 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 				pTechno->vt_entry_4C4()) // MegaMissionIsAttackMove)
 			{
 				auto dist = pTechno->DistanceFrom(pThis);
+				auto const pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
-				if (dist < closestRange)
+				if (dist < closestRange && pTargetTypeExt && !pTargetTypeExt->AttackMove_Follow)
 				{
 					pClosestTarget = pTechno;
 					closestRange = dist;
