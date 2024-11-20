@@ -231,6 +231,7 @@ public:
 
 		Valueable<bool> AttackMove_Follow;
 		Valueable<bool> AttackMove_Follow_IncludeAir;
+		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
 		struct LaserTrailDataEntry
 		{
@@ -250,7 +251,6 @@ public:
 		std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
-
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -456,6 +456,7 @@ public:
 
 			, AttackMove_Follow { false }
 			, AttackMove_Follow_IncludeAir { false }
+			, AttackMove_StopWhenTargetAcquired { }
 		{ }
 
 		virtual ~ExtData() = default;

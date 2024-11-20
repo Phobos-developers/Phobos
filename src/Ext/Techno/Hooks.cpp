@@ -546,6 +546,27 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 
 #pragma region AttackMove
 
+DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
+{
+	GET(FootClass* const, pThis, ESI);
+
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt)
+	{
+		bool DefaultValue = RulesExt::Global()->AttackMove_StopWhenTargetAcquired_UseOpportunityFireAsDefault ? !pType->OpportunityFire : false;
+
+		if (pTypeExt->AttackMove_StopWhenTargetAcquired.Get(DefaultValue))
+		{
+			pThis->StopMoving();
+			pThis->AbortMotion();
+		}
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x711E90, TechnoTypeClass_CanAttackMove_IgnoreWeapon, 0x6)
 {
 	enum { SkipGameCode = 0x711E9A };
