@@ -657,48 +657,29 @@ bool BuildingTypeExt::AutoUpgradeBuilding(BuildingClass* pBuilding)
 		{
 			const auto pHouse = pBuilding->Owner;
 			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-			const auto size = pTypeExt->PowersUp_Buildings.size();
-
-			std::vector<BuildingTypeClass*> upgradeBuildings;
-			upgradeBuildings.reserve(size + 1);
-
-			if (const auto pUpgrade = BuildingTypeClass::Find(pBuildingType->PowersUpBuilding))
-				upgradeBuildings.push_back(pUpgrade);
-
-			if (size)
-			{
-				for (const auto& pUpgrade : pTypeExt->PowersUp_Buildings)
-				{
-					if (pUpgrade)
-						upgradeBuildings.push_back(pUpgrade);
-				}
-			}
 
 			for (const auto& pOwned : pHouse->Buildings)
 			{
-				for (const auto& pUpgradeType : upgradeBuildings)
+				if (reinterpret_cast<bool(__thiscall*)(BuildingClass*, BuildingTypeClass*, HouseClass*)>(0x452670)(pOwned, pBuildingType, pHouse)) // CanUpgradeBuilding
 				{
-					if (pOwned->Type == pUpgradeType && pOwned->IsAlive && pOwned->Health > 0 && pOwned->IsOnMap && !pOwned->InLimbo && pOwned->CurrentMission != Mission::Selling)
+					if (pOwned->IsAlive && pOwned->Health > 0 && pOwned->IsOnMap && !pOwned->InLimbo && pOwned->CurrentMission != Mission::Selling)
 					{
-						if (reinterpret_cast<bool(__thiscall*)(BuildingClass*, BuildingTypeClass*, HouseClass*)>(0x452670)(pOwned, pBuildingType, pHouse))
+						const auto cell = pOwned->GetMapCoords();
+
+						if (cell != CellStruct::Empty && !pHouseExt->OwnsLimboDeliveredBuilding(pOwned))
 						{
-							const auto cell = pOwned->GetMapCoords();
+							const EventClass event
+							(
+								pHouse->ArrayIndex,
+								EventType::Place,
+								AbstractType::Building,
+								pBuildingType->GetArrayIndex(),
+								pBuildingType->Naval,
+								cell
+							);
+							EventClass::AddEvent(event);
 
-							if (cell != CellStruct::Empty && !pHouseExt->OwnsLimboDeliveredBuilding(pOwned))
-							{
-								const EventClass event
-								(
-									pHouse->ArrayIndex,
-									EventType::Place,
-									AbstractType::Building,
-									pBuildingType->GetArrayIndex(),
-									pBuildingType->Naval,
-									cell
-								);
-								EventClass::AddEvent(event);
-
-								return true;
-							}
+							return true;
 						}
 					}
 				}
