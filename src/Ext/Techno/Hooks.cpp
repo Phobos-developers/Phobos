@@ -607,11 +607,27 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 		if (pClosestTarget)
 		{
-			pThis->vt_entry_4A8(); // ClearMegaMission
 			pThis->SetDestination(pClosestTarget, false);
 			pThis->SetArchiveTarget(pClosestTarget);
 			pThis->QueueMission(Mission::Area_Guard, true);
 		}
+		else
+		{
+			if (pThis->unknown_5CC)
+			{
+				pThis->SetDestination((AbstractClass*)pThis->unknown_5CC, false);
+			}
+			else if (pThis->unknown_5C8)
+			{
+				pThis->SetDestination((AbstractClass*)pThis->unknown_5C8, false);
+			}
+			else
+			{
+				pThis->SetDestination(nullptr, false);
+			}
+		}
+
+		pThis->vt_entry_4A8(); // ClearMegaMission
 
 		R->EAX(pClosestTarget);
 		return FuncRet;
