@@ -738,7 +738,7 @@ DEFINE_HOOK(0x4FB319, HouseClass_UnitFromFactory_SkipMouseClear, 0x5)
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 	{
-		if (RulesExt::Global()->ExpandBuildingPlace && DisplayClass::Instance->CurrentBuildingType != pBuilding->Type)
+		if (RulesExt::Global()->ExpandBuildingPlace && reinterpret_cast<ObjectTypeClass*>(DisplayClass::Instance->unknown_1194) != pBuilding->Type)
 			return SkipGameCode;
 	}
 
