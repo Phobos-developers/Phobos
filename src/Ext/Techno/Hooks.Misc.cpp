@@ -141,6 +141,18 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 
 #pragma region WakeAnims
 
+DEFINE_HOOK_AGAIN(0x69FEDC, Locomotion_Process_Wake, 0x6)  // Ship
+DEFINE_HOOK_AGAIN(0x4B0814, Locomotion_Process_Wake, 0x6)  // Drive
+DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)  // Hover
+{
+	GET(ILocomotion* const, iloco, ESI);
+	__assume(iloco != nullptr);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(static_cast<LocomotionClass*>(iloco)->LinkedTo->GetTechnoType());
+	R->EDX(pTypeExt->Wake.Get(RulesClass::Instance->Wake));
+
+	return R->Origin() + 0xC;
+}
+
 namespace GrappleUpdateTemp
 {
 	TechnoClass* pThis;
