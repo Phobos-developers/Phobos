@@ -894,7 +894,9 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 				pHouseExt->CurrentBuildingTimes = 0;
 				pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
 				pHouseExt->CurrentBuildingTimer.Stop();
-				return CanNotBuild;
+
+				// This will be different from what vanilla do, but the vanilla way will still be used if in campaign
+				return SessionClass::IsCampaign() ? TemporarilyCanNotBuild : CanNotBuild;
 			}
 			while (false);
 

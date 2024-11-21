@@ -216,7 +216,7 @@ bool BuildingTypeExt::CheckOccupierCanLeave(HouseClass* pBuildingHouse, HouseCla
 		return false;
 	else if (pBuildingHouse == pOccupierHouse)
 		return true;
-	else if (SessionClass::Instance->GameMode == GameMode::Campaign && pOccupierHouse->IsInPlayerControl)
+	else if (SessionClass::IsCampaign() && pOccupierHouse->IsInPlayerControl)
 		return true;
 	else if (!pOccupierHouse->IsControlledByHuman() && pOccupierHouse->IsAlliedWith(pBuildingHouse))
 		return true;
@@ -285,7 +285,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 		if (const auto pSearchCell = MapClass::Instance->GetCellAt(searchCell))
 		{
-			if (std::find(checkedCells.begin(), checkedCells.end(), pSearchCell) == checkedCells.end() // TODO If there is a cellflag that can be used …
+			if (std::find(checkedCells.begin(), checkedCells.end(), pSearchCell) == checkedCells.end() // TODO If there is a cellflag (or CellExt) that can be used …
 				&& !pSearchCell->GetBuilding()
 				&& pSearchCell->IsClearToMove(SpeedType::Amphibious, true, true, -1, MovementZone::Amphibious, -1, false))
 			{
