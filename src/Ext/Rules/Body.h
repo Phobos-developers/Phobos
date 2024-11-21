@@ -164,7 +164,7 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
-		Valueable<bool> BuildingMassSelectable;
+		Valueable<bool> BuildingTypeSelectable;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -284,7 +284,7 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
-			, BuildingMassSelectable { false }
+			, BuildingTypeSelectable { false }
 		{ }
 
 		virtual ~ExtData() = default;
