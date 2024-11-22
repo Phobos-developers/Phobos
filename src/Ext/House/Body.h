@@ -35,11 +35,32 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		CDTimerClass AISuperWeaponDelayTimer;
+		CDTimerClass AIFireSaleDelayTimer;
+
 		//Read from INI
-		bool RepairBaseNodes[3];
+		Nullable<bool> RepairBaseNodes[3];
+
+		// FactoryPlants with Allow/DisallowTypes set.
+		std::vector<BuildingClass*> RestrictedFactoryPlants;
 
 		int LastBuiltNavalVehicleType;
 		int ProducingNavalUnitTypeIndex;
+
+		// Factories that exist but don't count towards multiple factory bonus.
+		int NumAirpads_NonMFB;
+		int NumBarracks_NonMFB;
+		int NumWarFactories_NonMFB;
+		int NumConYards_NonMFB;
+		int NumShipyards_NonMFB;
+
+		std::map<SuperClass*, std::vector<SuperClass*>> SuspendedEMPulseSWs;
+		// standalone? no need and not a good idea
+		struct SWExt
+		{
+			int ShotCount;
+		};
+		std::vector<SWExt> SuperExts;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
@@ -53,15 +74,28 @@ public:
 			, Factory_VehicleType { nullptr }
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
-			, RepairBaseNodes { false,false,false }
+			, AISuperWeaponDelayTimer {}
+			, RepairBaseNodes { }
+			, RestrictedFactoryPlants {}
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
+			, NumAirpads_NonMFB { 0 }
+			, NumBarracks_NonMFB { 0 }
+			, NumWarFactories_NonMFB { 0 }
+			, NumConYards_NonMFB { 0 }
+			, NumShipyards_NonMFB { 0 }
+			, AIFireSaleDelayTimer {}
+			, SuspendedEMPulseSWs {}
+			, SuperExts(SuperWeaponTypeClass::Array->Count)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
 		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
 		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
 		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);
+		void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
+		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval);
+		float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
 
 		virtual ~ExtData() = default;
 
@@ -80,7 +114,8 @@ public:
 		bool UpdateHarvesterProduction();
 	};
 
-	class ExtContainer final : public Container<HouseExt> {
+	class ExtContainer final : public Container<HouseExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();
@@ -109,7 +144,6 @@ public:
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
 	static void GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSphere, SuperClass*& pSuperCWarp);
-	static void SetSkirmishHouseName(HouseClass* pHouse);
 
 	static bool IsDisabledFromShell(
 	HouseClass const* pHouse, BuildingTypeClass const* pItem);

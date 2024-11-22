@@ -14,10 +14,12 @@
 #include <HouseClass.h>
 #include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
+#include <TeleportLocomotionClass.h>
 #include <BombClass.h>
 #include <ParticleSystemClass.h>
 #include <WarheadTypeClass.h>
 #include <HashTable.h>
+#include <TunnelLocomotionClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -25,6 +27,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
@@ -44,6 +47,10 @@
 DEFINE_JUMP(LJMP, 0x545CE2, 0x545CE9) //Phobos_BugFixes_Tileset255_RemoveNonMMArrayFill
 DEFINE_JUMP(LJMP, 0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 
+// Patches TechnoClass::Kill_Cargo/KillPassengers (push ESI -> push EBP)
+// Fixes recursive passenger kills not being accredited
+// to proper techno but to their transports
+DEFINE_PATCH(0x707CF2, 0x55);
 
 // WWP's shit code! Wrong check.
 // To avoid units dying when they are already dead.
@@ -215,7 +222,7 @@ DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
 DEFINE_HOOK(0x6DAAB2, TacticalClass_DrawRallyPointLines_NoUndeployBlyat, 0x6)
 {
 	GET(BuildingClass*, pBld, EDI);
-	if (pBld->Focus && pBld->CurrentMission != Mission::Selling)
+	if (pBld->ArchiveTarget && pBld->CurrentMission != Mission::Selling)
 		return 0x6DAAC0;
 	return 0x6DAD45;
 }
@@ -497,25 +504,25 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 {
 	auto const pThisBomb = FetchBomb::pThisBomb;
 	auto nCoord = *pCoord;
-	auto nDamageAreaResult = MapClass::Instance()->DamageArea
-	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse);
+	auto nDamageAreaResult = WarheadTypeExt::ExtMap.Find(pWarhead)->DamageAreaWithTarget
+	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse, abstract_cast<TechnoClass*>(pThisBomb->Target));
 	auto nLandType = MapClass::Instance()->GetCellAt(nCoord)->LandType;
 
 	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
 	{
-		if (auto pAnim = GameCreate<AnimClass>(pAnimType, nCoord, 0, 1, 0x2600, -15, false))
+		auto pAnim = GameCreate<AnimClass>(pAnimType, nCoord, 0, 1, 0x2600, -15, false);
+
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
+			pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+
+		if (!pAnim->Owner)
 		{
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
-				pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
-
-			if (!pAnim->Owner)
-			{
-				pAnim->Owner = pThisBomb->OwnerHouse;
-			}
-
-			if (const auto pExt = AnimExt::ExtMap.Find(pAnim))
-				pExt->SetInvoker(pThisBomb->Owner);
+			pAnim->Owner = pThisBomb->OwnerHouse;
 		}
+
+		if (const auto pExt = AnimExt::ExtMap.Find(pAnim))
+			pExt->SetInvoker(pThisBomb->Owner);
+
 	}
 
 	return nDamageAreaResult;
@@ -800,6 +807,7 @@ DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Teleport, notorious CLEG frozen state re
 DEFINE_JUMP(LJMP, 0x72A16A, 0x72A186);//Tunnel, not a big deal
 DEFINE_JUMP(LJMP, 0x663428, 0x663445);//Rocket, not a big deal
 DEFINE_JUMP(LJMP, 0x5170CE, 0x5170E0);//Hover, not a big deal
+DEFINE_JUMP(LJMP, 0x65B3F7, 0x65B416);//RadSite, no effect
 
 // Save GameModeOptions in campaign modes
 DEFINE_JUMP(LJMP, 0x67E3BD, 0x67E3D3); // Save
@@ -845,3 +853,230 @@ DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
 	R->EAX(0); // The original function returns some number, hell if I know what (it is 0 most of the time though and never actually used for anything).
 	return SkipGameCode;
 }
+
+#pragma region WarpInDelayFix
+
+DEFINE_HOOK(0x7195BF, TeleportLocomotionClass_Process_WarpInDelay, 0x6)
+{
+	GET(ILocomotion*, pThis, ESI);
+	GET(FootClass*, pLinkedTo, ECX);
+
+	auto const pLoco = static_cast<TeleportLocomotionClass*>(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+	pExt->LastWarpInDelay = Math::max(pLoco->Timer.GetTimeLeft(), pExt->LastWarpInDelay);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->HasRemainingWarpInDelay)
+	{
+		if (pExt->LastWarpInDelay)
+		{
+			pExt->LastWarpInDelay--;
+		}
+		else
+		{
+			pExt->HasRemainingWarpInDelay = false;
+			pExt->IsBeingChronoSphered = false;
+			pThis->WarpingOut = false;
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+// this fella was { 0, 0, 1 } before and somehow it also breaks both the light position a bit and how the lighting is applied when voxels rotate - Kerbiter
+DEFINE_HOOK(0x753D86, VoxelCalcNormals_NullAdditionalVector, 0x0)
+{
+	REF_STACK(Vector3D<float>, secondaryLightVector, STACK_OFFSET(0xD8, -0xC0));
+
+	if (RulesExt::Global()->UseFixedVoxelLighting)
+		secondaryLightVector = { 0, 0, 0 };
+	else
+		secondaryLightVector = { 0, 0, 1 };
+
+	return 0x753D9E;
+}
+
+DEFINE_HOOK(0x705D74, TechnoClass_GetRemapColour_DisguisePalette, 0x8)
+{
+	enum { SkipGameCode = 0x705D7C };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto pTechnoType = pThis->GetTechnoType();
+
+	if (!pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
+	{
+		if (const auto pDisguise = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+			pTechnoType = pDisguise;
+	}
+
+	R->EAX(pTechnoType);
+
+	return SkipGameCode;
+}
+
+// Fixes an edge case crash caused by temporal targeting enslaved infantry.
+DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
+{
+	enum { ReturnFromFunction = 0x71AE47 };
+
+	GET(TemporalClass* const, pThis, ESI);
+
+	if (!pThis->Target)
+		return ReturnFromFunction;
+
+	return 0;
+}
+
+// In the following three places the distance check was hardcoded to compare with 20, 17 and 16 respectively,
+// which means it didn't consider the actual speed of the unit. Now we check it and the units won't get stuck
+// even at high speeds - NetsuNegi
+
+DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9)
+{
+	enum { KeepMoving = 0x72980F, CloseEnough = 0x7295CE };
+
+	GET(TunnelLocomotionClass* const, pLoco, ESI);
+	GET(int const, distance, EAX);
+
+	return distance >= pLoco->LinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
+}
+
+DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
+{
+	enum { KeepMoving = 0x75BF85, CloseEnough = 0x75BD79 };
+
+	GET(FootClass* const, pLinkedTo, ECX);
+	GET(int const, distance, EAX);
+
+	return distance >= pLinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
+}
+
+DEFINE_HOOK(0x5B11DD, MechLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
+{
+	enum { KeepMoving = 0x5B14AA, CloseEnough = 0x5B11E6 };
+
+	GET(FootClass* const, pLinkedTo, ECX);
+	GET(int const, distance, EAX);
+
+	return distance >= pLinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
+}
+
+DEFINE_JUMP(LJMP, 0x517FF5, 0x518016); // Warhead with InfDeath=9 versus infantry in air
+
+// Fixes docks not repairing docked aircraft unless they enter the dock first e.g just built ones.
+// Also potential edge cases with unusual docking offsets, original had a distance check for 64 leptons which is replaced with IsInAir here.
+DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
+{
+	enum { AssignRepairMission = 0x449942 };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET(TechnoClass*, pLink, EDI);
+
+	if (pThis->Type->UnitReload && pLink->WhatAmI() == AbstractType::Aircraft && !pLink->IsInAir()
+		&& pThis->SendCommand(RadioCommand::QueryMoving, pLink) == RadioCommand::AnswerPositive)
+	{
+		return AssignRepairMission;
+	}
+
+	return 0;
+}
+
+// Patch tileset parsing to not reset certain tileset indices for Lunar theater.
+DEFINE_JUMP(LJMP, 0x546C8B, 0x546CBF);
+
+// Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes - Starkku
+DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
+{
+	enum { SkipResetTarget = 0x6FA472 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->GetTechnoType()->AttackFriendlies)
+		return SkipResetTarget;
+
+	return 0;
+}
+
+// Starkku: These fix issues with follower train cars etc) indices being thrown off by preplaced vehicles not being created, having other vehicles as InitialPayload etc.
+// This fix basically works by not using the global UnitClass array at all for setting the followers, only a list of preplaced units, successfully created or not.
+#pragma region Follower
+
+namespace UnitParseTemp
+{
+	std::vector<UnitClass*> ParsedUnits;
+	bool WasCreated = false;
+}
+
+// Add vehicles successfully created to list of parsed vehicles.
+DEFINE_HOOK(0x7435DE, UnitClass_ReadFromINI_Follower1, 0x6)
+{
+	GET(UnitClass*, pUnit, ESI);
+
+	UnitParseTemp::ParsedUnits.push_back(pUnit);
+	UnitParseTemp::WasCreated = true;
+
+	return 0;
+}
+
+// Add vehicles that were not successfully created to list of parsed vehicles as well as to followers list.
+DEFINE_HOOK(0x74364C, UnitClass_ReadFromINI_Follower2, 0x8)
+{
+	REF_STACK(TypeList<int>, followers, STACK_OFFSET(0xD0, -0xC0));
+
+	if (!UnitParseTemp::WasCreated)
+	{
+		followers.AddItem(-1);
+		UnitParseTemp::ParsedUnits.push_back(nullptr);
+	}
+
+	UnitParseTemp::WasCreated = false;
+
+	return 0;
+}
+
+// Set followers based on parsed vehicles.
+DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
+{
+	enum { SkipGameCode = 0x7436AC };
+
+	REF_STACK(TypeList<int>, followers, STACK_OFFSET(0xCC, -0xC0));
+	auto& units = UnitParseTemp::ParsedUnits;
+
+	for (size_t i = 0; i < units.size(); i++)
+	{
+		auto const pUnit = units[i];
+
+		if (!pUnit)
+			continue;
+
+		int followerIndex = followers[i];
+
+		if (followerIndex < 0 || followerIndex >= static_cast<int>(units.size()))
+		{
+			pUnit->FollowerCar = nullptr;
+		}
+		else
+		{
+			auto const pFollower = units[followerIndex];
+			pUnit->FollowerCar = pFollower;
+			pFollower->IsFollowerCar = true;
+		}
+	}
+
+	units.clear();
+
+	return SkipGameCode;
+}
+
+#pragma endregion

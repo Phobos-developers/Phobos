@@ -1,5 +1,5 @@
 #include "AresHelper.h"
-
+#include "AresFunctions.h"
 #include <Phobos.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
@@ -15,7 +15,6 @@ uintptr_t AresHelper::AresBaseAddress = 0x0;
 HMODULE AresHelper::AresDllHmodule = nullptr;
 AresHelper::Version AresHelper::AresVersion = AresHelper::Version::Unknown;
 bool AresHelper::CanUseAres = false;
-AresHelper::AresFunctionMap AresHelper::AresFunctionOffsetsFinal;
 
 const AresHelper::AresTimestampMap AresHelper::AresTimestampBytes =
 {
@@ -34,7 +33,7 @@ void AresHelper::GetGameModulesBaseAddresses()
 	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, GetProcessId(hCurrentProcess));
 	if (hSnap != INVALID_HANDLE_VALUE)
 	{
-		MODULEENTRY32 modEntry{ };
+		MODULEENTRY32 modEntry { };
 		modEntry.dwSize = sizeof(modEntry);
 		if (Module32First(hSnap, &modEntry))
 		{
@@ -57,7 +56,7 @@ void AresHelper::GetGameModulesBaseAddresses()
 				Debug::LogDeferred("Module %s base address : 0x%p.\n", originalModuleName, modEntry.modBaseAddr);
 				if (!_strcmpi(originalModuleName, "Ares.dll"))
 					AresBaseAddress = (uintptr_t)modEntry.modBaseAddr;
-				else if(!_strcmpi(originalModuleName, PHOBOS_DLL))
+				else if (!_strcmpi(originalModuleName, PHOBOS_DLL))
 					PhobosBaseAddress = (uintptr_t)modEntry.modBaseAddr;
 			}
 			while (Module32Next(hSnap, &modEntry));
@@ -86,7 +85,7 @@ void AresHelper::Init()
 	{
 		AresVersion = AresTimestampBytes.at(TimeDateStamp);
 	}
-	catch(std::exception)
+	catch (std::exception)
 	{
 		AresVersion = Version::Unknown;
 	}
@@ -96,22 +95,14 @@ void AresHelper::Init()
 	{
 	case Version::Ares30:
 		Debug::LogDeferred("[Phobos] Detected Ares 3.0.\n");
+		AresFunctions::InitAres3_0();
 		break;
 	case Version::Ares30p:
 		Debug::LogDeferred("[Phobos] Detected Ares 3.0p1.\n");
+		AresFunctions::InitAres3_0p1();
 		break;
 	default:
 		Debug::LogDeferred("[Phobos] Detected a version of Ares that is not supported by Phobos. Disabling integration.\n");
 		break;
-	}
-
-	constexpr const wchar_t* ARES_DLL = L"Ares.dll";
-	if (CanUseAres && GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, ARES_DLL, &AresDllHmodule))
-	{
-		for(auto x: AresFunctionOffsets.at(AresVersion))
-			if (x.second > 0)
-				AresFunctionOffsetsFinal[x.first] = AresBaseAddress + x.second;
-			else
-				AresFunctionOffsetsFinal[x.first] = 0;
 	}
 }
