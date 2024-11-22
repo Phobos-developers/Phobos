@@ -873,7 +873,11 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 						}
 						else if (pHouseExt->CurrentBuildingTimes <= 0)
 						{
-							break; // Time out
+							// This will be different from what vanilla do, but the vanilla way will still be used if in campaign
+							if (!SessionClass::IsCampaign())
+								break; // Time out
+
+							return TemporarilyCanNotBuild;
 						}
 
 						if (!pHouseExt->CurrentBuildingTimer.HasTimeLeft())
@@ -895,8 +899,7 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 				pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
 				pHouseExt->CurrentBuildingTimer.Stop();
 
-				// This will be different from what vanilla do, but the vanilla way will still be used if in campaign
-				return SessionClass::IsCampaign() ? TemporarilyCanNotBuild : CanNotBuild;
+				return CanNotBuild;
 			}
 			while (false);
 
