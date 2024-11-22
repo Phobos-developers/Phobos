@@ -182,6 +182,7 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 					{
 						it = vec.erase(it);
 
+						// Remove limbo buildings' tracking here because their are not truely InLimbo
 						if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
 							HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
 
