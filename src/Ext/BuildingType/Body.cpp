@@ -103,13 +103,15 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	return isUpgrade ? result : -1;
 }
 
-bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const TechnoTypeExt::ExtData* const pTypeExt)
+bool BuildingTypeExt::ShouldExistGreyCameo(const TechnoTypeExt::ExtData* const pTypeExt)
 {
 	const auto pType = pTypeExt->OwnerObject();
 	const auto techLevel = pType->TechLevel;
 
 	if (techLevel <= 0 || techLevel > Game::TechLevel)
 		return false;
+
+	const auto pHouse = HouseClass::CurrentPlayer();
 
 	if (!pHouse->InOwners(pType))
 		return false;
@@ -150,7 +152,7 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const
 				return true;
 
 			pAuxTypeExt->CameoCheckMutex = true;
-			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pAuxTypeExt);
+			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pAuxTypeExt);
 			pAuxTypeExt->CameoCheckMutex = false;
 
 			if (exist)
@@ -162,18 +164,18 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const HouseClass* const pHouse, const
 }
 
 // Check the cameo change
-CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pHouse, const TechnoTypeClass* const pType, CanBuildResult canBuild)
+CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const TechnoTypeClass* const pType, CanBuildResult canBuild)
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
 	{
-		auto& vec = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->OwnedExistCameoTechnoTypes;
+		auto& vec = ScenarioExt::Global()->OwnedExistCameoTechnoTypes;
 
 		if (canBuild == CanBuildResult::Unbuildable) // Unbuildable + Satisfy basic limitations = Change it to TemporarilyUnbuildable
 		{
 			pTypeExt->CameoCheckMutex = true;
-			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pHouse, pTypeExt);
+			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pTypeExt);
 			pTypeExt->CameoCheckMutex = false;
 
 			if (exist)
@@ -184,7 +186,7 @@ CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pH
 					SidebarClass::Instance->SidebarNeedsRepaint();
 					const EventClass event
 					(
-						pHouse->ArrayIndex,
+						HouseClass::CurrentPlayer->ArrayIndex,
 						EventType::AbandonAll,
 						static_cast<int>(pType->WhatAmI()),
 						pType->GetArrayIndex(),
@@ -200,9 +202,7 @@ CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const HouseClass* const pH
 		{
 			vec.erase(std::remove(vec.begin(), vec.end(), pTypeExt), vec.end());
 			SidebarClass::Instance->SidebarNeedsRepaint();
-
-			if (pHouse->IsControlledByCurrentPlayer())
-				VoxClass::Play(&Make_Global<const char>(0x83FA64)); // 0x83FA64 -> EVA_NewConstructionOptions
+			VoxClass::Play(&Make_Global<const char>(0x83FA64)); // 0x83FA64 -> EVA_NewConstructionOptions
 		}
 	}
 

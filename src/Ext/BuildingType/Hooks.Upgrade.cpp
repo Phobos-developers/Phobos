@@ -114,8 +114,8 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 			canBuild = CanBuildResult::TemporarilyUnbuildable;
 	}
 
-	if (!buildLimitOnly && includeInProduction && pThis->IsControlledByHuman()) // Eliminate any non-producible calls to change the list safely
-		canBuild = BuildingTypeExt::CheckAlwaysExistCameo(pThis, pItem, canBuild);
+	if (!buildLimitOnly && includeInProduction && pThis == HouseClass::CurrentPlayer()) // Eliminate any non-producible calls to change the list safely
+		canBuild = BuildingTypeExt::CheckAlwaysExistCameo(pItem, canBuild);
 
 	R->EAX(canBuild);
 	return 0;

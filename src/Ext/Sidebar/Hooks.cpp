@@ -7,6 +7,7 @@
 
 #include <Ext/House/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/ShapeTextPrinter.h>
 
@@ -111,7 +112,6 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 	GET_STACK(const RectangleStruct, boundingRect, STACK_OFFSET(0x48C, -0x3E0));
 	GET_STACK(TechnoTypeClass* const, pType, STACK_OFFSET(0x48C, -0x458));
 
-	const auto pHouse = HouseClass::CurrentPlayer();
 	const auto position = Point2D { destX + 30, destY + 24 };
 	const auto pRulesExt = RulesExt::Global();
 	const auto frames = pRulesExt->Cameo_OverlayFrames.Get();
@@ -123,7 +123,7 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 
 		if (pTypeExt && pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
 		{
-			auto& vec = HouseExt::ExtMap.Find(pHouse)->OwnedExistCameoTechnoTypes;
+			auto& vec = ScenarioExt::Global()->OwnedExistCameoTechnoTypes;
 
 			if (std::find(vec.begin(), vec.end(), pTypeExt) != vec.end())
 			{
@@ -156,6 +156,7 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 
 	if (pBuildingType) // Only count owned buildings
 	{
+		const auto pHouse = HouseClass::CurrentPlayer();
 		auto count = BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse);
 
 		if (count == -1)

@@ -1,12 +1,15 @@
 #include "Body.h"
+
 #include <EventClass.h>
 #include <TerrainClass.h>
 #include <AircraftClass.h>
 #include <TacticalClass.h>
 #include <IsometricTileTypeClass.h>
+
 #include <Ext/House/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/TerrainType/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresHelper.h>
 
@@ -119,7 +122,7 @@ DEFINE_HOOK(0x4A8F21, MapClass_PassesProximityCheck_BaseNormalExtra, 0x9)
 
 	const auto differentColor = RulesExt::Global()->PlacementGrid_Expand.Get();
 	bool isInAdjacent = false;
-	auto& vec = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->BaseNormalCells;
+	auto& vec = ScenarioExt::Global()->BaseNormalCells;
 
 	if (differentColor)
 		vec.clear();
@@ -525,7 +528,7 @@ DEFINE_HOOK(0x47EF52, CellClass_DrawPlaceGrid_DrawGrids, 0x6)
 	const auto minY = static_cast<short>(cell.Y - range);
 
 	bool green = false;
-	const auto& cells = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->BaseNormalCells;
+	const auto& cells = ScenarioExt::Global()->BaseNormalCells;
 
 	for (const auto& baseCell : cells)
 	{

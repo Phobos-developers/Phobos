@@ -270,17 +270,17 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 	{
 		R->EAX(true);
 	}
-	else if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType)) // The types exist in the list means that they are not buildable now
+	else if (pThis == HouseClass::CurrentPlayer && *R->ESP<int*>() != 0x4C9CEF)
 	{
-		if (pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
-		{
-			if (const auto pHouseExt = HouseExt::ExtMap.Find(pThis))
-			{
-				auto& vec = pHouseExt->OwnedExistCameoTechnoTypes;
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-				if (std::find(vec.begin(), vec.end(), pTypeExt) != vec.end())
-					R->EAX(true);
-			}
+		// The types exist in the list means that they are not buildable now
+		if (pTypeExt && pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
+		{
+			auto& vec = ScenarioExt::Global()->OwnedExistCameoTechnoTypes;
+
+			if (std::find(vec.begin(), vec.end(), pTypeExt) != vec.end())
+				R->EAX(true);
 		}
 	}
 

@@ -17,6 +17,7 @@
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/Scenario/Body.h>
 
 #include <sstream>
 #include <iomanip>
@@ -123,13 +124,12 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 		return;
 
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
-	auto const pHouse = HouseClass::CurrentPlayer();
 
 	int nBuildTime = TickTimeToSeconds(this->GetBuildTime(pType));
 	int nSec = nBuildTime % 60;
 	int nMin = nBuildTime / 60;
 
-	int cost = pType->GetActualCost(pHouse);
+	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
 
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n"
@@ -150,9 +150,9 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 	if (auto pDesc = this->GetUIDescription(pData))
 		oss << L"\n" << pDesc;
 
-	if (pData->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist) && pHouse)
+	if (pData->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
 	{
-		auto& vec = HouseExt::ExtMap.Find(pHouse)->OwnedExistCameoTechnoTypes;
+		auto& vec = ScenarioExt::Global()->OwnedExistCameoTechnoTypes;
 
 		if (std::find(vec.begin(), vec.end(), pData) != vec.end())
 		{

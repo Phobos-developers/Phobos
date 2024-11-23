@@ -24,9 +24,7 @@ public:
 		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 
-		std::vector<TechnoTypeExt::ExtData*> OwnedExistCameoTechnoTypes;
 		std::vector<UnitClass*> OwnedDeployingUnits;
-		std::vector<CellStruct> BaseNormalCells;
 		BuildingTypeClass* CurrentBuildingType;
 		CellStruct CurrentBuildingTopLeft;
 		CDTimerClass CurrentBuildingTimer;
@@ -73,9 +71,7 @@ public:
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
-			, OwnedExistCameoTechnoTypes {}
 			, OwnedDeployingUnits {}
-			, BaseNormalCells {}
 			, CurrentBuildingType { nullptr }
 			, CurrentBuildingTopLeft {}
 			, CurrentBuildingTimer {}
