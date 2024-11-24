@@ -3,6 +3,8 @@
 #include <UnitClass.h>
 
 #include <Ext/TechnoType/Body.h>
+#include <Ext/WarheadType/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/TemplateDef.h>
 
