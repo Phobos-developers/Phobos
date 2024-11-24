@@ -412,6 +412,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CrushOverlayExtraForwardTilt.Read(exINI, pSection, "CrushOverlayExtraForwardTilt");
 	this->CrushSlowdownMultiplier.Read(exINI, pSection, "CrushSlowdownMultiplier");
 
+	this->WhenCrushed_Warhead.Read<true>(exINI, pSection, "WhenCrushed.Warhead");
+	this->WhenCrushed_Weapon.Read<true>(exINI, pSection, "WhenCrushed.Weapon");
+	this->WhenCrushed_Damage.Read(exINI, pSection, "WhenCrushed.Damage");
+	this->WhenCrushed_Warhead_Full.Read(exINI, pSection, "WhenCrushed.Warhead.Full");
+
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
@@ -777,6 +782,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrushForwardTiltPerFrame)
 		.Process(this->CrushOverlayExtraForwardTilt)
 		.Process(this->CrushSlowdownMultiplier)
+
+		.Process(this->WhenCrushed_Warhead)
+		.Process(this->WhenCrushed_Weapon)
+		.Process(this->WhenCrushed_Damage)
+		.Process(this->WhenCrushed_Warhead_Full)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
