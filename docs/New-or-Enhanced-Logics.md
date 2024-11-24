@@ -1366,6 +1366,25 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### Deals damage or fires a weapon when crushed
+
+- A techno can now deal damage or fire a weapon when crushed.
+  - If both `WhenCrushed.Warhead` and `WhenCrushed.Weapon` are set, latter takes precedence.
+  - `WhenCrushed.Warhead`, if not set, defaults to `C4Warhead`.
+  - `WhenCrushed.Warhead.Full` customizes whether or not the Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
+  - `WhenCrushed.Damage`, if not set, defaults to weapon `Damage` for `WhenCrushed.Weapon` and 0 for `WhenCrushed.Warhead`.
+  - The damage or the weapon is sourceless, but is viewed as the victim's house.
+
+In `rulesmd.ini`
+```ini
+
+[SOMETECHNO]                        ; TechnoType
+WhenCrushed.Warhead=                ; WarheadType
+WhenCrushed.Warhead.Full=true       ; boolean
+WhenCrushed.Weapon=                 ; WeaponType
+WhenCrushed.Damage=                 ; integer
+```
+
 ## Terrain
 
 ### Destroy animation & sound
