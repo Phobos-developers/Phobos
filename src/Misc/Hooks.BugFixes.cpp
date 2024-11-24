@@ -1080,6 +1080,7 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 }
 
 #pragma region End_Piggyback PowerOn
+
 // Author: tyuah8
 static void End_Piggyback_PowerOn(ILocomotion* loco)
 {
@@ -1119,4 +1120,5 @@ DEFINE_HOOK(0x719F17, TeleportLocomotionClass__End_Piggyback__PowerOn, 0x5)
 	End_Piggyback_PowerOn(loco);
 	return 0;
 }
+
 #pragma endregion
