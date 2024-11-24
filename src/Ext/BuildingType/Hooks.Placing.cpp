@@ -880,7 +880,7 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 							if (!SessionClass::IsCampaign())
 								break; // Time out
 
-							return TemporarilyCanNotBuild;
+							pHouseExt->CurrentBuildingTimes = 30;
 						}
 
 						if (!pHouseExt->CurrentBuildingTimer.HasTimeLeft())
