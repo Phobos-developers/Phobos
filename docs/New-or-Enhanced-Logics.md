@@ -1374,6 +1374,13 @@ Convert.ComputerToHuman =   ; TechnoType
   - `WhenCrushed.Warhead.Full` customizes whether or not the Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `WhenCrushed.Damage`, if not set, defaults to weapon `Damage` for `WhenCrushed.Weapon` and 0 for `WhenCrushed.Warhead`.
   - The damage or the weapon is sourceless, but is viewed as the victim's house.
+  - Note that if this feature is used on an infantry type you can also define the infantry's `CrushSound=` to be the same as the infantry's `DieSound=` instead of the generic `InfantrySquish`. For example, if this feature is applied on Crazy Ivan to allow his death weapon to trigger when crushed, the code can be:
+    ```
+    [IVAN]
+    CrushSound=CrazyIvanDie
+    WhenCrushed.Weapon=IvanDeath
+    ```
+    In this case crushing Crazy Ivan is equivalent to killing him with direct damage: he explodes with his iconic death cry under the crushing treeds.
 
 In `rulesmd.ini`
 ```ini
