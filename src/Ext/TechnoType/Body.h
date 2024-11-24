@@ -182,6 +182,11 @@ public:
 		Valueable<double> CrushOverlayExtraForwardTilt;
 		Valueable<double> CrushSlowdownMultiplier;
 
+		Nullable<WarheadTypeClass*> WhenCrushed_Warhead;
+		Valueable<WeaponTypeClass*> WhenCrushed_Weapon;
+		Nullable<int> WhenCrushed_Damage;
+		Valueable<bool> WhenCrushed_Warhead_Full;
+
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
@@ -402,6 +407,11 @@ public:
 			, CrushSlowdownMultiplier { 0.2 }
 			, CrushForwardTiltPerFrame {}
 			, CrushOverlayExtraForwardTilt { 0.02 }
+
+			, WhenCrushed_Warhead {}
+			, WhenCrushed_Weapon {}
+			, WhenCrushed_Damage {}
+			, WhenCrushed_Warhead_Full { true }
 
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
