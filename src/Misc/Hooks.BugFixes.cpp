@@ -854,45 +854,6 @@ DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
 	return SkipGameCode;
 }
 
-#pragma region WarpInDelayFix
-
-DEFINE_HOOK(0x7195BF, TeleportLocomotionClass_Process_WarpInDelay, 0x6)
-{
-	GET(ILocomotion*, pThis, ESI);
-	GET(FootClass*, pLinkedTo, ECX);
-
-	auto const pLoco = static_cast<TeleportLocomotionClass*>(pThis);
-	auto const pExt = TechnoExt::ExtMap.Find(pLinkedTo);
-	pExt->LastWarpInDelay = Math::max(pLoco->Timer.GetTimeLeft(), pExt->LastWarpInDelay);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
-{
-	GET(FootClass*, pThis, ESI);
-
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->HasRemainingWarpInDelay)
-	{
-		if (pExt->LastWarpInDelay)
-		{
-			pExt->LastWarpInDelay--;
-		}
-		else
-		{
-			pExt->HasRemainingWarpInDelay = false;
-			pExt->IsBeingChronoSphered = false;
-			pThis->WarpingOut = false;
-		}
-	}
-
-	return 0;
-}
-
-#pragma endregion
-
 // this fella was { 0, 0, 1 } before and somehow it also breaks both the light position a bit and how the lighting is applied when voxels rotate - Kerbiter
 DEFINE_HOOK(0x753D86, VoxelCalcNormals_NullAdditionalVector, 0x0)
 {
@@ -1079,46 +1040,19 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 	return SkipGameCode;
 }
 
-#pragma region End_Piggyback PowerOn
-
+// This shouldn't be here
 // Author: tyuah8
-static void End_Piggyback_PowerOn(ILocomotion* loco)
+DEFINE_HOOK_AGAIN(0x4AF94D, EndPiggyback_PowerOn, 0x7) // Drive
+DEFINE_HOOK_AGAIN(0x54DADC, EndPiggyback_PowerOn, 0x5) // Jumpjet
+DEFINE_HOOK_AGAIN(0x69F05D, EndPiggyback_PowerOn, 0x7) // Ship
+DEFINE_HOOK(0x719F17, EndPiggyback_PowerOn, 0x5) // Teleport
 {
-	const auto pLoco = static_cast<LocomotionClass*>(loco);
-	const auto pLinkedTo = pLoco->LinkedTo;
-
+	auto* iloco = R->Origin() == 0x719F17 ? R->ECX<ILocomotion*>() : R->EAX<ILocomotion*>();
+	__assume(iloco!=nullptr);
+	auto pLinkedTo = static_cast<LocomotionClass*>(iloco)->LinkedTo;
 	if (!pLinkedTo->Deactivated && !pLinkedTo->IsUnderEMP())
-		pLoco->Power_On();
+		iloco->Power_On();
 	else
-		pLoco->Power_Off();
-}
-
-DEFINE_HOOK(0x4AF94D, DriveLocomotionClass__End_Piggyback__PowerOn, 0x7)
-{
-	GET(ILocomotion*, loco, EAX);
-	End_Piggyback_PowerOn(loco);
+		iloco->Power_Off();
 	return 0;
 }
-
-DEFINE_HOOK(0x54DADC, JumpjetLocomotionClass__End_Piggyback__PowerOn, 0x5)
-{
-	GET(ILocomotion*, loco, EAX);
-	End_Piggyback_PowerOn(loco);
-	return 0;
-}
-
-DEFINE_HOOK(0x69F05D, ShipLocomotionClass__End_Piggyback__PowerOn, 0x7)
-{
-	GET(ILocomotion*, loco, EAX);
-	End_Piggyback_PowerOn(loco);
-	return 0;
-}
-
-DEFINE_HOOK(0x719F17, TeleportLocomotionClass__End_Piggyback__PowerOn, 0x5)
-{
-	GET(ILocomotion*, loco, ECX);
-	End_Piggyback_PowerOn(loco);
-	return 0;
-}
-
-#pragma endregion
