@@ -183,8 +183,14 @@ public:
 		Valueable<double> CrushSlowdownMultiplier;
 
 		Nullable<WarheadTypeClass*> WhenCrushed_Warhead;
+		Nullable<WarheadTypeClass*> WhenCrushed_Warhead_Veteran;
+		Nullable<WarheadTypeClass*> WhenCrushed_Warhead_Elite;
 		Valueable<WeaponTypeClass*> WhenCrushed_Weapon;
+		Valueable<WeaponTypeClass*> WhenCrushed_Weapon_Veteran;
+		Valueable<WeaponTypeClass*> WhenCrushed_Weapon_Elite;
 		Nullable<int> WhenCrushed_Damage;
+		Nullable<int> WhenCrushed_Damage_Veteran;
+		Nullable<int> WhenCrushed_Damage_Elite;
 		Valueable<bool> WhenCrushed_Warhead_Full;
 
 		Valueable<bool> DigitalDisplay_Disable;
@@ -409,8 +415,14 @@ public:
 			, CrushOverlayExtraForwardTilt { 0.02 }
 
 			, WhenCrushed_Warhead {}
+			, WhenCrushed_Warhead_Veteran {}
+			, WhenCrushed_Warhead_Elite {}
 			, WhenCrushed_Weapon {}
+			, WhenCrushed_Weapon_Veteran {}
+			, WhenCrushed_Weapon_Elite {}
 			, WhenCrushed_Damage {}
+			, WhenCrushed_Damage_Veteran {}
+			, WhenCrushed_Damage_Elite {}
 			, WhenCrushed_Warhead_Full { true }
 
 			, DigitalDisplay_Disable { false }
@@ -472,6 +484,8 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+
+		void WhenCrushedBy(UnitClass* crusher, ObjectClass* victim, TechnoClass* techno);
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
