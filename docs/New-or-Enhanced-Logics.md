@@ -1383,6 +1383,7 @@ Convert.ComputerToHuman =   ; TechnoType
     WhenCrushed.Weapon=IvanDeath
     ```
     In this case crushing Crazy Ivan is equivalent to killing him with direct damage: he explodes with his iconic death cry under the crushing treeds.
+  - Note that the `IvanBomb` feature in Ares does not work with this. If `WhenCrushed.Weapon=IvanBomber` is set, nothing happens when the crush occures.
 
 In `rulesmd.ini`
 ```ini
