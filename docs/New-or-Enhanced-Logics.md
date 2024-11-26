@@ -1369,11 +1369,12 @@ Convert.ComputerToHuman =   ; TechnoType
 ### Deals damage or fires a weapon when crushed
 
 - A techno can now deal damage or fire a weapon when crushed.
-  - If both `WhenCrushed.Warhead` and `WhenCrushed.Weapon` are set, `WhenCrushed.Warhead` will be ignored.
+  - If `WhenCrushed.Weapon` is set at a veterancy level, `WhenCrushed.Warhead` and `WhenCrushed.Damage` at the same veterancy level will be ignored.
   - `WhenCrushed.Warhead`, if not set, defaults to `C4Warhead`.
-  - `WhenCrushed.Warhead.Full` customizes whether or not the Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
-  - `WhenCrushed.Damage`, if not set, defaults to weapon `Damage` for `WhenCrushed.Weapon` and 0 for `WhenCrushed.Warhead`. If set to any non-negative value, the weapon's damage will be ignored.
-  - The damage or the weapon comes from the victim and is viewed as the victim's house.
+  - `WhenCrushed.Warhead.Full` customizes whether or not the Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. When not set, it is default to true.
+  - `WhenCrushed.Damage`, if not set, defaults to 0.
+  - If `WhenCrushed.Weapon` is not set, `WhenCrushed.Warhead` is not set, and `WhenCrushed.Damage` is either not set or set to 0, no weapon or warhead detonation will occure at all at the veterancy level.
+  - The weapon or the damage is fired from the victim, is detonated at the victim's coords, and is viewed as the victim's house.
   - Each configuration can be varied based on the unit's veterancy.
   - Note that if this feature is used on an infantry type you can also define the infantry's `CrushSound=` to be the same as the infantry's `DieSound=` instead of the generic `InfantrySquish`. For example, if this feature is applied to Crazy Ivan to allow his death weapon to trigger when crushed, the code can be:
     ```
