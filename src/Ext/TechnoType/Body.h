@@ -410,7 +410,7 @@ public:
 
 			, WhenCrushed_Warhead {}
 			, WhenCrushed_Weapon {}
-			, WhenCrushed_Damage { -1 }
+			, WhenCrushed_Damage {}
 			, WhenCrushed_Warhead_Full { true }
 
 			, DigitalDisplay_Disable { false }
