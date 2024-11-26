@@ -34,62 +34,22 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
-void TechnoTypeExt::ExtData::WhenCrushedBy(UnitClass* pCrusher, ObjectClass* pVictim, TechnoClass* pVictimTechno)
+void TechnoTypeExt::ExtData::WhenCrushedBy(UnitClass* pCrusher, TechnoClass* pVictim)
 {
-	auto pWeapon = this->WhenCrushed_Weapon;
-	auto pWarhead = this->WhenCrushed_Warhead.Get(RulesClass::Instance->C4Warhead);
-	int damage;
+	auto pWeapon = this->WhenCrushed_Weapon.Get(pVictim);
+	auto pWarhead = this->WhenCrushed_Warhead.Get(pVictim);
+	int damage = this->WhenCrushed_Damage.Get(pVictim);
 
 	if (pWeapon)
 	{
-		auto pWeaponV = this->WhenCrushed_Weapon_Veteran;
-		auto pWeaponE = this->WhenCrushed_Weapon_Elite;
-		if (pVictimTechno->Veterancy.IsElite())
-		{
-			if (pWeaponE)
-				pWeapon = pWeaponE;
-			else if (pWeaponV)
-				pWeapon = pWeaponV;
-			damage = this->WhenCrushed_Damage_Elite.Get(this->WhenCrushed_Damage_Veteran.Get(this->WhenCrushed_Damage.Get(pWeapon->Damage)));
-		}
-		else if (pVictimTechno->Veterancy.IsVeteran())
-		{
-			if (pWeaponV)
-				pWeapon = pWeaponV;
-			damage = this->WhenCrushed_Damage_Veteran.Get(this->WhenCrushed_Damage.Get(pWeapon->Damage));
-		}
-		else
-		{
-			damage = this->WhenCrushed_Damage.Get(pWeapon->Damage);
-		}
-		WeaponTypeExt::DetonateAt(pWeapon, pVictim->GetCoords(), pVictimTechno, damage, pVictim->GetOwningHouse());
+		WeaponTypeExt::DetonateAt(pWeapon, pVictim->GetCoords(), pVictim, damage >= 0 ? damage : pWeapon->Damage, pVictim->GetOwningHouse());
 	}
 	else
 	{
-		auto pWarheadV = this->WhenCrushed_Warhead_Veteran.Get(pWarhead);
-		auto pWarheadE = this->WhenCrushed_Warhead_Elite.Get(pWarheadV);
-		if (pVictimTechno->Veterancy.IsElite())
-		{
-			if (pWarheadE)
-				pWarhead = pWarheadE;
-			else if (pWarheadV)
-				pWarhead = pWarheadV;
-			damage = this->WhenCrushed_Damage_Elite.Get(this->WhenCrushed_Damage_Veteran.Get(this->WhenCrushed_Damage.Get(0)));
-		}
-		else if (pVictimTechno->Veterancy.IsVeteran())
-		{
-			if (pWarheadV)
-				pWarhead = pWarheadV;
-			damage = this->WhenCrushed_Damage_Veteran.Get(this->WhenCrushed_Damage.Get(0));
-		}
-		else
-		{
-			damage = this->WhenCrushed_Damage.Get(0);
-		}
 		if (this->WhenCrushed_Warhead_Full)
-			WarheadTypeExt::DetonateAt(pWarhead, pVictim->GetCoords(), pVictimTechno, this->WhenCrushed_Damage.Get(0), pVictim->GetOwningHouse());
+			WarheadTypeExt::DetonateAt(pWarhead, pVictim->GetCoords(), pVictim, damage, pVictim->GetOwningHouse());
 		else
-			MapClass::DamageArea(pVictim->GetCoords(), this->WhenCrushed_Damage.Get(0), pVictimTechno, pWarhead, true, pVictim->GetOwningHouse());
+			MapClass::DamageArea(pVictim->GetCoords(), damage, pVictim, pWarhead, true, pVictim->GetOwningHouse());
 	}
 }
 
@@ -473,15 +433,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CrushOverlayExtraForwardTilt.Read(exINI, pSection, "CrushOverlayExtraForwardTilt");
 	this->CrushSlowdownMultiplier.Read(exINI, pSection, "CrushSlowdownMultiplier");
 
-	this->WhenCrushed_Warhead.Read<true>(exINI, pSection, "WhenCrushed.Warhead");
-	this->WhenCrushed_Warhead_Veteran.Read<true>(exINI, pSection, "WhenCrushed.Warhead.Veteran");
-	this->WhenCrushed_Warhead_Elite.Read<true>(exINI, pSection, "WhenCrushed.Warhead.Elite");
-	this->WhenCrushed_Weapon.Read<true>(exINI, pSection, "WhenCrushed.Weapon");
-	this->WhenCrushed_Weapon_Veteran.Read<true>(exINI, pSection, "WhenCrushed.Weapon.Veteran");
-	this->WhenCrushed_Weapon_Elite.Read<true>(exINI, pSection, "WhenCrushed.Weapon.Elite");
-	this->WhenCrushed_Damage.Read(exINI, pSection, "WhenCrushed.Damage");
-	this->WhenCrushed_Damage_Veteran.Read(exINI, pSection, "WhenCrushed.Damage.Veteran");
-	this->WhenCrushed_Damage_Elite.Read(exINI, pSection, "WhenCrushed.Damage.Elite");
+	this->WhenCrushed_Warhead.Read(exINI, pSection, "WhenCrushed.Warhead.%s");
+	this->WhenCrushed_Weapon.Read(exINI, pSection, "WhenCrushed.Weapon.%s");
+	this->WhenCrushed_Damage.Read(exINI, pSection, "WhenCrushed.Damage.%s");
 	this->WhenCrushed_Warhead_Full.Read(exINI, pSection, "WhenCrushed.Warhead.Full");
 
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
@@ -851,14 +805,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrushSlowdownMultiplier)
 
 		.Process(this->WhenCrushed_Warhead)
-		.Process(this->WhenCrushed_Warhead_Veteran)
-		.Process(this->WhenCrushed_Warhead_Elite)
 		.Process(this->WhenCrushed_Weapon)
-		.Process(this->WhenCrushed_Weapon_Veteran)
-		.Process(this->WhenCrushed_Weapon_Elite)
 		.Process(this->WhenCrushed_Damage)
-		.Process(this->WhenCrushed_Damage_Veteran)
-		.Process(this->WhenCrushed_Damage_Elite)
 		.Process(this->WhenCrushed_Warhead_Full)
 
 		.Process(this->DigitalDisplay_Disable)
