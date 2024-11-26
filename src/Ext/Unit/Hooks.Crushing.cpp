@@ -61,11 +61,10 @@ DEFINE_HOOK(0x7418AA, UnitClass_CrushCell_WhenCrushed, 6)
 	GET(UnitClass* const, pThis, EDI);
 	GET(ObjectClass* const, pVictim, ESI);
 
-	if (auto const pTechno = abstract_cast<TechnoClass*>(pVictim))
+	if (auto const pVictimTechno = abstract_cast<TechnoClass*>(pVictim))
 	{
-		auto pExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType());
-
-		pExt->WhenCrushedBy(pThis, pVictim, pTechno);
+		auto pVictimExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType());
+		pVictimExt->WhenCrushedBy(pThis, pVictimTechno);
 	}
 
 	return 0;
