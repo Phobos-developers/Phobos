@@ -46,6 +46,8 @@ void TechnoTypeExt::ExtData::WhenCrushedBy(UnitClass* pCrusher, TechnoClass* pVi
 	}
 	else
 	{
+		if (!pWarhead)
+			pWarhead = RulesClass::Instance->C4Warhead;
 		if (this->WhenCrushed_Warhead_Full)
 			WarheadTypeExt::DetonateAt(pWarhead, pVictim->GetCoords(), pVictim, damage, pVictim->GetOwningHouse());
 		else
