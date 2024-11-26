@@ -35,7 +35,7 @@ This page describes all the engine features that are either new and introduced b
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
     - `ArmorMultiplier.AllowWarheads` and `ArmorMultiplier.DisallowWarheads` can be used to restrict which Warheads the armor multiplier is applied to when dealing damage.
-    - If `ROFMultiplier.ApplyOnCurrentTimer` is set to true, `ROFMultiplier` is applied on currently running reload timer (if any) when the effect is first applied.  
+    - If `ROFMultiplier.ApplyOnCurrentTimer` is set to true, `ROFMultiplier` is applied on currently running reload timer (if any) when the effect is first applied.
   - If `Cloakable` is set to true, the object the effect is attached to is granted ability to cloak itself for duration of the effect.
   - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
   - `WeaponRange.Multiplier` and `WeaponRange.ExtraRange` can be used to multiply the weapon firing range of the object the effect is attached to, or give it an increase / decrease (measured in cells), respectively. `ExtraRange` is cumulatively applied from all attached effects after all `Multiplier` values have been applied.
@@ -552,6 +552,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]               ; BuildingType
 IsDestroyableObstacle=false  ; boolean
+```
+
+### Power plant damage factor
+
+- It is possible to customize the power decrement of a power plant when it's damaged. The actual power output for this plant will be: `Power` minuses the product of original power decrement and `Powerplant.DamageFactor`. Can't reduce power output lower than 0.
+  - Specifically, if the factor is set to 0.0, power output won't be decreased by losing health for this power plant.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+PowerPlant.DamageFactor=1.0        ; floating point value
 ```
 
 ### Power plant enhancer

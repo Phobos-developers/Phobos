@@ -41,7 +41,7 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 	return -1;
 }
 
-int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
+int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse, int power)
 {
 	int nAmount = 0;
 	float fFactor = 1.0f;
@@ -57,7 +57,7 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 		}
 	}
 
-	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
+	return static_cast<int>(std::round(power * fFactor)) + nAmount;
 }
 
 int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades
@@ -160,6 +160,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoBuildAreaOnBuildup.Read(exINI, pSection, "NoBuildAreaOnBuildup");
 	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
 	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
+
+	this->PowerPlant_DamageFactor.Read(exINI, pSection, "PowerPlant.DamageFactor");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -283,6 +285,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoBuildAreaOnBuildup)
 		.Process(this->Adjacent_Allowed)
 		.Process(this->Adjacent_Disallowed)
+		.Process(this->PowerPlant_DamageFactor)
 		;
 }
 

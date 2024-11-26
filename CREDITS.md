@@ -372,6 +372,7 @@ This page lists all the individual contributions to the project by their author.
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
+  - Customizing power output decrement when a power plant is damaged
 - **handama** - AI script action to jump back to previous script
 - **TaranDahl (航味麻酱)**
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode

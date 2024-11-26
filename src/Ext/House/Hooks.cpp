@@ -32,13 +32,40 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 	return 0;
 }
 
-// Power Plant Enhancer #131
 DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 {
 	GET(HouseClass*, pThis, ESI);
 	GET(BuildingClass*, pBld, EDI);
 
-	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis);
+	int power = pBld->GetPowerOutput();
+
+	// skip deactivated power plant
+	// TODO: interaction with Ares' Drain logic
+	if (!pBld->Deactivated && !pBld->IsUnderEMP())
+	{
+		const auto pType = pBld->Type;
+		const double factor = BuildingTypeExt::ExtMap.Find(pType)->PowerPlant_DamageFactor;
+
+		if (factor != 1.0)
+		{
+			double powerOutput = static_cast<double>(pType->PowerBonus - pType->PowerDrain);
+
+			// power plant with absorb
+			if (pBld->Passengers.NumPassengers > 0 && pType->ExtraPowerBonus > 0)
+				powerOutput += pBld->Passengers.NumPassengers * (pType->ExtraPowerBonus - pType->ExtraPowerDrain);
+
+			// power plant with upgrade
+			for (const auto& pUpgrade : pBld->Upgrades)
+			{
+				if (pUpgrade && pUpgrade->PowerBonus > 0)
+					powerOutput += (pUpgrade->PowerBonus - pUpgrade->PowerDrain);
+			}
+
+			power = Math::max(static_cast<int>(std::round(powerOutput - (powerOutput - power) * factor)), 0);
+		}
+	}
+
+	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis, power);
 
 	return 0x508D07;
 }
