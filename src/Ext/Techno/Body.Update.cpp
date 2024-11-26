@@ -679,12 +679,8 @@ void TechnoExt::ExtData::ManualIdleAction()
 
 		if (mouseCoords != CoordStruct::Empty) // Mouse in tactical
 		{
-			const auto technoCoords = this->OwnerObject()->GetCoords();
-			const auto offset = -static_cast<int>(technoCoords.Z * 1.25);
-			const auto nowRadian = Math::atan2(technoCoords.Y + offset - mouseCoords.Y, mouseCoords.X - technoCoords.X - offset);
-			DirStruct unitIdleFacingDirection;
-			unitIdleFacingDirection.SetRadian<32>(nowRadian);
-			turret->SetDesired(unitIdleFacingDirection);
+			const auto offset = -static_cast<int>(pThis->GetCoords().Z * 1.2307692307692307692307692307692); // ((Unsorted::LeptonsPerCell / 2) / Unsorted::LevelHeight)
+			turret->SetDesired(pThis->GetTargetDirection(MapClass::Instance->GetCellAt(CoordStruct { mouseCoords.X - offset, mouseCoords.Y - offset, 0 })));
 		}
 	}
 	else if (this->UnitIdleIsSelected) // Immediately stop when is not selected
