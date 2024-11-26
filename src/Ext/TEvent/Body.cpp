@@ -173,7 +173,7 @@ bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
 	if (!pType)
 		return false;
 
-	auto pHouse = HouseClass::FindByIndex(pThis->Value);
+	auto pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
 	if (!pHouse)
 		return false;
 
