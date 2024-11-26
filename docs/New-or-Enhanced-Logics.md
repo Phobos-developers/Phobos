@@ -1369,13 +1369,13 @@ Convert.ComputerToHuman =   ; TechnoType
 ### Deals damage or fires a weapon when crushed
 
 - A techno can now deal damage or fire a weapon when crushed.
-  - If both `WhenCrushed.Warhead` and `WhenCrushed.Weapon` are set, `WhenCrushed.Warhead` related are completely ignored.
+  - If both `WhenCrushed.Warhead` and `WhenCrushed.Weapon` are set, `WhenCrushed.Warhead` will be ignored.
   - `WhenCrushed.Warhead`, if not set, defaults to `C4Warhead`.
   - `WhenCrushed.Warhead.Full` customizes whether or not the Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
-  - `WhenCrushed.Damage`, if not set, defaults to weapon `Damage` for `WhenCrushed.Weapon` and 0 for `WhenCrushed.Warhead`. If set, the weapon's damage will be completely ignored, including the veteran and elite weapons.
+  - `WhenCrushed.Damage`, if not set, defaults to weapon `Damage` for `WhenCrushed.Weapon` and 0 for `WhenCrushed.Warhead`. If set to any non-negative value, the weapon's damage will be ignored.
   - The damage or the weapon comes from the victim and is viewed as the victim's house.
-  - Each configuration has a Veteran and Elite version that checks the victim's veterancy. If the elite version is not set, it is fallbacked to the veteran version. If the veteran version is not set, it is fallbacked to the regular version.
-  - Note that if this feature is used on an infantry type you can also define the infantry's `CrushSound=` to be the same as the infantry's `DieSound=` instead of the generic `InfantrySquish`. For example, if this feature is applied on Crazy Ivan to allow his death weapon to trigger when crushed, the code can be:
+  - Each configuration can be varied based on the unit's veterancy.
+  - Note that if this feature is used on an infantry type you can also define the infantry's `CrushSound=` to be the same as the infantry's `DieSound=` instead of the generic `InfantrySquish`. For example, if this feature is applied to Crazy Ivan to allow his death weapon to trigger when crushed, the code can be:
     ```
     [IVAN]
     CrushSound=CrazyIvanDie
@@ -1386,17 +1386,14 @@ Convert.ComputerToHuman =   ; TechnoType
 In `rulesmd.ini`
 ```ini
 
-[SOMETECHNO]                        ; TechnoType
-WhenCrushed.Warhead=                ; WarheadType
-WhenCrushed.Warhead.Veteran=        ; WarheadType
-WhenCrushed.Warhead.Elite=          ; WarheadType
-WhenCrushed.Warhead.Full=true       ; boolean
-WhenCrushed.Weapon=                 ; WeaponType
-WhenCrushed.Weapon.Veteran=         ; WeaponType
-WhenCrushed.Weapon.Elite=           ; WeaponType
-WhenCrushed.Damage=                 ; integer
-WhenCrushed.Damage.Veteran=         ; integer
-WhenCrushed.Damage.Elite=           ; integer
+[SOMETECHNO]                                         ; TechnoType
+WhenCrushed.Warhead=                                 ; WarheadType
+WhenCrushed.Warhead.(Rookie|Veteran|Elite)=          ; WarheadType
+WhenCrushed.Warhead.Full=true                        ; boolean
+WhenCrushed.Weapon=                                  ; WeaponType
+WhenCrushed.Weapon.(Rookie|Veteran|Elite)=           ; WeaponType
+WhenCrushed.Damage=                                  ; integer
+WhenCrushed.Damage.(Rookie|Veteran|Elite)=           ; integer
 ```
 
 ## Terrain
