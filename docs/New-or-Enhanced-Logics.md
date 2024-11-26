@@ -1371,7 +1371,7 @@ Convert.ComputerToHuman =   ; TechnoType
 - A techno can now deal damage or fire a weapon when crushed.
   - If `WhenCrushed.Weapon` is set at a veterancy level, `WhenCrushed.Warhead` and `WhenCrushed.Damage` at the same veterancy level will be ignored.
   - `WhenCrushed.Warhead`, if not set, defaults to `C4Warhead`.
-  - `WhenCrushed.Warhead.Full` customizes whether or not the Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. When not set, it is default to true.
+  - `WhenCrushed.Warhead.Full` customizes whether or not the Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. If not set, defaults to true. If set false, no animation defined in the warhead will be played.
   - `WhenCrushed.Damage`, if not set, defaults to 0.
   - If `WhenCrushed.Weapon` is not set, `WhenCrushed.Warhead` is not set, and `WhenCrushed.Damage` is either not set or set to 0, no weapon or warhead detonation will occure at all at the veterancy level.
   - The weapon or the damage is fired from the victim, is detonated at the victim's coords, and is viewed as the victim's house.
