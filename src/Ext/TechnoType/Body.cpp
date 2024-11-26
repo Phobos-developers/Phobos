@@ -42,9 +42,9 @@ void TechnoTypeExt::ExtData::WhenCrushedBy(UnitClass* pCrusher, TechnoClass* pVi
 
 	if (pWeapon)
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, pVictim->GetCoords(), pVictim, damage >= 0 ? damage : pWeapon->Damage, pVictim->GetOwningHouse());
+		WeaponTypeExt::DetonateAt(pWeapon, pVictim->GetCoords(), pVictim, damage > 0 ? damage : pWeapon->Damage, pVictim->GetOwningHouse());
 	}
-	else
+	else if (damage > 0)
 	{
 		if (!pWarhead)
 			pWarhead = RulesClass::Instance->C4Warhead;
