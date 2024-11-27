@@ -1,11 +1,13 @@
 #include "StraightTrajectory.h"
+
+#include <OverlayTypeClass.h>
+#include <ScenarioClass.h>
+#include <AircraftTrackerClass.h>
+
 #include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Techno/Body.h>
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
-#include <AircraftTrackerClass.h>
 
 std::unique_ptr<PhobosTrajectory> StraightTrajectoryType::CreateInstance() const
 {
@@ -148,30 +150,33 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	this->PassDetonateTimer.Start(pType->PassDetonateTimer > 0 ? pType->PassDetonateTimer : 0);
 	this->LastTargetCoord = pBullet->TargetCoords;
 	pBullet->Velocity = BulletVelocity::Empty;
-	const auto pOwner = pBullet->Owner;
+	const auto pFirer = pBullet->Owner;
 
 	if (const auto pWeapon = pBullet->WeaponType)
 	{
 		this->AttenuationRange = pWeapon->Range;
 		this->CountOfBurst = pWeapon->Burst;
 
-		if (pType->ApplyRangeModifiers && pOwner)
+		if (pType->ApplyRangeModifiers && pFirer)
 		{
 			if (this->DetonationDistance >= 0)
-				this->DetonationDistance = Leptons(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner, this->DetonationDistance));
+				this->DetonationDistance = Leptons(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, this->DetonationDistance));
 			else
-				this->DetonationDistance = Leptons(-WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner, -this->DetonationDistance));
+				this->DetonationDistance = Leptons(-WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, -this->DetonationDistance));
 
-			this->AttenuationRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pOwner);
+			this->AttenuationRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer);
 		}
 	}
 
-	if (pOwner)
+	if (pFirer)
 	{
-		this->FirepowerMult = pOwner->FirepowerMultiplier;
-		this->CurrentBurst = pOwner->CurrentBurstIndex;
+		this->CurrentBurst = pFirer->CurrentBurstIndex;
+		this->FirepowerMult = pFirer->FirepowerMultiplier;
 
-		if (pType->MirrorCoord && pOwner->CurrentBurstIndex % 2 == 1)
+		if (const auto pExt = TechnoExt::ExtMap.Find(pFirer))
+			this->FirepowerMult *= pExt->AE.FirepowerMultiplier;
+
+		if (pType->MirrorCoord && pFirer->CurrentBurstIndex % 2 == 1)
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
 	}
 
