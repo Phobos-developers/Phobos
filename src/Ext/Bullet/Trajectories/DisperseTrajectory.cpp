@@ -971,7 +971,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 									continue;
 							}
 
-							if (MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) == 0)
+							if (MapClass::GetTotalDamage(100, pWeapon->Warhead, pTechnoType->Armor, 0) == 0)
 								continue;
 
 							if (!this->CheckWeaponCanTarget(pWeaponExt, pBullet->Owner, pTechno))
@@ -1014,7 +1014,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 							continue;
 					}
 
-					if (MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) == 0)
+					if (MapClass::GetTotalDamage(100, pWeapon->Warhead, pTechnoType->Armor, 0) == 0)
 						continue;
 
 					if (!this->CheckWeaponCanTarget(pWeaponExt, pBullet->Owner, pTechno))
@@ -1030,6 +1030,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 			std::vector<AbstractClass*> validTargets;
 			validTargets.reserve(burstCount);
 
+			// TODO Simplify these codes
 			if (pType->WeaponDoRepeat)
 			{
 				if (validTechnoNums)
@@ -1182,7 +1183,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 	{
 		pCreateBullet->WeaponType = pWeapon;
 		const auto pBulletExt = BulletExt::ExtMap.Find(pCreateBullet);
-		pBulletExt->FirerHouse = BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+		pBulletExt->FirerHouse = pOwner;
 		pCreateBullet->MoveTo(pBullet->Location, BulletVelocity::Empty);
 
 		if (pBulletExt->Trajectory && curBurst >= 0)
