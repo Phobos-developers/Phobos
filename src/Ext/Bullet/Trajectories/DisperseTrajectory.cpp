@@ -1,20 +1,25 @@
 #include "DisperseTrajectory.h"
 // #include "StraightTrajectory.h" // TODO If merge #1294
 // #include "BombardTrajectory.h" // TODO If merge #1404
+// #include "EngraveTrajectory.h" // TODO If merge #1293
 // #include "ParabolaTrajectory.h" // TODO If merge #1374
-#include <Ext/Bullet/Body.h>
-#include <Ext/BulletType/Body.h>
-#include <Ext/WeaponType/Body.h>
-#include <Ext/Anim/Body.h>
-#include <Utilities/EnumFunctions.h>
+// #include "TracingTrajectory.h" // TODO
+
 #include <AnimClass.h>
 #include <LaserDrawClass.h>
 #include <EBolt.h>
 #include <RadBeam.h>
 #include <ParticleSystemClass.h>
 #include <ScenarioClass.h>
-#include <Utilities/Helpers.Alex.h>
 #include <AircraftTrackerClass.h>
+
+#include <Ext/Bullet/Body.h>
+#include <Ext/BulletType/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
+#include <Ext/Anim/Body.h>
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/Helpers.Alex.h>
 
 std::unique_ptr<PhobosTrajectory> DisperseTrajectoryType::CreateInstance() const
 {
@@ -189,6 +194,9 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	{
 		this->CurrentBurst = pFirer->CurrentBurstIndex;
 		this->FirepowerMult = pFirer->FirepowerMultiplier;
+
+		if (const auto pExt = TechnoExt::ExtMap.Find(pFirer))
+			this->FirepowerMult *= pExt->AE.FirepowerMultiplier;
 
 		if (pType->MirrorCoord && pFirer->CurrentBurstIndex % 2 == 1)
 			this->PreAimCoord.Y = -(this->PreAimCoord.Y);
@@ -1237,6 +1245,11 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 						this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 				}
 			}*/
+/*			else if (flag == TrajectoryFlag::Engrave) // TODO If merge #1293
+			{
+				const auto pTrajectory = static_cast<EngraveTrajectory*>(pBulletExt->Trajectory.get());
+				pTrajectory->NotMainWeapon = true;
+			}*/
 /*			else if (flag == TrajectoryFlag::Parabola) // TODO If merge #1374
 			{
 				const auto pTrajectory = static_cast<ParabolaTrajectory*>(pBulletExt->Trajectory.get());
@@ -1256,6 +1269,12 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 						this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 					}
 				}
+			}*/
+/*			else if (flag == TrajectoryFlag::Tracing) // TODO
+			{
+				const auto pTrajectory = static_cast<TracingTrajectory*>(pBulletExt->Trajectory.get());
+				pTrajectory->FirepowerMult = this->FirepowerMult;
+				pTrajectory->NotMainWeapon = true;
 			}*/
 		}
 
@@ -1313,7 +1332,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 	{
 		if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
 		{
-			auto const pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(), (pWeapon->IsHouseColor ? pOwner->LaserColor : pWeapon->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
+			auto const pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(), ((pWeapon->IsHouseColor && pOwner) ? pOwner->LaserColor : pWeapon->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
 			pLaser->IsHouseColor = true;
 			pLaser->Thickness = pWeaponExt->LaserThickness;
 			pLaser->IsSupported = (pLaser->Thickness > 3);
@@ -1346,7 +1365,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 		{
 			pRadBeam->SetCoordsSource(pBullet->Location);
 			pRadBeam->SetCoordsTarget(pTarget->GetCoords());
-			pRadBeam->Color = pWeaponExt->Beam_IsHouseColor ? pOwner->LaserColor : pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
+			pRadBeam->Color = (pWeaponExt->Beam_IsHouseColor && pOwner) ? pOwner->LaserColor : pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
 			pRadBeam->Period = pWeaponExt->Beam_Duration;
 			pRadBeam->Amplitude = pWeaponExt->Beam_Amplitude;
 		}
