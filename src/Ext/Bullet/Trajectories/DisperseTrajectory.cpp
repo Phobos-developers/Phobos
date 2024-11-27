@@ -930,7 +930,12 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 							if (!pTechno)
 							{
 								if (checkObjects && pObject != pTarget)
-									validObjects.push_back(pObject);
+								{
+									const auto pObjType = pObject->GetType();
+
+									if (pObjType && !pObjType->Immune)
+										validObjects.push_back(pObject);
+								}
 
 								pObject = pObject->NextObject;
 								continue;
