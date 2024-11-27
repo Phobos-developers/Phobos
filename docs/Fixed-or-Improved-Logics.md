@@ -175,6 +175,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings.
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps.
 - Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers.
+- Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 
 ## Fixes / interactions with other extensions
 

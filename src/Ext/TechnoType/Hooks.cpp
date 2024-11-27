@@ -49,16 +49,6 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 	return 0x73D28C;
 }
 
-DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
-{
-	GET(TechnoClass*, pThis, ECX);
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData->HealthBar_Hide)
-		return 0x6F6AB6;
-
-	return 0;
-}
-
 // Issue #503
 // Author : Otamaa
 DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
