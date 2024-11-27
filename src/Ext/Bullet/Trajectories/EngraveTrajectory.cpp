@@ -263,8 +263,7 @@ bool EngraveTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 {
 	return (!pTechno
 		|| !pTechno->IsAlive
-		|| !pTechno->IsOnMap
-		|| pTechno->InLimbo
+		|| (pTechno->InLimbo && !pTechno->Transporter)
 		|| pTechno->IsSinking
 		|| pTechno->Health <= 0
 		|| this->TechnoInTransport != static_cast<bool>(pTechno->Transporter)
