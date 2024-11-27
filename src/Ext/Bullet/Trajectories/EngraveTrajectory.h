@@ -63,7 +63,7 @@ public:
 		, TheDuration { trajType->TheDuration }
 		, LaserTimer {}
 		, DamageTimer {}
-		, TechnoInLimbo { false }
+		, TechnoInTransport { false }
 		, NotMainWeapon { false }
 		, FLHCoord {}
 		, BuildingCoord {}
@@ -85,7 +85,7 @@ public:
 	int TheDuration;
 	CDTimerClass LaserTimer;
 	CDTimerClass DamageTimer;
-	bool TechnoInLimbo;
+	bool TechnoInTransport;
 	bool NotMainWeapon;
 	CoordStruct FLHCoord;
 	CoordStruct BuildingCoord;
