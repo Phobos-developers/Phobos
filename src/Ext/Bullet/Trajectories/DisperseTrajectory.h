@@ -38,6 +38,8 @@ public:
 		, WeaponRetarget { false }
 		, WeaponLocation { false }
 		, WeaponTendency { false }
+		, WeaponHolistic { false }
+		, WeaponMarginal { false }
 		, WeaponToAllies { false }
 		, WeaponDoRepeat { false }
 	{ }
@@ -79,6 +81,8 @@ public:
 	Valueable<bool> WeaponRetarget;
 	Valueable<bool> WeaponLocation;
 	Valueable<bool> WeaponTendency;
+	Valueable<bool> WeaponHolistic;
+	Valueable<bool> WeaponMarginal;
 	Valueable<bool> WeaponToAllies;
 	Valueable<bool> WeaponDoRepeat;
 

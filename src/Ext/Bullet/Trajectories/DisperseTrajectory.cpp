@@ -56,6 +56,8 @@ void DisperseTrajectoryType::Serialize(T& Stm)
 		.Process(this->WeaponRetarget)
 		.Process(this->WeaponLocation)
 		.Process(this->WeaponTendency)
+		.Process(this->WeaponHolistic)
+		.Process(this->WeaponMarginal)
 		.Process(this->WeaponToAllies)
 		.Process(this->WeaponDoRepeat)
 		;
@@ -125,6 +127,8 @@ void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->WeaponRetarget.Read(exINI, pSection, "Trajectory.Disperse.WeaponRetarget");
 	this->WeaponLocation.Read(exINI, pSection, "Trajectory.Disperse.WeaponLocation");
 	this->WeaponTendency.Read(exINI, pSection, "Trajectory.Disperse.WeaponTendency");
+	this->WeaponHolistic.Read(exINI, pSection, "Trajectory.Disperse.WeaponHolistic");
+	this->WeaponMarginal.Read(exINI, pSection, "Trajectory.Disperse.WeaponMarginal");
 	this->WeaponToAllies.Read(exINI, pSection, "Trajectory.Disperse.WeaponToAllies");
 	this->WeaponDoRepeat.Read(exINI, pSection, "Trajectory.Disperse.WeaponDoRepeat");
 }
@@ -881,162 +885,147 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 			const auto centerCell = CellClass::Coord2Cell(centerCoords);
 
 			std::vector<TechnoClass*> validTechnos;
+			std::vector<ObjectClass*> validObjects;
 			std::vector<CellClass*> validCells;
 
 			const bool checkTechnos = (pWeaponExt->CanTarget & AffectedTarget::AllContents) != AffectedTarget::None;
+			const bool checkObjects = pType->WeaponMarginal;
 			const bool checkCells = (pWeaponExt->CanTarget & AffectedTarget::AllCells) != AffectedTarget::None;
 
 			const int rangeSide = pWeapon->Range >> 7;
 			const size_t initialSize = rangeSide * rangeSide;
 
 			if (checkTechnos)
-				validTechnos.reserve(initialSize << 1);
+				validTechnos.reserve(initialSize);
+
+			if (checkObjects)
+				validObjects.reserve(initialSize >> 1);
 
 			if (checkCells)
 				validCells.reserve(initialSize);
 
-			if (!this->TargetInTheAir) // Only get same type (on ground / in air)
+			if (pType->WeaponHolistic || !this->TargetInTheAir || checkCells)
 			{
-				if (checkTechnos)
+				for (CellSpreadEnumerator thisCell(static_cast<size_t>((static_cast<double>(pWeapon->Range) / Unsorted::LeptonsPerCell) + 0.99)); thisCell; ++thisCell)
 				{
-					const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-
-					for (CellSpreadEnumerator thisCell(static_cast<size_t>((static_cast<double>(pWeapon->Range) / Unsorted::LeptonsPerCell) + 0.99)); thisCell; ++thisCell)
+					if (const auto pCell = MapClass::Instance->TryGetCellAt(*thisCell + centerCell))
 					{
-						if (const auto pCell = MapClass::Instance->TryGetCellAt(*thisCell + centerCell))
+						if (checkCells && EnumFunctions::IsCellEligible(pCell, pWeaponExt->CanTarget, true, true))
+							validCells.push_back(pCell);
+
+						auto pObject = pCell->GetContent();
+
+						while (pObject)
 						{
-							auto pObject = pCell->GetContent();
+							const auto pTechno = abstract_cast<TechnoClass*>(pObject);
 
-							while (pObject)
+							if (!pTechno)
 							{
-								const auto pTechno = abstract_cast<TechnoClass*>(pObject);
+								if (checkObjects && pObject != pTarget)
+									validObjects.push_back(pObject);
+
 								pObject = pObject->NextObject;
-
-								if (!pTechno || this->CheckTechnoIsInvalid(pTechno))
-									continue;
-
-								const auto pTechnoType = pTechno->GetTechnoType();
-
-								if (!pTechnoType->LegalTarget)
-									continue;
-
-								if (pType->WeaponTendency && pTargetTechno && pTechno == pTargetTechno)
-									continue;
-
-								const auto absType = pTechno->WhatAmI();
-
-								if (absType == AbstractType::Building)
-								{
-									if (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
-										continue;
-
-									if (std::find(validTechnos.begin(), validTechnos.end(), pTechno) != validTechnos.end())
-										continue;
-								}
-
-								const auto pHouse = pTechno->Owner;
-
-								if (pOwner->IsAlliedWith(pHouse))
-								{
-									if (!pType->WeaponToAllies)
-										continue;
-								}
-								else
-								{
-									if (!pType->WeaponToAllies && absType == AbstractType::Infantry && pTechno->IsDisguisedAs(pOwner) && !pCell->DisguiseSensors_InclHouse(pOwner->ArrayIndex))
-										continue;
-
-									if (absType == AbstractType::Unit && pTechno->IsDisguised() && !pCell->DisguiseSensors_InclHouse(pOwner->ArrayIndex))
-										continue;
-
-									if (pTechno->CloakState == CloakState::Cloaked && !pCell->Sensors_InclHouse(pOwner->ArrayIndex))
-										continue;
-								}
-
-								if (MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) == 0)
-									continue;
-
-								if (!this->CheckWeaponCanTarget(pWeaponExt, pBullet->Owner, pTechno))
-									continue;
-
-								validTechnos.push_back(pTechno);
+								continue;
 							}
 
-							if (EnumFunctions::IsCellEligible(pCell, pWeaponExt->CanTarget, true, true))
-								validCells.push_back(pCell);
-						}
-					}
-				}
-				else if (checkCells)
-				{
-					for (CellSpreadEnumerator thisCell(static_cast<size_t>((static_cast<double>(pWeapon->Range) / Unsorted::LeptonsPerCell) + 0.99)); thisCell; ++thisCell)
-					{
-						if (const auto pCell = MapClass::Instance->TryGetCellAt(*thisCell + centerCell))
-						{
-							if (EnumFunctions::IsCellEligible(pCell, pWeaponExt->CanTarget, true, true))
-								validCells.push_back(pCell);
+							pObject = pObject->NextObject;
+
+							if (!checkTechnos || this->CheckTechnoIsInvalid(pTechno))
+								continue;
+
+							const auto pTechnoType = pTechno->GetTechnoType();
+
+							if (!pTechnoType->LegalTarget)
+								continue;
+
+							if (pType->WeaponTendency && pTechno == pTarget)
+								continue;
+
+							const auto absType = pTechno->WhatAmI();
+
+							if (absType == AbstractType::Building)
+							{
+								if (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
+									continue;
+
+								if (std::find(validTechnos.begin(), validTechnos.end(), pTechno) != validTechnos.end())
+									continue;
+							}
+
+							const auto pHouse = pTechno->Owner;
+
+							if (pOwner->IsAlliedWith(pHouse))
+							{
+								if (!pType->WeaponToAllies)
+									continue;
+							}
+							else
+							{
+								if (!pType->WeaponToAllies && absType == AbstractType::Infantry && pTechno->IsDisguisedAs(pOwner) && !pCell->DisguiseSensors_InclHouse(pOwner->ArrayIndex))
+									continue;
+
+								if (absType == AbstractType::Unit && pTechno->IsDisguised() && !pCell->DisguiseSensors_InclHouse(pOwner->ArrayIndex))
+									continue;
+
+								if (pTechno->CloakState == CloakState::Cloaked && !pCell->Sensors_InclHouse(pOwner->ArrayIndex))
+									continue;
+							}
+
+							if (MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) == 0)
+								continue;
+
+							if (!this->CheckWeaponCanTarget(pWeaponExt, pBullet->Owner, pTechno))
+								continue;
+
+							validTechnos.push_back(pTechno);
 						}
 					}
 				}
 			}
-			else
+
+			if ((pType->WeaponHolistic || this->TargetInTheAir) && checkTechnos)
 			{
-				if (checkTechnos)
+				const auto airTracker = &AircraftTrackerClass::Instance;
+				airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(centerCoords), Game::F2I(static_cast<double>(pWeapon->Range) / Unsorted::LeptonsPerCell));
+
+				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 				{
-					const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-					const auto airTracker = &AircraftTrackerClass::Instance;
-					airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(centerCoords), Game::F2I(static_cast<double>(pWeapon->Range) / Unsorted::LeptonsPerCell));
+					if (this->CheckTechnoIsInvalid(pTechno))
+						continue;
 
-					for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
+					const auto pTechnoType = pTechno->GetTechnoType();
+
+					if (!pTechnoType->LegalTarget)
+						continue;
+
+					if (pType->WeaponTendency && pTechno == pTarget)
+						continue;
+
+					const auto pHouse = pTechno->Owner;
+
+					if (pOwner->IsAlliedWith(pHouse))
 					{
-						if (this->CheckTechnoIsInvalid(pTechno))
+						if (!pType->WeaponToAllies)
 							continue;
-
-						const auto pTechnoType = pTechno->GetTechnoType();
-
-						if (!pTechnoType->LegalTarget)
-							continue;
-
-						if (pType->WeaponTendency && pTargetTechno && pTechno == pTargetTechno)
-							continue;
-
-						const auto pHouse = pTechno->Owner;
-
-						if (pOwner->IsAlliedWith(pHouse))
-						{
-							if (!pType->WeaponToAllies)
-								continue;
-						}
-						else if (const auto pCell = pTechno->GetCell())
-						{
-							if (pTechno->CloakState == CloakState::Cloaked && !pCell->Sensors_InclHouse(pOwner->ArrayIndex))
-								continue;
-						}
-
-						if (MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) == 0)
-							continue;
-
-						if (!this->CheckWeaponCanTarget(pWeaponExt, pBullet->Owner, pTechno))
-							continue;
-
-						validTechnos.push_back(pTechno);
 					}
-				}
-
-				if (checkCells)
-				{
-					for (CellSpreadEnumerator thisCell(static_cast<size_t>((static_cast<double>(pWeapon->Range) / Unsorted::LeptonsPerCell) + 0.99)); thisCell; ++thisCell)
+					else if (const auto pCell = pTechno->GetCell())
 					{
-						if (const auto pCell = MapClass::Instance->TryGetCellAt(*thisCell + centerCell))
-						{
-							if (EnumFunctions::IsCellEligible(pCell, pWeaponExt->CanTarget, true, true))
-								validCells.push_back(pCell);
-						}
+						if (pTechno->CloakState == CloakState::Cloaked && !pCell->Sensors_InclHouse(pOwner->ArrayIndex))
+							continue;
 					}
+
+					if (MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) == 0)
+						continue;
+
+					if (!this->CheckWeaponCanTarget(pWeaponExt, pBullet->Owner, pTechno))
+						continue;
+
+					validTechnos.push_back(pTechno);
 				}
 			}
 
 			int validTechnoNums = validTechnos.size();
+			int validObjectNums = validObjects.size();
 			int validCellNums = validCells.size();
 			std::vector<AbstractClass*> validTargets;
 			validTargets.reserve(burstCount);
@@ -1062,6 +1051,27 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 						const auto pNewTarget = validTechnos[randomIndex];
 						validTargets.push_back(pNewTarget);
 						std::swap(validTechnos[randomIndex], validTechnos[--validTechnoNums]);
+					}
+				}
+				else if (validObjectNums)
+				{
+					int currentCount = burstNow + validObjectNums;
+
+					for (; currentCount <= burstCount; currentCount += validObjectNums)
+					{
+						for (int burstNum = 0; burstNum < validObjectNums; ++burstNum)
+						{
+							const auto pNewTarget = validObjects[burstNum];
+							validTargets.push_back(pNewTarget);
+						}
+					}
+
+					for (auto burstNum = currentCount - validObjectNums; burstNum < burstCount; ++burstNum)
+					{
+						const auto randomIndex = ScenarioClass::Instance->Random.RandomRanged(0, validObjectNums - 1);
+						const auto pNewTarget = validObjects[randomIndex];
+						validTargets.push_back(pNewTarget);
+						std::swap(validObjects[randomIndex], validObjects[--validObjectNums]);
 					}
 				}
 				else if (validCellNums)
@@ -1096,24 +1106,45 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 						validTargets.push_back(pNewTarget);
 					}
 
-					const auto currentCount = burstNow + validTechnoNums;
+					const auto currentCount1 = burstNow + validTechnoNums;
 
-					if (burstCount - currentCount >= validCellNums)
+					if (burstCount - currentCount1 >= validObjectNums)
 					{
-						for (int burstNum = 0; burstNum < validCellNums; ++burstNum)
+						for (int burstNum = 0; burstNum < validObjectNums; ++burstNum)
 						{
-							const auto pNewTarget = validCells[burstNum];
+							const auto pNewTarget = validObjects[burstNum];
 							validTargets.push_back(pNewTarget);
+						}
+
+						const auto currentCount2 = currentCount1 + validObjectNums;
+
+						if (burstCount - currentCount2 >= validCellNums)
+						{
+							for (int burstNum = 0; burstNum < validCellNums; ++burstNum)
+							{
+								const auto pNewTarget = validCells[burstNum];
+								validTargets.push_back(pNewTarget);
+							}
+						}
+						else
+						{
+							for (auto burstNum = currentCount2; burstNum < burstCount; ++burstNum)
+							{
+								const auto randomIndex = ScenarioClass::Instance->Random.RandomRanged(0, validCellNums - 1);
+								const auto pNewTarget = validCells[randomIndex];
+								validTargets.push_back(pNewTarget);
+								std::swap(validCells[randomIndex], validCells[--validCellNums]);
+							}
 						}
 					}
 					else
 					{
-						for (auto burstNum = currentCount; burstNum < burstCount; ++burstNum)
+						for (auto burstNum = currentCount1; burstNum < burstCount; ++burstNum)
 						{
-							const auto randomIndex = ScenarioClass::Instance->Random.RandomRanged(0, validCellNums - 1);
-							const auto pNewTarget = validCells[randomIndex];
+							const auto randomIndex = ScenarioClass::Instance->Random.RandomRanged(0, validObjectNums - 1);
+							const auto pNewTarget = validObjects[randomIndex];
 							validTargets.push_back(pNewTarget);
-							std::swap(validCells[randomIndex], validCells[--validCellNums]);
+							std::swap(validObjects[randomIndex], validObjects[--validObjectNums]);
 						}
 					}
 				}
@@ -1132,7 +1163,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 			for (const auto& pNewTarget : validTargets)
 			{
 				this->CreateDisperseBullets(pBullet, pWeapon, pNewTarget, pOwner, burstNow, burstCount);
-				burstNow++;
+				++burstNow;
 			}
 		}
 	}
