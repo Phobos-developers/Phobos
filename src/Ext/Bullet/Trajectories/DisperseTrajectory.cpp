@@ -1306,29 +1306,24 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 			VocClass::PlayAt(reportIndex, pBullet->Location, nullptr);
 	}
 
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
 	if (pWeapon->IsLaser)
 	{
-		LaserDrawClass* pLaser;
-		const auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-		if (pWeapon->IsHouseColor)
+		if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
 		{
-			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(), pOwner->LaserColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
+			auto const pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(), (pWeapon->IsHouseColor ? pOwner->LaserColor : pWeapon->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
 			pLaser->IsHouseColor = true;
-		}
-		else if (pWeaponTypeExt->Laser_IsSingleColor)
-		{
-			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(), pWeapon->LaserInnerColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
-			pLaser->IsHouseColor = true;
+			pLaser->Thickness = pWeaponExt->LaserThickness;
+			pLaser->IsSupported = (pLaser->Thickness > 3);
 		}
 		else
 		{
-			pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(), pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
+			auto const pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(), pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
 			pLaser->IsHouseColor = false;
+			pLaser->Thickness = 3;
+			pLaser->IsSupported = false;
 		}
-
-		pLaser->Thickness = 3; //TODO Weapon's LaserThickness(Ares)
-		pLaser->IsSupported = false;
 	}
 
 	if (pWeapon->IsElectricBolt)
@@ -1336,29 +1331,23 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 		if (const auto pEBolt = GameCreate<EBolt>())
 		{
 			pEBolt->AlternateColor = pWeapon->IsAlternateColor;
-
 			//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
-			WeaponTypeExt::BoltWeaponMap[pEBolt] = WeaponTypeExt::ExtMap.Find(pWeapon);
+			WeaponTypeExt::BoltWeaponMap[pEBolt] = pWeaponExt;
 			pEBolt->Fire(pBullet->Location, pTarget->GetCoords(), 0);
 		}
 	}
 
 	if (pWeapon->IsRadBeam)
 	{
-		RadBeamType pRadBeamType;
+		const bool isTemporal = pWeapon->Warhead && pWeapon->Warhead->Temporal;
 
-		if (pWeapon->Warhead->Temporal)
-			pRadBeamType = RadBeamType::Temporal;
-		else
-			pRadBeamType = RadBeamType::RadBeam;
-
-		if (const auto pRadBeam = RadBeam::Allocate(pRadBeamType))
+		if (const auto pRadBeam = RadBeam::Allocate(isTemporal ? RadBeamType::Temporal : RadBeamType::RadBeam))
 		{
 			pRadBeam->SetCoordsSource(pBullet->Location);
 			pRadBeam->SetCoordsTarget(pTarget->GetCoords());
-
-			//TODO Weapon's Beam.Color, Beam.Duration, Beam.Amplitude(Ares)
-			pRadBeam->Color = pWeapon->Warhead->Temporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor;
+			pRadBeam->Color = pWeaponExt->Beam_IsHouseColor ? pOwner->LaserColor : pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
+			pRadBeam->Period = pWeaponExt->Beam_Duration;
+			pRadBeam->Amplitude = pWeaponExt->Beam_Amplitude;
 		}
 	}
 
