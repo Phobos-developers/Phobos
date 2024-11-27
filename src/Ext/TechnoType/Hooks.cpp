@@ -1,5 +1,53 @@
 #include "Body.h"
 #include <Ext/House/Body.h>
+#include <Ext/AnimType/Body.h>
+
+DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+	GET(int, nFacing, EDI);
+	GET_STACK(RectangleStruct*, pBounds, STACK_OFFSET(0x50, 0x8));
+	LEA_STACK(Point2D*, pLocation, STACK_OFFSET(0x50, -0x18));
+	GET_STACK(int, nBrightness, STACK_OFFSET(0x50, 0x4));
+
+	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+	ConvertClass* pDrawer = FileSystem::ANIM_PAL;
+	SHPStruct* pSHP = FileSystem::OREGATH_SHP;
+	int idxFrame;
+
+	auto idxTiberium = pThis->GetCell()->GetContainedTiberiumIndex();
+	auto idxArray = pData->OreGathering_Tiberiums.size() > 0 ? pData->OreGathering_Tiberiums.IndexOf(idxTiberium) : 0;
+	if (idxTiberium != -1 && idxArray != -1)
+	{
+		auto const pAnimType = pData->OreGathering_Anims.size() > 0 ? pData->OreGathering_Anims[idxArray] : nullptr;
+		auto const nFramesPerFacing = pData->OreGathering_FramesPerDir.size() > 0 ? pData->OreGathering_FramesPerDir[idxArray] : 15;
+		auto const pAnimExt = AnimTypeExt::ExtMap.Find(pAnimType);
+		if (pAnimType)
+		{
+			pSHP = pAnimType->GetImage();
+			if (auto const pPalette = pAnimExt->Palette.GetConvert())
+				pDrawer = pPalette;
+		}
+		idxFrame = nFramesPerFacing * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % nFramesPerFacing;
+	}
+	else
+	{
+		idxFrame = 15 * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % 15;
+	}
+
+	DSurface::Temp->DrawSHP(
+		pDrawer, pSHP, idxFrame, pLocation, pBounds,
+		BlitterFlags::Flat | BlitterFlags::Alpha | BlitterFlags::Centered,
+		0, pThis->GetZAdjustment() - 2, ZGradient::Ground, nBrightness,
+		0, nullptr, 0, 0, 0
+	);
+
+	R->EBP(nBrightness);
+	R->EBX(pBounds);
+
+	return 0x73D28C;
+}
 
 // Issue #503
 // Author : Otamaa

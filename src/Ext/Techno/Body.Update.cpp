@@ -689,6 +689,13 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 				pFoot->ParasiteImUsing->ExitUnit();
 		}
 
+		// Remove limbo buildings' tracking here because their are not truely InLimbo
+		if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
+		{
+			if (!pBuilding->InLimbo && !pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+				HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
+		}
+
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
 		return;

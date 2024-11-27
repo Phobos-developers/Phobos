@@ -81,7 +81,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 		pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
-	auto pickedFLHs = pTypeExt->WeaponBurstFLHs;
+	std::span<std::vector<CoordStruct>> pickedFLHs = pTypeExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{
