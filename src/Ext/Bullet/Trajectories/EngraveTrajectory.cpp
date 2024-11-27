@@ -159,7 +159,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 {
 	const auto pTechno = pBullet->Owner;
 
-	if ((!pTechno && !this->NotMainWeapon) || (pTechno && this->TechnoInTransport != static_cast<bool>(pTechno->Transporter)))
+	if (!this->NotMainWeapon && (!pTechno || this->TechnoInTransport != static_cast<bool>(pTechno->Transporter)))
 		return true;
 
 	if (--this->TheDuration < 0 || this->PlaceOnCorrectHeight(pBullet))
