@@ -97,6 +97,7 @@ private:
 	void GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno);
 	void CheckMirrorCoord(TechnoClass* pTechno);
 	void SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget);
+	bool InvalidFireCondition(TechnoClass* pTechno);
 	int GetFloorCoordHeight(BulletClass* pBullet, CoordStruct coord);
 	bool PlaceOnCorrectHeight(BulletClass* pBullet);
 	void DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);

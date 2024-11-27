@@ -159,7 +159,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 {
 	const auto pTechno = pBullet->Owner;
 
-	if (!this->NotMainWeapon && (!pTechno || this->TechnoInTransport != static_cast<bool>(pTechno->Transporter)))
+	if (!this->NotMainWeapon && this->InvalidFireCondition(pTechno))
 		return true;
 
 	if (--this->TheDuration < 0 || this->PlaceOnCorrectHeight(pBullet))
@@ -257,6 +257,21 @@ void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct th
 	pBullet->Velocity.X = theTarget.X - theSource.X;
 	pBullet->Velocity.Y = theTarget.Y - theSource.Y;
 	pBullet->Velocity.Z = 0;
+}
+
+bool EngraveTrajectory::InvalidFireCondition(TechnoClass* pTechno)
+{
+	return (!pTechno
+		|| !pTechno->IsAlive
+		|| !pTechno->IsOnMap
+		|| pTechno->InLimbo
+		|| pTechno->IsSinking
+		|| pTechno->Health <= 0
+		|| this->TechnoInTransport != static_cast<bool>(pTechno->Transporter)
+		|| pTechno->Deactivated
+		|| pTechno->TemporalTargetingMe
+		|| pTechno->BeingWarpedOut
+		|| pTechno->IsUnderEMP());
 }
 
 int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, CoordStruct coord)
