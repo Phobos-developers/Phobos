@@ -978,7 +978,9 @@ DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
 
 	GET(TechnoClass*, pThis, ESI);
 
-	if (pThis->GetTechnoType()->AttackFriendlies)
+	if (pThis->GetTechnoType()->AttackFriendlies
+		&& pThis->Target->GetOwningHouse()->IsAlliedWith(pThis) // TODO
+	)
 		return SkipResetTarget;
 
 	return 0;
