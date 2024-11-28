@@ -396,12 +396,13 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 	const auto pType = this->Type;
 	bool check = false;
 
-	if (!pBullet->Target)
-		check = true;
-	else if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target))
-		check = this->CheckTechnoIsInvalid(pTargetTechno);
-	else if (this->TargetIsTechno)
-		check = true;
+	if (this->TargetIsTechno)
+	{
+		if (!pBullet->Target)
+			check = true;
+		else if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target))
+			check = this->CheckTechnoIsInvalid(pTargetTechno);
+	}
 
 	if (!check)
 		return false;
@@ -570,12 +571,13 @@ bool DisperseTrajectory::CheckWeaponCanTarget(WeaponTypeExt::ExtData* pWeaponExt
 
 bool DisperseTrajectory::CurveVelocityChange(BulletClass* pBullet)
 {
-	const auto pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
-	const bool checkValid = pTargetTechno && !CheckTechnoIsInvalid(pTargetTechno);
+	const auto pTarget = pBullet->Target;
+	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+	const bool checkValid = (pTarget && pTarget->WhatAmI() == AbstractType::Bullet) || (pTargetTechno && !CheckTechnoIsInvalid(pTargetTechno));
 	auto targetLocation = pBullet->TargetCoords;
 
 	if (checkValid)
-		targetLocation = pTargetTechno->GetCoords();
+		targetLocation = pTarget->GetCoords();
 
 	pBullet->TargetCoords = targetLocation;
 
@@ -699,12 +701,13 @@ bool DisperseTrajectory::NotCurveVelocityChange(BulletClass* pBullet, HouseClass
 bool DisperseTrajectory::StandardVelocityChange(BulletClass* pBullet)
 {
 	const auto pType = this->Type;
-	const auto pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
-	const bool checkValid = pTargetTechno && !this->CheckTechnoIsInvalid(pTargetTechno);
+	const auto pTarget = pBullet->Target;
+	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+	const bool checkValid = (pTarget && pTarget->WhatAmI() == AbstractType::Bullet) || (pTargetTechno && !CheckTechnoIsInvalid(pTargetTechno));
 	auto targetLocation = pBullet->TargetCoords;
 
 	if (checkValid)
-		targetLocation = pTargetTechno->GetCoords();
+		targetLocation = pTarget->GetCoords();
 
 	pBullet->TargetCoords = targetLocation;
 
@@ -783,7 +786,7 @@ bool DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct 
 
 			const auto reviseLength = reviseVelocity.Magnitude();
 
-			if (!curve && this->Type->SuicideShortOfROT && reviseMult < 0 && this->LastReviseMult > 0 && this->LastTargetCoord == pBullet->TargetCoords)
+			if (!curve && this->Type->SuicideShortOfROT && reviseMult < 0 && this->LastReviseMult > 0 && (this->InStraight || this->LastTargetCoord == pBullet->TargetCoords))
 				return true;
 
 			if (turningRadius < reviseLength)
