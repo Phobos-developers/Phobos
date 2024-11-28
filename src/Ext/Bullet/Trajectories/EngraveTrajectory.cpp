@@ -178,7 +178,10 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 
 void EngraveTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
-	pBullet->UnInit(); //Prevent damage again.
+	//Prevent damage again.
+	pBullet->Health = 0;
+	pBullet->Limbo();
+	pBullet->UnInit();
 }
 
 void EngraveTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
