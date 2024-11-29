@@ -291,48 +291,17 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		}
 		while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
 
+		// Skip this check to use FindByCountryIndex
 		// Only valid House indexes
-		if ((pThis->Param4 >= HouseClass::Array->Count
-			&& pThis->Param4 < HouseClass::PlayerAtA)
-			|| pThis->Param4 > (HouseClass::PlayerAtA + HouseClass::Array->Count - 3))
-		{
-			return true;
-		}
+		//if ((pThis->Param4 >= HouseClass::Array->Count
+		//	&& pThis->Param4 < HouseClass::PlayerAtA)
+		//	|| pThis->Param4 > (HouseClass::PlayerAtA + HouseClass::Array->Count - 3))
+		//{
+		//	return true;
+		//}
 
 		switch (pThis->Param4)
 		{
-		case HouseClass::PlayerAtA:
-			houseIdx = 0;
-			break;
-
-		case HouseClass::PlayerAtB:
-			houseIdx = 1;
-			break;
-
-		case HouseClass::PlayerAtC:
-			houseIdx = 2;
-			break;
-
-		case HouseClass::PlayerAtD:
-			houseIdx = 3;
-			break;
-
-		case HouseClass::PlayerAtE:
-			houseIdx = 4;
-			break;
-
-		case HouseClass::PlayerAtF:
-			houseIdx = 5;
-			break;
-
-		case HouseClass::PlayerAtG:
-			houseIdx = 6;
-			break;
-
-		case HouseClass::PlayerAtH:
-			houseIdx = 7;
-			break;
-
 		case -1:
 			// Random non-neutral
 			for (auto pHouse : *HouseClass::Array)
@@ -396,7 +365,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			break;
 		}
 
-		if (HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx))
+		if (HouseClass* pHouse = HouseClass::Index_IsMP(houseIdx) ? HouseClass::FindByIndex(houseIdx) : HouseClass::FindByCountryIndex(houseIdx))
 		{
 			if (auto const pSuper = pHouse->Supers.GetItem(swIdx))
 			{
