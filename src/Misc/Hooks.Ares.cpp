@@ -1,5 +1,6 @@
 #include <BuildingClass.h>
 #include <FootClass.h>
+
 #include <Utilities/Macro.h>
 
 // In vanilla YR, game destroys building animations directly by calling constructor.
