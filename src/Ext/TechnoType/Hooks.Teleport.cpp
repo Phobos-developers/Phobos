@@ -25,7 +25,8 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 		WeaponTypeExt::DetonateAt(pExt->WarpOutWeapon, pLinked, pLinked);
 
 	const int distance = (int)Math::sqrt(pLinked->Location.DistanceFromSquared(pLocomotor->LastCoords));
-	TechnoExt::ExtMap.Find(pLinked)->LastWarpDistance = distance;
+	auto linkedExt = TechnoExt::ExtMap.Find(pLinked);
+	linkedExt->LastWarpDistance = distance;
 
 	if (auto pImage = pType->AlphaImage)
 	{
@@ -60,7 +61,7 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 			pLinked->WarpingOut = false;
 		}
 	}
-
+	linkedExt->LastWarpInDelay = std::max(pLocomotor->Timer.GetTimeLeft(), linkedExt->LastWarpInDelay);
 	return 0x7195BC;
 }
 
@@ -137,6 +138,29 @@ DEFINE_HOOK(0x719BD9, TeleportLocomotionClass_Process_ChronosphereDelay2, 0x6)
 	else
 	{
 		pExt->IsBeingChronoSphered = false;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DA53E, FootClass_Update_WarpInDelay, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->HasRemainingWarpInDelay)
+	{
+		if (pExt->LastWarpInDelay)
+		{
+			pExt->LastWarpInDelay--;
+		}
+		else
+		{
+			pExt->HasRemainingWarpInDelay = false;
+			pExt->IsBeingChronoSphered = false;
+			pThis->WarpingOut = false;
+		}
 	}
 
 	return 0;

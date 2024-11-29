@@ -439,7 +439,7 @@ New:
 - `ZAdjust` for OverlayTypes (by Starkku)
 - Allow customizing extra tint intensity for Iron Curtain & Force Shield (by Starkku)
 - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565 (by Starkku)
-- Customizing height at which subterranean units travel (by Starkku)
+- Customizing height and speed at which subterranean units travel (by Starkku)
 - Building placing and deploying logic enhancement (by CrimRecya)
 - Unit base normal and new placing grids (by CrimRecya)
 - Grey cameo preview and cameo overlays (by CrimRecya)
@@ -471,6 +471,7 @@ New:
 - Allow infantry to use land sequences in water (by Starkku)
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps (by Starkku)
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
+- Unit `Speed` setting now accepts floating point values (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -552,6 +553,8 @@ Vanilla fixes:
 - Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being displayed in water instead of `WetAttack` (by Starkku)
 - Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings (by Starkku)
 - Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers (by Starkku)
+- Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix (by tyuah8)
+- Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc. (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
