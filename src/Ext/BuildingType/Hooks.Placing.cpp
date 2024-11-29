@@ -1013,6 +1013,7 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 	enum { CanDeploy = 0x73958A, TemporarilyCanNotDeploy = 0x73953B, CanNotDeploy = 0x7394E0 };
 
 	GET(UnitClass* const, pUnit, EBP);
+	GET(CellStruct, topLeftCell, ESI);
 
 	if (!RulesExt::Global()->ExpandBuildingPlace)
 		return 0;
@@ -1021,10 +1022,11 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 	const auto pBuildingType = pUnit->Type->DeploysInto;
 	const auto pHouseExt = HouseExt::ExtMap.Find(pUnit->Owner);
 	auto& vec = pHouseExt->OwnedDeployingUnits;
-	auto topLeftCell = CellClass::Coord2Cell(pUnit->GetCoords());
 
 	if (pBuildingType->GetFoundationWidth() > 2 || pBuildingType->GetFoundationHeight(false) > 2)
 		topLeftCell -= CellStruct { 1, 1 };
+
+	R->Stack<CellStruct>(STACK_OFFSET(0x28, -0x14), topLeftCell);
 
 	if (!pBuildingType->PlaceAnywhere)
 	{
@@ -1091,8 +1093,6 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 	if (pTechnoExt)
 		pTechnoExt->UnitAutoDeployTimer.Stop();
 
-	LEA_STACK(CellStruct*, pTopLeftCell, STACK_OFFSET(0x28, -0x14));
-	*pTopLeftCell = topLeftCell;
 	return CanDeploy;
 }
 
