@@ -152,14 +152,14 @@ private:
 	void InitializeBulletNotCurve(BulletClass* pBullet, bool facing);
 	BulletVelocity RotateAboutTheAxis(BulletVelocity theSpeed, BulletVelocity theAxis, double theRadian);
 	bool CalculateBulletVelocity(BulletClass* pBullet, double trajectorySpeed);
-	bool BulletRetargetTechno(BulletClass* pBullet, HouseClass* pOwner);
+	bool BulletRetargetTechno(BulletClass* pBullet);
 	bool CheckTechnoIsInvalid(TechnoClass* pTechno);
 	bool CheckWeaponCanTarget(WeaponTypeExt::ExtData* pWeaponExt, TechnoClass* pFirer, TechnoClass* pTarget);
 	bool CurveVelocityChange(BulletClass* pBullet);
-	bool NotCurveVelocityChange(BulletClass* pBullet, HouseClass* pOwner);
+	bool NotCurveVelocityChange(BulletClass* pBullet);
 	bool StandardVelocityChange(BulletClass* pBullet);
 	bool ChangeBulletVelocity(BulletClass* pBullet, CoordStruct targetLocation, double turningRadius, bool curve);
-	bool PrepareDisperseWeapon(BulletClass* pBullet, HouseClass* pOwner);
+	bool PrepareDisperseWeapon(BulletClass* pBullet);
 	void CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst);
 	void DisperseBurstSubstitution(BulletClass* pBullet, CoordStruct axis, double rotateCoord, int curBurst, int maxBurst, bool mirror);
 };

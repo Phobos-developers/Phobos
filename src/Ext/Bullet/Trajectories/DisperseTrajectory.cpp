@@ -246,12 +246,10 @@ bool DisperseTrajectory::OnAI(BulletClass* pBullet)
 	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < (pType->UniqueCurve ? 154 : pType->TargetSnapDistance.Get()))
 		return true;
 
-	const auto pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
-
-	if (this->WeaponCount && (!pType->WeaponScope.Get() || pBullet->TargetCoords.DistanceFrom(pBullet->Location) <= pType->WeaponScope.Get()) && (!pOwner || this->PrepareDisperseWeapon(pBullet, pOwner)))
+	if (this->WeaponCount && (!pType->WeaponScope.Get() || pBullet->TargetCoords.DistanceFrom(pBullet->Location) <= pType->WeaponScope.Get()) && this->PrepareDisperseWeapon(pBullet))
 		return true;
 
-	if (pType->UniqueCurve ? this->CurveVelocityChange(pBullet) : this->NotCurveVelocityChange(pBullet, pOwner))
+	if (pType->UniqueCurve ? this->CurveVelocityChange(pBullet) : this->NotCurveVelocityChange(pBullet))
 		return true;
 
 	return false;
@@ -272,9 +270,8 @@ void DisperseTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 
 	if (pType->WeaponScope.Get() < 0 && this->WeaponCount)
 	{
-		const auto pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 		this->WeaponTimer.StartTime = 0;
-		this->PrepareDisperseWeapon(pBullet, pOwner);
+		this->PrepareDisperseWeapon(pBullet);
 	}
 }
 
@@ -391,7 +388,7 @@ bool DisperseTrajectory::CalculateBulletVelocity(BulletClass* pBullet, double tr
 	return false;
 }
 
-bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* pOwner)
+bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet)
 {
 	const auto pType = this->Type;
 	bool check = false;
@@ -409,6 +406,16 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet, HouseClass* 
 
 	if (pType->RetargetRadius < 0)
 		return true;
+
+	auto pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+
+	if (!pOwner || pOwner->Defeated)
+	{
+		if (const auto pNeutral = HouseClass::FindNeutral())
+			pOwner = pNeutral;
+		else
+			return false;
+	}
 
 	const auto retargetRange = pType->RetargetRadius * Unsorted::LeptonsPerCell;
 	auto retargetCoords = pBullet->TargetCoords;
@@ -643,7 +650,7 @@ bool DisperseTrajectory::CurveVelocityChange(BulletClass* pBullet)
 	return false;
 }
 
-bool DisperseTrajectory::NotCurveVelocityChange(BulletClass* pBullet, HouseClass* pOwner)
+bool DisperseTrajectory::NotCurveVelocityChange(BulletClass* pBullet)
 {
 	const auto pType = this->Type;
 
@@ -683,7 +690,7 @@ bool DisperseTrajectory::NotCurveVelocityChange(BulletClass* pBullet, HouseClass
 
 	if (!pType->LockDirection || !this->InStraight)
 	{
-		if (pType->RetargetRadius != 0 && this->BulletRetargetTechno(pBullet, pOwner))
+		if (pType->RetargetRadius != 0 && this->BulletRetargetTechno(pBullet))
 			return true;
 
 		if (this->PreAimDistance <= 1e-10 && this->StandardVelocityChange(pBullet))
@@ -822,7 +829,7 @@ bool DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct 
 	return false;
 }
 
-bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass* pOwner)
+bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet)
 {
 	const auto pType = this->Type;
 
@@ -840,6 +847,11 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet, HouseClass*
 
 		if (this->WeaponCount > 0)
 			--this->WeaponCount;
+
+		auto pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+
+		if (!pOwner || pOwner->Defeated)
+			pOwner = HouseClass::FindNeutral();
 
 		const auto pTarget = pBullet->Target ? pBullet->Target : MapClass::Instance->TryGetCellAt(pBullet->TargetCoords);
 
@@ -1340,7 +1352,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 	{
 		if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
 		{
-			auto const pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(), ((pWeapon->IsHouseColor && pOwner) ? pOwner->LaserColor : pWeapon->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
+			auto const pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(), (pWeapon->IsHouseColor ? pOwner->LaserColor : pWeapon->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
 			pLaser->IsHouseColor = true;
 			pLaser->Thickness = pWeaponExt->LaserThickness;
 			pLaser->IsSupported = (pLaser->Thickness > 3);
@@ -1373,7 +1385,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 		{
 			pRadBeam->SetCoordsSource(pBullet->Location);
 			pRadBeam->SetCoordsTarget(pTarget->GetCoords());
-			pRadBeam->Color = (pWeaponExt->Beam_IsHouseColor && pOwner) ? pOwner->LaserColor : pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
+			pRadBeam->Color = pWeaponExt->Beam_IsHouseColor ? pOwner->LaserColor : pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
 			pRadBeam->Period = pWeaponExt->Beam_Duration;
 			pRadBeam->Amplitude = pWeaponExt->Beam_Amplitude;
 		}
