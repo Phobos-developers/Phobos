@@ -592,9 +592,6 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 
 void TechnoExt::ExtData::StopIdleAction()
 {
-	if (!this->UnitIdleAction)
-		return;
-
 	if (this->UnitIdleActionTimer.IsTicking())
 		this->UnitIdleActionTimer.Stop();
 
@@ -673,7 +670,9 @@ void TechnoExt::ExtData::ManualIdleAction()
 
 	if (pThis->IsSelected)
 	{
-		this->StopIdleAction();
+		if (this->TypeExtData->UnitIdleRotateTurret.Get(RulesExt::Global()->UnitIdleRotateTurret))
+			this->StopIdleAction();
+
 		this->UnitIdleIsSelected = true;
 		const auto mouseCoords = TacticalClass::Instance->ClientToCoords(WWMouseClass::Instance->XY1);
 
