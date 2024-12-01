@@ -613,7 +613,7 @@ DEFINE_HOOK(0x6FE4A4, TechnoClass_FireAt_ChargeTurret1, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(int, rearmDelay, EAX);
-	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0xB4, -0x70));
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0xB0, -0x70));
 
 	SetChargeTurretDelay(pThis, rearmDelay, pWeapon);
 
