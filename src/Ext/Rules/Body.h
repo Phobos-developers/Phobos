@@ -137,6 +137,7 @@ public:
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
+		Valueable<bool> SetTabBySelectingFactory;
 		Valueable<int> SelectionFlashDuration;
 		AnimTypeClass* DropPodTrailer;
 		SHPStruct* PodImage;
@@ -254,6 +255,7 @@ public:
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 			, DrawTurretShadow { false }
 			, IsVoiceCreatedGlobal { false }
+			, SetTabBySelectingFactory { false }
 			, SelectionFlashDuration { 0 }
 			, DrawInsignia_OnlyOnSelected { false }
 			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }

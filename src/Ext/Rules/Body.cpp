@@ -168,6 +168,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
 
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
+	this->SetTabBySelectingFactory.Read(exINI, GameStrings::AudioVisual, "SetTabBySelectingFactory");
 	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
 	this->DrawInsignia_OnlyOnSelected.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.OnlyOnSelected");
 	this->DrawInsignia_AdjustPos_Infantry.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Infantry");
@@ -359,6 +360,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadialIndicatorVisibility)
 		.Process(this->DrawTurretShadow)
 		.Process(this->IsVoiceCreatedGlobal)
+		.Process(this->SetTabBySelectingFactory)
 		.Process(this->SelectionFlashDuration)
 		.Process(this->DrawInsignia_OnlyOnSelected)
 		.Process(this->DrawInsignia_AdjustPos_Infantry)

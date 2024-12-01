@@ -367,10 +367,32 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 {
 	GET(ObjectClass*, pThis, ESI);
 
+	const bool isControlledbyCurrentPlayer = pThis->GetOwningHouse()->IsControlledByCurrentPlayer();
+	const bool IsCurrentPlayer = pThis->GetOwningHouse()->IsCurrentPlayer();
 	pThis->IsSelected = true;
 
-	if (RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+	if (RulesExt::Global()->SelectionFlashDuration > 0 && isControlledbyCurrentPlayer)
 		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
+
+	if (RulesExt::Global()->SetTabBySelectingFactory)
+		if (pThis->WhatAmI() == AbstractType::Building && IsCurrentPlayer)
+			switch (specific_cast<BuildingClass*>(pThis)->Type->Factory)
+			{
+			case AbstractType::BuildingType:
+				TabClass::Instance->SetTab(SidebarClass::Instance->ActiveTabIndex == 0 ? 1 : 0);
+				break;
+			case AbstractType::InfantryType:
+				TabClass::Instance->SetTab(2);
+				break;
+			case AbstractType::AircraftType:
+				TabClass::Instance->SetTab(3);
+				break;
+			case AbstractType::UnitType:
+				TabClass::Instance->SetTab(3);
+				break;
+			default:
+				break;
+			}
 
 	return 0;
 }

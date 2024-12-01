@@ -364,6 +364,7 @@ This page lists all the individual contributions to the project by their author.
   - Auto-deploy/Deploy block on ammo change
   - Flashing Technos on selecting
   - Promotion animation
+  - Set sidebar tab by selecting factory
 - **ZivDero**
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
