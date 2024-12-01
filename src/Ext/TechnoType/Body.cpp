@@ -435,6 +435,32 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
 
+	char tempBuffer[32];
+
+	this->Convert_ToHouseOrCountry.clear();
+	Nullable<TechnoTypeClass*> technoType;
+	// put all sides into the map
+	for (auto const& pSide : *SideClass::Array)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert.To%s", pSide->ID);
+		technoType.Read(exINI, pSection, tempBuffer);
+		if (technoType.isset())
+		{
+			this->Convert_ToHouseOrCountry.insert(pSide, technoType.Get());
+		}
+	}
+
+	// put all countries into the map
+	for (auto const& pTHouse : *HouseTypeClass::Array)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert.To%s", pTHouse->ID);
+		technoType.Read(exINI, pSection, tempBuffer);
+		if (technoType.isset())
+		{
+			this->Convert_ToHouseOrCountry.insert(pTHouse, technoType.Get());
+		}
+	}
+
 	this->CrateGoodie_RerollChance.Read(exINI, pSection, "CrateGoodie.RerollChance");
 
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
@@ -470,8 +496,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.C
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
-
-	char tempBuffer[32];
 
 	if (this->OwnerObject()->Gunner && this->Insignia_Weapon.empty())
 	{
@@ -802,6 +826,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
+		.Process(this->Convert_ToHouseOrCountry)
 
 		.Process(this->CrateGoodie_RerollChance)
 

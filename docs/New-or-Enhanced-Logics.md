@@ -1357,13 +1357,27 @@ Promote.EliteAnimation=           ; Animation
 ```
 
 ### Convert TechnoType on owner house change
-- You can now change a unit's type when changing ownership from human to computer or from computer to human.
+- You can change a unit's type when changing ownership from human to computer or from computer to human.
+- You can change a unit's type when changing ownership into a certain side or country.
+  - `Convert.ToNod=E2` meaning the unit will be converted into a Conscript when changing ownership into a Soviet country.
+  - `Convert.ToUSSR=FLAKT` meaning the unit will be converted into a Flak Trooper when changing ownership into Russia. Country config has higher priority than side config.
+  - If this feature is used alongside with `Convert.HumanToComputer` or `Convert.ComputerToHuman`, the latter will take presedence.
+- These only happen when a unit changes ownership. If it was gained through other means that do not involve the changing of ownership, nothing happens and the unit doesn't convert.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]
 Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
+Convert.To*             =   ; TechnoType; * can be any of [Sides] or [Countries]
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
 ```
 
 ## Terrain

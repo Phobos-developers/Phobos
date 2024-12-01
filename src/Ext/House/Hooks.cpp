@@ -212,8 +212,25 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	{
 		bool I_am_human = pThis->Owner->IsControlledByHuman();
 		bool You_are_human = pNewOwner->IsControlledByHuman();
-		auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
+		TechnoTypeClass* pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
 			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_ComputerToHuman.Get() : nullptr;
+
+		if (!pConvertTo)
+		{
+			auto& map = pExt->TypeExtData->Convert_ToHouseOrCountry;
+			if (map.contains(pNewOwner->Type))
+			{
+				pConvertTo = map.get_or_default(pNewOwner->Type);
+			}
+			else
+			{
+				SideClass* pSide;
+				if (map.contains(pSide = SideClass::Array->Items[pNewOwner->Type->SideIndex]))
+				{
+					pConvertTo = map.get_or_default(pSide);
+				}
+			}
+		}
 
 		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
 			TechnoExt::ConvertToType(pMe, pConvertTo);

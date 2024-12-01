@@ -204,6 +204,7 @@ public:
 
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
+		PhobosMap<AbstractTypeClass*, TechnoTypeClass*> Convert_ToHouseOrCountry;
 
 		Valueable<double> CrateGoodie_RerollChance;
 
@@ -427,6 +428,7 @@ public:
 
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+			, Convert_ToHouseOrCountry { }
 
 			, CrateGoodie_RerollChance { 0.0 }
 
