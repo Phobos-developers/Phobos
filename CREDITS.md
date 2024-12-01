@@ -333,6 +333,7 @@ This page lists all the individual contributions to the project by their author.
    - `InfDeath=9` versus jumpjet infantry 0 damage fix
    - Skip rally point line drawing when undeploying a building
    - Ares' `SW.Shots` hint on extended tooltips
+   - Ares' Abductor weapon fix
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
