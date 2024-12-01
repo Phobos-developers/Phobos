@@ -1466,8 +1466,8 @@ WhenCrushed.Damage.(Rookie|Veteran|Elite)=           ; integer
   - The warhead or weapon is detonated where the unit itself is, the damage come from itself and is viewed the same house as it.
   - Normally it doesn't damage itself in the process, unless it has `DamageSelf=true` or the warhead has `AllowDamageOnSelf=yes`. The same is true for negative damage when crush heal is intended.
   - If multiple infantries are crushed at once, so will the crush detonation occure that many times.
-  - You can also specify the damage multiplier according to the victim's archetype, such as `WehnCrush.DamageMult.Infantries=50%` meaning the damage value is halved if the victim is an infantry. The archetypes are `Infantries`, `Units`, and `Others`. If the multiplier against an archetype is 0%, no detonation will happen when the unit crushes something in that archetype.
-    - By default, the multiplier on `Infantries` and `Units` are 100%, and the multiplier on `Others` is 0%.
+  - You can also specify the damage multiplier according to the victim's archetype, such as `WehnCrush.DamageMult.Infantries=50%` meaning the damage value is halved if the victim is an infantry. The archetypes are `Infantries`, `Units`, and `Overlays`. If the multiplier against an archetype is 0%, no detonation will happen when the unit crushes something in that archetype.
+    - By default, the multiplier on `Infantries` and `Units` are 100%, and the multiplier on `Overlays` is 0%.
 
 
 In `rulesmd.ini`
