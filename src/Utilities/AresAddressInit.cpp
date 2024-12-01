@@ -1,4 +1,3 @@
-#pragma once
 #include "AresFunctions.h"
 #include "AresHelper.h"
 #include "Patch.h"

@@ -29,7 +29,6 @@ private:
 	static constexpr bool _maybe = false;
 
 	static constexpr bool AresWasWrongAboutSpawnSurvivors = _maybe;
-	static constexpr bool AresWasWrongAboutAduction = true;
 
 	static void* _SWTypeExtMap;
 	static AresSWTypeExtData* (__thiscall* _SWTypeExtMapFind)(void*, SuperWeaponTypeClass*);

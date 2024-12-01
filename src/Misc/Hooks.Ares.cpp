@@ -2,6 +2,7 @@
 #include <FootClass.h>
 
 #include <Utilities/Macro.h>
+#include <Utilities/AresHelper.h>
 
 // In vanilla YR, game destroys building animations directly by calling constructor.
 // Ares changed this to call UnInit() which has a consequence of doing pointer invalidation on the AnimClass pointer.
@@ -21,12 +22,22 @@ DEFINE_HOOK(0x44E9FA, BuildingClass_Detach_RestoreAnims, 0x6)
 	return 0;
 }
 
+// Remember that we still don't fix Ares "issues" a priori. Extensions as well.
+// Patches presented here are exceptions rather that the rule. They must be short, concise and correct.
+// DO NOT POLLUTE ISSUEs and PRs.
+
 void Apply_Ares3_0_Patches()
 {
+	// Abductor fix:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x54CDF, AresHelper::AresBaseAddress + 0x54D3C);
 
 }
 
 void Apply_Ares3_0p1_Patches()
 {
+	// Abductor fix:
+	// Issue: moving vehicles leave permanent occupation stats on terrain
+	// What's done here: Skip Mark_Occupation_Bits cuz pFoot->Remove/Limbo() will do it.
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x5598F, AresHelper::AresBaseAddress + 0x559EC);
 
 }
