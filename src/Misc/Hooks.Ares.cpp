@@ -20,3 +20,13 @@ DEFINE_HOOK(0x44E9FA, BuildingClass_Detach_RestoreAnims, 0x6)
 
 	return 0;
 }
+
+void Apply_Ares3_0_Patches()
+{
+
+}
+
+void Apply_Ares3_0p1_Patches()
+{
+
+}
