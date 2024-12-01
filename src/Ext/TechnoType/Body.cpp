@@ -11,8 +11,11 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WarheadType/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 #include <Utilities/GeneralUtils.h>
+#include <Misc/FlyingStrings.h>
 
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 
@@ -30,6 +33,172 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	float z = static_cast<float>(offset->Z * factor);
 
 	mtx->Translate(x, y, z);
+}
+
+// This function is called upon a potential crusher's perspective and returns the crusher level of it.
+// This function is intended to use only on a unit with "Crusher=yes".
+int TechnoTypeExt::ExtData::GetCrusherLevel(FootClass* pCrusher)
+{
+	// Returns the CrusherLevel if explictly set.
+	if (this->CrusherLevel.isset())
+	{
+		return this->CrusherLevel.Get(0);
+	}
+
+	// Otherwise, gets a default value for CrusherLevel.
+	return pCrusher->GetTechnoType()->OmniCrusher ?
+		RulesExt::Global()->CrusherLevel_Defaults_OmniCrusher :
+		RulesExt::Global()->CrusherLevel_Defaults_Crusher;
+}
+
+// This function is called upon a potential crushing victim's perspective and returns the crushable level of it.
+// This function is intended to use only on an infantry, a unit, or an overlay.
+// Passing anything else such as terrain types into this function can cause a game crash.
+int TechnoTypeExt::ExtData::GetCrushableLevel(FootClass* pVictim)
+{
+	// If this techno is infantry:
+	if (auto const pVictimInfantry = abstract_cast<InfantryClass*>(pVictim))
+	{
+		// Returns the CrushableLevel if explictly set.
+		// Respects the "DeployedCrushableLevel=" setting if the infantry is deployed.
+		// Unlike the unmodded game, where you cannot tell an infantry is "Crushable=no" and "DeployableCrushable=yes",
+		// here you may have an infantry come with a lower CrushableLevel when deployed.
+		if (this->CrushableLevel.isset())
+		{
+			if (pVictimInfantry->IsDeployed())
+			{
+				return this->DeployedCrushableLevel.Get(this->CrushableLevel.Get(0));
+			}
+			else
+			{
+				return this->CrushableLevel.Get(0);
+			}
+		}
+
+		// Otherwise, gets a default value for CrushableLevel.
+		// If the InfantryType has "Crushable=yes", and it doesn't have "DeployedCrushable=no" and is deployed, then it can always be crushed.
+		// Note that in base game logic, "OmniCrushResistant=yes" only prevents "OmniCrusher=yes", it does not prevent "Crusher=yes".
+		// There fore, "Crushable=yes" and "OmniCrushResistant=yes" can still be crushed by "Crusher=yes" and "OmniCrusher=yes".
+		// Plus the fact that "OmniCrusher=yes" requires "Crusher=yes" to function,
+		// I'm ignoring the "OmniCrushResistant=" entry if "Crushable=yes" in the first place.
+		auto const pVictimInfTypeClass = abstract_cast<InfantryTypeClass*>(pVictimInfantry->GetTechnoType());
+		if (!pVictimInfTypeClass->Crushable || (!pVictimInfTypeClass->DeployedCrushable && pVictimInfantry->IsDeployed()))
+		{
+			return pVictimInfTypeClass->OmniCrushResistant ?
+				RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant :
+				RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Infantry;
+		}
+	}
+
+	// If this is something else:
+	else
+	{
+		// Returns the CrushableLevel if explictly set.
+		if (this->CrushableLevel.isset())
+		{
+			return this->CrushableLevel.Get(0);
+		}
+		// Otherwise, gets a default value for CrushableLevel.
+		// If this is explictly set as "Crushable=yes" then regard it crushable.
+		if (!pVictim->GetTechnoType()->Crushable)
+		{
+			return pVictim->GetTechnoType()->OmniCrushResistant ?
+				RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant :
+				RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Others;
+		}
+	}
+
+	return 0;
+}
+
+// This function is called when this techno crushes something. It is called upon the TechnoTypeExt::ExtData of the crusher.
+void TechnoTypeExt::ExtData::WhenCrushes(TechnoClass* pCrusher, TechnoClass* pVictim) const
+{
+	// Sells the victim for money.
+	if (this->WhenCrush_Soylent.Get())
+	{
+		int nMoneyToGive = (int)(pVictim->GetTechnoType()->GetRefund(pVictim->Owner, true) * this->WhenCrush_SoylentMultiplier);
+		if (pVictim->Passengers.NumPassengers > 0)
+		{
+			nMoneyToGive += TechnoExt::GetTotalSoylentOfPassengers(pCrusher, false, this->WhenCrush_SoylentMultiplier, pVictim);
+		}
+
+		if (nMoneyToGive > 0)
+		{
+			pCrusher->Owner->GiveMoney(nMoneyToGive);
+			if (this->WhenCrush_DisplaySoylent.Get())
+			{
+				FlyingStrings::AddMoneyString(nMoneyToGive, pCrusher->Owner,
+					this->WhenCrush_DisplaySoylentToHouses, pVictim->Location, this->WhenCrush_DisplaySoylentOffset);
+			}
+		}
+	}
+
+	// Weapon / warhead detonation.
+	auto pWeapon = this->WhenCrush_Weapon.Get(pCrusher);
+	auto pWarhead = this->WhenCrush_Warhead.Get(pCrusher);
+	int damage = this->WhenCrush_Damage.Get(pCrusher);
+	if (pWeapon || pWarhead || damage != 0)
+	{
+		double damageMult;
+		if (abstract_cast<UnitClass*>(pVictim))
+			damageMult = this->WhenCrush_DamageMult_Units;
+		else if (abstract_cast<InfantryClass*>(pVictim))
+			damageMult = this->WhenCrush_DamageMult_Infantries;
+		else
+			damageMult = this->WhenCrush_DamageMult_Overlays;
+		if (damageMult != 0.0)
+		{
+			if (pWeapon)
+			{
+				WeaponTypeExt::DetonateAt(pWeapon, pCrusher->GetCoords(), pCrusher, (int)std::round(damageMult * pWeapon->Damage), pCrusher->GetOwningHouse());
+			}
+			else if (pWarhead || damage != 0)
+			{
+				if (!pWarhead)
+					pWarhead = RulesClass::Instance->C4Warhead;
+				if (this->WhenCrush_Warhead_Full)
+					WarheadTypeExt::DetonateAt(pWarhead, pCrusher->GetCoords(), pCrusher, (int)std::round(damageMult * damage), pCrusher->GetOwningHouse());
+				else
+					MapClass::DamageArea(pCrusher->GetCoords(), (int)std::round(damageMult * damage), pCrusher, pWarhead, true, pCrusher->GetOwningHouse());
+			}
+		}
+	}
+}
+
+// This function is called when this techno is crushed. It is called upon the TechnoTypeExt::ExtData of the victim.
+void TechnoTypeExt::ExtData::WhenCrushedBy(TechnoClass* pCrusher, TechnoClass* pVictim) const
+{
+	auto pCrusherExt = TechnoTypeExt::ExtMap.Find(pCrusher->GetTechnoType());
+	// If WhenCrushed is supressed no detonation will happen at all
+	if (!pCrusherExt->WhenCrush_SupressVictim.Get())
+	{
+		auto pWeapon = this->WhenCrushed_Weapon.Get(pVictim);
+		auto pWarhead = this->WhenCrushed_Warhead.Get(pVictim);
+		int damage = this->WhenCrushed_Damage.Get(pVictim);
+		if (pWeapon)
+		{
+			// If WhenCrushed.Weapon is supressed or its warhead is supressed then no detonation will happen
+			if (!pCrusherExt->WhenCrush_SupressVictim_Weapons.Contains(pWeapon) &&
+				!(pWeapon->Warhead && pCrusherExt->WhenCrush_SupressVictim_Warheads.Contains(pWeapon->Warhead)))
+			{
+				WeaponTypeExt::DetonateAt(pWeapon, pVictim->GetCoords(), pVictim, pWeapon->Damage, pVictim->GetOwningHouse());
+			}
+		}
+		else if (pWarhead || damage != 0)
+		{
+			if (!pWarhead)
+				pWarhead = RulesClass::Instance->C4Warhead;
+			// If WhenCrushed.Warhead is supressed then no detonation will happen
+			if (!pCrusherExt->WhenCrush_SupressVictim_Warheads.Contains(pWarhead))
+			{
+				if (this->WhenCrushed_Warhead_Full)
+					WarheadTypeExt::DetonateAt(pWarhead, pVictim->GetCoords(), pVictim, damage, pVictim->GetOwningHouse());
+				else
+					MapClass::DamageArea(pVictim->GetCoords(), damage, pVictim, pWarhead, true, pVictim->GetOwningHouse());
+			}
+		}
+	}
 }
 
 // Ares 0.A source
@@ -413,6 +582,32 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CrushOverlayExtraForwardTilt.Read(exINI, pSection, "CrushOverlayExtraForwardTilt");
 	this->CrushSlowdownMultiplier.Read(exINI, pSection, "CrushSlowdownMultiplier");
 
+	this->CrusherLevel.Read(exINI, pSection, "CrusherLevel");
+	this->CrushableLevel.Read(exINI, pSection, "CrushableLevel");
+	this->DeployedCrushableLevel.Read(exINI, pSection, "DeployedCrushableLevel");
+
+	this->WhenCrush_Soylent.Read(exINI, pSection, "WhenCrush.Soylent");
+	this->WhenCrush_SoylentMultiplier.Read(exINI, pSection, "WhenCrush.SoylentMultiplier");
+	this->WhenCrush_DisplaySoylent.Read(exINI, pSection, "WhenCrush.DisplaySoylent");
+	this->WhenCrush_DisplaySoylentToHouses.Read(exINI, pSection, "WhenCrush.DisplaySoylentToHouses");
+	this->WhenCrush_DisplaySoylentOffset.Read(exINI, pSection, "WhenCrush.DisplaySoylentOffset");
+	this->WhenCrush_SupressVictim.Read(exINI, pSection, "WhenCrush.SupressVictim");
+	this->WhenCrush_SupressVictim_Warheads.Read(exINI, pSection, "WhenCrush.SupressVictim.Warheads");
+	this->WhenCrush_SupressVictim_Weapons.Read(exINI, pSection, "WhenCrush.SupressVictim.Weapons");
+
+	this->WhenCrush_Warhead.Read(exINI, pSection, "WhenCrush.Warhead.%s");
+	this->WhenCrush_Weapon.Read(exINI, pSection, "WhenCrush.Weapon.%s");
+	this->WhenCrush_Damage.Read(exINI, pSection, "WhenCrush.Damage.%s");
+	this->WhenCrush_Warhead_Full.Read(exINI, pSection, "WhenCrush.Warhead.Full");
+	this->WhenCrush_DamageMult_Infantries.Read(exINI, pSection, "WhenCrush.DamageMult.Infantries");
+	this->WhenCrush_DamageMult_Units.Read(exINI, pSection, "WhenCrush.DamageMult.Units");
+	this->WhenCrush_DamageMult_Overlays.Read(exINI, pSection, "WhenCrush.DamageMult.Overlays");
+
+	this->WhenCrushed_Warhead.Read(exINI, pSection, "WhenCrushed.Warhead.%s");
+	this->WhenCrushed_Weapon.Read(exINI, pSection, "WhenCrushed.Weapon.%s");
+	this->WhenCrushed_Damage.Read(exINI, pSection, "WhenCrushed.Damage.%s");
+	this->WhenCrushed_Warhead_Full.Read(exINI, pSection, "WhenCrushed.Warhead.Full");
+
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
@@ -779,6 +974,32 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrushForwardTiltPerFrame)
 		.Process(this->CrushOverlayExtraForwardTilt)
 		.Process(this->CrushSlowdownMultiplier)
+
+		.Process(this->CrusherLevel)
+		.Process(this->CrushableLevel)
+		.Process(this->DeployedCrushableLevel)
+
+		.Process(this->WhenCrush_Soylent)
+		.Process(this->WhenCrush_SoylentMultiplier)
+		.Process(this->WhenCrush_DisplaySoylent)
+		.Process(this->WhenCrush_DisplaySoylentToHouses)
+		.Process(this->WhenCrush_DisplaySoylentOffset)
+		.Process(this->WhenCrush_SupressVictim)
+		.Process(this->WhenCrush_SupressVictim_Warheads)
+		.Process(this->WhenCrush_SupressVictim_Weapons)
+
+		.Process(this->WhenCrush_Warhead)
+		.Process(this->WhenCrush_Weapon)
+		.Process(this->WhenCrush_Damage)
+		.Process(this->WhenCrush_Warhead_Full)
+		.Process(this->WhenCrush_DamageMult_Infantries)
+		.Process(this->WhenCrush_DamageMult_Units)
+		.Process(this->WhenCrush_DamageMult_Overlays)
+
+		.Process(this->WhenCrushed_Warhead)
+		.Process(this->WhenCrushed_Weapon)
+		.Process(this->WhenCrushed_Damage)
+		.Process(this->WhenCrushed_Warhead_Full)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)

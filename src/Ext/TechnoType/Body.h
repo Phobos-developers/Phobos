@@ -183,6 +183,37 @@ public:
 		Valueable<double> CrushOverlayExtraForwardTilt;
 		Valueable<double> CrushSlowdownMultiplier;
 
+		Nullable<int> CrusherLevel;
+		Nullable<int> CrushableLevel;
+		Nullable<int> DeployedCrushableLevel;
+
+		// When crush: sells the crushed victim for money
+		Valueable<bool> WhenCrush_Soylent;
+		Valueable<double> WhenCrush_SoylentMultiplier;
+		Valueable<bool> WhenCrush_DisplaySoylent;
+		Valueable<AffectedHouse> WhenCrush_DisplaySoylentToHouses;
+		Valueable<Point2D> WhenCrush_DisplaySoylentOffset;
+
+		// When crush: supresses the victim's WhenCrushed= configs
+		Valueable<bool> WhenCrush_SupressVictim;
+		ValueableVector<WarheadTypeClass*> WhenCrush_SupressVictim_Warheads;
+		ValueableVector<WeaponTypeClass*> WhenCrush_SupressVictim_Weapons;
+
+		// When crush: detonates a weapon or damage
+		Promotable<WarheadTypeClass*> WhenCrush_Warhead;
+		Promotable<WeaponTypeClass*> WhenCrush_Weapon;
+		Promotable<int> WhenCrush_Damage;
+		Valueable<bool> WhenCrush_Warhead_Full;
+		Valueable<double> WhenCrush_DamageMult_Infantries;
+		Valueable<double> WhenCrush_DamageMult_Units;
+		Valueable<double> WhenCrush_DamageMult_Overlays;
+
+		// When crushed: detonates a weapon or damage
+		Promotable<WarheadTypeClass*> WhenCrushed_Warhead;
+		Promotable<WeaponTypeClass*> WhenCrushed_Weapon;
+		Promotable<int> WhenCrushed_Damage;
+		Valueable<bool> WhenCrushed_Warhead_Full;
+
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
@@ -405,6 +436,32 @@ public:
 			, CrushForwardTiltPerFrame {}
 			, CrushOverlayExtraForwardTilt { 0.02 }
 
+			, CrusherLevel {}
+			, CrushableLevel {}
+			, DeployedCrushableLevel {}
+
+			, WhenCrush_Soylent { false }
+			, WhenCrush_SoylentMultiplier { 1.0 }
+			, WhenCrush_DisplaySoylent { false }
+			, WhenCrush_DisplaySoylentToHouses { AffectedHouse::All }
+			, WhenCrush_DisplaySoylentOffset { { 0, 0 } }
+			, WhenCrush_SupressVictim { false }
+			, WhenCrush_SupressVictim_Warheads {}
+			, WhenCrush_SupressVictim_Weapons {}
+
+			, WhenCrush_Warhead {}
+			, WhenCrush_Weapon {}
+			, WhenCrush_Damage {}
+			, WhenCrush_Warhead_Full { true }
+			, WhenCrush_DamageMult_Infantries { 1.0 }
+			, WhenCrush_DamageMult_Units { 1.0 }
+			, WhenCrush_DamageMult_Overlays { 0.0 }
+
+			, WhenCrushed_Warhead {}
+			, WhenCrushed_Weapon {}
+			, WhenCrushed_Damage {}
+			, WhenCrushed_Warhead_Full { true }
+
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
 
@@ -464,6 +521,12 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+
+		int GetCrusherLevel(FootClass* pCrusher);
+		int GetCrushableLevel(FootClass* pVictim);
+
+		void WhenCrushes(TechnoClass* pCrusher, TechnoClass* pVictim) const;
+		void WhenCrushedBy(TechnoClass* pCrusher, TechnoClass* pVictim) const;
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

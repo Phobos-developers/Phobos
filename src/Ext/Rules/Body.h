@@ -165,6 +165,13 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
+		Valueable<bool> CrusherLevelEnabled;
+		Valueable<int> CrusherLevel_Defaults_Crusher;
+		Valueable<int> CrusherLevel_Defaults_OmniCrusher;
+		Valueable<int> CrushableLevel_Defaults_Uncrushable_Infantry;
+		Valueable<int> CrushableLevel_Defaults_Uncrushable_Others;
+		Valueable<int> CrushableLevel_Defaults_OmniCrushResistant;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -284,6 +291,13 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+
+			, CrusherLevelEnabled { false }
+			, CrusherLevel_Defaults_Crusher { 1 }
+			, CrusherLevel_Defaults_OmniCrusher { 3 }
+			, CrushableLevel_Defaults_Uncrushable_Infantry { 1 }
+			, CrushableLevel_Defaults_Uncrushable_Others { 2 }
+			, CrushableLevel_Defaults_OmniCrushResistant { 3 }
 		{ }
 
 		virtual ~ExtData() = default;

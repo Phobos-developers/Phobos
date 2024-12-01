@@ -294,6 +294,10 @@ void TechnoExt::ExtData::EatPassengers()
 						EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pThis->Owner, pPassenger->Owner))
 					{
 						int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
+						if (pPassenger->Passengers.NumPassengers > 0)
+						{
+							nMoneyToGive += GetTotalSoylentOfPassengers(pThis, pDelType->DontScore, pDelType->SoylentMultiplier, pPassenger);
+						}
 
 						if (nMoneyToGive > 0)
 						{

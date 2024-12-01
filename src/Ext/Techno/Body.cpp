@@ -372,6 +372,31 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 	return false;
 }
 
+// Does what it says.
+// Note that this function is intended for when the transport is grinded or sold. Every unit in the transport will be destroyed in the process.
+int TechnoExt::GetTotalSoylentOfPassengers(TechnoClass* pThis, bool dontScore, double soylentMultiplier, TechnoClass* pTransport)
+{
+	TechnoClass* pPassenger;
+	int nMoneyToGive = 0;
+	while (pTransport->Passengers.NumPassengers > 0)
+	{
+		pPassenger = pTransport->Passengers.RemoveFirstPassenger();
+		if (pPassenger)
+		{
+			auto pSource = dontScore ? nullptr : pThis;
+			nMoneyToGive += (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * soylentMultiplier);
+			if (pPassenger->Passengers.NumPassengers > 0)
+			{
+				nMoneyToGive += GetTotalSoylentOfPassengers(pThis, dontScore, soylentMultiplier, pPassenger);
+			}
+			pPassenger->KillPassengers(pSource);
+			pPassenger->RegisterDestruction(pSource);
+			pPassenger->UnInit();
+		}
+	}
+	return nMoneyToGive;
+}
+
 /// <summary>
 /// Gets whether or not techno has listed AttachEffect types active on it
 /// </summary>

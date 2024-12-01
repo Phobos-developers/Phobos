@@ -1366,6 +1366,137 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### Crusher level and crushable level
+
+- A techno can now be specified with a `CrusherLevel=` and `CrushableLevel=` akin to that of successing CNC titles. This feature completely takes over the crush check and must be turned on manually by `[General]►CrusherLevelEnabled=true` before it can take any effect.
+- A unit can crush an infantry, a unit, or an overlay, if its `CrusherLevel` is greater than the latter's `CrushableLevel`. If not set, the default value will be taken from `[General]` settings. The default values of the `[General]` settings themselves follow the convention of *[Command and Conquer 3: Tiberium Wars](https://cnc-central.fandom.com/wiki/Command_%26_Conquer_3:_Tiberium_Wars)* and *[Kane's Wrath](https://cnc-central.fandom.com/wiki/Command_%26_Conquer_3:_Kane%27s_Wrath)*.
+  - `CrusherLevel=`:
+    - 0 if `Crusher=no`
+    - 1 if `Crusher=yes` and `OmniCrusher=no`
+    - 3 if `Crusher=yes` and `OmniCrusher=yes`
+  - `CrushableLevel=`:
+    - 0 if `Crushable=yes`
+    - 1 if `Crushable=no` and `OmniCrushResistant=no` and is an Infantry
+    - 2 if `Crushable=no` and `OmniCrushResistant=no` and is NOT an Infantry
+    - 3 if `Crushable=no` and `OmniCrushResistant=yes`
+  - `DeployedCrushableLevel=`:
+    - The same value as `CrushableLevel` if it was set
+    - 0 if `Crushable=yes` and `DeployedCrushable=yes`
+    - 1 if `Crushable=yes`, `DeployedCrushable=no`, and `OmniCrushResistant=no`
+    - 3 if `Crushable=yes`, `DeployedCrushable=no`, and `OmniCrushResistant=yes`
+  - Here is a quick lookup of the default values of `CrusherLevel` and `CrushableLevel` for Yuri's Revenge units:
+    - Conscript: 0/0
+    - Tesla Trooper: 0/1
+    - Guardian G.I.: 0/0 when undeployed, 0/1 when deployed
+    - T-Rex: 0/3
+    - IFV: 0/2
+    - Rhino Tank: 1/2
+    - Slave Miner: 1/3
+    - Battle Fortress: 3/3
+  - A few applications of the crusher level system:
+    - At 2/2, a vehicle can crush Tesla Troopers and deployed Guardian G.I.s, but it can't crush IFVs and is still crushable by Battle Fortresses, just like a [Scorpion Tank](https://cnc-central.fandom.com/wiki/Scorpion_tank_(Tiberium_Wars)) does with the Dozer blades upgrade.
+    - At 4/4, a vehicle can crush almost anything else, even Battle Fortresses, just like a [MARV](https://cnc-central.fandom.com/wiki/Mammoth_Armored_Reclamation_Vehicle) does.
+- Other usage notes:
+  - A unit must has a locomotor that supports crushing before it can crush something. Most naval units don't, safe for the amphibious transports.
+  - In an unmodded game, it doesn't even try to check if it can crush something if it has `Crusher=no`, meaning `OmniCrusher=yes` make no sense on a unit with `Crusher=no`. This behavior isn't changed by this feature, meaning you will still need `Crusher=yes` for a positive `CrushableLevel` to function.
+  - In an unmodded game, infantries can never crush anything regardless of `Crusher=yes` or locomotors. This behavior isn't changed by this feature, meaning a positive `CrusherLevel` makes no sense on an infantry type.
+  - If `CrusherLevel` is set, `OmniCrusher` is redundant and ignored.
+  - If `CrushableLevel` is set, `Crushable`, `OmniCrushResistant`, and `DeployedCrushable` are redundant and ignored. Use `DeployedCrushableLevel` instead if you wish the infantry to have a different crushable level when deployed.
+  - If `CrushableLevel` is unset, `DeployedCrushableLevel` does not apply at all.
+
+In `rulesmd.ini`
+```ini
+[General]
+CrusherLevelEnabled=false                           ; boolean
+CrusherLevel.Defaults.Crusher=1                     ; integer
+CrusherLevel.Defaults.OmniCrusher=3                 ; integer
+CrushableLevel.Defaults.Uncrushable.Infantry=1      ; integer
+CrushableLevel.Defaults.Uncrushable.Others=2        ; integer
+CrushableLevel.Defaults.OmniCrushResistant=3        ; integer
+
+[SOMETECHNO]                                        ; TechnoType
+CrusherLevel=                                       ; integer
+CrushableLevel=                                     ; integer
+DeployedCrushableLevel=                             ; integer; this only works for [InfantryTypes]
+```
+
+### When techno is crushed
+
+- A techno can now deal damage or fire a weapon when crushed as a death rattle.
+  - If `WhenCrushed.Weapon` is set at a veterancy level, `WhenCrushed.Warhead` and `WhenCrushed.Damage` at the same veterancy level will be ignored.
+  - `WhenCrushed.Warhead`, if not set, defaults to `C4Warhead`.
+  - `WhenCrushed.Warhead.Full` customizes whether or not the Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. If not set, defaults to true. If set false, no animation defined in the warhead will be played.
+  - `WhenCrushed.Damage`, if not set, defaults to 0.
+  - If `WhenCrushed.Weapon` is not set, `WhenCrushed.Warhead` is not set, and `WhenCrushed.Damage` is either not set or set to 0, no weapon or warhead detonation will occure at all at the veterancy level.
+  - The weapon or the damage is fired from the victim, is detonated at the victim's coords, and is viewed as the victim's house.
+  - Each configuration can be varied based on the unit's veterancy.
+  - Note that if this feature is used on an infantry type you can also define the infantry's `CrushSound=` to be the same as the infantry's `DieSound=` instead of the generic `InfantrySquish`. For example, if this feature is applied to Crazy Ivan to allow his death weapon to trigger when crushed, the code can be:
+    ```
+    [IVAN]
+    CrushSound=CrazyIvanDie
+    WhenCrushed.Weapon=IvanDeath
+    ```
+    In this case crushing Crazy Ivan is equivalent to killing him with direct damage: he explodes with his iconic death cry under the crushing treeds.
+  - Note that the `IvanBomb` feature in Ares does not work with this. If `WhenCrushed.Weapon=IvanBomber` is set, nothing happens when the unit is crushed.
+  - If the techno is loaded into a transport and the transport is crushed, tne techno is simply lost and no detonation will occure.
+
+In `rulesmd.ini`
+```ini
+
+[SOMETECHNO]                                         ; TechnoType
+WhenCrushed.Warhead=                                 ; WarheadType
+WhenCrushed.Warhead.(Rookie|Veteran|Elite)=          ; WarheadType
+WhenCrushed.Warhead.Full=true                        ; boolean
+WhenCrushed.Weapon=                                  ; WeaponType
+WhenCrushed.Weapon.(Rookie|Veteran|Elite)=           ; WeaponType
+WhenCrushed.Damage=                                  ; integer
+WhenCrushed.Damage.(Rookie|Veteran|Elite)=           ; integer
+```
+
+### When techno crushes something
+
+- A techno can now do something when it crushes something.
+  - If `WhenCrush.Soylent` is set to true, an amount of credits is awarded to the crusher's owner based on the victim's soylent. If the victim has passengers they will also count towards the soylent.
+    - `WhenCrush.SoylentMultiplier` is a direct multiplier applied to the refunded amount of credits. If not set, default to 100%.
+    - `WhenCrush.DisplaySoylent` can be set to true to display the amount of credits refunded on the transport. `WhenCrush.DisplaySoylentToHouses` determines which houses can see this and `WhenCrush.DisplaySoylentOffset` can be used to adjust the display offset.
+  - If `WhenCrush.SupressVictim` is set to true, the victim's death rattle of `WhenCrushed.Weapon` and `WhenCrushed.Warhead` cannot trigger at all, much like how the [Scorpion Tanks](https://cnc-central.fandom.com/wiki/Scorpion_tank_(Tiberium_Wars)) with the Dozer blades upgrade supress the crush damage of [Disintegrators](https://cnc-central.fandom.com/wiki/Disintegrator).
+    - Alternatively, `WhenCrush.SupressVictim.Weapons` and `WhenCrush.SupressVictim.Warheads` can be specified instead of full supression of death rattles. Note that if warheads are specified, not only the warhead-based death rattles are suppressed, but also the weapon-based death rattles that use the warhead are supressed as well.
+- It can also deal damage or fire a weapon on itself when it crushes something.
+  - `WhenCrush.Warhead` and `WhenCrush.Weapon` can be specified much like `WhenCrushed.Warhead/Weapon/Damage`, and the same rules are followed. If weapon is specified then warhead and damage on the same veterancy level are ignored.
+  - The warhead or weapon is detonated where the unit itself is, the damage come from itself and is viewed the same house as it.
+  - Normally it doesn't damage itself in the process, unless it has `DamageSelf=true` or the warhead has `AllowDamageOnSelf=yes`. The same is true for negative damage when crush heal is intended.
+  - If multiple infantries are crushed at once, so will the crush detonation occure that many times.
+  - You can also specify the damage multiplier according to the victim's archetype, such as `WehnCrush.DamageMult.Infantries=50%` meaning the damage value is halved if the victim is an infantry. The archetypes are `Infantries`, `Units`, and `Others`. If the multiplier against an archetype is 0%, no detonation will happen when the unit crushes something in that archetype.
+    - By default, the multiplier on `Infantries` and `Units` are 100%, and the multiplier on `Others` is 0%.
+
+
+In `rulesmd.ini`
+```ini
+
+[SOMETECHNO]                                ; TechnoType
+WhenCrush.Soylent=false                     ; boolean
+WhenCrush.SoylentMultiplier=100%            ; double
+WhenCrush.DisplaySoylent=false              ; boolean
+WhenCrush.DisplaySoylentToHouses=All        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+WhenCrush.DisplaySoylentOffset=0,0          ; X,Y, pixels relative to default
+WhenCrush.SupressVictim=false               ; boolean
+WhenCrush.SupressVictim.Warheads=           ; list of WarheadTypes
+WhenCrush.SupressVictim.Weapons=            ; list of WeaponTypes
+WhenCrush.Warhead=                          ; WarheadType
+WhenCrush.Warhead.Veteran=                  ; WarheadType
+WhenCrush.Warhead.Elite=                    ; WarheadType
+WhenCrush.Warhead.Full=true                 ; boolean
+WhenCrush.Weapon=                           ; WeaponType
+WhenCrush.Weapon.Veteran=                   ; WeaponType
+WhenCrush.Weapon.Elite=                     ; WeaponType
+WhenCrush.Damage=                           ; integer
+WhenCrush.Damage.Veteran=                   ; integer
+WhenCrush.Damage.Elite=                     ; integer
+WhenCrush.DamageMult.Infantries=100%        ; double
+WhenCrush.DamageMult.Units=100%             ; double
+WhenCrush.DamageMult.Overlays=0%            ; double
+```
+
 ## Terrain
 
 ### Destroy animation & sound

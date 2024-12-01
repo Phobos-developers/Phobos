@@ -207,6 +207,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CombatLightDetailLevel.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel");
 	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
 
+	this->CrusherLevelEnabled.Read(exINI, GameStrings::General, "CrusherLevelEnabled");
+	this->CrusherLevel_Defaults_Crusher.Read(exINI, GameStrings::General, "CrusherLevel.Defaults.Crusher");
+	this->CrusherLevel_Defaults_OmniCrusher.Read(exINI, GameStrings::General, "CrusherLevel.Defaults.OmniCrusher");
+	this->CrushableLevel_Defaults_Uncrushable_Infantry.Read(exINI, GameStrings::General, "CrushableLevel.Defaults.Uncrushable.Infantry");
+	this->CrushableLevel_Defaults_Uncrushable_Others.Read(exINI, GameStrings::General, "CrushableLevel.Defaults.Uncrushable.Others");
+	this->CrushableLevel_Defaults_OmniCrushResistant.Read(exINI, GameStrings::General, "CrushableLevel.Defaults.OmniCrushResistant");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -389,6 +396,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarheadParticleAlphaImageIsLightFlash)
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->LightFlashAlphaImageDetailLevel)
+		.Process(this->CrusherLevelEnabled)
+		.Process(this->CrusherLevel_Defaults_Crusher)
+		.Process(this->CrusherLevel_Defaults_OmniCrusher)
+		.Process(this->CrushableLevel_Defaults_Uncrushable_Infantry)
+		.Process(this->CrushableLevel_Defaults_Uncrushable_Others)
+		.Process(this->CrushableLevel_Defaults_OmniCrushResistant)
 		;
 }
 
