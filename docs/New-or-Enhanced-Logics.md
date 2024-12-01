@@ -1462,7 +1462,7 @@ WhenCrushed.Damage.(Rookie|Veteran|Elite)=           ; integer
   - If `WhenCrush.SupressVictim` is set to true, the victim's death rattle of `WhenCrushed.Weapon` and `WhenCrushed.Warhead` cannot trigger at all, much like how the [Scorpion Tanks](https://cnc-central.fandom.com/wiki/Scorpion_tank_(Tiberium_Wars)) with the Dozer blades upgrade supress the crush damage of [Disintegrators](https://cnc-central.fandom.com/wiki/Disintegrator).
     - Alternatively, `WhenCrush.SupressVictim.Weapons` and `WhenCrush.SupressVictim.Warheads` can be specified instead of full supression of death rattles. Note that if warheads are specified, not only the warhead-based death rattles are suppressed, but also the weapon-based death rattles that use the warhead are supressed as well.
 - It can also deal damage or fire a weapon on itself when it crushes something.
-  - `WhenCrush.Warhead` and `WhenCrush.Weapon` can be specified much like `WhenCrushed.Warhead/Weapon/Damage`, and the same rules are followed. If weapon is specified then warhead and damage on the same veterancy level are ignored.
+  - `WhenCrush.Warhead` and `WhenCrush.Weapon` can be specified much like `WhenCrushed.(Warhead|Weapon|Damage)`, and the same rules are followed. If weapon is specified then warhead and damage on the same veterancy level are ignored.
   - The warhead or weapon is detonated where the unit itself is, the damage come from itself and is viewed the same house as it.
   - Normally it doesn't damage itself in the process, unless it has `DamageSelf=true` or the warhead has `AllowDamageOnSelf=yes`. The same is true for negative damage when crush heal is intended.
   - If multiple infantries are crushed at once, so will the crush detonation occure that many times.
@@ -1495,6 +1495,26 @@ WhenCrush.Damage.Elite=                     ; integer
 WhenCrush.DamageMult.Infantries=100%        ; double
 WhenCrush.DamageMult.Units=100%             ; double
 WhenCrush.DamageMult.Overlays=0%            ; double
+```
+
+### When techno infiltrates a structure
+
+- A techno can now deal damage or fire a weapon when it infiltrates a structure. What makes this different from `SpyEffect.VictimSuperWeapon=` is it can be configured per agent techno type.
+  - `WhenInfiltrate.Warhead` and `WhenInfiltrate.Weapon` can be specified much like `WhenCrushed.(Warhead|Weapon|Damage)`, and the same rules are followed. If weapon is specified then warhead and damage on the same veterancy level are ignored.
+  - The warhead or weapon is detonated where the structure is, the damage come from the infantry and is viewed the same house as it.
+  - Note that the `IvanBomb` feature in Ares does not work with this. If `WhenInfiltrate.Weapon=IvanBomber` is set, nothing happens when the unit infiltrates, aside from the normal infiltration effect.
+
+In `rulesmd.ini`
+```ini
+
+[SOMETECHNO]                                         ; TechnoType
+WhenInfiltrate.Warhead=                              ; WarheadType
+WhenInfiltrate.Warhead.(Rookie|Veteran|Elite)=       ; WarheadType
+WhenInfiltrate.Warhead.Full=true                     ; boolean
+WhenInfiltrate.Weapon=                               ; WeaponType
+WhenInfiltrate.Weapon.(Rookie|Veteran|Elite)=        ; WeaponType
+WhenInfiltrate.Damage=                               ; integer
+WhenInfiltrate.Damage.(Rookie|Veteran|Elite)=        ; integer
 ```
 
 ## Terrain

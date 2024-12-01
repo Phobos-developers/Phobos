@@ -214,6 +214,12 @@ public:
 		Promotable<int> WhenCrushed_Damage;
 		Valueable<bool> WhenCrushed_Warhead_Full;
 
+		// When infiltrates: detonates a weapon or damage
+		Promotable<WarheadTypeClass*> WhenInfiltrate_Warhead;
+		Promotable<WeaponTypeClass*> WhenInfiltrate_Weapon;
+		Promotable<int> WhenInfiltrate_Damage;
+		Valueable<bool> WhenInfiltrate_Warhead_Full;
+
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
@@ -462,6 +468,11 @@ public:
 			, WhenCrushed_Damage {}
 			, WhenCrushed_Warhead_Full { true }
 
+			, WhenInfiltrate_Warhead {}
+			, WhenInfiltrate_Weapon {}
+			, WhenInfiltrate_Damage {}
+			, WhenInfiltrate_Warhead_Full { true }
+
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
 
@@ -527,6 +538,8 @@ public:
 
 		void WhenCrushes(TechnoClass* pCrusher, TechnoClass* pVictim) const;
 		void WhenCrushedBy(TechnoClass* pCrusher, TechnoClass* pVictim) const;
+
+		void WhenInfiltratesInto(InfantryClass* pSpy, BuildingClass* pBuilding) const;
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

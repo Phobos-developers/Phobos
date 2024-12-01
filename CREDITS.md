@@ -410,3 +410,4 @@ This page lists all the individual contributions to the project by their author.
 - **Aephiex**
   - Crush level system
   - Weapon detonation events when unit crushes something or gets crushed
+  - Weapon detonation events when unit infiltrates

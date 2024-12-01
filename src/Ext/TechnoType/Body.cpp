@@ -201,6 +201,31 @@ void TechnoTypeExt::ExtData::WhenCrushedBy(TechnoClass* pCrusher, TechnoClass* p
 	}
 }
 
+// This function is called when an infantry infiltrates a structure.
+void TechnoTypeExt::ExtData::WhenInfiltratesInto(InfantryClass* pSpy, BuildingClass* pBuilding) const
+{
+	// Weapon / warhead detonation upon infiltration.
+	// Note that, despite the detonate or area damage func are called right before the normal infiltration effects,
+	// the actual damage is resolved some time later, at least later than the normal infiltration effects resolve.
+	// So there is no need to worry if the building or the spy itself will be killed before the infiltration.
+	auto pWeapon = this->WhenInfiltrate_Weapon.Get(pSpy);
+	auto pWarhead = this->WhenInfiltrate_Warhead.Get(pSpy);
+	int damage = this->WhenInfiltrate_Damage.Get(pSpy);
+	if (pWeapon)
+	{
+		WeaponTypeExt::DetonateAt(pWeapon, pBuilding->GetCoords(), pSpy, pWeapon->Damage, pSpy->GetOwningHouse());
+	}
+	else if (pWarhead || damage != 0)
+	{
+		if (!pWarhead)
+			pWarhead = RulesClass::Instance->C4Warhead;
+		if (this->WhenCrush_Warhead_Full)
+			WarheadTypeExt::DetonateAt(pWarhead, pBuilding->GetCoords(), pSpy, damage, pSpy->GetOwningHouse());
+		else
+			MapClass::DamageArea(pBuilding->GetCoords(), damage, pSpy, pWarhead, true, pSpy->GetOwningHouse());
+	}
+}
+
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
@@ -608,6 +633,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WhenCrushed_Damage.Read(exINI, pSection, "WhenCrushed.Damage.%s");
 	this->WhenCrushed_Warhead_Full.Read(exINI, pSection, "WhenCrushed.Warhead.Full");
 
+	this->WhenInfiltrate_Warhead.Read(exINI, pSection, "WhenInfiltrate.Warhead.%s");
+	this->WhenInfiltrate_Weapon.Read(exINI, pSection, "WhenInfiltrate.Weapon.%s");
+	this->WhenInfiltrate_Damage.Read(exINI, pSection, "WhenInfiltrate.Damage.%s");
+	this->WhenInfiltrate_Warhead_Full.Read(exINI, pSection, "WhenInfiltrate.Warhead.Full");
+
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
@@ -1000,6 +1030,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WhenCrushed_Weapon)
 		.Process(this->WhenCrushed_Damage)
 		.Process(this->WhenCrushed_Warhead_Full)
+
+		.Process(this->WhenInfiltrate_Warhead)
+		.Process(this->WhenInfiltrate_Weapon)
+		.Process(this->WhenInfiltrate_Damage)
+		.Process(this->WhenInfiltrate_Warhead_Full)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
