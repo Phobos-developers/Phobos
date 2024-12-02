@@ -1518,6 +1518,29 @@ DetonateOnAllMapObjects.IgnoreTypes=         ; list of TechnoType names
 DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 ```
 
+### Fire weapon when kill
+
+- `KillWeapon` will be fired at the target TechnoType's location once it's been killed by this Warhead.
+  - `KillWeapon.AffectTargets` is used to filter which types of targets (TechnoTypes) are considered valid for KillWeapon. Only `none`, `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values.
+  - `KillWeapon.AffectHouses` is used to filter which houses targets can belong to be considered valid for KillWeapon.
+  - `KillWeapon.AffectTypes` can be used to list specific TechnoTypes to be considered as valid targets for KillWeapon. If any valid TechnoTypes are listed, then only matching objects will be targeted.
+  - `KillWeapon.IgnoreTypes` can be used to list specific TechnoTypes to be never considered as valid targets for KillWeapon.
+- Ìf a TechnoType has `SuppressKillWeapons` set to true, it will not trigger KillWeapon upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+
+ In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; Warhead
+KillWeapon=                     ; WeaponType
+KillWeapon.AffectTargets=all    ; list of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+KillWeapon.AffectHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.AffectTypes=         ; list of TechnoTypes
+KillWeapon.IgnoreTypes=         ; list of TechnoTypes
+
+[SOMETECHNO]                    ; TechnoType
+SuppressKillWeapons=false       ; boolean
+SuppressKillWeapons.Types=      ; list of WeaponTypes
+```
+
 ### Generate credits on impact
 
 ![image](_static/images/hackerfinallyworks-01.gif)

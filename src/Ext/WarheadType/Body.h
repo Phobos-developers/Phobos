@@ -150,6 +150,12 @@ public:
 		Valueable<bool> SuppressReflectDamage;
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
 
+		Valueable<WeaponTypeClass*> KillWeapon;
+		Valueable<AffectedTarget> KillWeapon_AffectTargets;
+		Valueable<AffectedHouse> KillWeapon_AffectHouses;
+		ValueableVector<TechnoTypeClass*> KillWeapon_AffectTypes;
+		ValueableVector<TechnoTypeClass*> KillWeapon_IgnoreTypes;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -316,6 +322,12 @@ public:
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
 			, DamageAreaTarget {}
+
+			, KillWeapon {}
+			, KillWeapon_AffectTargets { AffectedTarget::All }
+			, KillWeapon_AffectHouses { AffectedHouse::All }
+			, KillWeapon_AffectTypes {}
+			, KillWeapon_IgnoreTypes {}
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

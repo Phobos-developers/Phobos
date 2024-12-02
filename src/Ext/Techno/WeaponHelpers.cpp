@@ -3,6 +3,7 @@
 #include <OverlayTypeClass.h>
 
 #include <Ext/WeaponType/Body.h>
+#include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
@@ -197,4 +198,26 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	}
 
 	return weaponIndex;
+}
+
+void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH)
+{
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (!pWHExt->KillWeapon || pTypeExt->SuppressKillWeapons || !EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectHouses, pSource->Owner, pThis->Owner))
+		return;
+
+	if (pWHExt->KillWeapon_AffectTypes.size() > 0 && !pWHExt->KillWeapon_AffectTypes.Contains(pType))
+		return;
+
+	if (pWHExt->KillWeapon_IgnoreTypes.size() > 0 && pWHExt->KillWeapon_IgnoreTypes.Contains(pType))
+		return;
+
+	if (pTypeExt->SuppressKillWeapons_Types.size() > 0 && pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon))
+		return;
+
+	if (EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_AffectTargets))
+		WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource);
 }

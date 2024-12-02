@@ -266,6 +266,12 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
 	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
 
+	this->KillWeapon.Read(exINI, pSection, "KillWeapon");
+	this->KillWeapon_AffectTargets.Read(exINI, pSection, "KillWeapon.AffectTargets");
+	this->KillWeapon_AffectHouses.Read(exINI, pSection, "KillWeapon.AffectHouses");
+	this->KillWeapon_AffectTypes.Read(exINI, pSection, "KillWeapon.AffectTypes");
+	this->KillWeapon_IgnoreTypes.Read(exINI, pSection, "KillWeapon.IgnoreTypes");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -488,6 +494,12 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatLightChance)
 		.Process(this->CLIsBlack)
 		.Process(this->Particle_AlphaImageIsLightFlash)
+
+		.Process(this->KillWeapon)
+		.Process(this->KillWeapon_AffectTargets)
+		.Process(this->KillWeapon_AffectHouses)
+		.Process(this->KillWeapon_AffectTypes)
+		.Process(this->KillWeapon_IgnoreTypes)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
