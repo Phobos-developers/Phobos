@@ -334,6 +334,7 @@ This page lists all the individual contributions to the project by their author.
    - Skip rally point line drawing when undeploying a building
    - Ares' `SW.Shots` hint on extended tooltips
    - Ares' Abductor weapon fix
+   - Suppress Ares' swizzle warning when parsing tags and taskforces
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
