@@ -189,6 +189,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
+- Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles.
+- Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
 
 ## Aircraft
 
@@ -933,7 +935,7 @@ In `rulesmd.ini`:
 [General]
 SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
 SubterraneanSpeed=7.5    ; floating point value
-                         
+
 [SOMETECHNO]             ; TechnoType
 SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
 SubterraneanSpeed=-1     ; floating point value

@@ -607,7 +607,8 @@ Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
 - Appended Ares' `SW.Shots` usage to extended tooltips (by Trsdy)
-- Fixed Ares' Abductor weapon leaves permanent placement stats when abductor moving vehicles (by Trsdy)
+- Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles (by Trsdy)
+- Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by Trsdy)
 </details>
 
 ### 0.3.0.1
