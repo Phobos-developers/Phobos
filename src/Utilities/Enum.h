@@ -240,18 +240,6 @@ enum class ChronoSparkleDisplayPosition : unsigned char
 
 MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
 
-enum class ExpireWeaponCondition : unsigned char
-{
-	None = 0x0,
-	Expire = 0x1,
-	Remove = 0x2,
-	Death = 0x4,
-
-	All = 0xFF,
-};
-
-MAKE_ENUM_FLAGS(ExpireWeaponCondition);
-
 enum class HorizontalPosition : BYTE
 {
 	Left = 0,

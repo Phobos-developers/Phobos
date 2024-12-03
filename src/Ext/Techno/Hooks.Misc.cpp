@@ -141,6 +141,18 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 
 #pragma region WakeAnims
 
+DEFINE_HOOK_AGAIN(0x69FEDC, Locomotion_Process_Wake, 0x6)  // Ship
+DEFINE_HOOK_AGAIN(0x4B0814, Locomotion_Process_Wake, 0x6)  // Drive
+DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)  // Hover
+{
+	GET(ILocomotion* const, iloco, ESI);
+	__assume(iloco != nullptr);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(static_cast<LocomotionClass*>(iloco)->LinkedTo->GetTechnoType());
+	R->EDX(pTypeExt->Wake.Get(RulesClass::Instance->Wake));
+
+	return R->Origin() + 0xC;
+}
+
 namespace GrappleUpdateTemp
 {
 	TechnoClass* pThis;
@@ -393,5 +405,28 @@ void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, Object
 
 DEFINE_JUMP(CALL, 0x54B18E, GET_OFFSET(DisplayClass_Submit_Wrapper));  // JumpjetLocomotionClass_Process
 DEFINE_JUMP(CALL, 0x4CD4E7, GET_OFFSET(DisplayClass_Submit_Wrapper));  // FlyLocomotionClass_Update
+
+// Fixes SecondaryFire / SecondaryProne sequences not remapping to WetAttack in water.
+// Ideally there would be WetAttackSecondary but adding new sequences would be a big undertaking.
+// Also adds a toggle for not using water sequences at all - Starkku
+DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
+{
+	enum { Continue= 0x51D7EC, SkipWaterSequences = 0x51D842, UseSwim = 0x51D83D, UseWetAttack = 0x51D82F };
+
+	GET(InfantryClass*, pThis, ESI);
+	GET(Sequence, sequence, EDI);
+
+	R->EBP(0); // Restore overridden instructions.
+
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->OnlyUseLandSequences)
+		return SkipWaterSequences;
+
+	if (sequence == Sequence::Walk || sequence == Sequence::Crawl) // Restore overridden instructions.
+		return UseSwim;
+	else if (sequence == Sequence::SecondaryFire || sequence == Sequence::SecondaryProne)
+		return UseWetAttack;
+
+	return Continue;
+}
 
 #pragma endregion

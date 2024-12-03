@@ -222,7 +222,7 @@ DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
 DEFINE_HOOK(0x6DAAB2, TacticalClass_DrawRallyPointLines_NoUndeployBlyat, 0x6)
 {
 	GET(BuildingClass*, pBld, EDI);
-	if (pBld->Focus && pBld->CurrentMission != Mission::Selling)
+	if (pBld->ArchiveTarget && pBld->CurrentMission != Mission::Selling)
 		return 0x6DAAC0;
 	return 0x6DAD45;
 }
@@ -510,19 +510,19 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 
 	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
 	{
-		if (auto pAnim = GameCreate<AnimClass>(pAnimType, nCoord, 0, 1, 0x2600, -15, false))
+		auto pAnim = GameCreate<AnimClass>(pAnimType, nCoord, 0, 1, 0x2600, -15, false);
+
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
+			pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
+
+		if (!pAnim->Owner)
 		{
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
-				pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
-
-			if (!pAnim->Owner)
-			{
-				pAnim->Owner = pThisBomb->OwnerHouse;
-			}
-
-			if (const auto pExt = AnimExt::ExtMap.Find(pAnim))
-				pExt->SetInvoker(pThisBomb->Owner);
+			pAnim->Owner = pThisBomb->OwnerHouse;
 		}
+
+		if (const auto pExt = AnimExt::ExtMap.Find(pAnim))
+			pExt->SetInvoker(pThisBomb->Owner);
+
 	}
 
 	return nDamageAreaResult;
@@ -854,45 +854,6 @@ DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
 	return SkipGameCode;
 }
 
-#pragma region WarpInDelayFix
-
-DEFINE_HOOK(0x7195BF, TeleportLocomotionClass_Process_WarpInDelay, 0x6)
-{
-	GET(ILocomotion*, pThis, ESI);
-	GET(FootClass*, pLinkedTo, ECX);
-
-	auto const pLoco = static_cast<TeleportLocomotionClass*>(pThis);
-	auto const pExt = TechnoExt::ExtMap.Find(pLinkedTo);
-	pExt->LastWarpInDelay = Math::max(pLoco->Timer.GetTimeLeft(), pExt->LastWarpInDelay);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
-{
-	GET(FootClass*, pThis, ESI);
-
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->HasRemainingWarpInDelay)
-	{
-		if (pExt->LastWarpInDelay)
-		{
-			pExt->LastWarpInDelay--;
-		}
-		else
-		{
-			pExt->HasRemainingWarpInDelay = false;
-			pExt->IsBeingChronoSphered = false;
-			pThis->WarpingOut = false;
-		}
-	}
-
-	return 0;
-}
-
-#pragma endregion
-
 // this fella was { 0, 0, 1 } before and somehow it also breaks both the light position a bit and how the lighting is applied when voxels rotate - Kerbiter
 DEFINE_HOOK(0x753D86, VoxelCalcNormals_NullAdditionalVector, 0x0)
 {
@@ -949,7 +910,22 @@ DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9
 	GET(TunnelLocomotionClass* const, pLoco, ESI);
 	GET(int const, distance, EAX);
 
-	return distance >= pLoco->LinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
+	// The movement speed was actually also hardcoded here to 19, so the distance check made sense
+	// It can now be customized globally or per TechnoType however - Starkku
+	auto const pType = pLoco->LinkedTo->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	int speed = pTypeExt->SubterraneanSpeed >= 0 ? pTypeExt->SubterraneanSpeed : RulesExt::Global()->SubterraneanSpeed;
+
+	// Calculate speed multipliers.
+	pLoco->LinkedTo->SpeedPercentage = 1.0; // Subterranean locomotor doesn't normally use this so it would be 0.0 here and cause issues.
+	int maxSpeed = pType->Speed;
+	pType->Speed = speed;
+	speed = pLoco->LinkedTo->GetCurrentSpeed();
+	pType->Speed = maxSpeed;
+
+	TunnelLocomotionClass::TunnelMovementSpeed = speed;
+
+	return distance >= speed + 1 ? KeepMoving : CloseEnough;
 }
 
 DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
@@ -995,3 +971,114 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 // Patch tileset parsing to not reset certain tileset indices for Lunar theater.
 DEFINE_JUMP(LJMP, 0x546C8B, 0x546CBF);
 
+// Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes - Starkku
+DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
+{
+	enum { SkipResetTarget = 0x6FA472 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->GetTechnoType()->AttackFriendlies
+		&& pThis->Target->GetOwningHouse()->IsAlliedWith(pThis) // TODO
+	)
+		return SkipResetTarget;
+
+	return 0;
+}
+
+// Starkku: These fix issues with follower train cars etc) indices being thrown off by preplaced vehicles not being created, having other vehicles as InitialPayload etc.
+// This fix basically works by not using the global UnitClass array at all for setting the followers, only a list of preplaced units, successfully created or not.
+#pragma region Follower
+
+namespace UnitParseTemp
+{
+	std::vector<UnitClass*> ParsedUnits;
+	bool WasCreated = false;
+}
+
+// Add vehicles successfully created to list of parsed vehicles.
+DEFINE_HOOK(0x7435DE, UnitClass_ReadFromINI_Follower1, 0x6)
+{
+	GET(UnitClass*, pUnit, ESI);
+
+	UnitParseTemp::ParsedUnits.push_back(pUnit);
+	UnitParseTemp::WasCreated = true;
+
+	return 0;
+}
+
+// Add vehicles that were not successfully created to list of parsed vehicles as well as to followers list.
+DEFINE_HOOK(0x74364C, UnitClass_ReadFromINI_Follower2, 0x8)
+{
+	REF_STACK(TypeList<int>, followers, STACK_OFFSET(0xD0, -0xC0));
+
+	if (!UnitParseTemp::WasCreated)
+	{
+		followers.AddItem(-1);
+		UnitParseTemp::ParsedUnits.push_back(nullptr);
+	}
+
+	UnitParseTemp::WasCreated = false;
+
+	return 0;
+}
+
+// Set followers based on parsed vehicles.
+DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
+{
+	enum { SkipGameCode = 0x7436AC };
+
+	REF_STACK(TypeList<int>, followers, STACK_OFFSET(0xCC, -0xC0));
+	auto& units = UnitParseTemp::ParsedUnits;
+
+	for (size_t i = 0; i < units.size(); i++)
+	{
+		auto const pUnit = units[i];
+
+		if (!pUnit)
+			continue;
+
+		int followerIndex = followers[i];
+
+		if (followerIndex < 0 || followerIndex >= static_cast<int>(units.size()))
+		{
+			pUnit->FollowerCar = nullptr;
+		}
+		else
+		{
+			auto const pFollower = units[followerIndex];
+			pUnit->FollowerCar = pFollower;
+			pFollower->IsFollowerCar = true;
+		}
+	}
+
+	units.clear();
+
+	return SkipGameCode;
+}
+
+// This shouldn't be here
+// Author: tyuah8
+DEFINE_HOOK_AGAIN(0x4AF94D, EndPiggyback_PowerOn, 0x7) // Drive
+DEFINE_HOOK_AGAIN(0x54DADC, EndPiggyback_PowerOn, 0x5) // Jumpjet
+DEFINE_HOOK_AGAIN(0x69F05D, EndPiggyback_PowerOn, 0x7) // Ship
+DEFINE_HOOK(0x719F17, EndPiggyback_PowerOn, 0x5) // Teleport
+{
+	auto* iloco = R->Origin() == 0x719F17 ? R->ECX<ILocomotion*>() : R->EAX<ILocomotion*>();
+	__assume(iloco!=nullptr);
+	auto pLinkedTo = static_cast<LocomotionClass*>(iloco)->LinkedTo;
+	if (!pLinkedTo->Deactivated && !pLinkedTo->IsUnderEMP())
+		iloco->Power_On();
+	else
+		iloco->Power_Off();
+	return 0;
+}
+
+// Suppress Ares' swizzle warning
+size_t __fastcall HexStr2Int_replacement(const char* str)
+{
+	// Fake a pointer to trick Ares
+	return std::hash<std::string_view>{}(str) & 0xFFFFFF;
+}
+DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
+DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
