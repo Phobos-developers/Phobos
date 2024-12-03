@@ -58,7 +58,8 @@ void TypeConvertGroup::UniversalConvert(TechnoClass* pTarget, const std::vector<
 				// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
 				if (from == pTarget->GetTechnoType())
 				{
-					if (pTarget->Target)
+					if (pTarget->Target
+						&& !(from->WhatAmI() == AbstractType::BuildingType && toType->WhatAmI() == AbstractType::BuildingType))
 					{
 						auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 						pTargetExt->Convert_UniversalDeploy_RememberTarget = pTarget->Target;
