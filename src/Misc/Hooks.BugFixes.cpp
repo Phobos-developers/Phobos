@@ -854,45 +854,6 @@ DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
 	return SkipGameCode;
 }
 
-#pragma region WarpInDelayFix
-
-DEFINE_HOOK(0x7195BF, TeleportLocomotionClass_Process_WarpInDelay, 0x6)
-{
-	GET(ILocomotion*, pThis, ESI);
-	GET(FootClass*, pLinkedTo, ECX);
-
-	auto const pLoco = static_cast<TeleportLocomotionClass*>(pThis);
-	auto const pExt = TechnoExt::ExtMap.Find(pLinkedTo);
-	pExt->LastWarpInDelay = Math::max(pLoco->Timer.GetTimeLeft(), pExt->LastWarpInDelay);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4DA53E, FootClass_AI_WarpInDelay, 0x6)
-{
-	GET(FootClass*, pThis, ESI);
-
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->HasRemainingWarpInDelay)
-	{
-		if (pExt->LastWarpInDelay)
-		{
-			pExt->LastWarpInDelay--;
-		}
-		else
-		{
-			pExt->HasRemainingWarpInDelay = false;
-			pExt->IsBeingChronoSphered = false;
-			pThis->WarpingOut = false;
-		}
-	}
-
-	return 0;
-}
-
-#pragma endregion
-
 // this fella was { 0, 0, 1 } before and somehow it also breaks both the light position a bit and how the lighting is applied when voxels rotate - Kerbiter
 DEFINE_HOOK(0x753D86, VoxelCalcNormals_NullAdditionalVector, 0x0)
 {
@@ -949,7 +910,22 @@ DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9
 	GET(TunnelLocomotionClass* const, pLoco, ESI);
 	GET(int const, distance, EAX);
 
-	return distance >= pLoco->LinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
+	// The movement speed was actually also hardcoded here to 19, so the distance check made sense
+	// It can now be customized globally or per TechnoType however - Starkku
+	auto const pType = pLoco->LinkedTo->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	int speed = pTypeExt->SubterraneanSpeed >= 0 ? pTypeExt->SubterraneanSpeed : RulesExt::Global()->SubterraneanSpeed;
+
+	// Calculate speed multipliers.
+	pLoco->LinkedTo->SpeedPercentage = 1.0; // Subterranean locomotor doesn't normally use this so it would be 0.0 here and cause issues.
+	int maxSpeed = pType->Speed;
+	pType->Speed = speed;
+	speed = pLoco->LinkedTo->GetCurrentSpeed();
+	pType->Speed = maxSpeed;
+
+	TunnelLocomotionClass::TunnelMovementSpeed = speed;
+
+	return distance >= speed + 1 ? KeepMoving : CloseEnough;
 }
 
 DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
@@ -1002,7 +978,9 @@ DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
 
 	GET(TechnoClass*, pThis, ESI);
 
-	if (pThis->GetTechnoType()->AttackFriendlies)
+	if (pThis->GetTechnoType()->AttackFriendlies
+		&& pThis->Target->GetOwningHouse()->IsAlliedWith(pThis) // TODO
+	)
 		return SkipResetTarget;
 
 	return 0;
@@ -1079,4 +1057,28 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 	return SkipGameCode;
 }
 
-#pragma endregion
+// This shouldn't be here
+// Author: tyuah8
+DEFINE_HOOK_AGAIN(0x4AF94D, EndPiggyback_PowerOn, 0x7) // Drive
+DEFINE_HOOK_AGAIN(0x54DADC, EndPiggyback_PowerOn, 0x5) // Jumpjet
+DEFINE_HOOK_AGAIN(0x69F05D, EndPiggyback_PowerOn, 0x7) // Ship
+DEFINE_HOOK(0x719F17, EndPiggyback_PowerOn, 0x5) // Teleport
+{
+	auto* iloco = R->Origin() == 0x719F17 ? R->ECX<ILocomotion*>() : R->EAX<ILocomotion*>();
+	__assume(iloco!=nullptr);
+	auto pLinkedTo = static_cast<LocomotionClass*>(iloco)->LinkedTo;
+	if (!pLinkedTo->Deactivated && !pLinkedTo->IsUnderEMP())
+		iloco->Power_On();
+	else
+		iloco->Power_Off();
+	return 0;
+}
+
+// Suppress Ares' swizzle warning
+size_t __fastcall HexStr2Int_replacement(const char* str)
+{
+	// Fake a pointer to trick Ares
+	return std::hash<std::string_view>{}(str) & 0xFFFFFF;
+}
+DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
+DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
