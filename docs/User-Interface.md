@@ -276,6 +276,16 @@ In `rulesmd.ini`:
 SelectionFlashDuration=0  ; integer, number of frames
 ```
 
+### Set sidebar tab by selecting factory
+
+Factory buildings, owned by player, now may switch corresponded sidebar tabs, when selected, by enabling `SetTabBySelectingFactory` parameter.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+SetTabBySelectingFactory=false  ; boolean
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers
