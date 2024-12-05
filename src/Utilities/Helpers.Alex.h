@@ -53,25 +53,6 @@ namespace Helpers
 
 	namespace Alex
 	{
-
-		//! Less comparison for pointer types.
-		/*!
-			Dereferences the values before comparing them using std::less.
-
-			This compares the actual objects pointed to instead of their
-			arbitrary pointer values.
-		*/
-		struct deref_less
-		{
-			using is_transparent = void;
-
-			template <typename T, typename U>
-			bool operator()(T&& lhs, U&& rhs) const
-			{
-				return std::less<>()(*lhs, *rhs);
-			}
-		};
-
 		//! Represents a set of unique items.
 		template<typename T>
 		using DistinctCollector = std::set<T, decltype([](T a, T b)
