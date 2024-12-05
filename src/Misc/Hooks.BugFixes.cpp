@@ -252,7 +252,7 @@ DEFINE_HOOK(0x51BB6E, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // InfantryCl
 	if (pThis->TemporalTargetingMe)
 	{
 		// Also check for vftable here to guarantee the TemporalClass not being destoryed already.
-		if (VTable::Get(pThis->TemporalTargetingMe) == 0x7F5180) // TemporalClass::`vtable`
+		if (VTable::Get(pThis->TemporalTargetingMe) == TemporalClass::AbsVTable)
 			pThis->TemporalTargetingMe->Update();
 		else // It should had being warped out, delete this object
 		{
@@ -332,15 +332,11 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 {
 	GET(AircraftClass*, pThis, EDI);
 
-	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Fly)
+	if (const auto pLocomotor = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor))
 	{
-		if (const auto pLocomotor = static_cast<FlyLocomotionClass*>(pThis->Locomotor.GetInterfacePtr()))
-		{
-			double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
-				TechnoExt::GetCurrentSpeedMultiplier(pThis);
-
-			R->EAX(static_cast<int>(currentSpeed));
-		}
+		double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
+			TechnoExt::GetCurrentSpeedMultiplier(pThis);
+		R->EAX(static_cast<int>(currentSpeed));
 	}
 
 	return 0;
@@ -765,10 +761,9 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
 {
 	// Fix : Suppress capture EVA event if ConsideredVehicle=yes
-	announce = announce && !pThis->Type->IsVehicle();
+	if(announce) announce = pThis->IsStrange();
 
-	using this_func_sig = bool(__thiscall*)(BuildingClass*, HouseClass*, bool);
-	bool res = reinterpret_cast<this_func_sig>(0x448260)(pThis, pHouse, announce);
+	bool res = reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pThis, pHouse, announce);
 
 	// Fix : update powered anims
 	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
