@@ -761,7 +761,7 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
 {
 	// Fix : Suppress capture EVA event if ConsideredVehicle=yes
-	if(announce) announce = pThis->IsStrange();
+	if(announce) announce = !pThis->IsStrange();
 
 	bool res = reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pThis, pHouse, announce);
 
