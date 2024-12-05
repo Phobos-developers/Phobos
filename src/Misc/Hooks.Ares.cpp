@@ -3,6 +3,7 @@
 
 #include <Utilities/Macro.h>
 #include <Utilities/AresHelper.h>
+#include <Utilities/Helpers.Alex.h>
 
 // In vanilla YR, game destroys building animations directly by calling constructor.
 // Ares changed this to call UnInit() which has a consequence of doing pointer invalidation on the AnimClass pointer.
@@ -31,6 +32,10 @@ void Apply_Ares3_0_Patches()
 	// Abductor fix:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x54CDF, AresHelper::AresBaseAddress + 0x54D3C);
 
+	// Redirect Ares' getCellSpreadItems to our implementation:
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62267, &Helpers::Alex::getCellSpreadItems);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x528C8, &Helpers::Alex::getCellSpreadItems);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x5273A, &Helpers::Alex::getCellSpreadItems);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -40,4 +45,8 @@ void Apply_Ares3_0p1_Patches()
 	// What's done here: Skip Mark_Occupation_Bits cuz pFoot->Remove/Limbo() will do it.
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x5598F, AresHelper::AresBaseAddress + 0x559EC);
 
+	// Redirect Ares' getCellSpreadItems to our implementation:
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62FB7, &Helpers::Alex::getCellSpreadItems);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x53578, &Helpers::Alex::getCellSpreadItems);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x533EA, &Helpers::Alex::getCellSpreadItems);
 }
