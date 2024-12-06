@@ -291,15 +291,6 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		}
 		while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
 
-		// Skip this check to use FindByCountryIndex
-		// Only valid House indexes
-		//if ((pThis->Param4 >= HouseClass::Array->Count
-		//	&& pThis->Param4 < HouseClass::PlayerAtA)
-		//	|| pThis->Param4 > (HouseClass::PlayerAtA + HouseClass::Array->Count - 3))
-		//{
-		//	return true;
-		//}
-
 		switch (pThis->Param4)
 		{
 		case -1:
@@ -331,9 +322,6 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 					break;
 				}
 			}
-
-			if (pHouse < 0)
-				return true;
 
 			break;
 
