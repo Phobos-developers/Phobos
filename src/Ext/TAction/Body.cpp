@@ -277,8 +277,8 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 	if (SuperWeaponTypeClass::Array->Count > 0)
 	{
 		int swIdx = pThis->Param3;
-		int houseIdx = -1;
-		std::vector<int> housesListIdx;
+		HouseClass* pHouse = nullptr;
+		std::vector<HouseClass*> housesList;
 		CellStruct targetLocation = { (short)X, (short)Y };
 
 		do
@@ -310,12 +310,12 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 					&& !pHouse->IsObserver()
 					&& !pHouse->Type->MultiplayPassive)
 				{
-					housesListIdx.push_back(pHouse->ArrayIndex);
+					housesList.push_back(pHouse);
 				}
 			}
 
-			if (housesListIdx.size() > 0)
-				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
+			if (housesList.size() > 0)
+				pHouse = housesList.at(ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1));
 			else
 				return true;
 
@@ -327,12 +327,12 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			{
 				if (pHouseNeutral->IsNeutral())
 				{
-					houseIdx = pHouseNeutral->ArrayIndex;
+					pHouse = pHouseNeutral;
 					break;
 				}
 			}
 
-			if (houseIdx < 0)
+			if (pHouse < 0)
 				return true;
 
 			break;
@@ -345,12 +345,12 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 					&& !pHouse->Defeated
 					&& !pHouse->IsObserver())
 				{
-					housesListIdx.push_back(pHouse->ArrayIndex);
+					housesList.push_back(pHouse);
 				}
 			}
 
-			if (housesListIdx.size() > 0)
-				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
+			if (housesList.size() > 0)
+				pHouse = housesList.at(ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1));
 			else
 				return true;
 
@@ -358,14 +358,14 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		default:
 			if (pThis->Param4 >= 0)
-				houseIdx = pThis->Param4;
+				pHouse = HouseClass::Index_IsMP(pThis->Param4) ? HouseClass::FindByIndex(pThis->Param4) : HouseClass::FindByCountryIndex(pThis->Param4);
 			else
 				return true;
 
 			break;
 		}
 
-		if (HouseClass* pHouse = HouseClass::Index_IsMP(houseIdx) ? HouseClass::FindByIndex(houseIdx) : HouseClass::FindByCountryIndex(houseIdx))
+		if (pHouse)
 		{
 			if (auto const pSuper = pHouse->Supers.GetItem(swIdx))
 			{
