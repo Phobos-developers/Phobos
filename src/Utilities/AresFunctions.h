@@ -27,10 +27,6 @@ public:
 
 	static bool(__thiscall* IsTargetConstraintsEligible)(void*, HouseClass*, bool);
 
-	static void*(__thiscall* SWTypeExtMap_Find)(void*, SuperWeaponTypeClass*);
-
-	static void* SWTypeExtMap;
-
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
 
 private:
