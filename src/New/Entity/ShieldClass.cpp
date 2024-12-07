@@ -851,7 +851,7 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 			position.Y -= deltaY + 3;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				frame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				frame, &position, pBound, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 
@@ -868,7 +868,7 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 			const int emptyFrame = this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty.Get(0));
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				emptyFrame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				emptyFrame, &position, pBound, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 }
@@ -891,7 +891,7 @@ void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 	{
 		position.X += length + 1 + (length == 8 ? length + 1 : 0);
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipBoard,
-			frame, &position, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			frame, &position, pBound, BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		position.X -= length + 1 + (length == 8 ? length + 1 : 0);
 	}
 
@@ -903,7 +903,7 @@ void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 	{
 		position.X += 2;
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-			frame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			frame, &position, pBound, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 

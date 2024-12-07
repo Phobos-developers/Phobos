@@ -490,7 +490,7 @@ void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLoca
 
 	if (barType->Board_Background_File && (pThis->IsSelected || barType->Board_Background_ShowWhenNotSelected))
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Board_Background_File.Get(),
-				0, &boardPosition, pBounds, BlitterFlags(0xE00) | blitFlagsBG, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				0, &boardPosition, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha | blitFlagsBG, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 
 	Point2D position = pLocation;
 	position += {sign * (int)round(sectionAmount * sectionOffset.X / 2), sign * (int)round(sectionAmount * sectionOffset.Y / 2)};
@@ -501,7 +501,7 @@ void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLoca
 		{
 			position -= {sign * sectionOffset.X, sign * sectionOffset.Y};
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Sections_Pips_File.Get(),
-					sectionEmptyFrame, &position, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+					sectionEmptyFrame, &position, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 		
 		position = pLocation;
@@ -518,10 +518,10 @@ void TechnoExt::DrawBar(TechnoClass* pThis, BarTypeClass* barType, Point2D pLoca
 	{
 		position -= {sign * sectionOffset.X, sign * sectionOffset.Y};
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Sections_Pips_File.Get(),
-				frameIdxa, &position, pBounds, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				frameIdxa, &position, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
 	if (barType->Board_Foreground_File && (pThis->IsSelected || barType->Board_Foreground_ShowWhenNotSelected))
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, barType->Board_Foreground_File.Get(),
-				0, &boardPosition, pBounds, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				0, &boardPosition, pBounds, BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha | blitFlagsFG, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }

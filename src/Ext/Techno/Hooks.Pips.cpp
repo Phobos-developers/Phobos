@@ -3,7 +3,7 @@
 #include <TiberiumClass.h>
 #include "Body.h"
 
-DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
+/*DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
@@ -11,7 +11,7 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 		return 0x6F6AB6;
 
 	return 0;
-}
+}*/
 
 DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 {
@@ -26,7 +26,20 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
-			pShieldData->DrawShieldBar_Building(length, pBound);
+		{
+			const auto thisSBType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->ShieldBar_BarType.Get();
+
+			if (thisSBType)
+			{
+				Point2D position = *pLocation;
+				position.Y -= (pThis->Type->Height + 1) * Unsorted::CellHeightInPixels / 2;
+				TechnoExt::DrawBar(pThis, thisSBType, position, pBound, pShieldData->GetHealthRatio(), pShieldData->GetType()->GetConditionYellow(), pShieldData->GetType()->GetConditionRed());
+			}
+			else
+			{
+				pShieldData->DrawShieldBar_Building(length, pBound);
+			}
+		}
 	}
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
@@ -47,8 +60,20 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 	{
 		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
 		{
-			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-			pShieldData->DrawShieldBar_Other(length, pBound);
+			const auto thisSBType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->ShieldBar_BarType.Get();
+
+			if (thisSBType)
+			{
+				Point2D position = *pLocation;
+				position.Y -= pThis->WhatAmI() == AbstractType::Infantry ? 25 : 26;
+				position.Y += pThis->GetTechnoType()->PixelSelectionBracketDelta + pShieldData->GetType()->BracketDelta;
+				TechnoExt::DrawBar(pThis, thisSBType, position, pBound, pShieldData->GetHealthRatio(), pShieldData->GetType()->GetConditionYellow(), pShieldData->GetType()->GetConditionRed());
+			}
+			else
+			{
+				const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+				pShieldData->DrawShieldBar_Other(length, pBound);
+			}
 		}
 	}
 
@@ -370,31 +395,38 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 	const auto thisHBType = pTypeExt->HealthBar_BarType.Get();
 	const auto thisSBType = pTypeExt->ShieldBar_BarType.Get();
 	Point2D position = *pLocation;
-	int length = pThisIsInf ? 8 : 17;
 
 	if (pThisIsBld)
-	{
 		position.Y -= (static_cast<BuildingClass*>(pThis)->Type->Height + 1) * Unsorted::CellHeightInPixels / 2;
-		const int pThisBldTypeWidth = static_cast<BuildingClass*>(pThis)->Type->GetFoundationWidth();
-		length = pThisBldTypeWidth * 7 + (pThisBldTypeWidth / 2);
-	}
 	else
-	{
-		position.Y -= pThisIsInf ? 25 : 26;
-		position.Y += pThis->GetTechnoType()->PixelSelectionBracketDelta;
-	}
+		position.Y -= (pThisIsInf ? 25 : 26) - pThis->GetTechnoType()->PixelSelectionBracketDelta;
 
 	TechnoExt::DrawBar(pThis, thisHBType, position, pBound, pThis->GetHealthPercentage(), RulesClass::Instance->ConditionYellow, RulesClass::Instance->ConditionRed);
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (const auto pShieldData = pExt->Shield.get())
 	{
-		if (pShieldData->IsAvailable() && (pShieldData->GetHP() > 0))
+		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
 		{
-			if(thisSBType)
+			if (thisSBType)
+			{
+				position.Y += pShieldData->GetType()->BracketDelta;
 				TechnoExt::DrawBar(pThis, thisSBType, position, pBound, pShieldData->GetHealthRatio(), pShieldData->GetType()->GetConditionYellow(), pShieldData->GetType()->GetConditionRed());
+			}
 			else
-				pShieldData->DrawShieldBar(length, pLocation, pBound);
+			{
+				if (pThisIsBld)
+				{
+					const short pThisBldTypeWidth = static_cast<BuildingClass*>(pThis)->Type->GetFoundationWidth();
+					const int length = pThisBldTypeWidth * 7 + (pThisBldTypeWidth / 2);
+					pShieldData->DrawShieldBar_Building(length, pBound);
+				}
+				else
+				{
+					const int length = pThisIsInf ? 8 : 17;
+					pShieldData->DrawShieldBar_Other(length, pBound);
+				}
+			}
 		}
 	}
 
