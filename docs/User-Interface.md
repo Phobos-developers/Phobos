@@ -607,7 +607,7 @@ ExclusiveSWSidebar.BottomPCX=       ; filename - including the .pcx extension
 ExclusiveSWSidebar.ToggleShape=     ; filename - including the .shp extension
 
 [SOMESW]
-AllowInExclusiveSidebar=true        ; boolean
+ExclusiveSidebar.Allow=true         ; boolean
 ExclusiveSidebar.PriorityHouses=    ; list of house types
 ExclusiveSidebar.RequiredHouses=    ; list of house types
 ```
