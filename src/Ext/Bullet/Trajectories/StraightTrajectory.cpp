@@ -598,7 +598,10 @@ void StraightTrajectory::BulletDetonateVelocityCheck(BulletClass* pBullet, House
 	if (velocityCheck)
 	{
 		this->RemainingDistance = 0;
-		pBullet->Velocity *= ((locationDistance + 32.0) / pType->Trajectory_Speed);
+		locationDistance += 32.0;
+
+		if (locationDistance < pType->Trajectory_Speed)
+			pBullet->Velocity *= (locationDistance / pType->Trajectory_Speed);
 	}
 }
 
