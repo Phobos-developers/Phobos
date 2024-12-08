@@ -1366,6 +1366,22 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### Damaged unit image changes
+
+- When a unit is damaged (health points percentage is lower than `ConditionYellow` percentage), it now may use different image set by `DamagedImage` UnitType.
+- It is also works on water by setting `WaterDamagedImage` UnitType, similar to Ares' `WaterImage`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEUNIT]                   ; UnitType
+DamagedImage=                ; UnitType entry
+WaterDamagedImage=           ; UnitType entry
+```
+
+```{warning}
+Note that the UnitTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+```
+
 ## Terrain
 
 ### Destroy animation & sound

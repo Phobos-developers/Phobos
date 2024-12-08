@@ -543,3 +543,22 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
+{
+	enum { Continue = 0x73B4E0 };
+
+	GET(UnitClass*, pThis, EBP);
+	TechnoExt::ExtData *pData = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed && (pThis->IsYellowHP() || pThis->IsRedHP()))
+	{
+		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
+		{
+			ObjectTypeClass* Image = pCustomType;
+			R->EBX<ObjectTypeClass *>(Image);
+		}
+	}
+
+	R->EAX(pThis->WalkedFramesSoFar);
+	return Continue;
+}

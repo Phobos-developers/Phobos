@@ -466,6 +466,20 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const {
+	if (auto pUnit = abstract_cast<UnitClass*>(this->OwnerObject()))
+	{
+		auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+		if (pData->WaterDamagedImage && !pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water)
+			return pData->WaterDamagedImage;
+		else if (pData->DamagedImage)
+			return pData->DamagedImage;
+
+	}
+	return nullptr;
+}
+
 // =============================
 // load / save
 
