@@ -235,7 +235,7 @@ This page lists all the individual contributions to the project by their author.
   - Air unit tracking fix for large range / `CellSpread`
   - Extra tint intensity for Iron Curtain & Force Shield
   - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565
-  - Customizing height at which subterranean units travel
+  - Customizing height and speed at which subterranean units travel
   - AI superweapon delay timer customization
   - Disabling `MultipleFactory` bonus from specific BuildingType
   - Customizable ChronoSphere teleport delays for units
@@ -332,6 +332,8 @@ This page lists all the individual contributions to the project by their author.
    - `InfDeath=9` versus jumpjet infantry 0 damage fix
    - Skip rally point line drawing when undeploying a building
    - Ares' `SW.Shots` hint on extended tooltips
+   - Ares' Abductor weapon fix
+   - Suppress Ares' swizzle warning when parsing tags and taskforces
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support

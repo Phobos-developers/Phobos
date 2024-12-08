@@ -49,7 +49,6 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 		duree = std::max(distance / factor, duree);
 
 	}
-	pLocomotor->Timer.Start(duree);
 
 	pLinked->WarpingOut = true;
 
@@ -57,11 +56,13 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	{
 		if (pUnit->Type->Harvester || pUnit->Type->Weeder)
 		{
-			pLocomotor->Timer.Start(0);
+			duree = 0;
 			pLinked->WarpingOut = false;
 		}
 	}
-	linkedExt->LastWarpInDelay = std::max(pLocomotor->Timer.GetTimeLeft(), linkedExt->LastWarpInDelay);
+
+	pLocomotor->Timer.Start(duree);
+	linkedExt->LastWarpInDelay = std::max(duree, linkedExt->LastWarpInDelay);
 	return 0x7195BC;
 }
 
