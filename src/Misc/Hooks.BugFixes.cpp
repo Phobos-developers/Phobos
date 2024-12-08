@@ -1052,6 +1052,8 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 	return SkipGameCode;
 }
 
+#pragma endregion
+
 // This shouldn't be here
 // Author: tyuah8
 DEFINE_HOOK_AGAIN(0x4AF94D, EndPiggyback_PowerOn, 0x7) // Drive
