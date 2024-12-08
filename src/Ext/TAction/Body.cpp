@@ -277,7 +277,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 	if (SuperWeaponTypeClass::Array->Count > 0)
 	{
 		int swIdx = pThis->Param3;
-		HouseClass* pHouse = nullptr;
+		HouseClass* pExecuteHouse = nullptr;  // House who will fire the SW.
 		std::vector<HouseClass*> housesList;
 		CellStruct targetLocation = { (short)X, (short)Y };
 
@@ -306,7 +306,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			}
 
 			if (housesList.size() > 0)
-				pHouse = housesList.at(ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1));
+				pExecuteHouse = housesList[ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 
@@ -318,7 +318,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			{
 				if (pHouseNeutral->IsNeutral())
 				{
-					pHouse = pHouseNeutral;
+					pExecuteHouse = pHouseNeutral;
 					break;
 				}
 			}
@@ -338,7 +338,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			}
 
 			if (housesList.size() > 0)
-				pHouse = housesList.at(ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1));
+				pExecuteHouse = housesList[ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 
@@ -346,16 +346,16 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		default:
 			if (pThis->Param4 >= 0)
-				pHouse = HouseClass::Index_IsMP(pThis->Param4) ? HouseClass::FindByIndex(pThis->Param4) : HouseClass::FindByCountryIndex(pThis->Param4);
+				pExecuteHouse = HouseClass::Index_IsMP(pThis->Param4) ? HouseClass::FindByIndex(pThis->Param4) : HouseClass::FindByCountryIndex(pThis->Param4);
 			else
 				return true;
 
 			break;
 		}
 
-		if (pHouse)
+		if (pExecuteHouse)
 		{
-			if (auto const pSuper = pHouse->Supers.GetItem(swIdx))
+			if (auto const pSuper = pExecuteHouse->Supers.GetItem(swIdx))
 			{
 				int oldstart = pSuper->RechargeTimer.StartTime;
 				int oldleft = pSuper->RechargeTimer.TimeLeft;
