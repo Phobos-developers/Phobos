@@ -71,7 +71,7 @@ public:
 		if (!Stm.Load(Count))
 			return false;
 
-
+		Array.reserve(Count);
 		for (size_t i = 0; i < Count; ++i)
 		{
 			void* oldPtr = nullptr;
