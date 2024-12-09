@@ -33,12 +33,6 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
-void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor)
-{
-	if (auto ext = TechnoTypeExt::ExtMap.Find(pType))
-		ext->ApplyTurretOffset(mtx, factor);
-}
-
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
@@ -203,6 +197,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 				{
 					if (!alwaysOnGround)
 					{
+						inAir = pTechno->IsInAir();
 						if (auto const pFlyLoco = locomotion_cast<FlyLocomotionClass*>(pTechno->Locomotor))
 						{
 							pTechno->SetLocation(location);
@@ -351,6 +346,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WarpOutWeapon.Read<true>(exINI, pSection, "WarpOutWeapon");
 	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
 
+	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
 	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
 
 	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
@@ -831,6 +827,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarpOutWeapon)
 		.Process(this->WarpInWeapon_UseDistanceAsDamage)
 
+		.Process(this->SubterraneanSpeed)
 		.Process(this->SubterraneanHeight)
 
 		.Process(this->OreGathering_Anims)

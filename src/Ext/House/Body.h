@@ -150,8 +150,6 @@ public:
 	static bool HasGenericPrerequisite(int idx, std::map<BuildingTypeClass*, int> ownedBuildings);
 	static int FindGenericPrerequisite(const char* id);
 
-	static void SetSkirmishHouseName(HouseClass* pHouse);
-
 	static bool IsDisabledFromShell(
 	HouseClass const* pHouse, BuildingTypeClass const* pItem);
 

@@ -126,7 +126,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
-- You can now specify houses named `<Player @ A>` through `<Player @ H>` as the owner of TechnoTypes preplaced on the map in the editor, and they will be correctly given to players starting on points 1-8. Originally, it was only possible to use these house names in events, actions and teams.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
 - `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
@@ -171,9 +170,14 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
 - Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first.
-- Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) are now correctly parsed for Lunar theater.
+- Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater by setting `[General]` -> `ApplyLunarFixes` to true in `lunarmd.ini`. Do note that enabling this without fixing f.ex `WoodBridgeTileSet` pointing to a tileset with `TilesInSet=0` will cause issues in-game.
 - Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being displayed in water instead of `WetAttack`.
 - Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings.
+- `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps.
+- Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers.
+- Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
+- Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
+- Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 
 ## Fixes / interactions with other extensions
 
@@ -185,6 +189,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
+- Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles.
+- Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
 
 ## Aircraft
 
@@ -342,20 +348,20 @@ AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
 
 ### Unit repair customization
 
-- It is now possible to customize the repairing of units by `UnitRepair=true` and `UnitReload=true` buildings.
+- It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.
   - `Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General]`->`ReloadRate` if `UnitReload=true` and if overridden per AircraftType (Ares feature) can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General]`->`URepairRate`.
     - On `UnitReload=true` building setting this to negative value will fully disable the repair functionality.
   - `Units.RepairStep` how much `Strength` is restored per repair tick. Defaults to `[General]`->`RepairStep`.
   - `Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Defaults to `[General]`->`RepairPercent`. Note that the final cost is set to 1 if it is less than that.
-    - `Units.DisableRepairCost` if set to true disables the repair cost entirely.
+    - `Units.UseRepairCost` can be used to customize if repair cost is applied at all. Defaults to false for infantry, true for everything else.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]                 ; BuildingType
-Units.RepairRate=              ; floating point value, ingame minutes
-Units.RepairStep=              ; integer
-Units.RepairPercent=           ; floating point value, percents or absolute
-Units.DisableRepairCost=false  ; boolean
+[SOMEBUILDING]        ; BuildingType
+Units.RepairRate=     ; floating point value, ingame minutes
+Units.RepairStep=     ; integer
+Units.RepairPercent=  ; floating point value, percents or absolute
+Units.UseRepairCost=  ; boolean
 ```
 
 ### Airstrike target eligibility
@@ -919,21 +925,24 @@ AIAllToHunt=true          ; boolean
 GatherWhenMCVDeploy=true  ; boolean
 ```
 
-### Subterranean unit travel height
+### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
+- Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used. This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General]`->`TunnelSpeed`.
 
 In `rulesmd.ini`:
 ```ini
 [General]
 SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
+SubterraneanSpeed=7.5    ; floating point value
 
 [SOMETECHNO]             ; TechnoType
 SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
+SubterraneanSpeed=-1     ; floating point value
 ```
 
 ```{warning}
-This expects negative values to be used and may behave erratically if set to above -50.
+SubterraneanHeight expects negative values to be used and may behave erratically if set to above -50.
 ```
 
 ### Voxel body multi-section shadows
@@ -1452,6 +1461,17 @@ In `rulesmd.ini`:
 [SOMEWEAPON]                      ; WeaponType
 AmbientDamage.Warhead=            ; WarheadType
 AmbientDamage.IgnoreTarget=false  ; boolean
+```
+
+### Charge turret delays
+
+- It is now possible to customize the delay of `IsChargeTurret=true` unit turret animation per weapon, per `Burst` shot instead of defaulting to weapon's rearm timer (`ROF`, `BurstDelays` etc). Delay in the list corresponding to burst shot is used, or last delay listed if number of listed values is lower than the current burst index. Delay of 0 or less means previous delay, if applicable, is not restarted.
+  - Note that unlike the default rearm timer that uses `ROF`, any modifiers are not applied to explicitly set charge turret delays.
+
+  In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]          ; WeaponType
+ChargeTurret.Delays=  ; list of integers - game frames
 ```
 
 ### Customizable disk laser radius
