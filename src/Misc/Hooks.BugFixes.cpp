@@ -1090,7 +1090,7 @@ DEFINE_HOOK(0x4C75E6, EventClass_RespondToEvent_Stop, 0x5)
 		pTechno->vt_entry_4A8(); // pTechno->ClearMegaMissionData()
 
 	// To avoid aircrafts pausing in the air and let they returning to air base immediately
-	if (pTechno->WhatAmI() == AbstractType::Aircraft && !pTechno->Airstrike && !pTechno->Spawned && pTechno->GetHeight() > Unsorted::CellHeight)
+	if (pTechno->WhatAmI() == AbstractType::Aircraft && !pTechno->Airstrike && !pTechno->Spawned && static_cast<AircraftClass*>(pTechno)->Type->AirportBound && pTechno->GetHeight() > Unsorted::CellHeight)
 		pTechno->EnterIdleMode(false, true);
 
 	return SkipGameCode;
