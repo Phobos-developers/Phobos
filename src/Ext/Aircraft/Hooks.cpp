@@ -334,7 +334,7 @@ DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
 	{
 		auto coords = pThis->GetCoords();
 
-		if (pThis->TargetAndEstimateDamage(coords, ThreatType::Normal))
+		if (pThis->TargetAndEstimateDamage(coords, ThreatType::Area))
 		{
 			pThis->QueueMission(Mission::Attack, false);
 			return SkipGameCode;
