@@ -15,10 +15,10 @@ bool SWSidebarClass::AddColumn()
 {
 	auto& columns = this->Columns;
 
-	if (static_cast<int>(columns.size()) >= Phobos::UI::ExclusiveSWSidebar_MaxColumn)
+	if (static_cast<int>(columns.size()) >= Phobos::UI::SuperWeaponSidebar_MaxColumn)
 		return false;
 
-	const auto column = DLLCreate<SWColumnClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count + 1 + static_cast<int>(columns.size()), 0, 0, 60 + Phobos::UI::ExclusiveSWSidebar_Interval, 48);
+	const auto column = DLLCreate<SWColumnClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count + 1 + static_cast<int>(columns.size()), 0, 0, 60 + Phobos::UI::SuperWeaponSidebar_Interval, 48);
 
 	if (!column)
 		return false;
@@ -131,7 +131,7 @@ void SWSidebarClass::SortButtons()
 
 	const int buttonCount = static_cast<int>(vec_Buttons.size());
 	const int cameoWidth = 60, cameoHeight = 48;
-	const int maximum = Phobos::UI::ExclusiveSWSidebar_Max;
+	const int maximum = Phobos::UI::SuperWeaponSidebar_Max;
 	Point2D location = { 0, (DSurface::ViewBounds().Height - std::min(buttonCount, maximum) * cameoHeight) / 2 };
 	int location_Y = location.Y;
 	int rowIdx = 0, columnIdx = 0;
@@ -153,7 +153,7 @@ void SWSidebarClass::SortButtons()
 			rowIdx = 0;
 			columnIdx++;
 			location_Y += cameoHeight / 2;
-			location = { location.X + cameoWidth + Phobos::UI::ExclusiveSWSidebar_Interval, location_Y };
+			location = { location.X + cameoWidth + Phobos::UI::SuperWeaponSidebar_Interval, location_Y };
 		}
 		else
 		{
@@ -170,8 +170,8 @@ void SWSidebarClass::SortButtons()
 
 int SWSidebarClass::GetMaximumButtonCount()
 {
-	const int firstColumn = Phobos::UI::ExclusiveSWSidebar_Max;
-	const int columns = std::min(firstColumn, Phobos::UI::ExclusiveSWSidebar_MaxColumn);
+	const int firstColumn = Phobos::UI::SuperWeaponSidebar_Max;
+	const int columns = std::min(firstColumn, Phobos::UI::SuperWeaponSidebar_MaxColumn);
 	return (firstColumn + (firstColumn - (columns - 1))) * columns / 2;
 }
 
@@ -252,12 +252,12 @@ DEFINE_HOOK(0x6A5082, SidebarClass_InitClear_InitializeSWSidebar, 0x5)
 
 DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeSWSidebar, 0x5)
 {
-	if (!Phobos::UI::ExclusiveSWSidebar || Unsorted::ArmageddonMode)
+	if (!Phobos::UI::SuperWeaponSidebar || Unsorted::ArmageddonMode)
 		return 0;
 
 	if (const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]))
 	{
-		if (const auto toggleShape = pSideExt->ExclusiveSWSidebar_ToggleShape.Get())
+		if (const auto toggleShape = pSideExt->SuperWeaponSidebar_ToggleShape.Get())
 		{
 			if (const auto toggleButton = DLLCreate<ToggleSWButtonClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count, 0, 0, toggleShape->Width, toggleShape->Height))
 			{

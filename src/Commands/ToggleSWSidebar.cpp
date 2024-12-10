@@ -29,9 +29,9 @@ void ToggleSWSidebar::Execute(WWKey eInput) const
 	ToggleSWButtonClass::SwitchSidebar();
 
 	if (SidebarExt::Global()->SWSidebar_Enable)
-		MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("TXT_EX_SW_SIDEBAR_ENABLE", L"Super Weapon Sidebar Enabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:SuperWeaponSidebarEnabled", L"Super Weapon Sidebar Enabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	else
-		MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("TXT_EX_SW_SIDEBAR_DISABLE", L"Super Weapon Sidebar Disabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:SuperWeaponSidebarDisabled", L"Super Weapon Sidebar Disabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 
 	if (SWSidebarClass::Instance.CurrentColumn)
 		MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);

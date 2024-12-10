@@ -62,9 +62,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->TabIndex)
-		.Process(this->ExclusiveSidebar_Allow)
-		.Process(this->ExclusiveSidebar_PriorityHouses)
-		.Process(this->ExclusiveSidebar_RequiredHouses)
+		.Process(this->SuperWeaponSidebar_Allow)
+		.Process(this->SuperWeaponSidebar_PriorityHouses)
+		.Process(this->SuperWeaponSidebar_RequiredHouses)
 		.Process(this->SidebarPal)
 		.Process(this->SidebarPCX)
 		.Process(this->UseWeeds)
@@ -214,9 +214,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TabIndex.Read(exINI, pSection, "TabIndex");
 	GeneralUtils::IntValidCheck(&this->TabIndex, pSection, "TabIndex", 1, 0, 3);
     
-	this->ExclusiveSidebar_Allow.Read(exINI, pSection, "ExclusiveSidebar.Allow");
-	this->ExclusiveSidebar_PriorityHouses = pINI->ReadHouseTypesList(pSection, "ExclusiveSidebar.PriorityHouses", this->ExclusiveSidebar_PriorityHouses);
-	this->ExclusiveSidebar_RequiredHouses = pINI->ReadHouseTypesList(pSection, "ExclusiveSidebar.RequiredHouses", this->ExclusiveSidebar_RequiredHouses);
+	this->SuperWeaponSidebar_Allow.Read(exINI, pSection, "SuperWeaponSidebar.Allow");
+	this->SuperWeaponSidebar_PriorityHouses = pINI->ReadHouseTypesList(pSection, "SuperWeaponSidebar.PriorityHouses", this->SuperWeaponSidebar_PriorityHouses);
+	this->SuperWeaponSidebar_RequiredHouses = pINI->ReadHouseTypesList(pSection, "SuperWeaponSidebar.RequiredHouses", this->SuperWeaponSidebar_RequiredHouses);
 
 	this->SidebarPal.LoadFromINI(pINI, pSection, "SidebarPalette");
 	this->SidebarPCX.Read(pINI, pSection, "SidebarPCX");

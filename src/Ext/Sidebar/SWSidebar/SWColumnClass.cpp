@@ -10,7 +10,7 @@ SWColumnClass::SWColumnClass(unsigned int id, int x, int y, int width, int heigh
 	auto& columns = SWSidebarClass::Instance.Columns;
 	columns.emplace_back(this);
 
-	this->MaxButtons = Phobos::UI::ExclusiveSWSidebar_Max - (static_cast<int>(columns.size()) - 1);
+	this->MaxButtons = Phobos::UI::SuperWeaponSidebar_Max - (static_cast<int>(columns.size()) - 1);
 }
 
 bool SWColumnClass::Draw(bool forced)
@@ -22,7 +22,7 @@ bool SWColumnClass::Draw(bool forced)
 	auto bounds = pSurface->GetRect();
 
 	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
-	const auto centerPCX = pSideExt->ExclusiveSWSidebar_CenterPCX.GetSurface();
+	const auto centerPCX = pSideExt->SuperWeaponSidebar_CenterPCX.GetSurface();
 
 	if (centerPCX)
 	{
@@ -37,14 +37,14 @@ bool SWColumnClass::Draw(bool forced)
 		}
 	}
 
-	if (const auto topPCX = pSideExt->ExclusiveSWSidebar_TopPCX.GetSurface())
+	if (const auto topPCX = pSideExt->SuperWeaponSidebar_TopPCX.GetSurface())
 	{
 		RectangleStruct backRect = { this->X, this->Y, topPCX->GetWidth(), topPCX->GetHeight() };;
 		backRect.Y -= backRect.Height;
 		PCX::Instance->BlitToSurface(&backRect, pSurface, topPCX);
 	}
 
-	if (const auto bottomPCX = pSideExt->ExclusiveSWSidebar_BottomPCX.GetSurface())
+	if (const auto bottomPCX = pSideExt->SuperWeaponSidebar_BottomPCX.GetSurface())
 	{
 		RectangleStruct backRect = { this->X, this->Y, bottomPCX->GetWidth(), bottomPCX->GetHeight() };;
 		backRect.Y += this->Height;
@@ -90,15 +90,15 @@ bool SWColumnClass::AddButton(int superIdx)
 		if (!pSWExt->SW_ShowCameo)
 			return true;
 
-		if (!Phobos::UI::ExclusiveSWSidebar)
+		if (!Phobos::UI::SuperWeaponSidebar)
 			return false;
 
-		if (!pSWExt->ExclusiveSidebar_Allow)
+		if (!pSWExt->SuperWeaponSidebar_Allow)
 			return false;
 
 		const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
 
-		if ((pSWExt->ExclusiveSidebar_RequiredHouses & ownerBits) == 0)
+		if ((pSWExt->SuperWeaponSidebar_RequiredHouses & ownerBits) == 0)
 			return false;
 	}
 	else

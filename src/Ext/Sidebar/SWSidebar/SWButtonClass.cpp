@@ -235,7 +235,7 @@ bool ToggleSWButtonClass::Draw(bool forced)
 		return false;
 
 	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
-	const auto pShape = pSideExt->ExclusiveSWSidebar_ToggleShape.Get();
+	const auto pShape = pSideExt->SuperWeaponSidebar_ToggleShape.Get();
 
 	if (!pShape)
 		return false;

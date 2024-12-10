@@ -33,10 +33,10 @@ bool Phobos::UI::PowerDelta_Show = false;
 double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 bool Phobos::UI::CenterPauseMenuBackground = false;
-bool Phobos::UI::ExclusiveSWSidebar = false;
-int Phobos::UI::ExclusiveSWSidebar_Interval = 0;
-int Phobos::UI::ExclusiveSWSidebar_Max = 0;
-int Phobos::UI::ExclusiveSWSidebar_MaxColumn = INT32_MAX;
+bool Phobos::UI::SuperWeaponSidebar = false;
+int Phobos::UI::SuperWeaponSidebar_Interval = 0;
+int Phobos::UI::SuperWeaponSidebar_Max = 0;
+int Phobos::UI::SuperWeaponSidebar_MaxColumn = INT32_MAX;
 bool Phobos::UI::WeedsCounter_Show = false;
 bool Phobos::UI::AnchoredToolTips = false;
 
@@ -166,24 +166,24 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		Phobos::UI::CenterPauseMenuBackground =
 			ini_uimd.ReadBool(SIDEBAR_SECTION, "CenterPauseMenuBackground", Phobos::UI::CenterPauseMenuBackground);
 
-		Phobos::UI::ExclusiveSWSidebar =
-			ini_uimd.ReadBool(SIDEBAR_SECTION, "ExclusiveSWSidebar", Phobos::UI::ExclusiveSWSidebar);
+		Phobos::UI::SuperWeaponSidebar =
+			ini_uimd.ReadBool(SIDEBAR_SECTION, "SuperWeaponSidebar", Phobos::UI::SuperWeaponSidebar);
 
-		Phobos::UI::ExclusiveSWSidebar_Interval =
-			ini_uimd.ReadInteger(SIDEBAR_SECTION, "ExclusiveSWSidebar.Interval", Phobos::UI::ExclusiveSWSidebar_Interval);
+		Phobos::UI::SuperWeaponSidebar_Interval =
+			ini_uimd.ReadInteger(SIDEBAR_SECTION, "SuperWeaponSidebar.Interval", Phobos::UI::SuperWeaponSidebar_Interval);
 
-		Phobos::UI::ExclusiveSWSidebar_Max =
-			ini_uimd.ReadInteger(SIDEBAR_SECTION, "ExclusiveSWSidebar.Max", Phobos::UI::ExclusiveSWSidebar_Max);
+		Phobos::UI::SuperWeaponSidebar_Max =
+			ini_uimd.ReadInteger(SIDEBAR_SECTION, "SuperWeaponSidebar.Max", Phobos::UI::SuperWeaponSidebar_Max);
 
 		const int screenHeight = GameOptionsClass::Instance->ScreenHeight - 192;
 
-		if (Phobos::UI::ExclusiveSWSidebar_Max > 0)
-			Phobos::UI::ExclusiveSWSidebar_Max = std::min(Phobos::UI::ExclusiveSWSidebar_Max, screenHeight / 48);
+		if (Phobos::UI::SuperWeaponSidebar_Max > 0)
+			Phobos::UI::SuperWeaponSidebar_Max = std::min(Phobos::UI::SuperWeaponSidebar_Max, screenHeight / 48);
 		else
-			Phobos::UI::ExclusiveSWSidebar_Max = screenHeight / 48;
+			Phobos::UI::SuperWeaponSidebar_Max = screenHeight / 48;
 
-		Phobos::UI::ExclusiveSWSidebar_MaxColumn =
-			ini_uimd.ReadInteger(SIDEBAR_SECTION, "ExclusiveSWSidebar.MaxColumn", Phobos::UI::ExclusiveSWSidebar_MaxColumn);
+		Phobos::UI::SuperWeaponSidebar_MaxColumn =
+			ini_uimd.ReadInteger(SIDEBAR_SECTION, "SuperWeaponSidebar.MaxColumn", Phobos::UI::SuperWeaponSidebar_MaxColumn);
 	}
 
 	// UISettings

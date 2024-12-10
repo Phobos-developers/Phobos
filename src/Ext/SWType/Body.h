@@ -78,9 +78,9 @@ public:
 
 		Valueable<int> TabIndex;
         
-		Valueable<bool> ExclusiveSidebar_Allow;
-		DWORD ExclusiveSidebar_PriorityHouses;
-		DWORD ExclusiveSidebar_RequiredHouses;
+		Valueable<bool> SuperWeaponSidebar_Allow;
+		DWORD SuperWeaponSidebar_PriorityHouses;
+		DWORD SuperWeaponSidebar_RequiredHouses;
 
 		CustomPalette SidebarPal;
 		PhobosPCXFile SidebarPCX;
@@ -152,9 +152,9 @@ public:
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }
-			, ExclusiveSidebar_Allow { true }
-			, ExclusiveSidebar_PriorityHouses { 0u }
-			, ExclusiveSidebar_RequiredHouses { 0xFFFFFFFFu }
+			, SuperWeaponSidebar_Allow { true }
+			, SuperWeaponSidebar_PriorityHouses { 0u }
+			, SuperWeaponSidebar_RequiredHouses { 0xFFFFFFFFu }
 			, SidebarPal {}
 			, SidebarPCX {}
 			, UseWeeds { false }
