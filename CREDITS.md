@@ -371,6 +371,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow to change the speed of gas particles
 - **CrimRecya**
   - Fix `LimboKill` not working reliably
+  - Fix `Stop` command not working so well in some cases
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude

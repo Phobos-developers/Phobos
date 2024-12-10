@@ -1064,6 +1064,40 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 #pragma endregion
 
+#pragma region StopEventFix
+
+DEFINE_HOOK(0x4C75E6, EventClass_RespondToEvent_Stop, 0x5)
+{
+	enum { SkipGameCode = 0x4C762A };
+
+	GET(TechnoClass* const, pTechno, ESI);
+
+	// Clearing the current target should still be necessary for all technos
+	pTechno->SetTarget(nullptr);
+	const auto pFoot = abstract_cast<FootClass*>(pTechno);
+	const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
+
+	// To avoid jumpjets falling into a state of standing idly by
+	if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
+		pTechno->SetDestination(nullptr, true);
+	else if (!pFoot->Destination) // When in attack move and have had a target, the destination will be cleaned up, enter the guard mission can prevent the jumpjets stuck in a status of standing idly by
+		pTechno->QueueMission(Mission::Guard, true);
+	else if (static_cast<int>(CellClass::Coord2Cell(pFoot->Destination->GetCoords()).DistanceFromSquared(pTechno->GetMapCoords())) > 2) // If the jumpjet is moving, find the forward cell then stop in it
+		pTechno->SetDestination(pTechno->GetCell()->GetNeighbourCell(static_cast<FacingType>(((((pJumpjetLoco->LocomotionFacing.Current().Raw) >> 12) + 1) >> 1) & 7)), true);
+
+	// To avoid technos being unable to stop in attack move mega mission
+	if (pTechno->vt_entry_4C4()) // pTechno->MegaMissionIsAttackMove()
+		pTechno->vt_entry_4A8(); // pTechno->ClearMegaMissionData()
+
+	// To avoid aircrafts pausing in the air and let they returning to air base immediately
+	if (pTechno->WhatAmI() == AbstractType::Aircraft && !pTechno->Airstrike && !pTechno->Spawned && pTechno->GetHeight() > Unsorted::CellHeight)
+		pTechno->EnterIdleMode(false, true);
+
+	return SkipGameCode;
+}
+
+#pragma endregion
+
 // This shouldn't be here
 // Author: tyuah8
 DEFINE_HOOK_AGAIN(0x4AF94D, EndPiggyback_PowerOn, 0x7) // Drive
