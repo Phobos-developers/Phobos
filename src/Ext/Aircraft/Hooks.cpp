@@ -322,6 +322,34 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 // Aircraft mission hard code are all disposable that no ammo, target died or arrived destination all will call the aircraft return airbase
 #pragma region AircraftMissionExpand
 
+// Waypoint: Enable and smooth moving action
+bool __fastcall AircraftTypeClass_CanUseWaypoint(AircraftTypeClass* pThis)
+{
+	return RulesExt::Global()->ExpandAircraftMission.Get();
+}
+DEFINE_JUMP(VTABLE, 0x7E2908, GET_OFFSET(AircraftTypeClass_CanUseWaypoint))
+
+DEFINE_HOOK_AGAIN(0x4168C7, AircraftClass_Mission_Move_SmoothMoving, 0x5)
+DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
+{
+	enum { EnterIdleAndReturn = 0x416AC0, ContinueMoving1 = 0x416908, ContinueMoving2 = 0x416A47 };
+
+	GET(AircraftClass* const, pThis, ESI);
+	GET(CoordStruct* const, pCoords, EAX);
+
+	if (!RulesExt::Global()->ExpandAircraftMission)
+		return 0;
+
+	const int distance = Game::F2I(Point2D { pCoords->X, pCoords->Y }.DistanceFrom(Point2D { pThis->Location.X, pThis->Location.Y }));
+	const auto pType = pThis->Type;
+
+	if (distance > std::max((pType->SlowdownDistance >> 1), (2048 / pType->ROT)))
+		return (R->Origin() == 0x4168C7 ? ContinueMoving1 : ContinueMoving2);
+
+	pThis->EnterIdleMode(false, true);
+	return EnterIdleAndReturn;
+}
+
 // AreaGuard: return when no ammo or first target died
 DEFINE_HOOK_AGAIN(0x41A982, AircraftClass_Mission_AreaGuard, 0x6)
 DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
