@@ -586,7 +586,7 @@ ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enable
 - Cameos arranged in a pyramid shape.
 - `SuperWeaponSidebar.Interval` specific how many leptons between two columns.
 - `SuperWeaponSidebar.Max` controls the maximum number of icons on the leftmost side, which also depends on the current game resolution.
-- `SuperWeaponSidebar.MaxColumn` controls that maximum count of columns.
+- `SuperWeaponSidebar.MaxColumns` controls that maximum count of columns.
 - You can also launch first 10 SW by hotkey in INTERFACE category.
 - For localization of hotkey, add `TXT_FIRE_TACTICAL_SW_XX`, `TXT_FIRE_TACTICAL_SW_XX_DESC`, `TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` into your `.csf` file.
 
@@ -596,7 +596,7 @@ In `uimd.ini`:
 SuperWeaponSidebar=false            ; boolean
 SuperWeaponSidebar.Interval=0       ; integer
 SuperWeaponSidebar.Max=0            ; integer
-SuperWeaponSidebar.MaxColumn=       ; integer
+SuperWeaponSidebar.MaxColumns=       ; integer
 ```
 
 In `rulesmd.ini`
