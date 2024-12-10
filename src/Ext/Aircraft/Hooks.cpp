@@ -446,6 +446,7 @@ DEFINE_HOOK(0x4C762A, EventClass_RespondToEvent_StopAircraftAction, 0x6)
 
 	if (RulesExt::Global()->ExpandAircraftMission && pTechno->WhatAmI() == AbstractType::Aircraft && !pTechno->Airstrike && !pTechno->Spawned)
 	{
+		// I think this mega mission clearing should be all technotypes need
 		if (pTechno->vt_entry_4C4()) // pTechno->MegaMissionIsAttackMove()
 			pTechno->vt_entry_4A8(); // pTechno->ClearMegaMissionData()
 
