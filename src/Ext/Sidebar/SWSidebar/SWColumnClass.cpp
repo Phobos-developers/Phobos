@@ -22,33 +22,26 @@ bool SWColumnClass::Draw(bool forced)
 	auto bounds = pSurface->GetRect();
 
 	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
-	const auto centerPCX = pSideExt->SuperWeaponSidebar_CenterPCX.GetSurface();
 
-	if (centerPCX)
+	if (const auto centerShape = pSideExt->SuperWeaponSidebar_CenterShape.Get())
 	{
-		RectangleStruct backRect = { this->X, 0, centerPCX->GetWidth(), centerPCX->GetHeight() };
-		backRect.Width = centerPCX->GetWidth();
-		backRect.Height = centerPCX->GetHeight();
-
 		for (const auto button : this->Buttons)
 		{
-			backRect.Y = button->Y;
-			PCX::Instance->BlitToSurface(&backRect, pSurface, centerPCX);
+			Point2D drawPoint = { this->X, button->Y };
+			pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, centerShape, 0, &drawPoint, &bounds, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		}
 	}
 
-	if (const auto topPCX = pSideExt->SuperWeaponSidebar_TopPCX.GetSurface())
+	if (const auto topShape = pSideExt->SuperWeaponSidebar_TopShape.Get())
 	{
-		RectangleStruct backRect = { this->X, this->Y, topPCX->GetWidth(), topPCX->GetHeight() };;
-		backRect.Y -= backRect.Height;
-		PCX::Instance->BlitToSurface(&backRect, pSurface, topPCX);
+		Point2D drawPoint = { this->X, this->Y - topShape->Height };
+		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, topShape, 0, &drawPoint, &bounds, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
-	if (const auto bottomPCX = pSideExt->SuperWeaponSidebar_BottomPCX.GetSurface())
+	if (const auto bottomShape = pSideExt->SuperWeaponSidebar_BottomShape.Get())
 	{
-		RectangleStruct backRect = { this->X, this->Y, bottomPCX->GetWidth(), bottomPCX->GetHeight() };;
-		backRect.Y += this->Height;
-		PCX::Instance->BlitToSurface(&backRect, pSurface, bottomPCX);
+		Point2D drawPoint = { this->X, this->Y + bottomShape->Height };
+		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, bottomShape, 0, &drawPoint, &bounds, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
 	for (const auto button : this->Buttons)

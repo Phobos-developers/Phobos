@@ -37,9 +37,9 @@ public:
 		Nullable<float> ToolTip_Background_BlurSize;
 		Valueable<int> BriefingTheme;
 
-		PhobosPCXFile SuperWeaponSidebar_TopPCX;
-		PhobosPCXFile SuperWeaponSidebar_CenterPCX;
-		PhobosPCXFile SuperWeaponSidebar_BottomPCX;
+		Valueable<SHPStruct*> SuperWeaponSidebar_TopShape;
+		Valueable<SHPStruct*> SuperWeaponSidebar_CenterShape;
+		Valueable<SHPStruct*> SuperWeaponSidebar_BottomShape;
 		Valueable<SHPStruct*> SuperWeaponSidebar_ToggleShape;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
@@ -63,9 +63,9 @@ public:
 			, ToolTip_Background_Opacity { }
 			, ToolTip_Background_BlurSize { }
 			, BriefingTheme { -1 }
-			, SuperWeaponSidebar_TopPCX { }
-			, SuperWeaponSidebar_CenterPCX { }
-			, SuperWeaponSidebar_BottomPCX { }
+			, SuperWeaponSidebar_TopShape { }
+			, SuperWeaponSidebar_CenterShape { }
+			, SuperWeaponSidebar_BottomShape { }
 			, SuperWeaponSidebar_ToggleShape { nullptr }
 		{ }
 

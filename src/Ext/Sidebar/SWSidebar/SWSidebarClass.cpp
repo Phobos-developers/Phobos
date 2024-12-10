@@ -15,7 +15,7 @@ bool SWSidebarClass::AddColumn()
 {
 	auto& columns = this->Columns;
 
-	if (static_cast<int>(columns.size()) >= Phobos::UI::SuperWeaponSidebar_MaxColumn)
+	if (static_cast<int>(columns.size()) >= Phobos::UI::SuperWeaponSidebar_MaxColumns)
 		return false;
 
 	const auto column = DLLCreate<SWColumnClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count + 1 + static_cast<int>(columns.size()), 0, 0, 60 + Phobos::UI::SuperWeaponSidebar_Interval, 48);
@@ -171,7 +171,7 @@ void SWSidebarClass::SortButtons()
 int SWSidebarClass::GetMaximumButtonCount()
 {
 	const int firstColumn = Phobos::UI::SuperWeaponSidebar_Max;
-	const int columns = std::min(firstColumn, Phobos::UI::SuperWeaponSidebar_MaxColumn);
+	const int columns = std::min(firstColumn, Phobos::UI::SuperWeaponSidebar_MaxColumns);
 	return (firstColumn + (firstColumn - (columns - 1))) * columns / 2;
 }
 
@@ -184,14 +184,14 @@ bool SWSidebarClass::IsEnabled()
 
 DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_SWSidebar, 0x7)
 {
-	enum { Nothing = 0x6925FC };
+	enum { DoNothing = 0x6925FC };
 
 	if (SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentColumn)
-		return Nothing;
+		return DoNothing;
 
 	const auto toggleButton = SWSidebarClass::Instance.ToggleButton;
 
-	return toggleButton && toggleButton->IsHovering ? Nothing : 0;
+	return toggleButton && toggleButton->IsHovering ? DoNothing : 0;
 }
 
 DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_SWSidebar, 0x7)

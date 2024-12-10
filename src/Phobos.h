@@ -56,7 +56,7 @@ public:
 		static bool SuperWeaponSidebar;
 		static int SuperWeaponSidebar_Interval;
 		static int SuperWeaponSidebar_Max;
-		static int SuperWeaponSidebar_MaxColumn;
+		static int SuperWeaponSidebar_MaxColumns;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
 

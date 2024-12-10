@@ -36,7 +36,7 @@ bool Phobos::UI::CenterPauseMenuBackground = false;
 bool Phobos::UI::SuperWeaponSidebar = false;
 int Phobos::UI::SuperWeaponSidebar_Interval = 0;
 int Phobos::UI::SuperWeaponSidebar_Max = 0;
-int Phobos::UI::SuperWeaponSidebar_MaxColumn = INT32_MAX;
+int Phobos::UI::SuperWeaponSidebar_MaxColumns = INT32_MAX;
 bool Phobos::UI::WeedsCounter_Show = false;
 bool Phobos::UI::AnchoredToolTips = false;
 
@@ -182,8 +182,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		else
 			Phobos::UI::SuperWeaponSidebar_Max = screenHeight / 48;
 
-		Phobos::UI::SuperWeaponSidebar_MaxColumn =
-			ini_uimd.ReadInteger(SIDEBAR_SECTION, "SuperWeaponSidebar.MaxColumn", Phobos::UI::SuperWeaponSidebar_MaxColumn);
+		Phobos::UI::SuperWeaponSidebar_MaxColumns =
+			ini_uimd.ReadInteger(SIDEBAR_SECTION, "SuperWeaponSidebar.MaxColumns", Phobos::UI::SuperWeaponSidebar_MaxColumns);
 	}
 
 	// UISettings
