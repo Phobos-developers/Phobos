@@ -322,13 +322,14 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 // Aircraft mission hard code are all disposable that no ammo, target died or arrived destination all will call the aircraft return airbase
 #pragma region AircraftMissionExpand
 
-// Waypoint: Enable and smooth moving action
+// Waypoint: enable and smooth moving action
 bool __fastcall AircraftTypeClass_CanUseWaypoint(AircraftTypeClass* pThis)
 {
 	return RulesExt::Global()->ExpandAircraftMission.Get();
 }
 DEFINE_JUMP(VTABLE, 0x7E2908, GET_OFFSET(AircraftTypeClass_CanUseWaypoint))
 
+// Move: smooth the planning paths and returning route
 DEFINE_HOOK_AGAIN(0x4168C7, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 {
@@ -353,6 +354,17 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 	pThis->EnterIdleMode(false, true);
 
 	return EnterIdleAndReturn;
+}
+
+// Link: fix the vanilla bug that aircrafts will not reload if they have no link
+DEFINE_HOOK(0x414DB6, AircraftClass_Update_ResetNthLink, 0x6)
+{
+	GET(AircraftClass* const, pThis, ESI);
+
+	if (pThis->CurrentMission == Mission::Sleep && !pThis->Destination && pThis->DockNowHeadingTo && !pThis->GetNthLink())
+		pThis->SendCommand(RadioCommand::RequestLink, pThis->DockNowHeadingTo);
+
+	return 0;
 }
 
 // AreaGuard: return when no ammo or first target died
@@ -433,10 +445,13 @@ DEFINE_HOOK(0x414D4D, AircraftClass_Update_ClearTargetIfNoAmmo, 0x6)
 
 	GET(AircraftClass* const, pThis, ESI);
 
-	if (RulesExt::Global()->ExpandAircraftMission && !pThis->Ammo && !SessionClass::IsCampaign())
+	if (RulesExt::Global()->ExpandAircraftMission && !pThis->Ammo && !pThis->Airstrike && !pThis->Spawned)
 	{
-		if (const auto pTeam = pThis->Team)
-			pTeam->LiberateMember(pThis);
+		if (!SessionClass::IsCampaign()) // To avoid AI's aircrafts team repeatedly attempting to attack the target when no ammo
+		{
+			if (const auto pTeam = pThis->Team)
+				pTeam->LiberateMember(pThis);
+		}
 
 		return ClearTarget;
 	}
