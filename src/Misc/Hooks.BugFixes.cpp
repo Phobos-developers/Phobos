@@ -1066,32 +1066,47 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 #pragma region StopEventFix
 
-DEFINE_HOOK(0x4C75E6, EventClass_RespondToEvent_Stop, 0x5)
+DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 {
 	enum { SkipGameCode = 0x4C762A };
 
 	GET(TechnoClass* const, pTechno, ESI);
 
-	// Clearing the current target should still be necessary for all technos
-	pTechno->SetTarget(nullptr);
-	const auto pFoot = abstract_cast<FootClass*>(pTechno);
-	const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
+	// Check aircrafts
+	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
+	const bool findAirport = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned && pAircraft->Type->AirportBound;
 
-	// To avoid jumpjets falling into a state of standing idly by
-	if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
-		pTechno->SetDestination(nullptr, true);
-	else if (!pFoot->Destination) // When in attack move and have had a target, the destination will be cleaned up, enter the guard mission can prevent the jumpjets stuck in a status of standing idly by
-		pTechno->QueueMission(Mission::Guard, true);
-	else if (static_cast<int>(CellClass::Coord2Cell(pFoot->Destination->GetCoords()).DistanceFromSquared(pTechno->GetMapCoords())) > 2) // If the jumpjet is moving, find the forward cell then stop in it
-		pTechno->SetDestination(pTechno->GetCell()->GetNeighbourCell(static_cast<FacingType>(pJumpjetLoco->LocomotionFacing.Current().GetValue<3>())), true);
+	// To avoid aircrafts overlap by keep link if is returning or is in airport now.
+	if (!findAirport || !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
 
 	// To avoid technos being unable to stop in attack move mega mission
 	if (pTechno->vt_entry_4C4()) // pTechno->MegaMissionIsAttackMove()
 		pTechno->vt_entry_4A8(); // pTechno->ClearMegaMissionData()
 
-	// To avoid aircrafts pausing in the air and let they returning to air base immediately
-	if (pTechno->WhatAmI() == AbstractType::Aircraft && !pTechno->Airstrike && !pTechno->Spawned && static_cast<AircraftClass*>(pTechno)->Type->AirportBound && pTechno->GetHeight() > Unsorted::CellHeight)
-		pTechno->EnterIdleMode(false, true);
+	// Clearing the current target should still be necessary for all technos
+	pTechno->SetTarget(nullptr);
+
+	if (findAirport)
+	{
+		// To avoid aircrafts pausing in the air and let they returning to air base immediately.
+		if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+			pAircraft->EnterIdleMode(false, true);
+	}
+	else
+	{
+		// Check Jumpjets
+		const auto pFoot = abstract_cast<FootClass*>(pTechno);
+		const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
+
+		// To avoid jumpjets falling into a state of standing idly by
+		if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
+			pTechno->SetDestination(nullptr, true);
+		else if (!pFoot->Destination) // When in attack move and have had a target, the destination will be cleaned up, enter the guard mission can prevent the jumpjets stuck in a status of standing idly by
+			pTechno->QueueMission(Mission::Guard, true);
+		else if (static_cast<int>(CellClass::Coord2Cell(pFoot->Destination->GetCoords()).DistanceFromSquared(pTechno->GetMapCoords())) > 2) // If the jumpjet is moving, find the forward cell then stop in it
+			pTechno->SetDestination(pTechno->GetCell()->GetNeighbourCell(static_cast<FacingType>(pJumpjetLoco->LocomotionFacing.Current().GetValue<3>())), true);
+	}
 
 	return SkipGameCode;
 }
