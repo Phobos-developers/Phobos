@@ -356,17 +356,6 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 	return EnterIdleAndReturn;
 }
 
-// Link: fix the vanilla bug that aircrafts will not reload if they have no link
-DEFINE_HOOK(0x414DB6, AircraftClass_Update_ResetNthLink, 0x6)
-{
-	GET(AircraftClass* const, pThis, ESI);
-
-	if (pThis->CurrentMission == Mission::Sleep && !pThis->Destination && pThis->DockNowHeadingTo && !pThis->GetNthLink())
-		pThis->SendCommand(RadioCommand::RequestLink, pThis->DockNowHeadingTo);
-
-	return 0;
-}
-
 // AreaGuard: return when no ammo or first target died
 DEFINE_HOOK_AGAIN(0x41A982, AircraftClass_Mission_AreaGuard, 0x6)
 DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
@@ -489,7 +478,8 @@ AbstractClass* __fastcall AircraftClass_GreatestThreat(AircraftClass* pThis, voi
 			threatType |= pSecondaryWeapon->AllowedThreats();
 	}
 
-	return reinterpret_cast<AbstractClass*(__thiscall*)(TechnoClass*, ThreatType, CoordStruct*, bool)>(0x4D9920)(pThis, threatType, pSelectCoords, onlyTargetHouseEnemy); // FootClass_GreatestThreat (Prevent circular calls)
+	// return pThis->FootClass::GreatestThreat(threatType, pSelectCoords, onlyTargetHouseEnemy);
+	return reinterpret_cast<AbstractClass*(__thiscall*)(FootClass*, ThreatType, CoordStruct*, bool)>(0x4D9920)(pThis, threatType, pSelectCoords, onlyTargetHouseEnemy);
 }
 DEFINE_JUMP(VTABLE, 0x7E2668, GET_OFFSET(AircraftClass_GreatestThreat))
 
