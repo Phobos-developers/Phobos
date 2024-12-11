@@ -3,7 +3,7 @@
 // include this file whenever something is to be saved.
 
 #include "Savegame.h"
-
+#include <optional>
 #include <vector>
 #include <map>
 #include <bitset>
@@ -22,14 +22,14 @@
 namespace Savegame
 {
 	template <typename T>
-	concept ImplementsUpperCaseSaveLoad = requires (PhobosStreamWriter& stmWriter, PhobosStreamReader& stmReader, T& value, bool registerForChange)
+	concept ImplementsUpperCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T & value, bool registerForChange)
 	{
 		value.Save(stmWriter);
 		value.Load(stmReader, registerForChange);
 	};
 
 	template <typename T>
-	concept ImplementsLowerCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T& value, bool registerForChange)
+	concept ImplementsLowerCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T & value, bool registerForChange)
 	{
 		value.save(stmWriter);
 		value.load(stmReader, registerForChange);
@@ -290,7 +290,7 @@ namespace Savegame
 			{
 				std::vector<char> buffer(size);
 
-				if (!size || Stm.Read(reinterpret_cast<byte*>(&buffer[0]), size))
+				if (!size || Stm.Read(reinterpret_cast<byte*>(buffer.data()), size))
 				{
 					Value.assign(buffer.begin(), buffer.end());
 					return true;
@@ -320,6 +320,34 @@ namespace Savegame
 		bool WriteToStream(PhobosStreamWriter& Stm, const std::unique_ptr<T>& Value) const
 		{
 			return PersistObject(Stm, Value.get());
+		}
+	};
+
+	template <typename T>
+	struct Savegame::PhobosStreamObject<std::optional<T>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::optional<T>& Value, bool RegisterForChange) const
+		{
+			bool hasValue = false;
+			if (!Stm.Load(hasValue))
+				return false;
+
+			if (hasValue)
+				return Savegame::ReadPhobosStream(Stm, *Value, RegisterForChange);
+			else
+				Value.reset();
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::optional<T>& Value) const
+		{
+			Stm.Save(Value.has_value());
+
+			if (Value.has_value())
+				return Savegame::WritePhobosStream(Stm, *Value);
+
+			return true;
 		}
 	};
 
