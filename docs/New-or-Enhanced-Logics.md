@@ -1747,4 +1747,6 @@ In `rulesmd.ini`:
 [SOMEWEAPON]         ; WeaponType
 CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+CanTarget.MaxHealth=1.0  ; double
+CanTarget.MinHealth=0.0  ; double
 ```

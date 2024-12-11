@@ -40,6 +40,15 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, Te
 	return true;
 }
 
+bool WeaponTypeExt::ExtData::IsHealthRatioEligible(TechnoClass* const pTarget) const
+{
+	if (!pTarget)
+		return true;
+
+	const auto ratio = pTarget->GetHealthPercentage();
+	return ratio <= this->CanTarget_MaxHealth && ratio >= this->CanTarget_MinHealth;
+}
+
 void WeaponTypeExt::ExtData::Initialize()
 {
 	this->RadType = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
@@ -89,6 +98,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Strafing_UseAmmoPerShot.Read(exINI, pSection, "Strafing.UseAmmoPerShot");
 	this->CanTarget.Read(exINI, pSection, "CanTarget");
 	this->CanTargetHouses.Read(exINI, pSection, "CanTargetHouses");
+	this->CanTarget_MaxHealth.Read(exINI, pSection, "CanTarget.MaxHealth");
+	this->CanTarget_MinHealth.Read(exINI, pSection, "CanTarget.MinHealth");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
 	this->Burst_FireWithinSequence.Read(exINI, pSection, "Burst.FireWithinSequence");
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
@@ -133,6 +144,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Strafing_UseAmmoPerShot)
 		.Process(this->CanTarget)
 		.Process(this->CanTargetHouses)
+		.Process(this->CanTarget_MaxHealth)
+		.Process(this->CanTarget_MinHealth)
 		.Process(this->RadType)
 		.Process(this->Burst_Delays)
 		.Process(this->Burst_FireWithinSequence)

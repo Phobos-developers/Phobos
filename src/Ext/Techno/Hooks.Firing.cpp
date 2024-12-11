@@ -49,6 +49,7 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 		auto const pPrimaryExt = WeaponTypeExt::ExtMap.Find(pWeaponPrimary);
 
 		if (pWeaponSecondary && (!EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true)
+			|| !pPrimaryExt->IsHealthRatioEligible(pThis)
 			|| (pPrimaryExt->AttachEffect_CheckOnFirer && !pPrimaryExt->HasRequiredAttachedEffects(pThis, pThis))))
 		{
 			R->EAX(1);
@@ -306,7 +307,8 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (pTechno)
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
+				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner) ||
+				!pWeaponExt->IsHealthRatioEligible(pTechno))
 			{
 				return CannotFire;
 			}
