@@ -21,6 +21,7 @@ This page lists all the individual contributions to the project by their author.
   - Non-ASCII input fix
   - Building Placement Preview Adjustment
   - Check for Changelog/Documentation/Credits in Pull Requests
+  - Docs dark theme switcher
   - Fix position and layer of info tip and reveal production cameo on selected building
   - Fix a glitch related to incorrect target setting for missiles
   - Ability to disable shadow for debris & meteor animations
@@ -234,13 +235,23 @@ This page lists all the individual contributions to the project by their author.
   - Air unit tracking fix for large range / `CellSpread`
   - Extra tint intensity for Iron Curtain & Force Shield
   - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565
-  - Customizing height at which subterranean units travel
+  - Customizing height and speed at which subterranean units travel
   - AI superweapon delay timer customization
   - Disabling `MultipleFactory` bonus from specific BuildingType
   - Customizable ChronoSphere teleport delays for units
   - Allowed and disallowed types for `FactoryPlant`
   - Forbidding parallel AI queues for specific TechnoTypes
   - Nonprovocative Warheads
+  - Customizing effect of level lighting on air units
+  - Reimplemented `Airburst` & `Splits` logic with more customization options
+  - Buildings considered as destroyable pathfinding obstacles
+  - Animation visibility customization settings
+  - Light effect customizations
+  - Building unit repair customizations
+  - Build area customizations
+  - `Scorch` / `Flamer` fire animation customization
+  - EM Pulse cannon logic improvements
+  - `<Player @ X>` as owner for pre-placed objects
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -318,7 +329,11 @@ This page lists all the individual contributions to the project by their author.
    - Droppod properties dehardcode
    - Waypoint entering building together with engineer/agent bug fix
    - Skippable game save on scenario start
+   - `InfDeath=9` versus jumpjet infantry 0 damage fix
    - Skip rally point line drawing when undeploying a building
+   - Ares' `SW.Shots` hint on extended tooltips
+   - Ares' Abductor weapon fix
+   - Suppress Ares' swizzle warning when parsing tags and taskforces
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -327,7 +342,9 @@ This page lists all the individual contributions to the project by their author.
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
    - Disguised units not using the correct palette if target has custom palette bugfix
-   - Cloak Enhancement
+   - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
+   - Assign Super Weapon cameo to any sidebar tab
+   - - Cloak Enhancement
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons
@@ -350,7 +367,6 @@ This page lists all the individual contributions to the project by their author.
   - Flashing Technos on selecting
   - Promotion animation
 - **ZivDero**
-  - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
@@ -360,6 +376,11 @@ This page lists all the individual contributions to the project by their author.
   - Build limit group enhancement
   - Customizable rocker amplitude
 - **handama** - AI script action to jump back to previous script
+- **TaranDahl (航味麻酱)**
+  - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
+  - Skirmish AI "gather when MCV deploy" behavior dehardcode
+  - Global value of `RepairBaseNodes`
+- **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

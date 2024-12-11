@@ -286,4 +286,3 @@ bool TheaterSpecificSHP::Save(PhobosStreamWriter& Stm) const
 {
 	return Savegame::WritePhobosStream(Stm, this->value);
 }
-
