@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <OverlayTypeClass.h>
+
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
@@ -32,22 +34,24 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 
 	if (auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
 	{
-		if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true)) ||
+		if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true)) ||
 			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
+				!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
+				!pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))))
 		{
 			return weaponIndexOne;
 		}
 		else if (auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponOne))
 		{
-			bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
+			bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
+			bool firstAllowedAE = pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
 
-			if (!allowFallback && (!allowAAFallback || !secondaryIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
+			if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1) && firstAllowedAE)
 				return weaponIndexOne;
 
-			if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true)) ||
+			if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true)) ||
 				(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
-					!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
+					!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) || !firstAllowedAE)))
 			{
 				return weaponIndexTwo;
 			}
@@ -78,7 +82,7 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 	{
 		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
-			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon = weaponIndex || pExt->NoAmmoWeapon == -1))
+			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon == weaponIndex || pExt->NoAmmoWeapon == -1))
 				return true;
 		}
 	}
@@ -159,4 +163,38 @@ WeaponTypeClass* TechnoExt::GetCurrentWeapon(TechnoClass* pThis, bool getSeconda
 {
 	int weaponIndex = 0;
 	return TechnoExt::GetCurrentWeapon(pThis, weaponIndex, getSecondary);
+}
+
+// Gets weapon index for a weapon to use against wall overlay.
+int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType)
+{
+	auto const pTechnoType = pThis->GetTechnoType();
+	int weaponIndex = -1;
+	auto pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndex);
+
+	if ((pTechnoType->TurretCount > 0 && !pTechnoType->IsGattling) || !pWallOverlayType || !pWallOverlayType->Wall)
+		return weaponIndex;
+	else if (weaponIndex == -1)
+		return 0;
+
+	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	bool aeForbidsPrimary = pWeaponExt && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
+
+	if (!pWeapon || (!pWeapon->Warhead->Wall && (!pWeapon->Warhead->Wood || pWallOverlayType->Armor != Armor::Wood)) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1) || aeForbidsPrimary)
+	{
+		int weaponIndexSec = -1;
+		pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndexSec, true);
+		pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		bool aeForbidsSecondary = pWeaponExt && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
+
+		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood)
+			&& (!TechnoTypeExt::ExtMap.Find(pTechnoType)->NoSecondaryWeaponFallback || aeForbidsPrimary)) && !aeForbidsSecondary)
+		{
+			return weaponIndexSec;
+		}
+
+		return weaponIndex;
+	}
+
+	return weaponIndex;
 }

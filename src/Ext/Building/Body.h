@@ -21,32 +21,43 @@ public:
 
 	static constexpr DWORD Canary = 0x87654321;
 	static constexpr size_t ExtPointerOffset = 0x6FC;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<BuildingClass>
 	{
 	public:
 		BuildingTypeExt::ExtData* TypeExtData;
+		TechnoExt::ExtData* TechnoExtData;
 		bool DeployedTechno;
 		bool IsCreatedFromMapFile;
 		int LimboID;
 		int GrindingWeapon_LastFiredFrame;
+		int GrindingWeapon_AccumulatedCredits;
 		BuildingClass* CurrentAirFactory;
 		int AccumulatedIncome;
+		std::optional<int> CurrentLaserWeaponIndex;
+		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
+		SuperClass* EMPulseSW;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
+			, TechnoExtData { nullptr }
 			, DeployedTechno { false }
 			, IsCreatedFromMapFile { false }
 			, LimboID { -1 }
 			, GrindingWeapon_LastFiredFrame { 0 }
+			, GrindingWeapon_AccumulatedCredits { 0 }
 			, CurrentAirFactory { nullptr }
 			, AccumulatedIncome { 0 }
+			, CurrentLaserWeaponIndex {}
+			, PoweredUpToLevel { 0 }
+			, EMPulseSW {}
 		{ }
 
 		void DisplayIncomeString();
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
-
+		bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
 		void UpdatePrimaryFactoryAI();
 		virtual ~ExtData() = default;
 
@@ -96,5 +107,6 @@ public:
 	static bool HasFreeDocks(BuildingClass* pBuilding);
 	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
-	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
+	static bool CanUndeployOnSell(BuildingClass* pThis);
+	static const std::vector<CellStruct> GetFoundationCells(BuildingClass* pThis, CellStruct baseCoords, bool includeOccupyHeight = false);
 };

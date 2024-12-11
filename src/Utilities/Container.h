@@ -5,10 +5,11 @@
 #include <CCINIClass.h>
 #include <SwizzleManagerClass.h>
 
-#include "Concepts.h"
+#include <string_view>
 #include "Debug.h"
 #include "Stream.h"
 #include "Swizzle.h"
+#include "Phobos.h"
 
 enum class InitState
 {
@@ -56,7 +57,6 @@ class Extension
 	InitState Initialized;
 
 public:
-	static const DWORD Canary;
 
 	Extension(T* const OwnerObject) : AttachedToObject { OwnerObject }, Initialized { InitState::Blank }
 	{ }
@@ -286,6 +286,7 @@ private:
 	map_type Items;
 
 	base_type* SavingObject;
+	extension_type_ptr SavingExtPointer;
 	IStream* SavingStream;
 	const char* Name;
 
@@ -295,8 +296,7 @@ public:
 		SavingObject(nullptr),
 		SavingStream(nullptr),
 		Name(pName)
-	{
-	}
+	{ }
 
 	virtual ~Container() = default;
 
@@ -344,19 +344,16 @@ public:
 		if constexpr (HasOffset<T>)
 			ResetExtensionPointer(key);
 
-		if (auto const val = new extension_type(key))
-		{
-			val->EnsureConstanted();
+		auto const val = new extension_type(key);
 
-			if constexpr (HasOffset<T>)
-				SetExtensionPointer(key, val);
+		val->EnsureConstanted();
 
-			this->Items.insert(key, val);
+		if constexpr (HasOffset<T>)
+			SetExtensionPointer(key, val);
 
-			return val;
-		}
+		this->Items.insert(key, val);
 
-		return nullptr;
+		return val;
 	}
 
 	extension_type_ptr TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
@@ -381,15 +378,6 @@ public:
 		return Allocate(key);
 	}
 
-	extension_type_ptr FindOrAllocate(base_type_ptr key)
-	{
-		// Find Always check for nullptr here
-		if (auto const ptr = Find(key))
-			return ptr;
-
-		return Allocate(key);
-	}
-
 	extension_type_ptr Find(const_base_type_ptr key) const
 	{
 		if (!key)
@@ -399,6 +387,22 @@ public:
 			return GetExtensionPointer(key);
 		else
 			return this->Items.find(key);
+	}
+
+	// Only used on loading, does not check if key is nullptr.
+	extension_type_ptr FindOrAllocate(base_type_ptr key)
+	{
+		extension_type_ptr value = nullptr;
+
+		if constexpr (HasOffset<T>)
+			value = GetExtensionPointer(key);
+		else
+			value = this->Items.find(key);
+
+		if (!value)
+			value = Allocate(key);
+
+		return value;
 	}
 
 	void Remove(base_type_ptr key)
@@ -418,6 +422,15 @@ public:
 		if (this->Items.size())
 		{
 			Debug::Log("Cleared %u items from %s.\n", this->Items.size(), this->Name);
+
+			if constexpr (HasOffset<T>)
+			{
+				for (const auto& item : this->Items)
+				{
+					ResetExtensionPointer(item.first);
+				}
+			}
+
 			this->Items.clear();
 		}
 	}
@@ -434,6 +447,10 @@ public:
 
 		this->SavingObject = key;
 		this->SavingStream = pStm;
+
+		// Loading the base type data might override the ext pointer stored on it so it needs to be saved.
+		if constexpr (HasOffset<T>)
+			this->SavingExtPointer = GetExtensionPointer(key);
 	}
 
 	void SaveStatic()
@@ -458,6 +475,10 @@ public:
 	{
 		if (this->SavingObject && this->SavingStream)
 		{
+			// Restore stored ext pointer data.
+			if constexpr (HasOffset<T>)
+				SetExtensionPointer(this->SavingObject, this->SavingExtPointer);
+
 			//Debug::Log("[LoadStatic] Loading object %p as '%s'\n", this->SavingObject, this->Name);
 			if (!this->Load(this->SavingObject, this->SavingStream))
 				Debug::FatalErrorAndExit("LoadStatic - Loading object %p as '%s' failed!\n", this->SavingObject, this->Name);
@@ -472,15 +493,9 @@ public:
 		this->SavingStream = nullptr;
 	}
 
-	decltype(auto) begin() const
-	{
-		return this->Items.begin();
-	}
+	decltype(auto) begin() const = delete;
 
-	decltype(auto) end() const
-	{
-		return this->Items.end();
-	}
+	decltype(auto) end() const = delete;
 
 	size_t size() const
 	{
@@ -548,8 +563,8 @@ protected:
 			return nullptr;
 		}
 
-		extension_type_ptr buffer = this->Allocate(key);
-
+		// get or allocate the value data
+		extension_type_ptr buffer = this->FindOrAllocate(key);
 		if (!buffer)
 		{
 			Debug::Log("LoadKey - Could not find or allocate value.\n");

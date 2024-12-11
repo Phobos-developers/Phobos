@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/Scenario/Body.h>
 
 DEFINE_HOOK_AGAIN(0x6FA33C, TechnoClass_ThreatEvals_OpenToppedOwner, 0x6) // TechnoClass::AI
 DEFINE_HOOK_AGAIN(0x6F89F4, TechnoClass_ThreatEvals_OpenToppedOwner, 0x6) // TechnoClass::EvaluateCell
@@ -68,34 +69,50 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_SyncOwner, 0x7)
+DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(FootClass*, pPassenger, EDI);
 
 	if (pThis && pPassenger)
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
+		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-		if (pTypeExt->Passengers_SyncOwner && pTypeExt->Passengers_SyncOwner_RevertOnExit)
+		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit)
 			pExt->OriginalPassengerOwner = pPassenger->Owner;
+
+		if (pPassenger->WhatAmI() != AbstractType::Aircraft && pPassenger->WhatAmI() != AbstractType::Building
+			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
+		{
+			ScenarioExt::Global()->TransportReloaders.push_back(pExt);
+		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x4DE67B, FootClass_LeaveTransport_SyncOwner, 0x8)
+DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(FootClass*, pPassenger, EBX);
+	GET(FootClass*, pPassenger, EAX);
 
 	if (pThis && pPassenger)
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
+		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-		if (pTypeExt->Passengers_SyncOwner && pTypeExt->Passengers_SyncOwner_RevertOnExit &&
+		// Remove from transport reloader list before switching house
+		if (pPassenger->WhatAmI() != AbstractType::Aircraft && pPassenger->WhatAmI() != AbstractType::Building
+			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
+		{
+			auto& vec = ScenarioExt::Global()->TransportReloaders;
+			vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
+		}
+
+		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit &&
 			pExt->OriginalPassengerOwner)
 		{
 			pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
@@ -131,6 +148,22 @@ DEFINE_HOOK(0x737F80, TechnoClass_ReceiveDamage_Cargo_SyncOwner, 0x6)
 					pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
 			}
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x51DF82, InfantryClass_FireAt_ReloadInTransport, 0x6)
+{
+	GET(InfantryClass* const, pThis, ESI);
+
+	if (pThis->Transporter)
+	{
+		auto const pType = pThis->GetTechnoType();
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt->ReloadInTransport && pType->Ammo > 0 && pThis->Ammo < pType->Ammo)
+			pThis->StartReloading();
 	}
 
 	return 0;

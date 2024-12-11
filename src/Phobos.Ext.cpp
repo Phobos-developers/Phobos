@@ -10,6 +10,8 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/OverlayType/Body.h>
+#include <Ext/ParticleSystemType/Body.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -47,6 +49,11 @@ concept DerivedFromSpecializationOf =
 
 template<typename TExt>
 concept HasExtMap = requires { { TExt::ExtMap } -> DerivedFromSpecializationOf<Container>; };
+
+template<typename TExt>
+concept ExtDataConsiderPointerInvalidation = HasExtMap<TExt> && requires{
+	{ TExt::ShouldConsiderInvalidatePointer }->std::convertible_to<const bool>;
+}&& TExt::ShouldConsiderInvalidatePointer == true;
 
 template <typename T>
 concept Clearable = requires { T::Clear(); };
@@ -95,7 +102,7 @@ struct InvalidatePointerAction
 	{
 		if constexpr (PointerInvalidationSubscribable<T>)
 			T::PointerGotInvalid(ptr, removed);
-		else if constexpr (HasExtMap<T>)
+		else if constexpr (ExtDataConsiderPointerInvalidation<T>)
 			T::ExtMap.PointerGotInvalid(ptr, removed);
 
 		return true;
@@ -175,7 +182,7 @@ private:
 	// TAction: the method dispatcher class to call with each type
 	// ArgTypes: the argument types to call the method dispatcher's Process() method
 	template <typename TAction, typename... ArgTypes>
-	requires (DispatchesAction<TAction, RegisteredTypes, ArgTypes...> && ...)
+		requires (DispatchesAction<TAction, RegisteredTypes, ArgTypes...> && ...)
 	__forceinline static bool dispatch_mass_action(ArgTypes... args)
 	{
 		// (pack expression op ...) is a fold expression which
@@ -187,7 +194,7 @@ private:
 #pragma endregion
 
 // Add more class names as you like
-using PhobosTypeRegistry = TypeRegistry<
+using PhobosTypeRegistry = TypeRegistry <
 	// Ext classes
 	AircraftExt,
 	AnimTypeExt,
@@ -197,6 +204,8 @@ using PhobosTypeRegistry = TypeRegistry<
 	BulletExt,
 	BulletTypeExt,
 	HouseExt,
+	OverlayTypeExt,
+	ParticleSystemTypeExt,
 	RadSiteExt,
 	RulesExt,
 	ScenarioExt,
@@ -218,9 +227,11 @@ using PhobosTypeRegistry = TypeRegistry<
 	LaserTrailTypeClass,
 	RadTypeClass,
 	ShieldClass,
-	DigitalDisplayTypeClass
+	DigitalDisplayTypeClass,
+	AttachEffectTypeClass,
+	AttachEffectClass
 	// other classes
->;
+> ;
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {
@@ -245,7 +256,6 @@ DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 {
 	GET(IStream*, pStm, ESI);
-	//UNREFERENCED_PARAMETER(pStm);
 	PhobosTypeRegistry::SaveGlobals(pStm);
 	return 0;
 }
@@ -253,25 +263,29 @@ DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 {
 	GET(IStream*, pStm, ESI);
-	//UNREFERENCED_PARAMETER(pStm);
 	PhobosTypeRegistry::LoadGlobals(pStm);
 	return 0;
 }
 
-DEFINE_HOOK(0x67D04E, Game_Save_SavegameInformation, 0x7)
+DEFINE_HOOK(0x67D04E, GameSave_SavegameInformation, 0x7)
 {
 	REF_STACK(SavegameInformation, Info, STACK_OFFSET(0x4A4, -0x3F4));
-	Info.Version = Info.Version + SAVEGAME_ID;
+
+	Info.InternalVersion = Info.InternalVersion + SAVEGAME_ID;
+	strncat(Info.ExecutableName.data(),
+		" + Phobos " FILE_VERSION_STR,
+		Info.ExecutableName.Size - sizeof(" + Phobos " FILE_VERSION_STR)
+	);
+
 	return 0;
 }
 
-DEFINE_HOOK(0x559F29, LoadOptionsClass_GetFileInfo, 0x8)
+DEFINE_HOOK_AGAIN(0x67FD9D, LoadOptionsClass_GetFileInfo, 0x7)
+DEFINE_HOOK(0x67FDB1, LoadOptionsClass_GetFileInfo, 0x7)
 {
-	if (!R->BL()) return 0x55A03D; // vanilla overridden check
-
-	REF_STACK(SavegameInformation, Info, STACK_OFFSET(0x400, -0x3F4));
-	Info.Version = Info.Version - SAVEGAME_ID;
-	return 0x559F29 + 0x8;
+	GET(SavegameInformation*, Info, ESI);
+	Info->InternalVersion = Info->InternalVersion - SAVEGAME_ID;
+	return 0;
 }
 
 #ifdef DEBUG
@@ -285,24 +299,24 @@ DEFINE_HOOK(0x559F29, LoadOptionsClass_GetFileInfo, 0x8)
 bool Phobos::DetachFromDebugger()
 {
 	auto GetDebuggerProcessId = [](DWORD dwSelfProcessId) -> DWORD
-	{
-		DWORD dwParentProcessId = -1;
-		HANDLE hSnapshot = CreateToolhelp32Snapshot(2, 0);
-		PROCESSENTRY32 pe32;
-		pe32.dwSize = sizeof(PROCESSENTRY32);
-		Process32First(hSnapshot, &pe32);
-		do
 		{
-			if (pe32.th32ProcessID == dwSelfProcessId)
+			DWORD dwParentProcessId = -1;
+			HANDLE hSnapshot = CreateToolhelp32Snapshot(2, 0);
+			PROCESSENTRY32 pe32;
+			pe32.dwSize = sizeof(PROCESSENTRY32);
+			Process32First(hSnapshot, &pe32);
+			do
 			{
-				dwParentProcessId = pe32.th32ParentProcessID;
-				break;
+				if (pe32.th32ProcessID == dwSelfProcessId)
+				{
+					dwParentProcessId = pe32.th32ParentProcessID;
+					break;
+				}
 			}
-		}
-		while (Process32Next(hSnapshot, &pe32));
-		CloseHandle(hSnapshot);
-		return dwParentProcessId;
-	};
+			while (Process32Next(hSnapshot, &pe32));
+			CloseHandle(hSnapshot);
+			return dwParentProcessId;
+		};
 
 	HMODULE hModule = LoadLibrary("ntdll.dll");
 	if (hModule != NULL)

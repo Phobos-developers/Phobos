@@ -6,7 +6,7 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 		return pManager->CanCapture(pTarget);
 
 	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
-	if (pTechnoTypeExt && pTechnoTypeExt->MultiMindControl_ReleaseVictim)
+	if (pTechnoTypeExt->MultiMindControl_ReleaseVictim)
 	{
 		// I hate Ares' completely rewritten things - secsome
 		pManager->MaxControlNodes += 1;
@@ -51,8 +51,7 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 				pManager->DecideUnitFate(pTarget);
 				pTarget->MindControlledBy = nullptr;
 
-				if (pNode)
-					GameDelete(pNode);
+				GameDelete(pNode);
 
 				pManager->ControlNodes.RemoveItem(i);
 
@@ -107,14 +106,14 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 
 				if (auto const pAnimType = pControlledAnimType)
 				{
-					if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
-					{
-						pTarget->MindControlRingAnim = pAnim;
-						pAnim->SetOwnerObject(pTarget);
+					auto const pAnim = GameCreate<AnimClass>(pAnimType, location);
 
-						if (pBld)
-							pAnim->ZAdjust = -1024;
-					}
+					pTarget->MindControlRingAnim = pAnim;
+					pAnim->SetOwnerObject(pTarget);
+
+					if (pBld)
+						pAnim->ZAdjust = -1024;
+
 				}
 
 				return true;
