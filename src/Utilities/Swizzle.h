@@ -36,7 +36,8 @@ public:
 	}
 };
 
-struct Swizzle {
+struct Swizzle
+{
 	template <typename T>
 	Swizzle(T& object)
 	{

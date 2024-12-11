@@ -192,7 +192,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 				if (i != 0)
 					append(", ");
 
-				append("Slot %d = %s", i+1, pBuilding->Upgrades[i] ? pBuilding->Upgrades[i]->get_ID() : "<none>");
+				append("Slot %d = %s", i + 1, pBuilding->Upgrades[i] ? pBuilding->Upgrades[i]->get_ID() : "<none>");
 			}
 			append("\n");
 		}
@@ -247,11 +247,15 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		if (pTechno->IsMouseHovering)
 			dumpInfo(pTechno);
 	}
+
 	if (!dumped)
+	{
 		if (ObjectClass::CurrentObjects->Count > 0)
 		{
 			if (ObjectClass::CurrentObjects->Count != 1)
 				MessageListClass::Instance->PrintMessage(L"This command will only dump one of these selected object", 600, 5, true);
+
 			dumpInfo(ObjectClass::CurrentObjects->GetItem(ObjectClass::CurrentObjects->Count - 1));
 		}
+	}
 }
