@@ -466,7 +466,7 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
 
 	// To avoid aircrafts overlap by keep link if is returning or is in airport now.
-	if (!expand || !commonAircraft || !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+	if (!expand || !commonAircraft || pAircraft->CurrentMission != Mission::Enter || !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
 		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
 
 	pTechno->SetTarget(nullptr);
@@ -479,13 +479,15 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 			if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())) // If the aircraft have no valid dock, try to find a new one
 				pAircraft->EnterIdleMode(false, true);
 		}
-		else if (const auto pDestination = pAircraft->Destination)
+		else if (pAircraft->Ammo)
 		{
 			// To avoid `AirportBound=no` aircrafts ignoring the stop task or directly return to the airport.
-			if (pAircraft->Ammo && static_cast<int>(CellClass::Coord2Cell(pDestination->GetCoords()).DistanceFromSquared(pAircraft->GetMapCoords())) > 2) // If the aircraft is moving, find the forward cell then stop in it
+			if (pAircraft->Destination && static_cast<int>(CellClass::Coord2Cell(pAircraft->Destination->GetCoords()).DistanceFromSquared(pAircraft->GetMapCoords())) > 2) // If the aircraft is moving, find the forward cell then stop in it
 				pAircraft->SetDestination(pAircraft->GetCell()->GetNeighbourCell(static_cast<FacingType>(pAircraft->PrimaryFacing.Current().GetValue<3>())), true);
-			else if (!pAircraft->Ammo && (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())))
-				pAircraft->EnterIdleMode(false, true);
+		}
+		else if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+		{
+			pAircraft->EnterIdleMode(false, true);
 		}
 		// Otherwise landing or idling normally without answering the stop command
 	}
