@@ -329,6 +329,9 @@ bool __fastcall AircraftTypeClass_CanUseWaypoint(AircraftTypeClass* pThis)
 }
 DEFINE_JUMP(VTABLE, 0x7E2908, GET_OFFSET(AircraftTypeClass_CanUseWaypoint))
 
+// KickOut: skip useless tether
+DEFINE_JUMP(LJMP, 0x444021, 0x44402E)
+
 // Move: smooth the planning paths and returning route
 DEFINE_HOOK_AGAIN(0x4168C7, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
@@ -448,22 +451,50 @@ DEFINE_HOOK(0x414D4D, AircraftClass_Update_ClearTargetIfNoAmmo, 0x6)
 	return 0;
 }
 
-// Stop: clear the mega mission and return to airbase immediately
-DEFINE_HOOK(0x4C762A, EventClass_RespondToEvent_StopAircraftAction, 0x6)
+// Stop: clear the mega mission and return to airbase immediately (Temporary)
+// TODO The complete and accurate fix is in #1449
+DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 {
+	enum { SkipGameCode = 0x4C762A };
+
 	GET(TechnoClass* const, pTechno, ESI);
 
-	if (RulesExt::Global()->ExpandAircraftMission && pTechno->WhatAmI() == AbstractType::Aircraft && !pTechno->Airstrike && !pTechno->Spawned)
-	{
-		// I think this mega mission clearing should be all technotypes need
-		if (pTechno->vt_entry_4C4()) // pTechno->MegaMissionIsAttackMove()
-			pTechno->vt_entry_4A8(); // pTechno->ClearMegaMissionData()
+	const bool expand = RulesExt::Global()->ExpandAircraftMission.Get();
 
-		if (static_cast<AircraftClass*>(pTechno)->Type->AirportBound && pTechno->GetHeight() > Unsorted::CellHeight)
-			pTechno->EnterIdleMode(false, true);
+	// Check aircrafts
+	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
+	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
+
+	// To avoid aircrafts overlap by keep link if is returning or is in airport now.
+	if (!expand || !commonAircraft || !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
+
+	pTechno->SetTarget(nullptr);
+
+	if (expand && commonAircraft)
+	{
+		if (pAircraft->Type->AirportBound)
+		{
+			// To avoid `AirportBound=yes` aircrafts pausing in the air and let they returning to air base immediately.
+			if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())) // If the aircraft have no valid dock, try to find a new one
+				pAircraft->EnterIdleMode(false, true);
+		}
+		else if (const auto pDestination = pAircraft->Destination)
+		{
+			// To avoid `AirportBound=no` aircrafts ignoring the stop task or directly return to the airport.
+			if (pAircraft->Ammo && static_cast<int>(CellClass::Coord2Cell(pDestination->GetCoords()).DistanceFromSquared(pAircraft->GetMapCoords())) > 2) // If the aircraft is moving, find the forward cell then stop in it
+				pAircraft->SetDestination(pAircraft->GetCell()->GetNeighbourCell(static_cast<FacingType>(pAircraft->PrimaryFacing.Current().GetValue<3>())), true);
+			else if (!pAircraft->Ammo && (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())))
+				pAircraft->EnterIdleMode(false, true);
+		}
+		// Otherwise landing or idling normally without answering the stop command
+	}
+	else
+	{
+		pTechno->SetDestination(nullptr, true);
 	}
 
-	return 0;
+	return SkipGameCode;
 }
 
 // GreatestThreat: for all the mission that should let the aircraft auto select a target
