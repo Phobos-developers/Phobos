@@ -77,7 +77,7 @@ bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 	if (((int)flags & (int)GadgetFlag::LeftRelease) && this->IsPressed)
 	{
 		this->IsPressed = false;
-		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
+		VocClass::PlayGlobal(RulesClass::Instance->GUIMainButtonSound, 0x2000, 1.0);
 		ToggleSWButtonClass::SwitchSidebar();
 	}
 
