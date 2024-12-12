@@ -1066,6 +1066,9 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 #pragma region StopEventFix
 
+DEFINE_JUMP(LJMP, 0x444021, 0x44402E) // Skip useless tether when kick out aircrafts (temporary)
+// TODO: this is already in #1366, should delete if merge
+
 DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 {
 	enum { SkipGameCode = 0x4C762A };
@@ -1074,10 +1077,10 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 	// Check aircrafts
 	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
-	const bool findAirport = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned && pAircraft->Type->AirportBound;
+	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
 
 	// To avoid aircrafts overlap by keep link if is returning or is in airport now.
-	if (!findAirport || !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+	if (!commonAircraft || !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
 		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
 
 	// To avoid technos being unable to stop in attack move mega mission
@@ -1087,11 +1090,23 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	// Clearing the current target should still be necessary for all technos
 	pTechno->SetTarget(nullptr);
 
-	if (findAirport)
+	if (commonAircraft)
 	{
-		// To avoid aircrafts pausing in the air and let they returning to air base immediately.
-		if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
-			pAircraft->EnterIdleMode(false, true);
+		if (pAircraft->Type->AirportBound)
+		{
+			// To avoid `AirportBound=yes` aircrafts pausing in the air and let they returning to air base immediately.
+			if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())) // If the aircraft have no valid dock, try to find a new one
+				pAircraft->EnterIdleMode(false, true);
+		}
+		else if (const auto pDestination = pAircraft->Destination)
+		{
+			// To avoid `AirportBound=no` aircrafts ignoring the stop task or directly return to the airport.
+			if (pAircraft->Ammo && static_cast<int>(CellClass::Coord2Cell(pDestination->GetCoords()).DistanceFromSquared(pAircraft->GetMapCoords())) > 2) // If the aircraft is moving, find the forward cell then stop in it
+				pAircraft->SetDestination(pAircraft->GetCell()->GetNeighbourCell(static_cast<FacingType>(pAircraft->PrimaryFacing.Current().GetValue<3>())), true);
+			else if (!pAircraft->Ammo && (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())))
+				pAircraft->EnterIdleMode(false, true);
+		}
+		// Otherwise landing or idling normally without answering the stop command
 	}
 	else
 	{
@@ -1106,6 +1121,7 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 			pTechno->QueueMission(Mission::Guard, true);
 		else if (static_cast<int>(CellClass::Coord2Cell(pFoot->Destination->GetCoords()).DistanceFromSquared(pTechno->GetMapCoords())) > 2) // If the jumpjet is moving, find the forward cell then stop in it
 			pTechno->SetDestination(pTechno->GetCell()->GetNeighbourCell(static_cast<FacingType>(pJumpjetLoco->LocomotionFacing.Current().GetValue<3>())), true);
+		// Otherwise landing or idling normally without answering the stop command
 	}
 
 	return SkipGameCode;
