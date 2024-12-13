@@ -434,6 +434,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
+	this->Convert_EnterTransport.Read(exINI, pSection, "Convert.EnterTransport");
+	this->Convert_LeaveTransport.Read(exINI, pSection, "Convert.LeaveTransport");
+	TypeConvertGroup::Parse(this->ConvertOnLoad_Pairs, exINI, pSection, AffectedHouse::All, "Convert.OnLoad");
+	TypeConvertGroup::Parse(this->ConvertOnUnload_Pairs, exINI, pSection, AffectedHouse::All, "Convert.OnUnload");
 
 	char tempBuffer[32];
 
@@ -826,6 +830,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
+		.Process(this->Convert_EnterTransport)
+		.Process(this->Convert_LeaveTransport)
+		.Process(this->ConvertOnLoad_Pairs)
+		.Process(this->ConvertOnUnload_Pairs)
 		.Process(this->Convert_ToHouseOrCountry)
 
 		.Process(this->CrateGoodie_RerollChance)

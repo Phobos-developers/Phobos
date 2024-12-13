@@ -42,17 +42,24 @@ bool TypeConvertGroup::Save(PhobosStreamWriter& stm) const
 
 void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI, const char* pSection, AffectedHouse defaultAffectHouse)
 {
+	Parse(list, exINI, pSection, defaultAffectHouse, "Convert");
+}
+
+// Note that if the header's length plus "1.AffectedHouse" exceeds the capacity of the tempBuffer then the game will crash.
+// Longer headers ask for greater capacity of the tempBuffer.
+void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI, const char* pSection, AffectedHouse defaultAffectHouse, const char* header)
+{
+	char tempBuffer[40];
 	for (size_t i = 0; ; ++i)
 	{
-		char tempBuffer[32];
 		ValueableVector<TechnoTypeClass*> convertFrom;
 		Nullable<TechnoTypeClass*> convertTo;
 		Nullable<AffectedHouse> convertAffectedHouses;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s%d.From", header, i);
 		convertFrom.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s%d.To", header, i);
 		convertTo.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s%d.AffectedHouses", header, i);
 		convertAffectedHouses.Read(exINI, pSection, tempBuffer);
 
 		if (!convertTo.isset())
@@ -66,9 +73,12 @@ void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI,
 	ValueableVector<TechnoTypeClass*> convertFrom;
 	Nullable<TechnoTypeClass*> convertTo;
 	Nullable<AffectedHouse> convertAffectedHouses;
-	convertFrom.Read(exINI, pSection, "Convert.From");
-	convertTo.Read(exINI, pSection, "Convert.To");
-	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.From", header);
+	convertFrom.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.To", header);
+	convertTo.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.AffectedHouses", header);
+	convertAffectedHouses.Read(exINI, pSection, tempBuffer);
 	if (convertTo.isset())
 	{
 		if (!convertAffectedHouses.isset())

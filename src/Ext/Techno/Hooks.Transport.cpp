@@ -88,6 +88,17 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 		{
 			ScenarioExt::Global()->TransportReloaders.push_back(pExt);
 		}
+
+		TechnoTypeClass* pConvertTo;
+		if (pConvertTo = pExt->TypeExtData->Convert_EnterTransport)
+		{
+			TechnoExt::ConvertToType(pPassenger, pConvertTo);
+		}
+
+		if (pTransTypeExt->ConvertOnLoad_Pairs.size() > 0)
+		{
+			TypeConvertGroup::Convert(pPassenger, pTransTypeExt->ConvertOnLoad_Pairs, pPassenger->GetOwningHouse());
+		}
 	}
 
 	return 0;
@@ -116,6 +127,17 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 			pExt->OriginalPassengerOwner)
 		{
 			pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
+		}
+
+		TechnoTypeClass* pConvertTo;
+		if (pConvertTo = pExt->TypeExtData->Convert_LeaveTransport)
+		{
+			TechnoExt::ConvertToType(pPassenger, pConvertTo);
+		}
+
+		if (pTransTypeExt->ConvertOnUnload_Pairs.size() > 0)
+		{
+			TypeConvertGroup::Convert(pPassenger, pTransTypeExt->ConvertOnUnload_Pairs, pPassenger->GetOwningHouse());
 		}
 	}
 

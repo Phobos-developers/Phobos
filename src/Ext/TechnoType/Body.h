@@ -12,6 +12,7 @@
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
+#include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class Matrix3D;
 
@@ -204,6 +205,10 @@ public:
 
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
+		Valueable<TechnoTypeClass*> Convert_EnterTransport;
+		Valueable<TechnoTypeClass*> Convert_LeaveTransport;
+		std::vector<TypeConvertGroup> ConvertOnLoad_Pairs;
+		std::vector<TypeConvertGroup> ConvertOnUnload_Pairs;
 		PhobosMap<AbstractTypeClass*, TechnoTypeClass*> Convert_ToHouseOrCountry;
 
 		Valueable<double> CrateGoodie_RerollChance;
@@ -428,6 +433,10 @@ public:
 
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+			, Convert_EnterTransport { }
+			, Convert_LeaveTransport { }
+			, ConvertOnLoad_Pairs { }
+			, ConvertOnUnload_Pairs { }
 			, Convert_ToHouseOrCountry { }
 
 			, CrateGoodie_RerollChance { 0.0 }

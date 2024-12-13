@@ -1363,6 +1363,7 @@ Promote.EliteAnimation=           ; Animation
   - `Convert.ToUSSR=FLAKT` meaning the unit will be converted into a Flak Trooper when changing ownership into Russia. Country config has higher priority than side config.
   - If this feature is used alongside with `Convert.HumanToComputer` or `Convert.ComputerToHuman`, the latter will take presedence.
 - These only happen when a unit changes ownership. If it was gained through other means that do not involve the changing of ownership, nothing happens and the unit doesn't convert.
+- Ares' depiloting doesn't count as change in ownership.
 
 In `rulesmd.ini`:
 ```ini
@@ -1378,6 +1379,32 @@ This feature has the same limitations as [Ares' Type Conversion](https://ares-de
 
 ```{warning}
 This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
+### Convert TechnoType on enter or leave a transport or building
+- You can change a unit's type when it enters or leaves a transport.
+- You can also make the transport change its passenger's type when it loads or unloads a passenger.
+  - `Convert.OnLoadN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
+  - `Convert.OnLoadN.To` specifies the TechnoType which is the result of conversion.
+  - `Convert.OnLoadN.AffectedHouses` specifies whose units can be converted.
+  - `Convert.OnLoad.From`, `Convert.OnLoad.To` and `Convert.OnLoad.AffectedHouses` (without numbers) are a valid alternative to `Convert.OnLoad0.From`, `Convert.OnLoad0.To` and `Convert.OnLoad0.AffectedHouses` if only one pair is specified.
+  - The same rules apply to `Convert.OnUnload`.
+- This works when the techno is abducted.
+- Leaving a war factory when built doesn't count as leaving a building here.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]
+Convert.EnterTransport  =                      ; TechnoType;
+Convert.LeaveTransport  =                      ; TechnoType;
+
+[SOMETECHNO]
+Convert.OnLoad.From=                           ; list of TechnoType;
+Convert.OnLoad.To=                             ; TechnoType;
+Convert.OnLoad.AffectedHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Convert.OnUnload.From=
+Convert.OnUnload.To=
+Convert.OnUnload.AffectedHouses=all
 ```
 
 ## Terrain
