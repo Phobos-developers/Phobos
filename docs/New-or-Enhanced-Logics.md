@@ -1383,14 +1383,15 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 
 ### Convert TechnoType on enter or leave a transport or building
 - You can change a unit's type when it enters or leaves a transport.
+  - Getting ejected from a transport when it is destroyed counts as leaving it.
 - You can also make the transport change its passenger's type when it loads or unloads a passenger.
   - `Convert.OnLoadN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
   - `Convert.OnLoadN.To` specifies the TechnoType which is the result of conversion.
   - `Convert.OnLoadN.AffectedHouses` specifies whose units can be converted.
   - `Convert.OnLoad.From`, `Convert.OnLoad.To` and `Convert.OnLoad.AffectedHouses` (without numbers) are a valid alternative to `Convert.OnLoad0.From`, `Convert.OnLoad0.To` and `Convert.OnLoad0.AffectedHouses` if only one pair is specified.
   - The same rules apply to `Convert.OnUnload`.
+    - Having passengers ejected when destroyed counts as unloading them.
 - This works when the techno is abducted.
-- Leaving a war factory when built doesn't count as leaving a building here.
 
 In `rulesmd.ini`:
 ```ini
