@@ -598,33 +598,32 @@ static int __forceinline GetCoordHash(CoordStruct location)
 	return location.X / 10 + ((location.Y / 10) << 16);
 }
 
-void __fastcall ComputeGameCRC()
+static void __fastcall ComputeGameCRC()
 {
-	auto& GameCRC = EventClass::CurrentFrameCRC.get();
-	GameCRC = 0;
+	EventClass::CurrentFrameCRC = 0;
 
 	for (auto const pInf : *InfantryClass::Array)
 	{
 		int primaryFacing = pInf->PrimaryFacing.Current().GetValue<8>();
-		AddCRC(&GameCRC, GetCoordHash(pInf->Location) + primaryFacing);
+		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pInf->Location) + primaryFacing);
 	}
 
 	for (auto const pUnit : *UnitClass::Array)
 	{
 		int primaryFacing = pUnit->PrimaryFacing.Current().GetValue<8>();
 		int secondaryFacing = pUnit->SecondaryFacing.Current().GetValue<8>();
-		AddCRC(&GameCRC, GetCoordHash(pUnit->Location) + primaryFacing + secondaryFacing);
+		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pUnit->Location) + primaryFacing + secondaryFacing);
 	}
 
 	for (auto const pBuilding : *BuildingClass::Array)
 	{
 		int primaryFacing = pBuilding->PrimaryFacing.Current().GetValue<8>();
-		AddCRC(&GameCRC, GetCoordHash(pBuilding->Location) + primaryFacing);
+		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pBuilding->Location) + primaryFacing);
 	}
 
 	for (auto const pHouse : *HouseClass::Array)
 	{
-		AddCRC(&GameCRC, pHouse->MapIsClear);
+		AddCRC(&EventClass::CurrentFrameCRC, pHouse->MapIsClear);
 	}
 
 	for (int i = 0; i < 5; i++)
@@ -634,18 +633,19 @@ void __fastcall ComputeGameCRC()
 		for (auto const pObj : *layer)
 		{
 			if (IsHashable(pObj))
-				AddCRC(&GameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
+				AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
 		}
 	}
 
-	auto const& logic = LogicClass::Instance.get();
+	LogicClass const& logic = LogicClass::Instance;
+
 	for (auto const pObj : logic)
 	{
 		if (IsHashable(pObj))
-			AddCRC(&GameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
+			AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
 	}
 
-	AddCRC(&GameCRC, ScenarioClass::Instance->Random.Random());
+	AddCRC(&EventClass::CurrentFrameCRC, ScenarioClass::Instance->Random.Random());
 	Game::LogFrameCRC(Unsorted::CurrentFrame % 256);
 
 DEFINE_JUMP(CALL, 0x64731C, GET_OFFSET(ComputeGameCRC));
