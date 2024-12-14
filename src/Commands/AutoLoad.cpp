@@ -184,8 +184,8 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		// try to cast to TechnoClass
 		TechnoClass *pTechno = abstract_cast<TechnoClass *>(pUnit);
 
-		// If not a techno, or is in air, then exclude it from auto load feature.
-		if (!pTechno || pTechno->IsInAir())
+		// If not a techno, or is in air, or is MCed, or MCs anything, then it can't be a passenger.
+		if (!pTechno || pTechno->IsInAir() || pTechno->IsMindControlled() || pTechno->CaptureManager->IsControllingSomething())
 		{
 			continue;
 		}
@@ -211,7 +211,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		// try to cast to TechnoClass
 		TechnoClass *pTechno = abstract_cast<TechnoClass *>(pUnit);
 
-		// If not a techno, or is in air, then exclude it from auto load feature.
+		// If not a techno, or is in air, then it can't be a vehicle.
 		if (!pTechno || pTechno->IsInAir())
 		{
 			continue;
