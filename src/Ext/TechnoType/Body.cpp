@@ -27,6 +27,9 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
+// Checks if a transport can load a passenger.
+// Note that this function only checks the size limit and Ares passenger whitelist and blacklist,
+// it doesn't check if this transport is actually a transport or not.
 bool TechnoTypeExt::ExtData::CanLoadPassenger(TechnoClass* pTransport, TechnoClass* pPassenger) const
 {
 	auto const pTransportType = pTransport->GetTechnoType();
