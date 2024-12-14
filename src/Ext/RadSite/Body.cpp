@@ -106,13 +106,11 @@ void RadSiteExt::ExtData::CreateLight()
 	else
 	{
 		auto const pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell);
-		if (auto const pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer))
-		{
-			pThis->LightSource = pLight;
-			pLight->DetailLevel = 0;
-			pLight->Activate(update);
-			pThis->Radiate();
-		}
+		auto const pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer);
+		pThis->LightSource = pLight;
+		pLight->DetailLevel = 0;
+		pLight->Activate(update);
+		pThis->Radiate();
 	}
 }
 

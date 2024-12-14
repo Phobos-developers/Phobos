@@ -16,7 +16,7 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const override;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
-	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Straight; }
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Straight; }
 	Valueable<Leptons> DetonationDistance;
 	Valueable<bool> ApplyRangeModifiers;
 	Valueable<Leptons> TargetSnapDistance;
@@ -30,19 +30,18 @@ private:
 class StraightTrajectory final : public PhobosTrajectory
 {
 public:
-	StraightTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
+	StraightTrajectory(noinit_t) { }
 
-	StraightTrajectory(StraightTrajectoryType const* trajType) : PhobosTrajectory(trajType->Trajectory_Speed)
+	StraightTrajectory(StraightTrajectoryType const* trajType) : Type { trajType }
 		, DetonationDistance { trajType->DetonationDistance }
 		, TargetSnapDistance { trajType->TargetSnapDistance }
 		, FirerZPosition { 0 }
 		, TargetZPosition { 0 }
-		, Type { trajType }
 	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-	virtual TrajectoryFlag Flag() const { return TrajectoryFlag::Straight; }
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Straight; }
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override;

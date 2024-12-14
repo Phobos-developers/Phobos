@@ -1,158 +1,144 @@
 #include "Body.h"
-#include <InfantryClass.h>
-#include <SpecificStructures.h>
-#include <Utilities/Macro.h>
-#include <Utilities/GeneralUtils.h>
-#include <Ext/TechnoType/Body.h>
-#include <Ext/WarheadType/Body.h>
-#include <Ext/TEvent/Body.h>
 
-namespace RD
+// Cursor & target acquisition stuff not directly tied to other features can go here.
+
+#pragma region TargetAcquisition
+
+DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 {
-	bool SkipLowDamageCheck = false;
-}
-// #issue 88 : shield logic
-DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
-{
-	GET(TechnoClass*, pThis, ECX);
-	LEA_STACK(args_ReceiveDamage*, args, 0x4);
+	GET(TechnoClass* const, pThis, ESI);
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	int nDamageLeft = *args->Damage;
-
-	if (!args->IgnoreDefenses)
+	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		if (const auto pShieldData = pExt->Shield.get())
+		if (pExt->AutoFire)
 		{
-			if (!pShieldData->IsActive())
-				return 0;
+			if (pExt->AutoFire_TargetSelf)
+				pThis->SetTarget(pThis);
+			else
+				pThis->SetTarget(pThis->GetCell());
 
-			nDamageLeft = pShieldData->ReceiveDamage(args);
-
-			if (nDamageLeft >= 0)
-			{
-				*args->Damage = nDamageLeft;
-
-				if (auto pTag = pThis->AttachedTag)
-					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
-			}
-
-			if (nDamageLeft == 0)
-				RD::SkipLowDamageCheck = true;
+			return 0x7099B8;
 		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
+FireError __fastcall TechnoClass_TargetSomethingNearby_CanFire_Wrapper(TechnoClass* pThis, void* _, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
 {
-	if (RD::SkipLowDamageCheck)
-	{
-		RD::SkipLowDamageCheck = false;
-	}
-	else
-	{
-		// Restore overridden instructions
-		GET(int*, nDamage, EBX);
-		if (*nDamage < 1)
-			*nDamage = 1;
-	}
-
-	return 0x7019E3;
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	bool disableWeapons = pExt->AE.DisableWeapons;
+	pExt->AE.DisableWeapons = false;
+	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
+	pExt->AE.DisableWeapons = disableWeapons;
+	return fireError;
 }
 
-DEFINE_HOOK_AGAIN(0x70CF39, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_EvalThreatRating_Shield
-DEFINE_HOOK_AGAIN(0x6F7D31, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanAutoTargetObject_Shield
-DEFINE_HOOK_AGAIN(0x6FCB64, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanFire_Shield
-DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_ShouldRetaliate_Shield
+DEFINE_JUMP(CALL6, 0x7098E6, GET_OFFSET(TechnoClass_TargetSomethingNearby_CanFire_Wrapper));
+
+#pragma endregion
+
+#pragma region MapZone
+
+namespace MapZoneTemp
 {
-	WeaponTypeClass* pWeapon = nullptr;
-	if (R->Origin() == 0x708AEB)
-		pWeapon = R->ESI<WeaponTypeClass*>();
-	else if (R->Origin() == 0x6F7D31)
-		pWeapon = R->EBP<WeaponTypeClass*>();
-	else
-		pWeapon = R->EBX<WeaponTypeClass*>();
-
-	ObjectClass* pTarget = nullptr;
-	if (R->Origin() == 0x6F7D31 || R->Origin() == 0x70CF39)
-		pTarget = R->ESI<ObjectClass*>();
-	else
-		pTarget = R->EBP<ObjectClass*>();
-
-	if (const auto pExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget)))
-	{
-		if (const auto pShieldData = pExt->Shield.get())
-		{
-			if (pShieldData->CanBePenetrated(pWeapon->Warhead))
-				return 0;
-
-			if (pShieldData->IsActive())
-			{
-				R->EAX(pShieldData->GetArmorType());
-				return R->Origin() + 6;
-			}
-		}
-	}
-
-	return 0;
+	TargetZoneScanType zoneScanType;
 }
 
-DEFINE_HOOK(0x6F6AC4, TechnoClass_Remove_Shield, 0x5)
-{
-	GET(TechnoClass*, pThis, ECX);
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->Shield)
-		pExt->Shield->KillAnim();
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
+DEFINE_HOOK(0x6F9C67, TechnoClass_GreatestThreat_MapZoneSetContext, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(int, length, EBX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (const auto pShieldData = pExt->Shield.get())
-	{
-		if (pShieldData->IsAvailable())
-			pShieldData->DrawShieldBar(length, pLocation, pBound);
-	}
-
-	TechnoExt::ProcessDigitalDisplays(pThis);
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	MapZoneTemp::zoneScanType = pTypeExt->TargetZoneScanType;
 
 	return 0;
 }
 
-DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
+DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
+{
+	enum { AllowedObject = 0x6F7EA2, DisallowedObject = 0x6F894F };
+
+	GET(TechnoClass*, pThis, EDI);
+	GET(ObjectClass*, pObject, ESI);
+	GET(int, zone, EBP);
+
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
+	{
+		if (!TechnoExt::AllowedTargetByZone(pThis, pTechno, MapZoneTemp::zoneScanType, nullptr, true, zone))
+			return DisallowedObject;
+	}
+
+	return AllowedObject;
+}
+
+#pragma endregion
+
+#pragma region Walls
+
+DEFINE_HOOK(0x70095A, TechnoClass_WhatAction_WallWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+	GET_STACK(OverlayTypeClass*, pOverlayTypeClass, STACK_OFFSET(0x2C, -0x18));
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (const auto pShieldData = pExt->Shield.get())
-	{
-		if (pShieldData->IsAvailable())
-		{
-			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-			pShieldData->DrawShieldBar(length, pLocation, pBound);
-		}
-	}
-
-	TechnoExt::ProcessDigitalDisplays(pThis);
+	int weaponIndex = TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass);
+	R->EAX(pThis->GetWeapon(weaponIndex));
 
 	return 0;
 }
+
+DEFINE_HOOK(0x51C1F1, InfantryClass_CanEnterCell_WallWeapon, 0x5)
+{
+	enum { SkipGameCode = 0x51C1FE };
+
+	GET(InfantryClass*, pThis, EBP);
+	GET(OverlayTypeClass*, pOverlayTypeClass, ESI);
+
+	R->EAX(pThis->GetWeapon(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass)));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x73F495, UnitClass_CanEnterCell_WallWeapon, 0x6)
+{
+	enum { SkipGameCode = 0x73F4A1 };
+
+	GET(UnitClass*, pThis, EBX);
+	GET(OverlayTypeClass*, pOverlayTypeClass, ESI);
+
+	R->EAX(pThis->GetWeapon(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass)));
+
+	return SkipGameCode;
+}
+
+namespace CellEvalTemp
+{
+	int weaponIndex;
+}
+
+DEFINE_HOOK(0x6F8C9D, TechnoClass_EvaluateCell_SetContext, 0x7)
+{
+	GET(int, weaponIndex, EAX);
+
+	CellEvalTemp::weaponIndex = weaponIndex;
+
+	return 0;
+}
+
+WeaponStruct* __fastcall TechnoClass_EvaluateCellGetWeaponWrapper(TechnoClass* pThis)
+{
+	return pThis->GetWeapon(CellEvalTemp::weaponIndex);
+}
+
+int __fastcall TechnoClass_EvaluateCellGetWeaponRangeWrapper(TechnoClass* pThis, void* _, int weaponIndex)
+{
+	return pThis->GetWeaponRange(CellEvalTemp::weaponIndex);
+}
+
+DEFINE_JUMP(CALL6, 0x6F8CE3, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponWrapper));
+DEFINE_JUMP(CALL6, 0x6F8DD2, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponRangeWrapper));
+
+#pragma endregion
 
 #pragma region HealingWeapons
 
@@ -199,7 +185,7 @@ double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 
 DEFINE_JUMP(CALL, 0x6F7F51, GET_OFFSET(HealthRatio_Wrapper))
 
-#pragma endregion TechnoClass_EvaluateObject
+#pragma endregion
 
 class AresScheme
 {
@@ -276,7 +262,6 @@ private:
 	}
 };
 
-
 FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	AresScheme::Prefix(pThis, pObj, nWeaponIndex, false);
@@ -312,4 +297,5 @@ Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* 
 	return result;
 }
 DEFINE_JUMP(VTABLE, 0x7EB0CC, GET_OFFSET(InfantryClass__WhatAction_Wrapper))
-#pragma endregion HealingWeapons
+
+#pragma endregion
