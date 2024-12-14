@@ -241,6 +241,11 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 				}
 			}
 
+			// If MCed, or MCs anything, then it can't be a passenger.
+			if (pTechno->IsMindControlled() || pTechno->CaptureManager->IsControllingSomething())
+			{
+				continue;
+			}
 			largePassengerArray.push_back(pTechno);
 		}
 	}
