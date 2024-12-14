@@ -346,7 +346,7 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 
 	const auto pType = pThis->Type;
 
-	if (!pType->AirportBound || pThis->Airstrike || pThis->Spawned)
+	if (!pType->AirportBound || pThis->Team || pThis->Airstrike || pThis->Spawned)
 		return 0;
 
 	const int distance = Game::F2I(Point2D { pCoords->X, pCoords->Y }.DistanceFrom(Point2D { pThis->Location.X, pThis->Location.Y }));
