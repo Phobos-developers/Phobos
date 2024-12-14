@@ -89,12 +89,31 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 				{
 					auto pPassenger = passengerMap[leastpID][index];
 					auto pTransport = tTransports[index].first;
+					auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+					bool bySize = true;
+					// Check passenger filter here.
+					if (pTypeExt)
+					{
+						if (!pTypeExt->CanLoadPassenger(pTransport, pPassenger))
+						{
+							continue;
+						}
+						bySize = pTypeExt->Passengers_BySize;
+					}
 					if (pPassenger->GetCurrentMission() != Mission::Enter)
 					{
 						pPassenger->QueueMission(Mission::Enter, false);
 						pPassenger->SetTarget(nullptr);
 						pPassenger->SetDestination(pTransport, true);
-						tTransports[index].second += abstract_cast<TechnoClass *>(pPassenger)->GetTechnoType()->Size; // increase the virtual size of transport
+						if (bySize)
+						{
+							tTransports[index].second += abstract_cast<TechnoClass*>(pPassenger)->GetTechnoType()->Size; // increase the virtual size of transport
+						}
+						else
+						{
+							// If "Passengers.BySize=false" then only the number of passengers matter.
+							tTransports[index].second++;
+						}
 					}
 				}
 				passengerMap[leastpID].erase(passengerMap[leastpID].begin(), passengerMap[leastpID].begin() + index);
@@ -135,60 +154,116 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	MapClass::Instance->SetRepairMode(0);
 	MapClass::Instance->SetSellMode(0);
 
-	std::vector<TechnoClass *> infantryIndexArray;
+	// This array is for the standard passengers, most Infantry and small vehicles like terror drones go here.
+	// A techno is added to this array if:
+	// 1. It's an Infantry with size <= 2;
+	// 2. It's a Vehicle with size <= 2, and either has 0 passenger slots, or disallow manual loading.
+	std::vector<TechnoClass *> passengerArray;
+
+	// This array is for larger passengers like tanks. It is not necessarily larger, but has lower loading priority.
+	// A techno is added to this array if:
+	// 1. It's an Infantry with size >= 3;
+	// 2. It's a Vehicle with size >= 3, and either has 0 passenger slots, or disallow manual loading;
+	// 3. It's a Vehicle with passenger slots, allows manual loading, and has size limit <= 2.
+	// 
+	// This array is only loaded into large vehicles if:
+	//   - either "passengerArray" is empty;
+	//   - or nothing in the "passengerArray" can actually be loaded into non-large vehicles.
+	std::vector<TechnoClass *> largePassengerArray;
+
+	// vehicles that can hold size <= 2
 	std::vector<std::pair<TechnoClass *, int>> vehicleIndexArray;
-	// vehicle that can hold size larger than 2 passenger index array
+	// vehicles that can hold size >= 3
 	std::vector<std::pair<TechnoClass *, int>> largeVehicleIndexArray;
-	// full vehicle may be passenger.
-	std::vector<TechnoClass *> mayBePassengerArray;
-	// get current selected units.
+
+	// Get current selected units.
+	// The first iteration, we find units that can't be transports, and add them to the passenger arrays.
 	for (int i = 0; i < ObjectClass::CurrentObjects->Count; i++)
 	{
 		auto pUnit = ObjectClass::CurrentObjects->GetItem(i);
 		// try to cast to TechnoClass
 		TechnoClass *pTechno = abstract_cast<TechnoClass *>(pUnit);
 
-		if (pTechno && pTechno->WhatAmI() == AbstractType::Infantry && !pTechno->IsInAir())
+		// If not a techno, or is in air, or is MCed, or MCs anything, then it can't be a passenger.
+		if (!pTechno || pTechno->IsInAir()
+			|| pTechno->IsMindControlled()
+			|| (pTechno->CaptureManager && pTechno->CaptureManager->IsControllingSomething()))
 		{
-			infantryIndexArray.push_back(pTechno);
+			continue;
 		}
-		else if (pTechno && pTechno->WhatAmI() == AbstractType::Unit && !pTechno->IsInAir())
+
+		auto pTechnoType = pTechno->GetTechnoType();
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
+		// If it's an Infantry, or it's a Unit with no passenger slots or unable to manually load, add it to the passenger arrays.
+		if ((pTechno->WhatAmI() == AbstractType::Infantry || (pTechno->WhatAmI() == AbstractType::Unit && (pTechnoType->Passengers <= 0 || (pTypeExt && pTypeExt->NoManualEnter)))))
 		{
-			auto const pType = pTechno->GetTechnoType();
-			if (pType->Passengers > 0 && pTechno->Passengers.NumPassengers < pType->Passengers && pTechno->Passengers.GetTotalSize() < pType->Passengers)
-			{
-				if (pTechno->GetTechnoType()->SizeLimit > 2)
-				{
-					largeVehicleIndexArray.push_back(std::make_pair(pTechno, pTechno->Passengers.GetTotalSize()));
-				}
-				else
-				{
-					vehicleIndexArray.push_back(std::make_pair(pTechno, pTechno->Passengers.GetTotalSize()));
-				}
-			}
+			if (pTechnoType->Size <= 2)
+				passengerArray.push_back(pTechno);
 			else
+				largePassengerArray.push_back(pTechno);
+		}
+	}
+
+	// Get current selected units.
+	// The second iteration, we find units that can be transports.
+	for (int i = 0; i < ObjectClass::CurrentObjects->Count; i++)
+	{
+		auto pUnit = ObjectClass::CurrentObjects->GetItem(i);
+		// try to cast to TechnoClass
+		TechnoClass *pTechno = abstract_cast<TechnoClass *>(pUnit);
+
+		// If not a techno, or is in air, then it can't be a vehicle.
+		if (!pTechno || pTechno->IsInAir())
+		{
+			continue;
+		}
+
+		auto pTechnoType = pTechno->GetTechnoType();
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+		if (pTechno->WhatAmI() == AbstractType::Unit)
+		{
+			bool bySize = pTypeExt && pTypeExt->Passengers_BySize;
+
+			// If "Passengers.BySize=false" then only the number of passengers matter.
+			if (pTechnoType->Passengers > 0
+				&& pTechno->Passengers.NumPassengers < pTechnoType->Passengers
+				&& (!bySize || pTechno->Passengers.GetTotalSize() < pTechnoType->Passengers))
 			{
-				mayBePassengerArray.push_back(pTechno);
+				auto const transportTotalSize = bySize ? pTechno->Passengers.GetTotalSize() : pTechno->Passengers.NumPassengers;
+				if (pTechnoType->SizeLimit > 2)
+				{
+					largeVehicleIndexArray.push_back(std::make_pair(pTechno, transportTotalSize));
+					continue;
+				}
+				else if (!pTypeExt || pTypeExt->CanLoadAny(pTechno, passengerArray))
+				{
+					vehicleIndexArray.push_back(std::make_pair(pTechno, transportTotalSize));
+					continue;
+				}
 			}
+
+			// If MCed, or MCs anything, then it can't be a passenger.
+			if (pTechno->IsMindControlled() || pTechno->CaptureManager->IsControllingSomething())
+			{
+				continue;
+			}
+			largePassengerArray.push_back(pTechno);
 		}
 	}
 
 	// pair the infantry and vehicle
-	if (vehicleIndexArray.size() > 0 && infantryIndexArray.size() > 0)
+	if (vehicleIndexArray.size() > 0 && passengerArray.size() > 0)
 	{
-		SpreadPassengersToTransports(infantryIndexArray, vehicleIndexArray);
+		SpreadPassengersToTransports(passengerArray, vehicleIndexArray);
 	}
 	else if (largeVehicleIndexArray.size() > 0)
 	{
 		// load both infantry and vehicle into large vehicle
-		auto &passengerIndexArray = infantryIndexArray;
-		for (auto vehicle : vehicleIndexArray)
+		auto &passengerIndexArray = passengerArray;
+		for (auto largePassenger : largePassengerArray)
 		{
-			passengerIndexArray.push_back(vehicle.first);
-		}
-		for (auto mayBePassenger : mayBePassengerArray)
-		{
-			passengerIndexArray.push_back(mayBePassenger);
+			passengerIndexArray.push_back(largePassenger);
 		}
 		SpreadPassengersToTransports(passengerIndexArray, largeVehicleIndexArray);
 	}
