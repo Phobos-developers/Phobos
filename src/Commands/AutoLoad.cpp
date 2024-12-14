@@ -234,7 +234,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 					largeVehicleIndexArray.push_back(std::make_pair(pTechno, transportTotalSize));
 					continue;
 				}
-				else if (pTypeExt->CanLoadAny(pTechno, passengerArray))
+				else if (!pTypeExt || pTypeExt->CanLoadAny(pTechno, passengerArray))
 				{
 					vehicleIndexArray.push_back(std::make_pair(pTechno, transportTotalSize));
 					continue;

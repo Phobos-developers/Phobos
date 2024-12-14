@@ -31,10 +31,7 @@ bool TechnoTypeExt::ExtData::CanLoadPassenger(TechnoClass* pTransport, TechnoCla
 {
 	auto const pTransportType = pTransport->GetTechnoType();
 	auto const pPassengerType = pPassenger->GetTechnoType();
-	return pTransportType->Passengers > 0
-		&& !this->NoManualEnter
-		&& (pTransport->Passengers.NumPassengers < pTransportType->Passengers)
-		&& (pTransportType->SizeLimit <= 0 || pTransportType->SizeLimit >= pPassengerType->Size)
+	return (pTransportType->SizeLimit <= 0 || pTransportType->SizeLimit >= pPassengerType->Size)
 		&& (!this->Passengers_BySize || (pTransport->Passengers.GetTotalSize() + pPassengerType->Size) <= pTransportType->Passengers)
 		&& (this->PassengersWhitelist.empty() || this->PassengersWhitelist.Contains(pPassengerType))
 		&& !this->PassengersBlacklist.Contains(pPassengerType);
@@ -42,13 +39,6 @@ bool TechnoTypeExt::ExtData::CanLoadPassenger(TechnoClass* pTransport, TechnoCla
 
 bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::vector<TechnoClass*> pPassengerList) const
 {
-	auto const pTransportType = pTransport->GetTechnoType();
-	if (pTransportType->Passengers <= 0
-		|| this->NoManualEnter
-		|| pTransport->Passengers.NumPassengers >= pTransportType->Passengers)
-	{
-		return false;
-	}
 	for (auto pPassenger : pPassengerList)
 	{
 		if (this->CanLoadPassenger(pTransport, pPassenger))
