@@ -27,12 +27,27 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
-bool TechnoTypeExt::ExtData::CanLoadPassenger(TechnoClass* pPassenger) const
+bool TechnoTypeExt::ExtData::CanLoadPassenger(TechnoClass* pTransport, TechnoClass* pPassenger) const
 {
+	auto const pTransportType = pTransport->GetTechnoType();
 	auto const pPassengerType = pPassenger->GetTechnoType();
-	return (this->PassengersWhitelist.empty() ||
-			this->PassengersWhitelist.Contains(pPassengerType))
+	return pTransportType->Passengers > 0
+		&& (pTransportType->SizeLimit <= 0 || pTransportType->SizeLimit >= pPassengerType->Size)
+		&& (!this->Passengers_BySize || (pTransport->Passengers.GetTotalSize() + pPassengerType->Size) <= pTransportType->Passengers)
+		&& (this->PassengersWhitelist.empty() || this->PassengersWhitelist.Contains(pPassengerType))
 		&& !this->PassengersBlacklist.Contains(pPassengerType);
+}
+
+bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::vector<TechnoClass*> pPassengerList) const
+{
+	for (auto pPassenger : pPassengerList)
+	{
+		if (this->CanLoadPassenger(pTransport, pPassenger))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor)

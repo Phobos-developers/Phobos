@@ -484,7 +484,8 @@ public:
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 
-		bool CanLoadPassenger(TechnoClass* pPassenger) const;
+		bool CanLoadPassenger(TechnoClass* pTransport, TechnoClass* pPassenger) const;
+		bool CanLoadAny(TechnoClass* pTransport, std::vector<TechnoClass*> pPassengerList) const;
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
