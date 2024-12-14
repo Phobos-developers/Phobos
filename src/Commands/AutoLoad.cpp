@@ -89,12 +89,31 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 				{
 					auto pPassenger = passengerMap[leastpID][index];
 					auto pTransport = tTransports[index].first;
+					auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+					bool bySize = true;
+					// Check passenger filter here.
+					if (pTypeExt)
+					{
+						if (!pTypeExt->CanLoadPassenger(pPassenger))
+						{
+							continue;
+						}
+						bySize = pTypeExt->Passengers_BySize;
+					}
 					if (pPassenger->GetCurrentMission() != Mission::Enter)
 					{
 						pPassenger->QueueMission(Mission::Enter, false);
 						pPassenger->SetTarget(nullptr);
 						pPassenger->SetDestination(pTransport, true);
-						tTransports[index].second += abstract_cast<TechnoClass *>(pPassenger)->GetTechnoType()->Size; // increase the virtual size of transport
+						if (bySize)
+						{
+							tTransports[index].second += abstract_cast<TechnoClass*>(pPassenger)->GetTechnoType()->Size; // increase the virtual size of transport
+						}
+						else
+						{
+							// If "Passengers.BySize=false" then only the number of passengers matter.
+							tTransports[index].second++;
+						}
 					}
 				}
 				passengerMap[leastpID].erase(passengerMap[leastpID].begin(), passengerMap[leastpID].begin() + index);
@@ -154,16 +173,31 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		}
 		else if (pTechno && pTechno->WhatAmI() == AbstractType::Unit && !pTechno->IsInAir())
 		{
-			auto const pType = pTechno->GetTechnoType();
-			if (pType->Passengers > 0 && pTechno->Passengers.NumPassengers < pType->Passengers && pTechno->Passengers.GetTotalSize() < pType->Passengers)
+			auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+			bool bySize = true;
+			if (pTypeExt)
 			{
+				// If "NoManualEnter=true" then the transport is excluded from auto load feature. It may still become a passenger.
+				if (pTypeExt->NoManualEnter)
+				{
+					mayBePassengerArray.push_back(pTechno);
+					continue;
+				}
+				bySize = pTypeExt->Passengers_BySize;
+			}
+
+			// If "Passengers.BySize=false" then only the number of passengers matter.
+			auto const pType = pTechno->GetTechnoType();
+			if (pType->Passengers > 0 && pTechno->Passengers.NumPassengers < pType->Passengers && (!bySize || pTechno->Passengers.GetTotalSize() < pType->Passengers))
+			{
+				auto const transportTotalSize = bySize ? pTechno->Passengers.GetTotalSize() : pTechno->Passengers.NumPassengers;
 				if (pTechno->GetTechnoType()->SizeLimit > 2)
 				{
-					largeVehicleIndexArray.push_back(std::make_pair(pTechno, pTechno->Passengers.GetTotalSize()));
+					largeVehicleIndexArray.push_back(std::make_pair(pTechno, transportTotalSize));
 				}
 				else
 				{
-					vehicleIndexArray.push_back(std::make_pair(pTechno, pTechno->Passengers.GetTotalSize()));
+					vehicleIndexArray.push_back(std::make_pair(pTechno, transportTotalSize));
 				}
 			}
 			else

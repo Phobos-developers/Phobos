@@ -27,11 +27,21 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
+bool TechnoTypeExt::ExtData::CanLoadPassenger(TechnoClass* pPassenger) const
+{
+	auto const pPassengerType = pPassenger->GetTechnoType();
+	return (this->PassengersWhitelist.empty() ||
+			this->PassengersWhitelist.Contains(pPassengerType))
+		&& !this->PassengersBlacklist.Contains(pPassengerType);
+}
+
 void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor)
 {
 	if (auto ext = TechnoTypeExt::ExtMap.Find(pType))
 		ext->ApplyTurretOffset(mtx, factor);
 }
+
+
 
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
@@ -245,6 +255,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
+
+	this->PassengersWhitelist.Read(exINI, pSection, "Passengers.Allowed");
+	this->PassengersBlacklist.Read(exINI, pSection, "Passengers.Disallowed");
+	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
+	this->NoManualEnter.Read(exINI, pSection, "NoManualEnter");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
@@ -601,6 +616,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
+
+		.Process(this->PassengersWhitelist)
+		.Process(this->PassengersBlacklist)
+		.Process(this->Passengers_BySize)
+		.Process(this->NoManualEnter)
 
 		.Process(this->PronePrimaryFireFLH)
 		.Process(this->ProneSecondaryFireFLH)
