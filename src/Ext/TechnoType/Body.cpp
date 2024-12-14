@@ -48,12 +48,9 @@ bool TechnoTypeExt::ExtData::CanLoadPassenger(TechnoClass* pTransport, TechnoCla
 bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::vector<TechnoClass*> pPassengerList) const
 {
 	for (auto pPassenger : pPassengerList)
-	{
 		if (this->CanLoadPassenger(pTransport, pPassenger))
-		{
 			return true;
-		}
-	}
+
 	return false;
 }
 

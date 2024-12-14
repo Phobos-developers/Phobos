@@ -33,9 +33,7 @@ void DebugPrintTransport(std::vector<std::pair<TechnoClass *, int>> &tTransports
 	Debug::Log("AutoLoadCommandClass::DebugPrintTransport: Transport count: %d\n", tTransports.size());
 	// print address of each transport and its passengers
 	for (auto transport : tTransports)
-	{
 		Debug::Log("AutoLoadCommandClass::DebugPrintTransport: Transport address: %p, Now size: %d, Virtual size: %d\n", transport.first, transport.first->Passengers.GetTotalSize(), transport.second);
-	}
 }
 
 void DebugPrintPassenger(std::vector<TechnoClass *> &pPassengers)
@@ -43,9 +41,7 @@ void DebugPrintPassenger(std::vector<TechnoClass *> &pPassengers)
 	Debug::Log("AutoLoadCommandClass::DebugPrintPassenger: Passenger count: %d\n", pPassengers.size());
 	// print address of each passenger
 	for (auto passenger : pPassengers)
-	{
 		Debug::Log("AutoLoadCommandClass::DebugPrintPassenger: Passenger address: %p\n", passenger);
-	}
 }
 
 template <typename P, typename T>
@@ -62,9 +58,8 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 	{
 		auto pID = pPassenger->get_ID();
 		if (passengerMap.find(pID) == passengerMap.end())
-		{
 			passengerMap[pID] = std::vector<P>();
-		}
+
 		passengerMap[pID].push_back(pPassenger);
 	}
 
@@ -85,7 +80,7 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 
 			{
 				unsigned int index = 0;
-				for (; index < leastSize && index < tTransports.size(); index++)
+				for ( ; index < leastSize && index < tTransports.size(); index++)
 				{
 					auto pPassenger = passengerMap[leastpID][index];
 					auto pTransport = tTransports[index].first;
@@ -95,9 +90,8 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 					if (pTypeExt)
 					{
 						if (!pTypeExt->CanLoadPassenger(pTransport, pPassenger))
-						{
 							continue;
-						}
+
 						bySize = pTypeExt->Passengers_BySize;
 					}
 					if (pPassenger->GetCurrentMission() != Mission::Enter)
@@ -136,14 +130,11 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 				passengerMapIdle[leastpID] = passengerMap[leastpID];
 			}
 		}
+
 		if (passengerMapIdle.size() != 0 && tTransports.size() != 0)
-		{
 			std::swap(passengerMap, passengerMapIdle);
-		}
 		else
-		{
 			break;
-		}
 	}
 }
 
@@ -215,9 +206,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 
 		// If not a techno, or is in air, then it can't be a vehicle.
 		if (!pTechno || pTechno->IsInAir())
-		{
 			continue;
-		}
 
 		auto pTechnoType = pTechno->GetTechnoType();
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
@@ -245,9 +234,8 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 
 			// If MCed, or MCs anything, then it can't be a passenger.
 			if (pTechno->IsMindControlled() || (pTechno->CaptureManager && pTechno->CaptureManager->IsControllingSomething()))
-			{
 				continue;
-			}
+
 			largePassengerArray.push_back(pTechno);
 		}
 	}
