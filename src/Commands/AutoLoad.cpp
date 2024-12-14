@@ -165,7 +165,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	// 1. It's an Infantry with size >= 3;
 	// 2. It's a Vehicle with size >= 3, and either has 0 passenger slots, or disallow manual loading;
 	// 3. It's a Vehicle with passenger slots, allows manual loading, and has size limit <= 2.
-	// 
+	//
 	// This array is only loaded into large vehicles if:
 	//   - either "passengerArray" is empty;
 	//   - or nothing in the "passengerArray" can actually be loaded into non-large vehicles.
@@ -244,7 +244,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 			}
 
 			// If MCed, or MCs anything, then it can't be a passenger.
-			if (pTechno->IsMindControlled() || pTechno->CaptureManager->IsControllingSomething())
+			if (pTechno->IsMindControlled() || (pTechno->CaptureManager && pTechno->CaptureManager->IsControllingSomething()))
 			{
 				continue;
 			}
