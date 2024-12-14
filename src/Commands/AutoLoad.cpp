@@ -175,7 +175,9 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	std::vector<std::pair<TechnoClass *, int>> vehicleIndexArray;
 	// vehicles that can hold size >= 3
 	std::vector<std::pair<TechnoClass *, int>> largeVehicleIndexArray;
-	// get current selected units.
+
+	// Get current selected units.
+	// The first iteration, we find units that can't be transports, and add them to the passenger arrays.
 	for (int i = 0; i < ObjectClass::CurrentObjects->Count; i++)
 	{
 		auto pUnit = ObjectClass::CurrentObjects->GetItem(i);
@@ -191,7 +193,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		auto pTechnoType = pTechno->GetTechnoType();
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-		// If it's an Infantry, or it's a Unit with no passenger slots or unable to manually load infantries, add it to the passenger arrays.
+		// If it's an Infantry, or it's a Unit with no passenger slots or unable to manually load, add it to the passenger arrays.
 		if ((pTechno->WhatAmI() == AbstractType::Infantry || (pTechno->WhatAmI() == AbstractType::Unit && (pTechnoType->Passengers <= 0 || (pTypeExt && pTypeExt->NoManualEnter)))))
 		{
 			if (pTechnoType->Size <= 2)
@@ -199,7 +201,25 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 			else
 				largePassengerArray.push_back(pTechno);
 		}
-		else if (pTechno->WhatAmI() == AbstractType::Unit)
+	}
+
+	// Get current selected units.
+	// The second iteration, we find units that can be transports.
+	for (int i = 0; i < ObjectClass::CurrentObjects->Count; i++)
+	{
+		auto pUnit = ObjectClass::CurrentObjects->GetItem(i);
+		// try to cast to TechnoClass
+		TechnoClass *pTechno = abstract_cast<TechnoClass *>(pUnit);
+
+		// If not a techno, or is in air, then exclude it from auto load feature.
+		if (!pTechno || pTechno->IsInAir())
+		{
+			continue;
+		}
+
+		auto pTechnoType = pTechno->GetTechnoType();
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+		if (pTechno->WhatAmI() == AbstractType::Unit)
 		{
 			bool bySize = pTypeExt && pTypeExt->Passengers_BySize;
 
@@ -212,29 +232,18 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 				if (pTechnoType->SizeLimit > 2)
 				{
 					largeVehicleIndexArray.push_back(std::make_pair(pTechno, transportTotalSize));
+					continue;
 				}
-				else
+				else if (pTypeExt->CanLoadAny(pTechno, passengerArray))
 				{
 					vehicleIndexArray.push_back(std::make_pair(pTechno, transportTotalSize));
-					largePassengerArray.push_back(pTechno);
+					continue;
 				}
 			}
-			else
-			{
-				largePassengerArray.push_back(pTechno);
-			}
+
+			largePassengerArray.push_back(pTechno);
 		}
 	}
-
-	// Remove transports from the list with no potential passengers.
-	vehicleIndexArray.erase(
-	std::remove_if(vehicleIndexArray.begin(), vehicleIndexArray.end(),
-		[passengerArray](auto transport)
-		{
-			auto pTypeExt = TechnoTypeExt::ExtMap.Find(transport.first->GetTechnoType());
-			return !pTypeExt->CanLoadAny(transport.first, passengerArray);
-		}),
-	vehicleIndexArray.end());
 
 	// pair the infantry and vehicle
 	if (vehicleIndexArray.size() > 0 && passengerArray.size() > 0)
