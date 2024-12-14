@@ -1,5 +1,7 @@
-// for selected units, pair the loadable vehicle and units.
-// first only apply to infantry.
+// For selected units, pair the loadable vehicle and infantry.
+// 1. If transport can load vehicle, it won't load if the vehicle can be paired with infantry.
+// 2. It will always try to load the unit type with least amount of units, eg. 2 GI and 3 GGI, it will match 2 GI to transport first.
+// 3. For transport with multiple seats, it will try to fill the seats diversely.
 
 #include "AutoLoad.h"
 #include "Utilities/GeneralUtils.h"
@@ -66,7 +68,6 @@ void SpreadPassengersToTransports(std::vector<P>& pPassengers, std::vector<std::
 		passengerMap[pID].push_back(pPassenger);
 	}
 
-	DebugPrintPassenger(pPassengers);
 
 	while (true)
 	{
@@ -94,7 +95,7 @@ void SpreadPassengersToTransports(std::vector<P>& pPassengers, std::vector<std::
 						pPassenger->QueueMission(Mission::Enter, false);
 						pPassenger->SetTarget(nullptr);
 						pPassenger->SetDestination(pTransport, true);
-						tTransports[index].second += static_cast<int>(pPassenger->GetTechnoType()->Size);    // increase the virtual size of transport
+						tTransports[index].second += abstract_cast<TechnoClass*>(pPassenger)->GetTechnoType()->Size;    // increase the virtual size of transport
 					}
 				}
 				passengerMap[leastpID].erase(passengerMap[leastpID].begin(), passengerMap[leastpID].begin() + index);
@@ -107,7 +108,6 @@ void SpreadPassengersToTransports(std::vector<P>& pPassengers, std::vector<std::
 					}),
 				tTransports.end()
 			);
-			DebugPrintTransport(tTransports);
 
 			if (passengerMap[leastpID].size() == 0)
 			{
@@ -141,17 +141,15 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	// full vehicle may be passenger.
 	std::vector<TechnoClass*> mayBePassengerArray;
 	// get current selected units.
-	Debug::Log("AutoLoadCommandClass::Execute: Selected units count: %d\n", ObjectClass::CurrentObjects->Count);
 	for (int i = 0; i < ObjectClass::CurrentObjects->Count; i++)
 	{
 		auto pUnit = ObjectClass::CurrentObjects->GetItem(i);
 		// try to cast to TechnoClass
-		TechnoClass* pTechno = static_cast<TechnoClass*>(pUnit);
+		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
 		if (pTechno && pTechno->WhatAmI() == AbstractType::Infantry && !pTechno->IsInAir())
 		{
 			infantryIndexArray.push_back(pTechno);
-			Debug::Log("AutoLoadCommandClass::Execute: Infantry index: %d\n", i);
 		}
 		else if (pTechno && pTechno->WhatAmI() == AbstractType::Unit && !pTechno->IsInAir())
 		{
@@ -163,7 +161,6 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 				if (pTechno->GetTechnoType()->SizeLimit > 2)
 				{
 					largeVehicleIndexArray.push_back(std::make_pair(pTechno, pTechno->Passengers.GetTotalSize()));
-					Debug::Log("AutoLoadCommandClass::Execute: Large Vehicle index: %d, Passengers: %d\n", i, pTechno->Passengers.GetTotalSize());
 				}
 				else
 				{
