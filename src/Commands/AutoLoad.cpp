@@ -106,7 +106,7 @@ void SpreadPassengersToTransports(std::vector<TPassenger> &passengers, std::vect
 						// Check if the transport still has the budget for the new passenger.
 						// Note that, if not by size, then the transport is momentarily removed from "tTransports" as soon as it's full,
 						// so a transport not by size will not need to check against the passenger budget.
-						if (tTransports[index].second + passengerSize > pTransport->GetTechnoType()->Passengers)
+						if (transports[index].second + passengerSize > pTransport->GetTechnoType()->Passengers)
 							continue;
 					}
 
@@ -115,7 +115,7 @@ void SpreadPassengersToTransports(std::vector<TPassenger> &passengers, std::vect
 						pPassenger->QueueMission(Mission::Enter, false);
 						pPassenger->SetTarget(nullptr);
 						pPassenger->SetDestination(pTransport, true);
-						tTransports[index].second += passengerSize; // increase the virtual size of transport
+						transports[index].second += passengerSize; // increase the virtual size of transport
 					}
 				}
 				passengerMap[leastpID].erase(passengerMap[leastpID].begin(), passengerMap[leastpID].begin() + index);
