@@ -258,9 +258,10 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		if (pTechno->WhatAmI() == AbstractType::Unit)
 		{
 			bool bySize = pTypeExt && pTypeExt->Passengers_BySize;
+			bool noManualEnter = pTypeExt && pTypeExt->NoManualEnter;
 
 			// If "Passengers.BySize=false" then only the number of passengers matter.
-			if (pTechnoType->Passengers > 0
+			if (pTechnoType->Passengers > 0 && !noManualEnter
 				&& pTechno->Passengers.NumPassengers < pTechnoType->Passengers
 				&& (!bySize || pTechno->Passengers.GetTotalSize() < pTechnoType->Passengers))
 			{
