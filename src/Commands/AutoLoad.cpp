@@ -170,27 +170,14 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	MapClass::Instance->SetRepairMode(0);
 	MapClass::Instance->SetSellMode(0);
 
-	// This array is for the standard passengers, most Infantry and small vehicles like terror drones go here.
-	// A techno is added to this array if:
-	// 1. It's an Infantry with size <= 2;
-	// 2. It's a Vehicle with size <= 2, and either has 0 passenger slots, or disallow manual loading.
-	std::vector<TechnoClass*> passengerArray;
+	std::map<int, std::vector<TechnoClass*>> passengerMap;						// unit size -> a list of passengers of that size
+	std::set<int> passengerSizes;												// a sorted set of known passenger sizes
 
-	// This array is for larger passengers like tanks. It is not necessarily larger, but has lower loading priority.
-	// A techno is added to this array if:
-	// 1. It's an Infantry with size >= 3;
-	// 2. It's a Vehicle with size >= 3, and either has 0 passenger slots, or disallow manual loading;
-	// 3. It's a Vehicle with passenger slots, allows manual loading, and has size limit <= 2.
-	//
-	// This array is only loaded into large vehicles if:
-	//   - either "passengerArray" is empty;
-	//   - or nothing in the "passengerArray" can actually be loaded into non-large vehicles.
-	std::vector<TechnoClass*> largePassengerArray;
+	std::map<int, std::vector<std::pair<TechnoClass*, int>>> transportMap;		// size limit -> a list of transports of that size limit
+	std::set<int> transportSizeLimits;											// a sorted set of known size limits
 
-	// vehicles that can hold size <= 2
-	std::vector<std::pair<TechnoClass*, int>> vehicleIndexArray;
-	// vehicles that can hold size >= 3
-	std::vector<std::pair<TechnoClass*, int>> largeVehicleIndexArray;
+	std::map<int, std::vector<TechnoClass*>> ambiguousMap;						// unit size -> a list of units in ambiguousity
+	std::set<int> ambiguousSizes;												// a sorted set of known ambiguous unit sizes
 
 	// This array is for Bio Reactors.
 	// A Bio Reactor is a building with "Passengers > 0" and "InfantryAbsorb=yes".
@@ -217,7 +204,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		// try to cast to TechnoClass
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
-		// If not a techno, or is in air, then it can't be a passenger.
+		// If not a techno, or is in air, then it can't be a passenger, and it can't be a Bio Reactor or Tank Bunker.
 		if (!pTechno || pTechno->IsInAir())
 			continue;
 
@@ -251,10 +238,9 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		// If it's an Infantry, or it's a Unit with no passenger slots or unable to manually load, add it to the passenger arrays.
 		if ((pTechno->WhatAmI() == AbstractType::Infantry || (pTechno->WhatAmI() == AbstractType::Unit && (pTechnoType->Passengers <= 0 || (pTypeExt && pTypeExt->NoManualEnter)))))
 		{
-			if (pTechnoType->Size <= 2)
-				passengerArray.push_back(pTechno);
-			else
-				largePassengerArray.push_back(pTechno);
+			int const size = pTechnoType->Size;
+			passengerSizes.insert(size);
+			passengerMap[size].push_back(pTechno);
 		}
 	}
 
@@ -274,52 +260,116 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 		if (pTechno->WhatAmI() == AbstractType::Unit)
 		{
-			bool bySize = pTypeExt && pTypeExt->Passengers_BySize;
-			bool noManualEnter = pTypeExt && pTypeExt->NoManualEnter;
+			auto const bySize = pTypeExt && pTypeExt->Passengers_BySize;
+			auto const noManualEnter = pTypeExt && pTypeExt->NoManualEnter;
 
 			// If "Passengers.BySize=false" then only the number of passengers matter.
 			if (pTechnoType->Passengers > 0 && !noManualEnter
 				&& pTechno->Passengers.NumPassengers < pTechnoType->Passengers
 				&& (!bySize || pTechno->Passengers.GetTotalSize() < pTechnoType->Passengers))
 			{
-				auto const transportTotalSize = bySize ? pTechno->Passengers.GetTotalSize() : pTechno->Passengers.NumPassengers;
-				if (pTechnoType->SizeLimit > 2)
+				if (pTypeExt->CanLoadAny(pTechno, passengerMap, passengerSizes))
 				{
-					largeVehicleIndexArray.push_back(std::make_pair(pTechno, transportTotalSize));
-					continue;
+					int const sizeLimit = int(pTechnoType->SizeLimit);
+					transportSizeLimits.insert(sizeLimit);
+					auto const transportTotalSize = bySize ? pTechno->Passengers.GetTotalSize() : pTechno->Passengers.NumPassengers;
+					transportMap[sizeLimit].push_back(std::make_pair(pTechno, transportTotalSize));
 				}
-				else if (!pTypeExt || pTypeExt->CanLoadAny(pTechno, passengerArray))
+				else
 				{
-					vehicleIndexArray.push_back(std::make_pair(pTechno, transportTotalSize));
-					continue;
+					// If it can't actually load anything that is clearly a passenger,
+					// then put this unit into ambiguousity.
+					int const size = int(pTechnoType->Size);
+					ambiguousSizes.insert(size);
+					ambiguousMap[size].push_back(pTechno);
 				}
 			}
-
-			// If MCed, or MCs anything, then it can't be a passenger.
-			if (pTechno->IsMindControlled() || (pTechno->CaptureManager && pTechno->CaptureManager->IsControllingSomething()))
-				continue;
-
-			largePassengerArray.push_back(pTechno);
 		}
 	}
 
-	// pair the infantry and vehicle
-	if (vehicleIndexArray.size() > 0 && passengerArray.size() > 0)
+	// Find a right position for units in ambiguousity.
+	// A unit in ambiguousity is a unit that can't load any of the clear passengers,
+	// but can potentially load other units in ambiguousity,
+	// so we have to deside here if they will be passengers or transports.
+	// We move units in ambiguousity from the smallest size to the largest size into passengers,
+	// and if an unit in ambiguousity can somehow load them this way, then it is a transport.
+	if (!ambiguousSizes.empty())
 	{
-		SpreadPassengersToTransports(passengerArray, vehicleIndexArray);
-	}
-	else if (largeVehicleIndexArray.size() > 0)
-	{
-		// load both infantry and vehicle into large vehicle
-		auto& passengerIndexArray = passengerArray;
-		for (auto largePassenger : largePassengerArray)
+		std::vector<TechnoClass*> ambiguousPassengerVector;
+		for (auto ambiguousSizesItr = ambiguousSizes.begin();
+			ambiguousSizesItr != ambiguousSizes.end();
+			ambiguousSizesItr++)
 		{
-			passengerIndexArray.push_back(largePassenger);
+			auto const ambiguousSize = *ambiguousSizesItr;
+
+			if (ambiguousMap.contains(ambiguousSize))
+			{
+				auto const ambiguousVector = ambiguousMap[ambiguousSize];
+				for (auto ambiguousVectorItr = ambiguousVector.begin();
+					ambiguousVectorItr != ambiguousVector.end();
+					ambiguousVectorItr++)
+				{
+					auto const pAmbiguousTechno = *ambiguousVectorItr;
+					auto const pTechnoType = pAmbiguousTechno->GetTechnoType();
+					auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+					if (ambiguousPassengerVector.empty() || !pTypeExt->CanLoadAny(pAmbiguousTechno, ambiguousPassengerVector))
+					{
+						// If MCed, or MCs anything, then it can't be a passenger.
+						// In this case, this unit in ambiguousity is added to neither passengers nor transports.
+						if (pAmbiguousTechno->IsMindControlled() || (pAmbiguousTechno->CaptureManager && pAmbiguousTechno->CaptureManager->IsControllingSomething()))
+							continue;
+						ambiguousPassengerVector.push_back(pAmbiguousTechno);
+						int const size = int(pTechnoType->Size);
+						passengerSizes.insert(size);
+						passengerMap[size].push_back(pAmbiguousTechno);
+					}
+					else
+					{
+						int const sizeLimit = int(pTechnoType->SizeLimit);
+						auto const bySize = pTypeExt && pTypeExt->Passengers_BySize;
+						transportSizeLimits.insert(sizeLimit);
+						auto const transportTotalSize = bySize ? pAmbiguousTechno->Passengers.GetTotalSize() : pAmbiguousTechno->Passengers.NumPassengers;
+						transportMap[sizeLimit].push_back(std::make_pair(pAmbiguousTechno, transportTotalSize));
+					}
+				}
+			}
 		}
-		SpreadPassengersToTransports(passengerIndexArray, largeVehicleIndexArray);
+	}
+
+	// Pair the passengers and the transports if possible.
+	if (!passengerSizes.empty() && !transportSizeLimits.empty())
+	{
+		for (auto passengerSizesItr = passengerSizes.begin();
+			passengerSizesItr != passengerSizes.end();
+			passengerSizesItr++)
+		{
+			int passengerSize = *passengerSizesItr;
+			if (passengerMap.contains(passengerSize))
+			{
+				auto passengerVector = passengerMap[passengerSize];
+
+				for (auto transportSizeLimitsItr = transportSizeLimits.begin();
+					transportSizeLimitsItr != transportSizeLimits.end();
+					transportSizeLimitsItr++)
+				{
+					int transportSizeLimit = *transportSizeLimitsItr;
+
+					// If the transports are too small for the passengers then skip them.
+					if (transportSizeLimit < passengerSize)
+						continue;
+
+					if (transportMap.contains(transportSizeLimit))
+					{
+						auto transportVector = transportMap[transportSizeLimit];
+						SpreadPassengersToTransports(passengerVector, transportVector);
+					}
+				}
+			}
+		}
 	}
 	else
 	{
+		// If nothing can load then go find the Bio Reactors and Tank Bunkers.
 		if (bioReactorIndexArray.size() > 0 && bioReactorCandidateArray.size() > 0)
 			SpreadPassengersToTransports(bioReactorCandidateArray, bioReactorIndexArray);
 		if (tankBunkerIndexArray.size() > 0 && tankBunkerCandidateArray.size() > 0)
