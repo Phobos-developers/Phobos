@@ -86,28 +86,36 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 					auto pTransport = tTransports[index].first;
 					auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
 					bool bySize = true;
-					// Check passenger filter here.
+					int passengerSize = 1;
+
 					if (pTypeExt)
 					{
+						// Check passenger filter here.
 						if (!pTypeExt->CanLoadPassenger(pTransport, pPassenger))
 							continue;
 
 						bySize = pTypeExt->Passengers_BySize;
 					}
+
+					if (bySize)
+					{
+						// If by size then get the actual size of the potential passenger.
+						// Otherwise, every potential passenger counts as size 1.
+						passengerSize = abstract_cast<TechnoClass*>(pPassenger)->GetTechnoType()->Size;
+
+						// Check if the transport still has the budget for the new passenger.
+						// Note that, if not by size, then the transport is momentarily removed from "tTransports" as soon as it's full,
+						// so a transport not by size will not need to check against the passenger budget.
+						if (tTransports[index].second + passengerSize > pTransport->GetTechnoType()->Passengers)
+							continue;
+					}
+
 					if (pPassenger->GetCurrentMission() != Mission::Enter)
 					{
 						pPassenger->QueueMission(Mission::Enter, false);
 						pPassenger->SetTarget(nullptr);
 						pPassenger->SetDestination(pTransport, true);
-						if (bySize)
-						{
-							tTransports[index].second += abstract_cast<TechnoClass*>(pPassenger)->GetTechnoType()->Size; // increase the virtual size of transport
-						}
-						else
-						{
-							// If "Passengers.BySize=false" then only the number of passengers matter.
-							tTransports[index].second++;
-						}
+						tTransports[index].second += passengerSize; // increase the virtual size of transport
 					}
 				}
 				passengerMap[leastpID].erase(passengerMap[leastpID].begin(), passengerMap[leastpID].begin() + index);
