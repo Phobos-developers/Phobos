@@ -45,8 +45,9 @@ void DebugPrintPassenger(std::vector<TechnoClass*>& passengers)
 }
 
 template <typename TPassenger, typename TTransport>
-void SpreadPassengersToTransports(std::vector<TPassenger>& passengers, std::vector<std::pair<TTransport, int>>& transports)
+std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passengers, std::vector<std::pair<TTransport, int>>& transports)
 {
+	std::set<TPassenger> foundTransportVector;
 	// 1. Get the least kind of passengers
 	// 2. Send the passengers to the transport in round robin, if the transport is full, remove it from the vector transports;
 	// if the pID vector is empty, remove it from the map, if not, move it to passengerMapIdle. We try to fill the transport evenly for each kind of passengers.
@@ -127,6 +128,7 @@ void SpreadPassengersToTransports(std::vector<TPassenger>& passengers, std::vect
 						pPassenger->SetTarget(nullptr);
 						pPassenger->SetDestination(pTransport, true);
 						transports[index].second += passengerSize; // increase the virtual size of transport
+						foundTransportVector.insert(pPassenger);
 					}
 				}
 				passengerMap[leastpID].erase(passengerMap[leastpID].begin(), passengerMap[leastpID].begin() + index);
@@ -161,6 +163,7 @@ void SpreadPassengersToTransports(std::vector<TPassenger>& passengers, std::vect
 		else
 			break;
 	}
+	return foundTransportVector;
 }
 
 void AutoLoadCommandClass::Execute(WWKey eInput) const
@@ -234,9 +237,16 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 
 		auto pTechnoType = pTechno->GetTechnoType();
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+		auto const bySize = pTypeExt && pTypeExt->Passengers_BySize;
+		auto const noManualEnter = pTypeExt && pTypeExt->NoManualEnter;
 
-		// If it's an Infantry, or it's a Unit with no passenger slots or unable to manually load, add it to the passenger arrays.
-		if ((pTechno->WhatAmI() == AbstractType::Infantry || (pTechno->WhatAmI() == AbstractType::Unit && (pTechnoType->Passengers <= 0 || (pTypeExt && pTypeExt->NoManualEnter)))))
+		// If it's an Infantry, or it's a Unit with no passenger slots or unable to manually load, or is fully loaded, add it to the passenger arrays.
+		if ((pTechno->WhatAmI() == AbstractType::Infantry
+			|| (pTechno->WhatAmI() == AbstractType::Unit
+				&& (noManualEnter
+					|| pTechnoType->Passengers <= 0
+					|| pTechno->Passengers.NumPassengers >= pTechnoType->Passengers
+					|| (bySize && pTechno->Passengers.GetTotalSize() >= pTechnoType->Passengers)))))
 		{
 			int const size = pTechnoType->Size;
 			passengerSizes.insert(size);
@@ -277,8 +287,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 				}
 				else
 				{
-					// If it can't actually load anything that is clearly a passenger,
-					// then put this unit into ambiguousity.
+					// If it can't actually load anything that is clearly a passenger, then put it into ambiguousity.
 					int const size = int(pTechnoType->Size);
 					ambiguousSizes.insert(size);
 					ambiguousMap[size].push_back(pTechno);
@@ -304,12 +313,9 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 
 			if (ambiguousMap.contains(ambiguousSize))
 			{
-				auto const ambiguousVector = ambiguousMap[ambiguousSize];
-				for (auto ambiguousVectorItr = ambiguousVector.begin();
-					ambiguousVectorItr != ambiguousVector.end();
-					ambiguousVectorItr++)
+				auto const& ambiguousVector = ambiguousMap[ambiguousSize];
+				for (auto pAmbiguousTechno : ambiguousVector)
 				{
-					auto const pAmbiguousTechno = *ambiguousVectorItr;
 					auto const pTechnoType = pAmbiguousTechno->GetTechnoType();
 					auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 					if (ambiguousPassengerVector.empty() || !pTypeExt->CanLoadAny(pAmbiguousTechno, ambiguousPassengerVector))
@@ -339,31 +345,30 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	// Pair the passengers and the transports if possible.
 	if (!passengerSizes.empty() && !transportSizeLimits.empty())
 	{
-		for (auto passengerSizesItr = passengerSizes.begin();
-			passengerSizesItr != passengerSizes.end();
-			passengerSizesItr++)
+		for (auto passengerSize : passengerSizes)
 		{
-			int passengerSize = *passengerSizesItr;
-			if (passengerMap.contains(passengerSize))
+			auto& passengerVector = passengerMap[passengerSize];
+
+			for (auto transportSizeLimit : transportSizeLimits)
 			{
-				auto passengerVector = passengerMap[passengerSize];
+				// If the transports are too small for the passengers then skip them.
+				if (transportSizeLimit < passengerSize)
+					continue;
 
-				for (auto transportSizeLimitsItr = transportSizeLimits.begin();
-					transportSizeLimitsItr != transportSizeLimits.end();
-					transportSizeLimitsItr++)
-				{
-					int transportSizeLimit = *transportSizeLimitsItr;
+				auto& transportVector = transportMap[transportSizeLimit];
+				if (transportVector.empty())
+					continue;
 
-					// If the transports are too small for the passengers then skip them.
-					if (transportSizeLimit < passengerSize)
-						continue;
-
-					if (transportMap.contains(transportSizeLimit))
-					{
-						auto transportVector = transportMap[transportSizeLimit];
-						SpreadPassengersToTransports(passengerVector, transportVector);
-					}
-				}
+				auto foundTransportVector = SpreadPassengersToTransports(passengerVector, transportVector);
+				passengerVector.erase(
+					std::remove_if(passengerVector.begin(), passengerVector.end(),
+						[foundTransportVector](auto pPassenger)
+						{
+							return foundTransportVector.contains(pPassenger);
+						}),
+					passengerVector.end());
+				if (passengerVector.empty())
+					break;
 			}
 		}
 	}
