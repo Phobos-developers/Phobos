@@ -237,7 +237,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 
 		auto pTechnoType = pTechno->GetTechnoType();
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
-		auto const bySize = pTypeExt && pTypeExt->Passengers_BySize;
+		auto const bySize = !pTypeExt || pTypeExt->Passengers_BySize;
 		auto const noManualEnter = pTypeExt && pTypeExt->NoManualEnter;
 
 		// If it's an Infantry, or it's a Unit with no passenger slots or unable to manually load, or is fully loaded, add it to the passenger arrays.
@@ -270,7 +270,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 		if (pTechno->WhatAmI() == AbstractType::Unit)
 		{
-			auto const bySize = pTypeExt && pTypeExt->Passengers_BySize;
+			auto const bySize = !pTypeExt || pTypeExt->Passengers_BySize;
 			auto const noManualEnter = pTypeExt && pTypeExt->NoManualEnter;
 
 			// If "Passengers.BySize=false" then only the number of passengers matter.
@@ -332,7 +332,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 					else
 					{
 						int const sizeLimit = int(pTechnoType->SizeLimit);
-						auto const bySize = pTypeExt && pTypeExt->Passengers_BySize;
+						auto const bySize = !pTypeExt || pTypeExt->Passengers_BySize;
 						transportSizeLimits.insert(sizeLimit);
 						auto const transportTotalSize = bySize ? pAmbiguousTechno->Passengers.GetTotalSize() : pAmbiguousTechno->Passengers.NumPassengers;
 						transportMap[sizeLimit].push_back(std::make_pair(pAmbiguousTechno, transportTotalSize));
