@@ -118,7 +118,7 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 						// Check if the transport still has the budget for the new passenger.
 						// Note that, if not by size, then the transport is momentarily removed from "tTransports" as soon as it's full,
 						// so a transport not by size will not need to check against the passenger budget.
-						if (transports[index].second + passengerSize > pType->Passengers)
+						if (transports[index].second < passengerSize)
 							continue;
 					}
 
@@ -127,7 +127,7 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 						pPassenger->QueueMission(Mission::Enter, false);
 						pPassenger->SetTarget(nullptr);
 						pPassenger->SetDestination(pTransport, true);
-						transports[index].second += passengerSize; // increase the virtual size of transport
+						transports[index].second -= passengerSize; // increase the virtual size of transport
 						foundTransportVector.insert(pPassenger);
 					}
 				}
@@ -135,16 +135,12 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 			}
 
 			// Remove fully loaded transports from potential transports array.
-			// Tank Bunkers are fully loaded by one "passenger".
 			transports.erase(
 				std::remove_if(transports.begin(), transports.end(),
 					[](auto transport)
 					{
 						BuildingTypeClass* pBuildingType;
-						return transport.second == transport.first->GetTechnoType()->Passengers
-							|| (transport.second > 0 && transport.first->WhatAmI() == AbstractType::Building
-								&& (pBuildingType = abstract_cast<BuildingTypeClass*>(transport.first->GetTechnoType()))
-								&& pBuildingType->Bunker);
+						return transport.second == 0;
 					}),
 				transports.end());
 
@@ -216,10 +212,10 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		{
 			auto pBuilding = abstract_cast<BuildingClass*>(pTechno);
 			auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTechno->GetTechnoType());
-			if (pBuildingType->Passengers > 0 && pBuildingType->InfantryAbsorb)
-				bioReactorIndexArray.push_back(std::make_pair(pTechno, pTechno->Passengers.NumPassengers));
+			if (pBuildingType->Passengers > 0 && pBuildingType->InfantryAbsorb && pBuildingType->Passengers > pTechno->Passengers.NumPassengers)
+				bioReactorIndexArray.push_back(std::make_pair(pTechno, pBuildingType->Passengers - pTechno->Passengers.NumPassengers));
 			else if (pBuildingType->Bunker && !pBuilding->BunkerLinkedItem)
-				tankBunkerIndexArray.push_back(std::make_pair(pTechno, 0));
+				tankBunkerIndexArray.push_back(std::make_pair(pTechno, 1));
 			continue;
 		}
 
@@ -283,7 +279,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 					int const sizeLimit = int(pTechnoType->SizeLimit);
 					transportSizeLimits.insert(sizeLimit);
 					auto const transportTotalSize = bySize ? pTechno->Passengers.GetTotalSize() : pTechno->Passengers.NumPassengers;
-					transportMap[sizeLimit].push_back(std::make_pair(pTechno, transportTotalSize));
+					transportMap[sizeLimit].push_back(std::make_pair(pTechno, pTechnoType->Passengers - transportTotalSize));
 				}
 				else
 				{
@@ -335,7 +331,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 						auto const bySize = !pTypeExt || pTypeExt->Passengers_BySize;
 						transportSizeLimits.insert(sizeLimit);
 						auto const transportTotalSize = bySize ? pAmbiguousTechno->Passengers.GetTotalSize() : pAmbiguousTechno->Passengers.NumPassengers;
-						transportMap[sizeLimit].push_back(std::make_pair(pAmbiguousTechno, transportTotalSize));
+						transportMap[sizeLimit].push_back(std::make_pair(pAmbiguousTechno, pTechnoType->Passengers - transportTotalSize));
 					}
 				}
 			}
