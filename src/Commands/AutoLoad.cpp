@@ -127,7 +127,7 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 						pPassenger->QueueMission(Mission::Enter, false);
 						pPassenger->SetTarget(nullptr);
 						pPassenger->SetDestination(pTransport, true);
-						transports[index].second -= passengerSize; // increase the virtual size of transport
+						transports[index].second -= passengerSize; // take away that much passenger slot budgets from the transport
 						foundTransportVector.insert(pPassenger);
 					}
 				}
