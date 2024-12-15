@@ -99,7 +99,8 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 
 					if (bySize)
 					{
-						// If not by size then every potential passenger counts as size 1.
+						// If by size then get the actual size of the potential passenger.
+						// Otherwise, every potential passenger counts as size 1.
 						passengerSize = abstract_cast<TechnoClass*>(pPassenger)->GetTechnoType()->Size;
 
 						// Check if the transport still has the budget for the new passenger.
