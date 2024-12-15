@@ -8,68 +8,68 @@
 #include "Ext/Techno/Body.h"
 #include <unordered_map>
 
-const char *AutoLoadCommandClass::GetName() const
+const char* AutoLoadCommandClass::GetName() const
 {
 	return "AutoLoad";
 }
 
-const wchar_t *AutoLoadCommandClass::GetUIName() const
+const wchar_t* AutoLoadCommandClass::GetUIName() const
 {
 	return GeneralUtils::LoadStringUnlessMissing("TXT_AUTO_LOAD", L"Auto Load");
 }
 
-const wchar_t *AutoLoadCommandClass::GetUICategory() const
+const wchar_t* AutoLoadCommandClass::GetUICategory() const
 {
 	return CATEGORY_SELECTION;
 }
 
-const wchar_t *AutoLoadCommandClass::GetUIDescription() const
+const wchar_t* AutoLoadCommandClass::GetUIDescription() const
 {
 	return GeneralUtils::LoadStringUnlessMissing("TXT_AUTO_LOAD_DESC", L"Auto Load");
 }
 
-void DebugPrintTransport(std::vector<std::pair<TechnoClass *, int>> &tTransports)
+void DebugPrintTransport(std::vector<std::pair<TechnoClass*, int>>& transports)
 {
-	Debug::Log("AutoLoadCommandClass::DebugPrintTransport: Transport count: %d\n", tTransports.size());
+	Debug::Log("AutoLoadCommandClass::DebugPrintTransport: Transport count: %d\n", transports.size());
 	// print address of each transport and its passengers
-	for (auto transport : tTransports)
+	for (auto transport : transports)
 		Debug::Log("AutoLoadCommandClass::DebugPrintTransport: Transport address: %p, Now size: %d, Virtual size: %d\n", transport.first, transport.first->Passengers.GetTotalSize(), transport.second);
 }
 
-void DebugPrintPassenger(std::vector<TechnoClass *> &pPassengers)
+void DebugPrintPassenger(std::vector<TechnoClass*>& passengers)
 {
-	Debug::Log("AutoLoadCommandClass::DebugPrintPassenger: Passenger count: %d\n", pPassengers.size());
+	Debug::Log("AutoLoadCommandClass::DebugPrintPassenger: Passenger count: %d\n", passengers.size());
 	// print address of each passenger
-	for (auto passenger : pPassengers)
+	for (auto passenger : passengers)
 		Debug::Log("AutoLoadCommandClass::DebugPrintPassenger: Passenger address: %p\n", passenger);
 }
 
-template <typename P, typename T>
-void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::pair<T, int>> &tTransports)
+template <typename TPassenger, typename TTransport>
+void SpreadPassengersToTransports(std::vector<TPassenger>& passengers, std::vector<std::pair<TTransport, int>>& transports)
 {
 	// 1. Get the least kind of passengers
-	// 2. Send the passengers to the transport in round robin, if the transport is full, remove it from the vector tTransports;
+	// 2. Send the passengers to the transport in round robin, if the transport is full, remove it from the vector transports;
 	// if the pID vector is empty, remove it from the map, if not, move it to passengerMapIdle. We try to fill the transport evenly for each kind of passengers.
-	// 3. Repeat until all passengers are sent or the vector tTransports is empty.
-	std::unordered_map<const char *, std::vector<P>> passengerMap;
-	std::unordered_map<const char *, std::vector<P>> passengerMapIdle;
+	// 3. Repeat until all passengers are sent or the vector transports is empty.
+	std::unordered_map<const char*, std::vector<TPassenger>> passengerMap;
+	std::unordered_map<const char*, std::vector<TPassenger>> passengerMapIdle;
 
-	for (auto pPassenger : pPassengers)
+	for (auto pPassenger : passengers)
 	{
 		auto pID = pPassenger->get_ID();
 		if (passengerMap.find(pID) == passengerMap.end())
-			passengerMap[pID] = std::vector<P>();
+			passengerMap[pID] = std::vector<TPassenger>();
 
 		passengerMap[pID].push_back(pPassenger);
 	}
 
 	while (true)
 	{
-		while (passengerMap.size() > 0 && tTransports.size() > 0)
+		while (passengerMap.size() > 0 && transports.size() > 0)
 		{
-			const char *leastpID = nullptr;
+			const char* leastpID = nullptr;
 			unsigned int leastSize = std::numeric_limits<unsigned int>::max();
-			for (auto const &[pID, pPassenger] : passengerMap)
+			for (auto const& [pID, pPassenger] : passengerMap)
 			{
 				if (pPassenger.size() < leastSize)
 				{
@@ -80,12 +80,13 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 
 			{
 				unsigned int index = 0;
-				for ( ; index < leastSize && index < tTransports.size(); index++)
+				for (; index < leastSize && index < transports.size(); index++)
 				{
 					auto pPassenger = passengerMap[leastpID][index];
-					auto pTransport = tTransports[index].first;
+					auto pTransport = transports[index].first;
 					auto pType = pTransport->GetTechnoType();
 					auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
 					bool bySize = true;
 					int passengerSize = 1;
 					if (pTransport->WhatAmI() == AbstractType::Building)
@@ -97,7 +98,8 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 							continue;
 						// Tank Bunkers and Bio Reactors are viewed as "Passengers.BySize=no".
 						bySize = false;
-					} else if (pTypeExt)
+					}
+					else if (pTypeExt)
 					{
 						// Check passenger filter here.
 						if (!pTypeExt->CanLoadPassenger(pTransport, pPassenger))
@@ -115,7 +117,7 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 						// Check if the transport still has the budget for the new passenger.
 						// Note that, if not by size, then the transport is momentarily removed from "tTransports" as soon as it's full,
 						// so a transport not by size will not need to check against the passenger budget.
-						if (tTransports[index].second + passengerSize > pType->Passengers)
+						if (transports[index].second + passengerSize > pType->Passengers)
 							continue;
 					}
 
@@ -124,7 +126,7 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 						pPassenger->QueueMission(Mission::Enter, false);
 						pPassenger->SetTarget(nullptr);
 						pPassenger->SetDestination(pTransport, true);
-						tTransports[index].second += passengerSize; // increase the virtual size of transport
+						transports[index].second += passengerSize; // increase the virtual size of transport
 					}
 				}
 				passengerMap[leastpID].erase(passengerMap[leastpID].begin(), passengerMap[leastpID].begin() + index);
@@ -132,17 +134,17 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 
 			// Remove fully loaded transports from potential transports array.
 			// Tank Bunkers are fully loaded by one "passenger".
-			tTransports.erase(
-				std::remove_if(tTransports.begin(), tTransports.end(),
-							   [](auto transport)
-							   {
-									BuildingTypeClass* pBuildingType;
-									return transport.second == transport.first->GetTechnoType()->Passengers
-									   || (transport.second > 0 && transport.first->WhatAmI() == AbstractType::Building
-										   && (pBuildingType = abstract_cast<BuildingTypeClass*>(transport.first->GetTechnoType()))
-										   && pBuildingType->Bunker);
-							   }),
-				tTransports.end());
+			transports.erase(
+				std::remove_if(transports.begin(), transports.end(),
+					[](auto transport)
+					{
+						BuildingTypeClass* pBuildingType;
+						return transport.second == transport.first->GetTechnoType()->Passengers
+							|| (transport.second > 0 && transport.first->WhatAmI() == AbstractType::Building
+								&& (pBuildingType = abstract_cast<BuildingTypeClass*>(transport.first->GetTechnoType()))
+								&& pBuildingType->Bunker);
+					}),
+				transports.end());
 
 			if (passengerMap[leastpID].size() == 0)
 			{
@@ -154,7 +156,7 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 			}
 		}
 
-		if (passengerMapIdle.size() != 0 && tTransports.size() != 0)
+		if (passengerMapIdle.size() != 0 && transports.size() != 0)
 			std::swap(passengerMap, passengerMapIdle);
 		else
 			break;
@@ -172,7 +174,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	// A techno is added to this array if:
 	// 1. It's an Infantry with size <= 2;
 	// 2. It's a Vehicle with size <= 2, and either has 0 passenger slots, or disallow manual loading.
-	std::vector<TechnoClass *> passengerArray;
+	std::vector<TechnoClass*> passengerArray;
 
 	// This array is for larger passengers like tanks. It is not necessarily larger, but has lower loading priority.
 	// A techno is added to this array if:
@@ -183,12 +185,12 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	// This array is only loaded into large vehicles if:
 	//   - either "passengerArray" is empty;
 	//   - or nothing in the "passengerArray" can actually be loaded into non-large vehicles.
-	std::vector<TechnoClass *> largePassengerArray;
+	std::vector<TechnoClass*> largePassengerArray;
 
 	// vehicles that can hold size <= 2
-	std::vector<std::pair<TechnoClass *, int>> vehicleIndexArray;
+	std::vector<std::pair<TechnoClass*, int>> vehicleIndexArray;
 	// vehicles that can hold size >= 3
-	std::vector<std::pair<TechnoClass *, int>> largeVehicleIndexArray;
+	std::vector<std::pair<TechnoClass*, int>> largeVehicleIndexArray;
 
 	// This array is for Bio Reactors.
 	// A Bio Reactor is a building with "Passengers > 0" and "InfantryAbsorb=yes".
@@ -213,7 +215,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	{
 		auto pUnit = ObjectClass::CurrentObjects->GetItem(i);
 		// try to cast to TechnoClass
-		TechnoClass *pTechno = abstract_cast<TechnoClass *>(pUnit);
+		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
 		// If not a techno, or is in air, then it can't be a passenger.
 		if (!pTechno || pTechno->IsInAir())
@@ -262,7 +264,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	{
 		auto pUnit = ObjectClass::CurrentObjects->GetItem(i);
 		// try to cast to TechnoClass
-		TechnoClass *pTechno = abstract_cast<TechnoClass *>(pUnit);
+		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
 		// If not a techno, or is in air, then it can't be a vehicle.
 		if (!pTechno || pTechno->IsInAir())
@@ -309,7 +311,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	else if (largeVehicleIndexArray.size() > 0)
 	{
 		// load both infantry and vehicle into large vehicle
-		auto &passengerIndexArray = passengerArray;
+		auto& passengerIndexArray = passengerArray;
 		for (auto largePassenger : largePassengerArray)
 		{
 			passengerIndexArray.push_back(largePassenger);
