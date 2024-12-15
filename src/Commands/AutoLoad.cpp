@@ -139,7 +139,6 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 				std::remove_if(transports.begin(), transports.end(),
 					[](auto transport)
 					{
-						BuildingTypeClass* pBuildingType;
 						return transport.second == 0;
 					}),
 				transports.end());
