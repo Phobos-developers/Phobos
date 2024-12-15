@@ -552,7 +552,7 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed && (pThis->IsYellowHP() || pThis->IsRedHP()))
 	{
-		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
+		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra(pThis->IsRedHP()))
 		{
 			ObjectTypeClass* Image = pCustomType;
 			R->EBX<ObjectTypeClass *>(Image);
@@ -560,5 +560,26 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 	}
 
 	R->EAX(pThis->WalkedFramesSoFar);
+	return Continue;
+}
+
+DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
+{
+	enum { Continue = 0x73C608 };
+
+	GET(UnitClass*, pThis, EBP);
+	TechnoExt::ExtData *pData = TechnoExt::ExtMap.Find(pThis);
+
+	if(pThis->IsYellowHP() || pThis->IsRedHP())
+	{
+		if(UnitTypeClass* pCustomType = pData->GetUnitTypeExtra(pThis->IsRedHP()))
+		{
+			SHPStruct* Image = pCustomType->GetImage();
+			if(Image)
+				R->EAX<SHPStruct *>(Image);
+		}
+	}
+
+	R->ECX(pThis->GetType());
 	return Continue;
 }

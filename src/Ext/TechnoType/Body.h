@@ -230,8 +230,10 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
-		Nullable<UnitTypeClass*> DamagedImage;
-		Nullable<UnitTypeClass*> WaterDamagedImage;
+		Nullable<UnitTypeClass*> DamagedImage_ConditionYellow;
+		Nullable<UnitTypeClass*> DamagedImage_ConditionRed;
+		Nullable<UnitTypeClass*> WaterDamagedImage_ConditionYellow;
+		Nullable<UnitTypeClass*> WaterDamagedImage_ConditionRed;
 
 		struct LaserTrailDataEntry
 		{
@@ -456,8 +458,10 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
-			, DamagedImage { }
-			, WaterDamagedImage { }
+			, DamagedImage_ConditionYellow { }
+			, DamagedImage_ConditionRed { }
+			, WaterDamagedImage_ConditionYellow { }
+			, WaterDamagedImage_ConditionRed { }
 		{ }
 
 		virtual ~ExtData() = default;

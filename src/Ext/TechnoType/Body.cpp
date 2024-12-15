@@ -458,8 +458,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 
-	this->DamagedImage.Read(exINI, pSection, "DamagedImage");
-	this->WaterDamagedImage.Read(exINI, pSection, "WaterDamagedImage");
+	this->DamagedImage_ConditionYellow.Read(exINI, pSection, "DamagedImage.ConditionYellow");
+	this->DamagedImage_ConditionRed.Read(exINI, pSection, "DamagedImage.ConditionRed");
+	this->WaterDamagedImage_ConditionYellow.Read(exINI, pSection, "WaterDamagedImage.ConditionYellow");
+	this->WaterDamagedImage_ConditionRed.Read(exINI, pSection, "WaterDamagedImage.ConditionRed");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -832,8 +834,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
 
-		.Process(this->DamagedImage)
-		.Process(this->WaterDamagedImage)
+		.Process(this->DamagedImage_ConditionYellow)
+		.Process(this->DamagedImage_ConditionRed)
+		.Process(this->WaterDamagedImage_ConditionYellow)
+		.Process(this->WaterDamagedImage_ConditionRed)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
