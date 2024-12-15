@@ -84,11 +84,20 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 				{
 					auto pPassenger = passengerMap[leastpID][index];
 					auto pTransport = tTransports[index].first;
-					auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+					auto pType = pTransport->GetTechnoType();
+					auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 					bool bySize = true;
 					int passengerSize = 1;
-
-					if (pTypeExt)
+					if (pTransport->WhatAmI() == AbstractType::Building)
+					{
+						auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+						// If a building comes here then it is either a Bio Reactor or a Tank Bunker.
+						// Tank Bunkers have no passenger filter logic, while Bio Reactors have.
+						if (!pBuildingType->Bunker && !pTypeExt->CanLoadPassenger(pTransport, pPassenger))
+							continue;
+						// Tank Bunkers and Bio Reactors are viewed as "Passengers.BySize=no".
+						bySize = false;
+					} else if (pTypeExt)
 					{
 						// Check passenger filter here.
 						if (!pTypeExt->CanLoadPassenger(pTransport, pPassenger))
@@ -106,7 +115,7 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 						// Check if the transport still has the budget for the new passenger.
 						// Note that, if not by size, then the transport is momentarily removed from "tTransports" as soon as it's full,
 						// so a transport not by size will not need to check against the passenger budget.
-						if (tTransports[index].second + passengerSize > pTransport->GetTechnoType()->Passengers)
+						if (tTransports[index].second + passengerSize > pType->Passengers)
 							continue;
 					}
 
@@ -121,11 +130,17 @@ void SpreadPassengersToTransports(std::vector<P> &pPassengers, std::vector<std::
 				passengerMap[leastpID].erase(passengerMap[leastpID].begin(), passengerMap[leastpID].begin() + index);
 			}
 
+			// Remove fully loaded transports from potential transports array.
+			// Tank Bunkers are fully loaded by one "passenger".
 			tTransports.erase(
 				std::remove_if(tTransports.begin(), tTransports.end(),
 							   [](auto transport)
 							   {
-								   return transport.second == transport.first->GetTechnoType()->Passengers;
+									BuildingTypeClass* pBuildingType;
+									return transport.second == transport.first->GetTechnoType()->Passengers
+									   || (transport.second > 0 && transport.first->WhatAmI() == AbstractType::Building
+										   && (pBuildingType = abstract_cast<BuildingTypeClass*>(transport.first->GetTechnoType()))
+										   && pBuildingType->Bunker);
 							   }),
 				tTransports.end());
 
