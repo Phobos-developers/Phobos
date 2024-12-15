@@ -175,21 +175,58 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	// vehicles that can hold size >= 3
 	std::vector<std::pair<TechnoClass *, int>> largeVehicleIndexArray;
 
+	// This array is for Bio Reactors.
+	// A Bio Reactor is a building with "Passengers > 0" and "InfantryAbsorb=yes".
+	std::vector<std::pair<TechnoClass*, int>> bioReactorIndexArray;
+
+	// This array is for the infantry candidates of Bio Reactors.
+	// Unlike transports, mind-controlled ones can be loaded into Bio Reactors.
+	std::vector<TechnoClass*> bioReactorCandidateArray;
+
+	// This array is for Tank Bunkers.
+	// A Tank Bunker is a building with "Bunker=yes", "NumberOfDocks > 0", and is not yet fully docked.
+	std::vector<std::pair<TechnoClass*, int>> tankBunkerIndexArray;
+
+	// This array is for the unit candidates for Tank Bunkers.
+	// Unlike transports, mind-controlled ones and those mind-controlling something can be loaded into a Tank Bunker.
+	std::vector<TechnoClass*> tankBunkerCandidateArray;
+
 	// Get current selected units.
 	// The first iteration, we find units that can't be transports, and add them to the passenger arrays.
+	// We also find Bio Reactors, Tank Bunkers, and candidates for them.
 	for (int i = 0; i < ObjectClass::CurrentObjects->Count; i++)
 	{
 		auto pUnit = ObjectClass::CurrentObjects->GetItem(i);
 		// try to cast to TechnoClass
 		TechnoClass *pTechno = abstract_cast<TechnoClass *>(pUnit);
 
-		// If not a techno, or is in air, or is MCed, or MCs anything, then it can't be a passenger.
-		if (!pTechno || pTechno->IsInAir()
-			|| pTechno->IsMindControlled()
-			|| (pTechno->CaptureManager && pTechno->CaptureManager->IsControllingSomething()))
+		// If not a techno, or is in air, then it can't be a passenger.
+		if (!pTechno || pTechno->IsInAir())
+			continue;
+
+		// Detect Bio Reactors and Tank Bunkers.
+		if (pTechno->WhatAmI() == AbstractType::Building)
 		{
+			auto pBuilding = abstract_cast<BuildingClass*>(pTechno);
+			auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTechno->GetTechnoType());
+			if (pBuildingType->Passengers > 0 && pBuildingType->InfantryAbsorb)
+				bioReactorIndexArray.push_back(std::make_pair(pTechno, pTechno->Passengers.NumPassengers));
+			else if (pBuildingType->Bunker && !pBuilding->BunkerLinkedItem)
+				tankBunkerIndexArray.push_back(std::make_pair(pTechno, 0));
 			continue;
 		}
+
+		// Detect candidates for Bio Reactors and Tank Bunkers.
+		// A Bio Reactor candidate is an Infantry that isn't mind-controlling something.
+		// A Tank Bunker candidate is a Vehicle with "Turret=yes" and "Bunkerable=yes".
+		if (pTechno->WhatAmI() == AbstractType::Infantry && (!pTechno->CaptureManager || !pTechno->CaptureManager->IsControllingSomething()))
+			bioReactorCandidateArray.push_back(pTechno);
+		else if (pTechno->WhatAmI() == AbstractType::Unit && pTechno->GetTechnoType()->Turret && pTechno->GetTechnoType()->Bunkerable)
+			tankBunkerCandidateArray.push_back(pTechno);
+
+		// If MCed, or MCs anything, then it can't be a passenger.
+		if (pTechno->IsMindControlled() || (pTechno->CaptureManager && pTechno->CaptureManager->IsControllingSomething()))
+			continue;
 
 		auto pTechnoType = pTechno->GetTechnoType();
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
@@ -262,5 +299,12 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 			passengerIndexArray.push_back(largePassenger);
 		}
 		SpreadPassengersToTransports(passengerIndexArray, largeVehicleIndexArray);
+	}
+	else
+	{
+		if (bioReactorIndexArray.size() > 0 && bioReactorCandidateArray.size() > 0)
+			SpreadPassengersToTransports(bioReactorCandidateArray, bioReactorIndexArray);
+		if (tankBunkerIndexArray.size() > 0 && tankBunkerCandidateArray.size() > 0)
+			SpreadPassengersToTransports(tankBunkerCandidateArray, tankBunkerIndexArray);
 	}
 }
