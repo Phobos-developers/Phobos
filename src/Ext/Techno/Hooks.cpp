@@ -3,6 +3,7 @@
 
 #include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
@@ -559,8 +560,43 @@ DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 
 		if (pTypeExt->AttackMove_StopWhenTargetAcquired.Get(DefaultValue))
 		{
-			pThis->StopMoving();
-			pThis->AbortMotion();
+			auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor);
+
+			if (pJumpjetLoco)
+			{
+				auto crd = pThis->GetCoords();
+				pJumpjetLoco->DestinationCoords.X = crd.X;
+				pJumpjetLoco->DestinationCoords.Y = crd.Y;
+				pJumpjetLoco->CurrentSpeed = 0;
+				pJumpjetLoco->MaxSpeed = 0;
+				pThis->AbortMotion();
+			}
+			else
+			{
+				pThis->StopMoving();
+				pThis->AbortMotion();
+			}
+		}
+		if (pTypeExt->AttackMove_PursuitTarget)
+		{
+			pThis->SetDestination(pThis->Target, true);
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_PursuitTarget, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto const pType = pThis->GetTechnoType();
+
+	if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType))
+	{
+		if (pTypeExt->AttackMove_PursuitTarget && pThis->vt_entry_3B4((DWORD)pThis->Target))// InAttackMoveKeepRange
+		{
+			pThis->SetDestination(pThis->Target, true);
 		}
 	}
 

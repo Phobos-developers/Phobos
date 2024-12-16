@@ -832,6 +832,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_Follow)
 		.Process(this->AttackMove_Follow_IncludeAir)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
+		.Process(this->AttackMove_PursuitTarget)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

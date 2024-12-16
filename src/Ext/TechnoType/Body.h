@@ -232,6 +232,7 @@ public:
 		Valueable<bool> AttackMove_Follow;
 		Valueable<bool> AttackMove_Follow_IncludeAir;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
+		Valueable<bool> AttackMove_PursuitTarget;
 
 		struct LaserTrailDataEntry
 		{
@@ -457,6 +458,7 @@ public:
 			, AttackMove_Follow { false }
 			, AttackMove_Follow_IncludeAir { false }
 			, AttackMove_StopWhenTargetAcquired { }
+			, AttackMove_PursuitTarget { false }
 		{ }
 
 		virtual ~ExtData() = default;
