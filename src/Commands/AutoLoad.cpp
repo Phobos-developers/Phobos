@@ -124,7 +124,7 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 
 					if (pPassenger->GetCurrentMission() != Mission::Enter)
 					{
-						pPassenger->ObjectClickedAction(Action::Enter, pTransport, false);
+						pPassenger->ObjectClickedAction(Action::Enter, pTransport, true);
 						transports[index].second -= passengerSize; // take away that much passenger slot budgets from the transport
 						foundTransportVector.insert(pPassenger);
 					}
