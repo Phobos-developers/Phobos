@@ -39,22 +39,46 @@ bool TechnoTypeExt::ExtData::CanLoadPassenger(TechnoClass* pTransport, TechnoCla
 {
 	auto const pTransportType = pTransport->GetTechnoType();
 	auto const pPassengerType = pPassenger->GetTechnoType();
-	return (pTransportType->SizeLimit <= 0 || pTransportType->SizeLimit >= pPassengerType->Size)
-		&& (!this->Passengers_BySize || (pTransport->Passengers.GetTotalSize() + pPassengerType->Size) <= pTransportType->Passengers)
+	int const sizeLimit = int(pTransportType->SizeLimit);
+	int const size = int(pPassengerType->Size);
+	return (sizeLimit <= 0 || sizeLimit >= size)
+		&& (!this->Passengers_BySize || (pTransport->Passengers.GetTotalSize() + size) <= pTransportType->Passengers)
 		&& (this->PassengersWhitelist.empty() || this->PassengersWhitelist.Contains(pPassengerType))
 		&& !this->PassengersBlacklist.Contains(pPassengerType);
 }
 
+// Checks if a transport can load any of the passengers inside a list.
 bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::vector<TechnoClass*> pPassengerList) const
 {
 	for (auto pPassenger : pPassengerList)
 		if (this->CanLoadPassenger(pTransport, pPassenger))
 			return true;
-
 	return false;
 }
 
-
+// Checks if a transport can load any of the passengers inside a map.
+// It is assumed that the map's keys are the passengers' unit size and the values are the lists of passengers of said size.
+// It is assumed that every size in the map are present in the "passengerSizes" ordered set.
+bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::map<int, std::vector<TechnoClass*>> passengerMap, std::set<int> passengerSizes) const
+{
+	auto const pTransportType = pTransport->GetTechnoType();
+	int const sizeLimit = int(pTransportType->SizeLimit);
+	for (auto passengerSizesItr = passengerSizes.begin();
+		passengerSizesItr != passengerSizes.end();
+		passengerSizesItr++)
+	{
+		auto const passengerSize = *passengerSizesItr;
+		// there is no passenger small enough it can load, or the passenger list of this size is somehow empty
+		if ((sizeLimit > 0 && passengerSize > sizeLimit) || !passengerMap.contains(passengerSize))
+		{
+			continue;
+		}
+		// then check the function for list
+		if (this->CanLoadAny(pTransport, passengerMap[passengerSize]))
+			return true;
+	}
+	return false;
+}
 
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
