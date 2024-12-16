@@ -340,8 +340,12 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	// Pair the passengers and the transports if possible.
 	if (!passengerSizes.empty() && !transportSizeLimits.empty())
 	{
-		for (auto passengerSize : passengerSizes)
+
+		for (auto passengerSizesItr = passengerSizes.rbegin();
+			passengerSizesItr != passengerSizes.rend();
+			++passengerSizesItr)
 		{
+			auto passengerSize = *passengerSizesItr;
 			auto& passengerVector = passengerMap[passengerSize];
 
 			for (auto transportSizeLimit : transportSizeLimits)
