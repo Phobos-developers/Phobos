@@ -317,6 +317,16 @@ SelectionFlashDuration=0  ; integer, number of frames
 - Switches on/off [frame by frame mode](Miscellanous.html#frame-step-in).
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
+### `[ ]` Auto Load
+- A shortcut to quickly command the selected units to board transports. Select units and valid transports at a same time, and press the auto load hotkey, and the units will be ordered to enter the transports.
+  - Transports can be considered passengers if fully loaded, or `NoManualEnter=yes`, or it can't actually load anything from the selected passengers.
+  - Larger passengers are loaded first, and transports with smaller size limits are used first.
+  - At a given unit size and size limit, passengers will be diversely distributed into transports if possible.
+  - Ares `Passengers.Allowed=` and `Passengers.Disallowed=` are taken into account.
+- It also supports Bio Reactors and Tank Bunkers. Select said buildings and valid candidates at a same time, and press the auto load hotkey, and the units will be ordered to enter such buildings.
+  - If auto board transport can happen among selected units, then said logic takes precedence.
+- For localization add `TXT_AUTO_LOAD` and `TXT_AUTO_LOAD_DESC` into your `.csf` file.
+
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.
