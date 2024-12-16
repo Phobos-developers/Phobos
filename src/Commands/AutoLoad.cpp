@@ -113,7 +113,7 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 					{
 						// If by size then get the actual size of the potential passenger.
 						// Otherwise, every potential passenger counts as size 1.
-						passengerSize = abstract_cast<TechnoClass*>(pPassenger)->GetTechnoType()->Size;
+						passengerSize = static_cast<int>(abstract_cast<TechnoClass*>(pPassenger)->GetTechnoType()->Size);
 
 						// Check if the transport still has the budget for the new passenger.
 						// Note that, if not by size, then the transport is momentarily removed from "tTransports" as soon as it's full,
@@ -241,7 +241,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 					|| pTechno->Passengers.NumPassengers >= pTechnoType->Passengers
 					|| (bySize && pTechno->Passengers.GetTotalSize() >= pTechnoType->Passengers)))))
 		{
-			int const size = pTechnoType->Size;
+			int const size = static_cast<int>(pTechnoType->Size);
 			passengerSizes.insert(size);
 			passengerMap[size].push_back(pTechno);
 		}
