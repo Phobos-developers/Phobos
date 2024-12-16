@@ -311,7 +311,7 @@ LargeFireDistances=0.4375           ; list of floating point values, distance in
 ```
 
 ```{note}
-Save for the change that `Flamer? does not spawn animations if the parent animation is in air, the default settings should provide identical results to similar feature from Ares.
+Save for the change that `Flamer` does not spawn animations if the parent animation is in air, the default settings should provide identical results to similar feature from Ares.
 ```
 
 ### Layer on animations attached to objects
