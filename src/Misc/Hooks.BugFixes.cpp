@@ -1078,9 +1078,10 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	// Check aircrafts
 	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
 	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
+	const auto mission = pTechno->CurrentMission;
 
 	// To avoid aircrafts overlap by keep link if is returning or is in airport now.
-	if (!commonAircraft || pAircraft->CurrentMission != Mission::Enter || !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+	if (!commonAircraft || (mission != Mission::Sleep && mission != Mission::Guard && mission != Mission::Enter) || !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
 		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
 
 	// To avoid technos being unable to stop in attack move mega mission
