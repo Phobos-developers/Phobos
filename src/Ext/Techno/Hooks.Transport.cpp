@@ -90,7 +90,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 		}
 
 		TechnoTypeClass* pConvertTo;
-		if (pConvertTo = pExt->TypeExtData->Convert_EnterTransport)
+		if ((pConvertTo = pExt->TypeExtData->Convert_EnterTransport))
 		{
 			TechnoExt::ConvertToType(pPassenger, pConvertTo);
 		}
@@ -130,7 +130,7 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 		}
 
 		TechnoTypeClass* pConvertTo;
-		if (pConvertTo = pExt->TypeExtData->Convert_LeaveTransport)
+		if ((pConvertTo = pExt->TypeExtData->Convert_LeaveTransport))
 		{
 			TechnoExt::ConvertToType(pPassenger, pConvertTo);
 		}
