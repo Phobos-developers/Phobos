@@ -32,6 +32,82 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
+// This function is called upon a potential crusher's perspective and returns the crusher level of it.
+// This function is intended to use only on a unit with "Crusher=yes".
+int TechnoTypeExt::ExtData::GetCrusherLevel(FootClass* pCrusher)
+{
+	// Returns the CrusherLevel if explictly set.
+	if (this->CrusherLevel.isset())
+	{
+		return this->CrusherLevel.Get(0);
+	}
+
+	// Otherwise, gets a default value for CrusherLevel.
+	return pCrusher->GetTechnoType()->OmniCrusher ?
+		RulesExt::Global()->CrusherLevel_Defaults_OmniCrusher :
+		RulesExt::Global()->CrusherLevel_Defaults_Crusher;
+}
+
+// This function is called upon a potential crushing victim's perspective and returns the crushable level of it.
+// This function is intended to use only on an infantry, a unit, or an overlay.
+// Passing anything else such as terrain types into this function can cause a game crash.
+int TechnoTypeExt::ExtData::GetCrushableLevel(FootClass* pVictim)
+{
+	// If this techno is infantry:
+	if (auto const pVictimInfantry = abstract_cast<InfantryClass*>(pVictim))
+	{
+		// Returns the CrushableLevel if explictly set.
+		// Respects the "DeployedCrushableLevel=" setting if the infantry is deployed.
+		// Unlike the unmodded game, where you cannot tell an infantry is "Crushable=no" and "DeployableCrushable=yes",
+		// here you may have an infantry come with a lower CrushableLevel when deployed.
+		if (this->CrushableLevel.isset())
+		{
+			if (pVictimInfantry->IsDeployed())
+			{
+				return this->DeployedCrushableLevel.Get(this->CrushableLevel.Get(0));
+			}
+			else
+			{
+				return this->CrushableLevel.Get(0);
+			}
+		}
+
+		// Otherwise, gets a default value for CrushableLevel.
+		// If the InfantryType has "Crushable=yes", and it doesn't have "DeployedCrushable=no" and is deployed, then it can always be crushed.
+		// Note that in base game logic, "OmniCrushResistant=yes" only prevents "OmniCrusher=yes", it does not prevent "Crusher=yes".
+		// There fore, "Crushable=yes" and "OmniCrushResistant=yes" can still be crushed by "Crusher=yes" and "OmniCrusher=yes".
+		// Plus the fact that "OmniCrusher=yes" requires "Crusher=yes" to function,
+		// I'm ignoring the "OmniCrushResistant=" entry if "Crushable=yes" in the first place.
+		auto const pVictimInfTypeClass = abstract_cast<InfantryTypeClass*>(pVictimInfantry->GetTechnoType());
+		if (!pVictimInfTypeClass->Crushable || (!pVictimInfTypeClass->DeployedCrushable && pVictimInfantry->IsDeployed()))
+		{
+			return pVictimInfTypeClass->OmniCrushResistant ?
+				RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant :
+				RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Infantry;
+		}
+	}
+
+	// If this is something else:
+	else
+	{
+		// Returns the CrushableLevel if explictly set.
+		if (this->CrushableLevel.isset())
+		{
+			return this->CrushableLevel.Get(0);
+		}
+		// Otherwise, gets a default value for CrushableLevel.
+		// If this is explictly set as "Crushable=yes" then regard it crushable.
+		if (!pVictim->GetTechnoType()->Crushable)
+		{
+			return pVictim->GetTechnoType()->OmniCrushResistant ?
+				RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant :
+				RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Others;
+		}
+	}
+
+	return 0;
+}
+
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
@@ -414,6 +490,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CrushOverlayExtraForwardTilt.Read(exINI, pSection, "CrushOverlayExtraForwardTilt");
 	this->CrushSlowdownMultiplier.Read(exINI, pSection, "CrushSlowdownMultiplier");
 
+	this->CrusherLevel.Read(exINI, pSection, "CrusherLevel");
+	this->CrushableLevel.Read(exINI, pSection, "CrushableLevel");
+	this->DeployedCrushableLevel.Read(exINI, pSection, "DeployedCrushableLevel");
+
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
@@ -780,6 +860,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrushForwardTiltPerFrame)
 		.Process(this->CrushOverlayExtraForwardTilt)
 		.Process(this->CrushSlowdownMultiplier)
+
+		.Process(this->CrusherLevel)
+		.Process(this->CrushableLevel)
+		.Process(this->DeployedCrushableLevel)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)

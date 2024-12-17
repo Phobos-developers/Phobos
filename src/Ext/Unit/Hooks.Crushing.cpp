@@ -1,6 +1,7 @@
 #include <DriveLocomotionClass.h>
 #include <ShipLocomotionClass.h>
 #include <UnitClass.h>
+#include <OverlayTypeClass.h>
 
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Macro.h>
@@ -98,4 +99,31 @@ DEFINE_HOOK(0x6A108D, ShipLocomotionClass_WhileMoving_CrushTilt, 0xD)
 	pLinkedTo->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.02));
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x5F6CE0, FootClass_CanGetCrushed_Hook, 6)
+{
+	enum { CanCrush = 0x5F6D85, CannotCrush = 0x5F6D8C };
+
+	GET(FootClass* const, pCrusher, EDI);
+	GET(FootClass* const, pVictim, ESI);
+
+	// An eligible crusher must be a unit with "Crusher=yes".
+	// An eligible victim must be either an infantry, a unit, an overlay, or a building with 1x1 foundation.
+	if (RulesExt::Global()->CrusherLevelEnabled &&
+		pCrusher && pCrusher->WhatAmI() == AbstractType::Unit && pCrusher->GetTechnoType()->Crusher &&
+		pVictim && (pVictim->WhatAmI() == AbstractType::Infantry ||
+			pVictim->WhatAmI() == AbstractType::Unit ||
+			pVictim->WhatAmI() == AbstractType::Overlay ||
+			(RulesExt::Global()->CrusherLevelEnabled_For1x1Buildings && pVictim->WhatAmI() == AbstractType::Building &&
+				abstract_cast<BuildingTypeClass*>(pVictim->GetTechnoType())->Foundation == Foundation::_1x1)))
+	{
+		auto pCrusherExt = TechnoTypeExt::ExtMap.Find(pCrusher->GetTechnoType());
+		auto pVictimExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType());
+		int crusherLevel = pCrusherExt->GetCrusherLevel(pCrusher);
+		int crushableLevel = pVictimExt->GetCrushableLevel(pVictim);
+		return crusherLevel > crushableLevel ? CanCrush : CannotCrush;
+	}
+
+	return 0;
 }

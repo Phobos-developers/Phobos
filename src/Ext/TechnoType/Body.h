@@ -183,6 +183,10 @@ public:
 		Valueable<double> CrushOverlayExtraForwardTilt;
 		Valueable<double> CrushSlowdownMultiplier;
 
+		Nullable<int> CrusherLevel;
+		Nullable<int> CrushableLevel;
+		Nullable<int> DeployedCrushableLevel;
+
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
@@ -405,6 +409,10 @@ public:
 			, CrushForwardTiltPerFrame {}
 			, CrushOverlayExtraForwardTilt { 0.02 }
 
+			, CrusherLevel {}
+			, CrushableLevel {}
+			, DeployedCrushableLevel {}
+
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
 
@@ -464,6 +472,9 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+
+		int GetCrusherLevel(FootClass* pCrusher);
+		int GetCrushableLevel(FootClass* pVictim);
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
