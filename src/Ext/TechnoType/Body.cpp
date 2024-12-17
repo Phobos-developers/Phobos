@@ -62,7 +62,7 @@ bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::vector<Tec
 bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::map<int, std::vector<TechnoClass*>> passengerMap, std::set<int> passengerSizes) const
 {
 	auto const pTransportType = pTransport->GetTechnoType();
-	int const sizeLimit = int(pTransportType->SizeLimit);
+	auto const sizeLimit = static_cast<int>(pTransportType->SizeLimit);
 	for (auto const passengerSize : passengerSizes)
 	{
 		// there is no passenger small enough it can load, or the passenger list of this size is somehow empty
