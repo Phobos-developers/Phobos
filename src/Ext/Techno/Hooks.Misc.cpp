@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/BuildingType/Body.h>
 #include <SpawnManagerClass.h>
 #include <TunnelLocomotionClass.h>
 
@@ -374,8 +375,14 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 	if (RulesExt::Global()->SelectionFlashDuration > 0 && isControlledbyCurrentPlayer)
 		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
 
-	if (RulesExt::Global()->SetTabBySelectingFactory)
-		if (pThis->WhatAmI() == AbstractType::Building && IsCurrentPlayer)
+	if (RulesExt::Global()->SetTabBySelectingFactory && pThis->WhatAmI() == AbstractType::Building && IsCurrentPlayer)
+	{
+		auto const pBldTypeExt = BuildingTypeExt::ExtMap.Find(specific_cast<BuildingClass*>(pThis)->Type);
+		const int tabIndex = pBldTypeExt->SetTabBySelecting;
+
+		if (5 > tabIndex && tabIndex > 0)
+			TabClass::Instance->SetTab(tabIndex - 1);
+		else if (tabIndex == -1)
 			switch (specific_cast<BuildingClass*>(pThis)->Type->Factory)
 			{
 			case AbstractType::BuildingType:
@@ -393,6 +400,7 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 			default:
 				break;
 			}
+	}
 
 	return 0;
 }

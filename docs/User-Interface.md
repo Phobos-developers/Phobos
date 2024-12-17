@@ -268,7 +268,7 @@ ShowTimer.Priority=0  ; integer
 
 ### Flashing Technos on selecting
 
-Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
+- Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
 
 In `rulesmd.ini`:
 ```ini
@@ -278,12 +278,17 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 ### Set sidebar tab by selecting factory
 
-Factory buildings, owned by player, now may switch corresponded sidebar tabs, when selected, by enabling `SetTabBySelectingFactory` parameter.
+- Factory buildings, owned by player, now may switch corresponded sidebar tabs, when selected, by enabling `SetTabBySelectingFactory` parameter.
+- You may overwrite it to be able to switch to any sidebar tab by any building type selected, by setting `SetTabBySelecting` between 1 and 4.
+  - You may also disable it for factory building type by setting `SetTabBySelecting = 0`.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 SetTabBySelectingFactory=false  ; boolean
+
+[SOMEBUILDING]
+SetTabBySelecting=-1            ; integer, index of tab
 ```
 
 ## Hotkey Commands

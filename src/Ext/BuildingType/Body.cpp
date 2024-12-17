@@ -161,6 +161,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
 	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
 
+	this->SetTabBySelecting.Read(exINI, pSection, "SetTabBySelecting");
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		this->AircraftDockingDirs.clear();
@@ -283,6 +285,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoBuildAreaOnBuildup)
 		.Process(this->Adjacent_Allowed)
 		.Process(this->Adjacent_Disallowed)
+		.Process(this->SetTabBySelecting)
 		;
 }
 

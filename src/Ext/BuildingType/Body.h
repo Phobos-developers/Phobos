@@ -78,6 +78,8 @@ public:
 		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
 		ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
 
+		Valueable<int> SetTabBySelecting;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -126,6 +128,7 @@ public:
 			, NoBuildAreaOnBuildup { false }
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}
+			, SetTabBySelecting { -1 }
 		{ }
 
 		// Ares 0.A functions
