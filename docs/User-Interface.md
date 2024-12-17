@@ -318,13 +318,15 @@ SelectionFlashDuration=0  ; integer, number of frames
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
 ### `[ ]` Auto Load
-- A shortcut to quickly command the selected units to board transports. Select units and valid transports at a same time, and press the auto load hotkey, and the units will be ordered to enter the transports.
+- A shortcut to quickly command multiple units to board multiple transports at a same time. Select units and valid transports, then press the auto load hotkey, the units will be distributed among the transports and will be ordered to board them.
   - Transports can be considered passengers if fully loaded, or `NoManualEnter=yes`, or it can't actually load anything from the selected passengers.
   - Larger passengers are loaded first, and transports with smaller size limits are used first.
   - At a given unit size and size limit, passengers will be diversely distributed into transports if possible.
   - Ares `Passengers.Allowed=` and `Passengers.Disallowed=` are taken into account.
-- It also supports Bio Reactors and Tank Bunkers. Select said buildings and valid candidates at a same time, and press the auto load hotkey, and the units will be ordered to enter such buildings.
+- It also supports Bio Reactors and Tank Bunkers. Select valid candidates and multiple said buildings while pressing Shift, then press the auto load hotkey, the units will be distributed among these buildings and will be ordered to enter them.
   - If auto board transport can happen among selected units, then said logic takes precedence.
+  - A building is viewed as a Bio Reactor if it has `Passengers` >= 1, and it has `InfantryAbsorb=yes`.
+  - A building is viewed as a Tank Bunker if it has `Bunker=yes`.
 - For localization add `TXT_AUTO_LOAD` and `TXT_AUTO_LOAD_DESC` into your `.csf` file.
 
 ## Loading screen
