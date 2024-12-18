@@ -32,6 +32,7 @@
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
 #include <Utilities/TemplateDef.h>
+#include <Utilities/AresFunctions.h>
 
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
@@ -1089,3 +1090,41 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 }
 DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
 DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
+
+// This is a fix to the Ares bug: Academy feature doesn't apply to the initial payload of vehicles built off a War Factory.
+// Curiously, Academy applies to the initial payloads of vehicles under any other circumstances, even when built off a Naval Shipyard.
+// It is "Unsorted::IKnowWhatImDoing" prevented the "HouseExt::ApplyAcademy" from taking effect.
+// The fix is simple, when Ares is supposed to have initialized the initial payload, and Academy is prevented from taking any effect,
+// temporarily turn off "Unsorted::IKnowWhatImDoing", invoke "HouseExt::ApplyAcademy", then turn on "Unsorted::IKnowWhatImDoing" again.
+DEFINE_HOOK(0x4D71A0, FootClass_Put_InitialPayload_AfterAres, 0x6)
+{
+	GET(FootClass* const, pThis, ESI);
+	if (AresFunctions::ApplyAcademy && Unsorted::IKnowWhatImDoing)
+	{
+		if (pThis && !pThis->InLimbo && pThis->IsOnMap && pThis->WhatAmI() == AbstractType::Unit
+			&& pThis->GetTechnoType()->Passengers > 0
+			&& pThis->Passengers.NumPassengers > 0)
+		{
+			for (auto pNext = pThis->Passengers.FirstPassenger; pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
+			{
+				auto abstractType = AbstractType::None;
+				if (pNext->WhatAmI() == AbstractType::Unit)
+					if (pNext->GetTechnoType()->ConsideredAircraft)
+						abstractType = AbstractType::Aircraft;
+					else if (pNext->GetTechnoType()->Organic)
+						abstractType = AbstractType::Infantry;
+					else
+						abstractType = AbstractType::Unit;
+				else if (pNext->WhatAmI() == AbstractType::Infantry || pNext->WhatAmI() == AbstractType::Aircraft)
+					abstractType = pNext->WhatAmI();
+				if (abstractType != AbstractType::None)
+				{
+					--Unsorted::IKnowWhatImDoing;
+					AresFunctions::ApplyAcademy(AresFunctions::HouseExtMap_Find(pNext->Owner), pNext, abstractType);
+					++Unsorted::IKnowWhatImDoing;
+				}
+			}
+		}
+	}
+	return 0;
+}
