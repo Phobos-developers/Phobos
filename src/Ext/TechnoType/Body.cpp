@@ -39,8 +39,8 @@ bool TechnoTypeExt::ExtData::CanLoadPassenger(TechnoClass* pTransport, TechnoCla
 {
 	auto const pTransportType = pTransport->GetTechnoType();
 	auto const pPassengerType = pPassenger->GetTechnoType();
-	int const sizeLimit = int(pTransportType->SizeLimit);
-	int const size = int(pPassengerType->Size);
+	auto const sizeLimit = static_cast<int>(pTransportType->SizeLimit);
+	auto const size = static_cast<int>(pPassengerType->Size);
 	return (sizeLimit <= 0 || sizeLimit >= size)
 		&& (!this->Passengers_BySize || (pTransport->Passengers.GetTotalSize() + size) <= pTransportType->Passengers)
 		&& (this->PassengersWhitelist.empty() || this->PassengersWhitelist.Contains(pPassengerType))
@@ -62,17 +62,12 @@ bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::vector<Tec
 bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::map<int, std::vector<TechnoClass*>> passengerMap, std::set<int> passengerSizes) const
 {
 	auto const pTransportType = pTransport->GetTechnoType();
-	int const sizeLimit = int(pTransportType->SizeLimit);
-	for (auto passengerSizesItr = passengerSizes.begin();
-		passengerSizesItr != passengerSizes.end();
-		passengerSizesItr++)
+	auto const sizeLimit = static_cast<int>(pTransportType->SizeLimit);
+	for (auto const passengerSize : passengerSizes)
 	{
-		auto const passengerSize = *passengerSizesItr;
 		// there is no passenger small enough it can load, or the passenger list of this size is somehow empty
-		if ((sizeLimit > 0 && passengerSize > sizeLimit) || !passengerMap.contains(passengerSize))
-		{
+		if ((sizeLimit > 0 && passengerSize > sizeLimit) || !passengerMap.contains(passengerSize) || passengerMap[passengerSize].empty())
 			continue;
-		}
 		// then check the function for list
 		if (this->CanLoadAny(pTransport, passengerMap[passengerSize]))
 			return true;
