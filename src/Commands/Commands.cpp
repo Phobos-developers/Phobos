@@ -20,6 +20,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
+	MakeCommand<AutoLoadCommandClass>();
 
 	if (Phobos::Config::DevelopmentCommands)
 	{
@@ -33,7 +34,6 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 		MakeCommand<FrameStepCommandClass<15>>(); // Speed 3
 		MakeCommand<FrameStepCommandClass<30>>(); // Speed 4
 		MakeCommand<FrameStepCommandClass<60>>(); // Speed 5
-		MakeCommand<AutoLoadCommandClass>();
 	}
 
 	return 0;
