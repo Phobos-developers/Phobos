@@ -43,6 +43,11 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
 	this->UpdateAttachEffects();
+
+	if (this->AttackMoveFollowerTempCount)
+	{
+		this->AttackMoveFollowerTempCount--;
+	}
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()

@@ -631,8 +631,16 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 				pTechno->Owner == pThis->Owner &&
 				pTechno->vt_entry_4C4()) // MegaMissionIsAttackMove)
 			{
+				auto const pTargetExt = TechnoExt::ExtMap.Find(pTechno);
+
+				// Check this to prevent the followed techno from being surrounded
+				if (!pTargetExt || pTargetExt->AttackMoveFollowerTempCount >= 6)
+				{
+					continue;
+				}
+
 				auto dist = pTechno->DistanceFrom(pThis);
-				auto const pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+				auto const pTargetTypeExt = pTargetExt->TypeExtData;
 
 				if (dist < closestRange && pTargetTypeExt && !pTargetTypeExt->AttackMove_Follow)
 				{
@@ -644,6 +652,8 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 		if (pClosestTarget)
 		{
+			auto const pTargetExt = TechnoExt::ExtMap.Find(pClosestTarget);
+			pTargetExt->AttackMoveFollowerTempCount += pThis->WhatAmI() == AbstractType::Infantry ? 1 : 3;
 			pThis->SetDestination(pClosestTarget, false);
 			pThis->SetArchiveTarget(pClosestTarget);
 			pThis->QueueMission(Mission::Area_Guard, true);
