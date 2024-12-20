@@ -1091,6 +1091,27 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
 DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
 
+// This is the inline function to get the academy type that a techno enjoys.
+inline static const AbstractType GetAresAcademyType(TechnoClass* pTechno)
+{
+	if (pTechno->WhatAmI() == AbstractType::Unit)
+	{
+		if (pTechno->GetTechnoType()->ConsideredAircraft)
+			return AbstractType::Aircraft;
+		else if (pTechno->GetTechnoType()->Organic)
+			return AbstractType::Infantry;
+		else
+			return AbstractType::Unit;
+	}
+	else if (pTechno->WhatAmI() == AbstractType::Infantry
+		|| pTechno->WhatAmI() == AbstractType::Aircraft
+		|| pTechno->WhatAmI() == AbstractType::Building)
+	{
+		return pTechno->WhatAmI();
+	}
+	return AbstractType::None;
+}
+
 // This is a fix to the Ares bug: Academy feature doesn't apply to the initial payload of vehicles built off a War Factory.
 // Curiously, Academy applies to the initial payloads of vehicles under any other circumstances, even when built off a Naval Shipyard.
 // It is "Unsorted::IKnowWhatImDoing" prevented the "HouseExt::ApplyAcademy" from taking effect.
@@ -1108,21 +1129,7 @@ DEFINE_HOOK(0x4D71A0, FootClass_Put_InitialPayload_AfterAres, 0x6)
 		{
 			for (auto pNext = pThis->Passengers.FirstPassenger; pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
 			{
-				auto abstractType = AbstractType::None;
-				if (pNext->WhatAmI() == AbstractType::Unit)
-				{
-					if (pNext->GetTechnoType()->ConsideredAircraft)
-						abstractType = AbstractType::Aircraft;
-					else if (pNext->GetTechnoType()->Organic)
-						abstractType = AbstractType::Infantry;
-					else
-						abstractType = AbstractType::Unit;	
-				}
-				else if (pNext->WhatAmI() == AbstractType::Infantry || pNext->WhatAmI() == AbstractType::Aircraft)
-				{
-					abstractType = pNext->WhatAmI();
-				}
-
+				auto abstractType = GetAresAcademyType(pNext);
 				if (abstractType != AbstractType::None)
 				{
 					--Unsorted::IKnowWhatImDoing;
