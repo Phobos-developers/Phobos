@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <GeneralDefinitions.h>
 class TechnoClass;
 class TechnoTypeClass;
 class FootClass;
@@ -24,12 +25,20 @@ public:
 	static bool(__stdcall* ConvertTypeTo)(TechnoClass* pFoot, TechnoTypeClass* pConvertTo);
 
 	static void(__stdcall* SpawnSurvivors)(FootClass* pThis, TechnoClass* pKiller, bool Select, bool IgnoreDefenses);
+
+	static void(__thiscall* ApplyAcademy)(void*, TechnoClass* pTechno, AbstractType considerAs);
+
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
+
+	static std::function<AresHouseExtData* (HouseClass*)> HouseExtMap_Find;
+
 private:
 	static constexpr bool _maybe = false;
 
 	static constexpr bool AresWasWrongAboutSpawnSurvivors = _maybe;
 
 	static void* _SWTypeExtMap;
+	static void* _HouseExtMap;
 	static AresSWTypeExtData* (__thiscall* _SWTypeExtMapFind)(void*, SuperWeaponTypeClass*);
+	static AresHouseExtData* (__thiscall* _HouseExtMapFind)(void*, HouseClass*);
 };
