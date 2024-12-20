@@ -1099,6 +1099,7 @@ DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
 DEFINE_HOOK(0x4D71A0, FootClass_Put_InitialPayload_AfterAres, 0x6)
 {
 	GET(FootClass* const, pThis, ESI);
+
 	if (AresFunctions::ApplyAcademy && Unsorted::IKnowWhatImDoing)
 	{
 		if (pThis && !pThis->InLimbo && pThis->IsOnMap && pThis->WhatAmI() == AbstractType::Unit
@@ -1109,14 +1110,19 @@ DEFINE_HOOK(0x4D71A0, FootClass_Put_InitialPayload_AfterAres, 0x6)
 			{
 				auto abstractType = AbstractType::None;
 				if (pNext->WhatAmI() == AbstractType::Unit)
+				{
 					if (pNext->GetTechnoType()->ConsideredAircraft)
 						abstractType = AbstractType::Aircraft;
 					else if (pNext->GetTechnoType()->Organic)
 						abstractType = AbstractType::Infantry;
 					else
-						abstractType = AbstractType::Unit;
+						abstractType = AbstractType::Unit;	
+				}
 				else if (pNext->WhatAmI() == AbstractType::Infantry || pNext->WhatAmI() == AbstractType::Aircraft)
+				{
 					abstractType = pNext->WhatAmI();
+				}
+
 				if (abstractType != AbstractType::None)
 				{
 					--Unsorted::IKnowWhatImDoing;
@@ -1126,5 +1132,6 @@ DEFINE_HOOK(0x4D71A0, FootClass_Put_InitialPayload_AfterAres, 0x6)
 			}
 		}
 	}
+
 	return 0;
 }
