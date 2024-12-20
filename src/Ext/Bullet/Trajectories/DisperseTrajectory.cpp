@@ -111,6 +111,10 @@ void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->LockDirection.Read(exINI, pSection, "Trajectory.Disperse.LockDirection");
 	this->CruiseEnable.Read(exINI, pSection, "Trajectory.Disperse.CruiseEnable");
 	this->CruiseUnableRange.Read(exINI, pSection, "Trajectory.Disperse.CruiseUnableRange");
+
+	if (this->CruiseUnableRange < 0.5)
+		this->CruiseUnableRange = 0.5;
+
 	this->LeadTimeCalculate.Read(exINI, pSection, "Trajectory.Disperse.LeadTimeCalculate");
 	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.Disperse.TargetSnapDistance");
 	this->RetargetRadius.Read(exINI, pSection, "Trajectory.Disperse.RetargetRadius");
@@ -718,12 +722,6 @@ bool DisperseTrajectory::StandardVelocityChange(BulletClass* pBullet)
 
 	pBullet->TargetCoords = targetLocation;
 
-	const CoordStruct targetHorizon { targetLocation.X, targetLocation.Y, 0 };
-	const CoordStruct bulletHorizon { pBullet->Location.X, pBullet->Location.Y, 0 };
-
-	if (pType->CruiseEnable && targetHorizon.DistanceFrom(bulletHorizon) > (pType->CruiseUnableRange > 0.5 ? pType->CruiseUnableRange * Unsorted::LeptonsPerCell : Unsorted::LeptonsPerCell / 2))
-		targetLocation.Z = pBullet->Location.Z;
-
 	if (pType->LeadTimeCalculate && checkValid && pType->Trajectory_Speed > 64.0)
 	{
 		const auto leadSpeed = (pType->Trajectory_Speed + this->Speed) / 2;
@@ -731,12 +729,12 @@ bool DisperseTrajectory::StandardVelocityChange(BulletClass* pBullet)
 		targetLocation += (targetLocation - this->LastTargetCoord) * timeMult;
 	}
 
+	if (pType->CruiseEnable && Point2D { targetLocation.X, targetLocation.Y }.DistanceFrom(Point2D { pBullet->Location.X, pBullet->Location.Y }) > (pType->CruiseUnableRange * Unsorted::LeptonsPerCell))
+		targetLocation.Z = pBullet->Location.Z;
+
 	const auto turningRadius = pType->ROT * this->Speed * this->Speed / 16384;
 
-	if (this->ChangeBulletVelocity(pBullet, targetLocation, turningRadius, false))
-		return true;
-
-	return false;
+	return this->ChangeBulletVelocity(pBullet, targetLocation, turningRadius, false);
 }
 
 bool DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct targetLocation, double turningRadius, bool curve)
