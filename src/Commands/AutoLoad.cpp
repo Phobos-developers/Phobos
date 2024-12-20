@@ -142,13 +142,9 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 				transports.end());
 
 			if (passengerMap[leastpID].size() == 0)
-			{
 				passengerMap.erase(leastpID);
-			}
 			else
-			{
 				passengerMapIdle[leastpID] = passengerMap[leastpID];
-			}
 		}
 
 		if (passengerMapIdle.size() != 0 && transports.size() != 0)
