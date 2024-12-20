@@ -78,6 +78,11 @@ public:
 		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
 		ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
 
+		// NextBuilding feature linked list
+		Valueable<BuildingTypeClass*> NextBuilding_Prev;
+		Valueable<BuildingTypeClass*> NextBuilding_Next;
+		int NextBuilding_CurrentHeapId;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -126,6 +131,9 @@ public:
 			, NoBuildAreaOnBuildup { false }
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}
+			, NextBuilding_Prev { nullptr }
+			, NextBuilding_Next { nullptr }
+			, NextBuilding_CurrentHeapId { OwnerObject->ArrayIndex }
 		{ }
 
 		// Ares 0.A functions

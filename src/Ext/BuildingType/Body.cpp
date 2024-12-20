@@ -223,6 +223,12 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Art
 	this->ZShapePointMove_OnBuildup.Read(exArtINI, pSection, "ZShapePointMove.OnBuildup");
+
+	// Next Building
+	{
+		this->NextBuilding_Next.Read(exINI, pSection, "NextBuilding.Next");
+		this->NextBuilding_Prev.Read(exINI, pSection, "NextBuilding.Prev");
+	}
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -283,6 +289,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoBuildAreaOnBuildup)
 		.Process(this->Adjacent_Allowed)
 		.Process(this->Adjacent_Disallowed)
+		.Process(this->NextBuilding_Prev)
+		.Process(this->NextBuilding_Next)
+		.Process(this->NextBuilding_CurrentHeapId)
 		;
 }
 

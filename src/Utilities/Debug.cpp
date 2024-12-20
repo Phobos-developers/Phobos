@@ -66,7 +66,7 @@ void Debug::INIParseFailed(const char* section, const char* flag, const char* va
 	Debug::Log(LogMessage, section, flag, value, Message);
 }
 
-void Debug::FatalErrorAndExit(const char* pFormat, ...)
+[[noreturn]] void Debug::FatalErrorAndExit(const char* pFormat, ...)
 {
 	va_list args;
 	va_start(args, pFormat);
@@ -76,7 +76,7 @@ void Debug::FatalErrorAndExit(const char* pFormat, ...)
 	FatalExit(static_cast<int>(ExitCode::Undefined));
 }
 
-void Debug::FatalErrorAndExit(ExitCode nExitCode, const char* pFormat, ...)
+[[noreturn]] void Debug::FatalErrorAndExit(ExitCode nExitCode, const char* pFormat, ...)
 {
 	va_list args;
 	va_start(args, pFormat);
