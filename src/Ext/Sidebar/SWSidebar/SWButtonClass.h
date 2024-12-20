@@ -20,6 +20,8 @@ public:
 public:
 	static constexpr int StartID = 2200;
 
+	static constexpr int Magic_Align_Y = 27;
+
 	bool IsHovering { false };
 	int ColumnIndex { -1 };
 	int SuperIndex { -1 };

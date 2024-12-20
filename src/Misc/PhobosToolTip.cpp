@@ -253,7 +253,7 @@ DEFINE_HOOK(0x724B2E, ToolTipManager_SetX, 0x6)
 		if (const auto button = SWSidebarClass::Instance.CurrentButton)
 		{
 			R->EDX(button->X + button->Width);
-			R->EAX(button->Y + 27);
+			R->EAX(button->Y + SWButtonClass::Magic_Align_Y);
 		}
 	}
 
