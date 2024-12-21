@@ -228,8 +228,18 @@ DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_HelpText, 0x6)
 		return 0;
 
 	PhobosToolTip::Instance.IsCameo = true;
-	PhobosToolTip::Instance.HelpText_Super(button->SuperIndex);
-	R->EAX(PhobosToolTip::Instance.GetBuffer());
+
+	if (PhobosToolTip::Instance.IsEnabled())
+	{
+		PhobosToolTip::Instance.HelpText_Super(button->SuperIndex);
+		R->EAX(PhobosToolTip::Instance.GetBuffer());
+	}
+	else
+	{
+		const auto pSuper = HouseClass::CurrentPlayer->Supers[button->SuperIndex];
+		R->EAX(pSuper->Type->UIName);
+	}
+
 	return ApplyToolTip;
 }
 

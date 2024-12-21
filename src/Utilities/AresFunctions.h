@@ -28,8 +28,6 @@ public:
 
 	static bool(__thiscall* IsTargetConstraintsEligible)(void*, HouseClass*, bool);
 
-	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
-
 	static void(__thiscall* ApplyAcademy)(void*, TechnoClass* pTechno, AbstractType considerAs);
 
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;

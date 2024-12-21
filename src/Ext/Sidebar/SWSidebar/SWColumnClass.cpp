@@ -40,7 +40,7 @@ bool SWColumnClass::Draw(bool forced)
 
 	if (const auto bottomShape = pSideExt->SuperWeaponSidebar_BottomShape.Get())
 	{
-		Point2D drawPoint = { this->X, this->Y + static_cast<int>(this->Buttons.size()) * Phobos::UI::SuperWeaponSidebar_CameoHeight };
+		Point2D drawPoint = { this->X, this->Y + this->Height };
 		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, bottomShape, 0, &drawPoint, &bounds, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
@@ -104,7 +104,8 @@ bool SWColumnClass::AddButton(int superIdx)
 	if (static_cast<int>(buttons.size()) >= this->MaxButtons && !SWSidebarClass::Instance.AddColumn())
 		return false;
 
-	const auto button = DLLCreate<SWButtonClass>(SWButtonClass::StartID + superIdx, superIdx, 0, 0, 60, 48);
+	const int cameoWidth = 60;
+	const auto button = DLLCreate<SWButtonClass>(SWButtonClass::StartID + superIdx, superIdx, 0, 0, cameoWidth, Phobos::UI::SuperWeaponSidebar_CameoHeight);
 
 	if (!button)
 		return false;
