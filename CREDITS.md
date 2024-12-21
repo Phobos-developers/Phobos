@@ -335,6 +335,7 @@ This page lists all the individual contributions to the project by their author.
    - Ares' `SW.Shots` hint on extended tooltips
    - Ares' Abductor weapon fix
    - Suppress Ares' swizzle warning when parsing tags and taskforces
+   - Better fix for Ares academy not working on the initial payloads of vehicles built from a war factory
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -381,6 +382,7 @@ This page lists all the individual contributions to the project by their author.
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
   - Global value of `RepairBaseNodes`
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
+- **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
