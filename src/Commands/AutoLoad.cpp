@@ -224,9 +224,9 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 
 					// If this transport can't hold this passenger then skip.
 					if (!CanHoldPassenger(pTransport, pPassenger))
-						continue;
+						goto seeNextTransport; // "continue" causes to skip the passenger, not to skip the transport, so we shouldn't use "continue" here
 
-					// Gets the passenger slot budget that would be substracted from the budget.
+					// Gets the passenger slot budget that would be substracted.
 					int passengerSize;
 					if (IsBySize(pTransport))
 					{
@@ -236,7 +236,7 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 
 						// Check if the transport still has the budget for the new passenger.
 						if (transports[index].second < passengerSize)
-							continue;
+							goto seeNextTransport;
 					}
 					else
 					{
@@ -247,10 +247,14 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 
 					if (pPassenger->GetCurrentMission() != Mission::Enter)
 					{
+						bool moveFeedbackOld = std::exchange(Unsorted::MoveFeedback(), false);
 						pPassenger->ObjectClickedAction(Action::Enter, pTransport, true);
+						Unsorted::MoveFeedback = moveFeedbackOld;
 						transports[index].second -= passengerSize; // take away that much passenger slot budgets from the transport
 						foundTransportVector.insert(pPassenger);
 					}
+
+				seeNextTransport:;
 				}
 				passengerMap[leastpID].erase(passengerMap[leastpID].begin(), passengerMap[leastpID].begin() + index);
 			}
@@ -301,7 +305,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	std::vector<std::pair<TechnoClass*, int>> enterableBuildingIndexArray;
 
 	// This array is for the candidates of enterable buildings.
-	std::vector<TechnoClass*> enterableBuildingArray;
+	std::vector<TechnoClass*> enterableBuildingCandidateArray;
 
 	// Get current selected units.
 	// The first iteration, we find units that can't be transports, and add them to the passenger arrays.
@@ -331,7 +335,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		// Detect candidates for enterable buildings
 		if (CanBeBuildingPassenger(pTechno))
 		{
-			enterableBuildingArray.push_back(pTechno);
+			enterableBuildingCandidateArray.push_back(pTechno);
 		}
 
 		// Detect candidates for enterable vehicles.
@@ -460,7 +464,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	else
 	{
 		// If nothing can load then go find enterable buildings.
-		if (enterableBuildingIndexArray.size() > 0 && enterableBuildingArray.size() > 0)
-			SpreadPassengersToTransports(enterableBuildingArray, enterableBuildingIndexArray);
+		if (enterableBuildingIndexArray.size() > 0 && enterableBuildingCandidateArray.size() > 0)
+			SpreadPassengersToTransports(enterableBuildingCandidateArray, enterableBuildingIndexArray);
 	}
 }
