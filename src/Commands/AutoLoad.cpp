@@ -84,7 +84,9 @@ inline static const bool CanBeBuildingPassenger(TechnoClass* pPassenger)
 	else if (pPassenger->WhatAmI() == AbstractType::Unit)
 	{
 		// Tank Bunker
-		return pPassenger->GetTechnoType()->Turret && pPassenger->GetTechnoType()->Bunkerable;
+		return pPassenger->GetTechnoType()->Turret
+			&& pPassenger->GetTechnoType()->Bunkerable
+			&& !pPassenger->BunkerLinkedItem;
 	}
 	return false;
 }
@@ -100,13 +102,9 @@ inline static const int GetVehiclePassengerBudget(TechnoClass* pTransport)
 		if (pTechnoType->Passengers > 0 && !pTypeExt->NoManualEnter)
 		{
 			if (pTypeExt->Passengers_BySize)
-			{
 				return pTechnoType->Passengers - pTransport->Passengers.GetTotalSize();
-			}
 			else
-			{
 				return pTechnoType->Passengers - pTransport->Passengers.NumPassengers;
-			}
 		}
 	}
 	return 0;
@@ -118,7 +116,9 @@ inline static const bool CanBeVehiclePassenger(TechnoClass* pPassenger)
 	if (pPassenger->WhatAmI() == AbstractType::Infantry
 		|| pPassenger->WhatAmI() == AbstractType::Unit)
 	{
-		return !IsMindControlling(pPassenger) && !pPassenger->IsMindControlled();
+		return !IsMindControlling(pPassenger)
+			&& !pPassenger->IsMindControlled()
+			&& !pPassenger->BunkerLinkedItem;
 	}
 	return false;
 }
@@ -178,6 +178,21 @@ inline static const bool IsBySize(TechnoClass* pTransport)
 		return false;
 	}
 	return true;
+}
+
+// Oddly, a Tank Bunker can't load anything when selected by the player.
+// Therefore it has to be unselected.
+inline static void DeselectMe(TechnoClass* pTransport)
+{
+	if (pTransport->WhatAmI() == AbstractType::Building)
+	{
+		auto pBuilding = abstract_cast<BuildingClass*>(pTransport);
+		auto pBuildingType = abstract_cast<BuildingTypeClass*>(pBuilding->GetTechnoType());
+		if (pBuildingType->Bunker)
+		{
+			pTransport->Deselect();
+		}
+	}
 }
 
 template <typename TPassenger, typename TTransport>
@@ -247,6 +262,7 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 
 					if (pPassenger->GetCurrentMission() != Mission::Enter)
 					{
+						DeselectMe(pTransport);
 						bool moveFeedbackOld = std::exchange(Unsorted::MoveFeedback(), false);
 						pPassenger->ObjectClickedAction(Action::Enter, pTransport, true);
 						Unsorted::MoveFeedback = moveFeedbackOld;
@@ -310,9 +326,8 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	// Get current selected units.
 	// The first iteration, we find units that can't be transports, and add them to the passenger arrays.
 	// We also find Bio Reactors, Tank Bunkers, and candidates for them.
-	for (int i = 0; i < ObjectClass::CurrentObjects->Count; i++)
+	for (const auto& pUnit : ObjectClass::CurrentObjects())
 	{
-		auto pUnit = ObjectClass::CurrentObjects->GetItem(i);
 		// try to cast to TechnoClass
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
@@ -350,9 +365,8 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 
 	// Get current selected units.
 	// The second iteration, we find units that can be transports.
-	for (int i = 0; i < ObjectClass::CurrentObjects->Count; i++)
+	for (const auto& pUnit : ObjectClass::CurrentObjects())
 	{
-		auto pUnit = ObjectClass::CurrentObjects->GetItem(i);
 		// try to cast to TechnoClass
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
