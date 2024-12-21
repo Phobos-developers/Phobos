@@ -170,7 +170,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
 - Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first.
-- Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) are now correctly parsed for Lunar theater.
+- Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater by setting `[General]` -> `ApplyLunarFixes` to true in `lunarmd.ini`. Do note that enabling this without fixing f.ex `WoodBridgeTileSet` pointing to a tileset with `TilesInSet=0` will cause issues in-game.
 - Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being displayed in water instead of `WetAttack`.
 - Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings.
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps.
@@ -191,6 +191,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
 - Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles.
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
+- Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory.
 
 ## Aircraft
 
@@ -311,7 +312,7 @@ LargeFireDistances=0.4375           ; list of floating point values, distance in
 ```
 
 ```{note}
-Save for the change that `Flamer? does not spawn animations if the parent animation is in air, the default settings should provide identical results to similar feature from Ares.
+Save for the change that `Flamer` does not spawn animations if the parent animation is in air, the default settings should provide identical results to similar feature from Ares.
 ```
 
 ### Layer on animations attached to objects

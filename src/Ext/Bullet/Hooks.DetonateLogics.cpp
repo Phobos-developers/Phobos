@@ -241,7 +241,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 			{
 				bool createAll = pWHExt->AnimList_CreateAll;
 
-				if (pWHExt->Crit_Active && !pWHExt->Crit_AnimOnAffectedTargets)
+				if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() > 0 && !pWHExt->Crit_AnimOnAffectedTargets)
 				{
 					createAll = pWHExt->Crit_AnimList_CreateAll.Get(createAll);
 
