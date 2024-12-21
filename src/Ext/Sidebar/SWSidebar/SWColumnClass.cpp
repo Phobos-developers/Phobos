@@ -40,7 +40,7 @@ bool SWColumnClass::Draw(bool forced)
 
 	if (const auto bottomShape = pSideExt->SuperWeaponSidebar_BottomShape.Get())
 	{
-		Point2D drawPoint = { this->X, this->Y + bottomShape->Height };
+		Point2D drawPoint = { this->X, this->Y + static_cast<int>(this->Buttons.size()) * Phobos::UI::SuperWeaponSidebar_CameoHeight };
 		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, bottomShape, 0, &drawPoint, &bounds, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
