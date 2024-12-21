@@ -75,6 +75,14 @@ bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::map<int, s
 	return false;
 }
 
+// Checks if a garrisonable structure can garrison a unit.
+// It is assumed that "whom" is an infantry.
+// This function only checks about the Ares occupier whitelist, it does not check if this is a garrisonable structure or not.
+bool TechnoTypeExt::ExtData::CanBeOccupiedBy(TechnoClass* whom) const
+{
+	return this->AllowedOccupiers.empty() || this->AllowedOccupiers.Contains(whom->GetTechnoType());
+}
+
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
@@ -436,6 +444,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->PassengersWhitelist.Read(exINI, pSection, "Passengers.Allowed");
 	this->PassengersBlacklist.Read(exINI, pSection, "Passengers.Disallowed");
+	this->AllowedOccupiers.Read(exINI, pSection, "CanBeOccupiedBy");
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
 	this->NoManualEnter.Read(exINI, pSection, "NoManualEnter");
 
@@ -794,6 +803,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->PassengersWhitelist)
 		.Process(this->PassengersBlacklist)
+		.Process(this->AllowedOccupiers)
 		.Process(this->Passengers_BySize)
 		.Process(this->NoManualEnter)
 
