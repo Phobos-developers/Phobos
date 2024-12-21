@@ -267,10 +267,10 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 						bool deselected = DeselectMe(pTransport);
 						bool moveFeedbackOld = std::exchange(Unsorted::MoveFeedback(), false);
 						pPassenger->ObjectClickedAction(Action::Enter, pTransport, true);
-						Unsorted::MoveFeedback = moveFeedbackOld;
-						transports[index].second -= passengerSize; // take away that much passenger slot budgets from the transport
 						if (deselected)
 							pTransport->Select();
+						Unsorted::MoveFeedback = moveFeedbackOld;
+						transports[index].second -= passengerSize; // take away that much passenger slot budgets from the transport
 						foundTransportVector.insert(pPassenger);
 					}
 
