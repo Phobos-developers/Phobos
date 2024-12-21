@@ -182,7 +182,7 @@ inline static const bool IsBySize(TechnoClass* pTransport)
 
 // Oddly, a Tank Bunker can't load anything when selected by the player.
 // Therefore it has to be unselected.
-inline static void DeselectMe(TechnoClass* pTransport)
+inline static bool DeselectMe(TechnoClass* pTransport)
 {
 	if (pTransport->WhatAmI() == AbstractType::Building)
 	{
@@ -191,8 +191,10 @@ inline static void DeselectMe(TechnoClass* pTransport)
 		if (pBuildingType->Bunker)
 		{
 			pTransport->Deselect();
+			return true;
 		}
 	}
+	return false;
 }
 
 template <typename TPassenger, typename TTransport>
@@ -262,11 +264,13 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 
 					if (pPassenger->GetCurrentMission() != Mission::Enter)
 					{
-						DeselectMe(pTransport);
+						bool deselected = DeselectMe(pTransport);
 						bool moveFeedbackOld = std::exchange(Unsorted::MoveFeedback(), false);
 						pPassenger->ObjectClickedAction(Action::Enter, pTransport, true);
 						Unsorted::MoveFeedback = moveFeedbackOld;
 						transports[index].second -= passengerSize; // take away that much passenger slot budgets from the transport
+						if (deselected)
+							pTransport->Select();
 						foundTransportVector.insert(pPassenger);
 					}
 
