@@ -54,7 +54,7 @@ inline static const bool IsMindControlling(TechnoClass* pTechno)
 // If return value <= 0 then the building can't be a "transport".
 inline static const int GetBuildingPassengerBudget(BuildingClass* pBuilding)
 {
-	auto pBuildingType = abstract_cast<BuildingTypeClass*>(pBuilding->GetTechnoType());
+	auto pBuildingType = abstract_cast<BuildingTypeClass*>(pBuilding->Type);
 	// Bio Reactor
 	if (pBuildingType->Passengers > 0 && pBuildingType->InfantryAbsorb)
 	{
@@ -86,6 +86,8 @@ inline static const bool CanBeBuildingPassenger(TechnoClass* pPassenger)
 		// Tank Bunker
 		return pPassenger->GetTechnoType()->Turret
 			&& pPassenger->GetTechnoType()->Bunkerable
+			&& pPassenger->GetTechnoType()->SpeedType != SpeedType::Hover
+			&& !abstract_cast<FootClass*>(pPassenger)->ParasiteEatingMe
 			&& !pPassenger->BunkerLinkedItem;
 	}
 	return false;
@@ -136,7 +138,7 @@ inline static const bool CanHoldPassenger(TechnoClass* pTransport, TechnoClass* 
 	else if (pTransport->WhatAmI() == AbstractType::Building)
 	{
 		auto pBuilding = abstract_cast<BuildingClass*>(pTransport);
-		auto pBuildingType = abstract_cast<BuildingTypeClass*>(pBuilding->GetTechnoType());
+		auto pBuildingType = abstract_cast<BuildingTypeClass*>(pBuilding->Type);
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuildingType);
 		if (pBuildingType->Passengers > 0 && pBuildingType->InfantryAbsorb)
 		{
@@ -187,7 +189,7 @@ inline static bool DeselectMe(TechnoClass* pTransport)
 	if (pTransport->WhatAmI() == AbstractType::Building)
 	{
 		auto pBuilding = abstract_cast<BuildingClass*>(pTransport);
-		auto pBuildingType = abstract_cast<BuildingTypeClass*>(pBuilding->GetTechnoType());
+		auto pBuildingType = abstract_cast<BuildingTypeClass*>(pBuilding->Type);
 		if (pBuildingType->Bunker)
 		{
 			pTransport->Deselect();
@@ -387,14 +389,14 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 			{
 				if (pTypeExt->CanLoadAny(pTechno, passengerMap, passengerSizes))
 				{
-					int const sizeLimit = int(pTechnoType->SizeLimit);
+					int const sizeLimit = static_cast<int>(pTechnoType->SizeLimit);
 					transportSizeLimits.insert(sizeLimit);
 					transportMap[sizeLimit].push_back(std::make_pair(pTechno, budget));
 				}
 				else
 				{
 					// If it can't actually load any clear passenger, then put it into ambiguousity.
-					int const size = int(pTechnoType->Size);
+					int const size = static_cast<int>(pTechnoType->Size);
 					ambiguousSizes.insert(size);
 					ambiguousMap[size].push_back(pTechno);
 				}
@@ -436,7 +438,7 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 					{
 						// This unit in ambiguousity is added to transports.
 						int const budget = GetVehiclePassengerBudget(pAmbiguousTechno);
-						int const sizeLimit = int(pTechnoType->SizeLimit);
+						int const sizeLimit = static_cast<int>(pTechnoType->SizeLimit);
 						transportSizeLimits.insert(sizeLimit);
 						transportMap[sizeLimit].push_back(std::make_pair(pAmbiguousTechno, budget));
 					}
