@@ -54,7 +54,7 @@ inline static const bool IsMindControlling(TechnoClass* pTechno)
 // If return value <= 0 then the building can't be a "transport".
 inline static const int GetBuildingPassengerBudget(BuildingClass* pBuilding)
 {
-	auto pBuildingType = abstract_cast<BuildingTypeClass*>(pBuilding->Type);
+	auto pBuildingType = pBuilding->Type;
 	// Bio Reactor
 	if (pBuildingType->Passengers > 0 && pBuildingType->InfantryAbsorb)
 	{
@@ -138,7 +138,7 @@ inline static const bool CanHoldPassenger(TechnoClass* pTransport, TechnoClass* 
 	else if (pTransport->WhatAmI() == AbstractType::Building)
 	{
 		auto pBuilding = abstract_cast<BuildingClass*>(pTransport);
-		auto pBuildingType = abstract_cast<BuildingTypeClass*>(pBuilding->Type);
+		auto pBuildingType = pBuilding->Type;
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuildingType);
 		if (pBuildingType->Passengers > 0 && pBuildingType->InfantryAbsorb)
 		{
@@ -189,7 +189,7 @@ inline static bool DeselectMe(TechnoClass* pTransport)
 	if (pTransport->WhatAmI() == AbstractType::Building)
 	{
 		auto pBuilding = abstract_cast<BuildingClass*>(pTransport);
-		auto pBuildingType = abstract_cast<BuildingTypeClass*>(pBuilding->Type);
+		auto pBuildingType = pBuilding->Type;
 		if (pBuildingType->Bunker)
 		{
 			pTransport->Deselect();
