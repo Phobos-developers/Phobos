@@ -44,10 +44,16 @@ void DebugPrintPassenger(std::vector<TechnoClass*>& passengers)
 		Debug::Log("AutoLoadCommandClass::DebugPrintPassenger: Passenger address: %p\n", passenger);
 }
 
-// filter function: tells if this techno is mind controlling something.
+// tells if this techno is mind controlling something.
 inline static const bool IsMindControlling(TechnoClass* pTechno)
 {
 	return pTechno->CaptureManager && pTechno->CaptureManager->IsControllingSomething();
+}
+
+// tells if this techno is parasited (terror drone, giant squid, etc)
+inline static const bool IsParasited(TechnoClass* pTechno)
+{
+	return static_cast<FootClass*>(pTechno)->ParasiteEatingMe;
 }
 
 // Gets the passenger budgets of a building.
@@ -87,8 +93,7 @@ inline static const bool CanBeBuildingPassenger(TechnoClass* pPassenger)
 		return pPassenger->GetTechnoType()->Turret
 			&& pPassenger->GetTechnoType()->Bunkerable
 			&& pPassenger->GetTechnoType()->SpeedType != SpeedType::Hover
-			&& !abstract_cast<FootClass*>(pPassenger)->ParasiteEatingMe
-			&& !pPassenger->BunkerLinkedItem;
+			&& !IsParasited(pPassenger);
 	}
 	return false;
 }
@@ -120,7 +125,7 @@ inline static const bool CanBeVehiclePassenger(TechnoClass* pPassenger)
 	{
 		return !IsMindControlling(pPassenger)
 			&& !pPassenger->IsMindControlled()
-			&& !pPassenger->BunkerLinkedItem;
+			&& !IsParasited(pPassenger);
 	}
 	return false;
 }
@@ -135,9 +140,8 @@ inline static const bool CanHoldPassenger(TechnoClass* pTransport, TechnoClass* 
 		// the check of MCing or MCed are redundant here, see inline function "CanBeVehiclePassenger".
 		return pTypeExt->CanLoadPassenger(pTransport, pPassenger);
 	}
-	else if (pTransport->WhatAmI() == AbstractType::Building)
+	else if (auto pBuilding = abstract_cast<BuildingClass*>(pTransport))
 	{
-		auto pBuilding = abstract_cast<BuildingClass*>(pTransport);
 		auto pBuildingType = pBuilding->Type;
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuildingType);
 		if (pBuildingType->Passengers > 0 && pBuildingType->InfantryAbsorb)
@@ -153,7 +157,7 @@ inline static const bool CanHoldPassenger(TechnoClass* pTransport, TechnoClass* 
 			// the check of MCing is redundant here, see inline function "CanBeBuildingPassenger".
 			return pPassenger->WhatAmI() == AbstractType::Infantry
 				&& !pPassenger->IsMindControlled()
-				&& abstract_cast<InfantryTypeClass*>(pPassenger->GetTechnoType())->Occupier
+				&& static_cast<InfantryTypeClass*>(pPassenger->GetTechnoType())->Occupier
 				&& pTypeExt->CanBeOccupiedBy(pPassenger);
 		}
 		else if (pBuildingType->Bunker)
@@ -169,9 +173,9 @@ inline static const bool CanHoldPassenger(TechnoClass* pTransport, TechnoClass* 
 // Checks if this transport substrats passenger budget by passenger size.
 inline static const bool IsBySize(TechnoClass* pTransport)
 {
-	if (pTransport->WhatAmI() == AbstractType::Unit)
+	if (auto pUnit = abstract_cast<UnitClass*>(pTransport))
 	{
-		auto pType = pTransport->GetTechnoType();
+		auto pType = pUnit->Type;
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 		return pTypeExt->Passengers_BySize;
 	}
@@ -183,12 +187,11 @@ inline static const bool IsBySize(TechnoClass* pTransport)
 }
 
 // Oddly, a Tank Bunker can't load anything when selected by the player.
-// Therefore it has to be unselected.
+// Therefore it has to be deselected.
 inline static bool DeselectMe(TechnoClass* pTransport)
 {
-	if (pTransport->WhatAmI() == AbstractType::Building)
+	if (auto pBuilding = abstract_cast<BuildingClass*>(pTransport))
 	{
-		auto pBuilding = abstract_cast<BuildingClass*>(pTransport);
 		auto pBuildingType = pBuilding->Type;
 		if (pBuildingType->Bunker)
 		{
@@ -251,7 +254,7 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 					{
 						// If by size then get the actual size of the potential passenger.
 						// Otherwise, every potential passenger counts as size 1.
-						passengerSize = static_cast<int>(abstract_cast<TechnoClass*>(pPassenger)->GetTechnoType()->Size);
+						passengerSize = static_cast<int>(reinterpret_cast<TechnoClass*>(pPassenger)->GetTechnoType()->Size);
 
 						// Check if the transport still has the budget for the new passenger.
 						if (transports[index].second < passengerSize)
@@ -341,10 +344,15 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		if (!pTechno || pTechno->IsInAir())
 			continue;
 
+		// If not a techno, or is in air, or is bunkered, or is a loaded tank bunker, or is parasited, then exclude it from the first iteration.
+		// A unit on air can't be a passenger, a bunkered vehicle can't enter transports or further tank bunkers,
+		// and a loaded tank bunker can't load further vehicles.
+		if (!pTechno || pTechno->IsInAir() || pTechno->BunkerLinkedItem)
+			continue;
+
 		// Detect enterable buildings.
-		if (pTechno->WhatAmI() == AbstractType::Building)
+		if (auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 		{
-			auto pBuilding = abstract_cast<BuildingClass*>(pTechno);
 			int const budget = GetBuildingPassengerBudget(pBuilding);
 			if (budget > 0)
 			{
@@ -376,8 +384,9 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		// try to cast to TechnoClass
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
-		// If not a techno, or is in air, then it can't be a vehicle.
-		if (!pTechno || pTechno->IsInAir())
+		// If not a techno, or is in air, or is bunkered, then exclude it from the second iteration.
+		// A unit on air can't be a transport, a bunkered vehicle can't load passengers.
+		if (!pTechno || pTechno->IsInAir() || pTechno->BunkerLinkedItem)
 			continue;
 
 		auto pTechnoType = pTechno->GetTechnoType();
