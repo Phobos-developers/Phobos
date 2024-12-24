@@ -340,10 +340,6 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		// try to cast to TechnoClass
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
-		// If not a techno, or is in air, then it can't be a passenger, and it can't be a Bio Reactor or Tank Bunker.
-		if (!pTechno || pTechno->IsInAir())
-			continue;
-
 		// If not a techno, or is in air, or is bunkered, or is a loaded tank bunker, or is parasited, then exclude it from the first iteration.
 		// A unit on air can't be a passenger, a bunkered vehicle can't enter transports or further tank bunkers,
 		// and a loaded tank bunker can't load further vehicles.
