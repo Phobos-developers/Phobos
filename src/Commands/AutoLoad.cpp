@@ -90,10 +90,8 @@ inline static const bool CanBeBuildingPassenger(TechnoClass* pPassenger)
 	else if (pPassenger->WhatAmI() == AbstractType::Unit)
 	{
 		// Tank Bunker
-		return pPassenger->GetTechnoType()->Turret
-			&& pPassenger->GetTechnoType()->Bunkerable
-			&& pPassenger->GetTechnoType()->SpeedType != SpeedType::Hover
-			&& !IsParasited(pPassenger);
+		// This is the YR function to check if something can be bunkered.
+		return reinterpret_cast<bool(__thiscall*)(TechnoClass*)>(0x70FB50)(pPassenger);
 	}
 	return false;
 }
