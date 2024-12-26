@@ -196,6 +196,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
 - Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles.
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
+- Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory.
 
 ## Aircraft
 
@@ -326,7 +327,7 @@ LargeFireDistances=0.4375           ; list of floating point values, distance in
 ```
 
 ```{note}
-Save for the change that `Flamer? does not spawn animations if the parent animation is in air, the default settings should provide identical results to similar feature from Ares.
+Save for the change that `Flamer` does not spawn animations if the parent animation is in air, the default settings should provide identical results to similar feature from Ares.
 ```
 
 ### Layer on animations attached to objects
