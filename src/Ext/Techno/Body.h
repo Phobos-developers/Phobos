@@ -49,6 +49,9 @@ public:
 		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
 		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
+		bool UnitIdleIsSelected;
+		CDTimerClass UnitIdleActionTimer;
+		CDTimerClass UnitIdleActionGapTimer;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
 
@@ -86,6 +89,9 @@ public:
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
 			, CanCurrentlyDeployIntoBuilding { false }
+			, UnitIdleIsSelected { false }
+			, UnitIdleActionTimer {}
+			, UnitIdleActionGapTimer {}
 			, FiringObstacleCell {}
 			, IsDetachingForCloak { false }
 			, OriginalPassengerOwner {}
@@ -115,6 +121,10 @@ public:
 		void UpdateSelfOwnedAttachEffects();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
+		void StopIdleAction();
+		void ApplyIdleAction();
+		void ManualIdleAction();
+		void StopRotateWithNewROT(int ROT = -1);
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }

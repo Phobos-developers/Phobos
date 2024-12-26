@@ -187,6 +187,14 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
 	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
+	this->ExpandTurretRotation.Read(exINI, GameStrings::General, "ExpandTurretRotation");
+	this->Turret_IdleRotate.Read(exINI, GameStrings::AudioVisual, "Turret.IdleRotate");
+	this->Turret_PointToMouse.Read(exINI, GameStrings::AudioVisual, "Turret.PointToMouse");
+	this->Turret_IdleRestartMin.Read(exINI, GameStrings::AudioVisual, "Turret.IdleRestartMin");
+	this->Turret_IdleRestartMax.Read(exINI, GameStrings::AudioVisual, "Turret.IdleRestartMax");
+	this->Turret_IdleIntervalMin.Read(exINI, GameStrings::AudioVisual, "Turret.IdleIntervalMin");
+	this->Turret_IdleIntervalMax.Read(exINI, GameStrings::AudioVisual, "Turret.IdleIntervalMax");
+
 	this->AircraftLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "AircraftLevelLightMultiplier");
 	this->JumpjetLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "JumpjetLevelLightMultiplier");
 
@@ -373,6 +381,13 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
+		.Process(this->ExpandTurretRotation)
+		.Process(this->Turret_IdleRotate)
+		.Process(this->Turret_PointToMouse)
+		.Process(this->Turret_IdleRestartMin)
+		.Process(this->Turret_IdleRestartMax)
+		.Process(this->Turret_IdleIntervalMin)
+		.Process(this->Turret_IdleIntervalMax)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
 		.Process(this->PodImage)

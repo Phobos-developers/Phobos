@@ -135,6 +135,14 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
 
+		Valueable<bool> ExpandTurretRotation;
+		Valueable<bool> Turret_IdleRotate;
+		Valueable<bool> Turret_PointToMouse;
+		Valueable<int> Turret_IdleRestartMin;
+		Valueable<int> Turret_IdleRestartMax;
+		Valueable<int> Turret_IdleIntervalMin;
+		Valueable<int> Turret_IdleIntervalMax;
+
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
@@ -268,6 +276,13 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, ExpandTurretRotation { false }
+			, Turret_IdleRotate { false }
+			, Turret_PointToMouse { false }
+			, Turret_IdleRestartMin { 150 }
+			, Turret_IdleRestartMax { 300 }
+			, Turret_IdleIntervalMin { 150 }
+			, Turret_IdleIntervalMax { 450 }
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }

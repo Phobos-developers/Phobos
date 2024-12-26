@@ -12,6 +12,8 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
+#include <WWMouseClass.h>
+#include <TacticalClass.h>
 
 // TechnoClass_AI_0x6F9E50
 // It's not recommended to do anything more here it could have a better place for performance consideration
@@ -586,6 +588,121 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 	{
 		this->MindControlRingAnimType = nullptr;
 	}
+}
+
+void TechnoExt::ExtData::StopIdleAction()
+{
+	if (this->UnitIdleActionTimer.IsTicking())
+		this->UnitIdleActionTimer.Stop();
+
+	if (this->UnitIdleActionGapTimer.IsTicking())
+	{
+		this->UnitIdleActionGapTimer.Stop();
+		const auto pTypeExt = this->TypeExtData;
+		this->StopRotateWithNewROT(pTypeExt->TurretROT.Get(pTypeExt->OwnerObject()->ROT));
+	}
+}
+
+void TechnoExt::ExtData::ApplyIdleAction()
+{
+	const auto pThis = this->OwnerObject();
+	const auto turret = &pThis->SecondaryFacing;
+
+	if (this->UnitIdleActionTimer.Completed()) // Set first direction
+	{
+		this->UnitIdleActionTimer.Stop();
+		this->UnitIdleActionGapTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->Turret_IdleIntervalMin, RulesExt::Global()->Turret_IdleIntervalMax));
+		bool noTurn = false;
+
+		if (const auto pUnit = abstract_cast<UnitClass*>(pThis))
+			noTurn = pUnit->BunkerLinkedItem || !pUnit->Type->Speed || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
+		else if (pThis->WhatAmI() == AbstractType::Building)
+			noTurn = true;
+
+		const auto raw = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(0, 65535) - 32768);
+		const auto pTypeExt = this->TypeExtData;
+
+		this->StopRotateWithNewROT(ScenarioClass::Instance->Random.RandomRanged(2,4) >> 1);
+		turret->SetDesired(pTypeExt->GetTurretDesiredDir(DirStruct { (pTypeExt->GetTurretLimitedRaw(noTurn ? raw : (raw / 4)) + static_cast<short>(pThis->PrimaryFacing.Current().Raw)) }));
+	}
+	else if (this->UnitIdleActionGapTimer.IsTicking()) // Check change direction
+	{
+		if (!this->UnitIdleActionGapTimer.HasTimeLeft()) // Set next direction
+		{
+			this->UnitIdleActionGapTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->Turret_IdleIntervalMin, RulesExt::Global()->Turret_IdleIntervalMax));
+			bool noTurn = false;
+
+			if (const auto pUnit = abstract_cast<UnitClass*>(pThis))
+				noTurn = pUnit->BunkerLinkedItem || !pUnit->Type->Speed || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
+			else if (pThis->WhatAmI() == AbstractType::Building)
+				noTurn = true;
+
+			const auto raw = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(0, 65535) - 32768);
+			const auto pTypeExt = this->TypeExtData;
+
+			this->StopRotateWithNewROT(ScenarioClass::Instance->Random.RandomRanged(2,4) >> 1);
+			turret->SetDesired(pTypeExt->GetTurretDesiredDir(DirStruct { (pTypeExt->GetTurretLimitedRaw(noTurn ? raw : (raw / 4)) + static_cast<short>(pThis->PrimaryFacing.Current().Raw)) }));
+		}
+	}
+	else if (!this->UnitIdleActionTimer.IsTicking()) // In idle now
+	{
+		this->UnitIdleActionTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->Turret_IdleRestartMin, RulesExt::Global()->Turret_IdleRestartMax));
+		bool noTurn = false;
+
+		if (const auto pUnit = abstract_cast<UnitClass*>(pThis))
+			noTurn = pUnit->BunkerLinkedItem || !pUnit->Type->Speed || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
+		else if (pThis->WhatAmI() == AbstractType::Building)
+			noTurn = true;
+
+		if (!noTurn)
+			turret->SetDesired(this->TypeExtData->GetTurretDesiredDir(pThis->PrimaryFacing.Current()));
+	}
+}
+
+void TechnoExt::ExtData::ManualIdleAction()
+{
+	const auto pThis = this->OwnerObject();
+	const auto turret = &pThis->SecondaryFacing;
+
+	if (pThis->IsSelected)
+	{
+		const auto pTypeExt = this->TypeExtData;
+
+		if (pTypeExt->Turret_IdleRotate.Get(RulesExt::Global()->Turret_IdleRotate))
+			this->StopIdleAction();
+
+		this->UnitIdleIsSelected = true;
+		const auto mouseCoords = TacticalClass::Instance->ClientToCoords(WWMouseClass::Instance->XY1);
+
+		if (mouseCoords != CoordStruct::Empty) // Mouse in tactical
+		{
+			const auto offset = -static_cast<int>(pThis->GetCoords().Z * 1.2307692307692307692307692307692); // ((Unsorted::LeptonsPerCell / 2) / Unsorted::LevelHeight)
+			const auto targetDir = pThis->GetTargetDirection(MapClass::Instance->GetCellAt(CoordStruct { mouseCoords.X - offset, mouseCoords.Y - offset, 0 }));
+
+			if (const auto pFoot = abstract_cast<FootClass*>(pThis))
+				pTypeExt->SetTurretLimitedDir(pFoot, targetDir);
+			else
+				turret->SetDesired(pTypeExt->GetTurretDesiredDir(targetDir));
+		}
+	}
+	else if (this->UnitIdleIsSelected) // Immediately stop when is not selected
+	{
+		this->UnitIdleIsSelected = false;
+		this->StopRotateWithNewROT();
+	}
+}
+
+void TechnoExt::ExtData::StopRotateWithNewROT(int ROT)
+{
+	const auto turret = &this->OwnerObject()->SecondaryFacing;
+
+	const auto currentFacingDirection = turret->Current();
+	turret->DesiredFacing = currentFacingDirection;
+	turret->StartFacing = currentFacingDirection;
+	turret->RotationTimer.Start(0);
+
+	if (ROT >= 0)
+		turret->SetROT(ROT);
 }
 
 void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
