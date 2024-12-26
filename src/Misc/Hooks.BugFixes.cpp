@@ -963,8 +963,18 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 	return 0;
 }
 
-// Patch tileset parsing to not reset certain tileset indices for Lunar theater.
-DEFINE_JUMP(LJMP, 0x546C8B, 0x546CBF);
+// Fix tileset parsing to not reset certain tileset indices for Lunar theater if the fix is enabled.
+DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
+{
+	enum { SkipGameCode = 0x546CBF };
+
+	LEA_STACK(CCINIClass*, pINI, STACK_OFFSET(0xA10, -0x9D8));
+
+	if (pINI->ReadBool(GameStrings::General, "ApplyLunarFixes", false))
+		return SkipGameCode;
+
+	return 0;
+}
 
 // Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes - Starkku
 DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
@@ -1051,6 +1061,8 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 	return SkipGameCode;
 }
+
+#pragma endregion
 
 // This shouldn't be here
 // Author: tyuah8
