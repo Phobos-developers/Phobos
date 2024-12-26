@@ -93,6 +93,11 @@ public:
 		Valueable<double> HeightShadowScaling_MinScale;
 		double AirShadowBaseScale_log;
 
+		Valueable<bool> CheckUnitBaseNormal;
+		Valueable<bool> PlacementGrid_Expand;
+		Valueable<Vector3D<int>> PlacementGrid_LandFrames;
+		Valueable<Vector3D<int>> PlacementGrid_WaterFrames;
+
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
 		Valueable<bool> ForbidParallelAIQueues_Building;
@@ -222,6 +227,11 @@ public:
 			, HeightShadowScaling { false }
 			, HeightShadowScaling_MinScale { 0.0 }
 			, AirShadowBaseScale_log { 0.693376137 }
+
+			, CheckUnitBaseNormal { false }
+			, PlacementGrid_Expand { false }
+			, PlacementGrid_LandFrames { { 1, 0, 0 } }
+			, PlacementGrid_WaterFrames { { 1, 0, 0 } }
 
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }

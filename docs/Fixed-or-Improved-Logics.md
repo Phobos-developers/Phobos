@@ -1023,6 +1023,22 @@ ForbidParallelAIQueues.Building=no  ; boolean
 ForbidParallelAIQueues=false        ; boolean
 ```
 
+### Check building adjacent by using units
+
+- You can now set `CheckUnitBaseNormal` to true to use units to expand the construction scope of the base.
+  - `UnitBaseNormal` controls whether our own buildings can be place around it like vanilla `BaseNormal` do.
+  - `UnitBaseForAllyBuilding` controls whether ally buildings can be place around it like vanilla `EligibileForAllyBuilding` do.
+
+In `rulesmd.ini`:
+```ini
+[General]
+CheckUnitBaseNormal=false      ; boolean
+
+[SOMEUNIT]                     ; UnitType
+UnitBaseNormal=false           ; boolean
+UnitBaseForAllyBuilding=false  ; boolean
+```
+
 ## Terrains
 
 ### Animated TerrainTypes

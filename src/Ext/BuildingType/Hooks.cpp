@@ -69,6 +69,9 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
 	auto pRules = RulesExt::Global();
 
+	if (Phobos::Config::DrawAdjacentBoundary)
+		BuildingTypeExt::DrawAdjacentLines();
+
 	if (!pRules->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
 		return 0;
 
@@ -217,45 +220,3 @@ DEFINE_HOOK(0x5F5416, ObjectClass_ReceiveDamage_CanC4DamageRounding, 0x6)
 
 	return SkipGameCode;
 }
-
-#pragma region BuildingProximity
-
-namespace ProximityTemp
-{
-	BuildingTypeClass* pType = nullptr;
-}
-
-DEFINE_HOOK(0x4A8F20, isplayClass_BuildingProximityCheck_SetContext, 0x5)
-{
-	GET(BuildingTypeClass*, pType, ESI);
-
-	ProximityTemp::pType = pType;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
-{
-	enum { SkipBuilding = 0x4A902C };
-
-	GET(BuildingClass*, pCellBuilding, ESI);
-
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pCellBuilding->Type);
-
-	if (pTypeExt->NoBuildAreaOnBuildup && pCellBuilding->CurrentMission == Mission::Construction)
-		return SkipBuilding;
-
-	auto const& pBuildingsAllowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::pType)->Adjacent_Allowed;
-
-	if (pBuildingsAllowed.size() > 0 && !pBuildingsAllowed.Contains(pCellBuilding->Type))
-		return SkipBuilding;
-
-	auto const& pBuildingsDisallowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::pType)->Adjacent_Disallowed;
-
-	if (pBuildingsDisallowed.size() > 0 && pBuildingsDisallowed.Contains(pCellBuilding->Type))
-		return SkipBuilding;
-
-	return 0;
-}
-
-#pragma endregion
