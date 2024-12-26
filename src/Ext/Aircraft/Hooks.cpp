@@ -350,6 +350,8 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 
 	const int distance = Game::F2I(Point2D { pCoords->X, pCoords->Y }.DistanceFrom(Point2D { pThis->Location.X, pThis->Location.Y }));
 
+	// When the horizontal distance between the aircraft and its destination is greater than half of its deceleration distance
+	// or its turning radius, continue to move forward, otherwise return to airbase or execute the next planning path
 	if (distance > std::max((pType->SlowdownDistance >> 1), (2048 / pType->ROT)))
 		return (R->Origin() == 0x4168C7 ? ContinueMoving1 : ContinueMoving2);
 
@@ -393,19 +395,26 @@ DEFINE_HOOK(0x6FA68B, TechnoClass_Update_AttackMovePaused, 0xA) // To make aircr
 
 	GET(TechnoClass* const, pThis, ESI);
 
-	return (RulesExt::Global()->ExtendedAircraftMissions && pThis->WhatAmI() == AbstractType::Aircraft && (!pThis->Ammo || pThis->GetHeight() < Unsorted::CellHeight)) ? SkipGameCode : 0;
+	const bool skip = RulesExt::Global()->ExtendedAircraftMissions
+		&& pThis->WhatAmI() == AbstractType::Aircraft
+		&& (!pThis->Ammo || pThis->GetHeight() < Unsorted::CellHeight);
+
+	return skip ? SkipGameCode : 0;
 }
 
-DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget1, 0x6)
+DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget1, 0x6) // When it have MegaDestination
 {
 	enum { LoseTarget = 0x4DF3D3, HoldTarget = 0x4DF4AB };
 
 	GET(FootClass* const, pThis, ESI);
 
-	return ((RulesExt::Global()->ExtendedAircraftMissions && pThis->WhatAmI() == AbstractType::Aircraft) || pThis->vt_entry_3B4(reinterpret_cast<DWORD>(pThis->Target))) ? HoldTarget : LoseTarget; // pThis->InAuxiliarySearchRange(pThis->Target)
+	const bool hold = (RulesExt::Global()->ExtendedAircraftMissions && pThis->WhatAmI() == AbstractType::Aircraft)
+		|| pThis->vt_entry_3B4(reinterpret_cast<DWORD>(pThis->Target)); // pThis->InAuxiliarySearchRange(pThis->Target)
+
+	return hold ? HoldTarget : LoseTarget;
 }
 
-DEFINE_HOOK(0x4DF42A, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget2, 0x6)
+DEFINE_HOOK(0x4DF42A, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget2, 0x6) // When it have MegaTarget
 {
 	enum { ContinueCheck = 0x4DF462, HoldTarget = 0x4DF4AB };
 
