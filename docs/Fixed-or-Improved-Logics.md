@@ -230,12 +230,12 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 
 ### Expand Aircraft Mission
 
-- Now, when a `stop` command (S) is issued to an aircraft, the aircraft will immediately return to the airport. When a `guard` command (G) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted (Note that if the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time). When a `attack move` command (Ctrl+Shift) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammos are depleted or the destination is reached, it will return (Note that if the  automatically selected target is destroyed but ammos are not depleted yet during the process, the aircraft will continue to go to the destination).
+- Now, when a `stop` command (`[S]` by default) is issued to an aircraft, the aircraft will immediately return to the airport. When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted (Note that if the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time). When a `attack move` command (Ctrl+Shift) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return (Note that if the automatically selected target is destroyed but ammo is not depleted yet during the process, the aircraft will continue to go to the destination).
 
 In `rulesmd.ini`:
 ```ini
 [General]
-ExpandAircraftMission=     ; boolean
+ExtendedAircraftMissions=false    ; boolean
 ```
 
 ## Animations
