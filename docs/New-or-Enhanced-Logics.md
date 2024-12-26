@@ -790,6 +790,7 @@ Trajectory.Bombard.Height=0.0  ; double
 
 In `rulesmd.ini`:
 ```ini
+[SOMEPROJECTILE]                               ; Projectile
 Trajectory=Engrave                             ; Trajectory type
 Trajectory.Engrave.ApplyRangeModifiers=false   ; boolean
 Trajectory.Engrave.SourceCoord=0,0             ; integer - Forward,Lateral
