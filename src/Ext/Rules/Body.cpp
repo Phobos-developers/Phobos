@@ -137,6 +137,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		this->HeightShadowScaling = false;
 	this->HeightShadowScaling_MinScale.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling.MinScale");
 
+	this->Cameo_AlwaysExist.Read(exINI, GameStrings::AudioVisual, "Cameo.AlwaysExist");
+	this->Cameo_OverlayShapes.Read(exINI, GameStrings::AudioVisual, "Cameo.OverlayShapes");
+	this->Cameo_OverlayFrames.Read(exINI, GameStrings::AudioVisual, "Cameo.OverlayFrames");
+	this->Cameo_OverlayPalette.LoadFromINI(pINI, GameStrings::AudioVisual, "Cameo.OverlayPalette");
+
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
 	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Aircraft");
 	this->ForbidParallelAIQueues_Building.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Building");
@@ -330,6 +335,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AirShadowBaseScale_log)
 		.Process(this->HeightShadowScaling)
 		.Process(this->HeightShadowScaling_MinScale)
+		.Process(this->Cameo_AlwaysExist)
+		.Process(this->Cameo_OverlayShapes)
+		.Process(this->Cameo_OverlayFrames)
+		.Process(this->Cameo_OverlayPalette)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)

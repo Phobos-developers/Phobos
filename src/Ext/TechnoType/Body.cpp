@@ -454,6 +454,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimitGroup_ExtraLimit_Nums.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.Nums");
 	this->BuildLimitGroup_ExtraLimit_MaxCount.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxCount");
 	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
+
+	this->Cameo_AlwaysExist.Read(exINI, pSection, "Cameo.AlwaysExist");
+	this->Cameo_AuxTechnos.Read(exINI, pSection, "Cameo.AuxTechnos");
+	this->Cameo_NegTechnos.Read(exINI, pSection, "Cameo.NegTechnos");
+	this->UIDescription_Unbuildable.Read(exINI, pSection, "UIDescription.Unbuildable");
+
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
@@ -504,6 +510,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
 	auto pArtSection = pThis->ImageFile;
+
+	this->GreyCameoPCX.Read(&CCINIClass::INI_Art, pArtSection, "GreyCameoPCX");
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 	this->TurretShadow.Read(exArtINI, pArtSection, "TurretShadow");
@@ -824,6 +832,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimitGroup_ExtraLimit_Nums)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxCount)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
+
+		.Process(this->Cameo_AlwaysExist)
+		.Process(this->Cameo_AuxTechnos)
+		.Process(this->Cameo_NegTechnos)
+		.Process(this->CameoCheckMutex)
+		.Process(this->UIDescription_Unbuildable)
+		.Process(this->GreyCameoPCX)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)

@@ -3,6 +3,7 @@
 #include <SuperClass.h>
 #include <SuperWeaponTypeClass.h>
 
+#include <Ext/TechnoType/Body.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -165,4 +166,6 @@ public:
 	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
+	static bool ShouldExistGreyCameo(const TechnoTypeExt::ExtData* const pTypeExt);
+	static CanBuildResult CheckAlwaysExistCameo(const TechnoTypeClass* const pType, CanBuildResult canBuild);
 };

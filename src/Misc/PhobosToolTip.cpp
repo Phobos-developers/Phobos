@@ -17,6 +17,7 @@
 #include <Ext/Side/Body.h>
 #include <Ext/Surface/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/Scenario/Body.h>
 
 #include <sstream>
 #include <iomanip>
@@ -32,6 +33,13 @@ inline const wchar_t* PhobosToolTip::GetUIDescription(TechnoTypeExt::ExtData* pD
 {
 	return Phobos::Config::ToolTipDescriptions && !pData->UIDescription.Get().empty()
 		? pData->UIDescription.Get().Text
+		: nullptr;
+}
+
+inline const wchar_t* PhobosToolTip::GetUnbuildableUIDescription(TechnoTypeExt::ExtData* pData) const
+{
+	return Phobos::Config::ToolTipDescriptions && !pData->UIDescription_Unbuildable.Get().empty()
+		? pData->UIDescription_Unbuildable.Get().Text
 		: nullptr;
 }
 
@@ -141,6 +149,17 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 
 	if (auto pDesc = this->GetUIDescription(pData))
 		oss << L"\n" << pDesc;
+
+	if (pData->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
+	{
+		auto& vec = ScenarioExt::Global()->OwnedExistCameoTechnoTypes;
+
+		if (std::find(vec.begin(), vec.end(), pData) != vec.end())
+		{
+			if (auto pExDesc = this->GetUnbuildableUIDescription(pData))
+				oss << L"\n" << pExDesc;
+		}
+	}
 
 	this->TextBuffer = oss.str();
 }

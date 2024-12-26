@@ -20,6 +20,7 @@ public:
 
 private:
 	inline const wchar_t* GetUIDescription(TechnoTypeExt::ExtData* pData) const;
+	inline const wchar_t* GetUnbuildableUIDescription(TechnoTypeExt::ExtData* pData) const;
 	inline const wchar_t* GetUIDescription(SWTypeExt::ExtData* pData) const;
 	inline int GetBuildTime(TechnoTypeClass* pType) const;
 	inline int GetPower(TechnoTypeClass* pType) const;

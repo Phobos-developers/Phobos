@@ -367,6 +367,45 @@ In `rulesmd.ini`:
 MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 ```
 
+### Show cameo when unbuildable
+
+- A setting that allows you to preview information. This feature can be used as before, playing "new construction options" and clearing the specific production queue when prerequisites loss.
+  - `Cameo.AlwaysExist` controls whether you can see the cameo when the prerequisite have not satisfied (`TechnoLevel`, `Owner`, `RequiredHouses` and `ForbiddenHouses` should be satisfied). Defaults to `[AudioVisual]` -> `Cameo.AlwaysExist`.
+  - `ShowBuildingStatistics` controls whether the number of buildings of this type that you currently own needs to be displayed in the upper right corner of the building cameo (requires the cameo exist).
+  - `Cameo.OverlayShapes` controls the drawn image file.
+  - `Cameo.OverlayFrames` controls which frame in `Cameo.OverlayShapes` to draw in three different situations: currently owned this building type, grey cameo and have its prerequisite, grey cameo but have no prerequisite (The last situation requires `Cameo.AlwaysExist` to be true). When set to a negative number, it means that there is no need to draw under the corresponding conditions.
+  - `Cameo.OverlayPalette` the color palette used when drawing `Cameo.OverlayShapes`.
+  - If `Cameo.AuxTechnos` is not set, in addition to basic conditions, the grey cameo will only show when `AIBasePlanningSide` condition is satisfied. Otherwise, the grey cameo will only show when at least one of these types is owned by you or its `TechnoLevel`, `Owner`, `RequiredHouses`, `ForbiddenHouses`, `Cameo.AuxTechnos` (use `AIBasePlanningSide` if not set) and `Cameo.NegTechnos` (if set) conditions are satisfied.
+  - If `Cameo.NegTechnos` is set, the grey cameo will not show when you have a techno in one of these types.
+  - The `UIDescription.Unbuildable` is like `UIDescription`, but this only appearing when the techno is truly unbuildable.
+
+In `ra2md.ini`:
+```ini
+[Phobos]
+ShowBuildingStatistics=false     ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+Cameo.AlwaysExist=false          ; boolean
+Cameo.OverlayShapes=pips.shp     ; filename - including the .shp extension
+Cameo.OverlayFrames=-1,-1,-1     ; integer - owned this building, grey and have its prerequisite, grey but have no prerequisite
+Cameo.OverlayPalette=palette.pal ; filename - including the .pal extension
+
+[SOMETECHNO]                     ; TechnoType
+Cameo.AlwaysExist=               ; boolean
+Cameo.AuxTechnos=                ; List of TechnoTypes
+Cameo.NegTechnos=                ; List of TechnoTypes
+UIDescription.Unbuildable=       ; CSF entry key
+```
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType
+GreyCameoPCX=                    ; PCX filename - including the .pcx extension
+```
+
 ### Harvester counter
 
 ![image](_static/images/harvestercounter-01.gif)

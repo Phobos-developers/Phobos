@@ -226,6 +226,13 @@ public:
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
+		Nullable<bool> Cameo_AlwaysExist;
+		ValueableVector<TechnoTypeClass*> Cameo_AuxTechnos;
+		ValueableVector<TechnoTypeClass*> Cameo_NegTechnos;
+		bool CameoCheckMutex; // Not read from ini
+		Valueable<CSFText> UIDescription_Unbuildable;
+		PhobosPCXFile GreyCameoPCX;
+
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
@@ -448,6 +455,13 @@ public:
 			, BuildLimitGroup_ExtraLimit_Nums {}
 			, BuildLimitGroup_ExtraLimit_MaxCount {}
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
+
+			, Cameo_AlwaysExist {}
+			, Cameo_AuxTechnos {}
+			, Cameo_NegTechnos {}
+			, CameoCheckMutex { false }
+			, UIDescription_Unbuildable {}
+			, GreyCameoPCX {}
 
 			, Wake { }
 			, Wake_Grapple { }

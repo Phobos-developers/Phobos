@@ -257,7 +257,7 @@ DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
 }
 
-DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
+DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoTypeClass*, pType, 0x4);
@@ -267,7 +267,44 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
 		return 0;
 
 	if (HouseExt::ReachedBuildLimit(pThis, pType, false))
+	{
 		R->EAX(true);
+	}
+	else if (pThis == HouseClass::CurrentPlayer)
+	{
+		GET(int*, pAddress, ESP);
+
+		if (*pAddress == 0x6A5FED || *pAddress == 0x6A97EF || *pAddress == 0x6AB65B)
+		{
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+			// The types exist in the list means that they are not buildable now
+			if (pTypeExt && pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
+			{
+				auto& vec = ScenarioExt::Global()->OwnedExistCameoTechnoTypes;
+
+				if (std::find(vec.begin(), vec.end(), pTypeExt) != vec.end())
+					R->EAX(true);
+			}
+		}
+	}
+
+	return 0;
+}
+
+// All technos have Cameo_AlwaysExist=true need to change the EVA_NewConstructionOptions playing time
+DEFINE_HOOK(0x6A640B, SideBarClass_AddCameo_DoNotPlayEVA, 0x5)
+{
+	enum { SkipPlaying = 0x6A641A };
+
+	GET(AbstractType, absType, ESI);
+	GET(int, idxType, EBP);
+
+	if (const auto pType = ObjectTypeClass::GetTechnoType(absType, idxType))
+	{
+		if (TechnoTypeExt::ExtMap.Find(pType)->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
+			return SkipPlaying;
+	}
 
 	return 0;
 }

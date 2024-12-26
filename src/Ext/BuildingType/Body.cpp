@@ -1,8 +1,14 @@
 #include "Body.h"
 
-#include <Ext/House/Body.h>
+#include <EventClass.h>
+#include <TacticalClass.h>
+#include <TunnelLocomotionClass.h>
+
 #include <Utilities/GeneralUtils.h>
+#include <Ext/TechnoType/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/Scenario/Body.h>
 
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 
@@ -95,6 +101,112 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	}
 
 	return isUpgrade ? result : -1;
+}
+
+bool BuildingTypeExt::ShouldExistGreyCameo(const TechnoTypeExt::ExtData* const pTypeExt)
+{
+	const auto pType = pTypeExt->OwnerObject();
+	const auto techLevel = pType->TechLevel;
+
+	if (techLevel <= 0 || techLevel > Game::TechLevel)
+		return false;
+
+	const auto pHouse = HouseClass::CurrentPlayer();
+
+	if (!pHouse->InOwners(pType))
+		return false;
+
+	if (!pHouse->InRequiredHouses(pType))
+		return false;
+
+	if (pHouse->InForbiddenHouses(pType))
+		return false;
+
+	const auto& pNegTypes = pTypeExt->Cameo_NegTechnos;
+
+	if (pNegTypes.size())
+	{
+		for (const auto& pNegType : pNegTypes)
+		{
+			if (pNegType && pHouse->CountOwnedAndPresent(pNegType))
+				return false;
+		}
+	}
+
+	const auto& pAuxTypes = pTypeExt->Cameo_AuxTechnos;
+
+	if (!pAuxTypes.size())
+	{
+		const auto sideIndex = pType->AIBasePlanningSide;
+
+		return (sideIndex == -1 || sideIndex == pHouse->Type->SideIndex);
+	}
+
+	for (const auto& pAuxType : pAuxTypes)
+	{
+		const auto pAuxTypeExt = TechnoTypeExt::ExtMap.Find(pAuxType);
+
+		if (pAuxTypeExt && !pAuxTypeExt->CameoCheckMutex)
+		{
+			if (pHouse->CountOwnedAndPresent(pAuxType))
+				return true;
+
+			pAuxTypeExt->CameoCheckMutex = true;
+			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pAuxTypeExt);
+			pAuxTypeExt->CameoCheckMutex = false;
+
+			if (exist)
+				return true;
+		}
+	}
+
+	return false;
+}
+
+// Check the cameo change
+CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const TechnoTypeClass* const pType, CanBuildResult canBuild)
+{
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
+	{
+		auto& vec = ScenarioExt::Global()->OwnedExistCameoTechnoTypes;
+
+		if (canBuild == CanBuildResult::Unbuildable) // Unbuildable + Satisfy basic limitations = Change it to TemporarilyUnbuildable
+		{
+			pTypeExt->CameoCheckMutex = true;
+			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pTypeExt);
+			pTypeExt->CameoCheckMutex = false;
+
+			if (exist)
+			{
+				if (std::find(vec.begin(), vec.end(), pTypeExt) == vec.end()) // … + Not in the list = Need to add it into list
+				{
+					vec.push_back(pTypeExt);
+					SidebarClass::Instance->SidebarNeedsRepaint();
+					const EventClass event
+					(
+						HouseClass::CurrentPlayer->ArrayIndex,
+						EventType::AbandonAll,
+						static_cast<int>(pType->WhatAmI()),
+						pType->GetArrayIndex(),
+						pType->Naval
+					);
+					EventClass::AddEvent(event);
+				}
+
+				canBuild = CanBuildResult::TemporarilyUnbuildable;
+			}
+		}
+		else if (std::find(vec.begin(), vec.end(), pTypeExt) != vec.end()) // Not Unbuildable + In the list = remove it from the list and play EVA
+		{
+			vec.erase(std::remove(vec.begin(), vec.end(), pTypeExt), vec.end());
+			SidebarClass::Instance->SidebarNeedsRepaint();
+			VoxClass::Play(&Make_Global<const char>(0x83FA64)); // 0x83FA64 -> EVA_NewConstructionOptions
+		}
+	}
+
+	return canBuild;
 }
 
 void BuildingTypeExt::ExtData::Initialize()

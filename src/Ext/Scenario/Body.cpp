@@ -162,6 +162,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->BriefingTheme)
 		.Process(this->AutoDeathObjects)
 		.Process(this->TransportReloaders)
+		.Process(this->OwnedExistCameoTechnoTypes)
 		;
 }
 

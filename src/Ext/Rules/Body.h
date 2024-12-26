@@ -93,6 +93,11 @@ public:
 		Valueable<double> HeightShadowScaling_MinScale;
 		double AirShadowBaseScale_log;
 
+		Valueable<bool> Cameo_AlwaysExist;
+		Valueable<SHPStruct*> Cameo_OverlayShapes;
+		Valueable<Vector3D<int>> Cameo_OverlayFrames;
+		CustomPalette Cameo_OverlayPalette;
+
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
 		Valueable<bool> ForbidParallelAIQueues_Building;
@@ -222,6 +227,11 @@ public:
 			, HeightShadowScaling { false }
 			, HeightShadowScaling_MinScale { 0.0 }
 			, AirShadowBaseScale_log { 0.693376137 }
+
+			, Cameo_AlwaysExist { false }
+			, Cameo_OverlayShapes { FileSystem::PIPS_SHP }
+			, Cameo_OverlayFrames { { -1, -1, -1 } }
+			, Cameo_OverlayPalette {}
 
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
