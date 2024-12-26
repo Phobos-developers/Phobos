@@ -1,6 +1,5 @@
 #include <AircraftClass.h>
 #include <FlyLocomotionClass.h>
-#include <EventClass.h>
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Techno/Body.h>
