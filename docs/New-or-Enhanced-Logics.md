@@ -792,8 +792,8 @@ Trajectory.Bombard.Height=0.0  ; double
   - `Trajectory.Disperse.SuicideShortOfROT` controls whether the projectile will explode when it detected its insufficient turning ability.
   - `Trajectory.Disperse.SuicideAboveRange` controls the projectile to self destruct directly after reaching the flight distance. Set to 0 to disable suicide.
   - `Trajectory.Disperse.SuicideIfNoWeapon` controls whether the projectile will self destruct after the number of times it spreads the weapon has been exhausted. If `Trajectory.Disperse.WeaponCount` set to 0, this will not be enabled.
-  - `Trajectory.Disperse.Weapons` defined the dispersal weapons of the projectile.
-    - `Trajectory.Disperse.WeaponBurst` defined how many corresponding weapons each time the projectile will fire. When the quantity is lower than `Trajectory.Disperse.Weapons`, it will use the last value.
+  - `Trajectory.Disperse.Weapons` defines the dispersal weapons of the projectile.
+    - `Trajectory.Disperse.WeaponBurst` defines how many corresponding weapons each time the projectile will fire. When the quantity is lower than `Trajectory.Disperse.Weapons`, it will use the last value.
     - `Trajectory.Disperse.WeaponCount` controls how many times the projectile can spread the weapon. Set to a negative value means unlimited times.
     - `Trajectory.Disperse.WeaponDelay` controls the delay for dispersing the weapons defined by `Trajectory.Disperse.Weapons`.
     - `Trajectory.Disperse.WeaponTimer` controls the initial delay for dispersing the weapons defined by `Trajectory.Disperse.Weapons`.
@@ -809,6 +809,7 @@ Trajectory.Bombard.Height=0.0  ; double
 
 In `rulesmd.ini`:
 ```ini
+[SOMEPROJECTILE]                                ; Projectile
 Trajectory=Disperse                             ; Trajectory type
 Trajectory.Disperse.UniqueCurve=false           ; boolean
 Trajectory.Disperse.PreAimCoord=0,0,0           ; integer - Forward,Lateral,Height
