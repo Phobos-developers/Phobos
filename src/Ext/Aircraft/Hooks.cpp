@@ -479,55 +479,8 @@ DEFINE_HOOK(0x417944, AircraftClass_EnterIdleMode_DockCheck, 0x7)
 	return (pThis->GetHeight() > 0) ? Continue : Invalid; // Replace IsInAir()
 }
 */
-
-// Stop: clear the mega mission and return to airbase immediately (Temporary)
-// TODO The complete and accurate fix is in #1449
-DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
-{
-	enum { SkipGameCode = 0x4C762A };
-
-	GET(TechnoClass* const, pTechno, ESI);
-
-	const bool expand = RulesExt::Global()->ExtendedAircraftMissions.Get();
-
-	// Check aircrafts
-	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
-	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
-	const auto mission = pTechno->CurrentMission;
-
-	// To avoid aircrafts overlap by keep link if is returning or is in airport now.
-	if (!expand || !commonAircraft || (mission != Mission::Sleep && mission != Mission::Guard && mission != Mission::Enter) || !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
-		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
-
-	pTechno->SetTarget(nullptr);
-
-	if (expand && commonAircraft)
-	{
-		if (pAircraft->Type->AirportBound)
-		{
-			// To avoid `AirportBound=yes` aircrafts pausing in the air and let they returning to air base immediately.
-			if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())) // If the aircraft have no valid dock, try to find a new one
-				pAircraft->EnterIdleMode(false, true);
-		}
-		else if (pAircraft->Ammo)
-		{
-			// To avoid `AirportBound=no` aircrafts ignoring the stop task or directly return to the airport.
-			if (pAircraft->Destination && static_cast<int>(CellClass::Coord2Cell(pAircraft->Destination->GetCoords()).DistanceFromSquared(pAircraft->GetMapCoords())) > 2) // If the aircraft is moving, find the forward cell then stop in it
-				pAircraft->SetDestination(pAircraft->GetCell()->GetNeighbourCell(static_cast<FacingType>(pAircraft->PrimaryFacing.Current().GetValue<3>())), true);
-		}
-		else if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
-		{
-			pAircraft->EnterIdleMode(false, true);
-		}
-		// Otherwise landing or idling normally without answering the stop command
-	}
-	else
-	{
-		pTechno->SetDestination(nullptr, true);
-	}
-
-	return SkipGameCode;
-}
+// Stop: clear the mega mission and return to airbase immediately
+// (StopEventFix's DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6) in Hooks.BugFixes.cpp)
 
 // GreatestThreat: for all the mission that should let the aircraft auto select a target
 AbstractClass* __fastcall AircraftClass_GreatestThreat(AircraftClass* pThis, void* _, ThreatType threatType, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)

@@ -1066,9 +1066,6 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 #pragma region StopEventFix
 
-DEFINE_JUMP(LJMP, 0x444021, 0x44402E) // Skip useless tether when kick out aircrafts (temporary)
-// TODO: this is already in #1366, should delete if merge
-
 DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 {
 	enum { SkipGameCode = 0x4C762A };
