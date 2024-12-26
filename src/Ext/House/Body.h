@@ -24,6 +24,12 @@ public:
 		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 
+		std::vector<UnitClass*> OwnedDeployingUnits;
+		BuildingTypeClass* CurrentBuildingType;
+		CellStruct CurrentBuildingTopLeft;
+		CDTimerClass CurrentBuildingTimer;
+		int CurrentBuildingTimes;
+
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 		CounterClass LimboBuildings; // Currently owned buildings in limbo
 		CounterClass LimboInfantry;  // Currently owned infantry in limbo
@@ -65,6 +71,11 @@ public:
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
+			, OwnedDeployingUnits {}
+			, CurrentBuildingType { nullptr }
+			, CurrentBuildingTopLeft {}
+			, CurrentBuildingTimer {}
+			, CurrentBuildingTimes { 0 }
 			, LimboAircraft {}
 			, LimboBuildings {}
 			, LimboInfantry {}

@@ -208,6 +208,12 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->AddToLimboTracking(pType);
 	}
 
+	if (RulesExt::Global()->ExpandBuildingPlace && pThis->WhatAmI() == AbstractType::Unit && pType->DeploysInto)
+	{
+		auto& vec = pOwnerExt->OwnedDeployingUnits;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+	}
+
 	if (auto pMe = generic_cast<FootClass*>(pThis))
 	{
 		bool I_am_human = pThis->Owner->IsControlledByHuman();

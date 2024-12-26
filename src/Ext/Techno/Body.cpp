@@ -7,7 +7,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
-
+#include <Ext/House/Body.h>
 #include <Utilities/AresFunctions.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -22,6 +22,12 @@ TechnoExt::ExtData::~ExtData()
 	{
 		auto& vec = ScenarioExt::Global()->AutoDeathObjects;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
+
+	if (RulesExt::Global()->ExpandBuildingPlace && pThis->WhatAmI() == AbstractType::Unit && pType->DeploysInto)
+	{
+		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedDeployingUnits;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 	}
 
 	if (pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
@@ -497,6 +503,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
 		.Process(this->FiringObstacleCell)
+		.Process(this->UnitAutoDeployTimer)
 		.Process(this->IsDetachingForCloak)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->HasRemainingWarpInDelay)
