@@ -5,8 +5,9 @@
 #include <BulletClass.h>
 #include <Helpers/Macro.h>
 
-#include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
+#include "BombardTrajectory.h"
+#include "TracingTrajectory.h"
 
 TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 {
@@ -17,6 +18,9 @@ TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 		return;
 	case TrajectoryFlag::Bombard:
 		_ptr = std::make_unique<BombardTrajectoryType>();
+		return;
+	case TrajectoryFlag::Tracing:
+		_ptr = std::make_unique<TracingTrajectoryType>();
 		return;
 	}
 	_ptr.reset();
@@ -33,6 +37,7 @@ namespace detail
 			{
 				{"Straight", TrajectoryFlag::Straight},
 				{"Bombard" ,TrajectoryFlag::Bombard},
+				{"Tracing" ,TrajectoryFlag::Tracing},
 			};
 			for (auto [name, flag] : FlagNames)
 			{
@@ -62,6 +67,10 @@ void TrajectoryTypePointer::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	if (_ptr)
 	{
 		_ptr->Trajectory_Speed.Read(exINI, pSection, "Trajectory.Speed");
+
+		if (abs(_ptr->Trajectory_Speed) < 1e-10)
+			_ptr->Trajectory_Speed = 0.001;
+
 		_ptr->Read(pINI, pSection);
 	}
 }
@@ -109,6 +118,9 @@ bool TrajectoryPointer::Load(PhobosStreamReader& Stm, bool registerForChange)
 			break;
 		case TrajectoryFlag::Bombard:
 			_ptr = std::make_unique<BombardTrajectory>(noinit_t {});
+			break;
+		case TrajectoryFlag::Tracing:
+			_ptr = std::make_unique<TracingTrajectory>(noinit_t {});
 			break;
 		default:
 			_ptr.reset();
