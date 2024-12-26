@@ -252,7 +252,7 @@ DEFINE_HOOK(0x51BB6E, TechnoClass_AI_TemporalTargetingMe_Fix, 0x6) // InfantryCl
 	if (pThis->TemporalTargetingMe)
 	{
 		// Also check for vftable here to guarantee the TemporalClass not being destoryed already.
-		if (VTable::Get(pThis->TemporalTargetingMe) == 0x7F5180) // TemporalClass::`vtable`
+		if (VTable::Get(pThis->TemporalTargetingMe) == TemporalClass::AbsVTable)
 			pThis->TemporalTargetingMe->Update();
 		else // It should had being warped out, delete this object
 		{
@@ -332,15 +332,11 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 {
 	GET(AircraftClass*, pThis, EDI);
 
-	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Fly)
+	if (const auto pLocomotor = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor))
 	{
-		if (const auto pLocomotor = static_cast<FlyLocomotionClass*>(pThis->Locomotor.GetInterfacePtr()))
-		{
-			double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
-				TechnoExt::GetCurrentSpeedMultiplier(pThis);
-
-			R->EAX(static_cast<int>(currentSpeed));
-		}
+		double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
+			TechnoExt::GetCurrentSpeedMultiplier(pThis);
+		R->EAX(static_cast<int>(currentSpeed));
 	}
 
 	return 0;
@@ -765,10 +761,9 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
 {
 	// Fix : Suppress capture EVA event if ConsideredVehicle=yes
-	announce = announce && !pThis->Type->IsVehicle();
+	if(announce) announce = !pThis->IsStrange();
 
-	using this_func_sig = bool(__thiscall*)(BuildingClass*, HouseClass*, bool);
-	bool res = reinterpret_cast<this_func_sig>(0x448260)(pThis, pHouse, announce);
+	bool res = reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pThis, pHouse, announce);
 
 	// Fix : update powered anims
 	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
@@ -910,7 +905,22 @@ DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9
 	GET(TunnelLocomotionClass* const, pLoco, ESI);
 	GET(int const, distance, EAX);
 
-	return distance >= pLoco->LinkedTo->GetCurrentSpeed() ? KeepMoving : CloseEnough;
+	// The movement speed was actually also hardcoded here to 19, so the distance check made sense
+	// It can now be customized globally or per TechnoType however - Starkku
+	auto const pType = pLoco->LinkedTo->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	int speed = pTypeExt->SubterraneanSpeed >= 0 ? pTypeExt->SubterraneanSpeed : RulesExt::Global()->SubterraneanSpeed;
+
+	// Calculate speed multipliers.
+	pLoco->LinkedTo->SpeedPercentage = 1.0; // Subterranean locomotor doesn't normally use this so it would be 0.0 here and cause issues.
+	int maxSpeed = pType->Speed;
+	pType->Speed = speed;
+	speed = pLoco->LinkedTo->GetCurrentSpeed();
+	pType->Speed = maxSpeed;
+
+	TunnelLocomotionClass::TunnelMovementSpeed = speed;
+
+	return distance >= speed + 1 ? KeepMoving : CloseEnough;
 }
 
 DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
@@ -953,8 +963,18 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 	return 0;
 }
 
-// Patch tileset parsing to not reset certain tileset indices for Lunar theater.
-DEFINE_JUMP(LJMP, 0x546C8B, 0x546CBF);
+// Fix tileset parsing to not reset certain tileset indices for Lunar theater if the fix is enabled.
+DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
+{
+	enum { SkipGameCode = 0x546CBF };
+
+	LEA_STACK(CCINIClass*, pINI, STACK_OFFSET(0xA10, -0x9D8));
+
+	if (pINI->ReadBool(GameStrings::General, "ApplyLunarFixes", false))
+		return SkipGameCode;
+
+	return 0;
+}
 
 // Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes - Starkku
 DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
@@ -963,7 +983,9 @@ DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
 
 	GET(TechnoClass*, pThis, ESI);
 
-	if (pThis->GetTechnoType()->AttackFriendlies)
+	if (pThis->GetTechnoType()->AttackFriendlies
+		&& pThis->Target->GetOwningHouse()->IsAlliedWith(pThis) // TODO
+	)
 		return SkipResetTarget;
 
 	return 0;
@@ -1040,6 +1062,8 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 	return SkipGameCode;
 }
 
+#pragma endregion
+
 // This shouldn't be here
 // Author: tyuah8
 DEFINE_HOOK_AGAIN(0x4AF94D, EndPiggyback_PowerOn, 0x7) // Drive
@@ -1056,3 +1080,12 @@ DEFINE_HOOK(0x719F17, EndPiggyback_PowerOn, 0x5) // Teleport
 		iloco->Power_Off();
 	return 0;
 }
+
+// Suppress Ares' swizzle warning
+size_t __fastcall HexStr2Int_replacement(const char* str)
+{
+	// Fake a pointer to trick Ares
+	return std::hash<std::string_view>{}(str) & 0xFFFFFF;
+}
+DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
+DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType

@@ -115,3 +115,20 @@ DEFINE_HOOK(0x711FDF, TechnoTypeClass_RefundAmount_FactoryPlant, 0x8)
 
 	return 0;
 }
+
+
+DEFINE_HOOK(0x71464A, TechnoTypeClass_ReadINI_Speed, 0x7)
+{
+	enum { SkipGameCode = 0x71469F };
+
+	GET(TechnoTypeClass*, pThis, EBP);
+	GET(CCINIClass*, pINI, ESI);
+	GET(char*, pSection, EBX);
+	GET(int, eliteAirstrikeRechargeTime, EAX);
+
+	pThis->EliteAirstrikeRechargeTime = eliteAirstrikeRechargeTime; // Restore overridden instructions.
+	INI_EX exINI(pINI);
+	exINI.ReadSpeed(pSection, "Speed", &pThis->Speed);
+
+	return SkipGameCode;
+}
