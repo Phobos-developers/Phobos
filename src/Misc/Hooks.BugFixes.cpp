@@ -1082,8 +1082,8 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
 
 	// To avoid technos being unable to stop in attack move mega mission
-	if (pTechno->vt_entry_4C4()) // pTechno->MegaMissionIsAttackMove()
-		pTechno->vt_entry_4A8(); // pTechno->ClearMegaMissionData()
+	if (pTechno->MegaMissionIsAttackMove())
+		pTechno->ClearMegaMissionData();
 
 	// Clearing the current target should still be necessary for all technos
 	pTechno->SetTarget(nullptr);

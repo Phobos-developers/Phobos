@@ -408,10 +408,10 @@ DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget1, 
 
 	GET(FootClass* const, pThis, ESI);
 
-	const bool hold = (RulesExt::Global()->ExtendedAircraftMissions && pThis->WhatAmI() == AbstractType::Aircraft)
-		|| pThis->vt_entry_3B4(reinterpret_cast<DWORD>(pThis->Target)); // pThis->InAuxiliarySearchRange(pThis->Target)
+	if (RulesExt::Global()->ExtendedAircraftMissions && pThis->WhatAmI() == AbstractType::Aircraft)
+		return HoldTarget;
 
-	return hold ? HoldTarget : LoseTarget;
+	return pThis->InAuxiliarySearchRange(pThis->Target) ? HoldTarget : LoseTarget;
 }
 
 DEFINE_HOOK(0x4DF42A, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget2, 0x6) // When it have MegaTarget
@@ -431,12 +431,12 @@ DEFINE_HOOK(0x418CD1, AircraftClass_Mission_Attack_ContinueFlyToDestination, 0x6
 
 	if (!pThis->Target)
 	{
-		if (!RulesExt::Global()->ExtendedAircraftMissions || !pThis->vt_entry_4C4() || !pThis->unknown_5C8) // (!pThis->MegaMissionIsAttackMove() || !pThis->MegaDestination)
+		if (!RulesExt::Global()->ExtendedAircraftMissions || !pThis->MegaMissionIsAttackMove() || !pThis->MegaDestination)
 			return Continue;
 
-		pThis->SetDestination(reinterpret_cast<AbstractClass*>(pThis->unknown_5C8), false); // pThis->MegaDestination
+		pThis->SetDestination(pThis->MegaDestination, false);
 		pThis->QueueMission(Mission::Move, true);
-		pThis->unknown_bool_5D1 = false; // pThis->HaveAttackMoveTarget
+		pThis->HaveAttackMoveTarget = false;
 	}
 	else
 	{
