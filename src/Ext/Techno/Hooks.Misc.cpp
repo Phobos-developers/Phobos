@@ -338,6 +338,62 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 
 #pragma endregion
 
+#pragma region AttackMindControlledDelay
+
+bool __fastcall CanAttackMindControlled(TechnoClass* pControlled, TechnoClass* pRetaliator)
+{
+	const auto pMind = pControlled->MindControlledBy;
+
+	if (!pMind || pRetaliator->Berzerk)
+		return true;
+
+	const auto pManager = pMind->CaptureManager;
+
+	if (!pManager)
+		return true;
+
+	const auto pHome = pManager->GetOriginalOwner(pControlled);
+	const auto pHouse = pRetaliator->Owner;
+
+	if (!pHome || !pHouse || !pHouse->IsAlliedWith(pHome))
+		return true;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pControlled);
+
+	if (!pExt)
+		return true;
+
+	return (Unsorted::CurrentFrame - pExt->LastBeControlledFrame) >= RulesExt::Global()->AttackMindControlledDelay;
+}
+
+DEFINE_HOOK(0x7089E8, TechnoClass_AllowedToRetaliate_AttackMindControlledDelay, 0x6)
+{
+	enum { CannotRetaliate = 0x708B17 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pAttacker, EBP);
+
+	return CanAttackMindControlled(pAttacker, pThis) ? 0 : CannotRetaliate;
+}
+
+DEFINE_HOOK(0x6F7EA2, TechnoClass_CanAutoTargetObject_AttackMindControlledDelay, 0x6)
+{
+	enum { CannotSelect = 0x6F894F };
+
+	GET(TechnoClass* const, pThis, EDI);
+	GET(ObjectClass* const, pTarget, ESI);
+
+	if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		if (!CanAttackMindControlled(pTechno, pThis))
+			return CannotSelect;
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
 #pragma region Misc
 
 // I must not regroup my forces.

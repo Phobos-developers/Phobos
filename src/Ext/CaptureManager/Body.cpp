@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/Techno/Body.h>
+
 bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
 {
 	if (pManager->MaxControlNodes == 1)
@@ -47,6 +49,9 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 				auto pOriginOwner = pNode->OriginalOwner->Defeated ?
 					HouseClass::FindNeutral() : pNode->OriginalOwner;
 
+				if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
+					pExt->LastBeControlledFrame = 0;
+
 				pTarget->SetOwningHouse(pOriginOwner, !silent);
 				pManager->DecideUnitFate(pTarget);
 				pTarget->MindControlledBy = nullptr;
@@ -88,6 +93,9 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 
 			pManager->ControlNodes.AddItem(pControlNode);
 			pControlNode->LinkDrawTimer.Start(RulesClass::Instance->MindControlAttackLineFrames);
+
+			if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
+				pExt->LastBeControlledFrame = Unsorted::CurrentFrame;
 
 			if (pTarget->SetOwningHouse(pManager->Owner->Owner, !silent))
 			{
