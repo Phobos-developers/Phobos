@@ -290,6 +290,11 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 	return SkipGameCode;
 }
 
+constexpr bool CheckTrajectoryCanNotAlwaysSnap(const TrajectoryFlag flag)
+{
+	return flag == TrajectoryFlag::Straight;
+}
+
 DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 {
 	enum { SkipChecks = 0x467CDE };
@@ -304,15 +309,10 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 	}
 	else if (auto const pExt = BulletAITemp::ExtData)
 	{
-		if (auto const pTrajectory = pExt->Trajectory.get())
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
 		{
-			const TrajectoryFlag flag = pTrajectory->Flag();
-
-			if (flag == TrajectoryFlag::Straight)
-			{
-				R->EAX(pThis->Type);
-				return SkipChecks;
-			}
+			R->EAX(pThis->Type);
+			return SkipChecks;
 		}
 	}
 
@@ -337,18 +337,10 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	}
 	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (!pExt->SnappedToTarget)
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 		{
-			if (auto const pTrajectory = pExt->Trajectory.get())
-			{
-				const TrajectoryFlag flag = pTrajectory->Flag();
-
-				if (flag == TrajectoryFlag::Straight)
-				{
-					R->EAX(pThis->Type);
-					return SkipChecks;
-				}
-			}
+			R->EAX(pThis->Type);
+			return SkipChecks;
 		}
 	}
 
@@ -376,18 +368,8 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	// Fixes issues with walls etc.
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (!pExt->SnappedToTarget)
-		{
-			if (auto const pTrajectory = pExt->Trajectory.get())
-			{
-				const TrajectoryFlag flag = pTrajectory->Flag();
-
-				if (flag == TrajectoryFlag::Straight)
-				{
-					return SkipSetCoordinate;
-				}
-			}
-		}
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
+			return SkipSetCoordinate;
 	}
 
 	return 0;
@@ -401,15 +383,8 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (auto const pTrajectory = pExt->Trajectory.get())
-		{
-			const TrajectoryFlag flag = pTrajectory->Flag();
-
-			if (flag == TrajectoryFlag::Straight)
-			{
-				return SkipCheck;
-			}
-		}
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
+			return SkipCheck;
 	}
 
 	return 0;
