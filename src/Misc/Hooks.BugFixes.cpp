@@ -1072,14 +1072,17 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 	GET(TechnoClass* const, pTechno, ESI);
 
-	// Check aircrafts
+	// Check aircraft
 	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
 	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
 	const auto mission = pTechno->CurrentMission;
 
-	// To avoid aircrafts overlap by keep link if is returning or is in airport now.
-	if (!commonAircraft || (mission != Mission::Sleep && mission != Mission::Guard && mission != Mission::Enter) || !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+	// To avoid aircraft overlap by keep link if is returning or is in airport now.
+	if (!commonAircraft || (mission != Mission::Sleep && mission != Mission::Guard && mission != Mission::Enter)
+		|| !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+	{
 		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
+	}
 
 	// To avoid technos being unable to stop in attack move mega mission
 	if (pTechno->MegaMissionIsAttackMove())
@@ -1092,17 +1095,17 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	{
 		if (pAircraft->Type->AirportBound)
 		{
-			// To avoid `AirportBound=yes` aircrafts with ammo at low altitudes cannot correctly receive stop command and queue Mission::Guard with a `Destination`.
+			// To avoid `AirportBound=yes` aircraft with ammo at low altitudes cannot correctly receive stop command and queue Mission::Guard with a `Destination`.
 			if (pAircraft->Ammo)
 				pTechno->SetDestination(nullptr, true);
 
-			// To avoid `AirportBound=yes` aircrafts pausing in the air and let they returning to air base immediately.
+			// To avoid `AirportBound=yes` aircraft pausing in the air and let they returning to air base immediately.
 			if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())) // If the aircraft have no valid dock, try to find a new one
 				pAircraft->EnterIdleMode(false, true);
 		}
 		else if (pAircraft->Ammo)
 		{
-			// To avoid `AirportBound=no` aircrafts ignoring the stop task or directly return to the airport.
+			// To avoid `AirportBound=no` aircraft ignoring the stop task or directly return to the airport.
 			if (pAircraft->Destination && static_cast<int>(CellClass::Coord2Cell(pAircraft->Destination->GetCoords()).DistanceFromSquared(pAircraft->GetMapCoords())) > 2) // If the aircraft is moving, find the forward cell then stop in it
 				pAircraft->SetDestination(pAircraft->GetCell()->GetNeighbourCell(static_cast<FacingType>(pAircraft->PrimaryFacing.Current().GetValue<3>())), true);
 		}

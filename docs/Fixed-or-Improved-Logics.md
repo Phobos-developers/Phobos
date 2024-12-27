@@ -176,11 +176,12 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps.
 - Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers.
 - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
-- Prevent jumpjets from falling into a state of standing idly by when receive the stop(shortcut: s) command.
-- Prevent technos from being unable to stop the attack move mission when receive the stop(shortcut: s) command.
-- Prevent aircrafts from duplicatedly finding airport and overlapping when receive the stop(shortcut: s) command.
-- Prevent aircrafts from briefly pausing in the air before returning when receive the stop(shortcut: s) command.
-- Prevent aircrafts with `AirportBound=no` continue moving forward when receive the stop(shortcut: s) command.
+- Stop command (`[S]` by default) behavior is now more correct:
+  - Jumpjets no longer fall into a state of standing by idly.
+  - Technos are no longer unable to stop the attack move mission.
+  - Aircraft no longer find airport twice and overlap.
+  - Aircraft no longer briefly pause in the air before returning.
+  - Aircraft with `AirportBound=no` continue moving forward.
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 
@@ -233,14 +234,18 @@ In `rulesmd.ini`:
 LandingDir=     ; Direction type (integers from 0-255). Accepts negative values as a special case.
 ```
 
-### Expand Aircraft Mission
+### Extended Aircraft Missions
 
-- Now, when a `stop` command (`[S]` by default) is issued to an aircraft, the aircraft will immediately return to the airport. When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted (Note that if the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time). When a `attack move` command (Ctrl+Shift) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return (Note that if the automatically selected target is destroyed but ammo is not depleted yet during the process, the aircraft will continue to go to the destination).
+- Aircraft will now be able to use waypoints.
+- When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
+  - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
+- When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.
+  - If the automatically selected target is destroyed but ammo is not depleted yet during the process, the aircraft will continue flying to the destination.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-ExtendedAircraftMissions=false    ; boolean
+ExtendedAircraftMissions=false  ; boolean
 ```
 
 ## Animations
