@@ -274,6 +274,15 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 		CellClass* pTargetCell = nullptr;
 
+		if (pWeaponExt->NoRepeatFire > 0)
+		{
+			if (const auto pTargetTechnoExt = TechnoExt::ExtMap.Find(pTechno))
+			{
+				if ((Unsorted::CurrentFrame - pTargetTechnoExt->LastBeLockedFrame) < pWeaponExt->NoRepeatFire)
+					return CannotFire;
+			}
+		}
+
 		// AAOnly doesn't need to be checked if LandTargeting=1.
 		if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
 		{
@@ -414,8 +423,10 @@ DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
 DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DiscardAEOnFire, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
+	GET(AbstractClass* const, pTarget, EDI);
+	GET(WeaponTypeClass* const, pWeapon, EBX);
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->AE.HasOnFireDiscardables)
 	{
@@ -423,6 +434,15 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DiscardAEOnFire, 0x6)
 		{
 			if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
 				attachEffect->ShouldBeDiscarded = true;
+		}
+	}
+
+	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	{
+		if (pWeaponExt->NoRepeatFire > 0)
+		{
+			if (const auto pTargetTechnoExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget)))
+				pTargetTechnoExt->LastBeLockedFrame = Unsorted::CurrentFrame;
 		}
 	}
 

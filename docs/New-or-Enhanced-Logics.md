@@ -1748,3 +1748,13 @@ In `rulesmd.ini`:
 CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
+
+### Avoid weapon fire overflow in the same frame
+
+- Now you can make the weapon declare that the target has been locked at the moment of firing, and all weapons with positive `NoRepeatFire` value will not attack the declared target again during this period of time. Made for seckill and control weapons.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]       ; WeaponType
+NoRepeatFire=0     ; integer, game frames
+```
