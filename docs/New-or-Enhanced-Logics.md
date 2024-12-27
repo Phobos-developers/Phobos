@@ -1647,6 +1647,18 @@ In `rulesmd.ini`:
 NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
+### Undeploy building on impact
+
+- Warheads with `BuildingUndeploy` can now undeploy buildings with `UndeploysInto`.
+  - `BuildingUndeploy.Leave` controls whether need to let them move to low threat locations nearby. The threat degree here is calculated using the technos' cost. If a nearby techno has no primary weapons or is owned by your allies, it will not be included.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                  ; Warhead
+BuildingUndeploy=false         ; boolean
+BuildingUndeploy.Leave=false   ; boolean
+```
+
 ## Weapons
 
 ### AreaFire target customization

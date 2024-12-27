@@ -170,6 +170,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0)
 		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
 
+	if (this->BuildingUndeploy)
+		this->ApplyBuildingUndeploy(pTarget);
+
 #ifdef LOCO_TEST_WARHEADS
 	if (this->InflictLocomotor)
 		this->ApplyLocomotorInfliction(pTarget);
@@ -178,6 +181,78 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyLocomotorInflictionReset(pTarget);
 #endif
 
+}
+
+void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
+{
+	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+
+	if (!pBuilding)
+		return;
+
+	const auto pType = pBuilding->Type;
+
+	if (!pType->UndeploysInto || (pType->ConstructionYard && !GameModeOptionsClass::Instance->MCVRedeploy))
+		return;
+
+	const auto mission = pBuilding->CurrentMission;
+
+	if (mission == Mission::Construction || mission == Mission::Selling)
+		return;
+
+	auto cell = pBuilding->GetMapCoords();
+	const auto width = pType->GetFoundationWidth();
+	const auto height = pType->GetFoundationHeight(false);
+
+	if (width > 2 || height > 2)
+		cell += CellStruct { 1, 1 };
+
+	if (this->BuildingUndeploy_Leave)
+	{
+		const auto pHouse = pBuilding->Owner;
+		const auto pItems = Helpers::Alex::getCellSpreadItems(pBuilding->GetCoords(), 20);
+		int record[16] = {0};
+
+		for (const auto& pItem : pItems)
+		{
+			if ((!pHouse || !pHouse->IsAlliedWith(pItem)) && pItem->IsArmed())
+				record[pBuilding->GetTargetDirection(pItem).GetValue<4>()] += pItem->GetTechnoType()->Cost;
+		}
+
+		int costs = 0;
+		int dir = 0;
+
+		for (int i = 16; i < 32; ++i)
+		{
+			int newCosts = 0;
+
+			for (int j = -7; j < 8; ++j)
+				newCosts += ((8 - abs(j)) * record[(i + j) & 15]);
+
+			if (newCosts > costs)
+			{
+				dir = (i - 16);
+				costs = newCosts;
+			}
+		}
+
+		if (!costs)
+			dir = ScenarioClass::Instance->Random.RandomRanged(0, 15);
+
+		const double radian = -(((dir - 4) / 16.0) * Math::TwoPi);
+
+		cell.X -= static_cast<short>(14 * cos(radian));
+		cell.Y += static_cast<short>(14 * sin(radian));
+
+		const auto newCell = MapClass::Instance->NearByLocation(cell, pType->UndeploysInto->SpeedType, -1, pType->UndeploysInto->MovementZone,
+			false, (width + 2), (height + 2), false, false, false, false, CellStruct::Empty, false, false);
+
+		if (newCell != CellStruct::Empty)
+			cell = newCell;
+	}
+
+	pBuilding->SetArchiveTarget(MapClass::Instance->GetCellAt(cell));
+	pBuilding->Sell(0xFFFFFFFF);
 }
 
 void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr)
