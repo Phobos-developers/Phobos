@@ -372,6 +372,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow to change the speed of gas particles
 - **CrimRecya**
   - Fix `LimboKill` not working reliably
+  - No rearm and reload in EMP or temporal
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude

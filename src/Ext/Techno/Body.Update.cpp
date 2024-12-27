@@ -43,6 +43,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
 	this->UpdateAttachEffects();
+	this->UpdateRearmInEMPState();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -812,6 +813,36 @@ void TechnoExt::ExtData::UpdateTemporal()
 
 	for (auto const& ae : this->AttachedEffects)
 		ae->AI_Temporal();
+
+	this->UpdateRearmInTemporal();
+}
+
+void TechnoExt::ExtData::UpdateRearmInEMPState()
+{
+	const auto pThis = this->OwnerObject();
+
+	if (pThis->IsUnderEMP() && this->TypeExtData->NoRearmInEMPState.Get(RulesExt::Global()->NoRearmInEMPState))
+	{
+		if (pThis->RearmTimer.InProgress())
+			pThis->RearmTimer.TimeLeft++;
+
+		if (pThis->ReloadTimer.InProgress())
+			pThis->ReloadTimer.TimeLeft++;
+	}
+}
+
+void TechnoExt::ExtData::UpdateRearmInTemporal()
+{
+	const auto pThis = this->OwnerObject();
+
+	if (this->TypeExtData->NoRearmInTemporal.Get(RulesExt::Global()->NoRearmInTemporal))
+	{
+		if (pThis->RearmTimer.InProgress())
+			pThis->RearmTimer.TimeLeft++;
+
+		if (pThis->ReloadTimer.InProgress())
+			pThis->ReloadTimer.TimeLeft++;
+	}
 }
 
 // Updates state of all AttachEffects on techno.

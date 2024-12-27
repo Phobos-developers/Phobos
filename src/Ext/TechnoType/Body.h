@@ -226,6 +226,9 @@ public:
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
+		Nullable<bool> NoRearmInEMPState;
+		Nullable<bool> NoRearmInTemporal;
+
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
@@ -448,6 +451,9 @@ public:
 			, BuildLimitGroup_ExtraLimit_Nums {}
 			, BuildLimitGroup_ExtraLimit_MaxCount {}
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
+
+			, NoRearmInEMPState {}
+			, NoRearmInTemporal {}
 
 			, Wake { }
 			, Wake_Grapple { }

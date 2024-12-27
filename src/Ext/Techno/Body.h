@@ -110,6 +110,8 @@ public:
 		void RecalculateStatMultipliers();
 		void UpdateTemporal();
 		void UpdateMindControlAnim();
+		void UpdateRearmInEMPState();
+		void UpdateRearmInTemporal();
 		void InitializeLaserTrails();
 		void InitializeAttachEffects();
 		void UpdateSelfOwnedAttachEffects();

@@ -1366,6 +1366,21 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### No rearm and reload in EMP or temporal
+
+- Now you can make technos unable to rearm and reload when they are in EMP or locked by a temporal weapon. Defaults to `[General]` -> `NoRearmInEMPState` or `NoRearmInTemporal`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoRearmInEMPState=false   ; boolean
+NoRearmInTemporal=false   ; boolean
+
+[SOMETECHNO]              ; TechnoType
+NoRearmInEMPState=        ; boolean
+NoRearmInTemporal=        ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound
