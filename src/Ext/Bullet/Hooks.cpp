@@ -455,11 +455,8 @@ DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
-	{
-		if (pExt->Trajectory)
-			return SkipCheck;
-	}
+	if (BulletExt::ExtMap.Find(pThis)->Trajectory)
+		return SkipCheck;
 
 	return 0;
 }
