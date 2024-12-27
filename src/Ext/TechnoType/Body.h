@@ -226,6 +226,11 @@ public:
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
+		Valueable<int> RateDown_Ammo;
+		Valueable<int> RateDown_Delay;
+		Valueable<int> RateDown_Cover;
+		Valueable<bool> RateDown_Reset;
+
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
@@ -448,6 +453,11 @@ public:
 			, BuildLimitGroup_ExtraLimit_Nums {}
 			, BuildLimitGroup_ExtraLimit_MaxCount {}
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
+
+			, RateDown_Ammo { -2 }
+			, RateDown_Delay { 0 }
+			, RateDown_Cover { 0 }
+			, RateDown_Reset { false }
 
 			, Wake { }
 			, Wake_Grapple { }
