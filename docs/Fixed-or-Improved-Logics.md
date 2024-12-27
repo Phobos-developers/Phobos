@@ -177,6 +177,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers.
 - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
+- Now vehicles (exclude jumpjets) without turret will attempt to turn to the target while the weapon cools down, rather than after the weapon has cooled down.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 
 ## Fixes / interactions with other extensions

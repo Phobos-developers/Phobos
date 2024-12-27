@@ -1064,6 +1064,24 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 #pragma endregion
 
+#pragma region NoTurretUnitAlwaysTurnToTarget
+
+DEFINE_HOOK(0x7410BB, UnitClass_GetFireError_CheckFacingError, 0x8)
+{
+	enum { NoNeedToCheck = 0x74132B, ContinueCheck = 0x7410C3 };
+
+	GET(const FireError, fireError, EAX);
+
+	if (fireError == FireError::OK)
+		return ContinueCheck;
+
+	GET(UnitClass* const, pThis, ESI);
+
+	return (fireError == FireError::REARM && !pThis->Type->Turret && !pThis->IsWarpingIn()) ? ContinueCheck : NoNeedToCheck;
+}
+
+#pragma endregion
+
 // This shouldn't be here
 // Author: tyuah8
 DEFINE_HOOK_AGAIN(0x4AF94D, EndPiggyback_PowerOn, 0x7) // Drive
