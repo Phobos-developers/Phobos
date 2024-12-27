@@ -220,3 +220,215 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 
 	return 0;
 }
+
+#pragma region NoQueueUpToEnterAndUnload
+
+bool __fastcall CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
+{
+	const auto pOwner = pTransport->Owner;
+
+	if (!pOwner || !pOwner->IsAlliedWith(pPassenger) || pTransport->IsBeingWarpedOut())
+		return false;
+
+	if (pPassenger->IsMindControlled() || pPassenger->ParasiteEatingMe)
+		return false;
+
+	const auto pManager = pPassenger->CaptureManager;
+
+	if (pManager && pManager->IsControllingSomething())
+		return false;
+
+	const auto passengerSize = pPassenger->GetTechnoType()->Size;
+	const auto pTransportType = pTransport->Type;
+
+	if (passengerSize > pTransportType->SizeLimit)
+		return false;
+
+	const auto maxSize = pTransportType->Passengers;
+	const auto predictSize = pTransport->Passengers.GetTotalSize() + static_cast<int>(passengerSize);
+	const auto pLink = pTransport->GetNthLink();
+	const auto needCalculate = pLink && pLink != pPassenger;
+
+	if (needCalculate)
+	{
+		const auto linkCell = pLink->GetCoords();
+		const auto tranCell = pTransport->GetCoords();
+
+		// When the most important passenger is close, need to prevent overlap
+		if (abs(linkCell.X - tranCell.X) <= 384 && abs(linkCell.Y - tranCell.Y) <= 384)
+			return (predictSize <= (maxSize - pLink->GetTechnoType()->Size));
+	}
+
+	const auto remain = maxSize - predictSize;
+
+	if (remain < 0)
+		return false;
+
+	if (needCalculate && remain < static_cast<int>(pLink->GetTechnoType()->Size))
+	{
+		// Avoid passenger moving forward, resulting in overlap with transport and create invisible barrier
+		pLink->SendToFirstLink(RadioCommand::NotifyUnlink);
+		pLink->EnterIdleMode(false, true);
+	}
+
+	return true;
+}
+
+DEFINE_HOOK(0x51A0D4, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x6)
+{
+	enum { EnteredThenReturn = 0x51A47E };
+
+	GET(InfantryClass* const, pThis, ESI);
+
+	if (const auto pDest = abstract_cast<UnitClass*>(pThis->CurrentMission == Mission::Enter ? pThis->Destination : pThis->QueueUpToEnter))
+	{
+		if (pDest->Type->Passengers > 0 && TechnoTypeExt::ExtMap.Find(pDest->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+		{
+			const auto thisCell = pThis->GetCoords();
+			const auto destCell = pDest->GetCoords();
+
+			if (abs(thisCell.X - destCell.X) <= 384 && abs(thisCell.Y - destCell.Y) <= 384)
+			{
+				if (CanEnterNow(pDest, pThis)) // Replace send radio command: QueryCanEnter
+				{
+					if (const auto pTag = pDest->AttachedTag)
+						pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
+
+					pThis->ArchiveTarget = nullptr;
+					pThis->OnBridge = false;
+					pThis->MissionAccumulateTime = 0;
+					pThis->GattlingValue = 0;
+					pThis->CurrentGattlingStage = 0;
+
+					if (const auto pMind = pThis->MindControlledBy)
+					{
+						if (const auto pManager = pMind->CaptureManager)
+							pManager->FreeUnit(pThis);
+					}
+
+					pThis->Limbo();
+
+					if (pDest->Type->OpenTopped)
+						pDest->EnteredOpenTopped(pThis);
+
+					pThis->Transporter = pDest;
+					pDest->AddPassenger(pThis);
+					pThis->Undiscover();
+
+					pThis->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
+					pThis->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
+
+					return EnteredThenReturn;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73A5EA, UnitClass_UpdatePosition_NoQueueUpToEnter, 0x5)
+{
+	enum { EnteredThenReturn = 0x73A78C };
+
+	GET(UnitClass* const, pThis, EBP);
+
+	if (const auto pDest = abstract_cast<UnitClass*>(pThis->CurrentMission == Mission::Enter ? pThis->Destination : pThis->QueueUpToEnter))
+	{
+		if (pDest->Type->Passengers > 0 && TechnoTypeExt::ExtMap.Find(pDest->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+		{
+			const auto thisCell = pThis->GetCoords();
+			const auto destCell = pDest->GetCoords();
+
+			if (abs(thisCell.X - destCell.X) <= 384 && abs(thisCell.Y - destCell.Y) <= 384)
+			{
+				if (CanEnterNow(pDest, pThis)) // Replace send radio command: QueryCanEnter
+				{
+					// I don't know why units have no trigger
+
+					pThis->ArchiveTarget = nullptr;
+					pThis->OnBridge = false;
+					pThis->MissionAccumulateTime = 0;
+					pThis->GattlingValue = 0;
+					pThis->CurrentGattlingStage = 0;
+
+					if (const auto pMind = pThis->MindControlledBy)
+					{
+						if (const auto pManager = pMind->CaptureManager)
+							pManager->FreeUnit(pThis);
+					}
+
+					pThis->Limbo();
+					pDest->AddPassenger(pThis);
+
+					if (pDest->Type->OpenTopped)
+						pDest->EnteredOpenTopped(pThis);
+
+					pThis->Transporter = pDest;
+
+					if (pThis->Type->OpenTopped)
+						pThis->SetTargetForPassengers(nullptr);
+
+					pThis->Undiscover();
+
+					pThis->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
+					pThis->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
+
+					return EnteredThenReturn;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+static inline void PlayUnitLeaveTransportSound(UnitClass* pThis)
+{
+	const int sound = pThis->Type->LeaveTransportSound;
+
+	if (sound != -1)
+		VoxClass::PlayAtPos(sound, &pThis->Location);
+}
+
+DEFINE_HOOK(0x73DC9C, UnitClass_Mission_Unload_NoQueueUpToUnloadBreak, 0xA)
+{
+	enum { SkipGameCode = 0x73E289 };
+
+	GET(UnitClass* const, pThis, ESI);
+	GET(FootClass* const, pPassenger, EDI);
+
+	pPassenger->Undiscover();
+
+	// Play the sound when interrupted for some reason
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
+		PlayUnitLeaveTransportSound(pThis);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
+{
+	enum { UnloadLoop = 0x73D8CB, UnloadReturn = 0x73E289 };
+
+	GET(UnitClass* const, pThis, ESI);
+
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
+	{
+		if (pThis->Passengers.NumPassengers <= pThis->NonPassengerCount)
+		{
+			// If unloading is required within one frame, the sound will only be played when the last passenger leaves
+			PlayUnitLeaveTransportSound(pThis);
+			pThis->MissionStatus = 4;
+			return UnloadReturn;
+		}
+
+		R->EBX(0); // Reset
+		return UnloadLoop;
+	}
+
+	PlayUnitLeaveTransportSound(pThis);
+	return UnloadReturn;
+}
+
+#pragma endregion

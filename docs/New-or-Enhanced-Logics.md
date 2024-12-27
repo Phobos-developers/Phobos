@@ -1366,6 +1366,21 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### Fast access vehicle
+
+- Now you can let passengers quickly enter or leave the transport vehicles (useless for buildings) without queuing. Defaults to `[General]` -> `NoQueueUpToEnter` or `NoQueueUpToUnload`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false    ; boolean
+NoQueueUpToUnload=false   ; boolean
+
+[SOMEUNIT]                ; UnitType
+NoQueueUpToEnter=         ; boolean
+NoQueueUpToUnload=        ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound
