@@ -155,6 +155,11 @@ public:
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
 
+		Valueable<bool> AIAutoDeployMCV;
+		Valueable<bool> AISetBaseCenter;
+		Valueable<bool> AIBiasSpawnCell;
+		Valueable<bool> AIForbidConYard;
+
 		Valueable<bool> GatherWhenMCVDeploy;
 		Valueable<bool> AIFireSale;
 		Valueable<int> AIFireSaleDelay;
@@ -276,6 +281,10 @@ public:
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
 			, UseFixedVoxelLighting { false }
+			, AIAutoDeployMCV { true }
+			, AISetBaseCenter { true }
+			, AIBiasSpawnCell { false }
+			, AIForbidConYard { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
 			, AIFireSaleDelay { 0 }

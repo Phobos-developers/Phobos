@@ -233,6 +233,115 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 #pragma endregion
 
+#pragma region AIConstructionYard
+
+DEFINE_HOOK(0x740A11, UnitClass_Mission_Guard_AIAutoDeployMCV, 0x6)
+{
+	enum { SkipGameCode = 0x740A50 };
+
+	GET(UnitClass*, pMCV, ESI);
+
+	return (!RulesExt::Global()->AIAutoDeployMCV && pMCV->Owner->NumConYards > 0) ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x739889, UnitClass_TryToDeploy_AISetBaseCenter, 0x6)
+{
+	enum { SkipGameCode = 0x73992B };
+
+	GET(UnitClass*, pMCV, EBP);
+
+	return (!RulesExt::Global()->AISetBaseCenter && pMCV->Owner->NumConYards > 1) ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
+{
+	if (RulesExt::Global()->AIBiasSpawnCell && !SessionClass::IsCampaign())
+	{
+		GET(HouseClass*, pAI, EBX);
+
+		if (const auto count = pAI->ConYards.Count)
+		{
+			const auto wayPoint = pAI->GetSpawnPosition();
+
+			if (wayPoint != -1)
+			{
+				const auto center = ScenarioClass::Instance->GetWaypointCoords(wayPoint);
+				auto newCenter = center;
+				double distanceSquared = 131072.0;
+
+				for (int i = 0; i < count; ++i)
+				{
+					if (const auto pBuilding = pAI->ConYards.GetItem(i))
+					{
+						if (pBuilding->IsAlive && pBuilding->Health && !pBuilding->InLimbo)
+						{
+							const auto newDistanceSquared = pBuilding->GetMapCoords().DistanceFromSquared(center);
+
+							if (newDistanceSquared < distanceSquared)
+							{
+								distanceSquared = newDistanceSquared;
+								newCenter = pBuilding->GetMapCoords();
+							}
+						}
+					}
+				}
+
+				if (newCenter != center)
+				{
+					pAI->BaseSpawnCell = newCenter;
+					pAI->Base.BaseNodes.Items->MapCoords = newCenter;
+					pAI->Base.Center = newCenter;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
+{
+	enum { BuildFailed = 0x445696 };
+
+	GET(BaseNodeClass* const, pBaseNode, EBX);
+	GET(BuildingClass* const, pBuilding, EDI);
+
+	const auto pBuildingType = pBuilding->Type;
+
+	if (RulesExt::Global()->AIForbidConYard && pBuildingType->ConstructionYard)
+	{
+		if (pBaseNode)
+		{
+			pBaseNode->Placed = true;
+			pBaseNode->Attempts = 0;
+		}
+
+		return BuildFailed;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
+{
+	enum { Valid = 0x42EBC3, Invalid = 0x42EBAE };
+
+	GET(BaseClass* const, pBase, ESI);
+	GET(BaseNodeClass* const, pBaseNode, EAX);
+
+	if (pBaseNode->Placed)
+	{
+		const auto index = pBaseNode->BuildingTypeIndex;
+
+		if (index >= 0 && index < BuildingTypeClass::Array->Count && BuildingTypeClass::Array->Items[index]->ConstructionYard && RulesExt::Global()->AIForbidConYard)
+			return Invalid;
+	}
+
+	return reinterpret_cast<bool(__thiscall*)(HouseClass*, BaseNodeClass*)>(0x50CAD0)(pBase->Owner, pBaseNode) ? Valid : Invalid;
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x65EB8D, HouseClass_SendSpyPlanes_PlaceAircraft, 0x6)
 {
 	enum { SkipGameCode = 0x65EBE5, SkipGameCodeNoSuccess = 0x65EC12 };
