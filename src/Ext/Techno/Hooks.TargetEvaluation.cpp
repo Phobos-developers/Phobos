@@ -140,6 +140,75 @@ DEFINE_JUMP(CALL6, 0x6F8DD2, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponRangeWr
 
 #pragma endregion
 
+#pragma region AggressiveAttackMove
+
+static inline bool CheckAttackMoveCanResetTarget(FootClass* pThis)
+{
+	const auto pTarget = pThis->Target;
+
+	if (!pTarget || pTarget == pThis->MegaTarget)
+		return false;
+
+	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+
+	if (!pTargetTechno || pTargetTechno->IsArmed())
+		return false;
+
+	if (pThis->TargetingTimer.InProgress())
+		return false;
+
+	const auto pPrimary = pThis->GetWeapon(0);
+
+	if (!pPrimary)
+		return false;
+
+	const auto pPrimaryWeapon = pPrimary->WeaponType;
+
+	if (!pPrimaryWeapon)
+		return false;
+
+	const auto pNewTarget = abstract_cast<TechnoClass*>(pThis->GreatestThreat(ThreatType::Range, &pThis->Location, false));
+
+	if (!pNewTarget || pNewTarget->GetTechnoType() == pTargetTechno->GetTechnoType())
+		return false;
+
+	const auto pSecondary = pThis->GetWeapon(1);
+
+	if (!pSecondary)
+		return true;
+
+	const auto pSecondaryWeapon = pSecondary->WeaponType;
+
+	if (!pSecondaryWeapon || !pSecondaryWeapon->NeverUse)
+		return true;
+
+	return pSecondaryWeapon->Range <= pPrimaryWeapon->Range;
+}
+
+DEFINE_HOOK(0x4DF3A0, FootClass_UpdateAttackMove_SelectNewTarget, 0x6)
+{
+	GET(FootClass* const, pThis, ECX);
+
+	if (RulesExt::Global()->AttackMove_Aggressive && CheckAttackMoveCanResetTarget(pThis))
+	{
+		pThis->Target = nullptr;
+		pThis->HaveAttackMoveTarget = false;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTargetObject_AggressiveAttackMove, 0x6)
+{
+	enum { ContinueCheck = 0x6F85BA, CanTarget = 0x6F8604 };
+
+	GET(TechnoClass* const, pThis, EDI);
+
+	return (!pThis->Owner->IsControlledByHuman() || (RulesExt::Global()->AttackMove_Aggressive && pThis->MegaMissionIsAttackMove())) ? CanTarget : ContinueCheck;
+}
+
+#pragma endregion
+
 #pragma region HealingWeapons
 
 #pragma region TechnoClass_EvaluateObject
