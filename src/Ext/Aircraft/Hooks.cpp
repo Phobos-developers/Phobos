@@ -319,7 +319,7 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 }
 
 // Aircraft mission hard code are all disposable that no ammo, target died or arrived destination all will call the aircraft return airbase
-#pragma region AircraftMissionExpand
+#pragma region ExtendedAircraftMissions
 
 // Waypoint: enable and smooth moving action
 bool __fastcall AircraftTypeClass_CanUseWaypoint(AircraftTypeClass* pThis)
@@ -408,6 +408,7 @@ DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget1, 
 
 	GET(FootClass* const, pThis, ESI);
 
+	// The aircraft is constantly moving, which may cause its target to constantly enter and leave its range, so it is fixed to hold the target.
 	if (RulesExt::Global()->ExtendedAircraftMissions && pThis->WhatAmI() == AbstractType::Aircraft)
 		return HoldTarget;
 
@@ -420,6 +421,7 @@ DEFINE_HOOK(0x4DF42A, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget2, 
 
 	GET(FootClass* const, pThis, ESI);
 
+	// Although if the target selected by CS is an object rather than cell.
 	return (RulesExt::Global()->ExtendedAircraftMissions && pThis->WhatAmI() == AbstractType::Aircraft) ? HoldTarget : ContinueCheck;
 }
 
@@ -494,8 +496,7 @@ AbstractClass* __fastcall AircraftClass_GreatestThreat(AircraftClass* pThis, voi
 			threatType |= pSecondaryWeapon->AllowedThreats();
 	}
 
-	// return pThis->FootClass::GreatestThreat(threatType, pSelectCoords, onlyTargetHouseEnemy);
-	return reinterpret_cast<AbstractClass*(__thiscall*)(FootClass*, ThreatType, CoordStruct*, bool)>(0x4D9920)(pThis, threatType, pSelectCoords, onlyTargetHouseEnemy);
+	return pThis->FootClass::GreatestThreat(threatType, pSelectCoords, onlyTargetHouseEnemy);
 }
 DEFINE_JUMP(VTABLE, 0x7E2668, GET_OFFSET(AircraftClass_GreatestThreat))
 
