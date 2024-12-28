@@ -21,7 +21,7 @@ public:
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
-		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
+		std::map<int, int> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo

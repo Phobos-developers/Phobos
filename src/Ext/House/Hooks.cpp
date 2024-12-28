@@ -24,7 +24,7 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 			if (pExt->PowerPlantEnhancer_Buildings.size() &&
 				(pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f))
 			{
-				++pHouseExt->PowerPlantEnhancers[pExt];
+				++pHouseExt->PowerPlantEnhancers[pBld->Type->ArrayIndex];
 			}
 		}
 	}
