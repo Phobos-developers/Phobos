@@ -520,6 +520,13 @@ void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 
 bool TechnoExt::ExtData::GetAutoTargetBuildings(TechnoClass* pThis)
 {
+	// if this is a passenger then obey the configuration of the transport
+	if (auto pTransport = pThis->Transporter)
+	{
+		auto pTransportExt = TechnoExt::ExtMap.Find(pTransport);
+		return pTransportExt->GetAutoTargetBuildings(pTransport);
+	}
+
 	if (this->AggressiveStance < 0)
 	{
 		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
