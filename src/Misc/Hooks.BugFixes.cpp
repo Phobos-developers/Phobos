@@ -1092,6 +1092,10 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	{
 		if (pAircraft->Type->AirportBound)
 		{
+			// To avoid `AirportBound=yes` aircrafts with ammo at low altitudes cannot correctly receive stop command and queue Mission::Guard with a `Destination`.
+			if (pAircraft->Ammo)
+				pTechno->SetDestination(nullptr, true);
+
 			// To avoid `AirportBound=yes` aircrafts pausing in the air and let they returning to air base immediately.
 			if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())) // If the aircraft have no valid dock, try to find a new one
 				pAircraft->EnterIdleMode(false, true);
