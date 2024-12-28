@@ -158,7 +158,7 @@
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
-	<ClCompile Include="src\Misc\Network.cpp" />
+    <ClCompile Include="src\Misc\Network.cpp" />
     <ClCompile Include="src\Misc\Hooks.BugFixes.cpp" />
     <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
     <ClCompile Include="src\Misc\Hooks.UI.cpp" />
@@ -214,7 +214,7 @@
     <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
-	<ClInclude Include="src\Misc\Network.h" />
+    <ClInclude Include="src\Misc\Network.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\Misc\SyncLogging.h" />
     <ClInclude Include="src\New\Type\Affiliated\TypeConvertGroup.h" />
@@ -278,8 +278,6 @@
     <ClInclude Include="src\Utilities\AresFunctions.h" />
     <ClInclude Include="lib\nameof\nameof.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
-	<ClInclude Include="YRpp\NetworkEvents.h" />
-    <ClInclude Include="YRpp\Networking.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\version.rc" />
