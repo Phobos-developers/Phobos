@@ -320,16 +320,20 @@ SelectionFlashDuration=0  ; integer, number of frames
 ### `[ ]` Toggle Aggressive Stance
 - Switches on/off aggressive stance for selected units and structures.
 - Under aggressive stance, units and structures will target unarmed enemy buildings if no enemy units or defensive structures can be targeted.
-  - Aggressive stance does not reset even when the unit changes ownership.
-  - Aggressive stance has no effect if the unit is controlled by the AI.
+  - Aggressive stance does not reset even when the techno changes ownership.
+  - Aggressive stance has no effect if the techno is controlled by the AI.
   - The passengers of open-topped transports will obey the aggressive stance configuration of the transports.
 - Techno types can have further customizations about aggressive stance.
   - A techno type can be made aggressive stance by default by `AggressiveStance=true`.
   - A techno type can be disallowed to toggle its aggressive stance by `AggressiveStance.Togglable=false`.
-    - The default value for `AggressiveStance.Togglable` is false for units without a weapon and not open-topped, engineers, and agents. Otherwise, the default value is true.
-  - Upon enter aggressive stance, `VoiceEnterAggressiveStance` will be played, and if not defined, `VoiceAttack` will be played.
-  - Upon exit aggressive stance, `VoiceExitAggressiveStance` will be played, and if not defined, no voice will be played.
-- For localization add `TXT_AGGRESSIVE_STANCE`, `TXT_AGGRESSIVE_STANCE_DESC`, `TXT_AGGRESSIVE_STANCE_ON_MESSAGE`, and `TXT_AGGRESSIVE_STANCE_OFF_MESSAGE`, into your `.csf` file. The last 2 may have an `%i` in it to display how many unis are affected.
+    - `AggressiveStance.Togglable` is default to false for engineers, agents, and technos without a weapon and is not open-topped. It is default to true for anything else.
+  - Upon enter aggressive stance, `VoiceEnterAggressiveStance` will be played. If not defined, `VoiceAttack` will be played.
+  - Upon exit aggressive stance, `VoiceExitAggressiveStance` will be played. If not defined, no voice will be played.
+- For localization, add the following keys into your `.csf` file.
+  - `TXT_AGGRESSIVE_STANCE`: The name of the command.
+  - `TXT_AGGRESSIVE_STANCE_DESC`: The description of the command.
+  - `TXT_AGGRESSIVE_STANCE_ON_MESSAGE`: The message to be displayed when units enter aggressive stance. May have `%i` inside to display how many units are affected.
+  - `TXT_AGGRESSIVE_STANCE_OFF_MESSAGE`: The message to be displayed when units exit aggressive stance. May have `%i` inside to display how many units are affected.
 
 In `rulesmd.ini`:
 ```ini
