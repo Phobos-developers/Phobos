@@ -49,8 +49,8 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 		// try to cast to TechnoClass
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
-		// if not a techno or is in berserk then ignore it
-		if (!pTechno || pTechno->Berzerk)
+		// if not a techno or is in berserk or is not controlled by the local player then ignore it
+		if (!pTechno || pTechno->Berzerk || pTechno->Owner != HouseClass::CurrentPlayer)
 			continue;
 
 		// If not togglable then exclude it from the iteration.
