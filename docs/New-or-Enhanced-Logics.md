@@ -1366,6 +1366,18 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### Simplified unloading for miners
+
+- In vanilla, miners must first approach the refinery, then approach the uninstall location, enter the refinery, and finally complete the unloading. When you only have a few miners and the battle is not so urgent, these behaviors work fine and look interesting. But if you have many (say dozens) miners, then they will surround the refinery and cannot unload. Also, for symmetrical maps, there is always a player whose miners have to travel further to unload, thus that player is inherently disadvantaged because of this.
+- Now you can change this behavior by setting `HarvesterQuickUnloader` to true on the miner. The new behavior is similar to Warcraft or StarCraft: The miner will travel to the nearest available location around the refinery after collection is complete. When it arrives, the minerals it is loaded with will be unloaded directly, and then the miner will set destination to collection. For the miner with `Teleporter=yes`, we assume it works like a chrono miner in vanilla, and it will teleport directly around the refinery after collection is complete.
+  - If you order the miner to unload manually, it will process the old unloading behavior.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                   ; UnitType
+HarvesterQuickUnloader=false   ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound

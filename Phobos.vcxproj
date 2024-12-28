@@ -126,6 +126,7 @@
     <ClCompile Include="src\Ext\Techno\Hooks.ReceiveDamage.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.TargetEvaluation.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Transport.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Harvester.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Body.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.Passable.cpp" />
