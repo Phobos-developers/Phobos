@@ -3,7 +3,7 @@
 // #include "BombardTrajectory.h" // TODO If merge #1404
 // #include "EngraveTrajectory.h" // TODO If merge #1293
 // #include "ParabolaTrajectory.h" // TODO If merge #1374
-// #include "TracingTrajectory.h" // TODO
+// #include "TracingTrajectory.h" // TODO If merge #1481
 
 #include <AnimClass.h>
 #include <LaserDrawClass.h>
@@ -1288,7 +1288,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					}
 				}
 			}*/
-/*			else if (flag == TrajectoryFlag::Tracing) // TODO
+/*			else if (flag == TrajectoryFlag::Tracing) // TODO If merge #1481
 			{
 				const auto pTrajectory = static_cast<TracingTrajectory*>(pBulletExt->Trajectory.get());
 				pTrajectory->FirepowerMult = this->FirepowerMult;
