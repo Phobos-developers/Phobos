@@ -21,6 +21,7 @@
     <ClCompile Include="src\Ext\TechnoType\Hooks.MatrixOp.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
     <ClCompile Include="src\New\Type\AttachEffectTypeClass.cpp" />
+    <ClCompile Include="src\Commands\AggressiveStance.cpp" />
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\DamageDisplay.cpp" />
     <ClCompile Include="src\Commands\FrameByFrame.cpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
+	<ClCompile Include="src\Misc\Network.cpp" />
     <ClCompile Include="src\Misc\Hooks.BugFixes.cpp" />
     <ClCompile Include="src\Misc\Hooks.PCX.cpp" />
     <ClCompile Include="src\Misc\Hooks.UI.cpp" />
@@ -185,6 +187,7 @@
   <ItemGroup>
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />
+    <ClInclude Include="src\Commands\AggressiveStance.h" />
     <ClInclude Include="src\Commands\FrameByFrame.h" />
     <ClInclude Include="src\Commands\FrameStep.h" />
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
@@ -211,6 +214,7 @@
     <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
+	<ClInclude Include="src\Misc\Network.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\Misc\SyncLogging.h" />
     <ClInclude Include="src\New\Type\Affiliated\TypeConvertGroup.h" />
@@ -274,6 +278,8 @@
     <ClInclude Include="src\Utilities\AresFunctions.h" />
     <ClInclude Include="lib\nameof\nameof.h" />
     <ClInclude Include="YRpp\GameTextManager.h" />
+	<ClInclude Include="YRpp\NetworkEvents.h" />
+    <ClInclude Include="YRpp\Networking.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\version.rc" />

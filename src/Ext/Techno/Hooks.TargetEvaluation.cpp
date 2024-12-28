@@ -299,3 +299,21 @@ Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* 
 DEFINE_JUMP(VTABLE, 0x7EB0CC, GET_OFFSET(InfantryClass__WhatAction_Wrapper))
 
 #pragma endregion
+
+DEFINE_HOOK(0x6F858F, TechnoClass_EvaluateObject_AggressiveStance, 0x7)
+{
+	GET(TechnoClass*, pThis, EDI);
+	GET(TechnoClass*, pTarget, ESI);
+	if (pThis && pThis->Owner->IsHumanPlayer
+		&& pTarget && pTarget->WhatAmI() == AbstractType::Building)
+	{
+		if (auto pTechnoExt = TechnoExt::ExtMap.Find(pThis))
+		{
+			if (pTechnoExt->GetAutoTargetBuildings(pThis))
+			{
+				return 0x6F88BF;
+			}
+		}
+	}
+	return 0;
+}

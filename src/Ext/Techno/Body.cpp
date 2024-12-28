@@ -502,6 +502,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasRemainingWarpInDelay)
 		.Process(this->LastWarpInDelay)
 		.Process(this->IsBeingChronoSphered)
+		.Process(this->AggressiveStance)
 		;
 }
 
@@ -515,6 +516,35 @@ void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<TechnoClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+}
+
+bool TechnoExt::ExtData::GetAutoTargetBuildings(TechnoClass* pThis)
+{
+	if (this->AggressiveStance < 0)
+	{
+		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+			this->AggressiveStance = pTechnoTypeExt->AggressiveStance.Get() ? 1 : 0;
+		else
+			this->AggressiveStance = 0;
+	}
+	return this->AggressiveStance > 0;
+}
+
+void TechnoExt::ExtData::TogggleAutoTargetBuildings(TechnoClass* pThis)
+{
+	
+	if (this->GetAutoTargetBuildings(pThis))
+	{
+		// toggle off aggressive stance
+		this->AggressiveStance = 0;
+		// stop current target
+		pThis->SetTarget(nullptr);
+	}
+	else
+	{
+		// toggle on aggressive stance
+		this->AggressiveStance = 1;
+	}
 }
 
 bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm)

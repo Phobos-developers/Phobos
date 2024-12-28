@@ -11,6 +11,8 @@
 #include "ToggleDesignatorRange.h"
 #include "SaveVariablesToFile.h"
 
+#include "AggressiveStance.h"
+
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
 	// Load it after Ares'
@@ -19,6 +21,8 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
+
+	MakeCommand<AggressiveStanceClass>();
 
 	if (Phobos::Config::DevelopmentCommands)
 	{
