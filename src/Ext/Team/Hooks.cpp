@@ -4,15 +4,15 @@
 // Bugfix: TAction 7,80,107.
 DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
 {
-	if(!AresHelper::CanUseAres)
-		return 0; // Fuck you if not using Ares
+	if(!AresHelper::CanUseAres) // If you're not using Ares you don't deserve a fix
+		return 0;
 
 	GET(FootClass* const, pPayload, EAX);
 	GET(FootClass* const, pTransport, ESI);
 	GET(TeamClass* const, pTeam, EBP);
 	GET(TeamTypeClass const*, pThis, EBX);
 
-	auto unmarkPayloadCreated = [](FootClass* sucker){reinterpret_cast<char*>(sucker->align_154)[0x9E] = false;};
+	auto unmarkPayloadCreated = [](FootClass* member){reinterpret_cast<char*>(member->align_154)[0x9E] = false;};
 
 	if (!pTransport)
 	{
