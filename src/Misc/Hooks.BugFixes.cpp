@@ -32,7 +32,6 @@
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/AresFunctions.h>
 
 /*
 	Allow usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable
@@ -1065,6 +1064,78 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 #pragma endregion
 
+#pragma region StopEventFix
+
+DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
+{
+	enum { SkipGameCode = 0x4C762A };
+
+	GET(TechnoClass* const, pTechno, ESI);
+
+	// Check aircraft
+	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
+	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
+	const auto mission = pTechno->CurrentMission;
+
+	// To avoid aircraft overlap by keep link if is returning or is in airport now.
+	if (!commonAircraft || (mission != Mission::Sleep && mission != Mission::Guard && mission != Mission::Enter)
+		|| !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+	{
+		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
+	}
+
+	// To avoid technos being unable to stop in attack move mega mission
+	if (pTechno->MegaMissionIsAttackMove())
+		pTechno->ClearMegaMissionData();
+
+	// Clearing the current target should still be necessary for all technos
+	pTechno->SetTarget(nullptr);
+
+	if (commonAircraft)
+	{
+		if (pAircraft->Type->AirportBound)
+		{
+			// To avoid `AirportBound=yes` aircraft with ammo at low altitudes cannot correctly receive stop command and queue Mission::Guard with a `Destination`.
+			if (pAircraft->Ammo)
+				pTechno->SetDestination(nullptr, true);
+
+			// To avoid `AirportBound=yes` aircraft pausing in the air and let they returning to air base immediately.
+			if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())) // If the aircraft have no valid dock, try to find a new one
+				pAircraft->EnterIdleMode(false, true);
+		}
+		else if (pAircraft->Ammo)
+		{
+			// To avoid `AirportBound=no` aircraft ignoring the stop task or directly return to the airport.
+			if (pAircraft->Destination && static_cast<int>(CellClass::Coord2Cell(pAircraft->Destination->GetCoords()).DistanceFromSquared(pAircraft->GetMapCoords())) > 2) // If the aircraft is moving, find the forward cell then stop in it
+				pAircraft->SetDestination(pAircraft->GetCell()->GetNeighbourCell(static_cast<FacingType>(pAircraft->PrimaryFacing.Current().GetValue<3>())), true);
+		}
+		else if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+		{
+			pAircraft->EnterIdleMode(false, true);
+		}
+		// Otherwise landing or idling normally without answering the stop command
+	}
+	else
+	{
+		// Check Jumpjets
+		const auto pFoot = abstract_cast<FootClass*>(pTechno);
+		const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
+
+		// To avoid jumpjets falling into a state of standing idly by
+		if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
+			pTechno->SetDestination(nullptr, true);
+		else if (!pFoot->Destination) // When in attack move and have had a target, the destination will be cleaned up, enter the guard mission can prevent the jumpjets stuck in a status of standing idly by
+			pTechno->QueueMission(Mission::Guard, true);
+		else if (static_cast<int>(CellClass::Coord2Cell(pFoot->Destination->GetCoords()).DistanceFromSquared(pTechno->GetMapCoords())) > 2) // If the jumpjet is moving, find the forward cell then stop in it
+			pTechno->SetDestination(pTechno->GetCell()->GetNeighbourCell(static_cast<FacingType>(pJumpjetLoco->LocomotionFacing.Current().GetValue<3>())), true);
+		// Otherwise landing or idling normally without answering the stop command
+	}
+
+	return SkipGameCode;
+}
+
+#pragma endregion
+
 // This shouldn't be here
 // Author: tyuah8
 DEFINE_HOOK_AGAIN(0x4AF94D, EndPiggyback_PowerOn, 0x7) // Drive
@@ -1090,55 +1161,3 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 }
 DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
 DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
-
-// This is the inline function to get the academy type that a techno enjoys.
-inline static const AbstractType GetAresAcademyType(TechnoClass* pTechno)
-{
-	if (pTechno->WhatAmI() == AbstractType::Unit)
-	{
-		if (pTechno->GetTechnoType()->ConsideredAircraft)
-			return AbstractType::Aircraft;
-		else if (pTechno->GetTechnoType()->Organic)
-			return AbstractType::Infantry;
-		else
-			return AbstractType::Unit;
-	}
-	else if (pTechno->WhatAmI() == AbstractType::Infantry
-		|| pTechno->WhatAmI() == AbstractType::Aircraft
-		|| pTechno->WhatAmI() == AbstractType::Building)
-	{
-		return pTechno->WhatAmI();
-	}
-	return AbstractType::None;
-}
-
-// This is a fix to the Ares bug: Academy feature doesn't apply to the initial payload of vehicles built off a War Factory.
-// Curiously, Academy applies to the initial payloads of vehicles under any other circumstances, even when built off a Naval Shipyard.
-// It is "Unsorted::IKnowWhatImDoing" prevented the "HouseExt::ApplyAcademy" from taking effect.
-// The fix is simple, when Ares is supposed to have initialized the initial payload, and Academy is prevented from taking any effect,
-// temporarily turn off "Unsorted::IKnowWhatImDoing", invoke "HouseExt::ApplyAcademy", then turn on "Unsorted::IKnowWhatImDoing" again.
-DEFINE_HOOK(0x4D71A0, FootClass_Put_InitialPayload_AfterAres, 0x6)
-{
-	GET(FootClass* const, pThis, ESI);
-
-	if (AresFunctions::ApplyAcademy && Unsorted::IKnowWhatImDoing)
-	{
-		if (pThis && !pThis->InLimbo && pThis->IsOnMap && pThis->WhatAmI() == AbstractType::Unit
-			&& pThis->GetTechnoType()->Passengers > 0
-			&& pThis->Passengers.NumPassengers > 0)
-		{
-			for (auto pNext = pThis->Passengers.FirstPassenger; pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
-			{
-				auto abstractType = GetAresAcademyType(pNext);
-				if (abstractType != AbstractType::None)
-				{
-					--Unsorted::IKnowWhatImDoing;
-					AresFunctions::ApplyAcademy(AresFunctions::HouseExtMap_Find(pNext->Owner), pNext, abstractType);
-					++Unsorted::IKnowWhatImDoing;
-				}
-			}
-		}
-	}
-
-	return 0;
-}
