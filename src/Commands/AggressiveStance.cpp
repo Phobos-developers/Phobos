@@ -49,6 +49,10 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 		// try to cast to TechnoClass
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
+		// if not a techno or is in berserk then ignore it
+		if (!pTechno || pTechno->Berzerk)
+			continue;
+
 		// If not togglable then exclude it from the iteration.
 		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
 		{
