@@ -115,6 +115,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_CheckOnFirer.Read(exINI, pSection, "AttachEffect.CheckOnFirer");
 	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
 	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
+	this->Burst_NoDelay.Read(exINI, pSection, "Burst.NoDelay");
 }
 
 template <typename T>
@@ -160,6 +161,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_CheckOnFirer)
 		.Process(this->AttachEffect_IgnoreFromSameSource)
 		.Process(this->KickOutPassengers)
+		.Process(this->Burst_NoDelay)
 		;
 };
 

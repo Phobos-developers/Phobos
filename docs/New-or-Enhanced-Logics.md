@@ -1678,6 +1678,16 @@ Burst.Delays=-1                 ; integer - burst delays (comma-separated) for s
 Burst.FireWithinSequence=false  ; boolean
 ```
 
+### Burst without delay
+
+- In vanilla, vehicles and infantries will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true (useless for buildings yet).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]          ; WeaponType
+Burst.NoDelay=false   ; boolean
+```
+
 ### Extra warhead detonations
 
 - It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).

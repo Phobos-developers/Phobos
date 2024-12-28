@@ -372,6 +372,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow to change the speed of gas particles
 - **CrimRecya**
   - Fix `LimboKill` not working reliably
+  - Burst without delay
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -380,6 +381,7 @@ This page lists all the individual contributions to the project by their author.
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
   - Global value of `RepairBaseNodes`
+  - Burst without delay
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
