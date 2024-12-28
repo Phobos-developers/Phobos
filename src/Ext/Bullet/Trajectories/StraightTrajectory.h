@@ -124,7 +124,7 @@ public:
 	int ProximityDamage;
 	int RemainingDistance;
 	TechnoClass* ExtraCheck; // No taken out for use in next frame
-	std::map<TechnoClass*, int> TheCasualty; // No taken out for use, only for recording existence
+	std::map<int, int> TheCasualty; // Only for recording existence
 	double FirepowerMult;
 	int AttenuationRange;
 	CoordStruct LastTargetCoord;

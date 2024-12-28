@@ -852,41 +852,39 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	}
 
 	// Step 3: Record each target without repetition.
-	std::vector<TechnoClass*> casualtyChecked;
+	std::vector<int> casualtyChecked;
 	casualtyChecked.reserve(std::max(validTechnos.size(), this->TheCasualty.size()));
 
-	if (pBullet->Owner)
-		this->TheCasualty[pBullet->Owner] = 20;
+	if (const auto pFirer = pBullet->Owner)
+		this->TheCasualty[pFirer->UniqueID] = 20;
 
-	for (const auto& [pTechno, remainTime] : this->TheCasualty)
+	for (const auto& [ID, remainTime] : this->TheCasualty)
 	{
-		if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0 && !pTechno->InLimbo && !pTechno->IsSinking && remainTime > 0)
-			this->TheCasualty[pTechno] = remainTime - 1;
+		if (remainTime > 0)
+			this->TheCasualty[ID] = remainTime - 1;
 		else
-			casualtyChecked.push_back(pTechno);
+			casualtyChecked.push_back(ID);
 	}
 
-	for (const auto& pTechno : casualtyChecked)
-	{
-		this->TheCasualty.erase(pTechno);
-	}
+	for (const auto& ID : casualtyChecked)
+		this->TheCasualty.erase(ID);
 
-	casualtyChecked.clear();
+	std::vector<TechnoClass*> validTargets;
 
 	for (const auto& pTechno : validTechnos)
 	{
-		if (!this->TheCasualty.contains(pTechno))
-			casualtyChecked.push_back(pTechno);
+		if (!this->TheCasualty.contains(pTechno->UniqueID))
+			validTargets.push_back(pTechno);
 
-		this->TheCasualty[pTechno] = 20;
+		this->TheCasualty[pTechno->UniqueID] = 20;
 	}
 
 	// Step 4: Detonate warheads in sequence based on distance.
-	const auto casualtySize = casualtyChecked.size();
+	const auto targetsSize = validTargets.size();
 
-	if (this->ProximityImpact > 0 && static_cast<int>(casualtySize) > this->ProximityImpact)
+	if (this->ProximityImpact > 0 && static_cast<int>(targetsSize) > this->ProximityImpact)
 	{
-		std::sort(&casualtyChecked[0], &casualtyChecked[casualtySize],[pBullet](TechnoClass* pTechnoA, TechnoClass* pTechnoB)
+		std::sort(&validTargets[0], &validTargets[targetsSize],[pBullet](TechnoClass* pTechnoA, TechnoClass* pTechnoB)
 		{
 			const auto distanceA = pTechnoA->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
 			const auto distanceB = pTechnoB->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
@@ -901,7 +899,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		});
 	}
 
-	for (const auto& pTechno : casualtyChecked)
+	for (const auto& pTechno : validTargets)
 	{
 		if (pTechno == this->ExtraCheck) // Not effective for the technos following it.
 			break;
