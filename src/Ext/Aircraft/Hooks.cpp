@@ -397,7 +397,7 @@ DEFINE_HOOK(0x6FA68B, TechnoClass_Update_AttackMovePaused, 0xA) // To make aircr
 
 	const bool skip = RulesExt::Global()->ExtendedAircraftMissions
 		&& pThis->WhatAmI() == AbstractType::Aircraft
-		&& (!pThis->Ammo || pThis->GetHeight() < Unsorted::CellHeight);
+		&& (!pThis->Ammo || !pThis->IsInAir());
 
 	return skip ? SkipGameCode : 0;
 }
