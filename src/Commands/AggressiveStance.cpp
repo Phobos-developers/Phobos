@@ -39,7 +39,6 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 	std::vector<TechnoClass*> TechnoVectorNonAggressive;
 
 	// Get current selected units.
-	// In the first iteration we check what we should do.
 	// If all selected units are at aggressive stance, we should cancel their aggressive stance.
 	// Otherwise, we should turn them into aggressive stance.
 	bool isAnySelectedUnitArmed = false;
