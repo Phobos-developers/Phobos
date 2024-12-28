@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Networking.h>
+#include <EventClass.h>
 #include <vector>
 
 class PhobosNetEvent
@@ -18,6 +18,6 @@ public:
 	{
 	public:
 		static void RaiseToggleAggressiveStance(TechnoClass* pTechno);
-		static void RespondToToggleAggressiveStance(NetworkEvent* Event);
+		static void RespondToToggleAggressiveStance(EventClass* Event);
 	};
 };
