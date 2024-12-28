@@ -54,7 +54,7 @@ public:
 		int NumConYards_NonMFB;
 		int NumShipyards_NonMFB;
 
-		std::map<SuperClass*, std::vector<SuperClass*>> SuspendedEMPulseSWs;
+		std::map<int, std::vector<int>> SuspendedEMPulseSWs;
 		// standalone? no need and not a good idea
 		struct SWExt
 		{

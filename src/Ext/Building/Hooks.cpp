@@ -164,15 +164,15 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	{
 		auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
 
-		if (pHouseExt->SuspendedEMPulseSWs.count(pExt->EMPulseSW))
+		if (pHouseExt->SuspendedEMPulseSWs.count(pExt->EMPulseSW->Type->ArrayIndex))
 		{
-			for (auto const& pSuper : pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW])
+			for (auto const& swidx : pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW->Type->ArrayIndex])
 			{
-				pSuper->IsSuspended = false;
+				pThis->Owner->Supers[swidx]->IsSuspended = false;
 			}
 
-			pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW].clear();
-			pHouseExt->SuspendedEMPulseSWs.erase(pExt->EMPulseSW);
+			pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW->Type->ArrayIndex].clear();
+			pHouseExt->SuspendedEMPulseSWs.erase(pExt->EMPulseSW->Type->ArrayIndex);
 		}
 	}
 
