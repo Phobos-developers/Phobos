@@ -32,6 +32,7 @@ public:
 		Valueable<bool> CanC4_AllowZeroDamage;
 		Valueable<bool> Refinery_UseStorage;
 		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
+		Valueable<bool> ExcludeFromMultipleFactoryBonus;
 
 		ValueableIdx<VocClass> Grinding_Sound;
 		Valueable<WeaponTypeClass*> Grinding_Weapon;
@@ -61,8 +62,21 @@ public:
 		Nullable<bool> ConsideredVehicle;
 		Valueable<bool> ZShapePointMove_OnBuildup;
 		Valueable<int> SellBuildupLength;
+		Valueable<bool> IsDestroyableObstacle;
 
-		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
+		std::vector<std::optional<DirType>> AircraftDockingDirs;
+
+		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
+
+		Nullable<double> Units_RepairRate;
+		Nullable<int> Units_RepairStep;
+		Nullable<double> Units_RepairPercent;
+		Nullable<bool> Units_UseRepairCost;
+
+		Valueable<bool> NoBuildAreaOnBuildup;
+		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
+		ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -75,6 +89,7 @@ public:
 			, AllowAirstrike {}
 			, CanC4_AllowZeroDamage { false }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
+			, ExcludeFromMultipleFactoryBonus { false }
 			, Refinery_UseStorage { false }
 			, Grinding_AllowAllies { false }
 			, Grinding_AllowOwner { true }
@@ -101,6 +116,16 @@ public:
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
 			, AircraftDockingDirs {}
+			, FactoryPlant_AllowTypes {}
+			, FactoryPlant_DisallowTypes {}
+			, IsDestroyableObstacle { false }
+			, Units_RepairRate {}
+			, Units_RepairStep {}
+			, Units_RepairPercent {}
+			, Units_UseRepairCost {}
+			, NoBuildAreaOnBuildup { false }
+			, Adjacent_Allowed {}
+			, Adjacent_Disallowed {}
 		{ }
 
 		// Ares 0.A functions

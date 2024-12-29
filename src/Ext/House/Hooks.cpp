@@ -306,3 +306,66 @@ DEFINE_HOOK(0x4F9038, HouseClass_AI_Superweapons, 0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK_AGAIN(0x4FFA99, HouseClass_ExcludeFromMultipleFactoryBonus, 0x6)
+DEFINE_HOOK(0x4FF9C9, HouseClass_ExcludeFromMultipleFactoryBonus, 0x6)
+{
+	GET(BuildingClass*, pBuilding, ESI);
+
+	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->ExcludeFromMultipleFactoryBonus)
+	{
+		GET(HouseClass*, pThis, EDI);
+		GET(bool, isNaval, ECX);
+
+		auto const pExt = HouseExt::ExtMap.Find(pThis);
+		pExt->UpdateNonMFBFactoryCounts(pBuilding->Type->Factory, R->Origin() == 0x4FF9C9, isNaval);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x500910, HouseClass_GetFactoryCount, 0x5)
+{
+	enum { SkipGameCode = 0x50095D };
+
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(AbstractType, rtti, 0x4);
+	GET_STACK(bool, isNaval, 0x8);
+
+	auto const pExt = HouseExt::ExtMap.Find(pThis);
+	R->EAX(pExt->GetFactoryCountWithoutNonMFB(rtti, isNaval));
+
+	return SkipGameCode;
+}
+
+// Sell all and all in.
+DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
+{
+	enum { ret = 0x4FD907 };
+
+	GET(HouseClass*, pThis, EBX);
+
+	auto const pRules = RulesExt::Global();
+
+	if (pRules->AIFireSale)
+	{
+		auto const pExt = HouseExt::ExtMap.Find(pThis);
+
+		if (pRules->AIFireSaleDelay <= 0 || !pExt ||
+			pExt->AIFireSaleDelayTimer.Completed())
+		{
+			pThis->Fire_Sale();
+		}
+		else if (!pExt->AIFireSaleDelayTimer.HasStarted())
+		{
+			pExt->AIFireSaleDelayTimer.Start(pRules->AIFireSaleDelay);
+		}
+	}
+
+	if (pRules->AIAllToHunt)
+	{
+		pThis->All_To_Hunt();
+	}
+
+	return ret;
+}
