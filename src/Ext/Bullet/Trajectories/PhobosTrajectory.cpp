@@ -67,10 +67,7 @@ void TrajectoryTypePointer::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	if (_ptr)
 	{
 		_ptr->Trajectory_Speed.Read(exINI, pSection, "Trajectory.Speed");
-
-		if (abs(_ptr->Trajectory_Speed) < 1e-10)
-			_ptr->Trajectory_Speed = 0.001;
-
+		_ptr->Trajectory_Speed = Math::max(0.001,_ptr->Trajectory_Speed);
 		_ptr->Read(pINI, pSection);
 	}
 }

@@ -54,6 +54,7 @@ bool ParabolaTrajectoryType::Save(PhobosStreamWriter& Stm) const
 void ParabolaTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
+
 	this->DetonationDistance.Read(exINI, pSection, "Trajectory.Parabola.DetonationDistance");
 	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.Parabola.TargetSnapDistance");
 
@@ -265,7 +266,7 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	else
 		this->CalculateBulletVelocityRightNow(pBullet, &theSourceCoords, gravity);
 
-	if (!this->UseDisperseBurst && abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+	if (!this->UseDisperseBurst && std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
 	{
 		const auto axis = pType->AxisOfRotation.Get();
 
@@ -278,7 +279,7 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 
 		const auto rotationAxisLengthSquared = rotationAxis.MagnitudeSquared();
 
-		if (abs(rotationAxisLengthSquared) > 1e-10)
+		if (std::abs(rotationAxisLengthSquared) > 1e-10)
 		{
 			double extraRotate = 0.0;
 			rotationAxis *= 1 / sqrt(rotationAxisLengthSquared);
@@ -688,7 +689,7 @@ double ParabolaTrajectory::SearchVelocity(double horizontalDistance, int distanc
 {
 	// Estimate initial velocity
 	const auto mult = Math::sin(2 * radian);
-	auto velocity = abs(mult) > 1e-10 ? sqrt(horizontalDistance * gravity / mult) : 0.0;
+	auto velocity = std::abs(mult) > 1e-10 ? sqrt(horizontalDistance * gravity / mult) : 0.0;
 	velocity += distanceCoordsZ / gravity;
 	velocity = velocity > 8.0 ? velocity : 8.0;
 	const auto error = velocity / 16;
@@ -704,7 +705,7 @@ double ParabolaTrajectory::SearchVelocity(double horizontalDistance, int distanc
 		const auto dDifferential = (this->CheckVelocityEquation(horizontalDistance, distanceCoordsZ, (velocity + delta), radian, gravity) - differential) / delta;
 
 		// Check unacceptable divisor
-		if (abs(dDifferential) < 1e-10)
+		if (std::abs(dDifferential) < 1e-10)
 			return velocity;
 
 		// Calculate the speed of the next iteration
@@ -712,7 +713,7 @@ double ParabolaTrajectory::SearchVelocity(double horizontalDistance, int distanc
 		const auto velocityNew = velocity - difference;
 
 		// Check tolerable error
-		if (abs(difference) < error)
+		if (std::abs(difference) < error)
 			return velocityNew;
 
 		// Update the speed
@@ -786,13 +787,13 @@ double ParabolaTrajectory::SearchFixedHeightMeetTime(CoordStruct* pSourceCrd, Co
 		const auto differential = this->CheckFixedHeightEquation(pSourceCrd, pTargetCrd, pOffsetCrd, meetTime, gravity);
 		const auto dDifferential = (this->CheckFixedHeightEquation(pSourceCrd, pTargetCrd, pOffsetCrd, (meetTime + delta), gravity) - differential) / delta;
 
-		if (abs(dDifferential) < 1e-10)
+		if (std::abs(dDifferential) < 1e-10)
 			return meetTime;
 
 		const auto difference = differential / dDifferential;
 		const auto meetTimeNew = meetTime - difference;
 
-		if (abs(difference) < 1.0)
+		if (std::abs(difference) < 1.0)
 			return meetTimeNew;
 
 		meetTime = meetTimeNew;
@@ -824,13 +825,13 @@ double ParabolaTrajectory::SearchFixedAngleMeetTime(CoordStruct* pSourceCrd, Coo
 		const auto differential = this->CheckFixedAngleEquation(pSourceCrd, pTargetCrd, pOffsetCrd, meetTime, radian, gravity);
 		const auto dDifferential = (this->CheckFixedAngleEquation(pSourceCrd, pTargetCrd, pOffsetCrd, (meetTime + delta), radian, gravity) - differential) / delta;
 
-		if (abs(dDifferential) < 1e-10)
+		if (std::abs(dDifferential) < 1e-10)
 			return meetTime;
 
 		const auto difference = differential / dDifferential;
 		const auto meetTimeNew = meetTime - difference;
 
-		if (abs(difference) < 1.0)
+		if (std::abs(difference) < 1.0)
 			return meetTimeNew;
 
 		meetTime = meetTimeNew;
@@ -1028,12 +1029,12 @@ bool ParabolaTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 	if (pType->DetonationHeight >= 0 && pBullet->Velocity.Z < 1e-10 && (pBullet->Location.Z - pBullet->SourceCoords.Z) < pType->DetonationHeight)
 		return true;
 
-	if (abs(pType->DetonationAngle) < 1e-10)
+	if (std::abs(pType->DetonationAngle) < 1e-10)
 	{
 		if (pBullet->Velocity.Z < 1e-10)
 			return true;
 	}
-	else if (abs(pType->DetonationAngle) < 90.0)
+	else if (std::abs(pType->DetonationAngle) < 90.0)
 	{
 		const auto horizontalVelocity = Vector2D<double>{ pBullet->Velocity.X, pBullet->Velocity.Y }.Magnitude();
 
@@ -1105,7 +1106,7 @@ bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, CellClass
 			return true;
 
 		this->LastVelocity = pBullet->Velocity;
-		this->BulletDetonateEffectuate(pBullet, abs((pBullet->Location.Z - cellHeight) / pBullet->Velocity.Z));
+		this->BulletDetonateEffectuate(pBullet, std::abs((pBullet->Location.Z - cellHeight) / pBullet->Velocity.Z));
 	}
 
 	return false;
