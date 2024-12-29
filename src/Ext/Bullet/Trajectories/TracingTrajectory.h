@@ -31,7 +31,7 @@ public:
 		, Weapons {}
 		, WeaponCount {}
 		, WeaponDelay {}
-		, WeaponTimer { 0 }
+		, WeaponInitialDelay { 0 }
 		, WeaponCycle { -1 }
 		, WeaponCheck { false }
 		, Synchronize { true }
@@ -59,7 +59,7 @@ public:
 	ValueableVector<WeaponTypeClass*> Weapons;
 	ValueableVector<int> WeaponCount;
 	ValueableVector<int> WeaponDelay;
-	Valueable<int> WeaponTimer;
+	Valueable<int> WeaponInitialDelay;
 	Valueable<int> WeaponCycle;
 	Valueable<bool> WeaponCheck;
 	Valueable<bool> Synchronize;

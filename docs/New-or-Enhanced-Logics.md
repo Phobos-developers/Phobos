@@ -791,7 +791,7 @@ Trajectory.Bombard.Height=0.0  ; double
   - `Trajectory.Tracing.Weapons` defines the tracing weapons of the projectile.
     - `Trajectory.Tracing.WeaponCount` controls how many times the projectile can fire the corresponding weapon. Set to a negative value means unlimited times. If set to zero, the cooling will be calculated directly without firing the tracing weapon. If the quantity is less than `Trajectory.Tracing.Weapons`, the last value in the list will be used.
     - `Trajectory.Tracing.WeaponDelay` controls the delay after firing the corresponding weapon, at least 1 frame. If the quantity is less than `Trajectory.Tracing.Weapons`, the last value in the list will be used.
-    - `Trajectory.Tracing.WeaponTimer` controls the initial delay for firing the tracing weapons defined by `Trajectory.Tracing.Weapons`.
+    - `Trajectory.Tracing.WeaponInitialDelay` controls the initial delay for firing the tracing weapons defined by `Trajectory.Tracing.Weapons`.
     - `Trajectory.Tracing.WeaponCycle` controls how many rounds of weapons the projectile can fire, zero will not fire weapons, and negative numbers are considered infinite.
     - `Trajectory.Tracing.WeaponCheck` controls whether the projectile will check its orientation before firing the tracing weapons. Ignore this if `Trajectory.Tracing.Synchronize=false` or `Trajectory.Tracing.TraceTheTarget=true` or `Trajectory.Tracing.BulletSpin=true` or have negative `Trajectory.Tracing.ROT`.
   - `Trajectory.Tracing.Synchronize` controls whether the target of the projectile is synchronized with the target of its firer. If not, the projectile will not update the target. When `Trajectory.Tracing.TraceTheTarget=no`, the tracing weapons will select their own targets to attack based on its range.
@@ -816,7 +816,7 @@ Trajectory.Tracing.WeaponCoord=0,0,0      ; integer - Forward,Lateral,Height
 Trajectory.Tracing.Weapons=               ; list of WeaponTypes
 Trajectory.Tracing.WeaponCount=           ; list of integers
 Trajectory.Tracing.WeaponDelay=           ; list of integers
-Trajectory.Tracing.WeaponTimer=0          ; integer
+Trajectory.Tracing.WeaponInitialDelay=0   ; integer
 Trajectory.Tracing.WeaponCycle=-1         ; integer
 Trajectory.Tracing.WeaponCheck=no         ; boolean
 Trajectory.Tracing.Synchronize=yes        ; boolean

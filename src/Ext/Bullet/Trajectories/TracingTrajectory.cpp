@@ -40,7 +40,7 @@ void TracingTrajectoryType::Serialize(T& Stm)
 		.Process(this->Weapons)
 		.Process(this->WeaponCount)
 		.Process(this->WeaponDelay)
-		.Process(this->WeaponTimer)
+		.Process(this->WeaponInitialDelay)
 		.Process(this->WeaponCycle)
 		.Process(this->WeaponCheck)
 		.Process(this->Synchronize)
@@ -96,8 +96,8 @@ void TracingTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->Weapons.Read(exINI, pSection, "Trajectory.Tracing.Weapons");
 	this->WeaponCount.Read(exINI, pSection, "Trajectory.Tracing.WeaponCount");
 	this->WeaponDelay.Read(exINI, pSection, "Trajectory.Tracing.WeaponDelay");
-	this->WeaponTimer.Read(exINI, pSection, "Trajectory.Tracing.WeaponTimer");
-	this->WeaponTimer = Math::max(0, this->WeaponTimer);
+	this->WeaponInitialDelay.Read(exINI, pSection, "Trajectory.Tracing.WeaponInitialDelay");
+	this->WeaponInitialDelay = Math::max(0, this->WeaponInitialDelay);
 	this->WeaponCycle.Read(exINI, pSection, "Trajectory.Tracing.WeaponCycle");
 	this->WeaponCheck.Read(exINI, pSection, "Trajectory.Tracing.WeaponCheck");
 	this->Synchronize.Read(exINI, pSection, "Trajectory.Tracing.Synchronize");
@@ -143,7 +143,7 @@ void TracingTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	if (!pType->Weapons.empty() && !pType->WeaponCount.empty() && this->WeaponCycle)
 	{
 		this->WeaponCount = pType->WeaponCount[0];
-		this->WeaponTimer.Start(pType->WeaponTimer);
+		this->WeaponTimer.Start(pType->WeaponInitialDelay);
 	}
 
 	this->FLHCoord = pBullet->SourceCoords;
