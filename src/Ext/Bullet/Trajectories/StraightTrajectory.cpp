@@ -26,7 +26,7 @@ void StraightTrajectoryType::Serialize(T& Stm)
 		.Process(this->PassDetonateWarhead)
 		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateDelay)
-		.Process(this->PassDetonateTimer)
+		.Process(this->PassDetonateInitialDelay)
 		.Process(this->PassDetonateLocal)
 		.Process(this->LeadTimeCalculate)
 		.Process(this->OffsetCoord)
@@ -77,7 +77,7 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->PassDetonateWarhead.Read<true>(exINI, pSection, "Trajectory.Straight.PassDetonateWarhead");
 	this->PassDetonateDamage.Read(exINI, pSection, "Trajectory.Straight.PassDetonateDamage");
 	this->PassDetonateDelay.Read(exINI, pSection, "Trajectory.Straight.PassDetonateDelay");
-	this->PassDetonateTimer.Read(exINI, pSection, "Trajectory.Straight.PassDetonateTimer");
+	this->PassDetonateInitialDelay.Read(exINI, pSection, "Trajectory.Straight.PassDetonateInitialDelay");
 	this->PassDetonateLocal.Read(exINI, pSection, "Trajectory.Straight.PassDetonateLocal");
 	this->LeadTimeCalculate.Read(exINI, pSection, "Trajectory.Straight.LeadTimeCalculate");
 	this->OffsetCoord.Read(exINI, pSection, "Trajectory.Straight.OffsetCoord");
@@ -147,7 +147,7 @@ bool StraightTrajectory::Save(PhobosStreamWriter& Stm) const
 void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
 	const auto pType = this->Type;
-	this->PassDetonateTimer.Start(pType->PassDetonateTimer > 0 ? pType->PassDetonateTimer : 0);
+	this->PassDetonateTimer.Start(pType->PassDetonateInitialDelay > 0 ? pType->PassDetonateInitialDelay : 0);
 	this->LastTargetCoord = pBullet->TargetCoords;
 	pBullet->Velocity = BulletVelocity::Empty;
 	const auto pFirer = pBullet->Owner;
@@ -296,9 +296,9 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 				const auto minusFactor = -(horizonDistance * targetSpeed);
 				int travelTime = 0;
 
-				if (abs(baseFactor) < 1e-10)
+				if (std::abs(baseFactor) < 1e-10)
 				{
-					travelTime = abs(horizonDistance) > 1e-10 ? (static_cast<int>(theDistanceSquared / (2 * horizonDistance * targetSpeed)) + 1) : 0;
+					travelTime = std::abs(horizonDistance) > 1e-10 ? (static_cast<int>(theDistanceSquared / (2 * horizonDistance * targetSpeed)) + 1) : 0;
 				}
 				else
 				{
@@ -373,7 +373,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	else
 		pBullet->Velocity.Z = static_cast<double>(this->GetVelocityZ(pBullet));
 
-	if (!this->UseDisperseBurst && abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+	if (!this->UseDisperseBurst && std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
 	{
 		const auto axis = pType->AxisOfRotation.Get();
 
@@ -386,7 +386,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 
 		const auto rotationAxisLengthSquared = rotationAxis.MagnitudeSquared();
 
-		if (abs(rotationAxisLengthSquared) > 1e-10)
+		if (std::abs(rotationAxisLengthSquared) > 1e-10)
 		{
 			double extraRotate = 0.0;
 			rotationAxis *= 1 / sqrt(rotationAxisLengthSquared);
@@ -440,7 +440,7 @@ int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 			targetCellZ += CellClass::BridgeHeight;
 	}
 
-	if (sourceCellZ == targetCellZ || abs(bulletVelocityZ) <= 32)
+	if (sourceCellZ == targetCellZ || std::abs(bulletVelocityZ) <= 32)
 	{
 		if (!this->DetonationDistance)
 			return 0;
@@ -450,7 +450,7 @@ int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 		const auto distanceOfTwo = sourceCoords.DistanceFrom(targetCoords);
 		const auto theDistance = (this->DetonationDistance < 0) ? (distanceOfTwo - this->DetonationDistance) : this->DetonationDistance;
 
-		if (abs(theDistance) > 1e-10)
+		if (std::abs(theDistance) > 1e-10)
 			bulletVelocityZ = static_cast<int>(bulletVelocityZ * (distanceOfTwo / theDistance));
 		else
 			return 0;
@@ -619,7 +619,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 		pBullet->SetTarget(pDetonateAt);
 		pBullet->TargetCoords = position;
 
-		if (abs(velocity) > 1e-10)
+		if (std::abs(velocity) > 1e-10)
 			pBullet->Velocity *= distance / velocity;
 
 		if (this->ProximityImpact != 0)
@@ -988,7 +988,7 @@ std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClas
 std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bottomStaCell, CellStruct leftMidCell, CellStruct rightMidCell, CellStruct topEndCell)
 {
 	std::vector<CellStruct> recCells;
-	const auto cellNums = (abs(topEndCell.Y - bottomStaCell.Y) + 1) * (abs(rightMidCell.X - leftMidCell.X) + 1);
+	const auto cellNums = (std::abs(topEndCell.Y - bottomStaCell.Y) + 1) * (std::abs(rightMidCell.X - leftMidCell.X) + 1);
 	recCells.reserve(cellNums);
 	recCells.push_back(bottomStaCell);
 
@@ -1264,10 +1264,10 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet)
 		const auto cellCoords = pCell->GetCoordsWithBridge();
 		const auto differenceOnBridge = cellCoords.Z - futureCoords.Z;
 
-		if (abs(differenceOnBridge) < abs(checkDifference))
+		if (std::abs(differenceOnBridge) < std::abs(checkDifference))
 			checkDifference = differenceOnBridge;
 
-		if (abs(checkDifference) < 384 || !pBullet->Type->SubjectToCliffs)
+		if (std::abs(checkDifference) < 384 || !pBullet->Type->SubjectToCliffs)
 		{
 			const auto pType = this->Type;
 			pBullet->Velocity.Z += static_cast<double>(checkDifference + pType->ConfineAtHeight);

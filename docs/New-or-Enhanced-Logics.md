@@ -746,7 +746,7 @@ Trajectory.Speed=100.0  ; floating point value
   - `Trajectory.Straight.PassDetonate` enables extra detonations when the projectile is traveling.
     - `Trajectory.Straight.PassDetonateWarhead` defines the warhead detonated by `Trajectory.Straight.PassDetonate`, and `Trajectory.Straight.PassDetonateDamage` defines the damage caused by `Trajectory.Straight.PassDetonateWarhead`.
     - `Trajectory.Straight.PassDetonateDelay` controls the delay for detonating the warhead defined by `Trajectory.Straight.Warhead`.
-    - `Trajectory.Straight.PassDetonateTimer` controls the initial delay for detonating the warhead defined by `Trajectory.Straight.Warhead`.
+    - `Trajectory.Straight.PassDetonateInitialDelay` controls the initial delay for detonating the warhead defined by `Trajectory.Straight.Warhead`.
     - `Trajectory.Straight.PassDetonateLocal` controls whether `Trajectory.Straight.PassDetonateWarhead` and weapon's `Warhead` are always detonate at ground level. It will also no longer restrict vertical velocity of the projectile when using `Trajectory.Straight.ConfineAtHeight`.
   - `Trajectory.Straight.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target when firing. Note that this will not affect the facing of the turret.
   - `Trajectory.Straight.OffsetCoord` controls the offsets of the target. Projectile will aim at this position to attack. It also supports `Inaccurate=yes` and `Trajectory.Straight.LeadTimeCalculate=true` on this basis.
@@ -780,7 +780,7 @@ Trajectory.Straight.PassDetonate=false          ; boolean
 Trajectory.Straight.PassDetonateWarhead=        ; WarheadType
 Trajectory.Straight.PassDetonateDamage=0        ; integer
 Trajectory.Straight.PassDetonateDelay=1         ; integer
-Trajectory.Straight.PassDetonateTimer=0         ; integer
+Trajectory.Straight.PassDetonateInitialDelay=0  ; integer
 Trajectory.Straight.PassDetonateLocal=false     ; boolean
 Trajectory.Straight.LeadTimeCalculate=false     ; boolean
 Trajectory.Straight.OffsetCoord=0,0,0           ; integer - Forward,Lateral,Height

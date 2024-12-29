@@ -14,7 +14,7 @@ public:
 		, PassDetonateWarhead {}
 		, PassDetonateDamage { 0 }
 		, PassDetonateDelay { 1 }
-		, PassDetonateTimer { 0 }
+		, PassDetonateInitialDelay { 0 }
 		, PassDetonateLocal { false }
 		, LeadTimeCalculate { false }
 		, OffsetCoord { { 0, 0, 0 } }
@@ -52,7 +52,7 @@ public:
 	Valueable<WarheadTypeClass*> PassDetonateWarhead;
 	Valueable<int> PassDetonateDamage;
 	Valueable<int> PassDetonateDelay;
-	Valueable<int> PassDetonateTimer;
+	Valueable<int> PassDetonateInitialDelay;
 	Valueable<bool> PassDetonateLocal;
 	Valueable<bool> LeadTimeCalculate;
 	Valueable<CoordStruct> OffsetCoord;
