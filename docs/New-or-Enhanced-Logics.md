@@ -796,8 +796,8 @@ Trajectory.Bombard.Height=0.0  ; double
     - `Trajectory.Disperse.WeaponBurst` defines how many corresponding weapons each time the projectile will fire. When the quantity is lower than `Trajectory.Disperse.Weapons`, it will use the last value.
     - `Trajectory.Disperse.WeaponCount` controls how many times the projectile can spread the weapon. Set to a negative value means unlimited times.
     - `Trajectory.Disperse.WeaponDelay` controls the delay for dispersing the weapons defined by `Trajectory.Disperse.Weapons`.
-    - `Trajectory.Disperse.WeaponTimer` controls the initial delay for dispersing the weapons defined by `Trajectory.Disperse.Weapons`.
-    - `Trajectory.Disperse.WeaponScope` controls the weapon dispersing timer to start counting only within this distance of reaching the target. Set to 0 to disable this function. Set to a negative value means it will only disperse the weapon at most once before detonation.
+    - `Trajectory.Disperse.WeaponInitialDelay` controls the initial delay for dispersing the weapons defined by `Trajectory.Disperse.Weapons`.
+    - `Trajectory.Disperse.WeaponEffectiveRange` controls the weapon dispersing timer to start counting only within this distance of reaching the target. Set to 0 to disable this function. Set to a negative value means it will only disperse the weapon at most once before detonation.
     - `Trajectory.Disperse.WeaponSeparate` controls whether the projectile no longer fire all the weapons in `Trajectory.Disperse.Weapons` at once and instead fire a group of weapons in the list order, following `Trajectory.Disperse.WeaponBurst`.
     - `Trajectory.Disperse.WeaponRetarget` controls whether the dispersed weapons will find new targets on their own. Using the `Range`, `CanTarget`, required `AttachedEffects` of weapons to search new targets.
     - `Trajectory.Disperse.WeaponLocation` controls whether the dispersed weapons will search for new targets at the center of the spreading position, otherwise they will focus on the original target.
@@ -836,8 +836,8 @@ Trajectory.Disperse.Weapons=                    ; list of WeaponTypes
 Trajectory.Disperse.WeaponBurst=                ; list of integers
 Trajectory.Disperse.WeaponCount=0               ; integer
 Trajectory.Disperse.WeaponDelay=1               ; integer
-Trajectory.Disperse.WeaponTimer=0               ; integer
-Trajectory.Disperse.WeaponScope=0               ; floating point value
+Trajectory.Disperse.WeaponInitialDelay=0        ; integer
+Trajectory.Disperse.WeaponEffectiveRange=0      ; floating point value
 Trajectory.Disperse.WeaponSeparate=false        ; boolean
 Trajectory.Disperse.WeaponRetarget=false        ; boolean
 Trajectory.Disperse.WeaponLocation=false        ; boolean

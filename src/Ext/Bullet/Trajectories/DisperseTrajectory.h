@@ -32,8 +32,8 @@ public:
 		, WeaponBurst {}
 		, WeaponCount { 0 }
 		, WeaponDelay { 1 }
-		, WeaponTimer { 0 }
-		, WeaponScope { Leptons(0) }
+		, WeaponInitialDelay { 0 }
+		, WeaponEffectiveRange { Leptons(0) }
 		, WeaponSeparate { false }
 		, WeaponRetarget { false }
 		, WeaponLocation { false }
@@ -75,8 +75,8 @@ public:
 	ValueableVector<int> WeaponBurst;
 	Valueable<int> WeaponCount;
 	Valueable<int> WeaponDelay;
-	Valueable<int> WeaponTimer;
-	Valueable<Leptons> WeaponScope;
+	Valueable<int> WeaponInitialDelay;
+	Valueable<Leptons> WeaponEffectiveRange;
 	Valueable<bool> WeaponSeparate;
 	Valueable<bool> WeaponRetarget;
 	Valueable<bool> WeaponLocation;
