@@ -323,6 +323,7 @@ SelectionFlashDuration=0  ; integer, number of frames
   - Aggressive stance does not reset even when the techno changes ownership.
   - Aggressive stance has no effect if the techno is controlled by the AI.
   - The passengers of open-topped transports will obey the aggressive stance configuration of the transports.
+  - Aggressive stance doesn't make a unit aggressively attack if `CanPassiveAquire=no`. However they will obey aggressive stance when ordered to attack-move.
 - Techno types can have further customizations about aggressive stance.
   - A techno type can be made aggressive stance by default by `AggressiveStance=true`.
   - A techno type can be disallowed to toggle its aggressive stance by `AggressiveStance.Togglable=false`.
