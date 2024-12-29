@@ -97,6 +97,7 @@ public:
 		Valueable<bool> PlacementGrid_Expand;
 		Valueable<Vector3D<int>> PlacementGrid_LandFrames;
 		Valueable<Vector3D<int>> PlacementGrid_WaterFrames;
+		Valueable<bool> ExtendedAircraftMissions;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -232,6 +233,7 @@ public:
 			, PlacementGrid_Expand { false }
 			, PlacementGrid_LandFrames { { 1, 0, 0 } }
 			, PlacementGrid_WaterFrames { { 1, 0, 0 } }
+			, ExtendedAircraftMissions { false }
 
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
