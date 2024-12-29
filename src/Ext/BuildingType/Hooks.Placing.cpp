@@ -397,7 +397,7 @@ DEFINE_HOOK(0x47EEBC, CellClass_DrawPlaceGrid_RecordCell, 0x6)
 			R->EDX<BlitterFlags>(flags | (zero ? BlitterFlags::Zero : BlitterFlags::Nonzero));
 			return DrawVanillaAlt;
 		}
-		else if (BuildingTypeClass* const pType = abstract_cast<BuildingTypeClass*>(reinterpret_cast<ObjectTypeClass*>(DisplayClass::Instance->unknown_1194)))
+		else if (BuildingTypeClass* const pType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingTypeCopy))
 		{
 			R->Stack<bool>(STACK_OFFSET(0x30, -0x1D), pCell->CanThisExistHere(pType->SpeedType, pType, HouseClass::CurrentPlayer));
 			R->EDX<BlitterFlags>(flags | BlitterFlags::TransLucent75);
@@ -435,13 +435,13 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 				pDisplay->SetActiveFoundation(nullptr);
 				pDisplay->CurrentBuilding = nullptr;
 				pDisplay->CurrentBuildingType = nullptr;
-				pDisplay->unknown_11AC = 0xFFFFFFFF;
+				pDisplay->CurrentBuildingOwnerArrayIndex = -1;
 
 				if (!Unsorted::ArmageddonMode)
 				{
 					reinterpret_cast<void(__thiscall*)(DisplayClass*, CellStruct*)>(0x4A8D50)(pDisplay, nullptr); // Clear CurrentFoundationCopy_Data
-					pDisplay->unknown_1190 = 0;
-					pDisplay->unknown_1194 = 0;
+					pDisplay->CurrentBuildingCopy = nullptr;
+					pDisplay->CurrentBuildingTypeCopy = nullptr;
 				}
 			}
 
@@ -517,13 +517,13 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 								pDisplay->SetActiveFoundation(nullptr);
 								pDisplay->CurrentBuilding = nullptr;
 								pDisplay->CurrentBuildingType = nullptr;
-								pDisplay->unknown_11AC = 0xFFFFFFFF;
+								pDisplay->CurrentBuildingOwnerArrayIndex = -1;
 
 								if (!Unsorted::ArmageddonMode)
 								{
 									reinterpret_cast<void(__thiscall*)(DisplayClass*, CellStruct*)>(0x4A8D50)(pDisplay, nullptr); // Clear CurrentFoundationCopy_Data
-									pDisplay->unknown_1190 = 0;
-									pDisplay->unknown_1194 = 0;
+									pDisplay->CurrentBuildingCopy = nullptr;
+									pDisplay->CurrentBuildingTypeCopy = nullptr;
 								}
 							}
 
@@ -598,7 +598,7 @@ DEFINE_HOOK(0x4FB319, HouseClass_UnitFromFactory_SkipMouseClear, 0x5)
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 	{
-		if (RulesExt::Global()->ExpandBuildingPlace && reinterpret_cast<ObjectTypeClass*>(DisplayClass::Instance->unknown_1194) != pBuilding->Type)
+		if (RulesExt::Global()->ExpandBuildingPlace && DisplayClass::Instance->CurrentBuildingTypeCopy != pBuilding->Type)
 			return SkipGameCode;
 	}
 
@@ -1093,7 +1093,7 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 			{
 				auto pType = pHouseExt->CurrentBuildingType;
 
-				if (pType || (isPlayer && (pType = abstract_cast<BuildingTypeClass*>(reinterpret_cast<ObjectTypeClass*>(pDisplay->unknown_1194)), pType)))
+				if (pType || (isPlayer && (pType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingTypeCopy), pType)))
 				{
 					auto pCell = pDisplay->TryGetCellAt(pHouseExt->CurrentBuildingTopLeft);
 
