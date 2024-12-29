@@ -54,9 +54,7 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
 
-	if (this->Trajectory_Speed > 128.0)
-		this->Trajectory_Speed = 128.0;
-
+	this->Trajectory_Speed = Math::min(128.0, this->Trajectory_Speed);
 	this->ApplyRangeModifiers.Read(exINI, pSection, "Trajectory.Engrave.ApplyRangeModifiers");
 	this->SourceCoord.Read(exINI, pSection, "Trajectory.Engrave.SourceCoord");
 	this->TargetCoord.Read(exINI, pSection, "Trajectory.Engrave.TargetCoord");
@@ -70,24 +68,13 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->LaserOuterColor.Read(exINI, pSection, "Trajectory.Engrave.LaserOuterColor");
 	this->LaserOuterSpread.Read(exINI, pSection, "Trajectory.Engrave.LaserOuterSpread");
 	this->LaserThickness.Read(exINI, pSection, "Trajectory.Engrave.LaserThickness");
-
-	if (this->LaserThickness <= 0)
-		this->LaserThickness = 1;
-
+	this->LaserThickness = Math::max(1, this->LaserThickness);
 	this->LaserDuration.Read(exINI, pSection, "Trajectory.Engrave.LaserDuration");
-
-	if (this->LaserDuration <= 0)
-		this->LaserDuration = 1;
-
+	this->LaserDuration = Math::max(1, this->LaserDuration);
 	this->LaserDelay.Read(exINI, pSection, "Trajectory.Engrave.LaserDelay");
-
-	if (this->LaserDelay <= 0)
-		this->LaserDelay = 1;
-
+	this->LaserDelay = Math::max(1, this->LaserDelay);
 	this->DamageDelay.Read(exINI, pSection, "Trajectory.Engrave.DamageDelay");
-
-	if (this->DamageDelay <= 0)
-		this->DamageDelay = 1;
+	this->DamageDelay = Math::max(1, this->DamageDelay);
 }
 
 template<typename T>
@@ -304,7 +291,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 
 	const auto checkDifference = this->GetFloorCoordHeight(pBullet, futureCoords) - futureCoords.Z;
 
-	if (abs(checkDifference) >= 384)
+	if (std::abs(checkDifference) >= 384)
 	{
 		if (pBullet->Type->SubjectToCliffs)
 			return true;
