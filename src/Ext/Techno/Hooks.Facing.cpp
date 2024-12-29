@@ -40,7 +40,7 @@ DEFINE_HOOK(0x7369D6, UnitClass_UpdateRotation_StopUnitIdleAction, 0xA)
 					const auto curDir = pThis->PrimaryFacing.Current();
 					const auto tgtDir = pTypeExt->GetBodyDesiredDir(curDir, targetDir);
 
-					if (abs(static_cast<short>(static_cast<short>(tgtDir.Raw) - static_cast<short>(curDir.Raw))) >= 8192)
+					if (std::abs(static_cast<short>(static_cast<short>(tgtDir.Raw) - static_cast<short>(curDir.Raw))) >= 8192)
 						pThis->PrimaryFacing.SetDesired(tgtDir);
 				}
 			}
