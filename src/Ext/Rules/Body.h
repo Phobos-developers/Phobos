@@ -94,6 +94,7 @@ public:
 		double AirShadowBaseScale_log;
 
 		Valueable<bool> ExpandBuildingPlace;
+		Valueable<bool> ExtendedAircraftMissions;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -226,6 +227,7 @@ public:
 			, AirShadowBaseScale_log { 0.693376137 }
 
 			, ExpandBuildingPlace { false }
+			, ExtendedAircraftMissions { false }
 
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
