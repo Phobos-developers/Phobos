@@ -49,6 +49,8 @@ public:
 		ValueableVector<bool> ExtraWarheads_FullDetonation;
 		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 		Valueable<bool> AmbientDamage_IgnoreTarget;
+		AEAttachInfoTypeClass AttachEffects;
+		Valueable<bool> AttachEffect_Enable;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
 		std::vector<std::string> AttachEffect_RequiredGroups;
@@ -90,6 +92,8 @@ public:
 			, ExtraWarheads_FullDetonation {}
 			, AmbientDamage_Warhead {}
 			, AmbientDamage_IgnoreTarget { false }
+			, AttachEffects {}
+			, AttachEffect_Enable { false }
 			, AttachEffect_RequiredTypes {}
 			, AttachEffect_DisallowedTypes {}
 			, AttachEffect_RequiredGroups {}

@@ -414,8 +414,10 @@ DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
 DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DiscardAEOnFire, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
+	GET(AbstractClass* const, pTarget, EDI);
+	GET(WeaponTypeClass* const, pWeapon, EBX);
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->AE.HasOnFireDiscardables)
 	{
@@ -423,6 +425,20 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DiscardAEOnFire, 0x6)
 		{
 			if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
 				attachEffect->ShouldBeDiscarded = true;
+		}
+	}
+
+	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	{
+		if (pWeaponExt->AttachEffect_Enable)
+		{
+			if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+			{
+				auto const& info = pWeaponExt->AttachEffects;
+				AttachEffectClass::Attach(pTargetTechno, pThis->Owner, pThis, pWeapon->Warhead, info);
+				AttachEffectClass::Detach(pTargetTechno, info);
+				AttachEffectClass::DetachByGroups(pTargetTechno, info);
+			}
 		}
 	}
 
