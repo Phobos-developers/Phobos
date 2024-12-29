@@ -729,7 +729,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
   - The speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
     - In `Trajectory=Straight`, it refers to the whole distance speed of the projectile and it has no restrictions.
     - In `Trajectory=Bombard`, it refers to the initial speed of the projectile and it has no restrictions.
-    - In `Trajectory=Tracing`, it refers to the tracing speed of the projectile and Negative numbers are considered infinite.
+    - In `Trajectory=Tracing`, it refers to the speed of tracing and turning around of the projectile.
 
   In `rulesmd.ini`:
 ```ini

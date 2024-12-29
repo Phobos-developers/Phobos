@@ -66,6 +66,7 @@ bool TracingTrajectoryType::Save(PhobosStreamWriter& Stm) const
 void TracingTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
+
 	pINI->ReadString(pSection, "Trajectory.Tracing.TraceMode", "", Phobos::readBuffer);
 	if (INIClass::IsBlank(Phobos::readBuffer))
 		this->TraceMode = TraceTargetMode::Connection;
@@ -96,10 +97,7 @@ void TracingTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->WeaponCount.Read(exINI, pSection, "Trajectory.Tracing.WeaponCount");
 	this->WeaponDelay.Read(exINI, pSection, "Trajectory.Tracing.WeaponDelay");
 	this->WeaponTimer.Read(exINI, pSection, "Trajectory.Tracing.WeaponTimer");
-
-	if (this->WeaponTimer < 0)
-		this->WeaponTimer = 0;
-
+	this->WeaponTimer = Math::max(0, this->WeaponTimer);
 	this->WeaponCycle.Read(exINI, pSection, "Trajectory.Tracing.WeaponCycle");
 	this->WeaponCheck.Read(exINI, pSection, "Trajectory.Tracing.WeaponCheck");
 	this->Synchronize.Read(exINI, pSection, "Trajectory.Tracing.Synchronize");
@@ -438,7 +436,7 @@ bool TracingTrajectory::CheckFireFacing(BulletClass* pBullet)
 	const auto targetDir = DirStruct { Math::atan2(theTarget.Y - theBullet.Y, theTarget.X - theBullet.X) };
 	const auto bulletDir = DirStruct { Math::atan2(pBullet->Velocity.Y, pBullet->Velocity.X) };
 
-	return abs(static_cast<short>(static_cast<short>(targetDir.Raw) - static_cast<short>(bulletDir.Raw))) <= (2048 + (pType->ROT << 8));
+	return std::abs(static_cast<short>(static_cast<short>(targetDir.Raw) - static_cast<short>(bulletDir.Raw))) <= (2048 + (pType->ROT << 8));
 }
 
 BulletVelocity TracingTrajectory::ChangeVelocity(BulletClass* pBullet)
@@ -501,7 +499,7 @@ BulletVelocity TracingTrajectory::ChangeVelocity(BulletClass* pBullet)
 			{
 				auto rotateAngle = Math::atan2(distanceCoords.Y, distanceCoords.X);
 
-				if (abs(radius) > 1e-10)
+				if (std::abs(radius) > 1e-10)
 					rotateAngle += (pType->Trajectory_Speed / radius);
 
 				theOffset.X = static_cast<int>(radius * Math::cos(rotateAngle));
@@ -524,7 +522,7 @@ BulletVelocity TracingTrajectory::ChangeVelocity(BulletClass* pBullet)
 			{
 				auto rotateAngle = Math::atan2(distanceCoords.Y, distanceCoords.X);
 
-				if (abs(radius) > 1e-10)
+				if (std::abs(radius) > 1e-10)
 					rotateAngle -= (pType->Trajectory_Speed / radius);
 
 				theOffset.X = static_cast<int>(radius * Math::cos(rotateAngle));
@@ -562,7 +560,7 @@ BulletVelocity TracingTrajectory::ChangeVelocity(BulletClass* pBullet)
 		static_cast<double>(distanceCoords.Z)
 	};
 
-	if (pType->Trajectory_Speed > 0 && distance > pType->Trajectory_Speed)
+	if (distance > pType->Trajectory_Speed)
 		velocity *= (pType->Trajectory_Speed / distance);
 
 	return velocity;
