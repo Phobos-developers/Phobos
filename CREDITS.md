@@ -335,6 +335,7 @@ This page lists all the individual contributions to the project by their author.
    - Ares' Abductor weapon fix
    - Suppress Ares' swizzle warning when parsing tags and taskforces
    - Better fix for Ares academy not working on the initial payloads of vehicles built from a war factory
+   - Fix Ares' InitialPayload for teams spawned by trigger actions
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -372,6 +373,8 @@ This page lists all the individual contributions to the project by their author.
   - Allow to change the speed of gas particles
 - **CrimRecya**
   - Fix `LimboKill` not working reliably
+  - Allow using waypoints, area guard and attack move with aircraft
+  - Fix `Stop` command not working so well in some cases
   - New Tracing trajectory
 - **Ollerus**
   - Build limit group enhancement
