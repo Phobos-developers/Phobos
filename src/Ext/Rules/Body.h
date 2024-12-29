@@ -97,6 +97,7 @@ public:
 		Valueable<SHPStruct*> Cameo_OverlayShapes;
 		Valueable<Vector3D<int>> Cameo_OverlayFrames;
 		CustomPalette Cameo_OverlayPalette;
+		Valueable<bool> ExtendedAircraftMissions;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -232,6 +233,7 @@ public:
 			, Cameo_OverlayShapes { FileSystem::PIPS_SHP }
 			, Cameo_OverlayFrames { { -1, -1, -1 } }
 			, Cameo_OverlayPalette {}
+			, ExtendedAircraftMissions { false }
 
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
