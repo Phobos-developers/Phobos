@@ -285,7 +285,7 @@ void TracingTrajectory::SetSourceLocation(BulletClass* pBullet)
 	pBullet->Velocity = facing * (1 / facing.Magnitude());
 }
 
-void TracingTrajectory::InitializeDuration(BulletClass* pBullet, int duration)
+inline void TracingTrajectory::InitializeDuration(BulletClass* pBullet, int duration)
 {
 	if (duration <= 0)
 	{
@@ -298,7 +298,7 @@ void TracingTrajectory::InitializeDuration(BulletClass* pBullet, int duration)
 	this->ExistTimer.Start(duration);
 }
 
-bool TracingTrajectory::InvalidFireCondition(TechnoClass* pTechno)
+inline bool TracingTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 {
 	return (!pTechno
 		|| !pTechno->IsAlive
@@ -733,123 +733,44 @@ void TracingTrajectory::CreateTracingBullets(BulletClass* pBullet, WeaponTypeCla
 
 	if (const auto pCreateBullet = pWeapon->Projectile->CreateBullet(pTarget, pTechno, finalDamage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 	{
-		pCreateBullet->WeaponType = pWeapon;
-		const auto pBulletExt = BulletExt::ExtMap.Find(pCreateBullet);
-		pBulletExt->FirerHouse = pOwner;
-		pCreateBullet->MoveTo(fireCoord, BulletVelocity::Empty);
+		BulletExt::SimulatedFiringInfos(pCreateBullet, pWeapon, pOwner, WeaponTypeExt::ExtMap.Find(pWeapon)->ProjectileRange.Get());
+		BulletExt::SimulatedFiringVelocity(pCreateBullet, fireCoord, false);
 
-		if (pBulletExt->Trajectory)
+		const auto pBulletExt = BulletExt::ExtMap.Find(pCreateBullet);
+		const auto pTraj = pBulletExt->Trajectory.get();
+
+		if (pTraj)
 		{
-			const auto flag = pBulletExt->Trajectory->Flag();
+			const auto flag = pTraj->Flag();
 
 			if (flag == TrajectoryFlag::Tracing)
 			{
-				const auto pTrajectory = static_cast<TracingTrajectory*>(pBulletExt->Trajectory.get());
+				const auto pTrajectory = static_cast<TracingTrajectory*>(pTraj);
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 				pTrajectory->NotMainWeapon = true;
 			}
 /*			else if (flag == TrajectoryFlag::Disperse) // TODO If merge #1295
 			{
-				const auto pTrajectory = static_cast<DisperseTrajectory*>(pBulletExt->Trajectory.get());
+				const auto pTrajectory = static_cast<DisperseTrajectory*>(pTraj);
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 			}*/
 /*			else if (flag == TrajectoryFlag::Straight) // TODO If merge #1294
 			{
-				const auto pTrajectory = static_cast<StraightTrajectory*>(pBulletExt->Trajectory.get());
+				const auto pTrajectory = static_cast<StraightTrajectory*>(pTraj);
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 			}*/
 /*			else if (flag == TrajectoryFlag::Engrave) // TODO If merge #1293
 			{
-				const auto pTrajectory = static_cast<EngraveTrajectory*>(pBulletExt->Trajectory.get());
+				const auto pTrajectory = static_cast<EngraveTrajectory*>(pTraj);
 				pTrajectory->NotMainWeapon = true;
 			}*/
 		}
 
-		const auto animCounts = pWeapon->Anim.Count;
-
-		if (animCounts > 0)
-		{
-			int animIndex = 0;
-
-			if (animCounts % 8 == 0)
-			{
-				if (pBulletExt->Trajectory)
-					animIndex = static_cast<int>((Math::atan2(pCreateBullet->Velocity.Y , pCreateBullet->Velocity.X) + Math::TwoPi + Math::Pi) * animCounts / Math::TwoPi - (animCounts / 8) + 0.5) % animCounts;
-				else
-					animIndex = static_cast<int>((Math::atan2(targetCoords.Y - fireCoord.Y , targetCoords.X - fireCoord.X) + Math::TwoPi + Math::Pi) * animCounts / Math::TwoPi - (animCounts / 8) + 0.5) % animCounts;
-			}
-			else
-			{
-				animIndex = ScenarioClass::Instance->Random.RandomRanged(0 , animCounts - 1);
-			}
-
-			if (const auto pAnimType = pWeapon->Anim[animIndex])
-			{
-				const auto pAnim = GameCreate<AnimClass>(pAnimType, fireCoord);
-				pAnim->SetOwnerObject(pBullet->Owner);
-				pAnim->Owner = pOwner;
-
-				if (const auto pAnimExt = AnimExt::ExtMap.Find(pAnim))
-					pAnimExt->SetInvoker(pBullet->Owner, pOwner);
-			}
-		}
+		BulletExt::SimulatedFiringAnim(pCreateBullet, pWeapon, pOwner, pTraj, (pType->TraceTheTarget && !this->NotMainWeapon));
+		BulletExt::SimulatedFiringReport(pCreateBullet, pWeapon);
+		BulletExt::SimulatedFiringLaser(pCreateBullet, pWeapon, pOwner);
+		BulletExt::SimulatedFiringElectricBolt(pCreateBullet, pWeapon);
+		BulletExt::SimulatedFiringRadBeam(pCreateBullet, pWeapon, pOwner);
+		BulletExt::SimulatedFiringParticleSystem(pCreateBullet, pWeapon, pOwner);
 	}
-	else
-	{
-		return;
-	}
-
-	if (pWeapon->Report.Count > 0)
-	{
-		const auto reportIndex = pWeapon->Report.GetItem((pBullet->Owner ? pBullet->Owner->unknown_short_3C8 : ScenarioClass::Instance->Random.Random()) % pWeapon->Report.Count);
-
-		if (reportIndex != -1)
-			VocClass::PlayAt(reportIndex, fireCoord, nullptr);
-	}
-
-	if (pWeapon->IsLaser)
-	{
-		if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
-		{
-			auto const pLaser = GameCreate<LaserDrawClass>(fireCoord, targetCoords, (pWeapon->IsHouseColor ? pOwner->LaserColor : pWeapon->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
-			pLaser->IsHouseColor = true;
-			pLaser->Thickness = pWeaponExt->LaserThickness;
-			pLaser->IsSupported = (pLaser->Thickness > 3);
-		}
-		else
-		{
-			auto const pLaser = GameCreate<LaserDrawClass>(fireCoord, targetCoords, pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
-			pLaser->IsHouseColor = false;
-			pLaser->Thickness = 3;
-			pLaser->IsSupported = false;
-		}
-	}
-
-	if (pWeapon->IsElectricBolt)
-	{
-		if (const auto pEBolt = GameCreate<EBolt>())
-		{
-			pEBolt->AlternateColor = pWeapon->IsAlternateColor;
-			//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
-			WeaponTypeExt::BoltWeaponMap[pEBolt] = pWeaponExt;
-			pEBolt->Fire(fireCoord, targetCoords, 0);
-		}
-	}
-
-	if (pWeapon->IsRadBeam)
-	{
-		const bool isTemporal = pWeapon->Warhead && pWeapon->Warhead->Temporal;
-
-		if (const auto pRadBeam = RadBeam::Allocate(isTemporal ? RadBeamType::Temporal : RadBeamType::RadBeam))
-		{
-			pRadBeam->SetCoordsSource(fireCoord);
-			pRadBeam->SetCoordsTarget(targetCoords);
-			pRadBeam->Color = pWeaponExt->Beam_IsHouseColor ? pOwner->LaserColor : pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
-			pRadBeam->Period = pWeaponExt->Beam_Duration;
-			pRadBeam->Amplitude = pWeaponExt->Beam_Amplitude;
-		}
-	}
-
-	if (const auto pPSType = pWeapon->AttachedParticleSystem)
-		GameCreate<ParticleSystemClass>(pPSType, fireCoord, pTarget, pBullet->Owner, targetCoords, pOwner);
 }

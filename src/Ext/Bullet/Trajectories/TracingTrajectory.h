@@ -119,8 +119,8 @@ private:
 
 	void GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno);
 	void SetSourceLocation(BulletClass* pBullet);
-	void InitializeDuration(BulletClass* pBullet, int duration);
-	bool InvalidFireCondition(TechnoClass* pTechno);
+	inline void InitializeDuration(BulletClass* pBullet, int duration);
+	inline bool InvalidFireCondition(TechnoClass* pTechno);
 	bool BulletDetonatePreCheck(BulletClass* pBullet);
 	void ChangeFacing(BulletClass* pBullet);
 	bool CheckFireFacing(BulletClass* pBullet);
