@@ -95,11 +95,11 @@ private:
 	void Serialize(T& Stm);
 
 	void GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno);
-	void CheckMirrorCoord(TechnoClass* pTechno);
+	inline void CheckMirrorCoord(TechnoClass* pTechno);
 	void SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget);
-	bool InvalidFireCondition(TechnoClass* pTechno);
+	inline bool InvalidFireCondition(TechnoClass* pTechno);
 	int GetFloorCoordHeight(BulletClass* pBullet, CoordStruct coord);
 	bool PlaceOnCorrectHeight(BulletClass* pBullet);
 	void DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
-	void DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
+	inline void DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
 };

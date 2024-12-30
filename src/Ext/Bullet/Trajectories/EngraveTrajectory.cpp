@@ -215,7 +215,7 @@ void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTe
 	this->FLHCoord = pExt->LastWeaponFLH;
 }
 
-void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno)
+inline void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno)
 {
 	if (this->NotMainWeapon || !(pTechno->CurrentBurstIndex % 2))
 		return;
@@ -249,7 +249,7 @@ void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct th
 	pBullet->Velocity.Z = 0;
 }
 
-bool EngraveTrajectory::InvalidFireCondition(TechnoClass* pTechno)
+inline bool EngraveTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 {
 	return (!pTechno
 		|| !pTechno->IsAlive
@@ -371,7 +371,7 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 	}
 }
 
-void EngraveTrajectory::DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
+inline void EngraveTrajectory::DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
 	const auto pType = this->Type;
 	this->DamageTimer.Start(pType->DamageDelay);
