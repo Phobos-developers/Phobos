@@ -1,7 +1,8 @@
 #include "AggressiveStance.h"
 #include "Ext/Techno/Body.h"
 #include <EventClass.h>
-#include "../Misc/Network.h"
+#include <Ext/Event/Body.h>
+#include <Ext/Event/Body.cpp>
 
 const char* AggressiveStanceClass::GetName() const
 {
@@ -93,7 +94,7 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 		}
 		for (auto pTechno : TechnoVector)
 		{
-			PhobosNetEvent::Handlers::RaiseToggleAggressiveStance(pTechno);
+			EventExt::RaiseToggleAggressiveStance(pTechno);
 
 			auto pTechnoType = pTechno->GetTechnoType();
 			auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);

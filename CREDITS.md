@@ -383,7 +383,7 @@ This page lists all the individual contributions to the project by their author.
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Aephiex**
   - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
-  - aggressive stance toggle command (auto target buildings)
+  - Aggressive stance toggle command (auto target unarmed enemy buildings)
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

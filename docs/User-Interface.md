@@ -319,6 +319,7 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 ### `[ ]` Toggle Aggressive Stance
 - Switches on/off aggressive stance for selected units and structures.
+  - Much like how the deploy command work on G.I.s. If all selected technos that may toggle aggressive stance are already aggressive stance, they will exit it, otherwise they will enter it.
 - Under aggressive stance, units and structures will target unarmed enemy buildings if no enemy units or defensive structures can be targeted.
   - Aggressive stance does not reset even when the techno changes ownership.
   - Aggressive stance has no effect if the techno is controlled by the AI.
