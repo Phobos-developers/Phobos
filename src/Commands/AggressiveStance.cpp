@@ -49,7 +49,7 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
 		// if not a techno or is in berserk or is not controlled by the local player then ignore it
-		if (!pTechno || pTechno->Berzerk || pTechno->Owner != HouseClass::CurrentPlayer)
+		if (!pTechno || pTechno->Berzerk || !pTechno->Owner->IsInPlayerControl)
 			continue;
 
 		// If not togglable then exclude it from the iteration.
@@ -62,7 +62,7 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
 		{
 			isAnySelectedUnitArmed = true;
-			if (pTechnoExt->GetAutoTargetBuildings(pTechno))
+			if (pTechnoExt->GetAggressiveStance(pTechno))
 			{
 				TechnoVectorAggressive.push_back(pTechno);
 			}

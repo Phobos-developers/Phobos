@@ -48,7 +48,7 @@ void PhobosNetEvent::Handlers::RespondToToggleAggressiveStance(EventClass* pEven
 	{
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
 		{
-			pTechnoExt->TogggleAutoTargetBuildings(pTechno);
+			pTechnoExt->ToggleAggressiveStance(pTechno);
 		}
 	}
 }

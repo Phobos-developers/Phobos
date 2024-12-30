@@ -309,7 +309,7 @@ DEFINE_HOOK(0x6F858F, TechnoClass_EvaluateObject_AggressiveStance, 0x7)
 	{
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(pThis))
 		{
-			if (pTechnoExt->GetAutoTargetBuildings(pThis))
+			if (pTechnoExt->GetAggressiveStance(pThis))
 			{
 				return 0x6F88BF;
 			}
