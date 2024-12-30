@@ -352,7 +352,7 @@ void DisperseTrajectory::InitializeBulletNotCurve(BulletClass* pBullet, bool fac
 	}
 }
 
-BulletVelocity DisperseTrajectory::RotateAboutTheAxis(BulletVelocity theSpeed, BulletVelocity theAxis, double theRadian)
+inline BulletVelocity DisperseTrajectory::RotateAboutTheAxis(BulletVelocity theSpeed, BulletVelocity theAxis, double theRadian)
 {
 	const auto theAxisLengthSquared = theAxis.MagnitudeSquared();
 
@@ -555,12 +555,12 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet)
 	return false;
 }
 
-bool DisperseTrajectory::CheckTechnoIsInvalid(TechnoClass* pTechno)
+inline bool DisperseTrajectory::CheckTechnoIsInvalid(TechnoClass* pTechno)
 {
 	return (!pTechno->IsAlive || !pTechno->IsOnMap || pTechno->InLimbo || pTechno->IsSinking || pTechno->Health <= 0);
 }
 
-bool DisperseTrajectory::CheckWeaponCanTarget(WeaponTypeExt::ExtData* pWeaponExt, TechnoClass* pFirer, TechnoClass* pTarget)
+inline bool DisperseTrajectory::CheckWeaponCanTarget(WeaponTypeExt::ExtData* pWeaponExt, TechnoClass* pFirer, TechnoClass* pTarget)
 {
 	return !pWeaponExt || (EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget) && pWeaponExt->HasRequiredAttachedEffects(pTarget, pFirer));
 }
@@ -1192,18 +1192,19 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 	if (const auto pCreateBullet = pWeapon->Projectile->CreateBullet(pTarget, pBullet->Owner, finalDamage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 	{
-		pCreateBullet->WeaponType = pWeapon;
-		const auto pBulletExt = BulletExt::ExtMap.Find(pCreateBullet);
-		pBulletExt->FirerHouse = pOwner;
-		pCreateBullet->MoveTo(pBullet->Location, BulletVelocity::Empty);
+		BulletExt::SimulatedFiringInfos(pCreateBullet, pWeapon, pOwner, WeaponTypeExt::ExtMap.Find(pWeapon)->ProjectileRange.Get());
+		BulletExt::SimulatedFiringVelocity(pCreateBullet, pBullet->Location, false);
 
-		if (pBulletExt->Trajectory)
+		const auto pBulletExt = BulletExt::ExtMap.Find(pCreateBullet);
+		const auto pTraj = pBulletExt->Trajectory.get();
+
+		if (pTraj)
 		{
-			const auto flag = pBulletExt->Trajectory->Flag();
+			const auto flag = pTraj->Flag();
 
 			if (flag == TrajectoryFlag::Disperse)
 			{
-				const auto pTrajectory = static_cast<DisperseTrajectory*>(pBulletExt->Trajectory.get());
+				const auto pTrajectory = static_cast<DisperseTrajectory*>(pTraj);
 				const auto pTrajType = pTrajectory->Type;
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 
@@ -1213,7 +1214,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 			}
 /*			else if (flag == TrajectoryFlag::Straight) // TODO If merge #1294
 			{
-				const auto pTrajectory = static_cast<StraightTrajectory*>(pBulletExt->Trajectory.get());
+				const auto pTrajectory = static_cast<StraightTrajectory*>(pTraj);
 				const auto pTrajType = pTrajectory->Type;
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 
@@ -1234,7 +1235,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 			}*/
 /*			else if (flag == TrajectoryFlag::Bombard) // TODO If merge #1404
 			{
-				const auto pTrajectory = static_cast<BombardTrajectory*>(pBulletExt->Trajectory.get());
+				const auto pTrajectory = static_cast<BombardTrajectory*>(pTraj);
 				const auto pTrajType = pTrajectory->Type;
 
 				//The bombard trajectory bullets without NoLaunch and FreeFallOnTarget can change the velocity.
@@ -1250,12 +1251,12 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 			}*/
 /*			else if (flag == TrajectoryFlag::Engrave) // TODO If merge #1293
 			{
-				const auto pTrajectory = static_cast<EngraveTrajectory*>(pBulletExt->Trajectory.get());
+				const auto pTrajectory = static_cast<EngraveTrajectory*>(pTraj);
 				pTrajectory->NotMainWeapon = true;
 			}*/
 /*			else if (flag == TrajectoryFlag::Parabola) // TODO If merge #1374
 			{
-				const auto pTrajectory = static_cast<ParabolaTrajectory*>(pBulletExt->Trajectory.get());
+				const auto pTrajectory = static_cast<ParabolaTrajectory*>(pTraj);
 				const auto pTrajType = pTrajectory->Type;
 
 				//The parabola trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
@@ -1275,107 +1276,19 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 			}*/
 /*			else if (flag == TrajectoryFlag::Tracing) // TODO If merge #1481
 			{
-				const auto pTrajectory = static_cast<TracingTrajectory*>(pBulletExt->Trajectory.get());
+				const auto pTrajectory = static_cast<TracingTrajectory*>(pTraj);
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 				pTrajectory->NotMainWeapon = true;
 			}*/
 		}
 
-		const auto animCounts = pWeapon->Anim.Count;
-
-		if (animCounts > 0)
-		{
-			int animIndex = 0;
-
-			if (animCounts % 8 == 0)
-			{
-				if (pBulletExt->Trajectory)
-				{
-					animIndex = static_cast<int>((Math::atan2(pCreateBullet->Velocity.Y , pCreateBullet->Velocity.X) + Math::TwoPi + Math::Pi) * animCounts / Math::TwoPi - (animCounts / 8) + 0.5) % animCounts;
-				}
-				else
-				{
-					const auto theSourceCoord = pBullet->Location;
-					const auto theTargetCoord = pTarget->GetCoords();
-					animIndex = static_cast<int>((Math::atan2(theTargetCoord.Y - theSourceCoord.Y , theTargetCoord.X - theSourceCoord.X) + Math::TwoPi + Math::Pi) * animCounts / Math::TwoPi - (animCounts / 8) + 0.5) % animCounts;
-				}
-			}
-			else
-			{
-				animIndex = ScenarioClass::Instance->Random.RandomRanged(0 , animCounts - 1);
-			}
-
-			if (const auto pAnimType = pWeapon->Anim[animIndex])
-			{
-				const auto pAnim = GameCreate<AnimClass>(pAnimType, pBullet->Location);
-				pAnim->SetOwnerObject(pBullet->Owner);
-				pAnim->Owner = pOwner;
-
-				if (const auto pAnimExt = AnimExt::ExtMap.Find(pAnim))
-					pAnimExt->SetInvoker(pBullet->Owner, pOwner);
-			}
-		}
+		BulletExt::SimulatedFiringAnim(pCreateBullet, pWeapon, pOwner, pTraj, false);
+		BulletExt::SimulatedFiringReport(pCreateBullet, pWeapon);
+		BulletExt::SimulatedFiringLaser(pCreateBullet, pWeapon, pOwner);
+		BulletExt::SimulatedFiringElectricBolt(pCreateBullet, pWeapon);
+		BulletExt::SimulatedFiringRadBeam(pCreateBullet, pWeapon, pOwner);
+		BulletExt::SimulatedFiringParticleSystem(pCreateBullet, pWeapon, pOwner);
 	}
-	else
-	{
-		return;
-	}
-
-	if (pWeapon->Report.Count > 0)
-	{
-		const auto reportIndex = pWeapon->Report.GetItem((pBullet->Owner ? pBullet->Owner->unknown_short_3C8 : ScenarioClass::Instance->Random.Random()) % pWeapon->Report.Count);
-
-		if (reportIndex != -1)
-			VocClass::PlayAt(reportIndex, pBullet->Location, nullptr);
-	}
-
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-	if (pWeapon->IsLaser)
-	{
-		if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
-		{
-			auto const pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(), (pWeapon->IsHouseColor ? pOwner->LaserColor : pWeapon->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
-			pLaser->IsHouseColor = true;
-			pLaser->Thickness = pWeaponExt->LaserThickness;
-			pLaser->IsSupported = (pLaser->Thickness > 3);
-		}
-		else
-		{
-			auto const pLaser = GameCreate<LaserDrawClass>(pBullet->Location, pTarget->GetCoords(), pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
-			pLaser->IsHouseColor = false;
-			pLaser->Thickness = 3;
-			pLaser->IsSupported = false;
-		}
-	}
-
-	if (pWeapon->IsElectricBolt)
-	{
-		if (const auto pEBolt = GameCreate<EBolt>())
-		{
-			pEBolt->AlternateColor = pWeapon->IsAlternateColor;
-			//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
-			WeaponTypeExt::BoltWeaponMap[pEBolt] = pWeaponExt;
-			pEBolt->Fire(pBullet->Location, pTarget->GetCoords(), 0);
-		}
-	}
-
-	if (pWeapon->IsRadBeam)
-	{
-		const bool isTemporal = pWeapon->Warhead && pWeapon->Warhead->Temporal;
-
-		if (const auto pRadBeam = RadBeam::Allocate(isTemporal ? RadBeamType::Temporal : RadBeamType::RadBeam))
-		{
-			pRadBeam->SetCoordsSource(pBullet->Location);
-			pRadBeam->SetCoordsTarget(pTarget->GetCoords());
-			pRadBeam->Color = pWeaponExt->Beam_IsHouseColor ? pOwner->LaserColor : pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
-			pRadBeam->Period = pWeaponExt->Beam_Duration;
-			pRadBeam->Amplitude = pWeaponExt->Beam_Amplitude;
-		}
-	}
-
-	if (const auto pPSType = pWeapon->AttachedParticleSystem)
-		GameCreate<ParticleSystemClass>(pPSType, pBullet->Location, pTarget, pBullet->Owner, pTarget->GetCoords(), pOwner);
 }
 
 void DisperseTrajectory::DisperseBurstSubstitution(BulletClass* pBullet, CoordStruct axis, double rotateCoord, int curBurst, int maxBurst, bool mirror)

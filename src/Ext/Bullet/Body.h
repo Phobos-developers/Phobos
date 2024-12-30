@@ -68,4 +68,13 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static void SimulatedFiringInfos(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse, int projectileRange);
+	static void SimulatedFiringVelocity(BulletClass* pBullet, const CoordStruct& sourceCoords, bool randomVelocity);
+	static void SimulatedFiringAnim(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse, bool trajectory, bool attach);
+	static void SimulatedFiringReport(BulletClass* pBullet, WeaponTypeClass* pWeapon);
+	static void SimulatedFiringLaser(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse);
+	static void SimulatedFiringElectricBolt(BulletClass* pBullet, WeaponTypeClass* pWeapon);
+	static void SimulatedFiringRadBeam(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse);
+	static void SimulatedFiringParticleSystem(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse);
 };
