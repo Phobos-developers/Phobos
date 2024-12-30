@@ -577,6 +577,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				{
 					BulletExt::SimulatedFiringInfos(pBullet, pWeapon, pOwner, projectileRange);
 					BulletExt::SimulatedFiringVelocity(pBullet, pThis->Location, true);
+					// BulletExt::SimulatedFiringAnim(pBullet, pWeapon, pOwner, BulletExt::ExtMap.Find(pBullet)->Trajectory, false);
+					// BulletExt::SimulatedFiringReport(pBullet, pWeapon);
 					BulletExt::SimulatedFiringLaser(pBullet, pWeapon, pOwner);
 					BulletExt::SimulatedFiringElectricBolt(pBullet, pWeapon);
 					BulletExt::SimulatedFiringRadBeam(pBullet, pWeapon, pOwner);

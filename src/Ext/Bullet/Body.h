@@ -69,12 +69,12 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static inline void SimulatedFiringInfos(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse, int projectileRange);
-	static inline void SimulatedFiringVelocity(BulletClass* pBullet, const CoordStruct& sourceCoords, bool randomVelocity);
-	static inline void SimulatedFiringAnim(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse, bool attach);
-	static inline void SimulatedFiringReport(BulletClass* pBullet, WeaponTypeClass* pWeapon);
-	static inline void SimulatedFiringLaser(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse);
-	static inline void SimulatedFiringElectricBolt(BulletClass* pBullet, WeaponTypeClass* pWeapon);
-	static inline void SimulatedFiringRadBeam(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse);
-	static inline void SimulatedFiringParticleSystem(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse);
+	static void SimulatedFiringInfos(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse, int projectileRange);
+	static void SimulatedFiringVelocity(BulletClass* pBullet, const CoordStruct& sourceCoords, bool randomVelocity);
+	static void SimulatedFiringAnim(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse, bool trajectory, bool attach);
+	static void SimulatedFiringReport(BulletClass* pBullet, WeaponTypeClass* pWeapon);
+	static void SimulatedFiringLaser(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse);
+	static void SimulatedFiringElectricBolt(BulletClass* pBullet, WeaponTypeClass* pWeapon);
+	static void SimulatedFiringRadBeam(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse);
+	static void SimulatedFiringParticleSystem(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse);
 };
