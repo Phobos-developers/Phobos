@@ -369,8 +369,9 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 
 	pThis->IsSelected = true;
 
-	if (RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
-		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
+	if (Phobos::Config::ShowFlashOnSelecting && RulesExt::Global()->SelectionFlashDuration > 0)
+		if (pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+			pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
 
 	return 0;
 }

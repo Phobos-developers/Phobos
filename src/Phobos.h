@@ -90,6 +90,7 @@ public:
 		static bool ShowWeedsCounter;
 		static bool ShowPlanningPath;
 		static bool HideLightFlashEffects;
+		static bool ShowFlashOnSelecting;
 	};
 
 	class Misc
