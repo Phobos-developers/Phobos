@@ -539,7 +539,7 @@ bool TechnoExt::ExtData::GetAggressiveStance(TechnoClass* pThis) const
 void TechnoExt::ExtData::ToggleAggressiveStance(TechnoClass* pThis)
 {
 	
-	if (this->GetAggressiveStance(pThis))
+	if (this->AggressiveStance)
 	{
 		// toggle off aggressive stance
 		this->AggressiveStance = false;
