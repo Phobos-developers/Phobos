@@ -575,72 +575,13 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			{
 				if (auto const pBullet = pTypeSplits->CreateBullet(pTarget, pSource, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
-					BulletExt::ExtMap.Find(pBullet)->FirerHouse = pOwner;
-					pBullet->WeaponType = pWeapon;
-					pBullet->Range = projectileRange;
-
-					DirStruct dir;
-					dir.SetValue<5>(random.RandomRanged(0, 31));
-
-					auto const radians = dir.GetRadian<32>();
-					auto const sin_rad = Math::sin(radians);
-					auto const cos_rad = Math::cos(radians);
-					auto const cos_factor = -2.44921270764e-16; // cos(1.5 * Math::Pi * 1.00001)
-					auto const flatSpeed = cos_factor * pBullet->Speed;
-
-					BulletVelocity velocity;
-					velocity.X = cos_rad * flatSpeed;
-					velocity.Y = sin_rad * flatSpeed;
-					velocity.Z = -pBullet->Speed;
-
-					pBullet->MoveTo(pThis->Location, velocity);
+					BulletExt::SimulatedFiringInfos(pBullet, pWeapon, pOwner, projectileRange);
+					BulletExt::SimulatedFiringVelocity(pBullet, pThis->Location, true);
+					BulletExt::SimulatedFiringLaser(pBullet, pWeapon, pOwner);
+					BulletExt::SimulatedFiringElectricBolt(pBullet, pWeapon);
+					BulletExt::SimulatedFiringRadBeam(pBullet, pWeapon, pOwner);
+					BulletExt::SimulatedFiringParticleSystem(pBullet, pWeapon, pOwner);
 				}
-
-				if (pWeapon->IsLaser)
-				{
-					if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
-					{
-						auto const pLaser = GameCreate<LaserDrawClass>(pThis->Location, pTarget->GetCoords(), (pWeapon->IsHouseColor ? pOwner->LaserColor : pWeapon->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pWeapon->LaserDuration);
-						pLaser->IsHouseColor = true;
-						pLaser->Thickness = pWeaponExt->LaserThickness;
-						pLaser->IsSupported = (pLaser->Thickness > 3);
-					}
-					else
-					{
-						auto const pLaser = GameCreate<LaserDrawClass>(pThis->Location, pTarget->GetCoords(), pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
-						pLaser->IsHouseColor = false;
-						pLaser->Thickness = 3;
-						pLaser->IsSupported = false;
-					}
-				}
-
-				if (pWeapon->IsElectricBolt)
-				{
-					if (auto const pEBolt = GameCreate<EBolt>())
-					{
-						pEBolt->AlternateColor = pWeapon->IsAlternateColor;
-						//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
-						WeaponTypeExt::BoltWeaponMap[pEBolt] = pWeaponExt;
-						pEBolt->Fire(pThis->Location, pTarget->GetCoords(), 0);
-					}
-				}
-
-				if (pWeapon->IsRadBeam)
-				{
-					const bool isTemporal = pWeapon->Warhead && pWeapon->Warhead->Temporal;
-
-					if (const auto pRadBeam = RadBeam::Allocate(isTemporal ? RadBeamType::Temporal : RadBeamType::RadBeam))
-					{
-						pRadBeam->SetCoordsSource(pThis->Location);
-						pRadBeam->SetCoordsTarget(pTarget->GetCoords());
-						pRadBeam->Color = pWeaponExt->Beam_IsHouseColor ? pOwner->LaserColor : pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
-						pRadBeam->Period = pWeaponExt->Beam_Duration;
-						pRadBeam->Amplitude = pWeaponExt->Beam_Amplitude;
-					}
-				}
-
-				if (const auto pPSType = pWeapon->AttachedParticleSystem)
-					GameCreate<ParticleSystemClass>(pPSType, pThis->Location, pTarget, pThis->Owner, pTarget->GetCoords(), pOwner);
 			}
 		}
 	}
