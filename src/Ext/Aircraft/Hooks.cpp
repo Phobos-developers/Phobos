@@ -48,18 +48,19 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 	}
 
 	int fireCount = pThis->MissionStatus - 4;
+	int strafingShots = pWeaponExt->Strafing_Shots.Get(5);
 
-	if (pWeaponExt->Strafing_Shots > 5)
+	if (strafingShots > 5)
 	{
 		if (pThis->MissionStatus == (int)AirAttackStatus::FireAtTarget3_Strafe)
 		{
-			int remainingShots = pWeaponExt->Strafing_Shots - 3 - pExt->Strafe_BombsDroppedThisRound;
+			int remainingShots = strafingShots - 3 - pExt->Strafe_BombsDroppedThisRound;
 
 			if (remainingShots > 0)
 				pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget2_Strafe;
 		}
 	}
-	else if (fireCount > 1 && pWeaponExt->Strafing_Shots < fireCount)
+	else if (fireCount > 1 && strafingShots < fireCount)
 	{
 		if (!pThis->Ammo)
 			pThis->IsLocked = false;
@@ -215,12 +216,11 @@ DEFINE_HOOK(0x414F10, AircraftClass_AI_Trailer, 0x5)
 	GET(AircraftClass*, pThis, ESI);
 	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x40, -0xC));
 
-	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1))
-	{
-		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
-		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
-		pTrailerAnimExt->SetInvoker(pThis);
-	}
+	auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1);
+	auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+	AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
+	pTrailerAnimExt->SetInvoker(pThis);
+	pTrailerAnimExt->IsTechnoTrailerAnim = true;
 
 	return SkipGameCode;
 }
@@ -298,31 +298,6 @@ DEFINE_HOOK(0x44402E, BuildingClass_ExitObject_PoseDir2, 0x5)
 
 #pragma endregion
 
-DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
-{
-	GET(ILocomotion*, iloco, ESI);
-	__assume(iloco != nullptr);
-	auto loco = static_cast<FlyLocomotionClass*>(iloco);
-	auto pThis = static_cast<AircraftClass*>(loco->LinkedTo);
-	if (pThis->GetHeight() <= 0)
-	{
-		REF_STACK(Matrix3D, mat, STACK_OFFSET(0x38, -0x30));
-		auto slope_idx = MapClass::Instance->GetCellAt(pThis->Location)->SlopeIndex;
-		mat = Matrix3D::VoxelRampMatrix[slope_idx] * mat;
-		float ars = pThis->AngleRotatedSideways;
-		float arf = pThis->AngleRotatedForwards;
-		if (std::abs(ars) > 0.005 || std::abs(arf) > 0.005)
-		{
-			mat.TranslateZ(float(std::abs(Math::sin(ars)) * pThis->Type->VoxelScaleX
-				+ std::abs(Math::sin(arf)) * pThis->Type->VoxelScaleY));
-			R->ECX(pThis);
-			return 0x4CF6AD;
-		}
-	}
-
-	return 0x4CF6A0;
-}
-
 DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 {
 	enum { SkipKickOutPassengers = 0x415F08 };
@@ -341,4 +316,243 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 		return 0;
 
 	return SkipKickOutPassengers;
+}
+
+// Aircraft mission hard code are all disposable that no ammo, target died or arrived destination all will call the aircraft return airbase
+#pragma region ExtendedAircraftMissions
+
+// Waypoint: enable and smooth moving action
+bool __fastcall AircraftTypeClass_CanUseWaypoint(AircraftTypeClass* pThis)
+{
+	return RulesExt::Global()->ExtendedAircraftMissions.Get();
+}
+DEFINE_JUMP(VTABLE, 0x7E2908, GET_OFFSET(AircraftTypeClass_CanUseWaypoint))
+
+// KickOut: skip useless tether
+DEFINE_JUMP(LJMP, 0x444021, 0x44402E)
+
+// Move: smooth the planning paths and returning route
+DEFINE_HOOK_AGAIN(0x4168C7, AircraftClass_Mission_Move_SmoothMoving, 0x5)
+DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
+{
+	enum { EnterIdleAndReturn = 0x416AC0, ContinueMoving1 = 0x416908, ContinueMoving2 = 0x416A47 };
+
+	GET(AircraftClass* const, pThis, ESI);
+	GET(CoordStruct* const, pCoords, EAX);
+
+	if (!RulesExt::Global()->ExtendedAircraftMissions)
+		return 0;
+
+	const auto pType = pThis->Type;
+
+	if (!pType->AirportBound || pThis->Team || pThis->Airstrike || pThis->Spawned)
+		return 0;
+
+	const int distance = Game::F2I(Point2D { pCoords->X, pCoords->Y }.DistanceFrom(Point2D { pThis->Location.X, pThis->Location.Y }));
+
+	// When the horizontal distance between the aircraft and its destination is greater than half of its deceleration distance
+	// or its turning radius, continue to move forward, otherwise return to airbase or execute the next planning path
+	if (distance > std::max((pType->SlowdownDistance >> 1), (2048 / pType->ROT)))
+		return (R->Origin() == 0x4168C7 ? ContinueMoving1 : ContinueMoving2);
+
+	pThis->EnterIdleMode(false, true);
+
+	return EnterIdleAndReturn;
+}
+
+// AreaGuard: return when no ammo or first target died
+DEFINE_HOOK_AGAIN(0x41A982, AircraftClass_Mission_AreaGuard, 0x6)
+DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
+{
+	enum { SkipGameCode = 0x41A97A };
+
+	GET(AircraftClass* const, pThis, ESI);
+
+	if (RulesExt::Global()->ExtendedAircraftMissions && !pThis->Team && pThis->Ammo && pThis->IsArmed())
+	{
+		auto coords = pThis->GetCoords();
+
+		if (pThis->TargetAndEstimateDamage(coords, ThreatType::Area))
+		{
+			pThis->QueueMission(Mission::Attack, false);
+			return SkipGameCode;
+		}
+	}
+
+	return 0;
+}
+
+// AttackMove: return when no ammo or arrived destination
+bool __fastcall AircraftTypeClass_CanAttackMove(AircraftTypeClass* pThis)
+{
+	return RulesExt::Global()->ExtendedAircraftMissions.Get();
+}
+DEFINE_JUMP(VTABLE, 0x7E290C, GET_OFFSET(AircraftTypeClass_CanAttackMove))
+
+DEFINE_HOOK(0x6FA68B, TechnoClass_Update_AttackMovePaused, 0xA) // To make aircrafts not search for targets while resting at the airport, this is designed to adapt to loop waypoint
+{
+	enum { SkipGameCode = 0x6FA6F5 };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	const bool skip = RulesExt::Global()->ExtendedAircraftMissions
+		&& pThis->WhatAmI() == AbstractType::Aircraft
+		&& (!pThis->Ammo || !pThis->IsInAir());
+
+	return skip ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget1, 0x6) // When it have MegaDestination
+{
+	enum { LoseTarget = 0x4DF3D3, HoldTarget = 0x4DF4AB };
+
+	GET(FootClass* const, pThis, ESI);
+
+	// The aircraft is constantly moving, which may cause its target to constantly enter and leave its range, so it is fixed to hold the target.
+	if (RulesExt::Global()->ExtendedAircraftMissions && pThis->WhatAmI() == AbstractType::Aircraft)
+		return HoldTarget;
+
+	return pThis->InAuxiliarySearchRange(pThis->Target) ? HoldTarget : LoseTarget;
+}
+
+DEFINE_HOOK(0x4DF42A, FootClass_UpdateAttackMove_AircraftHoldAttackMoveTarget2, 0x6) // When it have MegaTarget
+{
+	enum { ContinueCheck = 0x4DF462, HoldTarget = 0x4DF4AB };
+
+	GET(FootClass* const, pThis, ESI);
+
+	// Although if the target selected by CS is an object rather than cell.
+	return (RulesExt::Global()->ExtendedAircraftMissions && pThis->WhatAmI() == AbstractType::Aircraft) ? HoldTarget : ContinueCheck;
+}
+
+DEFINE_HOOK(0x418CD1, AircraftClass_Mission_Attack_ContinueFlyToDestination, 0x6)
+{
+	enum { Continue = 0x418C43, Return = 0x418CE8 };
+
+	GET(AircraftClass* const, pThis, ESI);
+
+	if (!pThis->Target)
+	{
+		if (!RulesExt::Global()->ExtendedAircraftMissions || !pThis->MegaMissionIsAttackMove() || !pThis->MegaDestination)
+			return Continue;
+
+		pThis->SetDestination(pThis->MegaDestination, false);
+		pThis->QueueMission(Mission::Move, true);
+		pThis->HaveAttackMoveTarget = false;
+	}
+	else
+	{
+		pThis->MissionStatus = 1;
+	}
+
+	R->EAX(1);
+	return Return;
+}
+
+// Idle: clear the target if no ammo
+DEFINE_HOOK(0x414D4D, AircraftClass_Update_ClearTargetIfNoAmmo, 0x6)
+{
+	enum { ClearTarget = 0x414D3F };
+
+	GET(AircraftClass* const, pThis, ESI);
+
+	if (RulesExt::Global()->ExtendedAircraftMissions && !pThis->Ammo && !pThis->Airstrike && !pThis->Spawned)
+	{
+		if (!SessionClass::IsCampaign()) // To avoid AI's aircrafts team repeatedly attempting to attack the target when no ammo
+		{
+			if (const auto pTeam = pThis->Team)
+				pTeam->LiberateMember(pThis);
+		}
+
+		return ClearTarget;
+	}
+
+	return 0;
+}
+
+// Stop: clear the mega mission and return to airbase immediately
+// (StopEventFix's DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6) in Hooks.BugFixes.cpp)
+
+// GreatestThreat: for all the mission that should let the aircraft auto select a target
+AbstractClass* __fastcall AircraftClass_GreatestThreat(AircraftClass* pThis, void* _, ThreatType threatType, CoordStruct* pSelectCoords, bool onlyTargetHouseEnemy)
+{
+	if (RulesExt::Global()->ExtendedAircraftMissions)
+	{
+		if (const auto pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType)
+			threatType |= pPrimaryWeapon->AllowedThreats();
+
+		if (const auto pSecondaryWeapon = pThis->GetWeapon(1)->WeaponType)
+			threatType |= pSecondaryWeapon->AllowedThreats();
+	}
+
+	return pThis->FootClass::GreatestThreat(threatType, pSelectCoords, onlyTargetHouseEnemy);
+}
+DEFINE_JUMP(VTABLE, 0x7E2668, GET_OFFSET(AircraftClass_GreatestThreat))
+
+#pragma endregion
+
+static __forceinline bool CheckSpyPlaneCameraCount(AircraftClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType);
+
+	if (!pWeaponExt->Strafing_Shots.isset())
+		return true;
+
+	if (pExt->Strafe_BombsDroppedThisRound >= pWeaponExt->Strafing_Shots)
+		return false;
+
+	pExt->Strafe_BombsDroppedThisRound++;
+
+	return true;
+}
+
+DEFINE_HOOK(0x415666, AircraftClass_Mission_SpyPlaneApproach_MaxCount, 0x6)
+{
+	enum { Skip = 0x41570C };
+
+	GET(AircraftClass*, pThis, ESI);
+
+	if (!CheckSpyPlaneCameraCount(pThis))
+		return Skip;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4157EB, AircraftClass_Mission_SpyPlaneOverfly_MaxCount, 0x6)
+{
+	enum { Skip = 0x415863 };
+
+	GET(AircraftClass*, pThis, ESI);
+
+	if (!CheckSpyPlaneCameraCount(pThis))
+		return Skip;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
+{
+	enum { SkipResponse = 0x709015 };
+
+	GET(TechnoClass*, pThis, ECX);
+
+	if (auto const pAircraft = abstract_cast<AircraftClass*>(pThis))
+	{
+		if (pAircraft->Type->Carryall && pAircraft->HasAnyLink() &&
+			generic_cast<FootClass*>(pAircraft->Destination))
+		{
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
+
+			if (pTypeExt->VoicePickup.isset())
+			{
+				pThis->QueueVoice(pTypeExt->VoicePickup.Get());
+
+				R->EAX(1);
+				return SkipResponse;
+			}
+		}
+	}
+
+	return 0;
 }
