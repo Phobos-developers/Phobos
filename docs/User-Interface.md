@@ -268,13 +268,13 @@ ShowTimer.Priority=0  ; integer
 
 ### Flashing Technos on selecting
 
-- Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it permanently.
+- Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter.
   - The feature can be toggled on/off by user if enabled in mod via `ShowFlashOnSelecting` setting in `RA2MD.ini`.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-SelectionFlashDuration=0    ; integer, number of frames
+SelectionFlashDuration=     ; integer, number of frames
 ```
 
 In `RA2MD.ini`:
