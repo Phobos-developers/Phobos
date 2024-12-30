@@ -334,8 +334,8 @@ SelectionFlashDuration=0  ; integer, number of frames
 - For localization, add the following keys into your `.csf` file.
   - `TXT_AGGRESSIVE_STANCE`: The name of the command.
   - `TXT_AGGRESSIVE_STANCE_DESC`: The description of the command.
-  - `TXT_AGGRESSIVE_STANCE_ON_MESSAGE`: The message to be displayed when units enter aggressive stance. May have `%i` inside to display how many units are affected.
-  - `TXT_AGGRESSIVE_STANCE_OFF_MESSAGE`: The message to be displayed when units exit aggressive stance. May have `%i` inside to display how many units are affected.
+  - `MSG:AGGRESSIVE_STANCE_ON`: The message to be displayed when units enter aggressive stance. May have `%i` inside to display how many units are affected.
+  - `MSG:AGGRESSIVE_STANCE_OFF`: The message to be displayed when units exit aggressive stance. May have `%i` inside to display how many units are affected.
 
 In `rulesmd.ini`:
 ```ini
