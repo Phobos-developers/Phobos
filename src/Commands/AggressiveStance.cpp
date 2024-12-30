@@ -26,12 +26,12 @@ const wchar_t* AggressiveStanceClass::GetUIDescription() const
 
 const wchar_t* AggressiveStanceClass::GetToggleOnPopupMessage() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_AGGRESSIVE_STANCE_ON_MESSAGE", L"%i unit(s) entered Aggressive Stance.");
+	return GeneralUtils::LoadStringUnlessMissing("MSG:AGGRESSIVE_STANCE_ON", L"%i unit(s) entered Aggressive Stance.");
 }
 
 const wchar_t* AggressiveStanceClass::GetToggleOffPopupMessage() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_AGGRESSIVE_STANCE_OFF_MESSAGE", L"%i unit(s) ceased Aggressive Stance.");
+	return GeneralUtils::LoadStringUnlessMissing("MSG:AGGRESSIVE_STANCE_OFF", L"%i unit(s) ceased Aggressive Stance.");
 }
 
 void AggressiveStanceClass::Execute(WWKey eInput) const
@@ -125,7 +125,7 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 			}
 		}
 		wchar_t buffer[0x1000];
-		swprintf_s(buffer, Message, TechnoVector.size());
+		wsprintfW(buffer, Message, TechnoVector.size());
 		MessageListClass::Instance->PrintMessage(buffer);
 	}
 }
