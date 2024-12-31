@@ -39,8 +39,8 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 void TechnoTypeExt::ExtData::InitCrusherLevel()
 {
 	// Crusher related.
-	// Only UnitType can crush something, so we don't bother to do this for anything else.
-	if (this->OwnerObject()->WhatAmI() == AbstractType::UnitType)
+	// Only UnitType with "Crusher=yes" can crush something, so we don't bother to do this for anything else.
+	if (this->OwnerObject()->WhatAmI() == AbstractType::UnitType && this->OwnerObject()->Crusher)
 	{
 		if (!this->CrusherLevel.isset())
 		{
@@ -55,27 +55,6 @@ void TechnoTypeExt::ExtData::InitCrusherLevel()
 			else
 			{
 				this->CrusherLevel = 0;
-			}
-		}
-		else
-		{
-			// `CrusherLevel` is set, we make sure `Crusher` and `OmniCrusher` are present when needed, to make .ini coding easier.
-			// If crusher level is greater than zero, then make the techno type itself a crusher.
-			// If we don't, a vehicle type that is not a crusher can never crush anything, even if it had a sky high crusher level.
-			// The purpose is to make `Crusher=true` unnecessary for a vehicle that is clearly intended to be a crusher.
-			// This doesn't remove existing `Crusher=true` if the vehicle had a zero or negative crusher level.
-			if (!this->OwnerObject()->Crusher && this->CrusherLevel > 0)
-			{
-				this->OwnerObject()->Crusher = true;
-			}
-
-			// If crusher level is equal to or greater than the default value for `OmniCrusher`, then make the techno itself an omni crusher.
-			// Otherwise, it can't crush walls that resist normal crusher, if only a high crusher level is given but `OmniCrusher=true` is not.
-			// The purpose is to make `OmniCrusher=true` unnecessary for a vehicle that is clearly intended to be an omni crusher.
-			// This doesn't remove existing `OmniCrusher=true` if the vehicle's crusher level is lower than the default value for `OmniCrusher`.
-			if (!this->OwnerObject()->OmniCrusher && this->CrusherLevel >= RulesExt::Global()->CrusherLevel_Defaults_OmniCrusher)
-			{
-				this->OwnerObject()->OmniCrusher = true;
 			}
 		}
 	}
@@ -112,7 +91,7 @@ void TechnoTypeExt::ExtData::InitCrusherLevel()
 		}
 
 		// `CrushableLevel` is not set, we take a default value for `DeployedCrushableLevel` based on `DeployedCrushable` and `OmniCrushResistant`.
-		// To avoid complexity of considering all possible combos, we ignore explicit `DeployedCrushableLevel` if `CrushableLevel` is not set.
+		// To avoid complexity of all possible combos, we ignore explicit `DeployedCrushableLevel` if `CrushableLevel` is not set.
 		if (auto pInfantryType = static_cast<InfantryTypeClass*>(this->OwnerObject()))
 		{
 			// We only consider case 1, since in any other case, the infantry's
@@ -134,13 +113,11 @@ void TechnoTypeExt::ExtData::InitCrusherLevel()
 	}
 }
 
-// This function is called upon a potential crusher's perspective and returns the crusher level of it.
 int TechnoTypeExt::ExtData::GetCrusherLevel(FootClass* pCrusher) const
 {
 	return this->CrusherLevel.Get(0);
 }
 
-// This function is called upon a potential crushing victim's perspective and returns the crushable level of it.
 int TechnoTypeExt::ExtData::GetCrushableLevel(FootClass* pVictim) const
 {
 	if (auto pVictimInfantry = abstract_cast<InfantryClass*>(pVictim))

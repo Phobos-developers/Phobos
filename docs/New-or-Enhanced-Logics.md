@@ -1397,18 +1397,18 @@ Convert.ComputerToHuman =   ; TechnoType
     - At 2/2, a vehicle can crush Tesla Troopers and deployed Guardian G.I.s, but it can't crush IFVs and is still crushable by Battle Fortresses, just like a [Scorpion Tank](https://cnc-central.fandom.com/wiki/Scorpion_tank_(Tiberium_Wars)) does with the Dozer blades upgrade.
     - At 4/4, a vehicle can crush almost anything else, even Battle Fortresses, just like a [MARV](https://cnc-central.fandom.com/wiki/Mammoth_Armored_Reclamation_Vehicle) does.
 - Other usage notes:
-  - A unit must has a locomotor that supports crushing before it can crush something. Most naval units don't, except for the amphibious transports.
-  - If a vehicle has a positive `CrusherLevel`, since it is presumably intended to be a crusher, it will be silently assigned with `Crusher=yes`, otherwise the game doesn't even try to check if it can crush something.
-    - Existing `Crusher=yes` entry isn't removed even if it had a `CrusherLevel` <= 0, however it doesn't help this unit to crush something with `CrushableLevel=0`.
-  - If a vehicle has a `CrusherLevel` >= `[General]►CrushableLevel.Defaults.Uncrushable.Building`, since it is presumably intended to be able to crush walls, it will be silently assigned with `OmniCrusher=yes`, otherwise it won't be able to crush walls, unlike those explicitly given with `OmniCrusher=yes`.
-    - Existing `OmniCrusher=yes` entry isn't removed even if it had a `CrusherLevel` lower than that, however it doesn't help this unit to crush something with a `CrushableLevel` equal to or greater than its `CrusherLevel`.
+  - A vehicle must has a locomotor that supports crushing before it can crush something. Most naval units don't, except for the amphibious transports.
+  - A vehicle must have `Crusher=yes` before it can crush something, meaning a positive `CrusherLevel` requires `Crusher=yes` to function.
+  - Infantry types can never crush anything even if it had `Crusher=yes` and a tank's locomotor and movement zone.
   - If `CrusherLevel` is set, `OmniCrusher` is redundant and ignored.
   - If `CrushableLevel` is set, `Crushable`, `OmniCrushResistant`, and `DeployedCrushable` are redundant and ignored. Use `DeployedCrushableLevel` instead if you wish the infantry to have a different crushable level when deployed.
   - If `CrushableLevel` is not set, `DeployedCrushableLevel` does not apply.
-- A building with 1x1 foundation can be made crushable, however they have `Crushable=no` by default and they are hard-coded to be immune to `OmniCrusher`, meaning they can't be crushed by normal means. Thus, the crusher level system does not apply to buildings by default, and it must be turned on by `[General]►CrusherLevelEnabled.For1x1Buildings=true`. If not turned on, crushing buildings fallbacks to unmodded behavior.
+- A building with 1x1 foundation can be made crushable, however they have `Crushable=no` by default and they are hard-coded to be immune to `OmniCrusher`, meaning they can't be crushed by normal means. Thus, the crusher level system does not apply to buildings by default, and it must be turned on by `[General]►CrusherLevelEnabled.For1x1Buildings=true`. If not turned on, crushing buildings follow unmodded behavior.
   - Crushing a building triggers no animation or sound effect, and the building is silently removed from the map.
   - Crushing a building may cause unexpected behavior of the game, such as crushing all Bridge Repair Huts can make a bridge irrepairable.
-- The crusher level system does not apply to walls. Crushing walls fallbacks to unmodded behavior.
+- The crusher level system does not apply to walls. Crushing walls follow unmodded behavior.
+  - `Crusher=yes`, `MovementZone=(Destroyer|AmphibiousDestroyer)` can crush overlays with `Wall=yes`, `Crushable=yes` (Sandbags).
+  - `Crusher=yes`, `MovementZone=CrusherAll` can crush overlays with `Wall=yes`, `Crushable=no` (Fortress Walls).
 
 In `rulesmd.ini`
 ```ini
