@@ -19,6 +19,9 @@ TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 void TechnoTypeExt::ExtData::Initialize()
 {
 	this->ShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+
+	if (RulesExt::Global()->CrusherLevelEnabled)
+		InitCrusherLevel();
 }
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
@@ -32,80 +35,120 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
-// This function is called upon a potential crusher's perspective and returns the crusher level of it.
-// This function is intended to use only on a unit with "Crusher=yes".
-int TechnoTypeExt::ExtData::GetCrusherLevel(FootClass* pCrusher)
+// Init the `CrusherLevel`, `CrushableLevel`, and `DeployedCrushableLevel` for a techno type.
+void TechnoTypeExt::ExtData::InitCrusherLevel()
 {
-	// Returns the CrusherLevel if explictly set.
-	if (this->CrusherLevel.isset())
+	// Crusher related.
+	// Only UnitType can crush something, so we don't bother to do this for anything else.
+	if (this->OwnerObject()->WhatAmI() == AbstractType::UnitType)
 	{
-		return this->CrusherLevel.Get(0);
-	}
-
-	// Otherwise, gets a default value for CrusherLevel.
-	return pCrusher->GetTechnoType()->OmniCrusher ?
-		RulesExt::Global()->CrusherLevel_Defaults_OmniCrusher :
-		RulesExt::Global()->CrusherLevel_Defaults_Crusher;
-}
-
-// This function is called upon a potential crushing victim's perspective and returns the crushable level of it.
-// This function is intended to use only on an infantry, a unit, or an overlay.
-// Passing anything else such as terrain types into this function can cause a game crash.
-int TechnoTypeExt::ExtData::GetCrushableLevel(FootClass* pVictim)
-{
-	// If this techno is infantry:
-	if (auto const pVictimInfantry = abstract_cast<InfantryClass*>(pVictim))
-	{
-		// Returns the CrushableLevel if explictly set.
-		// Respects the "DeployedCrushableLevel=" setting if the infantry is deployed.
-		// Unlike the unmodded game, where you cannot tell an infantry is "Crushable=no" and "DeployableCrushable=yes",
-		// here you may have an infantry come with a lower CrushableLevel when deployed.
-		if (this->CrushableLevel.isset())
+		if (!this->CrusherLevel.isset())
 		{
-			if (pVictimInfantry->IsDeployed())
+			// `CrusherLevel` is not set, we take a default value based on `Crusher` and `OmniCrusher`.
+			if (this->OwnerObject()->Crusher)
 			{
-				return this->DeployedCrushableLevel.Get(this->CrushableLevel.Get(0));
+				if (this->OwnerObject()->OmniCrusher)
+					this->CrusherLevel = RulesExt::Global()->CrusherLevel_Defaults_OmniCrusher;
+				else
+					this->CrusherLevel = RulesExt::Global()->CrusherLevel_Defaults_Crusher;
 			}
 			else
 			{
-				return this->CrushableLevel.Get(0);
+				this->CrusherLevel = 0;
+			}
+		}
+		else
+		{
+			// `CrusherLevel` is set, we make sure `Crusher` and `OmniCrusher` are present when needed, to make .ini coding easier.
+			// If crusher level is greater than zero, then make the techno type itself a crusher.
+			// If we don't, a vehicle type that is not a crusher can never crush anything, even if it had a sky high crusher level.
+			// The purpose is to make `Crusher=true` unnecessary for a vehicle that is clearly intended to be a crusher.
+			// This doesn't remove existing `Crusher=true` if the vehicle had a zero or negative crusher level.
+			if (!this->OwnerObject()->Crusher && this->CrusherLevel > 0)
+			{
+				this->OwnerObject()->Crusher = true;
+			}
+
+			// If crusher level is equal to or greater than the default value for `OmniCrusher`, then make the techno itself an omni crusher.
+			// Otherwise, it can't crush walls that resist normal crusher, if only a high crusher level is given but `OmniCrusher=true` is not.
+			// The purpose is to make `OmniCrusher=true` unnecessary for a vehicle that is clearly intended to be an omni crusher.
+			// This doesn't remove existing `OmniCrusher=true` if the vehicle's crusher level is lower than the default value for `OmniCrusher`.
+			if (!this->OwnerObject()->OmniCrusher && this->CrusherLevel >= RulesExt::Global()->CrusherLevel_Defaults_OmniCrusher)
+			{
+				this->OwnerObject()->OmniCrusher = true;
+			}
+		}
+	}
+
+	// Crushable related.
+	if (!this->CrushableLevel.isset())
+	{
+		// `CrushableLevel` is not set, we take a default value based on `Crushable`, `OmniCrushResistant`, and the techno's type.
+		if (this->OwnerObject()->Crushable)
+		{
+			this->CrushableLevel = 0;
+		}
+		else if (this->OwnerObject()->OmniCrushResistant)
+		{
+			this->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant;
+		}
+		else
+		{
+			// The techno types are infantry types, unit types, aircraft types, and building types.
+			// Overlay types are not techno types.
+			switch (this->OwnerObject()->WhatAmI())
+			{
+			case AbstractType::InfantryType:
+				this->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Infantry;
+				break;
+			case AbstractType::UnitType:
+			case AbstractType::AircraftType:
+				this->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Unit;
+				break;
+			case AbstractType::BuildingType:
+				this->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Building;
+				break;
 			}
 		}
 
-		// Otherwise, gets a default value for CrushableLevel.
-		// If the InfantryType has "Crushable=yes", and it doesn't have "DeployedCrushable=no" and is deployed, then it can always be crushed.
-		// Note that in base game logic, "OmniCrushResistant=yes" only prevents "OmniCrusher=yes", it does not prevent "Crusher=yes".
-		// There fore, "Crushable=yes" and "OmniCrushResistant=yes" can still be crushed by "Crusher=yes" and "OmniCrusher=yes".
-		// Plus the fact that "OmniCrusher=yes" requires "Crusher=yes" to function,
-		// I'm ignoring the "OmniCrushResistant=" entry if "Crushable=yes" in the first place.
-		auto const pVictimInfTypeClass = abstract_cast<InfantryTypeClass*>(pVictimInfantry->GetTechnoType());
-		if (!pVictimInfTypeClass->Crushable || (!pVictimInfTypeClass->DeployedCrushable && pVictimInfantry->IsDeployed()))
+		// `CrushableLevel` is not set, we take a default value for `DeployedCrushableLevel` based on `DeployedCrushable` and `OmniCrushResistant`.
+		// To avoid complexity of considering all possible combos, we ignore explicit `DeployedCrushableLevel` if `CrushableLevel` is not set.
+		if (auto pInfantryType = static_cast<InfantryTypeClass*>(this->OwnerObject()))
 		{
-			return pVictimInfTypeClass->OmniCrushResistant ?
-				RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant :
-				RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Infantry;
+			// We only consider case 1, since in any other case, the infantry's
+			// default `DeployedCrushableLevel` will be equal to its default `CrushableLevel`.
+			// 1. `Crushable=true`, `DeployedCrushable=false`: uncrushable only when deployed;
+			// 2. `Crushable=false`, `DeployedCrushable=true`: uncrushable always.
+			if (pInfantryType->Crushable && !pInfantryType->DeployedCrushable)
+			{
+				if (pInfantryType->OmniCrushResistant)
+					this->DeployedCrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant;
+				else
+					this->DeployedCrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Infantry;
+			}
+			else
+			{
+				this->DeployedCrushableLevel = this->CrushableLevel;
+			}
 		}
 	}
+}
 
-	// If this is something else:
-	else
+// This function is called upon a potential crusher's perspective and returns the crusher level of it.
+int TechnoTypeExt::ExtData::GetCrusherLevel(FootClass* pCrusher) const
+{
+	return this->CrusherLevel.Get(0);
+}
+
+// This function is called upon a potential crushing victim's perspective and returns the crushable level of it.
+int TechnoTypeExt::ExtData::GetCrushableLevel(FootClass* pVictim) const
+{
+	if (auto pVictimInfantry = static_cast<InfantryClass*>(pVictim))
 	{
-		// Returns the CrushableLevel if explictly set.
-		if (this->CrushableLevel.isset())
-		{
-			return this->CrushableLevel.Get(0);
-		}
-		// Otherwise, gets a default value for CrushableLevel.
-		// If this is explictly set as "Crushable=yes" then regard it crushable.
-		if (!pVictim->GetTechnoType()->Crushable)
-		{
-			return pVictim->GetTechnoType()->OmniCrushResistant ?
-				RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant :
-				RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Others;
-		}
+		if (pVictimInfantry->IsDeployed())
+			return this->DeployedCrushableLevel.Get(this->CrushableLevel.Get(0));
 	}
-
-	return 0;
+	return this->CrushableLevel.Get(0);
 }
 
 // Ares 0.A source

@@ -212,7 +212,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CrusherLevel_Defaults_Crusher.Read(exINI, GameStrings::General, "CrusherLevel.Defaults.Crusher");
 	this->CrusherLevel_Defaults_OmniCrusher.Read(exINI, GameStrings::General, "CrusherLevel.Defaults.OmniCrusher");
 	this->CrushableLevel_Defaults_Uncrushable_Infantry.Read(exINI, GameStrings::General, "CrushableLevel.Defaults.Uncrushable.Infantry");
-	this->CrushableLevel_Defaults_Uncrushable_Others.Read(exINI, GameStrings::General, "CrushableLevel.Defaults.Uncrushable.Others");
+	this->CrushableLevel_Defaults_Uncrushable_Unit.Read(exINI, GameStrings::General, "CrushableLevel.Defaults.Uncrushable.Unit");
+	this->CrushableLevel_Defaults_Uncrushable_Building.Read(exINI, GameStrings::General, "CrushableLevel.Defaults.Uncrushable.Building");
 	this->CrushableLevel_Defaults_OmniCrushResistant.Read(exINI, GameStrings::General, "CrushableLevel.Defaults.OmniCrushResistant");
 
 	// Section AITargetTypes
@@ -402,7 +403,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrusherLevel_Defaults_Crusher)
 		.Process(this->CrusherLevel_Defaults_OmniCrusher)
 		.Process(this->CrushableLevel_Defaults_Uncrushable_Infantry)
-		.Process(this->CrushableLevel_Defaults_Uncrushable_Others)
+		.Process(this->CrushableLevel_Defaults_Uncrushable_Unit)
+		.Process(this->CrushableLevel_Defaults_Uncrushable_Building)
 		.Process(this->CrushableLevel_Defaults_OmniCrushResistant)
 		;
 }

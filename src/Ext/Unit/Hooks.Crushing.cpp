@@ -108,21 +108,23 @@ DEFINE_HOOK(0x5F6CE0, FootClass_CanGetCrushed_Hook, 6)
 	GET(FootClass* const, pCrusher, EDI);
 	GET(FootClass* const, pVictim, ESI);
 
-	// An eligible crusher must be a unit with "Crusher=yes".
-	// An eligible victim must be either an infantry, a unit, an overlay, or a building with 1x1 foundation.
-	if (RulesExt::Global()->CrusherLevelEnabled &&
-		pCrusher && pCrusher->WhatAmI() == AbstractType::Unit && pCrusher->GetTechnoType()->Crusher &&
-		pVictim && (pVictim->WhatAmI() == AbstractType::Infantry ||
-			pVictim->WhatAmI() == AbstractType::Unit ||
-			pVictim->WhatAmI() == AbstractType::Overlay ||
-			(RulesExt::Global()->CrusherLevelEnabled_For1x1Buildings && pVictim->WhatAmI() == AbstractType::Building &&
-				abstract_cast<BuildingTypeClass*>(pVictim->GetTechnoType())->Foundation == Foundation::_1x1)))
+	if (RulesExt::Global()->CrusherLevelEnabled)
 	{
-		auto pCrusherExt = TechnoTypeExt::ExtMap.Find(pCrusher->GetTechnoType());
-		auto pVictimExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType());
-		int crusherLevel = pCrusherExt->GetCrusherLevel(pCrusher);
-		int crushableLevel = pVictimExt->GetCrushableLevel(pVictim);
-		return crusherLevel > crushableLevel ? CanCrush : CannotCrush;
+		// An eligible crusher must be a unit with "Crusher=yes".
+		// An eligible victim must be either an infantry, a unit, or a building with 1x1 foundation.
+		// Otherwise, fallback to unmodded behavior.
+		if (pCrusher && pCrusher->WhatAmI() == AbstractType::Unit && pCrusher->GetTechnoType()->Crusher &&
+			pVictim && (pVictim->WhatAmI() == AbstractType::Infantry ||
+				pVictim->WhatAmI() == AbstractType::Unit ||
+				(RulesExt::Global()->CrusherLevelEnabled_For1x1Buildings && pVictim->WhatAmI() == AbstractType::Building &&
+					abstract_cast<BuildingTypeClass*>(pVictim->GetTechnoType())->Foundation == Foundation::_1x1)))
+		{
+			auto pCrusherExt = TechnoTypeExt::ExtMap.Find(pCrusher->GetTechnoType());
+			auto pVictimExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType());
+			int crusherLevel = pCrusherExt->GetCrusherLevel(pCrusher);
+			int crushableLevel = pVictimExt->GetCrushableLevel(pVictim);
+			return crusherLevel > crushableLevel ? CanCrush : CannotCrush;
+		}
 	}
 
 	return 0;

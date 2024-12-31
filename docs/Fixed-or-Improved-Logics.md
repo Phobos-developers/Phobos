@@ -1124,7 +1124,7 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 ### Customizing crushing tilt and slowdown
 
-- Vehicles with `Crusher=true` and `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
+- Vehicles with `Crusher=true` and `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrushes.Vehicles` and `TiltsWhenCrushes.Overlays`, which both default to `TiltsWhenCrushes`.
 - `CrushForwardTiltPerFrame` determines how much the forward tilt is adjusted per frame when crushing overlays or vehicles. Defaults to -0.02 for vehicles using Ship locomotor crushing overlays, -0.050000001 for all other cases.
 - `CrushOverlayExtraForwardTilt` is additional forward tilt applied after an overlay has been crushed by the vehicle.
 - It is possible to customize the movement speed slowdown when `MovementZone=CrusherAll` vehicle crushes walls by setting `CrushSlowdownMultiplier`.

@@ -1368,22 +1368,22 @@ Convert.ComputerToHuman =   ; TechnoType
 
 ### Crusher level and crushable level
 
-- A techno can now be specified with a `CrusherLevel=` and `CrushableLevel=` akin to that of successing CNC titles. This feature completely takes over the crush check and must be turned on manually by `[General]►CrusherLevelEnabled=true` before it can take any effect.
-- A unit can crush something if its `CrusherLevel` is greater than the latter's `CrushableLevel`. If not set, the default value will be taken from `[General]` settings. The default values of the `[General]` settings themselves follow the convention of *[Command and Conquer 3: Tiberium Wars](https://cnc-central.fandom.com/wiki/Command_%26_Conquer_3:_Tiberium_Wars)* and *[Kane's Wrath](https://cnc-central.fandom.com/wiki/Command_%26_Conquer_3:_Kane%27s_Wrath)*.
-  - `CrusherLevel=`:
+- A techno can now be specified with a `CrusherLevel=` and `CrushableLevel=` akin to that of successing CNC titles. Since this feature completely takes over the crush check, it must be turned on by `[General]►CrusherLevelEnabled=true`.
+- A vehicle can crush an infantry or a vehicle if its `CrusherLevel` is greater than the latter's `CrushableLevel`. If not set, the default value will be taken from `[General]` settings. The default values of the `[General]` settings themselves follow the convention of *[Command and Conquer 3: Tiberium Wars](https://cnc-central.fandom.com/wiki/Command_%26_Conquer_3:_Tiberium_Wars)* and *[Kane's Wrath](https://cnc-central.fandom.com/wiki/Command_%26_Conquer_3:_Kane%27s_Wrath)*.
+  - `CrusherLevel=` of vehicle types:
     - 0 if `Crusher=no`
     - 1 if `Crusher=yes` and `OmniCrusher=no`
     - 3 if `Crusher=yes` and `OmniCrusher=yes`
   - `CrushableLevel=`:
     - 0 if `Crushable=yes`
-    - 1 if `Crushable=no` and `OmniCrushResistant=no` and is an Infantry
-    - 2 if `Crushable=no` and `OmniCrushResistant=no` and is NOT an Infantry
+    - 1 if `Crushable=no` and `OmniCrushResistant=no` and is an infantry
+    - 2 if `Crushable=no` and `OmniCrushResistant=no` and is a vehicle
     - 3 if `Crushable=no` and `OmniCrushResistant=yes`
-  - `DeployedCrushableLevel=`:
-    - The same value as `CrushableLevel` if it was set
+  - `DeployedCrushableLevel=` of infantry types:
     - 0 if `Crushable=yes` and `DeployedCrushable=yes`
     - 1 if `Crushable=yes`, `DeployedCrushable=no`, and `OmniCrushResistant=no`
     - 3 if `Crushable=yes`, `DeployedCrushable=no`, and `OmniCrushResistant=yes`
+    - The same as `CrushableLevel` in any other case
   - Here is a quick lookup of the default values of `CrusherLevel` and `CrushableLevel` for Yuri's Revenge units:
     - Conscript: 0/0
     - Tesla Trooper: 0/1
@@ -1397,12 +1397,18 @@ Convert.ComputerToHuman =   ; TechnoType
     - At 2/2, a vehicle can crush Tesla Troopers and deployed Guardian G.I.s, but it can't crush IFVs and is still crushable by Battle Fortresses, just like a [Scorpion Tank](https://cnc-central.fandom.com/wiki/Scorpion_tank_(Tiberium_Wars)) does with the Dozer blades upgrade.
     - At 4/4, a vehicle can crush almost anything else, even Battle Fortresses, just like a [MARV](https://cnc-central.fandom.com/wiki/Mammoth_Armored_Reclamation_Vehicle) does.
 - Other usage notes:
-  - A unit must has a locomotor that supports crushing before it can crush something. Most naval units don't, save for the amphibious transports.
-  - In an unmodded game, it doesn't even try to check if it can crush something if it has `Crusher=no`, meaning `OmniCrusher=yes` make no sense on a unit with `Crusher=no`. This behavior isn't changed by this feature, meaning you will still need `Crusher=yes` for a positive `CrushableLevel` to function.
-  - In an unmodded game, infantries can never crush anything regardless of `Crusher=yes` or locomotors. This behavior isn't changed by this feature, meaning a positive `CrusherLevel` makes no sense on an infantry type.
+  - A unit must has a locomotor that supports crushing before it can crush something. Most naval units don't, except for the amphibious transports.
+  - If a vehicle has a positive `CrusherLevel`, since it is presumably intended to be a crusher, it will be silently assigned with `Crusher=yes`, otherwise the game doesn't even try to check if it can crush something.
+    - Existing `Crusher=yes` entry isn't removed even if it had a `CrusherLevel` <= 0.
+  - If a vehicle has a `CrusherLevel` >= `[General]►CrushableLevel.Defaults.Uncrushable.Building`, since it is presumably intended to be able to crush walls, it will be silently assigned with `OmniCrusher=yes`, otherwise it won't be able to crush walls, unlike those explicitly given with `OmniCrusher=yes`.
+    - Existing `OmniCrusher=yes` entry isn't removed even if it had a `CrusherLevel` lower than that.
+  - If `CrusherLevel` is set, `OmniCrusher` is redundant and ignored.
   - If `CrushableLevel` is set, `Crushable`, `OmniCrushResistant`, and `DeployedCrushable` are redundant and ignored. Use `DeployedCrushableLevel` instead if you wish the infantry to have a different crushable level when deployed.
-  - If `CrushableLevel` is unset, `DeployedCrushableLevel` does not apply at all.
-- A building with 1x1 foundation can be made crushable, however they have `Crushable=no` and `OmniCrushResistant=yes` by default, meaning they can't be crushed by normal means. The crusher level system does not apply to buildings by default, and it must be turned on manually by `[General]►CrusherLevelEnabled.For1x1Buildings=true`. Note that crushing buildings may cause unexpected behavior of the game, such as crushing a Bridge Repair Hut can render the bridge irrepairable.
+  - If `CrushableLevel` is not set, `DeployedCrushableLevel` does not apply.
+- A building with 1x1 foundation can be made crushable, however they have `Crushable=no` by default and they are hard-coded to be immune to `OmniCrusher`, meaning they can't be crushed by normal means. Thus, the crusher level system does not apply to buildings by default, and it must be turned on by `[General]►CrusherLevelEnabled.For1x1Buildings=true`. If not turned on, crushing buildings fallbacks to unmodded behavior.
+  - Crushing a building triggers no animation or sound effect, and the building is silently removed from the map.
+  - Crushing a building may cause unexpected behavior of the game, such as crushing all Bridge Repair Huts can make a bridge irrepairable.
+- The crusher level system does not apply to walls. Crushing walls fallbacks to unmodded behavior.
 
 In `rulesmd.ini`
 ```ini
@@ -1412,11 +1418,12 @@ CrusherLevelEnabled.For1x1Buildings=false           ; boolean
 CrusherLevel.Defaults.Crusher=1                     ; integer
 CrusherLevel.Defaults.OmniCrusher=3                 ; integer
 CrushableLevel.Defaults.Uncrushable.Infantry=1      ; integer
-CrushableLevel.Defaults.Uncrushable.Others=2        ; integer
+CrushableLevel.Defaults.Uncrushable.Unit=2          ; integer
+CrushableLevel.Defaults.Uncrushable.Building=3      ; integer
 CrushableLevel.Defaults.OmniCrushResistant=3        ; integer
 
 [SOMETECHNO]                                        ; TechnoType
-CrusherLevel=                                       ; integer
+CrusherLevel=                                       ; integer; this only works for [VehicleTypes]
 CrushableLevel=                                     ; integer
 DeployedCrushableLevel=                             ; integer; this only works for [InfantryTypes]
 ```

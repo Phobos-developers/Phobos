@@ -170,7 +170,8 @@ public:
 		Valueable<int> CrusherLevel_Defaults_Crusher;
 		Valueable<int> CrusherLevel_Defaults_OmniCrusher;
 		Valueable<int> CrushableLevel_Defaults_Uncrushable_Infantry;
-		Valueable<int> CrushableLevel_Defaults_Uncrushable_Others;
+		Valueable<int> CrushableLevel_Defaults_Uncrushable_Unit;
+		Valueable<int> CrushableLevel_Defaults_Uncrushable_Building;
 		Valueable<int> CrushableLevel_Defaults_OmniCrushResistant;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -298,7 +299,8 @@ public:
 			, CrusherLevel_Defaults_Crusher { 1 }
 			, CrusherLevel_Defaults_OmniCrusher { 3 }
 			, CrushableLevel_Defaults_Uncrushable_Infantry { 1 }
-			, CrushableLevel_Defaults_Uncrushable_Others { 2 }
+			, CrushableLevel_Defaults_Uncrushable_Unit { 2 }
+			, CrushableLevel_Defaults_Uncrushable_Building { 3 }
 			, CrushableLevel_Defaults_OmniCrushResistant { 3 }
 		{ }
 
