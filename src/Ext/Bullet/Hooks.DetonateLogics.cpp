@@ -538,8 +538,6 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			}
 		}
 
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-		int projectileRange = pWeaponExt->ProjectileRange.Get();
 		auto const pTypeSplits = pWeapon->Projectile;
 		int damage = pWeapon->Damage;
 
@@ -575,14 +573,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			{
 				if (auto const pBullet = pTypeSplits->CreateBullet(pTarget, pSource, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
-					BulletExt::SimulatedFiringInfos(pBullet, pWeapon, pOwner, projectileRange);
-					BulletExt::SimulatedFiringVelocity(pBullet, pThis->Location, true);
-					// BulletExt::SimulatedFiringAnim(pBullet, pWeapon, pOwner, BulletExt::ExtMap.Find(pBullet)->Trajectory, false);
-					// BulletExt::SimulatedFiringReport(pBullet, pWeapon);
-					BulletExt::SimulatedFiringLaser(pBullet, pWeapon, pOwner);
-					BulletExt::SimulatedFiringElectricBolt(pBullet, pWeapon);
-					BulletExt::SimulatedFiringRadBeam(pBullet, pWeapon, pOwner);
-					BulletExt::SimulatedFiringParticleSystem(pBullet, pWeapon, pOwner);
+					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, true);
+					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, false, true);
 				}
 			}
 		}

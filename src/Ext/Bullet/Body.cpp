@@ -156,63 +156,56 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	}
 }
 
-// Make sure pBullet is not empty before call
-void BulletExt::SimulatedFiringInfos(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse, int projectileRange)
+static inline int SetBuildingFireAnimZAdjust(BuildingClass* pBuilding, int animY)
 {
-	pBullet->WeaponType = pWeapon;
-	pBullet->Range = projectileRange;
-	BulletExt::ExtMap.Find(pBullet)->FirerHouse = pHouse;
+	if (pBuilding->GetOccupantCount() > 0)
+		return -200;
+
+	const auto renderCoords = pBuilding->GetRenderCoords();
+	const auto zAdj = (animY - renderCoords.Y) / -4;
+	return (zAdj >= 0) ? 0 : zAdj;
 }
 
-// Make sure pBullet is not empty before call
-void BulletExt::SimulatedFiringVelocity(BulletClass* pBullet, const CoordStruct& sourceCoords, bool randomVelocity)
+// Make sure pBullet and pBullet->WeaponType is not empty before call
+inline void BulletExt::SimulatedFiringAnim(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach)
 {
-	auto velocity = BulletVelocity::Empty;
-
-	if (randomVelocity)
-	{
-		DirStruct dir;
-		dir.SetValue<5>(ScenarioClass::Instance->Random.RandomRanged(0, 31));
-
-		const auto cos_factor = -2.44921270764e-16; // cos(1.5 * Math::Pi * 1.00001)
-		const auto flatSpeed = cos_factor * pBullet->Speed;
-
-		const auto radians = dir.GetRadian<32>();
-		velocity = BulletVelocity { Math::cos(radians) * flatSpeed, Math::sin(radians) * flatSpeed, static_cast<double>(-pBullet->Speed) };
-	}
-
-	pBullet->MoveTo(sourceCoords, velocity);
-}
-
-// Make sure pBullet and pWeapon is not empty before call
-void BulletExt::SimulatedFiringAnim(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse, bool trajectory, bool attach)
-{
+	const auto pWeapon = pBullet->WeaponType;
 	const auto animCounts = pWeapon->Anim.Count;
 
 	if (animCounts <= 0)
 		return;
 
+	const auto pFirer = pBullet->Owner;
 	const auto pAnimType = pWeapon->Anim[(animCounts % 8 == 0) ? // Have direction ?
-		(static_cast<int>(((trajectory ? // (Trajectory ?
-			Math::atan2(pBullet->Velocity.Y , pBullet->Velocity.X) : // Velocity :
-			Math::atan2(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y , pBullet->TargetCoords.X - pBullet->SourceCoords.X)) // Connection)
-		/ Math::TwoPi + 1.5) * animCounts - (animCounts / 8) + 0.5) % animCounts) : // Calculate direction :
+		(static_cast<int>((Math::atan2(pBullet->Velocity.Y , pBullet->Velocity.X) / Math::TwoPi + 1.5) * animCounts - (animCounts / 8) + 0.5) % animCounts) : // Calculate direction :
 		ScenarioClass::Instance->Random.RandomRanged(0 , animCounts - 1)]; // Simple random;
 
 	if (!pAnimType)
 		return;
 
 	const auto pAnim = GameCreate<AnimClass>(pAnimType, pBullet->SourceCoords);
-	pAnim->SetOwnerObject(pBullet->Owner);
-	pAnim->Owner = pHouse;
 
-	if (attach)
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pBullet->Owner, pHouse);
+	pAnim->Owner = pHouse;
+	AnimExt::ExtMap.Find(pAnim)->SetInvoker(pFirer, pHouse);
+
+	if (pAttach)
+	{
+		if (pAttach->WhatAmI() == AbstractType::Building)
+			pAnim->ZAdjust = SetBuildingFireAnimZAdjust(static_cast<BuildingClass*>(pAttach), pBullet->SourceCoords.Y);
+		else
+			pAnim->SetOwnerObject(pAttach);
+	}
+	else if (const auto pBuilding = abstract_cast<BuildingClass*>(pFirer))
+	{
+		pAnim->ZAdjust = SetBuildingFireAnimZAdjust(pBuilding, pBullet->SourceCoords.Y);
+	}
 }
 
-// Make sure pBullet and pWeapon is not empty before call
-void BulletExt::SimulatedFiringReport(BulletClass* pBullet, WeaponTypeClass* pWeapon)
+// Make sure pBullet and pBullet->WeaponType is not empty before call
+inline void BulletExt::SimulatedFiringReport(BulletClass* pBullet)
 {
+	const auto pWeapon = pBullet->WeaponType;
+
 	if (pWeapon->Report.Count <= 0)
 		return;
 
@@ -223,9 +216,11 @@ void BulletExt::SimulatedFiringReport(BulletClass* pBullet, WeaponTypeClass* pWe
 		VocClass::PlayAt(reportIndex, pBullet->Location, nullptr);
 }
 
-// Make sure pBullet and pWeapon is not empty before call
-void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse)
+// Make sure pBullet and pBullet->WeaponType is not empty before call
+inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pHouse)
 {
+	const auto pWeapon = pBullet->WeaponType;
+
 	if (!pWeapon->IsLaser)
 		return;
 
@@ -248,9 +243,11 @@ void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, WeaponTypeClass* pWea
 	}
 }
 
-// Make sure pBullet and pWeapon is not empty before call
-void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet, WeaponTypeClass* pWeapon)
+// Make sure pBullet and pBullet->WeaponType is not empty before call
+inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 {
+	const auto pWeapon = pBullet->WeaponType;
+
 	if (!pWeapon->IsElectricBolt)
 		return;
 
@@ -263,9 +260,11 @@ void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet, WeaponTypeClas
 	}
 }
 
-// Make sure pBullet and pWeapon is not empty before call
-void BulletExt::SimulatedFiringRadBeam(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse)
+// Make sure pBullet and pBullet->WeaponType is not empty before call
+inline void BulletExt::SimulatedFiringRadBeam(BulletClass* pBullet, HouseClass* pHouse)
 {
+	const auto pWeapon = pBullet->WeaponType;
+
 	if (!pWeapon->IsRadBeam)
 		return;
 
@@ -284,11 +283,61 @@ void BulletExt::SimulatedFiringRadBeam(BulletClass* pBullet, WeaponTypeClass* pW
 	}
 }
 
-// Make sure pBullet and pWeapon is not empty before call
-void BulletExt::SimulatedFiringParticleSystem(BulletClass* pBullet, WeaponTypeClass* pWeapon, HouseClass* pHouse)
+// Make sure pBullet and pBullet->WeaponType is not empty before call
+inline void BulletExt::SimulatedFiringParticleSystem(BulletClass* pBullet, HouseClass* pHouse)
 {
-	if (const auto pPSType = pWeapon->AttachedParticleSystem)
+	if (const auto pPSType = pBullet->WeaponType->AttachedParticleSystem)
 		GameCreate<ParticleSystemClass>(pPSType, pBullet->SourceCoords, pBullet->Target, pBullet->Owner, pBullet->TargetCoords, pHouse);
+}
+
+// Make sure pBullet is not empty before call
+void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool randomVelocity)
+{
+	// Weapon
+	pBullet->WeaponType = pWeapon;
+
+	// Range
+	int projectileRange = WeaponTypeExt::ExtMap.Find(pWeapon)->ProjectileRange.Get();
+	pBullet->Range = projectileRange;
+
+	// House
+	BulletExt::ExtMap.Find(pBullet)->FirerHouse = pHouse;
+
+	// Velocity
+	auto velocity = BulletVelocity::Empty;
+
+	if (randomVelocity)
+	{
+		DirStruct dir;
+		dir.SetValue<5>(ScenarioClass::Instance->Random.RandomRanged(0, 31));
+
+		const auto cos_factor = -2.44921270764e-16; // cos(1.5 * Math::Pi * 1.00001)
+		const auto flatSpeed = cos_factor * pBullet->Speed;
+
+		const auto radians = dir.GetRadian<32>();
+		velocity = BulletVelocity { Math::cos(radians) * flatSpeed, Math::sin(radians) * flatSpeed, static_cast<double>(-pBullet->Speed) };
+	}
+
+	// Unlimbo
+	pBullet->MoveTo(sourceCoords, velocity);
+}
+
+// Make sure pBullet and pBullet->WeaponType is not empty before call
+void BulletExt::SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach, bool firingEffect, bool visualEffect)
+{
+	if (firingEffect)
+	{
+		BulletExt::SimulatedFiringAnim(pBullet, pHouse, pAttach);
+		BulletExt::SimulatedFiringReport(pBullet);
+	}
+
+	if (visualEffect)
+	{
+		BulletExt::SimulatedFiringLaser(pBullet, pHouse);
+		BulletExt::SimulatedFiringElectricBolt(pBullet);
+		BulletExt::SimulatedFiringRadBeam(pBullet, pHouse);
+		BulletExt::SimulatedFiringParticleSystem(pBullet, pHouse);
+	}
 }
 
 // =============================
