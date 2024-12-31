@@ -143,7 +143,7 @@ int TechnoTypeExt::ExtData::GetCrusherLevel(FootClass* pCrusher) const
 // This function is called upon a potential crushing victim's perspective and returns the crushable level of it.
 int TechnoTypeExt::ExtData::GetCrushableLevel(FootClass* pVictim) const
 {
-	if (auto pVictimInfantry = static_cast<InfantryClass*>(pVictim))
+	if (auto pVictimInfantry = abstract_cast<InfantryClass*>(pVictim))
 	{
 		if (pVictimInfantry->IsDeployed())
 			return this->DeployedCrushableLevel.Get(this->CrushableLevel.Get(0));
