@@ -384,7 +384,9 @@ This page lists all the individual contributions to the project by their author.
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
   - Global value of `RepairBaseNodes`
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
-- **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
+- **Aephiex**
+  - crusher level system
+  - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
@@ -414,4 +416,3 @@ This page lists all the individual contributions to the project by their author.
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
-- **Aephiex** - crusher level system
