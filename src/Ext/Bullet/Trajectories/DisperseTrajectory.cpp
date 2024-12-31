@@ -1192,13 +1192,10 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 
 	if (const auto pCreateBullet = pWeapon->Projectile->CreateBullet(pTarget, pBullet->Owner, finalDamage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 	{
-		BulletExt::SimulatedFiringInfos(pCreateBullet, pWeapon, pOwner, WeaponTypeExt::ExtMap.Find(pWeapon)->ProjectileRange.Get());
-		BulletExt::SimulatedFiringVelocity(pCreateBullet, pBullet->Location, false);
-
+		BulletExt::SimulatedFiringUnlimbo(pCreateBullet, pOwner, pWeapon, pBullet->Location, false);
 		const auto pBulletExt = BulletExt::ExtMap.Find(pCreateBullet);
-		const auto pTraj = pBulletExt->Trajectory.get();
 
-		if (pTraj)
+		if (const auto pTraj = pBulletExt->Trajectory.get())
 		{
 			const auto flag = pTraj->Flag();
 
@@ -1282,12 +1279,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 			}*/
 		}
 
-		BulletExt::SimulatedFiringAnim(pCreateBullet, pWeapon, pOwner, pTraj, false);
-		BulletExt::SimulatedFiringReport(pCreateBullet, pWeapon);
-		BulletExt::SimulatedFiringLaser(pCreateBullet, pWeapon, pOwner);
-		BulletExt::SimulatedFiringElectricBolt(pCreateBullet, pWeapon);
-		BulletExt::SimulatedFiringRadBeam(pCreateBullet, pWeapon, pOwner);
-		BulletExt::SimulatedFiringParticleSystem(pCreateBullet, pWeapon, pOwner);
+		BulletExt::SimulatedFiringEffects(pCreateBullet, pOwner, nullptr, true, true);
 	}
 }
 
