@@ -1399,9 +1399,9 @@ Convert.ComputerToHuman =   ; TechnoType
 - Other usage notes:
   - A unit must has a locomotor that supports crushing before it can crush something. Most naval units don't, except for the amphibious transports.
   - If a vehicle has a positive `CrusherLevel`, since it is presumably intended to be a crusher, it will be silently assigned with `Crusher=yes`, otherwise the game doesn't even try to check if it can crush something.
-    - Existing `Crusher=yes` entry isn't removed even if it had a `CrusherLevel` <= 0.
+    - Existing `Crusher=yes` entry isn't removed even if it had a `CrusherLevel` <= 0, however it doesn't help this unit to crush something with `CrushableLevel=0`.
   - If a vehicle has a `CrusherLevel` >= `[General]►CrushableLevel.Defaults.Uncrushable.Building`, since it is presumably intended to be able to crush walls, it will be silently assigned with `OmniCrusher=yes`, otherwise it won't be able to crush walls, unlike those explicitly given with `OmniCrusher=yes`.
-    - Existing `OmniCrusher=yes` entry isn't removed even if it had a `CrusherLevel` lower than that.
+    - Existing `OmniCrusher=yes` entry isn't removed even if it had a `CrusherLevel` lower than that, however it doesn't help this unit to crush something with a `CrushableLevel` equal to or greater than its `CrusherLevel`.
   - If `CrusherLevel` is set, `OmniCrusher` is redundant and ignored.
   - If `CrushableLevel` is set, `Crushable`, `OmniCrushResistant`, and `DeployedCrushable` are redundant and ignored. Use `DeployedCrushableLevel` instead if you wish the infantry to have a different crushable level when deployed.
   - If `CrushableLevel` is not set, `DeployedCrushableLevel` does not apply.
