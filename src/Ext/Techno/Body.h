@@ -124,9 +124,9 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void InitAggressiveStance(TechnoTypeClass* pTechnoType);
-		bool GetAggressiveStance(TechnoClass* pThis) const;
-		void ToggleAggressiveStance(TechnoClass* pThis);
+		void InitAggressiveStance();
+		bool GetAggressiveStance() const;
+		void ToggleAggressiveStance();
 
 	private:
 		template <typename T>

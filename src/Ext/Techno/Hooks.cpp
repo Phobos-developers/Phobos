@@ -137,7 +137,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	pExt->InitializeLaserTrails();
 	pExt->InitializeAttachEffects();
 
-	pExt->InitAggressiveStance(pType);
+	pExt->InitAggressiveStance();
 
 	return 0;
 }

@@ -518,25 +518,24 @@ void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-void TechnoExt::ExtData::InitAggressiveStance(TechnoTypeClass* pTechnoType)
+void TechnoExt::ExtData::InitAggressiveStance()
 {
-	if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType))
-		this->AggressiveStance = pTechnoTypeExt->AggressiveStance.Get();
+	this->AggressiveStance = this->TypeExtData->AggressiveStance.Get();
 }
 
-bool TechnoExt::ExtData::GetAggressiveStance(TechnoClass* pThis) const
+bool TechnoExt::ExtData::GetAggressiveStance() const
 {
 	// if this is a passenger then obey the configuration of the transport
-	if (auto pTransport = pThis->Transporter)
+	if (auto pTransport = this->OwnerObject()->Transporter)
 	{
 		auto pTransportExt = TechnoExt::ExtMap.Find(pTransport);
-		return pTransportExt->GetAggressiveStance(pTransport);
+		return pTransportExt->GetAggressiveStance();
 	}
 
 	return this->AggressiveStance;
 }
 
-void TechnoExt::ExtData::ToggleAggressiveStance(TechnoClass* pThis)
+void TechnoExt::ExtData::ToggleAggressiveStance()
 {
 	
 	if (this->AggressiveStance)
@@ -544,7 +543,7 @@ void TechnoExt::ExtData::ToggleAggressiveStance(TechnoClass* pThis)
 		// toggle off aggressive stance
 		this->AggressiveStance = false;
 		// stop current target
-		pThis->SetTarget(nullptr);
+		this->OwnerObject()->SetTarget(nullptr);
 	}
 	else
 	{

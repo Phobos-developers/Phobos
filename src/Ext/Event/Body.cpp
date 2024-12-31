@@ -37,7 +37,7 @@ void EventExt::RespondToToggleAggressiveStance()
 	{
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
 		{
-			pTechnoExt->ToggleAggressiveStance(pTechno);
+			pTechnoExt->ToggleAggressiveStance();
 		}
 	}
 }

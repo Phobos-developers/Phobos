@@ -62,7 +62,7 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
 		{
 			isAnySelectedUnitArmed = true;
-			if (pTechnoExt->GetAggressiveStance(pTechno))
+			if (pTechnoExt->GetAggressiveStance())
 			{
 				TechnoVectorAggressive.push_back(pTechno);
 			}
