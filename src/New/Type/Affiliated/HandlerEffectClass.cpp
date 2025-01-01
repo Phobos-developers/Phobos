@@ -6,9 +6,9 @@ HandlerEffectClass::HandlerEffectClass()
 	: Weapon {}
 { }
 
-std::unique_ptr<HandlerEffectClass> HandlerEffectClass::Parse(EventHandlerTypeClass * OwnedBy, INI_EX & exINI, const char* pSection, const char* scopeName, const char* effectName)
+std::unique_ptr<HandlerEffectClass> HandlerEffectClass::Parse(INI_EX & exINI, const char* pSection, const char* scopeName, const char* effectName)
 {
-	auto effect = std::make_unique<HandlerEffectClass>(OwnedBy);
+	auto effect = std::make_unique<HandlerEffectClass>();
 	effect.get()->LoadFromINI(exINI, pSection, scopeName, effectName);
 	if (effect.get()->IsDefined())
 	{

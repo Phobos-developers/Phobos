@@ -14,9 +14,9 @@ HandlerFilterClass::HandlerFilterClass()
 	, Passengers_HasType {}
 { }
 
-std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(EventHandlerTypeClass * OwnedBy, INI_EX & exINI, const char* pSection, const char* scopeName, const char* filterName)
+std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(INI_EX & exINI, const char* pSection, const char* scopeName, const char* filterName)
 {
-	auto filter = std::make_unique<HandlerFilterClass>(OwnedBy);
+	auto filter = std::make_unique<HandlerFilterClass>();
 	filter.get()->LoadFromINI(exINI, pSection, scopeName, filterName);
 	if (filter.get()->IsDefined())
 	{
