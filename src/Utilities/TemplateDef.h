@@ -1066,14 +1066,6 @@ namespace detail
 			{
 				value = EventScopeType::They;
 			}
-			else if (_strcmpi(parser.value(), "Cause") == 0)
-			{
-				value = EventScopeType::Cause;
-			}
-			else if (_strcmpi(parser.value(), "Victim") == 0)
-			{
-				value = EventScopeType::Victim;
-			}
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an event scope type");
