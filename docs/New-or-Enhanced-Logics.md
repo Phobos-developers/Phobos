@@ -476,6 +476,8 @@ Shield.InheritStateOnReplace=false          ; boolean
   - The available effects are:
     - `(scope).Effect.Weapon`: A weapon is fired at the scope's position, the firer is the `Me` scope of the event.
       - This doesn't work with Ares `IvanBomb` feature.
+- Other usage notes:
+  - If any type conversion happened before or during the event, only the handlers attached to the old type will be invoked.
 
 
 In `rulesmd.ini`:
