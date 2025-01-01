@@ -12,12 +12,12 @@ class EventHandlerTypeClass final : public Enumerable<EventHandlerTypeClass>
 {
 public:
 	Valueable<EventTypeClass*> EventType;
-	PhobosMap<EventScopeType, std::unique_ptr<HandlerFilterClass>> Filter;
-	PhobosMap<EventScopeType, std::unique_ptr<HandlerFilterClass>> Transport_Filter;
-	PhobosMap<EventScopeType, std::unique_ptr<HandlerFilterClass>> NegFilter;
-	PhobosMap<EventScopeType, std::unique_ptr<HandlerFilterClass>> Transport_NegFilter;
-	PhobosMap<EventScopeType, std::unique_ptr<HandlerEffectClass>> Effect;
-	PhobosMap<EventScopeType, std::unique_ptr<HandlerEffectClass>> Transport_Effect;
+	std::map<EventScopeType, std::unique_ptr<HandlerFilterClass>> Filter;
+	std::map<EventScopeType, std::unique_ptr<HandlerFilterClass>> Transport_Filter;
+	std::map<EventScopeType, std::unique_ptr<HandlerFilterClass>> NegFilter;
+	std::map<EventScopeType, std::unique_ptr<HandlerFilterClass>> Transport_NegFilter;
+	std::map<EventScopeType, std::unique_ptr<HandlerEffectClass>> Effect;
+	std::map<EventScopeType, std::unique_ptr<HandlerEffectClass>> Transport_Effect;
 
 	EventHandlerTypeClass(const char* pTitle = NONE_STR) : Enumerable<EventHandlerTypeClass>(pTitle)
 		, EventType {}

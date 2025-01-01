@@ -25,12 +25,12 @@ void EventHandlerTypeClass::LoadFromINI(CCINIClass* pINI)
 void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, const EventScopeType scope)
 {
 	auto const scopeName = nameof::customize::enum_name(scope).data();
-	this->Filter.insert(scope, HandlerFilterClass::Parse(exINI, pSection, scopeName, "Filter"));
-	this->Transport_Filter.insert(scope, HandlerFilterClass::Parse(exINI, pSection, scopeName, "Transport.Filter"));
-	this->NegFilter.insert(scope, HandlerFilterClass::Parse(exINI, pSection, scopeName, "NegFilter"));
-	this->Transport_NegFilter.insert(scope, HandlerFilterClass::Parse(exINI, pSection, scopeName, "Transport.NegFilter"));
-	this->Effect.insert(scope, HandlerEffectClass::Parse(exINI, pSection, scopeName, "Effect"));
-	this->Transport_Effect.insert(scope, HandlerEffectClass::Parse(exINI, pSection, scopeName, "Transport.Effect"));
+	this->Filter[scope] = HandlerFilterClass::Parse(exINI, pSection, scopeName, "Filter");
+	this->Transport_Filter[scope] = HandlerFilterClass::Parse(exINI, pSection, scopeName, "Transport.Filter");
+	this->NegFilter[scope] = HandlerFilterClass::Parse(exINI, pSection, scopeName, "NegFilter");
+	this->Transport_NegFilter[scope] = HandlerFilterClass::Parse(exINI, pSection, scopeName, "Transport.NegFilter");
+	this->Effect[scope] = HandlerEffectClass::Parse(exINI, pSection, scopeName, "Effect");
+	this->Transport_Effect[scope] = HandlerEffectClass::Parse(exINI, pSection, scopeName, "Transport.Effect");
 }
 
 template <typename T>
@@ -70,31 +70,29 @@ void EventHandlerTypeClass::HandleEvent(TechnoClass* pOwner, std::map<EventScope
 
 bool EventHandlerTypeClass::CheckFilters(TechnoClass* pOwner, EventScopeType scope, TechnoClass* pTarget) const
 {
-	std::unique_ptr<HandlerFilterClass> filter;
-
 	// check positive filter
-	if (filter = this->Filter.get_or_default(scope, nullptr))
+	if (auto const& filter = this->Filter.at(scope))
 	{
 		if (!pTarget || !filter.get()->Check(pOwner, pTarget, false))
 			return false;
 	}
 
 	// check positive transport filter
-	if (filter = this->Transport_Filter.get_or_default(scope, nullptr))
+	if (auto const& filter = this->Transport_Filter.at(scope))
 	{
 		if (!pTarget || !pTarget->Transporter || !filter.get()->Check(pOwner, pTarget->Transporter, false))
 			return false;
 	}
 
 	// check negative filter
-	if (filter = this->NegFilter.get_or_default(scope, nullptr))
+	if (auto const& filter = this->NegFilter.at(scope))
 	{
 		if (!pTarget || !filter.get()->Check(pOwner, pTarget, true))
 			return false;
 	}
 
 	// check negative transport filter
-	if (filter = this->Transport_NegFilter.get_or_default(scope, nullptr))
+	if (auto const& filter = this->Transport_NegFilter.at(scope))
 	{
 		if (!pTarget || !pTarget->Transporter || !filter.get()->Check(pOwner, pTarget->Transporter, true))
 			return false;
@@ -105,10 +103,8 @@ bool EventHandlerTypeClass::CheckFilters(TechnoClass* pOwner, EventScopeType sco
 
 void EventHandlerTypeClass::ExecuteEffects(TechnoClass* pOwner, EventScopeType scope, TechnoClass* pTarget) const
 {
-	std::unique_ptr<HandlerEffectClass> effect;
-
 	// execute effect
-	if (effect = this->Effect.get_or_default(scope, nullptr))
+	if (auto const& effect = this->Effect.at(scope))
 	{
 		if (pTarget)
 		{
@@ -117,7 +113,7 @@ void EventHandlerTypeClass::ExecuteEffects(TechnoClass* pOwner, EventScopeType s
 	}
 
 	// execute transport effect
-	if (effect = this->Transport_Effect.get_or_default(scope, nullptr))
+	if (auto const& effect = this->Transport_Effect.at(scope))
 	{
 		if (pTarget && pTarget->Transporter)
 		{
