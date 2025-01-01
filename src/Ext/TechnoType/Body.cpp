@@ -480,18 +480,28 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	for (size_t i = 0; ; ++i)
 	{
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "EventHandler%d", i);
+		eventHandlerNullable.Reset();
 		eventHandlerNullable.Read<true>(exINI, pSection, tempBuffer);
 		if (!eventHandlerNullable.isset())
+		{
 			break;
+		}
+		if (!eventHandlerNullable.Get()->loaded.Get())
+			eventHandlerNullable.Get()->LoadFromINI(pINI);
 		this->AppendEventHandlerType(eventHandlerNullable.Get());
 	}
 
 	// read single event handler
 	if (this->EventHandlersMap.empty())
 	{
+		eventHandlerNullable.Reset();
 		eventHandlerNullable.Read<true>(exINI, pSection, "EventHandler");
 		if (eventHandlerNullable.isset())
+		{
+			if (!eventHandlerNullable.Get()->loaded.Get())
+				eventHandlerNullable.Get()->LoadFromINI(pINI);
 			this->AppendEventHandlerType(eventHandlerNullable.Get());
+		}
 	}
 
 
@@ -657,9 +667,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 void TechnoTypeExt::ExtData::AppendEventHandlerType(EventHandlerTypeClass* pEventHandlerTypeClass)
 {
 	auto pEventTypeClass = pEventHandlerTypeClass->EventType.Get();
-	auto vector = this->EventHandlersMap.get_or_default(pEventTypeClass);
+	auto& vector = this->EventHandlersMap[pEventTypeClass];
 	vector.push_back(pEventHandlerTypeClass);
-	this->EventHandlersMap.insert(pEventTypeClass, vector);
 }
 
 template <typename T>

@@ -1,5 +1,4 @@
 #include "HandlerCompClass.h"
-#include <nameof/nameof.h>
 
 HandlerCompClass::HandlerCompClass()
 	: ScopeType {}
@@ -9,11 +8,11 @@ HandlerCompClass::HandlerCompClass()
 	, Effect {}
 { }
 
-std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const char* pSection, EventScopeType ScopeType)
+std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const char* pSection, EventScopeType ScopeType, const char* scopeName)
 {
 	auto handlerUnit = std::make_unique<HandlerCompClass>();
 	handlerUnit.get()->ScopeType = ScopeType;
-	handlerUnit.get()->LoadFromINI(exINI, pSection);
+	handlerUnit.get()->LoadFromINI(exINI, pSection, scopeName, nullptr);
 	if (handlerUnit.get()->IsDefined())
 	{
 		return handlerUnit;
@@ -25,12 +24,12 @@ std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const c
 	}
 }
 
-std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const char* pSection, EventScopeType ScopeType, EventExtendedScopeType ExtendedScopeType)
+std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const char* pSection, EventScopeType ScopeType, EventExtendedScopeType ExtendedScopeType, const char* scopeName, const char* extendedScopeName)
 {
 	auto handlerUnit = std::make_unique<HandlerCompClass>();
 	handlerUnit.get()->ScopeType = ScopeType;
 	handlerUnit.get()->ExtendedScopeType = ExtendedScopeType;
-	handlerUnit.get()->LoadFromINI(exINI, pSection);
+	handlerUnit.get()->LoadFromINI(exINI, pSection, scopeName, extendedScopeName);
 	if (handlerUnit.get()->IsDefined())
 	{
 		return handlerUnit;
@@ -42,20 +41,19 @@ std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const c
 	}
 }
 
-void HandlerCompClass::LoadFromINI(INI_EX& exINI, const char* pSection)
+void HandlerCompClass::LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* extendedScopeName)
 {
-	auto scopeName = nameof::customize::enum_name(this->ScopeType.Get()).data();
-	if (this->ExtendedScopeType.isset())
+	auto localScopeName = scopeName;
+	if (extendedScopeName)
 	{
-		auto const extendedScopeName = nameof::customize::enum_name(this->ExtendedScopeType.Get()).data();
 		char tempBuffer[32];
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s", scopeName, extendedScopeName);
-		scopeName = tempBuffer;
+		localScopeName = tempBuffer;
 	}
 
-	this->Filter = HandlerFilterClass::Parse(exINI, pSection, scopeName, "Filter");
-	this->NegFilter = HandlerFilterClass::Parse(exINI, pSection, scopeName, "NegFilter");
-	this->Effect = HandlerEffectClass::Parse(exINI, pSection, scopeName, "Effect");
+	this->Filter = HandlerFilterClass::Parse(exINI, pSection, localScopeName, "Filter");
+	this->NegFilter = HandlerFilterClass::Parse(exINI, pSection, localScopeName, "NegFilter");
+	this->Effect = HandlerEffectClass::Parse(exINI, pSection, localScopeName, "Effect");
 }
 
 bool HandlerCompClass::IsDefined() const

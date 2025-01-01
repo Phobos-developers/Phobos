@@ -10,6 +10,10 @@ const char* Enumerable<EventHandlerTypeClass>::GetMainSection()
 
 void EventHandlerTypeClass::LoadFromINI(CCINIClass* pINI)
 {
+	if (this->loaded.Get())
+		return;
+	this->loaded = true;
+
 	const char* pSection = this->Name;
 	if (strcmp(pSection, NONE_STR) == 0)
 		return;
@@ -18,24 +22,24 @@ void EventHandlerTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->EventType.Read<true>(exINI, pSection, "EventType");
 
-	LoadForScope(exINI, pSection, EventScopeType::Me);
-	LoadForScope(exINI, pSection, EventScopeType::They);
+	LoadForScope(exINI, pSection, EventScopeType::Me, "Me");
+	LoadForScope(exINI, pSection, EventScopeType::They, "They");
 }
 
-void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, const EventScopeType scopeType)
+void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, const EventScopeType scopeType, const char* scopeName)
 {
-	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType);
+	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, scopeName);
 	if (comp)
 	{
 		this->HandlerComps.push_back(std::move(comp));
 	}
 
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedScopeType::Transport);
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedScopeType::Transport, scopeName, "Transport");
 }
 
-void EventHandlerTypeClass::LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventScopeType scopeType, const EventExtendedScopeType extendedScopeType)
+void EventHandlerTypeClass::LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventScopeType scopeType, const EventExtendedScopeType extendedScopeType, const char* scopeName, const char* extendedScopeName)
 {
-	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, extendedScopeType);
+	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, extendedScopeType, scopeName, extendedScopeName);
 	if (comp)
 	{
 		this->HandlerComps.push_back(std::move(comp));

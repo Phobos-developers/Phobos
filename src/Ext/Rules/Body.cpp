@@ -52,7 +52,7 @@ void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 void RulesExt::ExtData::InitializeConstants()
 {
-
+	EventTypeClass::AddDefaults();
 }
 
 // earliest loader - can't really do much because nothing else is initialized yet, so lookups won't work

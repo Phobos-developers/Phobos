@@ -15,11 +15,11 @@ public:
 	std::unique_ptr<HandlerFilterClass> NegFilter;
 	std::unique_ptr<HandlerEffectClass> Effect;
 
-	static std::unique_ptr<HandlerCompClass> Parse(INI_EX& exINI, const char* pSection, EventScopeType ScopeType);
+	static std::unique_ptr<HandlerCompClass> Parse(INI_EX& exINI, const char* pSection, EventScopeType ScopeType, const char* scopeName);
 
-	static std::unique_ptr<HandlerCompClass> Parse(INI_EX& exINI, const char* pSection, EventScopeType ScopeType, EventExtendedScopeType ExtendedScopeType);
+	static std::unique_ptr<HandlerCompClass> Parse(INI_EX& exINI, const char* pSection, EventScopeType ScopeType, EventExtendedScopeType ExtendedScopeType, const char* scopeName, const char* extendedScopeName);
 
-	void LoadFromINI(INI_EX& exINI, const char* pSection);
+	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* extendedScopeName);
 
 	bool IsDefined() const;
 
