@@ -1,6 +1,19 @@
 #include <Ext/Techno/Body.h>
 #include "HandlerFilterClass.h"
 
+HandlerFilterClass::HandlerFilterClass()
+	: House {}
+	, TechnoTypes {}
+	, AttachedEffects {}
+	, ShieldTypes {}
+	, Side {}
+	, Country {}
+	, Veterancy {}
+	, HPPercentage {}
+	, Passengers_HasAny {}
+	, Passengers_HasType {}
+{ }
+
 std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(INI_EX & exINI, const char* pSection, const char* scopeName, const char* filterName)
 {
 	auto filter = std::make_unique<HandlerFilterClass>();
@@ -148,6 +161,16 @@ bool HandlerFilterClass::IsDefined() const
 		|| HPPercentage.isset()
 		|| Passengers_HasAny.isset()
 		|| !Passengers_HasType.empty();
+}
+
+bool HandlerFilterClass::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool HandlerFilterClass::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<HandlerFilterClass*>(this)->Serialize(stm);
 }
 
 template<typename T>

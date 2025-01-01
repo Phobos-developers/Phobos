@@ -22,15 +22,24 @@ void EventHandlerTypeClass::LoadFromINI(CCINIClass* pINI)
 	LoadForScope(exINI, pSection, EventScopeType::They);
 }
 
-void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, const EventScopeType scope)
+void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, const EventScopeType scopeType)
 {
-	auto const scopeName = nameof::customize::enum_name(scope).data();
-	this->Filter[scope] = HandlerFilterClass::Parse(exINI, pSection, scopeName, "Filter");
-	this->Transport_Filter[scope] = HandlerFilterClass::Parse(exINI, pSection, scopeName, "Transport.Filter");
-	this->NegFilter[scope] = HandlerFilterClass::Parse(exINI, pSection, scopeName, "NegFilter");
-	this->Transport_NegFilter[scope] = HandlerFilterClass::Parse(exINI, pSection, scopeName, "Transport.NegFilter");
-	this->Effect[scope] = HandlerEffectClass::Parse(exINI, pSection, scopeName, "Effect");
-	this->Transport_Effect[scope] = HandlerEffectClass::Parse(exINI, pSection, scopeName, "Transport.Effect");
+	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType);
+	if (comp)
+	{
+		this->HandlerComps.push_back(std::move(comp));
+	}
+
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedScopeType::Transport);
+}
+
+void EventHandlerTypeClass::LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventScopeType scopeType, const EventExtendedScopeType extendedScopeType)
+{
+	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, extendedScopeType);
+	if (comp)
+	{
+		this->HandlerComps.push_back(std::move(comp));
+	}
 }
 
 template <typename T>
@@ -38,12 +47,7 @@ void EventHandlerTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->EventType)
-		.Process(this->Filter)
-		.Process(this->Transport_Filter)
-		.Process(this->NegFilter)
-		.Process(this->Transport_NegFilter)
-		.Process(this->Effect)
-		.Process(this->Transport_Effect)
+		.Process(this->HandlerComps)
 		;
 }
 
@@ -61,63 +65,43 @@ void EventHandlerTypeClass::HandleEvent(TechnoClass* pOwner, std::map<EventScope
 {
 	for (auto it = participants.begin(); it != participants.end(); ++it)
 	{
-		auto scope = it->first;
+		auto scopeType = it->first;
 		auto pTarget = it->second;
-		if (!CheckFilters(pOwner, scope, pTarget))
+		if (!CheckFilters(scopeType, pOwner, pTarget))
 			return;
+	}
+
+	for (auto it = participants.begin(); it != participants.end(); ++it)
+	{
+		auto scopeType = it->first;
+		auto pTarget = it->second;
+		ExecuteEffects(scopeType, pOwner, pTarget);
 	}
 }
 
-bool EventHandlerTypeClass::CheckFilters(TechnoClass* pOwner, EventScopeType scope, TechnoClass* pTarget) const
+bool EventHandlerTypeClass::CheckFilters(EventScopeType scopeType, TechnoClass* pOwner, TechnoClass* pTarget) const
 {
-	// check positive filter
-	if (auto const& filter = this->Filter.at(scope))
+	for (auto const& handlerUnit : this->HandlerComps)
 	{
-		if (!pTarget || !filter.get()->Check(pOwner, pTarget, false))
-			return false;
-	}
-
-	// check positive transport filter
-	if (auto const& filter = this->Transport_Filter.at(scope))
-	{
-		if (!pTarget || !pTarget->Transporter || !filter.get()->Check(pOwner, pTarget->Transporter, false))
-			return false;
-	}
-
-	// check negative filter
-	if (auto const& filter = this->NegFilter.at(scope))
-	{
-		if (!pTarget || !filter.get()->Check(pOwner, pTarget, true))
-			return false;
-	}
-
-	// check negative transport filter
-	if (auto const& filter = this->Transport_NegFilter.at(scope))
-	{
-		if (!pTarget || !pTarget->Transporter || !filter.get()->Check(pOwner, pTarget->Transporter, true))
-			return false;
+		if (handlerUnit.get()->ScopeType == scopeType)
+		{
+			if (!handlerUnit.get()->CheckFilters(pOwner, pTarget))
+			{
+				return false;
+			}
+		}
 	}
 
 	return true;
 }
 
-void EventHandlerTypeClass::ExecuteEffects(TechnoClass* pOwner, EventScopeType scope, TechnoClass* pTarget) const
+void EventHandlerTypeClass::ExecuteEffects(EventScopeType scopeType, TechnoClass* pOwner, TechnoClass* pTarget) const
 {
-	// execute effect
-	if (auto const& effect = this->Effect.at(scope))
+	for (auto const& handlerUnit : this->HandlerComps)
 	{
-		if (pTarget)
+		if (handlerUnit.get()->ScopeType == scopeType)
 		{
-			effect.get()->Execute(pOwner, pTarget);
-		}
-	}
-
-	// execute transport effect
-	if (auto const& effect = this->Transport_Effect.at(scope))
-	{
-		if (pTarget && pTarget->Transporter)
-		{
-			effect.get()->Execute(pOwner, pTarget->Transporter);
+			handlerUnit.get()->ExecuteEffects(pOwner, pTarget);
 		}
 	}
 }

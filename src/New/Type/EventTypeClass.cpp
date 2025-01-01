@@ -7,6 +7,17 @@ const char* Enumerable<EventTypeClass>::GetMainSection()
 	return "EventTypes";
 }
 
+EventTypeClass* EventTypeClass::WhenCreated = nullptr;
+EventTypeClass* EventTypeClass::WhenCaptured = nullptr;
+EventTypeClass* EventTypeClass::WhenCrush = nullptr;
+EventTypeClass* EventTypeClass::WhenCrushed = nullptr;
+EventTypeClass* EventTypeClass::WhenInfiltrate = nullptr;
+EventTypeClass* EventTypeClass::WhenInfiltrated = nullptr;
+EventTypeClass* EventTypeClass::WhenLoad = nullptr;
+EventTypeClass* EventTypeClass::WhenUnload = nullptr;
+EventTypeClass* EventTypeClass::WhenBoard = nullptr;
+EventTypeClass* EventTypeClass::WhenUnboard = nullptr;
+
 void EventTypeClass::AddDefaults()
 {
 	EventTypeClass::WhenCreated = FindOrAllocate("WhenCreated");

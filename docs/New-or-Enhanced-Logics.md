@@ -476,6 +476,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - The available effects are:
     - `(scope).Effect.Weapon`: A weapon is fired at the scope's position, the firer is the `Me` scope of the event.
       - This doesn't work with Ares `IvanBomb` feature.
+    - `(scope).ConvertN.From`, `To`, `AffectedHouses`: The scope is converted to a different type. See `Super Weapons` -> `Convert TechnoType` for details.
 - Other usage notes:
   - If any type conversion happened before or during the event, only the handlers attached to the old type will be invoked.
 
@@ -486,13 +487,33 @@ In `rulesmd.ini`:
 EventHandlerN=...                      ; EventHandlerType
 
 [SOMEHANDLER]                          ; EventHandlerType
-EventType=...                          ; EventType
-(scope).Filter.Veterancy=...           ; list of veterancy enumeration (none|rookie|veteral|elite)
-(scope).Filter.HPPercentage=...        ; list of HP percentage enumeration (none|full|green|greennotfull|yellow|red)
-(scope).Effect.Weapon=...
+EventType=                             ; EventType
+
+;; filters
+(scope).Filter.House=                          ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+(scope).Filter.TechnoTypes=                    ; list of TechnoTypes
+(scope).Filter.AttachedEffects=                ; list of AttachedEffectTypes
+(scope).Filter.ShieldTypes=                    ; list of ShieldTypes
+(scope).Filter.Side=                           ; list of Sides
+(scope).Filter.Country=                        ; list of Countries
+(scope).Filter.Veterancy=                      ; list of veterancy enumeration (none|rookie|veteral|elite)
+(scope).Filter.HPPercentage=                   ; list of HP percentage enumeration (none|full|green|greennotfull|yellow|red)
+(scope).Filter.Passengers.HasAny=              ; boolean
+(scope).Filter.Passengers.HasType=             ; list of TechnoTypes
+
+;; effects
+(scope).Effect.Weapon=                         ; WeaponType
+(scope).Effect.ConvertN.From=                  ; list of TechnoTypes
+(scope).Effect.ConvertN.To=                    ; TechnoType
+(scope).Effect.ConvertN.AffectedHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+; where N = 0, 1, 2, ...
+; or
+(scope).Effect.Convert.From=                   ; list of TechnoTypes
+(scope).Effect.Convert.To=                     ; TechnoType
+(scope).Effect.Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
-An example to make Crazy Ivan fire his death weapon even when crushed:
+An example to make Crazy Ivan fire his death weapon when crushed.
 ```ini
 [IVAN]
 EventHandler=IvanCrushedHandler

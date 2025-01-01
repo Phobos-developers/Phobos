@@ -288,6 +288,13 @@ enum class EventScopeType : byte
 
 MAKE_ENUM_FLAGS(EventScopeType);
 
+enum class EventExtendedScopeType : byte
+{
+	Transport = 1,
+};
+
+MAKE_ENUM_FLAGS(EventExtendedScopeType);
+
 enum class VeterancyType : byte
 {
 	None = 0x0,

@@ -1,12 +1,13 @@
 #pragma once
 
-#include <Utilities/EnumFunctions.h>
 #include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 
 class HandlerFilterClass
 {
 public:
+	HandlerFilterClass();
+
 	Nullable<AffectedHouse> House;
 	ValueableVector<TechnoTypeClass*> TechnoTypes;
 	ValueableVector<AttachEffectTypeClass*> AttachedEffects;
@@ -26,6 +27,8 @@ public:
 
 	bool IsDefined() const;
 
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
 private:
 	template <typename T>
 	bool Serialize(T& stm);

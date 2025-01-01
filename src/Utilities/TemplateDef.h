@@ -1079,6 +1079,27 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<EventExtendedScopeType>(EventExtendedScopeType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "Transport") == 0)
+			{
+				value = EventExtendedScopeType::Transport;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an event extended scope type");
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<VeterancyType>(VeterancyType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))

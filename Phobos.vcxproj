@@ -22,6 +22,7 @@
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\HandlerEffectClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\HandlerFilterClass.cpp" />
+    <ClCompile Include="src\New\Type\Affiliated\HandlerCompClass.cpp" />
     <ClCompile Include="src\New\Type\AttachEffectTypeClass.cpp" />
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\DamageDisplay.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\HandlerEffectClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\HandlerFilterClass.h" />
+    <ClInclude Include="src\New\Type\Affiliated\HandlerCompClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />
     <ClInclude Include="src\Commands\FrameByFrame.h" />
     <ClInclude Include="src\Commands\FrameStep.h" />

@@ -1,36 +1,24 @@
 #pragma once
-#include <set>
-#include <unordered_map>
 
 #include <Utilities/Enumerable.h>
-#include <Utilities/TemplateDef.h>
+#include <Utilities/Template.h>
 #include "EventTypeClass.h"
-#include "Affiliated/HandlerFilterClass.h"
-#include "Affiliated/HandlerEffectClass.h"
+#include "Affiliated/HandlerCompClass.h"
 
 class EventHandlerTypeClass final : public Enumerable<EventHandlerTypeClass>
 {
 public:
 	Valueable<EventTypeClass*> EventType;
-	std::map<EventScopeType, std::unique_ptr<HandlerFilterClass>> Filter;
-	std::map<EventScopeType, std::unique_ptr<HandlerFilterClass>> Transport_Filter;
-	std::map<EventScopeType, std::unique_ptr<HandlerFilterClass>> NegFilter;
-	std::map<EventScopeType, std::unique_ptr<HandlerFilterClass>> Transport_NegFilter;
-	std::map<EventScopeType, std::unique_ptr<HandlerEffectClass>> Effect;
-	std::map<EventScopeType, std::unique_ptr<HandlerEffectClass>> Transport_Effect;
+	std::vector<std::unique_ptr<HandlerCompClass>> HandlerComps;
 
 	EventHandlerTypeClass(const char* pTitle = NONE_STR) : Enumerable<EventHandlerTypeClass>(pTitle)
 		, EventType {}
-		, Filter {}
-		, Transport_Filter {}
-		, NegFilter {}
-		, Transport_NegFilter {}
-		, Effect {}
-		, Transport_Effect {}
+		, HandlerComps {}
 	{};
 
 	void LoadFromINI(CCINIClass* pINI);
-	void LoadForScope(INI_EX& exINI, const char* pSection, const EventScopeType scope);
+	void LoadForScope(INI_EX& exINI, const char* pSection, const EventScopeType scopeType);
+	void LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventScopeType scopeType, const EventExtendedScopeType extendedScopeType);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
 
@@ -40,6 +28,6 @@ private:
 	template <typename T>
 	void Serialize(T& Stm);
 
-	bool CheckFilters(TechnoClass* pOwner, EventScopeType scope, TechnoClass* pTarget) const;
-	void ExecuteEffects(TechnoClass* pOwner, EventScopeType scope, TechnoClass* pTarget) const;
+	bool CheckFilters(EventScopeType scopeType, TechnoClass* pOwner, TechnoClass* pTarget) const;
+	void ExecuteEffects(EventScopeType scopeType, TechnoClass* pOwner, TechnoClass* pTarget) const;
 };
