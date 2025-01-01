@@ -425,6 +425,81 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
+### Event Handlers
+
+- Event Handlers can be defined and given to techno types, to specify something to be done when something happens.
+  - The Event Handlers are listed at `[EventHandlerTypes]`. Separate listing of the Event Handlers is not mandatory, the game will parse Event Handler types from techno entries.
+  - `EventHandlerN` (where N is 0, 1, 2...) specifies an event handler for the techno type. This entry can have many types listed.
+  - `EventHandler` is a valid alternative for `EventHandler0`, if only one is specified.
+- Event Handlers must have an `EventType`, may have a several filters on a Scope, and may specify the effects on a Scope.
+- Event Types:
+  - Each Event Handler must has an event type. The event type can be any custom string and is not required to be separately listed.
+  - There are a several `EventType` that will be invoked from the game.
+    - `WhenCreated`: when the techno is created.
+    - `WhenCaptured`: when the techno is captured, mind-controlled, or released from mind-control. `They` is missing for this event.
+    - `WhenCrush`: when the techno crushes something (not walls).
+    - `WhenCrushed`: when the techno is crushed.
+    - `WhenInfiltrate`: when the techno infiltrates into a building.
+    - `WhenInfiltrated`: when the building is infiltrated by a techno.
+    - `WhenLoad`: when the vehicle loads a passenger.
+    - `WhenUnload`: when the vehicle unloads a passenger.
+    - `WhenBoard`: when the techno boards a vehicle.
+    - `WhenUnboard`: when the techno is unloaded from a vehicle.
+- Scopes:
+  - Scopes are crucial to designate who will the filters and effects be applied to.
+  - There are a several basic scopes that most events will have.
+    - `Me`: techno this handler is attached to.
+    - `They`: the other participant of the event. Whatever it is is dependant to the event. Some events like `WhenCreated` may not have a `They`.
+  - The extended scopes can be used to get further techno related to the participants.
+    - `(any basic scope).Transport`: the transporting vehicle of a techno.
+- Filters:
+  - Filters can be specified on an scope to ask for something to be true about it, or the event handler doesn't resolve its effects.
+  - If any filter is specified, the scope must exist, or the event handler doesn't resolve its effects.
+  - The available filters are:
+    - `(scope).Filter.House`: Techno owner's relation with the handler's owner. (none|owner/self|allies/ally|team|enemies/enemy|all)
+    - `(scope).Filter.TechnoTypes`: Be any of the listed techno types.
+    - `(scope).Filter.AttachedEffects`: Have any of the listed attached effects.
+    - `(scope).Filter.ShieldTypes`: Have any of the listed shields.
+    - `(scope).Filter.Side`: Owner be any of the listed sides.
+    - `(scope).Filter.Country`: Owner be any of the listed countries.
+    - `(scope).Filter.Veterancy`: Be of any listed veterancy.
+    - `(scope).Filter.HPPercentage`: Has a required HP percentage.
+    - `(scope).Filter.Passengers.HasAny`: Has or has no passengers.
+    - `(scope).Filter.Passengers.HasType`: Has any passenger that is any of the listed techno types.
+- Negative Filters:
+  - Negative Filters can be specified on a scope to ask for something to be false about it, or the event handler doesn't resolve its effects.
+  - Even though they are negative filters, if any negative filter is specified, the scope must exist, or the event handler doesn't resolve its effects.
+  - The available negative filters are identical to regular filters, expect negative filters are defined like `(scope).NegFilter.House`.
+- Effects:
+  - Effects can be specified on a scope to ask for something to be done to it, if all filter checks pass.
+  - The scope must exist. Nothing will be done to an empty scope.
+  - The available effects are:
+    - `(scope).Effect.Weapon`: A weapon is fired at the scope's position, the firer is the `Me` scope of the event.
+      - This doesn't work with Ares `IvanBomb` feature.
+
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                           ; TechnoType
+EventHandlerN=...                      ; EventHandlerType
+
+[SOMEHANDLER]                          ; EventHandlerType
+EventType=...                          ; EventType
+(scope).Filter.Veterancy=...           ; list of veterancy enumeration (none|rookie|veteral|elite)
+(scope).Filter.HPPercentage=...        ; list of HP percentage enumeration (none|full|green|greennotfull|yellow|red)
+(scope).Effect.Weapon=...
+```
+
+An example to make Crazy Ivan fire his death weapon even when crushed:
+```ini
+[IVAN]
+EventHandler=IvanCrushedHandler
+
+[IvanCrushedHandler]
+EventType=WhenCrushed
+They.Effect.Weapon=IvanDeath
+```
+
 ## Animations
 
 ### Anim-to-Unit

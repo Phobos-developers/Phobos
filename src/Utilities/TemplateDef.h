@@ -1054,6 +1054,128 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<EventScopeType>(EventScopeType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "Me") == 0)
+			{
+				value = EventScopeType::Me;
+			}
+			else if (_strcmpi(parser.value(), "They") == 0)
+			{
+				value = EventScopeType::They;
+			}
+			else if (_strcmpi(parser.value(), "Cause") == 0)
+			{
+				value = EventScopeType::Cause;
+			}
+			else if (_strcmpi(parser.value(), "Victim") == 0)
+			{
+				value = EventScopeType::Victim;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an event scope type");
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<VeterancyType>(VeterancyType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, VeterancyType> Names[] =
+			{
+				{"none", VeterancyType::None},
+				{"rookie", VeterancyType::Rookie},
+				{"veteran", VeterancyType::Veteran},
+				{"elite", VeterancyType::Elite},
+			};
+
+
+			auto parsed = VeterancyType::None;
+			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
+			{
+				std::string_view&& cur { part.begin(),part.end() };
+				*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+				auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+				bool matched = false;
+				for (auto const& [name, val] : Names)
+				{
+					if (_strcmpi(pCur, name) == 0)
+					{
+						parsed |= val;
+						matched = true;
+						break;
+					}
+				}
+				if (!matched)
+				{
+					Debug::INIParseFailed(pSection, pKey, pCur, "Expected a veterancy type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<HPPercentageType>(HPPercentageType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, HPPercentageType> Names[] =
+			{
+				{"none", HPPercentageType::None},
+				{"full", HPPercentageType::Full},
+				{"green", HPPercentageType::Green},
+				{"greennotfull", HPPercentageType::GreenNotFull},
+				{"yellow", HPPercentageType::Yellow},
+				{"red", HPPercentageType::Red},
+			};
+
+			auto parsed = HPPercentageType::None;
+			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
+			{
+				std::string_view&& cur { part.begin(),part.end() };
+				*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+				auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+				bool matched = false;
+				for (auto const& [name, val] : Names)
+				{
+					if (_strcmpi(pCur, name) == 0)
+					{
+						parsed |= val;
+						matched = true;
+						break;
+					}
+				}
+				if (!matched)
+				{
+					Debug::INIParseFailed(pSection, pKey, pCur, "Expected an HP percentage type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<CLSID>(CLSID& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (!parser.ReadString(pSection, pKey))

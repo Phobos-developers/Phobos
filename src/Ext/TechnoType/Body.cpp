@@ -32,6 +32,21 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
+void TechnoTypeExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, TechnoClass* pMe, TechnoClass* pThey) const
+{
+	if (this->EventHandlersMap.contains(pEventTypeClass))
+	{
+		const std::map<EventScopeType, TechnoClass*> participants = {
+			{ EventScopeType::Me, pMe },
+			{ EventScopeType::They, pThey },
+		};
+		for (auto pEventHandlerTypeClass : EventHandlersMap.get_or_default(pEventTypeClass))
+		{
+			pEventHandlerTypeClass->HandleEvent(pMe, participants);
+		}
+	}
+}
+
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
@@ -458,6 +473,28 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 
+	char tempBuffer[32];
+
+	// read event handlers
+	Nullable<EventHandlerTypeClass*> eventHandlerNullable;
+	for (size_t i = 0; ; ++i)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "EventHandler%d", i);
+		eventHandlerNullable.Read<true>(exINI, pSection, tempBuffer);
+		if (!eventHandlerNullable.isset())
+			break;
+		this->AppendEventHandlerType(eventHandlerNullable.Get());
+	}
+
+	// read single event handler
+	if (this->EventHandlersMap.empty())
+	{
+		eventHandlerNullable.Read<true>(exINI, pSection, "EventHandler");
+		if (eventHandlerNullable.isset())
+			this->AppendEventHandlerType(eventHandlerNullable.Get());
+	}
+
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -617,6 +654,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (GeneralUtils::IsValidString(pThis->PaletteFile) && !pThis->Palette)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, pThis->PaletteFile);
+}
+
+void TechnoTypeExt::ExtData::AppendEventHandlerType(EventHandlerTypeClass* pEventHandlerTypeClass)
+{
+	auto pEventTypeClass = pEventHandlerTypeClass->EventType.Get();
+	auto vector = this->EventHandlersMap.get_or_default(pEventTypeClass);
+	vector.push_back(pEventHandlerTypeClass);
+	this->EventHandlersMap.insert(pEventTypeClass, vector);
 }
 
 template <typename T>

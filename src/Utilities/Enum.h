@@ -33,6 +33,7 @@
 #pragma once
 
 #include <GeneralDefinitions.h>
+#include <map>
 
 enum class AttachedAnimFlag
 {
@@ -278,6 +279,37 @@ enum class DisplayInfoType : BYTE
 	Occupants = 8,
 	GattlingStage = 9
 };
+
+enum class EventScopeType : byte
+{
+	Me = 1,
+	They = 2,
+};
+
+MAKE_ENUM_FLAGS(EventScopeType);
+
+enum class VeterancyType : byte
+{
+	None = 0x0,
+	Rookie = 0x1,
+	Veteran = 0x2,
+	Elite = 0x4,
+};
+
+MAKE_ENUM_FLAGS(VeterancyType);
+
+enum class HPPercentageType : byte
+{
+	None = 0x0,
+	Full = 0x1,
+	GreenNotFull = 0x2,
+	Yellow = 0x4,
+	Red = 0x8,
+
+	Green = Full | GreenNotFull,
+};
+
+MAKE_ENUM_FLAGS(HPPercentageType);
 
 class MouseCursorHotSpotX
 {

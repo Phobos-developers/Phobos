@@ -226,6 +226,10 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 		if (!I_am_human && You_are_human)
 			TechnoExt::ChangeOwnerMissionFix(pMe);
+
+		// By the moment, pExt->TypeExtData has not changed.
+		// It is only updated with "TechnoExt::ExtData::OnEarlyUpdate()".
+		pExt->TypeExtData->InvokeEvent(EventTypeClass::WhenCaptured, pMe, nullptr);
 	}
 
 	return 0;

@@ -116,6 +116,18 @@ DEFINE_HOOK(0x711FDF, TechnoTypeClass_RefundAmount_FactoryPlant, 0x8)
 	return 0;
 }
 
+DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_BeforeInfiltrate, 6)
+{
+	GET(InfantryClass*, pSpy, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+
+	auto pSpyExt = TechnoTypeExt::ExtMap.Find(pSpy->GetTechnoType());
+	pSpyExt->InvokeEvent(EventTypeClass::WhenInfiltrate, pSpy, pBuilding);
+	auto pBuildingExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
+	pBuildingExt->InvokeEvent(EventTypeClass::WhenInfiltrated, pBuilding, pSpy);
+
+	return 0;
+}
 
 DEFINE_HOOK(0x71464A, TechnoTypeClass_ReadINI_Speed, 0x7)
 {

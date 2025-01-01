@@ -79,6 +79,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pPassTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit)
 			pExt->OriginalPassengerOwner = pPassenger->Owner;
@@ -88,6 +89,9 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 		{
 			ScenarioExt::Global()->TransportReloaders.push_back(pExt);
 		}
+
+		pTransTypeExt->InvokeEvent(EventTypeClass::WhenLoad, pThis, pPassenger);
+		pPassTypeExt->InvokeEvent(EventTypeClass::WhenBoard, pPassenger, pThis);
 	}
 
 	return 0;
@@ -103,6 +107,7 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pPassTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		// Remove from transport reloader list before switching house
 		if (pPassenger->WhatAmI() != AbstractType::Aircraft && pPassenger->WhatAmI() != AbstractType::Building
@@ -117,6 +122,9 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 		{
 			pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
 		}
+
+		pTransTypeExt->InvokeEvent(EventTypeClass::WhenUnload, pThis, pPassenger);
+		pPassTypeExt->InvokeEvent(EventTypeClass::WhenUnboard, pPassenger, pThis);
 	}
 
 	return 0;

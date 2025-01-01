@@ -95,3 +95,33 @@ bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTa
 
 	return eligible;
 }
+
+bool EnumFunctions::CheckVeterancy(TechnoClass* const pTechno, VeterancyType allowed)
+{
+	VeterancyType veterancy;
+	if (pTechno->Veterancy.IsRookie())
+		veterancy = VeterancyType::Rookie;
+	else if (pTechno->Veterancy.IsVeteran())
+		veterancy = VeterancyType::Veteran;
+	else if (pTechno->Veterancy.IsElite())
+		veterancy = VeterancyType::Elite;
+	else
+		veterancy = VeterancyType::None;
+	return (veterancy & allowed) != VeterancyType::None;
+}
+
+bool EnumFunctions::CheckHPPercentage(TechnoClass* const pTechno, HPPercentageType allowed)
+{
+	HPPercentageType hpPercentageType;
+	if (pTechno->Health >= pTechno->GetTechnoType()->Strength)
+		hpPercentageType = HPPercentageType::Full;
+	else if (pTechno->IsGreenHP())
+		hpPercentageType = HPPercentageType::GreenNotFull;
+	else if (pTechno->IsYellowHP())
+		hpPercentageType = HPPercentageType::Yellow;
+	else if (pTechno->IsRedHP())
+		hpPercentageType = HPPercentageType::Red;
+	else
+		hpPercentageType = HPPercentageType::None;
+	return (hpPercentageType & allowed) != HPPercentageType::None;
+}
