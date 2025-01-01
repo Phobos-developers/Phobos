@@ -1048,8 +1048,9 @@ AutoFire.TargetSelf=false  ; boolean
 
 ### Automatically target structures
 
-- You can make a unit Aggressive Stance by default. Under aggressive stance, units will target unarmed enemy buildings if no enemy units or defensive structures can be targeted.
-- For more details of Aggressive Stance, see `User Interface` -> `Hotkey Commands` -> `Toggle Aggressive Stance`.
+- You can make a unit Aggressive Stance by default.
+- Under aggressive stance, units and structures will target unarmed enemy buildings if no enemy units or defensive structures can be targeted.
+- For more details of Aggressive Stance, see [User Interface -> Toggle Aggressive Stance](User-Interface.md#toggle-aggressive-stance) for details.
 
 In `rulesmd.ini`:
 ```ini
