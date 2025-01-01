@@ -435,8 +435,8 @@ Shield.InheritStateOnReplace=false          ; boolean
 - Event Types:
   - Each Event Handler must has an event type. The event type can be any custom string and is not required to be separately listed.
   - There are a several `EventType` that will be invoked from the game.
-    - `WhenCreated`: when the techno is created.
-    - `WhenCaptured`: when the techno is captured, mind-controlled, or released from mind-control. `They` is missing for this event.
+    - `WhenCreated`: when the techno is created. `They` is missing for the event.
+    - `WhenCaptured`: when the techno is captured, mind-controlled, or released from mind-control. `They` is missing for the event.
     - `WhenCrush`: when the techno crushes something (not walls).
     - `WhenCrushed`: when the techno is crushed.
     - `WhenInfiltrate`: when the techno infiltrates into a building.
@@ -450,7 +450,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - There are a several basic scopes that most events will have.
     - `Me`: techno this handler is attached to.
     - `They`: the other participant of the event. Whatever it is is dependant to the event. Some events like `WhenCreated` may not have a `They`.
-  - The extended scopes can be used to get further techno related to the participants.
+  - The extended scopes can be used to get further techno related to the participants. Filters and effects can be assigned to them.
     - `(any basic scope).Transport`: the transporting vehicle of a techno.
 - Filters:
   - Filters can be specified on an scope to ask for something to be true about it, or the event handler doesn't resolve its effects.
@@ -469,14 +469,14 @@ Shield.InheritStateOnReplace=false          ; boolean
 - Negative Filters:
   - Negative Filters can be specified on a scope to ask for something to be false about it, or the event handler doesn't resolve its effects.
   - Even though they are negative filters, if any negative filter is specified, the scope must exist, or the event handler doesn't resolve its effects.
-  - The available negative filters are identical to regular filters, expect negative filters are defined like `(scope).NegFilter.House`.
+  - Negative filters are defined like `(scope).NegFilter.House`. Available filter types are the same.
 - Effects:
   - Effects can be specified on a scope to ask for something to be done to it, if all filter checks pass.
   - The scope must exist. Nothing will be done to an empty scope.
   - The available effects are:
     - `(scope).Effect.Weapon`: A weapon is fired at the scope's position, the firer is the `Me` scope of the event.
       - This doesn't work with Ares `IvanBomb` feature.
-    - `(scope).ConvertN.From`, `To`, `AffectedHouses`: The scope is converted to a different type. See `Super Weapons` -> `Convert TechnoType` for details.
+    - `(scope).Effect.ConvertN.From`, `To`, `AffectedHouses`: The scope is converted to a different type. This follows the same rules as `Super Weapons` -> `Convert TechnoType`.
 - Other usage notes:
   - If any type conversion happened before or during the event, only the handlers attached to the old type will be invoked.
 
