@@ -1,19 +1,6 @@
 #include <Ext/Techno/Body.h>
 #include "HandlerFilterClass.h"
 
-HandlerFilterClass::HandlerFilterClass()
-	: House {}
-	, TechnoTypes {}
-	, AttachedEffects {}
-	, ShieldTypes {}
-	, Side {}
-	, Country {}
-	, Veterancy {}
-	, HPPercentage {}
-	, Passengers_HasAny {}
-	, Passengers_HasType {}
-{ }
-
 std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(INI_EX & exINI, const char* pSection, const char* scopeName, const char* filterName)
 {
 	auto filter = std::make_unique<HandlerFilterClass>();
