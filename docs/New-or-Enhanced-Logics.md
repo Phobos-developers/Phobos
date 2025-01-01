@@ -435,16 +435,16 @@ Shield.InheritStateOnReplace=false          ; boolean
 - Event Types:
   - Each Event Handler must has an event type. The event type can be any custom string and is not required to be separately listed.
   - There are a several `EventType` that will be invoked from the game.
-    - `WhenCreated`: when the techno is created. `They` is missing for the event.
-    - `WhenCaptured`: when the techno is captured, mind-controlled, or released from mind-control. `They` is missing for the event.
-    - `WhenCrush`: when the techno crushes something (not walls).
-    - `WhenCrushed`: when the techno is crushed.
-    - `WhenInfiltrate`: when the techno infiltrates into a building.
-    - `WhenInfiltrated`: when the building is infiltrated by a techno.
-    - `WhenLoad`: when the vehicle loads a passenger.
-    - `WhenUnload`: when the vehicle unloads a passenger.
-    - `WhenBoard`: when the techno boards a vehicle.
-    - `WhenUnboard`: when the techno is unloaded from a vehicle.
+    - `WhenCreated`: When the techno is created. `They` is missing for the event.
+    - `WhenCaptured`: When the techno is captured, mind-controlled, or released from mind-control. `They` is missing for the event.
+    - `WhenCrush`: When the techno crushes something (not walls).
+    - `WhenCrushed`: When the techno is crushed.
+    - `WhenInfiltrate`: When the techno infiltrates into a building.
+    - `WhenInfiltrated`: When the building is infiltrated by a techno.
+    - `WhenLoad`: When the vehicle loads a passenger.
+    - `WhenUnload`: When the vehicle unloads a passenger.
+    - `WhenBoard`: When the techno is loaded into a vehicle.
+    - `WhenUnboard`: When the techno is unloaded from a vehicle.
 - Scopes:
   - Scopes are crucial to designate who will the filters and effects be applied to.
   - There are a several basic scopes that most events will have.
