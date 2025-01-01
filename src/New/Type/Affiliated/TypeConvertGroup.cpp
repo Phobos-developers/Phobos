@@ -46,7 +46,7 @@ void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI,
 }
 
 // If the header's length plus "1.AffectedHouse" exceeds the capacity of the tempBuffer the game will crash.
-// For example, there are 36 characters in "Cause.Effect.Convert0.AffectedHouses", meaning it crashes the game if the buffer size was only 32.
+// For example, there are 35 characters in "They.Effect.Convert0.AffectedHouses", meaning it crashes the game if the buffer size was only 32.
 // The buffer size 64 should be enough for most cases, however it should be furtherly expanded if even longer headers are expected.
 void TypeConvertGroup::Parse(std::vector<TypeConvertGroup>& list, INI_EX& exINI, const char* pSection, AffectedHouse defaultAffectHouse, const char* header)
 {

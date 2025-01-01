@@ -55,8 +55,8 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	Passengers_HasType.Read(exINI, pSection, tempBuffer);
 }
 
-// If "negative == false", the function returns false if any check failed, otherwise return true.
-// If "negative == true", the function returns false if any check succeed, otherwise return true.
+// If "negative == false", the function returns false if any check failed, otherwise it returns true.
+// If "negative == true", the function returns false if any check succeed, otherwise it returns true.
 // Thus, we simply compare "negative" with the outcome of an entry, if equals then return false.
 bool HandlerFilterClass::Check(TechnoClass* pOwner, TechnoClass* pTarget, bool negative) const
 {
