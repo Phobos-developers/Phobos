@@ -1,9 +1,8 @@
 #include <Ext/Techno/Body.h>
 #include "HandlerFilterClass.h"
 
-HandlerFilterClass::HandlerFilterClass(EventHandlerTypeClass* OwnedBy)
-	: OwnerType { OwnedBy }
-	, House {}
+HandlerFilterClass::HandlerFilterClass()
+	: House {}
 	, TechnoTypes {}
 	, AttachedEffects {}
 	, ShieldTypes {}

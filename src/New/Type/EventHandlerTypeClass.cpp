@@ -25,12 +25,12 @@ void EventHandlerTypeClass::LoadFromINI(CCINIClass* pINI)
 void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, const EventScopeType scope)
 {
 	auto const scopeName = nameof::customize::enum_name(scope).data();
-	this->Filter.insert(scope, HandlerFilterClass::Parse(this, exINI, pSection, scopeName, "Filter"));
-	this->Transport_Filter.insert(scope, HandlerFilterClass::Parse(this, exINI, pSection, scopeName, "Transport.Filter"));
-	this->NegFilter.insert(scope, HandlerFilterClass::Parse(this, exINI, pSection, scopeName, "NegFilter"));
-	this->Transport_NegFilter.insert(scope, HandlerFilterClass::Parse(this, exINI, pSection, scopeName, "Transport.NegFilter"));
-	this->Effect.insert(scope, HandlerEffectClass::Parse(this, exINI, pSection, scopeName, "Effect"));
-	this->Transport_Effect.insert(scope, HandlerEffectClass::Parse(this, exINI, pSection, scopeName, "Transport.Effect"));
+	this->Filter.insert(scope, HandlerFilterClass::Parse(exINI, pSection, scopeName, "Filter"));
+	this->Transport_Filter.insert(scope, HandlerFilterClass::Parse(exINI, pSection, scopeName, "Transport.Filter"));
+	this->NegFilter.insert(scope, HandlerFilterClass::Parse(exINI, pSection, scopeName, "NegFilter"));
+	this->Transport_NegFilter.insert(scope, HandlerFilterClass::Parse(exINI, pSection, scopeName, "Transport.NegFilter"));
+	this->Effect.insert(scope, HandlerEffectClass::Parse(exINI, pSection, scopeName, "Effect"));
+	this->Transport_Effect.insert(scope, HandlerEffectClass::Parse(exINI, pSection, scopeName, "Transport.Effect"));
 }
 
 template <typename T>

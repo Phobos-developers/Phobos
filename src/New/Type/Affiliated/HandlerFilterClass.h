@@ -1,19 +1,12 @@
 #pragma once
 
 #include <Utilities/EnumFunctions.h>
-#include <New/Type/EventHandlerTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 
 class HandlerFilterClass
 {
 public:
-	HandlerFilterClass() = default;
-
-	HandlerFilterClass(EventHandlerTypeClass* OwnedBy);
-
-	EventHandlerTypeClass* OwnerType;
-
 	Nullable<AffectedHouse> House;
 	ValueableVector<TechnoTypeClass*> TechnoTypes;
 	ValueableVector<AttachEffectTypeClass*> AttachedEffects;
@@ -25,7 +18,7 @@ public:
 	Nullable<bool> Passengers_HasAny;
 	ValueableVector<TechnoTypeClass*> Passengers_HasType;
 
-	static std::unique_ptr<HandlerFilterClass> Parse(EventHandlerTypeClass* OwnedBy, INI_EX& exINI, const char* pSection, const char* scopeName, const char* filterName);
+	static std::unique_ptr<HandlerFilterClass> Parse(INI_EX& exINI, const char* pSection, const char* scopeName, const char* filterName);
 
 	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* filterName);
 
