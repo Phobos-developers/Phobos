@@ -431,7 +431,6 @@ Shield.InheritStateOnReplace=false          ; boolean
   - The Event Handlers are listed at `[EventHandlerTypes]`. Separate listing of the Event Handlers is not mandatory, the game will parse Event Handler types from techno entries.
   - `EventHandlerN` (where N is 0, 1, 2...) specifies an event handler for the techno type. This entry can have many types listed.
   - `EventHandler` is a valid alternative for `EventHandler0`, if only one is specified.
-- Event Handlers must have an `EventType`, may have a several filters on a Scope, and may specify the effects on a Scope.
 - Event Types:
   - Each Event Handler must has an event type. The event type can be any custom string and is not required to be separately listed.
   - There are a several `EventType` that will be invoked from the game.
@@ -476,7 +475,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - The available effects are:
     - `(scope).Effect.Weapon`: A weapon is fired at the scope's position, the firer is the `Me` scope of the event.
       - This doesn't work with Ares `IvanBomb` feature.
-    - `(scope).Effect.ConvertN.From`, `To`, `AffectedHouses`: The scope is converted to a different type. This follows the same rules as `Super Weapons` -> `Convert TechnoType`.
+    - `(scope).Effect.ConvertN.From`, `To`, `AffectedHouses`: The scope is converted to a different type. This follows the same rules as [Super Weapons -> Convert TechnoType](#convert-technotype).
 - Other usage notes:
   - If any type conversion happened before or during the event, only the handlers attached to the old type will be invoked.
 
