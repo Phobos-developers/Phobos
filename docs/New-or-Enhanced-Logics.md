@@ -449,22 +449,33 @@ Shield.InheritStateOnReplace=false          ; boolean
   - There are a several basic scopes that most events will have.
     - `Me`: techno this handler is attached to.
     - `They`: the other participant of the event. Whatever it is is dependant to the event. Some events like `WhenCreated` may not have a `They`.
-  - The extended scopes can be used to get further techno related to the participants. Filters and effects can be assigned to them.
-    - `(any basic scope).Transport`: the transporting vehicle of a techno.
+  - The extended scopes can be used to get further techno related to the participants. Filters and effects can be assigned to them as well.
+    - `(any basic scope).Transport`: The transporting vehicle that is carrying the scope.
+    - `(any basic scope).Bunker`: To vehicle types, this refers to the Tank Bunker loading it; to Tank Bunkers, this refers to the vehicle loaded into it.
+    - `(any basic scope).MindController`: The techno that is mind-controlling the scope.
 - Filters:
   - Filters can be specified on an scope to ask for something to be true about it, or the event handler doesn't resolve its effects.
   - If any filter is specified, the scope must exist, or the event handler doesn't resolve its effects.
   - The available filters are:
-    - `(scope).Filter.House`: Techno owner's relation with the handler's owner. (none|owner/self|allies/ally|team|enemies/enemy|all)
-    - `(scope).Filter.TechnoTypes`: Be any of the listed techno types.
-    - `(scope).Filter.AttachedEffects`: Have any of the listed attached effects.
-    - `(scope).Filter.ShieldTypes`: Have any of the listed shields.
-    - `(scope).Filter.Side`: Owner be any of the listed sides.
-    - `(scope).Filter.Country`: Owner be any of the listed countries.
-    - `(scope).Filter.Veterancy`: Be of any listed veterancy.
-    - `(scope).Filter.HPPercentage`: Has a required HP percentage.
-    - `(scope).Filter.Passengers.HasAny`: Has or has no passengers.
-    - `(scope).Filter.Passengers.HasType`: Has any passenger that is any of the listed techno types.
+    - `(scope).Filter.Abstract`: A quick filter on the techno's type and domain. (none|land|water|empty|infantry|units|buildings|all)
+    - `(scope).Filter.IsInAir`: Techno is in air.
+    - `(scope).Filter.TechnoTypes`: Techno is any of the listed TechnoTypes.
+    - `(scope).Filter.AttachedEffects`: Techno has any of the listed AttachedEffectTypes.
+    - `(scope).Filter.ShieldTypes`: Techno has any of the listed ShieldTypes.
+    - `(scope).Filter.Veterancy`: Techno is any of the listed veterancy.
+    - `(scope).Filter.HPPercentage`: Techno is any of the listed HP percentage condition.
+    - `(scope).Filter.Owner.House`: Techno owner's relation with the handler's owner. (none|owner/self|allies/ally|team|enemies/enemy|all)
+    - `(scope).Filter.Owner.Sides`: Owner's country is any of the listed sides.
+    - `(scope).Filter.Owner.Countries`: Owner's country is any of the listed countries.
+    - `(scope).Filter.Owner.IsHuman`: Owner is human controlled.
+    - `(scope).Filter.Owner.IsAI`: Owner is AI controlled.
+    - `(scope).Filter.IsBunkered`: Techno is either loaded into a Tank Bunker, or is a Tank Bunker loading something.
+    - `(scope).Filter.IsMindControlled`: Techno is mind-controlled.
+    - `(scope).Filter.IsMindControlled.Perma`: Techno is permanently mind-controlled.
+    - `(scope).Filter.MindControlling.Any`: Techno is mind-controlling something.
+    - `(scope).Filter.MindControlling.Type`: Techno is mind-controlling something that is any of the listed TechnoTypes.
+    - `(scope).Filter.Passengers.Any`: Has or has no passengers.
+    - `(scope).Filter.Passengers.Type`: Has any passenger that is any of the listed TechnoTypes.
 - Negative Filters:
   - Negative Filters can be specified on a scope to ask for something to be false about it, or the event handler doesn't resolve its effects.
   - Even though they are negative filters, if any negative filter is specified, the scope must exist, or the event handler doesn't resolve its effects.
@@ -482,26 +493,37 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                           ; TechnoType
-EventHandlerN=...                      ; EventHandlerType
+[SOMETECHNO]                                   ; TechnoType
+EventHandlerN=...                              ; EventHandlerType
 
-[SOMEHANDLER]                          ; EventHandlerType
-EventType=                             ; EventType
+[SOMEHANDLER]                                  ; EventHandlerType
+EventType=                                     ; EventType
 
 ;; filters
-(scope).Filter.House=                          ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+(scope).Filter.Abstract=                       ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+(scope).Filter.IsInAir=                        ; boolean
 (scope).Filter.TechnoTypes=                    ; list of TechnoTypes
 (scope).Filter.AttachedEffects=                ; list of AttachedEffectTypes
 (scope).Filter.ShieldTypes=                    ; list of ShieldTypes
-(scope).Filter.Side=                           ; list of Sides
-(scope).Filter.Country=                        ; list of Countries
-(scope).Filter.Veterancy=                      ; list of veterancy enumeration (none|rookie|veteral|elite)
-(scope).Filter.HPPercentage=                   ; list of HP percentage enumeration (none|full|green|greennotfull|yellow|red)
-(scope).Filter.Passengers.HasAny=              ; boolean
-(scope).Filter.Passengers.HasType=             ; list of TechnoTypes
+(scope).Filter.Veterancy=                      ; list of Veterancy Enumeration (none|rookie|veteral|elite)
+(scope).Filter.HPPercentage=                   ; list of HP Percentage Enumeration (none|full|green|greennotfull|yellow|red)
+(scope).Filter.Owner.House=                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+(scope).Filter.Owner.Sides=                    ; list of Sides
+(scope).Filter.Owner.Countries=                ; list of Countries
+(scope).Filter.Owner.IsHuman=                  ; boolean
+(scope).Filter.Owner.IsAI=                     ; boolean
+(scope).Filter.IsBunkered=                     ; boolean
+(scope).Filter.IsMindControlled=               ; boolean
+(scope).Filter.IsMindControlled.Perma=         ; boolean
+(scope).Filter.MindControlling.Any=            ; boolean
+(scope).Filter.MindControlling.Type=           ; list of TechnoTypes
+(scope).Filter.Passengers.Any=                 ; boolean
+(scope).Filter.Passengers.Type=                ; list of TechnoTypes
 
-;; effects
+;; effects - weapon detonation
 (scope).Effect.Weapon=                         ; WeaponType
+
+;; effects - type conversion
 (scope).Effect.ConvertN.From=                  ; list of TechnoTypes
 (scope).Effect.ConvertN.To=                    ; TechnoType
 (scope).Effect.ConvertN.AffectedHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -512,12 +534,15 @@ EventType=                             ; EventType
 (scope).Effect.Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
+#### Examples
+
 An example to make Crazy Ivan fire his death weapon when crushed.
+
 ```ini
 [IVAN]
-EventHandler=IvanCrushedHandler
+EventHandler=EHIvanCrushed
 
-[IvanCrushedHandler]
+[EHIvanCrushed]
 EventType=WhenCrushed
 They.Effect.Weapon=IvanDeath
 ```

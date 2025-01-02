@@ -2,16 +2,25 @@
 #include "HandlerFilterClass.h"
 
 HandlerFilterClass::HandlerFilterClass()
-	: House {}
+	: Abstract {}
+	, IsInAir {}
 	, TechnoTypes {}
 	, AttachedEffects {}
-	, ShieldTypes {}
-	, Side {}
-	, Country {}
 	, Veterancy {}
 	, HPPercentage {}
-	, Passengers_HasAny {}
-	, Passengers_HasType {}
+	, ShieldTypes {}
+	, Owner_House {}
+	, Owner_Sides {}
+	, Owner_Countries {}
+	, Owner_IsHuman {}
+	, Owner_IsAI {}
+	, IsBunkered {}
+	, IsMindControlled {}
+	, IsMindControlled_Perma {}
+	, MindControlling_Any {}
+	, MindControlling_Type {}
+	, Passengers_Any {}
+	, Passengers_Type {}
 { }
 
 std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(INI_EX & exINI, const char* pSection, const char* scopeName, const char* filterName)
@@ -32,26 +41,47 @@ std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(INI_EX & exINI, co
 void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* filterName)
 {
 	char tempBuffer[64];
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.House", scopeName, filterName);
-	House.Read(exINI, pSection, tempBuffer);
+
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Abstract", scopeName, filterName);
+	Abstract.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsInAir", scopeName, filterName);
+	IsInAir.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.TechnoTypes", scopeName, filterName);
 	TechnoTypes.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.AttachedEffects", scopeName, filterName);
 	AttachedEffects.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.ShieldTypes", scopeName, filterName);
 	ShieldTypes.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Side", scopeName, filterName);
-	Side.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Country", scopeName, filterName);
-	Country.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Veterancy", scopeName, filterName);
 	Veterancy.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.HPPercentage", scopeName, filterName);
 	HPPercentage.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers_HasAny", scopeName, filterName);
-	Passengers_HasAny.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers_HasType", scopeName, filterName);
-	Passengers_HasType.Read(exINI, pSection, tempBuffer);
+
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.House", scopeName, filterName);
+	Owner_House.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.Sides", scopeName, filterName);
+	Owner_Sides.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.Countries", scopeName, filterName);
+	Owner_Countries.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.IsHuman", scopeName, filterName);
+	Owner_IsHuman.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.IsAI", scopeName, filterName);
+	Owner_IsAI.Read(exINI, pSection, tempBuffer);
+
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsBunkered", scopeName, filterName);
+	IsBunkered.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsMindControlled", scopeName, filterName);
+	IsMindControlled.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsMindControlled.Perma", scopeName, filterName);
+	IsMindControlled_Perma.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.MindControlling.Any", scopeName, filterName);
+	MindControlling_Any.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.MindControlling.Type", scopeName, filterName);
+	MindControlling_Type.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Any", scopeName, filterName);
+	Passengers_Any.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Type", scopeName, filterName);
+	Passengers_Type.Read(exINI, pSection, tempBuffer);
 }
 
 // If "negative == false", the function returns false if any check failed, otherwise it returns true.
@@ -61,9 +91,16 @@ bool HandlerFilterClass::Check(TechnoClass* pOwner, TechnoClass* pTarget, bool n
 {
 	TechnoExt::ExtData* pTargetExt = nullptr;
 
-	if (House.isset())
+	if (Abstract.isset())
 	{
-		if (negative == EnumFunctions::CanTargetHouse(House.Get(), pOwner->Owner, pTarget->Owner))
+		if (negative == (EnumFunctions::IsCellEligible(pTarget->GetCell(), Abstract.Get(), true, true)
+			&& EnumFunctions::IsTechnoEligible(pTarget, Abstract.Get(), false)))
+			return false;
+	}
+
+	if (IsInAir.isset())
+	{
+		if (negative == (IsInAir.Get() == pTarget->IsInAir()))
 			return false;
 	}
 
@@ -89,26 +126,6 @@ bool HandlerFilterClass::Check(TechnoClass* pOwner, TechnoClass* pTarget, bool n
 			return false;
 	}
 
-	if (!Side.empty())
-	{
-		bool sideFlag = false;
-		for (auto pSide : Side)
-		{
-			if (pTarget->Owner->Type->SideIndex == pSide->GetArrayIndex()) {
-				sideFlag = true;
-				break;
-			}
-		}
-		if (negative == sideFlag)
-			return false;
-	}
-
-	if (!Country.empty())
-	{
-		if (negative == Country.Contains(pTarget->Owner->Type))
-			return false;
-	}
-
 	if (Veterancy.isset())
 	{
 		if (negative == EnumFunctions::CheckVeterancy(pTarget, Veterancy.Get()))
@@ -121,13 +138,93 @@ bool HandlerFilterClass::Check(TechnoClass* pOwner, TechnoClass* pTarget, bool n
 			return false;
 	}
 
-	if (Passengers_HasAny.isset())
+	if (Owner_House.isset())
 	{
-		if (negative == (Passengers_HasAny.Get() == pTarget->Passengers.NumPassengers > 0))
+		if (negative == EnumFunctions::CanTargetHouse(Owner_House.Get(), pOwner->Owner, pTarget->Owner))
 			return false;
 	}
 
-	if (!Passengers_HasType.empty())
+	if (!Owner_Sides.empty())
+	{
+		bool sideFlag = false;
+		for (auto pSide : Owner_Sides)
+		{
+			if (pTarget->Owner->Type->SideIndex == pSide->GetArrayIndex()) {
+				sideFlag = true;
+				break;
+			}
+		}
+		if (negative == sideFlag)
+			return false;
+	}
+
+	if (!Owner_Countries.empty())
+	{
+		if (negative == Owner_Countries.Contains(pTarget->Owner->Type))
+			return false;
+	}
+
+	if (Owner_IsHuman.isset())
+	{
+		if (negative == pTarget->Owner->IsControlledByHuman())
+			return false;
+	}
+
+	if (Owner_IsAI.isset())
+	{
+		if (negative != pTarget->Owner->IsControlledByHuman())
+			return false;
+	}
+
+	if (IsBunkered.isset())
+	{
+		if (negative == (pTarget->BunkerLinkedItem != nullptr))
+			return false;
+	}
+
+	if (IsMindControlled.isset())
+	{
+		if (negative == pTarget->IsMindControlled())
+			return false;
+	}
+
+	if (IsMindControlled_Perma.isset())
+	{
+		if (negative == (pTarget->MindControlledByAUnit && !pTarget->MindControlledBy))
+			return false;
+	}
+
+	if (MindControlling_Any.isset())
+	{
+		if (negative == (pTarget->CaptureManager && pTarget->CaptureManager->IsControllingSomething()))
+			return false;
+	}
+
+	if (!MindControlling_Type.empty())
+	{
+		bool mcFlag = false;
+		if ((pTarget->CaptureManager && pTarget->CaptureManager->IsControllingSomething()))
+		{
+			for (auto node : pTarget->CaptureManager->ControlNodes)
+			{
+				if (node->Unit && MindControlling_Type.Contains(node->Unit->GetTechnoType()))
+				{
+					mcFlag = true;
+					break;
+				}
+			}
+		}
+		if (negative == mcFlag)
+			return false;
+	}
+
+	if (Passengers_Any.isset())
+	{
+		if (negative == (Passengers_Any.Get() == pTarget->Passengers.NumPassengers > 0))
+			return false;
+	}
+
+	if (!Passengers_Type.empty())
 	{
 		bool passengerFlag = false;
 		if (pTarget->Passengers.NumPassengers > 0)
@@ -135,7 +232,7 @@ bool HandlerFilterClass::Check(TechnoClass* pOwner, TechnoClass* pTarget, bool n
 			for (NextObject obj(pTarget->Passengers.FirstPassenger->NextObject); obj; ++obj)
 			{
 				auto const passenger = abstract_cast<TechnoClass*>(*obj);
-				if (Passengers_HasType.Contains(passenger->GetTechnoType()))
+				if (Passengers_Type.Contains(passenger->GetTechnoType()))
 				{
 					passengerFlag = true;
 					break;
@@ -151,16 +248,25 @@ bool HandlerFilterClass::Check(TechnoClass* pOwner, TechnoClass* pTarget, bool n
 
 bool HandlerFilterClass::IsDefined() const
 {
-	return House.isset()
+	return Abstract.isset()
+		|| IsInAir.isset()
 		|| !TechnoTypes.empty()
 		|| !AttachedEffects.empty()
 		|| !ShieldTypes.empty()
-		|| !Side.empty()
-		|| !Country.empty()
 		|| Veterancy.isset()
 		|| HPPercentage.isset()
-		|| Passengers_HasAny.isset()
-		|| !Passengers_HasType.empty();
+		|| Owner_House.isset()
+		|| !Owner_Sides.empty()
+		|| !Owner_Countries.empty()
+		|| Owner_IsHuman.isset()
+		|| Owner_IsAI.isset()
+		|| IsBunkered.isset()
+		|| IsMindControlled.isset()
+		|| IsMindControlled_Perma.isset()
+		|| MindControlling_Any.isset()
+		|| !MindControlling_Type.empty()
+		|| Passengers_Any.isset()
+		|| !Passengers_Type.empty();
 }
 
 bool HandlerFilterClass::Load(PhobosStreamReader& stm, bool registerForChange)
@@ -177,15 +283,24 @@ template<typename T>
 bool HandlerFilterClass::Serialize(T& stm)
 {
 	return stm
-		.Process(this->House)
+		.Process(this->Abstract)
+		.Process(this->IsInAir)
 		.Process(this->TechnoTypes)
 		.Process(this->AttachedEffects)
 		.Process(this->ShieldTypes)
-		.Process(this->Side)
-		.Process(this->Country)
 		.Process(this->Veterancy)
 		.Process(this->HPPercentage)
-		.Process(this->Passengers_HasAny)
-		.Process(this->Passengers_HasType)
+		.Process(this->Owner_House)
+		.Process(this->Owner_Sides)
+		.Process(this->Owner_Countries)
+		.Process(this->Owner_IsHuman)
+		.Process(this->Owner_IsAI)
+		.Process(this->IsBunkered)
+		.Process(this->IsMindControlled)
+		.Process(this->IsMindControlled_Perma)
+		.Process(this->MindControlling_Any)
+		.Process(this->MindControlling_Type)
+		.Process(this->Passengers_Any)
+		.Process(this->Passengers_Type)
 		.Success();
 }

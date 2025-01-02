@@ -1087,6 +1087,14 @@ namespace detail
 			{
 				value = EventExtendedScopeType::Transport;
 			}
+			else if (_strcmpi(parser.value(), "Bunker") == 0)
+			{
+				value = EventExtendedScopeType::Bunker;
+			}
+			else if (_strcmpi(parser.value(), "MindController") == 0)
+			{
+				value = EventExtendedScopeType::MindController;
+			}
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an event extended scope type");

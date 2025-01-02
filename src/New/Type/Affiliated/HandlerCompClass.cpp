@@ -71,6 +71,10 @@ TechnoClass* HandlerCompClass::GetTrueTarget(TechnoClass* pTarget) const
 		{
 		case EventExtendedScopeType::Transport:
 			return pTarget->Transporter;
+		case EventExtendedScopeType::Bunker:
+			return pTarget->BunkerLinkedItem;
+		case EventExtendedScopeType::MindController:
+			return pTarget->MindControlledBy;
 		}
 	}
 	return pTarget;

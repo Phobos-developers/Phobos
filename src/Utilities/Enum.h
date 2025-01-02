@@ -291,6 +291,8 @@ MAKE_ENUM_FLAGS(EventScopeType);
 enum class EventExtendedScopeType : byte
 {
 	Transport = 1,
+	Bunker = 2,
+	MindController = 3,
 };
 
 MAKE_ENUM_FLAGS(EventExtendedScopeType);

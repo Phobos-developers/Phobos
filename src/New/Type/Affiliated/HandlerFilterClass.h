@@ -8,16 +8,27 @@ class HandlerFilterClass
 public:
 	HandlerFilterClass();
 
-	Nullable<AffectedHouse> House;
+	Nullable<AffectedTarget> Abstract;
+	Nullable<bool> IsInAir;
 	ValueableVector<TechnoTypeClass*> TechnoTypes;
 	ValueableVector<AttachEffectTypeClass*> AttachedEffects;
 	ValueableVector<ShieldTypeClass*> ShieldTypes;
-	ValueableVector<SideClass*> Side;
-	ValueableVector<HouseTypeClass*> Country;
 	Nullable<VeterancyType> Veterancy;
 	Nullable<HPPercentageType> HPPercentage;
-	Nullable<bool> Passengers_HasAny;
-	ValueableVector<TechnoTypeClass*> Passengers_HasType;
+
+	Nullable<AffectedHouse> Owner_House;
+	ValueableVector<SideClass*> Owner_Sides;
+	ValueableVector<HouseTypeClass*> Owner_Countries;
+	Nullable<bool> Owner_IsHuman;
+	Nullable<bool> Owner_IsAI;
+
+	Nullable<bool> IsBunkered;
+	Nullable<bool> IsMindControlled;
+	Nullable<bool> IsMindControlled_Perma;
+	Nullable<bool> MindControlling_Any;
+	ValueableVector<TechnoTypeClass*> MindControlling_Type;
+	Nullable<bool> Passengers_Any;
+	ValueableVector<TechnoTypeClass*> Passengers_Type;
 
 	static std::unique_ptr<HandlerFilterClass> Parse(INI_EX& exINI, const char* pSection, const char* scopeName, const char* filterName);
 
