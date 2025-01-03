@@ -29,6 +29,8 @@ public:
 	ValueableVector<TechnoTypeClass*> MindControlling_Type;
 	Nullable<bool> Passengers_Any;
 	ValueableVector<TechnoTypeClass*> Passengers_Type;
+	Nullable<bool> Upgrades_Any;
+	ValueableVector<BuildingTypeClass*> Upgrades_Type;
 
 	static std::unique_ptr<HandlerFilterClass> Parse(INI_EX& exINI, const char* pSection, const char* scopeName, const char* filterName);
 

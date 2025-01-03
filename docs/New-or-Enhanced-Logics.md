@@ -476,6 +476,8 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `(scope).Filter.MindControlling.Type`: Techno is mind-controlling something that is any of the listed TechnoTypes.
     - `(scope).Filter.Passengers.Any`: Techno has passengers.
     - `(scope).Filter.Passengers.Type`: Techno has a passenger that is any of the listed TechnoTypes.
+    - `(scope).Filter.Upgrades.Any`: Techno is a building with any upgrade installed.
+    - `(scope).Filter.Upgrades.Type`: Techno is a building with any upgrade installed that is any of the listed BuildingTypes.
 - Negative Filters:
   - Negative Filters can be specified on a scope to ask for something to be false about it, or the event handler doesn't resolve its effects.
   - Even though they are negative filters, if specified, the scope must exist, or the event handler doesn't resolve its effects.
@@ -537,6 +539,8 @@ EventType=                                     ; EventType
 (scope).Filter.MindControlling.Type=           ; list of TechnoTypes
 (scope).Filter.Passengers.Any=                 ; boolean
 (scope).Filter.Passengers.Type=                ; list of TechnoTypes
+(scope).Filter.Upgrades.Any=                   ; boolean
+(scope).Filter.Upgrades.Type=                  ; list of BuildingTypes
 
 ;; Note: effects on a same scope are resolved in the order they are listed in this document.
 

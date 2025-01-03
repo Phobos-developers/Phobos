@@ -21,6 +21,8 @@ HandlerFilterClass::HandlerFilterClass()
 	, MindControlling_Type {}
 	, Passengers_Any {}
 	, Passengers_Type {}
+	, Upgrades_Any {}
+	, Upgrades_Type {}
 { }
 
 std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(INI_EX & exINI, const char* pSection, const char* scopeName, const char* filterName)
@@ -82,6 +84,10 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	Passengers_Any.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Type", scopeName, filterName);
 	Passengers_Type.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Upgrades.Any", scopeName, filterName);
+	Upgrades_Any.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Upgrades.Type", scopeName, filterName);
+	Upgrades_Type.Read(exINI, pSection, tempBuffer);
 }
 
 // If "negative == false", the function returns false if any check failed, otherwise it returns true.
@@ -218,29 +224,63 @@ bool HandlerFilterClass::Check(std::map<EventScopeType, TechnoClass*>* pParticip
 			return false;
 	}
 
-	if (Passengers_Any.isset())
+	if (Passengers_Any.isset() || !Passengers_Type.empty())
 	{
-		if (negative == (Passengers_Any.Get() == pTarget->Passengers.NumPassengers > 0))
-			return false;
-	}
+		bool passengerAnyFlag = pTarget->Passengers.NumPassengers > 0;
 
-	if (!Passengers_Type.empty())
-	{
-		bool passengerFlag = false;
-		if (pTarget->Passengers.NumPassengers > 0)
+		if (Passengers_Any.isset())
 		{
-			for (NextObject obj(pTarget->Passengers.FirstPassenger->NextObject); obj; ++obj)
+			if (negative == (Passengers_Any.Get() == passengerAnyFlag))
+				return false;
+		}
+
+		if (!Passengers_Type.empty())
+		{
+			bool passengerFlag = false;
+			if (passengerAnyFlag)
 			{
-				auto const pPassenger = abstract_cast<TechnoClass*>(*obj);
-				if (Passengers_Type.Contains(pPassenger->GetTechnoType()))
+				for (NextObject obj(pTarget->Passengers.FirstPassenger->NextObject); obj; ++obj)
 				{
-					passengerFlag = true;
-					break;
+					auto const pPassenger = abstract_cast<TechnoClass*>(*obj);
+					if (Passengers_Type.Contains(pPassenger->GetTechnoType()))
+					{
+						passengerFlag = true;
+						break;
+					}
 				}
 			}
+			if (negative == passengerFlag)
+				return false;
 		}
-		if (negative == passengerFlag)
-			return false;
+	}
+
+	if (Upgrades_Any.isset() || !Upgrades_Type.empty())
+	{
+		bool upgradesAnyFlag = false;
+		bool upgradesTypeFlag = Upgrades_Type.empty(); // if no upgrades types specified then skip upgrades type check
+
+		if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+		{
+			for (auto const& pBuildingUpgrade : pBuilding->Upgrades)
+			{
+				upgradesAnyFlag = true;
+				upgradesTypeFlag = upgradesTypeFlag || Upgrades_Type.Contains(pBuildingUpgrade);
+				if (upgradesAnyFlag && upgradesTypeFlag)
+					break;
+			}
+		}
+
+		if (Upgrades_Any.isset())
+		{
+			if (negative == (Upgrades_Any.Get() == upgradesAnyFlag))
+				return false;
+		}
+
+		if (!Upgrades_Type.empty())
+		{
+			if (negative == upgradesTypeFlag)
+				return false;
+		}
 	}
 
 	return true;
@@ -266,7 +306,9 @@ bool HandlerFilterClass::IsDefined() const
 		|| MindControlling_Any.isset()
 		|| !MindControlling_Type.empty()
 		|| Passengers_Any.isset()
-		|| !Passengers_Type.empty();
+		|| !Passengers_Type.empty()
+		|| Upgrades_Any.isset()
+		|| !Upgrades_Type.empty();
 }
 
 bool HandlerFilterClass::Load(PhobosStreamReader& stm, bool registerForChange)
@@ -302,5 +344,7 @@ bool HandlerFilterClass::Serialize(T& stm)
 		.Process(this->MindControlling_Type)
 		.Process(this->Passengers_Any)
 		.Process(this->Passengers_Type)
+		.Process(this->Upgrades_Any)
+		.Process(this->Upgrades_Type)
 		.Success();
 }
