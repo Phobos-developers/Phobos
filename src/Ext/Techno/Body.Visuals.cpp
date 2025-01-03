@@ -220,17 +220,17 @@ void TechnoExt::DrawFactoryProgress(BuildingClass* pThis, RectangleStruct* pBoun
 		switch (pType->Factory)
 		{
 		case AbstractType::BuildingType:
-			pPrimaryFactory = pHouse->GetPrimaryFactory(AbstractType::BuildingType, false, BuildCat::DontCare);
-			pSecondaryFactory = pHouse->GetPrimaryFactory(AbstractType::BuildingType, false, BuildCat::Combat);
+			pPrimaryFactory = pHouse->Primary_ForBuildings;
+			pSecondaryFactory = pHouse->Primary_ForDefenses;
 			break;
 		case AbstractType::InfantryType:
-			pPrimaryFactory = pHouse->GetPrimaryFactory(AbstractType::InfantryType, false, BuildCat::Combat);
+			pPrimaryFactory = pHouse->Primary_ForInfantry;
 			break;
 		case AbstractType::UnitType:
-			pPrimaryFactory = pHouse->GetPrimaryFactory(AbstractType::UnitType, pType->Naval, BuildCat::Combat);
+			pPrimaryFactory = pType->Naval ? pHouse->Primary_ForShips : pHouse->Primary_ForVehicles;
 			break;
 		case AbstractType::AircraftType:
-			pPrimaryFactory = pHouse->GetPrimaryFactory(AbstractType::AircraftType, false, BuildCat::Combat);
+			pPrimaryFactory = pHouse->Primary_ForAircraft;
 			break;
 		default:
 			return;
