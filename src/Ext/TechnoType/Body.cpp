@@ -49,13 +49,13 @@ void TechnoTypeExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, Techno
 
 int TechnoTypeExt::GetTotalSoylentOfPassengers(double soylentMultiplier, TechnoClass* pTransport)
 {
-	TechnoClass* pPassenger;
+	TechnoClass* pPassenger = nullptr;
 	int nMoneyToGive = 0;
 	if (pTransport->Passengers.NumPassengers > 0)
 	{
 		for (NextObject obj(pTransport->Passengers.FirstPassenger->NextObject); obj; ++obj)
 		{
-			auto const pPassenger = abstract_cast<TechnoClass*>(*obj);
+			pPassenger = abstract_cast<TechnoClass*>(*obj);
 			nMoneyToGive += (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * soylentMultiplier);
 			if (pPassenger->Passengers.NumPassengers > 0)
 			{
@@ -69,7 +69,7 @@ int TechnoTypeExt::GetTotalSoylentOfPassengers(double soylentMultiplier, TechnoC
 // This function is intended for when the transport is grinded or sold. Every unit in the transport will be destroyed in the process.
 int TechnoTypeExt::DestroyAndGetTotalSoylentOfPassengers(TechnoClass* pSource, double soylentMultiplier, TechnoClass* pTransport)
 {
-	TechnoClass* pPassenger;
+	TechnoClass* pPassenger = nullptr;
 	int nMoneyToGive = 0;
 	while (pTransport->Passengers.NumPassengers > 0)
 	{

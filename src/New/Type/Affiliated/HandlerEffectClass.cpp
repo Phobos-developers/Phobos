@@ -250,7 +250,6 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 void HandlerEffectClass::CreatePassengers(TechnoClass* pToWhom, TechnoClass* pPassengerOwnerScope) const
 {
 	auto const pType = pToWhom->GetTechnoType();
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	auto const pBld = abstract_cast<BuildingClass*>(pToWhom);
 	auto const pBldType = pBld ? pBld->Type : nullptr;
@@ -362,8 +361,7 @@ bool HandlerEffectClass::IsDefined() const
 		|| Soylent_Mult.isset()
 		|| Passengers_Eject.Get()
 		|| Passengers_Kill.Get()
-		|| !Passengers_Create_Types.empty()
-		|| Command.isset();
+		|| !Passengers_Create_Types.empty();
 }
 
 bool HandlerEffectClass::Load(PhobosStreamReader& stm, bool registerForChange)
@@ -385,7 +383,7 @@ bool HandlerEffectClass::Serialize(T& stm)
 		.Process(this->Weapon_Firer_ExtScope)
 		.Process(this->Weapon_SpawnProj)
 		.Process(this->Convert_Pairs)
-		.Process(this->Soylent_Mult
+		.Process(this->Soylent_Mult)
 		.Process(this->Soylent_IncludePassengers)
 		.Process(this->Soylent_Scope)
 		.Process(this->Soylent_ExtScope)
