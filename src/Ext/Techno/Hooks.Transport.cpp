@@ -105,17 +105,17 @@ DEFINE_HOOK(0x47342A, CargoClass_Attach_EventHook, 0x5)
 	// At this point, the passenger is already loaded into the transport.
 	if (pPassenger)
 	{
-		auto pTransport = pPassenger->Transporter;
+		// A transport component's pointer is equal to the transport's pointer plus 0x114.
+		// Therefore, we can get the transport's pointer by substracting it back.
+		// This is confirmed to support both transports and Bio Reactors.
+		auto dword = reinterpret_cast<DWORD>(pThis);
+		auto pTransport = reinterpret_cast<TechnoClass*>(dword - 0x114);
 
-		// If loaded into a Bio Reactor, the Transporter pointer is nullptr.
-		if (pTransport)
-		{
-			auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
-			auto const pPassTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
+		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+		auto const pPassTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
 
-			pTransTypeExt->InvokeEvent(EventTypeClass::AfterLoad, pTransport, pPassenger);
-			pPassTypeExt->InvokeEvent(EventTypeClass::AfterBoard, pPassenger, pTransport);
-		}
+		pTransTypeExt->InvokeEvent(EventTypeClass::AfterLoad, pTransport, pPassenger);
+		pPassTypeExt->InvokeEvent(EventTypeClass::AfterBoard, pPassenger, pTransport);
 	}
 
 	return 0;
