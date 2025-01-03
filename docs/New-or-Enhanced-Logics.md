@@ -478,6 +478,7 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `(scope).Filter.Owner.House`: Techno owner's relation with the handler's owner. *(none|owner/self|allies/ally|team|enemies/enemy|all)*
     - `(scope).Filter.Owner.Sides`: Owner's country is any of the listed sides.
     - `(scope).Filter.Owner.Countries`: Owner's country is any of the listed countries.
+    - `(scope).Filter.Owner.Buildings`: Owner has a building that is any of the listed BuildingTypes.
     - `(scope).Filter.Owner.IsHuman`: Owner is human controlled.
     - `(scope).Filter.Owner.IsAI`: Owner is AI controlled.
     - `(scope).Filter.IsBunkered`: Techno is either loaded into a Tank Bunker, or is a Tank Bunker loading something.
@@ -542,6 +543,7 @@ EventType=                                         ; EventType
 (scope).Filter.Owner.House=                        ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 (scope).Filter.Owner.Sides=                        ; list of Sides
 (scope).Filter.Owner.Countries=                    ; list of Countries
+(scope).Filter.Owner.Buildings=                    ; list of BuildingTypes
 (scope).Filter.Owner.IsHuman=                      ; boolean
 (scope).Filter.Owner.IsAI=                         ; boolean
 (scope).Filter.IsBunkered=                         ; boolean

@@ -106,11 +106,16 @@ DEFINE_HOOK(0x47342A, CargoClass_Attach_EventHook, 0x5)
 	if (pPassenger)
 	{
 		auto pTransport = pPassenger->Transporter;
-		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
-		auto const pPassTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
 
-		pTransTypeExt->InvokeEvent(EventTypeClass::AfterLoad, pTransport, pPassenger);
-		pPassTypeExt->InvokeEvent(EventTypeClass::AfterBoard, pPassenger, pTransport);
+		// If loaded into a Bio Reactor, the Transporter pointer is nullptr.
+		if (pTransport)
+		{
+			auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+			auto const pPassTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
+
+			pTransTypeExt->InvokeEvent(EventTypeClass::AfterLoad, pTransport, pPassenger);
+			pPassTypeExt->InvokeEvent(EventTypeClass::AfterBoard, pPassenger, pTransport);
+		}
 	}
 
 	return 0;

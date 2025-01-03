@@ -12,6 +12,7 @@ HandlerFilterClass::HandlerFilterClass()
 	, Owner_House {}
 	, Owner_Sides {}
 	, Owner_Countries {}
+	, Owner_Buildings {}
 	, Owner_IsHuman {}
 	, Owner_IsAI {}
 	, IsBunkered {}
@@ -65,6 +66,8 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	Owner_Sides.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.Countries", scopeName, filterName);
 	Owner_Countries.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.Buildings", scopeName, filterName);
+	Owner_Buildings.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.IsHuman", scopeName, filterName);
 	Owner_IsHuman.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.IsAI", scopeName, filterName);
@@ -167,6 +170,33 @@ bool HandlerFilterClass::Check(std::map<EventScopeType, TechnoClass*>* pParticip
 	if (!Owner_Countries.empty())
 	{
 		if (negative == Owner_Countries.Contains(pTarget->Owner->Type))
+			return false;
+	}
+
+	if (!Owner_Buildings.empty())
+	{
+		bool buildingFlag = false;
+		if (pTarget->Owner->OwnedBuildings > 0)
+		{
+			for (auto const& pBld : pTarget->Owner->Buildings)
+			{
+				if (Owner_Buildings.Contains(pBld->Type))
+				{
+					buildingFlag = true;
+					goto _EndOwnerBuildingSearch_;
+				}
+				for (const auto& pUpgrade : pBld->Upgrades)
+				{
+					if (Owner_Buildings.Contains(pUpgrade))
+					{
+						buildingFlag = true;
+						goto _EndOwnerBuildingSearch_;
+					}
+				}
+			}
+		_EndOwnerBuildingSearch_:;
+		}
+		if (negative == buildingFlag)
 			return false;
 	}
 
@@ -298,6 +328,7 @@ bool HandlerFilterClass::IsDefined() const
 		|| Owner_House.isset()
 		|| !Owner_Sides.empty()
 		|| !Owner_Countries.empty()
+		|| !Owner_Buildings.empty()
 		|| Owner_IsHuman.isset()
 		|| Owner_IsAI.isset()
 		|| IsBunkered.isset()
@@ -335,6 +366,7 @@ bool HandlerFilterClass::Serialize(T& stm)
 		.Process(this->Owner_House)
 		.Process(this->Owner_Sides)
 		.Process(this->Owner_Countries)
+		.Process(this->Owner_Buildings)
 		.Process(this->Owner_IsHuman)
 		.Process(this->Owner_IsAI)
 		.Process(this->IsBunkered)

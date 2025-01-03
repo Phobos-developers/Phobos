@@ -19,6 +19,7 @@ public:
 	Nullable<AffectedHouse> Owner_House;
 	ValueableVector<SideClass*> Owner_Sides;
 	ValueableVector<HouseTypeClass*> Owner_Countries;
+	ValueableVector<BuildingTypeClass*> Owner_Buildings;
 	Nullable<bool> Owner_IsHuman;
 	Nullable<bool> Owner_IsAI;
 
