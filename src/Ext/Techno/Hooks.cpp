@@ -79,7 +79,9 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCenterCoords());
 		else if (RulesExt::Global()->Promote_EliteAnimation)
 			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords());
-		promAnim->SetOwnerObject(pThis);
+
+		if(promAnim)
+			promAnim->SetOwnerObject(pThis);
 	}
 
 	return aresProcess();
