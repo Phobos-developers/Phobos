@@ -506,77 +506,78 @@ Shield.InheritStateOnReplace=false          ; boolean
       - `~.Score` can be set to true to make the killed passengers be treated as if they were killed by a scope.
       - The scope can be determined with `~.Score.Scope` and `~.Score.ExtScope`, and if not set, defaults to the `Me` scope.
     - `(scope).Passenger.Create.Types`, and `~.Create.Nums`, can be specified so a number of passengers will be spawned inside the transport.
-      - `~.Create.Owner.Scope`, and `~.Create.Owner.ExScope`, can be used to specify the passengers' owner. If not specified, it is default to the `(scope)`.
+      - `~.Create.Owner.Scope`, and `~.Create.Owner.ExtScope`, can be used to specify the passengers' owner. If not specified, it is default to the `(scope)`.
 - Other usage notes:
   - If any type conversion happened before or during the event, only the handlers attached to the old type will be invoked.
 
-
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                                   ; TechnoType
-EventHandlerN=...                              ; EventHandlerType
+[SOMETECHNO]                                       ; TechnoType
+EventHandlerN=...                                  ; EventHandlerType
 
-[SOMEHANDLER]                                  ; EventHandlerType
-EventType=                                     ; EventType
+[SOMEHANDLER]                                      ; EventHandlerType
+EventType=                                         ; EventType
 
 ;; filters
-(scope).Filter.Abstract=                       ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-(scope).Filter.IsInAir=                        ; boolean
-(scope).Filter.TechnoTypes=                    ; list of TechnoTypes
-(scope).Filter.AttachedEffects=                ; list of AttachedEffectTypes
-(scope).Filter.ShieldTypes=                    ; list of ShieldTypes
-(scope).Filter.Veterancy=                      ; list of Veterancy Enumeration (none|rookie|veteral|elite)
-(scope).Filter.HPPercentage=                   ; list of HP Percentage Enumeration (none|full|green|greennotfull|yellow|red)
-(scope).Filter.Owner.House=                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-(scope).Filter.Owner.Sides=                    ; list of Sides
-(scope).Filter.Owner.Countries=                ; list of Countries
-(scope).Filter.Owner.IsHuman=                  ; boolean
-(scope).Filter.Owner.IsAI=                     ; boolean
-(scope).Filter.IsBunkered=                     ; boolean
-(scope).Filter.IsMindControlled=               ; boolean
-(scope).Filter.IsMindControlled.Perma=         ; boolean
-(scope).Filter.MindControlling.Any=            ; boolean
-(scope).Filter.MindControlling.Type=           ; list of TechnoTypes
-(scope).Filter.Passengers.Any=                 ; boolean
-(scope).Filter.Passengers.Type=                ; list of TechnoTypes
-(scope).Filter.Upgrades.Any=                   ; boolean
-(scope).Filter.Upgrades.Type=                  ; list of BuildingTypes
+(scope).Filter.Abstract=                           ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+(scope).Filter.IsInAir=                            ; boolean
+(scope).Filter.TechnoTypes=                        ; list of TechnoTypes
+(scope).Filter.AttachedEffects=                    ; list of AttachedEffectTypes
+(scope).Filter.ShieldTypes=                        ; list of ShieldTypes
+(scope).Filter.Veterancy=                          ; list of Veterancy Enumeration (none|rookie|veteral|elite)
+(scope).Filter.HPPercentage=                       ; list of HP Percentage Enumeration (none|full|green|greennotfull|yellow|red)
+(scope).Filter.Owner.House=                        ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+(scope).Filter.Owner.Sides=                        ; list of Sides
+(scope).Filter.Owner.Countries=                    ; list of Countries
+(scope).Filter.Owner.IsHuman=                      ; boolean
+(scope).Filter.Owner.IsAI=                         ; boolean
+(scope).Filter.IsBunkered=                         ; boolean
+(scope).Filter.IsMindControlled=                   ; boolean
+(scope).Filter.IsMindControlled.Perma=             ; boolean
+(scope).Filter.MindControlling.Any=                ; boolean
+(scope).Filter.MindControlling.Type=               ; list of TechnoTypes
+(scope).Filter.Passengers.Any=                     ; boolean
+(scope).Filter.Passengers.Type=                    ; list of TechnoTypes
+(scope).Filter.Upgrades.Any=                       ; boolean
+(scope).Filter.Upgrades.Type=                      ; list of BuildingTypes
 
 ;; Note: effects on a same scope are resolved in the order they are listed in this document.
 
 ;; effects - weapon detonation
-(scope).Effect.Weapon=                         ; WeaponType
-(scope).Effect.Weapon.Firer.Scope=Me           ; basic scope type (Me|They)
-(scope).Effect.Weapon.Firer.ExtScope=          ; extended scope type (Transport|Bunker|MindController)
-(scope).Effect.Weapon.SpawnProj=false          ; boolean
+(scope).Effect.Weapon=                             ; WeaponType
+(scope).Effect.Weapon.Firer.Scope=Me               ; basic scope type (Me|They)
+(scope).Effect.Weapon.Firer.ExtScope=              ; extended scope type (Transport|Bunker|MindController)
+(scope).Effect.Weapon.SpawnProj=false              ; boolean
 
 ;; effects - type conversion
-(scope).Effect.ConvertN.From=                  ; list of TechnoTypes
-(scope).Effect.ConvertN.To=                    ; TechnoType
-(scope).Effect.ConvertN.AffectedHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+(scope).Effect.ConvertN.From=                      ; list of TechnoTypes
+(scope).Effect.ConvertN.To=                        ; TechnoType
+(scope).Effect.ConvertN.AffectedHouses=all         ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ; where N = 0, 1, 2, ...
 ; or
-(scope).Effect.Convert.From=                   ; list of TechnoTypes
-(scope).Effect.Convert.To=                     ; TechnoType
-(scope).Effect.Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+(scope).Effect.Convert.From=                       ; list of TechnoTypes
+(scope).Effect.Convert.To=                         ; TechnoType
+(scope).Effect.Convert.AffectedHouses=all          ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
 ;; effects - soylent bounty
-(scope).Effect.Soylent.Mult=                   ; double
-(scope).Effect.Soylent.IncludePassengers=false ; boolean
-(scope).Effect.Soylent.Scope=Me                ; basic scope type (Me|They)
-(scope).Effect.Soylent.ExtScope=               ; extended scope type (Transport|Bunker|MindController)
-(scope).Effect.Soylent.Display=true            ; boolean
-(scope).Effect.Soylent.Display.Houses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-(scope).Effect.Soylent.Display.Offset=0,0      ; X,Y, pixels relative to default
+(scope).Effect.Soylent.Mult=                       ; double
+(scope).Effect.Soylent.IncludePassengers=false     ; boolean
+(scope).Effect.Soylent.Scope=Me                    ; basic scope type (Me|They)
+(scope).Effect.Soylent.ExtScope=                   ; extended scope type (Transport|Bunker|MindController)
+(scope).Effect.Soylent.Display=true                ; boolean
+(scope).Effect.Soylent.Display.Houses=all          ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+(scope).Effect.Soylent.Display.Offset=0,0          ; X,Y, pixels relative to default
 
 ;; effects - passengers
-(scope).Effect.Passengers.Eject=false          ; boolean
-(scope).Effect.Passengers.Kill=false           ; boolean
-(scope).Effect.Passengers.Kill.Score=false     ; boolean
-(scope).Effect.Passengers.Kill.Score.Scope=Me  ; basic scope type (Me|They)
-(scope).Effect.Passengers.Kill.Score.ExtScope= ; extended scope type (Transport|Bunker|MindController)
-(scope).Effect.Passengers.Create.Types=        ; list of TechnoTypes
-(scope).Effect.Passengers.Create.Nums=         ; list of integers
+(scope).Effect.Passengers.Eject=false              ; boolean
+(scope).Effect.Passengers.Kill=false               ; boolean
+(scope).Effect.Passengers.Kill.Score=false         ; boolean
+(scope).Effect.Passengers.Kill.Score.Scope=Me      ; basic scope type (Me|They)
+(scope).Effect.Passengers.Kill.Score.ExtScope=     ; extended scope type (Transport|Bunker|MindController)
+(scope).Effect.Passengers.Create.Types=            ; list of TechnoTypes
+(scope).Effect.Passengers.Create.Nums=             ; list of integers
+(scope).Effect.Passengers.Create.Owner.Scope=      ; basic scope type (Me|They)
+(scope).Effect.Passengers.Create.Owner.ExtScope=   ; extended scope type (Transport|Bunker|MindController)
 ```
 
 #### Examples
