@@ -199,13 +199,25 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 	{
 		if (pTarget->Passengers.NumPassengers > 0)
 		{
-			if (pTarget->GetTechnoType()->OpenTopped)
+			auto const openTopped = pTarget->GetTechnoType()->OpenTopped;
+
+			while (pTarget->Passengers.FirstPassenger)
 			{
-				pTarget->MarkPassengersAsExited();
-			}
-			while (pTarget->Passengers.NumPassengers > 0)
-			{
-				pTarget->Passengers.RemoveFirstPassenger();
+				FootClass* pPassenger = pTarget->Passengers.RemoveFirstPassenger();
+
+				auto const coords = pTarget->GetCoords();
+				auto const pCell = MapClass::Instance->GetCellAt(coords);
+				auto const isBridge = pCell->ContainsBridge();
+				auto const nCell = MapClass::Instance->NearByLocation(pCell->MapCoords,
+					SpeedType::Wheel, -1, MovementZone::Normal, isBridge, 1, 1, true,
+					false, false, isBridge, CellStruct::Empty, false, false);
+
+				pPassenger->Unlimbo(MapClass::Instance->TryGetCellAt(nCell)->GetCoords(), static_cast<DirType>(32 * ScenarioClass::Instance->Random.RandomRanged(0, 7)));
+
+				if (openTopped)
+				{
+					pTarget->ExitedOpenTopped(pPassenger);
+				}
 			}
 		}
 	}

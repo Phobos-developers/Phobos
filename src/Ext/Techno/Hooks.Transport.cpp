@@ -79,7 +79,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		auto const pPassTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto const pPassTypeExt = pExt->TypeExtData;
 
 		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit)
 			pExt->OriginalPassengerOwner = pPassenger->Owner;
@@ -90,8 +90,27 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 			ScenarioExt::Global()->TransportReloaders.push_back(pExt);
 		}
 
-		pTransTypeExt->InvokeEvent(EventTypeClass::WhenLoad, pThis, pPassenger);
-		pPassTypeExt->InvokeEvent(EventTypeClass::WhenBoard, pPassenger, pThis);
+		pTransTypeExt->InvokeEvent(EventTypeClass::BeforeLoad, pThis, pPassenger);
+		pPassTypeExt->InvokeEvent(EventTypeClass::BeforeBoard, pPassenger, pThis);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x47342A, CargoClass_Attach_EventHook, 0x5)
+{
+	GET(PassengersClass*, pThis, EDI);
+	GET(FootClass*, pPassenger, ESI);
+
+	// At this point, the passenger is already loaded into the transport.
+	if (pPassenger)
+	{
+		auto pTransport = pPassenger->Transporter;
+		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+		auto const pPassTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
+
+		pTransTypeExt->InvokeEvent(EventTypeClass::AfterLoad, pTransport, pPassenger);
+		pPassTypeExt->InvokeEvent(EventTypeClass::AfterBoard, pPassenger, pTransport);
 	}
 
 	return 0;

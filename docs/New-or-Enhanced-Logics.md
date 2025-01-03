@@ -434,16 +434,27 @@ Shield.InheritStateOnReplace=false          ; boolean
 - Event Types:
   - Each Event Handler must has an event type. The event types do not need to be separately listed.
   - There are a several `EventType` that will be invoked from the game.
-    - `WhenCreated`: When the techno is created. `They` is missing for the event.
-    - `WhenCaptured`: When the techno is captured, mind-controlled, or released from mind-control. `They` is missing for the event.
-    - `WhenCrush`: When the techno crushes something (not walls).
-    - `WhenCrushed`: When the techno is crushed.
-    - `WhenInfiltrate`: When the techno infiltrates into a building.
-    - `WhenInfiltrated`: When the building is infiltrated by a techno.
-    - `WhenLoad`: When the vehicle loads a passenger.
-    - `WhenUnload`: When the vehicle unloads a passenger.
-    - `WhenBoard`: When the techno is loaded into a vehicle.
-    - `WhenUnboard`: When the techno is unloaded from a vehicle.
+    - Single events:
+      - The `They` scope is missing for these events.
+      - `WhenCreated`: When the techno is created. Invoked even if the techno is pre-placed on the map.
+      - `WhenCaptured`: When the techno is captured, mind-controlled, or released from mind-control.
+    - Crushing:
+      - Invoked when a techno crushes something (not a wall). By the moment, the victim is not yet removed from the game.
+      - `WhenCrush`: Invoked on the crusher's perspective.
+      - `WhenCrushed`: Invoked on the victim's perspective.
+    - Infiltrating:
+      - Invoked when a techno infiltrates into a building, before spy effects are resolved.
+      - `WhenInfiltrate`: Invoked on the spy's perspective.
+      - `WhenInfiltrated`: Invoked on the building's perspective.
+    - Transport loading:
+      - Invoked when a techno is loaded into a transport, before or after it is actually inserted into its passengers.
+      - The `Before` events are not invoked when the transport abducts something *(Ares feature)*.
+      - `BeforeLoad`, `AfterLoad`: Invoked on the transport's perspective.
+      - `BeforeBoard`, `AfterBoard`: Invoked on the passenger's perspective.
+    - Transport unloading:
+      - Invoked when a techno leaves a transport.
+      - `WhenUnload`: Invoked on the transport's perspective.
+      - `WhenUnboard`: Invoked on the passenger's perspective.
 - Scopes:
   - Scopes are crucial to designate who will the filters and effects be applied to.
   - There are a several basic scopes that most events will have.
