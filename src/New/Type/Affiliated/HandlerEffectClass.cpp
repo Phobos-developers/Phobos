@@ -346,7 +346,7 @@ void HandlerEffectClass::CreatePassengers(TechnoClass* pToWhom, TechnoClass* pPa
 
 				pPayload->Transporter = pToWhom;
 
-				auto const old = std::exchange(VocClass::VoicesEnabled, false);
+				auto const old = std::exchange(VocClass::VoicesEnabled(), false);
 				pToWhom->AddPassenger(pPayload);
 				VocClass::VoicesEnabled = old;
 			}
