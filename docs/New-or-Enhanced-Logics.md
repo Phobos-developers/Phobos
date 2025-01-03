@@ -509,6 +509,8 @@ Shield.InheritStateOnReplace=false          ; boolean
       - `~.Create.Owner.Scope`, and `~.Create.Owner.ExtScope`, can be used to specify the passengers' owner. If not specified, it is default to the `(scope)`.
 - Other usage notes:
   - If any type conversion happened right before or during the event, only the handlers attached to the old type will be invoked.
+  - Event Handlers on a same techno type are invoked in the numeral order.
+  - Effects on a same scope are resolved in the order they are listed in this document. To reveres the order, you may define multiple Event Handlers with identical event type and filters but different effects.
 
 In `rulesmd.ini`:
 ```ini
@@ -540,8 +542,6 @@ EventType=                                         ; EventType
 (scope).Filter.Passengers.Type=                    ; list of TechnoTypes
 (scope).Filter.Upgrades.Any=                       ; boolean
 (scope).Filter.Upgrades.Type=                      ; list of BuildingTypes
-
-;; Note: effects on a same scope are resolved in the order they are listed in this document.
 
 ;; effects - weapon detonation
 (scope).Effect.Weapon=                             ; WeaponType
