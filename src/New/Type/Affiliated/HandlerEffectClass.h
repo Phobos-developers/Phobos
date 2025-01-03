@@ -33,6 +33,14 @@ public:
 	Nullable<EventScopeType> Passengers_Create_Owner_Scope;
 	Nullable<EventExtendedScopeType> Passengers_Create_Owner_ExtScope;
 
+	Nullable<VeterancyType> Veterancy_Set;
+	Nullable<double> Veterancy_Add;
+
+	NullableIdx<VocClass> Voice;
+	Valueable<bool> Voice_Persist;
+	Valueable<bool> Voice_Global;
+	NullableIdx<VocClass> EVA;
+
 	static std::unique_ptr<HandlerEffectClass> Parse(INI_EX& exINI, const char* pSection, const char* scopeName, const char* effectName);
 
 	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* effectName);

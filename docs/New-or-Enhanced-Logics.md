@@ -513,12 +513,22 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `~.Scope`, and `~.ExtScope`, can be used to specify the receptant. The credits will be rewarded to its owner. It is default to the `Me` scope.
     - `~.Display` can be set to true to display the amount of credits on the receptant scope. `~.Display.House` determines which houses can see this and `~.Display.Offset` can be used to adjust the display offset.
   - Passengers:
-    - `(scope).Passenger.Eject` can be set to true to forcibly eject its passengers out of the vehicle.
-    - `(scope).Passenger.Kill` can be set to true to kill all passengers from the vehicle.
+    - `(scope).Effect.Passenger.Eject` can be set to true to forcibly eject its passengers out of the vehicle.
+    - `(scope).Effect.Passenger.Kill` can be set to true to kill all passengers from the vehicle.
       - `~.Score` can be set to true to make the killed passengers be treated as if they were killed by a scope.
       - The scope can be determined with `~.Score.Scope` and `~.Score.ExtScope`, and if not set, defaults to the `Me` scope.
-    - `(scope).Passenger.Create.Types`, and `~.Create.Nums`, can be specified so a number of passengers will be spawned inside the transport.
+    - `(scope).Effect.Passenger.Create.Types`, and `~.Create.Nums`, can be specified so a number of passengers will be spawned inside the transport.
       - `~.Create.Owner.Scope`, and `~.Create.Owner.ExtScope`, can be used to specify the passengers' owner. If not specified, it is default to the `(scope)`.
+  - Veterancy:
+    - The scope's veterancy can be updated. Requires it to be `Trainable=yes`.
+    - `(scope).Effect.Veterancy.Set=(rookie|veteran|elite)` will set the scope's veterancy.
+    - `(scope).Effect.Veterancy.Add` will make the scope earn experience, or lose experience if a negative number is given.
+  - Voice:
+    - A voice can be played.
+    - `(scope).Effect.Voice` will be played at the location of `(scope)`. It is only audible to the scope's owner, and will be interrupted when it dies.
+      - `~.Voice.Persist` can be set to true, so the voice is not interrupted even when it dies.
+      - `~.Voice.Global` can be set to true, it does not only persists, it is also audible to other players.
+    - `(scope).Effect.EVA` will be played as an EVA announcement to the `(scope)`'s owner. It is only audible to the scope's owner.
 - Other usage notes:
   - If any type conversion happened right before or during the event, only the handlers attached to the old type will be invoked.
   - Event Handlers on a same techno type are invoked in the numeral order.
@@ -573,7 +583,7 @@ EventType=                                         ; EventType
 (scope).Effect.Convert.AffectedHouses=all          ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
 ;; effects - soylent bounty
-(scope).Effect.Soylent.Mult=                       ; double
+(scope).Effect.Soylent.Mult=                       ; percentage
 (scope).Effect.Soylent.IncludePassengers=false     ; boolean
 (scope).Effect.Soylent.Scope=Me                    ; basic scope type (Me|They)
 (scope).Effect.Soylent.ExtScope=                   ; extended scope type (Transport|Bunker|MindController)
@@ -591,6 +601,16 @@ EventType=                                         ; EventType
 (scope).Effect.Passengers.Create.Nums=             ; list of integers
 (scope).Effect.Passengers.Create.Owner.Scope=      ; basic scope type (Me|They)
 (scope).Effect.Passengers.Create.Owner.ExtScope=   ; extended scope type (Transport|Bunker|MindController)
+
+;; effects - veterancy
+(scope).Effect.Veterancy.Set=                      ; single Veterancy Enumeration (rookie|veteral|elite)
+(scope).Effect.Veterancy.Add=                      ; percentage
+
+;; effects - voice
+(scope).Effect.Voice=                              ; sound entry
+(scope).Effect.Voice.Persist=false                 ; boolean
+(scope).Effect.Voice.Global=false                  ; boolean
+(scope).Effect.EVA=                                ; sound entry
 ```
 
 #### Examples
@@ -603,7 +623,9 @@ EventHandler=EHIvanCrushed
 
 [EHIvanCrushed]
 EventType=WhenCrushed
-They.Effect.Weapon=IvanDeath
+Me.Effect.Weapon=IvanDeath
+Me.Effect.Voice=CrazyIvanDie
+Me.Effect.Voice.Global=true
 ```
 
 An example to make Rhino Tank heal itself when it crushes something, as long as the owner has a Soviet Battle Lab, to mimic the crush heal protocal in RA3.

@@ -26,6 +26,12 @@ HandlerEffectClass::HandlerEffectClass()
 	, Passengers_Create_Nums {}
 	, Passengers_Create_Owner_Scope {}
 	, Passengers_Create_Owner_ExtScope {}
+	, Veterancy_Set {}
+	, Veterancy_Add {}
+	, Voice {}
+	, Voice_Persist { false }
+	, Voice_Global { false }
+	, EVA {}
 { }
 
 std::unique_ptr<HandlerEffectClass> HandlerEffectClass::Parse(INI_EX& exINI, const char* pSection, const char* scopeName, const char* effectName)
@@ -125,6 +131,35 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.Owner.ExtScope", scopeName, effectName);
 		Passengers_Create_Owner_ExtScope.Read(exINI, pSection, tempBuffer);
 	}
+
+	// Veterancy
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Veterancy.Set", scopeName, effectName);
+	Veterancy_Set.Read(exINI, pSection, tempBuffer);
+	if (Veterancy_Set.isset() && Veterancy_Set.Get() != VeterancyType::Rookie
+		&& Veterancy_Set.Get() != VeterancyType::Veteran
+		&& Veterancy_Set.Get() != VeterancyType::Elite)
+	{
+		Veterancy_Set.Reset();
+	}
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Veterancy.Add", scopeName, effectName);
+	Veterancy_Add.Read(exINI, pSection, tempBuffer);
+	if (Veterancy_Add.isset() && Veterancy_Add.Get() == 0)
+	{
+		Veterancy_Add.Reset();
+	}
+
+	// Voice
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Voice", scopeName, effectName);
+	Voice.Read(exINI, pSection, tempBuffer);
+	if (Voice.isset())
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Voice.Persist", scopeName, effectName);
+		Voice_Persist.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Voice.Global", scopeName, effectName);
+		Voice_Global.Read(exINI, pSection, tempBuffer);
+	}
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EVA", scopeName, effectName);
+	EVA.Read(exINI, pSection, tempBuffer);
 }
 
 void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pOwner, TechnoClass* pTarget) const
@@ -256,6 +291,56 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 			this->CreatePassengers(pTarget, pPassengerOwnerScope);
 		}
 	}
+
+	// Veterancy
+	if (pTarget->GetTechnoType()->Trainable)
+	{
+		if (Veterancy_Set.isset())
+		{
+			switch (Veterancy_Set.Get())
+			{
+			case VeterancyType::Rookie:
+				pTarget->Veterancy.Reset();
+				break;
+			case VeterancyType::Veteran:
+				pTarget->Veterancy.SetVeteran();
+				break;
+			case VeterancyType::Elite:
+				pTarget->Veterancy.SetElite();
+				break;
+			}
+		}
+
+		if (Veterancy_Add.isset())
+		{
+			pTarget->Veterancy.Add(Veterancy_Add.Get());
+		}
+	}
+
+	// Voice
+	if (Voice.isset())
+	{
+		if (Voice_Global.Get())
+		{
+			VocClass::PlayAt(Voice.Get(), pTarget->Location);
+		}
+		else if (pTarget->Owner->IsControlledByCurrentPlayer())
+		{
+			if (Voice_Persist.Get())
+				VocClass::PlayAt(Voice.Get(), pTarget->Location);
+			else
+				pTarget->QueueVoice(Voice.Get());
+		}
+	}
+
+	// EVA
+	if (EVA.isset())
+	{
+		if (pTarget->Owner->IsControlledByCurrentPlayer())
+		{
+			VoxClass::PlayIndex(EVA.Get());
+		}
+	}
 }
 
 // Basically copied from Ares "TechnoExt::ExtData::CreateInitialPayload()".
@@ -373,7 +458,11 @@ bool HandlerEffectClass::IsDefined() const
 		|| Soylent_Mult.isset()
 		|| Passengers_Eject.Get()
 		|| Passengers_Kill.Get()
-		|| !Passengers_Create_Types.empty();
+		|| !Passengers_Create_Types.empty()
+		|| Veterancy_Set.isset()
+		|| Veterancy_Add.isset()
+		|| Voice.isset()
+		|| EVA.isset();
 }
 
 bool HandlerEffectClass::Load(PhobosStreamReader& stm, bool registerForChange)
@@ -409,7 +498,13 @@ bool HandlerEffectClass::Serialize(T& stm)
 		.Process(this->Passengers_Kill_Score_ExtScope)
 		.Process(this->Passengers_Create_Types)
 		.Process(this->Passengers_Create_Nums)
-		.Process(this->Passengers_Create_Owner_Scope)
+		.Process(this->Passengers_Create_Owner_Scope
 		.Process(this->Passengers_Create_Owner_ExtScope)
+		.Process(this->Veterancy_Set)
+		.Process(this->Veterancy_Add)
+		.Process(this->Voice)
+		.Process(this->Voice_Persist)
+		.Process(this->Voice_Global)
+		.Process(this->EVA)
 		.Success();
 }
