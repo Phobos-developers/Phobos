@@ -486,7 +486,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - Effects can be specified on a scope to ask for something to be done to it, if all filters pass.
   - The scope must exist. Nothing will be done to an empty scope.
   - Weapon Detonation:
-    - Aa weapon can be fired at the scope's position. *(This doesn't support Ares ivan bomb.)*
+    - A weapon can be fired at the scope's position. *(This doesn't support Ares ivan bomb.)*
     - `(scope).Effect.Weapon` specifies the weapon type to be fired at the position.
     - `~.Firer.Scope`, and `~.Firer.ExtScope`, can be used to specify the firer of the weapon. The firer is default to the `Me` scope.
     - `~.SpawnProj` can be set to true to have a projectile spawned from the firer's position and have it directed to the target's position. *(This doesn't support `Arcing=yes` projectiles.)*
@@ -508,7 +508,7 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `(scope).Passenger.Create.Types`, and `~.Create.Nums`, can be specified so a number of passengers will be spawned inside the transport.
       - `~.Create.Owner.Scope`, and `~.Create.Owner.ExtScope`, can be used to specify the passengers' owner. If not specified, it is default to the `(scope)`.
 - Other usage notes:
-  - If any type conversion happened before or during the event, only the handlers attached to the old type will be invoked.
+  - If any type conversion happened right before or during the event, only the handlers attached to the old type will be invoked.
 
 In `rulesmd.ini`:
 ```ini
