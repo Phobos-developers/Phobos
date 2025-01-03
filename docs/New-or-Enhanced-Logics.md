@@ -606,6 +606,23 @@ EventType=WhenCrushed
 They.Effect.Weapon=IvanDeath
 ```
 
+An example to make Rhino Tank heal itself when it crushes something, as long as the owner has a Soviet Battle Lab, to mimic the crush heal protocal in RA3.
+
+```ini
+[HTNK]
+EventHandler=EHCrushHealProtocal
+
+[EHCrushHealProtocal]
+EventType=WhenCrush
+Me.Filter.Owner.Buildings=NATECH
+Me.Effect.Weapon=EHCrushHealWeapon
+
+[EHCrushHealWeapon]
+Damage=-150
+Warhead=Mechanical
+...
+```
+
 ## Animations
 
 ### Anim-to-Unit
