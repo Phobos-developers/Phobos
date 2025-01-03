@@ -296,17 +296,24 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 
 int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool mode)
 {
-	if (!pThis || !pFirer)
+	const auto pExt = WeaponTypeExt::ExtMap.Find(pThis);
+
+	if (!pExt || !pFirer)
+		return 0;
+
+	const auto keepRange = pExt->KeepRange.Get();
+
+	if (!keepRange)
 		return 0;
 
 	const auto absType = pFirer->WhatAmI();
-	const auto pExt = WeaponTypeExt::ExtMap.Find(pThis);
-	const auto keepRange = pExt->KeepRange.Get();
 
-	if (!keepRange || (absType != AbstractType::Infantry && absType != AbstractType::Unit))
+	if (absType != AbstractType::Infantry && absType != AbstractType::Unit)
 		return 0;
 
-	if (pFirer->Owner && pFirer->Owner->IsControlledByHuman())
+	const auto pHouse = pFirer->Owner;
+
+	if (pHouse && pHouse->IsControlledByHuman())
 	{
 		if (!pExt->KeepRange_AllowPlayer)
 			return 0;
@@ -327,28 +334,26 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 
 		for (int i = 0; i < spawnsNumber; i++)
 		{
-			if (spawnManager->SpawnedNodes[i]->Status == SpawnNodeStatus::Returning)
+			const auto status = spawnManager->SpawnedNodes[i]->Status;
+
+			if (status == SpawnNodeStatus::TakeOff || status == SpawnNodeStatus::Returning)
 				return 0;
 		}
 	}
 
 	if (mode)
-	{
-		if (keepRange > 0)
-			return keepRange;
-	}
-	else if (keepRange < 0)
-	{
-		const auto checkRange = -keepRange - 128;
-		const auto pTarget = pFirer->Target;
+		return (keepRange > 0) ? keepRange : 0;
 
-		if (pTarget && static_cast<int>(pFirer->GetCoords().DistanceFrom(pTarget->GetCoords())) >= checkRange)
-			return (checkRange > 128) ? checkRange : 128;
-		else
-			return -keepRange;
-	}
+	if (keepRange > 0)
+		return 0;
 
-	return 0;
+	const auto checkRange = -keepRange - 128;
+	const auto pTarget = pFirer->Target;
+
+	if (pTarget && pFirer->DistanceFrom(pTarget) >= checkRange)
+		return (checkRange > 443) ? checkRange : 443; // 1.73 * Unsorted::LeptonsPerCell
+
+	return -keepRange;
 }
 
 // =============================
