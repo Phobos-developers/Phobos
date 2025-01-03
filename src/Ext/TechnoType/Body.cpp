@@ -36,15 +36,57 @@ void TechnoTypeExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, Techno
 {
 	if (this->EventHandlersMap.contains(pEventTypeClass))
 	{
-		const std::map<EventScopeType, TechnoClass*> participants = {
+		std::map<EventScopeType, TechnoClass*> participants = {
 			{ EventScopeType::Me, pMe },
 			{ EventScopeType::They, pThey },
 		};
 		for (auto pEventHandlerTypeClass : EventHandlersMap.get_or_default(pEventTypeClass))
 		{
-			pEventHandlerTypeClass->HandleEvent(pMe, participants);
+			pEventHandlerTypeClass->HandleEvent(pMe, &participants);
 		}
 	}
+}
+
+int TechnoTypeExt::GetTotalSoylentOfPassengers(double soylentMultiplier, TechnoClass* pTransport)
+{
+	TechnoClass* pPassenger;
+	int nMoneyToGive = 0;
+	if (pTransport->Passengers.NumPassengers > 0)
+	{
+		for (NextObject obj(pTransport->Passengers.FirstPassenger->NextObject); obj; ++obj)
+		{
+			auto const pPassenger = abstract_cast<TechnoClass*>(*obj);
+			nMoneyToGive += (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * soylentMultiplier);
+			if (pPassenger->Passengers.NumPassengers > 0)
+			{
+				nMoneyToGive += GetTotalSoylentOfPassengers(soylentMultiplier, pPassenger);
+			}
+		}
+	}
+	return nMoneyToGive;
+}
+
+// This function is intended for when the transport is grinded or sold. Every unit in the transport will be destroyed in the process.
+int TechnoTypeExt::DestroyAndGetTotalSoylentOfPassengers(TechnoClass* pSource, double soylentMultiplier, TechnoClass* pTransport)
+{
+	TechnoClass* pPassenger;
+	int nMoneyToGive = 0;
+	while (pTransport->Passengers.NumPassengers > 0)
+	{
+		pPassenger = pTransport->Passengers.RemoveFirstPassenger();
+		if (pPassenger)
+		{
+			nMoneyToGive += (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * soylentMultiplier);
+			if (pPassenger->Passengers.NumPassengers > 0)
+			{
+				nMoneyToGive += DestroyAndGetTotalSoylentOfPassengers(pSource, soylentMultiplier, pPassenger);
+			}
+			pPassenger->KillPassengers(pSource);
+			pPassenger->RegisterDestruction(pSource);
+			pPassenger->UnInit();
+		}
+	}
+	return nMoneyToGive;
 }
 
 // Ares 0.A source

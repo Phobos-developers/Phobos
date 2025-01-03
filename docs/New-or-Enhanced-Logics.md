@@ -429,10 +429,10 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 - Event Handlers can be defined and given to techno types, to specify something to be done when something happens.
   - The Event Handlers are listed at `[EventHandlerTypes]`. Separate listing of the Event Handlers is not mandatory, the game will parse Event Handler types from techno entries.
-  - `EventHandlerN` (where N is 0, 1, 2...) specifies an event handler for the techno type. This entry can have many types listed.
+  - `EventHandlerN` (where N is 0, 1, 2...) specifies an event handler for the techno type.
   - `EventHandler` is a valid alternative for `EventHandler0`, if only one is specified.
 - Event Types:
-  - Each Event Handler must has an event type. The event type can be any custom string and is not required to be separately listed.
+  - Each Event Handler must has an event type. The event types do not need to be separately listed.
   - There are a several `EventType` that will be invoked from the game.
     - `WhenCreated`: When the techno is created. `They` is missing for the event.
     - `WhenCaptured`: When the techno is captured, mind-controlled, or released from mind-control. `They` is missing for the event.
@@ -448,8 +448,8 @@ Shield.InheritStateOnReplace=false          ; boolean
   - Scopes are crucial to designate who will the filters and effects be applied to.
   - There are a several basic scopes that most events will have.
     - `Me`: techno this handler is attached to.
-    - `They`: the other participant of the event. Whatever it is is dependant to the event. Some events like `WhenCreated` may not have a `They`.
-  - The extended scopes can be used to get further techno related to the participants. Filters and effects can be assigned to them as well.
+    - `They`: the other participant of the event. Whatever it is is dependant to the event. Some events do not have `They`.
+  - The extended scopes can be used to access techno related to the participants. Filters and effects can be assigned to them as well.
     - `(any basic scope).Transport`: The transporting vehicle that is carrying the scope.
     - `(any basic scope).Bunker`: To vehicle types, this refers to the Tank Bunker loading it; to Tank Bunkers, this refers to the vehicle loaded into it.
     - `(any basic scope).MindController`: The techno that is mind-controlling the scope.
@@ -457,14 +457,14 @@ Shield.InheritStateOnReplace=false          ; boolean
   - Filters can be specified on an scope to ask for something to be true about it, or the event handler doesn't resolve its effects.
   - If any filter is specified, the scope must exist, or the event handler doesn't resolve its effects.
   - The available filters are:
-    - `(scope).Filter.Abstract`: A quick filter on the techno's type and domain. (none|land|water|empty|infantry|units|buildings|all)
+    - `(scope).Filter.Abstract`: A quick filter on the techno's type and domain. *(none|land|water|empty|infantry|units|buildings|all)*
     - `(scope).Filter.IsInAir`: Techno is in air.
     - `(scope).Filter.TechnoTypes`: Techno is any of the listed TechnoTypes.
     - `(scope).Filter.AttachedEffects`: Techno has any of the listed AttachedEffectTypes.
     - `(scope).Filter.ShieldTypes`: Techno has any of the listed ShieldTypes.
     - `(scope).Filter.Veterancy`: Techno is any of the listed veterancy.
     - `(scope).Filter.HPPercentage`: Techno is any of the listed HP percentage condition.
-    - `(scope).Filter.Owner.House`: Techno owner's relation with the handler's owner. (none|owner/self|allies/ally|team|enemies/enemy|all)
+    - `(scope).Filter.Owner.House`: Techno owner's relation with the handler's owner. *(none|owner/self|allies/ally|team|enemies/enemy|all)*
     - `(scope).Filter.Owner.Sides`: Owner's country is any of the listed sides.
     - `(scope).Filter.Owner.Countries`: Owner's country is any of the listed countries.
     - `(scope).Filter.Owner.IsHuman`: Owner is human controlled.
@@ -474,19 +474,37 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `(scope).Filter.IsMindControlled.Perma`: Techno is permanently mind-controlled.
     - `(scope).Filter.MindControlling.Any`: Techno is mind-controlling something.
     - `(scope).Filter.MindControlling.Type`: Techno is mind-controlling something that is any of the listed TechnoTypes.
-    - `(scope).Filter.Passengers.Any`: Has or has no passengers.
-    - `(scope).Filter.Passengers.Type`: Has any passenger that is any of the listed TechnoTypes.
+    - `(scope).Filter.Passengers.Any`: Techno has passengers.
+    - `(scope).Filter.Passengers.Type`: Techno has a passenger that is any of the listed TechnoTypes.
 - Negative Filters:
   - Negative Filters can be specified on a scope to ask for something to be false about it, or the event handler doesn't resolve its effects.
-  - Even though they are negative filters, if any negative filter is specified, the scope must exist, or the event handler doesn't resolve its effects.
-  - Negative filters are defined like `(scope).NegFilter.House`. Available filter types are the same.
+  - Even though they are negative filters, if specified, the scope must exist, or the event handler doesn't resolve its effects.
+  - Negative filters are defined like `(scope).NegFilter.~`. Available filter types are the same.
 - Effects:
-  - Effects can be specified on a scope to ask for something to be done to it, if all filter checks pass.
+  - Effects can be specified on a scope to ask for something to be done to it, if all filters pass.
   - The scope must exist. Nothing will be done to an empty scope.
-  - The available effects are:
-    - `(scope).Effect.Weapon`: A weapon is fired at the scope's position, the firer is the `Me` scope of the event.
-      - This doesn't work with Ares `IvanBomb` feature.
-    - `(scope).Effect.ConvertN.From`, `To`, `AffectedHouses`: The scope is converted to a different type. This follows the same rules as [Super Weapons -> Convert TechnoType](#convert-technotype).
+  - Weapon Detonation:
+    - Aa weapon can be fired at the scope's position. *(This doesn't support Ares ivan bomb.)*
+    - `(scope).Effect.Weapon` specifies the weapon type to be fired at the position.
+    - `~.Firer.Scope`, and `~.Firer.ExtScope`, can be used to specify the firer of the weapon. The firer is default to the `Me` scope.
+    - `~.SpawnProj` can be set to true to have a projectile spawned from the firer's position and have it directed to the target's position. *(This doesn't support `Arcing=yes` projectiles.)*
+  - Type Conversion:
+    - The scope can be converted to a different techno type.
+    - `(scope).Effect.ConvertN.From`, `~.To`, `~.AffectedHouses`.
+    - This follows the same rules as [Super Weapons -> Convert TechnoType](#convert-technotype).
+  - Soylent Bounty:
+    - Credits can be rewarded based on the scope's soylent.
+    - `(scope).Effect.Soylent.Mult` specifies the soylent multiplier. If not specified, or it is equal to 0, no credits will be rewarded. If negative, credits can be substracted from the receptant.
+    - `~.IncludePassengers` can be set to true to make it so the total soylent of the scope's passengers will also count.
+    - `~.Scope`, and `~.ExtScope`, can be used to specify the receptant. The credits will be rewarded to its owner. It is default to the `Me` scope.
+    - `~.Display` can be set to true to display the amount of credits on the receptant scope. `~.Display.House` determines which houses can see this and `~.Display.Offset` can be used to adjust the display offset.
+  - Passengers:
+    - `(scope).Passenger.Eject` can be set to true to forcibly eject its passengers out of the vehicle.
+    - `(scope).Passenger.Kill` can be set to true to kill all passengers from the vehicle.
+      - `~.Score` can be set to true to make the killed passengers be treated as if they were killed by a scope.
+      - The scope can be determined with `~.Score.Scope` and `~.Score.ExtScope`, and if not set, defaults to the `Me` scope.
+    - `(scope).Passenger.Create.Types`, and `~.Create.Nums`, can be specified so a number of passengers will be spawned inside the transport.
+      - `~.Create.Owner.Scope`, and `~.Create.Owner.ExScope`, can be used to specify the passengers' owner. If not specified, it is default to the `(scope)`.
 - Other usage notes:
   - If any type conversion happened before or during the event, only the handlers attached to the old type will be invoked.
 
@@ -520,8 +538,13 @@ EventType=                                     ; EventType
 (scope).Filter.Passengers.Any=                 ; boolean
 (scope).Filter.Passengers.Type=                ; list of TechnoTypes
 
+;; Note: effects on a same scope are resolved in the order they are listed in this document.
+
 ;; effects - weapon detonation
 (scope).Effect.Weapon=                         ; WeaponType
+(scope).Effect.Weapon.Firer.Scope=Me           ; basic scope type (Me|They)
+(scope).Effect.Weapon.Firer.ExtScope=          ; extended scope type (Transport|Bunker|MindController)
+(scope).Effect.Weapon.SpawnProj=false          ; boolean
 
 ;; effects - type conversion
 (scope).Effect.ConvertN.From=                  ; list of TechnoTypes
@@ -532,6 +555,24 @@ EventType=                                     ; EventType
 (scope).Effect.Convert.From=                   ; list of TechnoTypes
 (scope).Effect.Convert.To=                     ; TechnoType
 (scope).Effect.Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
+;; effects - soylent bounty
+(scope).Effect.Soylent.Mult=                   ; double
+(scope).Effect.Soylent.IncludePassengers=false ; boolean
+(scope).Effect.Soylent.Scope=Me                ; basic scope type (Me|They)
+(scope).Effect.Soylent.ExtScope=               ; extended scope type (Transport|Bunker|MindController)
+(scope).Effect.Soylent.Display=true            ; boolean
+(scope).Effect.Soylent.Display.Houses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+(scope).Effect.Soylent.Display.Offset=0,0      ; X,Y, pixels relative to default
+
+;; effects - passengers
+(scope).Effect.Passengers.Eject=false          ; boolean
+(scope).Effect.Passengers.Kill=false           ; boolean
+(scope).Effect.Passengers.Kill.Score=false     ; boolean
+(scope).Effect.Passengers.Kill.Score.Scope=Me  ; basic scope type (Me|They)
+(scope).Effect.Passengers.Kill.Score.ExtScope= ; extended scope type (Transport|Bunker|MindController)
+(scope).Effect.Passengers.Create.Types=        ; list of TechnoTypes
+(scope).Effect.Passengers.Create.Nums=         ; list of integers
 ```
 
 #### Examples

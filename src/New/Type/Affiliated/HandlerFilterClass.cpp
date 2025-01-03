@@ -6,9 +6,9 @@ HandlerFilterClass::HandlerFilterClass()
 	, IsInAir {}
 	, TechnoTypes {}
 	, AttachedEffects {}
+	, ShieldTypes {}
 	, Veterancy {}
 	, HPPercentage {}
-	, ShieldTypes {}
 	, Owner_House {}
 	, Owner_Sides {}
 	, Owner_Countries {}
@@ -87,7 +87,7 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 // If "negative == false", the function returns false if any check failed, otherwise it returns true.
 // If "negative == true", the function returns false if any check succeed, otherwise it returns true.
 // Thus, we simply compare "negative" with the outcome of an entry, if equals then return false.
-bool HandlerFilterClass::Check(TechnoClass* pOwner, TechnoClass* pTarget, bool negative) const
+bool HandlerFilterClass::Check(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pOwner, TechnoClass* pTarget, bool negative) const
 {
 	TechnoExt::ExtData* pTargetExt = nullptr;
 
@@ -231,8 +231,8 @@ bool HandlerFilterClass::Check(TechnoClass* pOwner, TechnoClass* pTarget, bool n
 		{
 			for (NextObject obj(pTarget->Passengers.FirstPassenger->NextObject); obj; ++obj)
 			{
-				auto const passenger = abstract_cast<TechnoClass*>(*obj);
-				if (Passengers_Type.Contains(passenger->GetTechnoType()))
+				auto const pPassenger = abstract_cast<TechnoClass*>(*obj);
+				if (Passengers_Type.Contains(pPassenger->GetTechnoType()))
 				{
 					passengerFlag = true;
 					break;

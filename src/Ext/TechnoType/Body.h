@@ -496,6 +496,9 @@ public:
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
 
+	static int GetTotalSoylentOfPassengers(double soylentMultiplier, TechnoClass* pTransport);
+	static int DestroyAndGetTotalSoylentOfPassengers(TechnoClass* pSource, double soylentMultiplier, TechnoClass* pTransport);
+
 	static TechnoClass* CreateUnit(TechnoTypeClass* pType, CoordStruct location, DirType facing, DirType* secondaryFacing, HouseClass* pOwner,
 		TechnoClass* pInvoker = nullptr, HouseClass* pInvokerHouse = nullptr, AnimTypeClass* pSpawnAnimType = nullptr, int spawnHeight = -1,
 		bool alwaysOnGround = false, bool checkPathfinding = false, bool parachuteIfInAir = false, Mission mission = Mission::Guard, Mission* missionAI = nullptr);

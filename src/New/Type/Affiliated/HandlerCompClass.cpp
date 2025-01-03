@@ -63,11 +63,11 @@ bool HandlerCompClass::IsDefined() const
 		|| Effect != nullptr;
 }
 
-TechnoClass* HandlerCompClass::GetTrueTarget(TechnoClass* pTarget) const
+inline TechnoClass* HandlerCompClass::GetTrueTarget(TechnoClass* pTarget, Nullable<EventExtendedScopeType> ExtendedScopeType)
 {
-	if (pTarget && this->ExtendedScopeType.isset())
+	if (pTarget && ExtendedScopeType.isset())
 	{
-		switch (this->ExtendedScopeType.Get())
+		switch (ExtendedScopeType.Get())
 		{
 		case EventExtendedScopeType::Transport:
 			return pTarget->Transporter;
@@ -80,13 +80,13 @@ TechnoClass* HandlerCompClass::GetTrueTarget(TechnoClass* pTarget) const
 	return pTarget;
 }
 
-bool HandlerCompClass::CheckFilters(TechnoClass* pOwner, TechnoClass* pTarget) const
+bool HandlerCompClass::CheckFilters(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pOwner, TechnoClass* pTarget) const
 {
-	auto const pTrueTarget = this->GetTrueTarget(pTarget);
+	auto const pTrueTarget = HandlerCompClass::GetTrueTarget(pTarget, this->ExtendedScopeType);
 
 	if (this->Filter)
 	{
-		if (!(pTrueTarget && this->Filter.get()->Check(pOwner, pTarget, false)))
+		if (!(pTrueTarget && this->Filter.get()->Check(pParticipants, pOwner, pTarget, false)))
 		{
 			return false;
 		}
@@ -94,7 +94,7 @@ bool HandlerCompClass::CheckFilters(TechnoClass* pOwner, TechnoClass* pTarget) c
 
 	if (this->NegFilter)
 	{
-		if (!(pTrueTarget && this->NegFilter.get()->Check(pOwner, pTarget, true)))
+		if (!(pTrueTarget && this->NegFilter.get()->Check(pParticipants, pOwner, pTarget, true)))
 		{
 			return false;
 		}
@@ -103,14 +103,15 @@ bool HandlerCompClass::CheckFilters(TechnoClass* pOwner, TechnoClass* pTarget) c
 	return true;
 }
 
-void HandlerCompClass::ExecuteEffects(TechnoClass* pOwner, TechnoClass* pTarget) const
+void HandlerCompClass::ExecuteEffects(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pOwner, TechnoClass* pTarget) const
 {
-	auto const pTrueTarget = this->GetTrueTarget(pTarget);
+	auto const pTrueTarget = HandlerCompClass::GetTrueTarget(pTarget, this->ExtendedScopeType);
+
 	if (pTrueTarget)
 	{
 		if (this->Effect)
 		{
-			this->Effect.get()->Execute(pOwner, pTrueTarget);
+			this->Effect.get()->Execute(pParticipants, pOwner, pTrueTarget);
 		}
 	}
 }

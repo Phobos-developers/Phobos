@@ -24,12 +24,12 @@ public:
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
 
-	void HandleEvent(TechnoClass* pOwner, std::map<EventScopeType, TechnoClass*> participants);
+	void HandleEvent(TechnoClass* pOwner, std::map<EventScopeType, TechnoClass*>* pParticipants);
 
 private:
 	template <typename T>
 	void Serialize(T& Stm);
 
-	bool CheckFilters(EventScopeType scopeType, TechnoClass* pOwner, TechnoClass* pTarget) const;
-	void ExecuteEffects(EventScopeType scopeType, TechnoClass* pOwner, TechnoClass* pTarget) const;
+	bool CheckFilters(std::map<EventScopeType, TechnoClass*>* pParticipants, EventScopeType scopeType, TechnoClass* pOwner, TechnoClass* pTarget) const;
+	void ExecuteEffects(std::map<EventScopeType, TechnoClass*>* pParticipants, EventScopeType scopeType, TechnoClass* pOwner, TechnoClass* pTarget) const;
 };

@@ -295,6 +295,11 @@ void TechnoExt::ExtData::EatPassengers()
 					{
 						int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
 
+						if (pPassenger->Passengers.NumPassengers > 0)
+						{
+							nMoneyToGive += TechnoTypeExt::DestroyAndGetTotalSoylentOfPassengers(pDelType->DontScore ? nullptr : pThis, pDelType->SoylentMultiplier, pPassenger);
+						}
+
 						if (nMoneyToGive > 0)
 						{
 							pThis->Owner->GiveMoney(nMoneyToGive);
