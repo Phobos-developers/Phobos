@@ -1003,7 +1003,7 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 
 	if (pHouse->RecheckTechTree)
 	{
-		if (const auto pFactory = pHouse->GetPrimaryFactory(AbstractType::BuildingType, false, BuildCat::DontCare))
+		if (const auto pFactory = pHouse->Primary_ForBuildings)
 		{
 			if (pFactory->IsDone())
 			{
@@ -1012,7 +1012,7 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 			}
 		}
 
-		if (const auto pFactory = pHouse->GetPrimaryFactory(AbstractType::BuildingType, false, BuildCat::Combat))
+		if (const auto pFactory = pHouse->Primary_ForDefenses)
 		{
 			if (pFactory->IsDone())
 			{
