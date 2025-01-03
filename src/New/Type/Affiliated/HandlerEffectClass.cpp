@@ -498,7 +498,7 @@ bool HandlerEffectClass::Serialize(T& stm)
 		.Process(this->Passengers_Kill_Score_ExtScope)
 		.Process(this->Passengers_Create_Types)
 		.Process(this->Passengers_Create_Nums)
-		.Process(this->Passengers_Create_Owner_Scope
+		.Process(this->Passengers_Create_Owner_Scope)
 		.Process(this->Passengers_Create_Owner_ExtScope)
 		.Process(this->Veterancy_Set)
 		.Process(this->Veterancy_Add)
