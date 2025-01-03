@@ -63,7 +63,7 @@ bool HandlerCompClass::IsDefined() const
 		|| Effect != nullptr;
 }
 
-inline TechnoClass* HandlerCompClass::GetTrueTarget(TechnoClass* pTarget, Nullable<EventExtendedScopeType> ExtendedScopeType)
+TechnoClass* HandlerCompClass::GetTrueTarget(TechnoClass* pTarget, Nullable<EventExtendedScopeType> ExtendedScopeType)
 {
 	if (pTarget && ExtendedScopeType.isset())
 	{
