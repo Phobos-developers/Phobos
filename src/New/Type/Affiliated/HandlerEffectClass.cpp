@@ -236,24 +236,23 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 		{
 			auto const openTopped = pTarget->GetTechnoType()->OpenTopped;
 
+			// Remove each passenger and unlimbo (place) it at a random place nearby.
+			// This supports transport vehicles and Bio Reactors.
 			while (pTarget->Passengers.FirstPassenger)
 			{
 				FootClass* pPassenger = pTarget->Passengers.RemoveFirstPassenger();
-
-				auto const coords = pTarget->GetCoords();
-				auto const pCell = MapClass::Instance->GetCellAt(coords);
-				auto const isBridge = pCell->ContainsBridge();
-				auto const nCell = MapClass::Instance->NearByLocation(pCell->MapCoords,
-					SpeedType::Wheel, -1, MovementZone::Normal, isBridge, 1, 1, true,
-					false, false, isBridge, CellStruct::Empty, false, false);
-
-				pPassenger->Unlimbo(MapClass::Instance->TryGetCellAt(nCell)->GetCoords(), static_cast<DirType>(32 * ScenarioClass::Instance->Random.RandomRanged(0, 7)));
-
+				UnlimboAtRandomPlaceNearby(pPassenger, pTarget);
 				if (openTopped)
 				{
 					pTarget->ExitedOpenTopped(pPassenger);
 				}
 			}
+		}
+		else if (pTarget->GetOccupantCount() > 0)
+		{
+			auto pTargetBld = reinterpret_cast<BuildingClass*>(pTarget);
+			// BuildingClass* -> RemoveOccupants
+			reinterpret_cast<void(__thiscall*)(BuildingClass*, int, int)>(0x457DE0)(pTargetBld, 0, 0);
 		}
 	}
 
@@ -263,32 +262,37 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 		TechnoClass* pScorer = nullptr;
 		if (Passengers_Kill_Score.Get())
 		{
-			pScorer = pOwner;
 			if (Passengers_Kill_Score_Scope.isset())
-			{
 				pScorer = HandlerCompClass::GetTrueTarget(pParticipants->at(Passengers_Kill_Score_Scope.Get()), Passengers_Kill_Score_ExtScope);
-			}
+			else
+				pScorer = pOwner;
 		}
-
-		pTarget->KillPassengers(pScorer);
+		if (pTarget->Passengers.NumPassengers > 0)
+		{
+			pTarget->KillPassengers(pScorer);
+		}
+		else if (pTarget->GetOccupantCount() > 0)
+		{
+			// If it is garrisoned, it must be a garrisonable structure, so it is safe to use "reinterpret_cast" here.
+			auto pTargetBld = reinterpret_cast<BuildingClass*>(pTarget);
+			pTargetBld->KillOccupants(pScorer);
+		}
 	}
 
 	// Passenger Creation
 	if (!Passengers_Create_Types.empty())
 	{
-		TechnoClass* pPassengerOwnerScope = pTarget;
-		if (Passengers_Kill_Score.Get())
+		if (Passengers_Create_Owner_Scope.isset())
 		{
-			pPassengerOwnerScope = pOwner;
-			if (Passengers_Kill_Score_Scope.isset())
+			auto pPassengerOwnerScope = HandlerCompClass::GetTrueTarget(pParticipants->at(Passengers_Create_Owner_Scope.Get()), Passengers_Create_Owner_ExtScope);
+			if (pPassengerOwnerScope)
 			{
-				pPassengerOwnerScope = HandlerCompClass::GetTrueTarget(pParticipants->at(Passengers_Kill_Score_Scope.Get()), Passengers_Kill_Score_ExtScope);
+				this->CreatePassengers(pTarget, pPassengerOwnerScope);
 			}
 		}
-
-		if (pPassengerOwnerScope)
+		else
 		{
-			this->CreatePassengers(pTarget, pPassengerOwnerScope);
+			this->CreatePassengers(pTarget, pTarget);
 		}
 	}
 
@@ -343,7 +347,19 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 	}
 }
 
+void HandlerEffectClass::UnlimboAtRandomPlaceNearby(FootClass* pWhom, TechnoClass* pNearWhom) const
+{
+	auto const coords = pNearWhom->GetCoords();
+	auto const pCell = MapClass::Instance->GetCellAt(coords);
+	auto const isBridge = pCell->ContainsBridge();
+	auto const nCell = MapClass::Instance->NearByLocation(pCell->MapCoords,
+		SpeedType::Wheel, -1, MovementZone::Normal, isBridge, 1, 1, true,
+		false, false, isBridge, CellStruct::Empty, false, false);
+	pWhom->Unlimbo(MapClass::Instance->TryGetCellAt(nCell)->GetCoords(), static_cast<DirType>(32 * ScenarioClass::Instance->Random.RandomRanged(0, 7)));
+}
+
 // Basically copied from Ares "TechnoExt::ExtData::CreateInitialPayload()".
+// This supports transport vehicles, Bio Reactors, and garrisonable structures.
 void HandlerEffectClass::CreatePassengers(TechnoClass* pToWhom, TechnoClass* pPassengerOwnerScope) const
 {
 	auto const pType = pToWhom->GetTechnoType();

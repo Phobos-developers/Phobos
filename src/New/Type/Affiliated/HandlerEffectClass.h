@@ -55,5 +55,6 @@ private:
 	template <typename T>
 	bool Serialize(T& stm);
 
+	void UnlimboAtRandomPlaceNearby(FootClass* pWhom, TechnoClass* pNearWhom) const;
 	void CreatePassengers(TechnoClass* pToWhom, TechnoClass* pPassengerOwnerScope) const;
 };

@@ -447,13 +447,12 @@ Shield.InheritStateOnReplace=false          ; boolean
       - `WhenInfiltrate`: Invoked on the spy's perspective.
       - `WhenInfiltrated`: Invoked on the building's perspective.
     - Transport loading:
-      - Invoked when a techno is loaded into a transport, before or after it is actually inserted into its passengers.
-      - The `Before` events are not invoked when the transport abducts something *(Ares feature)*.
-      - `BeforeLoad`, `AfterLoad`: Invoked on the transport's perspective.
-      - `BeforeBoard`, `AfterBoard`: Invoked on the passenger's perspective.
+      - Invoked when a techno is loaded into a transport, a Bio Reactor, or a garrisonable structure. By the moment, the passenger is already inside the transport or building.
+      - `WhenLoad`: Invoked on the transport or building's perspective.
+      - `WhenBoard`: Invoked on the passenger's perspective.
     - Transport unloading:
-      - Invoked when a techno leaves a transport.
-      - `WhenUnload`: Invoked on the transport's perspective.
+      - Invoked when a techno leaves a transport, a Bio Reactor, or a garrisonable structure. By the moment, the passenger has already left the transport or building.
+      - `WhenUnload`: Invoked on the transport or building's perspective.
       - `WhenUnboard`: Invoked on the passenger's perspective.
 - Scopes:
   - Scopes are crucial to designate who will the filters and effects be applied to.
@@ -461,7 +460,7 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `Me`: techno this handler is attached to.
     - `They`: the other participant of the event. Whatever it is is dependant to the event. Some events do not have `They`.
   - The extended scopes can be used to access techno related to the participants. Filters and effects can be assigned to them as well.
-    - `(any basic scope).Transport`: The transporting vehicle that is carrying the scope.
+    - `(any basic scope).Transport`: The transporting vehicle, or Bio Reactor, or garrisonable structure, that is carrying the scope.
     - `(any basic scope).Bunker`: To vehicle types, this refers to the Tank Bunker loading it; to Tank Bunkers, this refers to the vehicle loaded into it.
     - `(any basic scope).MindController`: The techno that is mind-controlling the scope.
 - Filters:
@@ -513,14 +512,15 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `~.Scope`, and `~.ExtScope`, can be used to specify the receptant. The credits will be rewarded to its owner. It is default to the `Me` scope.
     - `~.Display` can be set to true to display the amount of credits on the receptant scope. `~.Display.House` determines which houses can see this and `~.Display.Offset` can be used to adjust the display offset.
   - Passengers:
-    - `(scope).Effect.Passenger.Eject` can be set to true to forcibly eject its passengers out of the vehicle.
-    - `(scope).Effect.Passenger.Kill` can be set to true to kill all passengers from the vehicle.
-      - `~.Score` can be set to true to make the killed passengers be treated as if they were killed by a scope.
+    - Operations can be done to a transporting vehicle's passengers, a Bio Reactor's captives, or a garrisonable structure's occupants.
+    - `(scope).Effect.Passengers.Eject` can be set to true to forcibly eject its passengers out of it.
+    - `(scope).Effect.Passengers.Kill` can be set to true to kill all passengers.
+      - `~.Score` can be set to true to make the killed units be treated as if they were killed by a scope.
       - The scope can be determined with `~.Score.Scope` and `~.Score.ExtScope`, and if not set, defaults to the `Me` scope.
-    - `(scope).Effect.Passenger.Create.Types`, and `~.Create.Nums`, can be specified so a number of passengers will be spawned inside the transport.
-      - `~.Create.Owner.Scope`, and `~.Create.Owner.ExtScope`, can be used to specify the passengers' owner. If not specified, it is default to the `(scope)`.
+    - `(scope).Effect.Passengers.Create.Types`, and `~.Create.Nums`, can be specified so a number of units will be spawned inside the transport or building.
+      - `~.Create.Owner.Scope`, and `~.Create.Owner.ExtScope`, can be used to specify the units' owner. If not specified, it is default to the `(scope)`.
   - Veterancy:
-    - The scope's veterancy can be updated. Requires it to be `Trainable=yes`.
+    - The scope's veterancy can be updated. Requires `Trainable=yes`.
     - `(scope).Effect.Veterancy.Set=(rookie|veteran|elite)` will set the scope's veterancy.
     - `(scope).Effect.Veterancy.Add` will make the scope earn experience, or lose experience if a negative number is given.
   - Voice:
@@ -612,6 +612,10 @@ EventType=                                         ; EventType
 (scope).Effect.Voice.Global=false                  ; boolean
 (scope).Effect.EVA=                                ; sound entry
 ```
+
+### Event Invokers
+
+- Event Invokers can be defined and given to weapons, warheads, super weapons, and event handlers, to invoke any given event type.
 
 #### Examples
 

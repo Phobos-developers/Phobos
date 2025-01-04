@@ -21,11 +21,9 @@ public:
 	static EventTypeClass* WhenCrushed;
 	static EventTypeClass* WhenInfiltrate;
 	static EventTypeClass* WhenInfiltrated;
-	static EventTypeClass* BeforeLoad;
-	static EventTypeClass* AfterLoad;
+	static EventTypeClass* WhenLoad;
 	static EventTypeClass* WhenUnload;
-	static EventTypeClass* BeforeBoard;
-	static EventTypeClass* AfterBoard;
+	static EventTypeClass* WhenBoard;
 	static EventTypeClass* WhenUnboard;
 
 	void LoadFromINI(CCINIClass* pINI);

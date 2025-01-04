@@ -35,6 +35,7 @@ public:
 
 		std::vector<TechnoExt::ExtData*> AutoDeathObjects;
 		std::vector<TechnoExt::ExtData*> TransportReloaders; // Objects that can reload ammo in limbo
+		std::vector<TechnoExt::ExtData*> OccupantsCache; // Stores the occupants that would be released from a garrisonable structure.
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -43,6 +44,7 @@ public:
 			, Variables { }
 			, AutoDeathObjects {}
 			, TransportReloaders {}
+			, OccupantsCache {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

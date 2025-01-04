@@ -1,4 +1,5 @@
 #include "HandlerCompClass.h"
+#include <Ext/Techno/Body.h>
 
 HandlerCompClass::HandlerCompClass()
 	: ScopeType {}
@@ -70,7 +71,7 @@ TechnoClass* HandlerCompClass::GetTrueTarget(TechnoClass* pTarget, Nullable<Even
 		switch (ExtendedScopeType.Get())
 		{
 		case EventExtendedScopeType::Transport:
-			return pTarget->Transporter;
+			return GetTransportingTechno(pTarget);
 		case EventExtendedScopeType::Bunker:
 			return pTarget->BunkerLinkedItem;
 		case EventExtendedScopeType::MindController:
@@ -78,6 +79,20 @@ TechnoClass* HandlerCompClass::GetTrueTarget(TechnoClass* pTarget, Nullable<Even
 		}
 	}
 	return pTarget;
+}
+
+TechnoClass* HandlerCompClass::GetTransportingTechno(TechnoClass* pTarget)
+{
+	if (pTarget->Transporter)
+	{
+		return pTarget->Transporter;
+	}
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	if (pTargetExt->HousingMe)
+	{
+		return pTargetExt->HousingMe;
+	}
+	return nullptr;
 }
 
 bool HandlerCompClass::CheckFilters(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pOwner, TechnoClass* pTarget) const

@@ -13,11 +13,9 @@ EventTypeClass* EventTypeClass::WhenCrush = nullptr;
 EventTypeClass* EventTypeClass::WhenCrushed = nullptr;
 EventTypeClass* EventTypeClass::WhenInfiltrate = nullptr;
 EventTypeClass* EventTypeClass::WhenInfiltrated = nullptr;
-EventTypeClass* EventTypeClass::BeforeLoad = nullptr;
-EventTypeClass* EventTypeClass::AfterLoad = nullptr;
+EventTypeClass* EventTypeClass::WhenLoad = nullptr;
 EventTypeClass* EventTypeClass::WhenUnload = nullptr;
-EventTypeClass* EventTypeClass::BeforeBoard = nullptr;
-EventTypeClass* EventTypeClass::AfterBoard = nullptr;
+EventTypeClass* EventTypeClass::WhenBoard = nullptr;
 EventTypeClass* EventTypeClass::WhenUnboard = nullptr;
 
 void EventTypeClass::AddDefaults()
@@ -28,11 +26,9 @@ void EventTypeClass::AddDefaults()
 	EventTypeClass::WhenCrushed = FindOrAllocate("WhenCrushed");
 	EventTypeClass::WhenInfiltrate = FindOrAllocate("WhenInfiltrate");
 	EventTypeClass::WhenInfiltrated = FindOrAllocate("WhenInfiltrated");
-	EventTypeClass::BeforeLoad = FindOrAllocate("BeforeLoad");
-	EventTypeClass::AfterLoad = FindOrAllocate("AfterLoad");
+	EventTypeClass::WhenLoad = FindOrAllocate("WhenLoad");
 	EventTypeClass::WhenUnload = FindOrAllocate("WhenUnload");
-	EventTypeClass::BeforeBoard = FindOrAllocate("BeforeBoard");
-	EventTypeClass::AfterBoard = FindOrAllocate("AfterBoard");
+	EventTypeClass::WhenBoard = FindOrAllocate("WhenBoard");
 	EventTypeClass::WhenUnboard = FindOrAllocate("WhenUnboard");
 }
 
