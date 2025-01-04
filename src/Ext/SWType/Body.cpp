@@ -174,7 +174,6 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::Owner);
 
 	// read event invokers
-	char tempBuffer[32];
 	Nullable<EventInvokerTypeClass*> eventInvokerNullable;
 	for (size_t i = 0; ; ++i)
 	{
