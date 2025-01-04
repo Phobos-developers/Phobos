@@ -138,7 +138,6 @@ void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, std::map<EventScopeT
 				pPassenger = abstract_cast<TechnoClass*>(*obj);
 				if (CheckFilters(pHouse, pPassenger))
 				{
-					auto pPassengerTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
 					pParticipants->operator[](EventScopeType::Me) = pPassenger;
 					TryExecuteSingle(pHouse, pParticipants, pPassenger);
 				}
@@ -151,7 +150,6 @@ void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, std::map<EventScopeT
 			{
 				if (CheckFilters(pHouse, pPassenger))
 				{
-					auto pPassengerTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
 					pParticipants->operator[](EventScopeType::Me) = pPassenger;
 					TryExecuteSingle(pHouse, pParticipants, pPassenger);
 				}
@@ -168,7 +166,6 @@ void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, std::map<EventScopeT
 				auto pMCedTechno = controlNode->Unit;
 				if (CheckFilters(pHouse, pMCedTechno))
 				{
-					auto pMCedTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pMCedTechno->GetTechnoType());
 					pParticipants->operator[](EventScopeType::Me) = pMCedTechno;
 					TryExecuteSingle(pHouse, pParticipants, pMCedTechno);
 				}
