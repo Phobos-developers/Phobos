@@ -34,4 +34,6 @@ private:
 	void Serialize(T& Stm);
 	void LoadFromINIPrivate(INI_EX& exINI, const char* pSection);
 	bool CheckFilters(HouseClass* pHouse, TechnoClass* pTarget) const;
+	void TryExecuteSingle(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pTarget);
+	void TryPassDown(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pRoot);
 };

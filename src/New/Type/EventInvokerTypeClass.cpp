@@ -96,11 +96,23 @@ bool EventInvokerTypeClass::CheckFilters(HouseClass* pHouse, TechnoClass* pTarge
 	return true;
 }
 
+// This function is invoked from the external source.
+// - The "Me" scope can shift multiple times through the passing down.
+//   We have to record the initial "Me" scope and give it back,
+//   because multiple invokers may be invoked at a same time,
+//   and the same participants map will be reused.
 void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants)
 {
 	auto pTarget = pParticipants->at(EventScopeType::Me);
-	auto pThey = pParticipants->at(EventScopeType::They);
+	TryExecuteSingle(pHouse, pParticipants, pTarget);
+	pParticipants->operator[](EventScopeType::Me) = pTarget;
+}
 
+// This function is invoked internally in this invoker class.
+// This function checks for a single target, and invoke the events on it if appropriate.
+// It also tries to pass down the target to its passengers, and every appropriate additional targets will go back to this function.
+void EventInvokerTypeClass::TryExecuteSingle(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pTarget)
+{
 	if (CheckFilters(pHouse, pTarget))
 	{
 		auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
@@ -111,66 +123,58 @@ void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, std::map<EventScopeTy
 		}
 	}
 
-	// Target Pass Down: Passengers
+	TryPassDown(pHouse, pParticipants, pTarget);
+}
+
+void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pRoot)
+{
 	if (Target_PassDown_Passengers.Get())
 	{
-		if (pTarget->Passengers.NumPassengers > 0)
+		if (pRoot->Passengers.NumPassengers > 0)
 		{
 			TechnoClass* pPassenger = nullptr;
-			for (NextObject obj(pTarget->Passengers.FirstPassenger->NextObject); obj; ++obj)
+			for (NextObject obj(pRoot->Passengers.FirstPassenger->NextObject); obj; ++obj)
 			{
 				pPassenger = abstract_cast<TechnoClass*>(*obj);
 				if (CheckFilters(pHouse, pPassenger))
 				{
 					auto pPassengerTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
 					pParticipants->operator[](EventScopeType::Me) = pPassenger;
-					for (auto pEventType : EventTypes)
-					{
-						pPassengerTypeExt->InvokeEvent(pEventType, pParticipants);
-					}
+					TryExecuteSingle(pHouse, pParticipants, pPassenger);
 				}
 			}
 		}
-		else if (pTarget->GetOccupantCount() > 0)
+		else if (pRoot->GetOccupantCount() > 0)
 		{
-			auto pTargetBld = reinterpret_cast<BuildingClass*>(pTarget);
-			for (auto pPassenger : pTargetBld->Occupants)
+			auto pBld = reinterpret_cast<BuildingClass*>(pRoot);
+			for (auto pPassenger : pBld->Occupants)
 			{
 				if (CheckFilters(pHouse, pPassenger))
 				{
 					auto pPassengerTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
 					pParticipants->operator[](EventScopeType::Me) = pPassenger;
-					for (auto pEventType : EventTypes)
-					{
-						pPassengerTypeExt->InvokeEvent(pEventType, pParticipants);
-					}
+					TryExecuteSingle(pHouse, pParticipants, pPassenger);
 				}
 			}
 		}
 	}
 
-	// Target Pass Down: Mind Controlled
 	if (Target_PassDown_MindControlled.Get())
 	{
-		if (pTarget->CaptureManager && pTarget->CaptureManager->IsControllingSomething())
+		if (pRoot->CaptureManager && pRoot->CaptureManager->IsControllingSomething())
 		{
-			for (auto controlNode : pTarget->CaptureManager->ControlNodes)
+			for (auto controlNode : pRoot->CaptureManager->ControlNodes)
 			{
 				auto pMCedTechno = controlNode->Unit;
 				if (CheckFilters(pHouse, pMCedTechno))
 				{
 					auto pMCedTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pMCedTechno->GetTechnoType());
 					pParticipants->operator[](EventScopeType::Me) = pMCedTechno;
-					for (auto pEventType : EventTypes)
-					{
-						pMCedTechnoTypeExt->InvokeEvent(pEventType, pParticipants);
-					}
+					TryExecuteSingle(pHouse, pParticipants, pMCedTechno);
 				}
 			}
 		}
 	}
-
-	pParticipants->operator[](EventScopeType::Me) = pTarget;
 }
 
 template <typename T>
