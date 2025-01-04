@@ -49,8 +49,7 @@ void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, co
 	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, scopeName);
 	if (comp)
 	{
-		auto& vec = this->HandlerComps[scopeType];
-		vec.push_back(std::move(comp));
+		this->HandlerComps.push_back(std::move(comp));
 	}
 
 	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedScopeType::Transport, scopeName, "Transport");
@@ -63,8 +62,7 @@ void EventHandlerTypeClass::LoadForExtendedScope(INI_EX& exINI, const char* pSec
 	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, extendedScopeType, scopeName, extendedScopeName);
 	if (comp)
 	{
-		auto& vec = this->HandlerComps[scopeType];
-		vec.push_back(std::move(comp));
+		this->HandlerComps.push_back(std::move(comp));
 	}
 }
 
@@ -92,25 +90,21 @@ void EventHandlerTypeClass::HandleEvent(std::map<EventScopeType, TechnoClass*>* 
 {
 	for (auto it = pParticipants->begin(); it != pParticipants->end(); ++it)
 	{
-		auto scopeType = it->first;
-		auto pTarget = it->second;
-		if (!CheckFilters(pParticipants, scopeType))
+		if (!CheckFilters(pParticipants, it->first))
 			return;
 	}
 
 	for (auto it = pParticipants->begin(); it != pParticipants->end(); ++it)
 	{
-		auto scopeType = it->first;
-		auto pTarget = it->second;
-		ExecuteEffects(pParticipants, scopeType);
+		ExecuteEffects(pParticipants, it->first);
 	}
 }
 
 bool EventHandlerTypeClass::CheckFilters(std::map<EventScopeType, TechnoClass*>* pParticipants, EventScopeType scopeType) const
 {
-	if (this->HandlerComps.contains(scopeType))
+	for (auto const& handlerComp : this->HandlerComps)
 	{
-		for (auto const& handlerComp : this->HandlerComps.get_or_default(scopeType))
+		if (handlerComp.get()->ScopeType == scopeType)
 		{
 			if (!handlerComp.get()->CheckFilters(pParticipants))
 			{
@@ -124,9 +118,9 @@ bool EventHandlerTypeClass::CheckFilters(std::map<EventScopeType, TechnoClass*>*
 
 void EventHandlerTypeClass::ExecuteEffects(std::map<EventScopeType, TechnoClass*>* pParticipants, EventScopeType scopeType) const
 {
-	if (this->HandlerComps.contains(scopeType))
+	for (auto const& handlerComp : this->HandlerComps)
 	{
-		for (auto const& handlerComp : this->HandlerComps.get_or_default(scopeType))
+		if (handlerComp.get()->ScopeType == scopeType)
 		{
 			handlerComp.get()->ExecuteEffects(pParticipants);
 		}

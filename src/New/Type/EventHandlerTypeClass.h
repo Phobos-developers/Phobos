@@ -10,7 +10,7 @@ class EventHandlerTypeClass final : public Enumerable<EventHandlerTypeClass>
 public:
 	Valueable<bool> loaded;
 	Valueable<EventTypeClass*> EventType;
-	PhobosMap<EventScopeType, std::vector<std::unique_ptr<HandlerCompClass>>> HandlerComps;
+	std::vector<std::unique_ptr<HandlerCompClass>> HandlerComps;
 
 	EventHandlerTypeClass(const char* pTitle = NONE_STR) : Enumerable<EventHandlerTypeClass>(pTitle)
 		, loaded { false }

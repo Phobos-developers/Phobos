@@ -122,7 +122,6 @@ bool HandlerCompClass::CheckFilters(std::map<EventScopeType, TechnoClass*>* pPar
 
 void HandlerCompClass::ExecuteEffects(std::map<EventScopeType, TechnoClass*>* pParticipants) const
 {
-	auto pOwner = pParticipants->at(EventScopeType::Me);
 	auto pTarget = pParticipants->at(EventScopeType::They);
 	auto const pTrueTarget = HandlerCompClass::GetTrueTarget(pTarget, this->ExtendedScopeType);
 

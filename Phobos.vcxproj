@@ -78,6 +78,7 @@
     <ClCompile Include="src\New\Type\Affiliated\DroppodTypeClass.cpp" />
     <ClCompile Include="src\New\Type\DigitalDisplayTypeClass.cpp" />
     <ClCompile Include="src\New\Type\EventHandlerTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\EventInvokerTypeClass.cpp" />
     <ClCompile Include="src\New\Type\EventTypeClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="src\New\Type\Affiliated\DroppodTypeClass.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
     <ClInclude Include="src\New\Type\EventHandlerTypeClass.h" />
+    <ClInclude Include="src\New\Type\EventInvokerTypeClass.h" />
     <ClInclude Include="src\New\Type\EventTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
