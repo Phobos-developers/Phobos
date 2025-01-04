@@ -792,7 +792,7 @@ Me.Effect.Voice.Persist=yes
       - `Target.PassDown.Passengers` can be set to true, so this invoker will pass down to the techno's passengers, and the passengers of passengers, and so on.
       - `Target.PassDown.MindControlled` can be set to true, so this invoker will pass down to the techno's mind-controlled technos.
     - The root techno is not needed to be able to handle the event type, and is not even needed to pass the `Target.Filter.~` and `Target.NegFilter.~` of this invoker.
-- Each weapon, warhead, super weapon, and `(scope).Effect.~` entry of an event handler, may have multiple event invokers listed.
+- Each warhead, super weapon, and `(scope).Effect.~` entry of an event handler, may have multiple event invokers listed.
   - On Warheads:
     - `EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types.
     - `EventInvoker` is a valid alternative for `EventInvoker0`, if only one is specified.
