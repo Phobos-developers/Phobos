@@ -304,7 +304,7 @@ DEFINE_HOOK(0x6F858F, TechnoClass_EvaluateObject_AggressiveStance, 0x7)
 {
 	GET(TechnoClass*, pThis, EDI);
 	GET(TechnoClass*, pTarget, ESI);
-	if (pThis && pThis->Owner->IsHumanPlayer
+	if (pThis && pThis->Owner->IsControlledByHuman()
 		&& pTarget && pTarget->WhatAmI() == AbstractType::Building)
 	{
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(pThis))

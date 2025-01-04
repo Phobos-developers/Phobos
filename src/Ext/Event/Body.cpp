@@ -22,24 +22,18 @@ void EventExt::RespondEvent()
 
 void EventExt::RaiseToggleAggressiveStance(TechnoClass* pTechno)
 {
-	auto target = TargetClass(pTechno);
-	EventExt eventExt = EventExt();
+	EventExt eventExt {};
 	eventExt.Type = EventTypeExt::ToggleAggressiveStance;
 	eventExt.HouseIndex = static_cast<char>(pTechno->Owner->ArrayIndex);
-	memcpy(eventExt.ToggleAggressiveStance.DataBuffer, &target, sizeof(target));
+	eventExt.Frame = Unsorted::CurrentFrame;
+	eventExt.ToggleAggressiveStance.Who = TargetClass(pTechno);
 	eventExt.AddEvent();
 }
 
 void EventExt::RespondToToggleAggressiveStance()
 {
-	TargetClass* pTarget = reinterpret_cast<TargetClass*>(this->ToggleAggressiveStance.DataBuffer);
-	if (auto pTechno = pTarget->As_Techno())
-	{
-		if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
-		{
-			pTechnoExt->ToggleAggressiveStance();
-		}
-	}
+	if (const auto pTechnoExt = TechnoExt::ExtMap.Find(this->ToggleAggressiveStance.Who.As_Techno()))
+		pTechnoExt->ToggleAggressiveStance();
 }
 
 size_t EventExt::GetDataSize(EventTypeExt type)

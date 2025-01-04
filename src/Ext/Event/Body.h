@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <stdint.h>
 #include <TechnoClass.h>
+#include <TargetClass.h>
 
 enum class EventTypeExt : uint8_t
 {
@@ -30,7 +31,7 @@ public:
 
 		struct ToggleAggressiveStance
 		{
-			char DataBuffer[5];
+			TargetClass Who;
 		} ToggleAggressiveStance;
 	};
 

@@ -134,8 +134,8 @@ public:
 
 		Valueable<bool> AggressiveStance;
 		Nullable<bool> AggressiveStance_Togglable;
-		NullableIdx<VocClass> VoiceEnterAggressiveStance;
-		NullableIdx<VocClass> VoiceExitAggressiveStance;
+		ValueableIdx<VocClass> VoiceEnterAggressiveStance;
+		ValueableIdx<VocClass> VoiceExitAggressiveStance;
 
 		Valueable<bool> NoSecondaryWeaponFallback;
 		Valueable<bool> NoSecondaryWeaponFallback_AllowAA;
@@ -330,8 +330,8 @@ public:
 
 			, AggressiveStance { false }
 			, AggressiveStance_Togglable {}
-			, VoiceEnterAggressiveStance {}
-			, VoiceExitAggressiveStance {}
+			, VoiceEnterAggressiveStance { -1 }
+			, VoiceExitAggressiveStance { -1 }
 
 			, NoSecondaryWeaponFallback { false }
 			, NoSecondaryWeaponFallback_AllowAA { false }

@@ -49,7 +49,7 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
 		// if not a techno or is in berserk or is not controlled by the local player then ignore it
-		if (!pTechno || pTechno->Berzerk || !pTechno->Owner->IsInPlayerControl)
+		if (!pTechno || pTechno->Berzerk || !pTechno->Owner->IsControlledByCurrentPlayer())
 			continue;
 
 		// If not togglable then exclude it from the iteration.
@@ -101,11 +101,11 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 
 			if (isAllSelectedUnitAggressiveStance)
 			{
-				voiceIndex = pTechnoTypeExt->VoiceExitAggressiveStance.Get(-1);
+				voiceIndex = pTechnoTypeExt->VoiceExitAggressiveStance.Get();
 			}
 			else
 			{
-				voiceIndex = pTechnoTypeExt->VoiceEnterAggressiveStance.Get(-1);
+				voiceIndex = pTechnoTypeExt->VoiceEnterAggressiveStance.Get();
 				if (voiceIndex < 0)
 				{
 					TypeList<int> voiceList = pTechnoType->VoiceAttack.Count ? pTechnoType->VoiceAttack : pTechnoType->VoiceMove;
@@ -118,10 +118,7 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 				}
 			}
 
-			if (voiceIndex > 0)
-			{
-				pTechno->QueueVoice(voiceIndex);
-			}
+			pTechno->QueueVoice(voiceIndex);
 		}
 		wchar_t buffer[0x1000];
 		wsprintfW(buffer, Message, TechnoVector.size());
