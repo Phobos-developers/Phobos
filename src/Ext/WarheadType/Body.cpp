@@ -266,6 +266,37 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
 	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
 
+	// read event invokers
+	char tempBuffer[32];
+	Nullable<EventInvokerTypeClass*> eventInvokerNullable;
+	for (size_t i = 0; ; ++i)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "EventInvoker%d", i);
+		eventInvokerNullable.Reset();
+		eventInvokerNullable.Read<true>(exINI, pSection, tempBuffer);
+		if (eventInvokerNullable.isset())
+		{
+			eventInvokerNullable.Get()->LoadFromINI(exINI);
+			this->EventInvokers.push_back(eventInvokerNullable.Get());
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// read single event invokers
+	if (this->EventInvokers.empty())
+	{
+		eventInvokerNullable.Reset();
+		eventInvokerNullable.Read<true>(exINI, pSection, "EventInvoker");
+		if (eventInvokerNullable.isset())
+		{
+			eventInvokerNullable.Get()->LoadFromINI(exINI);
+			this->EventInvokers.push_back(eventInvokerNullable.Get());
+		}
+	}
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -318,6 +349,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->AttachEffects.AttachTypes.size() > 0
 		|| this->AttachEffects.RemoveTypes.size() > 0
 		|| this->AttachEffects.RemoveGroups.size() > 0
+		|| this->EventInvokers.size() > 0
 	);
 
 	char tempBuffer[32];
@@ -499,6 +531,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
+
+		.Process(this->EventInvokers)
 		;
 }
 

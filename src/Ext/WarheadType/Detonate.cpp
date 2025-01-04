@@ -170,6 +170,18 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0)
 		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
 
+	if (this->EventInvokers.size() > 0)
+	{
+		std::map<EventScopeType, TechnoClass*> participants = {
+			{ EventScopeType::Me, pTarget },
+			{ EventScopeType::They, pOwner },
+		};
+		for (auto pEventInvokerType : EventInvokers)
+		{
+			pEventInvokerType->TryExecute(pHouse, &participants);
+		}
+	}
+
 #ifdef LOCO_TEST_WARHEADS
 	if (this->InflictLocomotor)
 		this->ApplyLocomotorInfliction(pTarget);

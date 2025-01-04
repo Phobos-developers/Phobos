@@ -34,6 +34,9 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (pTypeExt->Convert_Pairs.size() > 0)
 		pTypeExt->ApplyTypeConversion(pSW);
 
+	if (pTypeExt->EventInvokers.size() > 0)
+		pTypeExt->ApplyEventInvokers(pSW);
+
 	if (static_cast<int>(pSW->Type->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
 		pTypeExt->HandleEMPulseLaunch(pSW, cell);
 
@@ -293,6 +296,24 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 
 	for (const auto pTargetFoot : *FootClass::Array)
 		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
+}
+
+void SWTypeExt::ExtData::ApplyEventInvokers(SuperClass* pSW)
+{
+	if (this->EventInvokers.size() == 0)
+		return;
+
+	for (const auto pTargetFoot : *FootClass::Array)
+	{
+		std::map<EventScopeType, TechnoClass*> participants = {
+			{ EventScopeType::Me, pTargetFoot },
+			{ EventScopeType::They, nullptr },
+		};
+		for (auto pEventInvokerType : EventInvokers)
+		{
+			pEventInvokerType->TryExecute(pSW->Owner, &participants);
+		}
+	}
 }
 
 void SWTypeExt::ExtData::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) const

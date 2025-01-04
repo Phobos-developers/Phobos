@@ -70,6 +70,8 @@ public:
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
+		ValueableVector<EventInvokerTypeClass*> EventInvokers;
+
 		Valueable<bool> UseWeeds;
 		Valueable<int> UseWeeds_Amount;
 		Valueable<bool> UseWeeds_StorageTimer;
@@ -118,6 +120,7 @@ public:
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
+			, EventInvokers {}
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }
 			, UseWeeds { false }
@@ -147,6 +150,7 @@ public:
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
 		void ApplyTypeConversion(SuperClass* pSW);
+		void ApplyEventInvokers(SuperClass* pSW);
 		void HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) const;
 		std::vector<BuildingClass*> GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const;
 		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;

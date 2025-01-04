@@ -42,7 +42,18 @@ void TechnoTypeExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, Techno
 		};
 		for (auto pEventHandlerTypeClass : EventHandlersMap.get_or_default(pEventTypeClass))
 		{
-			pEventHandlerTypeClass->HandleEvent(pMe, &participants);
+			pEventHandlerTypeClass->HandleEvent(&participants);
+		}
+	}
+}
+
+void TechnoTypeExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, std::map<EventScopeType, TechnoClass*>* pParticipants) const
+{
+	if (this->EventHandlersMap.contains(pEventTypeClass))
+	{
+		for (auto pEventHandlerTypeClass : EventHandlersMap.get_or_default(pEventTypeClass))
+		{
+			pEventHandlerTypeClass->HandleEvent(pParticipants);
 		}
 	}
 }
@@ -63,6 +74,15 @@ int TechnoTypeExt::GetTotalSoylentOfPassengers(double soylentMultiplier, TechnoC
 			}
 		}
 	}
+
+	if (auto pTransportUnit = abstract_cast<UnitClass*>(pTransport))
+	{
+		if (auto pParasite = pTransportUnit->ParasiteEatingMe)
+		{
+			nMoneyToGive += (int)(pParasite->GetTechnoType()->GetRefund(pParasite->Owner, true) * soylentMultiplier);
+		}
+	}
+
 	return nMoneyToGive;
 }
 
@@ -71,6 +91,7 @@ int TechnoTypeExt::DestroyAndGetTotalSoylentOfPassengers(TechnoClass* pSource, d
 {
 	TechnoClass* pPassenger = nullptr;
 	int nMoneyToGive = 0;
+
 	while (pTransport->Passengers.NumPassengers > 0)
 	{
 		pPassenger = pTransport->Passengers.RemoveFirstPassenger();
@@ -86,6 +107,15 @@ int TechnoTypeExt::DestroyAndGetTotalSoylentOfPassengers(TechnoClass* pSource, d
 			pPassenger->UnInit();
 		}
 	}
+
+	if (auto pTransportUnit = abstract_cast<UnitClass*>(pTransport))
+	{
+		if (auto pParasite = pTransportUnit->ParasiteEatingMe)
+		{
+			nMoneyToGive += (int)(pParasite->GetTechnoType()->GetRefund(pParasite->Owner, true) * soylentMultiplier);
+		}
+	}
+
 	return nMoneyToGive;
 }
 
@@ -524,13 +554,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "EventHandler%d", i);
 		eventHandlerNullable.Reset();
 		eventHandlerNullable.Read<true>(exINI, pSection, tempBuffer);
-		if (!eventHandlerNullable.isset())
+		if (eventHandlerNullable.isset())
+		{
+			eventHandlerNullable.Get()->LoadFromINI(exINI);
+			this->AppendEventHandlerType(eventHandlerNullable.Get());
+		}
+		else
 		{
 			break;
 		}
-		if (!eventHandlerNullable.Get()->loaded.Get())
-			eventHandlerNullable.Get()->LoadFromINI(pINI);
-		this->AppendEventHandlerType(eventHandlerNullable.Get());
 	}
 
 	// read single event handler
@@ -540,12 +572,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		eventHandlerNullable.Read<true>(exINI, pSection, "EventHandler");
 		if (eventHandlerNullable.isset())
 		{
-			if (!eventHandlerNullable.Get()->loaded.Get())
-				eventHandlerNullable.Get()->LoadFromINI(pINI);
+			eventHandlerNullable.Get()->LoadFromINI(exINI);
 			this->AppendEventHandlerType(eventHandlerNullable.Get());
 		}
 	}
-
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");

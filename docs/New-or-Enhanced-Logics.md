@@ -427,38 +427,62 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 ### Event Handlers
 
-- Event Handlers can be defined and given to techno types, to specify something to be done when something happens.
-  - The Event Handlers are listed at `[EventHandlerTypes]`. Separate listing of the Event Handlers is not mandatory, the game will parse Event Handler types from techno entries.
+- Event Handlers can be defined and given to techno types, to specify something to be done when something happens. Event Handlers are defined under `[EventHandlerTypes]`, however separate listing is not mandatory.
   - `EventHandlerN` (where N is 0, 1, 2...) specifies an event handler for the techno type.
   - `EventHandler` is a valid alternative for `EventHandler0`, if only one is specified.
 - Event Types:
-  - Each Event Handler must has an event type. The event types do not need to be separately listed.
-  - There are a several `EventType` that will be invoked from the game.
-    - Single events:
-      - The `They` scope is missing for these events.
-      - `WhenCreated`: When the techno is created. Invoked even if the techno is pre-placed on the map.
-      - `WhenCaptured`: When the techno is captured, mind-controlled, or released from mind-control.
-    - Crushing:
-      - Invoked when a techno crushes something (not a wall). By the moment, the victim is not yet removed from the game.
-      - `WhenCrush`: Invoked on the crusher's perspective.
-      - `WhenCrushed`: Invoked on the victim's perspective.
-    - Infiltrating:
-      - Invoked when a techno infiltrates into a building, before spy effects are resolved.
-      - `WhenInfiltrate`: Invoked on the spy's perspective.
-      - `WhenInfiltrated`: Invoked on the building's perspective.
-    - Transport loading:
-      - Invoked when a techno is loaded into a transport, a Bio Reactor, or a garrisonable structure. By the moment, the passenger is already inside the transport or building.
-      - `WhenLoad`: Invoked on the transport or building's perspective.
-      - `WhenBoard`: Invoked on the passenger's perspective.
-    - Transport unloading:
-      - Invoked when a techno leaves a transport, a Bio Reactor, or a garrisonable structure. By the moment, the passenger has already left the transport or building.
-      - `WhenUnload`: Invoked on the transport or building's perspective.
-      - `WhenUnboard`: Invoked on the passenger's perspective.
+  - Each Event Handler must has an event type. This determines what kind of effect it is handling.
+  - <details>
+      <summary>There are a several pre-defined event types that will be invoked from the game. Expand to see details.</summary>
+      <ul>
+        <li>
+          Single events:
+          <ul>
+            <li>The <code>They</code> scope is missing for these events.</li>
+            <li><code>WhenCreated</code>: When the techno is created. Invoked even if the techno is pre-placed on the map.</li>
+            <li><code>WhenCaptured</code>: When the techno is captured, mind-controlled, or released from mind-control.</li>
+          </ul>
+        </li>
+        <li>
+          Crushing:
+          <ul>
+            <li>Invoked when a techno crushes something (not a wall). By the moment, the victim is not yet removed from the game.</li>
+            <li><code>WhenCrush</code>: Invoked on the crusher's perspective.</li>
+            <li><code>WhenCrushed</code>: Invoked on the victim's perspective.</li>
+          </ul>
+        </li>
+        <li>
+          Infiltrating:
+          <ul>
+            <li>Invoked when a techno infiltrates into a building, before spy effects are resolved.</li>
+            <li><code>WhenInfiltrate</code>: Invoked on the spy's perspective.</li>
+            <li><code>WhenInfiltrated</code>: Invoked on the building's perspective.</li>
+          </ul>
+        </li>
+        <li>
+          Transport loading:
+          <ul>
+            <li>Invoked when a techno is loaded into a transport, a Bio Reactor, or a garrisonable structure. By the moment, the passenger is already inside the transport or building.</li>
+            <li><code>WhenLoad</code>: Invoked on the transport or building's perspective.</li>
+            <li><code>WhenBoard</code>: Invoked on the passenger's perspective.</li>
+          </ul>
+        </li>
+        <li>
+          Transport unloading:
+          <ul>
+            <li>Invoked when a techno leaves a transport, a Bio Reactor, or a garrisonable structure. By the moment, the passenger has already left the transport or building.</li>
+            <li><code>WhenUnload</code>: Invoked on the transport or building's perspective.</li>
+            <li><code>WhenUnboard</code>: Invoked on the passenger's perspective.</li>
+          </ul>
+        </li>
+      </ul>
+    </details>
+  - The Event Type can also be any custom string, ready to be invoked through a Warhead, a Super Weapon, or an Event Handler's effect. See [Event Invokers](#event-invokers) for details.
 - Scopes:
   - Scopes are crucial to designate who will the filters and effects be applied to.
   - There are a several basic scopes that most events will have.
-    - `Me`: techno this handler is attached to.
-    - `They`: the other participant of the event. Whatever it is is dependant to the event. Some events do not have `They`.
+    - `Me`: Techno to which this handler is attached to.
+    - `They`: The other participant of the event. Whatever it is is dependant to the event. Some events do not have `They`.
   - The extended scopes can be used to access techno related to the participants. Filters and effects can be assigned to them as well.
     - `(any basic scope).Transport`: The transporting vehicle, or Bio Reactor, or garrisonable structure, that is carrying the scope.
     - `(any basic scope).Bunker`: To vehicle types, this refers to the Tank Bunker loading it; to Tank Bunkers, this refers to the vehicle loaded into it.
@@ -466,29 +490,33 @@ Shield.InheritStateOnReplace=false          ; boolean
 - Filters:
   - Filters can be specified on an scope to ask for something to be true about it, or the event handler doesn't resolve its effects.
   - If any filter is specified, the scope must exist, or the event handler doesn't resolve its effects.
-  - The available filters are:
-    - `(scope).Filter.Abstract`: A quick filter on the techno's type and domain. *(none|land|water|empty|infantry|units|buildings|all)*
-    - `(scope).Filter.IsInAir`: Techno is in air.
-    - `(scope).Filter.TechnoTypes`: Techno is any of the listed TechnoTypes.
-    - `(scope).Filter.AttachedEffects`: Techno has any of the listed AttachedEffectTypes.
-    - `(scope).Filter.ShieldTypes`: Techno has any of the listed ShieldTypes.
-    - `(scope).Filter.Veterancy`: Techno is any of the listed veterancy.
-    - `(scope).Filter.HPPercentage`: Techno is any of the listed HP percentage condition.
-    - `(scope).Filter.Owner.House`: Techno owner's relation with the handler's owner. *(none|owner/self|allies/ally|team|enemies/enemy|all)*
-    - `(scope).Filter.Owner.Sides`: Owner's country is any of the listed sides.
-    - `(scope).Filter.Owner.Countries`: Owner's country is any of the listed countries.
-    - `(scope).Filter.Owner.Buildings`: Owner has a building that is any of the listed BuildingTypes.
-    - `(scope).Filter.Owner.IsHuman`: Owner is human controlled.
-    - `(scope).Filter.Owner.IsAI`: Owner is AI controlled.
-    - `(scope).Filter.IsBunkered`: Techno is either loaded into a Tank Bunker, or is a Tank Bunker loading something.
-    - `(scope).Filter.IsMindControlled`: Techno is mind-controlled.
-    - `(scope).Filter.IsMindControlled.Perma`: Techno is permanently mind-controlled.
-    - `(scope).Filter.MindControlling.Any`: Techno is mind-controlling something.
-    - `(scope).Filter.MindControlling.Type`: Techno is mind-controlling something that is any of the listed TechnoTypes.
-    - `(scope).Filter.Passengers.Any`: Techno has passengers.
-    - `(scope).Filter.Passengers.Type`: Techno has a passenger that is any of the listed TechnoTypes.
-    - `(scope).Filter.Upgrades.Any`: Techno is a building with any upgrade installed.
-    - `(scope).Filter.Upgrades.Type`: Techno is a building with any upgrade installed that is any of the listed BuildingTypes.
+  - <details>
+      <summary>Filters are defined like <code>(scope).Filter.~</code>. Expand to see available filter types.</summary>
+      <ul>
+        <li><code>~.Abstract</code>: A quick filter on the techno's type and domain. <i>(none|land|water|empty|infantry|units|buildings|all)</i></li>
+        <li><code>~.IsInAir</code>: Techno is in air.</li>
+        <li><code>~.TechnoTypes</code>: Techno is any of the listed TechnoTypes.</li>
+        <li><code>~.AttachedEffects</code>: Techno has any of the listed AttachedEffectTypes.</li>
+        <li><code>~.ShieldTypes</code>: Techno has any of the listed ShieldTypes.</li>
+        <li><code>~.Veterancy</code>: Techno is any of the listed veterancy.</li>
+        <li><code>~.HPPercentage</code>: Techno is any of the listed HP percentage condition.</li>
+        <li><code>~.Owner.House</code>: Techno owner's relation with the handler's owner. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
+        <li><code>~.Owner.Sides</code>: Owner's country is any of the listed sides.</li>
+        <li><code>~.Owner.Countries</code>: Owner's country is any of the listed countries.</li>
+        <li><code>~.Owner.Buildings</code>: Owner has a building that is any of the listed BuildingTypes.</li>
+        <li><code>~.Owner.IsHuman</code>: Owner is human controlled.</li>
+        <li><code>~.Owner.IsAI</code>: Owner is AI controlled.</li>
+        <li><code>~.IsBunkered</code>: Techno is either loaded into a Tank Bunker, or is a Tank Bunker loading something.</li>
+        <li><code>~.IsMindControlled</code>: Techno is mind-controlled.</li>
+        <li><code>~.IsMindControlled.Perma</code>: Techno is permanently mind-controlled.</li>
+        <li><code>~.MindControlling.Any</code>: Techno is mind-controlling something.</li>
+        <li><code>~.MindControlling.Type</code>: Techno is mind-controlling something that is any of the listed TechnoTypes.</li>
+        <li><code>~.Passengers.Any</code>: Techno has passengers.</li>
+        <li><code>~.Passengers.Type</code>: Techno has a passenger that is any of the listed TechnoTypes.</li>
+        <li><code>~.Upgrades.Any</code>: Techno is a building with any upgrade installed.</li>
+        <li><code>~.Upgrades.Type</code>: Techno is a building with any upgrade installed that is any of the listed BuildingTypes.</li>
+      </ul>
+    </details>
 - Negative Filters:
   - Negative Filters can be specified on a scope to ask for something to be false about it, or the event handler doesn't resolve its effects.
   - Even though they are negative filters, if specified, the scope must exist, or the event handler doesn't resolve its effects.
@@ -496,43 +524,95 @@ Shield.InheritStateOnReplace=false          ; boolean
 - Effects:
   - Effects can be specified on a scope to ask for something to be done to it, if all filters pass.
   - The scope must exist. Nothing will be done to an empty scope.
-  - Weapon Detonation:
-    - A weapon can be fired at the scope's position. *(This doesn't support Ares ivan bomb.)*
-    - `(scope).Effect.Weapon` specifies the weapon type to be fired at the position.
-    - `~.Firer.Scope`, and `~.Firer.ExtScope`, can be used to specify the firer of the weapon. The firer is default to the `Me` scope.
-    - `~.SpawnProj` can be set to true to have a projectile spawned from the firer's position and have it directed to the target's position. *(This doesn't support `Arcing=yes` projectiles.)*
-  - Type Conversion:
-    - The scope can be converted to a different techno type.
-    - `(scope).Effect.ConvertN.From`, `~.To`, `~.AffectedHouses`.
-    - This follows the same rules as [Super Weapons -> Convert TechnoType](#convert-technotype).
-  - Soylent Bounty:
-    - Credits can be rewarded based on the scope's soylent.
-    - `(scope).Effect.Soylent.Mult` specifies the soylent multiplier. If not specified, or it is equal to 0, no credits will be rewarded. If negative, credits can be substracted from the receptant.
-    - `~.IncludePassengers` can be set to true to make it so the total soylent of the scope's passengers will also count.
-    - `~.Scope`, and `~.ExtScope`, can be used to specify the receptant. The credits will be rewarded to its owner. It is default to the `Me` scope.
-    - `~.Display` can be set to true to display the amount of credits on the receptant scope. `~.Display.House` determines which houses can see this and `~.Display.Offset` can be used to adjust the display offset.
-  - Passengers:
-    - Operations can be done to a transporting vehicle's passengers, a Bio Reactor's captives, or a garrisonable structure's occupants.
-    - `(scope).Effect.Passengers.Eject` can be set to true to forcibly eject its passengers out of it.
-    - `(scope).Effect.Passengers.Kill` can be set to true to kill all passengers.
-      - `~.Score` can be set to true to make the killed units be treated as if they were killed by a scope.
-      - The scope can be determined with `~.Score.Scope` and `~.Score.ExtScope`, and if not set, defaults to the `Me` scope.
-    - `(scope).Effect.Passengers.Create.Types`, and `~.Create.Nums`, can be specified so a number of units will be spawned inside the transport or building.
-      - `~.Create.Owner.Scope`, and `~.Create.Owner.ExtScope`, can be used to specify the units' owner. If not specified, it is default to the `(scope)`.
-  - Veterancy:
-    - The scope's veterancy can be updated. Requires `Trainable=yes`.
-    - `(scope).Effect.Veterancy.Set=(rookie|veteran|elite)` will set the scope's veterancy.
-    - `(scope).Effect.Veterancy.Add` will make the scope earn experience, or lose experience if a negative number is given.
-  - Voice:
-    - A voice can be played.
-    - `(scope).Effect.Voice` will be played at the location of `(scope)`. It is only audible to the scope's owner, and will be interrupted when it dies.
-      - `~.Voice.Persist` can be set to true, so the voice is not interrupted even when it dies.
-      - `~.Voice.Global` can be set to true, it does not only persists, it is also audible to other players.
-    - `(scope).Effect.EVA` will be played as an EVA announcement to the `(scope)`'s owner. It is only audible to the scope's owner.
+  - <details>
+      <summary>Effects are defined like <code>(scope).Effect.~</code>. The effects can be weapon detonation, type conversion, and more. Expand to see details.</summary>
+      <ol>
+        <li>
+          Weapon Detonation:
+          <ul>
+            <li>A weapon can be fired at the scope's position. <i>(This doesn't support Ares ivan bomb.)</i></li>
+            <li><code>~.Weapon</code> specifies the weapon type to be fired at the position.</li>
+            <li><code>~.Weapon.Firer.Scope</code>, and <code>~.Weapon.Firer.ExtScope</code>, can be used to specify the firer of the weapon. The firer is default to the <code>Me</code> scope.</li>
+            <li><code>~.Weapon..SpawnProj</code> can be set to true to have a projectile spawned from the firer's position and have it directed to the target's position. <i>(This doesn't support <code>Arcing=yes</code> projectiles.)</i></li>
+          </ul>
+        </li>
+        <li>
+          Type Conversion:
+          <ul>
+            <li>The scope can be converted to a different techno type.</li>
+            <li><code>~.ConvertN.From</code>, <code>~.ConvertN.To</code>, <code>~.ConvertN.AffectedHouses</code>.</li>
+            <li>This follows the same rules as <a href="#convert-technotype">Super Weapons -> Convert TechnoType</a>.</li>
+          </ul>
+        </li>
+        <li>
+          Soylent Bounty:
+          <ul>
+            <li>Credits can be rewarded based on the scope's soylent.</li>
+            <li><code>~.Soylent.Mult</code> specifies the soylent multiplier. If not specified, or it is equal to 0, no credits will be rewarded. If negative, credits can be substracted from the receptant.</li>
+            <li><code>~.Soylent.IncludePassengers</code> can be set to true to make it so the total soylent of the scope's passengers will also count.</li>
+            <li><code>~.Soylent.Scope</code>, and <code>~.Soylent.ExtScope</code>, can be used to specify the receptant. The credits will be rewarded to its owner. It is default to the <code>Me</code> scope.</li>
+            <li><code>~.Soylent.Display</code> can be set to true to display the amount of credits on the receptant scope. <code>~.Soylent.Display.House</code> determines which houses can see this and <code>~.Soylent.Display.Offset</code> can be used to adjust the display offset.</li>
+          </ul>
+        </li>
+        <li>
+          Passengers:
+          <ul>
+            <li>Operations can be done to a transporting vehicle's passengers, a Bio Reactor's captives, or a garrisonable structure's occupants.</li>
+            <li><code>~.Passengers.Eject</code> can be set to true to forcibly eject its passengers out of it.</li>
+            <li><code>~.Passengers.Kill</code> can be set to true to kill all passengers.
+              <ul>
+                <li><code>~.Passengers.Kill.Score</code> can be set to true to make the killed units be treated as if they were killed by a scope.</li>
+                <li>The scope can be determined with <code>~.Passengers.Kill.Score.Scope</code> and <code>~.Passengers.Kill.Score.ExtScope</code>, and if not set, defaults to the <code>Me</code> scope.</li>
+              </ul>
+            </li>
+            <li><code>(scope).Effect.Passengers.Create.Types</code>, and <code>~.Create.Nums</code>, can be specified so a number of units will be spawned inside the transport or building.
+              <ul>
+                <li><code>~.Passengers.Create.Owner.Scope</code>, and <code>~.Passengers.Create.Owner.ExtScope</code>, can be used to specify the units' owner. If not specified, it is default to the <code>(scope)</code> (the techno that the effect is applied to).</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>
+          Veterancy:
+          <ul>
+            <li>The scope's veterancy can be updated. Requires <code>Trainable=yes</code>.</li>
+            <li><code>~.Veterancy.Set=(rookie|veteran|elite)</code> will set the scope's veterancy.</li>
+            <li><code>~.Veterancy.Add</code> will make the scope earn experience, or lose experience if a negative number is given.</li>
+          </ul>
+        </li>
+        <li>
+          Voice:
+          <ul>
+            <li>A voice can be played.</li>
+            <li><code>~.Voice</code> will be played at the location of <code>(scope)</code>. It is only audible to the scope's owner, and will be interrupted when it dies.
+              <ul>
+                <li><code>~.Voice.Persist</code> can be set to true, so the voice is not interrupted even when it dies. However, the voice will not move accordingly when the unit moves.</li>
+                <li><code>~.Voice.Global</code> can be set to true, it does not only persists, it is also audible to other players.</li>
+              </ul>
+            </li>
+            <li><code>~.EVA</code> will be played as an EVA announcement to the <code>(scope)</code>'s owner. It is only audible to the scope's owner.</li>
+          </ul>
+        </li>
+        <li>
+          Event Invokers:
+          <ul>
+            <li>Event Invokers can be called upon the target.</li>
+            <li><code>~.EventInvokerN</code> (where N is 0, 1, 2...) specifies the Event Invoker Types to be invoked to a scope.</li>
+            <li><code>~.EventInvoker</code> is a valid alternative for <code>(scope).Effect.EventInvoker0</code>, if only one is specified.</li>
+            <li>The <code>Me</code> scope of the invoked event will be the <code>(scope)</code>, and the <code>They</code> scope of the event will be the original <code>Me</code> of the source event handler.<br>For example, an IFV receives event A, where the IFV itself is the <code>Me</code> scope. Then the IFV's event handler invokes event B on a Grizzly Tank. On the Grizzly Tank's perspective, the <code>Me</code> will be the Grizzly Tank, and the <code>They</code> scope will be the IFV.</li>
+            <li>See <a href="#event-invokers">Event Invokers</a> for details.</li>
+          </ul>
+        </li>
+      </ul>
+    </details>
 - Other usage notes:
   - If any type conversion happened right before or during the event, only the handlers attached to the old type will be invoked.
-  - Event Handlers on a same techno type are invoked in the numeral order.
-  - Effects on a same scope are resolved in the order they are listed in this document. To reveres the order, you may define multiple Event Handlers with identical event type and filters but different effects.
+  - Effects are executed in an order like:
+    - Event Handlers on a same techno type are invoked in the numeral order.
+    - Effects for the `Me` scope are executed before the efffects for the `They` scope.
+    - Effects for the basic scopes are executed before those for the extended scopes, and for the extended scopes, `Transport` -> `Bunker` -> `MindController`.
+    - Effects on a same scope are resolved in the order they are listed in this document.
+  - To reverse the order, define another event handler with identical event type and filters, but different effects.
 
 In `rulesmd.ini`:
 ```ini
@@ -611,42 +691,123 @@ EventType=                                         ; EventType
 (scope).Effect.Voice.Persist=false                 ; boolean
 (scope).Effect.Voice.Global=false                  ; boolean
 (scope).Effect.EVA=                                ; sound entry
+
+;; effects - event invoker
+(scope).Effect.EventInvokerN=                      ; EventInvokerType
 ```
-
-### Event Invokers
-
-- Event Invokers can be defined and given to weapons, warheads, super weapons, and event handlers, to invoke any given event type.
 
 #### Examples
 
-An example to make Crazy Ivan fire his death weapon when crushed.
-
-```ini
-[IVAN]
+<ul>
+  <li>
+    <details>
+      <summary>Crazy Ivans fire the death weapon and play the death sound when crushed.</summary>
+      <pre lang="ini"><code>[IVAN]
 EventHandler=EHIvanCrushed
-
+<br/>
 [EHIvanCrushed]
 EventType=WhenCrushed
 Me.Effect.Weapon=IvanDeath
 Me.Effect.Voice=CrazyIvanDie
-Me.Effect.Voice.Global=true
-```
-
-An example to make Rhino Tank heal itself when it crushes something, as long as the owner has a Soviet Battle Lab, to mimic the crush heal protocal in RA3.
-
-```ini
-[HTNK]
+Me.Effect.Voice.Global=true</code></pre>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary>Rhino Tanks heal themselves when they crush something, as long as the Soviet commander owns a Soviet Battle Lab, to mimic the Grinder Treads protocol in RA3.</summary>
+      <pre lang="ini"><code>[HTNK]
 EventHandler=EHCrushHealProtocal
-
+<br/>
 [EHCrushHealProtocal]
 EventType=WhenCrush
 Me.Filter.Owner.Buildings=NATECH
 Me.Effect.Weapon=EHCrushHealWeapon
-
+<br/>
 [EHCrushHealWeapon]
 Damage=-150
 Warhead=Mechanical
-...
+...</code></pre>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary>A Battle Bunker converts loaded Conscripts into elite Initiates.</summary>
+      <pre lang="ini"><code>[NABNKR]
+EventHandler=EHBattleBunkerConvert
+<br/>
+[EHBattleBunkerConvert0]
+EventType=WhenLoad
+They.Filter.TechnoTypes=E2
+They.Effect.Convert.To=INIT
+They.Effect.Veterancy.Set=elite</code></pre>
+    </details>
+  </li>
+  <li>
+    <details>
+      <summary>The Soviet Amphibious Transport functions like a mobile grinder that it sells everything loaded for money.</summary>
+      <pre lang="ini"><code>[SAPC]
+EventHandler0=EHAutoGrind0
+EventHandler1=EHAutoGrind1
+<br/>
+[EHAutoGrind0]
+EventType=WhenLoad
+They.Effect.Soylent.Mult=100%
+They.Effect.Soylent.IncludePassengers=yes
+<br/>
+[EHAutoGrind1]
+EventType=WhenLoad
+Me.Effect.Passengers.Kill=yes
+Me.Effect.Voice=SellBuilding
+Me.Effect.Voice.Persist=yes
+;; The effects for Me scope is executed before the effects for They scope.
+;; If we don't reverse the order, the passengers will be killed before they yield any credits.
+;; To reverse the order, define another event handler with identical EventType and filters.</code></pre>
+    </details>
+  </li>
+</ul>
+
+### Event Invokers
+
+- Event Invokers can be defined and given to warheads, super weapons, and event handlers, to invoke any event type and trigger the event handlers on their targets. Event Invokers are defined under `[EventInvokers]`, however separate listing is not mandatory.
+  - Event Types:
+    - `EventTypeN` (where N is 0, 1, 2...) specifies the Event Types of an Event Invoker.
+    - `EventType` is a valid alternative for `EventType0`, if only one is specified.
+    - The Event Types can be any of the pre-defined event types, or any custom string, to allow a custom event call.
+  - Filters and Negative Filters:
+    - Event Invokers may have filters to ask for something to be true or false about the techno.
+    - The Filters are defined like `Target.Filter.~`.
+    - The Negative Filters are defined like `Target.NegFilter.~`.
+    - The available filter types are the same as Event Handlers. See [Event Handlers -> Filters](#event-handlers) for details.
+- Each weapon, warhead, super weapon, and `(scope).Effect.~` entry of an event handler, may have multiple event invokers listed.
+  - On Warheads:
+    - `EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types.
+    - `EventInvoker` is a valid alternative for `EventInvoker0`, if only one is specified.
+    - The `Me` scope of the event will be the firer of the warhead, and the `They` scope will be the techno hit by the warhead.
+  - On Super Weapons:
+    - `EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types.
+    - `EventInvoker` is a valid alternative for `EventInvoker0`, if only one is specified.
+    - The `Me` scope of the event will be null, and the `They` scope will be the techno hit by the super weapon.
+  - On Event Handlers:
+    - `(scope).Effect.EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types to be invoked to a scope.
+    - `(scope).Effect.EventInvoker` is a valid alternative for `(scope).Effect.EventInvoker0`, if only one is specified.
+    - The `Me` scope of the invoked event will be the `(scope)`, and the `They` scope of the event will be the original `Me` of the source event handler.
+	For example, an IFV receives event A, where the IFV itself is the `Me` scope. Then the IFV's event handler invokes event B on a Grizzly Tank. On the Grizzly Tank's perspective, the `Me` will be the Grizzly Tank, and the `They` scope will be the IFV.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINVOKER]                          ; EventInvokerType
+EventTypeN=                            ; EventType
+Target.Filter.~                        ; filters
+Target.NegFilter.~                     ; negative filters
+
+[SOMEWH]                               ; WarheadType
+EventInvokerN=                         ; EventInvokerType
+
+[SOMESW]                               ; SuperWeaponType
+EventInvokerN=                         ; EventInvokerType
+
+[SOMEHANDLER]                          ; EventHandlerType
+(scope).Effect.EventInvokerN=          ; EventInvokerType
 ```
 
 ## Animations

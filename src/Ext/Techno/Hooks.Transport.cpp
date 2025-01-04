@@ -112,7 +112,6 @@ DEFINE_HOOK(0x4733B0, CargoClass_Attach_Hook_BeforeLoad, 0x6)
 
 		auto const pPassengerType = pPassenger->GetTechnoType();
 		auto const pPassExt = TechnoExt::ExtMap.Find(pPassenger);
-		auto const pPassTypeExt = pPassExt->TypeExtData;
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
 
 		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit)
@@ -232,7 +231,6 @@ DEFINE_HOOK(0x458060, BuildingClass_Remove_Occupants_BeforeHook, 0x5)
 	if (pBld->GetOccupantCount() > 0)
 	{
 		auto& vec = ScenarioExt::Global()->OccupantsCache;
-		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pBld->GetTechnoType());
 		for (auto pOccupant : pBld->Occupants)
 		{
 			auto pPassExt = TechnoExt::ExtMap.Find(pOccupant);

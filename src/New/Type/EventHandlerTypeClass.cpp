@@ -20,6 +20,24 @@ void EventHandlerTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
+	LoadFromINIPrivate(exINI, pSection);
+}
+
+void EventHandlerTypeClass::LoadFromINI(INI_EX& exINI)
+{
+	if (this->loaded.Get())
+		return;
+	this->loaded = true;
+
+	const char* pSection = this->Name;
+	if (strcmp(pSection, NONE_STR) == 0)
+		return;
+
+	LoadFromINIPrivate(exINI, pSection);
+}
+
+void EventHandlerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSection)
+{
 	this->EventType.Read<true>(exINI, pSection, "EventType");
 
 	LoadForScope(exINI, pSection, EventScopeType::Me, "Me");
@@ -31,7 +49,8 @@ void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, co
 	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, scopeName);
 	if (comp)
 	{
-		this->HandlerComps.push_back(std::move(comp));
+		auto& vec = this->HandlerComps[scopeType];
+		vec.push_back(std::move(comp));
 	}
 
 	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedScopeType::Transport, scopeName, "Transport");
@@ -44,7 +63,8 @@ void EventHandlerTypeClass::LoadForExtendedScope(INI_EX& exINI, const char* pSec
 	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, extendedScopeType, scopeName, extendedScopeName);
 	if (comp)
 	{
-		this->HandlerComps.push_back(std::move(comp));
+		auto& vec = this->HandlerComps[scopeType];
+		vec.push_back(std::move(comp));
 	}
 }
 
@@ -52,6 +72,7 @@ template <typename T>
 void EventHandlerTypeClass::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->loaded)
 		.Process(this->EventType)
 		.Process(this->HandlerComps)
 		;
@@ -67,13 +88,13 @@ void EventHandlerTypeClass::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-void EventHandlerTypeClass::HandleEvent(TechnoClass* pOwner, std::map<EventScopeType, TechnoClass*>* pParticipants)
+void EventHandlerTypeClass::HandleEvent(std::map<EventScopeType, TechnoClass*>* pParticipants)
 {
 	for (auto it = pParticipants->begin(); it != pParticipants->end(); ++it)
 	{
 		auto scopeType = it->first;
 		auto pTarget = it->second;
-		if (!CheckFilters(pParticipants, scopeType, pOwner, pTarget))
+		if (!CheckFilters(pParticipants, scopeType))
 			return;
 	}
 
@@ -81,17 +102,17 @@ void EventHandlerTypeClass::HandleEvent(TechnoClass* pOwner, std::map<EventScope
 	{
 		auto scopeType = it->first;
 		auto pTarget = it->second;
-		ExecuteEffects(pParticipants, scopeType, pOwner, pTarget);
+		ExecuteEffects(pParticipants, scopeType);
 	}
 }
 
-bool EventHandlerTypeClass::CheckFilters(std::map<EventScopeType, TechnoClass*>* pParticipants, EventScopeType scopeType, TechnoClass* pOwner, TechnoClass* pTarget) const
+bool EventHandlerTypeClass::CheckFilters(std::map<EventScopeType, TechnoClass*>* pParticipants, EventScopeType scopeType) const
 {
-	for (auto const& handlerUnit : this->HandlerComps)
+	if (this->HandlerComps.contains(scopeType))
 	{
-		if (handlerUnit.get()->ScopeType == scopeType)
+		for (auto const& handlerComp : this->HandlerComps.get_or_default(scopeType))
 		{
-			if (!handlerUnit.get()->CheckFilters(pParticipants, pOwner, pTarget))
+			if (!handlerComp.get()->CheckFilters(pParticipants))
 			{
 				return false;
 			}
@@ -101,13 +122,13 @@ bool EventHandlerTypeClass::CheckFilters(std::map<EventScopeType, TechnoClass*>*
 	return true;
 }
 
-void EventHandlerTypeClass::ExecuteEffects(std::map<EventScopeType, TechnoClass*>* pParticipants, EventScopeType scopeType, TechnoClass* pOwner, TechnoClass* pTarget) const
+void EventHandlerTypeClass::ExecuteEffects(std::map<EventScopeType, TechnoClass*>* pParticipants, EventScopeType scopeType) const
 {
-	for (auto const& handlerUnit : this->HandlerComps)
+	if (this->HandlerComps.contains(scopeType))
 	{
-		if (handlerUnit.get()->ScopeType == scopeType)
+		for (auto const& handlerComp : this->HandlerComps.get_or_default(scopeType))
 		{
-			handlerUnit.get()->ExecuteEffects(pParticipants, pOwner, pTarget);
+			handlerComp.get()->ExecuteEffects(pParticipants);
 		}
 	}
 }

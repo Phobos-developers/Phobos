@@ -32,6 +32,7 @@ HandlerEffectClass::HandlerEffectClass()
 	, Voice_Persist { false }
 	, Voice_Global { false }
 	, EVA {}
+	, EventInvokers {}
 { }
 
 std::unique_ptr<HandlerEffectClass> HandlerEffectClass::Parse(INI_EX& exINI, const char* pSection, const char* scopeName, const char* effectName)
@@ -160,10 +161,43 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	}
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EVA", scopeName, effectName);
 	EVA.Read(exINI, pSection, tempBuffer);
+
+	// read event invokers
+	Nullable<EventInvokerTypeClass*> eventInvokerNullable;
+	for (size_t i = 0; ; ++i)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker%d", scopeName, effectName, i);
+		eventInvokerNullable.Reset();
+		eventInvokerNullable.Read<true>(exINI, pSection, tempBuffer);
+		if (eventInvokerNullable.isset())
+		{
+			eventInvokerNullable.Get()->LoadFromINI(exINI);
+			this->EventInvokers.push_back(eventInvokerNullable.Get());
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// read single event invokers
+	if (this->EventInvokers.empty())
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker", scopeName, effectName);
+		eventInvokerNullable.Reset();
+		eventInvokerNullable.Read<true>(exINI, pSection, tempBuffer);
+		if (eventInvokerNullable.isset())
+		{
+			eventInvokerNullable.Get()->LoadFromINI(exINI);
+			this->EventInvokers.push_back(eventInvokerNullable.Get());
+		}
+	}
 }
 
-void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pOwner, TechnoClass* pTarget) const
+void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pTarget) const
 {
+	auto pOwner = pParticipants->at(EventScopeType::Me);
+
 	// Weapon Detonation
 	if (Weapon.isset())
 	{
@@ -212,7 +246,8 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 		{
 			auto multiplier = Soylent_Mult.Get();
 			int nMoneyToGive = (int)(pTarget->GetTechnoType()->GetRefund(pTarget->Owner, true) * multiplier);
-			if (Soylent_IncludePassengers.Get() && pTarget->Passengers.NumPassengers > 0)
+
+			if (Soylent_IncludePassengers.Get())
 			{
 				nMoneyToGive += TechnoTypeExt::GetTotalSoylentOfPassengers(multiplier, pTarget);
 			}
@@ -343,6 +378,19 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 		if (pTarget->Owner->IsControlledByCurrentPlayer())
 		{
 			VoxClass::PlayIndex(EVA.Get());
+		}
+	}
+
+	// Event Invoker
+	if (!EventInvokers.empty())
+	{
+		std::map<EventScopeType, TechnoClass*> participants = {
+			{ EventScopeType::Me, pTarget },
+			{ EventScopeType::They, pOwner },
+		};
+		for (auto pEventInvokerType : EventInvokers)
+		{
+			pEventInvokerType->TryExecute(pOwner->Owner, &participants);
 		}
 	}
 }
@@ -478,7 +526,8 @@ bool HandlerEffectClass::IsDefined() const
 		|| Veterancy_Set.isset()
 		|| Veterancy_Add.isset()
 		|| Voice.isset()
-		|| EVA.isset();
+		|| EVA.isset()
+		|| !EventInvokers.empty();
 }
 
 bool HandlerEffectClass::Load(PhobosStreamReader& stm, bool registerForChange)
@@ -522,5 +571,6 @@ bool HandlerEffectClass::Serialize(T& stm)
 		.Process(this->Voice_Persist)
 		.Process(this->Voice_Global)
 		.Process(this->EVA)
+		.Process(this->EventInvokers)
 		.Success();
 }

@@ -2,6 +2,7 @@
 
 #include <Utilities/Template.h>
 #include "TypeConvertGroup.h"
+#include <New/Type/EventInvokerTypeClass.h>
 
 class HandlerEffectClass
 {
@@ -41,11 +42,13 @@ public:
 	Valueable<bool> Voice_Global;
 	NullableIdx<VocClass> EVA;
 
+	ValueableVector<EventInvokerTypeClass*> EventInvokers;
+
 	static std::unique_ptr<HandlerEffectClass> Parse(INI_EX& exINI, const char* pSection, const char* scopeName, const char* effectName);
 
 	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* effectName);
 
-	void Execute(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pOwner, TechnoClass* pTarget) const;
+	void Execute(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pTarget) const;
 
 	bool IsDefined() const;
 

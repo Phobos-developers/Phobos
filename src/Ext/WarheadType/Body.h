@@ -150,6 +150,8 @@ public:
 		Valueable<bool> SuppressReflectDamage;
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
 
+		ValueableVector<EventInvokerTypeClass*> EventInvokers;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -316,6 +318,8 @@ public:
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
 			, DamageAreaTarget {}
+
+			, EventInvokers {}
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

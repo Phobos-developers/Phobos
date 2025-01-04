@@ -95,13 +95,15 @@ TechnoClass* HandlerCompClass::GetTransportingTechno(TechnoClass* pTarget)
 	return nullptr;
 }
 
-bool HandlerCompClass::CheckFilters(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pOwner, TechnoClass* pTarget) const
+bool HandlerCompClass::CheckFilters(std::map<EventScopeType, TechnoClass*>* pParticipants) const
 {
+	auto pOwner = pParticipants->at(EventScopeType::Me);
+	auto pTarget = pParticipants->at(EventScopeType::They);
 	auto const pTrueTarget = HandlerCompClass::GetTrueTarget(pTarget, this->ExtendedScopeType);
 
 	if (this->Filter)
 	{
-		if (!(pTrueTarget && this->Filter.get()->Check(pParticipants, pOwner, pTarget, false)))
+		if (!(pTrueTarget && this->Filter.get()->Check(pOwner->Owner, pTrueTarget, false)))
 		{
 			return false;
 		}
@@ -109,7 +111,7 @@ bool HandlerCompClass::CheckFilters(std::map<EventScopeType, TechnoClass*>* pPar
 
 	if (this->NegFilter)
 	{
-		if (!(pTrueTarget && this->NegFilter.get()->Check(pParticipants, pOwner, pTarget, true)))
+		if (!(pTrueTarget && this->NegFilter.get()->Check(pOwner->Owner, pTrueTarget, true)))
 		{
 			return false;
 		}
@@ -118,15 +120,17 @@ bool HandlerCompClass::CheckFilters(std::map<EventScopeType, TechnoClass*>* pPar
 	return true;
 }
 
-void HandlerCompClass::ExecuteEffects(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pOwner, TechnoClass* pTarget) const
+void HandlerCompClass::ExecuteEffects(std::map<EventScopeType, TechnoClass*>* pParticipants) const
 {
+	auto pOwner = pParticipants->at(EventScopeType::Me);
+	auto pTarget = pParticipants->at(EventScopeType::They);
 	auto const pTrueTarget = HandlerCompClass::GetTrueTarget(pTarget, this->ExtendedScopeType);
 
 	if (pTrueTarget)
 	{
 		if (this->Effect)
 		{
-			this->Effect.get()->Execute(pParticipants, pOwner, pTrueTarget);
+			this->Effect.get()->Execute(pParticipants, pTrueTarget);
 		}
 	}
 }

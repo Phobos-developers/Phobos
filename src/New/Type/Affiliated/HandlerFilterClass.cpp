@@ -96,7 +96,7 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 // If "negative == false", the function returns false if any check failed, otherwise it returns true.
 // If "negative == true", the function returns false if any check succeed, otherwise it returns true.
 // Thus, we simply compare "negative" with the outcome of an entry, if equals then return false.
-bool HandlerFilterClass::Check(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pOwner, TechnoClass* pTarget, bool negative) const
+bool HandlerFilterClass::Check(HouseClass* pHouse, TechnoClass* pTarget, bool negative) const
 {
 	TechnoExt::ExtData* pTargetExt = nullptr;
 
@@ -149,7 +149,7 @@ bool HandlerFilterClass::Check(std::map<EventScopeType, TechnoClass*>* pParticip
 
 	if (Owner_House.isset())
 	{
-		if (negative == EnumFunctions::CanTargetHouse(Owner_House.Get(), pOwner->Owner, pTarget->Owner))
+		if (negative == EnumFunctions::CanTargetHouse(Owner_House.Get(), pHouse, pTarget->Owner))
 			return false;
 	}
 

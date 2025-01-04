@@ -37,7 +37,7 @@ public:
 
 	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* filterName);
 
-	bool Check(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pOwner, TechnoClass* pTarget, bool negative = false) const;
+	bool Check(HouseClass* pHouse, TechnoClass* pTarget, bool negative = false) const;
 
 	bool IsDefined() const;
 
