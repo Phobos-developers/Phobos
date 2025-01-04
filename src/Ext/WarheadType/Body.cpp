@@ -352,7 +352,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->EventInvokers.size() > 0
 	);
 
-	char tempBuffer[32];
 	Nullable<Powerup> crateType;
 	Nullable<int> weight;
 
