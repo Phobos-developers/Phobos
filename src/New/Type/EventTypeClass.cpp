@@ -9,6 +9,8 @@ const char* Enumerable<EventTypeClass>::GetMainSection()
 
 EventTypeClass* EventTypeClass::WhenCreated = nullptr;
 EventTypeClass* EventTypeClass::WhenCaptured = nullptr;
+EventTypeClass* EventTypeClass::WhenKill = nullptr;
+EventTypeClass* EventTypeClass::WhenKilled = nullptr;
 EventTypeClass* EventTypeClass::WhenCrush = nullptr;
 EventTypeClass* EventTypeClass::WhenCrushed = nullptr;
 EventTypeClass* EventTypeClass::WhenInfiltrate = nullptr;
@@ -22,6 +24,8 @@ void EventTypeClass::AddDefaults()
 {
 	EventTypeClass::WhenCreated = FindOrAllocate("WhenCreated");
 	EventTypeClass::WhenCaptured = FindOrAllocate("WhenCaptured");
+	EventTypeClass::WhenKill = FindOrAllocate("WhenKill");
+	EventTypeClass::WhenKilled = FindOrAllocate("WhenKilled");
 	EventTypeClass::WhenCrush = FindOrAllocate("WhenCrush");
 	EventTypeClass::WhenCrushed = FindOrAllocate("WhenCrushed");
 	EventTypeClass::WhenInfiltrate = FindOrAllocate("WhenInfiltrate");

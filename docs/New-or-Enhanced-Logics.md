@@ -444,6 +444,15 @@ Shield.InheritStateOnReplace=false          ; boolean
           </ul>
         </li>
         <li>
+          Killing:
+          <ul>
+            <li>Invoked when a techno is killed by damage (not by crushinng). By the moment, the victim is not yet removed from the game.</li>
+            <li><code>WhenKill</code>: Invoked on the killer's perspective.</li>
+            <li><code>WhenKilled</code>: Invoked on the victim's perspective.</li>
+            <li>If the damage was sourceless, <code>WhenKill</code> will not be invoked, and <code>WhenKilled</code> will be missing of the <code>They</code> scope.</li>
+          </ul>
+        </li>
+        <li>
           Crushing:
           <ul>
             <li>Invoked when a techno crushes something (not a wall). By the moment, the victim is not yet removed from the game.</li>
