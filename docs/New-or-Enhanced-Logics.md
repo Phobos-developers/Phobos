@@ -565,7 +565,7 @@ Shield.InheritStateOnReplace=false          ; boolean
                 <li>The scope can be determined with <code>~.Passengers.Kill.Score.Scope</code> and <code>~.Passengers.Kill.Score.ExtScope</code>, and if not set, defaults to the <code>Me</code> scope.</li>
               </ul>
             </li>
-            <li><code>(scope).Effect.Passengers.Create.Types</code>, and <code>~.Create.Nums</code>, can be specified so a number of units will be spawned inside the transport or building.
+            <li><code>~.Passengers.Create.Types</code>, and <code>~.Passengers.Create.Nums</code>, can be specified so a number of units will be spawned inside the transport or building.
               <ul>
                 <li><code>~.Passengers.Create.Owner.Scope</code>, and <code>~.Passengers.Create.Owner.ExtScope</code>, can be used to specify the units' owner. If not specified, it is default to the <code>(scope)</code> (the techno that the effect is applied to).</li>
               </ul>
