@@ -782,16 +782,15 @@ Me.Effect.Voice.Persist=yes
   - On Warheads:
     - `EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types.
     - `EventInvoker` is a valid alternative for `EventInvoker0`, if only one is specified.
-    - The `Me` scope of the event will be the firer of the warhead, and the `They` scope will be the techno hit by the warhead.
-  - On Super Weapons:
+    - The `Me` scope will be the techno hit by the warhead, and the `They` scope of the event will be the firer of the warhead.
     - `EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types.
     - `EventInvoker` is a valid alternative for `EventInvoker0`, if only one is specified.
-    - The `Me` scope of the event will be null, and the `They` scope will be the techno hit by the super weapon.
+    - The `Me` scope will be the techno hit by the super weapon, and the `They` scope of the event will be null.
   - On Event Handlers:
     - `(scope).Effect.EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types to be invoked to a scope.
     - `(scope).Effect.EventInvoker` is a valid alternative for `(scope).Effect.EventInvoker0`, if only one is specified.
     - The `Me` scope of the invoked event will be the `(scope)`, and the `They` scope of the event will be the original `Me` of the source event handler.
-	For example, an IFV receives event A, where the IFV itself is the `Me` scope. Then the IFV's event handler invokes event B on a Grizzly Tank. On the Grizzly Tank's perspective, the `Me` will be the Grizzly Tank, and the `They` scope will be the IFV.
+    For example, an IFV receives event A, where the IFV itself is the `Me` scope. Then the IFV's event handler invokes event B on a Grizzly Tank. On the Grizzly Tank's perspective, the `Me` will be the Grizzly Tank, and the `They` scope will be the IFV.
 
 In `rulesmd.ini`:
 ```ini
