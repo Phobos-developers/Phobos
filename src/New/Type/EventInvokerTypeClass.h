@@ -12,17 +12,21 @@ public:
 	ValueableVector<EventTypeClass*> EventTypes;
 	std::unique_ptr<HandlerFilterClass> Filter;
 	std::unique_ptr<HandlerFilterClass> NegFilter;
+	Valueable<bool> Target_PassDown_Passengers;
+	Valueable<bool> Target_PassDown_MindControlled;
 
 	EventInvokerTypeClass(const char* pTitle = NONE_STR) : Enumerable<EventInvokerTypeClass>(pTitle)
 		, loaded { false }
 		, EventTypes {}
 		, Filter {}
 		, NegFilter {}
+		, Target_PassDown_Passengers { false }
+		, Target_PassDown_MindControlled { false }
 	{};
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromINI(INI_EX& exINI);
-	void TryExecute(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants) const;
+	void TryExecute(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
 private:

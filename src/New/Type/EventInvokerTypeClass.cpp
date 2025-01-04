@@ -1,6 +1,7 @@
 #include "EventInvokerTypeClass.h"
 #include <nameof/nameof.h>
 #include <Ext/TechnoType/Body.h>
+#include <InfantryClass.h>
 
 template<>
 
@@ -70,6 +71,8 @@ void EventInvokerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSecti
 
 	this->Filter = HandlerFilterClass::Parse(exINI, pSection, "Target", "Filter");
 	this->NegFilter = HandlerFilterClass::Parse(exINI, pSection, "Target", "NegFilter");
+	this->Target_PassDown_Passengers.Read(exINI, pSection, "Target.PassDown.Passengers");
+	this->Target_PassDown_MindControlled.Read(exINI, pSection, "Target.PassDown.MindControlled");
 }
 
 bool EventInvokerTypeClass::CheckFilters(HouseClass* pHouse, TechnoClass* pTarget) const
@@ -93,17 +96,81 @@ bool EventInvokerTypeClass::CheckFilters(HouseClass* pHouse, TechnoClass* pTarge
 	return true;
 }
 
-void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants) const
+void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants)
 {
 	auto pTarget = pParticipants->at(EventScopeType::Me);
-	if (!CheckFilters(pHouse, pTarget))
-		return;
-	auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
+	auto pThey = pParticipants->at(EventScopeType::They);
 
-	for (auto pEventType : EventTypes)
+	if (CheckFilters(pHouse, pTarget))
 	{
-		pTargetTypeExt->InvokeEvent(pEventType, pParticipants);
+		auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
+
+		for (auto pEventType : EventTypes)
+		{
+			pTargetTypeExt->InvokeEvent(pEventType, pParticipants);
+		}
 	}
+
+	// Target Pass Down: Passengers
+	if (Target_PassDown_Passengers.Get())
+	{
+		if (pTarget->Passengers.NumPassengers > 0)
+		{
+			TechnoClass* pPassenger = nullptr;
+			for (NextObject obj(pTarget->Passengers.FirstPassenger->NextObject); obj; ++obj)
+			{
+				pPassenger = abstract_cast<TechnoClass*>(*obj);
+				if (CheckFilters(pHouse, pPassenger))
+				{
+					auto pPassengerTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
+					pParticipants->operator[](EventScopeType::Me) = pPassenger;
+					for (auto pEventType : EventTypes)
+					{
+						pPassengerTypeExt->InvokeEvent(pEventType, pParticipants);
+					}
+				}
+			}
+		}
+		else if (pTarget->GetOccupantCount() > 0)
+		{
+			auto pTargetBld = reinterpret_cast<BuildingClass*>(pTarget);
+			for (auto pPassenger : pTargetBld->Occupants)
+			{
+				if (CheckFilters(pHouse, pPassenger))
+				{
+					auto pPassengerTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
+					pParticipants->operator[](EventScopeType::Me) = pPassenger;
+					for (auto pEventType : EventTypes)
+					{
+						pPassengerTypeExt->InvokeEvent(pEventType, pParticipants);
+					}
+				}
+			}
+		}
+	}
+
+	// Target Pass Down: Mind Controlled
+	if (Target_PassDown_MindControlled.Get())
+	{
+		if (pTarget->CaptureManager && pTarget->CaptureManager->IsControllingSomething())
+		{
+			for (auto controlNode : pTarget->CaptureManager->ControlNodes)
+			{
+				auto pMCedTechno = controlNode->Unit;
+				if (CheckFilters(pHouse, pMCedTechno))
+				{
+					auto pMCedTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pMCedTechno->GetTechnoType());
+					pParticipants->operator[](EventScopeType::Me) = pMCedTechno;
+					for (auto pEventType : EventTypes)
+					{
+						pMCedTechnoTypeExt->InvokeEvent(pEventType, pParticipants);
+					}
+				}
+			}
+		}
+	}
+
+	pParticipants->operator[](EventScopeType::Me) = pTarget;
 }
 
 template <typename T>
@@ -114,6 +181,8 @@ void EventInvokerTypeClass::Serialize(T& Stm)
 		.Process(this->EventTypes)
 		.Process(this->Filter)
 		.Process(this->NegFilter)
+		.Process(this->Target_PassDown_Passengers)
+		.Process(this->Target_PassDown_MindControlled)
 		;
 }
 

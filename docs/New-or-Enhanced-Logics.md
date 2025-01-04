@@ -787,6 +787,11 @@ Me.Effect.Voice.Persist=yes
     - The Filters are defined like `Target.Filter.~`.
     - The Negative Filters are defined like `Target.NegFilter.~`.
     - The available filter types are the same as Event Handlers. See [Event Handlers -> Filters](#event-handlers) for details.
+  - Target pass down:
+    - The event invoking can be passed down to other related technos, so the same event type will be invoked to them as well.
+      - `Target.PassDown.Passengers` can be set to true, so this invoker will pass down to the techno's passengers, and the passengers of passengers, and so on.
+      - `Target.PassDown.MindControlled` can be set to true, so this invoker will pass down to the techno's mind-controlled technos.
+    - The root techno is not needed to be able to handle the event type, and is not even needed to pass the `Target.Filter.~` and `Target.NegFilter.~` of this invoker.
 - Each weapon, warhead, super weapon, and `(scope).Effect.~` entry of an event handler, may have multiple event invokers listed.
   - On Warheads:
     - `EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types.
@@ -803,19 +808,21 @@ Me.Effect.Voice.Persist=yes
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINVOKER]                          ; EventInvokerType
-EventTypeN=                            ; EventType
-Target.Filter.~                        ; filters
-Target.NegFilter.~                     ; negative filters
+[SOMEINVOKER]                              ; EventInvokerType
+EventTypeN=                                ; EventType
+Target.Filter.~                            ; filters
+Target.NegFilter.~                         ; negative filters
+Target.PassDown.Passengers=false           ; boolean
+Target.PassDown.MindControlled=false       ; boolean
 
-[SOMEWH]                               ; WarheadType
-EventInvokerN=                         ; EventInvokerType
+[SOMEWH]                                   ; WarheadType
+EventInvokerN=                             ; EventInvokerType
 
-[SOMESW]                               ; SuperWeaponType
-EventInvokerN=                         ; EventInvokerType
+[SOMESW]                                   ; SuperWeaponType
+EventInvokerN=                             ; EventInvokerType
 
-[SOMEHANDLER]                          ; EventHandlerType
-(scope).Effect.EventInvokerN=          ; EventInvokerType
+[SOMEHANDLER]                              ; EventHandlerType
+(scope).Effect.EventInvokerN=              ; EventInvokerType
 ```
 
 ## Animations
