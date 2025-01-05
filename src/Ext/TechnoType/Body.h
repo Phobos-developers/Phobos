@@ -480,6 +480,8 @@ public:
 		bool CanLoadPassenger(TechnoClass* pTransport, TechnoClass* pPassenger) const;
 		bool CanLoadAny(TechnoClass* pTransport, std::vector<TechnoClass*> pPassengerList) const;
 		bool CanLoadAny(TechnoClass* pTransport, std::map<int, std::vector<TechnoClass*>> passengerMap, std::set<int> passengerSizes) const;
+
+		// Ares 0.2
 		bool CanBeOccupiedBy(TechnoClass* whom) const;
 
 		// Ares 0.A
