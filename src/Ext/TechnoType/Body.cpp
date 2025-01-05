@@ -277,12 +277,15 @@ void TechnoTypeExt::ExtData::SetTurretLimitedDir(FootClass* pThis, DirStruct des
 	const auto pTurret = &pThis->SecondaryFacing;
 	const auto destinationDir = this->GetTurretDesiredDir(desiredDir);
 
-	if (turretRestrictAngle < 0)
+	if (turretRestrictAngle < 10.0)
 	{
 		const auto facing = pBody->Current();
-		pBody->SetDesired(destinationDir);
 		pTurret->SetCurrent(facing);
 		pTurret->SetDesired(facing);
+
+		if (!pThis->Locomotor->Is_Moving_Now())
+			pBody->SetDesired(destinationDir);
+
 		return;
 	}
 
@@ -318,10 +321,7 @@ void TechnoTypeExt::ExtData::SetTurretLimitedDir(FootClass* pThis, DirStruct des
 	if ((desiredDifference < -restrictRaw || desiredDifference > restrictRaw) && !pThis->Locomotor->Is_Moving_Now())
 		pBody->SetDesired(this->Turret_BodyOrientation ? this->GetBodyDesiredDir(currentDir, desiredDir) : desiredDir);
 
-	if ((currentDifference > 0 && desiredDifference < 0) || (currentDifference < 0 && desiredDifference > 0))
-		pTurret->SetDesired(bodyDir);
-	else
-		pTurret->SetDesired(destinationDir);
+	pTurret->SetDesired(((currentDifference > 0 && desiredDifference < 0) || (currentDifference < 0 && desiredDifference > 0)) ? bodyDir : destinationDir);
 }
 
 short TechnoTypeExt::ExtData::GetTurretLimitedRaw(short currentDirectionRaw)
