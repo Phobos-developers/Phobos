@@ -72,32 +72,31 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	return location;
 }
 
-CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound, TechnoTypeExt::ExtData* pTypeExt)
+CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound)
 {
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	if (!pTypeExt)
-		pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
-	std::span<std::vector<CoordStruct>> pickedFLHs = pTypeExt->WeaponBurstFLHs;
+	std::span<std::vector<CoordStruct>> pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{
 		if (pInf && pInf->IsDeployed())
-			pickedFLHs = pTypeExt->EliteDeployedWeaponBurstFLHs;
+			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-			pickedFLHs = pTypeExt->EliteCrouchedWeaponBurstFLHs;
+			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
 		else
-			pickedFLHs = pTypeExt->EliteWeaponBurstFLHs;
+			pickedFLHs = pExt->EliteWeaponBurstFLHs;
 	}
 	else
 	{
 		if (pInf && pInf->IsDeployed())
-			pickedFLHs = pTypeExt->DeployedWeaponBurstFLHs;
+			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-			pickedFLHs = pTypeExt->CrouchedWeaponBurstFLHs;
+			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
 	}
 	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
 	{
@@ -108,15 +107,12 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	return FLH;
 }
 
-CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound, TechnoTypeExt::ExtData* pTypeExt)
+CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound)
 {
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	if (!pTypeExt)
-		pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pTypeExt)
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type))
 	{
 		Nullable<CoordStruct> pickedFLH;
 
