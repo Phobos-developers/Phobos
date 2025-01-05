@@ -25,6 +25,8 @@ public:
 
 	static TechnoClass* GetTrueTarget(TechnoClass* pTarget, Nullable<EventExtendedScopeType> ExtendedScopeType);
 	static TechnoClass* GetTransportingTechno(TechnoClass* pTarget);
+	static TechnoClass* GetParasiteTechno(TechnoClass* pTarget);
+	static TechnoClass* GetHostTechno(TechnoClass* pTarget);
 	bool CheckFilters(std::map<EventScopeType, TechnoClass*>* pParticipants) const;
 	void ExecuteEffects(std::map<EventScopeType, TechnoClass*>* pParticipants) const;
 

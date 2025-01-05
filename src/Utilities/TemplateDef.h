@@ -1095,6 +1095,14 @@ namespace detail
 			{
 				value = EventExtendedScopeType::MindController;
 			}
+			else if (_strcmpi(parser.value(), "Parasite") == 0)
+			{
+				value = EventExtendedScopeType::Parasite;
+			}
+			else if (_strcmpi(parser.value(), "Host") == 0)
+			{
+				value = EventExtendedScopeType::Host;
+			}
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an event extended scope type");

@@ -9,12 +9,6 @@ HandlerFilterClass::HandlerFilterClass()
 	, ShieldTypes {}
 	, Veterancy {}
 	, HPPercentage {}
-	, Owner_House {}
-	, Owner_Sides {}
-	, Owner_Countries {}
-	, Owner_Buildings {}
-	, Owner_IsHuman {}
-	, Owner_IsAI {}
 	, IsBunkered {}
 	, IsMindControlled {}
 	, IsMindControlled_Perma {}
@@ -24,6 +18,12 @@ HandlerFilterClass::HandlerFilterClass()
 	, Passengers_Type {}
 	, Upgrades_Any {}
 	, Upgrades_Type {}
+	, Owner_House {}
+	, Owner_Sides {}
+	, Owner_Countries {}
+	, Owner_Buildings {}
+	, Owner_IsHuman {}
+	, Owner_IsAI {}
 { }
 
 std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(INI_EX & exINI, const char* pSection, const char* scopeName, const char* filterName)
@@ -60,19 +60,6 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.HPPercentage", scopeName, filterName);
 	HPPercentage.Read(exINI, pSection, tempBuffer);
 
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.House", scopeName, filterName);
-	Owner_House.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.Sides", scopeName, filterName);
-	Owner_Sides.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.Countries", scopeName, filterName);
-	Owner_Countries.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.Buildings", scopeName, filterName);
-	Owner_Buildings.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.IsHuman", scopeName, filterName);
-	Owner_IsHuman.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.IsAI", scopeName, filterName);
-	Owner_IsAI.Read(exINI, pSection, tempBuffer);
-
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsBunkered", scopeName, filterName);
 	IsBunkered.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsMindControlled", scopeName, filterName);
@@ -91,6 +78,19 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	Upgrades_Any.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Upgrades.Type", scopeName, filterName);
 	Upgrades_Type.Read(exINI, pSection, tempBuffer);
+
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.House", scopeName, filterName);
+	Owner_House.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.Sides", scopeName, filterName);
+	Owner_Sides.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.Countries", scopeName, filterName);
+	Owner_Countries.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.Buildings", scopeName, filterName);
+	Owner_Buildings.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.IsHuman", scopeName, filterName);
+	Owner_IsHuman.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Owner.IsAI", scopeName, filterName);
+	Owner_IsAI.Read(exINI, pSection, tempBuffer);
 }
 
 // If "negative == false", the function returns false if any check failed, otherwise it returns true.
@@ -147,71 +147,6 @@ bool HandlerFilterClass::Check(HouseClass* pHouse, TechnoClass* pTarget, bool ne
 			return false;
 	}
 
-	if (Owner_House.isset())
-	{
-		if (negative == EnumFunctions::CanTargetHouse(Owner_House.Get(), pHouse, pTarget->Owner))
-			return false;
-	}
-
-	if (!Owner_Sides.empty())
-	{
-		bool sideFlag = false;
-		for (auto pSide : Owner_Sides)
-		{
-			if (pTarget->Owner->Type->SideIndex == pSide->GetArrayIndex()) {
-				sideFlag = true;
-				break;
-			}
-		}
-		if (negative == sideFlag)
-			return false;
-	}
-
-	if (!Owner_Countries.empty())
-	{
-		if (negative == Owner_Countries.Contains(pTarget->Owner->Type))
-			return false;
-	}
-
-	if (!Owner_Buildings.empty())
-	{
-		bool buildingFlag = false;
-		if (pTarget->Owner->OwnedBuildings > 0)
-		{
-			for (auto const& pBld : pTarget->Owner->Buildings)
-			{
-				if (Owner_Buildings.Contains(pBld->Type))
-				{
-					buildingFlag = true;
-					goto _EndOwnerBuildingSearch_;
-				}
-				for (const auto& pUpgrade : pBld->Upgrades)
-				{
-					if (Owner_Buildings.Contains(pUpgrade))
-					{
-						buildingFlag = true;
-						goto _EndOwnerBuildingSearch_;
-					}
-				}
-			}
-		_EndOwnerBuildingSearch_:;
-		}
-		if (negative == buildingFlag)
-			return false;
-	}
-
-	if (Owner_IsHuman.isset())
-	{
-		if (negative == pTarget->Owner->IsControlledByHuman())
-			return false;
-	}
-
-	if (Owner_IsAI.isset())
-	{
-		if (negative != pTarget->Owner->IsControlledByHuman())
-			return false;
-	}
-
 	if (IsBunkered.isset())
 	{
 		if (negative == (pTarget->BunkerLinkedItem != nullptr))
@@ -230,28 +165,35 @@ bool HandlerFilterClass::Check(HouseClass* pHouse, TechnoClass* pTarget, bool ne
 			return false;
 	}
 
-	if (MindControlling_Any.isset())
-	{
-		if (negative == (pTarget->CaptureManager && pTarget->CaptureManager->IsControllingSomething()))
-			return false;
-	}
+	CheckForHouse(pHouse, pTarget->Owner, negative);
 
-	if (!MindControlling_Type.empty())
+	if (MindControlling_Any.isset() || !MindControlling_Type.empty())
 	{
-		bool mcFlag = false;
-		if ((pTarget->CaptureManager && pTarget->CaptureManager->IsControllingSomething()))
+		bool mcAnyFlag = pTarget->CaptureManager && pTarget->CaptureManager->IsControllingSomething();
+
+		if (MindControlling_Any.isset())
 		{
-			for (auto node : pTarget->CaptureManager->ControlNodes)
+			if (negative == (MindControlling_Any.Get() == mcAnyFlag))
+				return false;
+		}
+
+		if (!MindControlling_Type.empty())
+		{
+			bool mcFlag = false;
+			if (mcAnyFlag)
 			{
-				if (node->Unit && MindControlling_Type.Contains(node->Unit->GetTechnoType()))
+				for (auto node : pTarget->CaptureManager->ControlNodes)
 				{
-					mcFlag = true;
-					break;
+					if (node->Unit && MindControlling_Type.Contains(node->Unit->GetTechnoType()))
+					{
+						mcFlag = true;
+						break;
+					}
 				}
 			}
+			if (negative == mcFlag)
+				return false;
 		}
-		if (negative == mcFlag)
-			return false;
 	}
 
 	if (Passengers_Any.isset() || !Passengers_Type.empty())
@@ -316,7 +258,84 @@ bool HandlerFilterClass::Check(HouseClass* pHouse, TechnoClass* pTarget, bool ne
 	return true;
 }
 
+bool HandlerFilterClass::CheckForHouse(HouseClass* pHouse, HouseClass* pTargetHouse, bool negative) const
+{
+	if (Owner_House.isset())
+	{
+		if (negative == EnumFunctions::CanTargetHouse(Owner_House.Get(), pHouse, pTargetHouse))
+			return false;
+	}
+
+	if (!Owner_Sides.empty())
+	{
+		bool sideFlag = false;
+		for (auto pSide : Owner_Sides)
+		{
+			if (pTargetHouse->Type->SideIndex == pSide->GetArrayIndex())
+			{
+				sideFlag = true;
+				break;
+			}
+		}
+		if (negative == sideFlag)
+			return false;
+	}
+
+	if (!Owner_Countries.empty())
+	{
+		if (negative == Owner_Countries.Contains(pTargetHouse->Type))
+			return false;
+	}
+
+	if (!Owner_Buildings.empty())
+	{
+		bool buildingFlag = false;
+		if (pTargetHouse->OwnedBuildings > 0)
+		{
+			for (auto const& pBld : pTargetHouse->Buildings)
+			{
+				if (Owner_Buildings.Contains(pBld->Type))
+				{
+					buildingFlag = true;
+					goto _EndOwnerBuildingSearch_;
+				}
+				for (const auto& pUpgrade : pBld->Upgrades)
+				{
+					if (Owner_Buildings.Contains(pUpgrade))
+					{
+						buildingFlag = true;
+						goto _EndOwnerBuildingSearch_;
+					}
+				}
+			}
+		_EndOwnerBuildingSearch_:;
+		}
+		if (negative == buildingFlag)
+			return false;
+	}
+
+	if (Owner_IsHuman.isset())
+	{
+		if (negative == pTargetHouse->IsControlledByHuman())
+			return false;
+	}
+
+	if (Owner_IsAI.isset())
+	{
+		if (negative != pTargetHouse->IsControlledByHuman())
+			return false;
+	}
+
+	return true;
+}
+
 bool HandlerFilterClass::IsDefined() const
+{
+	return IsDefinedAnyTechnoCheck()
+		|| IsDefinedAnyHouseCheck();
+}
+
+bool HandlerFilterClass::IsDefinedAnyTechnoCheck() const
 {
 	return Abstract.isset()
 		|| IsInAir.isset()
@@ -325,12 +344,6 @@ bool HandlerFilterClass::IsDefined() const
 		|| !ShieldTypes.empty()
 		|| Veterancy.isset()
 		|| HPPercentage.isset()
-		|| Owner_House.isset()
-		|| !Owner_Sides.empty()
-		|| !Owner_Countries.empty()
-		|| !Owner_Buildings.empty()
-		|| Owner_IsHuman.isset()
-		|| Owner_IsAI.isset()
 		|| IsBunkered.isset()
 		|| IsMindControlled.isset()
 		|| IsMindControlled_Perma.isset()
@@ -340,6 +353,16 @@ bool HandlerFilterClass::IsDefined() const
 		|| !Passengers_Type.empty()
 		|| Upgrades_Any.isset()
 		|| !Upgrades_Type.empty();
+}
+
+bool HandlerFilterClass::IsDefinedAnyHouseCheck() const
+{
+	return Owner_House.isset()
+		|| !Owner_Sides.empty()
+		|| !Owner_Countries.empty()
+		|| !Owner_Buildings.empty()
+		|| Owner_IsHuman.isset()
+		|| Owner_IsAI.isset();
 }
 
 bool HandlerFilterClass::Load(PhobosStreamReader& stm, bool registerForChange)
@@ -363,12 +386,6 @@ bool HandlerFilterClass::Serialize(T& stm)
 		.Process(this->ShieldTypes)
 		.Process(this->Veterancy)
 		.Process(this->HPPercentage)
-		.Process(this->Owner_House)
-		.Process(this->Owner_Sides)
-		.Process(this->Owner_Countries)
-		.Process(this->Owner_Buildings)
-		.Process(this->Owner_IsHuman)
-		.Process(this->Owner_IsAI)
 		.Process(this->IsBunkered)
 		.Process(this->IsMindControlled)
 		.Process(this->IsMindControlled_Perma)
@@ -378,5 +395,11 @@ bool HandlerFilterClass::Serialize(T& stm)
 		.Process(this->Passengers_Type)
 		.Process(this->Upgrades_Any)
 		.Process(this->Upgrades_Type)
+		.Process(this->Owner_House)
+		.Process(this->Owner_Sides)
+		.Process(this->Owner_Countries)
+		.Process(this->Owner_Buildings)
+		.Process(this->Owner_IsHuman)
+		.Process(this->Owner_IsAI)
 		.Success();
 }

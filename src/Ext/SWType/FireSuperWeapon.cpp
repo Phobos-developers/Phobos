@@ -311,7 +311,7 @@ void SWTypeExt::ExtData::ApplyEventInvokers(SuperClass* pSW)
 		};
 		for (auto pEventInvokerType : EventInvokers)
 		{
-			pEventInvokerType->TryExecute(pSW->Owner, &participants);
+			pEventInvokerType->TryExecute(pSW->Owner, &participants, true);
 		}
 	}
 }

@@ -494,64 +494,66 @@ Shield.InheritStateOnReplace=false          ; boolean
   - There are a several basic scopes that most events will have.
     - `Me`: Techno to which this handler is attached to.
     - `They`: The other participant of the event. Whatever it is is dependant to the event. Some events do not have `They`.
-  - The extended scopes can be used to access techno related to the participants. Filters and effects can be assigned to them as well.
-    - `(any basic scope).Transport`: The transporting vehicle, or Bio Reactor, or garrisonable structure, that is carrying the scope.
-    - `(any basic scope).Bunker`: To vehicle types, this refers to the Tank Bunker loading it; to Tank Bunkers, this refers to the vehicle loaded into it.
-    - `(any basic scope).MindController`: The techno that is mind-controlling the scope.
+  - The extended scopes can be used to access techno related to the participants. Filters and effects can be assigned to them as well. Extended scopes can't nest each other, and can only follow basic scopes.
+    - `(scope).Transport`: The transporting vehicle, or Bio Reactor, or garrisonable structure, that is carrying the scope.
+    - `(scope).Bunker`: To vehicle types, this refers to the Tank Bunker loading it; to Tank Bunkers, this refers to the vehicle loaded into it.
+    - `(scope).MindController`: The techno that is mind-controlling the scope.
+    - `(scope).Parasite`: The parasite of this techno (Terror Drones, Giant Squids).
+    - `(scope).Host`: The techno that this parasite is haunting.
 - Filters:
   - Filters can be specified on an scope to ask for something to be true about it, or the event handler doesn't resolve its effects.
   - If any filter is specified, the scope must exist, or the event handler doesn't resolve its effects.
   - <details>
-      <summary>Filters are defined like <code>(scope).Filter.~</code>. Expand to see available filter types.</summary>
+      <summary>Filters are defined like <code>(scope).Filter.*</code>. Expand to see available filter types.</summary>
       <ul>
-        <li><code>~.Abstract</code>: A quick filter on the techno's type and domain. <i>(none|land|water|empty|infantry|units|buildings|all)</i></li>
-        <li><code>~.IsInAir</code>: Techno is in air.</li>
-        <li><code>~.TechnoTypes</code>: Techno is any of the listed TechnoTypes.</li>
-        <li><code>~.AttachedEffects</code>: Techno has any of the listed AttachedEffectTypes.</li>
-        <li><code>~.ShieldTypes</code>: Techno has any of the listed ShieldTypes.</li>
-        <li><code>~.Veterancy</code>: Techno is any of the listed veterancy.</li>
-        <li><code>~.HPPercentage</code>: Techno is any of the listed HP percentage condition.</li>
-        <li><code>~.Owner.House</code>: Techno owner's relation with the handler's owner. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
-        <li><code>~.Owner.Sides</code>: Owner's country is any of the listed sides.</li>
-        <li><code>~.Owner.Countries</code>: Owner's country is any of the listed countries.</li>
-        <li><code>~.Owner.Buildings</code>: Owner has a building that is any of the listed BuildingTypes.</li>
-        <li><code>~.Owner.IsHuman</code>: Owner is human controlled.</li>
-        <li><code>~.Owner.IsAI</code>: Owner is AI controlled.</li>
-        <li><code>~.IsBunkered</code>: Techno is either loaded into a Tank Bunker, or is a Tank Bunker loading something.</li>
-        <li><code>~.IsMindControlled</code>: Techno is mind-controlled.</li>
-        <li><code>~.IsMindControlled.Perma</code>: Techno is permanently mind-controlled.</li>
-        <li><code>~.MindControlling.Any</code>: Techno is mind-controlling something.</li>
-        <li><code>~.MindControlling.Type</code>: Techno is mind-controlling something that is any of the listed TechnoTypes.</li>
-        <li><code>~.Passengers.Any</code>: Techno has passengers.</li>
-        <li><code>~.Passengers.Type</code>: Techno has a passenger that is any of the listed TechnoTypes.</li>
-        <li><code>~.Upgrades.Any</code>: Techno is a building with any upgrade installed.</li>
-        <li><code>~.Upgrades.Type</code>: Techno is a building with any upgrade installed that is any of the listed BuildingTypes.</li>
+        <li><code>*.Abstract</code>: A quick filter on the techno's type and domain. <i>(none|land|water|empty|infantry|units|buildings|all)</i></li>
+        <li><code>*.IsInAir</code>: Techno is in air.</li>
+        <li><code>*.TechnoTypes</code>: Techno is any of the listed TechnoTypes.</li>
+        <li><code>*.AttachedEffects</code>: Techno has any of the listed AttachedEffectTypes.</li>
+        <li><code>*.ShieldTypes</code>: Techno has any of the listed ShieldTypes.</li>
+        <li><code>*.Veterancy</code>: Techno is any of the listed veterancy.</li>
+        <li><code>*.HPPercentage</code>: Techno is any of the listed HP percentage condition.</li>
+        <li><code>*.IsBunkered</code>: Techno is either loaded into a Tank Bunker, or is a Tank Bunker loading something.</li>
+        <li><code>*.IsMindControlled</code>: Techno is mind-controlled.</li>
+        <li><code>*.IsMindControlled.Perma</code>: Techno is permanently mind-controlled.</li>
+        <li><code>*.MindControlling.Any</code>: Techno is mind-controlling something.</li>
+        <li><code>*.MindControlling.Type</code>: Techno is mind-controlling something that is any of the listed TechnoTypes.</li>
+        <li><code>*.Passengers.Any</code>: Techno has passengers.</li>
+        <li><code>*.Passengers.Type</code>: Techno has a passenger that is any of the listed TechnoTypes.</li>
+        <li><code>*.Upgrades.Any</code>: Techno is a building with any upgrade installed.</li>
+        <li><code>*.Upgrades.Type</code>: Techno is a building with any upgrade installed that is any of the listed BuildingTypes.</li>
+        <li><code>*.Owner.House</code>: Techno owner's relation with the handler's owner. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
+        <li><code>*.Owner.Sides</code>: Owner's country is any of the listed sides.</li>
+        <li><code>*.Owner.Countries</code>: Owner's country is any of the listed countries.</li>
+        <li><code>*.Owner.Buildings</code>: Owner has a building that is any of the listed BuildingTypes.</li>
+        <li><code>*.Owner.IsHuman</code>: Owner is human controlled.</li>
+        <li><code>*.Owner.IsAI</code>: Owner is AI controlled.</li>
       </ul>
     </details>
 - Negative Filters:
   - Negative Filters can be specified on a scope to ask for something to be false about it, or the event handler doesn't resolve its effects.
   - Even though they are negative filters, if specified, the scope must exist, or the event handler doesn't resolve its effects.
-  - Negative filters are defined like `(scope).NegFilter.~`. Available filter types are the same.
+  - Negative filters are defined like `(scope).NegFilter.*`. Available filter types are the same.
 - Effects:
   - Effects can be specified on a scope to ask for something to be done to it, if all filters pass.
   - The scope must exist. Nothing will be done to an empty scope.
   - <details>
-      <summary>Effects are defined like <code>(scope).Effect.~</code>. The effects can be weapon detonation, type conversion, and more. Expand to see details.</summary>
+      <summary>Effects are defined like <code>(scope).Effect.*</code>. The effects can be weapon detonation, type conversion, and more. Expand to see details.</summary>
       <ol>
         <li>
           Weapon Detonation:
           <ul>
             <li>A weapon can be fired at the scope's position. <i>(This doesn't support Ares ivan bomb.)</i></li>
-            <li><code>~.Weapon</code> specifies the weapon type to be fired at the position.</li>
-            <li><code>~.Weapon.Firer.Scope</code>, and <code>~.Weapon.Firer.ExtScope</code>, can be used to specify the firer of the weapon. The firer is default to the <code>Me</code> scope.</li>
-            <li><code>~.Weapon..SpawnProj</code> can be set to true to have a projectile spawned from the firer's position and have it directed to the target's position. <i>(This doesn't support <code>Arcing=yes</code> projectiles.)</i></li>
+            <li><code>*.Weapon</code> specifies the weapon type to be fired at the position.</li>
+            <li><code>*.Weapon.Firer.Scope</code>, and <code>*.Weapon.Firer.ExtScope</code>, can be used to specify the firer of the weapon. The firer is default to the <code>Me</code> scope.</li>
+            <li><code>*.Weapon..SpawnProj</code> can be set to true to have a projectile spawned from the firer's position and have it directed to the target's position. <i>(This doesn't support <code>Arcing=yes</code> projectiles.)</i></li>
           </ul>
         </li>
         <li>
           Type Conversion:
           <ul>
             <li>The scope can be converted to a different techno type.</li>
-            <li><code>~.ConvertN.From</code>, <code>~.ConvertN.To</code>, <code>~.ConvertN.AffectedHouses</code>.</li>
+            <li><code>*.ConvertN.From</code>, <code>*.ConvertN.To</code>, <code>*.ConvertN.AffectedHouses</code>.</li>
             <li>This follows the same rules as <a href="#convert-technotype">Super Weapons -> Convert TechnoType</a>.</li>
           </ul>
         </li>
@@ -559,26 +561,26 @@ Shield.InheritStateOnReplace=false          ; boolean
           Soylent Bounty:
           <ul>
             <li>Credits can be rewarded based on the scope's soylent.</li>
-            <li><code>~.Soylent.Mult</code> specifies the soylent multiplier. If not specified, or it is equal to 0, no credits will be rewarded. If negative, credits can be substracted from the receptant.</li>
-            <li><code>~.Soylent.IncludePassengers</code> can be set to true to make it so the total soylent of the scope's passengers will also count.</li>
-            <li><code>~.Soylent.Scope</code>, and <code>~.Soylent.ExtScope</code>, can be used to specify the receptant. The credits will be rewarded to its owner. It is default to the <code>Me</code> scope.</li>
-            <li><code>~.Soylent.Display</code> can be set to true to display the amount of credits on the receptant scope. <code>~.Soylent.Display.House</code> determines which houses can see this and <code>~.Soylent.Display.Offset</code> can be used to adjust the display offset.</li>
+            <li><code>*.Soylent.Mult</code> specifies the soylent multiplier. If not specified, or it is equal to 0, no credits will be rewarded. If negative, credits can be substracted from the receptant.</li>
+            <li><code>*.Soylent.IncludePassengers</code> can be set to true to make it so the total soylent of the scope's passengers will also count.</li>
+            <li><code>*.Soylent.Scope</code>, and <code>*.Soylent.ExtScope</code>, can be used to specify the receptant. The credits will be rewarded to its owner. It is default to the <code>Me</code> scope.</li>
+            <li><code>*.Soylent.Display</code> can be set to true to display the amount of credits on the receptant scope. <code>*.Soylent.Display.House</code> determines which houses can see this and <code>*.Soylent.Display.Offset</code> can be used to adjust the display offset.</li>
           </ul>
         </li>
         <li>
           Passengers:
           <ul>
             <li>Operations can be done to a transporting vehicle's passengers, a Bio Reactor's captives, or a garrisonable structure's occupants.</li>
-            <li><code>~.Passengers.Eject</code> can be set to true to forcibly eject its passengers out of it.</li>
-            <li><code>~.Passengers.Kill</code> can be set to true to kill all passengers.
+            <li><code>*.Passengers.Eject</code> can be set to true to forcibly eject its passengers out of it.</li>
+            <li><code>*.Passengers.Kill</code> can be set to true to kill all passengers.
               <ul>
-                <li><code>~.Passengers.Kill.Score</code> can be set to true to make the killed units be treated as if they were killed by a scope.</li>
-                <li>The scope can be determined with <code>~.Passengers.Kill.Score.Scope</code> and <code>~.Passengers.Kill.Score.ExtScope</code>, and if not set, defaults to the <code>Me</code> scope.</li>
+                <li><code>*.Passengers.Kill.Score</code> can be set to true to make the killed units be treated as if they were killed by a scope.</li>
+                <li>The scope can be determined with <code>*.Passengers.Kill.Score.Scope</code> and <code>*.Passengers.Kill.Score.ExtScope</code>, and if not set, defaults to the <code>Me</code> scope.</li>
               </ul>
             </li>
-            <li><code>~.Passengers.Create.Types</code>, and <code>~.Passengers.Create.Nums</code>, can be specified so a number of units will be spawned inside the transport or building.
+            <li><code>*.Passengers.Create.Types</code>, and <code>*.Passengers.Create.Nums</code>, can be specified so a number of units will be spawned inside the transport or building.
               <ul>
-                <li><code>~.Passengers.Create.Owner.Scope</code>, and <code>~.Passengers.Create.Owner.ExtScope</code>, can be used to specify the units' owner. If not specified, it is default to the <code>(scope)</code> (the techno that the effect is applied to).</li>
+                <li><code>*.Passengers.Create.Owner.Scope</code>, and <code>*.Passengers.Create.Owner.ExtScope</code>, can be used to specify the units' owner. If not specified, it is default to the <code>(scope)</code> (the techno that the effect is applied to).</li>
               </ul>
             </li>
           </ul>
@@ -587,29 +589,29 @@ Shield.InheritStateOnReplace=false          ; boolean
           Veterancy:
           <ul>
             <li>The scope's veterancy can be updated. Requires <code>Trainable=yes</code>.</li>
-            <li><code>~.Veterancy.Set=(rookie|veteran|elite)</code> will set the scope's veterancy.</li>
-            <li><code>~.Veterancy.Add</code> will make the scope earn experience, or lose experience if a negative number is given.</li>
+            <li><code>*.Veterancy.Set=(rookie|veteran|elite)</code> will set the scope's veterancy.</li>
+            <li><code>*.Veterancy.Add</code> will make the scope earn experience, or lose experience if a negative number is given.</li>
           </ul>
         </li>
         <li>
           Voice:
           <ul>
             <li>A voice can be played.</li>
-            <li><code>~.Voice</code> will be played at the location of <code>(scope)</code>. It is only audible to the scope's owner, and will be interrupted when it dies.
+            <li><code>*.Voice</code> will be played at the location of <code>(scope)</code>. It is only audible to the scope's owner, and will be interrupted when it dies.
               <ul>
-                <li><code>~.Voice.Persist</code> can be set to true, so the voice is not interrupted even when it dies. However, the voice will not move accordingly when the unit moves.</li>
-                <li><code>~.Voice.Global</code> can be set to true, it does not only persists, it is also audible to other players.</li>
+                <li><code>*.Voice.Persist</code> can be set to true, so the voice is not interrupted even when it dies. However, the voice will not move accordingly when the unit moves.</li>
+                <li><code>*.Voice.Global</code> can be set to true, it does not only persists, it is also audible to other players.</li>
               </ul>
             </li>
-            <li><code>~.EVA</code> will be played as an EVA announcement to the <code>(scope)</code>'s owner. It is only audible to the scope's owner.</li>
+            <li><code>*.EVA</code> will be played as an EVA announcement to the <code>(scope)</code>'s owner. It is only audible to the scope's owner.</li>
           </ul>
         </li>
         <li>
           Event Invokers:
           <ul>
             <li>Event Invokers can be called upon the target.</li>
-            <li><code>~.EventInvokerN</code> (where N is 0, 1, 2...) specifies the Event Invoker Types to be invoked to a scope.</li>
-            <li><code>~.EventInvoker</code> is a valid alternative for <code>(scope).Effect.EventInvoker0</code>, if only one is specified.</li>
+            <li><code>*.EventInvokerN</code> (where N is 0, 1, 2...) specifies the Event Invoker Types to be invoked to a scope.</li>
+            <li><code>*.EventInvoker</code> is a valid alternative for <code>(scope).Effect.EventInvoker0</code>, if only one is specified.</li>
             <li>The <code>Me</code> scope of the invoked event will be the <code>(scope)</code>, and the <code>They</code> scope of the event will be the original <code>Me</code> of the source event handler.<br>For example, an IFV receives event A, where the IFV itself is the <code>Me</code> scope. Then the IFV's event handler invokes event B on a Grizzly Tank. On the Grizzly Tank's perspective, the <code>Me</code> will be the Grizzly Tank, and the <code>They</code> scope will be the IFV.</li>
             <li>See <a href="#event-invokers">Event Invokers</a> for details.</li>
           </ul>
@@ -621,7 +623,8 @@ Shield.InheritStateOnReplace=false          ; boolean
   - Effects are executed in an order like:
     - Event Handlers on a same techno type are invoked in the numeral order.
     - Effects for the `Me` scope are executed before the efffects for the `They` scope.
-    - Effects for the basic scopes are executed before those for the extended scopes, and for the extended scopes, `Transport` -> `Bunker` -> `MindController`.
+    - Effects for the basic scopes are executed before those for the extended scopes.
+    - Effects for the extended scopes are executed in the order the extended scopes are listed in the document.
     - Effects on a same scope are resolved in the order they are listed in this document.
   - To reverse the order, define another event handler with identical event type and filters, but different effects.
 
@@ -641,12 +644,6 @@ EventTypeN=                                        ; EventType
 (scope).Filter.ShieldTypes=                        ; list of ShieldTypes
 (scope).Filter.Veterancy=                          ; list of Veterancy Enumeration (none|rookie|veteral|elite)
 (scope).Filter.HPPercentage=                       ; list of HP Percentage Enumeration (none|full|green|greennotfull|yellow|red)
-(scope).Filter.Owner.House=                        ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-(scope).Filter.Owner.Sides=                        ; list of Sides
-(scope).Filter.Owner.Countries=                    ; list of Countries
-(scope).Filter.Owner.Buildings=                    ; list of BuildingTypes
-(scope).Filter.Owner.IsHuman=                      ; boolean
-(scope).Filter.Owner.IsAI=                         ; boolean
 (scope).Filter.IsBunkered=                         ; boolean
 (scope).Filter.IsMindControlled=                   ; boolean
 (scope).Filter.IsMindControlled.Perma=             ; boolean
@@ -656,6 +653,12 @@ EventTypeN=                                        ; EventType
 (scope).Filter.Passengers.Type=                    ; list of TechnoTypes
 (scope).Filter.Upgrades.Any=                       ; boolean
 (scope).Filter.Upgrades.Type=                      ; list of BuildingTypes
+(scope).Filter.Owner.House=                        ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+(scope).Filter.Owner.Sides=                        ; list of Sides
+(scope).Filter.Owner.Countries=                    ; list of Countries
+(scope).Filter.Owner.Buildings=                    ; list of BuildingTypes
+(scope).Filter.Owner.IsHuman=                      ; boolean
+(scope).Filter.Owner.IsAI=                         ; boolean
 
 ;; effects - weapon detonation
 (scope).Effect.Weapon=                             ; WeaponType
@@ -786,10 +789,19 @@ Me.Effect.Voice.Persist=yes
     - The Event Types can be any of the pre-defined event types, or any custom string, to allow a custom event call.
     - If an Event Invoker and an Event Handler share more than one of their Event Types, so will the handler be invoked more than once.
     For example, if an Event Invoker has `EventType0=WhenCustom0`, `EventType1=WhenCustom1`, and the same is true for an Event Handler, then the handler will be invoked twice.
-  - Filters and Negative Filters:
-    - Event Invokers may have filters to ask for something to be true or false about the techno. If the target doesn't pass the filters, no events will be invoked on it.
-    - The Filters are defined like `Target.Filter.~`.
-    - The Negative Filters are defined like `Target.NegFilter.~`.
+  - Invoker Filters:
+    - Event Invokers may have filters to ask for something to be true or false about the invoker itself. If it doesn't pass the filters, no events will be invoked on it.
+    - The Filters are defined like `Invoker.Filter.*`.
+    - The Negative Filters are defined like `Invoker.NegFilter.*`.
+    - `Invoker` is not a proper scope type, extended scope types won't work here.
+    - The available filters are the same as Event Handlers. See [Event Handlers -> Filters](#event-handlers) for details.
+    - For Warheads, the firer of the warhead will be used to check against the invoker filters.
+    - For Super Weapons, only `Invoker.(Filter|NegFilter).Owner.*` filters will work. The firing house of the super weapon will be used to check against the invoker filters. Other filters will cause the invoker to outright fail.
+    - For Invokers invoked through Event Handlers, the `Me` scope of the Event Handler will be used to check against the invoker filters.
+  - Target Filters:
+    - Event Invokers may have filters to ask for something to be true or false about the target. If the target doesn't pass the filters, no events will be invoked on it.
+    - The Filters are defined like `Target.Filter.*`.
+    - The Negative Filters are defined like `Target.NegFilter.*`.
     - `Target` is not a proper scope type, extended scope types won't work here.
     - The available filters are the same as Event Handlers. See [Event Handlers -> Filters](#event-handlers) for details.
   - Extra Event Handlers:
@@ -803,7 +815,7 @@ Me.Effect.Voice.Persist=yes
       - `Target.PassDown.MindControlled` can be set to true, so this invoker will pass down to the techno's mind-controlled technos.
     - The root techno is not needed to be able to handle the event type, and is not even needed to pass the filters and negative filters of this event invoker.
     - Should the passed-down-to extra target pass the filters and negative filters, not only the events will be invoked on them, the extra event handlers will be invoked on them as well.
-- Each warhead, super weapon, and `(scope).Effect.~` entry of an event handler, may have multiple event invokers listed.
+- Each warhead, super weapon, and `(scope).Effect.*` entry of an event handler, may have multiple event invokers listed.
   - On Warheads:
     - `EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types.
     - `EventInvoker` is a valid alternative for `EventInvoker0`, if only one is specified.
@@ -822,9 +834,11 @@ In `rulesmd.ini`:
 ```ini
 [SOMEINVOKER]                              ; EventInvokerType
 EventTypeN=                                ; EventType
-Target.Filter.~                            ; filters
-Target.NegFilter.~                         ; negative filters
-Target.ExtraEventHandlerN.~                ; EventHandlerType
+Invoker.Filter.*                           ; filters
+Invoker.NegFilter.*                        ; negative filters
+Target.Filter.*                            ; filters
+Target.NegFilter.*                         ; negative filters
+Target.ExtraEventHandlerN=                 ; EventHandlerType
 Target.PassDown.Passengers=false           ; boolean
 Target.PassDown.MindControlled=false       ; boolean
 

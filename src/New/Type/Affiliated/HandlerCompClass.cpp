@@ -76,6 +76,10 @@ TechnoClass* HandlerCompClass::GetTrueTarget(TechnoClass* pTarget, Nullable<Even
 			return pTarget->BunkerLinkedItem;
 		case EventExtendedScopeType::MindController:
 			return pTarget->MindControlledBy;
+		case EventExtendedScopeType::Parasite:
+			return GetParasiteTechno(pTarget);
+		case EventExtendedScopeType::Host:
+			return GetHostTechno(pTarget);
 		}
 	}
 	return pTarget;
@@ -91,6 +95,27 @@ TechnoClass* HandlerCompClass::GetTransportingTechno(TechnoClass* pTarget)
 	if (pTargetExt->HousingMe)
 	{
 		return pTargetExt->HousingMe;
+	}
+	return nullptr;
+}
+
+TechnoClass* HandlerCompClass::GetParasiteTechno(TechnoClass* pTarget)
+{
+	if (auto pFoot = reinterpret_cast<FootClass*>(pTarget))
+	{
+		return pFoot->ParasiteEatingMe;
+	}
+	return nullptr;
+}
+
+TechnoClass* HandlerCompClass::GetHostTechno(TechnoClass* pTarget)
+{
+	if (auto pFoot = reinterpret_cast<FootClass*>(pTarget))
+	{
+		if (pFoot->ParasiteImUsing)
+		{
+			return pFoot->ParasiteImUsing->Victim;
+		}
 	}
 	return nullptr;
 }
