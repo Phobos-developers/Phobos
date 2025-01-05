@@ -9,12 +9,12 @@ class EventHandlerTypeClass final : public Enumerable<EventHandlerTypeClass>
 {
 public:
 	Valueable<bool> loaded;
-	Valueable<EventTypeClass*> EventType;
+	ValueableVector<EventTypeClass*> EventTypes;
 	std::vector<std::unique_ptr<HandlerCompClass>> HandlerComps;
 
 	EventHandlerTypeClass(const char* pTitle = NONE_STR) : Enumerable<EventHandlerTypeClass>(pTitle)
 		, loaded { false }
-		, EventType {}
+		, EventTypes {}
 		, HandlerComps {}
 	{};
 
@@ -25,8 +25,10 @@ public:
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
 
-	void HandleEvent(std::map<EventScopeType, TechnoClass*>* pParticipants);
+	static void LoadTypeListFromINI(INI_EX& exINI, const char* pSection, const char* pHeader, ValueableVector<EventHandlerTypeClass*>* vec);
+	static void LoadTypeMapFromINI(INI_EX& exINI, const char* pSection, const char* pHeader, PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>>* map);
 
+	void HandleEvent(std::map<EventScopeType, TechnoClass*>* pParticipants);
 private:
 	template <typename T>
 	void Serialize(T& Stm);

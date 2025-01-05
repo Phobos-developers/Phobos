@@ -96,6 +96,15 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 }
 */
 
+// A "PassengersClass" pointer is equal to the transport's pointer plus 0x114.
+// Therefore, we can get the transport's pointer by "PassengersClass" pointer minus 0x114.
+// This is confirmed to support both transports and Bio Reactors.
+inline static TechnoClass* GetCargoClassParent(PassengersClass* pCargoClass)
+{
+	auto dword = reinterpret_cast<DWORD>(pCargoClass);
+	return reinterpret_cast<TechnoClass*>(dword - 0x114);
+}
+
 // At this point, the passenger is not yet loaded into the transport.
 DEFINE_HOOK(0x4733B0, CargoClass_Attach_Hook_BeforeLoad, 0x6)
 {
@@ -104,12 +113,7 @@ DEFINE_HOOK(0x4733B0, CargoClass_Attach_Hook_BeforeLoad, 0x6)
 
 	if (pPassenger)
 	{
-		// A "PassengersClass" pointer is equal to the transport's pointer plus 0x114.
-		// Therefore, we can get the transport's pointer by this manner.
-		// This is confirmed to support both transports and Bio Reactors.
-		auto dword = reinterpret_cast<DWORD>(pThis);
-		auto pTransport = reinterpret_cast<TechnoClass*>(dword - 0x114);
-
+		auto const pTransport = GetCargoClassParent(pThis);
 		auto const pPassengerType = pPassenger->GetTechnoType();
 		auto const pPassExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
@@ -135,12 +139,7 @@ DEFINE_HOOK(0x47342A, CargoClass_Attach_Hook_AfterLoad, 0x5)
 
 	if (pPassenger)
 	{
-		// A "PassengersClass" pointer is equal to the transport's pointer plus 0x114.
-		// Therefore, we can get the transport's pointer by this manner.
-		// This is confirmed to support both transports and Bio Reactors.
-		auto dword = reinterpret_cast<DWORD>(pThis);
-		auto pTransport = reinterpret_cast<TechnoClass*>(dword - 0x114);
-
+		auto const pTransport = GetCargoClassParent(pThis);
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
 		auto const pPassExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const pPassTypeExt = pPassExt->TypeExtData;

@@ -5,6 +5,8 @@
 #include "EventTypeClass.h"
 #include "Affiliated/HandlerFilterClass.h"
 
+class EventHandlerTypeClass;
+
 class EventInvokerTypeClass final : public Enumerable<EventInvokerTypeClass>
 {
 public:
@@ -12,6 +14,7 @@ public:
 	ValueableVector<EventTypeClass*> EventTypes;
 	std::unique_ptr<HandlerFilterClass> Filter;
 	std::unique_ptr<HandlerFilterClass> NegFilter;
+	ValueableVector<EventHandlerTypeClass*> ExtraEventHandlers;
 	Valueable<bool> Target_PassDown_Passengers;
 	Valueable<bool> Target_PassDown_MindControlled;
 
@@ -20,6 +23,7 @@ public:
 		, EventTypes {}
 		, Filter {}
 		, NegFilter {}
+		, ExtraEventHandlers {}
 		, Target_PassDown_Passengers { false }
 		, Target_PassDown_MindControlled { false }
 	{};
@@ -29,6 +33,8 @@ public:
 	void TryExecute(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
+
+	static void LoadTypeListFromINI(INI_EX& exINI, const char* pSection, const char* pHeader, ValueableVector<EventInvokerTypeClass*>* vec);
 private:
 	template <typename T>
 	void Serialize(T& Stm);

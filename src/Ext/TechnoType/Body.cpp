@@ -545,37 +545,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 
-	char tempBuffer[32];
-
-	// read event handlers
-	Nullable<EventHandlerTypeClass*> eventHandlerNullable;
-	for (size_t i = 0; ; ++i)
-	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "EventHandler%d", i);
-		eventHandlerNullable.Reset();
-		eventHandlerNullable.Read<true>(exINI, pSection, tempBuffer);
-		if (eventHandlerNullable.isset())
-		{
-			eventHandlerNullable.Get()->LoadFromINI(exINI);
-			this->AppendEventHandlerType(eventHandlerNullable.Get());
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	// read single event handler
-	if (this->EventHandlersMap.empty())
-	{
-		eventHandlerNullable.Reset();
-		eventHandlerNullable.Read<true>(exINI, pSection, "EventHandler");
-		if (eventHandlerNullable.isset())
-		{
-			eventHandlerNullable.Get()->LoadFromINI(exINI);
-			this->AppendEventHandlerType(eventHandlerNullable.Get());
-		}
-	}
+	// Event Handler
+	EventHandlerTypeClass::LoadTypeMapFromINI(exINI, pSection, "EventHandler", &this->EventHandlersMap);
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -590,6 +561,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.C
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
+
+	char tempBuffer[32];
 
 	if (this->OwnerObject()->Gunner && this->Insignia_Weapon.empty())
 	{
@@ -734,13 +707,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (GeneralUtils::IsValidString(pThis->PaletteFile) && !pThis->Palette)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, pThis->PaletteFile);
-}
-
-void TechnoTypeExt::ExtData::AppendEventHandlerType(EventHandlerTypeClass* pEventHandlerTypeClass)
-{
-	auto pEventTypeClass = pEventHandlerTypeClass->EventType.Get();
-	auto& vector = this->EventHandlersMap[pEventTypeClass];
-	vector.push_back(pEventHandlerTypeClass);
 }
 
 template <typename T>

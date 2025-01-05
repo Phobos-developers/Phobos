@@ -427,11 +427,14 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 ### Event Handlers
 
-- Event Handlers can be defined and given to techno types, to specify something to be done when something happens. Event Handlers are defined under `[EventHandlerTypes]`, however separate listing is not mandatory.
+- Event Handlers can be defined and given to techno types, to specify something to be done when something happens. Event Invokers are listed under `[EventHandlerTypes]`, however listing them there is not mandatory.
   - `EventHandlerN` (where N is 0, 1, 2...) specifies an event handler for the techno type.
   - `EventHandler` is a valid alternative for `EventHandler0`, if only one is specified.
 - Event Types:
-  - Each Event Handler must has an event type. This determines what kind of effect it is handling.
+  - Event Handlers can have any number of Event Types listed. It will handle any of the listed events.
+  - `EventTypeN` (where N is 0, 1, 2...) specifies the Event Types of an Event Invoker.
+  - `EventType` is a valid alternative for `EventType0`, if only one is specified.
+  - The Event Types can be any of the pre-defined event types, or any custom string, to allow a custom event call. Custom event types can be invoked through a warhead, a super weapon, or an Event Handler's effect. See [Event Invokers](#event-invokers) for details.
   - <details>
       <summary>There are a several pre-defined event types that will be invoked from the game. Expand to see details.</summary>
       <ul>
@@ -486,7 +489,6 @@ Shield.InheritStateOnReplace=false          ; boolean
         </li>
       </ul>
     </details>
-  - The Event Type can also be any custom string, ready to be invoked through a Warhead, a Super Weapon, or an Event Handler's effect. See [Event Invokers](#event-invokers) for details.
 - Scopes:
   - Scopes are crucial to designate who will the filters and effects be applied to.
   - There are a several basic scopes that most events will have.
@@ -629,7 +631,7 @@ In `rulesmd.ini`:
 EventHandlerN=...                                  ; EventHandlerType
 
 [SOMEHANDLER]                                      ; EventHandlerType
-EventType=                                         ; EventType
+EventTypeN=                                        ; EventType
 
 ;; filters
 (scope).Filter.Abstract=                           ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
@@ -777,21 +779,28 @@ Me.Effect.Voice.Persist=yes
 
 ### Event Invokers
 
-- Event Invokers can be defined and given to warheads, super weapons, and event handlers, to invoke any event type and trigger the event handlers on their targets. Event Invokers are defined under `[EventInvokers]`, however separate listing is not mandatory.
+- Event Invokers can be defined and given to warheads, super weapons, and event handlers, to invoke any event type and trigger the event handlers on their targets. Event Invokers are listed under `[EventInvokerTypes]`, however listing them there is not mandatory.
   - Event Types:
     - `EventTypeN` (where N is 0, 1, 2...) specifies the Event Types of an Event Invoker.
     - `EventType` is a valid alternative for `EventType0`, if only one is specified.
     - The Event Types can be any of the pre-defined event types, or any custom string, to allow a custom event call.
   - Filters and Negative Filters:
-    - Event Invokers may have filters to ask for something to be true or false about the techno.
+    - Event Invokers may have filters to ask for something to be true or false about the techno. If the target doesn't pass the filters, no events will be invoked on it.
     - The Filters are defined like `Target.Filter.~`.
     - The Negative Filters are defined like `Target.NegFilter.~`.
-    - The available filter types are the same as Event Handlers. See [Event Handlers -> Filters](#event-handlers) for details.
+    - `Target` is not a proper scope type, extended scope types won't work here.
+    - The available filters are the same as Event Handlers. See [Event Handlers -> Filters](#event-handlers) for details.
+  - Extra Event Handlers:
+    - Extra event handlers can be specified, these will be forcibly invoked as if they were attached to each affected target of this event invoker, before any event handlers attached to the targets themselves to be invoked. Extra event handlers are invoked without checking their event types.
+    - `Target.ExtraEventHandlerN` (where N is 0, 1, 2...) specifies extra event handlers.
+    - `Target.ExtraEventHandler` is a valid alternative for `Target.ExtraEventHandler0`, if only one is specified.
+    - Extra event handlers are invoked on the target's perspective, meaning `Me` scope there will be the invoker's target, and the `They` scope there will be the techno that fired the warhead, or nonexistant if this invoker is fired through a super weapon.
   - Target pass down:
     - The event invoking can be passed down to other related technos, so the same event type will be invoked to them as well.
       - `Target.PassDown.Passengers` can be set to true, so this invoker will pass down to the techno's passengers, and the passengers of passengers, and so on.
       - `Target.PassDown.MindControlled` can be set to true, so this invoker will pass down to the techno's mind-controlled technos.
-    - The root techno is not needed to be able to handle the event type, and is not even needed to pass the `Target.Filter.~` and `Target.NegFilter.~` of this invoker.
+    - The root techno is not needed to be able to handle the event type, and is not even needed to pass the filters and negative filters of this event invoker.
+    - Should the passed-down-to extra target pass the filters and negative filters, not only the events will be invoked on them, the extra event handlers will be invoked on them as well.
 - Each warhead, super weapon, and `(scope).Effect.~` entry of an event handler, may have multiple event invokers listed.
   - On Warheads:
     - `EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types.
@@ -812,6 +821,7 @@ In `rulesmd.ini`:
 EventTypeN=                                ; EventType
 Target.Filter.~                            ; filters
 Target.NegFilter.~                         ; negative filters
+Target.ExtraEventHandlerN.~                ; EventHandlerType
 Target.PassDown.Passengers=false           ; boolean
 Target.PassDown.MindControlled=false       ; boolean
 

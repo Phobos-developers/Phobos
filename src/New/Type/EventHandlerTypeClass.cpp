@@ -38,8 +38,7 @@ void EventHandlerTypeClass::LoadFromINI(INI_EX& exINI)
 
 void EventHandlerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSection)
 {
-	this->EventType.Read<true>(exINI, pSection, "EventType");
-
+	EventTypeClass::LoadTypeListFromINI(exINI, pSection, "EventType", &this->EventTypes);
 	LoadForScope(exINI, pSection, EventScopeType::Me, "Me");
 	LoadForScope(exINI, pSection, EventScopeType::They, "They");
 }
@@ -71,7 +70,7 @@ void EventHandlerTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->loaded)
-		.Process(this->EventType)
+		.Process(this->EventTypes)
 		.Process(this->HandlerComps)
 		;
 }
@@ -84,6 +83,82 @@ void EventHandlerTypeClass::LoadFromStream(PhobosStreamReader& Stm)
 void EventHandlerTypeClass::SaveToStream(PhobosStreamWriter& Stm)
 {
 	this->Serialize(Stm);
+}
+
+void EventHandlerTypeClass::LoadTypeListFromINI(INI_EX& exINI, const char* pSection, const char* pHeader, ValueableVector<EventHandlerTypeClass*>* vec)
+{
+	char tempBuffer[32];
+
+	// read event handlers
+	Nullable<EventHandlerTypeClass*> eventHandlerNullable;
+	for (size_t i = 0; ; ++i)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s%d", pHeader, i);
+		eventHandlerNullable.Reset();
+		eventHandlerNullable.Read<true>(exINI, pSection, tempBuffer);
+		if (eventHandlerNullable.isset())
+		{
+			eventHandlerNullable.Get()->LoadFromINI(exINI);
+			vec->push_back(eventHandlerNullable.Get());
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// read single event handler
+	if (vec->empty())
+	{
+		eventHandlerNullable.Reset();
+		eventHandlerNullable.Read<true>(exINI, pSection, pHeader);
+		if (eventHandlerNullable.isset())
+		{
+			eventHandlerNullable.Get()->LoadFromINI(exINI);
+			vec->push_back(eventHandlerNullable.Get());
+		}
+	}
+}
+
+void EventHandlerTypeClass::LoadTypeMapFromINI(INI_EX & exINI, const char* pSection, const char* pHeader, PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>>*map)
+{
+	char tempBuffer[32];
+
+	// read event handlers
+	Nullable<EventHandlerTypeClass*> eventHandlerNullable;
+	for (size_t i = 0; ; ++i)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s%d", pHeader, i);
+		eventHandlerNullable.Reset();
+		eventHandlerNullable.Read<true>(exINI, pSection, tempBuffer);
+		if (eventHandlerNullable.isset())
+		{
+			eventHandlerNullable.Get()->LoadFromINI(exINI);
+			for (auto eventType : eventHandlerNullable.Get()->EventTypes)
+			{
+				map->operator[](eventType).push_back(eventHandlerNullable.Get());
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// read single event handler
+	if (map->empty())
+	{
+		eventHandlerNullable.Reset();
+		eventHandlerNullable.Read<true>(exINI, pSection, pHeader);
+		if (eventHandlerNullable.isset())
+		{
+			eventHandlerNullable.Get()->LoadFromINI(exINI);
+			for (auto eventType : eventHandlerNullable.Get()->EventTypes)
+			{
+				map->operator[](eventType).push_back(eventHandlerNullable.Get());
+			}
+		}
+	}
 }
 
 void EventHandlerTypeClass::HandleEvent(std::map<EventScopeType, TechnoClass*>* pParticipants)

@@ -39,38 +39,10 @@ void EventInvokerTypeClass::LoadFromINI(INI_EX& exINI)
 
 void EventInvokerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSection)
 {
-	char tempBuffer[32];
-
-	// read event types
-	Nullable<EventTypeClass*> eventTypeNullable;
-	for (size_t i = 0; ; ++i)
-	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "EventType%d", i);
-		eventTypeNullable.Reset();
-		eventTypeNullable.Read<true>(exINI, pSection, tempBuffer);
-		if (eventTypeNullable.isset())
-		{
-			this->EventTypes.push_back(eventTypeNullable.Get());
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	// read single event type
-	if (this->EventTypes.empty())
-	{
-		eventTypeNullable.Reset();
-		eventTypeNullable.Read<true>(exINI, pSection, "EventType");
-		if (eventTypeNullable.isset())
-		{
-			this->EventTypes.push_back(eventTypeNullable.Get());
-		}
-	}
-
+	EventTypeClass::LoadTypeListFromINI(exINI, pSection, "EventType", &this->EventTypes);
 	this->Filter = HandlerFilterClass::Parse(exINI, pSection, "Target", "Filter");
 	this->NegFilter = HandlerFilterClass::Parse(exINI, pSection, "Target", "NegFilter");
+	EventHandlerTypeClass::LoadTypeListFromINI(exINI, pSection, "Target.ExtraEventHandler", &this->ExtraEventHandlers);
 	this->Target_PassDown_Passengers.Read(exINI, pSection, "Target.PassDown.Passengers");
 	this->Target_PassDown_MindControlled.Read(exINI, pSection, "Target.PassDown.MindControlled");
 }
@@ -116,6 +88,11 @@ void EventInvokerTypeClass::TryExecuteSingle(HouseClass* pHouse, std::map<EventS
 	if (CheckFilters(pHouse, pTarget))
 	{
 		auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
+
+		for (auto pEventHandlerTypeClass : ExtraEventHandlers)
+		{
+			pEventHandlerTypeClass->HandleEvent(pParticipants);
+		}
 
 		for (auto pEventType : EventTypes)
 		{
@@ -182,6 +159,7 @@ void EventInvokerTypeClass::Serialize(T& Stm)
 		.Process(this->EventTypes)
 		.Process(this->Filter)
 		.Process(this->NegFilter)
+		.Process(this->ExtraEventHandlers)
 		.Process(this->Target_PassDown_Passengers)
 		.Process(this->Target_PassDown_MindControlled)
 		;
@@ -195,4 +173,39 @@ void EventInvokerTypeClass::LoadFromStream(PhobosStreamReader& Stm)
 void EventInvokerTypeClass::SaveToStream(PhobosStreamWriter& Stm)
 {
 	this->Serialize(Stm);
+}
+
+void EventInvokerTypeClass::LoadTypeListFromINI(INI_EX& exINI, const char* pSection, const char* pHeader, ValueableVector<EventInvokerTypeClass*>* vec)
+{
+	char tempBuffer[64];
+
+	// read event invokers
+	Nullable<EventInvokerTypeClass*> eventInvokerNullable;
+	for (size_t i = 0; ; ++i)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s%d", pHeader, i);
+		eventInvokerNullable.Reset();
+		eventInvokerNullable.Read<true>(exINI, pSection, tempBuffer);
+		if (eventInvokerNullable.isset())
+		{
+			eventInvokerNullable.Get()->LoadFromINI(exINI);
+			vec->push_back(eventInvokerNullable.Get());
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// read single event invokers
+	if (vec->empty())
+	{
+		eventInvokerNullable.Reset();
+		eventInvokerNullable.Read<true>(exINI, pSection, pHeader);
+		if (eventInvokerNullable.isset())
+		{
+			eventInvokerNullable.Get()->LoadFromINI(exINI);
+			vec->push_back(eventInvokerNullable.Get());
+		}
+	}
 }

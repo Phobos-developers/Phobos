@@ -170,38 +170,11 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Detonate_Warhead_Full.Read(exINI, pSection, "Detonate.Warhead.Full");
 	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
 
+	// Event Invoker
+	EventInvokerTypeClass::LoadTypeListFromINI(exINI, pSection, "EventInvoker", &this->EventInvokers);
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::Owner);
-
-	// read event invokers
-	Nullable<EventInvokerTypeClass*> eventInvokerNullable;
-	for (size_t i = 0; ; ++i)
-	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "EventInvoker%d", i);
-		eventInvokerNullable.Reset();
-		eventInvokerNullable.Read<true>(exINI, pSection, tempBuffer);
-		if (eventInvokerNullable.isset())
-		{
-			eventInvokerNullable.Get()->LoadFromINI(exINI);
-			this->EventInvokers.push_back(eventInvokerNullable.Get());
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	// read single event invokers
-	if (this->EventInvokers.empty())
-	{
-		eventInvokerNullable.Reset();
-		eventInvokerNullable.Read<true>(exINI, pSection, "EventInvoker");
-		if (eventInvokerNullable.isset())
-		{
-			eventInvokerNullable.Get()->LoadFromINI(exINI);
-			this->EventInvokers.push_back(eventInvokerNullable.Get());
-		}
-	}
 
 	this->ShowDesignatorRange.Read(exINI, pSection, "ShowDesignatorRange");
 

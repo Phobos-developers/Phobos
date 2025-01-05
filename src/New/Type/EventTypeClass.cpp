@@ -54,3 +54,35 @@ void EventTypeClass::SaveToStream(PhobosStreamWriter& Stm)
 {
 	this->Serialize(Stm);
 }
+
+void EventTypeClass::LoadTypeListFromINI(INI_EX& exINI, const char* pSection, const char* pHeader, ValueableVector<EventTypeClass*>* vec)
+{
+	char tempBuffer[32];
+
+	Nullable<EventTypeClass*> eventTypeNullable;
+	for (size_t i = 0; ; ++i)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s%d", pHeader, i);
+		eventTypeNullable.Reset();
+		eventTypeNullable.Read<true>(exINI, pSection, tempBuffer);
+		if (eventTypeNullable.isset())
+		{
+			vec->push_back(eventTypeNullable.Get());
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// read single event type
+	if (vec->empty())
+	{
+		eventTypeNullable.Reset();
+		eventTypeNullable.Read<true>(exINI, pSection, pHeader);
+		if (eventTypeNullable.isset())
+		{
+			vec->push_back(eventTypeNullable.Get());
+		}
+	}
+}

@@ -162,36 +162,9 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EVA", scopeName, effectName);
 	EVA.Read(exINI, pSection, tempBuffer);
 
-	// read event invokers
-	Nullable<EventInvokerTypeClass*> eventInvokerNullable;
-	for (size_t i = 0; ; ++i)
-	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker%d", scopeName, effectName, i);
-		eventInvokerNullable.Reset();
-		eventInvokerNullable.Read<true>(exINI, pSection, tempBuffer);
-		if (eventInvokerNullable.isset())
-		{
-			eventInvokerNullable.Get()->LoadFromINI(exINI);
-			this->EventInvokers.push_back(eventInvokerNullable.Get());
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	// read single event invokers
-	if (this->EventInvokers.empty())
-	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker", scopeName, effectName);
-		eventInvokerNullable.Reset();
-		eventInvokerNullable.Read<true>(exINI, pSection, tempBuffer);
-		if (eventInvokerNullable.isset())
-		{
-			eventInvokerNullable.Get()->LoadFromINI(exINI);
-			this->EventInvokers.push_back(eventInvokerNullable.Get());
-		}
-	}
+	// Event Invoker
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker", scopeName, effectName);
+	EventInvokerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->EventInvokers);
 }
 
 void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pTarget) const
