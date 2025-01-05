@@ -174,9 +174,9 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	// Special case: a Leader with OpenTopped tag
 	if (pLeaderUnitType->OpenTopped && pLeaderUnit->Passengers.NumPassengers > 0)
 	{
-		for (NextObject obj(pLeaderUnit->Passengers.FirstPassenger->NextObject); obj; ++obj)
+		for (NextObject obj(pLeaderUnit->Passengers.FirstPassenger); obj; ++obj)
 		{
-			auto const passenger = abstract_cast<FootClass*>(*obj);
+			auto const passenger = reinterpret_cast<FootClass*>(*obj);
 			bool passengerWeaponsHaveAG = false;
 			bool passengerWeaponsHaveAA = false;
 			CheckUnitTargetingCapabilities(passenger, passengerWeaponsHaveAG, passengerWeaponsHaveAA, agentMode);

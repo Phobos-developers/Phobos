@@ -64,9 +64,9 @@ int TechnoTypeExt::GetTotalSoylentOfPassengers(double soylentMultiplier, TechnoC
 	int nMoneyToGive = 0;
 	if (pTransport->Passengers.NumPassengers > 0)
 	{
-		for (NextObject obj(pTransport->Passengers.FirstPassenger->NextObject); obj; ++obj)
+		for (NextObject obj(pTransport->Passengers.FirstPassenger); obj; ++obj)
 		{
-			pPassenger = abstract_cast<TechnoClass*>(*obj);
+			pPassenger = reinterpret_cast<TechnoClass*>(*obj);
 			nMoneyToGive += (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * soylentMultiplier);
 			if (pPassenger->Passengers.NumPassengers > 0)
 			{

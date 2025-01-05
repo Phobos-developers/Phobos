@@ -211,9 +211,9 @@ bool HandlerFilterClass::Check(HouseClass* pHouse, TechnoClass* pTarget, bool ne
 			bool passengerFlag = false;
 			if (passengerAnyFlag)
 			{
-				for (NextObject obj(pTarget->Passengers.FirstPassenger->NextObject); obj; ++obj)
+				for (NextObject obj(pTarget->Passengers.FirstPassenger); obj; ++obj)
 				{
-					auto const pPassenger = abstract_cast<TechnoClass*>(*obj);
+					auto const pPassenger = reinterpret_cast<TechnoClass*>(*obj);
 					if (Passengers_Type.Contains(pPassenger->GetTechnoType()))
 					{
 						passengerFlag = true;
