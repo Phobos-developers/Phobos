@@ -554,6 +554,7 @@ Vanilla fixes:
 - Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers (by Starkku)
 - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix (by tyuah8)
 - Fix `Stop` command not working so well in some cases (by CrimRecya)
+- Use 2D distance instead of 3D distance to check whether team members have arrived destination (by CrimRecya)
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc. (by Starkku)
 
 Phobos fixes:
