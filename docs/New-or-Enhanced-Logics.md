@@ -427,7 +427,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 ### Event Handlers
 
-- Event Handlers can be defined and given to techno types, to specify something to be done when something happens. Event Invokers are listed under `[EventHandlerTypes]`, however listing them there is not mandatory.
+- Event Handlers can be defined and given to techno types, to specify something to be done when something happens. Event Handlers are listed under `[EventHandlerTypes]`, however listing them there is not mandatory.
   - `EventHandlerN` (where N is 0, 1, 2...) specifies an event handler for the techno type.
   - `EventHandler` is a valid alternative for `EventHandler0`, if only one is specified.
 - Event Types:
