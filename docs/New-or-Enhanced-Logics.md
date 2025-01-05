@@ -432,7 +432,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `EventHandler` is a valid alternative for `EventHandler0`, if only one is specified.
 - Event Types:
   - Event Handlers can have any number of Event Types listed. It will handle any of the listed events.
-  - `EventTypeN` (where N is 0, 1, 2...) specifies the Event Types of an Event Invoker.
+  - `EventTypeN` (where N is 0, 1, 2...) specifies the Event Types of an Event Handler.
   - `EventType` is a valid alternative for `EventType0`, if only one is specified.
   - The Event Types can be any of the pre-defined event types, or any custom string, to allow a custom event call. Custom event types can be invoked through a warhead, a super weapon, or an Event Handler's effect. See [Event Invokers](#event-invokers) for details.
   - <details>
@@ -806,9 +806,10 @@ Me.Effect.Voice.Persist=yes
     - `EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types.
     - `EventInvoker` is a valid alternative for `EventInvoker0`, if only one is specified.
     - The `Me` scope will be the techno hit by the warhead, and the `They` scope of the event will be the firer of the warhead.
+  - On Super Weapons:
     - `EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types.
     - `EventInvoker` is a valid alternative for `EventInvoker0`, if only one is specified.
-    - The `Me` scope will be the techno hit by the super weapon, and the `They` scope of the event will be null.
+    - The `Me` scope will be the techno hit by the super weapon, and the `They` scope of the event will be nonexistant.
   - On Event Handlers:
     - `(scope).Effect.EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types to be invoked to a scope.
     - `(scope).Effect.EventInvoker` is a valid alternative for `(scope).Effect.EventInvoker0`, if only one is specified.
