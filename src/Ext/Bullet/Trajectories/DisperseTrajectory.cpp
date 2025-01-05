@@ -44,6 +44,8 @@ void DisperseTrajectoryType::Serialize(T& Stm)
 		.Process(this->LockDirection)
 		.Process(this->CruiseEnable)
 		.Process(this->CruiseUnableRange)
+		.Process(this->CruiseAltitude)
+		.Process(this->CruiseAlongLevel)
 		.Process(this->LeadTimeCalculate)
 		.Process(this->TargetSnapDistance)
 		.Process(this->RetargetRadius)
@@ -102,7 +104,9 @@ void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->LockDirection.Read(exINI, pSection, "Trajectory.Disperse.LockDirection");
 	this->CruiseEnable.Read(exINI, pSection, "Trajectory.Disperse.CruiseEnable");
 	this->CruiseUnableRange.Read(exINI, pSection, "Trajectory.Disperse.CruiseUnableRange");
-	this->CruiseUnableRange = Math::max(0.5, this->CruiseUnableRange);
+	this->CruiseUnableRange = Leptons(Math::max(128, this->CruiseUnableRange.Get()));
+	this->CruiseAltitude.Read(exINI, pSection, "Trajectory.Disperse.CruiseAltitude");
+	this->CruiseAlongLevel.Read(exINI, pSection, "Trajectory.Disperse.CruiseAlongLevel");
 	this->LeadTimeCalculate.Read(exINI, pSection, "Trajectory.Disperse.LeadTimeCalculate");
 	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.Disperse.TargetSnapDistance");
 	this->RetargetRadius.Read(exINI, pSection, "Trajectory.Disperse.RetargetRadius");
@@ -135,6 +139,7 @@ void DisperseTrajectory::Serialize(T& Stm)
 		.Process(this->Speed)
 		.Process(this->PreAimCoord)
 		.Process(this->UseDisperseBurst)
+		.Process(this->CruiseEnable)
 		.Process(this->SuicideAboveRange)
 		.Process(this->WeaponCount)
 		.Process(this->WeaponTimer)
@@ -587,7 +592,7 @@ bool DisperseTrajectory::CurveVelocityChange(BulletClass* pBullet)
 		const CoordStruct horizonVelocity { targetLocation.X - pBullet->Location.X, targetLocation.Y - pBullet->Location.Y, 0 };
 		const auto horizonDistance = horizonVelocity.Magnitude();
 
-		if (horizonDistance > 1e-10)
+		if (horizonDistance > 0)
 		{
 			auto horizonMult = std::abs(pBullet->Velocity.Z / 64.0) / horizonDistance;
 			pBullet->Velocity.X += horizonMult * horizonVelocity.X;
@@ -643,24 +648,24 @@ bool DisperseTrajectory::NotCurveVelocityChange(BulletClass* pBullet)
 {
 	const auto pType = this->Type;
 
-	if (this->SuicideAboveRange > 1e-10)
+	if (this->SuicideAboveRange > 0)
 	{
 		this->SuicideAboveRange -= this->Speed;
 
-		if (this->SuicideAboveRange <= 1e-10)
+		if (this->SuicideAboveRange <= 0)
 			return true;
 	}
 
-	if (this->PreAimDistance > 1e-10)
+	if (this->PreAimDistance > 0)
 		this->PreAimDistance -= this->Speed;
 
 	bool velocityUp = false;
 
-	if (this->Accelerate && pType->Acceleration != 0.0)
+	if (this->Accelerate && std::abs(pType->Acceleration) > 1e-10)
 	{
 		this->Speed += pType->Acceleration;
 
-		if (pType->Acceleration > 0.0)
+		if (pType->Acceleration > 0)
 		{
 			if (this->Speed >= pType->Trajectory_Speed)
 			{
@@ -679,10 +684,10 @@ bool DisperseTrajectory::NotCurveVelocityChange(BulletClass* pBullet)
 
 	if (!pType->LockDirection || !this->InStraight)
 	{
-		if (pType->RetargetRadius != 0 && this->BulletRetargetTechno(pBullet))
+		if (std::abs(pType->RetargetRadius) > 1e-10 && this->BulletRetargetTechno(pBullet))
 			return true;
 
-		if (this->PreAimDistance <= 1e-10 && this->StandardVelocityChange(pBullet))
+		if (this->PreAimDistance <= 0 && this->StandardVelocityChange(pBullet))
 			return true;
 
 		velocityUp = true;
@@ -714,8 +719,24 @@ bool DisperseTrajectory::StandardVelocityChange(BulletClass* pBullet)
 		targetLocation += (targetLocation - this->LastTargetCoord) * timeMult;
 	}
 
-	if (pType->CruiseEnable && Point2D { targetLocation.X, targetLocation.Y }.DistanceFrom(Point2D { pBullet->Location.X, pBullet->Location.Y }) > (pType->CruiseUnableRange * Unsorted::LeptonsPerCell))
-		targetLocation.Z = pBullet->Location.Z;
+	if (this->CruiseEnable)
+	{
+		const auto horizontal = Point2D { targetLocation.X - pBullet->Location.X, targetLocation.Y - pBullet->Location.Y };
+		const auto horizontalDistance = horizontal.Magnitude();
+
+		if (horizontalDistance > pType->CruiseUnableRange.Get())
+		{
+			const auto ratio = this->Speed / horizontalDistance;
+			targetLocation.X = pBullet->Location.X + static_cast<int>(horizontal.X * ratio);
+			targetLocation.Y = pBullet->Location.Y + static_cast<int>(horizontal.Y * ratio);
+			targetLocation.Z = pType->CruiseAltitude + (pType->CruiseAlongLevel ? MapClass::Instance->GetCellFloorHeight(pBullet->Location) : pBullet->SourceCoords.Z);
+		}
+		else
+		{
+			this->CruiseEnable = false;
+			this->LastReviseMult = 0;
+		}
+	}
 
 	const auto turningRadius = pType->ROT * this->Speed * this->Speed / 16384;
 
@@ -776,9 +797,6 @@ bool DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct 
 
 			const auto reviseLength = reviseVelocity.Magnitude();
 
-			if (!curve && this->Type->SuicideShortOfROT && reviseMult < 0 && this->LastReviseMult > 0 && (this->InStraight || this->LastTargetCoord == pBullet->TargetCoords))
-				return true;
-
 			if (turningRadius < reviseLength)
 			{
 				reviseVelocity *= turningRadius / reviseLength;
@@ -787,8 +805,16 @@ bool DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, CoordStruct 
 			else
 			{
 				pBullet->Velocity = targetVelocity;
-				this->InStraight = true;
+
+				if (curve || !this->CruiseEnable)
+					this->InStraight = true;
 			}
+		}
+
+		if (!curve && this->Type->SuicideShortOfROT && !this->CruiseEnable)
+		{
+			if (reviseMult <= 0 && (this->InStraight || (this->LastReviseMult > 0 && this->PreAimDistance <= 0)))
+				return true;
 		}
 	}
 

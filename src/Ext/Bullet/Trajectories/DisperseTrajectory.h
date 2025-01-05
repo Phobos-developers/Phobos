@@ -20,7 +20,9 @@ public:
 		, ROT { 30.0 }
 		, LockDirection { false }
 		, CruiseEnable { false }
-		, CruiseUnableRange { 5.0 }
+		, CruiseUnableRange { Leptons(1280) }
+		, CruiseAltitude { 800 }
+		, CruiseAlongLevel { false }
 		, LeadTimeCalculate { true }
 		, TargetSnapDistance { Leptons(128) }
 		, RetargetAllies { false }
@@ -63,7 +65,9 @@ public:
 	Valueable<double> ROT;
 	Valueable<bool> LockDirection;
 	Valueable<bool> CruiseEnable;
-	Valueable<double> CruiseUnableRange;
+	Valueable<Leptons> CruiseUnableRange;
+	Valueable<int> CruiseAltitude;
+	Valueable<bool> CruiseAlongLevel;
 	Valueable<bool> LeadTimeCalculate;
 	Valueable<Leptons> TargetSnapDistance;
 	Valueable<bool> RetargetAllies;
@@ -100,6 +104,7 @@ public:
 		, Speed { trajType->LaunchSpeed }
 		, PreAimCoord { trajType->PreAimCoord.Get() }
 		, UseDisperseBurst { trajType->UseDisperseBurst }
+		, CruiseEnable { trajType->CruiseEnable }
 		, SuicideAboveRange { trajType->SuicideAboveRange * Unsorted::LeptonsPerCell }
 		, WeaponCount { trajType->WeaponCount }
 		, WeaponTimer {}
@@ -130,6 +135,7 @@ public:
 	double Speed;
 	CoordStruct PreAimCoord;
 	bool UseDisperseBurst;
+	bool CruiseEnable;
 	double SuicideAboveRange;
 	int WeaponCount;
 	CDTimerClass WeaponTimer;

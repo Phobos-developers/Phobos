@@ -771,7 +771,7 @@ Trajectory.Bombard.Height=0.0  ; double
 #### Disperse trajectory
 
 - Its trajectory looks a bit like a `ROT`, but its settings are more flexible. It also has a unique trajectory. And as its name suggests, it can even spread out more weapons.
-  - `Trajectory.Disperse.UniqueCurve` controls whether to enable simulated Qian Xuesen trajectory. After enabling this, it will NOT respect the following 19 items and `Trajectory.Speed`.
+  - `Trajectory.Disperse.UniqueCurve` controls whether to enable simulated Qian Xuesen trajectory. After enabling this, it will NOT respect the following 21 items and `Trajectory.Speed`.
   - `Trajectory.Disperse.PreAimCoord` controls the initial flight direction of the projectile, and after reaching this coordinate, it will begin to turn towards the target direction. When it is set to 0,0,0 , it will directly face the target.
     - `Trajectory.Disperse.RotateCoord` controls whether to rotate the projectile's firing direction within the angle bisector of `Trajectory.Disperse.PreAimCoord` according to the weapon's `Burst`. Set to 0 to disable this function.
     - `Trajectory.Disperse.MirrorCoord` controls whether `Trajectory.Disperse.PreAimCoord` need to mirror the lateral value to adapt to the current burst index. At the same time, the rotation direction calculated by `Trajectory.Disperse.RotateCoord` will also be reversed, and the rotation angle between each adjacent projectile on each side will not change as a result.
@@ -785,6 +785,8 @@ Trajectory.Bombard.Height=0.0  ; double
   - `Trajectory.Disperse.LockDirection` controls whether after reaching `Trajectory.Disperse.PreAimCoord` and completing the first turn, the projectile will lock the direction of motion without further adjustment.
   - `Trajectory.Disperse.CruiseEnable` controls whether after reaching `Trajectory.Disperse.PreAimCoord` and completing the first turn, the projectile will maintain altitude while moving towards the target.
     - `Trajectory.Disperse.CruiseUnableRange` controls how far away it is from the target to end the cruise phase, no longer maintaining the cruise altitude, and begins to move directly towards the target. If the distance is already below this value by the time `Trajectory.Disperse.PreAimCoord` is reached, the cruise phase will be skipped.
+    - `Trajectory.Disperse.CruiseAltitude` controls the minimum altitude of the projectile in the cruise phase.
+    - `Trajectory.Disperse.CruiseAlongLevel` controls whether to calculate `Trajectory.Disperse.CruiseAltitude` by the height of the projectile and the ground height of the current position, otherwise it will be calculated by the height of the projectile and the height of the launch position.
   - `Trajectory.Disperse.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target during motion.
   - `Trajectory.Disperse.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
   - `Trajectory.Disperse.RetargetRadius` controls the radius of the projectile to search for a new target after losing its original target. If it hasn't arrived `Trajectory.Disperse.PreAimCoord` yet, the last coordinate of the original target is taken as the center of the searching circle. Otherwise, the coordinate of the distance in front of the projectile is taken as the center of the circle. Set to 0 indicates that this function is not enabled, and it will still attempt to attack the original target's location. If it is set to a negative value, it will directly self explode in place.
@@ -825,6 +827,8 @@ Trajectory.Disperse.ROT=30.0                    ; floating point value
 Trajectory.Disperse.LockDirection=false         ; boolean
 Trajectory.Disperse.CruiseEnable=false          ; boolean
 Trajectory.Disperse.CruiseUnableRange=5         ; floating point value
+Trajectory.Disperse.CruiseAltitude=800          ; integer
+Trajectory.Disperse.CruiseAlongLevel=false      ; boolean
 Trajectory.Disperse.LeadTimeCalculate=true      ; boolean
 Trajectory.Disperse.TargetSnapDistance=0.5      ; floating point value
 Trajectory.Disperse.RetargetRadius=0            ; floating point value
