@@ -784,6 +784,8 @@ Me.Effect.Voice.Persist=yes
     - `EventTypeN` (where N is 0, 1, 2...) specifies the Event Types of an Event Invoker.
     - `EventType` is a valid alternative for `EventType0`, if only one is specified.
     - The Event Types can be any of the pre-defined event types, or any custom string, to allow a custom event call.
+    - If an Event Invoker and an Event Handler shares 2 or more of their Event Types, the said handler will be invoked that many times at once.
+    For example, if an Event Invoker has `EventType0=WhenCustom0`, `EventType1=WhenCustom1`, and the same is true for an Event Handler, then the handler will be invoked twice.
   - Filters and Negative Filters:
     - Event Invokers may have filters to ask for something to be true or false about the techno. If the target doesn't pass the filters, no events will be invoked on it.
     - The Filters are defined like `Target.Filter.~`.
@@ -791,7 +793,7 @@ Me.Effect.Voice.Persist=yes
     - `Target` is not a proper scope type, extended scope types won't work here.
     - The available filters are the same as Event Handlers. See [Event Handlers -> Filters](#event-handlers) for details.
   - Extra Event Handlers:
-    - Extra event handlers can be specified, these will be forcibly invoked as if they were attached to each affected target of this event invoker, before any event handlers attached to the targets themselves to be invoked. Extra event handlers are invoked without checking their event types.
+    - Extra event handlers can be specified, these will be forcibly invoked as if they were attached to each affected target of this event invoker, before any event handlers attached to the targets themselves to be invoked. Extra event handlers are invoked once for each target, without checking event types.
     - `Target.ExtraEventHandlerN` (where N is 0, 1, 2...) specifies extra event handlers.
     - `Target.ExtraEventHandler` is a valid alternative for `Target.ExtraEventHandler0`, if only one is specified.
     - Extra event handlers are invoked on the target's perspective, meaning `Me` scope there will be the invoker's target, and the `They` scope there will be the techno that fired the warhead, or nonexistant if this invoker is fired through a super weapon.
