@@ -784,7 +784,7 @@ Me.Effect.Voice.Persist=yes
     - `EventTypeN` (where N is 0, 1, 2...) specifies the Event Types of an Event Invoker.
     - `EventType` is a valid alternative for `EventType0`, if only one is specified.
     - The Event Types can be any of the pre-defined event types, or any custom string, to allow a custom event call.
-    - If an Event Invoker and an Event Handler shares 2 or more of their Event Types, the said handler will be invoked that many times at once.
+    - If an Event Invoker and an Event Handler share more than one of their Event Types, so will the handler be invoked more than once.
     For example, if an Event Invoker has `EventType0=WhenCustom0`, `EventType1=WhenCustom1`, and the same is true for an Event Handler, then the handler will be invoked twice.
   - Filters and Negative Filters:
     - Event Invokers may have filters to ask for something to be true or false about the techno. If the target doesn't pass the filters, no events will be invoked on it.
