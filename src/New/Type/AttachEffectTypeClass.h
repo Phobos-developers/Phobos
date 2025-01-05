@@ -205,7 +205,7 @@ public:
 	ValueableVector<int> DurationOverrides;
 	ValueableVector<int> Delays;
 	ValueableVector<int> InitialDelays;
-	NullableVector<int> RecreationDelays;
+	ValueableVector<int> RecreationDelays;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
