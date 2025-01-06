@@ -1039,7 +1039,7 @@ Passengers.SyncOwner.RevertOnExit=true  ; boolean
 
 - Vehicle types with `Passengers.Lock.Count=X` (where X is integer), will try to keep passengers with total size X when ordered to unload. Deploy again to unload the rest.
   - If a techno has `TurretCount` > 0, it tries to keep its last passenger when ordered to unload, which is the exactly same behavior when X = 1.
-  - If X >= 0, the passengers lock logic takes precedence, and the said behavior of `TurretCount` will be disabled.
+  - If X > 0, the passengers lock logic takes precedence, and the said behavior of `TurretCount` will be disabled.
   - If X = 0, the said behavior of `TurretCount` will be disabled as well.
 - Vehicle types with `Passengers.Lock.NoUnload=true`, will not be able to unload, as long as the total size of passengers is equal to or fewer than X.
 - Vehicle types with `PipScale=Passengers`, and `Passengers.Lock.HidePips=true`, will hide the initial X pips from the transport pips display.
