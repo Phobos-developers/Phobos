@@ -250,7 +250,7 @@ DEFINE_HOOK(0x709D28, TechnoClass_DrawPips_Passengers, 0x6)
 
 	// We cook a vector consist of passenger pips.
 	// The first passenger is in fact the last passenger to be displayed.
-	std::vector<int> passengerPips;
+	static std::vector<int> passengerPips;
 	TechnoClass* pPassenger = nullptr;
 	for (NextObject obj(pThis->Passengers.FirstPassenger); obj; ++obj)
 	{
@@ -345,6 +345,7 @@ DEFINE_HOOK(0x709D28, TechnoClass_DrawPips_Passengers, 0x6)
 		}
 	}
 
+	passengerPips.clear();
 	return SkipGameDrawing;
 }
 
