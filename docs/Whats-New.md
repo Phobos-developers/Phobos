@@ -614,6 +614,7 @@ Fixes / interactions with other extensions:
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by Trsdy)
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory (by Trsdy, supersedes Aephiex impl.)
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
+- Passenger lock mechanics (by Aephiex)
 </details>
 
 ### 0.3.0.1

@@ -158,6 +158,12 @@ public:
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
+		Valueable<int> Passengers_Lock_Count;
+		Valueable<bool> Passengers_Lock_NoUnload;
+		Valueable<bool> Passengers_Lock_HidePips;
+
+		Valueable<bool> Passengers_BySize;
+
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
@@ -371,6 +377,12 @@ public:
 			, SelfHealGainType {}
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
+
+			, Passengers_Lock_Count { 0 }
+			, Passengers_Lock_NoUnload { false }
+			, Passengers_Lock_HidePips { false }
+
+			, Passengers_BySize { true }
 
 			, OnlyUseLandSequences { false }
 

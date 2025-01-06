@@ -391,6 +391,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
+	this->Passengers_Lock_Count.Read(exINI, pSection, "Passengers.Lock.Count");
+	this->Passengers_Lock_NoUnload.Read(exINI, pSection, "Passengers.Lock.NoUnload");
+	this->Passengers_Lock_HidePips.Read(exINI, pSection, "Passengers.Lock.HidePips");
+
 	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
 	this->IronCurtain_KillWarhead.Read<true>(exINI, pSection, "IronCurtain.KillWarhead");
@@ -471,6 +475,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.C
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
+
+	// Ares 2.0
+	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
 
 	char tempBuffer[32];
 
@@ -743,6 +750,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
+
+		.Process(this->Passengers_Lock_Count)
+		.Process(this->Passengers_Lock_NoUnload)
+		.Process(this->Passengers_Lock_HidePips)
+
+		.Process(this->Passengers_BySize)
 
 		.Process(this->OnlyUseLandSequences)
 

@@ -1035,6 +1035,25 @@ Passengers.SyncOwner=false              ; boolean
 Passengers.SyncOwner.RevertOnExit=true  ; boolean
 ```
 
+### Passenger lock
+
+- Vehicle types with `Passengers.Lock.Count=X` (where X is integer), will try to keep passengers with total size X when ordered to unload. Deploy again to unload the rest.
+  - If a techno has `TurretCount` > 0, it tries to keep its last passenger when ordered to unload, which is the exactly same behavior when X = 1.
+  - If X >= 0, the passengers lock logic takes precedence, and the said behavior of `TurretCount` will be disabled.
+  - If X = 0, the said behavior of `TurretCount` will be disabled as well.
+- Vehicle types with `Passengers.Lock.NoUnload=true`, will not be able to unload, as long as the total size of passengers is equal to or fewer than X.
+- Vehicle types with `PipScale=Passengers`, and `Passengers.Lock.HidePips=true`, will hide the initial X pips from the transport pips display.
+  - If the transport also has `Gunner=true`, the first displayed transport slot pip will not be separated from the rest.
+- If the transport has `Passengers.BySize=false` *(Ares feature)*, the number of passengers will be taken into account, instead of their total size.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; VehicleType
+Passengers.Lock.Count=-1                ; integer
+Passengers.Lock.NoUnload=false          ; boolean
+Passengers.Lock.HidePips=true           ; boolean
+```
+
 ### Automatically firing weapons
 
 - You can now make TechnoType automatically fire its weapon(s) without having to scan for suitable targets by setting `AutoFire`, on either its base cell (in which case the weapon that is used for force-firing is used) or itself (in which case normal targeting and weapon selection rules and are respected) depending on if `AutoFire.TargetSelf` is set or not.

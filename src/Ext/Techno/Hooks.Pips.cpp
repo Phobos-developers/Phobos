@@ -223,6 +223,131 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 	return SkipGameDrawing;
 }
 
+DEFINE_HOOK(0x709D28, TechnoClass_DrawPips_Passengers, 0x6)
+{
+	enum { SkipGameDrawing = 0x70A083 };
+
+	GET_STACK(bool, isBuilding, STACK_OFFSET(0x74, -0x61));
+
+	if (isBuilding)
+		return 0;
+
+	GET(TechnoClass*, pThis, ECX);
+
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const numHiddenPips = pTypeExt->Passengers_Lock_HidePips ? pTypeExt->Passengers_Lock_Count : 0;
+
+	// If all pips are hidden then don't bother to draw at all.
+	if (pType->Passengers <= numHiddenPips)
+		return SkipGameDrawing;
+
+	auto const bySize = pTypeExt->Passengers_BySize;
+
+	// If any hidden pips exist, then don't draw the gunner gap, because the gunner pip is hidden.
+	// If the passenger slot is only 1, then don't draw the gunner gap as well.
+	auto const drawGunnerGap = pType->Gunner && numHiddenPips == 0 && pType->Passengers > 1;
+
+	// We cook a vector consist of passenger pips.
+	// The first passenger is in fact the last passenger to be displayed.
+	std::vector<int> passengerPips;
+	TechnoClass* pPassenger = nullptr;
+	for (NextObject obj(pThis->Passengers.FirstPassenger); obj; ++obj)
+	{
+		pPassenger = reinterpret_cast<TechnoClass*>(*obj);
+
+		// Gunner gap.
+		if (drawGunnerGap && !pPassenger->NextObject)
+		{
+			passengerPips.push_back(-1);
+		}
+
+		// The extra pips for units larger than size 1.
+		if (bySize)
+		{
+			auto size = static_cast<int>(pPassenger->GetTechnoType()->Size);
+			if (size > 1)
+			{
+				for (int i = size; i > 1; --i)
+				{
+					passengerPips.push_back(3);
+				}
+			}
+		}
+
+		// The first pip for this passenger.
+		if (auto pInfantry = abstract_cast<InfantryClass*>(pPassenger))
+			passengerPips.push_back(static_cast<int>(pInfantry->Type->Pip));
+		else
+			passengerPips.push_back(5);
+	}
+
+	LEA_STACK(RectangleStruct*, offset, STACK_OFFSET(0x74, -0x24));
+	GET_STACK(RectangleStruct*, rect, STACK_OFFSET(0x74, 0xC));
+	GET_STACK(SHPStruct*, shape, STACK_OFFSET(0x74, -0x58));
+
+	Point2D position = { offset->X, offset->Y };
+	Point2D size = RulesExt::Global()->Pips_Generic_Size;
+
+	// If all passenger pips are hidden, we only draw empty pips.
+	if (static_cast<int>(passengerPips.size()) <= numHiddenPips)
+	{
+		for (int i = pType->Passengers; i > numHiddenPips; --i)
+		{
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, 0,
+					&position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+
+			position.X += size.X;
+			position.Y += size.Y;
+
+			// Leave space for gunner gap.
+			if (drawGunnerGap && i == pType->Passengers)
+			{
+				position.X += size.X;
+				position.Y += size.Y;
+			}
+		}
+	}
+	else
+	{
+		// Draw this number of empty pips.
+		auto const numEmptyPips = pType->Passengers - (bySize ? pThis->Passengers.GetTotalSize() : pThis->Passengers.NumPassengers);
+
+		// Draw passenger pips.
+		int currentIndex = 0;
+		for (auto passengerPipsItr = passengerPips.rbegin();
+			passengerPipsItr != passengerPips.rend();
+			++passengerPipsItr)
+		{
+			if (currentIndex >= numHiddenPips)
+			{
+				int passengerPip = *passengerPipsItr;
+				if (passengerPip >= 0)
+				{
+					DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, passengerPip,
+							&position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				}
+
+				position.X += size.X;
+				position.Y += size.Y;
+			}
+			++currentIndex;
+		}
+
+		// Draw empty pips.
+		for (int i = numEmptyPips; i > 0; --i)
+		{
+			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, 0,
+					&position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+
+			position.X += size.X;
+			position.Y += size.Y;
+		}
+	}
+
+	return SkipGameDrawing;
+}
+
 DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 {
 	enum { SkipGameDrawing = 0x70A4EC };
