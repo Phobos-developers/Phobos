@@ -240,7 +240,7 @@ bool HandlerFilterClass::Check(HouseClass* pHouse, TechnoClass* pTarget, bool ne
 			{
 				for (NextObject obj(pTarget->Passengers.FirstPassenger); obj; ++obj)
 				{
-					auto const pPassenger = reinterpret_cast<TechnoClass*>(*obj);
+					auto const pPassenger = static_cast<TechnoClass*>(*obj);
 					if (Passengers_Type.Contains(pPassenger->GetTechnoType()))
 					{
 						passengerFlag = true;

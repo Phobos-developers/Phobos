@@ -162,7 +162,7 @@ void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, std::map<EventScopeT
 			TechnoClass* pPassenger = nullptr;
 			for (NextObject obj(pRoot->Passengers.FirstPassenger); obj; ++obj)
 			{
-				pPassenger = reinterpret_cast<TechnoClass*>(*obj);
+				pPassenger = static_cast<TechnoClass*>(*obj);
 				pParticipants->operator[](EventScopeType::Me) = pPassenger;
 				TryExecuteOnTarget(pHouse, pParticipants, pPassenger);
 			}
