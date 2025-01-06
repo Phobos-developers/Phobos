@@ -122,6 +122,6 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 		}
 		wchar_t buffer[0x1000];
 		wsprintfW(buffer, Message, TechnoVector.size());
-		MessageListClass::Instance->PrintMessage(buffer);
+		MessageListClass::Instance->PrintMessage(buffer, RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex);
 	}
 }
