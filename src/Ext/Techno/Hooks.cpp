@@ -69,17 +69,23 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 
 	auto aresProcess = [pThis]() { return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054; };
 
-	if (!RulesExt::Global()->Promote_VeteranAnimation && !RulesExt::Global()->Promote_EliteAnimation)
-		return aresProcess();
-
-	if (pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
+	auto const NewRanking = pThis->Veterancy.GetRemainingLevel();
+	if (pThis->CurrentRanking != NewRanking && pThis->CurrentRanking != Rank::Invalid)
 	{
-		AnimClass* promAnim = nullptr;
-		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && RulesExt::Global()->Promote_VeteranAnimation)
-			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCenterCoords());
-		else if (RulesExt::Global()->Promote_EliteAnimation)
-			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords());
-		promAnim->SetOwnerObject(pThis);
+		auto pThisTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		pThisTypeExt->InvokeEvent((pThis->CurrentRanking < NewRanking) ? EventTypeClass::WhenPromoted : EventTypeClass::WhenDemoted, pThis, nullptr);
+
+		if (NewRanking != Rank::Rookie)
+		{
+			if (!RulesExt::Global()->Promote_VeteranAnimation && !RulesExt::Global()->Promote_EliteAnimation)
+				return aresProcess();
+			AnimClass* promAnim = nullptr;
+			if (NewRanking == Rank::Veteran && RulesExt::Global()->Promote_VeteranAnimation)
+				promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCenterCoords());
+			else if (RulesExt::Global()->Promote_EliteAnimation)
+				promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords());
+			promAnim->SetOwnerObject(pThis);
+		}
 	}
 
 	return aresProcess();

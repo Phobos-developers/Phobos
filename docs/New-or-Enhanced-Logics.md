@@ -444,6 +444,8 @@ Shield.InheritStateOnReplace=false          ; boolean
             <li>The <code>They</code> scope is missing for these events.</li>
             <li><code>WhenCreated</code>: When the techno is created. Invoked even if the techno is pre-placed on the map.</li>
             <li><code>WhenCaptured</code>: When the techno is captured, mind-controlled, or released from mind-control.</li>
+            <li><code>WhenPromoted</code>: When the techno's veterancy is promoted.</li>
+            <li><code>WhenDemoted</code>: When the techno's veterancy is somehow demoted.</li>
           </ul>
         </li>
         <li>
@@ -498,7 +500,7 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `(scope).Transport`: The transporting vehicle, or Bio Reactor, or garrisonable structure, that is carrying the scope.
     - `(scope).Bunker`: To vehicle types, this refers to the Tank Bunker loading it; to Tank Bunkers, this refers to the vehicle loaded into it.
     - `(scope).MindController`: The techno that is mind-controlling the scope.
-    - `(scope).Parasite`: The parasite of this techno (Terror Drones, Giant Squids).
+    - `(scope).Parasite`: The parasite (Terror Drone, Giant Squid) that is haunting this techno.
     - `(scope).Host`: The techno that this parasite is haunting.
 - Filters:
   - Filters can be specified on an scope to ask for something to be true about it, or the event handler doesn't resolve its effects.
@@ -513,6 +515,9 @@ Shield.InheritStateOnReplace=false          ; boolean
         <li><code>*.ShieldTypes</code>: Techno has any of the listed ShieldTypes.</li>
         <li><code>*.Veterancy</code>: Techno is any of the listed veterancy.</li>
         <li><code>*.HPPercentage</code>: Techno is any of the listed HP percentage condition.</li>
+        <li><code>*.IsPassenger</code>: Techno is loaded into a transport vehicle, a Bio Reactor, or a garrisonable structure.</li>
+        <li><code>*.IsParasited</code>: Techno is haunted by a parasite (Terror Drone, Giant Squid).</li>
+        <li><code>*.IsParasiting</code>: Techno is a parasite haunting something.</li>
         <li><code>*.IsBunkered</code>: Techno is either loaded into a Tank Bunker, or is a Tank Bunker loading something.</li>
         <li><code>*.IsMindControlled</code>: Techno is mind-controlled.</li>
         <li><code>*.IsMindControlled.Perma</code>: Techno is permanently mind-controlled.</li>

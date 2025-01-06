@@ -16,6 +16,9 @@ public:
 	Nullable<VeterancyType> Veterancy;
 	Nullable<HPPercentageType> HPPercentage;
 
+	Nullable<bool> IsPassenger;
+	Nullable<bool> IsParasited;
+	Nullable<bool> IsParasiting;
 	Nullable<bool> IsBunkered;
 	Nullable<bool> IsMindControlled;
 	Nullable<bool> IsMindControlled_Perma;

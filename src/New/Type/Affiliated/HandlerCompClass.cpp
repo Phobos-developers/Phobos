@@ -101,21 +101,15 @@ TechnoClass* HandlerCompClass::GetTransportingTechno(TechnoClass* pTarget)
 
 TechnoClass* HandlerCompClass::GetParasiteTechno(TechnoClass* pTarget)
 {
-	if (auto pFoot = reinterpret_cast<FootClass*>(pTarget))
-	{
-		return pFoot->ParasiteEatingMe;
-	}
-	return nullptr;
+	return reinterpret_cast<FootClass*>(pTarget)->ParasiteEatingMe;
 }
 
 TechnoClass* HandlerCompClass::GetHostTechno(TechnoClass* pTarget)
 {
-	if (auto pFoot = reinterpret_cast<FootClass*>(pTarget))
+	auto pFoot = reinterpret_cast<FootClass*>(pTarget);
+	if (pFoot->ParasiteImUsing)
 	{
-		if (pFoot->ParasiteImUsing)
-		{
-			return pFoot->ParasiteImUsing->Victim;
-		}
+		return pFoot->ParasiteImUsing->Victim;
 	}
 	return nullptr;
 }

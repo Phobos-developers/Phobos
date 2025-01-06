@@ -17,6 +17,8 @@ public:
 	// public static pointers of event types invoked by Phobos
 	static EventTypeClass* WhenCreated;
 	static EventTypeClass* WhenCaptured;
+	static EventTypeClass* WhenPromoted;
+	static EventTypeClass* WhenDemoted;
 	static EventTypeClass* WhenKill;
 	static EventTypeClass* WhenKilled;
 	static EventTypeClass* WhenCrush;
