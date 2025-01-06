@@ -236,7 +236,7 @@ DEFINE_HOOK(0x709D28, TechnoClass_DrawPips_Passengers, 0x6)
 
 	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto const numHiddenPips = pTypeExt->Passengers_Lock_HidePips ? pTypeExt->Passengers_Lock_Count : 0;
+	auto const numHiddenPips = pTypeExt->Passengers_Lock_HidePips ? std::max(pTypeExt->Passengers_Lock_Count.Get(), 0) : 0;
 
 	// If all pips are hidden then don't bother to draw at all.
 	if (pType->Passengers <= numHiddenPips)
