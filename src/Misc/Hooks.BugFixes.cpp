@@ -1143,25 +1143,17 @@ int __fastcall Check2DDistanceInsteadOf3D(AbstractClass* pSource, void* _, Abstr
 	const auto sourceCoords = pSource->GetCoords();
 	const auto targetCoords = pTarget->GetCoords();
 
-	int distance = Game::F2I(Point2D { sourceCoords.X - targetCoords.X, sourceCoords.Y - targetCoords.Y }.Magnitude());
+	// Aircraft has its own unique treatment, and it will not be changed here
+	int distance = Game::F2I((pSource->IsInAir() && pSource->WhatAmI() != AbstractType::Aircraft) ? // Jumpjets or sth in the air ?
+		(Point2D { sourceCoords.X - targetCoords.X, sourceCoords.Y - targetCoords.Y }.Magnitude() * 2) : // bonus to units in the air
+		sourceCoords.DistanceFrom(targetCoords)); // Original
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget)) // Vanilla bonus to building
 		distance -= ((pBuilding->Type->GetFoundationWidth() + pBuilding->Type->GetFoundationHeight(false)) << 6);
 
-	return distance;
+	return Math::max(0, distance);
 }
-DEFINE_JUMP(CALL, 0x6EB686, GET_OFFSET(Check2DDistanceInsteadOf3D)); // MoveToObject - TeamSpawnCell
-DEFINE_JUMP(CALL, 0x6EB8FF, GET_OFFSET(Check2DDistanceInsteadOf3D)); // TryToGuard - TeamSpawnCell1
-DEFINE_JUMP(CALL, 0x6EB9C8, GET_OFFSET(Check2DDistanceInsteadOf3D)); // TryToGuard - TeamSpawnCell2
-DEFINE_JUMP(CALL, 0x6EBB8C, GET_OFFSET(Check2DDistanceInsteadOf3D)); // MoveToCell - TeamSpawnCell
-DEFINE_JUMP(CALL, 0x6EBCC9, GET_OFFSET(Check2DDistanceInsteadOf3D)); // MoveToCell - TeamFocus
-DEFINE_JUMP(CALL, 0x6EBD6E, GET_OFFSET(Check2DDistanceInsteadOf3D)); // MoveToCell - SelfDestination
-DEFINE_JUMP(CALL, 0x6EC1BB, GET_OFFSET(Check2DDistanceInsteadOf3D)); // InlineCall - CheckStray
-DEFINE_JUMP(CALL, 0x6ED390, GET_OFFSET(Check2DDistanceInsteadOf3D)); // TryToLoad - TeamSpawnCell
-DEFINE_JUMP(CALL, 0x6ED562, GET_OFFSET(Check2DDistanceInsteadOf3D)); // TryToDeploy - TeamSpawnCell
-DEFINE_JUMP(CALL, 0x6ED873, GET_OFFSET(Check2DDistanceInsteadOf3D)); // NewMission - TeamSpawnCell1
-DEFINE_JUMP(CALL, 0x6ED958, GET_OFFSET(Check2DDistanceInsteadOf3D)); // NewMission - TeamSpawnCell2
-DEFINE_JUMP(CALL, 0x6EF1AE, GET_OFFSET(Check2DDistanceInsteadOf3D)); // TryToUnload - TeamSpawnCell
+DEFINE_JUMP(CALL, 0x6EBCC9, GET_OFFSET(Check2DDistanceInsteadOf3D));
 
 #pragma endregion
 
