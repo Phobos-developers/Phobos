@@ -254,7 +254,7 @@ DEFINE_HOOK(0x709D28, TechnoClass_DrawPips_Passengers, 0x6)
 	TechnoClass* pPassenger = nullptr;
 	for (NextObject obj(pThis->Passengers.FirstPassenger); obj; ++obj)
 	{
-		pPassenger = reinterpret_cast<TechnoClass*>(*obj);
+		pPassenger = static_cast<TechnoClass*>(*obj);
 
 		// Gunner gap.
 		if (drawGunnerGap && !pPassenger->NextObject)

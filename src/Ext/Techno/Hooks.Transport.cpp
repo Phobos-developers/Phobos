@@ -237,7 +237,7 @@ inline static int GetHowManyPassengersShouldIKeep(UnitClass* pThis, TechnoTypeEx
 			bool isFirst = true;
 			for (NextObject obj(pThis->Passengers.FirstPassenger); obj; ++obj)
 			{
-				pPassenger = reinterpret_cast<TechnoClass*>(*obj);
+				pPassenger = static_cast<TechnoClass*>(*obj);
 				totalSize -= static_cast<int>(pPassenger->GetTechnoType()->Size);
 				if (totalSize < minimalSize)
 				{
