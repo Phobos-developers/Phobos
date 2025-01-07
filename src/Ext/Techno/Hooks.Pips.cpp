@@ -235,6 +235,10 @@ DEFINE_HOOK(0x709D28, TechnoClass_DrawPips_Passengers, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 
 	auto const pType = pThis->GetTechnoType();
+
+	if (pType->PipScale != PipScale::Passengers)
+		return 0;
+
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	auto const numHiddenPips = pTypeExt->Passengers_Lock_HidePips ? std::max(pTypeExt->Passengers_Lock_Count.Get(), 0) : 0;
 
