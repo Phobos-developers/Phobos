@@ -531,7 +531,7 @@ Shield.InheritStateOnReplace=false          ; boolean
         <li><code>*.Owner.House</code>: Techno owner's relation with the handler's owner. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
         <li><code>*.Owner.Sides</code>: Owner's country is any of the listed sides.</li>
         <li><code>*.Owner.Countries</code>: Owner's country is any of the listed countries.</li>
-        <li><code>*.Owner.Buildings</code>: Owner has a building that is any of the listed BuildingTypes.</li>
+        <li><code>*.Owner.Buildings</code>: Owner has a building that is any of the listed BuildingTypes. Building upgrades count.</li>
         <li><code>*.Owner.IsHuman</code>: Owner is human controlled.</li>
         <li><code>*.Owner.IsAI</code>: Owner is AI controlled.</li>
       </ul>
