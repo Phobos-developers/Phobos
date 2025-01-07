@@ -267,7 +267,7 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 	// Initial
 	auto curCoord = Point2D { pLocation->X, pLocation->Y };
 	auto pCurCell = MapClass::Instance->GetCellAt(CellStruct { static_cast<short>(curCoord.X >> 8), static_cast<short>(curCoord.Y >> 8) });
-	auto maxHeight = pCurCell->GetFloorHeight(Point2D { curCoord.X & 0xFF, curCoord.Y & 0xFF }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCurCell);
+	auto maxHeight = pCurCell->GetFloorHeight(Point2D { curCoord.X, curCoord.Y }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCurCell);
 
 	// If is moving
 	if (pThis->CurrentSpeed > 0.0)
@@ -283,7 +283,7 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 		auto lastCoord = curCoord;
 		curCoord += stepCoord;
 		pCurCell = MapClass::Instance->GetCellAt(CellStruct { static_cast<short>(curCoord.X >> 8), static_cast<short>(curCoord.Y >> 8) });
-		auto newHeight = pCurCell->GetFloorHeight(Point2D { curCoord.X & 0xFF, curCoord.Y & 0xFF }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCurCell);
+		auto newHeight = pCurCell->GetFloorHeight(Point2D { curCoord.X, curCoord.Y }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCurCell);
 
 		if (newHeight > maxHeight)
 			maxHeight = newHeight;
@@ -326,7 +326,7 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 			if (!pCurCell)
 				return maxHeight;
 
-			newHeight = pCurCell->GetFloorHeight(Point2D { curCoord.X & 0xFF, curCoord.Y & 0xFF }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCurCell);
+			newHeight = pCurCell->GetFloorHeight(Point2D { curCoord.X, curCoord.Y }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCurCell);
 
 			if (newHeight > maxHeight)
 				maxHeight = newHeight;
