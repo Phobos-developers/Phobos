@@ -580,6 +580,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->AlternateFLHs.push_back(alternateFLH);
 	}
 
+	this->AlternateFLH_Fixed.Read(exArtINI, pArtSection, "AlternateFLH.Fixed");
+
 	// Parasitic types
 	this->AttachEffects.LoadFromINI(pINI, pSection);
 
@@ -718,6 +720,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
 		.Process(this->AlternateFLHs)
+		.Process(this->AlternateFLH_Fixed)
 
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)

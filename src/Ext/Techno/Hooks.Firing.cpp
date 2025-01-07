@@ -650,6 +650,11 @@ DEFINE_HOOK(0x6F3AF9, TechnoClass_GetFLH_AlternateFLH, 0x6)
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	weaponIdx = -weaponIdx - 1;
 
+	if (pTypeExt->AlternateFLH_Fixed)
+	{
+		weaponIdx = pThis->Passengers.NumPassengers - weaponIdx - 1;
+	}
+
 	const CoordStruct& flh =
 		weaponIdx < static_cast<int>(pTypeExt->AlternateFLHs.size())
 		? pTypeExt->AlternateFLHs[weaponIdx]

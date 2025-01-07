@@ -471,6 +471,8 @@ New:
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps (by Starkku)
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
+- Passenger lock mechanics (by Aephiex)
+- Passengers will use `AlternateFLH` in an reversed order they are loaded into the transport, and they will use from 0 to the last, meaning a given passenger's gunport can change as more passengers are boarded. This can be customized by `AlternateFLH.Fixed=true`, in which case the first passenger loaded will consistently use `AlternateFLH0`, and so on. (by Aephiex)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -614,7 +616,6 @@ Fixes / interactions with other extensions:
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by Trsdy)
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory (by Trsdy, supersedes Aephiex impl.)
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
-- Passenger lock mechanics (by Aephiex)
 </details>
 
 ### 0.3.0.1

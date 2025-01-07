@@ -100,6 +100,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed buildings' `NaturalParticleSystem` being created for in-map pre-placed structures.
 - Fixed jumpjet units being unable to visually tilt or be flipped if `TiltCrashJumpjet=no`.
 - Unlimited (more than 5) `AlternateFLH` entries for units.
+- Passengers will use `AlternateFLH` in an reversed order they are loaded into the transport, and they will use from 0 to the last, meaning a given passenger's gunport can change as more passengers are boarded. This can be customized by `AlternateFLH.Fixed=true`, in which case the first passenger loaded will consistently use `AlternateFLH0`, and so on.
 - Warheads spawning debris now use `MaxDebris` as an actual cap for number of debris to spawn instead of `MaxDebris` - 1.
  If both `Primary` and `Secondary` weapons can fire at air targets (projectile has `AA=true`), `Primary` can now be picked instead of always forcing `Secondary`. Also applies to `IsGattling=true`, with odd-numbered and even-numbered `WeaponX` slots instead of `Primary` and `Secondary`, respectively.
 - `IsGattling=true` can now fall back to secondary weapon slot (even-numbered `WeaponX` slots) if primary one (odd-numbered) cannot fire at current target (armor type, `CanTarget(Houses)`, shield etc).

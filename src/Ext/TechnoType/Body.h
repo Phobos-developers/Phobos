@@ -113,6 +113,7 @@ public:
 		std::vector<std::vector<CoordStruct>> WeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
 		std::vector<CoordStruct> AlternateFLHs;
+		Valueable<bool> AlternateFLH_Fixed;
 
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
@@ -310,6 +311,7 @@ public:
 			, OreGathering_Anims {}
 			, OreGathering_Tiberiums {}
 			, OreGathering_FramesPerDir {}
+			, AlternateFLH_Fixed { false }
 			, LaserTrailData {}
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
