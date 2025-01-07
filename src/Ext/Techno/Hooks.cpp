@@ -72,20 +72,15 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 	auto const NewRanking = pThis->Veterancy.GetRemainingLevel();
 	if (pThis->CurrentRanking != NewRanking && pThis->CurrentRanking != Rank::Invalid)
 	{
-		auto pThisTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		pThisTypeExt->InvokeEvent((pThis->CurrentRanking < NewRanking) ? EventTypeClass::WhenPromoted : EventTypeClass::WhenDemoted, pThis, nullptr);
 
-		if (NewRanking != Rank::Rookie)
-		{
-			if (!RulesExt::Global()->Promote_VeteranAnimation && !RulesExt::Global()->Promote_EliteAnimation)
-				return aresProcess();
-			AnimClass* promAnim = nullptr;
-			if (NewRanking == Rank::Veteran && RulesExt::Global()->Promote_VeteranAnimation)
-				promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCenterCoords());
-			else if (RulesExt::Global()->Promote_EliteAnimation)
-				promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords());
+		AnimClass* promAnim = nullptr;
+		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && RulesExt::Global()->Promote_VeteranAnimation)
+			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCenterCoords());
+		else if (RulesExt::Global()->Promote_EliteAnimation)
+			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords());
+
+		if(promAnim)
 			promAnim->SetOwnerObject(pThis);
-		}
 	}
 
 	return aresProcess();
