@@ -719,7 +719,7 @@ DEFINE_HOOK(0x4D580B, FootClass_ApproachTarget_DeployToFire, 0x6)
 
 DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
 {
-	enum { SkipGameCode = 0x741086, MustDeploy = 0x7410A8 };
+	enum { SkipGameCode = 0x7410B7, MustDeploy = 0x7410A8 };
 
 	GET(UnitClass*, pThis, ESI);
 
