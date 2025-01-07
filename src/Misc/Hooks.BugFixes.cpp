@@ -1121,6 +1121,14 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 		const auto pFoot = abstract_cast<FootClass*>(pTechno);
 		const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
 
+		// Clear archive target for infantries and vehicles like receive a mega mission
+		if (pFoot && !pAircraft)
+			pTechno->SetArchiveTarget(nullptr);
+
+		// To avoid foots stuck in Mission::Area_Guard
+		if (pTechno->CurrentMission == Mission::Area_Guard && !pTechno->GetTechnoType()->DefaultToGuardArea)
+			pTechno->QueueMission(Mission::Guard, true);
+
 		// To avoid jumpjets falling into a state of standing idly by
 		if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
 			pTechno->SetDestination(nullptr, true);
