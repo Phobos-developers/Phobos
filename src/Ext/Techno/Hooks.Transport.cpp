@@ -135,24 +135,21 @@ DEFINE_HOOK(0x4733B0, CargoClass_Attach_Hook_BeforeLoad, 0x6)
 DEFINE_HOOK(0x47342A, CargoClass_Attach_Hook_AfterLoad, 0x5)
 {
 	GET(PassengersClass*, pThis, EDI);
-	GET(FootClass*, pPassenger, ESI);
 
-	if (pPassenger)
+	auto const pTransport = GetCargoClassParent(pThis);
+	auto const pPassenger = pTransport->Passengers.FirstPassenger; // At this point, ESI is no longer the passenger.
+	auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+	auto const pPassExt = TechnoExt::ExtMap.Find(pPassenger);
+	auto const pPassTypeExt = pPassExt->TypeExtData;
+
+	// Set a pointer to the Bio Reactor.
+	if (auto pTransportBld = abstract_cast<BuildingClass*>(pTransport))
 	{
-		auto const pTransport = GetCargoClassParent(pThis);
-		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
-		auto const pPassExt = TechnoExt::ExtMap.Find(pPassenger);
-		auto const pPassTypeExt = pPassExt->TypeExtData;
-
-		// Set a pointer to the Bio Reactor.
-		if (auto pTransportBld = abstract_cast<BuildingClass*>(pTransport))
-		{
-			pPassExt->HousingMe = pTransportBld;
-		}
-
-		pTransTypeExt->InvokeEvent(EventTypeClass::WhenLoad, pTransport, pPassenger);
-		pPassTypeExt->InvokeEvent(EventTypeClass::WhenBoard, pPassenger, pTransport);
+		pPassExt->HousingMe = pTransportBld;
 	}
+
+	pTransTypeExt->InvokeEvent(EventTypeClass::WhenLoad, pTransport, pPassenger);
+	pPassTypeExt->InvokeEvent(EventTypeClass::WhenBoard, pPassenger, pTransport);
 
 	return 0;
 }
