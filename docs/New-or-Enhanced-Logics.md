@@ -728,7 +728,9 @@ EventHandler=EHIvanCrushed
 EventType=WhenCrushed
 Me.Effect.Weapon=IvanDeath
 Me.Effect.Voice=CrazyIvanDie
-Me.Effect.Voice.Global=true</code></pre>
+Me.Effect.Voice.Global=true
+;; also refer to "[AudioVisual]->InfantryPlayDieSoundWhenCrushed"
+;; if you want all infantry to play die sound when crushed.</code></pre>
     </details>
   </li>
   <li>

@@ -1645,3 +1645,13 @@ DropPod.Trailer.SpawnDelay =  ; int, number of frames between each spawn of Drop
 DropPod.Weapon =              ; weapon, default to [General]->DropPodWeapon
 DropPod.Weapon.HitLandOnly =  ; boolean, default to no
 ```
+
+## Infantry play die sound when crushed
+
+In vanilla game, an infantry crushed will not play a die sound. This can now be customized.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+InfantryPlayDieSoundWhenCrushed=false  ; boolean
+```
