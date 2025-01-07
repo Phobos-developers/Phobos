@@ -444,6 +444,7 @@ Shield.InheritStateOnReplace=false          ; boolean
             <li>The <code>They</code> scope is missing for these events.</li>
             <li><code>WhenCreated</code>: When the techno is created. Invoked even if the techno is pre-placed on the map.</li>
             <li><code>WhenCaptured</code>: When the techno is captured, mind-controlled, or released from mind-control.</li>
+            <li><code>WhenUpgraded</code>: When the building is installed with an upgrade.</li>
             <li><code>WhenPromoted</code>: When the techno's veterancy is promoted.</li>
             <li><code>WhenDemoted</code>: When the techno's veterancy is somehow demoted.</li>
           </ul>
@@ -487,14 +488,6 @@ Shield.InheritStateOnReplace=false          ; boolean
             <li>Invoked when a techno leaves a transport, a Bio Reactor, or a garrisonable structure. By the moment, the passenger has already left the transport or building.</li>
             <li><code>WhenUnload</code>: Invoked on the transport or building's perspective.</li>
             <li><code>WhenUnboard</code>: Invoked on the passenger's perspective.</li>
-          </ul>
-        </li>
-        <li>
-          Building upgrading:
-          <ul>
-            <li>Invoked when a building upgrade is placed. By the moment, the building is already attached with the upgrade.</li>
-            <li><code>WhenUpgraded</code>: Invoked on the upgraded building's perspective. The upgrade is the <code>They</code> scope in this event.</li>
-            <li><code>WhenPutAsUpgrade</code>: Invoked on the upgrade's perspective. The upgraded building is the <code>They</code> scope in this event.</li>
           </ul>
         </li>
       </ul>
