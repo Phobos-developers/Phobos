@@ -29,6 +29,8 @@ public:
 	static EventTypeClass* WhenUnload;
 	static EventTypeClass* WhenBoard;
 	static EventTypeClass* WhenUnboard;
+	static EventTypeClass* WhenUpgraded;
+	static EventTypeClass* WhenPutAsUpgrade;
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);

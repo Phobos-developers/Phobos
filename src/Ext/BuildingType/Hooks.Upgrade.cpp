@@ -62,6 +62,19 @@ DEFINE_HOOK(0x4408EB, BuildingClass_Unlimbo_UpgradeBuildings, 0xA)
 	return ForbidUpgrade;
 }
 
+DEFINE_HOOK(0x4409CD, BuildingClass_UpdateAnimsAndTurretAfterUpgrade, 0x5)
+{
+	GET(BuildingClass*, pBuilding, ECX);
+	GET(BuildingClass*, pUpgrade, ESI);
+
+	auto const pTechnoExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
+	auto const pUpgradeExt = TechnoTypeExt::ExtMap.Find(pUpgrade->Type);
+	pTechnoExt->InvokeEvent(EventTypeClass::WhenUpgraded, pBuilding, pUpgrade);
+	pUpgradeExt->InvokeEvent(EventTypeClass::WhenPutAsUpgrade, pUpgrade, pBuilding);
+
+	return 0;
+}
+
 #pragma region UpgradesInteraction
 
 int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const* const pItem)

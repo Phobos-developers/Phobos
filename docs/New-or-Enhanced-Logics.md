@@ -489,6 +489,14 @@ Shield.InheritStateOnReplace=false          ; boolean
             <li><code>WhenUnboard</code>: Invoked on the passenger's perspective.</li>
           </ul>
         </li>
+        <li>
+          Building upgrading:
+          <ul>
+            <li>Invoked when a building upgrade is placed. By the moment, the building is already attached with the upgrade.</li>
+            <li><code>WhenUpgraded</code>: Invoked on the upgraded building's perspective. The upgrade is the <code>They</code> scope in this event.</li>
+            <li><code>WhenPutAsUpgrade</code>: Invoked on the upgrade's perspective. The upgraded building is the <code>They</code> scope in this event.</li>
+          </ul>
+        </li>
       </ul>
     </details>
 - Scopes:
