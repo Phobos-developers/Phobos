@@ -1126,7 +1126,7 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 			pTechno->SetArchiveTarget(nullptr);
 
 		// To avoid foots stuck in Mission::Area_Guard
-		if (pTechno->CurrentMission == Mission::Area_Guard)
+		if (pTechno->CurrentMission == Mission::Area_Guard && !pTechno->GetTechnoType()->DefaultToGuardArea)
 			pTechno->QueueMission(Mission::Guard, true);
 
 		// To avoid jumpjets falling into a state of standing idly by
