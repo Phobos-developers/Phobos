@@ -626,13 +626,14 @@ Shield.InheritStateOnReplace=false          ; boolean
     </details>
 - Other usage notes:
   - If any type conversion happened right before or during the event, only the handlers attached to the old type will be invoked.
-  - Effects are executed in an order like:
+  - Filters and effects are no real scripts. Multiple instances of a same key will override each other, and only the latest specified one will take effect. For example, multiple instances of `Me.Effect.Weapon` doesn't make multiple weapons to detonate at the same time on the `Me` scope.
+  - The order at which effects are specified in `rulesmd.ini` does not affect the order at which they are resolved. Effects are resolved in an order determined by the following rules.
     - Event Handlers on a same techno type are invoked in the numeral order.
     - Effects for the `Me` scope are executed before the efffects for the `They` scope.
     - Effects for the basic scopes are executed before those for the extended scopes.
     - Effects for the extended scopes are executed in the order the extended scopes are listed in the document.
     - Effects on a same scope are resolved in the order they are listed in this document.
-  - To reverse the order, define another event handler with identical event type and filters, but different effects.
+    - To reverse the order, define another event handler with identical event type and filters, but different effects.
 
 In `rulesmd.ini`:
 ```ini
