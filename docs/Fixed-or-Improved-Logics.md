@@ -184,6 +184,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Aircraft with `AirportBound=no` continue moving forward.
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
+- In vanilla game, an infantry crushed will not play a die sound. This can now be customized by `[AudioVisual]` -> `InfantryPlayDieSoundWhenCrushed=true`.
 
 ## Fixes / interactions with other extensions
 
@@ -1644,14 +1645,4 @@ DropPod.Trailer.Attached =    ; boolean, default to no
 DropPod.Trailer.SpawnDelay =  ; int, number of frames between each spawn of DropPod.Trailer, default to 6
 DropPod.Weapon =              ; weapon, default to [General]->DropPodWeapon
 DropPod.Weapon.HitLandOnly =  ; boolean, default to no
-```
-
-## Infantry play die sound when crushed
-
-In vanilla game, an infantry crushed will not play a die sound. This can now be customized.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-InfantryPlayDieSoundWhenCrushed=false  ; boolean
 ```
