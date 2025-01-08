@@ -276,7 +276,7 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 		const auto angle = -pThis->LocomotionFacing.Current().GetRadian<65536>();
 		const auto checkCoord = Point2D { static_cast<int>(checkLength * cos(angle) + 0.5), static_cast<int>(checkLength * sin(angle) + 0.5) };
 		const auto largeStep = Math::max(abs(checkCoord.X), abs(checkCoord.Y));
-		const auto checkSteps = (largeStep > Unsorted::LeptonsPerCell) ? (largeStep / Unsorted::LeptonsPerCell) : 1;
+		const auto checkSteps = (largeStep > Unsorted::LeptonsPerCell) ? (largeStep / Unsorted::LeptonsPerCell + 1) : 1;
 		const auto stepCoord = Point2D { (checkCoord.X / checkSteps), (checkCoord.Y / checkSteps) };
 
 		// Check forward
@@ -292,14 +292,14 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 		if ((curCoord.X >> 8) != (lastCoord.X >> 8) && (curCoord.Y >> 8) != (lastCoord.Y >> 8))
 		{
 			bool lastX = (abs(stepCoord.X) > abs(stepCoord.Y)) ?
-				(((curCoord.Y - static_cast<int>((static_cast<double>((stepCoord.X > 0) ?
+				(((curCoord.Y - static_cast<int>(((stepCoord.X > 0) ?
 					(curCoord.X & 0XFF) :
 					((curCoord.X & 0XFF) - Unsorted::LeptonsPerCell)) *
-				checkCoord.Y) / checkCoord.X + 0.5)) >> 8) == (curCoord.Y >> 8)) :
-				(((curCoord.X - static_cast<int>((static_cast<double>((stepCoord.Y > 0) ?
+				checkCoord.Y / checkCoord.X)) >> 8) == (curCoord.Y >> 8)) :
+				(((curCoord.X - static_cast<int>(((stepCoord.Y > 0) ?
 					(curCoord.Y & 0XFF) :
 					((curCoord.Y & 0XFF) - Unsorted::LeptonsPerCell)) *
-				checkCoord.X) / checkCoord.Y + 0.5)) >> 8) != (curCoord.X >> 8));
+				checkCoord.X / checkCoord.Y)) >> 8) != (curCoord.X >> 8));
 
 			if (const auto pCheckCell = MapClass::Instance->TryGetCellAt(lastX ?
 				CellStruct { static_cast<short>(lastCoord.X >> 8), static_cast<short>(curCoord.Y >> 8) } :
@@ -335,14 +335,14 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 			if ((curCoord.X >> 8) != (lastCoord.X >> 8) && (curCoord.Y >> 8) != (lastCoord.Y >> 8))
 			{
 				bool lastX = (abs(stepCoord.X) > abs(stepCoord.Y)) ?
-					(((curCoord.Y - static_cast<int>((static_cast<double>((stepCoord.X > 0) ?
+					(((curCoord.Y - static_cast<int>(((stepCoord.X > 0) ?
 						(curCoord.X & 0XFF) :
 						((curCoord.X & 0XFF) - Unsorted::LeptonsPerCell)) *
-					checkCoord.Y) / checkCoord.X + 0.5)) >> 8) == (curCoord.Y >> 8)) :
-					(((curCoord.X - static_cast<int>((static_cast<double>((stepCoord.Y > 0) ?
+					checkCoord.Y / checkCoord.X)) >> 8) == (curCoord.Y >> 8)) :
+					(((curCoord.X - static_cast<int>(((stepCoord.Y > 0) ?
 						(curCoord.Y & 0XFF) :
 						((curCoord.Y & 0XFF) - Unsorted::LeptonsPerCell)) *
-					checkCoord.X) / checkCoord.Y + 0.5)) >> 8) != (curCoord.X >> 8));
+					checkCoord.X / checkCoord.Y)) >> 8) != (curCoord.X >> 8));
 
 				if (const auto pCheckCell = MapClass::Instance->TryGetCellAt(lastX ?
 					CellStruct { static_cast<short>(lastCoord.X >> 8), static_cast<short>(curCoord.Y >> 8) } :
