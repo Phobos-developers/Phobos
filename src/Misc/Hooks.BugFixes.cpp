@@ -1142,7 +1142,7 @@ int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, Abstrac
 {
 	return (pSource->IsInAir() && pSource->WhatAmI() != AbstractType::Aircraft) // Jumpjets or sth in the air
 		? (pSource->DistanceFrom(pTarget) * 2) // 2D distance (2x is the bonus to units in the air)
-		: reinterpret_cast<int(__thiscall*)(ObjectClass*, AbstractClass*)>(0x5F6360)(pSource, pTarget); // 3D distance (vanilla)
+		: pSource->DistanceFrom3D(pTarget); // 3D distance (vanilla)
 }
 DEFINE_JUMP(CALL, 0x6EBCC9, GET_OFFSET(Check2DDistanceInsteadOf3D));
 
