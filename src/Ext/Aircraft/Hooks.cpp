@@ -362,7 +362,7 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 	return EnterIdleAndReturn;
 }
 
-DEFINE_HOOK(0x4DDD66, FootClass_vt_entry_550_ReplaceHardcode, 0x5) // To avoid that the aircraft cannot fly towards the water surface normally
+DEFINE_HOOK(0x4DDD66, FootClass_IsLandZoneClear_ReplaceHardcode, 0x6) // To avoid that the aircraft cannot fly towards the water surface normally
 {
 	enum { SkipGameCode = 0x4DDD8A };
 
