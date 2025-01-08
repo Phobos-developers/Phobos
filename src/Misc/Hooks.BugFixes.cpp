@@ -1138,20 +1138,11 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 #pragma region TeamCloseRangeFix
 
-int __fastcall Check2DDistanceInsteadOf3D(AbstractClass* pSource, void* _, AbstractClass* pTarget)
+int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
 {
-	const auto sourceCoords = pSource->GetCoords();
-	const auto targetCoords = pTarget->GetCoords();
-
-	// Aircraft has its own unique treatment, and it will not be changed here
-	int distance = Game::F2I((pSource->IsInAir() && pSource->WhatAmI() != AbstractType::Aircraft) ? // Jumpjets or sth in the air ?
-		(Point2D { sourceCoords.X - targetCoords.X, sourceCoords.Y - targetCoords.Y }.Magnitude() * 2) : // bonus to units in the air
-		sourceCoords.DistanceFrom(targetCoords)); // Original
-
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget)) // Vanilla bonus to building
-		distance -= ((pBuilding->Type->GetFoundationWidth() + pBuilding->Type->GetFoundationHeight(false)) << 6);
-
-	return Math::max(0, distance);
+	return (pSource->IsInAir() && pSource->WhatAmI() != AbstractType::Aircraft) // Jumpjets or sth in the air
+		? pSource->DistanceFrom(pTarget) // 2D distance
+		: reinterpret_cast<int(__thiscall*)(ObjectClass*, AbstractClass*)>(0x5F6360)(pSource, pTarget); // 3D distance (vanilla)
 }
 DEFINE_JUMP(CALL, 0x6EBCC9, GET_OFFSET(Check2DDistanceInsteadOf3D));
 
