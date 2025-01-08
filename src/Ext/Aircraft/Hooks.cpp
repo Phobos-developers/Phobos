@@ -356,7 +356,7 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 		return (R->Origin() == 0x4168C7 ? ContinueMoving1 : ContinueMoving2);
 
 	// Try next planning waypoint first, then return to air base if it does not exist or cannot be taken
-	if (!reinterpret_cast<bool(__thiscall*)(AircraftClass*)>(0x6385C0)(pThis))
+	if (!pThis->TryNextPlanningTokenNode())
 		pThis->EnterIdleMode(false, true);
 
 	return EnterIdleAndReturn;
