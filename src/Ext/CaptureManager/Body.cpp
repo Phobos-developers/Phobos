@@ -96,7 +96,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 			if (threatDelay > 0)
 			{
 				if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
-					pExt->BeControlledThreatFrame = Unsorted::CurrentFrame + threatDelay;
+					pExt->BeControlledThreatFrame = Unsorted::CurrentFrame() + threatDelay;
 			}
 
 			if (pTarget->SetOwningHouse(pManager->Owner->Owner, !silent))
@@ -141,7 +141,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass
 		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
 			bRemoveFirst = pTechnoTypeExt->MultiMindControl_ReleaseVictim;
 
-		return CaptureManagerExt::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType, threatDelay);
+		return CaptureManagerExt::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType, false, threatDelay);
 	}
 
 	return false;
