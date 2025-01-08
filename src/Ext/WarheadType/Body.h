@@ -68,6 +68,7 @@ public:
 		Valueable<bool> Crit_SuppressWhenIntercepted;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
+		Nullable<int> MindControl_ThreatDelay;
 
 		Valueable<bool> Shield_Penetrate;
 		Valueable<bool> Shield_Break;
@@ -220,6 +221,7 @@ public:
 			, Crit_SuppressWhenIntercepted { false }
 
 			, MindControl_Anim {}
+			, MindControl_ThreatDelay {}
 
 			, Shield_Penetrate { false }
 			, Shield_Break { false }

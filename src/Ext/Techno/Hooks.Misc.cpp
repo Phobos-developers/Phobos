@@ -363,7 +363,7 @@ bool __fastcall CanAttackMindControlled(TechnoClass* pControlled, TechnoClass* p
 	if (!pExt)
 		return true;
 
-	return (Unsorted::CurrentFrame - pExt->LastBeControlledFrame) >= RulesExt::Global()->AttackMindControlledDelay;
+	return pExt->BeControlledThreatFrame >= Unsorted::CurrentFrame();
 }
 
 DEFINE_HOOK(0x7089E8, TechnoClass_AllowedToRetaliate_AttackMindControlledDelay, 0x6)
