@@ -18,30 +18,31 @@ bool SWColumnClass::Draw(bool forced)
 	if (!SWSidebarClass::IsEnabled())
 		return false;
 
-	const auto pSurface = DSurface::Composite();
-	auto bounds = pSurface->GetRect();
-
 	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
+	const int cameoWidth = 60, cameoHeight = 48;
+	const int cameoBackgroundWidth = Phobos::UI::SuperWeaponSidebar_Interval + cameoWidth;
 
-	if (const auto centerShape = pSideExt->SuperWeaponSidebar_CenterShape.Get())
+	if (const auto pCenterPCX = pSideExt->SuperWeaponSidebar_CenterPCX.GetSurface())
 	{
+		const int cameoHarfInterval = (Phobos::UI::SuperWeaponSidebar_CameoHeight - cameoHeight) / 2;
+
 		for (const auto button : this->Buttons)
 		{
-			Point2D drawPoint = { this->X, button->Y };
-			pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, centerShape, 0, &drawPoint, &bounds, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			RectangleStruct drawRect { this->X, button->Y - cameoHarfInterval, cameoBackgroundWidth, Phobos::UI::SuperWeaponSidebar_CameoHeight };
+			PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, pCenterPCX);
 		}
 	}
 
-	if (const auto topShape = pSideExt->SuperWeaponSidebar_TopShape.Get())
+	if (const auto pTopPCX = pSideExt->SuperWeaponSidebar_TopPCX.GetSurface())
 	{
-		Point2D drawPoint = { this->X, this->Y - topShape->Height };
-		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, topShape, 0, &drawPoint, &bounds, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		RectangleStruct drawRect { this->X, this->Y - 20, cameoBackgroundWidth, 20 };
+		PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, pTopPCX);
 	}
 
-	if (const auto bottomShape = pSideExt->SuperWeaponSidebar_BottomShape.Get())
+	if (const auto pBottomPCX = pSideExt->SuperWeaponSidebar_BottomPCX.GetSurface())
 	{
-		Point2D drawPoint = { this->X, this->Y + this->Height };
-		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, bottomShape, 0, &drawPoint, &bounds, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		RectangleStruct drawRect { this->X, this->Y + this->Height, cameoBackgroundWidth, 20 };
+		PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, pBottomPCX);
 	}
 
 	for (const auto button : this->Buttons)

@@ -20,21 +20,18 @@ bool ToggleSWButtonClass::Draw(bool forced)
 		return false;
 
 	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
-	const auto pShape = pSideExt->SuperWeaponSidebar_ToggleShape.Get();
+	const auto pTogglePCX = SWSidebarClass::IsEnabled() ? pSideExt->SuperWeaponSidebar_OnPCX.GetSurface() : pSideExt->SuperWeaponSidebar_OffPCX.GetSurface();
 
-	if (!pShape)
+	if (!pTogglePCX)
 		return false;
 
-	const auto pConvert = FileSystem::SIDEBAR_PAL();
-	const auto pSurface = DSurface::Composite();
-	Point2D position = { this->X, this->Y };
-	RectangleStruct destRect = { position.X, position.Y, this->Width, this->Height };
-	pSurface->DrawSHP(pConvert, pShape, SWSidebarClass::IsEnabled(), &position, &destRect, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+	RectangleStruct destRect { this->X, this->Y, this->Width, this->Height };
+	PCX::Instance->BlitToSurface(&destRect, DSurface::Composite, pTogglePCX);
 
 	if (this->IsHovering)
 	{
 		const COLORREF tooltipColor = Drawing::RGB_To_Int(Drawing::TooltipColor());
-		pSurface->DrawRect(&destRect, tooltipColor);
+		DSurface::Composite->DrawRect(&destRect, tooltipColor);
 	}
 
 	return true;
@@ -69,6 +66,11 @@ bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 	auto& columns = SWSidebarClass::Instance.Columns;
 
 	if (columns.empty())
+		return false;
+
+	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
+
+	if (SWSidebarClass::IsEnabled() ? !pSideExt->SuperWeaponSidebar_OnPCX.GetSurface() : !pSideExt->SuperWeaponSidebar_OffPCX.GetSurface())
 		return false;
 
 	if ((int)flags & (int)GadgetFlag::LeftPress)

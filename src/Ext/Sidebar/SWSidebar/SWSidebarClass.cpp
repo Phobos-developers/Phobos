@@ -257,15 +257,12 @@ DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeSWSidebar, 0x5)
 
 	if (const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]))
 	{
-		if (const auto toggleShape = pSideExt->SuperWeaponSidebar_ToggleShape.Get())
+		if (const auto toggleButton = DLLCreate<ToggleSWButtonClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count, 0, 0, 10, 50))
 		{
-			if (const auto toggleButton = DLLCreate<ToggleSWButtonClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count, 0, 0, toggleShape->Width, toggleShape->Height))
-			{
-				toggleButton->Zap();
-				GScreenClass::Instance->AddButton(toggleButton);
-				SWSidebarClass::Instance.ToggleButton = toggleButton;
-				toggleButton->UpdatePosition();
-			}
+			toggleButton->Zap();
+			GScreenClass::Instance->AddButton(toggleButton);
+			SWSidebarClass::Instance.ToggleButton = toggleButton;
+			toggleButton->UpdatePosition();
 		}
 	}
 

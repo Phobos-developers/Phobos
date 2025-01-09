@@ -602,16 +602,18 @@ SuperWeaponSidebar.MaxColumns=       ; integer
 In `rulesmd.ini`
 ```ini
 [SOMESIDE]
-SuperWeaponSidebar.TopShape=          ; filename - including the .shp extension
-SuperWeaponSidebar.CenterShape=     ; filename - including the .shp extension
-SuperWeaponSidebar.BottomShape=    ; filename - including the .shp extension
-SuperWeaponSidebar.ToggleShape=     ; filename - including the .shp extension
+SuperWeaponSidebar.OnPCX=             ; filename - including the .pcx extension
+SuperWeaponSidebar.OffPCX=            ; filename - including the .pcx extension
+SuperWeaponSidebar.TopPCX=            ; filename - including the .pcx extension
+SuperWeaponSidebar.CenterPCX=         ; filename - including the .pcx extension
+SuperWeaponSidebar.BottomPCX=         ; filename - including the .pcx extension
 
 [SOMESW]
 SuperWeaponSidebar.Allow=true         ; boolean
 SuperWeaponSidebar.PriorityHouses=    ; list of house types
 SuperWeaponSidebar.RequiredHouses=    ; list of house types
 ```
+
 ## Miscellanous
 
 ### Skip saving game on starting a new campaign
