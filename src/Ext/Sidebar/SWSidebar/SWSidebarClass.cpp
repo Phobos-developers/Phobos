@@ -18,7 +18,8 @@ bool SWSidebarClass::AddColumn()
 	if (static_cast<int>(columns.size()) >= Phobos::UI::SuperWeaponSidebar_MaxColumns)
 		return false;
 
-	const auto column = DLLCreate<SWColumnClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count + 1 + static_cast<int>(columns.size()), 0, 0, 60 + Phobos::UI::SuperWeaponSidebar_Interval, 48);
+	const int cameoWidth = 60;
+	const auto column = DLLCreate<SWColumnClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count + 1 + static_cast<int>(columns.size()), 0, 0, cameoWidth + Phobos::UI::SuperWeaponSidebar_Interval, Phobos::UI::SuperWeaponSidebar_CameoHeight);
 
 	if (!column)
 		return false;
@@ -143,8 +144,10 @@ void SWSidebarClass::SortButtons()
 	const int buttonCount = static_cast<int>(vec_Buttons.size());
 	const int cameoWidth = 60, cameoHeight = 48;
 	const int maximum = Phobos::UI::SuperWeaponSidebar_Max;
-	Point2D location = { 0, (DSurface::ViewBounds().Height - std::min(buttonCount, maximum) * cameoHeight) / 2 };
-	int location_Y = location.Y;
+	const int cameoHarfInterval = (Phobos::UI::SuperWeaponSidebar_CameoHeight - cameoHeight) / 2;
+	int location_Y = (DSurface::ViewBounds().Height - std::min(buttonCount, maximum) * Phobos::UI::SuperWeaponSidebar_CameoHeight) / 2;
+	Point2D location = { Phobos::UI::SuperWeaponSidebar_LeftOffset, location_Y };
+	location_Y -= cameoHarfInterval;
 	int rowIdx = 0, columnIdx = 0;
 
 	for (const auto button : vec_Buttons)
@@ -152,7 +155,7 @@ void SWSidebarClass::SortButtons()
 		const auto column = columns[columnIdx];
 
 		if (rowIdx == 0)
-			column->SetPosition(location.X, location.Y);
+			column->SetPosition(location.X - Phobos::UI::SuperWeaponSidebar_LeftOffset, location.Y);
 
 		column->Buttons.emplace_back(button);
 		button->SetColumn(columnIdx);
@@ -163,17 +166,18 @@ void SWSidebarClass::SortButtons()
 		{
 			rowIdx = 0;
 			columnIdx++;
-			location_Y += cameoHeight / 2;
-			location = { location.X + cameoWidth + Phobos::UI::SuperWeaponSidebar_Interval, location_Y };
+			location_Y += Phobos::UI::SuperWeaponSidebar_CameoHeight / 2;
+			location.X += cameoWidth + Phobos::UI::SuperWeaponSidebar_Interval;
+			location.Y = location_Y + cameoHarfInterval;
 		}
 		else
 		{
-			location.Y += cameoHeight;
+			location.Y += Phobos::UI::SuperWeaponSidebar_CameoHeight;
 		}
 	}
 
 	for (const auto column : columns)
-		column->SetHeight(column->Buttons.size() * 48);
+		column->SetHeight(column->Buttons.size() * Phobos::UI::SuperWeaponSidebar_CameoHeight);
 
 	if (const auto toggleButton = this->ToggleButton)
 		toggleButton->UpdatePosition();

@@ -105,8 +105,8 @@ bool SWColumnClass::AddButton(int superIdx)
 	if (static_cast<int>(buttons.size()) >= this->MaxButtons && !SWSidebarClass::Instance.AddColumn())
 		return false;
 
-	const int cameoWidth = 60;
-	const auto button = DLLCreate<SWButtonClass>(SWButtonClass::StartID + superIdx, superIdx, 0, 0, cameoWidth, Phobos::UI::SuperWeaponSidebar_CameoHeight);
+	const int cameoWidth = 60, cameoHeight = 48;
+	const auto button = DLLCreate<SWButtonClass>(SWButtonClass::StartID + superIdx, superIdx, 0, 0, cameoWidth, cameoHeight);
 
 	if (!button)
 		return false;
