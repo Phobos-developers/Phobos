@@ -77,7 +77,7 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 
 		Valueable<int> TabIndex;
-        
+
 		Valueable<bool> SuperWeaponSidebar_Allow;
 		DWORD SuperWeaponSidebar_PriorityHouses;
 		DWORD SuperWeaponSidebar_RequiredHouses;
