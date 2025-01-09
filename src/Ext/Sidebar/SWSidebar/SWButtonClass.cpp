@@ -197,7 +197,7 @@ bool SWButtonClass::LaunchSuper() const
 			{
 				DisplayClass::Instance->CurrentBuilding = nullptr;
 				DisplayClass::Instance->CurrentBuildingType = nullptr;
-				DisplayClass::Instance->unknown_11AC = static_cast<DWORD>(-1);
+				DisplayClass::Instance->CurrentBuildingOwnerArrayIndex = -1;
 				DisplayClass::Instance->SetActiveFoundation(nullptr);
 				MapClass::Instance->SetRepairMode(0);
 				DisplayClass::Instance->SetSellMode(0);
