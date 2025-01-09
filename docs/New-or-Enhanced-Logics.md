@@ -720,7 +720,7 @@ EventTypeN=                                        ; EventType
 (scope).Effect.EventInvokerN=                      ; EventInvokerType
 ```
 
-#### Examples
+#### Examples of making use of the Event Handlers
 
 <ul>
   <li>
@@ -863,6 +863,53 @@ EventInvokerN=                             ; EventInvokerType
 [SOMEHANDLER]                              ; EventHandlerType
 (scope).Effect.EventInvokerN=              ; EventInvokerType
 ```
+
+#### Examples of making use of the Event Invokers
+
+<ul>
+  <li>
+    <details>
+      <summary>Battle Fortresses make all garrisoned G.I.s and Guardian G.I.s synchronize with the vehicle's veterancy, will not do the same to other garrisoned infantry units, and will not cause elite infantry to demote to veteran.</summary>
+      <pre lang="ini"><code>[BFRT]
+EventHandler0=EH_BFRT_Veteran
+EventHandler0=EH_BFRT_Elite
+<br/>
+[EH_BFRT_Veteran]
+EventType=WhenPromoted
+Me.Filter.Veterancy=veteran
+Me.Effect.EventInvoker=EV_BFRT_Veteran
+;; When I promote into Veteran, I use the said invoker on myself.
+<br/>
+[EH_BFRT_Elite]
+EventType=WhenPromoted
+Me.Filter.Veterancy=elite
+Me.Effect.EventInvoker=EV_BFRT_Elite
+;; When I promote into Elite, I use the said invoker on myself.
+<br/>
+[EV_BFRT_Veteran]
+Target.PassDown.Passengers=true
+Target.Filter.TechnoTypes=E1,GGI
+Target.ExtraEventHandler=EEH_BFRT_Veteran
+;; When the invoker is invoked on me, it is passed down to my passengers as well.
+;; Only G.I.s and Guardian G.I.s will be affected, meaning myself and other infantries will not be affected.
+<br/>
+[EV_BFRT_Elite]
+Target.PassDown.Passengers=true
+Target.Filter.TechnoTypes=E1,GGI
+Target.ExtraEventHandler=EEH_BFRT_Elite
+;; Ditto.
+<br/>
+[EEH_BFRT_Veteran]
+Me.Filter.Veterancy=rookie
+Me.Effect.Veterancy.Set=veteran
+;; This handler is attached to G.I.s and Guardian G.I.s, and will make them promote into Veteran.
+<br/>
+[EEH_BFRT_Elite]
+Me.Effect.Veterancy.Set=elite
+;; This handler is attached to G.I.s and Guardian G.I.s, and will make them promote into Elite</code></pre>
+    </details>
+  </li>
+</ul>
 
 ## Animations
 
