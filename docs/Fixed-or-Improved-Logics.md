@@ -179,6 +179,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Stop command (`[S]` by default) behavior is now more correct:
   - Jumpjets no longer fall into a state of standing by idly.
   - Technos are no longer unable to stop the attack move mission.
+  - Technos are no longer unable to stop the area guard mission.
   - Aircraft no longer find airport twice and overlap.
   - Aircraft no longer briefly pause in the air before returning.
   - Aircraft with `AirportBound=no` continue moving forward.
