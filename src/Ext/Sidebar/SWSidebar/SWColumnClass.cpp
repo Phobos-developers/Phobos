@@ -131,7 +131,6 @@ bool SWColumnClass::RemoveButton(int superIdx)
 
 	DLLDelete(*it);
 	buttons.erase(it);
-	SWSidebarClass::Instance.SortButtons();
 	return true;
 }
 

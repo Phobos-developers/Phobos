@@ -98,17 +98,6 @@ void SWSidebarClass::SortButtons()
 	auto& columns = this->Columns;
 
 	if (columns.empty())
-		return;
-
-	columns.erase(
-		std::remove_if(columns.begin(), columns.end(),
-			[](SWColumnClass* const column)
-			{ return column->Buttons.empty(); }
-		),
-		columns.end()
-	);
-
-	if (columns.empty())
 	{
 		if (const auto toggleButton = this->ToggleButton)
 			toggleButton->UpdatePosition();
@@ -221,17 +210,38 @@ DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_SWSidebar, 0x7)
 
 	if (pHouse->IsCurrentPlayer())
 	{
-		for (const auto column : SWSidebarClass::Instance.Columns)
+		auto& sidebar = SWSidebarClass::Instance;
+
+		for (const auto& column : sidebar.Columns)
 		{
-			for (const auto button : column->Buttons)
+			std::vector<int> removeButtons;
+
+			for (const auto& button : column->Buttons)
 			{
 				if (HouseClass::CurrentPlayer->Supers[button->SuperIndex]->IsPresent)
 					continue;
 
-				if (column->RemoveButton(button->SuperIndex))
-					SidebarExt::Global()->SWSidebar_Indices.Remove(button->SuperIndex);
+				removeButtons.push_back(button->SuperIndex);
+			}
+
+			for (const auto& index : removeButtons)
+			{
+				if (column->RemoveButton(index))
+					SidebarExt::Global()->SWSidebar_Indices.Remove(index);
 			}
 		}
+
+		SWSidebarClass::Instance.SortButtons();
+		int removes = 0;
+
+		for (const auto& column : sidebar.Columns)
+		{
+			if (column->Buttons.empty())
+				++removes;
+		}
+
+		for (; removes > 0; --removes)
+			sidebar.RemoveColumn();
 	}
 
 	return SkipGameCode;
