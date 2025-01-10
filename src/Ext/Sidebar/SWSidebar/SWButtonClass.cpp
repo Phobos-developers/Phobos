@@ -148,14 +148,14 @@ void SWButtonClass::OnMouseLeave()
 
 bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 {
-	if ((int)flags & (int)GadgetFlag::LeftPress)
+	if (flags & GadgetFlag::LeftPress)
 	{
 		MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
 		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
 		this->LaunchSuper();
 	}
 
-	return this->ControlClass::Action(flags, pKey, KeyModifier::None);
+	return this->GadgetClass::Action(flags, pKey, KeyModifier::None);
 }
 
 void SWButtonClass::SetColumn(int column)
@@ -200,7 +200,7 @@ bool SWButtonClass::LaunchSuper() const
 				DisplayClass::Instance->CurrentBuildingOwnerArrayIndex = -1;
 				DisplayClass::Instance->SetActiveFoundation(nullptr);
 				MapClass::Instance->SetRepairMode(0);
-				DisplayClass::Instance->SetSellMode(0);
+				MapClass::Instance->SetSellMode(0);
 				DisplayClass::Instance->PowerToggleMode = false;
 				DisplayClass::Instance->PlanningMode = false;
 				DisplayClass::Instance->PlaceBeaconMode = false;

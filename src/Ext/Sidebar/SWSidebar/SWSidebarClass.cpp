@@ -9,7 +9,6 @@
 SWSidebarClass SWSidebarClass::Instance;
 CommandClass* SWSidebarClass::Commands[10];
 
-
 // =============================
 // functions
 

@@ -7,7 +7,7 @@
 #include <Ext/Side/Body.h>
 
 ToggleSWButtonClass::ToggleSWButtonClass(unsigned int id, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, static_cast<GadgetFlag>((int)GadgetFlag::LeftPress | (int)GadgetFlag::LeftRelease), true)
+	: ControlClass(id, x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::LeftRelease), true)
 {
 	SWSidebarClass::Instance.ToggleButton = this;
 }
@@ -73,10 +73,10 @@ bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 	if (SWSidebarClass::IsEnabled() ? !pSideExt->SuperWeaponSidebar_OnPCX.GetSurface() : !pSideExt->SuperWeaponSidebar_OffPCX.GetSurface())
 		return false;
 
-	if ((int)flags & (int)GadgetFlag::LeftPress)
+	if (flags & GadgetFlag::LeftPress)
 		this->IsPressed = true;
 
-	if (((int)flags & (int)GadgetFlag::LeftRelease) && this->IsPressed)
+	if ((flags & GadgetFlag::LeftRelease) && this->IsPressed)
 	{
 		this->IsPressed = false;
 		VocClass::PlayGlobal(RulesClass::Instance->GUIMainButtonSound, 0x2000, 1.0);
