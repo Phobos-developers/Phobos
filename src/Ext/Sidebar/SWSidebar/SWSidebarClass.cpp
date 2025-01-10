@@ -145,7 +145,7 @@ void SWSidebarClass::SortButtons()
 		const auto column = columns[columnIdx];
 
 		if (rowIdx == 0)
-			column->SetPosition(location.X - Phobos::UI::SuperWeaponSidebar_LeftOffset, location.Y);
+			column->SetPosition(location.X - Phobos::UI::SuperWeaponSidebar_LeftOffset, location.Y - (SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex])->SuperWeaponSidebar_TopPCX.GetSurface() ? 20 : 0));
 
 		column->Buttons.emplace_back(button);
 		button->SetColumn(columnIdx);

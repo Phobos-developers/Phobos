@@ -35,13 +35,13 @@ bool SWColumnClass::Draw(bool forced)
 
 	if (const auto pTopPCX = pSideExt->SuperWeaponSidebar_TopPCX.GetSurface())
 	{
-		RectangleStruct drawRect { this->X, this->Y - 20, cameoBackgroundWidth, 20 };
+		RectangleStruct drawRect { this->X, this->Y, cameoBackgroundWidth, 20 };
 		PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, pTopPCX);
 	}
 
 	if (const auto pBottomPCX = pSideExt->SuperWeaponSidebar_BottomPCX.GetSurface())
 	{
-		RectangleStruct drawRect { this->X, this->Y + this->Height, cameoBackgroundWidth, 20 };
+		RectangleStruct drawRect { this->X, this->Y + this->Height - 20, cameoBackgroundWidth, 20 };
 		PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, pBottomPCX);
 	}
 
@@ -57,11 +57,13 @@ void SWColumnClass::OnMouseEnter()
 		return;
 
 	SWSidebarClass::Instance.CurrentColumn = this;
+	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
 }
 
 void SWColumnClass::OnMouseLeave()
 {
 	SWSidebarClass::Instance.CurrentColumn = nullptr;
+	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
 }
 
 bool SWColumnClass::Clicked(DWORD* pKey, GadgetFlag flags, int x, int y, KeyModifier modifier)
@@ -149,5 +151,7 @@ void SWColumnClass::ClearButtons(bool remove)
 
 void SWColumnClass::SetHeight(int height)
 {
-	this->Height = height;
+	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
+
+	this->Height = height + (pSideExt->SuperWeaponSidebar_TopPCX.GetSurface() ? 20 : 0) + (pSideExt->SuperWeaponSidebar_BottomPCX.GetSurface() ? 20 : 0);
 }
