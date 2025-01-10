@@ -324,8 +324,7 @@ DEFINE_HOOK(0x709D28, TechnoClass_DrawPips_Passengers, 0x6)
 							&position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 				}
 
-				position.X += size.X;
-				position.Y += size.Y;
+				position += size;
 			}
 			++currentIndex;
 		}
@@ -336,8 +335,7 @@ DEFINE_HOOK(0x709D28, TechnoClass_DrawPips_Passengers, 0x6)
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, 0,
 					&position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 
-			position.X += size.X;
-			position.Y += size.Y;
+			position += size;
 		}
 	}
 
