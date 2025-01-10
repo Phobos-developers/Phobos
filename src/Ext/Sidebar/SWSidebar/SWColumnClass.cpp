@@ -137,7 +137,6 @@ bool SWColumnClass::RemoveButton(int superIdx)
 	AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentButton, *it);
 	GScreenClass::Instance->RemoveButton(*it);
 
-	DLLDelete(*it);
 	buttons.erase(it);
 	return true;
 }

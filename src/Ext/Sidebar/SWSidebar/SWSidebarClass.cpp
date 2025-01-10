@@ -42,7 +42,6 @@ bool SWSidebarClass::RemoveColumn()
 		AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentColumn, backColumn);
 		GScreenClass::Instance->RemoveButton(backColumn);
 
-		DLLDelete(backColumn);
 		columns.erase(columns.end() - 1);
 		return true;
 	}
@@ -59,7 +58,6 @@ void SWSidebarClass::InitClear()
 	{
 		this->ToggleButton = nullptr;
 		GScreenClass::Instance->RemoveButton(toggleButton);
-		DLLDelete(toggleButton);
 	}
 
 	auto& columns = this->Columns;
@@ -68,7 +66,6 @@ void SWSidebarClass::InitClear()
 	{
 		column->ClearButtons();
 		GScreenClass::Instance->RemoveButton(column);
-		DLLDelete(column);
 	}
 
 	columns.clear();
