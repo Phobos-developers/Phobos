@@ -42,7 +42,6 @@ bool SWSidebarClass::RemoveColumn()
 		AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentColumn, backColumn);
 		GScreenClass::Instance->RemoveButton(backColumn);
 
-		DLLDelete(backColumn);
 		columns.erase(columns.end() - 1);
 		return true;
 	}
@@ -59,7 +58,6 @@ void SWSidebarClass::InitClear()
 	{
 		this->ToggleButton = nullptr;
 		GScreenClass::Instance->RemoveButton(toggleButton);
-		DLLDelete(toggleButton);
 	}
 
 	auto& columns = this->Columns;
@@ -68,7 +66,6 @@ void SWSidebarClass::InitClear()
 	{
 		column->ClearButtons();
 		GScreenClass::Instance->RemoveButton(column);
-		DLLDelete(column);
 	}
 
 	columns.clear();
@@ -168,9 +165,6 @@ void SWSidebarClass::SortButtons()
 
 	for (const auto column : columns)
 		column->SetHeight(column->Buttons.size() * Phobos::UI::SuperWeaponSidebar_CameoHeight);
-
-	if (const auto toggleButton = this->ToggleButton)
-		toggleButton->UpdatePosition();
 }
 
 int SWSidebarClass::GetMaximumButtonCount()
@@ -241,6 +235,9 @@ DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_SWSidebar, 0x7)
 
 		for (; removes > 0; --removes)
 			sidebar.RemoveColumn();
+
+		if (const auto toggleButton = sidebar.ToggleButton)
+			toggleButton->UpdatePosition();
 	}
 
 	return SkipGameCode;
@@ -283,12 +280,38 @@ DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeSWSidebar, 0x5)
 
 	if (const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]))
 	{
-		if (const auto toggleButton = DLLCreate<ToggleSWButtonClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count, 0, 0, 10, 50))
+		const auto pOnPCX = pSideExt->SuperWeaponSidebar_OnPCX.GetSurface();
+		const auto pOffPCX = pSideExt->SuperWeaponSidebar_OffPCX.GetSurface();
+		int width = 0, height = 0;
+
+		if (pOnPCX)
 		{
-			toggleButton->Zap();
-			GScreenClass::Instance->AddButton(toggleButton);
-			SWSidebarClass::Instance.ToggleButton = toggleButton;
-			toggleButton->UpdatePosition();
+			if (pOffPCX)
+			{
+				width = std::max(pOnPCX->GetWidth(), pOffPCX->GetWidth());
+				height = std::max(pOnPCX->GetHeight(), pOffPCX->GetHeight());
+			}
+			else
+			{
+				width = pOnPCX->GetWidth();
+				height = pOnPCX->GetHeight();
+			}
+		}
+		else if (pOffPCX)
+		{
+			width = pOffPCX->GetWidth();
+			height = pOffPCX->GetHeight();
+		}
+
+		if (width > 0 && height > 0)
+		{
+			if (const auto toggleButton = DLLCreate<ToggleSWButtonClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count, 0, 0, width, height))
+			{
+				toggleButton->Zap();
+				GScreenClass::Instance->AddButton(toggleButton);
+				SWSidebarClass::Instance.ToggleButton = toggleButton;
+				toggleButton->UpdatePosition();
+			}
 		}
 	}
 

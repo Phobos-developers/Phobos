@@ -35,13 +35,15 @@ bool SWColumnClass::Draw(bool forced)
 
 	if (const auto pTopPCX = pSideExt->SuperWeaponSidebar_TopPCX.GetSurface())
 	{
-		RectangleStruct drawRect { this->X, this->Y, cameoBackgroundWidth, 20 };
+		const int height = pTopPCX->GetHeight();
+		RectangleStruct drawRect { this->X, this->Y, cameoBackgroundWidth, height };
 		PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, pTopPCX);
 	}
 
 	if (const auto pBottomPCX = pSideExt->SuperWeaponSidebar_BottomPCX.GetSurface())
 	{
-		RectangleStruct drawRect { this->X, this->Y + this->Height - 20, cameoBackgroundWidth, 20 };
+		const int height = pBottomPCX->GetHeight();
+		RectangleStruct drawRect { this->X, this->Y + this->Height - height, cameoBackgroundWidth, height };
 		PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, pBottomPCX);
 	}
 
@@ -116,6 +118,10 @@ bool SWColumnClass::AddButton(int superIdx)
 	button->Zap();
 	GScreenClass::Instance->AddButton(button);
 	SWSidebarClass::Instance.SortButtons();
+
+	if (const auto toggleButton = SWSidebarClass::Instance.ToggleButton)
+		toggleButton->UpdatePosition();
+
 	return true;
 }
 
@@ -131,7 +137,6 @@ bool SWColumnClass::RemoveButton(int superIdx)
 	AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentButton, *it);
 	GScreenClass::Instance->RemoveButton(*it);
 
-	DLLDelete(*it);
 	buttons.erase(it);
 	return true;
 }
@@ -153,5 +158,11 @@ void SWColumnClass::SetHeight(int height)
 {
 	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
 
-	this->Height = height + (pSideExt->SuperWeaponSidebar_TopPCX.GetSurface() ? 20 : 0) + (pSideExt->SuperWeaponSidebar_BottomPCX.GetSurface() ? 20 : 0);
+	this->Height = height;
+
+	if (const auto pTopPCX = pSideExt->SuperWeaponSidebar_TopPCX.GetSurface())
+		this->Height += pTopPCX->GetHeight();
+
+	if (const auto pBottomPCX = pSideExt->SuperWeaponSidebar_BottomPCX.GetSurface())
+		this->Height += pBottomPCX->GetHeight();
 }
