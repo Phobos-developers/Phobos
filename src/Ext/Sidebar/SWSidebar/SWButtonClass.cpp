@@ -9,7 +9,7 @@
 #include <Utilities/AresFunctions.h>
 
 SWButtonClass::SWButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, GadgetFlag::LeftPress, true)
+	: ControlClass(id, x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::RightPress), true)
 	, SuperIndex(superIdx)
 {
 	if (const auto backColumn = SWSidebarClass::Instance.Columns.back())
@@ -148,6 +148,9 @@ void SWButtonClass::OnMouseLeave()
 
 bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 {
+	if (flags & GadgetFlag::RightPress)
+		DisplayClass::Instance->CurrentSWTypeIndex = -1;
+
 	if (flags & GadgetFlag::LeftPress)
 	{
 		MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
@@ -155,7 +158,9 @@ bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 		this->LaunchSuper();
 	}
 
-	return this->GadgetClass::Action(flags, pKey, KeyModifier::None);
+	// this->ControlClass::Action(flags, pKey, KeyModifier::None);
+	reinterpret_cast<bool(__thiscall*)(ControlClass*, GadgetFlag, DWORD*, KeyModifier)>(0x48E5A0)(this, flags, pKey, KeyModifier::None);
+	return true;
 }
 
 void SWButtonClass::SetColumn(int column)
