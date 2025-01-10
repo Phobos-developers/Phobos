@@ -32,6 +32,67 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
+// This function returns true if unloading the next passenger will not break the passenger lock, and vice versa.
+// This function assumes the techno to have a "PassengerLock.Count" > 0, and will not check it.
+bool TechnoTypeExt::ExtData::PassengerLockAffordable(TechnoClass* pThis) const
+{
+	if (this->Passengers_BySize && static_cast<int>(this->OwnerObject()->SizeLimit) > 1)
+	{
+		int const totalSize = pThis->Passengers.GetTotalSize();
+		int const minimalSize = this->Passengers_Lock_Count;
+		if (totalSize > minimalSize)
+		{
+			int const firstPassengerSize = static_cast<int>(pThis->Passengers.FirstPassenger->GetTechnoType()->Size);
+			if ((totalSize - firstPassengerSize) >= minimalSize)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	else
+	{
+		return pThis->Passengers.NumPassengers > this->Passengers_Lock_Count;
+	}
+}
+
+// This function returns the number of passengers should be kept inside the passenger lock.
+// This function assumes the techno to have a "PassengerLock.Count" > 0, and will not check it.
+int TechnoTypeExt::ExtData::NumPassengersToBeLocked(TechnoClass* pThis) const
+{
+	if (this->Passengers_BySize && static_cast<int>(this->OwnerObject()->SizeLimit) > 1)
+	{
+		int totalSize = pThis->Passengers.GetTotalSize();
+		int const minimalSize = this->Passengers_Lock_Count;
+
+		if (totalSize > minimalSize)
+		{
+			int shouldKeep = pThis->Passengers.NumPassengers;
+			TechnoClass* pPassenger = nullptr;
+			bool isFirst = true;
+			for (NextObject obj(pThis->Passengers.FirstPassenger); obj; ++obj)
+			{
+				pPassenger = static_cast<TechnoClass*>(*obj);
+				totalSize -= static_cast<int>(pPassenger->GetTechnoType()->Size);
+				if (totalSize < minimalSize)
+				{
+					// If unloading the first passenger would break the lock,
+					// then it is the user's intention to unload whatever left here.
+					return isFirst ? 0 : shouldKeep;
+				}
+				--shouldKeep;
+				isFirst = false;
+			}
+		}
+
+		return 0;
+	}
+	else
+	{
+		return this->Passengers_Lock_Count;
+	}
+}
+
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {

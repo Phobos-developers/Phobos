@@ -262,9 +262,7 @@ DEFINE_HOOK(0x709D28, TechnoClass_DrawPips_Passengers, 0x6)
 
 		// Gunner gap.
 		if (drawGunnerGap && !pPassenger->NextObject)
-		{
 			passengerPips.push_back(-1);
-		}
 
 		// The extra pips for units larger than size 1.
 		if (bySize)
@@ -273,9 +271,7 @@ DEFINE_HOOK(0x709D28, TechnoClass_DrawPips_Passengers, 0x6)
 			if (size > 1)
 			{
 				for (int i = size; i > 1; --i)
-				{
 					passengerPips.push_back(3);
-				}
 			}
 		}
 
@@ -301,15 +297,11 @@ DEFINE_HOOK(0x709D28, TechnoClass_DrawPips_Passengers, 0x6)
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, 0,
 					&position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 
-			position.X += size.X;
-			position.Y += size.Y;
+			position += size;
 
 			// Leave space for gunner gap.
 			if (drawGunnerGap && i == pType->Passengers)
-			{
-				position.X += size.X;
-				position.Y += size.Y;
-			}
+				position += size;
 		}
 	}
 	else

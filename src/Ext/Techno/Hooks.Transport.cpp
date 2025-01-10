@@ -223,41 +223,6 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 
 #pragma region Passenger_Lock
 
-inline static int GetHowManyPassengersShouldIKeep(UnitClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
-{
-	if (pTypeExt->Passengers_BySize && static_cast<int>(pThis->GetTechnoType()->SizeLimit) > 1)
-	{
-		int totalSize = pThis->Passengers.GetTotalSize();
-		int const minimalSize = pTypeExt->Passengers_Lock_Count;
-
-		if (totalSize > minimalSize)
-		{
-			int shouldKeep = pThis->Passengers.NumPassengers;
-			TechnoClass* pPassenger = nullptr;
-			bool isFirst = true;
-			for (NextObject obj(pThis->Passengers.FirstPassenger); obj; ++obj)
-			{
-				pPassenger = static_cast<TechnoClass*>(*obj);
-				totalSize -= static_cast<int>(pPassenger->GetTechnoType()->Size);
-				if (totalSize < minimalSize)
-				{
-					// If unloading the first passenger would break the lock,
-					// then it is the user's intention to unload whatever left here.
-					return isFirst ? 0 : shouldKeep;
-				}
-				--shouldKeep;
-				isFirst = false;
-			}
-		}
-
-		return 0;
-	}
-	else
-	{
-		return pTypeExt->Passengers_Lock_Count;
-	}
-}
-
 DEFINE_HOOK(0x73D842, UnitClass_Unload_HowManyPassengersShouldIKeep, 0x6)
 {
 	GET(UnitClass*, pThis, ECX);
@@ -267,7 +232,7 @@ DEFINE_HOOK(0x73D842, UnitClass_Unload_HowManyPassengersShouldIKeep, 0x6)
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 		if (pTypeExt->Passengers_Lock_Count > 0)
 		{
-			auto const shouldKeep = GetHowManyPassengersShouldIKeep(pThis, pTypeExt);
+			auto const shouldKeep = pTypeExt->NumPassengersToBeLocked(pThis);
 			if (pThis->Passengers.NumPassengers > shouldKeep)
 				pThis->NonPassengerCount = shouldKeep;
 			else
@@ -282,35 +247,13 @@ DEFINE_HOOK(0x73D842, UnitClass_Unload_HowManyPassengersShouldIKeep, 0x6)
 	return 0;
 }
 
-inline static bool GetCanIAffordUnloadingPassengers(UnitClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
-{
-	if (pTypeExt->Passengers_BySize && static_cast<int>(pThis->GetTechnoType()->SizeLimit) > 1)
-	{
-		int const totalSize = pThis->Passengers.GetTotalSize();
-		int const minimalSize = pTypeExt->Passengers_Lock_Count;
-		if (totalSize > minimalSize)
-		{
-			int const firstPassengerSize = static_cast<int>(pThis->Passengers.FirstPassenger->GetTechnoType()->Size);
-			if ((totalSize - firstPassengerSize) >= minimalSize)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	else
-	{
-		return pThis->Passengers.NumPassengers > pTypeExt->Passengers_Lock_Count;
-	}
-}
-
 DEFINE_HOOK(0x740031, UnitClass_GetCursorOverObject_PassengerLockNoUnload, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (pTypeExt->Passengers_Lock_Count > 0 && pTypeExt->Passengers_Lock_NoUnload
-		&& !GetCanIAffordUnloadingPassengers(pThis, pTypeExt))
+		&& !pTypeExt->PassengerLockAffordable(pThis))
 	{
 		return 0x740115;
 	}
@@ -324,7 +267,7 @@ DEFINE_HOOK(0x700EEC, TechnoClass_CanDeploySlashUnload_PassengerLockNoUnload, 0x
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (pTypeExt->Passengers_Lock_Count > 0 && pTypeExt->Passengers_Lock_NoUnload
-		&& !GetCanIAffordUnloadingPassengers(pThis, pTypeExt))
+		&& !pTypeExt->PassengerLockAffordable(pThis))
 	{
 		return 0x700DCE;
 	}
