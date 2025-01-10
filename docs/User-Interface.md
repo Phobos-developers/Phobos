@@ -585,33 +585,39 @@ ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enable
 - In theory, it should be compatible with Ares
 - Cameos arranged in a pyramid shape.
 - `SuperWeaponSidebar.Interval` specific how many leptons between two columns.
-- `SuperWeaponSidebar.Max` controls the maximum number of icons on the leftmost side, which also depends on the current game resolution.
+- `SuperWeaponSidebar.Max` controls the maximum number of cameos on the leftmost side, which also depends on the current game resolution.
 - `SuperWeaponSidebar.MaxColumns` controls that maximum count of columns.
+- `SuperWeaponSidebar.CameoHeight` controls the distance from the top of the previous cameo to the top of the next cameo.
+- `SuperWeaponSidebar.LeftOffset` controls the distance between the leftmost cameo and the leftmost part of the screen.
 - You can also launch first 10 SW by hotkey in INTERFACE category.
 - For localization of hotkey, add `TXT_FIRE_TACTICAL_SW_XX`, `TXT_FIRE_TACTICAL_SW_XX_DESC`, `TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` into your `.csf` file.
 
 In `uimd.ini`:
 ```ini
 [Sidebar]
-SuperWeaponSidebar=false            ; boolean
-SuperWeaponSidebar.Interval=0       ; integer
-SuperWeaponSidebar.Max=0            ; integer
-SuperWeaponSidebar.MaxColumns=       ; integer
+SuperWeaponSidebar=false              ; boolean
+SuperWeaponSidebar.Interval=0         ; integer
+SuperWeaponSidebar.LeftOffset=0       ; integer
+SuperWeaponSidebar.CameoHeight=48     ; integer
+SuperWeaponSidebar.Max=0              ; integer
+SuperWeaponSidebar.MaxColumns=        ; integer
 ```
 
 In `rulesmd.ini`
 ```ini
 [SOMESIDE]
-SuperWeaponSidebar.TopShape=          ; filename - including the .shp extension
-SuperWeaponSidebar.CenterShape=     ; filename - including the .shp extension
-SuperWeaponSidebar.BottomShape=    ; filename - including the .shp extension
-SuperWeaponSidebar.ToggleShape=     ; filename - including the .shp extension
+SuperWeaponSidebar.OnPCX=             ; filename - including the .pcx extension
+SuperWeaponSidebar.OffPCX=            ; filename - including the .pcx extension
+SuperWeaponSidebar.TopPCX=            ; filename - including the .pcx extension
+SuperWeaponSidebar.CenterPCX=         ; filename - including the .pcx extension
+SuperWeaponSidebar.BottomPCX=         ; filename - including the .pcx extension
 
 [SOMESW]
 SuperWeaponSidebar.Allow=true         ; boolean
 SuperWeaponSidebar.PriorityHouses=    ; list of house types
 SuperWeaponSidebar.RequiredHouses=    ; list of house types
 ```
+
 ## Miscellanous
 
 ### Skip saving game on starting a new campaign

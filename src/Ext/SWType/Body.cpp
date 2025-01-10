@@ -213,7 +213,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->TabIndex.Read(exINI, pSection, "TabIndex");
 	GeneralUtils::IntValidCheck(&this->TabIndex, pSection, "TabIndex", 1, 0, 3);
-    
+
 	this->SuperWeaponSidebar_Allow.Read(exINI, pSection, "SuperWeaponSidebar.Allow");
 	this->SuperWeaponSidebar_PriorityHouses = pINI->ReadHouseTypesList(pSection, "SuperWeaponSidebar.PriorityHouses", this->SuperWeaponSidebar_PriorityHouses);
 	this->SuperWeaponSidebar_RequiredHouses = pINI->ReadHouseTypesList(pSection, "SuperWeaponSidebar.RequiredHouses", this->SuperWeaponSidebar_RequiredHouses);

@@ -9,7 +9,7 @@
 #include <Utilities/AresFunctions.h>
 
 SWButtonClass::SWButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, GadgetFlag::LeftPress, true)
+	: ControlClass(id, x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::RightPress), true)
 	, SuperIndex(superIdx)
 {
 	if (const auto backColumn = SWSidebarClass::Instance.Columns.back())
@@ -148,14 +148,19 @@ void SWButtonClass::OnMouseLeave()
 
 bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 {
-	if ((int)flags & (int)GadgetFlag::LeftPress)
+	if (flags & GadgetFlag::RightPress)
+		DisplayClass::Instance->CurrentSWTypeIndex = -1;
+
+	if (flags & GadgetFlag::LeftPress)
 	{
 		MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
 		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
 		this->LaunchSuper();
 	}
 
-	return this->ControlClass::Action(flags, pKey, KeyModifier::None);
+	// this->ControlClass::Action(flags, pKey, KeyModifier::None);
+	reinterpret_cast<bool(__thiscall*)(ControlClass*, GadgetFlag, DWORD*, KeyModifier)>(0x48E5A0)(this, flags, pKey, KeyModifier::None);
+	return true;
 }
 
 void SWButtonClass::SetColumn(int column)
@@ -200,7 +205,7 @@ bool SWButtonClass::LaunchSuper() const
 				DisplayClass::Instance->CurrentBuildingOwnerArrayIndex = -1;
 				DisplayClass::Instance->SetActiveFoundation(nullptr);
 				MapClass::Instance->SetRepairMode(0);
-				DisplayClass::Instance->SetSellMode(0);
+				MapClass::Instance->SetSellMode(0);
 				DisplayClass::Instance->PowerToggleMode = false;
 				DisplayClass::Instance->PlanningMode = false;
 				DisplayClass::Instance->PlaceBeaconMode = false;

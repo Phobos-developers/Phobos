@@ -7,7 +7,6 @@ decltype(AresFunctions::ConvertTypeTo) AresFunctions::ConvertTypeTo = nullptr;
 decltype(AresFunctions::SpawnSurvivors) AresFunctions::SpawnSurvivors = nullptr;
 decltype(AresFunctions::IsTargetConstraintsEligible) AresFunctions::IsTargetConstraintsEligible = nullptr;
 std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> AresFunctions::SWTypeExtMap_Find;
-std::function<AresHouseExtData* (HouseClass*)> AresFunctions::HouseExtMap_Find;
 
 void* AresFunctions::_SWTypeExtMap = nullptr;
 decltype(AresFunctions::_SWTypeExtMapFind) AresFunctions::_SWTypeExtMapFind = nullptr;

@@ -1,12 +1,13 @@
 #include "SWSidebarClass.h"
 #include <CommandClass.h>
+#include <sstream>
+
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
-#include <sstream>
+#include <Ext/SWType/Body.h>
 
 SWSidebarClass SWSidebarClass::Instance;
 CommandClass* SWSidebarClass::Commands[10];
-
 
 // =============================
 // functions
@@ -18,7 +19,8 @@ bool SWSidebarClass::AddColumn()
 	if (static_cast<int>(columns.size()) >= Phobos::UI::SuperWeaponSidebar_MaxColumns)
 		return false;
 
-	const auto column = DLLCreate<SWColumnClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count + 1 + static_cast<int>(columns.size()), 0, 0, 60 + Phobos::UI::SuperWeaponSidebar_Interval, 48);
+	const int cameoWidth = 60;
+	const auto column = DLLCreate<SWColumnClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count + 1 + static_cast<int>(columns.size()), 0, 0, cameoWidth + Phobos::UI::SuperWeaponSidebar_Interval, Phobos::UI::SuperWeaponSidebar_CameoHeight);
 
 	if (!column)
 		return false;
@@ -95,17 +97,6 @@ void SWSidebarClass::SortButtons()
 	auto& columns = this->Columns;
 
 	if (columns.empty())
-		return;
-
-	columns.erase(
-		std::remove_if(columns.begin(), columns.end(),
-			[](SWColumnClass* const column)
-			{ return column->Buttons.empty(); }
-		),
-		columns.end()
-	);
-
-	if (columns.empty())
 	{
 		if (const auto toggleButton = this->ToggleButton)
 			toggleButton->UpdatePosition();
@@ -124,16 +115,29 @@ void SWSidebarClass::SortButtons()
 		column->ClearButtons(false);
 	}
 
-	std::stable_sort(vec_Buttons.begin(), vec_Buttons.end(), [](SWButtonClass* const a, SWButtonClass* const b)
+	const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
+
+	std::stable_sort(vec_Buttons.begin(), vec_Buttons.end(), [ownerBits](SWButtonClass* const a, SWButtonClass* const b)
 		{
+			const auto pExtA = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItemOrDefault(a->SuperIndex));
+			const auto pExtB = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItemOrDefault(b->SuperIndex));
+
+			if (pExtB && (pExtB->SuperWeaponSidebar_PriorityHouses & ownerBits) && (!pExtA || !(pExtA->SuperWeaponSidebar_PriorityHouses & ownerBits)))
+				return false;
+
+			if ((!pExtB || !(pExtB->SuperWeaponSidebar_PriorityHouses & ownerBits)) && pExtA && (pExtA->SuperWeaponSidebar_PriorityHouses & ownerBits))
+				return true;
+
 			return BuildType::SortsBefore(AbstractType::Special, a->SuperIndex, AbstractType::Special, b->SuperIndex);
 		});
 
 	const int buttonCount = static_cast<int>(vec_Buttons.size());
 	const int cameoWidth = 60, cameoHeight = 48;
 	const int maximum = Phobos::UI::SuperWeaponSidebar_Max;
-	Point2D location = { 0, (DSurface::ViewBounds().Height - std::min(buttonCount, maximum) * cameoHeight) / 2 };
-	int location_Y = location.Y;
+	const int cameoHarfInterval = (Phobos::UI::SuperWeaponSidebar_CameoHeight - cameoHeight) / 2;
+	int location_Y = (DSurface::ViewBounds().Height - std::min(buttonCount, maximum) * Phobos::UI::SuperWeaponSidebar_CameoHeight) / 2;
+	Point2D location = { Phobos::UI::SuperWeaponSidebar_LeftOffset, location_Y };
+	location_Y -= cameoHarfInterval;
 	int rowIdx = 0, columnIdx = 0;
 
 	for (const auto button : vec_Buttons)
@@ -141,7 +145,7 @@ void SWSidebarClass::SortButtons()
 		const auto column = columns[columnIdx];
 
 		if (rowIdx == 0)
-			column->SetPosition(location.X, location.Y);
+			column->SetPosition(location.X - Phobos::UI::SuperWeaponSidebar_LeftOffset, location.Y - (SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex])->SuperWeaponSidebar_TopPCX.GetSurface() ? 20 : 0));
 
 		column->Buttons.emplace_back(button);
 		button->SetColumn(columnIdx);
@@ -152,17 +156,18 @@ void SWSidebarClass::SortButtons()
 		{
 			rowIdx = 0;
 			columnIdx++;
-			location_Y += cameoHeight / 2;
-			location = { location.X + cameoWidth + Phobos::UI::SuperWeaponSidebar_Interval, location_Y };
+			location_Y += Phobos::UI::SuperWeaponSidebar_CameoHeight / 2;
+			location.X += cameoWidth + Phobos::UI::SuperWeaponSidebar_Interval;
+			location.Y = location_Y + cameoHarfInterval;
 		}
 		else
 		{
-			location.Y += cameoHeight;
+			location.Y += Phobos::UI::SuperWeaponSidebar_CameoHeight;
 		}
 	}
 
 	for (const auto column : columns)
-		column->SetHeight(column->Buttons.size() * 48);
+		column->SetHeight(column->Buttons.size() * Phobos::UI::SuperWeaponSidebar_CameoHeight);
 
 	if (const auto toggleButton = this->ToggleButton)
 		toggleButton->UpdatePosition();
@@ -204,17 +209,38 @@ DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_SWSidebar, 0x7)
 
 	if (pHouse->IsCurrentPlayer())
 	{
-		for (const auto column : SWSidebarClass::Instance.Columns)
+		auto& sidebar = SWSidebarClass::Instance;
+
+		for (const auto& column : sidebar.Columns)
 		{
-			for (const auto button : column->Buttons)
+			std::vector<int> removeButtons;
+
+			for (const auto& button : column->Buttons)
 			{
 				if (HouseClass::CurrentPlayer->Supers[button->SuperIndex]->IsPresent)
 					continue;
 
-				if (column->RemoveButton(button->SuperIndex))
-					SidebarExt::Global()->SWSidebar_Indices.Remove(button->SuperIndex);
+				removeButtons.push_back(button->SuperIndex);
+			}
+
+			for (const auto& index : removeButtons)
+			{
+				if (column->RemoveButton(index))
+					SidebarExt::Global()->SWSidebar_Indices.Remove(index);
 			}
 		}
+
+		SWSidebarClass::Instance.SortButtons();
+		int removes = 0;
+
+		for (const auto& column : sidebar.Columns)
+		{
+			if (column->Buttons.empty())
+				++removes;
+		}
+
+		for (; removes > 0; --removes)
+			sidebar.RemoveColumn();
 	}
 
 	return SkipGameCode;
@@ -257,15 +283,12 @@ DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeSWSidebar, 0x5)
 
 	if (const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]))
 	{
-		if (const auto toggleShape = pSideExt->SuperWeaponSidebar_ToggleShape.Get())
+		if (const auto toggleButton = DLLCreate<ToggleSWButtonClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count, 0, 0, 10, 50))
 		{
-			if (const auto toggleButton = DLLCreate<ToggleSWButtonClass>(SWButtonClass::StartID + SuperWeaponTypeClass::Array->Count, 0, 0, toggleShape->Width, toggleShape->Height))
-			{
-				toggleButton->Zap();
-				GScreenClass::Instance->AddButton(toggleButton);
-				SWSidebarClass::Instance.ToggleButton = toggleButton;
-				toggleButton->UpdatePosition();
-			}
+			toggleButton->Zap();
+			GScreenClass::Instance->AddButton(toggleButton);
+			SWSidebarClass::Instance.ToggleButton = toggleButton;
+			toggleButton->UpdatePosition();
 		}
 	}
 

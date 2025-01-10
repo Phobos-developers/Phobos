@@ -1,6 +1,5 @@
 #pragma once
 #include <functional>
-#include <GeneralDefinitions.h>
 class TechnoClass;
 class TechnoTypeClass;
 class FootClass;
@@ -29,8 +28,6 @@ public:
 	static bool(__thiscall* IsTargetConstraintsEligible)(void*, HouseClass*, bool);
 
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
-
-	static std::function<AresHouseExtData* (HouseClass*)> HouseExtMap_Find;
 
 private:
 
