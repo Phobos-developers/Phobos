@@ -148,6 +148,9 @@ void SWButtonClass::OnMouseLeave()
 
 bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 {
+	if (!SWSidebarClass::IsEnabled())
+		return false;
+
 	if (flags & GadgetFlag::RightPress)
 		DisplayClass::Instance->CurrentSWTypeIndex = -1;
 
