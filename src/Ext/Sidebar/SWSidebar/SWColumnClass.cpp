@@ -110,7 +110,7 @@ bool SWColumnClass::AddButton(int superIdx)
 		return false;
 
 	const int cameoWidth = 60, cameoHeight = 48;
-	const auto button = DLLCreate<SWButtonClass>(SWButtonClass::StartID + superIdx, superIdx, 0, 0, cameoWidth, cameoHeight);
+	const auto button = GameCreate<SWButtonClass>(SWButtonClass::StartID + superIdx, superIdx, 0, 0, cameoWidth, cameoHeight);
 
 	if (!button)
 		return false;
