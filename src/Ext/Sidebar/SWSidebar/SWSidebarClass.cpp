@@ -133,8 +133,7 @@ void SWSidebarClass::SortButtons()
 	const int maximum = Phobos::UI::SuperWeaponSidebar_Max;
 	const int cameoHarfInterval = (Phobos::UI::SuperWeaponSidebar_CameoHeight - cameoHeight) / 2;
 	int location_Y = (DSurface::ViewBounds().Height - std::min(buttonCount, maximum) * Phobos::UI::SuperWeaponSidebar_CameoHeight) / 2;
-	Point2D location = { Phobos::UI::SuperWeaponSidebar_LeftOffset, location_Y };
-	location_Y -= cameoHarfInterval;
+	Point2D location = { Phobos::UI::SuperWeaponSidebar_LeftOffset, location_Y + cameoHarfInterval };
 	int rowIdx = 0, columnIdx = 0;
 
 	for (const auto button : vec_Buttons)
@@ -142,7 +141,10 @@ void SWSidebarClass::SortButtons()
 		const auto column = columns[columnIdx];
 
 		if (rowIdx == 0)
-			column->SetPosition(location.X - Phobos::UI::SuperWeaponSidebar_LeftOffset, location.Y - (SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex])->SuperWeaponSidebar_TopPCX.GetSurface() ? 20 : 0));
+		{
+			const auto pTopPCX = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex])->SuperWeaponSidebar_TopPCX.GetSurface();
+			column->SetPosition(location.X - Phobos::UI::SuperWeaponSidebar_LeftOffset, location_Y - (pTopPCX ? pTopPCX->GetHeight() : 0));
+		}
 
 		column->Buttons.emplace_back(button);
 		button->SetColumn(columnIdx);
