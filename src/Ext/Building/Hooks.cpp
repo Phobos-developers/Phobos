@@ -217,6 +217,7 @@ DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
 DEFINE_HOOK(0x446EE8, BuildingClass_Unlimbo_WhenCreated, 0x6)
 {
 	GET(BuildingClass* const, pThis, ESI);
+
 	if (auto pTechnoExt = TechnoExt::ExtMap.Find(pThis))
 	{
 		if (!pTechnoExt->WhenCreatedEventFired)
@@ -225,6 +226,8 @@ DEFINE_HOOK(0x446EE8, BuildingClass_Unlimbo_WhenCreated, 0x6)
 			pTechnoExt->TypeExtData->InvokeEvent(EventTypeClass::WhenCreated, pThis, nullptr);
 		}
 	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
