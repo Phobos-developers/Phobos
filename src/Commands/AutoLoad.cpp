@@ -198,7 +198,7 @@ inline static bool DeselectMe(TechnoClass* pTransport)
 template <typename TPassenger, typename TTransport>
 std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passengers, std::vector<std::pair<TTransport, int>>& transports)
 {
-	std::set<TPassenger> foundTransportVector;
+	std::set<TPassenger> foundTransportSet;
 	// 1. Get the least kind of passengers
 	// 2. Send the passengers to the transport in round robin, if the transport is full, remove it from the vector transports;
 	// if the pID vector is empty, remove it from the map, if not, move it to passengerMapIdle. We try to fill the transport evenly for each kind of passengers.
@@ -260,7 +260,7 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 						// so it is redundant to check a transport's budget if it doesn't count by size.
 					}
 
-					if (pPassenger->GetCurrentMission() != Mission::Enter)
+					if (!foundTransportSet.contains(pPassenger))
 					{
 						bool deselected = DeselectMe(pTransport);
 						bool moveFeedbackOld = std::exchange(Unsorted::MoveFeedback(), false);
@@ -269,7 +269,7 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 							pTransport->Select();
 						Unsorted::MoveFeedback = moveFeedbackOld;
 						transports[index].second -= passengerSize; // take away that much passenger slot budgets from the transport
-						foundTransportVector.insert(pPassenger);
+						foundTransportSet.insert(pPassenger);
 					}
 
 				seeNextTransport:;
@@ -297,7 +297,7 @@ std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passe
 		else
 			break;
 	}
-	return foundTransportVector;
+	return foundTransportSet;
 }
 
 void AutoLoadCommandClass::Execute(WWKey eInput) const
@@ -453,14 +453,14 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 				auto& transportVector = transportMapPair.second;
 
 				// Do only if the transports can handle passengers of this size.
-				if (transportSizeLimit >= passengerSize)
+				if (transportSizeLimit >= passengerSize && !transportVector.empty())
 				{
-					auto foundTransportVector = SpreadPassengersToTransports(passengerVector, transportVector);
+					auto foundTransportSet = SpreadPassengersToTransports(passengerVector, transportVector);
 					passengerVector.erase(
 						std::remove_if(passengerVector.begin(), passengerVector.end(),
-							[foundTransportVector](auto pPassenger)
+							[foundTransportSet](auto pPassenger)
 							{
-								return foundTransportVector.contains(pPassenger);
+								return foundTransportSet.contains(pPassenger);
 							}),
 						passengerVector.end());
 					if (passengerVector.empty())
