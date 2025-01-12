@@ -466,6 +466,22 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+int TechnoExt::ExtData::GetCrusherLevel() const
+{
+	return this->TypeExtData->CrusherLevel.Get(0);
+}
+
+int TechnoExt::ExtData::GetCrushableLevel() const
+{
+	if (auto pVictimInfantry = abstract_cast<InfantryClass*>(this->OwnerObject()))
+	{
+		// The YR function to check if this infantry is deployed.
+		if (reinterpret_cast<bool(__thiscall*)(InfantryClass*)>(0x5228D0)(pVictimInfantry))
+			return this->TypeExtData->DeployedCrushableLevel.Get(this->TypeExtData->CrushableLevel.Get(0));
+	}
+	return this->TypeExtData->CrushableLevel.Get(0);
+}
+
 // =============================
 // load / save
 

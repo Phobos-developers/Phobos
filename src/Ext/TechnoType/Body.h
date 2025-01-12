@@ -474,8 +474,6 @@ public:
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 
 		void InitCrusherLevel();
-		int GetCrusherLevel(FootClass* pCrusher) const;
-		int GetCrushableLevel(FootClass* pVictim) const;
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

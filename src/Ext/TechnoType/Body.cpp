@@ -113,21 +113,6 @@ void TechnoTypeExt::ExtData::InitCrusherLevel()
 	}
 }
 
-int TechnoTypeExt::ExtData::GetCrusherLevel(FootClass* pCrusher) const
-{
-	return this->CrusherLevel.Get(0);
-}
-
-int TechnoTypeExt::ExtData::GetCrushableLevel(FootClass* pVictim) const
-{
-	if (auto pVictimInfantry = abstract_cast<InfantryClass*>(pVictim))
-	{
-		if (pVictimInfantry->IsDeployed())
-			return this->DeployedCrushableLevel.Get(this->CrushableLevel.Get(0));
-	}
-	return this->CrushableLevel.Get(0);
-}
-
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {

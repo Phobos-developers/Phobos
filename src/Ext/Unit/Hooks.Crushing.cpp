@@ -4,6 +4,7 @@
 #include <OverlayTypeClass.h>
 
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/TemplateDef.h>
 
@@ -111,18 +112,17 @@ DEFINE_HOOK(0x5F6CE0, FootClass_CanGetCrushed_Hook, 6)
 	if (RulesExt::Global()->CrusherLevelEnabled)
 	{
 		// An eligible crusher must be a unit with "Crusher=yes".
-		// An eligible victim must be either an infantry, a unit, or a building with 1x1 foundation.
+		// An eligible victim must be either an infantry, a unit, or a building (if crusher level is enabled for buildings).
 		// Otherwise, fallback to unmodded behavior.
 		if (pCrusher && pCrusher->WhatAmI() == AbstractType::Unit && pCrusher->GetTechnoType()->Crusher &&
 			pVictim && (pVictim->WhatAmI() == AbstractType::Infantry ||
 				pVictim->WhatAmI() == AbstractType::Unit ||
-				(RulesExt::Global()->CrusherLevelEnabled_For1x1Buildings && pVictim->WhatAmI() == AbstractType::Building &&
-					abstract_cast<BuildingTypeClass*>(pVictim->GetTechnoType())->Foundation == Foundation::_1x1)))
+				(RulesExt::Global()->CrusherLevelEnabled_For1x1Buildings && pVictim->WhatAmI() == AbstractType::Building)))
 		{
-			auto pCrusherExt = TechnoTypeExt::ExtMap.Find(pCrusher->GetTechnoType());
-			auto pVictimExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType());
-			int crusherLevel = pCrusherExt->GetCrusherLevel(pCrusher);
-			int crushableLevel = pVictimExt->GetCrushableLevel(pVictim);
+			auto const pCrusherExt = TechnoExt::ExtMap.Find(pCrusher);
+			auto const pVictimExt = TechnoExt::ExtMap.Find(pVictim);
+			auto const crusherLevel = pCrusherExt->GetCrusherLevel();
+			auto const crushableLevel = pVictimExt->GetCrushableLevel();
 			return crusherLevel > crushableLevel ? CanCrush : CannotCrush;
 		}
 	}
