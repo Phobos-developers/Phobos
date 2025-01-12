@@ -131,23 +131,21 @@ inline static const bool CanBeVehiclePassenger(TechnoClass* pPassenger)
 // Gets if the transport can load a passenger.
 inline static const bool CanHoldPassenger(TechnoClass* pTransport, TechnoClass* pPassenger)
 {
+	auto const pTransportExt = TechnoExt::ExtMap.Find(pTransport);
 	if (pTransport->WhatAmI() == AbstractType::Unit)
 	{
-		auto pTechnoType = pTransport->GetTechnoType();
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 		// the check of MCing or MCed are redundant here, see inline function "CanBeVehiclePassenger".
-		return pTypeExt->CanLoadPassenger(pTransport, pPassenger);
+		return pTransportExt->CanLoadPassenger(pPassenger);
 	}
-	else if (auto pBuilding = abstract_cast<BuildingClass*>(pTransport))
+	else if (auto const pBuilding = abstract_cast<BuildingClass*>(pTransport))
 	{
-		auto pBuildingType = pBuilding->Type;
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuildingType);
-		if (pBuildingType->Passengers > 0 && pBuildingType->InfantryAbsorb)
+		auto const pBuildingType = pBuilding->Type;
+		if (pTransportExt->TypeExtData->OwnerObject()->Passengers > 0 && pBuildingType->InfantryAbsorb)
 		{
 			// Bio Reactor
 			// the check of MCing is redundant here, see inline function "CanBeBuildingPassenger".
 			return pPassenger->WhatAmI() == AbstractType::Infantry
-				&& pTypeExt->CanLoadPassenger(pTransport, pPassenger);
+				&& pTransportExt->CanLoadPassenger(pPassenger);
 		}
 		else if (pBuildingType->CanBeOccupied)
 		{
@@ -156,7 +154,7 @@ inline static const bool CanHoldPassenger(TechnoClass* pTransport, TechnoClass* 
 			return pPassenger->WhatAmI() == AbstractType::Infantry
 				&& !pPassenger->IsMindControlled()
 				&& static_cast<InfantryTypeClass*>(pPassenger->GetTechnoType())->Occupier
-				&& pTypeExt->CanBeOccupiedBy(pPassenger);
+				&& pTransportExt->CanBeOccupiedBy(pPassenger);
 		}
 		else if (pBuildingType->Bunker)
 		{
@@ -171,11 +169,9 @@ inline static const bool CanHoldPassenger(TechnoClass* pTransport, TechnoClass* 
 // Checks if this transport substrats passenger budget by passenger size.
 inline static const bool IsBySize(TechnoClass* pTransport)
 {
-	if (auto pUnit = abstract_cast<UnitClass*>(pTransport))
+	if (auto const pUnit = abstract_cast<UnitClass*>(pTransport))
 	{
-		auto pType = pUnit->Type;
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-		return pTypeExt->Passengers_BySize;
+		return TechnoTypeExt::ExtMap.Find(pUnit->Type)->Passengers_BySize;
 	}
 	else if (pTransport->WhatAmI() == AbstractType::Building)
 	{
@@ -184,14 +180,13 @@ inline static const bool IsBySize(TechnoClass* pTransport)
 	return true;
 }
 
-// Oddly, a Tank Bunker can't load anything when selected by the player.
+// A Tank Bunker refuses entering by "ObjectClickedMission" when selected by the player.
 // Therefore it has to be deselected.
 inline static bool DeselectMe(TechnoClass* pTransport)
 {
-	if (auto pBuilding = abstract_cast<BuildingClass*>(pTransport))
+	if (auto const pBuilding = abstract_cast<BuildingClass*>(pTransport))
 	{
-		auto pBuildingType = pBuilding->Type;
-		if (pBuildingType->Bunker)
+		if (pBuilding->Type->Bunker)
 		{
 			pTransport->Deselect();
 			return true;
@@ -313,13 +308,10 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	MapClass::Instance->SetSellMode(0);
 
 	std::map<int, std::vector<TechnoClass*>> passengerMap;						// unit size -> a list of passengers of that size
-	std::set<int> passengerSizes;												// a sorted set of known passenger sizes
 
 	std::map<int, std::vector<std::pair<TechnoClass*, int>>> transportMap;		// size limit -> a list of transports of that size limit
-	std::set<int> transportSizeLimits;											// a sorted set of known size limits
 
 	std::map<int, std::vector<TechnoClass*>> ambiguousMap;						// unit size -> a list of units in ambiguousity
-	std::set<int> ambiguousSizes;												// a sorted set of known ambiguous unit sizes
 
 	// This array is for Bio Reactors, garrisonable structures, and Tank Bunkers.
 	// A Bio Reactor is a building with "Passengers > 0" and "InfantryAbsorb=yes".
@@ -366,7 +358,6 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		{
 			auto pTechnoType = pTechno->GetTechnoType();
 			int const size = static_cast<int>(pTechnoType->Size);
-			passengerSizes.insert(size);
 			passengerMap[size].push_back(pTechno);
 		}
 	}
@@ -384,23 +375,21 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 			continue;
 
 		auto pTechnoType = pTechno->GetTechnoType();
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+		auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 		if (pTechno->WhatAmI() == AbstractType::Unit)
 		{
 			int const budget = GetVehiclePassengerBudget(pTechno);
 			if (budget > 0)
 			{
-				if (pTypeExt->CanLoadAny(pTechno, passengerMap, passengerSizes))
+				if (pTechnoExt->CanLoadAny(passengerMap))
 				{
 					int const sizeLimit = static_cast<int>(pTechnoType->SizeLimit);
-					transportSizeLimits.insert(sizeLimit);
 					transportMap[sizeLimit].push_back(std::make_pair(pTechno, budget));
 				}
 				else
 				{
 					// If it can't actually load any clear passenger, then put it into ambiguousity.
 					int const size = static_cast<int>(pTechnoType->Size);
-					ambiguousSizes.insert(size);
 					ambiguousMap[size].push_back(pTechno);
 				}
 			}
@@ -413,74 +402,70 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 	// so we have to deside here if they will be passengers or transports.
 	// We move units in ambiguousity from the smallest size to the largest size into passengers,
 	// and if an unit in ambiguousity can somehow load them this way, then it is a transport.
-	if (!ambiguousSizes.empty())
+	if (!ambiguousMap.empty())
 	{
 		std::vector<TechnoClass*> ambiguousPassengerVector;
-		for (auto ambiguousSize : ambiguousSizes)
+		for (auto& pair : ambiguousMap)
 		{
-			if (ambiguousMap.contains(ambiguousSize))
+			auto const ambiguousSize = pair.first;
+			auto const& ambiguousVector = pair.second;
+			for (auto pAmbiguousTechno : ambiguousVector)
 			{
-				auto const& ambiguousVector = ambiguousMap[ambiguousSize];
-				for (auto pAmbiguousTechno : ambiguousVector)
+				auto const pTechnoExt = TechnoExt::ExtMap.Find(pAmbiguousTechno);
+				auto const pTechnoType = pTechnoExt->TypeExtData->OwnerObject();
+				if (ambiguousPassengerVector.empty() || !pTechnoExt->CanLoadAny(ambiguousPassengerVector))
 				{
-					auto const pTechnoType = pAmbiguousTechno->GetTechnoType();
-					auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
-					if (ambiguousPassengerVector.empty() || !pTypeExt->CanLoadAny(pAmbiguousTechno, ambiguousPassengerVector))
-					{
-						// This unit in ambiguousity is about to be added to passengers.
-						// Before that, check if it can be a vehicle's passenger.
-						// If not, this unit in ambiguousity is added to neither passengers nor transports.
-						if (!CanBeVehiclePassenger(pAmbiguousTechno))
-							continue;
-						ambiguousPassengerVector.push_back(pAmbiguousTechno);
-						int const size = static_cast<int>(pTechnoType->Size);
-						passengerSizes.insert(size);
-						passengerMap[size].push_back(pAmbiguousTechno);
-					}
-					else
-					{
-						// This unit in ambiguousity is added to transports.
-						int const budget = GetVehiclePassengerBudget(pAmbiguousTechno);
-						int const sizeLimit = static_cast<int>(pTechnoType->SizeLimit);
-						transportSizeLimits.insert(sizeLimit);
-						transportMap[sizeLimit].push_back(std::make_pair(pAmbiguousTechno, budget));
-					}
+					// This unit in ambiguousity is about to be added to passengers.
+					// Before that, check if it can be a vehicle's passenger.
+					// If not, this unit in ambiguousity is added to neither passengers nor transports.
+					if (!CanBeVehiclePassenger(pAmbiguousTechno))
+						continue;
+					ambiguousPassengerVector.push_back(pAmbiguousTechno);
+					int const size = static_cast<int>(pTechnoType->Size);
+					passengerMap[size].push_back(pAmbiguousTechno);
+				}
+				else
+				{
+					// This unit in ambiguousity is added to transports.
+					int const budget = GetVehiclePassengerBudget(pAmbiguousTechno);
+					int const sizeLimit = static_cast<int>(pTechnoType->SizeLimit);
+					transportMap[sizeLimit].push_back(std::make_pair(pAmbiguousTechno, budget));
 				}
 			}
 		}
 	}
 
 	// Pair the passengers and the transports if possible.
-	if (!passengerSizes.empty() && !transportSizeLimits.empty())
+	if (!passengerMap.empty() && !transportMap.empty())
 	{
 		// Reversed iteration, so we load larger passengers first.
-		for (auto passengerSizesItr = passengerSizes.rbegin();
-			passengerSizesItr != passengerSizes.rend();
-			++passengerSizesItr)
+		for (auto passengerMapItr = passengerMap.rbegin();
+			passengerMapItr != passengerMap.rend();
+			++passengerMapItr)
 		{
-			auto passengerSize = *passengerSizesItr;
-			auto& passengerVector = passengerMap[passengerSize];
+			auto& passengerMapPair = *passengerMapItr;
+			auto passengerSize = passengerMapPair.first;
+			auto& passengerVector = passengerMapPair.second;
 
-			for (auto transportSizeLimit : transportSizeLimits)
+			for (auto& transportMapPair : transportMap)
 			{
-				// If the transports are too small for the passengers then skip them.
-				if (transportSizeLimit < passengerSize)
-					continue;
+				auto transportSizeLimit = transportMapPair.first;
+				auto& transportVector = transportMapPair.second;
 
-				auto& transportVector = transportMap[transportSizeLimit];
-				if (transportVector.empty())
-					continue;
-
-				auto foundTransportVector = SpreadPassengersToTransports(passengerVector, transportVector);
-				passengerVector.erase(
-					std::remove_if(passengerVector.begin(), passengerVector.end(),
-						[foundTransportVector](auto pPassenger)
-						{
-							return foundTransportVector.contains(pPassenger);
-						}),
-					passengerVector.end());
-				if (passengerVector.empty())
-					break;
+				// Do only if the transports can handle passengers of this size.
+				if (transportSizeLimit >= passengerSize)
+				{
+					auto foundTransportVector = SpreadPassengersToTransports(passengerVector, transportVector);
+					passengerVector.erase(
+						std::remove_if(passengerVector.begin(), passengerVector.end(),
+							[foundTransportVector](auto pPassenger)
+							{
+								return foundTransportVector.contains(pPassenger);
+							}),
+						passengerVector.end());
+					if (passengerVector.empty())
+						break;
+				}
 			}
 		}
 	}

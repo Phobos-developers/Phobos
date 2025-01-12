@@ -32,58 +32,6 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
-// Checks if a transport can load a passenger.
-// Note that this function only checks the size limit and Ares passenger whitelist and blacklist,
-// it doesn't check if this transport is actually a transport or not.
-bool TechnoTypeExt::ExtData::CanLoadPassenger(TechnoClass* pTransport, TechnoClass* pPassenger) const
-{
-	auto const pTransportType = pTransport->GetTechnoType();
-	auto const pPassengerType = pPassenger->GetTechnoType();
-	auto const sizeLimit = static_cast<int>(pTransportType->SizeLimit);
-	auto const size = static_cast<int>(pPassengerType->Size);
-	return (sizeLimit <= 0 || sizeLimit >= size)
-		&& (!this->Passengers_BySize || (pTransport->Passengers.GetTotalSize() + size) <= pTransportType->Passengers)
-		&& (this->PassengersWhitelist.empty() || this->PassengersWhitelist.Contains(pPassengerType))
-		&& !this->PassengersBlacklist.Contains(pPassengerType);
-}
-
-// Checks if a transport can load any of the passengers inside a list.
-bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::vector<TechnoClass*> pPassengerList) const
-{
-	for (auto pPassenger : pPassengerList)
-		if (this->CanLoadPassenger(pTransport, pPassenger))
-			return true;
-	return false;
-}
-
-// Checks if a transport can load any of the passengers inside a map.
-// It is assumed that the map's keys are the passengers' unit size and the values are the lists of passengers of said size.
-// It is assumed that every size in the map are present in the "passengerSizes" ordered set.
-bool TechnoTypeExt::ExtData::CanLoadAny(TechnoClass* pTransport, std::map<int, std::vector<TechnoClass*>> passengerMap, std::set<int> passengerSizes) const
-{
-	auto const pTransportType = pTransport->GetTechnoType();
-	auto const sizeLimit = static_cast<int>(pTransportType->SizeLimit);
-	for (auto const passengerSize : passengerSizes)
-	{
-		// there is no passenger small enough it can load, or the passenger list of this size is somehow empty
-		if ((sizeLimit > 0 && passengerSize > sizeLimit) || !passengerMap.contains(passengerSize) || passengerMap[passengerSize].empty())
-			continue;
-		// then check the function for list
-		if (this->CanLoadAny(pTransport, passengerMap[passengerSize]))
-			return true;
-	}
-	return false;
-}
-
-// Ares 0.2 source
-// Checks if a garrisonable structure can garrison a unit.
-// It is assumed that "whom" is an infantry.
-// This function only checks about the Ares occupier whitelist, it does not check if this is a garrisonable structure or not.
-bool TechnoTypeExt::ExtData::CanBeOccupiedBy(TechnoClass* whom) const
-{
-	return this->AllowedOccupiers.empty() || this->AllowedOccupiers.Contains(whom->GetTechnoType());
-}
-
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {

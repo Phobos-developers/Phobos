@@ -116,6 +116,13 @@ public:
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 
+		bool CanLoadPassenger(TechnoClass* pPassenger) const;
+		bool CanLoadAny(std::vector<TechnoClass*> pPassengerList) const;
+		bool CanLoadAny(std::map<int, std::vector<TechnoClass*>> passengerMap) const;
+
+		// Ares 0.2
+		bool CanBeOccupiedBy(TechnoClass* whom) const;
+
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
