@@ -377,7 +377,11 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 
 	const bool isCameo = PhobosToolTip::Instance.IsCameo;
 
-	if (isCameo && Phobos::UI::AnchoredToolTips && PhobosToolTip::Instance.IsEnabled() && Phobos::Config::ToolTipDescriptions)
+	if (isCameo && Phobos::UI::AnchoredToolTips
+		&& PhobosToolTip::Instance.IsEnabled()
+		&& Phobos::Config::ToolTipDescriptions
+		// If inspecting a cameo from the super weapon sidebar, "AnchoredToolTips=true" shouldn't apply.
+		&& !SWSidebarClass::Instance.CurrentButton) 
 	{
 		LEA_STACK(LTRBStruct*, a2, STACK_OFFSET(0x44, -0x20));
 		auto x = DSurface::SidebarBounds->X - pRect->Width - 2;
