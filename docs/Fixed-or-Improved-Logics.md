@@ -185,6 +185,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Aircraft with `AirportBound=no` continue moving forward.
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
+- Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft was ordered to move onto water surface.
 
 ## Fixes / interactions with other extensions
 
@@ -237,7 +238,7 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 
 ### Extended Aircraft Missions
 
-- Aircraft will now be able to use waypoints and fly towards the water surface normally.
+- Aircraft will now be able to use waypoints.
 - When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
   - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
 - When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.
