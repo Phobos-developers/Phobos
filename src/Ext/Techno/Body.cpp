@@ -471,7 +471,6 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 // it doesn't check if this transport is actually a transport or not.
 bool TechnoExt::ExtData::CanLoadPassenger(TechnoClass* pPassenger) const
 {
-	auto const pTransport = this->OwnerObject();
 	auto const pTransportTypeExt = this->TypeExtData;
 	auto const pTransportType = pTransportTypeExt->OwnerObject();
 	auto const pPassengerType = pPassenger->GetTechnoType();
