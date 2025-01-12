@@ -504,7 +504,7 @@ bool TechnoExt::ExtData::CanLoadAny(std::map<int, std::vector<TechnoClass*>> pas
 	{
 		auto const passengerSize = passengerMapPair.first;
 		// there is no passenger small enough it can load, or the passenger list of this size is somehow empty
-		if ((sizeLimit > 0 && passengerSize > sizeLimit) || !passengerMap.contains(passengerSize) || passengerMap[passengerSize].empty())
+		if ((sizeLimit > 0 && passengerSize > sizeLimit) || passengerMapPair.second.empty())
 			continue;
 		// then check the function for list
 		if (this->CanLoadAny(passengerMapPair.second))
