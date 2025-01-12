@@ -210,7 +210,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
 
 	this->CrusherLevelEnabled.Read(exINI, GameStrings::General, "CrusherLevelEnabled");
-	this->CrusherLevelEnabled_For1x1Buildings.Read(exINI, GameStrings::General, "CrusherLevelEnabled.For1x1Buildings");
+	this->CrusherLevelEnabled_ForBuildings.Read(exINI, GameStrings::General, "CrusherLevelEnabled.ForBuildings");
 	this->CrusherLevel_Defaults_Crusher.Read(exINI, GameStrings::General, "CrusherLevel.Defaults.Crusher");
 	this->CrusherLevel_Defaults_OmniCrusher.Read(exINI, GameStrings::General, "CrusherLevel.Defaults.OmniCrusher");
 	this->CrushableLevel_Defaults_Uncrushable_Infantry.Read(exINI, GameStrings::General, "CrushableLevel.Defaults.Uncrushable.Infantry");
@@ -402,7 +402,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->LightFlashAlphaImageDetailLevel)
 		.Process(this->CrusherLevelEnabled)
-		.Process(this->CrusherLevelEnabled_For1x1Buildings)
+		.Process(this->CrusherLevelEnabled_ForBuildings)
 		.Process(this->CrusherLevel_Defaults_Crusher)
 		.Process(this->CrusherLevel_Defaults_OmniCrusher)
 		.Process(this->CrushableLevel_Defaults_Uncrushable_Infantry)

@@ -468,15 +468,86 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 
 int TechnoExt::ExtData::GetCrusherLevel() const
 {
-	return this->TypeExtData->CrusherLevel.Get(0);
+	auto const pTypeExt = this->TypeExtData;
+	if (!pTypeExt->CrusherLevel.isset())
+	{
+		auto const pType = pTypeExt->OwnerObject();
+		// `CrusherLevel` is not set, we take a default value based on `Crusher` and `OmniCrusher`.
+		if (pType->Crusher)
+		{
+			if (pType->OmniCrusher)
+				pTypeExt->CrusherLevel = RulesExt::Global()->CrusherLevel_Defaults_OmniCrusher;
+			else
+				pTypeExt->CrusherLevel = RulesExt::Global()->CrusherLevel_Defaults_Crusher;
+		}
+		else
+		{
+			pTypeExt->CrusherLevel = 0;
+		}
+	}
+
+	return pTypeExt->CrusherLevel.Get();
 }
 
 int TechnoExt::ExtData::GetCrushableLevel() const
 {
+	auto const pTypeExt = this->TypeExtData;
+	if (!pTypeExt->CrushableLevel.isset())
+	{
+		auto const pType = pTypeExt->OwnerObject();
+		// `CrushableLevel` is not set, we take a default value based on `Crushable`, `OmniCrushResistant`, and the techno's type.
+		if (pType->Crushable)
+		{
+			pTypeExt->CrushableLevel = 0;
+		}
+		else if (pType->OmniCrushResistant)
+		{
+			pTypeExt->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant;
+		}
+		else
+		{
+			// The techno types are infantry types, unit types, aircraft types, and building types.
+			// Overlay types are not techno types.
+			switch (pType->WhatAmI())
+			{
+			case AbstractType::InfantryType:
+				pTypeExt->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Infantry;
+				break;
+			case AbstractType::UnitType:
+			case AbstractType::AircraftType:
+				pTypeExt->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Unit;
+				break;
+			case AbstractType::BuildingType:
+				pTypeExt->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Building;
+				break;
+			}
+		}
+
+		// `CrushableLevel` is not set, we take a default value for `DeployedCrushableLevel` based on `DeployedCrushable` and `OmniCrushResistant`.
+		// To avoid complexity of all possible combos, we ignore explicit `DeployedCrushableLevel` if `CrushableLevel` is not set.
+		if (auto pInfantryType = abstract_cast<InfantryTypeClass*>(pType))
+		{
+			// We only consider case 1, since in any other case, the infantry's
+			// default `DeployedCrushableLevel` will be equal to its default `CrushableLevel`.
+			// 1. `Crushable=true`, `DeployedCrushable=false`: uncrushable only when deployed;
+			// 2. `Crushable=false`, `DeployedCrushable=true`: uncrushable always.
+			if (pInfantryType->Crushable && !pInfantryType->DeployedCrushable)
+			{
+				if (pInfantryType->OmniCrushResistant)
+					pTypeExt->DeployedCrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant;
+				else
+					pTypeExt->DeployedCrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Infantry;
+			}
+			else
+			{
+				pTypeExt->DeployedCrushableLevel = pTypeExt->CrushableLevel;
+			}
+		}
+	}
+
 	if (auto pVictimInfantry = abstract_cast<InfantryClass*>(this->OwnerObject()))
 	{
-		// The YR function to check if this infantry is deployed.
-		if (reinterpret_cast<bool(__thiscall*)(InfantryClass*)>(0x5228D0)(pVictimInfantry))
+		if (pVictimInfantry->IsDeployed())
 			return this->TypeExtData->DeployedCrushableLevel.Get(this->TypeExtData->CrushableLevel.Get(0));
 	}
 	return this->TypeExtData->CrushableLevel.Get(0);

@@ -168,7 +168,7 @@ public:
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
 		Valueable<bool> CrusherLevelEnabled;
-		Valueable<bool> CrusherLevelEnabled_For1x1Buildings;
+		Valueable<bool> CrusherLevelEnabled_ForBuildings;
 		Valueable<int> CrusherLevel_Defaults_Crusher;
 		Valueable<int> CrusherLevel_Defaults_OmniCrusher;
 		Valueable<int> CrushableLevel_Defaults_Uncrushable_Infantry;
@@ -299,7 +299,7 @@ public:
 			, LightFlashAlphaImageDetailLevel { 0 }
 
 			, CrusherLevelEnabled { false }
-			, CrusherLevelEnabled_For1x1Buildings { false }
+			, CrusherLevelEnabled_ForBuildings { false }
 			, CrusherLevel_Defaults_Crusher { 1 }
 			, CrusherLevel_Defaults_OmniCrusher { 3 }
 			, CrushableLevel_Defaults_Uncrushable_Infantry { 1 }

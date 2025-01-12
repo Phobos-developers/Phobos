@@ -117,7 +117,7 @@ DEFINE_HOOK(0x5F6CE0, FootClass_CanGetCrushed_Hook, 6)
 		if (pCrusher && pCrusher->WhatAmI() == AbstractType::Unit && pCrusher->GetTechnoType()->Crusher &&
 			pVictim && (pVictim->WhatAmI() == AbstractType::Infantry ||
 				pVictim->WhatAmI() == AbstractType::Unit ||
-				(RulesExt::Global()->CrusherLevelEnabled_For1x1Buildings && pVictim->WhatAmI() == AbstractType::Building)))
+				(RulesExt::Global()->CrusherLevelEnabled_ForBuildings && pVictim->WhatAmI() == AbstractType::Building)))
 		{
 			auto const pCrusherExt = TechnoExt::ExtMap.Find(pCrusher);
 			auto const pVictimExt = TechnoExt::ExtMap.Find(pVictim);

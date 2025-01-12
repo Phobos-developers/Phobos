@@ -19,9 +19,6 @@ TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 void TechnoTypeExt::ExtData::Initialize()
 {
 	this->ShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
-
-	if (RulesExt::Global()->CrusherLevelEnabled)
-		InitCrusherLevel();
 }
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
@@ -33,84 +30,6 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	float z = static_cast<float>(offset->Z * factor);
 
 	mtx->Translate(x, y, z);
-}
-
-// Init the `CrusherLevel`, `CrushableLevel`, and `DeployedCrushableLevel` for a techno type.
-void TechnoTypeExt::ExtData::InitCrusherLevel()
-{
-	// Crusher related.
-	// Only UnitType with "Crusher=yes" can crush something, so we don't bother to do this for anything else.
-	if (this->OwnerObject()->WhatAmI() == AbstractType::UnitType && this->OwnerObject()->Crusher)
-	{
-		if (!this->CrusherLevel.isset())
-		{
-			// `CrusherLevel` is not set, we take a default value based on `Crusher` and `OmniCrusher`.
-			if (this->OwnerObject()->Crusher)
-			{
-				if (this->OwnerObject()->OmniCrusher)
-					this->CrusherLevel = RulesExt::Global()->CrusherLevel_Defaults_OmniCrusher;
-				else
-					this->CrusherLevel = RulesExt::Global()->CrusherLevel_Defaults_Crusher;
-			}
-			else
-			{
-				this->CrusherLevel = 0;
-			}
-		}
-	}
-
-	// Crushable related.
-	if (!this->CrushableLevel.isset())
-	{
-		// `CrushableLevel` is not set, we take a default value based on `Crushable`, `OmniCrushResistant`, and the techno's type.
-		if (this->OwnerObject()->Crushable)
-		{
-			this->CrushableLevel = 0;
-		}
-		else if (this->OwnerObject()->OmniCrushResistant)
-		{
-			this->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant;
-		}
-		else
-		{
-			// The techno types are infantry types, unit types, aircraft types, and building types.
-			// Overlay types are not techno types.
-			switch (this->OwnerObject()->WhatAmI())
-			{
-			case AbstractType::InfantryType:
-				this->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Infantry;
-				break;
-			case AbstractType::UnitType:
-			case AbstractType::AircraftType:
-				this->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Unit;
-				break;
-			case AbstractType::BuildingType:
-				this->CrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Building;
-				break;
-			}
-		}
-
-		// `CrushableLevel` is not set, we take a default value for `DeployedCrushableLevel` based on `DeployedCrushable` and `OmniCrushResistant`.
-		// To avoid complexity of all possible combos, we ignore explicit `DeployedCrushableLevel` if `CrushableLevel` is not set.
-		if (auto pInfantryType = static_cast<InfantryTypeClass*>(this->OwnerObject()))
-		{
-			// We only consider case 1, since in any other case, the infantry's
-			// default `DeployedCrushableLevel` will be equal to its default `CrushableLevel`.
-			// 1. `Crushable=true`, `DeployedCrushable=false`: uncrushable only when deployed;
-			// 2. `Crushable=false`, `DeployedCrushable=true`: uncrushable always.
-			if (pInfantryType->Crushable && !pInfantryType->DeployedCrushable)
-			{
-				if (pInfantryType->OmniCrushResistant)
-					this->DeployedCrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_OmniCrushResistant;
-				else
-					this->DeployedCrushableLevel = RulesExt::Global()->CrushableLevel_Defaults_Uncrushable_Infantry;
-			}
-			else
-			{
-				this->DeployedCrushableLevel = this->CrushableLevel;
-			}
-		}
-	}
 }
 
 // Ares 0.A source

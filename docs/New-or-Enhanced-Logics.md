@@ -1403,9 +1403,10 @@ Convert.ComputerToHuman =   ; TechnoType
   - If `CrusherLevel` is set, `OmniCrusher` is redundant and ignored.
   - If `CrushableLevel` is set, `Crushable`, `OmniCrushResistant`, and `DeployedCrushable` are redundant and ignored. Use `DeployedCrushableLevel` instead if you wish the infantry to have a different crushable level when deployed.
   - If `CrushableLevel` is not set, `DeployedCrushableLevel` does not apply.
-- A building with 1x1 foundation can be made crushable, however they have `Crushable=no` by default and they are hard-coded to be immune to `OmniCrusher`, meaning they can't be crushed by normal means. Thus, the crusher level system does not apply to buildings by default, and it must be turned on by `[General]►CrusherLevelEnabled.For1x1Buildings=true`. If not turned on, crushing buildings follow unmodded behavior.
+- A building with 1x1 foundation can be made crushable, however they have `Crushable=no` by default and they are hard-coded to be immune to `OmniCrusher`, meaning they can't be crushed by normal means. Thus, the crusher level system does not apply to buildings by default, and it must be turned on by `[General]►CrusherLevelEnabled.ForBuildings=true`. If not turned on, crushing buildings follow unmodded behavior.
   - Crushing a building triggers no animation or sound effect, and the building is silently removed from the map.
   - Crushing a building may cause unexpected behavior of the game, such as crushing all Bridge Repair Huts can make a bridge irrepairable.
+  - Even if this is turned on, crushing a building requires its central cell to be accessable. Some foundation sizes do not have a central cell.
 - The crusher level system does not apply to walls. Crushing walls follow unmodded behavior.
   - `Crusher=yes`, `MovementZone=(Destroyer|AmphibiousDestroyer)` can crush overlays with `Wall=yes`, `Crushable=yes` (Sandbags).
   - `Crusher=yes`, `MovementZone=CrusherAll` can crush overlays with `Wall=yes`, `Crushable=no` (Fortress Walls).
@@ -1414,7 +1415,7 @@ In `rulesmd.ini`
 ```ini
 [General]
 CrusherLevelEnabled=false                           ; boolean
-CrusherLevelEnabled.For1x1Buildings=false           ; boolean
+CrusherLevelEnabled.ForBuildings=false           ; boolean
 CrusherLevel.Defaults.Crusher=1                     ; integer
 CrusherLevel.Defaults.OmniCrusher=3                 ; integer
 CrushableLevel.Defaults.Uncrushable.Infantry=1      ; integer
