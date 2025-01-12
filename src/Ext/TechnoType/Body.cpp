@@ -32,34 +32,6 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
-bool TechnoTypeExt::ExtData::CanToggleAggressiveStance(TechnoClass* pTechno)
-{
-	if (!this->AggressiveStance_Togglable.isset())
-	{
-		// Only techno that are armed and open-topped can be aggressive stance.
-		if (!(pTechno->IsArmed() || pTechno->GetTechnoType()->OpenTopped))
-		{
-			this->AggressiveStance_Togglable = false;
-			return false;
-		}
-
-		// Engineers and Agents are default to not allow aggressive stance.
-		if (auto pInfantryTypeClass = abstract_cast<InfantryTypeClass*>(pTechno->GetTechnoType()))
-		{
-			if (pInfantryTypeClass->Engineer || pInfantryTypeClass->Agent)
-			{
-				this->AggressiveStance_Togglable = false;
-				return false;
-			}
-		}
-
-		this->AggressiveStance_Togglable = true;
-		return true;
-	}
-
-	return this->AggressiveStance_Togglable.Get(true);
-}
-
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {

@@ -23,12 +23,12 @@ const wchar_t* AggressiveStanceClass::GetUIDescription() const
 	return GeneralUtils::LoadStringUnlessMissing("TXT_AGGRESSIVE_STANCE_DESC", L"Aggressive Stance");
 }
 
-const wchar_t* AggressiveStanceClass::GetToggleOnPopupMessage() const
+static inline const wchar_t* GetToggleOnPopupMessage()
 {
 	return GeneralUtils::LoadStringUnlessMissing("MSG:AGGRESSIVE_STANCE_ON", L"%i unit(s) entered Aggressive Stance.");
 }
 
-const wchar_t* AggressiveStanceClass::GetToggleOffPopupMessage() const
+static inline const wchar_t* GetToggleOffPopupMessage()
 {
 	return GeneralUtils::LoadStringUnlessMissing("MSG:AGGRESSIVE_STANCE_OFF", L"%i unit(s) ceased Aggressive Stance.");
 }
@@ -41,7 +41,7 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 	// Get current selected units.
 	// If all selected units are at aggressive stance, we should cancel their aggressive stance.
 	// Otherwise, we should turn them into aggressive stance.
-	bool isAnySelectedUnitArmed = false;
+	bool isAnySelectedUnitTogglable = false;
 	bool isAllSelectedUnitAggressiveStance = true;
 	for (const auto& pUnit : ObjectClass::CurrentObjects())
 	{
@@ -53,29 +53,26 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 			continue;
 
 		// If not togglable then exclude it from the iteration.
-		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
-		{
-			if (!pTechnoTypeExt->CanToggleAggressiveStance(pTechno))
-				continue;
-		}
-
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
 		{
-			isAnySelectedUnitArmed = true;
-			if (pTechnoExt->GetAggressiveStance())
+			if (pTechnoExt->CanToggleAggressiveStance())
 			{
-				TechnoVectorAggressive.push_back(pTechno);
-			}
-			else
-			{
-				isAllSelectedUnitAggressiveStance = false;
-				TechnoVectorNonAggressive.push_back(pTechno);
+				isAnySelectedUnitTogglable = true;
+				if (pTechnoExt->GetAggressiveStance())
+				{
+					TechnoVectorAggressive.push_back(pTechno);
+				}
+				else
+				{
+					isAllSelectedUnitAggressiveStance = false;
+					TechnoVectorNonAggressive.push_back(pTechno);
+				}
 			}
 		}
 	}
 
-	// If this boolean is false, then none of the selected units are armed, meaning this hotket doesn't need to do anything.
-	if (isAnySelectedUnitArmed)
+	// If this boolean is false, then none of the selected units are togglable, meaning this hotket doesn't need to do anything.
+	if (isAnySelectedUnitTogglable)
 	{
 		// If all selected units are aggressive stance, then cancel their aggressive stance;
 		// otherwise, make all selected units aggressive stance.
@@ -84,12 +81,12 @@ void AggressiveStanceClass::Execute(WWKey eInput) const
 		if (isAllSelectedUnitAggressiveStance)
 		{
 			TechnoVector = TechnoVectorAggressive;
-			Message = this->GetToggleOffPopupMessage();
+			Message = GetToggleOffPopupMessage();
 		}
 		else
 		{
 			TechnoVector = TechnoVectorNonAggressive;
-			Message = this->GetToggleOnPopupMessage();
+			Message = GetToggleOnPopupMessage();
 		}
 		for (auto pTechno : TechnoVector)
 		{
