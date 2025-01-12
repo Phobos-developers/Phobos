@@ -143,8 +143,6 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	pExt->InitializeLaserTrails();
 	pExt->InitializeAttachEffects();
 
-	pExt->TypeExtData->InvokeEvent(EventTypeClass::WhenCreated, pThis, nullptr);
-
 	return 0;
 }
 
@@ -469,6 +467,22 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 		{
 			trail.LastLocation = { };
 			trail.Visible = true;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4D7192, FootClass_Unlimbo_WhenCreated, 0x9)
+{
+	GET(FootClass*, pTechno, ESI);
+
+	if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
+	{
+		if (!pTechnoExt->WhenCreatedEventFired)
+		{
+			pTechnoExt->WhenCreatedEventFired = true;
+			pTechnoExt->TypeExtData->InvokeEvent(EventTypeClass::WhenCreated, pTechno, nullptr);
 		}
 	}
 

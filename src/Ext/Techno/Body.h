@@ -59,8 +59,8 @@ public:
 		int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
 
-		// The pointer to the Bio Reactor or garrisonable structure holding this techno.
-		BuildingClass* HousingMe;
+		BuildingClass* HousingMe;              // The pointer to the Bio Reactor or garrisonable structure holding this techno.
+		bool WhenCreatedEventFired;            // This is true if the techno's "WhenCreated" event is fired, so it doesn't fire again when loading a save.
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -96,6 +96,7 @@ public:
 			, LastWarpInDelay { 0 }
 			, IsBeingChronoSphered { false }
 			, HousingMe {}
+			, WhenCreatedEventFired { false }
 		{ }
 
 		void OnEarlyUpdate();

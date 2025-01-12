@@ -214,6 +214,19 @@ DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
 	return 0;
 }
 
+DEFINE_HOOK(0x446EE8, BuildingClass_Unlimbo_WhenCreated, 0x6)
+{
+	GET(BuildingClass* const, pThis, ESI);
+	if (auto pTechnoExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (!pTechnoExt->WhenCreatedEventFired)
+		{
+			pTechnoExt->WhenCreatedEventFired = true;
+			pTechnoExt->TypeExtData->InvokeEvent(EventTypeClass::WhenCreated, pThis, nullptr);
+		}
+	}
+}
+
 DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 {
 	enum { ContinueCheck = 0x440B58, SkipSetShouldRebuild = 0x440B81 };
