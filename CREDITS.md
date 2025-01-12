@@ -376,6 +376,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
   - Fix `Stop` command not working so well in some cases
+  - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
