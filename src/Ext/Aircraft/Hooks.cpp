@@ -318,6 +318,21 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 	return SkipKickOutPassengers;
 }
 
+DEFINE_HOOK(0x4DDD66, FootClass_IsLandZoneClear_ReplaceHardcode, 0x6) // To avoid that the aircraft cannot fly towards the water surface normally
+{
+	enum { SkipGameCode = 0x4DDD8A };
+
+	GET(FootClass* const, pThis, EBP);
+	GET_STACK(CellStruct, cell, STACK_OFFSET(0x20, 0x4));
+
+	const auto pType = pThis->GetTechnoType();
+
+	// In vanilla, only aircrafts or `foots with fly locomotion` will call this virtual function
+	// So I don't know why WW use hard-coded `SpeedType::Track` and `MovementZone::Normal` to check this
+	R->AL(MapClass::Instance->GetCellAt(cell)->IsClearToMove(pType->SpeedType, false, false, -1, pType->MovementZone, -1, true));
+	return SkipGameCode;
+}
+
 static __forceinline bool CheckSpyPlaneCameraCount(AircraftClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
