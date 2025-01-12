@@ -473,7 +473,7 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4D7192, FootClass_Unlimbo_WhenCreated, 0x9)
+DEFINE_HOOK(0x4D71A0, FootClass_Unlimbo_WhenCreated, 0x9)
 {
 	GET(FootClass*, pTechno, ESI);
 

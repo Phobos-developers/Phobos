@@ -216,7 +216,7 @@ DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
 
 DEFINE_HOOK(0x446EE8, BuildingClass_Unlimbo_WhenCreated, 0x6)
 {
-	GET(BuildingClass* const, pThis, ESI);
+	GET(BuildingClass* const, pThis, EBP);
 
 	if (auto pTechnoExt = TechnoExt::ExtMap.Find(pThis))
 	{
