@@ -734,6 +734,11 @@ EventTypeN=                                        ; EventType
 (scope).Effect.Voice.Global=false                  ; boolean
 (scope).Effect.EVA=                                ; sound entry
 
+;; effects - transfer ownership
+(scope).Transfer.To.House=                         ; neutral house type (civilian, neutral, special)
+(scope).Transfer.To.Scope=                         ; basic scope type (Me|They)
+(scope).Transfer.To.ExtScope=                      ; extended scope type (Transport|Bunker|MindController)
+
 ;; effects - command
 (scope).Effect.Command=                            ; mission type (Attack|Enter|Guard|Unload)
 (scope).Effect.Command.Target.Scope=Me             ; basic scope type (Me|They)
