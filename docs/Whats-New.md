@@ -556,6 +556,7 @@ Vanilla fixes:
 - Fix `Stop` command not working so well in some cases (by CrimRecya)
 - Use 2D distance instead of 3D to check whether in air team members have arrived destination (by CrimRecya)
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc. (by Starkku)
+- Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
