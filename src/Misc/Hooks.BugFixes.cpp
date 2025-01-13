@@ -1148,6 +1148,9 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
 {
+	// At present, it seems that aircraft use their own mapcoords and the team destination's mapcoords to check.
+    // During the previous test, it was found that if the aircraft uses this and needs to return to the airport
+	// with the script first, it will interrupt the remaining tasks for unknown reasons - CrimRecya
 	return (pSource->IsInAir() && pSource->WhatAmI() != AbstractType::Aircraft) // Jumpjets or sth in the air
 		? (pSource->DistanceFrom(pTarget) * 2) // 2D distance (2x is the bonus to units in the air)
 		: pSource->DistanceFrom3D(pTarget); // 3D distance (vanilla)
