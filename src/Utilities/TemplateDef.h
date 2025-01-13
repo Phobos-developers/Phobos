@@ -1116,6 +1116,39 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Mission>(Mission& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "Guard") == 0)
+			{
+				value = Mission::Guard;
+			}
+			else if (_strcmpi(parser.value(), "Unload") == 0)
+			{
+				value = Mission::Unload;
+			}
+			else if (_strcmpi(parser.value(), "Enter") == 0)
+			{
+				value = Mission::Enter;
+			}
+			else if (_strcmpi(parser.value(), "Attack") == 0)
+			{
+				value = Mission::Attack;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an event extended scope type");
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<VeterancyType>(VeterancyType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))

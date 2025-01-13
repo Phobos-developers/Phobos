@@ -162,6 +162,45 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EVA", scopeName, effectName);
 	EVA.Read(exINI, pSection, tempBuffer);
 
+	// Transfer to House
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.House", scopeName, effectName);
+	Transfer_To_House.Read(exINI, pSection, tempBuffer);
+	if (Transfer_To_House.isset())
+	{
+		switch (Transfer_To_House.Get())
+		{
+		case OwnerHouseKind::Civilian:
+		case OwnerHouseKind::Neutral:
+		case OwnerHouseKind::Special:
+			break;
+		default:
+			Transfer_To_House.Reset();
+		}
+	}
+
+	// Transfer to Scope
+	if (!Transfer_To_House.isset())
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.Scope", scopeName, effectName);
+		Transfer_To_Scope.Read(exINI, pSection, tempBuffer);
+		if (Transfer_To_Scope.isset())
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.ExtScope", scopeName, effectName);
+			Transfer_To_ExtScope.Read(exINI, pSection, tempBuffer);
+		}
+	}
+
+	// Command
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command", scopeName, effectName);
+	Command.Read(exINI, pSection, tempBuffer);
+	if (Command.isset())
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command.Target.Scope", scopeName, effectName);
+		Command_Target_Scope.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command.Target.ExtScope", scopeName, effectName);
+		Command_Target_ExtScope.Read(exINI, pSection, tempBuffer);
+	}
+
 	// Event Invoker
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker", scopeName, effectName);
 	EventInvokerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->EventInvokers);
@@ -354,6 +393,81 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 		}
 	}
 
+	// Transfer
+	if (Transfer_To_House.isset() || Transfer_To_Scope.isset())
+	{
+		HouseClass* pTransferToHouse = nullptr;
+		if (Transfer_To_House.isset())
+		{
+			switch (Transfer_To_House.Get())
+			{
+			case OwnerHouseKind::Civilian:
+				pTransferToHouse = HouseClass::FindCivilianSide();
+				break;
+			case OwnerHouseKind::Neutral:
+				pTransferToHouse = HouseClass::FindNeutral();
+				break;
+			case OwnerHouseKind::Special:
+				pTransferToHouse = HouseClass::FindSpecial();
+				break;
+			}
+		}
+		if (Transfer_To_Scope.isset())
+		{
+			auto pTransferToTechno = HandlerCompClass::GetTrueTarget(pParticipants->at(Transfer_To_Scope.Get()), Transfer_To_ExtScope);
+			if (pTransferToTechno)
+			{
+				pTransferToHouse = pTransferToTechno->Owner;
+			}
+		}
+		if (pTransferToHouse && pTransferToHouse != pTarget->Owner)
+		{
+			this->TransferOwnership(pTarget, pTransferToHouse);
+		}
+	}
+
+	// Command
+	if (Command.isset())
+	{
+		TechnoClass* pCommandTarget = nullptr;
+		bool isDestination = false;
+		switch (Command.Get())
+		{
+			// These command types require an explicit target or it doesn't count.
+		case Mission::Enter:
+		case Mission::Attack:
+			if (Command_Target_Scope.isset())
+				pCommandTarget = HandlerCompClass::GetTrueTarget(pParticipants->at(Command_Target_Scope.Get()), Command_Target_ExtScope);
+			if (!pCommandTarget)
+				goto _EndCommand_;
+			isDestination = Command.Get() == Mission::Enter;
+			break;
+			// These command types do not require a target.
+		case Mission::Guard:
+		case Mission::Unload:
+			break;
+		default:
+			goto _EndCommand_;
+		}
+
+		pTarget->QueueMission(Command.Get(), false);
+		if (pCommandTarget)
+		{
+			if (isDestination)
+			{
+				pTarget->SetTarget(nullptr);
+				pTarget->SetDestination(pCommandTarget, true);
+			}
+			else
+			{
+				pTarget->SetTarget(pCommandTarget);
+			}
+		}
+
+	_EndCommand_:;
+	}
+
+
 	// Event Invoker
 	if (!EventInvokers.empty())
 	{
@@ -488,6 +602,33 @@ void HandlerEffectClass::CreatePassengers(TechnoClass* pToWhom, TechnoClass* pPa
 	}
 }
 
+void HandlerEffectClass::TransferOwnership(TechnoClass* pTarget, HouseClass* pNewOnwer) const
+{
+	// if MCed, release from MC
+	if (auto const pController = pTarget->MindControlledBy)
+	{
+		pController->CaptureManager->FreeUnit(pTarget);
+	}
+
+	// remove perma control ring effect
+	pTarget->MindControlledByAUnit = false;
+	if (pTarget->MindControlRingAnim)
+	{
+		pTarget->MindControlRingAnim->UnInit();
+		pTarget->MindControlRingAnim = nullptr;
+	}
+
+	// transfer ownership and cancel mission
+	pTarget->SetOwningHouse(pNewOnwer, false);
+	pTarget->QueueMission(Mission::Guard, false);
+
+	// reboot the slave manager
+	if (pTarget->SlaveManager)
+	{
+		pTarget->SlaveManager->ResumeWork();
+	}
+}
+
 bool HandlerEffectClass::IsDefined() const
 {
 	return Weapon.isset()
@@ -500,6 +641,9 @@ bool HandlerEffectClass::IsDefined() const
 		|| Veterancy_Add.isset()
 		|| Voice.isset()
 		|| EVA.isset()
+		|| Transfer_To_House.isset()
+		|| Transfer_To_Scope.isset()
+		|| Command.isset()
 		|| !EventInvokers.empty();
 }
 
@@ -544,6 +688,12 @@ bool HandlerEffectClass::Serialize(T& stm)
 		.Process(this->Voice_Persist)
 		.Process(this->Voice_Global)
 		.Process(this->EVA)
+		.Process(this->Transfer_To_House)
+		.Process(this->Transfer_To_Scope)
+		.Process(this->Transfer_To_ExtScope)
+		.Process(this->Command)
+		.Process(this->Command_Target_Scope)
+		.Process(this->Command_Target_ExtScope)
 		.Process(this->EventInvokers)
 		.Success();
 }

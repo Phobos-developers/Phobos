@@ -51,7 +51,7 @@ void EventInvokerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSecti
 
 bool EventInvokerTypeClass::CheckInvokerFilters(HouseClass* pHouse, TechnoClass* pInvoker, bool fromSuperWeapon) const
 {
-	if (fromSuperWeapon)
+	if (!pInvoker && fromSuperWeapon)
 	{
 		if (this->Invoker_Filter)
 		{

@@ -613,6 +613,24 @@ Shield.InheritStateOnReplace=false          ; boolean
           </ul>
         </li>
         <li>
+          Transfer ownership:
+          <ul>
+            <li>The scope's ownership can be transfered to a house.</li>
+            <li><code>*.Transfer.To.House</code> can be specified to turn <code>(scope)</code> into neutral. The available options are: <code>civilian</code>, <code>neutral</code>, <code>special</code>. As the effect resolves, the game tries to find a house of the given ID, if it doesn't find any, no ownership transfering will occure.</li>
+            <li><code>*.Transfer.To.Scope</code>, and <code>*.Transfer.To.ExtScope</code>, can be used to transfer the scope's ownership into the owning house of another scope's. If the latter doesn't exist, no ownership transfering will occure.</li>
+            <li>Choose only one among <code>*.Transfer.To.House</code> and <code>*.Transfer.To.Scope</code>. If both specified with valid input, the former takes precedence.</li>
+            <li>If ownership transfered, existing mind-control links and permanent mind-control effects are removed.</li>
+          </ul>
+        </li>
+        <li>
+          Command:
+          <ul>
+            <li>A command can be given to the scope.</li>
+            <li><code>*.Command</code> specifies the mission type that will be given to the <code>(scope)</code>. The available mission types are: <code>Enter</code>, <code>Attack</code>, <code>Guard</code>, <code>Unload</code>.</li>
+            <li><code>*.Command.Target.Scope</code>, and <code>*.Command.Target.ExtScope</code>, can be used to specify the target of the command. The <code>Enter</code>, <code>Attack</code> command require a target to be proceed.</li>
+          </ul>
+        </li>
+        <li>
           Event Invokers:
           <ul>
             <li>Event Invokers can be called upon the target.</li>
@@ -716,6 +734,11 @@ EventTypeN=                                        ; EventType
 (scope).Effect.Voice.Global=false                  ; boolean
 (scope).Effect.EVA=                                ; sound entry
 
+;; effects - command
+(scope).Effect.Command=                            ; mission type (Attack|Enter|Guard|Unload)
+(scope).Effect.Command.Target.Scope=Me             ; basic scope type (Me|They)
+(scope).Effect.Command.Target.ExtScope=            ; extended scope type (Transport|Bunker|MindController)
+
 ;; effects - event invoker
 (scope).Effect.EventInvokerN=                      ; EventInvokerType
 ```
@@ -808,8 +831,8 @@ Me.Effect.Voice.Persist=yes
     - `Invoker` is not a proper scope type, extended scope types won't work here.
     - The available filters are the same as Event Handlers. See [Event Handlers -> Filters](#event-handlers) for details.
     - For Warheads, the firer of the warhead will be used to check against the invoker filters.
-    - For Super Weapons, only `Invoker.(Filter|NegFilter).Owner.*` filters will work. The firing house of the super weapon will be used to check against the invoker filters. Other filters will cause the invoker to outright fail.
-    - For Invokers invoked through Event Handlers, the `Me` scope of the Event Handler will be used to check against the invoker filters.
+    - For Super Weapons, a random eligible firing building for the super weapon owned by the firing house, will be used to check against the invoker filters. If no such building exists, the firing house will be used to check against `Invoker.(Filter|NegFilter).Owner.*` filters, and any other filters will cause the invoker to fail.
+    - For Invokers invoked through Event Handlers, the `Me` scope of the original Event Handler will be used to check against the invoker filters.
   - Target Filters:
     - Event Invokers may have filters to ask for something to be true or false about the target. If the target doesn't pass the filters, no events will be invoked on it.
     - The Filters are defined like `Target.Filter.*`.
@@ -820,7 +843,7 @@ Me.Effect.Voice.Persist=yes
     - Extra event handlers can be specified, these will be forcibly invoked as if they were attached to each affected target of this event invoker, before any event handlers attached to the targets themselves to be invoked. Extra event handlers are invoked once for each target, without checking event types.
     - `Target.ExtraEventHandlerN` (where N is 0, 1, 2...) specifies extra event handlers.
     - `Target.ExtraEventHandler` is a valid alternative for `Target.ExtraEventHandler0`, if only one is specified.
-    - Extra event handlers are invoked on the target's perspective, meaning `Me` scope there will be the invoker's target, and the `They` scope there will be the techno that fired the warhead, or nonexistant if this invoker is fired through a super weapon.
+    - Extra event handlers are invoked on the target's perspective, meaning `Me` scope there will be the invoker's target, not the invoker itself.
   - Target pass down:
     - The event invoking can be passed down to other related technos, so the same event type will be invoked to them as well.
       - `Target.PassDown.Passengers` can be set to true, so this invoker will pass down to the techno's passengers, and the passengers of passengers, and so on.
@@ -835,12 +858,12 @@ Me.Effect.Voice.Persist=yes
   - On Super Weapons:
     - `EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types.
     - `EventInvoker` is a valid alternative for `EventInvoker0`, if only one is specified.
-    - The `Me` scope will be the techno hit by the super weapon, and the `They` scope of the event will be nonexistant.
+    - The `Me` scope will be the techno hit by the super weapon, and the `They` scope of the event will be a random eligible firing building for the super weapon owned by the firing house, or nonexistant if no such building exists.
   - On Event Handlers:
     - `(scope).Effect.EventInvokerN` (where N is 0, 1, 2...) specifies the Event Invoker Types to be invoked to a scope.
     - `(scope).Effect.EventInvoker` is a valid alternative for `(scope).Effect.EventInvoker0`, if only one is specified.
     - The `Me` scope of the invoked event will be the `(scope)`, and the `They` scope of the event will be the original `Me` of the source event handler.
-    For example, an IFV receives event A, where the IFV itself is the `Me` scope. Then the IFV's event handler invokes event B on a Grizzly Tank. On the Grizzly Tank's perspective, the `Me` will be the Grizzly Tank, and the `They` scope will be the IFV.
+      For example, an IFV receives event A, where the IFV itself is the `Me` scope. Then the IFV's event handler invokes event B on a Grizzly Tank. On the Grizzly Tank's perspective, the `Me` will be the Grizzly Tank, and the `They` scope will be the IFV.
 
 In `rulesmd.ini`:
 ```ini

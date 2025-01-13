@@ -42,6 +42,14 @@ public:
 	Valueable<bool> Voice_Global;
 	NullableIdx<VocClass> EVA;
 
+	Nullable<OwnerHouseKind> Transfer_To_House;
+	Nullable<EventScopeType> Transfer_To_Scope;
+	Nullable<EventExtendedScopeType> Transfer_To_ExtScope;
+
+	Nullable<Mission> Command;
+	Nullable<EventScopeType> Command_Target_Scope;
+	Nullable<EventExtendedScopeType> Command_Target_ExtScope;
+
 	ValueableVector<EventInvokerTypeClass*> EventInvokers;
 
 	static std::unique_ptr<HandlerEffectClass> Parse(INI_EX& exINI, const char* pSection, const char* scopeName, const char* effectName);
@@ -60,4 +68,5 @@ private:
 
 	void UnlimboAtRandomPlaceNearby(FootClass* pWhom, TechnoClass* pNearWhom) const;
 	void CreatePassengers(TechnoClass* pToWhom, TechnoClass* pPassengerOwnerScope) const;
+	void TransferOwnership(TechnoClass* pTarget, HouseClass* pNewOnwer) const;
 };

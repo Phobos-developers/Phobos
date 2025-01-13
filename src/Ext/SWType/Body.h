@@ -150,7 +150,7 @@ public:
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
 		void ApplyTypeConversion(SuperClass* pSW);
-		void ApplyEventInvokers(SuperClass* pSW);
+		void ApplyEventInvokers(SuperClass* pSW, const CellStruct& cell);
 		void HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) const;
 		std::vector<BuildingClass*> GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const;
 		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;
