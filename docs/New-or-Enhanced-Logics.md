@@ -34,6 +34,7 @@ This page describes all the engine features that are either new and introduced b
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
+    - `ArmorMultiplier.AllowWarheads` and `ArmorMultiplier.DisallowWarheads` can be used to restrict which Warheads the armor multiplier is applied to when dealing damage.
     - If `ROFMultiplier.ApplyOnCurrentTimer` is set to true, `ROFMultiplier` is applied on currently running reload timer (if any) when the effect is first applied.
   - If `Cloakable` is set to true, the object the effect is attached to is granted ability to cloak itself for duration of the effect.
   - `ForceDecloak`, if set to true, will uncloak and make the object the effect is attached to unable to cloak itself for duration of the effect.
@@ -44,7 +45,7 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
-  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage]`->`C4Warhead`. If `ReflectDamage.Warhead` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
+  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage]`->`C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
@@ -96,13 +97,15 @@ Animation.HideIfAttachedWith=                      ; List of AttachEffectTypes
 CumulativeAnimations=                              ; list of animations
 CumulativeAnimations.RestartOnChange=true          ; boolean
 ExpireWeapon=                                      ; WeaponType
-ExpireWeapon.TriggerOn=expire                      ; List of expire weapon trigger condition enumeration (none|expire|remove|death|all)
+ExpireWeapon.TriggerOn=expire                      ; List of expire weapon trigger condition enumeration (none|expire|remove|death|discard|all)
 ExpireWeapon.CumulativeOnlyOnce=false              ; boolean
 Tint.Color=                                        ; integer - R,G,B
 Tint.Intensity=                                    ; floating point value
 Tint.VisibleToHouses=all                           ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 FirepowerMultiplier=1.0                            ; floating point value
 ArmorMultiplier=1.0                                ; floating point value
+ArmorMultiplier.AllowWarheads=                     ; list of WarheadTypes
+ArmorMultiplier.DisallowWarheads=                  ; list of WarheadTypes
 SpeedMultiplier=1.0                                ; floating point value
 ROFMultiplier=1.0                                  ; floating point value
 ROFMultiplier.ApplyOnCurrentTimer=true             ; boolean
@@ -125,7 +128,7 @@ ReflectDamage.Multiplier=1.0                       ; floating point value, perce
 ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisableWeapons=false                               ; boolean
 Groups=                                            ; comma-separated list of strings (group IDs)
-                                                   
+
 [SOMETECHNO]                                       ; TechnoType
 AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
 AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
@@ -134,7 +137,7 @@ AttachEffect.InitialDelays=                        ; integer - initial delays (c
 AttachEffect.RecreationDelays=                     ; integer - recreation delays (comma-separated) for AttachTypes in order from first to last.
 OpenTopped.UseTransportRangeModifiers=false        ; boolean
 OpenTopped.CheckTransportDisableWeapons=false      ; boolean
-                                                   
+
 [SOMEWEAPON]                                       ; WeaponType
 AttachEffect.RequiredTypes=                        ; List of AttachEffectTypes
 AttachEffect.DisallowedTypes=                      ; List of AttachEffectTypes
@@ -146,8 +149,8 @@ AttachEffect.DisallowedMinCounts=                  ; integer - minimum disallowe
 AttachEffect.DisallowedMaxCounts=                  ; integer - maximum disallowed instance count (comma-separated) for cumulative types in order from first to last.
 AttachEffect.IgnoreFromSameSource=false            ; boolean
 AttachEffect.CheckOnFirer=false                    ; boolean
-                                                   
-[SOMEWARHEAD]                                      
+
+[SOMEWARHEAD]
 AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
 AttachEffect.CumulativeRefreshAll=false            ; boolean
 AttachEffect.CumulativeRefreshAll.OnAttach=false   ; boolean
@@ -511,7 +514,7 @@ DetachedReport=  ; sound entry
   - `Adjacent.Allowed` lists BuildingTypes this BuildingType can be placed off (within distance defined by `Adjacent`). If empty, any BuildingType not listed in `Adjacent.Disallowed` is okay.
   - `Adjacent.Disallowed` lists BuildingTypes this BuildingType cannot be placed next to. If empty, any BuildingTypes are okay as long as `Adjacent.Allowed` is empty or they are listed on it.
   - If `NoBuildAreaOnBuildup` is set to true, no building can be built next to this building regardless of any other settings if it is currently displaying its buildup animation.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]              ; BuildingType
@@ -544,7 +547,7 @@ PowersUp.Buildings= ; list of BuildingTypes
 
 - It is possible to make buildings be considered pathfinding obstacles that can be destroyed by setting `IsDestroyableBlockage` to true. What this does is make the building be considered impassable and impenetrable pathfinding obstacle to every unit that is not flying or have appropriate `MovementZone` (ones that allow destroyable obstacles to be overcome, e.g `(Infantry|Amphibious)Destroyer`) akin to wall overlays and TerrainTypes.
   - Keep in mind that if an unit has appropriate `MovementZone` but no means to actually destroy an obstacle (such as a weapon that can fire and deal damage at them), they will get stuck trying to go through them instead of pathing around.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]               ; BuildingType
@@ -573,9 +576,9 @@ PowerPlantEnhancer.Factor=1.0      ; floating point value
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                     ; BuildingType
-SpyEffect.Custom=false            ; boolean
-SpyEffect.VictimSuperWeapon=      ; SuperWeaponType
-SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
+SpyEffect.Custom=false             ; boolean
+SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
+SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
 ## Infantry
@@ -586,7 +589,7 @@ SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
 
 In `artmd.ini`:
 ```ini
-[SOMEINFANTRY]             ; InfantryType
+[SOMEINFANTRY]             ; InfantryType image
 PronePrimaryFireFLH=       ; integer - Forward,Lateral,Height
 ProneSecondaryFireFLH=     ; integer - Forward,Lateral,Height
 DeployedPrimaryFireFLH=    ; integer - Forward,Lateral,Height
@@ -633,7 +636,6 @@ Ammo.Shared=no        ; boolean
 Ammo.Shared.Group=-1  ; integer
 ```
 
-
 ### Slaves' house decision customization when owner is killed
 
 - You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterKilled`:
@@ -658,6 +660,16 @@ In `rulesmd.ini`
 ```ini
 [SOMEINFANTRY]  ; Slave type
 SlavesFreeSound=      ; sound entry
+```
+
+### Use land sequences even in water
+
+- Setting `OnlyUseLandSequences` to true will make infantry display only the regular sequences used on land even if it is in water.
+
+In `artmd.ini`
+```ini
+[SOMEINFANTRY]              ; InfantryType image
+OnlyUseLandSequences=false  ; boolean
 ```
 
 ## Projectiles
@@ -1437,8 +1449,8 @@ RemoveMindControl=false  ; boolean
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
   - `Crit.AffectBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
-  - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list.
-    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation.
+  - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list. If `Crit.AnimList.CreateAll` is set (defaults to `AnimList.CreateAll`), all animations from the list are created.
+    - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
   - `Crit.SuppressWhenIntercepted`, if set, prevents critical hits from occuring at all if the warhead was detonated from a [projectile that was intercepted](#projectile-interception-logic).
   - `ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them immune to critical hits.
@@ -1456,6 +1468,7 @@ Crit.AffectsHouses=all              ; list of Affected House Enumeration (none|o
 Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
 Crit.AnimList=                      ; list of animations
 Crit.AnimList.PickRandom=           ; boolean
+Crit.AnimList.CreateAll=            ; boolean
 Crit.ActiveChanceAnims=             ; list of animations
 Crit.AnimOnAffectedTargets=false    ; boolean
 Crit.SuppressWhenIntercepted=false  ; boolean
@@ -1608,6 +1621,16 @@ LaunchSW.DisplayMoney.Houses=all  ; Affected House Enumeration (none|owner/self|
 LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
+### Parasite removal
+
+- By default if unit takes negative damage from a Warhead (before `Verses` are calculated), any parasites infecting it are removed and deleted. This behaviour can now be customized to disable the removal for negative damage, or enable it for any arbitrary warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]     ; Warhead
+RemoveParasite=  ; boolean
+```
+
 ### Remove disguise on impact
 
 - Warheads can now remove disguise from disguised spies or mirage tanks. This will work even if the disguised was acquired by default through `PermaDisguise`.
@@ -1736,15 +1759,16 @@ FeedbackWeapon=  ; WeaponType
 
 - Some of the behavior of strafing aircraft weapons can now be customized.
   - `Strafing` controls if the aircraft can strafe when firing at the target. Default to `true` if the projectile's `ROT` < 2 and `Inviso=false`, otherwise `false`.
-  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired.
+  - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run, defaults to 5 if not set. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired.
   - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined.
   - `Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour of only deducting ammo after a strafing run and instead doing it after each individual shot.
+- There is a special case for aircraft spawned by `Type=SpyPlane` superweapons on `SpyPlane Approach` or `SpyPlane Overfly` mission where `Strafing.Shots` only if explicitly set on its primary weapon, determines the maximum number of times the map revealing effect can activate irregardless of other factors.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]                   ; WeaponType
 Strafing=                      ; boolean
-Strafing.Shots=5               ; integer
+Strafing.Shots=                ; integer
 Strafing.SimulateBurst=false   ; boolean
 Strafing.UseAmmoPerShot=false  ; boolean
 ```

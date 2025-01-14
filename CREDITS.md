@@ -235,7 +235,7 @@ This page lists all the individual contributions to the project by their author.
   - Air unit tracking fix for large range / `CellSpread`
   - Extra tint intensity for Iron Curtain & Force Shield
   - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565
-  - Customizing height at which subterranean units travel
+  - Customizing height and speed at which subterranean units travel
   - AI superweapon delay timer customization
   - Disabling `MultipleFactory` bonus from specific BuildingType
   - Customizable ChronoSphere teleport delays for units
@@ -251,6 +251,7 @@ This page lists all the individual contributions to the project by their author.
   - Build area customizations
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
+  - `<Player @ X>` as owner for pre-placed objects
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -330,6 +331,11 @@ This page lists all the individual contributions to the project by their author.
    - Skippable game save on scenario start
    - `InfDeath=9` versus jumpjet infantry 0 damage fix
    - Skip rally point line drawing when undeploying a building
+   - Ares' `SW.Shots` hint on extended tooltips
+   - Ares' Abductor weapon fix
+   - Suppress Ares' swizzle warning when parsing tags and taskforces
+   - Better fix for Ares academy not working on the initial payloads of vehicles built from a war factory
+   - Fix Ares' InitialPayload for teams spawned by trigger actions
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -362,13 +368,16 @@ This page lists all the individual contributions to the project by their author.
   - Flashing Technos on selecting
   - Promotion animation
 - **ZivDero**
-  - Allow giving ownership of buildings to players in Skirmish and MP using <Player @ A-H>
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
 - **CrimRecya**
   - Fix `LimboKill` not working reliably
   - Enhance bombard trajectory
+  - Allow using waypoints, area guard and attack move with aircraft
+  - Fix `Stop` command not working so well in some cases
+  - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
+  - Use 2D distance instead of 3D to check whether in air team members have arrived destination
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -380,6 +389,8 @@ This page lists all the individual contributions to the project by their author.
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
   - Global value of `RepairBaseNodes`
+- **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
+- **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
@@ -405,6 +416,7 @@ This page lists all the individual contributions to the project by their author.
 - **thomassneddon** - general assistance, knowledge about voxel lighting model
 - **Xkein** - general assistance, YRpp edits
 - **mevitar** - honorary shield tester *triple* award
+- **Phobos CN Tester Group (Reedom, Mantis, Swim Wing, Takitoru, Examon, AKB, Pusheen, ZQ, Claptrap, BunkerGeneral, Big J, Skywalker, ChickEmperor, Shifty, Mikain, Tobiichi Origami, Feiron, W_S502, Ailink, AbrahamMikhail, Tide, Fnfalsc, Yumeri_Rei, Nacho, Zhuzi, Ika_Aru)** - extensive and thorough testing
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features

@@ -21,6 +21,9 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Lunar theater tileset parsing unhardcoding is now only applied if `lunarmd.ini` has `[General]` -> `ApplyLunarFixes` set to true.
+- `Units.DisableRepairCost` was changed to `Units.UseRepairCost` (note inverted expected value) as it no longer has discrete default value and affects `Hospital=true` buildings, infantry do not have repair cost by default.
+- Critical hit animations created by `Crit.AnimOnAffectedTargets=true` Warheads no longer default to `AnimList.PickRandom` if `Crit.AnimList.PickRandom` is not set.
 - `SelfHealGainType` value `none` has been changed to `noheal` due to `none` being treated as a blank string and not parsed by the game.
 - Affected target enum (`CanTarget`, `Crit.Affects` et al) now considers buildings considered vehicles (`ConsideredVehicle=true` or not set in conjunction with `UndeploysInto` & 1x1 foundation) as units instead of buildings.
 - If `CreateUnit.AlwaysSpawnOnGround` is set to false, jumpjet vehicles created will now automatically take off instead of staying on ground. Set to true to force spawn on ground.
@@ -372,7 +375,6 @@ New:
 - Unhardcoded timer blinking color scheme (by Starkku)
 - Customizing shield self-healing timer restart when shield is damaged (by Starkku)
 - Customizing minimum & maximum amount of damage shield can take from a single hit (by Starkku)
-- Players can now be given ownership of preplaced buildings in Skirmish and Multiplayer in maps using houses of the format <Player @ X> where X goes from A to H for spawn positions 1-8 (by ZivDero)
 - `AutoDeath.Technos(Dont)Exist` can optionally track limboed (not physically on map, e.g transports etc) technos (by Starkku)
 - Wall overlay `Palette` support (by Starkku)
 - Show designator & inhibitor range (by Morton)
@@ -438,11 +440,12 @@ New:
 - `ZAdjust` for OverlayTypes (by Starkku)
 - Allow customizing extra tint intensity for Iron Curtain & Force Shield (by Starkku)
 - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565 (by Starkku)
-- Customizing height at which subterranean units travel (by Starkku)
+- Customizing height and speed at which subterranean units travel (by Starkku)
 - Option for Warhead damage to penetrate Iron Curtain or Force Shield (by Starkku)
 - Option for Warhead to remove all shield types at once (by Starkku)
 - Allow customizing voxel light source position (by Kerbiter, Morton, based on knowledge of thomassnedon)
 - Option to fix voxel light source being offset and incorrectly tilting on slopes (by Kerbiter)
+- Allow using waypoints, area guard and attack move with aircraft (by CrimRecya)
 - AI superweapon delay timer customization (by Starkku)
 - Disabling `MultipleFactory` bonus from specific BuildingType (by Starkku)
 - Customizable ChronoSphere teleport delays for units (by Starkku)
@@ -463,6 +466,11 @@ New:
 - Toggle to disallow buildings from providing build area during buildup (by Starkku)
 - Allow customizing which building types provide build area for a building (by Starkku)
 - `Scorch` / `Flamer` fire animation customization (by Starkku)
+- Warheads parasite removal customization (by Starkku)
+- Allow infantry to use land sequences in water (by Starkku)
+- `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps (by Starkku)
+- Allow customizing charge turret delays per burst on a weapon (by Starkku)
+- Unit `Speed` setting now accepts floating point values (by Starkku)
 - Enhance bombard trajectory with vertical and meteor trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 
 Vanilla fixes:
@@ -541,6 +549,15 @@ Vanilla fixes:
 - Removed the 0 damage effect from `InfDeath=9` warheads to in-air infantries (by Trsdy)
 - Projectiles created from `AirburstWeapon` now remember their WeaponType and can apply radiation etc. (by Starkku)
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first (by Starkku)
+- Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater (by Starkku)
+- Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being displayed in water instead of `WetAttack` (by Starkku)
+- Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings (by Starkku)
+- Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers (by Starkku)
+- Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix (by tyuah8)
+- Fix `Stop` command not working so well in some cases (by CrimRecya)
+- Use 2D distance instead of 3D to check whether in air team members have arrived destination (by CrimRecya)
+- Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc. (by Starkku)
+- Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -585,6 +602,7 @@ Phobos fixes:
 - Fix `LimboKill` not working reliably (by CrimRecya)
 - Fixed `SelfHealGainType=none` not working (changed to `noheal`) (by Starkku)
 - Fixed AircraftTypes gaining self-healing from `UnitsGainSelfHeal` by default (while not displaying the pip) when they should not (by Starkku)
+- Fixed `LaunchSW.IgnoreInhibitors` and `SW.Next.IgnoreInhibitors` overriding corresponding `IgnoreDesignators` settings (by Ollerus)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.
@@ -594,6 +612,11 @@ Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed (by Starkku)
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
+- Appended Ares' `SW.Shots` usage to extended tooltips (by Trsdy)
+- Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles (by Trsdy)
+- Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by Trsdy)
+- Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory (by Trsdy, supersedes Aephiex impl.)
+- Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
 </details>
 
 ### 0.3.0.1

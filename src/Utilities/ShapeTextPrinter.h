@@ -25,10 +25,7 @@ class ShapeTextPrinter
 {
 private:
 
-	static const char* SignSequence;
-	static const int SignSequenceLength;
-
-	static int GetSignIndex(const char sign);
+	static constexpr std::string_view SignSequence = "/%$,.!?|";
 
 public:
 
