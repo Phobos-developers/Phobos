@@ -370,24 +370,6 @@ In `rulesmd.ini`:
 AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
 ```
 
-### Unit repair customization
-
-- It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.
-  - `Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General]`->`ReloadRate` if `UnitReload=true` and if overridden per AircraftType (Ares feature) can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General]`->`URepairRate`.
-    - On `UnitReload=true` building setting this to negative value will fully disable the repair functionality.
-  - `Units.RepairStep` how much `Strength` is restored per repair tick. Defaults to `[General]`->`RepairStep`.
-  - `Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Defaults to `[General]`->`RepairPercent`. Note that the final cost is set to 1 if it is less than that.
-    - `Units.UseRepairCost` can be used to customize if repair cost is applied at all. Defaults to false for infantry, true for everything else.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]        ; BuildingType
-Units.RepairRate=     ; floating point value, ingame minutes
-Units.RepairStep=     ; integer
-Units.RepairPercent=  ; floating point value, percents or absolute
-Units.UseRepairCost=  ; boolean
-```
-
 ### Airstrike target eligibility
 
 - By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
@@ -478,6 +460,24 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                         ; BuildingType
 ExcludeFromMultipleFactoryBonus=false  ; boolean
+```
+
+### Unit repair customization
+
+- It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.
+  - `Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General]`->`ReloadRate` if `UnitReload=true` and if overridden per AircraftType (Ares feature) can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General]`->`URepairRate`.
+    - On `UnitReload=true` building setting this to negative value will fully disable the repair functionality.
+  - `Units.RepairStep` how much `Strength` is restored per repair tick. Defaults to `[General]`->`RepairStep`.
+  - `Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Defaults to `[General]`->`RepairPercent`. Note that the final cost is set to 1 if it is less than that.
+    - `Units.UseRepairCost` can be used to customize if repair cost is applied at all. Defaults to false for infantry, true for everything else.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]        ; BuildingType
+Units.RepairRate=     ; floating point value, ingame minutes
+Units.RepairStep=     ; integer
+Units.RepairPercent=  ; floating point value, percents or absolute
+Units.UseRepairCost=  ; boolean
 ```
 
 ## Particle systems
