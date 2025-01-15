@@ -5,8 +5,8 @@
 #include <BulletClass.h>
 #include <Helpers/Macro.h>
 
-#include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
+#include "BombardTrajectory.h"
 
 TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 {

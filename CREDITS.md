@@ -379,6 +379,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `Stop` command not working so well in some cases
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Use 2D distance instead of 3D to check whether in air team members have arrived destination
+  - Enhanced Straight trajectory
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
