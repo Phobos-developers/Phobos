@@ -252,6 +252,7 @@ This page lists all the individual contributions to the project by their author.
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
   - `<Player @ X>` as owner for pre-placed objects
+  - Custom exit cell for infantry factory
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -395,7 +396,7 @@ This page lists all the individual contributions to the project by their author.
   - Superweapon launch site & availability code
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
-- **ststl, FlyStar, Saigyouji, JunJacobYoung** - Digital Display
+- **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic

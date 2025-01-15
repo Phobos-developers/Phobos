@@ -368,7 +368,7 @@ New:
 - Chrono sparkle animation display customization and improvements (by Starkku)
 - Script action to Chronoshift teams to enemy base (by Starkku)
 - Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
-- Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
+- Digital display of HP and SP (by ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, based on knowledge of DeathFish)
 - PipScale pip customizations (size, ammo / spawn / tiberium frames or offsets) (by Starkku)
 - Auto-deploy/Deploy block on ammo change (by Fryone)
 - `AltPalette` lighting toggle (by Starkku)
@@ -472,6 +472,7 @@ New:
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps (by Starkku)
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
+- Custom exit cell for infantry factory (by Starkku)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
