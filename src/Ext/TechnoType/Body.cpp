@@ -455,8 +455,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimitGroup_ExtraLimit_MaxCount.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxCount");
 	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
 
-	this->NoRearmInEMPState.Read(exINI, pSection, "NoRearmInEMPState");
-	this->NoRearmInTemporal.Read(exINI, pSection, "NoRearmInTemporal");
+	this->NoRearm_Inactive.Read(exINI, pSection, "NoRearm.Inactive");
+	this->NoRearm_Temporal.Read(exINI, pSection, "NoRearm.Temporal");
+	this->NoReload_Inactive.Read(exINI, pSection, "NoReload.Inactive");
+	this->NoReload_Temporal.Read(exINI, pSection, "NoReload.Temporal");
 
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
@@ -829,8 +831,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxCount)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
 
-		.Process(this->NoRearmInEMPState)
-		.Process(this->NoRearmInTemporal)
+		.Process(this->NoRearm_Inactive)
+		.Process(this->NoRearm_Temporal)
+		.Process(this->NoReload_Inactive)
+		.Process(this->NoReload_Temporal)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
