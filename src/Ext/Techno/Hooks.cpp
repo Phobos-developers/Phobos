@@ -550,17 +550,18 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 	GET(UnitClass*, pThis, EBP);
 	TechnoExt::ExtData *pData = TechnoExt::ExtMap.Find(pThis);
 
-	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed && (pThis->IsYellowHP() || pThis->IsRedHP()))
+	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra(pThis->IsRedHP()))
+		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
 		{
 			ObjectTypeClass* Image = pCustomType;
 			R->EBX<ObjectTypeClass *>(Image);
 		}
 	}
 
-	R->EAX(pThis->WalkedFramesSoFar);
-	return Continue;
+	//R->EAX(pThis->WalkedFramesSoFar);
+	//return Continue;
+	return 0;
 }
 
 DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
@@ -570,12 +571,12 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 	GET(UnitClass*, pThis, EBP);
 	TechnoExt::ExtData *pData = TechnoExt::ExtMap.Find(pThis);
 
-	if(pThis->IsYellowHP() || pThis->IsRedHP())
+	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if(UnitTypeClass* pCustomType = pData->GetUnitTypeExtra(pThis->IsRedHP()))
+		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
 		{
 			SHPStruct* Image = pCustomType->GetImage();
-			if(Image)
+			if (Image)
 				R->EAX<SHPStruct *>(Image);
 		}
 	}

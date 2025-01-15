@@ -1368,16 +1368,16 @@ Convert.ComputerToHuman =   ; TechnoType
 
 ### Damaged unit image changes
 
-- When a unit is damaged (health points percentage is lower than `ConditionYellow` percentage), it now may use different image set by `DamagedImage.ConditionYellow` UnitType. Similar, `DamagedImage.ConditionRed` is used as image if unit health points percentage is lower than `ConditionRed` percentage.
-- It is also works on water by setting `WaterDamagedImage.ConditionYellow` and `WaterDamagedImage.ConditionRed` UnitType, similar to Ares' `WaterImage`.
+- When a unit is damaged (health points percentage is lower than `ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` UnitType. Similar, `Image.ConditionRed` is used as image if unit health points percentage is lower than `ConditionRed` percentage.
+- It is also works on water by setting `WaterImage.ConditionYellow` and `WaterImage.ConditionRed` UnitType, similar to Ares' `WaterImage`.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEUNIT]                                   ; UnitType
-DamagedImage.ConditionYellow=                ; UnitType entry
-DamagedImage.ConditionRed=                   ; UnitType entry
-WaterDamagedImage.ConditionYellow=           ; UnitType entry
-WaterDamagedImage.ConditionRed=              ; UnitType entry
+Image.ConditionYellow=                ; UnitType entry
+Image.ConditionRed=                   ; UnitType entry
+WaterImage.ConditionYellow=           ; UnitType entry
+WaterImage.ConditionRed=              ; UnitType entry
 ```
 
 ```{warning}
