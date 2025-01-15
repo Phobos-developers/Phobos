@@ -179,7 +179,7 @@ static inline bool CheckAttackMoveCanResetTarget(FootClass* pThis)
 
 	const auto pSecondaryWeapon = pSecondary->WeaponType;
 
-	if (!pSecondaryWeapon || !pSecondaryWeapon->NeverUse)
+	if (!pSecondaryWeapon || !pSecondaryWeapon->NeverUse) // Melee unit's virtual scanner
 		return true;
 
 	return pSecondaryWeapon->Range <= pPrimaryWeapon->Range;
