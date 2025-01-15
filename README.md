@@ -91,9 +91,9 @@ Credits
 
 ### Developers
 - **Belonit (Gluk-v48)** - project author
-- **Kerbiter (Metadorius)** - project co-author, BDFL, maintainer (semi-active for the time being; [Patreon](https://www.patreon.com/kerbiter), PM me for PayPal to avoid fees)
+- **Kerbiter (Metadorius)** - project co-author, BDFL, maintainer ([Patreon](https://www.patreon.com/kerbiter), PM me for PayPal to avoid fees)
 - **Starkku** - co-maintainer, developer ([Patreon](https://www.patreon.com/Starkku))
-- **Uranusian (Thrifinesma)** - retired developer, CN community ambassador
+- **Uranusian (Thrifinesma)** - developer, CN community ambassador
 - **secsome (SEC-SOME)** - developer
 - **Otamaa (Fahroni, BoredEXE)** - developer ([PayPal](https://paypal.me/GeneralOtama))
 - **FS-21** - developer
