@@ -413,6 +413,22 @@ In `rulesmd.ini`:
 ConsideredVehicle=  ; boolean
 ```
 
+### Custom exit cell for infantry factory
+
+- By default `Factory=InfantryType` buildings use exit cell for the created infantry based on hardcoded settings if any of `GDIBarracks`, `NodBarracks` or `YuriBarracks` are set to true. It is now possible to define arbitrary exit cell for such building via `BarracksExitCell`. Below is a reference of the cell offsets for the hardcoded values.
+
+| Key            | Cell Offset |
+|----------------|-------------|
+| `GDIBarracks`  | 1,2         |
+| `NodBarracks`  | 2,2         |
+| `YuriBarracks` | 2,1         |
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]     ; BuildingType
+BarracksExitCell=  ; X,Y - cell offset
+```
+
 ### Customizable & new grinder properties
 
 ![image](_static/images/grinding.gif)
