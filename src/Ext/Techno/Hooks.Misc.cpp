@@ -376,7 +376,7 @@ DEFINE_HOOK(0x7089E8, TechnoClass_AllowedToRetaliate_AttackMindControlledDelay, 
 	return CanAttackMindControlled(pAttacker, pThis) ? 0 : CannotRetaliate;
 }
 
-DEFINE_HOOK(0x6F7EA2, TechnoClass_CanAutoTargetObject_AttackMindControlledDelay, 0x6)
+DEFINE_HOOK(0x6F88BF, TechnoClass_CanAutoTargetObject_AttackMindControlledDelay, 0x6)
 {
 	enum { CannotSelect = 0x6F894F };
 
