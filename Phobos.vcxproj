@@ -28,6 +28,7 @@
     <ClCompile Include="src\Commands\NextIdleHarvester.cpp" />
     <ClCompile Include="src\Commands\ObjectInfo.cpp" />
     <ClCompile Include="src\Commands\QuickSave.cpp" />
+    <ClCompile Include="src\Commands\ManualReloadAmmo.cpp" />
     <ClCompile Include="src\Commands\ToggleDesignatorRange.cpp" />
     <ClCompile Include="src\Commands\ToggleDigitalDisplay.cpp" />
     <ClCompile Include="src\Commands\SaveVariablesToFile.cpp" />
@@ -40,6 +41,7 @@
     <ClCompile Include="src\Ext\Bullet\Trajectories\StraightTrajectory.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Hooks.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
+    <ClCompile Include="src\Ext\Event\Body.cpp" />
     <ClCompile Include="src\Ext\OverlayType\Body.cpp" />
     <ClCompile Include="src\Ext\OverlayType\Hooks.cpp" />
     <ClCompile Include="src\Ext\ParticleType\Body.cpp" />
@@ -193,12 +195,14 @@
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Commands\DamageDisplay.h" />
     <ClInclude Include="src\Commands\QuickSave.h" />
+    <ClInclude Include="src\Commands\ManualReloadAmmo.h" />
     <ClInclude Include="src\Commands\ToggleDesignatorRange.h" />
     <ClInclude Include="src\Commands\ToggleDigitalDisplay.h" />
     <ClInclude Include="src\Commands\SaveVariablesToFile.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\StraightTrajectory.h" />
+    <ClInclude Include="src\Ext\Event\Body.h" />
     <ClInclude Include="src\Ext\OverlayType\Body.h" />
     <ClInclude Include="src\Ext\ParticleType\Body.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />

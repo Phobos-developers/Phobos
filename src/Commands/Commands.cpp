@@ -10,6 +10,7 @@
 #include "ToggleDigitalDisplay.h"
 #include "ToggleDesignatorRange.h"
 #include "SaveVariablesToFile.h"
+#include "ManualReloadAmmo.h"
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -19,6 +20,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
+	MakeCommand<ManualReloadAmmoCommandClass>();
 
 	if (Phobos::Config::DevelopmentCommands)
 	{

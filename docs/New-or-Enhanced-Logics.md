@@ -1366,6 +1366,18 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### Manually empty and reload ammo
+
+- You can now use the shortcut key to manually empty and reload ammo for units. Aircraft still needs to return to the airport to reload.
+  - `CanManualReload` controls whether this type of techno can manually empty and reload ammo.
+  - For shortcut keys, see [User Interface -> Manually Reload](User-Interface.md#Manual-Reload).
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]            ; TechnoType
+CanManualReload=false   ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound
