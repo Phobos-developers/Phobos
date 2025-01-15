@@ -10,11 +10,18 @@
 > The project is currently not maintained actively enough and thus we are looking for active maintainers at the moment. Please message us [in Discord channel](https://discord.gg/sZeMzz6qVg) (or PM Kerbiter directly).
 
 # Phobos
+
 ...is a community engine extension project providing a set of new features and fixes for Yuri's Revenge based on [modified YRpp](https://github.com/Metadorius/YRpp) and [Syringe](https://github.com/Ares-Developers/Syringe) to allow injecting code. It's meant to accompany [Ares](https://github.com/Ares-Developers/Ares) rather than replace it, thus it won't introduce incompatibilities.
 
 While Phobos is independent of Ares and does NOT require Ares specifically to function, Phobos complements some of the features found in Ares and vice versa.
 
-You can discuss the project at a dedicated [channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg).
+Community
+---------
+
+As the project is international and English is currently studied the most commonly as a second language, it's the main project language. We do not limit the creation of language-specific community groups though, because we understand that many may not know English as well as their native language and/or may have trouble accessing Discord.
+
+- **[🌐 International Discord channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg)**
+- [🇨🇳 Chinese QQ Phobos group / Phobos 中文用户QQ群 (630590659)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)
 
 Downloads
 ---------
