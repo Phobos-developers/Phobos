@@ -1372,6 +1372,7 @@ Convert.ComputerToHuman =   ; TechnoType
 - Units with turret without `TurretSpins=true` can looks more vivid when it is in idle.
   - `Turret.IdleRotate` controls whether units can rotate their turrets when in idle. Defaults to `[AudioVisual]` -> `Turret.IdleRotate`.
   - `Turret.PointToMouse` controls whether units will turn their turrets to your mouse when in idle. Defaults to `[AudioVisual]` -> `Turret.PointToMouse`.
+    - At the present moment, this only functions in singleplayer.
   - `Turret.IdleRestartMin` and `Turret.IdleRestartMax` control the delay from idle to action occurrence together.
   - `Turret.IdleIntervalMin` and `Turret.IdleIntervalMax` control the delay between every idle actions together.
 - The turret and body of the units can now be rotated under control.
