@@ -546,34 +546,37 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 }
 
 
-// I played a stupid trick here:
-// The context is used to mark the caller. 
+#pragma region BuildingTypeSelectable
+
 namespace BuildingTypeSelectable
 {
-	bool ProcessingIDMatches = false;
+    bool ProcessingIDMatches = false;
 }
 
-// If the caller is the type select filter, then the context is set, which means that the vfunc IsStrange is called by the type select filter.
-DEFINE_HOOK(0x732A85, sub_732950_SetContext1, 0x7)
+DEFINE_HOOK_AGAIN(0x732B28, TypeSelectExecute_SetContext, 0x6)
+DEFINE_HOOK(0x732A85, TypeSelectExecute_SetContext, 0x7)
 {
-	BuildingTypeSelectable::ProcessingIDMatches = true;
-	return 0;
+    BuildingTypeSelectable::ProcessingIDMatches = true;
+    return 0;
 }
 
-DEFINE_HOOK(0x732B28, sub_732950_SetContext2, 0x6)
+DEFINE_HOOK_AGAIN(0x732C91, TechnoClass_IDMatches_ResetContext, 0x5)
+DEFINE_HOOK(0x732C8A, TechnoClass_IDMatches_ResetContext, 0x5)
 {
-	BuildingTypeSelectable::ProcessingIDMatches = true;
-	return 0;
+    BuildingTypeSelectable::ProcessingIDMatches = false;
+    return 0;
 }
 
-DEFINE_HOOK(0x732C97, TechnoClass_IDMatches_ResetContext, 0x5)
-{
-	BuildingTypeSelectable::ProcessingIDMatches = false;
-	return 0;
-}
-
-// If the context is set as well as the flags is enabled, the vfunc IsStrange return true to enable the type selection.
+// If the context is set as well as the flags is enabled, this will make the vfunc CanBeSelectedNow return true to enable the type selection.
 DEFINE_HOOK(0x465D40, BuildingClass_Is1x1AndUndeployable_BuildingMassSelectable, 0x6)
 {
-	return BuildingTypeSelectable::ProcessingIDMatches && RulesExt::Global()->BuildingTypeSelectable ? 0x465D68 : 0;
+    enum { SkipGameCode = 0x465D6A };
+
+    if (!BuildingTypeSelectable::ProcessingIDMatches || !RulesExt::Global()->BuildingTypeSelectable)
+        return 0;
+
+    R->EAX(true);
+    return SkipGameCode;
 }
+
+#pragma endregion
