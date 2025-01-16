@@ -389,8 +389,8 @@ This page lists all the individual contributions to the project by their author.
   - Global value of `RepairBaseNodes`
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Aephiex**
-  - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
   - Aggressive stance toggle command (auto target unarmed enemy buildings)
+  - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
