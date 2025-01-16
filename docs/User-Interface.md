@@ -266,6 +266,15 @@ ShowTimer=yes
 ShowTimer.Priority=0  ; integer
 ```
 
+### Type select for buildings
+- In vanilla game, type select can only be used on 1x1 buildings with `UndeploysInto`. Now it's possible to use it on all buildings if `BuildingTypeSelectable` set to true.
+
+In `rulesmd.ini`
+```ini
+[General]
+BuildingTypeSelectable=false  ; boolean
+```
+
 ### Flashing Technos on selecting
 
 Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
