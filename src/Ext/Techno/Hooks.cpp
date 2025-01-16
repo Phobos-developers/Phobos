@@ -546,11 +546,14 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 }
 
 
+// I played a stupid trick here:
+// The context is used to mark the caller. 
 namespace BuildingTypeSelectable
 {
 	bool ProcessingIDMatches = false;
 }
 
+// If the caller is the type select filter, then the context is set, which means that the vfunc IsStrange is called by the type select filter.
 DEFINE_HOOK(0x732A85, sub_732950_SetContext1, 0x7)
 {
 	BuildingTypeSelectable::ProcessingIDMatches = true;
@@ -569,6 +572,7 @@ DEFINE_HOOK(0x732C97, TechnoClass_IDMatches_ResetContext, 0x5)
 	return 0;
 }
 
+// If the context is set as well as the flags is enabled, the vfunc IsStrange return true to enable the type selection.
 DEFINE_HOOK(0x465D40, BuildingClass_Is1x1AndUndeployable_BuildingMassSelectable, 0x6)
 {
 	return BuildingTypeSelectable::ProcessingIDMatches && RulesExt::Global()->BuildingTypeSelectable ? 0x465D68 : 0;
