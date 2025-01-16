@@ -543,7 +543,8 @@ void TechnoExt::ExtData::ToggleAggressiveStance()
 		// toggle off aggressive stance
 		this->AggressiveStance = false;
 		// stop current target
-		this->OwnerObject()->QueueMission(Mission::Guard, false);
+		this->OwnerObject()->QueueMission(Mission::Guard, true);
+		this->OwnerObject()->SetTarget(nullptr);
 	}
 	else
 	{
