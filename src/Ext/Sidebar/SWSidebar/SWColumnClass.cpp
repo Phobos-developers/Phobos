@@ -91,7 +91,7 @@ bool SWColumnClass::AddButton(int superIdx)
 		if (!Phobos::UI::SuperWeaponSidebar)
 			return false;
 
-		if (!pSWExt->SuperWeaponSidebar_Allow)
+		if (!pSWExt->SuperWeaponSidebar_Allow.Get(RulesExt::Global()->SuperWeaponSidebar_AllowByDefault))
 			return false;
 
 		const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;

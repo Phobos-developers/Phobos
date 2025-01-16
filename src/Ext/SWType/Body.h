@@ -78,7 +78,7 @@ public:
 
 		Valueable<int> TabIndex;
 
-		Valueable<bool> SuperWeaponSidebar_Allow;
+		Nullable<bool> SuperWeaponSidebar_Allow;
 		DWORD SuperWeaponSidebar_PriorityHouses;
 		DWORD SuperWeaponSidebar_RequiredHouses;
 
@@ -152,7 +152,7 @@ public:
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }
-			, SuperWeaponSidebar_Allow { true }
+			, SuperWeaponSidebar_Allow {}
 			, SuperWeaponSidebar_PriorityHouses { 0u }
 			, SuperWeaponSidebar_RequiredHouses { 0xFFFFFFFFu }
 			, SidebarPal {}
