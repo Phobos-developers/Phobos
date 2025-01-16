@@ -15,7 +15,7 @@ const wchar_t* AggressiveStanceClass::GetUIName() const
 
 const wchar_t* AggressiveStanceClass::GetUICategory() const
 {
-	return CATEGORY_SELECTION;
+	return CATEGORY_CONTROL;
 }
 
 const wchar_t* AggressiveStanceClass::GetUIDescription() const
