@@ -581,30 +581,31 @@ ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enable
 
 ### Exclusive SuperWeapon Sidebar
 
-- It is possible to put sw cameos on the left of screen like C&C3 when `SuperWeaponSidebar` is true.
-- In theory, it should be compatible with Ares
-- Cameos arranged in a pyramid shape.
-- `SuperWeaponSidebar.Interval` specific how many leptons between two columns.
-- `SuperWeaponSidebar.Max` controls the maximum number of cameos on the leftmost side, which also depends on the current game resolution.
-- `SuperWeaponSidebar.MaxColumns` controls that maximum count of columns.
-- `SuperWeaponSidebar.CameoHeight` controls the distance from the top of the previous cameo to the top of the next cameo.
-- `SuperWeaponSidebar.LeftOffset` controls the distance between the leftmost cameo and the leftmost part of the screen.
+- It is possible to put sw cameos on the left of screen like C&C3 when `SuperWeaponSidebar` is true. Cameos arranged in a pyramid shape. In theory, it should be compatible with Ares.
+  - `SuperWeaponSidebar.Interval` controls the distance between two column cameos (excluding the background). When you need to make a background, the width of the background should be (`SuperWeaponSidebar.Interval` + cameo fixed width 60).
+  - `SuperWeaponSidebar.LeftOffset` controls the distance between the left side of cameo and the left side of its column (background). This will not be greater than `SuperWeaponSidebar.Interval`.
+  - `SuperWeaponSidebar.CameoHeight` controls the distance from the top of the previous cameo to the top of the next cameo. That is, the space between the upper and lower cameos is (`SuperWeaponSidebar.CameoHeight` - cameo fixed height 48). This will not be less than 48. When you need to make a background, this is the height of the background.
+  - `SuperWeaponSidebar.Max` controls the maximum number of cameos on the leftmost column, which also depends on the current game resolution.
+  - `SuperWeaponSidebar.MaxColumns` controls that maximum count of columns.
 - You can also launch first 10 SW by hotkey in INTERFACE category.
-- For localization of hotkey, add `TXT_FIRE_TACTICAL_SW_XX`, `TXT_FIRE_TACTICAL_SW_XX_DESC`, `TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` into your `.csf` file.
+  - For localization of hotkey, add `TXT_FIRE_TACTICAL_SW_XX`, `TXT_FIRE_TACTICAL_SW_XX_DESC`, `TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` into your `.csf` file.
 
 In `uimd.ini`:
 ```ini
 [Sidebar]
 SuperWeaponSidebar=false              ; boolean
-SuperWeaponSidebar.Interval=0         ; integer
-SuperWeaponSidebar.LeftOffset=0       ; integer
-SuperWeaponSidebar.CameoHeight=48     ; integer
+SuperWeaponSidebar.Interval=0         ; integer, pixels
+SuperWeaponSidebar.LeftOffset=0       ; integer, pixels
+SuperWeaponSidebar.CameoHeight=48     ; integer, pixels
 SuperWeaponSidebar.Max=0              ; integer
 SuperWeaponSidebar.MaxColumns=        ; integer
 ```
 
 In `rulesmd.ini`
 ```ini
+[AudioVisual]
+SuperWeaponSidebar.AllowByDefault=false   ; boolean
+
 [SOMESIDE]
 SuperWeaponSidebar.OnPCX=             ; filename - including the .pcx extension
 SuperWeaponSidebar.OffPCX=            ; filename - including the .pcx extension
@@ -613,7 +614,7 @@ SuperWeaponSidebar.CenterPCX=         ; filename - including the .pcx extension
 SuperWeaponSidebar.BottomPCX=         ; filename - including the .pcx extension
 
 [SOMESW]
-SuperWeaponSidebar.Allow=true         ; boolean
+SuperWeaponSidebar.Allow=             ; boolean
 SuperWeaponSidebar.PriorityHouses=    ; list of house types
 SuperWeaponSidebar.RequiredHouses=    ; list of house types
 ```
