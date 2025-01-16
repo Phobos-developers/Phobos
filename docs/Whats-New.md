@@ -472,7 +472,7 @@ New:
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps (by Starkku)
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
-- Custom exit cell for infantry factory (by Starkku
+- Custom exit cell for infantry factory (by Starkku)
 - Aggressive stance toggle command (auto target unarmed enemy buildings) (by Aephiex)
 
 Vanilla fixes:
