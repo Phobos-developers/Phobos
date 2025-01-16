@@ -531,3 +531,63 @@ DEFINE_HOOK(0x6F4D1A, TechnoClass_ReceiveCommand_Repair, 0x5)
 }
 
 #pragma endregion
+
+#pragma region BarracksExitCell
+
+DEFINE_HOOK(0x44EFD8, BuildingClass_FindExitCell_BarracksExitCell, 0x6)
+{
+	enum { SkipGameCode = 0x44F13B, ReturnFromFunction = 0x44F037 };
+
+	GET(BuildingClass*, pThis, EBX);
+	REF_STACK(CellStruct, resultCell, STACK_OFFSET(0x30, -0x20));
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->BarracksExitCell.isset())
+	{
+		Point2D offset = pTypeExt->BarracksExitCell.Get();
+		auto exitCell = pThis->GetMapCoords();
+		exitCell.X += (short)offset.X;
+		exitCell.Y += (short)offset.Y;
+
+		if (MapClass::Instance->CoordinatesLegal(exitCell))
+		{
+			GET(TechnoClass*, pTechno, ESI);
+			auto const pCell = MapClass::Instance->GetCellAt(exitCell);
+
+			if (pTechno->IsCellOccupied(pCell, FacingType::None, -1, nullptr, true) == Move::OK)
+			{
+				resultCell = exitCell;
+				return ReturnFromFunction;
+			}
+		}
+
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x444B83, BuildingClass_ExitObject_BarracksExitCell, 0x7)
+{
+	enum { SkipGameCode = 0x444C7C };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET(int, xCoord, EBP);
+	GET(int, yCoord, EDX);
+	REF_STACK(CoordStruct, resultCoords, STACK_OFFSET(0x140, -0x108));
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->BarracksExitCell.isset())
+	{
+		auto const exitCoords = pThis->Type->ExitCoord;
+		resultCoords = CoordStruct{ xCoord + exitCoords.X, yCoord + exitCoords.Y, exitCoords.Z };
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
