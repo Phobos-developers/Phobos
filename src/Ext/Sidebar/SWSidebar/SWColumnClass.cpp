@@ -4,13 +4,11 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/Side/Body.h>
 
-SWColumnClass::SWColumnClass(unsigned int id, int x, int y, int width, int height)
+SWColumnClass::SWColumnClass(unsigned int id, int maxButtons, int x, int y, int width, int height)
 	: ControlClass(id, x, y, width, height, static_cast<GadgetFlag>(0), true)
+	, MaxButtons(maxButtons)
 {
-	auto& columns = SWSidebarClass::Instance.Columns;
-	columns.emplace_back(this);
-
-	this->MaxButtons = Phobos::UI::SuperWeaponSidebar_Max - (static_cast<int>(columns.size()) - 1);
+	SWSidebarClass::Instance.Columns.emplace_back(this);
 }
 
 bool SWColumnClass::Draw(bool forced)

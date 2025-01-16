@@ -8,7 +8,7 @@ class SWColumnClass : public ControlClass
 {
 public:
 	SWColumnClass() = default;
-	SWColumnClass(unsigned int id, int x, int y, int width, int height);
+	SWColumnClass(unsigned int id, int maxButtons, int x, int y, int width, int height);
 
 	~SWColumnClass() = default;
 
