@@ -150,7 +150,7 @@ void BulletExt::ExtData::InitializeLaserTrails()
 
 		for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
 		{
-			this->LaserTrails.push_back(LaserTrailClass { &LaserTrailTypeClass::Array[idxTrail], pOwner });
+			this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pOwner);
 		}
 	}
 }

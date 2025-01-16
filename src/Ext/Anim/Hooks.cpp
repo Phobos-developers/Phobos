@@ -106,7 +106,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 		{
 			pInvoker = pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
 
-			if (pInvoker)
+			if (pInvoker && !pOwner)
 				pOwner = pInvoker->Owner;
 		}
 	}
