@@ -170,7 +170,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0)
 		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
 
-	if (this->BuildingUndeploy)
+	if (this->BuildingSell || this->BuildingUndeploy)
 		this->ApplyBuildingUndeploy(pTarget);
 
 #ifdef LOCO_TEST_WARHEADS
@@ -187,17 +187,23 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 {
 	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
 
-	if (!pBuilding)
-		return;
-
-	const auto pType = pBuilding->Type;
-
-	if (!pType->UndeploysInto || (pType->ConstructionYard && !GameModeOptionsClass::Instance->MCVRedeploy))
+	if (!pBuilding || !pBuilding->IsAlive || !pBuilding->IsOnMap || !pBuilding->InLimbo)
 		return;
 
 	const auto mission = pBuilding->CurrentMission;
 
 	if (mission == Mission::Construction || mission == Mission::Selling)
+		return;
+
+	if (this->BuildingSell)
+	{
+		pBuilding->Sell(1);
+		return;
+	}
+
+	const auto pType = pBuilding->Type;
+
+	if (!pType->UndeploysInto || (pType->ConstructionYard && !GameModeOptionsClass::Instance->MCVRedeploy))
 		return;
 
 	auto cell = pBuilding->GetMapCoords();
@@ -252,7 +258,7 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 	}
 
 	pBuilding->SetArchiveTarget(MapClass::Instance->GetCellAt(cell));
-	pBuilding->Sell(0xFFFFFFFF);
+	pBuilding->Sell(1);
 }
 
 void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr)
