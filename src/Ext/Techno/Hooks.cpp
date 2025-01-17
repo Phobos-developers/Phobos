@@ -560,8 +560,9 @@ DEFINE_HOOK(0x732A85, TypeSelectExecute_SetContext, 0x7)
     return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x732C91, TechnoClass_IDMatches_ResetContext, 0x5)
-DEFINE_HOOK(0x732C8A, TechnoClass_IDMatches_ResetContext, 0x5)
+// This func has two retn, but one of them is affected by Ares' hook. Thus we only hook the other one.
+// If you have any problem, check Ares in IDA before making any changes.
+DEFINE_HOOK(0x732C97, TechnoClass_IDMatches_ResetContext, 0x5)
 {
     BuildingTypeSelectable::ProcessingIDMatches = false;
     return 0;
