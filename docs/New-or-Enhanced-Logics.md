@@ -461,7 +461,7 @@ CreateUnit.AlwaysSpawnOnGround=false   ; boolean
 CreateUnit.SpawnParachutedInAir=false  ; boolean
 CreateUnit.ConsiderPathfinding=false   ; boolean
 CreateUnit.SpawnAnim=                  ; Animation
-CreareUnit.SpawnHeight=-1              ; integer, height in leptons
+CreateUnit.SpawnHeight=-1              ; integer, height in leptons
 ```
 
 ```{note}
