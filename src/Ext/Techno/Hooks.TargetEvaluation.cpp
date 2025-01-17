@@ -157,12 +157,7 @@ static inline bool CheckAttackMoveCanResetTarget(FootClass* pThis)
 	if (pThis->TargetingTimer.InProgress())
 		return false;
 
-	const auto pPrimary = pThis->GetWeapon(0);
-
-	if (!pPrimary)
-		return false;
-
-	const auto pPrimaryWeapon = pPrimary->WeaponType;
+	const auto pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType;
 
 	if (!pPrimaryWeapon)
 		return false;
@@ -172,12 +167,7 @@ static inline bool CheckAttackMoveCanResetTarget(FootClass* pThis)
 	if (!pNewTarget || pNewTarget->GetTechnoType() == pTargetTechno->GetTechnoType())
 		return false;
 
-	const auto pSecondary = pThis->GetWeapon(1);
-
-	if (!pSecondary)
-		return true;
-
-	const auto pSecondaryWeapon = pSecondary->WeaponType;
+	const auto pSecondaryWeapon = pThis->GetWeapon(1)->WeaponType;
 
 	if (!pSecondaryWeapon || !pSecondaryWeapon->NeverUse) // Melee unit's virtual scanner
 		return true;
