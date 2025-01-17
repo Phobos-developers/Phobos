@@ -187,7 +187,7 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 {
 	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
 
-	if (!pBuilding || !pBuilding->IsAlive || !pBuilding->IsOnMap || !pBuilding->InLimbo)
+	if (!pBuilding || !pBuilding->IsAlive || !pBuilding->IsOnMap || pBuilding->InLimbo)
 		return;
 
 	const auto mission = pBuilding->CurrentMission;
