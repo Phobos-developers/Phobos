@@ -105,9 +105,9 @@ AbstractClass* HandlerCompClass::GetTrueTarget(AbstractClass* pTarget, Nullable<
 
 HouseClass* HandlerCompClass::GetOwningHouseOfActor(AbstractClass* pTarget)
 {
-	if (auto pTargetHouse = abstract_cast<HouseClass*>(pTarget))
+	if (pTarget->WhatAmI() == AbstractType::House)
 	{
-		return pTargetHouse;
+		return static_cast<HouseClass*>(pTarget);
 	}
 	else
 	{

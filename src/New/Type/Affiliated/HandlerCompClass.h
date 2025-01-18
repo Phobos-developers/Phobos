@@ -4,6 +4,8 @@
 #include "HandlerFilterClass.h"
 #include "HandlerEffectClass.h"
 
+class HandlerEffectClass;
+
 class HandlerCompClass
 {
 public:

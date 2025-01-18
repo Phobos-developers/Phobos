@@ -4,6 +4,8 @@
 #include "TypeConvertGroup.h"
 #include <New/Type/EventInvokerTypeClass.h>
 
+class EventInvokerTypeClass;
+
 class HandlerEffectClass
 {
 public:

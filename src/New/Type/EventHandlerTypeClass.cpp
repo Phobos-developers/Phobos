@@ -72,7 +72,6 @@ void EventHandlerTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->loaded)
-		.Process(this->EventTypes)
 		.Process(this->HandlerComps)
 		;
 }

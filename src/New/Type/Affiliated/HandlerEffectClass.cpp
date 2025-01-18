@@ -227,7 +227,6 @@ void HandlerEffectClass::Execute(std::map<EventActorType, AbstractClass*>* pPart
 void HandlerEffectClass::ExecuteForTechno(std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget) const
 {
 	auto pOwner = pParticipants->at(EventActorType::Me);
-	auto pOwnerTechno = abstract_cast<TechnoClass*>(pOwner);
 	auto pOwnerHouse = HandlerCompClass::GetOwningHouseOfActor(pOwner);
 
 	// Weapon Detonation
