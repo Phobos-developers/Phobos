@@ -486,7 +486,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   </details>
 - Custom event types can be used. These events will only be invoked through Event Invokers.
 - Other usage notes:
-  - If any type conversion happened right before or during the event, only the handlers attached to the old type will be invoked.
+  - If any type conversion happened right before or during the event, only the handlers attached to the old type will be invoked. For example, if two event triggers were invoked at a same moment, the first one converted the techno to a different type, the second one will resolve nevertheless, and the event triggers defined on the new type will not be invoked at this moment.
 
 In `rulesmd.ini`:
 ```ini
@@ -513,7 +513,8 @@ TriggerN.EventHandler=...                          ; EventHandlerType
 - Filters:
   - Filters can be specified on an actor to ask for something to be true about it, or the event handler's effects do not resolve. Filters are defined like <code>(actor).Filter.*</code>. 
   - Negative Filters can be specified on an actor to ask for something to be false about it, or the event handler's effects do not resolve. Negative Filters are defined like <code>(actor).NegFilter.*</code>.
-  - If any Filter or Negative filter is specified on an actor, the actor must exist, or the filter will fail the check.
+  - All Filter entry must be true, and all Negative Filter entry must be false.
+  - If any Filter or Negative Filter is specified on an actor, the actor must exist, or the filter will fail the check.
   - <details>
       <summary>Expand to see available Techno filter types. These filters fail the check if the actor is not a techno, even negative filters will do.</summary>
       <ul>
