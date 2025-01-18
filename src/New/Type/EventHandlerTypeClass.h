@@ -10,10 +10,12 @@ class EventHandlerTypeClass final : public Enumerable<EventHandlerTypeClass>
 public:
 	Valueable<bool> loaded;
 	std::vector<std::unique_ptr<HandlerCompClass>> HandlerComps;
+	Nullable<EventHandlerTypeClass*> Next;
 
 	EventHandlerTypeClass(const char* pTitle = NONE_STR) : Enumerable<EventHandlerTypeClass>(pTitle)
 		, loaded { false }
 		, HandlerComps {}
+		, Next {}
 	{};
 
 	void LoadFromINI(CCINIClass* pINI);

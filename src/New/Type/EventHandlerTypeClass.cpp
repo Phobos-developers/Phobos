@@ -40,6 +40,11 @@ void EventHandlerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSecti
 {
 	LoadForActor(exINI, pSection, EventActorType::Me, "Me");
 	LoadForActor(exINI, pSection, EventActorType::They, "They");
+	this->Next.Read<true>(exINI, pSection, "Next");
+	if (Next.isset())
+	{
+		Next.Get()->LoadFromINI(exINI);
+	}
 }
 
 void EventHandlerTypeClass::LoadForActor(INI_EX& exINI, const char* pSection, const EventActorType actorType, const char* actorName)
@@ -73,6 +78,7 @@ void EventHandlerTypeClass::Serialize(T& Stm)
 	Stm
 		.Process(this->loaded)
 		.Process(this->HandlerComps)
+		.Process(this->Next)
 		;
 }
 
@@ -172,15 +178,27 @@ void EventHandlerTypeClass::LoadTypeMapFromINI(INI_EX & exINI, const char* pSect
 
 void EventHandlerTypeClass::HandleEvent(std::map<EventActorType, AbstractClass*>* pParticipants)
 {
+	bool passedFilters = true;
 	for (auto it = pParticipants->begin(); it != pParticipants->end(); ++it)
 	{
 		if (!CheckFilters(pParticipants, it->first))
-			return;
+		{
+			passedFilters = false;
+			break;
+		}
 	}
 
-	for (auto it = pParticipants->begin(); it != pParticipants->end(); ++it)
+	if (passedFilters)
 	{
-		ExecuteEffects(pParticipants, it->first);
+		for (auto it = pParticipants->begin(); it != pParticipants->end(); ++it)
+		{
+			ExecuteEffects(pParticipants, it->first);
+		}
+	}
+
+	if (Next.isset())
+	{
+		Next.Get()->HandleEvent(pParticipants);
 	}
 }
 
