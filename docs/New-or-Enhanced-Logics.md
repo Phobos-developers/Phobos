@@ -664,8 +664,6 @@ TriggerN.EventHandler=...                          ; EventHandlerType
       - Effects for the extended actors are executed in the order the extended actors are listed in the document.
       - Effects on a same actor are resolved in the order they are listed in this document.
 
-#### Event Invokers
-
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                       ; TechnoType
@@ -773,7 +771,7 @@ Next=                                              ; EventHandlerType
   - Similar to Event Handlers, the Invokers also have actors. There are two basic actors that every Invoker will have.
     - `Invoker`: The firer of the warhead, the firing house of the super weapon, or the actor this invoker is invoked upon through a handler's effect.
     - `Target`: The techno hit by the warhead or super weapon, or the `Me` actor of the original event handler.
-  - Extended actors can be used here as well. See [Event Handlers -> Filters](#event-handlers) to learn more about extended actors.
+  - Extended actors can be used here as well. See [Event Handlers -> Actors](#event-handlers) to learn more about extended actors.
 - Filters:
   - Similar to Event Handlers, the Invokers can also have filters defined, to ask for something to be true or false about an actor. These filters are checked before any actual Event Handlers do, if the check failed, no event invoking will happen.
   - See [Event Handlers -> Filters](#event-handlers) to learn more about Filters.
