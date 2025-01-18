@@ -30,8 +30,8 @@ public:
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromINI(INI_EX& exINI);
-	void LoadForScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const char* scopeName);
-	void LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const EventExtendedActorType extendedScopeType, const char* scopeName, const char* extendedScopeName);
+	void LoadForActor(INI_EX& exINI, const char* pSection, const EventActorType actorType, const char* actorName);
+	void LoadForExtendedActor(INI_EX& exINI, const char* pSection, const EventActorType actorType, const EventExtendedActorType extendedActorType, const char* actorName, const char* extendedActorName);
 	void TryExecute(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);

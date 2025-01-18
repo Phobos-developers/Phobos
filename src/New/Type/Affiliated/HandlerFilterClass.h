@@ -37,9 +37,9 @@ public:
 	Nullable<bool> IsHuman;
 	Nullable<bool> IsAI;
 
-	static std::unique_ptr<HandlerFilterClass> Parse(INI_EX& exINI, const char* pSection, const char* scopeName, const char* filterName);
+	static std::unique_ptr<HandlerFilterClass> Parse(INI_EX& exINI, const char* pSection, const char* actorName, const char* filterName);
 
-	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* filterName);
+	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* actorName, const char* filterName);
 
 	bool Check(HouseClass* pHouse, AbstractClass* pTarget, bool negative = false) const;
 

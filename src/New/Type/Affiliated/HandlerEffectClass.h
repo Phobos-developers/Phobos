@@ -56,9 +56,9 @@ public:
 
 	ValueableVector<EventInvokerTypeClass*> EventInvokers;
 
-	static std::unique_ptr<HandlerEffectClass> Parse(INI_EX& exINI, const char* pSection, const char* scopeName, const char* effectName);
+	static std::unique_ptr<HandlerEffectClass> Parse(INI_EX& exINI, const char* pSection, const char* actorName, const char* effectName);
 
-	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* effectName);
+	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* actorName, const char* effectName);
 
 	void Execute(std::map<EventActorType, AbstractClass*>* pParticipants, AbstractClass* pTarget) const;
 

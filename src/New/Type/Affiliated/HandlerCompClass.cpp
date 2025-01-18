@@ -2,18 +2,18 @@
 #include <Ext/Techno/Body.h>
 
 HandlerCompClass::HandlerCompClass()
-	: ScopeType {}
-	, ExtendedScopeType {}
+	: ActorType {}
+	, ExtendedActorType {}
 	, Filter {}
 	, NegFilter {}
 	, Effect {}
 { }
 
-std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const char* pSection, EventActorType ScopeType, const char* scopeName, bool includeEffects)
+std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const char* pSection, EventActorType ActorType, const char* actorName, bool includeEffects)
 {
 	auto handlerUnit = std::make_unique<HandlerCompClass>();
-	handlerUnit.get()->ScopeType = ScopeType;
-	handlerUnit.get()->LoadFromINI(exINI, pSection, scopeName, nullptr, includeEffects);
+	handlerUnit.get()->ActorType = ActorType;
+	handlerUnit.get()->LoadFromINI(exINI, pSection, actorName, nullptr, includeEffects);
 	if (handlerUnit.get()->IsDefined())
 	{
 		return handlerUnit;
@@ -25,12 +25,12 @@ std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const c
 	}
 }
 
-std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const char* pSection, EventActorType ScopeType, EventExtendedActorType ExtendedScopeType, const char* scopeName, const char* extendedScopeName, bool includeEffects)
+std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const char* pSection, EventActorType ActorType, EventExtendedActorType ExtendedActorType, const char* actorName, const char* extendedActorName, bool includeEffects)
 {
 	auto handlerUnit = std::make_unique<HandlerCompClass>();
-	handlerUnit.get()->ScopeType = ScopeType;
-	handlerUnit.get()->ExtendedScopeType = ExtendedScopeType;
-	handlerUnit.get()->LoadFromINI(exINI, pSection, scopeName, extendedScopeName, includeEffects);
+	handlerUnit.get()->ActorType = ActorType;
+	handlerUnit.get()->ExtendedActorType = ExtendedActorType;
+	handlerUnit.get()->LoadFromINI(exINI, pSection, actorName, extendedActorName, includeEffects);
 	if (handlerUnit.get()->IsDefined())
 	{
 		return handlerUnit;
@@ -42,20 +42,20 @@ std::unique_ptr<HandlerCompClass> HandlerCompClass::Parse(INI_EX& exINI, const c
 	}
 }
 
-void HandlerCompClass::LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* extendedScopeName, bool includeEffects)
+void HandlerCompClass::LoadFromINI(INI_EX& exINI, const char* pSection, const char* actorName, const char* extendedActorName, bool includeEffects)
 {
-	auto localScopeName = scopeName;
-	if (extendedScopeName)
+	auto localActorName = actorName;
+	if (extendedActorName)
 	{
 		char tempBuffer[32];
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s", scopeName, extendedScopeName);
-		localScopeName = tempBuffer;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s", actorName, extendedActorName);
+		localActorName = tempBuffer;
 	}
 
-	this->Filter = HandlerFilterClass::Parse(exINI, pSection, localScopeName, "Filter");
-	this->NegFilter = HandlerFilterClass::Parse(exINI, pSection, localScopeName, "NegFilter");
+	this->Filter = HandlerFilterClass::Parse(exINI, pSection, localActorName, "Filter");
+	this->NegFilter = HandlerFilterClass::Parse(exINI, pSection, localActorName, "NegFilter");
 	if (includeEffects)
-		this->Effect = HandlerEffectClass::Parse(exINI, pSection, localScopeName, "Effect");
+		this->Effect = HandlerEffectClass::Parse(exINI, pSection, localActorName, "Effect");
 }
 
 bool HandlerCompClass::IsDefined() const
@@ -65,13 +65,13 @@ bool HandlerCompClass::IsDefined() const
 		|| Effect != nullptr;
 }
 
-AbstractClass* HandlerCompClass::GetTrueTarget(AbstractClass* pTarget, Nullable<EventExtendedActorType> ExtendedScopeType)
+AbstractClass* HandlerCompClass::GetTrueTarget(AbstractClass* pTarget, Nullable<EventExtendedActorType> ExtendedActorType)
 {
-	if (pTarget && ExtendedScopeType.isset())
+	if (pTarget && ExtendedActorType.isset())
 	{
 		if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 		{
-			switch (ExtendedScopeType.Get())
+			switch (ExtendedActorType.Get())
 			{
 			case EventExtendedActorType::Owner:
 				return pTargetTechno->Owner;
@@ -91,7 +91,7 @@ AbstractClass* HandlerCompClass::GetTrueTarget(AbstractClass* pTarget, Nullable<
 		}
 		else
 		{
-			switch (ExtendedScopeType.Get())
+			switch (ExtendedActorType.Get())
 			{
 			case EventExtendedActorType::Owner:
 				return GetOwningHouseOfActor(pTarget);
@@ -146,7 +146,7 @@ TechnoClass* HandlerCompClass::GetHostTechno(TechnoClass* pTarget)
 
 bool HandlerCompClass::CheckFilters(HouseClass* pHouse, AbstractClass* pTarget) const
 {
-	auto const pTrueTarget = HandlerCompClass::GetTrueTarget(pTarget, this->ExtendedScopeType);
+	auto const pTrueTarget = HandlerCompClass::GetTrueTarget(pTarget, this->ExtendedActorType);
 
 	if (this->Filter)
 	{
@@ -171,14 +171,14 @@ bool HandlerCompClass::CheckFilters(std::map<EventActorType, AbstractClass*>* pP
 {
 	auto pOwner = pParticipants->at(EventActorType::Me);
 	auto pHouse = GetOwningHouseOfActor(pOwner);
-	auto pTarget = pParticipants->at(this->ScopeType);
+	auto pTarget = pParticipants->at(this->ActorType);
 	return CheckFilters(pHouse, pTarget);
 }
 
 void HandlerCompClass::ExecuteEffects(std::map<EventActorType, AbstractClass*>* pParticipants) const
 {
-	auto pTarget = pParticipants->at(this->ScopeType);
-	auto const pTrueTarget = HandlerCompClass::GetTrueTarget(pTarget, this->ExtendedScopeType);
+	auto pTarget = pParticipants->at(this->ActorType);
+	auto const pTrueTarget = HandlerCompClass::GetTrueTarget(pTarget, this->ExtendedActorType);
 
 	if (pTrueTarget)
 	{
@@ -203,8 +203,8 @@ template<typename T>
 bool HandlerCompClass::Serialize(T& stm)
 {
 	return stm
-		.Process(this->ScopeType)
-		.Process(this->ExtendedScopeType)
+		.Process(this->ActorType)
+		.Process(this->ExtendedActorType)
 		.Process(this->Filter)
 		.Process(this->NegFilter)
 		.Process(this->Effect)

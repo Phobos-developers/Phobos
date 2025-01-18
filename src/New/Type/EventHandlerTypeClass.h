@@ -18,8 +18,8 @@ public:
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromINI(INI_EX& exINI);
-	void LoadForScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const char* scopeName);
-	void LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const EventExtendedActorType extendedScopeType, const char* scopeName, const char* extendedScopeName);
+	void LoadForActor(INI_EX& exINI, const char* pSection, const EventActorType actorType, const char* actorName);
+	void LoadForExtendedActor(INI_EX& exINI, const char* pSection, const EventActorType actorType, const EventExtendedActorType extendedActorType, const char* actorName, const char* extendedActorName);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
 
@@ -32,6 +32,6 @@ private:
 	void Serialize(T& Stm);
 	void LoadFromINIPrivate(INI_EX& exINI, const char* pSection);
 
-	bool CheckFilters(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType scopeType) const;
-	void ExecuteEffects(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType scopeType) const;
+	bool CheckFilters(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType actorType) const;
+	void ExecuteEffects(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType actorType) const;
 };

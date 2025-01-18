@@ -873,7 +873,7 @@ They.Effect.Soylent.IncludePassengers=yes
 Me.Effect.Passengers.Kill=yes
 Me.Effect.Voice=SellBuilding
 Me.Effect.Voice.Persist=yes
-;; The effects for Me scope is executed before the effects for They scope.
+;; The effects for Me actor is executed before the effects for They actor.
 ;; If we don't reverse the order, the passengers will be killed before they yield any credits.
 ;; To reverse the order, define another event handler with identical EventType and filters.</code></pre>
     </details>

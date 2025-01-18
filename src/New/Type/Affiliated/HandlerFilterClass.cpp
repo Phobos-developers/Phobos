@@ -31,10 +31,10 @@ HandlerFilterClass::HandlerFilterClass()
 	, IsAI {}
 { }
 
-std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(INI_EX & exINI, const char* pSection, const char* scopeName, const char* filterName)
+std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(INI_EX & exINI, const char* pSection, const char* actorName, const char* filterName)
 {
 	auto filter = std::make_unique<HandlerFilterClass>();
-	filter.get()->LoadFromINI(exINI, pSection, scopeName, filterName);
+	filter.get()->LoadFromINI(exINI, pSection, actorName, filterName);
 	if (filter.get()->IsDefined())
 	{
 		return filter;
@@ -46,61 +46,61 @@ std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(INI_EX & exINI, co
 	}
 }
 
-void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* filterName)
+void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const char* actorName, const char* filterName)
 {
 	char tempBuffer[64];
 
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Abstract", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Abstract", actorName, filterName);
 	Abstract.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsInAir", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsInAir", actorName, filterName);
 	IsInAir.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.TechnoTypes", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.TechnoTypes", actorName, filterName);
 	TechnoTypes.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.AttachedEffects", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.AttachedEffects", actorName, filterName);
 	AttachedEffects.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.ShieldTypes", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.ShieldTypes", actorName, filterName);
 	ShieldTypes.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Veterancy", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Veterancy", actorName, filterName);
 	Veterancy.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.HPPercentage", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.HPPercentage", actorName, filterName);
 	HPPercentage.Read(exINI, pSection, tempBuffer);
 
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsPassenger", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsPassenger", actorName, filterName);
 	IsPassenger.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsParasited", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsParasited", actorName, filterName);
 	IsParasited.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsParasiting", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsParasiting", actorName, filterName);
 	IsParasiting.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsBunkered", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsBunkered", actorName, filterName);
 	IsBunkered.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsMindControlled", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsMindControlled", actorName, filterName);
 	IsMindControlled.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsMindControlled.Perma", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsMindControlled.Perma", actorName, filterName);
 	IsMindControlled_Perma.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.MindControlling.Any", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.MindControlling.Any", actorName, filterName);
 	MindControlling_Any.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.MindControlling.Type", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.MindControlling.Type", actorName, filterName);
 	MindControlling_Type.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Any", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Any", actorName, filterName);
 	Passengers_Any.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Type", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Type", actorName, filterName);
 	Passengers_Type.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Upgrades.Any", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Upgrades.Any", actorName, filterName);
 	Upgrades_Any.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Upgrades.Type", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Upgrades.Type", actorName, filterName);
 	Upgrades_Type.Read(exINI, pSection, tempBuffer);
 
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.House", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.House", actorName, filterName);
 	House.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Sides", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Sides", actorName, filterName);
 	Sides.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Countries", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Countries", actorName, filterName);
 	Countries.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Buildings", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Buildings", actorName, filterName);
 	Buildings.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsHuman", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsHuman", actorName, filterName);
 	IsHuman.Read(exINI, pSection, tempBuffer);
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsAI", scopeName, filterName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsAI", actorName, filterName);
 	IsAI.Read(exINI, pSection, tempBuffer);
 
 	HasAnyTechnoCheck = IsDefinedAnyTechnoCheck();

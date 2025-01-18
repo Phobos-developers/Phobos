@@ -11,21 +11,21 @@ class HandlerCompClass
 public:
 	HandlerCompClass();
 
-	Valueable<EventActorType> ScopeType;
-	Nullable<EventExtendedActorType> ExtendedScopeType;
+	Valueable<EventActorType> ActorType;
+	Nullable<EventExtendedActorType> ExtendedActorType;
 	std::unique_ptr<HandlerFilterClass> Filter;
 	std::unique_ptr<HandlerFilterClass> NegFilter;
 	std::unique_ptr<HandlerEffectClass> Effect;
 
-	static std::unique_ptr<HandlerCompClass> Parse(INI_EX& exINI, const char* pSection, EventActorType ScopeType, const char* scopeName, bool includeEffects = true);
+	static std::unique_ptr<HandlerCompClass> Parse(INI_EX& exINI, const char* pSection, EventActorType ActorType, const char* actorName, bool includeEffects = true);
 
-	static std::unique_ptr<HandlerCompClass> Parse(INI_EX& exINI, const char* pSection, EventActorType ScopeType, EventExtendedActorType ExtendedScopeType, const char* scopeName, const char* extendedScopeName, bool includeEffects = true);
+	static std::unique_ptr<HandlerCompClass> Parse(INI_EX& exINI, const char* pSection, EventActorType ActorType, EventExtendedActorType ExtendedActorType, const char* actorName, const char* extendedActorName, bool includeEffects = true);
 
-	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* extendedScopeName, bool includeEffects = true);
+	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* actorName, const char* extendedActorName, bool includeEffects = true);
 
 	bool IsDefined() const;
 
-	static AbstractClass* GetTrueTarget(AbstractClass* pTarget, Nullable<EventExtendedActorType> ExtendedScopeType);
+	static AbstractClass* GetTrueTarget(AbstractClass* pTarget, Nullable<EventExtendedActorType> ExtendedActorType);
 	static HouseClass* GetOwningHouseOfActor(AbstractClass* pTarget);
 	static TechnoClass* GetTransportingTechno(TechnoClass* pTarget);
 	static TechnoClass* GetParasiteTechno(TechnoClass* pTarget);

@@ -38,29 +38,29 @@ void EventHandlerTypeClass::LoadFromINI(INI_EX& exINI)
 
 void EventHandlerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSection)
 {
-	LoadForScope(exINI, pSection, EventActorType::Me, "Me");
-	LoadForScope(exINI, pSection, EventActorType::They, "They");
+	LoadForActor(exINI, pSection, EventActorType::Me, "Me");
+	LoadForActor(exINI, pSection, EventActorType::They, "They");
 }
 
-void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const char* scopeName)
+void EventHandlerTypeClass::LoadForActor(INI_EX& exINI, const char* pSection, const EventActorType actorType, const char* actorName)
 {
-	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, scopeName);
+	auto comp = HandlerCompClass::Parse(exINI, pSection, actorType, actorName);
 	if (comp)
 	{
 		this->HandlerComps.push_back(std::move(comp));
 	}
 
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Owner, scopeName, "Owner");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Transport, scopeName, "Transport");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Bunker, scopeName, "Bunker");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::MindController, scopeName, "MindController");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Parasite, scopeName, "Parasite");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Host, scopeName, "Host");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::Owner, actorName, "Owner");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::Transport, actorName, "Transport");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::Bunker, actorName, "Bunker");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::MindController, actorName, "MindController");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::Parasite, actorName, "Parasite");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::Host, actorName, "Host");
 }
 
-void EventHandlerTypeClass::LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const EventExtendedActorType extendedScopeType, const char* scopeName, const char* extendedScopeName)
+void EventHandlerTypeClass::LoadForExtendedActor(INI_EX& exINI, const char* pSection, const EventActorType actorType, const EventExtendedActorType extendedActorType, const char* actorName, const char* extendedActorName)
 {
-	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, extendedScopeType, scopeName, extendedScopeName);
+	auto comp = HandlerCompClass::Parse(exINI, pSection, actorType, extendedActorType, actorName, extendedActorName);
 	if (comp)
 	{
 		this->HandlerComps.push_back(std::move(comp));
@@ -184,11 +184,11 @@ void EventHandlerTypeClass::HandleEvent(std::map<EventActorType, AbstractClass*>
 	}
 }
 
-bool EventHandlerTypeClass::CheckFilters(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType scopeType) const
+bool EventHandlerTypeClass::CheckFilters(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType actorType) const
 {
 	for (auto const& handlerComp : this->HandlerComps)
 	{
-		if (handlerComp.get()->ScopeType == scopeType)
+		if (handlerComp.get()->ActorType == actorType)
 		{
 			if (!handlerComp.get()->CheckFilters(pParticipants))
 			{
@@ -200,11 +200,11 @@ bool EventHandlerTypeClass::CheckFilters(std::map<EventActorType, AbstractClass*
 	return true;
 }
 
-void EventHandlerTypeClass::ExecuteEffects(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType scopeType) const
+void EventHandlerTypeClass::ExecuteEffects(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType actorType) const
 {
 	for (auto const& handlerComp : this->HandlerComps)
 	{
-		if (handlerComp.get()->ScopeType == scopeType)
+		if (handlerComp.get()->ActorType == actorType)
 		{
 			handlerComp.get()->ExecuteEffects(pParticipants);
 		}

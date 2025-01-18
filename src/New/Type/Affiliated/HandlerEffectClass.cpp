@@ -36,10 +36,10 @@ HandlerEffectClass::HandlerEffectClass()
 	, EventInvokers {}
 { }
 
-std::unique_ptr<HandlerEffectClass> HandlerEffectClass::Parse(INI_EX& exINI, const char* pSection, const char* scopeName, const char* effectName)
+std::unique_ptr<HandlerEffectClass> HandlerEffectClass::Parse(INI_EX& exINI, const char* pSection, const char* actorName, const char* effectName)
 {
 	auto effect = std::make_unique<HandlerEffectClass>();
-	effect.get()->LoadFromINI(exINI, pSection, scopeName, effectName);
+	effect.get()->LoadFromINI(exINI, pSection, actorName, effectName);
 	if (effect.get()->IsDefined())
 	{
 		return effect;
@@ -51,29 +51,29 @@ std::unique_ptr<HandlerEffectClass> HandlerEffectClass::Parse(INI_EX& exINI, con
 	}
 }
 
-void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const char* scopeName, const char* effectName)
+void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const char* actorName, const char* effectName)
 {
 	char tempBuffer[64];
 
 	// Weapon Detonation
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon", actorName, effectName);
 	Weapon.Read(exINI, pSection, tempBuffer);
 	if (Weapon.isset())
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon.Firer", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon.Firer", actorName, effectName);
 		Weapon_Firer.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon.FirerExt", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon.FirerExt", actorName, effectName);
 		Weapon_FirerExt.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon.SpawnProj", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon.SpawnProj", actorName, effectName);
 		Weapon_SpawnProj.Read(exINI, pSection, tempBuffer);
 	}
 
 	// Type Conversion
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Convert", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Convert", actorName, effectName);
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All, tempBuffer);
 
 	// Soylent Bounty
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Mult", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Mult", actorName, effectName);
 	Soylent_Mult.Read(exINI, pSection, tempBuffer);
 	if (Soylent_Mult.isset())
 	{
@@ -83,59 +83,59 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 		}
 		else
 		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.IncludePassengers", scopeName, effectName);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.IncludePassengers", actorName, effectName);
 			Soylent_IncludePassengers.Read(exINI, pSection, tempBuffer);
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Receptant", scopeName, effectName);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Receptant", actorName, effectName);
 			Soylent_Receptant.Read(exINI, pSection, tempBuffer);
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.ReceptantExt", scopeName, effectName);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.ReceptantExt", actorName, effectName);
 			Soylent_ReceptantExt.Read(exINI, pSection, tempBuffer);
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Display", scopeName, effectName);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Display", actorName, effectName);
 			Soylent_Display.Read(exINI, pSection, tempBuffer);
 			if (Soylent_Display.Get())
 			{
-				_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Display.Houses", scopeName, effectName);
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Display.Houses", actorName, effectName);
 				Soylent_Display_Houses.Read(exINI, pSection, tempBuffer);
-				_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Display.Offset", scopeName, effectName);
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Display.Offset", actorName, effectName);
 				Soylent_Display_Offset.Read(exINI, pSection, tempBuffer);
 			}
 		}
 	}
 
 	// Passenger Ejection
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Eject", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Eject", actorName, effectName);
 	Passengers_Eject.Read(exINI, pSection, tempBuffer);
 
 	// Passenger Removal
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill", actorName, effectName);
 	Passengers_Kill.Read(exINI, pSection, tempBuffer);
 	if (Passengers_Kill.Get())
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill.Score", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill.Score", actorName, effectName);
 		Passengers_Kill_Score.Read(exINI, pSection, tempBuffer);
 		if (Passengers_Kill_Score.Get())
 		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill.Scorer", scopeName, effectName);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill.Scorer", actorName, effectName);
 			Passengers_Kill_Scorer.Read(exINI, pSection, tempBuffer);
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill.ScorerExt", scopeName, effectName);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill.ScorerExt", actorName, effectName);
 			Passengers_Kill_ScorerExt.Read(exINI, pSection, tempBuffer);
 		}
 	}
 
 	// Passenger Creation
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.Types", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.Types", actorName, effectName);
 	Passengers_Create_Types.Read(exINI, pSection, tempBuffer);
 	if (!Passengers_Create_Types.empty())
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.Nums", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.Nums", actorName, effectName);
 		Passengers_Create_Nums.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.Owner", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.Owner", actorName, effectName);
 		Passengers_Create_Owner.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.OwnerExt", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.OwnerExt", actorName, effectName);
 		Passengers_Create_OwnerExt.Read(exINI, pSection, tempBuffer);
 	}
 
 	// Veterancy
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Veterancy.Set", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Veterancy.Set", actorName, effectName);
 	Veterancy_Set.Read(exINI, pSection, tempBuffer);
 	if (Veterancy_Set.isset() && Veterancy_Set.Get() != VeterancyType::Rookie
 		&& Veterancy_Set.Get() != VeterancyType::Veteran
@@ -143,7 +143,7 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	{
 		Veterancy_Set.Reset();
 	}
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Veterancy.Add", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Veterancy.Add", actorName, effectName);
 	Veterancy_Add.Read(exINI, pSection, tempBuffer);
 	if (Veterancy_Add.isset() && Veterancy_Add.Get() == 0)
 	{
@@ -151,20 +151,20 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	}
 
 	// Voice
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Voice", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Voice", actorName, effectName);
 	Voice.Read(exINI, pSection, tempBuffer);
 	if (Voice.isset())
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Voice.Persist", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Voice.Persist", actorName, effectName);
 		Voice_Persist.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Voice.Global", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Voice.Global", actorName, effectName);
 		Voice_Global.Read(exINI, pSection, tempBuffer);
 	}
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EVA", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EVA", actorName, effectName);
 	EVA.Read(exINI, pSection, tempBuffer);
 
 	// Transfer to House
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.House", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.House", actorName, effectName);
 	Transfer_To_House.Read(exINI, pSection, tempBuffer);
 	if (Transfer_To_House.isset())
 	{
@@ -179,31 +179,31 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 		}
 	}
 
-	// Transfer to Scope
+	// Transfer to Actor
 	if (!Transfer_To_House.isset())
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.Actor", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.Actor", actorName, effectName);
 		Transfer_To_Actor.Read(exINI, pSection, tempBuffer);
 		if (Transfer_To_Actor.isset())
 		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.ActorExt", scopeName, effectName);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.ActorExt", actorName, effectName);
 			Transfer_To_ActorExt.Read(exINI, pSection, tempBuffer);
 		}
 	}
 
 	// Command
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command", actorName, effectName);
 	Command.Read(exINI, pSection, tempBuffer);
 	if (Command.isset())
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command.Target", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command.Target", actorName, effectName);
 		Command_Target.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command.TargetExt", scopeName, effectName);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command.TargetExt", actorName, effectName);
 		Command_TargetExt.Read(exINI, pSection, tempBuffer);
 	}
 
 	// Event Invoker
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker", scopeName, effectName);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker", actorName, effectName);
 	EventInvokerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->EventInvokers);
 
 	// defined flag
@@ -356,10 +356,10 @@ void HandlerEffectClass::ExecuteForTechno(std::map<EventActorType, AbstractClass
 	{
 		if (Passengers_Create_Owner.isset())
 		{
-			auto pPassengerOwnerScope = HandlerCompClass::GetTrueTarget(pParticipants->at(Passengers_Create_Owner.Get()), Passengers_Create_OwnerExt);
-			if (pPassengerOwnerScope)
+			auto pPassengerOwnerActor = HandlerCompClass::GetTrueTarget(pParticipants->at(Passengers_Create_Owner.Get()), Passengers_Create_OwnerExt);
+			if (pPassengerOwnerActor)
 			{
-				this->CreatePassengers(pTarget, HandlerCompClass::GetOwningHouseOfActor(pPassengerOwnerScope));
+				this->CreatePassengers(pTarget, HandlerCompClass::GetOwningHouseOfActor(pPassengerOwnerActor));
 			}
 		}
 		else

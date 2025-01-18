@@ -39,33 +39,33 @@ void EventInvokerTypeClass::LoadFromINI(INI_EX& exINI)
 
 void EventInvokerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSection)
 {
-	LoadForScope(exINI, pSection, EventActorType::Me, "Invoker");
-	LoadForScope(exINI, pSection, EventActorType::They, "Target");
+	LoadForActor(exINI, pSection, EventActorType::Me, "Invoker");
+	LoadForActor(exINI, pSection, EventActorType::They, "Target");
 	EventTypeClass::LoadTypeListFromINI(exINI, pSection, "EventType", &this->EventTypes);
 	EventHandlerTypeClass::LoadTypeListFromINI(exINI, pSection, "ExtraEventHandler", &this->ExtraEventHandlers);
 	this->PassDown_Passengers.Read(exINI, pSection, "PassDown.Passengers");
 	this->PassDown_MindControlled.Read(exINI, pSection, "PassDown.MindControlled");
 }
 
-void EventInvokerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const char* scopeName)
+void EventInvokerTypeClass::LoadForActor(INI_EX& exINI, const char* pSection, const EventActorType actorType, const char* actorName)
 {
-	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, scopeName, false);
+	auto comp = HandlerCompClass::Parse(exINI, pSection, actorType, actorName, false);
 	if (comp)
 	{
 		this->HandlerComps.push_back(std::move(comp));
 	}
 
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Owner, scopeName, "Owner");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Transport, scopeName, "Transport");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Bunker, scopeName, "Bunker");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::MindController, scopeName, "MindController");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Parasite, scopeName, "Parasite");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Host, scopeName, "Host");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::Owner, actorName, "Owner");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::Transport, actorName, "Transport");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::Bunker, actorName, "Bunker");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::MindController, actorName, "MindController");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::Parasite, actorName, "Parasite");
+	LoadForExtendedActor(exINI, pSection, actorType, EventExtendedActorType::Host, actorName, "Host");
 }
 
-void EventInvokerTypeClass::LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const EventExtendedActorType extendedScopeType, const char* scopeName, const char* extendedScopeName)
+void EventInvokerTypeClass::LoadForExtendedActor(INI_EX& exINI, const char* pSection, const EventActorType actorType, const EventExtendedActorType extendedActorType, const char* actorName, const char* extendedActorName)
 {
-	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, extendedScopeType, scopeName, extendedScopeName, false);
+	auto comp = HandlerCompClass::Parse(exINI, pSection, actorType, extendedActorType, actorName, extendedActorName, false);
 	if (comp)
 	{
 		this->HandlerComps.push_back(std::move(comp));
@@ -76,7 +76,7 @@ bool EventInvokerTypeClass::CheckInvokerFilters(HouseClass* pHouse, AbstractClas
 {
 	for (auto const& handlerComp : this->HandlerComps)
 	{
-		if (handlerComp.get()->ScopeType == EventActorType::Me)
+		if (handlerComp.get()->ActorType == EventActorType::Me)
 		{
 			if (!handlerComp.get()->CheckFilters(pHouse, pInvoker))
 			{
@@ -92,7 +92,7 @@ bool EventInvokerTypeClass::CheckTargetFilters(HouseClass* pHouse, AbstractClass
 {
 	for (auto const& handlerComp : this->HandlerComps)
 	{
-		if (handlerComp.get()->ScopeType == EventActorType::They)
+		if (handlerComp.get()->ActorType == EventActorType::They)
 		{
 			if (!handlerComp.get()->CheckFilters(pHouse, pTarget))
 			{
@@ -105,8 +105,8 @@ bool EventInvokerTypeClass::CheckTargetFilters(HouseClass* pHouse, AbstractClass
 }
 
 // This function is invoked from the external source.
-// The "Me" scope can shift multiple times through the passing down.
-// We have to record the initial "Me" scope and give it back,
+// The "Me" actor can shift multiple times through the passing down.
+// We have to record the initial "Me" actor and give it back,
 // because multiple invokers may be invoked at a same time,
 // and the same participants map will be reused.
 void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants)
