@@ -7,6 +7,8 @@
 
 class EventHandlerTypeClass;
 
+class HandlerCompClass;
+
 class EventInvokerTypeClass final : public Enumerable<EventInvokerTypeClass>
 {
 public:
