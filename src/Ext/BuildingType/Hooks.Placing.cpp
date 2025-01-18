@@ -799,6 +799,17 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 	return CanNotBuild;
 }
 
+static inline bool CanDrawGrid(bool draw)
+{
+	if (ProximityTemp::Exist)
+	{
+		ProximityTemp::Exist = false;
+		return false;
+	}
+
+	return draw;
+}
+
 // Laser fence use GetBuilding to check whether can build and draw, so no need to change
 // Buildable-upon TechnoTypes Hook #8-1 -> sub_6D5C50 - Don't draw overlay wall grid when have occupiers
 DEFINE_HOOK(0x6D5D38, TacticalClass_DrawOverlayWallGrid_DisableWhenHaveTechnos, 0x8)
@@ -807,13 +818,7 @@ DEFINE_HOOK(0x6D5D38, TacticalClass_DrawOverlayWallGrid_DisableWhenHaveTechnos, 
 
 	GET(bool, valid, EAX);
 
-	if (ProximityTemp::Exist)
-	{
-		ProximityTemp::Exist = false;
-		return Invalid;
-	}
-
-	return valid ? Valid : Invalid;
+	return CanDrawGrid(valid) ? Valid : Invalid;
 }
 
 // Buildable-upon TechnoTypes Hook #8-2 -> sub_6D59D0 - Don't draw firestorm wall grid when have occupiers
@@ -823,13 +828,7 @@ DEFINE_HOOK(0x6D5A9D, TacticalClass_DrawFirestormWallGrid_DisableWhenHaveTechnos
 
 	GET(bool, valid, EAX);
 
-	if (ProximityTemp::Exist)
-	{
-		ProximityTemp::Exist = false;
-		return Invalid;
-	}
-
-	return valid ? Valid : Invalid;
+	return CanDrawGrid(valid) ? Valid : Invalid;
 }
 
 // Buildable-upon TechnoTypes Hook #8-3 -> sub_588750 - Don't place overlay wall when have occupiers
@@ -839,13 +838,7 @@ DEFINE_HOOK(0x588873, MapClass_BuildingToWall_DisableWhenHaveTechnos, 0x8)
 
 	GET(bool, valid, EAX);
 
-	if (ProximityTemp::Exist)
-	{
-		ProximityTemp::Exist = false;
-		return Invalid;
-	}
-
-	return valid ? Valid : Invalid;
+	return CanDrawGrid(valid) ? Valid : Invalid;
 }
 
 // Buildable-upon TechnoTypes Hook #8-4 -> sub_588570 - Don't place firestorm wall when have occupiers
@@ -855,13 +848,7 @@ DEFINE_HOOK(0x588664, MapClass_BuildingToFirestormWall_DisableWhenHaveTechnos, 0
 
 	GET(bool, valid, EAX);
 
-	if (ProximityTemp::Exist)
-	{
-		ProximityTemp::Exist = false;
-		return Invalid;
-	}
-
-	return valid ? Valid : Invalid;
+	return CanDrawGrid(valid) ? Valid : Invalid;
 }
 
 // Buildable-upon TechnoTypes Hook #9-1 -> sub_7393C0 - Try to clean up the building space when is deploying
@@ -1081,6 +1068,9 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 // Buildable-upon TechnoTypes Hook #12 -> sub_6D5030 - Draw the placing building preview
 DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 {
+	if (!RulesExt::Global()->ExpandBuildingPlace)
+		return 0;
+
 	const auto pPlayer = HouseClass::CurrentPlayer();
 	const auto pDisplay = DisplayClass::Instance();
 
