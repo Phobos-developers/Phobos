@@ -1082,6 +1082,7 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 {
 	const auto pPlayer = HouseClass::CurrentPlayer();
+	const auto pDisplay = DisplayClass::Instance();
 
 	for (const auto& pHouse : *HouseClass::Array)
 	{
@@ -1089,7 +1090,6 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 		{
 			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 			const bool isPlayer = pHouse == pPlayer;
-			const auto pDisplay = DisplayClass::Instance();
 			{
 				auto pType = pHouseExt->CurrentBuildingType;
 
@@ -1199,7 +1199,7 @@ DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 		{
 			const auto pType = BuildingTypeClass::Array->Items[index];
 
-			if (BuildingTypeExt::ExtMap.Find(pType)->LimboBuild)
+			if (RulesExt::Global()->ExpandBuildingPlace && BuildingTypeExt::ExtMap.Find(pType)->LimboBuild)
 				return Invalid;
 		}
 	}
