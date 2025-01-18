@@ -21,7 +21,7 @@ public:
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
-		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
+		std::map<int, int> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 
 		std::vector<UnitClass*> OwnedDeployingUnits;
@@ -60,7 +60,7 @@ public:
 		int NumConYards_NonMFB;
 		int NumShipyards_NonMFB;
 
-		std::map<SuperClass*, std::vector<SuperClass*>> SuspendedEMPulseSWs;
+		std::map<int, std::vector<int>> SuspendedEMPulseSWs;
 		// standalone? no need and not a good idea
 		struct SWExt
 		{

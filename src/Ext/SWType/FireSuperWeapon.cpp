@@ -266,10 +266,10 @@ void SWTypeExt::ExtData::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& 
 			{
 				pSuper->IsSuspended = true;
 
-				if (pHouseExt->SuspendedEMPulseSWs.count(pSW))
-					pHouseExt->SuspendedEMPulseSWs[pSW].push_back(pSuper);
+				if (pHouseExt->SuspendedEMPulseSWs.count(pSW->Type->ArrayIndex))
+					pHouseExt->SuspendedEMPulseSWs[pSW->Type->ArrayIndex].push_back(pSuper->Type->ArrayIndex);
 				else
-					pHouseExt->SuspendedEMPulseSWs.insert({ pSW, std::vector<SuperClass*>{pSuper} });
+					pHouseExt->SuspendedEMPulseSWs.insert({ pSW->Type->ArrayIndex, std::vector<int>{pSuper->Type->ArrayIndex} });
 			}
 		}
 	}
