@@ -5,27 +5,28 @@
 #include <Misc/FlyingStrings.h>
 
 HandlerEffectClass::HandlerEffectClass()
-	: Weapon {}
-	, Weapon_Firer_Scope {}
-	, Weapon_Firer_ExtScope {}
+	: HasAnyTechnoEffect { false }
+	, Weapon { }
+	, Weapon_Firer {}
+	, Weapon_FirerExt {}
 	, Weapon_SpawnProj { false }
 	, Convert_Pairs {}
 	, Soylent_Mult {}
 	, Soylent_IncludePassengers { false }
-	, Soylent_Scope {}
-	, Soylent_ExtScope {}
+	, Soylent_Receptant {}
+	, Soylent_ReceptantExt {}
 	, Soylent_Display { true }
 	, Soylent_Display_Houses { AffectedHouse::All }
 	, Soylent_Display_Offset { { 0, 0 } }
 	, Passengers_Eject { false }
 	, Passengers_Kill { false }
 	, Passengers_Kill_Score { false }
-	, Passengers_Kill_Score_Scope {}
-	, Passengers_Kill_Score_ExtScope {}
+	, Passengers_Kill_Scorer {}
+	, Passengers_Kill_ScorerExt {}
 	, Passengers_Create_Types {}
 	, Passengers_Create_Nums {}
-	, Passengers_Create_Owner_Scope {}
-	, Passengers_Create_Owner_ExtScope {}
+	, Passengers_Create_Owner {}
+	, Passengers_Create_OwnerExt {}
 	, Veterancy_Set {}
 	, Veterancy_Add {}
 	, Voice {}
@@ -59,10 +60,10 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	Weapon.Read(exINI, pSection, tempBuffer);
 	if (Weapon.isset())
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon.Firer.Scope", scopeName, effectName);
-		Weapon_Firer_Scope.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon.Firer.ExtScope", scopeName, effectName);
-		Weapon_Firer_ExtScope.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon.Firer", scopeName, effectName);
+		Weapon_Firer.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon.FirerExt", scopeName, effectName);
+		Weapon_FirerExt.Read(exINI, pSection, tempBuffer);
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon.SpawnProj", scopeName, effectName);
 		Weapon_SpawnProj.Read(exINI, pSection, tempBuffer);
 	}
@@ -84,10 +85,10 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 		{
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.IncludePassengers", scopeName, effectName);
 			Soylent_IncludePassengers.Read(exINI, pSection, tempBuffer);
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Scope", scopeName, effectName);
-			Soylent_Scope.Read(exINI, pSection, tempBuffer);
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.ExtScope", scopeName, effectName);
-			Soylent_ExtScope.Read(exINI, pSection, tempBuffer);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Receptant", scopeName, effectName);
+			Soylent_Receptant.Read(exINI, pSection, tempBuffer);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.ReceptantExt", scopeName, effectName);
+			Soylent_ReceptantExt.Read(exINI, pSection, tempBuffer);
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Soylent.Display", scopeName, effectName);
 			Soylent_Display.Read(exINI, pSection, tempBuffer);
 			if (Soylent_Display.Get())
@@ -113,10 +114,10 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 		Passengers_Kill_Score.Read(exINI, pSection, tempBuffer);
 		if (Passengers_Kill_Score.Get())
 		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill.Score.Scope", scopeName, effectName);
-			Passengers_Kill_Score_Scope.Read(exINI, pSection, tempBuffer);
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill.Score.ExtScope", scopeName, effectName);
-			Passengers_Kill_Score_ExtScope.Read(exINI, pSection, tempBuffer);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill.Scorer", scopeName, effectName);
+			Passengers_Kill_Scorer.Read(exINI, pSection, tempBuffer);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Kill.ScorerExt", scopeName, effectName);
+			Passengers_Kill_ScorerExt.Read(exINI, pSection, tempBuffer);
 		}
 	}
 
@@ -127,10 +128,10 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	{
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.Nums", scopeName, effectName);
 		Passengers_Create_Nums.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.Owner.Scope", scopeName, effectName);
-		Passengers_Create_Owner_Scope.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.Owner.ExtScope", scopeName, effectName);
-		Passengers_Create_Owner_ExtScope.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.Owner", scopeName, effectName);
+		Passengers_Create_Owner.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Passengers.Create.OwnerExt", scopeName, effectName);
+		Passengers_Create_OwnerExt.Read(exINI, pSection, tempBuffer);
 	}
 
 	// Veterancy
@@ -181,12 +182,12 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	// Transfer to Scope
 	if (!Transfer_To_House.isset())
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.Scope", scopeName, effectName);
-		Transfer_To_Scope.Read(exINI, pSection, tempBuffer);
-		if (Transfer_To_Scope.isset())
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.Actor", scopeName, effectName);
+		Transfer_To_Actor.Read(exINI, pSection, tempBuffer);
+		if (Transfer_To_Actor.isset())
 		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.ExtScope", scopeName, effectName);
-			Transfer_To_ExtScope.Read(exINI, pSection, tempBuffer);
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.ActorExt", scopeName, effectName);
+			Transfer_To_ActorExt.Read(exINI, pSection, tempBuffer);
 		}
 	}
 
@@ -195,45 +196,66 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	Command.Read(exINI, pSection, tempBuffer);
 	if (Command.isset())
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command.Target.Scope", scopeName, effectName);
-		Command_Target_Scope.Read(exINI, pSection, tempBuffer);
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command.Target.ExtScope", scopeName, effectName);
-		Command_Target_ExtScope.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command.Target", scopeName, effectName);
+		Command_Target.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Command.TargetExt", scopeName, effectName);
+		Command_TargetExt.Read(exINI, pSection, tempBuffer);
 	}
 
 	// Event Invoker
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker", scopeName, effectName);
 	EventInvokerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->EventInvokers);
+
+	// defined flag
+	HasAnyTechnoEffect = IsDefinedAnyTechnoEffect();
 }
 
-void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pTarget) const
+void HandlerEffectClass::Execute(std::map<EventActorType, AbstractClass*>* pParticipants, AbstractClass* pTarget) const
 {
-	auto pOwner = pParticipants->at(EventScopeType::Me);
+	if (!pTarget)
+		return;
+
+	if (HasAnyTechnoEffect)
+	{
+		if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+		{
+			ExecuteForTechno(pParticipants, pTargetTechno);
+		}
+	}
+}
+
+void HandlerEffectClass::ExecuteForTechno(std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget) const
+{
+	auto pOwner = pParticipants->at(EventActorType::Me);
+	auto pOwnerTechno = abstract_cast<TechnoClass*>(pOwner);
+	auto pOwnerHouse = HandlerCompClass::GetOwningHouseOfActor(pOwner);
 
 	// Weapon Detonation
 	if (Weapon.isset())
 	{
 		auto pWeapon = Weapon.Get();
-		TechnoClass* pFirer = pOwner;
-		if (Weapon_Firer_Scope.isset())
+		AbstractClass* pFirer = pOwner;
+		if (Weapon_Firer.isset())
 		{
-			pFirer = HandlerCompClass::GetTrueTarget(pParticipants->at(Weapon_Firer_Scope.Get()), Weapon_Firer_ExtScope);
+			pFirer = HandlerCompClass::GetTrueTarget(pParticipants->at(Weapon_Firer.Get()), Weapon_FirerExt);
 		}
 		if (pFirer)
 		{
-			if (Weapon_SpawnProj.Get())
+			auto pFirerTechno = abstract_cast<TechnoClass*>(pFirer);
+			auto pFirerHouse = HandlerCompClass::GetOwningHouseOfActor(pFirer);
+			if (pFirerTechno && Weapon_SpawnProj.Get())
 			{
-				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pTarget, pFirer,
+				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pTarget, pFirerTechno,
 					pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
 					pBullet->WeaponType = pWeapon;
 					pBullet->MoveTo(pTarget->Location, BulletVelocity::Empty);
-					BulletExt::ExtMap.Find(pBullet)->FirerHouse = pFirer->Owner;
+					BulletExt::ExtMap.Find(pBullet)->FirerHouse = pFirerHouse;
 				}
 			}
 			else
 			{
-				WeaponTypeExt::DetonateAt(pWeapon, pTarget->GetCoords(), pFirer, pWeapon->Damage, pFirer->GetOwningHouse());
+				WeaponTypeExt::DetonateAt(pWeapon, pTarget->GetCoords(), pFirerTechno, pWeapon->Damage, pFirerHouse);
 			}
 		}
 	}
@@ -241,21 +263,24 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 	// Type Conversion
 	if (!Convert_Pairs.empty())
 	{
-		TypeConvertGroup::Convert(static_cast<FootClass*>(pTarget), this->Convert_Pairs, pOwner->Owner);
+		TypeConvertGroup::Convert(static_cast<FootClass*>(pTarget), this->Convert_Pairs, pOwnerHouse);
 	}
 
 	// Soylent Bounty
 	if (Soylent_Mult.isset())
 	{
 		auto pReceptant = pOwner;
-		if (Soylent_Scope.isset())
+		if (Soylent_Receptant.isset())
 		{
-			pReceptant = HandlerCompClass::GetTrueTarget(pParticipants->at(Soylent_Scope.Get()), Soylent_ExtScope);
+			pReceptant = HandlerCompClass::GetTrueTarget(pParticipants->at(Soylent_Receptant.Get()), Soylent_ReceptantExt);
 		}
 
 		// if we don't have a proper receptant then don't bother to do at all
 		if (pReceptant)
 		{
+			auto pReceptantTechno = abstract_cast<TechnoClass*>(pReceptant);
+			auto pReceptantHouse = HandlerCompClass::GetOwningHouseOfActor(pReceptant);
+
 			auto multiplier = Soylent_Mult.Get();
 			int nMoneyToGive = (int)(pTarget->GetTechnoType()->GetRefund(pTarget->Owner, true) * multiplier);
 
@@ -266,11 +291,11 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 
 			if (nMoneyToGive != 0)
 			{
-				pReceptant->Owner->TransactMoney(nMoneyToGive);
-				if (Soylent_Display.Get())
+				pReceptantHouse->TransactMoney(nMoneyToGive);
+				if (pReceptantTechno && Soylent_Display.Get())
 				{
-					FlyingStrings::AddMoneyString(nMoneyToGive, pReceptant->Owner,
-						Soylent_Display_Houses, pReceptant->Location, Soylent_Display_Offset);
+					FlyingStrings::AddMoneyString(nMoneyToGive, pReceptantHouse,
+						Soylent_Display_Houses, pReceptantTechno->Location, Soylent_Display_Offset);
 				}
 			}
 		}
@@ -306,40 +331,41 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 	// Passenger Removal
 	if (Passengers_Kill.Get())
 	{
-		TechnoClass* pScorer = nullptr;
+		AbstractClass* pScorer = nullptr;
 		if (Passengers_Kill_Score.Get())
 		{
-			if (Passengers_Kill_Score_Scope.isset())
-				pScorer = HandlerCompClass::GetTrueTarget(pParticipants->at(Passengers_Kill_Score_Scope.Get()), Passengers_Kill_Score_ExtScope);
+			if (Passengers_Kill_Scorer.isset())
+				pScorer = HandlerCompClass::GetTrueTarget(pParticipants->at(Passengers_Kill_Scorer.Get()), Passengers_Kill_ScorerExt);
 			else
 				pScorer = pOwner;
 		}
+		auto pScorerTechno = abstract_cast<TechnoClass*>(pScorer);
 		if (pTarget->Passengers.NumPassengers > 0)
 		{
-			pTarget->KillPassengers(pScorer);
+			pTarget->KillPassengers(pScorerTechno);
 		}
 		else if (pTarget->GetOccupantCount() > 0)
 		{
 			// If it is garrisoned, it must be a garrisonable structure, so it is safe to use "reinterpret_cast" here.
 			auto pTargetBld = reinterpret_cast<BuildingClass*>(pTarget);
-			pTargetBld->KillOccupants(pScorer);
+			pTargetBld->KillOccupants(pScorerTechno);
 		}
 	}
 
 	// Passenger Creation
 	if (!Passengers_Create_Types.empty())
 	{
-		if (Passengers_Create_Owner_Scope.isset())
+		if (Passengers_Create_Owner.isset())
 		{
-			auto pPassengerOwnerScope = HandlerCompClass::GetTrueTarget(pParticipants->at(Passengers_Create_Owner_Scope.Get()), Passengers_Create_Owner_ExtScope);
+			auto pPassengerOwnerScope = HandlerCompClass::GetTrueTarget(pParticipants->at(Passengers_Create_Owner.Get()), Passengers_Create_OwnerExt);
 			if (pPassengerOwnerScope)
 			{
-				this->CreatePassengers(pTarget, pPassengerOwnerScope);
+				this->CreatePassengers(pTarget, HandlerCompClass::GetOwningHouseOfActor(pPassengerOwnerScope));
 			}
 		}
 		else
 		{
-			this->CreatePassengers(pTarget, pTarget);
+			this->CreatePassengers(pTarget, pTarget->Owner);
 		}
 	}
 
@@ -394,7 +420,7 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 	}
 
 	// Transfer
-	if (Transfer_To_House.isset() || Transfer_To_Scope.isset())
+	if (Transfer_To_House.isset() || Transfer_To_Actor.isset())
 	{
 		HouseClass* pTransferToHouse = nullptr;
 		if (Transfer_To_House.isset())
@@ -412,12 +438,12 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 				break;
 			}
 		}
-		if (Transfer_To_Scope.isset())
+		if (Transfer_To_Actor.isset())
 		{
-			auto pTransferToTechno = HandlerCompClass::GetTrueTarget(pParticipants->at(Transfer_To_Scope.Get()), Transfer_To_ExtScope);
-			if (pTransferToTechno)
+			auto pTransferTo = HandlerCompClass::GetTrueTarget(pParticipants->at(Transfer_To_Actor.Get()), Transfer_To_ActorExt);
+			if (pTransferTo)
 			{
-				pTransferToHouse = pTransferToTechno->Owner;
+				pTransferToHouse = HandlerCompClass::GetOwningHouseOfActor(pTransferTo);
 			}
 		}
 		if (pTransferToHouse && pTransferToHouse != pTarget->Owner)
@@ -436,8 +462,8 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 			// These command types require an explicit target or it doesn't count.
 		case Mission::Enter:
 		case Mission::Attack:
-			if (Command_Target_Scope.isset())
-				pCommandTarget = HandlerCompClass::GetTrueTarget(pParticipants->at(Command_Target_Scope.Get()), Command_Target_ExtScope);
+			if (Command_Target.isset())
+				pCommandTarget = abstract_cast<TechnoClass*>(HandlerCompClass::GetTrueTarget(pParticipants->at(Command_Target.Get()), Command_TargetExt));
 			if (!pCommandTarget)
 				goto _EndCommand_;
 			isDestination = Command.Get() == Mission::Enter;
@@ -471,13 +497,13 @@ void HandlerEffectClass::Execute(std::map<EventScopeType, TechnoClass*>* pPartic
 	// Event Invoker
 	if (!EventInvokers.empty())
 	{
-		std::map<EventScopeType, TechnoClass*> participants = {
-			{ EventScopeType::Me, pTarget },
-			{ EventScopeType::They, pOwner },
+		std::map<EventActorType, AbstractClass*> participants = {
+			{ EventActorType::Me, pTarget },
+			{ EventActorType::They, pOwner },
 		};
 		for (auto pEventInvokerType : EventInvokers)
 		{
-			pEventInvokerType->TryExecute(pOwner->Owner, &participants);
+			pEventInvokerType->TryExecute(pOwnerHouse, &participants);
 		}
 	}
 }
@@ -495,7 +521,7 @@ void HandlerEffectClass::UnlimboAtRandomPlaceNearby(FootClass* pWhom, TechnoClas
 
 // Basically copied from Ares "TechnoExt::ExtData::CreateInitialPayload()".
 // This supports transport vehicles, Bio Reactors, and garrisonable structures.
-void HandlerEffectClass::CreatePassengers(TechnoClass* pToWhom, TechnoClass* pPassengerOwnerScope) const
+void HandlerEffectClass::CreatePassengers(TechnoClass* pToWhom, HouseClass* pPassengerOwner) const
 {
 	auto const pType = pToWhom->GetTechnoType();
 
@@ -538,7 +564,7 @@ void HandlerEffectClass::CreatePassengers(TechnoClass* pToWhom, TechnoClass* pPa
 
 		for (auto j = 0; j < count; ++j)
 		{
-			auto const pObject = pPayloadType->CreateObject(pPassengerOwnerScope->Owner);
+			auto const pObject = pPayloadType->CreateObject(pPassengerOwner);
 
 			if (pBld)
 			{
@@ -631,6 +657,11 @@ void HandlerEffectClass::TransferOwnership(TechnoClass* pTarget, HouseClass* pNe
 
 bool HandlerEffectClass::IsDefined() const
 {
+	return HasAnyTechnoEffect;
+}
+
+bool HandlerEffectClass::IsDefinedAnyTechnoEffect() const
+{
 	return Weapon.isset()
 		|| !Convert_Pairs.empty()
 		|| Soylent_Mult.isset()
@@ -642,7 +673,7 @@ bool HandlerEffectClass::IsDefined() const
 		|| Voice.isset()
 		|| EVA.isset()
 		|| Transfer_To_House.isset()
-		|| Transfer_To_Scope.isset()
+		|| Transfer_To_Actor.isset()
 		|| Command.isset()
 		|| !EventInvokers.empty();
 }
@@ -662,26 +693,26 @@ bool HandlerEffectClass::Serialize(T& stm)
 {
 	return stm
 		.Process(this->Weapon)
-		.Process(this->Weapon_Firer_Scope)
-		.Process(this->Weapon_Firer_ExtScope)
+		.Process(this->Weapon_Firer)
+		.Process(this->Weapon_FirerExt)
 		.Process(this->Weapon_SpawnProj)
 		.Process(this->Convert_Pairs)
 		.Process(this->Soylent_Mult)
 		.Process(this->Soylent_IncludePassengers)
-		.Process(this->Soylent_Scope)
-		.Process(this->Soylent_ExtScope)
+		.Process(this->Soylent_Receptant)
+		.Process(this->Soylent_ReceptantExt)
 		.Process(this->Soylent_Display)
 		.Process(this->Soylent_Display_Houses)
 		.Process(this->Soylent_Display_Offset)
 		.Process(this->Passengers_Eject)
 		.Process(this->Passengers_Kill)
 		.Process(this->Passengers_Kill_Score)
-		.Process(this->Passengers_Kill_Score_Scope)
-		.Process(this->Passengers_Kill_Score_ExtScope)
+		.Process(this->Passengers_Kill_Scorer)
+		.Process(this->Passengers_Kill_ScorerExt)
 		.Process(this->Passengers_Create_Types)
 		.Process(this->Passengers_Create_Nums)
-		.Process(this->Passengers_Create_Owner_Scope)
-		.Process(this->Passengers_Create_Owner_ExtScope)
+		.Process(this->Passengers_Create_Owner)
+		.Process(this->Passengers_Create_OwnerExt)
 		.Process(this->Veterancy_Set)
 		.Process(this->Veterancy_Add)
 		.Process(this->Voice)
@@ -689,11 +720,11 @@ bool HandlerEffectClass::Serialize(T& stm)
 		.Process(this->Voice_Global)
 		.Process(this->EVA)
 		.Process(this->Transfer_To_House)
-		.Process(this->Transfer_To_Scope)
-		.Process(this->Transfer_To_ExtScope)
+		.Process(this->Transfer_To_Actor)
+		.Process(this->Transfer_To_ActorExt)
 		.Process(this->Command)
-		.Process(this->Command_Target_Scope)
-		.Process(this->Command_Target_ExtScope)
+		.Process(this->Command_Target)
+		.Process(this->Command_TargetExt)
 		.Process(this->EventInvokers)
 		.Success();
 }

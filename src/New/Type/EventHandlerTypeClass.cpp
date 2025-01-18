@@ -38,12 +38,11 @@ void EventHandlerTypeClass::LoadFromINI(INI_EX& exINI)
 
 void EventHandlerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSection)
 {
-	EventTypeClass::LoadTypeListFromINI(exINI, pSection, "EventType", &this->EventTypes);
-	LoadForScope(exINI, pSection, EventScopeType::Me, "Me");
-	LoadForScope(exINI, pSection, EventScopeType::They, "They");
+	LoadForScope(exINI, pSection, EventActorType::Me, "Me");
+	LoadForScope(exINI, pSection, EventActorType::They, "They");
 }
 
-void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, const EventScopeType scopeType, const char* scopeName)
+void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const char* scopeName)
 {
 	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, scopeName);
 	if (comp)
@@ -51,14 +50,15 @@ void EventHandlerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, co
 		this->HandlerComps.push_back(std::move(comp));
 	}
 
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedScopeType::Transport, scopeName, "Transport");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedScopeType::Bunker, scopeName, "Bunker");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedScopeType::MindController, scopeName, "MindController");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedScopeType::Parasite, scopeName, "Parasite");
-	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedScopeType::Host, scopeName, "Host");
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Owner, scopeName, "Owner");
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Transport, scopeName, "Transport");
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Bunker, scopeName, "Bunker");
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::MindController, scopeName, "MindController");
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Parasite, scopeName, "Parasite");
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Host, scopeName, "Host");
 }
 
-void EventHandlerTypeClass::LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventScopeType scopeType, const EventExtendedScopeType extendedScopeType, const char* scopeName, const char* extendedScopeName)
+void EventHandlerTypeClass::LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const EventExtendedActorType extendedScopeType, const char* scopeName, const char* extendedScopeName)
 {
 	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, extendedScopeType, scopeName, extendedScopeName);
 	if (comp)
@@ -127,18 +127,22 @@ void EventHandlerTypeClass::LoadTypeMapFromINI(INI_EX & exINI, const char* pSect
 	char tempBuffer[32];
 
 	// read event handlers
+	Nullable<EventTypeClass*> eventTypeNullable;
 	Nullable<EventHandlerTypeClass*> eventHandlerNullable;
 	for (size_t i = 0; ; ++i)
 	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s%d", pHeader, i);
-		eventHandlerNullable.Reset();
-		eventHandlerNullable.Read<true>(exINI, pSection, tempBuffer);
-		if (eventHandlerNullable.isset())
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s%d.EventType", pHeader, i);
+		eventTypeNullable.Reset();
+		eventTypeNullable.Read<true>(exINI, pSection, tempBuffer);
+		if (eventTypeNullable.isset())
 		{
-			eventHandlerNullable.Get()->LoadFromINI(exINI);
-			for (auto eventType : eventHandlerNullable.Get()->EventTypes)
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s%d.EventHandler", pHeader, i);
+			eventHandlerNullable.Reset();
+			eventHandlerNullable.Read<true>(exINI, pSection, tempBuffer);
+			if (eventHandlerNullable.isset())
 			{
-				map->operator[](eventType).push_back(eventHandlerNullable.Get());
+				eventHandlerNullable.Get()->LoadFromINI(exINI);
+				map->operator[](eventTypeNullable.Get()).push_back(eventHandlerNullable.Get());
 			}
 		}
 		else
@@ -150,20 +154,24 @@ void EventHandlerTypeClass::LoadTypeMapFromINI(INI_EX & exINI, const char* pSect
 	// read single event handler
 	if (map->empty())
 	{
-		eventHandlerNullable.Reset();
-		eventHandlerNullable.Read<true>(exINI, pSection, pHeader);
-		if (eventHandlerNullable.isset())
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.EventType", pHeader);
+		eventTypeNullable.Reset();
+		eventTypeNullable.Read<true>(exINI, pSection, tempBuffer);
+		if (eventTypeNullable.isset())
 		{
-			eventHandlerNullable.Get()->LoadFromINI(exINI);
-			for (auto eventType : eventHandlerNullable.Get()->EventTypes)
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.EventHandler", pHeader);
+			eventHandlerNullable.Reset();
+			eventHandlerNullable.Read<true>(exINI, pSection, tempBuffer);
+			if (eventHandlerNullable.isset())
 			{
-				map->operator[](eventType).push_back(eventHandlerNullable.Get());
+				eventHandlerNullable.Get()->LoadFromINI(exINI);
+				map->operator[](eventTypeNullable.Get()).push_back(eventHandlerNullable.Get());
 			}
 		}
 	}
 }
 
-void EventHandlerTypeClass::HandleEvent(std::map<EventScopeType, TechnoClass*>* pParticipants)
+void EventHandlerTypeClass::HandleEvent(std::map<EventActorType, AbstractClass*>* pParticipants)
 {
 	for (auto it = pParticipants->begin(); it != pParticipants->end(); ++it)
 	{
@@ -177,7 +185,7 @@ void EventHandlerTypeClass::HandleEvent(std::map<EventScopeType, TechnoClass*>* 
 	}
 }
 
-bool EventHandlerTypeClass::CheckFilters(std::map<EventScopeType, TechnoClass*>* pParticipants, EventScopeType scopeType) const
+bool EventHandlerTypeClass::CheckFilters(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType scopeType) const
 {
 	for (auto const& handlerComp : this->HandlerComps)
 	{
@@ -193,7 +201,7 @@ bool EventHandlerTypeClass::CheckFilters(std::map<EventScopeType, TechnoClass*>*
 	return true;
 }
 
-void EventHandlerTypeClass::ExecuteEffects(std::map<EventScopeType, TechnoClass*>* pParticipants, EventScopeType scopeType) const
+void EventHandlerTypeClass::ExecuteEffects(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType scopeType) const
 {
 	for (auto const& handlerComp : this->HandlerComps)
 	{

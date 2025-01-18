@@ -39,51 +39,46 @@ void EventInvokerTypeClass::LoadFromINI(INI_EX& exINI)
 
 void EventInvokerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSection)
 {
+	LoadForScope(exINI, pSection, EventActorType::Me, "Invoker");
+	LoadForScope(exINI, pSection, EventActorType::They, "Target");
 	EventTypeClass::LoadTypeListFromINI(exINI, pSection, "EventType", &this->EventTypes);
-	this->Invoker_Filter = HandlerFilterClass::Parse(exINI, pSection, "Invoker", "Filter");
-	this->Invoker_NegFilter = HandlerFilterClass::Parse(exINI, pSection, "Invoker", "NegFilter");
-	this->Target_Filter = HandlerFilterClass::Parse(exINI, pSection, "Target", "Filter");
-	this->Target_NegFilter = HandlerFilterClass::Parse(exINI, pSection, "Target", "NegFilter");
-	EventHandlerTypeClass::LoadTypeListFromINI(exINI, pSection, "Target.ExtraEventHandler", &this->Target_ExtraEventHandlers);
-	this->Target_PassDown_Passengers.Read(exINI, pSection, "Target.PassDown.Passengers");
-	this->Target_PassDown_MindControlled.Read(exINI, pSection, "Target.PassDown.MindControlled");
+	EventHandlerTypeClass::LoadTypeListFromINI(exINI, pSection, "ExtraEventHandler", &this->ExtraEventHandlers);
+	this->PassDown_Passengers.Read(exINI, pSection, "PassDown.Passengers");
+	this->PassDown_MindControlled.Read(exINI, pSection, "PassDown.MindControlled");
 }
 
-bool EventInvokerTypeClass::CheckInvokerFilters(HouseClass* pHouse, TechnoClass* pInvoker, bool fromSuperWeapon) const
+void EventInvokerTypeClass::LoadForScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const char* scopeName)
 {
-	if (!pInvoker && fromSuperWeapon)
+	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, scopeName, false);
+	if (comp)
 	{
-		if (this->Invoker_Filter)
-		{
-			if (this->Invoker_Filter->IsDefinedAnyTechnoCheck()
-				|| !this->Invoker_Filter.get()->CheckForHouse(pHouse, pHouse, false))
-			{
-				return false;
-			}
-		}
-
-		if (this->Invoker_NegFilter)
-		{
-			if (this->Invoker_NegFilter->IsDefinedAnyTechnoCheck()
-				|| !this->Invoker_NegFilter.get()->CheckForHouse(pHouse, pHouse, true))
-			{
-				return false;
-			}
-		}
+		this->HandlerComps.push_back(std::move(comp));
 	}
-	else
-	{
-		if (this->Invoker_Filter)
-		{
-			if (!(pInvoker && this->Invoker_Filter.get()->Check(pHouse, pInvoker, false)))
-			{
-				return false;
-			}
-		}
 
-		if (this->Invoker_NegFilter)
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Owner, scopeName, "Owner");
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Transport, scopeName, "Transport");
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Bunker, scopeName, "Bunker");
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::MindController, scopeName, "MindController");
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Parasite, scopeName, "Parasite");
+	LoadForExtendedScope(exINI, pSection, scopeType, EventExtendedActorType::Host, scopeName, "Host");
+}
+
+void EventInvokerTypeClass::LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const EventExtendedActorType extendedScopeType, const char* scopeName, const char* extendedScopeName)
+{
+	auto comp = HandlerCompClass::Parse(exINI, pSection, scopeType, extendedScopeType, scopeName, extendedScopeName, false);
+	if (comp)
+	{
+		this->HandlerComps.push_back(std::move(comp));
+	}
+}
+
+bool EventInvokerTypeClass::CheckInvokerFilters(HouseClass* pHouse, AbstractClass* pInvoker) const
+{
+	for (auto const& handlerComp : this->HandlerComps)
+	{
+		if (handlerComp.get()->ScopeType == EventActorType::Me)
 		{
-			if (!(pInvoker && this->Invoker_NegFilter.get()->Check(pHouse, pInvoker, true)))
+			if (!handlerComp.get()->CheckFilters(pHouse, pInvoker))
 			{
 				return false;
 			}
@@ -93,21 +88,16 @@ bool EventInvokerTypeClass::CheckInvokerFilters(HouseClass* pHouse, TechnoClass*
 	return true;
 }
 
-bool EventInvokerTypeClass::CheckTargetFilters(HouseClass* pHouse, TechnoClass* pTarget) const
+bool EventInvokerTypeClass::CheckTargetFilters(HouseClass* pHouse, AbstractClass* pTarget) const
 {
-	if (this->Target_Filter)
+	for (auto const& handlerComp : this->HandlerComps)
 	{
-		if (!(pTarget && this->Target_Filter.get()->Check(pHouse, pTarget, false)))
+		if (handlerComp.get()->ScopeType == EventActorType::They)
 		{
-			return false;
-		}
-	}
-
-	if (this->Target_NegFilter)
-	{
-		if (!(pTarget && this->Target_NegFilter.get()->Check(pHouse, pTarget, true)))
-		{
-			return false;
+			if (!handlerComp.get()->CheckFilters(pHouse, pTarget))
+			{
+				return false;
+			}
 		}
 	}
 
@@ -119,27 +109,30 @@ bool EventInvokerTypeClass::CheckTargetFilters(HouseClass* pHouse, TechnoClass* 
 // We have to record the initial "Me" scope and give it back,
 // because multiple invokers may be invoked at a same time,
 // and the same participants map will be reused.
-void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants, bool fromSuperWeapon)
+void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants)
 {
-	auto pTarget = pParticipants->at(EventScopeType::Me);
-	auto pInvoker = pParticipants->at(EventScopeType::They);
-	if (CheckInvokerFilters(pHouse, pInvoker, fromSuperWeapon))
+	auto pTarget = abstract_cast<TechnoClass*>(pParticipants->at(EventActorType::Me));
+	if (pTarget)
 	{
-		TryExecuteOnTarget(pHouse, pParticipants, pTarget);
-		pParticipants->operator[](EventScopeType::Me) = pTarget;
+		auto pInvoker = pParticipants->at(EventActorType::They);
+		if (CheckInvokerFilters(pHouse, pInvoker))
+		{
+			TryExecuteOnTarget(pHouse, pParticipants, pTarget);
+			pParticipants->operator[](EventActorType::Me) = pTarget;
+		}
 	}
 }
 
 // This function is invoked internally in this invoker class.
 // This function checks for a single target, and invoke the events on it if appropriate.
 // It also tries to pass down the target to its passengers, and every appropriate additional targets will go back to this function.
-void EventInvokerTypeClass::TryExecuteOnTarget(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pTarget)
+void EventInvokerTypeClass::TryExecuteOnTarget(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget)
 {
 	if (CheckTargetFilters(pHouse, pTarget))
 	{
 		auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
 
-		for (auto pEventHandlerTypeClass : Target_ExtraEventHandlers)
+		for (auto pEventHandlerTypeClass : ExtraEventHandlers)
 		{
 			pEventHandlerTypeClass->HandleEvent(pParticipants);
 		}
@@ -153,9 +146,9 @@ void EventInvokerTypeClass::TryExecuteOnTarget(HouseClass* pHouse, std::map<Even
 	TryPassDown(pHouse, pParticipants, pTarget);
 }
 
-void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pRoot)
+void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pRoot)
 {
-	if (Target_PassDown_Passengers.Get())
+	if (PassDown_Passengers.Get())
 	{
 		if (pRoot->Passengers.NumPassengers > 0)
 		{
@@ -163,7 +156,7 @@ void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, std::map<EventScopeT
 			for (NextObject obj(pRoot->Passengers.FirstPassenger); obj; ++obj)
 			{
 				pPassenger = static_cast<TechnoClass*>(*obj);
-				pParticipants->operator[](EventScopeType::Me) = pPassenger;
+				pParticipants->operator[](EventActorType::Me) = pPassenger;
 				TryExecuteOnTarget(pHouse, pParticipants, pPassenger);
 			}
 		}
@@ -172,20 +165,20 @@ void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, std::map<EventScopeT
 			auto pBld = reinterpret_cast<BuildingClass*>(pRoot);
 			for (auto pPassenger : pBld->Occupants)
 			{
-				pParticipants->operator[](EventScopeType::Me) = pPassenger;
+				pParticipants->operator[](EventActorType::Me) = pPassenger;
 				TryExecuteOnTarget(pHouse, pParticipants, pPassenger);
 			}
 		}
 	}
 
-	if (Target_PassDown_MindControlled.Get())
+	if (PassDown_MindControlled.Get())
 	{
 		if (pRoot->CaptureManager && pRoot->CaptureManager->IsControllingSomething())
 		{
 			for (auto controlNode : pRoot->CaptureManager->ControlNodes)
 			{
 				auto pMCedTechno = controlNode->Unit;
-				pParticipants->operator[](EventScopeType::Me) = pMCedTechno;
+				pParticipants->operator[](EventActorType::Me) = pMCedTechno;
 				TryExecuteOnTarget(pHouse, pParticipants, pMCedTechno);
 			}
 		}
@@ -197,12 +190,11 @@ void EventInvokerTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->loaded)
+		.Process(this->HandlerComps)
 		.Process(this->EventTypes)
-		.Process(this->Target_Filter)
-		.Process(this->Target_NegFilter)
-		.Process(this->Target_ExtraEventHandlers)
-		.Process(this->Target_PassDown_Passengers)
-		.Process(this->Target_PassDown_MindControlled)
+		.Process(this->ExtraEventHandlers)
+		.Process(this->PassDown_Passengers)
+		.Process(this->PassDown_MindControlled)
 		;
 }
 

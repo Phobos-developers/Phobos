@@ -3,7 +3,7 @@
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
 #include "EventTypeClass.h"
-#include "Affiliated/HandlerFilterClass.h"
+#include "Affiliated/HandlerCompClass.h"
 
 class EventHandlerTypeClass;
 
@@ -11,30 +11,26 @@ class EventInvokerTypeClass final : public Enumerable<EventInvokerTypeClass>
 {
 public:
 	Valueable<bool> loaded;
+	std::vector<std::unique_ptr<HandlerCompClass>> HandlerComps;
 	ValueableVector<EventTypeClass*> EventTypes;
-	std::unique_ptr<HandlerFilterClass> Invoker_Filter;
-	std::unique_ptr<HandlerFilterClass> Invoker_NegFilter;
-	std::unique_ptr<HandlerFilterClass> Target_Filter;
-	std::unique_ptr<HandlerFilterClass> Target_NegFilter;
-	ValueableVector<EventHandlerTypeClass*> Target_ExtraEventHandlers;
-	Valueable<bool> Target_PassDown_Passengers;
-	Valueable<bool> Target_PassDown_MindControlled;
+	ValueableVector<EventHandlerTypeClass*> ExtraEventHandlers;
+	Valueable<bool> PassDown_Passengers;
+	Valueable<bool> PassDown_MindControlled;
 
 	EventInvokerTypeClass(const char* pTitle = NONE_STR) : Enumerable<EventInvokerTypeClass>(pTitle)
 		, loaded { false }
+		, HandlerComps {}
 		, EventTypes {}
-		, Invoker_Filter {}
-		, Invoker_NegFilter {}
-		, Target_Filter {}
-		, Target_NegFilter {}
-		, Target_ExtraEventHandlers {}
-		, Target_PassDown_Passengers { false }
-		, Target_PassDown_MindControlled { false }
+		, ExtraEventHandlers {}
+		, PassDown_Passengers { false }
+		, PassDown_MindControlled { false }
 	{};
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromINI(INI_EX& exINI);
-	void TryExecute(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants, bool fromSuperWeapon = false);
+	void LoadForScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const char* scopeName);
+	void LoadForExtendedScope(INI_EX& exINI, const char* pSection, const EventActorType scopeType, const EventExtendedActorType extendedScopeType, const char* scopeName, const char* extendedScopeName);
+	void TryExecute(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
 
@@ -43,8 +39,8 @@ private:
 	template <typename T>
 	void Serialize(T& Stm);
 	void LoadFromINIPrivate(INI_EX& exINI, const char* pSection);
-	bool CheckInvokerFilters(HouseClass* pHouse, TechnoClass* pInvoker, bool fromSuperWeapon) const;
-	bool CheckTargetFilters(HouseClass* pHouse, TechnoClass* pTarget) const;
-	void TryExecuteOnTarget(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pTarget);
-	void TryPassDown(HouseClass* pHouse, std::map<EventScopeType, TechnoClass*>* pParticipants, TechnoClass* pRoot);
+	bool CheckInvokerFilters(HouseClass* pHouse, AbstractClass* pInvoker) const;
+	bool CheckTargetFilters(HouseClass* pHouse, AbstractClass* pTarget) const;
+	void TryExecuteOnTarget(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget);
+	void TryPassDown(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pRoot);
 };

@@ -36,9 +36,9 @@ void TechnoTypeExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, Techno
 {
 	if (this->EventHandlersMap.contains(pEventTypeClass))
 	{
-		std::map<EventScopeType, TechnoClass*> participants = {
-			{ EventScopeType::Me, pMe },
-			{ EventScopeType::They, pThey },
+		std::map<EventActorType, AbstractClass*> participants = {
+			{ EventActorType::Me, pMe },
+			{ EventActorType::They, pThey },
 		};
 		for (auto pEventHandlerTypeClass : EventHandlersMap.get_or_default(pEventTypeClass))
 		{
@@ -47,7 +47,7 @@ void TechnoTypeExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, Techno
 	}
 }
 
-void TechnoTypeExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, std::map<EventScopeType, TechnoClass*>* pParticipants) const
+void TechnoTypeExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, std::map<EventActorType, AbstractClass*>* pParticipants) const
 {
 	if (this->EventHandlersMap.contains(pEventTypeClass))
 	{
@@ -546,7 +546,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 
 	// Event Handler
-	EventHandlerTypeClass::LoadTypeMapFromINI(exINI, pSection, "EventHandler", &this->EventHandlersMap);
+	EventHandlerTypeClass::LoadTypeMapFromINI(exINI, pSection, "Trigger", &this->EventHandlersMap);
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");

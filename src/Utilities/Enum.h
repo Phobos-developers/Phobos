@@ -280,24 +280,25 @@ enum class DisplayInfoType : BYTE
 	GattlingStage = 9
 };
 
-enum class EventScopeType : byte
+enum class EventActorType : byte
 {
 	Me = 1,
 	They = 2,
 };
 
-MAKE_ENUM_FLAGS(EventScopeType);
+MAKE_ENUM_FLAGS(EventActorType);
 
-enum class EventExtendedScopeType : byte
+enum class EventExtendedActorType : byte
 {
-	Transport = 1,
-	Bunker = 2,
-	MindController = 3,
-	Parasite = 4,
-	Host = 5,
+	Owner = 1,
+	Transport = 2,
+	Bunker = 3,
+	MindController = 4,
+	Parasite = 5,
+	Host = 6,
 };
 
-MAKE_ENUM_FLAGS(EventExtendedScopeType);
+MAKE_ENUM_FLAGS(EventExtendedActorType);
 
 enum class VeterancyType : byte
 {

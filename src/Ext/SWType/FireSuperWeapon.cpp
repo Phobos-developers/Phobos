@@ -303,26 +303,15 @@ void SWTypeExt::ExtData::ApplyEventInvokers(SuperClass* pSW, const CellStruct& c
 	if (this->EventInvokers.size() == 0)
 		return;
 
-	BuildingClass* pFirer = nullptr;
-
-	for (auto const& pBld : pSW->Owner->Buildings)
-	{
-		if (this->IsLaunchSiteEligible(cell, pBld, false))
-		{
-			pFirer = pBld;
-			break;
-		}
-	}
-
 	for (const auto pTargetFoot : *FootClass::Array)
 	{
-		std::map<EventScopeType, TechnoClass*> participants = {
-			{ EventScopeType::Me, pTargetFoot },
-			{ EventScopeType::They, pFirer },
+		std::map<EventActorType, AbstractClass*> participants = {
+			{ EventActorType::Me, pTargetFoot },
+			{ EventActorType::They, pSW->Owner },
 		};
 		for (auto pEventInvokerType : EventInvokers)
 		{
-			pEventInvokerType->TryExecute(pSW->Owner, &participants, true);
+			pEventInvokerType->TryExecute(pSW->Owner, &participants);
 		}
 	}
 }

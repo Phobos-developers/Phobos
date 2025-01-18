@@ -1054,21 +1054,21 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<EventScopeType>(EventScopeType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	inline bool read<EventActorType>(EventActorType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
 			if (_strcmpi(parser.value(), "Me") == 0)
 			{
-				value = EventScopeType::Me;
+				value = EventActorType::Me;
 			}
 			else if (_strcmpi(parser.value(), "They") == 0)
 			{
-				value = EventScopeType::They;
+				value = EventActorType::They;
 			}
 			else
 			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an event scope type");
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an actor type");
 				return false;
 			}
 
@@ -1079,33 +1079,37 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<EventExtendedScopeType>(EventExtendedScopeType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	inline bool read<EventExtendedActorType>(EventExtendedActorType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			if (_strcmpi(parser.value(), "Transport") == 0)
+			if (_strcmpi(parser.value(), "Owner") == 0)
 			{
-				value = EventExtendedScopeType::Transport;
+				value = EventExtendedActorType::Owner;
+			}
+			else if (_strcmpi(parser.value(), "Transport") == 0)
+			{
+				value = EventExtendedActorType::Transport;
 			}
 			else if (_strcmpi(parser.value(), "Bunker") == 0)
 			{
-				value = EventExtendedScopeType::Bunker;
+				value = EventExtendedActorType::Bunker;
 			}
 			else if (_strcmpi(parser.value(), "MindController") == 0)
 			{
-				value = EventExtendedScopeType::MindController;
+				value = EventExtendedActorType::MindController;
 			}
 			else if (_strcmpi(parser.value(), "Parasite") == 0)
 			{
-				value = EventExtendedScopeType::Parasite;
+				value = EventExtendedActorType::Parasite;
 			}
 			else if (_strcmpi(parser.value(), "Host") == 0)
 			{
-				value = EventExtendedScopeType::Host;
+				value = EventExtendedActorType::Host;
 			}
 			else
 			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an event extended scope type");
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an extended event actor type");
 				return false;
 			}
 
@@ -1127,7 +1131,6 @@ namespace detail
 				{"veteran", VeterancyType::Veteran},
 				{"elite", VeterancyType::Elite},
 			};
-
 
 			auto parsed = VeterancyType::None;
 			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))

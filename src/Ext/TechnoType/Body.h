@@ -471,7 +471,7 @@ public:
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 
 		void InvokeEvent(EventTypeClass* pEventTypeClass, TechnoClass* pMe, TechnoClass* pThey) const;
-		void InvokeEvent(EventTypeClass* pEventTypeClass, std::map<EventScopeType, TechnoClass*>* pParticipants) const;
+		void InvokeEvent(EventTypeClass* pEventTypeClass, std::map<EventActorType, AbstractClass*>* pParticipants) const;
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
