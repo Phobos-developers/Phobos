@@ -347,17 +347,8 @@ DEFINE_HOOK(0x70DE40, BuildingClass_sub_70DE40_GattlingRateDownDelay, 0xA)
 	GET(BuildingClass* const, pThis, ECX);
 	GET_STACK(int, rateDown, STACK_OFFSET(0x0, 0x4));
 
-	auto newValue = pThis->GattlingValue;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pTypeExt = pExt->TypeExtData;
-
-	if (pTypeExt->RateDown_Reset && (!pThis->Target || pExt->LastTargetID != pThis->Target->UniqueID))
-	{
-		pExt->LastTargetID = pThis->Target ? pThis->Target->UniqueID : 0xFFFFFFFF;
-		pThis->GattlingValue = 0;
-		pThis->CurrentGattlingStage = 0;
-		return Return;
-	}
 
 	if (pTypeExt->RateDown_Delay < 0)
 		return Return;
@@ -384,6 +375,7 @@ DEFINE_HOOK(0x70DE40, BuildingClass_sub_70DE40_GattlingRateDownDelay, 0xA)
 		return Return;
 	}
 
+	auto newValue = pThis->GattlingValue;
 	newValue -= (rateDown * remain);
 	pThis->GattlingValue = (newValue <= 0) ? 0 : newValue;
 	return Return;
@@ -393,18 +385,9 @@ DEFINE_HOOK(0x70DE70, TechnoClass_sub_70DE70_GattlingRateDownReset, 0x5)
 {
 	GET(TechnoClass* const, pThis, ECX);
 
-	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
-	{
-		if (pExt->TypeExtData->RateDown_Reset && (!pThis->Target || pExt->LastTargetID != pThis->Target->UniqueID))
-		{
-			pExt->LastTargetID = pThis->Target ? pThis->Target->UniqueID : 0xFFFFFFFF;
-			pThis->GattlingValue = 0;
-			pThis->CurrentGattlingStage = 0;
-		}
-
-		pExt->AccumulatedGattlingValue = 0;
-		pExt->ShouldUpdateGattlingValue = false;
-	}
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->AccumulatedGattlingValue = 0;
+	pExt->ShouldUpdateGattlingValue = false;
 
 	return 0;
 }
@@ -416,17 +399,8 @@ DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
 	GET(TechnoClass* const, pThis, ESI);
 	GET_STACK(int, rateMult, STACK_OFFSET(0x10, 0x4));
 
-	auto newValue = pThis->GattlingValue;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pTypeExt = pExt->TypeExtData;
-
-	if (pTypeExt->RateDown_Reset && (!pThis->Target || pExt->LastTargetID != pThis->Target->UniqueID))
-	{
-		pExt->LastTargetID = pThis->Target ? pThis->Target->UniqueID : 0xFFFFFFFF;
-		pThis->GattlingValue = 0;
-		pThis->CurrentGattlingStage = 0;
-		return SkipGameCode;
-	}
 
 	if (pTypeExt->RateDown_Delay < 0)
 		return SkipGameCode;
@@ -458,6 +432,7 @@ DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
 		return SkipGameCode;
 	}
 
+	auto newValue = pThis->GattlingValue;
 	newValue -= (rateDown * remain);
 	pThis->GattlingValue = (newValue <= 0) ? 0 : newValue;
 	return SkipGameCode;
