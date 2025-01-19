@@ -44,7 +44,6 @@ public:
 	NullableIdx<VocClass> Voice;
 	Valueable<bool> Voice_Persist;
 	Valueable<bool> Voice_Global;
-	NullableIdx<VocClass> EVA;
 
 	Nullable<OwnerHouseKind> Transfer_To_House;
 	Nullable<EventActorType> Transfer_To_Actor;
@@ -54,6 +53,13 @@ public:
 	Nullable<EventActorType> Command_Target;
 	Nullable<EventExtendedActorType> Command_TargetExt;
 
+	Valueable<bool> HasAnyHouseEffect;
+
+	NullableIdx<VocClass> EVA;
+
+	Valueable<bool> HasAnyGenericEffect;
+
+	ValueableVector<EventHandlerTypeClass*> EventHandlers;
 	ValueableVector<EventInvokerTypeClass*> EventInvokers;
 
 	static std::unique_ptr<HandlerEffectClass> Parse(INI_EX& exINI, const char* pSection, const char* actorName, const char* effectName);
@@ -70,11 +76,14 @@ private:
 	template <typename T>
 	bool Serialize(T& stm);
 
-	void ExecuteForTechno(std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget) const;
+	void ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget) const;
+	void ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>* pParticipants, HouseClass* pTarget) const;
+	void ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>* pParticipants, AbstractClass* pTarget) const;
 
 	bool IsDefinedAnyTechnoEffect() const;
+	bool IsDefinedAnyHouseEffect() const;
+	bool IsDefinedAnyGenericEffect() const;
 
-	void UnlimboAtRandomPlaceNearby(FootClass* pWhom, TechnoClass* pNearWhom) const;
 	void CreatePassengers(TechnoClass* pToWhom, HouseClass* pPassengerOwner) const;
 	void TransferOwnership(TechnoClass* pTarget, HouseClass* pNewOnwer) const;
 };

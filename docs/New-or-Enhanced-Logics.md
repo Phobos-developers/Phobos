@@ -516,7 +516,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
   - All Filter entry must be true, and all Negative Filter entry must be false.
   - If any Filter or Negative Filter is specified on an actor, the actor must exist, or the filter will fail the check.
   - <details>
-      <summary>Expand to see available Techno filter types. These filters fail the check if the actor is not a techno, even negative filters will do.</summary>
+      <summary>Expand to see Techno filter types. These filters fail the check if the actor is not a techno, even negative filters will do.</summary>
       <ul>
         <li><code>*.Abstract</code>: A quick filter on the techno's type and domain. <i>(none|land|water|empty|infantry|units|buildings|all)</i></li>
         <li><code>*.IsInAir</code>: Techno is in air.</li>
@@ -540,7 +540,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
       </ul>
     </details>
   - <details>
-      <summary>Expand to see available House filter types. These can be used on house actors, or techno actors, in which case the techno's owning house is checked.</summary>
+      <summary>Expand to see House filter types. If the actor isn't a house, its owning house will be checked.</summary>
       <ul>
         <li><code>*.House</code>: The house's relation with the handler's owner. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
         <li><code>*.Sides</code>: The house's country is any of the listed sides.</li>
@@ -554,7 +554,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
   - Effects can be specified on an actor to ask for something to be done to it, if all filters pass. Effects are defined like <code>(actor).Effect.*</code>.
   - The actor must exist. Nothing will be done to an nonexistant actor.
   - <details>
-      <summary>Expand to see available Techno effect types. These effects will not resolve if the actor is not a techno.</summary>
+      <summary>Expand to see Techno effect types. These effects will not resolve if the actor is not a techno.</summary>
       <ol>
         <li>
           Weapon Detonation:
@@ -619,7 +619,6 @@ TriggerN.EventHandler=...                          ; EventHandlerType
                 <li><code>*.Voice.Global</code> can be set to true, it does not only persists, it is also audible to other players.</li>
               </ul>
             </li>
-            <li><code>*.EVA</code> will be played as an EVA announcement to the <code>(actor)</code>'s owner. It is only audible to the actor's owner.</li>
           </ul>
         </li>
         <li>
@@ -640,20 +639,40 @@ TriggerN.EventHandler=...                          ; EventHandlerType
             <li><code>*.Command.Target|TargetExt</code>, can be used to specify the target of the command. The <code>Enter</code>, <code>Attack</code> command require a target to proceed.</li>
           </ul>
         </li>
+      </ul>
+    </details>
+  - <details>
+      <summary>Expand to see House effect types. These will resolve to the actor's owning house if used on an actor that isn't a house.</summary>
+        <li>
+          Voice:
+          <ul>
+            <li>A voice can be played.</li>
+            <li><code>*.EVA</code> will be played as an EVA announcement to the <code>(actor)</code>'s owner. It is only audible to the house.</li>
+          </ul>
+        </li>
+    </details>
+  - <details>
+      <summary>Expand to see generic effect types. These effects will resolve on any actor type.</summary>
+        <li>
+          Event Handlers:
+          <ul>
+            <li>Event Handlers can be called upon the actor.</li>
+            <li><code>*.EventHandlerN</code>, where N is an integer starting from 0, specifies the Event Handlers to be invoked on an actor. <code>*.EventHandler</code> is a valid alternative if only one is specified.</li>
+            <li>The <code>Me</code> actor there will be the <code>(actor)</code>, and the <code>They</code> actor there will be the original <code>Me</code> of the source event handler.</li>
+          </ul>
+        </li>
         <li>
           Event Invokers:
           <ul>
             <li>Event Invokers can be called upon the actor.</li>
-            <li><code>*.EventInvokerN</code> (where N is 0, 1, 2...) specifies the Event Invoker Types to be invoked to an actor.</li>
-            <li><code>*.EventInvoker</code> is a valid alternative for <code>(actor).Effect.EventInvoker0</code>, if only one is specified.</li>
-            <li>The <code>Me</code> actor of the invoked event will be the <code>(actor)</code>, and the <code>They</code> actor of the event will be the original <code>Me</code> of the source event handler.<br>For example, an IFV receives event A, where the IFV itself is the <code>Me</code> actor. Then the IFV's event handler invokes event B on a Grizzly Tank. On the Grizzly Tank's perspective, the <code>Me</code> will be the Grizzly Tank, and the <code>They</code> actor will be the IFV.</li>
+            <li><code>*.EventInvokerN</code>, where N is an integer starting from 0, specifies the Event Invokers to be invoked on an actor. <code>*.EventInvoker</code> is a valid alternative if only one is specified.</li>
+            <li>The <code>Target</code> actor there will be the <code>(actor)</code>, and the <code>Invoker</code> actor there will be the original <code>Me</code> of the source event handler.</li>
             <li>See <a href="#event-invokers">Event Invokers</a> for details.</li>
           </ul>
         </li>
-      </ul>
     </details>
 - Next Handler:
-  - The `Next` Event Handler can be specified to be invoked right after this one. The `Next` handler is always invoked no matter if the original handler passed its filters.
+  - The `Next` Event Handler can be specified to be invoked right after this one. Unlike Event Handler effects on actors, `Next` handler is always invoked no matter if the original handler passed its filters.
   - The Event Handlers have a few limitations with it, which can be overcame by defining a `Next` handler with identical effects but different filters, or identical filters but different effects.
     - There is no `or` operator in Filters.
     - Filters and Effects are no real scripts. Multiple instances of a same key will override each other, and only the latest specified one will take effect. 
@@ -674,7 +693,7 @@ EventHandlerN=...                                  ; EventHandlerType
 ;; Next handler
 Next=                                              ; EventHandlerType
 
-;; filters - techno
+;; filters (techno)
 (actor).Filter.Abstract=                           ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 (actor).Filter.IsInAir=                            ; boolean
 (actor).Filter.TechnoTypes=                        ; list of TechnoTypes
@@ -695,7 +714,7 @@ Next=                                              ; EventHandlerType
 (actor).Filter.Upgrades.Any=                       ; boolean
 (actor).Filter.Upgrades.Type=                      ; list of BuildingTypes
 
-;; filters - house
+;; filters (house)
 (actor).Filter.House=                              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 (actor).Filter.Sides=                              ; list of Sides
 (actor).Filter.Countries=                          ; list of Countries
@@ -703,13 +722,13 @@ Next=                                              ; EventHandlerType
 (actor).Filter.IsHuman=                            ; boolean
 (actor).Filter.IsAI=                               ; boolean
 
-;; effects - weapon detonation
+;; effects (techno) - weapon detonation
 (actor).Effect.Weapon=                             ; WeaponType
 (actor).Effect.Weapon.Firer=Me                     ; basic actor
 (actor).Effect.Weapon.FirerExt=                    ; extended actor
 (actor).Effect.Weapon.SpawnProj=false              ; boolean
 
-;; effects - type conversion
+;; effects (techno) - type conversion
 (actor).Effect.ConvertN.From=                      ; list of TechnoTypes
 (actor).Effect.ConvertN.To=                        ; TechnoType
 (actor).Effect.ConvertN.AffectedHouses=all         ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -719,7 +738,7 @@ Next=                                              ; EventHandlerType
 (actor).Effect.Convert.To=                         ; TechnoType
 (actor).Effect.Convert.AffectedHouses=all          ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
-;; effects - soylent bounty
+;; effects (techno) - soylent bounty
 (actor).Effect.Soylent.Mult=                       ; percentage
 (actor).Effect.Soylent.IncludePassengers=false     ; boolean
 (actor).Effect.Soylent.Receptant=Me                ; basic actor
@@ -728,7 +747,7 @@ Next=                                              ; EventHandlerType
 (actor).Effect.Soylent.Display.Houses=all          ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 (actor).Effect.Soylent.Display.Offset=0,0          ; X,Y, pixels relative to default
 
-;; effects - passengers
+;; effects (techno) - passengers
 (actor).Effect.Passengers.Eject=false              ; boolean
 (actor).Effect.Passengers.Kill=false               ; boolean
 (actor).Effect.Passengers.Kill.Score=false         ; boolean
@@ -739,27 +758,30 @@ Next=                                              ; EventHandlerType
 (actor).Effect.Passengers.Create.Owner=            ; basic actor
 (actor).Effect.Passengers.Create.OwnerExt=         ; extended actor
 
-;; effects - veterancy
+;; effects (techno) - veterancy
 (actor).Effect.Veterancy.Set=                      ; single Veterancy Enumeration (rookie|veteral|elite)
 (actor).Effect.Veterancy.Add=                      ; percentage
 
-;; effects - voice
+;; effects (techno) - voice
 (actor).Effect.Voice=                              ; sound entry
 (actor).Effect.Voice.Persist=false                 ; boolean
 (actor).Effect.Voice.Global=false                  ; boolean
-(actor).Effect.EVA=                                ; sound entry
 
-;; effects - transfer ownership
+;; effects (techno) - transfer ownership
 (actor).Effect.Transfer.To.House=                  ; neutral house type (civilian, neutral, special)
 (actor).Effect.Transfer.To.Actor=                  ; basic actor
 (actor).Effect.Transfer.To.ActorExt=               ; extended actor
 
-;; effects - command
+;; effects (techno) - command
 (actor).Effect.Command=                            ; mission type (Attack|Enter|Guard|Unload)
 (actor).Effect.Command.Target=                     ; basic actor
 (actor).Effect.Command.TargetExt=                  ; extended actor
 
-;; effects - event invoker
+;; effects (house) - EVA
+(actor).Effect.EVA=                                ; sound entry
+
+;; effects (generic) - event handlers and event invokers
+(actor).Effect.EventHandlerN=                      ; EventHandlerType
 (actor).Effect.EventInvokerN=                      ; EventInvokerType
 ```
 

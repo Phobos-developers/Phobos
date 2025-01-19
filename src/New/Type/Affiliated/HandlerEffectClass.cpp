@@ -32,7 +32,15 @@ HandlerEffectClass::HandlerEffectClass()
 	, Voice {}
 	, Voice_Persist { false }
 	, Voice_Global { false }
+	, Command {}
+	, Command_Target {}
+	, Command_TargetExt {}
+
+	, HasAnyHouseEffect { false }
 	, EVA {}
+
+	, HasAnyGenericEffect { false }
+	, EventHandlers {}
 	, EventInvokers {}
 { }
 
@@ -202,12 +210,18 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 		Command_TargetExt.Read(exINI, pSection, tempBuffer);
 	}
 
+	// Event handler
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventHandler", actorName, effectName);
+	EventHandlerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->EventHandlers);
+
 	// Event Invoker
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker", actorName, effectName);
 	EventInvokerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->EventInvokers);
 
 	// defined flag
 	HasAnyTechnoEffect = IsDefinedAnyTechnoEffect();
+	HasAnyHouseEffect = IsDefinedAnyHouseEffect();
+	HasAnyGenericEffect = IsDefinedAnyGenericEffect();
 }
 
 void HandlerEffectClass::Execute(std::map<EventActorType, AbstractClass*>* pParticipants, AbstractClass* pTarget) const
@@ -215,20 +229,31 @@ void HandlerEffectClass::Execute(std::map<EventActorType, AbstractClass*>* pPart
 	if (!pTarget)
 		return;
 
+	auto pOwner = pParticipants->at(EventActorType::Me);
+	auto pOwnerHouse = HandlerCompClass::GetOwningHouseOfActor(pOwner);
+
 	if (HasAnyTechnoEffect)
 	{
 		if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 		{
-			ExecuteForTechno(pParticipants, pTargetTechno);
+			ExecuteForTechno(pOwner, pOwnerHouse, pParticipants, pTargetTechno);
 		}
+	}
+
+	if (HasAnyHouseEffect)
+	{
+		auto pTargetHouse = HandlerCompClass::GetOwningHouseOfActor(pTarget);
+		ExecuteForHouse(pOwner, pOwnerHouse, pParticipants, pTargetHouse);
+	}
+
+	if (HasAnyGenericEffect)
+	{
+		ExecuteGeneric(pOwner, pOwnerHouse, pParticipants, pTarget);
 	}
 }
 
-void HandlerEffectClass::ExecuteForTechno(std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget) const
+void HandlerEffectClass::ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget) const
 {
-	auto pOwner = pParticipants->at(EventActorType::Me);
-	auto pOwnerHouse = HandlerCompClass::GetOwningHouseOfActor(pOwner);
-
 	// Weapon Detonation
 	if (Weapon.isset())
 	{
@@ -312,7 +337,8 @@ void HandlerEffectClass::ExecuteForTechno(std::map<EventActorType, AbstractClass
 			while (pTarget->Passengers.FirstPassenger)
 			{
 				FootClass* pPassenger = pTarget->Passengers.RemoveFirstPassenger();
-				UnlimboAtRandomPlaceNearby(pPassenger, pTarget);
+				auto const pPassExt = TechnoExt::ExtMap.Find(pPassenger);
+				pPassExt->UnlimboAtRandomPlaceNearby(&pTarget->GetCoords());
 				if (openTopped)
 				{
 					pTarget->ExitedOpenTopped(pPassenger);
@@ -409,15 +435,6 @@ void HandlerEffectClass::ExecuteForTechno(std::map<EventActorType, AbstractClass
 		}
 	}
 
-	// EVA
-	if (EVA.isset())
-	{
-		if (pTarget->Owner->IsControlledByCurrentPlayer())
-		{
-			VoxClass::PlayIndex(EVA.Get());
-		}
-	}
-
 	// Transfer
 	if (Transfer_To_House.isset() || Transfer_To_Actor.isset())
 	{
@@ -491,31 +508,46 @@ void HandlerEffectClass::ExecuteForTechno(std::map<EventActorType, AbstractClass
 
 	_EndCommand_:;
 	}
+}
 
+void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>* pParticipants, HouseClass* pTarget) const
+{
+	// EVA
+	if (EVA.isset())
+	{
+		if (pTarget->IsControlledByCurrentPlayer())
+		{
+			VoxClass::PlayIndex(EVA.Get());
+		}
+	}
+}
 
-	// Event Invoker
-	if (!EventInvokers.empty())
+void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>*pParticipants, AbstractClass* pTarget) const
+{
+	// Event Handler & Event Invoker
+	if (!EventHandlers.empty() || !EventInvokers.empty())
 	{
 		std::map<EventActorType, AbstractClass*> participants = {
 			{ EventActorType::Me, pTarget },
 			{ EventActorType::They, pOwner },
 		};
-		for (auto pEventInvokerType : EventInvokers)
+
+		if (!EventHandlers.empty())
 		{
-			pEventInvokerType->TryExecute(pOwnerHouse, &participants);
+			for (auto pEventHandlerType : EventHandlers)
+			{
+				pEventHandlerType->HandleEvent(&participants);
+			}
+		}
+
+		if (!EventInvokers.empty())
+		{
+			for (auto pEventInvokerType : EventInvokers)
+			{
+				pEventInvokerType->TryExecute(pOwnerHouse, &participants);
+			}
 		}
 	}
-}
-
-void HandlerEffectClass::UnlimboAtRandomPlaceNearby(FootClass* pWhom, TechnoClass* pNearWhom) const
-{
-	auto const coords = pNearWhom->GetCoords();
-	auto const pCell = MapClass::Instance->GetCellAt(coords);
-	auto const isBridge = pCell->ContainsBridge();
-	auto const nCell = MapClass::Instance->NearByLocation(pCell->MapCoords,
-		SpeedType::Wheel, -1, MovementZone::Normal, isBridge, 1, 1, true,
-		false, false, isBridge, CellStruct::Empty, false, false);
-	pWhom->Unlimbo(MapClass::Instance->TryGetCellAt(nCell)->GetCoords(), static_cast<DirType>(32 * ScenarioClass::Instance->Random.RandomRanged(0, 7)));
 }
 
 // Basically copied from Ares "TechnoExt::ExtData::CreateInitialPayload()".
@@ -656,7 +688,9 @@ void HandlerEffectClass::TransferOwnership(TechnoClass* pTarget, HouseClass* pNe
 
 bool HandlerEffectClass::IsDefined() const
 {
-	return HasAnyTechnoEffect;
+	return HasAnyTechnoEffect
+		|| HasAnyHouseEffect
+		|| HasAnyGenericEffect;
 }
 
 bool HandlerEffectClass::IsDefinedAnyTechnoEffect() const
@@ -670,10 +704,19 @@ bool HandlerEffectClass::IsDefinedAnyTechnoEffect() const
 		|| Veterancy_Set.isset()
 		|| Veterancy_Add.isset()
 		|| Voice.isset()
-		|| EVA.isset()
 		|| Transfer_To_House.isset()
 		|| Transfer_To_Actor.isset()
-		|| Command.isset()
+		|| Command.isset();
+}
+
+bool HandlerEffectClass::IsDefinedAnyHouseEffect() const
+{
+	return EVA.isset();
+}
+
+bool HandlerEffectClass::IsDefinedAnyGenericEffect() const
+{
+	return !EventHandlers.empty()
 		|| !EventInvokers.empty();
 }
 
