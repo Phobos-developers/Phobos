@@ -670,7 +670,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
             <li><code>*.Scope.MapWide</code> can be set to true to search all objects on the map.</li>
             <li>Choose only one among <code>*.Scope.Radius</code> and <code>*.Scope.MapWide</code>. If both spcified with valid value, the latter takes precedence.</li>
             <li><code>*.Scope.Abstract</code> specifies a quick filter on the techno's type and domain. This is required, or the area search does not happen. <i>(none|land|water|empty|infantry|units|buildings|all)</i></li>
-            <li><code>*.Scope.House</code> specifies the required relation between the techno's owning house and handler's owning house. This is required, or the area search does not happen. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
+            <li><code>*.Scope.House</code> specifies the required relation between the techno's owning house and handler's owning house. This is required, or the area search does not happen. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i><br>Note that, the handler's owning house doesn't change immediately if the handler's attached techno's owning house changed prior to the area search.</li>
             <li><code>*.Scope.TechnoTypes</code> specifies the required techno types. This is required, or the area search does not happen. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
             <li><code>*.Scope.AirIncluded</code> can be set to true, so aerial techno will be included.</li>
             <li><code>*.Scope.EventInvokerN</code>, where N is an integer starting from 0, specifies the Event Invokers to be invoked on it <code>*.Scope.EventInvoker</code> is a valid alternative if only one is specified.</li>
