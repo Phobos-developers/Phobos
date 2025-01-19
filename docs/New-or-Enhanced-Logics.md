@@ -643,16 +643,19 @@ TriggerN.EventHandler=...                          ; EventHandlerType
     </details>
   - <details>
       <summary>Expand to see House effect types. These will resolve to the actor's owning house if used on an actor that isn't a house.</summary>
+      <ul>
         <li>
-          Voice:
+          EVA:
           <ul>
-            <li>A voice can be played.</li>
+            <li>An EVA can be played.</li>
             <li><code>*.EVA</code> will be played as an EVA announcement to the <code>(actor)</code>'s owner. It is only audible to the house.</li>
           </ul>
         </li>
+      </ul>
     </details>
   - <details>
       <summary>Expand to see generic effect types. These effects will resolve on any actor type.</summary>
+      <ul>
         <li>
           Event Invokers:
           <ul>
@@ -677,6 +680,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
             <li>The <code>Target</code> actor there will be the searched techno, and the <code>Invoker</code> actor there will be the original <code>Me</code> of the source event handler.</li>
           </ul>
         </li>
+      </ul>
     </details>
 - Next Handler:
   - The `Next` Event Handler can be specified to be invoked right after this one. Unlike Event Handler effects on actors, `Next` handler is always invoked no matter if the original handler passed its filters.
