@@ -892,8 +892,7 @@ Me.Effect.EventInvoker=EV_BFRT_SyncVeterancy
 [EV_BFRT_SyncVeterancy]
 Target.PassDown.Passengers=true
 Target.Filter.TechnoTypes=E1,GGI
-Target.ExtraEventHandler0=EEH_BFRT_SyncVeterancy0
-Target.ExtraEventHandler1=EEH_BFRT_SyncVeterancy1
+ExtraEventHandler=EEH_BFRT_SyncVeterancy0
 ;; When the invoker is invoked on me, it is passed down to my passengers as well.
 ;; Only G.I.s and Guardian G.I.s will be affected, meaning myself and other infantries will not be affected.
 <br/>
@@ -901,6 +900,7 @@ Target.ExtraEventHandler1=EEH_BFRT_SyncVeterancy1
 Me.Transport.Filter.Veterancy=veteran
 Me.Filter.Veterancy=rookie
 Me.Effect.Veterancy.Set=veteran
+Next=EEH_BFRT_SyncVeterancy1
 ;; This handler is attached to G.I.s and Guardian G.I.s, and will make them promote into Veteran.
 <br/>
 [EEH_BFRT_SyncVeterancy1]
