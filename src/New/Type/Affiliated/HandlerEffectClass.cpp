@@ -3,9 +3,13 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <Utilities/Helpers.Alex.h>
+#include <AircraftClass.h>
 
 HandlerEffectClass::HandlerEffectClass()
 	: HasAnyTechnoEffect { false }
+
+#pragma region TechnoEffects
 	, Weapon { }
 	, Weapon_Firer {}
 	, Weapon_FirerExt {}
@@ -35,13 +39,25 @@ HandlerEffectClass::HandlerEffectClass()
 	, Command {}
 	, Command_Target {}
 	, Command_TargetExt {}
+#pragma endregion
 
+#pragma region HouseEffects
 	, HasAnyHouseEffect { false }
 	, EVA {}
+#pragma endregion
 
+#pragma region GenericEffects
 	, HasAnyGenericEffect { false }
 	, EventHandlers {}
 	, EventInvokers {}
+	, Scope_Radius {}
+	, Scope_MapWide { false }
+	, Scope_Abstract {}
+	, Scope_House {}
+	, Scope_AirIncluded { false }
+	, Scope_TechnoTypes {}
+	, Scope_EventInvokers {}
+#pragma endregion
 { }
 
 std::unique_ptr<HandlerEffectClass> HandlerEffectClass::Parse(INI_EX& exINI, const char* pSection, const char* actorName, const char* effectName)
@@ -63,6 +79,7 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 {
 	char tempBuffer[64];
 
+#pragma region TechnoEffects
 	// Weapon Detonation
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Weapon", actorName, effectName);
 	Weapon.Read(exINI, pSection, tempBuffer);
@@ -168,8 +185,6 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Voice.Global", actorName, effectName);
 		Voice_Global.Read(exINI, pSection, tempBuffer);
 	}
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EVA", actorName, effectName);
-	EVA.Read(exINI, pSection, tempBuffer);
 
 	// Transfer to House
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Transfer.To.House", actorName, effectName);
@@ -210,6 +225,20 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 		Command_TargetExt.Read(exINI, pSection, tempBuffer);
 	}
 
+	// defined flag
+	HasAnyTechnoEffect = IsDefinedAnyTechnoEffect();
+#pragma endregion
+
+#pragma region HouseEffects
+	// EVA
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EVA", actorName, effectName);
+	EVA.Read(exINI, pSection, tempBuffer);
+
+	// defined flag
+	HasAnyHouseEffect = IsDefinedAnyHouseEffect();
+#pragma endregion
+
+#pragma region GenericEffects
 	// Event handler
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventHandler", actorName, effectName);
 	EventHandlerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->EventHandlers);
@@ -218,10 +247,47 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker", actorName, effectName);
 	EventInvokerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->EventInvokers);
 
+	// Area search
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Scope.Radius", actorName, effectName);
+	Scope_Radius.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Scope.MapWide", actorName, effectName);
+	Scope_MapWide.Read(exINI, pSection, tempBuffer);
+
+	if (Scope_MapWide.Get() || Scope_Radius.isset())
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Scope.Abstract", actorName, effectName);
+		Scope_Abstract.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Scope.House", actorName, effectName);
+		Scope_House.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Scope.AirIncluded", actorName, effectName);
+		Scope_AirIncluded.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Scope.TechnoTypes", actorName, effectName);
+		Scope_TechnoTypes.Read(exINI, pSection, tempBuffer);
+
+		// all filters must be specified
+		if (Scope_Abstract.isset() && Scope_House.isset() && !Scope_TechnoTypes.empty())
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Scope.EventInvoker", actorName, effectName);
+			EventInvokerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->Scope_EventInvokers);
+			// and the invokers must not be empty
+			if (!Scope_EventInvokers.empty())
+			{
+				goto _AreaSearch_ParseFinish_;
+			}
+		}
+
+		Scope_Radius.Reset();
+		Scope_MapWide = false;
+		Scope_Abstract.Reset();
+		Scope_House.Reset();
+		Scope_AirIncluded = false;
+		Scope_TechnoTypes.clear();
+		_AreaSearch_ParseFinish_:;
+	}
+
 	// defined flag
-	HasAnyTechnoEffect = IsDefinedAnyTechnoEffect();
-	HasAnyHouseEffect = IsDefinedAnyHouseEffect();
 	HasAnyGenericEffect = IsDefinedAnyGenericEffect();
+#pragma endregion
 }
 
 void HandlerEffectClass::Execute(std::map<EventActorType, AbstractClass*>* pParticipants, AbstractClass* pTarget) const
@@ -548,6 +614,98 @@ void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwne
 			}
 		}
 	}
+
+	// Area Search
+	if (Scope_MapWide.Get() || Scope_Radius.isset())
+	{
+		std::map<EventActorType, AbstractClass*> participants = {
+			{ EventActorType::Me, nullptr },
+			{ EventActorType::They, pOwner },
+		};
+
+		if (Scope_MapWide.Get())
+		{
+			auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
+			{
+				std::vector<T> vec(dvc.Count);
+				std::copy(dvc.begin(), dvc.end(), vec.begin());
+				return vec;
+			};
+
+			std::function<void(TechnoClass*)> tryInvoke = [this, &participants, pOwnerHouse](TechnoClass* pItem)
+				{
+					if (IsEligibleForAreaSearch(pItem, pOwnerHouse))
+					{
+						participants[EventActorType::Me] = pItem;
+						for (auto pEventInvokerType : Scope_EventInvokers)
+						{
+							pEventInvokerType->TryExecute(pOwnerHouse, &participants);
+						}
+					}
+				};
+
+			if ((Scope_Abstract & AffectedTarget::Aircraft) != AffectedTarget::None)
+			{
+				auto const aircraft = copy_dvc(*AircraftClass::Array);
+
+				for (auto pAircraft : aircraft)
+					tryInvoke(pAircraft);
+			}
+
+			if ((Scope_Abstract & AffectedTarget::Building) != AffectedTarget::None)
+			{
+				auto const buildings = copy_dvc(*BuildingClass::Array);
+
+				for (auto pBuilding : buildings)
+					tryInvoke(pBuilding);
+			}
+
+			if ((Scope_Abstract & AffectedTarget::Infantry) != AffectedTarget::None)
+			{
+				auto const infantry = copy_dvc(*InfantryClass::Array);
+
+				for (auto pInf : infantry)
+					tryInvoke(pInf);
+			}
+
+			if ((Scope_Abstract & AffectedTarget::Unit) != AffectedTarget::None)
+			{
+				auto const units = copy_dvc(*UnitClass::Array);
+
+				for (auto const pUnit : units)
+					tryInvoke(pUnit);
+			}
+		}
+		else
+		{
+			if (auto pTargetObj = abstract_cast<ObjectClass*>(pTarget))
+			{
+				const auto pItems = Helpers::Alex::getCellSpreadItems(pTargetObj->Location, Scope_Radius.Get(), Scope_AirIncluded);
+				for (auto pItem : pItems)
+				{
+					participants[EventActorType::Me] = pItem;
+					for (auto pEventInvokerType : Scope_EventInvokers)
+					{
+						pEventInvokerType->TryExecute(pOwnerHouse, &participants);
+					}
+				}
+			}
+		}
+	}
+}
+
+bool HandlerEffectClass::IsEligibleForAreaSearch(TechnoClass* pTechno, HouseClass* pOwner) const
+{
+	if (!pTechno || !pTechno->IsOnMap || !pTechno->IsAlive || pTechno->InLimbo || pTechno->IsSinking)
+		return false;
+
+	if (pOwner && !EnumFunctions::CanTargetHouse(this->Scope_House, pOwner, pTechno->Owner))
+		return false;
+
+	if (pTechno->IsInAir() && !Scope_AirIncluded)
+		return false;
+
+	return Scope_TechnoTypes.Contains(pTechno->GetTechnoType());
 }
 
 // Basically copied from Ares "TechnoExt::ExtData::CreateInitialPayload()".
@@ -717,7 +875,9 @@ bool HandlerEffectClass::IsDefinedAnyHouseEffect() const
 bool HandlerEffectClass::IsDefinedAnyGenericEffect() const
 {
 	return !EventHandlers.empty()
-		|| !EventInvokers.empty();
+		|| !EventInvokers.empty()
+		|| Scope_MapWide.Get()
+		|| Scope_Radius.isset();
 }
 
 bool HandlerEffectClass::Load(PhobosStreamReader& stm, bool registerForChange)
@@ -734,6 +894,8 @@ template<typename T>
 bool HandlerEffectClass::Serialize(T& stm)
 {
 	return stm
+#pragma region TechnoEffects
+		.Process(this->HasAnyTechnoEffect)
 		.Process(this->Weapon)
 		.Process(this->Weapon_Firer)
 		.Process(this->Weapon_FirerExt)
@@ -760,13 +922,28 @@ bool HandlerEffectClass::Serialize(T& stm)
 		.Process(this->Voice)
 		.Process(this->Voice_Persist)
 		.Process(this->Voice_Global)
-		.Process(this->EVA)
 		.Process(this->Transfer_To_House)
 		.Process(this->Transfer_To_Actor)
 		.Process(this->Transfer_To_ActorExt)
 		.Process(this->Command)
 		.Process(this->Command_Target)
 		.Process(this->Command_TargetExt)
+#pragma endregion
+#pragma region HouseEffects
+		.Process(this->HasAnyHouseEffect)
+		.Process(this->EVA)
+#pragma endregion
+#pragma region GenericEffects
+		.Process(this->HasAnyGenericEffect)
+		.Process(this->EventHandlers)
 		.Process(this->EventInvokers)
+		.Process(this->Scope_Radius)
+		.Process(this->Scope_MapWide)
+		.Process(this->Scope_Abstract)
+		.Process(this->Scope_House)
+		.Process(this->Scope_AirIncluded)
+		.Process(this->Scope_TechnoTypes)
+		.Process(this->Scope_EventInvokers)
+#pragma endregion
 		.Success();
 }

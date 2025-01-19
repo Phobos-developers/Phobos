@@ -513,10 +513,10 @@ TriggerN.EventHandler=...                          ; EventHandlerType
 - Filters:
   - Filters can be specified on an actor to ask for something to be true about it, or the event handler's effects do not resolve. Filters are defined like <code>(actor).Filter.*</code>. 
   - Negative Filters can be specified on an actor to ask for something to be false about it, or the event handler's effects do not resolve. Negative Filters are defined like <code>(actor).NegFilter.*</code>.
-  - All Filter entry must be true, and all Negative Filter entry must be false.
+  - All Filter entries must be true, all Negative Filter entries must be false.
   - If any Filter or Negative Filter is specified on an actor, the actor must exist, or the filter will fail the check.
   - <details>
-      <summary>Expand to see Techno filter types. These filters fail the check if the actor is not a techno, even negative filters will do.</summary>
+      <summary>Expand to see Techno filters. These filters fail the check if the actor is not a techno, even negative filters will do.</summary>
       <ul>
         <li><code>*.Abstract</code>: A quick filter on the techno's type and domain. <i>(none|land|water|empty|infantry|units|buildings|all)</i></li>
         <li><code>*.IsInAir</code>: Techno is in air.</li>
@@ -670,6 +670,21 @@ TriggerN.EventHandler=...                          ; EventHandlerType
             <li>See <a href="#event-invokers">Event Invokers</a> for details.</li>
           </ul>
         </li>
+        <li>
+          Area search:
+          <ul>
+            <li>Event Invokers can be called around a radius of an actor, or on the full map, upon each techno found through a search.</li>
+            <li><code>*.Scope.Radius</code> specifies the radius in which the area search is done. The logic is much like warhead detonation. This only works if the actor is not a </li>
+            <li><code>*.Scope.MapWide</code> can be set to true to search all objects on the map.</li>
+            <li>Choose only one among <code>*.Scope.Radius</code> and <code>*.Scope.MapWide</code>. If both spcified with valid value, the latter takes precedence.</li>
+            <li><code>*.Scope.Abstract</code> specifies a quick filter on the techno's type and domain. This is required, or the area search does not happen. <i>(none|land|water|empty|infantry|units|buildings|all)</i></li>
+            <li><code>*.Scope.House</code> specifies the required relation between the techno's owning house and handler's owning house. This is required, or the area search does not happen. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
+            <li><code>*.Scope.TechnoTypes</code> specifies the required techno types. This is required, or the area search does not happen. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
+            <li><code>*.Scope.AirIncluded</code> can be set to true, so aerial techno will be included.</li>
+            <li><code>*.Scope.EventInvokerN</code>, where N is an integer starting from 0, specifies the Event Invokers to be invoked on it <code>*.Scope.EventInvoker</code> is a valid alternative if only one is specified.</li>
+            <li>The <code>Target</code> actor there will be the searched techno, and the <code>Invoker</code> actor there will be the original <code>Me</code> of the source event handler.</li>
+          </ul>
+        </li>
     </details>
 - Next Handler:
   - The `Next` Event Handler can be specified to be invoked right after this one. Unlike Event Handler effects on actors, `Next` handler is always invoked no matter if the original handler passed its filters.
@@ -783,6 +798,15 @@ Next=                                              ; EventHandlerType
 ;; effects (generic) - event handlers and event invokers
 (actor).Effect.EventHandlerN=                      ; EventHandlerType
 (actor).Effect.EventInvokerN=                      ; EventInvokerType
+
+;; effects (generic) - area search
+(actor).Effect.Scope.Radius=                       ; double
+(actor).Effect.Scope.MapWide=false                 ; boolean
+(actor).Effect.Scope.Abstract=                     ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+(actor).Effect.Scope.House=                        ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+(actor).Effect.Scope.AirIncluded=false             ; boolean
+(actor).Effect.Scope.TechnoTypes=                  ; list of TechnoTypes
+(actor).Effect.Scope.EventInvokerN=                ; EventInvokerType
 ```
 
 #### Event Invokers
