@@ -2,10 +2,7 @@
 
 #include <Utilities/Template.h>
 #include "TypeConvertGroup.h"
-#include <New/Type/EventHandlerTypeClass.h>
 #include <New/Type/EventInvokerTypeClass.h>
-
-class EventHandlerTypeClass;
 
 class EventInvokerTypeClass;
 
@@ -72,7 +69,6 @@ public:
 
 	Valueable<bool> HasAnyGenericEffect;
 
-	ValueableVector<EventHandlerTypeClass*> EventHandlers;
 	ValueableVector<EventInvokerTypeClass*> EventInvokers;
 
 	Nullable<double> Scope_Radius;

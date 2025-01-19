@@ -48,7 +48,6 @@ HandlerEffectClass::HandlerEffectClass()
 
 #pragma region GenericEffects
 	, HasAnyGenericEffect { false }
-	, EventHandlers {}
 	, EventInvokers {}
 	, Scope_Radius {}
 	, Scope_MapWide { false }
@@ -239,10 +238,6 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 #pragma endregion
 
 #pragma region GenericEffects
-	// Event handler
-	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventHandler", actorName, effectName);
-	EventHandlerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->EventHandlers);
-
 	// Event Invoker
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EventInvoker", actorName, effectName);
 	EventInvokerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->EventInvokers);
@@ -269,20 +264,17 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 		{
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Scope.EventInvoker", actorName, effectName);
 			EventInvokerTypeClass::LoadTypeListFromINI(exINI, pSection, tempBuffer, &this->Scope_EventInvokers);
-			// and the invokers must not be empty
-			if (!Scope_EventInvokers.empty())
-			{
-				goto _AreaSearch_ParseFinish_;
-			}
 		}
 
-		Scope_Radius.Reset();
-		Scope_MapWide = false;
-		Scope_Abstract.Reset();
-		Scope_House.Reset();
-		Scope_AirIncluded = false;
-		Scope_TechnoTypes.clear();
-		_AreaSearch_ParseFinish_:;
+		if (Scope_EventInvokers.empty())
+		{
+			Scope_Radius.Reset();
+			Scope_MapWide = false;
+			Scope_Abstract.Reset();
+			Scope_House.Reset();
+			Scope_AirIncluded = false;
+			Scope_TechnoTypes.clear();
+		}
 	}
 
 	// defined flag
@@ -592,32 +584,21 @@ void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwn
 void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>*pParticipants, AbstractClass* pTarget) const
 {
 	// Event Handler & Event Invoker
-	if (!EventHandlers.empty() || !EventInvokers.empty())
+	if (!EventInvokers.empty())
 	{
 		std::map<EventActorType, AbstractClass*> participants = {
 			{ EventActorType::Me, pTarget },
 			{ EventActorType::They, pOwner },
 		};
 
-		if (!EventHandlers.empty())
+		for (auto pEventInvokerType : EventInvokers)
 		{
-			for (auto pEventHandlerType : EventHandlers)
-			{
-				pEventHandlerType->HandleEvent(&participants);
-			}
-		}
-
-		if (!EventInvokers.empty())
-		{
-			for (auto pEventInvokerType : EventInvokers)
-			{
-				pEventInvokerType->TryExecute(pOwnerHouse, &participants);
-			}
+			pEventInvokerType->TryExecute(pOwnerHouse, &participants);
 		}
 	}
 
 	// Area Search
-	if (Scope_MapWide.Get() || Scope_Radius.isset())
+	if (!Scope_EventInvokers.empty())
 	{
 		std::map<EventActorType, AbstractClass*> participants = {
 			{ EventActorType::Me, nullptr },
@@ -875,10 +856,8 @@ bool HandlerEffectClass::IsDefinedAnyHouseEffect() const
 
 bool HandlerEffectClass::IsDefinedAnyGenericEffect() const
 {
-	return !EventHandlers.empty()
-		|| !EventInvokers.empty()
-		|| Scope_MapWide.Get()
-		|| Scope_Radius.isset();
+	return !EventInvokers.empty()
+		|| !Scope_EventInvokers.empty();
 }
 
 bool HandlerEffectClass::Load(PhobosStreamReader& stm, bool registerForChange)
@@ -936,7 +915,6 @@ bool HandlerEffectClass::Serialize(T& stm)
 #pragma endregion
 #pragma region GenericEffects
 		.Process(this->HasAnyGenericEffect)
-		.Process(this->EventHandlers)
 		.Process(this->EventInvokers)
 		.Process(this->Scope_Radius)
 		.Process(this->Scope_MapWide)

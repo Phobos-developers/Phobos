@@ -654,14 +654,6 @@ TriggerN.EventHandler=...                          ; EventHandlerType
   - <details>
       <summary>Expand to see generic effect types. These effects will resolve on any actor type.</summary>
         <li>
-          Event Handlers:
-          <ul>
-            <li>Event Handlers can be called upon the actor.</li>
-            <li><code>*.EventHandlerN</code>, where N is an integer starting from 0, specifies the Event Handlers to be invoked on an actor. <code>*.EventHandler</code> is a valid alternative if only one is specified.</li>
-            <li>The <code>Me</code> actor there will be the <code>(actor)</code>, and the <code>They</code> actor there will be the original <code>Me</code> of the source event handler.</li>
-          </ul>
-        </li>
-        <li>
           Event Invokers:
           <ul>
             <li>Event Invokers can be called upon the actor.</li>
@@ -795,8 +787,7 @@ Next=                                              ; EventHandlerType
 ;; effects (house) - EVA
 (actor).Effect.EVA=                                ; sound entry
 
-;; effects (generic) - event handlers and event invokers
-(actor).Effect.EventHandlerN=                      ; EventHandlerType
+;; effects (generic) - event invokers
 (actor).Effect.EventInvokerN=                      ; EventInvokerType
 
 ;; effects (generic) - area search
