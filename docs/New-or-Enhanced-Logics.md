@@ -946,6 +946,30 @@ Me.Effect.Veterancy.Set=elite
 ;; This handler is attached to G.I.s and Guardian G.I.s, and will make them promote into Elite.</code></pre>
     </details>
   </li>
+  <li>
+    <details>
+      <summary>A certain Artillery unit with a super long range weapon, will be ordered to attack a target locker when the latter is created. The latter is meanwhile transfered to neutral house to allow manual targeting.</summary>
+      <pre lang="ini"><code>[TARGET_LOCKER]
+Trigger.EventType=WhenCreated
+Trigger.EventHandler=EH_Locker_MegaTaunt
+<br/>
+[EH_Locker_MegaTaunt]
+Me.Effect.Transfer.To.House=neutral
+Me.Effect.Scope.MapWide=true
+Me.Effect.Scope.Abstract=units
+Me.Effect.Scope.House=owner
+Me.Effect.Scope.TechnoTypes=CERTAIN_ARTILLERY
+Me.Effect.Scope.EventInvoker=EV_Locker_MegaTaunt
+<br/>
+[EV_Locker_MegaTaunt]
+ExtraEventHandler=EEH_Locker_MegaTaunt
+<br/>
+[EEH_Locker_MegaTaunt]
+Me.Effect.Command=Attack
+Me.Effect.Command.Target=They
+Me.Effect.Voice=CertainArtilleryAttackVoice</code></pre>
+    </details>
+  </li>
 </ul>
 
 ## Animations
