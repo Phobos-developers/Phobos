@@ -404,7 +404,8 @@ void HandlerEffectClass::ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOw
 			{
 				FootClass* pPassenger = pTarget->Passengers.RemoveFirstPassenger();
 				auto const pPassExt = TechnoExt::ExtMap.Find(pPassenger);
-				pPassExt->UnlimboAtRandomPlaceNearby(&pTarget->GetCoords());
+				auto const coords = pTarget->GetCoords();
+				pPassExt->UnlimboAtRandomPlaceNearby(&coords);
 				if (openTopped)
 				{
 					pTarget->ExitedOpenTopped(pPassenger);

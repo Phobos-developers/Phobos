@@ -466,7 +466,7 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-void TechnoExt::ExtData::UnlimboAtRandomPlaceNearby(CoordStruct* pNearCoords) const
+void TechnoExt::ExtData::UnlimboAtRandomPlaceNearby(const CoordStruct* pNearCoords) const
 {
 	auto const pCell = MapClass::Instance->GetCellAt(*pNearCoords);
 	auto const isBridge = pCell->ContainsBridge();

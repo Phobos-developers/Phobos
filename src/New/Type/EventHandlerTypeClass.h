@@ -5,6 +5,8 @@
 #include "EventTypeClass.h"
 #include "Affiliated/HandlerCompClass.h"
 
+class HandlerCompClass;
+
 class EventHandlerTypeClass final : public Enumerable<EventHandlerTypeClass>
 {
 public:

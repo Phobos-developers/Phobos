@@ -2,7 +2,10 @@
 
 #include <Utilities/Template.h>
 #include "TypeConvertGroup.h"
+#include <New/Type/EventHandlerTypeClass.h>
 #include <New/Type/EventInvokerTypeClass.h>
+
+class EventHandlerTypeClass;
 
 class EventInvokerTypeClass;
 
