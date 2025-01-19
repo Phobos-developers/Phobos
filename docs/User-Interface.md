@@ -581,6 +581,9 @@ ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enable
 
 ### Exclusive SuperWeapon Sidebar
 
+![image](_static/images/sw_sidebar-01-on.png)
+![image](_static/images/sw_sidebar-02-on.png)
+
 - It is possible to put sw cameos on the left of screen like C&C3 when `SuperWeaponSidebar` is true. Cameos arranged in a pyramid shape. In theory, it should be compatible with Ares.
   - `SuperWeaponSidebar.Interval` controls the distance between two column cameos (excluding the background). When you need to make a background, the width of the background should be (`SuperWeaponSidebar.Interval` + cameo fixed width 60).
   - `SuperWeaponSidebar.LeftOffset` controls the distance between the left side of cameo and the left side of its column (background). This will not be greater than `SuperWeaponSidebar.Interval`.
