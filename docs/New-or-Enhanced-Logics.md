@@ -704,9 +704,9 @@ TriggerN.EventHandler=...                          ; EventHandlerType
     - There is no `or` operator in Filters.
     - Filters and Effects are no real scripts. Multiple instances of a same key will override each other, and only the latest specified one will take effect. 
     - The order at which effects are specified in `rulesmd.ini` does not affect the order at which they are resolved. Effects are resolved in an order determined by the following rules.
-      - Effects for the basic actors are executed in the order the extended actors are listed in the document.
+      - Effects for the basic actors are executed in the order they are listed in the document.
       - Effects for the basic actors are executed before those for the extended actors.
-      - Effects for the extended actors are executed in the order the extended actors are listed in the document.
+      - Effects for the extended actors are executed in the order they are listed in the document.
       - Effects on a same actor are resolved in the order they are listed in this document.
 
 In `rulesmd.ini`:
