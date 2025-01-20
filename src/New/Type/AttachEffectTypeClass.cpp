@@ -156,6 +156,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
 	AddToGroupsMap();
+
+	// Event Handler
+	EventHandlerTypeClass::LoadTypeMapFromINI(exINI, pSection, "Trigger", &this->EventHandlersMap);
 }
 
 template <typename T>
@@ -210,6 +213,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage_AffectsHouses)
 		.Process(this->DisableWeapons)
 		.Process(this->Groups)
+		.Process(this->EventHandlersMap)
 		;
 }
 

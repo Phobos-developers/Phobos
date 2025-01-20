@@ -583,13 +583,18 @@ void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwn
 
 void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>*pParticipants, AbstractClass* pTarget) const
 {
-	// Event Handler & Event Invoker
+	static std::map<EventActorType, AbstractClass*> participants = {
+		{ EventActorType::Me, nullptr },
+		{ EventActorType::They, nullptr },
+		{ EventActorType::Scoper, pParticipants->operator[](EventActorType::Scoper) },
+		{ EventActorType::Enchanter, pParticipants->operator[](EventActorType::Enchanter) },
+	};
+
+	// Event Invoker
 	if (!EventInvokers.empty())
 	{
-		std::map<EventActorType, AbstractClass*> participants = {
-			{ EventActorType::Me, pTarget },
-			{ EventActorType::They, pOwner },
-		};
+		participants[EventActorType::Me] = pTarget;
+		participants[EventActorType::They] = pOwner;
 
 		for (auto pEventInvokerType : EventInvokers)
 		{
@@ -600,10 +605,21 @@ void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwne
 	// Area Search
 	if (!Scope_EventInvokers.empty())
 	{
-		std::map<EventActorType, AbstractClass*> participants = {
-			{ EventActorType::Me, nullptr },
-			{ EventActorType::They, pOwner },
-		};
+		participants[EventActorType::Me] = nullptr;
+		participants[EventActorType::They] = pTarget;
+		participants[EventActorType::Scoper] = pOwner;
+
+		std::function<void(TechnoClass*)> tryInvoke = [this, pOwnerHouse](TechnoClass* pItem)
+			{
+				if (IsEligibleForAreaSearch(pItem, pOwnerHouse))
+				{
+					participants[EventActorType::Me] = pItem;
+					for (auto pEventInvokerType : Scope_EventInvokers)
+					{
+						pEventInvokerType->TryExecute(pOwnerHouse, &participants);
+					}
+				}
+			};
 
 		if (Scope_MapWide.Get())
 		{
@@ -613,18 +629,6 @@ void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwne
 				std::copy(dvc.begin(), dvc.end(), vec.begin());
 				return vec;
 			};
-
-			std::function<void(TechnoClass*)> tryInvoke = [this, &participants, pOwnerHouse](TechnoClass* pItem)
-				{
-					if (IsEligibleForAreaSearch(pItem, pOwnerHouse))
-					{
-						participants[EventActorType::Me] = pItem;
-						for (auto pEventInvokerType : Scope_EventInvokers)
-						{
-							pEventInvokerType->TryExecute(pOwnerHouse, &participants);
-						}
-					}
-				};
 
 			if ((Scope_Abstract & AffectedTarget::Aircraft) != AffectedTarget::None)
 			{
@@ -665,11 +669,7 @@ void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwne
 				const auto pItems = Helpers::Alex::getCellSpreadItems(pTargetObj->Location, Scope_Radius.Get(), Scope_AirIncluded);
 				for (auto pItem : pItems)
 				{
-					participants[EventActorType::Me] = pItem;
-					for (auto pEventInvokerType : Scope_EventInvokers)
-					{
-						pEventInvokerType->TryExecute(pOwnerHouse, &participants);
-					}
+					tryInvoke(pItem);
 				}
 			}
 		}

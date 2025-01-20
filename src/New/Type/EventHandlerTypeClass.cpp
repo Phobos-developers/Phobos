@@ -40,6 +40,8 @@ void EventHandlerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSecti
 {
 	LoadForActor(exINI, pSection, EventActorType::Me, "Me");
 	LoadForActor(exINI, pSection, EventActorType::They, "They");
+	LoadForActor(exINI, pSection, EventActorType::Enchanter, "Enchanter");
+	LoadForActor(exINI, pSection, EventActorType::Scoper, "Scoper");
 	this->Next.Read<true>(exINI, pSection, "Next");
 	if (Next.isset())
 	{

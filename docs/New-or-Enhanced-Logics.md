@@ -428,7 +428,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 ### Event Trigger System
 
 - Technos may have event triggers associated, to specify something to be done when something happened to them.
-- Event Types and Event Handlers are associated with Technos by `TriggerN.EventType=` and `TriggerN.EventHandler=`, where N is an integer starting from 0. `Trigger.EventType` and `Trigger.EventHandler` is a valid alternate if only one is specified.
+- Event Types and Event Handlers are associated with Technos and Attached Effects by `TriggerN.EventType=` and `TriggerN.EventHandler=`, where N is an integer starting from 0. `Trigger.EventType` and `Trigger.EventHandler` is a valid alternate if only one is specified.
 - <details>
     <summary>Expand to see the list of pre-defined Techno event types that will be invoked from the game.</summary>
     <ul>
@@ -486,11 +486,16 @@ Shield.InheritStateOnReplace=false          ; boolean
   </details>
 - Custom event types can be used. These events will only be invoked through Event Invokers.
 - Other usage notes:
-  - If any type conversion happened right before or during the event, only the handlers attached to the old type will be invoked. For example, if two event triggers were invoked at a same moment, the first one converted the techno to a different type, the second one will resolve nevertheless, and the event triggers defined on the new type will not be invoked at this moment.
+  - The triggers on Attached Effects are triggered first in the numeral order, then those on the Techno Types follow in the numeral order.
+  - If any type conversion happened right before or during the event, only the triggers attached to the old type will be invoked. For example, if two event triggers were invoked at a same moment, the first one converted the techno to a different type, the second one will resolve nevertheless, and the event triggers defined on the new type will not be invoked at this moment, will only take effect later this game.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                       ; TechnoType
+TriggerN.EventType=...                             ; EventType
+TriggerN.EventHandler=...                          ; EventHandlerType
+
+[SOMEAE]                                           ; AttachedEffectType
 TriggerN.EventType=...                             ; EventType
 TriggerN.EventHandler=...                          ; EventHandlerType
 ```
@@ -500,9 +505,12 @@ TriggerN.EventHandler=...                          ; EventHandlerType
 - An Event Handler is a set of Filters and Effects. Event Handlers are listed under `[EventHandlerTypes]`, however listing them there is not mandatory.
 - Actors:
   - Actors are crucial to designate who will the filters and effects be applied to.
-  - There are a several basic actors that most events will have.
+  - There are a several basic actors.
     - `Me`: Techno to which this handler is attached to.
     - `They`: The other actor of the event. Whatever it is is up to the event. Some events do not have `They`.
+  - There are more basic actors for advanced use.
+    - `Enchanter`: If this Event Handler is associated to an Attached Effect, this basic actor refers to the source of the said attached effect. This basic actor is consistent through the whole event chain.
+    - `Scoper`: If this Event Handler is a consequence of an area search effect of an Event Handler, this basic actor refers to the `Me` actor of the original Event Handler. This basic actor is overridden for the consequencing event chain every time an area search effect is initiated.
   - The extended actors can be used to access other related actors. Filters and Effects can be assigned to them as well. Extended actors may not nest each other, they can only follow basic actors.
     - `(actor).Owner`: The owning house of the actor. If this is used on an house actor, the identical house actor is returned.
     - `(actor).Transport`: The transporting vehicle, or Bio Reactor, or garrisonable structure, that is carrying the actor.
@@ -677,13 +685,13 @@ TriggerN.EventHandler=...                          ; EventHandlerType
             <li><code>*.Scope.TechnoTypes</code> specifies the required techno types. This is required, or the area search does not happen. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
             <li><code>*.Scope.AirIncluded</code> can be set to true, so aerial techno will be included.</li>
             <li><code>*.Scope.EventInvokerN</code>, where N is an integer starting from 0, specifies the Event Invokers to be invoked on it <code>*.Scope.EventInvoker</code> is a valid alternative if only one is specified.</li>
-            <li>The <code>Target</code> actor there will be the searched techno, and the <code>Invoker</code> actor there will be the original <code>Me</code> of the source event handler.</li>
+            <li>The <code>Target</code> actor there will be the searched techno, and the <code>Invoker</code> actor there will be the <code>(actor)</code> of this area search effect. In addition, the <code>Scoper</code> basic actor there will be the <code>Me</code> actor here, and it will be transfered to each Event Handler invoked through the Event Invoker.</li>
           </ul>
         </li>
       </ol>
     </details>
 - Next Handler:
-  - The `Next` Event Handler can be specified to be invoked right after this one. Unlike Event Handler effects on actors, `Next` handler is always invoked no matter if the original handler passed its filters.
+  - The `Next` Event Handler can be specified to be invoked right after this one, with the identical set of actors. The `Next` handler is always invoked no matter if the original handler passed its filters on its actors.
   - The Event Handlers have a few limitations with it, which can be overcame by defining a `Next` handler with identical effects but different filters, or identical filters but different effects.
     - There is no `or` operator in Filters.
     - Filters and Effects are no real scripts. Multiple instances of a same key will override each other, and only the latest specified one will take effect. 
@@ -812,6 +820,9 @@ Next=                                              ; EventHandlerType
   - Similar to Event Handlers, the Invokers also have actors. There are two basic actors that every Invoker will have.
     - `Invoker`: The firer of the warhead, the firing house of the super weapon, or the actor this invoker is invoked upon through a handler's effect.
     - `Target`: The techno hit by the warhead or super weapon, or the `Me` actor of the original event handler.
+  - There are more basic actors for advanced use.
+    - `Enchanter`: If this Event Invoker is a consequence of an Event Handler associated to an Attached Effect, this basic actor refers to the source of the said attached effect. This basic actor is consistent through the whole event chain.
+    - `Scoper`: If this Event Invoker is a consequence of an area search effect of an Event Handler, this basic actor refers to the `Me` actor of the original Event Handler. This basic actor is overridden for the consequencing event chain every time an area search effect is initiated.
   - Extended actors can be used here as well. See [Event Handlers -> Actors](#event-handlers) to learn more about extended actors.
 - Filters:
   - Similar to Event Handlers, the Invokers can also have filters defined, to ask for something to be true or false about an actor. These filters are checked before any actual Event Handlers do, if the check failed, no event invoking will happen.

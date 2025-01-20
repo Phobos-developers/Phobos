@@ -1,7 +1,7 @@
 #include "EventInvokerTypeClass.h"
 #include <nameof/nameof.h>
-#include <Ext/TechnoType/Body.h>
 #include <InfantryClass.h>
+#include <Ext/Techno/Body.h>
 
 template<>
 
@@ -41,6 +41,8 @@ void EventInvokerTypeClass::LoadFromINIPrivate(INI_EX& exINI, const char* pSecti
 {
 	LoadForActor(exINI, pSection, EventActorType::Me, "Invoker");
 	LoadForActor(exINI, pSection, EventActorType::They, "Target");
+	LoadForActor(exINI, pSection, EventActorType::Scoper, "Scoper");
+	LoadForActor(exINI, pSection, EventActorType::Enchanter, "Enchanter");
 	EventTypeClass::LoadTypeListFromINI(exINI, pSection, "EventType", &this->EventTypes);
 	EventHandlerTypeClass::LoadTypeListFromINI(exINI, pSection, "ExtraEventHandler", &this->ExtraEventHandlers);
 	this->PassDown_Passengers.Read(exINI, pSection, "PassDown.Passengers");
@@ -72,29 +74,13 @@ void EventInvokerTypeClass::LoadForExtendedActor(INI_EX& exINI, const char* pSec
 	}
 }
 
-bool EventInvokerTypeClass::CheckInvokerFilters(HouseClass* pHouse, AbstractClass* pInvoker) const
+bool EventInvokerTypeClass::CheckFilters(HouseClass* pHouse, EventActorType actorType, AbstractClass* pInvoker) const
 {
 	for (auto const& handlerComp : this->HandlerComps)
 	{
-		if (handlerComp.get()->ActorType == EventActorType::Me)
+		if (handlerComp.get()->ActorType == actorType)
 		{
 			if (!handlerComp.get()->CheckFilters(pHouse, pInvoker))
-			{
-				return false;
-			}
-		}
-	}
-
-	return true;
-}
-
-bool EventInvokerTypeClass::CheckTargetFilters(HouseClass* pHouse, AbstractClass* pTarget) const
-{
-	for (auto const& handlerComp : this->HandlerComps)
-	{
-		if (handlerComp.get()->ActorType == EventActorType::They)
-		{
-			if (!handlerComp.get()->CheckFilters(pHouse, pTarget))
 			{
 				return false;
 			}
@@ -115,7 +101,11 @@ void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, std::map<EventActorTy
 	if (pTarget)
 	{
 		auto pInvoker = pParticipants->at(EventActorType::They);
-		if (CheckInvokerFilters(pHouse, pInvoker))
+		auto pScoper = pParticipants->at(EventActorType::Scoper);
+		auto pEnchanter = pParticipants->at(EventActorType::Enchanter);
+		if (CheckFilters(pHouse, EventActorType::They, pInvoker)
+			&& CheckFilters(pHouse, EventActorType::Scoper, pScoper)
+			&& CheckFilters(pHouse, EventActorType::Enchanter, pEnchanter))
 		{
 			TryExecuteOnTarget(pHouse, pParticipants, pTarget);
 			pParticipants->operator[](EventActorType::Me) = pTarget;
@@ -128,9 +118,9 @@ void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, std::map<EventActorTy
 // It also tries to pass down the target to its passengers, and every appropriate additional targets will go back to this function.
 void EventInvokerTypeClass::TryExecuteOnTarget(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget)
 {
-	if (CheckTargetFilters(pHouse, pTarget))
+	if (CheckFilters(pHouse, EventActorType::Me, pTarget))
 	{
-		auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
+		auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 
 		for (auto pEventHandlerTypeClass : ExtraEventHandlers)
 		{
@@ -139,7 +129,7 @@ void EventInvokerTypeClass::TryExecuteOnTarget(HouseClass* pHouse, std::map<Even
 
 		for (auto pEventType : EventTypes)
 		{
-			pTargetTypeExt->InvokeEvent(pEventType, pParticipants);
+			pTargetExt->InvokeEvent(pEventType, pParticipants);
 		}
 	}
 

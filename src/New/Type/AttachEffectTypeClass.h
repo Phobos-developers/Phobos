@@ -5,6 +5,10 @@
 
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
+#include "EventTypeClass.h"
+#include "EventHandlerTypeClass.h"
+
+class EventHandlerTypeClass;
 
 // AE discard condition
 enum class DiscardCondition : unsigned char
@@ -90,6 +94,8 @@ public:
 
 	std::vector<std::string> Groups;
 
+	PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>> EventHandlersMap;
+
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
 		, Cumulative { false }
@@ -139,6 +145,7 @@ public:
 		, ReflectDamage_AffectsHouses { AffectedHouse::All }
 		, DisableWeapons { false }
 		, Groups {}
+		, EventHandlersMap {}
 	{};
 
 	bool HasTint() const

@@ -1066,6 +1066,14 @@ namespace detail
 			{
 				value = EventActorType::They;
 			}
+			else if (_strcmpi(parser.value(), "Enchanter") == 0)
+			{
+				value = EventActorType::Enchanter;
+			}
+			else if (_strcmpi(parser.value(), "Scoper") == 0)
+			{
+				value = EventActorType::Scoper;
+			}
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an actor type");

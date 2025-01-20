@@ -282,8 +282,13 @@ enum class DisplayInfoType : BYTE
 
 enum class EventActorType : byte
 {
+	// event handler actors
+	// for invokers, Me = Target, They = Invoker
 	Me = 1,
 	They = 2,
+	// advanced basic actors
+	Enchanter = 5,
+	Scoper = 6
 };
 
 MAKE_ENUM_FLAGS(EventActorType);

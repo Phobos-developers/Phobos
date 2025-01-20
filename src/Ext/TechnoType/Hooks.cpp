@@ -121,9 +121,9 @@ DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_BeforeInfiltrate, 6)
 	GET(InfantryClass*, pSpy, ESI);
 	GET(BuildingClass*, pBuilding, EDI);
 
-	auto pSpyExt = TechnoTypeExt::ExtMap.Find(pSpy->GetTechnoType());
+	auto pSpyExt = TechnoExt::ExtMap.Find(pSpy);
 	pSpyExt->InvokeEvent(EventTypeClass::WhenInfiltrate, pSpy, pBuilding);
-	auto pBuildingExt = TechnoTypeExt::ExtMap.Find(pBuilding->GetTechnoType());
+	auto pBuildingExt = TechnoExt::ExtMap.Find(pBuilding);
 	pBuildingExt->InvokeEvent(EventTypeClass::WhenInfiltrated, pBuilding, pSpy);
 
 	return 0;

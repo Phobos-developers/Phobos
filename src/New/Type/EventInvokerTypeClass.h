@@ -41,8 +41,7 @@ private:
 	template <typename T>
 	void Serialize(T& Stm);
 	void LoadFromINIPrivate(INI_EX& exINI, const char* pSection);
-	bool CheckInvokerFilters(HouseClass* pHouse, AbstractClass* pInvoker) const;
-	bool CheckTargetFilters(HouseClass* pHouse, AbstractClass* pTarget) const;
+	bool CheckFilters(HouseClass* pHouse, EventActorType actorType, AbstractClass* pInvoker) const;
 	void TryExecuteOnTarget(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget);
 	void TryPassDown(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pRoot);
 };

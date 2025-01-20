@@ -3,6 +3,8 @@
 #include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 
+class AttachEffectTypeClass;
+
 class HandlerFilterClass
 {
 public:

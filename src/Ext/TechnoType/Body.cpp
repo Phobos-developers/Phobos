@@ -32,32 +32,6 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
-void TechnoTypeExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, TechnoClass* pMe, TechnoClass* pThey) const
-{
-	if (this->EventHandlersMap.contains(pEventTypeClass))
-	{
-		std::map<EventActorType, AbstractClass*> participants = {
-			{ EventActorType::Me, pMe },
-			{ EventActorType::They, pThey },
-		};
-		for (auto pEventHandlerTypeClass : EventHandlersMap.get_or_default(pEventTypeClass))
-		{
-			pEventHandlerTypeClass->HandleEvent(&participants);
-		}
-	}
-}
-
-void TechnoTypeExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, std::map<EventActorType, AbstractClass*>* pParticipants) const
-{
-	if (this->EventHandlersMap.contains(pEventTypeClass))
-	{
-		for (auto pEventHandlerTypeClass : EventHandlersMap.get_or_default(pEventTypeClass))
-		{
-			pEventHandlerTypeClass->HandleEvent(pParticipants);
-		}
-	}
-}
-
 int TechnoTypeExt::GetTotalSoylentOfPassengers(double soylentMultiplier, TechnoClass* pTransport)
 {
 	TechnoClass* pPassenger = nullptr;

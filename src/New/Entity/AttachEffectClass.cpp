@@ -475,6 +475,11 @@ bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSour
 	return pInvoker == this->Invoker && pSource == this->Source;
 }
 
+AbstractClass* AttachEffectClass::GetSource() const
+{
+	return this->Source;
+}
+
 #pragma region StaticFunctions_AttachDetachTransfer
 
 /// <summary>

@@ -31,6 +31,7 @@ public:
 	bool ShouldBeDiscardedNow() const;
 	bool IsActive() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
+	AbstractClass* GetSource() const;
 
 	static void PointerGotInvalid(void* ptr, bool removed);
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
