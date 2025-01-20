@@ -22,6 +22,8 @@ EventTypeClass* EventTypeClass::WhenUnload = nullptr;
 EventTypeClass* EventTypeClass::WhenBoard = nullptr;
 EventTypeClass* EventTypeClass::WhenUnboard = nullptr;
 EventTypeClass* EventTypeClass::WhenUpgraded = nullptr;
+EventTypeClass* EventTypeClass::WhenAttach = nullptr;
+EventTypeClass* EventTypeClass::WhenDetach = nullptr;
 
 void EventTypeClass::AddDefaults()
 {
@@ -40,6 +42,8 @@ void EventTypeClass::AddDefaults()
 	EventTypeClass::WhenBoard = FindOrAllocate("WhenBoard");
 	EventTypeClass::WhenUnboard = FindOrAllocate("WhenUnboard");
 	EventTypeClass::WhenUpgraded = FindOrAllocate("WhenUpgraded");
+	EventTypeClass::WhenAttach = FindOrAllocate("WhenAttach");
+	EventTypeClass::WhenDetach = FindOrAllocate("WhenDetach");
 }
 
 void EventTypeClass::LoadFromINI(CCINIClass* pINI)

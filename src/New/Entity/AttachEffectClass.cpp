@@ -475,9 +475,9 @@ bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSour
 	return pInvoker == this->Invoker && pSource == this->Source;
 }
 
-AbstractClass* AttachEffectClass::GetSource() const
+TechnoClass* AttachEffectClass::GetInvoker() const
 {
-	return this->Source;
+	return this->Invoker;
 }
 
 #pragma region StaticFunctions_AttachDetachTransfer
@@ -523,6 +523,20 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 
 				if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
 					pTargetExt->UpdateCumulativeAttachEffects(pType);
+			}
+
+			auto const& map = pAE->GetType()->EventHandlersMap;
+			if (map.contains(EventTypeClass::WhenAttach))
+			{
+				static std::map<EventActorType, AbstractClass*> participants = {
+					{ EventActorType::Me, pTarget },
+					{ EventActorType::They, pInvoker },
+					{ EventActorType::Enchanter, pInvoker },
+				};
+				for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenAttach))
+				{
+					pEventHandlerTypeClass->HandleEvent(&participants);
+				}
 			}
 		}
 	}
@@ -749,6 +763,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 	auto const targetAEs = &pTargetExt->AttachedEffects;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<WeaponTypeClass*> expireWeapons;
+	std::vector<AttachEffectClass*> detachedVector;
 
 	for (it = targetAEs->begin(); it != targetAEs->end(); )
 	{
@@ -770,6 +785,8 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
 				pTargetExt->UpdateCumulativeAttachEffects(pType, attachEffect);
 
+			detachedVector.push_back(attachEffect);
+
 			if (attachEffect->ResetIfRecreatable())
 			{
 				++it;
@@ -784,13 +801,29 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		}
 	}
 
-
 	auto const coords = pTarget->GetCoords();
 	auto const pOwner = pTarget->Owner;
 
 	for (auto const& pWeapon : expireWeapons)
 	{
 		WeaponTypeExt::DetonateAt(pWeapon, coords, pTarget, pOwner, pTarget);
+	}
+
+	for (auto const& pAE : detachedVector)
+	{
+		auto const& map = pAE->GetType()->EventHandlersMap;
+		if (map.contains(EventTypeClass::WhenDetach))
+		{
+			static std::map<EventActorType, AbstractClass*> participants = {
+				{ EventActorType::Me, pTarget },
+				{ EventActorType::They, pAE->GetInvoker() },
+				{ EventActorType::Enchanter, pAE->GetInvoker() },
+			};
+			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenDetach))
+			{
+				pEventHandlerTypeClass->HandleEvent(&participants);
+			}
+		}
 	}
 
 	return detachedCount;

@@ -482,6 +482,14 @@ Shield.InheritStateOnReplace=false          ; boolean
           <li><code>WhenUnboard</code>: Invoked on the passenger's perspective.</li>
         </ul>
       </li>
+      <li>
+        Attached Effects:
+        <ul>
+          <li>These events are only invoked for the event triggers on Attached Effects. The <code>Me</code> basic actor is the attached techno, and the <code>They</code> and <code>Enchanter</code> basic actors are the source of this Attached Effect.</li>
+          <li><code>WhenAttach</code>: Invoked when this Attached Effect is attached.</li>
+          <li><code>WhenDetach</code>: Invoked when this Attached Effect is detached for any reason, such as it expired, it was removed, the object died, or it was discarded.</li>
+        </ul>
+      </li>
     </ul>
   </details>
 - Custom event types can be used. These events will only be invoked through Event Invokers.

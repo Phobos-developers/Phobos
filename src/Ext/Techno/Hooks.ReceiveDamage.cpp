@@ -191,6 +191,7 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	std::set<AttachEffectTypeClass*> cumulativeTypes;
 	std::vector<WeaponTypeClass*> expireWeapons;
+	std::vector<AttachEffectClass*> detachedVector;
 
 	for (auto const& attachEffect : pExt->AttachedEffects)
 	{
@@ -204,6 +205,7 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 					cumulativeTypes.insert(pType);
 
 				expireWeapons.push_back(pType->ExpireWeapon);
+				detachedVector.push_back(attachEffect.get());
 			}
 		}
 	}
@@ -214,6 +216,23 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 	for (auto const& pWeapon : expireWeapons)
 	{
 		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+	}
+
+	for (auto const& pAE : detachedVector)
+	{
+		auto const& map = pAE->GetType()->EventHandlersMap;
+		if (map.contains(EventTypeClass::WhenDetach))
+		{
+			static std::map<EventActorType, AbstractClass*> participants = {
+				{ EventActorType::Me, pThis },
+				{ EventActorType::They, pAE->GetInvoker() },
+				{ EventActorType::Enchanter, pAE->GetInvoker() },
+			};
+			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenDetach))
+			{
+				pEventHandlerTypeClass->HandleEvent(&participants);
+			}
+		}
 	}
 
 	return 0;

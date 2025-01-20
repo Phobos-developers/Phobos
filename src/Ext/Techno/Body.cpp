@@ -494,7 +494,7 @@ void TechnoExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, std::map<E
 	{
 		auto pAttachEffect = std::move(attachEffect.get());
 		auto const& map = pAttachEffect->GetType()->EventHandlersMap;
-		pParticipants->operator[](EventActorType::Enchanter) = pAttachEffect->GetSource();
+		pParticipants->operator[](EventActorType::Enchanter) = pAttachEffect->GetInvoker();
 		InvokeEventStatic(pEventTypeClass, pParticipants, &map);
 	}
 

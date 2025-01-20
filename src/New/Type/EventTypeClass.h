@@ -30,6 +30,8 @@ public:
 	static EventTypeClass* WhenBoard;
 	static EventTypeClass* WhenUnboard;
 	static EventTypeClass* WhenUpgraded;
+	static EventTypeClass* WhenAttach;
+	static EventTypeClass* WhenDetach;
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
