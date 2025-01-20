@@ -826,10 +826,10 @@ void TechnoExt::ExtData::UpdateRearmInEMPState()
 
 	const auto pTypeExt = this->TypeExtData;
 
-	if (pThis->RearmTimer.InProgress() && pTypeExt->NoRearm_Inactive.Get(RulesExt::Global()->NoRearm_Inactive))
+	if (pThis->RearmTimer.InProgress() && pTypeExt->NoRearm_UnderEMP.Get(RulesExt::Global()->NoRearm_UnderEMP))
 		pThis->RearmTimer.StartTime++;
 
-	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_Inactive.Get(RulesExt::Global()->NoReload_Inactive))
+	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_UnderEMP.Get(RulesExt::Global()->NoReload_UnderEMP))
 		pThis->ReloadTimer.StartTime++;
 }
 

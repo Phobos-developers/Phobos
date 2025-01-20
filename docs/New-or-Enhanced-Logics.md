@@ -1373,15 +1373,15 @@ Convert.ComputerToHuman =   ; TechnoType
 In `rulesmd.ini`:
 ```ini
 [General]
-NoRearm.Inactive=false   ; boolean
+NoRearm.UnderEMP=false   ; boolean
 NoRearm.Temporal=false   ; boolean
-NoReload.Inactive=false  ; boolean
+NoReload.UnderEMP=false  ; boolean
 NoReload.Temporal=false  ; boolean
 
 [SOMETECHNO]             ; TechnoType
-NoRearm.Inactive=        ; boolean
+NoRearm.UnderEMP=        ; boolean
 NoRearm.Temporal=        ; boolean
-NoReload.Inactive=       ; boolean
+NoReload.UnderEMP=       ; boolean
 NoReload.Temporal=       ; boolean
 ```
 
