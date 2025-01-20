@@ -1056,6 +1056,7 @@ Spawner.AttackImmediately=false  ; boolean
     - `PassengerDeletion.SoylentAllowedHouses` determines which houses passengers can belong to be eligible for refunding.
     - `PassengerDeletion.DisplaySoylent` can be set to true to display the amount of credits refunded on the transport. `PassengerDeletion.DisplaySoylentToHouses` determines which houses can see this and `PassengerDeletion.DisplaySoylentOffset` can be used to adjust the display offset.
   - `PassengerDeletion.ReportSound` and `PassengerDeletion.Anim` can be used to specify a sound and animation to play when a passenger is erased, respectively.
+  - If `PassengerDeletion.UnderEMP` is set to true, the deletion will be processed when the transport is under EMP or deactivated.
 
 In `rulesmd.ini`:
 ```ini
@@ -1075,6 +1076,7 @@ PassengerDeletion.DisplaySoylentToHouses=All    ; Affected House Enumeration (no
 PassengerDeletion.DisplaySoylentOffset=0,0      ; X,Y, pixels relative to default
 PassengerDeletion.ReportSound=                  ; Sound
 PassengerDeletion.Anim=                         ; Animation
+PassengerDeletion.UnderEMP=false                ; boolean
 ```
 
 ### Automatic passenger owner change to match transport owner
