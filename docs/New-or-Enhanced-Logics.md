@@ -685,7 +685,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
           Area search:
           <ul>
             <li>Event Invokers can be called around a radius of an actor, or on the full map, upon each techno found through a search.</li>
-            <li><code>*.Scope.Radius</code> specifies the radius in which the area search is done. The logic is much like warhead detonation. This only works if the actor is not a </li>
+            <li><code>*.Scope.Radius</code> specifies the radius in which the area search is done. The logic is much like warhead detonation. This only works if the actor is on the map, such as it doesn't work for house actors.</li>
             <li><code>*.Scope.MapWide</code> can be set to true to search all objects on the map.</li>
             <li>Choose only one among <code>*.Scope.Radius</code> and <code>*.Scope.MapWide</code>. If both spcified with valid value, the latter takes precedence.</li>
             <li><code>*.Scope.Abstract</code> specifies a quick filter on the techno's type and domain. This is required, or the area search does not happen. <i>(none|land|water|empty|infantry|units|buildings|all)</i></li>
