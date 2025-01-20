@@ -524,6 +524,29 @@ bool BuildingTypeExt::BuildLimboBuilding(BuildingClass* pBuilding)
 	return false;
 }
 
+bool BuildingTypeExt::BuildLimboBuilding(BuildingClass* pBuilding)
+{
+	const auto pBuildingType = pBuilding->Type;
+
+	if (BuildingTypeExt::ExtMap.Find(pBuildingType)->LimboBuild)
+	{
+		const EventClass event
+		(
+			pBuilding->Owner->ArrayIndex,
+			EventType::Place,
+			AbstractType::Building,
+			pBuildingType->GetArrayIndex(),
+			pBuildingType->Naval,
+			CellStruct { 1, 1 }
+		);
+		EventClass::AddEvent(event);
+
+		return true;
+	}
+
+	return false;
+}
+
 void BuildingTypeExt::CreateLimboBuilding(BuildingClass* pBuilding, BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 {
 	if (pBuilding || (pBuilding = static_cast<BuildingClass*>(pType->CreateObject(pOwner)), pBuilding))
