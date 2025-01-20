@@ -619,7 +619,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 		pBullet->SetTarget(pDetonateAt);
 		pBullet->TargetCoords = position;
 
-		if (std::abs(velocity) > 1e-10)
+		if (std::abs(velocity) > 1e-10 && distance < velocity)
 			pBullet->Velocity *= distance / velocity;
 
 		if (this->ProximityImpact != 0)
@@ -634,7 +634,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 			if (pType->ProximityDirect)
 				pDetonateAt->ReceiveDamage(&damage, 0, pWH, pBullet->Owner, false, false, pOwner);
 			else
-				WarheadTypeExt::DetonateAt(pWH, pType->ProximityMedial ? pBullet->Location : position, pBullet->Owner, damage, pOwner, pDetonateAt);
+				WarheadTypeExt::DetonateAt(pWH, pType->ProximityMedial ? pBullet->Location : position, pBullet->Owner, damage, pOwner, pType->ProximityMedial ? nullptr : pDetonateAt);
 
 			this->CalculateNewDamage(pBullet);
 		}
@@ -923,7 +923,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		if (pType->ProximityDirect)
 			pTechno->ReceiveDamage(&damage, 0, pWH, pBullet->Owner, false, false, pOwner);
 		else
-			WarheadTypeExt::DetonateAt(pWH, pType->ProximityMedial ? pBullet->Location : pTechno->GetCoords(), pBullet->Owner, damage, pOwner, pTechno);
+			WarheadTypeExt::DetonateAt(pWH, pType->ProximityMedial ? pBullet->Location : pTechno->GetCoords(), pBullet->Owner, damage, pOwner, pType->ProximityMedial ? nullptr : pTechno);
 
 		this->CalculateNewDamage(pBullet);
 
