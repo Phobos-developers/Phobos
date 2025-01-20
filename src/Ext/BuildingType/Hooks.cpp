@@ -73,11 +73,10 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		return 0;
 
 	auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding);
-	auto pType = pBuilding ? pBuilding->Type : nullptr;
+	auto pType = specific_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingType);
 	auto pTypeExt = pType ? BuildingTypeExt::ExtMap.Find(pType) : nullptr;
-	bool isShow = pTypeExt && pTypeExt->PlacementPreview;
 
-	if (isShow)
+	if (pBuilding && pTypeExt && pTypeExt->PlacementPreview)
 	{
 		CellClass* pCell = nullptr;
 		{

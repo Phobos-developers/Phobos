@@ -409,6 +409,35 @@ DEFINE_HOOK(0x47EEBC, CellClass_DrawPlaceGrid_RecordCell, 0x6)
 	return DontDrawAlt;
 }
 
+static inline BuildingTypeClass* GetAnotherPlacingType(BuildingTypeClass* pType, CellStruct checkCell, bool opposite)
+{
+	if (!pType->PlaceAnywhere)
+	{
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+
+		if (!pTypeExt->LimboBuild)
+		{
+			const auto onWater = MapClass::Instance->GetCellAt(checkCell)->LandType == LandType::Water;
+
+			if (const auto pAnotherType = (opposite ^ onWater) ? (pType->Naval ? nullptr : pTypeExt->PlaceBuilding_OnWater) : (pType->Naval ? pTypeExt->PlaceBuilding_OnLand : nullptr))
+			{
+				if (pAnotherType->BuildCat == pType->BuildCat && !pAnotherType->PlaceAnywhere && !BuildingTypeExt::ExtMap.Find(pAnotherType)->LimboBuild)
+					return pAnotherType;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+static inline BuildingTypeClass* GetAnotherPlacingType(DisplayClass* pDisplay)
+{
+	if (const auto pCurrentBuilding = abstract_cast<BuildingClass*>(pDisplay->CurrentBuilding))
+		return GetAnotherPlacingType(pCurrentBuilding->Type, pDisplay->CurrentFoundation_CenterCell, false);
+
+	return nullptr;
+}
+
 // Buildable-upon TechnoTypes Hook #3 -> sub_4FB0E0 - Hang up place event if there is only infantries and units on the cell
 DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 {
@@ -416,15 +445,58 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 
 	GET(HouseClass* const, pHouse, EBP);
 	GET(TechnoClass* const, pTechno, ESI);
+	GET(FactoryClass* const, pPrimary, EBX);
 	GET(BuildingClass* const, pFactory, EDI);
 	GET_STACK(const CellStruct, topLeftCell, STACK_OFFSET(0x3C, 0x10));
 
-	if (pTechno->WhatAmI() == AbstractType::Building && RulesExt::Global()->ExpandBuildingPlace)
+	if (pTechno->WhatAmI() == AbstractType::Building)
 	{
-		const auto pBuilding = static_cast<BuildingClass*>(pTechno);
-		const auto pBuildingType = pBuilding->Type;
-		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
 		const auto pDisplay = DisplayClass::Instance();
+		auto pBuilding = static_cast<BuildingClass*>(pTechno);
+		auto pBuildingType = pBuilding->Type;
+		const auto pBufferBuilding = pBuilding;
+		const auto pBufferType = pBuildingType;
+
+		auto checkCell = topLeftCell;
+
+		if (pBuildingType->Gate)
+		{
+			if (pBuildingType->GetFoundationWidth() > 2)
+				checkCell.X += 1;
+			else if (pBuildingType->GetFoundationHeight(false) > 2)
+				checkCell.Y += 1;
+		}
+		else if (pBuildingType->GetFoundationWidth() > 2 || pBuildingType->GetFoundationHeight(false) > 2)
+		{
+			checkCell += CellStruct { 1, 1 };
+		}
+
+		if (const auto pOtherType = GetAnotherPlacingType(pBuildingType, checkCell, false))
+		{
+			pBuildingType = pOtherType;
+		}
+		else if (const auto pAnotherType = GetAnotherPlacingType(pBuildingType, topLeftCell, true)) // Center cell may be different, so make assumptions
+		{
+			checkCell = topLeftCell;
+
+			if (pAnotherType->Gate)
+			{
+				if (pAnotherType->GetFoundationWidth() > 2)
+					checkCell.X += 1;
+				else if (pAnotherType->GetFoundationHeight(false) > 2)
+					checkCell.Y += 1;
+			}
+			else if (pAnotherType->GetFoundationWidth() > 2 || pAnotherType->GetFoundationHeight(false) > 2)
+			{
+				checkCell += CellStruct { 1, 1 };
+			}
+
+			// If the land occupation of the two buildings is different, the larger one will prevail, And the smaller one may not be placed on the shore.
+			if ((MapClass::Instance->GetCellAt(checkCell)->LandType == LandType::Water) ^ pBuildingType->Naval)
+				pBuildingType = pAnotherType;
+		}
+
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
 
 		if (pTypeExt->LimboBuild)
 		{
@@ -435,7 +507,7 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 				pDisplay->SetActiveFoundation(nullptr);
 				pDisplay->CurrentBuilding = nullptr;
 				pDisplay->CurrentBuildingType = nullptr;
-				pDisplay->CurrentBuildingOwnerArrayIndex = -1;
+				pDisplay->CurrentBuildingOwnerArrayIndexCopy = -1;
 
 				if (!Unsorted::ArmageddonMode)
 				{
@@ -463,103 +535,148 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 
 			return BuildSucceeded;
 		}
-		else
+
+		if (RulesExt::Global()->ExpandBuildingPlace && !pBuildingType->PlaceAnywhere && !pBuildingType->PowersUpBuilding[0])
 		{
-			if (!pBuildingType->PlaceAnywhere && !pBuildingType->PowersUpBuilding[0])
+			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+			bool canBuild = true;
+			bool noOccupy = true;
+
+			for (auto pFoundation = pBuildingType->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 			{
-				const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-				bool canBuild = true;
-				bool noOccupy = true;
+				const auto currentCoord = topLeftCell + *pFoundation;
+				const auto pCell = pDisplay->GetCellAt(currentCoord);
 
-				for (auto pFoundation = pBuildingType->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
+				if (!pCell->CanThisExistHere(pBuildingType->SpeedType, pBuildingType, pHouse))
 				{
-					const auto currentCoord = topLeftCell + *pFoundation;
-					const auto pCell = pDisplay->GetCellAt(currentCoord);
-
-					if (!pCell->CanThisExistHere(pBuildingType->SpeedType, pBuildingType, pHouse))
-					{
-						canBuild = false;
-						break;
-					}
-					else if (ProximityTemp::Exist)
-					{
-						noOccupy = false;
-					}
+					canBuild = false;
+					break;
 				}
-
-				ProximityTemp::Exist = false;
-
-				do
+				else if (ProximityTemp::Exist)
 				{
-					if (canBuild)
-					{
-						if (noOccupy)
-							break; // Can Build
+					noOccupy = false;
+				}
+			}
 
-						do
+			ProximityTemp::Exist = false;
+
+			do
+			{
+				if (canBuild)
+				{
+					if (noOccupy)
+						break; // Can Build
+
+					do
+					{
+						if (topLeftCell != pHouseExt->CurrentBuildingTopLeft || pBufferType != pHouseExt->CurrentBuildingType) // New command
 						{
-							if (topLeftCell != pHouseExt->CurrentBuildingTopLeft || pBuildingType != pHouseExt->CurrentBuildingType) // New command
-							{
-								pHouseExt->CurrentBuildingType = pBuildingType;
-								pHouseExt->CurrentBuildingTimes = 30;
-								pHouseExt->CurrentBuildingTopLeft = topLeftCell;
-							}
-							else if (pHouseExt->CurrentBuildingTimes <= 0)
-							{
-								break; // Time out
-							}
-
-							if (!(pHouseExt->CurrentBuildingTimes % 5) && BuildingTypeExt::CleanUpBuildingSpace(pBuildingType, topLeftCell, pHouse))
-								break; // No place for cleaning
-
-							if (pHouse == HouseClass::CurrentPlayer && pHouseExt->CurrentBuildingTimes == 30)
-							{
-								pDisplay->SetActiveFoundation(nullptr);
-								pDisplay->CurrentBuilding = nullptr;
-								pDisplay->CurrentBuildingType = nullptr;
-								pDisplay->CurrentBuildingOwnerArrayIndex = -1;
-
-								if (!Unsorted::ArmageddonMode)
-								{
-									reinterpret_cast<void(__thiscall*)(DisplayClass*, CellStruct*)>(0x4A8D50)(pDisplay, nullptr); // Clear CurrentFoundationCopy_Data
-									pDisplay->CurrentBuildingCopy = nullptr;
-									pDisplay->CurrentBuildingTypeCopy = nullptr;
-								}
-							}
-
-							--pHouseExt->CurrentBuildingTimes;
-							pHouseExt->CurrentBuildingTimer.Start(8);
-
-							return TemporarilyCanNotBuild;
+							pHouseExt->CurrentBuildingType = pBufferType;
+							pHouseExt->CurrentBuildingDrawType = pBuildingType;
+							pHouseExt->CurrentBuildingTimes = 30;
+							pHouseExt->CurrentBuildingTopLeft = topLeftCell;
 						}
-						while (false);
+						else if (pHouseExt->CurrentBuildingTimes <= 0)
+						{
+							break; // Time out
+						}
+
+						if (!(pHouseExt->CurrentBuildingTimes % 5) && BuildingTypeExt::CleanUpBuildingSpace(pBuildingType, topLeftCell, pHouse))
+							break; // No place for cleaning
+
+						if (pHouse == HouseClass::CurrentPlayer && pHouseExt->CurrentBuildingTimes == 30)
+						{
+							pDisplay->SetActiveFoundation(nullptr);
+							pDisplay->CurrentBuilding = nullptr;
+							pDisplay->CurrentBuildingType = nullptr;
+							pDisplay->CurrentBuildingOwnerArrayIndexCopy = -1;
+
+							if (!Unsorted::ArmageddonMode)
+							{
+								reinterpret_cast<void(__thiscall*)(DisplayClass*, CellStruct*)>(0x4A8D50)(pDisplay, nullptr); // Clear CurrentFoundationCopy_Data
+								pDisplay->CurrentBuildingCopy = nullptr;
+								pDisplay->CurrentBuildingTypeCopy = nullptr;
+							}
+						}
+
+						--pHouseExt->CurrentBuildingTimes;
+						pHouseExt->CurrentBuildingTimer.Start(8);
+
+						return TemporarilyCanNotBuild;
 					}
-
-					if (pHouseExt->CurrentBuildingType == pBuildingType)
-					{
-						pHouseExt->CurrentBuildingType = nullptr;
-						pHouseExt->CurrentBuildingTimes = 0;
-						pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
-						pHouseExt->CurrentBuildingTimer.Stop();
-
-						if (pHouseExt->CurrentBuildingTimes != 30)
-							return CanNotBuild;
-					}
-
-					ProximityTemp::Mouse = true;
-					return CanNotBuild;
+					while (false);
 				}
-				while (false);
 
-				if (pHouseExt->CurrentBuildingType == pBuildingType)
+				if (pHouseExt->CurrentBuildingType == pBufferType)
 				{
 					pHouseExt->CurrentBuildingType = nullptr;
+					pHouseExt->CurrentBuildingDrawType = nullptr;
 					pHouseExt->CurrentBuildingTimes = 0;
 					pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
 					pHouseExt->CurrentBuildingTimer.Stop();
+
+					if (pHouseExt->CurrentBuildingTimes != 30)
+						return CanNotBuild;
 				}
+
+				ProximityTemp::Mouse = true;
+				return CanNotBuild;
+			}
+			while (false);
+
+			if (pHouseExt->CurrentBuildingType == pBufferType)
+			{
+				pHouseExt->CurrentBuildingType = nullptr;
+				pHouseExt->CurrentBuildingDrawType = nullptr;
+				pHouseExt->CurrentBuildingTimes = 0;
+				pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
+				pHouseExt->CurrentBuildingTimer.Stop();
 			}
 		}
+
+		if (pBufferType != pBuildingType)
+			pBuilding = static_cast<BuildingClass*>(pBuildingType->CreateObject(pHouse));
+
+		pFactory->SendCommand(RadioCommand::RequestLink, pBuilding);
+
+		if (pBuilding->Unlimbo(CoordStruct{ (topLeftCell.X << 8) + 128, (topLeftCell.Y << 8) + 128, 0 }, DirType::North))
+		{
+			if (pBufferBuilding != pBuilding)
+			{
+				if (HouseClass::CurrentPlayer == pHouse)
+				{
+					if (pDisplay->CurrentBuilding == pBufferBuilding)
+						pDisplay->CurrentBuilding = pBuilding;
+
+					if (pDisplay->CurrentBuildingType == pBufferType)
+						pDisplay->CurrentBuildingType = pBuildingType;
+
+					if (pDisplay->CurrentBuildingCopy == pBufferBuilding)
+						pDisplay->CurrentBuildingCopy = pBuilding;
+
+					if (pDisplay->CurrentBuildingTypeCopy == pBufferType)
+						pDisplay->CurrentBuildingTypeCopy = pBuildingType;
+
+					if (Make_Global<BuildingClass*>(0xB0FE5C) == pBufferBuilding) // Q
+						Make_Global<BuildingClass*>(0xB0FE5C) = pBuilding;
+
+					if (Make_Global<BuildingClass*>(0xB0FE60) == pBufferBuilding) // W
+						Make_Global<BuildingClass*>(0xB0FE60) = pBuilding;
+				}
+
+				pBufferBuilding->UnInit();
+				pPrimary->Object = pBuilding;
+				R->ESI(pBuilding);
+			}
+
+			return CanBuild;
+		}
+
+		if (pBufferBuilding != pBuilding)
+			pBuilding->UnInit();
+
+		ProximityTemp::Mouse = true;
+		return CanNotBuild;
 	}
 
 	pFactory->SendCommand(RadioCommand::RequestLink, pTechno);
@@ -589,6 +706,29 @@ DEFINE_HOOK(0x4FB395, HouseClass_UnitFromFactory_SkipMouseReturn, 0x6)
 	return SkipGameCode;
 }
 
+static inline bool IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeClass* pType2)
+{
+	if (pType1 == pType2)
+		return true;
+
+	if (pType1->BuildCat != pType2->BuildCat || pType1->PlaceAnywhere || pType2->PlaceAnywhere)
+		return false;
+
+	const auto pType1Ext = BuildingTypeExt::ExtMap.Find(pType1);
+	const auto pType2Ext = BuildingTypeExt::ExtMap.Find(pType2);
+
+	if (pType1Ext->LimboBuild || pType2Ext->LimboBuild)
+		return false;
+
+	if (pType1Ext->PlaceBuilding_OnLand == pType2 || pType1Ext->PlaceBuilding_OnWater == pType2)
+		return true;
+
+	if (pType2Ext->PlaceBuilding_OnLand == pType1 || pType2Ext->PlaceBuilding_OnWater == pType1)
+		return true;
+
+	return false;
+}
+
 // Buildable-upon TechnoTypes Hook #4-2 -> sub_4FB0E0 - Check whether need to skip the clear command
 DEFINE_HOOK(0x4FB319, HouseClass_UnitFromFactory_SkipMouseClear, 0x5)
 {
@@ -596,10 +736,16 @@ DEFINE_HOOK(0x4FB319, HouseClass_UnitFromFactory_SkipMouseClear, 0x5)
 
 	GET(TechnoClass* const, pTechno, ESI);
 
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+	if (RulesExt::Global()->ExpandBuildingPlace)
 	{
-		if (RulesExt::Global()->ExpandBuildingPlace && DisplayClass::Instance->CurrentBuildingTypeCopy != pBuilding->Type)
-			return SkipGameCode;
+		if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+		{
+			if (const auto pBufferType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingTypeCopy))
+			{
+				if (!IsSameBuildingType(pBuilding->Type, pBufferType))
+					return SkipGameCode;
+			}
+		}
 	}
 
 	return 0;
@@ -612,7 +758,16 @@ DEFINE_HOOK(0x4FAB83, HouseClass_AbandonProductionOf_SkipMouseClear, 0x7)
 
 	GET(const int, index, EBX);
 
-	return (RulesExt::Global()->ExpandBuildingPlace && index >= 0 && BuildingTypeClass::Array->Items[index] != DisplayClass::Instance->CurrentBuildingType) ? SkipGameCode : 0;
+	if (RulesExt::Global()->ExpandBuildingPlace && index >= 0)
+	{
+		if (const auto pCurrentBuildingType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingType))
+		{
+			if (!IsSameBuildingType(BuildingTypeClass::Array->Items[index], pCurrentBuildingType))
+				return SkipGameCode;
+		}
+	}
+
+	return 0;
 }
 
 // Buildable-upon TechnoTypes Hook #5 -> sub_4C9FF0 - Restart timer and clear buffer when abandon building production
@@ -627,12 +782,13 @@ DEFINE_HOOK(0x4CA05B, FactoryClass_AbandonProduction_AbandonCurrentBuilding, 0x5
 		if (!pHouseExt || !pHouseExt->CurrentBuildingType)
 			return 0;
 
-		const auto pTechno = pFactory->Object;
+		const auto pBuilding = abstract_cast<BuildingClass*>(pFactory->Object);
 
-		if (pTechno->WhatAmI() != AbstractType::Building || pHouseExt->CurrentBuildingType != static_cast<BuildingClass*>(pTechno)->Type)
+		if (!pBuilding || (pFactory->Owner->IsControlledByHuman() && pHouseExt->CurrentBuildingType != pBuilding->Type))
 			return 0;
 
 		pHouseExt->CurrentBuildingType = nullptr;
+		pHouseExt->CurrentBuildingDrawType = nullptr;
 		pHouseExt->CurrentBuildingTimes = 0;
 		pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
 		pHouseExt->CurrentBuildingTimer.Stop();
@@ -651,48 +807,48 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 	GET(BuildingClass* const, pFactory, ESI);
 	GET(const CellStruct, topLeftCell, EDX);
 
+	const auto pBuildingType = pBuilding->Type;
+	const auto pHouse = pFactory->Owner;
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+
+	if (pTypeExt->LimboBuild)
+	{
+		BuildingTypeExt::CreateLimboBuilding(pBuilding, pBuildingType, pHouse, pTypeExt->LimboBuildID);
+
+		if (pBaseNode)
+		{
+			pBaseNode->Placed = true;
+			pBaseNode->Attempts = 0;
+
+			if (pHouse->ProducingBuildingTypeIndex == pBuildingType->ArrayIndex)
+				pHouse->ProducingBuildingTypeIndex = -1;
+		}
+
+		const auto pFactoryType = pFactory->Type;
+
+		if (pFactoryType->ConstructionYard)
+		{
+			VocClass::PlayGlobal(RulesClass::Instance->BuildingSlam, 0x2000, 1.0);
+
+			pFactory->DestroyNthAnim(BuildingAnimSlot::PreProduction);
+			pFactory->DestroyNthAnim(BuildingAnimSlot::Idle);
+
+			const bool damaged = pFactory->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+			const auto pAnimName = damaged ? pFactoryType->BuildingAnim[8].Damaged : pFactoryType->BuildingAnim[8].Anim;
+
+			if (pAnimName && *pAnimName)
+				pFactory->PlayAnim(pAnimName, BuildingAnimSlot::Production, damaged, false);
+		}
+
+		return BuildSucceeded;
+	}
+
 	if (!RulesExt::Global()->ExpandBuildingPlace)
 		return 0;
 
-	const auto pBuildingType = pBuilding->Type;
-
 	if (topLeftCell != CellStruct::Empty && !pBuildingType->PlaceAnywhere)
 	{
-		const auto pHouse = pFactory->Owner;
-		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
-
-		if (pTypeExt->LimboBuild)
-		{
-			BuildingTypeExt::CreateLimboBuilding(pBuilding, pBuildingType, pHouse, pTypeExt->LimboBuildID);
-
-			if (pBaseNode)
-			{
-				pBaseNode->Placed = true;
-				pBaseNode->Attempts = 0;
-
-				if (pHouse->ProducingBuildingTypeIndex == pBuildingType->ArrayIndex)
-					pHouse->ProducingBuildingTypeIndex = -1;
-			}
-
-			const auto pFactoryType = pFactory->Type;
-
-			if (pFactoryType->ConstructionYard)
-			{
-				VocClass::PlayGlobal(RulesClass::Instance->BuildingSlam, 0x2000, 1.0);
-
-				pFactory->DestroyNthAnim(BuildingAnimSlot::PreProduction);
-				pFactory->DestroyNthAnim(BuildingAnimSlot::Idle);
-
-				const bool damaged = pFactory->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
-				const auto pAnimName = damaged ? pFactoryType->BuildingAnim[8].Damaged : pFactoryType->BuildingAnim[8].Anim;
-
-				if (pAnimName && *pAnimName)
-					pFactory->PlayAnim(pAnimName, BuildingAnimSlot::Production, damaged, false);
-			}
-
-			return BuildSucceeded;
-		}
-		else if (!pBuildingType->PowersUpBuilding[0])
+		if (!pBuildingType->PowersUpBuilding[0])
 		{
 			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 			bool canBuild = true;
@@ -728,6 +884,7 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 						if (topLeftCell != pHouseExt->CurrentBuildingTopLeft || pBuildingType != pHouseExt->CurrentBuildingType) // New command
 						{
 							pHouseExt->CurrentBuildingType = pBuildingType;
+							pHouseExt->CurrentBuildingDrawType = pBuildingType;
 							pHouseExt->CurrentBuildingTimes = 30;
 							pHouseExt->CurrentBuildingTopLeft = topLeftCell;
 						}
@@ -755,6 +912,7 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 				}
 
 				pHouseExt->CurrentBuildingType = nullptr;
+				pHouseExt->CurrentBuildingDrawType = nullptr;
 				pHouseExt->CurrentBuildingTimes = 0;
 				pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
 				pHouseExt->CurrentBuildingTimer.Stop();
@@ -764,6 +922,7 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 			while (false);
 
 			pHouseExt->CurrentBuildingType = nullptr;
+			pHouseExt->CurrentBuildingDrawType = nullptr;
 			pHouseExt->CurrentBuildingTimes = 0;
 			pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
 			pHouseExt->CurrentBuildingTimer.Stop();
@@ -985,29 +1144,29 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 {
 	GET(const HouseClass* const, pHouse, ESI);
 
-	if (!pHouse->IsControlledByHuman() || !RulesExt::Global()->ExpandBuildingPlace)
+	if (!pHouse->IsControlledByHuman())
 		return 0;
 
-	if (pHouse->RecheckTechTree)
+	if (const auto pFactory = pHouse->Primary_ForBuildings)
 	{
-		if (const auto pFactory = pHouse->Primary_ForBuildings)
+		if (pFactory->IsDone())
 		{
-			if (pFactory->IsDone())
-			{
-				if (const auto pBuilding = abstract_cast<BuildingClass*>(pFactory->Object))
-					BuildingTypeExt::AutoUpgradeBuilding(pBuilding);
-			}
-		}
-
-		if (const auto pFactory = pHouse->Primary_ForDefenses)
-		{
-			if (pFactory->IsDone())
-			{
-				if (const auto pBuilding = abstract_cast<BuildingClass*>(pFactory->Object))
-					BuildingTypeExt::AutoUpgradeBuilding(pBuilding);
-			}
+			if (const auto pBuilding = abstract_cast<BuildingClass*>(pFactory->Object))
+				BuildingTypeExt::AutoPlaceBuilding(pBuilding);
 		}
 	}
+
+	if (const auto pFactory = pHouse->Primary_ForDefenses)
+	{
+		if (pFactory->IsDone())
+		{
+			if (const auto pBuilding = abstract_cast<BuildingClass*>(pFactory->Object))
+				BuildingTypeExt::AutoPlaceBuilding(pBuilding);
+		}
+	}
+
+	if (!RulesExt::Global()->ExpandBuildingPlace)
+		return 0;
 
 	if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
 	{
@@ -1065,6 +1224,31 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK_AGAIN(0x4ABA47, DisplayClass_PreparePassesProximityCheck_ReplaceBuildingType, 0x6)
+DEFINE_HOOK(0x4A946E, DisplayClass_PreparePassesProximityCheck_ReplaceBuildingType, 0x6)
+{
+	const auto pDisplay = DisplayClass::Instance();
+
+	if (const auto pAnotherType = GetAnotherPlacingType(pDisplay))
+	{
+		if (pDisplay->CurrentBuildingType && pDisplay->CurrentBuildingType != pAnotherType)
+		{
+			pDisplay->CurrentBuildingType = pAnotherType;
+			pDisplay->SetActiveFoundation(pAnotherType->GetFoundationData(true));
+		}
+	}
+	else if (const auto pCurrentBuilding = abstract_cast<BuildingClass*>(pDisplay->CurrentBuilding))
+	{
+		if (pDisplay->CurrentBuildingType && pDisplay->CurrentBuildingType != pCurrentBuilding->Type)
+		{
+			pDisplay->CurrentBuildingType = pCurrentBuilding->Type;
+			pDisplay->SetActiveFoundation(pCurrentBuilding->Type->GetFoundationData(true));
+		}
+	}
+
+	return 0;
+}
+
 // Buildable-upon TechnoTypes Hook #12 -> sub_6D5030 - Draw the placing building preview
 DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 {
@@ -1081,9 +1265,9 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 			const bool isPlayer = pHouse == pPlayer;
 			{
-				auto pType = pHouseExt->CurrentBuildingType;
+				auto pType = pHouseExt->CurrentBuildingDrawType;
 
-				if (pType || (isPlayer && (pType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingTypeCopy), pType)))
+				if (pType || (isPlayer && (pType = abstract_cast<BuildingTypeClass*>(pDisplay->CurrentBuildingTypeCopy), pType)))
 				{
 					auto pCell = pDisplay->TryGetCellAt(pHouseExt->CurrentBuildingTopLeft);
 
@@ -1170,7 +1354,7 @@ DEFINE_HOOK(0x6A8E34, StripClass_Update_AutoBuildBuildings, 0x7)
 
 	GET(BuildingClass* const, pBuilding, ESI);
 
-	return (RulesExt::Global()->ExpandBuildingPlace && (BuildingTypeExt::BuildLimboBuilding(pBuilding) || BuildingTypeExt::AutoUpgradeBuilding(pBuilding))) ? SkipSetStripShortCut : 0;
+	return (BuildingTypeExt::BuildLimboBuilding(pBuilding) || BuildingTypeExt::AutoPlaceBuilding(pBuilding)) ? SkipSetStripShortCut : 0;
 }
 
 // Limbo Build Hook -> sub_42EB50 - Check Base Node
@@ -1189,7 +1373,7 @@ DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 		{
 			const auto pType = BuildingTypeClass::Array->Items[index];
 
-			if (RulesExt::Global()->ExpandBuildingPlace && BuildingTypeExt::ExtMap.Find(pType)->LimboBuild)
+			if (BuildingTypeExt::ExtMap.Find(pType)->LimboBuild)
 				return Invalid;
 		}
 	}
