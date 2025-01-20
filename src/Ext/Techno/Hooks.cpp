@@ -72,8 +72,8 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 	auto const NewRanking = pThis->Veterancy.GetRemainingLevel();
 	if (pThis->CurrentRanking != NewRanking && pThis->CurrentRanking != Rank::Invalid)
 	{
-		auto pThisTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		pThisTypeExt->InvokeEvent((pThis->CurrentRanking < NewRanking) ? EventTypeClass::WhenPromoted : EventTypeClass::WhenDemoted, pThis, nullptr);
+		auto pThisExt = TechnoExt::ExtMap.Find(pThis);
+		pThisExt->InvokeEvent((pThis->CurrentRanking < NewRanking) ? EventTypeClass::WhenPromoted : EventTypeClass::WhenDemoted, pThis, nullptr);
 
 		if (NewRanking != Rank::Rookie)
 		{
@@ -482,7 +482,7 @@ DEFINE_HOOK(0x4D71A0, FootClass_Unlimbo_WhenCreated, 0x9)
 		if (!pTechnoExt->WhenCreatedEventFired)
 		{
 			pTechnoExt->WhenCreatedEventFired = true;
-			pTechnoExt->TypeExtData->InvokeEvent(EventTypeClass::WhenCreated, pTechno, nullptr);
+			pTechnoExt->InvokeEvent(EventTypeClass::WhenCreated, pTechno, nullptr);
 		}
 	}
 

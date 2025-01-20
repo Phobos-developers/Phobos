@@ -143,11 +143,11 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
 		}
 
-		auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
-		pSourceTypeExt->InvokeEvent(EventTypeClass::WhenKill, pSource, pThis);
+		auto const pSourceExt = TechnoExt::ExtMap.Find(pSource);
+		pSourceExt->InvokeEvent(EventTypeClass::WhenKill, pSource, pThis);
 	}
 
-	pTypeExt->InvokeEvent(EventTypeClass::WhenKilled, pThis, pSource);
+	pExt->InvokeEvent(EventTypeClass::WhenKilled, pThis, pSource);
 
 	return 0;
 }

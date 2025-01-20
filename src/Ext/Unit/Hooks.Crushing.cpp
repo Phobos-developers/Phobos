@@ -5,6 +5,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/TemplateDef.h>
+#include <Ext/Techno/Body.h>
 
 DEFINE_HOOK(0x073B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 {
@@ -107,9 +108,9 @@ DEFINE_HOOK(0x7418AA, UnitClass_CrushCell_WhenCrushed, 6)
 
 	if (auto const pVictimTechno = abstract_cast<TechnoClass*>(pVictim))
 	{
-		auto pCrusherExt = TechnoTypeExt::ExtMap.Find(pCrusher->GetTechnoType());
+		auto pCrusherExt = TechnoExt::ExtMap.Find(pCrusher);
 		pCrusherExt->InvokeEvent(EventTypeClass::WhenCrush, pCrusher, pVictimTechno);
-		auto pVictimExt = TechnoTypeExt::ExtMap.Find(pVictimTechno->GetTechnoType());
+		auto pVictimExt = TechnoExt::ExtMap.Find(pVictimTechno);
 		pVictimExt->InvokeEvent(EventTypeClass::WhenCrushed, pVictimTechno, pCrusher);
 
 		if (RulesExt::Global()->InfantryPlayDieSoundWhenCrushed

@@ -138,7 +138,7 @@ DEFINE_HOOK(0x47342A, CargoClass_Attach_Hook_AfterLoad, 0x5)
 
 	auto const pTransport = GetCargoClassParent(pThis);
 	auto const pPassenger = pTransport->Passengers.FirstPassenger; // At this point, ESI is no longer the passenger.
-	auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+	auto const pTransExt = TechnoExt::ExtMap.Find(pTransport);
 	auto const pPassExt = TechnoExt::ExtMap.Find(pPassenger);
 	auto const pPassTypeExt = pPassExt->TypeExtData;
 
@@ -148,8 +148,8 @@ DEFINE_HOOK(0x47342A, CargoClass_Attach_Hook_AfterLoad, 0x5)
 		pPassExt->HousingMe = pTransportBld;
 	}
 
-	pTransTypeExt->InvokeEvent(EventTypeClass::WhenLoad, pTransport, pPassenger);
-	pPassTypeExt->InvokeEvent(EventTypeClass::WhenBoard, pPassenger, pTransport);
+	pTransExt->InvokeEvent(EventTypeClass::WhenLoad, pTransport, pPassenger);
+	pPassExt->InvokeEvent(EventTypeClass::WhenBoard, pPassenger, pTransport);
 
 	return 0;
 }
@@ -163,8 +163,8 @@ DEFINE_HOOK(0x4DE722, FootClass_RemoveFirstPassenger_Hook, 0x6)
 	if (pTransport && pPassenger)
 	{
 		auto const pPassType = pPassenger->GetTechnoType();
+		auto const pTransExt = TechnoExt::ExtMap.Find(pTransport);
 		auto const pPassExt = TechnoExt::ExtMap.Find(pPassenger);
-		auto const pPassTypeExt = pPassExt->TypeExtData;
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
 
 		// Remove from transport reloader list before switching house
@@ -183,8 +183,9 @@ DEFINE_HOOK(0x4DE722, FootClass_RemoveFirstPassenger_Hook, 0x6)
 
 		// Revoke the Bio Reactor pointer.
 		pPassExt->HousingMe = nullptr;
-		pTransTypeExt->InvokeEvent(EventTypeClass::WhenUnload, pTransport, pPassenger);
-		pPassTypeExt->InvokeEvent(EventTypeClass::WhenUnboard, pPassenger, pTransport);
+
+		pTransExt->InvokeEvent(EventTypeClass::WhenUnload, pTransport, pPassenger);
+		pPassExt->InvokeEvent(EventTypeClass::WhenUnboard, pPassenger, pTransport);
 	}
 
 	return 0;
@@ -203,13 +204,13 @@ DEFINE_HOOK(0x70F6EC, TechnoClass_UpdateThreatToCell_Hook, 0x6)
 		{
 			for (auto pOccupant : pBld->Occupants)
 			{
-				auto const pBldTypeExt = TechnoTypeExt::ExtMap.Find(pBld->Type);
+				auto const pBldExt = TechnoExt::ExtMap.Find(pBld);
 				auto pPassExt = TechnoExt::ExtMap.Find(pOccupant);
 				if (!pPassExt->HousingMe)
 				{
 					pPassExt->HousingMe = pBld;
-					pBldTypeExt->InvokeEvent(EventTypeClass::WhenLoad, pBld, pOccupant);
-					pPassExt->TypeExtData->InvokeEvent(EventTypeClass::WhenBoard, pOccupant, pBld);
+					pBldExt->InvokeEvent(EventTypeClass::WhenLoad, pBld, pOccupant);
+					pPassExt->InvokeEvent(EventTypeClass::WhenBoard, pOccupant, pBld);
 				}
 			}
 		}
@@ -245,13 +246,13 @@ DEFINE_HOOK(0x4581CD, BuildingClass_Remove_Occupants_AfterHook, 0x6)
 	auto& vec = ScenarioExt::Global()->OccupantsCache;
 	if (!vec.empty())
 	{
-		auto const pBldTypeExt = TechnoTypeExt::ExtMap.Find(pBld->Type);
+		auto const pBldExt = TechnoExt::ExtMap.Find(pBld);
 
 		for (auto pPassExt : vec)
 		{
 			pPassExt->HousingMe = nullptr;
-			pBldTypeExt->InvokeEvent(EventTypeClass::WhenUnload, pBld, pPassExt->OwnerObject());
-			pPassExt->TypeExtData->InvokeEvent(EventTypeClass::WhenUnboard, pPassExt->OwnerObject(), pBld);
+			pBldExt->InvokeEvent(EventTypeClass::WhenUnload, pBld, pPassExt->OwnerObject());
+			pPassExt->InvokeEvent(EventTypeClass::WhenUnboard, pPassExt->OwnerObject(), pBld);
 		}
 
 		vec.clear();

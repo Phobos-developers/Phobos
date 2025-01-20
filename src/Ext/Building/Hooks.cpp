@@ -223,7 +223,7 @@ DEFINE_HOOK(0x446EE8, BuildingClass_Unlimbo_WhenCreated, 0x6)
 		if (!pTechnoExt->WhenCreatedEventFired)
 		{
 			pTechnoExt->WhenCreatedEventFired = true;
-			pTechnoExt->TypeExtData->InvokeEvent(EventTypeClass::WhenCreated, pThis, nullptr);
+			pTechnoExt->InvokeEvent(EventTypeClass::WhenCreated, pThis, nullptr);
 		}
 	}
 

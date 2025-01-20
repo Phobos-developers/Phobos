@@ -229,7 +229,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 		// By the moment, pExt->TypeExtData has not changed.
 		// It is only updated with "TechnoExt::ExtData::OnEarlyUpdate()".
-		pExt->TypeExtData->InvokeEvent(EventTypeClass::WhenCaptured, pMe, nullptr);
+		pExt->InvokeEvent(EventTypeClass::WhenCaptured, pMe, nullptr);
 	}
 
 	return 0;
