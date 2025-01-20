@@ -177,7 +177,7 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 		auto const pAnim = GameCreate<AnimClass>(debrisAnims[debrisIndex], pThis->GetCoords());
 
 		if (pThis->Owner)
-			pAnim->Owner = pThis->Owner->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner->Owner, nullptr, false, true);
 
 		debrisCount--;
 	}

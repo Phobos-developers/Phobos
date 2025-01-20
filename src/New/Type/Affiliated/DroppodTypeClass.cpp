@@ -98,7 +98,7 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 			if (auto trailerType = podType->Trailer.Get(RulesExt::Global()->DropPodTrailer))
 			{
 				auto trailer = GameCreate<AnimClass>(trailerType, oldLoc);
-				trailer->Owner = pLinked->Owner;
+				AnimExt::SetAnimOwnerHouseKind(trailer, pLinked->Owner, nullptr, false, true);
 				if (podType->Trailer_Attached)
 					trailer->SetOwnerObject(pLinked);
 			}

@@ -308,7 +308,8 @@ void AttachEffectClass::CreateAnim()
 		auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location);
 
 		pAnim->SetOwnerObject(this->Techno);
-		pAnim->Owner = this->Type->Animation_UseInvokerAsOwner ? InvokerHouse : this->Techno->Owner;
+		auto const pOwner = this->Type->Animation_UseInvokerAsOwner ? InvokerHouse : this->Techno->Owner;
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
 		pAnim->RemainingIterations = 0xFFu;
 		this->Animation = pAnim;
 

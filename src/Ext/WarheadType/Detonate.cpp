@@ -336,7 +336,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 				ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
 
 			auto const pAnim = GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
-			pAnim->Owner = pHouse;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
 			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
 		}
 		else
@@ -344,7 +344,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 			for (auto const& pType : this->Crit_AnimList)
 			{
 				auto const pAnim = GameCreate<AnimClass>(pType, pTarget->Location);
-				pAnim->Owner = pHouse;
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
 				AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
 			}
 		}

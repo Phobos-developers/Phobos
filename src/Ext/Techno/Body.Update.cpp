@@ -286,7 +286,7 @@ void TechnoExt::ExtData::EatPassengers()
 					{
 						auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
 						pAnim->SetOwnerObject(pThis);
-						pAnim->Owner = pThis->Owner;
+						AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
 					}
 
 					// Check if there is money refund
@@ -711,7 +711,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 			if (auto const pAnim = GameCreate<AnimClass>(pVanishAnimation, pThis->GetCoords()))
 			{
 				auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-				pAnim->Owner = pThis->Owner;
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
 				pAnimExt->SetInvoker(pThis);
 			}
 		}

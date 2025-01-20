@@ -690,7 +690,7 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 			auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location);
 
 			pAnim->SetOwnerObject(this->Techno);
-			pAnim->Owner = this->Techno->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
 		}
 	}
 
