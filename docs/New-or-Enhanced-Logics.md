@@ -569,6 +569,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
 		  <code>*.HouseCompare.Params/Methods/Values</code>: Compares the house's properties with an integer.
 		  <ul>
 		    <li>The three entries are all lists that support multiple inputs separated by comma (<code>,</code>).</li>
+		    <li>All comparason must pass. If it was a negative filter, all comparason must not pass.</li>
 		    <li>If the list sizes mismatch, the entire house compare filter is invalid and does not take effect.</li>
 		    <li>Supported house parameters are: <code>Credits|PowerSurplus|PowerOutput|PowerDrain</code></li>
 		    <li>Supported comparators are: <code>Equal|Greater|GreaterEqual|Smaller|SmallerEqual|NotEqual</code>; can be abbrived as: <code>e|g|ge|s|se|ne</code></li>

@@ -427,20 +427,16 @@ bool HandlerFilterClass::CheckForHouse(HouseClass* pHouse, HouseClass* pTargetHo
 
 	if (!HouseCompare_Params.empty())
 	{
-		bool compareFlag = true;
 		for (int i = 0; i < HouseCompare_Params.size(); i++)
 		{
-			if (!EnumFunctions::HouseParameterCompare(pTargetHouse,
+			if (EnumFunctions::HouseParameterCompare(pTargetHouse,
 				HouseCompare_Params.at(i),
 				HouseCompare_Methods.at(i),
-				HouseCompare_Values.at(i)))
+				HouseCompare_Values.at(i)) == negative)
 			{
-				compareFlag = false;
-				break;
+				return false;
 			}
 		}
-		if (negative == compareFlag)
-			return false;
 	}
 
 	return true;
