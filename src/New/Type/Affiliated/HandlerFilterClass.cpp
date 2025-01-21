@@ -427,7 +427,7 @@ bool HandlerFilterClass::CheckForHouse(HouseClass* pHouse, HouseClass* pTargetHo
 
 	if (!HouseCompare_Params.empty())
 	{
-		for (int i = 0; i < HouseCompare_Params.size(); i++)
+		for (size_t i = 0; i < HouseCompare_Params.size(); i++)
 		{
 			if (EnumFunctions::HouseParameterCompare(pTargetHouse,
 				HouseCompare_Params.at(i),
