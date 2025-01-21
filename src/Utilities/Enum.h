@@ -291,8 +291,6 @@ enum class EventActorType : byte
 	Scoper = 4
 };
 
-MAKE_ENUM_FLAGS(EventActorType);
-
 enum class EventExtendedActorType : byte
 {
 	Owner = 1,
@@ -302,8 +300,6 @@ enum class EventExtendedActorType : byte
 	Parasite = 5,
 	Host = 6,
 };
-
-MAKE_ENUM_FLAGS(EventExtendedActorType);
 
 enum class VeterancyType : byte
 {
@@ -338,8 +334,6 @@ enum class ComparatorType : byte
 	NotEqual = 6,
 };
 
-MAKE_ENUM_FLAGS(ComparatorType);
-
 enum class HouseParameterType : byte
 {
 	Credits = 1,
@@ -347,8 +341,6 @@ enum class HouseParameterType : byte
 	PowerOutput = 3,
 	PowerDrain = 4,
 };
-
-MAKE_ENUM_FLAGS(HouseParameterType);
 
 class MouseCursorHotSpotX
 {

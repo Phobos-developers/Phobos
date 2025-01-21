@@ -36,6 +36,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include <CRT.h>
+#include "Enum.h"
 
 //! Parses strings into one or more elements of another type.
 /*!
@@ -328,6 +329,60 @@ inline bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue)
 	}
 	return false;
 };
+
+template<>
+inline bool Parser<ComparatorType>::TryParse(const char* pValue, OutType* outValue)
+{
+	static const std::pair<const char*, ComparatorType> Names[] =
+	{
+		{"Equal", ComparatorType::Equal},
+		{"Greater", ComparatorType::Greater},
+		{"GreaterEqual", ComparatorType::GreaterEqual},
+		{"Smaller", ComparatorType::Smaller},
+		{"SmallerEqual", ComparatorType::SmallerEqual},
+		{"NotEqual", ComparatorType::NotEqual},
+		{"e", ComparatorType::Equal},
+		{"g", ComparatorType::Greater},
+		{"ge", ComparatorType::GreaterEqual},
+		{"s", ComparatorType::Smaller},
+		{"se", ComparatorType::SmallerEqual},
+		{"ne", ComparatorType::NotEqual},
+	};
+
+	for (auto const& [name, val] : Names)
+	{
+		if (_strcmpi(pValue, name) == 0)
+		{
+			*outValue = val;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+template<>
+inline bool Parser<HouseParameterType>::TryParse(const char* pValue, OutType* outValue)
+{
+	static const std::pair<const char*, HouseParameterType> Names[] =
+	{
+		{"Credits", HouseParameterType::Credits},
+		{"PowerSurplus", HouseParameterType::PowerSurplus},
+		{"PowerOutput", HouseParameterType::PowerOutput},
+		{"PowerDrain", HouseParameterType::PowerDrain},
+	};
+
+	for (auto const& [name, val] : Names)
+	{
+		if (_strcmpi(pValue, name) == 0)
+		{
+			*outValue = val;
+			return true;
+		}
+	}
+
+	return false;
+}
 
 //! Parses strings into one or more elements of another type, with an
 //! arbitrary maximum count that can be determined at moment of parsing.
