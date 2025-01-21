@@ -243,17 +243,18 @@ DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_HelpText, 0x6)
 	return ApplyToolTip;
 }
 
-DEFINE_HOOK(0x72426F, ToolTipManager_ProcessMessage_SetDelay, 0x5)
+DEFINE_HOOK(0x724247, ToolTipManager_ProcessMessage_SetDelayTimer, 0x6)
 {
-	if (SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentButton)
-		R->EDX(0);
+	enum { SkipDelay = 0x72429E };
 
-	return 0;
+	return SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentButton ? SkipDelay : 0;
 }
 
 DEFINE_HOOK(0x72428C, ToolTipManager_ProcessMessage_Redraw, 0x5)
 {
-	return SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentButton ? 0x724297 : 0;
+	enum { SkipRedraw = 0x724297 };
+
+	return SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentButton ? SkipRedraw : 0;
 }
 
 DEFINE_HOOK(0x724B2E, ToolTipManager_SetX, 0x6)
