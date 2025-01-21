@@ -1058,29 +1058,23 @@ namespace detail
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			if (_strcmpi(parser.value(), "Me") == 0)
+			static const std::pair<const char*, EventActorType> Names[] =
 			{
-				value = EventActorType::Me;
-			}
-			else if (_strcmpi(parser.value(), "They") == 0)
-			{
-				value = EventActorType::They;
-			}
-			else if (_strcmpi(parser.value(), "Enchanter") == 0)
-			{
-				value = EventActorType::Enchanter;
-			}
-			else if (_strcmpi(parser.value(), "Scoper") == 0)
-			{
-				value = EventActorType::Scoper;
-			}
-			else
-			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an actor type");
-				return false;
-			}
+				{"Me", EventActorType::Me},
+				{"They", EventActorType::They},
+				{"Enchanter", EventActorType::Enchanter},
+				{"Scoper", EventActorType::Scoper},
+			};
 
-			return true;
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a basic actor type");
 		}
 
 		return false;
@@ -1091,37 +1085,25 @@ namespace detail
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			if (_strcmpi(parser.value(), "Owner") == 0)
+			static const std::pair<const char*, EventExtendedActorType> Names[] =
 			{
-				value = EventExtendedActorType::Owner;
-			}
-			else if (_strcmpi(parser.value(), "Transport") == 0)
-			{
-				value = EventExtendedActorType::Transport;
-			}
-			else if (_strcmpi(parser.value(), "Bunker") == 0)
-			{
-				value = EventExtendedActorType::Bunker;
-			}
-			else if (_strcmpi(parser.value(), "MindController") == 0)
-			{
-				value = EventExtendedActorType::MindController;
-			}
-			else if (_strcmpi(parser.value(), "Parasite") == 0)
-			{
-				value = EventExtendedActorType::Parasite;
-			}
-			else if (_strcmpi(parser.value(), "Host") == 0)
-			{
-				value = EventExtendedActorType::Host;
-			}
-			else
-			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an extended event actor type");
-				return false;
-			}
+				{"Owner", EventExtendedActorType::Owner},
+				{"Transport", EventExtendedActorType::Transport},
+				{"Bunker", EventExtendedActorType::Bunker},
+				{"MindController", EventExtendedActorType::MindController},
+				{"Parasite", EventExtendedActorType::Parasite},
+				{"Host", EventExtendedActorType::Host},
+			};
 
-			return true;
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a basic actor type");
 		}
 
 		return false;
@@ -1210,6 +1192,68 @@ namespace detail
 
 			value = parsed;
 			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<ComparatorType>(ComparatorType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, ComparatorType> Names[] =
+			{
+				{"Equal", ComparatorType::Equal},
+				{"Greater", ComparatorType::Greater},
+				{"GreaterEqual", ComparatorType::GreaterEqual},
+				{"Smaller", ComparatorType::Smaller},
+				{"SmallerEqual", ComparatorType::SmallerEqual},
+				{"NotEqual", ComparatorType::NotEqual},
+				{"e", ComparatorType::Equal},
+				{"g", ComparatorType::Greater},
+				{"ge", ComparatorType::GreaterEqual},
+				{"s", ComparatorType::Smaller},
+				{"se", ComparatorType::SmallerEqual},
+				{"ne", ComparatorType::NotEqual},
+			};
+
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a comparator type (Equal|Greater|GreaterEqual|Smaller|SmallerEqual|NotEqual) can be abbrived as: (e|g|ge|s|se|ne)");
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<HouseParameterType>(HouseParameterType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, HouseParameterType> Names[] =
+			{
+				{"Credits", HouseParameterType::Credits},
+				{"PowerSurplus", HouseParameterType::PowerSurplus},
+				{"PowerOutput", HouseParameterType::PowerOutput},
+				{"PowerDrain", HouseParameterType::PowerDrain},
+			};
+
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a house parameter accessor (Credits|PowerSurplus|PowerOutput|PowerDrain)");
 		}
 
 		return false;

@@ -477,7 +477,7 @@ Shield.InheritStateOnReplace=false          ; boolean
       <li>
         Transport unloading:
         <ul>
-          <li>Invoked when a techno leaves a transport, a Bio Reactor, or a garrisonable structure. By the moment, the passenger has already left the transport or building.</li>
+          <li>Invoked when a techno leaves a transport, a Bio Reactor, or a garrisonable structure. By the moment, the passenger has already left the transport or building, but might not have been placed on the map.</li>
           <li><code>WhenUnload</code>: Invoked on the transport or building's perspective.</li>
           <li><code>WhenUnboard</code>: Invoked on the passenger's perspective.</li>
         </ul>
@@ -518,7 +518,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
     - `They`: The other actor of the event. Whatever it is is up to the event. Some events do not have `They`.
   - There are more basic actors for advanced use.
     - `Enchanter`: If this Event Handler is associated to an Attached Effect, this basic actor refers to the source of the said attached effect. This basic actor is consistent through the whole event chain.
-    - `Scoper`: If this Event Handler is a consequence of an area search effect of an Event Handler, this basic actor refers to the `Me` actor of the original Event Handler. This basic actor is overridden for the consequencing event chain every time an area search effect is initiated.
+    - `Scoper`: If this Event Handler is a consequence of an area search effect of an Event Handler, this basic actor refers to the actor that the `Scope` effect was used on. This basic actor persists for the subsequent event chain, until another area search effect is initiated.
   - The extended actors can be used to access other related actors. Filters and Effects can be assigned to them as well. Extended actors may not nest each other, they can only follow basic actors.
     - `(actor).Owner`: The owning house of the actor. If this is used on an house actor, the identical house actor is returned.
     - `(actor).Transport`: The transporting vehicle, or Bio Reactor, or garrisonable structure, that is carrying the actor.
@@ -564,6 +564,16 @@ TriggerN.EventHandler=...                          ; EventHandlerType
         <li><code>*.Buildings</code>: The house has a building that is any of the listed BuildingTypes. Building upgrades count.</li>
         <li><code>*.IsHuman</code>: The house is human controlled.</li>
         <li><code>*.IsAI</code>: The house is AI controlled.</li>
+        <li><code>*.IsLowPower</code>: The house is at low power.</li>
+        <li>
+		  <code>*.HouseCompare.Params/Methods/Values</code>: Compares the house's properties with an integer.
+		  <ul>
+		    <li>The three entries are all lists that support multiple inputs separated by comma (<code>,</code>).</li>
+		    <li>If the list sizes mismatch, the entire house compare filter is invalid and does not take effect.</li>
+		    <li>Supported house parameters are: <code>Credits|PowerSurplus|PowerOutput|PowerDrain</code></li>
+		    <li>Supported comparators are: <code>Equal|Greater|GreaterEqual|Smaller|SmallerEqual|NotEqual</code>; can be abbrived as: <code>e|g|ge|s|se|ne</code></li>
+		  </ul>
+		</li>
       </ul>
     </details>
 - Effects:
@@ -693,7 +703,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
             <li><code>*.Scope.TechnoTypes</code> specifies the required techno types. This is required, or the area search does not happen. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
             <li><code>*.Scope.AirIncluded</code> can be set to true, so aerial techno will be included.</li>
             <li><code>*.Scope.EventInvokerN</code>, where N is an integer starting from 0, specifies the Event Invokers to be invoked on it <code>*.Scope.EventInvoker</code> is a valid alternative if only one is specified.</li>
-            <li>The <code>Target</code> actor there will be the searched techno, and the <code>Invoker</code> actor there will be the <code>(actor)</code> of this area search effect. In addition, the <code>Scoper</code> basic actor there will be the <code>Me</code> actor here, and it will be transfered to each Event Handler invoked through the Event Invoker.</li>
+            <li>The <code>Target</code> actor there will be the <code>(actor)</code>, and the <code>Invoker</code> actor there will be the original <code>Me</code> of the source event handler. In addition, the <code>Scoper</code> basic actor there will be the <code>(actor)</code>, and it will also be transfered to the subsequent event chain, until another area search effect is initiated.</li>
           </ul>
         </li>
       </ol>
@@ -707,7 +717,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
       - Effects for the basic actors are executed in the order they are listed in the document.
       - Effects for the basic actors are executed before those for the extended actors.
       - Effects for the extended actors are executed in the order they are listed in the document.
-      - Effects on a same actor are resolved in the order they are listed in this document.
+      - Effects on a same actor are resolved in the order the effect types are listed in the document.
 
 In `rulesmd.ini`:
 ```ini
@@ -747,6 +757,10 @@ Next=                                              ; EventHandlerType
 (actor).Filter.Buildings=                          ; list of BuildingTypes
 (actor).Filter.IsHuman=                            ; boolean
 (actor).Filter.IsAI=                               ; boolean
+(actor).Filter.IsLowPower=                         ; boolean
+(actor).Filter.HouseCompare.Params=                ; list of house parameters (Credits|PowerSurplus|PowerOutput|PowerDrain)
+(actor).Filter.HouseCompare.Methods=               ; list of comparing methods (e|g|ge|s|se|ne) or (Equal|Greater|GreaterEqual|Smaller|SmallerEqual|NotEqual)
+(actor).Filter.HouseCompare.Values=                ; list of integer
 
 ;; effects (techno) - weapon detonation
 (actor).Effect.Weapon=                             ; WeaponType
@@ -829,7 +843,7 @@ Next=                                              ; EventHandlerType
     - `Target`: The techno hit by the warhead or super weapon, or the `Me` actor of the original event handler.
   - There are more basic actors for advanced use.
     - `Enchanter`: If this Event Invoker is a consequence of an Event Handler associated to an Attached Effect, this basic actor refers to the source of the said attached effect. This basic actor is consistent through the whole event chain.
-    - `Scoper`: If this Event Invoker is a consequence of an area search effect of an Event Handler, this basic actor refers to the `Me` actor of the original Event Handler. This basic actor is overridden for the consequencing event chain every time an area search effect is initiated.
+    - `Scoper`: If this Event Invoker is a consequence of an area search effect of an Event Handler, this basic actor refers to the actor that the `Scope` effect was used on. This basic actor persists for the subsequent event chain, until another area search effect is initiated.
   - Extended actors can be used here as well. See [Event Handlers -> Actors](#event-handlers) to learn more about extended actors.
 - Filters:
   - Similar to Event Handlers, the Invokers can also have filters defined, to ask for something to be true or false about an actor. These filters are checked before any actual Event Handlers do, if the check failed, no event invoking will happen.
@@ -841,7 +855,7 @@ Next=                                              ; EventHandlerType
 - Extra Event Handlers:
   - Extra event handlers can be specified, these will be forcibly invoked as if they were attached to each affected target of this event invoker, before any event handlers attached to the targets themselves to be invoked. Extra event handlers are invoked once for each target, without checking event types.
   - Extra event handlers are defined like `ExtraEventHandlerN`, where N is an integer starting from 0. `ExtraEventHandler` is a valid alternative is only one is specified.
-  - To the extra event handlers, the `Me` actor there will be the techno affected by this invoker, and the `They` actor there will be the `Me` actor of this invoker.
+  - To the extra event handlers, the `Me` actor there will be the `Target` actor here, and the `They` actor there will be the `Invoker` actor here.
 - Target pass down:
   - The event invoking can be passed down to other related technos. The same event types and extra event handlers will be invoked on them as well. Target pass down can happen even if the parent doesn't pass the filters itself.
   - `PassDown.Passengers` can be set to true, so this invoker will pass down to the techno's passengers, and the passengers of passengers, and so on. This supports Bio Reactors and garrisonable structures.

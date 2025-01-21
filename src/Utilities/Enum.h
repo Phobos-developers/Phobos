@@ -287,8 +287,8 @@ enum class EventActorType : byte
 	Me = 1,
 	They = 2,
 	// advanced basic actors
-	Enchanter = 5,
-	Scoper = 6
+	Enchanter = 3,
+	Scoper = 4
 };
 
 MAKE_ENUM_FLAGS(EventActorType);
@@ -327,6 +327,28 @@ enum class HPPercentageType : byte
 };
 
 MAKE_ENUM_FLAGS(HPPercentageType);
+
+enum class ComparatorType : byte
+{
+	Equal = 1,
+	Greater = 2,
+	GreaterEqual = 3,
+	Smaller = 4,
+	SmallerEqual = 5,
+	NotEqual = 6,
+};
+
+MAKE_ENUM_FLAGS(ComparatorType);
+
+enum class HouseParameterType : byte
+{
+	Credits = 1,
+	PowerSurplus = 2,
+	PowerOutput = 3,
+	PowerDrain = 4,
+};
+
+MAKE_ENUM_FLAGS(HouseParameterType);
 
 class MouseCursorHotSpotX
 {

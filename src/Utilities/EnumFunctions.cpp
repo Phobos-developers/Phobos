@@ -125,3 +125,43 @@ bool EnumFunctions::CheckHPPercentage(TechnoClass* const pTechno, HPPercentageTy
 		hpPercentageType = HPPercentageType::None;
 	return (hpPercentageType & allowed) != HPPercentageType::None;
 }
+
+bool EnumFunctions::HouseParameterCompare(HouseClass* pHouse, HouseParameterType hpt, ComparatorType ct, int value)
+{
+	int param = -1;
+	switch (hpt)
+	{
+	case HouseParameterType::Credits:
+		param = pHouse->Available_Money();
+		break;
+	case HouseParameterType::PowerSurplus:
+		param = pHouse->PowerSurplus;
+		break;
+	case HouseParameterType::PowerOutput:
+		param = pHouse->PowerOutput;
+		break;
+	case HouseParameterType::PowerDrain:
+		param = pHouse->PowerDrain;
+		break;
+	default:
+		return false;
+	}
+
+	switch (ct)
+	{
+	case ComparatorType::Equal:
+		return param == value;
+	case ComparatorType::Greater:
+		return param > value;
+	case ComparatorType::GreaterEqual:
+		return param >= value;
+	case ComparatorType::Smaller:
+		return param < value;
+	case ComparatorType::SmallerEqual:
+		return param <= value;
+	case ComparatorType::NotEqual:
+		return param != value;
+	}
+
+	return false;
+}

@@ -14,4 +14,5 @@ public:
 	static bool AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells = false, bool considerAircraftSeparately = false, bool allowBridges = false);
 	static bool CheckVeterancy(TechnoClass* const pTechno, VeterancyType allowed);
 	static bool CheckHPPercentage(TechnoClass* const pTechno, HPPercentageType allowed);
+	static bool HouseParameterCompare(HouseClass* pHouse, HouseParameterType hpt, ComparatorType ct, int value);
 };

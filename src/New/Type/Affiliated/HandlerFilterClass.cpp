@@ -3,6 +3,7 @@
 
 HandlerFilterClass::HandlerFilterClass()
 	: HasAnyTechnoCheck { false }
+#pragma region TechnoFilters
 	, Abstract { }
 	, IsInAir {}
 	, TechnoTypes {}
@@ -22,6 +23,8 @@ HandlerFilterClass::HandlerFilterClass()
 	, Passengers_Type {}
 	, Upgrades_Any {}
 	, Upgrades_Type {}
+#pragma endregion
+#pragma region HouseFilters
 	, HasAnyHouseCheck { false }
 	, House {}
 	, Sides {}
@@ -29,6 +32,11 @@ HandlerFilterClass::HandlerFilterClass()
 	, Buildings {}
 	, IsHuman {}
 	, IsAI {}
+	, IsLowPower {}
+	, HouseCompare_Params {}
+	, HouseCompare_Methods {}
+	, HouseCompare_Values {}
+#pragma endregion
 { }
 
 std::unique_ptr<HandlerFilterClass> HandlerFilterClass::Parse(INI_EX & exINI, const char* pSection, const char* actorName, const char* filterName)
@@ -50,6 +58,7 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 {
 	char tempBuffer[64];
 
+#pragma region TechnoFilters
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Abstract", actorName, filterName);
 	Abstract.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsInAir", actorName, filterName);
@@ -90,6 +99,10 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Upgrades.Type", actorName, filterName);
 	Upgrades_Type.Read(exINI, pSection, tempBuffer);
 
+	HasAnyTechnoCheck = IsDefinedAnyTechnoCheck();
+#pragma endregion
+
+#pragma region HouseFilters
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.House", actorName, filterName);
 	House.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Sides", actorName, filterName);
@@ -102,9 +115,28 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	IsHuman.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsAI", actorName, filterName);
 	IsAI.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsLowPower", actorName, filterName);
+	IsLowPower.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.HouseCompare.Params", actorName, filterName);
+	HouseCompare_Params.Read(exINI, pSection, tempBuffer);
+	if (!HouseCompare_Params.empty())
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.HouseCompare.Methods", actorName, filterName);
+		HouseCompare_Methods.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.HouseCompare.Values", actorName, filterName);
+		HouseCompare_Values.Read(exINI, pSection, tempBuffer);
+		// if the counts do not match then it is invalid input
+		if (HouseCompare_Params.size() != HouseCompare_Methods.size()
+			|| HouseCompare_Params.size() != HouseCompare_Values.size())
+		{
+			HouseCompare_Params.clear();
+			HouseCompare_Methods.clear();
+			HouseCompare_Values.clear();
+		}
+	}
 
-	HasAnyTechnoCheck = IsDefinedAnyTechnoCheck();
 	HasAnyHouseCheck = IsDefinedAnyHouseCheck();
+#pragma endregion
 }
 
 bool HandlerFilterClass::Check(HouseClass* pHouse, AbstractClass* pTarget, bool negative) const
@@ -387,6 +419,30 @@ bool HandlerFilterClass::CheckForHouse(HouseClass* pHouse, HouseClass* pTargetHo
 			return false;
 	}
 
+	if (IsLowPower.isset())
+	{
+		if (negative != (IsLowPower.Get() == pTargetHouse->HasLowPower()))
+			return false;
+	}
+
+	if (!HouseCompare_Params.empty())
+	{
+		bool compareFlag = true;
+		for (int i = 0; i < HouseCompare_Params.size(); i++)
+		{
+			if (!EnumFunctions::HouseParameterCompare(pTargetHouse,
+				HouseCompare_Params.at(i),
+				HouseCompare_Methods.at(i),
+				HouseCompare_Values.at(i)))
+			{
+				compareFlag = false;
+				break;
+			}
+		}
+		if (negative == compareFlag)
+			return false;
+	}
+
 	return true;
 }
 
@@ -425,7 +481,9 @@ bool HandlerFilterClass::IsDefinedAnyHouseCheck() const
 		|| !Countries.empty()
 		|| !Buildings.empty()
 		|| IsHuman.isset()
-		|| IsAI.isset();
+		|| IsAI.isset()
+		|| IsLowPower.isset()
+		|| !HouseCompare_Params.empty();
 }
 
 bool HandlerFilterClass::Load(PhobosStreamReader& stm, bool registerForChange)
@@ -442,6 +500,7 @@ template<typename T>
 bool HandlerFilterClass::Serialize(T& stm)
 {
 	return stm
+#pragma region TechnoFilters
 		.Process(this->HasAnyTechnoCheck)
 		.Process(this->Abstract)
 		.Process(this->IsInAir)
@@ -459,6 +518,8 @@ bool HandlerFilterClass::Serialize(T& stm)
 		.Process(this->Passengers_Type)
 		.Process(this->Upgrades_Any)
 		.Process(this->Upgrades_Type)
+#pragma endregion
+#pragma region HouseFilters
 		.Process(this->HasAnyHouseCheck)
 		.Process(this->House)
 		.Process(this->Sides)
@@ -466,5 +527,10 @@ bool HandlerFilterClass::Serialize(T& stm)
 		.Process(this->Buildings)
 		.Process(this->IsHuman)
 		.Process(this->IsAI)
+		.Process(this->IsLowPower)
+		.Process(this->HouseCompare_Params)
+		.Process(this->HouseCompare_Methods)
+		.Process(this->HouseCompare_Values)
+#pragma endregion
 		.Success();
 }

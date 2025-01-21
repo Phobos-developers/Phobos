@@ -10,6 +10,7 @@ class HandlerFilterClass
 public:
 	HandlerFilterClass();
 
+#pragma region TechnoFilters
 	Valueable<bool> HasAnyTechnoCheck;
 	Nullable<AffectedTarget> Abstract;
 	Nullable<bool> IsInAir;
@@ -30,7 +31,9 @@ public:
 	ValueableVector<TechnoTypeClass*> Passengers_Type;
 	Nullable<bool> Upgrades_Any;
 	ValueableVector<BuildingTypeClass*> Upgrades_Type;
+#pragma endregion
 
+#pragma region HouseFilters
 	Valueable<bool> HasAnyHouseCheck;
 	Nullable<AffectedHouse> House;
 	ValueableVector<SideClass*> Sides;
@@ -38,6 +41,11 @@ public:
 	ValueableVector<BuildingTypeClass*> Buildings;
 	Nullable<bool> IsHuman;
 	Nullable<bool> IsAI;
+	Nullable<bool> IsLowPower;
+	ValueableVector<HouseParameterType> HouseCompare_Params;
+	ValueableVector<ComparatorType> HouseCompare_Methods;
+	ValueableVector<int> HouseCompare_Values;
+#pragma endregion
 
 	static std::unique_ptr<HandlerFilterClass> Parse(INI_EX& exINI, const char* pSection, const char* actorName, const char* filterName);
 

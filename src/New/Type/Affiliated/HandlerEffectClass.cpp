@@ -606,8 +606,8 @@ void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwne
 	if (!Scope_EventInvokers.empty())
 	{
 		participants[EventActorType::Me] = nullptr;
-		participants[EventActorType::They] = pTarget;
-		participants[EventActorType::Scoper] = pOwner;
+		participants[EventActorType::They] = pOwner;
+		participants[EventActorType::Scoper] = pTarget;
 
 		std::function<void(TechnoClass*)> tryInvoke = [this, pOwnerHouse](TechnoClass* pItem)
 			{
