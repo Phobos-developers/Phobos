@@ -1,9 +1,5 @@
 #include <BuildingClass.h>
 #include <FootClass.h>
-#include <SidebarClass.h>
-#include <HouseClass.h>
-#include <SuperClass.h>
-#include <EventClass.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/AresHelper.h>
@@ -32,49 +28,6 @@ DEFINE_HOOK(0x44E9FA, BuildingClass_Detach_RestoreAnims, 0x6)
 // Patches presented here are exceptions rather that the rule. They must be short, concise and correct.
 // DO NOT POLLUTE ISSUEs and PRs.
 
-static bool __stdcall AresTabCameo_RemoveCameo(BuildType* pItem)
-{
-	const auto pTechnoType = TechnoTypeClass::GetByTypeAndIndex(pItem->ItemType, pItem->ItemIndex);
-	const auto pCurrent = HouseClass::CurrentPlayer();
-
-	if (pTechnoType)
-	{
-		const auto pFactory = pTechnoType->FindFactory(true, false, false, pCurrent);
-
-		if (pFactory && pFactory->Owner->CanBuild(pTechnoType, false, true) != CanBuildResult::Unbuildable)
-			return false;
-	}
-	else
-	{
-		const auto& supers = pCurrent->Supers;
-
-		if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent && !SWSidebarClass::Instance.AddButton(pItem->ItemIndex))
-			return false;
-	}
-
-	if (pItem->CurrentFactory)
-	{
-		EventClass nEvent = EventClass(pCurrent->ArrayIndex, EventType::Abandon, static_cast<int>(pItem->ItemType), pItem->ItemIndex, pTechnoType && pTechnoType->Naval);
-		EventClass::AddEvent(nEvent);
-	}
-
-	if (pItem->ItemType == BuildingTypeClass::AbsID || pItem->ItemType == BuildingClass::AbsID)
-	{
-		DisplayClass::Instance->CurrentBuilding = nullptr;
-		DisplayClass::Instance->CurrentBuildingType = nullptr;
-		DisplayClass::Instance->CurrentBuildingOwnerArrayIndex = -1;
-		DisplayClass::Instance->SetActiveFoundation(nullptr);
-	}
-
-	if (pTechnoType && pCurrent->GetPrimaryFactory(pTechnoType->WhatAmI(), pTechnoType->Naval, BuildCat::DontCare))
-	{
-		EventClass nEvent = EventClass(pCurrent->ArrayIndex, EventType::AbandonAll, static_cast<int>(pItem->ItemType), pItem->ItemIndex, pTechnoType->Naval);
-		EventClass::AddEvent(nEvent);
-	}
-
-	return true;
-}
-
 ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, HouseClass* owner)
 {
 	// temporarily reset the mutex since it's not part of the design
@@ -95,7 +48,7 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x5273A, &Helpers::Alex::getCellSpreadItems);
 
 	// Redirect Ares's RemoveCameo to out implementation:
-	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x02BDD0, GET_OFFSET(AresTabCameo_RemoveCameo));
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x02BDD0, GET_OFFSET(SWSidebarClass::AresTabCameo_RemoveCameo));
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43D5D, &CreateInitialPayload);
@@ -114,7 +67,7 @@ void Apply_Ares3_0p1_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x533EA, &Helpers::Alex::getCellSpreadItems);
 
 	// Redirect Ares's RemoveCameo to out implementation:
-	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x02C910, GET_OFFSET(AresTabCameo_RemoveCameo));
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x02C910, GET_OFFSET(SWSidebarClass::AresTabCameo_RemoveCameo));
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4483D, &CreateInitialPayload);

@@ -1,6 +1,6 @@
 #include "SWSidebarClass.h"
 #include <CommandClass.h>
-#include <sstream>
+#include <EventClass.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
@@ -184,6 +184,49 @@ int SWSidebarClass::GetMaximumButtonCount()
 bool SWSidebarClass::IsEnabled()
 {
 	return SidebarExt::Global()->SWSidebar_Enable;
+}
+
+bool __stdcall SWSidebarClass::AresTabCameo_RemoveCameo(BuildType* pItem)
+{
+	const auto pTechnoType = TechnoTypeClass::GetByTypeAndIndex(pItem->ItemType, pItem->ItemIndex);
+	const auto pCurrent = HouseClass::CurrentPlayer();
+
+	if (pTechnoType)
+	{
+		const auto pFactory = pTechnoType->FindFactory(true, false, false, pCurrent);
+
+		if (pFactory && pFactory->Owner->CanBuild(pTechnoType, false, true) != CanBuildResult::Unbuildable)
+			return false;
+	}
+	else
+	{
+		const auto& supers = pCurrent->Supers;
+
+		if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent && !SWSidebarClass::Instance.AddButton(pItem->ItemIndex))
+			return false;
+	}
+
+	if (pItem->CurrentFactory)
+	{
+		EventClass nEvent = EventClass(pCurrent->ArrayIndex, EventType::Abandon, static_cast<int>(pItem->ItemType), pItem->ItemIndex, pTechnoType && pTechnoType->Naval);
+		EventClass::AddEvent(nEvent);
+	}
+
+	if (pItem->ItemType == BuildingTypeClass::AbsID || pItem->ItemType == BuildingClass::AbsID)
+	{
+		DisplayClass::Instance->CurrentBuilding = nullptr;
+		DisplayClass::Instance->CurrentBuildingType = nullptr;
+		DisplayClass::Instance->CurrentBuildingOwnerArrayIndex = -1;
+		DisplayClass::Instance->SetActiveFoundation(nullptr);
+	}
+
+	if (pTechnoType && pCurrent->GetPrimaryFactory(pTechnoType->WhatAmI(), pTechnoType->Naval, BuildCat::DontCare))
+	{
+		EventClass nEvent = EventClass(pCurrent->ArrayIndex, EventType::AbandonAll, static_cast<int>(pItem->ItemType), pItem->ItemIndex, pTechnoType->Naval);
+		EventClass::AddEvent(nEvent);
+	}
+
+	return true;
 }
 
 // Hooks

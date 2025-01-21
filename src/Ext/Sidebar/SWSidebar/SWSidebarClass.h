@@ -20,16 +20,9 @@ public:
 
 	static bool IsEnabled();
 
+	static bool __stdcall AresTabCameo_RemoveCameo(BuildType* pItem);
+
 	static SWSidebarClass Instance;
-
-public:
-	static void Allocate();
-	static void Remove();
-
-	static void Clear()
-	{
-		Allocate();
-	}
 
 public:
 	std::vector<SWColumnClass*> Columns {};
