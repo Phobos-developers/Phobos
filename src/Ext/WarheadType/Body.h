@@ -140,6 +140,8 @@ public:
 
 		Valueable<bool> Nonprovocative;
 
+		Nullable<bool> MergeBuildingDamage;
+
 		Nullable<int> CombatLightDetailLevel;
 		Valueable<double> CombatLightChance;
 		Valueable<bool> CLIsBlack;
@@ -291,6 +293,8 @@ public:
 			, RemoveInflictedLocomotor { false }
 
 			, Nonprovocative { false }
+
+			, MergeBuildingDamage {}
 
 			, CombatLightDetailLevel {}
 			, CombatLightChance { 1.0 }

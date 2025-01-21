@@ -262,6 +262,73 @@ DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
 	return 0x489B53;
 }
 
+#pragma region MergeBuildingDamage
+
+namespace DamageBuildingHelper
+{
+	std::map<BuildingClass*, double> Buildings;
+}
+
+DEFINE_HOOK(0x4899DA, DamageArea_DamageBuilding_SetContext, 0x7)
+{
+	GET_BASE(WarheadTypeClass* const, pWH, 0xC);
+
+	if (!WarheadTypeExt::ExtMap.Find(pWH)->MergeBuildingDamage.Get(RulesExt::Global()->MergeBuildingDamage))
+		return 0;
+
+	DamageBuildingHelper::Buildings.clear();
+
+	struct DamageGroup
+	{
+		ObjectClass* Target;
+		int Distance;
+	};
+
+	GET_STACK(DynamicVectorClass<DamageGroup*>, groups, STACK_OFFSET(0xE0, -0xA8));
+
+	for (auto& group : groups)
+	{
+		if (const auto pBuilding = abstract_cast<BuildingClass*>(group->Target))
+		{
+			DamageBuildingHelper::Buildings[pBuilding] += (1.0 - (1.0 - pWH->PercentAtMax) * group->Distance / (pWH->CellSpread * 256.0));
+			group->Distance = 0;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x489AA0, DamageArea_DamageBuilding_ReceiveDamage, 0x7)
+{
+	enum { SkipGameCode = 0x489ABC };
+
+	GET(WarheadTypeClass* const, pWH, ECX);
+
+	if (!WarheadTypeExt::ExtMap.Find(pWH)->MergeBuildingDamage.Get(RulesExt::Global()->MergeBuildingDamage))
+		return 0;
+
+	GET(ObjectClass* const, pTechno, ESI);
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+	{
+		if (DamageBuildingHelper::Buildings.contains(pBuilding))
+		{
+			GET(int, damage, EAX);
+			const auto multiplier = DamageBuildingHelper::Buildings[pBuilding];
+			R->EAX(Game::F2I(damage * multiplier));
+			DamageBuildingHelper::Buildings.erase(pBuilding);
+		}
+		else
+		{
+			return SkipGameCode;
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
 #pragma region Nonprovocative
 
 // Do not retaliate against being hit by these Warheads.
