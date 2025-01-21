@@ -118,7 +118,10 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 						VocClass::PlayAt(dWpn->Report[Randomizer::Global->Random() % count], coords);
 					MapClass::DamageArea(locnear, 2 * dWpn->Damage, pLinked, dWpn->Warhead, true, pLinked->Owner);
 					if (auto dmgAnim = MapClass::SelectDamageAnimation(2 * dWpn->Damage, dWpn->Warhead, LandType::Clear, locnear))
-						GameCreate<AnimClass>(dmgAnim, locnear, 0, 1, 0x2600, -15, 0)->Owner = pLinked->Owner;
+					{
+						auto const pAnim = GameCreate<AnimClass>(dmgAnim, locnear, 0, 1, 0x2600, -15, 0);
+						AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
+					}
 				}
 			}
 		}
@@ -133,10 +136,16 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 		if (pLinked->Unlimbo(pLinked->Location, DirType::North))
 		{
 			if (auto puff = podType->Puff.Get(RulesClass::Instance->DropPodPuff))
-				GameCreate<AnimClass>(puff, pLinked->Location)->Owner = pLinked->Owner;
+			{
+				auto const pAnim = GameCreate<AnimClass>(puff, pLinked->Location);
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
+			}
 
 			if (auto podAnim = podType->GroundAnim[lThis->OutOfMap].Get(RulesClass::Instance->DropPod[lThis->OutOfMap]))
-				GameCreate<AnimClass>(podAnim, pLinked->Location)->Owner = pLinked->Owner;
+			{
+				auto const pAnim = GameCreate<AnimClass>(podAnim, pLinked->Location);
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
+			}
 
 			if (dWpn && podType->Weapon_HitLandOnly)
 				WeaponTypeExt::DetonateAt(dWpn, pLinked->Location, pLinked, pLinked->Owner);
@@ -155,7 +164,10 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 		{
 			MapClass::DamageArea(coords, 100, pLinked, RulesClass::Instance->C4Warhead, true, pLinked->Owner);
 			if (auto dmgAnim = MapClass::SelectDamageAnimation(100, RulesClass::Instance->C4Warhead, LandType::Clear, coords))
-				GameCreate<AnimClass>(dmgAnim, coords, 0, 1, 0x2600, -15, 0)->Owner = pLinked->Owner;
+			{
+				auto const pAnim = GameCreate<AnimClass>(dmgAnim, coords, 0, 1, 0x2600, -15, 0);
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
+			}
 		}
 		lThis->Release();
 	}
@@ -194,7 +206,10 @@ DEFINE_HOOK(0x4B607D, DroppodLocomotionClass_ILoco_MoveTo, 0x8)
 	{
 		pLinked->PrimaryFacing.SetCurrent(DirStruct { DirType::South });
 		if (auto entryAnim = podType->AtmosphereEntry.Get(RulesClass::Instance->AtmosphereEntry))
-			GameCreate<AnimClass>(entryAnim, to)->Owner = pLinked->Owner;
+		{
+			auto const pAnim = GameCreate<AnimClass>(entryAnim, to);
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
+		}
 	}
 
 	return 0x4B61F0;

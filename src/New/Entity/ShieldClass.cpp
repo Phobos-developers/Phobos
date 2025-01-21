@@ -331,7 +331,7 @@ void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 
 	if (pAnimType)
 	{
-		const auto pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+		auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
 		AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
 		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 	}
