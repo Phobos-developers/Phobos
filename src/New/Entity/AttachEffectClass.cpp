@@ -314,11 +314,9 @@ void AttachEffectClass::CreateAnim()
 		this->Animation = pAnim;
 
 		if (this->Type->Animation_UseInvokerAsOwner)
-		{
-			auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-			pAnimExt->SetInvoker(Invoker);
-		}
-
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(Invoker);
+		else
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 	}
 }
 

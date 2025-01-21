@@ -183,13 +183,9 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 
 				if (pSpawnAnimType)
 				{
-					if (auto const pAnim = GameCreate<AnimClass>(pSpawnAnimType, location))
-					{
-						AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
-
-						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
-							pAnimExt->SetInvoker(pInvoker, pInvokerHouse);
-					}
+					auto const pAnim = GameCreate<AnimClass>(pSpawnAnimType, location);
+					AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
+					AnimExt::ExtMap.Find(pAnim)->SetInvoker(pInvoker, pInvokerHouse);
 				}
 
 				if (!pTechno->InLimbo)

@@ -287,6 +287,7 @@ void TechnoExt::ExtData::EatPassengers()
 						auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
 						pAnim->SetOwnerObject(pThis);
 						AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
+						AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThis);
 					}
 
 					// Check if there is money refund
@@ -570,16 +571,11 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 				offset = pThis->GetTechnoType()->MindControlRingOffset;
 
 			coords.Z += offset;
-			auto anim = GameCreate<AnimClass>(this->MindControlRingAnimType, coords, 0, 1);
+			pThis->MindControlRingAnim = GameCreate<AnimClass>(this->MindControlRingAnimType, coords, 0, 1);
+			pThis->MindControlRingAnim->SetOwnerObject(pThis);
 
-			if (anim)
-			{
-				pThis->MindControlRingAnim = anim;
-				pThis->MindControlRingAnim->SetOwnerObject(pThis);
-
-				if (pThis->WhatAmI() == AbstractType::Building)
-					pThis->MindControlRingAnim->ZAdjust = -1024;
-			}
+			if (pThis->WhatAmI() == AbstractType::Building)
+				pThis->MindControlRingAnim->ZAdjust = -1024;
 		}
 	}
 	else if (this->MindControlRingAnimType)
@@ -708,12 +704,9 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 	{
 		if (pVanishAnimation)
 		{
-			if (auto const pAnim = GameCreate<AnimClass>(pVanishAnimation, pThis->GetCoords()))
-			{
-				auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
-				pAnimExt->SetInvoker(pThis);
-			}
+			auto const pAnim = GameCreate<AnimClass>(pVanishAnimation, pThis->GetCoords());
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThis);
 		}
 
 		pThis->KillPassengers(pThis);

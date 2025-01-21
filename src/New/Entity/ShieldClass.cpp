@@ -330,7 +330,11 @@ void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
 
 	if (pAnimType)
-		GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+	{
+		const auto pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+		AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
+	}
 }
 
 bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
@@ -691,6 +695,7 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 
 			pAnim->SetOwnerObject(this->Techno);
 			AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 		}
 	}
 
@@ -780,6 +785,7 @@ void ShieldClass::CreateAnim()
 
 		pAnim->SetOwnerObject(this->Techno);
 		AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 		pAnim->RemainingIterations = 0xFFu;
 		this->IdleAnim = pAnim;
 	}
