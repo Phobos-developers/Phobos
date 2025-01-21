@@ -255,23 +255,30 @@ DEFINE_HOOK(0x6A6316, SidebarClass_AddCameo_SuperWeapon_SWSidebar, 0x6)
 	enum { ReturnFalse = 0x6A65FF };
 
 	GET_STACK(AbstractType, whatAmI, STACK_OFFSET(0x14, 0x4));
+
+	if (whatAmI != AbstractType::Special && whatAmI != AbstractType::SuperWeaponType && whatAmI != AbstractType::Super)
+		return 0;
+
 	GET_STACK(int, index, STACK_OFFSET(0x14, 0x8));
 
-	switch (whatAmI)
-	{
-	case AbstractType::Super:
-	case AbstractType::SuperWeaponType:
-	case AbstractType::Special:
-		if (SWSidebarClass::Instance.AddButton(index))
-			return ReturnFalse;
-
-		break;
-
-	default:
-		break;
-	}
+	if (SWSidebarClass::Instance.AddButton(index))
+		return ReturnFalse;
 
 	return 0;
+}
+
+DEFINE_HOOK(0x6AA790, StripClass_RecheckCameo_RemoveCameo, 0x6)
+{
+	enum { ShouldRemove = 0x6AA7B6, ShouldNotRemove = 0x6AAA68 };
+
+	GET(BuildType*, pItem, ESI);
+	const auto pCurrent = HouseClass::CurrentPlayer();
+	const auto& supers = pCurrent->Supers;
+
+	if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent && !SWSidebarClass::Instance.AddButton(pItem->ItemIndex))
+		return ShouldNotRemove;
+
+	return ShouldRemove;
 }
 
 DEFINE_HOOK(0x6A5082, SidebarClass_InitClear_InitializeSWSidebar, 0x5)
