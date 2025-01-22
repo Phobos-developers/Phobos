@@ -289,7 +289,6 @@ DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
 				if (newCenter != center)
 				{
 					pAI->BaseSpawnCell = newCenter;
-					pAI->Base.BaseNodes.Items->MapCoords = newCenter;
 					pAI->Base.Center = newCenter;
 				}
 			}
