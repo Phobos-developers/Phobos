@@ -140,7 +140,6 @@ DEFINE_HOOK(0x47342A, CargoClass_Attach_Hook_AfterLoad, 0x5)
 	auto const pPassenger = pTransport->Passengers.FirstPassenger; // At this point, ESI is no longer the passenger.
 	auto const pTransExt = TechnoExt::ExtMap.Find(pTransport);
 	auto const pPassExt = TechnoExt::ExtMap.Find(pPassenger);
-	auto const pPassTypeExt = pPassExt->TypeExtData;
 
 	// Set a pointer to the Bio Reactor.
 	if (auto pTransportBld = abstract_cast<BuildingClass*>(pTransport))
