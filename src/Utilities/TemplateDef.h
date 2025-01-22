@@ -1207,14 +1207,14 @@ namespace detail
 				{"Equal", ComparatorType::Equal},
 				{"Greater", ComparatorType::Greater},
 				{"GreaterEqual", ComparatorType::GreaterEqual},
-				{"Smaller", ComparatorType::Smaller},
-				{"SmallerEqual", ComparatorType::SmallerEqual},
+				{"Lower", ComparatorType::Lower},
+				{"LowerEqual", ComparatorType::LowerEqual},
 				{"NotEqual", ComparatorType::NotEqual},
 				{"e", ComparatorType::Equal},
 				{"g", ComparatorType::Greater},
 				{"ge", ComparatorType::GreaterEqual},
-				{"s", ComparatorType::Smaller},
-				{"se", ComparatorType::SmallerEqual},
+				{"l", ComparatorType::Lower},
+				{"le", ComparatorType::LowerEqual},
 				{"ne", ComparatorType::NotEqual},
 			};
 
@@ -1226,7 +1226,7 @@ namespace detail
 					return true;
 				}
 			}
-			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a comparator type (Equal|Greater|GreaterEqual|Smaller|SmallerEqual|NotEqual) can be abbrived as: (e|g|ge|s|se|ne)");
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a comparator type (Equal|Greater|GreaterEqual|Lower|LowerEqual|NotEqual) can be abbrived as: (e|g|ge|l|le|ne)");
 		}
 
 		return false;

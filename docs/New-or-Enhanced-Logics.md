@@ -572,7 +572,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
 		    <li>All comparason must pass. If it was a negative filter, all comparason must not pass.</li>
 		    <li>If the list sizes mismatch, the entire house compare filter is invalid and does not take effect.</li>
 		    <li>Supported house parameters are: <code>Credits|PowerSurplus|PowerOutput|PowerDrain</code></li>
-		    <li>Supported comparators are: <code>Equal|Greater|GreaterEqual|Smaller|SmallerEqual|NotEqual</code>; can be abbrived as: <code>e|g|ge|s|se|ne</code></li>
+		    <li>Supported comparators are: <code>Equal|Greater|GreaterEqual|Lower|LowerEqual|NotEqual</code>; can be abbrived as: <code>e|g|ge|l|le|ne</code></li>
 		  </ul>
 		</li>
       </ul>
@@ -760,7 +760,7 @@ Next=                                              ; EventHandlerType
 (actor).Filter.IsAI=                               ; boolean
 (actor).Filter.IsLowPower=                         ; boolean
 (actor).Filter.HouseCompare.Params=                ; list of house parameters (Credits|PowerSurplus|PowerOutput|PowerDrain)
-(actor).Filter.HouseCompare.Methods=               ; list of comparing methods (e|g|ge|s|se|ne) or (Equal|Greater|GreaterEqual|Smaller|SmallerEqual|NotEqual)
+(actor).Filter.HouseCompare.Methods=               ; list of comparing methods (e|g|ge|l|le|ne) or (Equal|Greater|GreaterEqual|Lower|LowerEqual|NotEqual)
 (actor).Filter.HouseCompare.Values=                ; list of integer
 
 ;; effects (techno) - weapon detonation

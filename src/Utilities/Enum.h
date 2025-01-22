@@ -329,8 +329,8 @@ enum class ComparatorType : byte
 	Equal = 1,
 	Greater = 2,
 	GreaterEqual = 3,
-	Smaller = 4,
-	SmallerEqual = 5,
+	Lower = 4,
+	LowerEqual = 5,
 	NotEqual = 6,
 };
 

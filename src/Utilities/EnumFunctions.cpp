@@ -155,9 +155,9 @@ bool EnumFunctions::HouseParameterCompare(HouseClass* pHouse, HouseParameterType
 		return param > value;
 	case ComparatorType::GreaterEqual:
 		return param >= value;
-	case ComparatorType::Smaller:
+	case ComparatorType::Lower:
 		return param < value;
-	case ComparatorType::SmallerEqual:
+	case ComparatorType::LowerEqual:
 		return param <= value;
 	case ComparatorType::NotEqual:
 		return param != value;

@@ -338,14 +338,14 @@ inline bool Parser<ComparatorType>::TryParse(const char* pValue, OutType* outVal
 		{"Equal", ComparatorType::Equal},
 		{"Greater", ComparatorType::Greater},
 		{"GreaterEqual", ComparatorType::GreaterEqual},
-		{"Smaller", ComparatorType::Smaller},
-		{"SmallerEqual", ComparatorType::SmallerEqual},
+		{"Lower", ComparatorType::Lower},
+		{"LowerEqual", ComparatorType::LowerEqual},
 		{"NotEqual", ComparatorType::NotEqual},
 		{"e", ComparatorType::Equal},
 		{"g", ComparatorType::Greater},
 		{"ge", ComparatorType::GreaterEqual},
-		{"s", ComparatorType::Smaller},
-		{"se", ComparatorType::SmallerEqual},
+		{"l", ComparatorType::Lower},
+		{"le", ComparatorType::LowerEqual},
 		{"ne", ComparatorType::NotEqual},
 	};
 
