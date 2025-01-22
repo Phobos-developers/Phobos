@@ -5,6 +5,7 @@
 #include <HouseClass.h>
 
 #include <Ext/TechnoType/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 bool EventExt::AddEvent()
 {
@@ -39,9 +40,16 @@ void EventExt::RespondToManualReloadEvent()
 		if (pTechno->Ammo > 0 && pTechno->IsAlive && !pTechno->Berzerk)
 		{
 			const auto pType = pTechno->GetTechnoType();
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-			if (pType && pTechno->Ammo != pType->Ammo && TechnoTypeExt::ExtMap.Find(pType)->CanManualReload)
+			if (pType && pTechno->Ammo != pType->Ammo && pTypeExt->CanManualReload)
 			{
+				if (pTypeExt->CanManualReload_DetonateWarhead && pTypeExt->CanManualReload_DetonateConsume > pTechno->Ammo)
+					WarheadTypeExt::DetonateAt(pTypeExt->CanManualReload_DetonateWarhead.Get(), pTechno->GetCoords(), pTechno, 1, pTechno->Owner, pTechno->Target);
+
+				if (pTypeExt->CanManualReload_ResetROF)
+					pTechno->RearmTimer.Stop();
+
 				pTechno->Ammo = 0;
 
 				if (pTechno->WhatAmI() != AbstractType::Aircraft)
