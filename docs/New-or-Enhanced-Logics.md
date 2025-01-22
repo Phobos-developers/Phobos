@@ -1372,7 +1372,7 @@ Convert.ComputerToHuman =   ; TechnoType
   - `CanManualReload` controls whether this type of techno can manually empty and reload ammo.
   - `CanManualReload.ResetROF` controls whether need to reset rearm timer when manually empty and reload ammo.
   - `CanManualReload.DetonateWarhead` controls whether need to detonate a warhead at the techno's location with 1 damage when manually empty and reload ammo.
-  - `CanManualReload.DetonateConsume` controls whether `CanManualReload.DetonateWarhead` require the techno to have more ammo than this value before reloading in order to detonate.
+  - `CanManualReload.DetonateConsume` controls whether `CanManualReload.DetonateWarhead` require the techno to have more ammo than this value (or equal to) before reloading in order to detonate.
   - For shortcut keys, see [User Interface -> Manually Reload](User-Interface.md#Manual-Reload).
 
 In `rulesmd.ini`:

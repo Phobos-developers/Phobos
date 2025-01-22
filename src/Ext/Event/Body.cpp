@@ -44,7 +44,7 @@ void EventExt::RespondToManualReloadEvent()
 
 			if (pType && pTechno->Ammo != pType->Ammo && pTypeExt->CanManualReload)
 			{
-				if (pTypeExt->CanManualReload_DetonateWarhead && pTypeExt->CanManualReload_DetonateConsume > pTechno->Ammo)
+				if (pTypeExt->CanManualReload_DetonateWarhead && pTypeExt->CanManualReload_DetonateConsume <= pTechno->Ammo)
 					WarheadTypeExt::DetonateAt(pTypeExt->CanManualReload_DetonateWarhead.Get(), pTechno->GetCoords(), pTechno, 1, pTechno->Owner, pTechno->Target);
 
 				if (pTypeExt->CanManualReload_ResetROF)
