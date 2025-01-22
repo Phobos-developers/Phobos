@@ -372,6 +372,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AggressiveStance.Read(exINI, pSection, "AggressiveStance");
 	this->AggressiveStance_Togglable.Read(exINI, pSection, "AggressiveStance.Togglable");
+	this->AggressiveStance_Exempt.Read(exINI, pSection, "AggressiveStance.Exempt");
 	this->VoiceEnterAggressiveStance.Read(exINI, pSection, "VoiceEnterAggressiveStance");
 	this->VoiceExitAggressiveStance.Read(exINI, pSection, "VoiceExitAggressiveStance");
 
@@ -731,6 +732,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AggressiveStance)
 		.Process(this->AggressiveStance_Togglable)
+		.Process(this->AggressiveStance_Exempt)
 		.Process(this->VoiceEnterAggressiveStance)
 		.Process(this->VoiceExitAggressiveStance)
 

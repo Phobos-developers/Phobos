@@ -1113,6 +1113,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]                           ; TechnoType
 AggressiveStance=false                 ; boolean
 AggressiveStance.Togglable=            ; boolean
+AggressiveStance.Exempt=               ; boolean
 VoiceEnterAggressiveStance=            ; sound entry
 VoiceExitAggressiveStance=             ; sound entry
 ```

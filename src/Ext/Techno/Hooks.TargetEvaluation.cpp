@@ -307,6 +307,15 @@ DEFINE_HOOK(0x6F858F, TechnoClass_EvaluateObject_AggressiveStance, 0x7)
 	if (pThis && pThis->Owner->IsControlledByHuman()
 		&& pTarget && pTarget->WhatAmI() == AbstractType::Building)
 	{
+		// Fallback to unmodded behavior if the building is an exempt of aggressive stance.
+		if (auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType()))
+		{
+			if (pTargetTypeExt->AggressiveStance_Exempt)
+			{
+				return 0;
+			}
+		}
+
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(pThis))
 		{
 			if (pTechnoExt->GetAggressiveStance())

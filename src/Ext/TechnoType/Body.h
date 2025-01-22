@@ -134,6 +134,7 @@ public:
 
 		Valueable<bool> AggressiveStance;
 		Nullable<bool> AggressiveStance_Togglable;
+		Valueable<bool> AggressiveStance_Exempt;
 		ValueableIdx<VocClass> VoiceEnterAggressiveStance;
 		ValueableIdx<VocClass> VoiceExitAggressiveStance;
 
@@ -330,6 +331,7 @@ public:
 
 			, AggressiveStance { false }
 			, AggressiveStance_Togglable {}
+			, AggressiveStance_Exempt { false }
 			, VoiceEnterAggressiveStance { -1 }
 			, VoiceExitAggressiveStance { -1 }
 

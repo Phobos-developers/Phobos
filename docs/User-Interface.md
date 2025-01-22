@@ -329,6 +329,7 @@ SelectionFlashDuration=0  ; integer, number of frames
   - A techno type can be made aggressive stance by default by `AggressiveStance=true`.
   - A techno type can be disallowed to toggle its aggressive stance by `AggressiveStance.Togglable=false`.
     - `AggressiveStance.Togglable` is default to false for engineers, agents, and technos without a weapon and is not open-topped. It is default to true for anything else.
+  - A building type can be the exempt of aggressive stance by setting `AggressiveStance.Exempt=true`, in which case units under aggressive stance will try to not attack it as if the units were not under aggressive stance. However, they will still attack the building if it was a defensive structure or an occupied civilian structure.
   - Upon enter aggressive stance, `VoiceEnterAggressiveStance` will be played. If not defined, `VoiceAttack` will be played.
   - Upon exit aggressive stance, `VoiceExitAggressiveStance` will be played. If not defined, no voice will be played.
 - For localization, add the following keys into your `.csf` file.
@@ -342,6 +343,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]                           ; TechnoType
 AggressiveStance=false                 ; boolean
 AggressiveStance.Togglable=            ; boolean
+AggressiveStance.Exempt=false          ; boolean
 VoiceEnterAggressiveStance=            ; sound entry
 VoiceExitAggressiveStance=             ; sound entry
 ```
