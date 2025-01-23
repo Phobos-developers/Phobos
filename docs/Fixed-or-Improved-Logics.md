@@ -496,6 +496,16 @@ Units.RepairPercent=  ; floating point value, percents or absolute
 Units.UseRepairCost=  ; boolean
 ```
 
+### Enable Building Production Queue
+
+- Buildings can now be able to queue up to construct like other units by setting `ExpandBuildingQueue` to true. Tip: If the building is not placed, it is the same as pausing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExpandBuildingQueue=false  ; boolean
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
