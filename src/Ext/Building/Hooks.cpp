@@ -521,19 +521,19 @@ DEFINE_HOOK(0x6F4D1A, TechnoClass_ReceiveCommand_Repair, 0x5)
 DEFINE_HOOK(0x6AB689, SelectClass_Action_SkipBuildingProductionCheck, 0x5)
 {
 	enum { SkipGameCode = 0x6AB6CE };
-	return RulesExt::Global()->ExpandBuildingQueue ? SkipGameCode : 0;
+	return RulesExt::Global()->BuildingProductionQueue ? SkipGameCode : 0;
 }
 
 DEFINE_HOOK(0x4FA520, HouseClass_BeginProduction_SkipBuilding, 0x5)
 {
 	enum { SkipGameCode = 0x4FA553 };
-	return RulesExt::Global()->ExpandBuildingQueue ? SkipGameCode : 0;
+	return RulesExt::Global()->BuildingProductionQueue ? SkipGameCode : 0;
 }
 
 DEFINE_HOOK(0x4C9C7B, FactoryClass_QueueProduction_ForceCheckBuilding, 0x7)
 {
 	enum { SkipGameCode = 0x4C9C9E };
-	return RulesExt::Global()->ExpandBuildingQueue ? SkipGameCode : 0;
+	return RulesExt::Global()->BuildingProductionQueue ? SkipGameCode : 0;
 }
 
 DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
@@ -588,7 +588,7 @@ DEFINE_HOOK(0x6A9789, StripClass_DrawStrip_NoGreyCameo, 0x6)
 	GET(TechnoTypeClass* const, pType, EBX);
 	GET_STACK(bool, clicked, STACK_OFFSET(0x48C, -0x475));
 
-	return (!RulesExt::Global()->ExpandBuildingQueue && pType->WhatAmI() == AbstractType::BuildingType && clicked) ? SkipGameCode : ContinueCheck;
+	return (!RulesExt::Global()->BuildingProductionQueue && pType->WhatAmI() == AbstractType::BuildingType && clicked) ? SkipGameCode : ContinueCheck;
 }
 
 #pragma endregion

@@ -95,7 +95,7 @@ public:
 
 		Valueable<bool> ExtendedAircraftMissions;
 
-		Valueable<bool> ExpandBuildingQueue;
+		Valueable<bool> BuildingProductionQueue;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -229,7 +229,7 @@ public:
 
 			, ExtendedAircraftMissions { false }
 
-			, ExpandBuildingQueue { false }
+			, BuildingProductionQueue { false }
 
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }

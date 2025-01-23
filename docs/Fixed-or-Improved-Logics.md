@@ -498,12 +498,16 @@ Units.UseRepairCost=  ; boolean
 
 ### Enable Building Production Queue
 
-- Buildings can now be able to queue up to construct like other units by setting `ExpandBuildingQueue` to true. Tip: If the building is not placed, it is the same as pausing.
+- Buildings can now be queued for construction like other units if `ExpandBuildingQueue` is set to true.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-ExpandBuildingQueue=false  ; boolean
+BuildingProductionQueue=false  ; boolean
+```
+
+```{note}
+When the building becomes ready to be placed, the next building's construction will not begin until the player places the current building.
 ```
 
 ## Particle systems
