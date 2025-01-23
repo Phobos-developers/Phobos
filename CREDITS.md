@@ -362,6 +362,7 @@ This page lists all the individual contributions to the project by their author.
   - `TurretOffset` support for SHP vehicles
   - Customizable rocker amplitude
   - Customizable wake anim
+  - Initial effort on optimization for crates' random distribution 
 - **Fryone**
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
