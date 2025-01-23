@@ -302,7 +302,7 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 ### `[ ]` Save Variables
 
-- Save local & global variables to an INI file. See [this](Miscellanous.html#save-variables-to-file) for details.
+- Save local & global variables to an INI file. See [this](Miscellanous.md#save-variables-to-file) for details.
 - For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Designator Range
@@ -314,7 +314,7 @@ SelectionFlashDuration=0  ; integer, number of frames
 - For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Frame By Frame Mode
-- Switches on/off [frame by frame mode](Miscellanous.html#frame-step-in).
+- Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
 ## Loading screen
