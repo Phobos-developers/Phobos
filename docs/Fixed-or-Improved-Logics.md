@@ -498,7 +498,7 @@ Units.UseRepairCost=  ; boolean
 
 ### Enable Building Production Queue
 
-- Buildings can now be queued for construction like other units if `ExpandBuildingQueue` is set to true.
+- Buildings can now be queued for construction like other units if `BuildingProductionQueue` is set to true.
 
 In `rulesmd.ini`:
 ```ini
