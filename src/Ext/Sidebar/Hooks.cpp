@@ -183,8 +183,8 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 				GET_STACK(RectangleStruct, surfaceRect, STACK_OFFSET(0x48C, -0x438));
 
 				const COLORREF color = Drawing::RGB_To_Int(Drawing::TooltipColor);
-				const TextPrintType printType = TextPrintType::Background | TextPrintType::Right | TextPrintType::FullShadow | TextPrintType::Point8;
-				auto textPosition = Point2D { destX + 60, destY + 1 };
+				const TextPrintType printType = TextPrintType::Background | TextPrintType::FullShadow | TextPrintType::Point8;
+				auto textPosition = Point2D { destX, destY + 1 };
 
 				wchar_t text[0x20];
 				swprintf_s(text, L"%d", count);
