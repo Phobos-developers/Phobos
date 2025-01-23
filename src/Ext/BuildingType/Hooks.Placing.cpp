@@ -730,7 +730,7 @@ static inline bool IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeCla
 }
 
 // Buildable-upon TechnoTypes Hook #4-2 -> sub_4FB0E0 - Check whether need to skip the clear command
-DEFINE_HOOK(0x4FB319, HouseClass_UnitFromFactory_SkipMouseClear, 0x5)
+DEFINE_HOOK(0x4FB339, HouseClass_UnitFromFactory_SkipMouseClear, 0x6)
 {
 	enum { SkipGameCode = 0x4FB4A0 };
 
@@ -740,9 +740,9 @@ DEFINE_HOOK(0x4FB319, HouseClass_UnitFromFactory_SkipMouseClear, 0x5)
 	{
 		if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 		{
-			if (const auto pBufferType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingTypeCopy))
+			if (const auto pCurrentType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingType))
 			{
-				if (!IsSameBuildingType(pBuilding->Type, pBufferType))
+				if (!IsSameBuildingType(pBuilding->Type, pCurrentType))
 					return SkipGameCode;
 			}
 		}
