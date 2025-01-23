@@ -380,6 +380,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Use 2D distance instead of 3D to check whether in air team members have arrived destination
   - Enhanced Straight trajectory
+  - Enable Building Production Queue
+  - Fix for sidebar not updating queued unit numbers when on hold
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
