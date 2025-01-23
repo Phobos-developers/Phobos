@@ -1147,21 +1147,24 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 	if (!pHouse->IsControlledByHuman())
 		return 0;
 
-	if (const auto pFactory = pHouse->Primary_ForBuildings)
+	if (pHouse->RecheckTechTree || !(Unsorted::CurrentFrame() % 15))
 	{
-		if (pFactory->IsDone())
+		if (const auto pFactory = pHouse->Primary_ForBuildings)
 		{
-			if (const auto pBuilding = abstract_cast<BuildingClass*>(pFactory->Object))
-				BuildingTypeExt::AutoPlaceBuilding(pBuilding);
+			if (pFactory->IsDone())
+			{
+				if (const auto pBuilding = abstract_cast<BuildingClass*>(pFactory->Object))
+					BuildingTypeExt::AutoPlaceBuilding(pBuilding);
+			}
 		}
-	}
 
-	if (const auto pFactory = pHouse->Primary_ForDefenses)
-	{
-		if (pFactory->IsDone())
+		if (const auto pFactory = pHouse->Primary_ForDefenses)
 		{
-			if (const auto pBuilding = abstract_cast<BuildingClass*>(pFactory->Object))
-				BuildingTypeExt::AutoPlaceBuilding(pBuilding);
+			if (pFactory->IsDone())
+			{
+				if (const auto pBuilding = abstract_cast<BuildingClass*>(pFactory->Object))
+					BuildingTypeExt::AutoPlaceBuilding(pBuilding);
+			}
 		}
 	}
 

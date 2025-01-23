@@ -457,7 +457,7 @@ bool BuildingTypeExt::AutoPlaceBuilding(BuildingClass* pBuilding)
 	const auto pType = pBuilding->Type;
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 
-	if (!pTypeExt->AutoBuilding)
+	if (!pTypeExt->AutoBuilding || pType->LaserFence || pType->Gate || pType->ToTile)
 		return false;
 
 	const auto pHouse = pBuilding->Owner;
@@ -465,89 +465,166 @@ bool BuildingTypeExt::AutoPlaceBuilding(BuildingClass* pBuilding)
 	if (pHouse->Buildings.Count <= 0)
 		return false;
 
+	const auto foundation = pType->GetFoundationData(true);
+
+	auto canBuildHere = [&pType, &pHouse, &foundation](CellStruct cell)
+	{
+		return reinterpret_cast<bool(__thiscall*)(MapClass*, BuildingTypeClass*, int, CellStruct*, CellStruct*)>(0x4A8EB0)(MapClass::Instance(),
+			pType, pHouse->ArrayIndex, foundation, &cell) // Adjacent
+			&& reinterpret_cast<bool(__thiscall*)(MapClass*, BuildingTypeClass*, int, CellStruct*, CellStruct*)>(0x4A9070)(MapClass::Instance(),
+			pType, pHouse->ArrayIndex, foundation, &cell); // NoShroud
+	};
+
 	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	if (pType->PowersUpBuilding[0])
+	auto getMapCell = [&pHouseExt](BuildingClass* pBuilding)
+	{
+		if (!pBuilding->IsAlive || pBuilding->Health <= 0 || !pBuilding->IsOnMap || pBuilding->InLimbo || pHouseExt->OwnsLimboDeliveredBuilding(pBuilding))
+			return CellStruct::Empty;
+
+		return pBuilding->GetMapCoords();
+	};
+
+	auto addPlaceEvent = [&pType, &pHouse](CellStruct cell)
+	{
+		const EventClass event (pHouse->ArrayIndex, EventType::Place, AbstractType::Building, pType->GetArrayIndex(), pType->Naval, cell);
+		EventClass::AddEvent(event);
+	};
+
+	if (pType->LaserFencePost || pType->Wall)
+	{
+		for (const auto& pOwned : pHouse->Buildings)
+		{
+			const auto pOwnedType = pOwned->Type;
+
+			if (!pOwnedType->ProtectWithWall)
+				continue;
+
+			const auto baseCell = getMapCell(pOwned);
+
+			if (baseCell == CellStruct::Empty)
+				continue;
+
+			const auto width = pOwnedType->GetFoundationWidth();
+			const auto height = pOwnedType->GetFoundationHeight(true);
+			auto cell = CellStruct::Empty;
+			int index = 0, check = width + 1, count = 0;
+
+			for (auto pFoundation = pOwnedType->FoundationOutside; *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
+			{
+				if (++index != check)
+					continue;
+
+				check += (++count & 1) ? 1 : (height * 2 + width + 1);
+				const auto outsideCell = baseCell + *pFoundation;
+				const auto pCell = MapClass::Instance->TryGetCellAt(outsideCell);
+
+				if (pCell && pCell->CanThisExistHere(pOwnedType->SpeedType, pOwnedType, pHouse) && canBuildHere(outsideCell))
+				{
+					addPlaceEvent(outsideCell);
+					return true;
+				}
+			}
+
+			for (auto pFoundation = pOwnedType->FoundationOutside; *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
+			{
+				const auto outsideCell = baseCell + *pFoundation;
+				const auto pCell = MapClass::Instance->TryGetCellAt(outsideCell);
+
+				if (pCell && pCell->CanThisExistHere(pOwnedType->SpeedType, pOwnedType, pHouse) && canBuildHere(outsideCell))
+					cell = outsideCell;
+			}
+
+			if (cell == CellStruct::Empty)
+				continue;
+
+			addPlaceEvent(cell);
+			return true;
+		}
+
+		return false;
+	}
+	else if (pType->PlaceAnywhere)
+	{
+		for (const auto& pOwned : pHouse->Buildings)
+		{
+			if (!pOwned->Type->BaseNormal)
+				continue;
+
+			const auto cell = getMapCell(pOwned);
+
+			if (cell == CellStruct::Empty || !canBuildHere(cell))
+				continue;
+
+			addPlaceEvent(cell);
+			return true;
+		}
+
+		return false;
+	}
+	else if (pType->PowersUpBuilding[0])
 	{
 		for (const auto& pOwned : pHouse->Buildings)
 		{
 			if (!reinterpret_cast<bool(__thiscall*)(BuildingClass*, BuildingTypeClass*, HouseClass*)>(0x452670)(pOwned, pType, pHouse)) // CanUpgradeBuilding
 				continue;
 
-			if (!pOwned->IsAlive || pOwned->Health <= 0 || !pOwned->IsOnMap || pOwned->InLimbo || pOwned->CurrentMission == Mission::Selling)
+			const auto cell = getMapCell(pOwned);
+
+			if (cell == CellStruct::Empty || pOwned->CurrentMission == Mission::Selling || !canBuildHere(cell))
 				continue;
 
-			const auto cell = pOwned->GetMapCoords();
-
-			if (cell == CellStruct::Empty || pHouseExt->OwnsLimboDeliveredBuilding(pOwned))
-				continue;
-
-			const EventClass event
-			(
-				pHouse->ArrayIndex,
-				EventType::Place,
-				AbstractType::Building,
-				pType->GetArrayIndex(),
-				pType->Naval,
-				cell
-			);
-			EventClass::AddEvent(event);
-
+			addPlaceEvent(cell);
 			return true;
 		}
+
+		return false;
 	}
-	else
+
+	const auto buildGap = static_cast<short>(pTypeExt->AutoBuilding_Gap + pType->ProtectWithWall ? 1 : 0);
+	const auto doubleGap = buildGap * 2;
+	const auto width = pType->GetFoundationWidth() + doubleGap;
+	const auto height = pType->GetFoundationHeight(true) + doubleGap;
+	const auto speedType = pType->SpeedType == SpeedType::Float ? SpeedType::Float : SpeedType::Track;
+	const auto buildable = speedType != SpeedType::Float;
+
+	auto tryBuildAt = [&](DynamicVectorClass<BuildingClass*>& vector, bool baseNormal)
 	{
-		const auto speedType = pType->Naval ? SpeedType::Float : SpeedType::Track;
-		const auto buildGap = pTypeExt->AutoBuilding_Gap * 2;
-		const auto width = pType->GetFoundationWidth() + buildGap;
-		const auto height = pType->GetFoundationHeight(false) + buildGap;
-		const auto offset = CellSpread::GetNeighbourOffset(Unsorted::CurrentFrame() & 7u);
-		const auto buildOffset = CellStruct { static_cast<short>(pTypeExt->AutoBuilding_Gap), static_cast<short>(pTypeExt->AutoBuilding_Gap) };
-		const auto foundation = pType->GetFoundationData(true);
-
-		for (const auto& pOwned : pHouse->Buildings)
+		for (const auto& pBase : vector)
 		{
-			if (!pOwned->IsAlive || pOwned->Health <= 0 || !pOwned->IsOnMap || pOwned->InLimbo || pOwned->CurrentMission == Mission::Selling)
+			if (baseNormal && !pBase->Type->BaseNormal)
 				continue;
 
-			const auto baseCell = pOwned->GetMapCoords();
+			const auto baseCell = getMapCell(pBase);
 
-			if (baseCell == CellStruct::Empty || !pOwned->Type->BaseNormal || pHouseExt->OwnsLimboDeliveredBuilding(pOwned))
+			if (baseCell == CellStruct::Empty)
 				continue;
 
+			// TODO The construction area does not actually need to be so large, the surrounding space should be able to be occupied by other things
+			// TODO It would be better if the Buildable check could be fit with ExpandBuildingPlace within this function.
+			// TODO Similarly, it would be better if the following Adjacent & NoShroud check could be made within this function.
 			auto cell = pType->PlaceAnywhere ? baseCell : MapClass::Instance->NearByLocation(baseCell, speedType, -1, MovementZone::Normal, false,
-				width, height, false, false, false, false, (baseCell + offset), false, true);
+				width, height, false, false, false, false, CellStruct::Empty, false, buildable);
 
 			if (cell == CellStruct::Empty)
-				break;
+				return false;
 
-			cell += buildOffset;
+			cell += CellStruct { buildGap, buildGap };
 
-			if (!reinterpret_cast<bool(__thiscall*)(MapClass*, BuildingTypeClass*, int, CellStruct*, CellStruct*)>(0x4A8EB0)(MapClass::Instance(),
-				pType, pHouse->ArrayIndex, foundation, &cell) // Adjacent
-				|| !reinterpret_cast<bool(__thiscall*)(MapClass*, BuildingTypeClass*, int, CellStruct*, CellStruct*)>(0x4A9070)(MapClass::Instance(),
-				pType, pHouse->ArrayIndex, foundation, &cell)) // NoShroud
-			{
+			if (!canBuildHere(cell))
 				continue;
-			}
 
-			const EventClass event
-			(
-				pHouse->ArrayIndex,
-				EventType::Place,
-				AbstractType::Building,
-				pType->GetArrayIndex(),
-				pType->Naval,
-				cell
-			);
-			EventClass::AddEvent(event);
-
+			addPlaceEvent(cell);
 			return true;
 		}
-	}
 
-	return false;
+		return false;
+	};
+
+	if (pHouse->ConYards.Count > 0 && tryBuildAt(pHouse->ConYards, false))
+		return true;
+
+	return tryBuildAt(pHouse->Buildings, true);
 }
 
 bool BuildingTypeExt::BuildLimboBuilding(BuildingClass* pBuilding)
