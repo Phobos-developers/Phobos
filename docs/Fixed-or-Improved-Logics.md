@@ -496,20 +496,6 @@ Units.RepairPercent=  ; floating point value, percents or absolute
 Units.UseRepairCost=  ; boolean
 ```
 
-### Enable Building Production Queue
-
-- Buildings can now be queued for construction like other units if `BuildingProductionQueue` is set to true.
-
-In `rulesmd.ini`:
-```ini
-[General]
-BuildingProductionQueue=false  ; boolean
-```
-
-```{note}
-When the building becomes ready to be placed, the next building's construction will not begin until the player places the current building.
-```
-
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
