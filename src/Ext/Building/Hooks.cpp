@@ -530,6 +530,12 @@ DEFINE_HOOK(0x4FA520, HouseClass_BeginProduction_SkipBuilding, 0x5)
 	return RulesExt::Global()->BuildingProductionQueue ? SkipGameCode : 0;
 }
 
+DEFINE_HOOK(0x4FA612, HouseClass_BeginProduction_ForceRedrawStrip, 0x5)
+{
+	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+	return 0;
+}
+
 DEFINE_HOOK(0x4C9C7B, FactoryClass_QueueProduction_ForceCheckBuilding, 0x7)
 {
 	enum { SkipGameCode = 0x4C9C9E };
@@ -553,6 +559,7 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 
 		if (firstRemoved)
 		{
+			SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
 			SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
 
 			if (all)
@@ -567,7 +574,13 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 	if (!pFactory->Object)
 		return SkipCheck;
 
-	return pFactory->RemoveOneFromQueue(TechnoTypeClass::GetByTypeAndIndex(absType, index)) ? Return : CheckSame;
+	if (!pFactory->RemoveOneFromQueue(TechnoTypeClass::GetByTypeAndIndex(absType, index)))
+		return CheckSame;
+
+	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+	SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+
+	return Return;
 }
 
 DEFINE_HOOK(0x6A9C54, StripClass_DrawStrip_FindFactoryDehardCode, 0x6)
