@@ -10,6 +10,8 @@
 
 class EventHandlerTypeClass;
 
+class PlayerEmblemTypeClass;
+
 // AE discard condition
 enum class DiscardCondition : unsigned char
 {

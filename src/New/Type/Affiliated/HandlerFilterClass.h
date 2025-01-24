@@ -5,6 +5,8 @@
 
 class AttachEffectTypeClass;
 
+class PlayerEmblemTypeClass;
+
 class HandlerFilterClass
 {
 public:
