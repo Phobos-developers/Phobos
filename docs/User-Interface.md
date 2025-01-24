@@ -318,18 +318,17 @@ SelectionFlashDuration=0  ; integer, number of frames
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Aggressive Stance
-- Switches on/off aggressive stance for selected units and structures.
-  - Much like how the deploy command work on G.I.s. If all selected technos that may toggle aggressive stance are already aggressive stance, they will exit it, otherwise they will enter it.
+- By default, units will not actively attack unarmed enemy buildings. This hotkey can switch on/off aggressive stance for selected units and structures, allowing them to actively attack unarmed enemy buildings.
+  - Much like how the deploy command works on G.I.s. If all selected units and/or structures (that may toggle aggressive stance) are already aggressive stance, they will exit it, otherwise they will enter it.
 - Under aggressive stance, units and structures will target unarmed enemy buildings if no enemy units or defensive structures can be targeted.
-  - Aggressive stance does not reset even when the techno changes ownership.
-  - Aggressive stance has no effect if the techno is controlled by the AI.
+  - Aggressive stance has no effect if the techno is controlled by the AI, has no weapon that can target a building, or does not passively attack at all.
   - The passengers of open-topped transports will obey the aggressive stance configuration of the transports.
-  - Aggressive stance doesn't make a unit aggressively attack if `CanPassiveAquire=no`. However they will obey aggressive stance when ordered to attack-move.
+  - Aggressive stance does not reset when the techno changes ownership.
 - Techno types can have further customizations about aggressive stance.
   - A techno type can be made aggressive stance by default by `AggressiveStance=true`.
   - A techno type can be disallowed to toggle its aggressive stance by `AggressiveStance.Togglable=false`.
     - `AggressiveStance.Togglable` is default to false for engineers, agents, and technos without a weapon and is not open-topped. It is default to true for anything else.
-  - A building type can be the exempt of aggressive stance by setting `AggressiveStance.Exempt=true`, in which case units under aggressive stance will try to not attack it as if the units were not under aggressive stance. However, they will still attack the building if it was a defensive structure or an occupied civilian structure.
+  - A building type can be the exempt of aggressive stance by setting `AggressiveStance.Exempt=true`, in which case technos under aggressive stance will try to not attack it as if they were not aggressive stance. However, they will still attack the building if it was a defensive structure or an occupied civilian structure.
   - Upon enter aggressive stance, `VoiceEnterAggressiveStance` will be played. If not defined, `VoiceAttack` will be played.
   - Upon exit aggressive stance, `VoiceExitAggressiveStance` will be played. If not defined, no voice will be played.
 - For localization, add the following keys into your `.csf` file.
