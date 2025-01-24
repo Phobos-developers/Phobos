@@ -454,6 +454,9 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 bool BuildingTypeExt::AutoPlaceBuilding(BuildingClass* pBuilding)
 {
+	if (!Phobos::Config::AutoBuilding_Enable)
+		return false;
+
 	const auto pType = pBuilding->Type;
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 

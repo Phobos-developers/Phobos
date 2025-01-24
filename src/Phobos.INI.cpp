@@ -45,6 +45,7 @@ bool Phobos::Config::ShowPlacementPreview = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
 bool Phobos::Config::RealTimeTimers = false;
 bool Phobos::Config::RealTimeTimers_Adaptive = false;
+bool Phobos::Config::AutoBuilding_Enable = true;
 int Phobos::Config::CampaignDefaultGameSpeed = 2;
 bool Phobos::Config::SkirmishUnlimitedColors = false;
 bool Phobos::Config::ShowDesignatorRange = false;
