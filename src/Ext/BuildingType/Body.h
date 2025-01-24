@@ -65,6 +65,8 @@ public:
 		Valueable<int> SellBuildupLength;
 		Valueable<bool> IsDestroyableObstacle;
 
+		Nullable<bool> Cameo_ShouldCount;
+
 		std::vector<std::optional<DirType>> AircraftDockingDirs;
 
 		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
@@ -118,6 +120,7 @@ public:
 			, ConsideredVehicle {}
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
+			, Cameo_ShouldCount {}
 			, AircraftDockingDirs {}
 			, FactoryPlant_AllowTypes {}
 			, FactoryPlant_DisallowTypes {}

@@ -392,6 +392,7 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
 - A setting that allows you to preview information. This feature can be used as before, playing "new construction options" and clearing the specific production queue when prerequisites loss.
   - `Cameo.AlwaysExist` controls whether you can see the cameo when the prerequisite have not satisfied (`TechnoLevel`, `Owner`, `RequiredHouses` and `ForbiddenHouses` should be satisfied). Defaults to `[AudioVisual]` -> `Cameo.AlwaysExist`.
   - `ShowBuildingStatistics` controls whether the number of buildings of this type that you currently own needs to be displayed in the upper left corner of the building cameo (requires the cameo exist).
+    - `Cameo.ShouldCount` controls whether this type of building need to count if `ShowBuildingStatistics=true`. Default to check if building's own `BuildCat` is not `Combat` or `BuildLimit` is not zero.
   - `Cameo.OverlayShapes` controls the drawn image file.
   - `Cameo.OverlayFrames` controls which frame in `Cameo.OverlayShapes` to draw in three different situations: currently owned this building type, grey cameo and have its prerequisite, grey cameo but have no prerequisite (The last situation requires `Cameo.AlwaysExist` to be true). When set to a negative number, it means that there is no need to draw under the corresponding conditions.
   - `Cameo.OverlayPalette` the color palette used when drawing `Cameo.OverlayShapes`.
@@ -418,6 +419,9 @@ Cameo.AlwaysExist=               ; boolean
 Cameo.AuxTechnos=                ; List of TechnoTypes
 Cameo.NegTechnos=                ; List of TechnoTypes
 UIDescription.Unbuildable=       ; CSF entry key
+
+[SOMEBUILDING]                   ; BuildingType
+Cameo.ShouldCount=               ; boolean
 ```
 
 In `artmd.ini`:

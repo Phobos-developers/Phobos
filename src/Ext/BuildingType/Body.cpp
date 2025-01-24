@@ -274,6 +274,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Units_RepairPercent.Read(exINI, pSection, "Units.RepairPercent");
 	this->Units_UseRepairCost.Read(exINI, pSection, "Units.UseRepairCost");
 
+	this->Cameo_ShouldCount.Read(exINI, pSection, "Cameo.ShouldCount");
+
 	this->NoBuildAreaOnBuildup.Read(exINI, pSection, "NoBuildAreaOnBuildup");
 	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
 	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
@@ -391,6 +393,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ConsideredVehicle)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
+		.Process(this->Cameo_ShouldCount)
 		.Process(this->AircraftDockingDirs)
 		.Process(this->FactoryPlant_AllowTypes)
 		.Process(this->FactoryPlant_DisallowTypes)
