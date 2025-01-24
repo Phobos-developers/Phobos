@@ -1,5 +1,4 @@
 #include "EnumFunctions.h"
-#include "Debug.h"
 
 bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse)
 {
