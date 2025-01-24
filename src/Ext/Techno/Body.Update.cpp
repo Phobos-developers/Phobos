@@ -839,6 +839,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		{
 			auto const attachEffect = it->get();
 			existingAETypes.insert(attachEffect->GetType());
+			++it;
 		}
 		for (auto pEmblemType : pOwnerExt->PlayerEmblems_HasAutoAE)
 		{

@@ -109,10 +109,10 @@ HouseClass* HandlerCompClass::GetOwningHouseOfActor(AbstractClass* pTarget)
 	{
 		return static_cast<HouseClass*>(pTarget);
 	}
-	else if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+	/*else if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
 		return pTargetTechno->Owner;
-	}
+	}*/
 	else
 	{
 		return pTarget->GetOwningHouse();

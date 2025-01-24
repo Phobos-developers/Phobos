@@ -632,7 +632,7 @@ void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwn
 
 		if (refreshAutoAEFlag)
 		{
-			pTargetExt->UpdatePlayerEmblemBuildOptions();
+			pTargetExt->UpdateAutoAttachEffects();
 		}
 	}
 }
