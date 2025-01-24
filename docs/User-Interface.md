@@ -15,6 +15,8 @@ This page lists all user interface additions, changes, fixes that are implemente
 You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
 ```
 
+- Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold.
+
 ## Audio
 
 - You can now specify which soundtrack themes would play on win or lose.
@@ -335,6 +337,24 @@ DisableEmptySpawnPositions=false  ; boolean
 ```
 
 ## Sidebar / Battle UI
+
+
+### Building Production Queue
+
+![Building Production Queue](static/images/image.png)
+*Queueing multiple buildings*
+
+- Buildings can now be queued for construction like other units if `BuildingProductionQueue` is set to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingProductionQueue=false  ; boolean
+```
+
+```{note}
+When the building becomes ready to be placed, the next building's construction will not begin until the player places the current building.
+```
 
 ### Cameo Sorting
 

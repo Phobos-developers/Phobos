@@ -362,6 +362,7 @@ This page lists all the individual contributions to the project by their author.
   - `TurretOffset` support for SHP vehicles
   - Customizable rocker amplitude
   - Customizable wake anim
+  - Initial effort on optimization for crates' random distribution
 - **Fryone**
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
@@ -379,6 +380,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Use 2D distance instead of 3D to check whether in air team members have arrived destination
   - Enhanced Straight trajectory
+  - Enable Building Production Queue
+  - Fix for sidebar not updating queued unit numbers when on hold
   - Grey cameo preview and cameo overlays
 - **Ollerus**
   - Build limit group enhancement

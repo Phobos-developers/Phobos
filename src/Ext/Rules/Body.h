@@ -99,6 +99,8 @@ public:
 		CustomPalette Cameo_OverlayPalette;
 		Valueable<bool> ExtendedAircraftMissions;
 
+		Valueable<bool> BuildingProductionQueue;
+
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
 		Valueable<bool> ForbidParallelAIQueues_Building;
@@ -234,6 +236,8 @@ public:
 			, Cameo_OverlayFrames { { -1, -1, -1 } }
 			, Cameo_OverlayPalette {}
 			, ExtendedAircraftMissions { false }
+
+			, BuildingProductionQueue { false }
 
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
