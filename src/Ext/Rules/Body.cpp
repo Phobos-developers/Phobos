@@ -402,6 +402,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarheadParticleAlphaImageIsLightFlash)
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->LightFlashAlphaImageDetailLevel)
+		.Process(this->InfantryPlayDieSoundWhenCrushed)
 		;
 }
 
