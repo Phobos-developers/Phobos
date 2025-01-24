@@ -13,6 +13,12 @@ bool PlayerEmblemTypeClass::AlterBuildOptions() const
 		|| !this->BuildOptions_Disallow.empty();
 }
 
+bool PlayerEmblemTypeClass::AutoCreateAttachEffects() const
+{
+	return !this->AttachEffect_AttachTypes.empty()
+		&& !this->AttachEffect_TechnoTypes.empty();
+}
+
 void PlayerEmblemTypeClass::InvokeEventHandlers(EventTypeClass* pEventType, HouseClass* pHouse) const
 {
 	if (this->EventHandlersMap.contains(pEventType))
@@ -41,6 +47,10 @@ void PlayerEmblemTypeClass::LoadFromINI(CCINIClass* pINI)
 	// Build Options
 	this->BuildOptions_Allow.Read(exINI, pSection, "BuildOptions.Allow");
 	this->BuildOptions_Disallow.Read(exINI, pSection, "BuildOptions.Disallow");
+
+	// Attach Effect
+	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
+	this->AttachEffect_TechnoTypes.Read(exINI, pSection, "AttachEffect.TechnoTypes");
 }
 
 template <typename T>
@@ -50,6 +60,8 @@ void PlayerEmblemTypeClass::Serialize(T& Stm)
 		.Process(this->BuildOptions_Allow)
 		.Process(this->BuildOptions_Disallow)
 		.Process(this->EventHandlersMap)
+		.Process(this->AttachEffect_AttachTypes)
+		.Process(this->AttachEffect_TechnoTypes)
 		.Success();
 }
 

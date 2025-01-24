@@ -7,6 +7,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/House/Body.h>
 
 std::vector<AttachEffectClass*> AttachEffectClass::Array;
 
@@ -457,6 +458,27 @@ bool AttachEffectClass::ShouldBeDiscardedNow() const
 			if ((inRange && distanceFromTgt <= distance) || (outOfRange && distanceFromTgt >= distance))
 				return true;
 		}
+	}
+
+	if (!this->Type->Discard_HasEmblem.empty() || !this->Type->Discard_HasNoEmblem.empty())
+	{
+		auto const pOwnerExt = HouseExt::ExtMap.Find(pTechno->Owner);
+		for (auto pEmblemType : this->Type->Discard_HasEmblem)
+		{
+			if (pOwnerExt->PlayerEmblems.contains(pEmblemType))
+				return true;
+		}
+		auto hasNoEmblemFlag = true;
+		for (auto pEmblemType : this->Type->Discard_HasNoEmblem)
+		{
+			if (pOwnerExt->PlayerEmblems.contains(pEmblemType))
+			{
+				hasNoEmblemFlag = false;
+				break;
+			}
+		}
+		if (hasNoEmblemFlag)
+			return true;
 	}
 
 	return false;

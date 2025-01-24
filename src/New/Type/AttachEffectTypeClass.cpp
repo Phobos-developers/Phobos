@@ -101,6 +101,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Powered.Read(exINI, pSection, "Powered");
 	this->DiscardOn.Read(exINI, pSection, "DiscardOn");
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
+	this->Discard_HasEmblem.Read(exINI, pSection, "Discard.HasEmblem");
+	this->Discard_HasNoEmblem.Read(exINI, pSection, "Discard.HasNoEmblem");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->PenetratesForceShield.Read(exINI, pSection, "PenetratesForceShield");
 
@@ -171,6 +173,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Powered)
 		.Process(this->DiscardOn)
 		.Process(this->DiscardOn_RangeOverride)
+		.Process(this->Discard_HasEmblem)
+		.Process(this->Discard_HasNoEmblem)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->PenetratesForceShield)
 		.Process(this->Animation)

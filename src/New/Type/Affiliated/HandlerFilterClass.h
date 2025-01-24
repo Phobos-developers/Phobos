@@ -38,6 +38,7 @@ public:
 	Nullable<AffectedHouse> House;
 	ValueableVector<SideClass*> Sides;
 	ValueableVector<HouseTypeClass*> Countries;
+	ValueableVector<PlayerEmblemTypeClass*> Emblems;
 	ValueableVector<BuildingTypeClass*> Buildings;
 	Nullable<bool> IsHuman;
 	Nullable<bool> IsAI;

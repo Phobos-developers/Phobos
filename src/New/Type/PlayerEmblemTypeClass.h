@@ -15,13 +15,19 @@ public:
 	ValueableVector<TechnoTypeClass*> BuildOptions_Allow;
 	ValueableVector<TechnoTypeClass*> BuildOptions_Disallow;
 
+	ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
+	ValueableVector<TechnoTypeClass*> AttachEffect_TechnoTypes;
+
 	PlayerEmblemTypeClass(const char* pTitle = NONE_STR) : Enumerable<PlayerEmblemTypeClass>(pTitle)
 		, EventHandlersMap {}
 		, BuildOptions_Allow {}
 		, BuildOptions_Disallow {}
+		, AttachEffect_AttachTypes {}
+		, AttachEffect_TechnoTypes {}
 	{}
 
 	bool AlterBuildOptions() const;
+	bool AutoCreateAttachEffects() const;
 	void InvokeEventHandlers(EventTypeClass* pEventType, HouseClass* pHouse) const;
 
 	void LoadFromINI(CCINIClass* pINI);

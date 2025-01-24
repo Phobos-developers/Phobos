@@ -597,6 +597,23 @@ void HouseExt::ExtData::UpdatePlayerEmblemBuildOptions()
 	this->OwnerObject()->RecheckTechTree = true;
 }
 
+void HouseExt::ExtData::UpdateAutoAttachEffects()
+{
+	PlayerEmblems_HasAutoAE.clear();
+	PlayerEmblems_AutoAETarget.clear();
+	for (auto const pEmblemType : PlayerEmblems)
+	{
+		if (pEmblemType->AutoCreateAttachEffects())
+		{
+			PlayerEmblems_HasAutoAE.insert(pEmblemType);
+			for (auto const pTechnoType : pEmblemType->AttachEffect_TechnoTypes)
+			{
+				PlayerEmblems_AutoAETarget.insert(pTechnoType);
+			}
+		}
+	}
+}
+
 void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	const char* pSection = this->OwnerObject()->PlainName;
@@ -650,6 +667,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlayerEmblems)
 		.Process(this->PlayerEmblems_BuildOptions_Allowed)
 		.Process(this->PlayerEmblems_BuildOptions_Disallowed)
+		.Process(this->PlayerEmblems_HasAutoAE)
+		.Process(this->PlayerEmblems_AutoAETarget)
 		;
 }
 

@@ -50,6 +50,8 @@ public:
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
 	Nullable<Leptons> DiscardOn_RangeOverride;
+	ValueableVector<PlayerEmblemTypeClass*> Discard_HasEmblem;
+	ValueableVector<PlayerEmblemTypeClass*> Discard_HasNoEmblem;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	Valueable<AnimTypeClass*> Animation;
@@ -103,6 +105,8 @@ public:
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
+		, Discard_HasEmblem {}
+		, Discard_HasNoEmblem {}
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, Animation {}

@@ -42,13 +42,13 @@ public:
 	static int DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
 
+	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
+		AbstractClass* pSource, AEAttachParams const& attachInfo);
+
 private:
 	void OnlineCheck();
 	void CloakCheck();
 	void AnimCheck();
-
-	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
-		AbstractClass* pSource, AEAttachParams const& attachInfo);
 
 	static int DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo, std::vector<AttachEffectTypeClass*> const& types);
 	static int RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount);

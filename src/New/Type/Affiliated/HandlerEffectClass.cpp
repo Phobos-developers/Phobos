@@ -595,6 +595,7 @@ void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwn
 		auto const pTargetExt = HouseExt::ExtMap.Find(pTarget);
 
 		bool refreshBuildOptionsFlag = false;
+		bool refreshAutoAEFlag = false;
 
 		if (!PlayerEmblem_AttachTypes.empty())
 		{
@@ -605,6 +606,7 @@ void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwn
 					pTargetExt->PlayerEmblems.insert(pEmblemType);
 					pEmblemType->InvokeEventHandlers(EventTypeClass::WhenAttach, pTarget);
 					refreshBuildOptionsFlag = refreshBuildOptionsFlag || pEmblemType->AlterBuildOptions();
+					refreshAutoAEFlag = refreshAutoAEFlag || pEmblemType->AutoCreateAttachEffects();
 				}
 			}
 		}
@@ -618,11 +620,17 @@ void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwn
 					pTargetExt->PlayerEmblems.erase(pEmblemType);
 					pEmblemType->InvokeEventHandlers(EventTypeClass::WhenDetach, pTarget);
 					refreshBuildOptionsFlag = refreshBuildOptionsFlag || pEmblemType->AlterBuildOptions();
+					refreshAutoAEFlag = refreshAutoAEFlag || pEmblemType->AutoCreateAttachEffects();
 				}
 			}
 		}
 
 		if (refreshBuildOptionsFlag)
+		{
+			pTargetExt->UpdatePlayerEmblemBuildOptions();
+		}
+
+		if (refreshAutoAEFlag)
 		{
 			pTargetExt->UpdatePlayerEmblemBuildOptions();
 		}

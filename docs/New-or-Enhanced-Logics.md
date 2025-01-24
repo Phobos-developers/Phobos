@@ -26,6 +26,10 @@ This page describes all the engine features that are either new and introduced b
     - `Animation.TemporalAction` determines what happens to the animation when the attached object is under effect of `Temporal=true` Warhead.
     - `Animation.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the animation's owner & invoker instead of the object the effect is attached to.
     - `Animation.HideIfAttachedWith` contains list of other AttachEffectTypes that if attached to same techno as the current one, will hide this effect's animation.
+  - `Discard.HasEmblem` and `Discard.HasNoEmblem` can be used to discard this attach effect when the techno's owning house has or has not an emblem type.
+    - The attach effect is discarded if the owning house has any one emblem listed in `Discard.HasEmblem`.
+    - The attach effect is discarded if the owning house has no any emblems listed in `Discard.HasNoEmblem`.
+    - See See [Player Emblems](#player-emblems) for more info about Player Emblems.
   - `CumulativeAnimations` can be used to declare a list of animations used for `Cumulative=true` types instead of `Animation`. An animation is picked from the list in order matching the number of active instances of the type on the object, with last listed animation used if number is higher than the number of listed animations. This animation is only displayed once and is transferred from the effect to another of same type (specifically one with longest remaining duration), if such exists, upon expiration or removal. Note that because `Cumulative.MaxCount` limits the number of effects of same type that can be applied this can cause animations to 'flicker' here as effects expire before new ones can be applied in some circumstances.
     - `CumulativeAnimations.RestartOnChange` determines if the animation playback is restarted when the type of animation changes, if not then playback resumes at frame at same position relative to the animation's length.
   - Attached effect can fire off a weapon when expired / removed / object dies by setting `ExpireWeapon`.
@@ -87,6 +91,8 @@ Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
 DiscardOn=none                                     ; list of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
+Discard.HasEmblem=                                 ; list of PlayerEmblemTypes
+Discard.HasNoEmblem=                               ; list of PlayerEmblemTypes
 PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
 Animation=                                         ; Animation
@@ -578,19 +584,20 @@ TriggerN.EventHandler=...                          ; EventHandlerType
         <li><code>*.House</code>: The house's relation with the handler's owner. <i>(none|owner/self|allies/ally|team|enemies/enemy|all)</i></li>
         <li><code>*.Sides</code>: The house's country is any of the listed sides.</li>
         <li><code>*.Countries</code>: The house's country is any of the listed countries.</li>
+        <li><code>*.Emblems</code>: The house has any emblem in the list.</li>
         <li><code>*.Buildings</code>: The house has a building that is any of the listed BuildingTypes. Building upgrades count.</li>
         <li><code>*.IsHuman</code>: The house is human controlled.</li>
         <li><code>*.IsAI</code>: The house is AI controlled.</li>
         <li><code>*.IsLowPower</code>: The house is at low power.</li>
         <li>
-		  <code>*.HouseCompare.Params/Methods/Values</code>: Compares the house's properties with an integer.
-		  <ul>
-		    <li>The three entries are all lists that support multiple inputs separated by comma (<code>,</code>). If the list sizes mismatch, the entire house compare filter is void.</li>
-		    <li>All comparason must pass. If it was a negative filter, all comparason must not pass.</li>
-		    <li>Supported house parameters are: <code>Credits|PowerSurplus|PowerOutput|PowerDrain</code></li>
-		    <li>Supported comparators are: <code>Equal|Greater|GreaterEqual|Lower|LowerEqual|NotEqual</code>; can be abbrived as: <code>e|g|ge|l|le|ne</code></li>
-		  </ul>
-		</li>
+          <code>*.HouseCompare.Params/Methods/Values</code>: Compares the house's properties with an integer.
+          <ul>
+            <li>The three entries are all lists that support multiple inputs separated by comma (<code>,</code>). If the list sizes mismatch, the entire house compare filter is void.</li>
+            <li>All comparason must pass. If it was a negative filter, all comparason must not pass.</li>
+            <li>Supported house parameters are: <code>Credits|PowerSurplus|PowerOutput|PowerDrain</code></li>
+            <li>Supported comparators are: <code>Equal|Greater|GreaterEqual|Lower|LowerEqual|NotEqual</code>; can be abbrived as: <code>e|g|ge|l|le|ne</code></li>
+          </ul>
+        </li>
       </ul>
     </details>
 - Effects:
@@ -700,7 +707,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
             <li>Player Emblems can be granted to the house.</li>
             <li><code>*.PlayerEmblem.AttachTypes</code> is a list of Player Emblem Types that will be granted to the player.</li>
             <li><code>*.PlayerEmblem.RemoveTypes</code> is a list of Player Emblem Types that will be removed from the player.</li>
-			<li>See <a href="#player-emblems">Player Emblems</a> for details.</li>
+            <li>See <a href="#player-emblems">Player Emblems</a> for details.</li>
           </ul>
         </li>
       </ol>
@@ -780,6 +787,7 @@ Next=                                              ; EventHandlerType
 (actor).Filter.House=                              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 (actor).Filter.Sides=                              ; list of Sides
 (actor).Filter.Countries=                          ; list of Countries
+(actor).Filter.Emblems=                            ; list of PlayerEmblemTypes
 (actor).Filter.Buildings=                          ; list of BuildingTypes
 (actor).Filter.IsHuman=                            ; boolean
 (actor).Filter.IsAI=                               ; boolean
@@ -922,11 +930,16 @@ EventInvokerN=                             ; EventInvokerType
   - Event triggers can be associated to Player Emblems. Event triggers are associated using `TriggerN.EventType=` and `TriggerN.EventHandler=`entries, where N is an integer starting from 0. `Trigger.EventType` and `Trigger.EventHandler` are valid if only one pair is specified. See [Event Trigger System](#event-trigger-system) for details.
   - Construction options can be modified.
     - The house can build the techno types listed in `BuildOptions.Allow`, bypassing most prerequisites and limitations, except:
-	  - The techno type must has `Owner=` specified;
-	  - The house must own a factory that can build it;
-	  - The `BuildLimit` and `BuildLimitGroup` must not have reached;
-	  - The techno type must not have been prohibited through `BuildOptions.Disallow`.
+      - The techno type must has `Owner=` specified;
+      - The house must own a factory that can build it;
+      - The `BuildLimit` and `BuildLimitGroup` must not have reached;
+      - The techno type must not have been prohibited through `BuildOptions.Disallow`.
     - The house can't build the techno types listed in `BuildOptions.Disallow`.
+  - Attach Effects can be automatically created for owned objects.
+    - `AttachEffect.AttachTypes` specifies the list of attach effect types.
+    - `AttachEffect.TechnoTypes` specifies the list of target techno types. If not specified, no attach effect will be created.
+    - Attach Effects are only created if the object does not alreay have an instance of the attach effect type.
+    - Can be used in conjunction of `Discard.HasEmblem` and `Discard.HasNoEmblem` on attach effect types.
 
 In `rulesmd.ini`:
 ```ini
@@ -938,6 +951,8 @@ TriggerN.EventType=...                             ; EventType
 TriggerN.EventHandler=...                          ; EventHandlerType
 BuildOptions.Allow=                                ; list of TechnoTypes
 BuildOptions.Disallow=                             ; list of TechnoTypes
+AttachEffect.AttachTypes=                          ; list of AttachEffectTypes
+AttachEffect.TechnoTypes=                          ; list of TechnoTypes
 ```
 
 #### Examples of making use of the Event Trigger System

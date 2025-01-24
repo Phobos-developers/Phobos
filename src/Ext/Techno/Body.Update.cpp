@@ -823,11 +823,40 @@ void TechnoExt::ExtData::UpdateTemporal()
 void TechnoExt::ExtData::UpdateAttachEffects()
 {
 	auto const pThis = this->OwnerObject();
+	auto const pThisType = pThis->GetTechnoType();
+	auto const pOwner = pThis->Owner;
+	auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 	bool inTunnel = this->IsInTunnel || this->IsBurrowed;
 	bool markForRedraw = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	static std::vector<WeaponTypeClass*> expireWeapons;
 	static std::vector<AttachEffectClass*> detachedVector;
+
+	if (pOwnerExt->PlayerEmblems_AutoAETarget.contains(pThisType))
+	{
+		static std::set<AttachEffectTypeClass*> existingAETypes;
+		for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
+		{
+			auto const attachEffect = it->get();
+			existingAETypes.insert(attachEffect->GetType());
+		}
+		for (auto pEmblemType : pOwnerExt->PlayerEmblems_HasAutoAE)
+		{
+			if (pEmblemType->AttachEffect_TechnoTypes.Contains(pThisType))
+			{
+				for (auto pAEType : pEmblemType->AttachEffect_AttachTypes)
+				{
+					if (!existingAETypes.contains(pAEType))
+					{
+						const AEAttachParams info { };
+						AttachEffectClass::CreateAndAttach(pAEType, pThis, this->AttachedEffects, pThis->Owner, pThis, pThis, info);
+						existingAETypes.insert(pAEType);
+					}
+				}
+			}
+		}
+		existingAETypes.clear();
+	}
 
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
 	{
@@ -880,7 +909,6 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		pThis->MarkForRedraw();
 
 	auto const coords = pThis->GetCoords();
-	auto const pOwner = pThis->Owner;
 
 	for (auto const& pWeapon : expireWeapons)
 	{

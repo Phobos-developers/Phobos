@@ -65,6 +65,8 @@ public:
 		std::set<PlayerEmblemTypeClass*> PlayerEmblems;
 		std::set<TechnoTypeClass*> PlayerEmblems_BuildOptions_Allowed;
 		std::set<TechnoTypeClass*> PlayerEmblems_BuildOptions_Disallowed;
+		std::set<PlayerEmblemTypeClass*> PlayerEmblems_HasAutoAE;
+		std::set<TechnoTypeClass*> PlayerEmblems_AutoAETarget;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
@@ -94,6 +96,8 @@ public:
 			, PlayerEmblems {}
 			, PlayerEmblems_BuildOptions_Allowed {}
 			, PlayerEmblems_BuildOptions_Disallowed {}
+			, PlayerEmblems_HasAutoAE {}
+			, PlayerEmblems_AutoAETarget {}
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
@@ -113,6 +117,7 @@ public:
 		void UpdateVehicleProduction();
 
 		void UpdatePlayerEmblemBuildOptions();
+		void UpdateAutoAttachEffects();
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

@@ -1,5 +1,6 @@
 #include <Ext/Techno/Body.h>
 #include "HandlerFilterClass.h"
+#include <Ext/House/Body.h>
 
 HandlerFilterClass::HandlerFilterClass()
 	: HasAnyTechnoCheck { false }
@@ -30,6 +31,7 @@ HandlerFilterClass::HandlerFilterClass()
 	, Sides {}
 	, Countries {}
 	, Buildings {}
+	, Emblems {}
 	, IsHuman {}
 	, IsAI {}
 	, IsLowPower {}
@@ -111,6 +113,8 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	Countries.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Buildings", actorName, filterName);
 	Buildings.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Emblems", actorName, filterName);
+	Emblems.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsHuman", actorName, filterName);
 	IsHuman.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.IsAI", actorName, filterName);
@@ -407,6 +411,23 @@ bool HandlerFilterClass::CheckForHouse(HouseClass* pHouse, HouseClass* pTargetHo
 			return false;
 	}
 
+	if (!Emblems.empty())
+	{
+		bool emblemFlag = false;
+		auto const pTargetHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
+		for (auto const pEmblemType : Emblems)
+		{
+			if (pTargetHouseExt->PlayerEmblems.contains(pEmblemType))
+			{
+				emblemFlag = true;
+				goto _EndEmblemSearch_;
+			}
+		}
+	_EndEmblemSearch_:;
+		if (negative == emblemFlag)
+			return false;
+	}
+
 	if (IsHuman.isset())
 	{
 		if (negative == pTargetHouse->IsControlledByHuman())
@@ -476,6 +497,7 @@ bool HandlerFilterClass::IsDefinedAnyHouseCheck() const
 		|| !Sides.empty()
 		|| !Countries.empty()
 		|| !Buildings.empty()
+		|| !Emblems.empty()
 		|| IsHuman.isset()
 		|| IsAI.isset()
 		|| IsLowPower.isset()
@@ -521,6 +543,7 @@ bool HandlerFilterClass::Serialize(T& stm)
 		.Process(this->Sides)
 		.Process(this->Countries)
 		.Process(this->Buildings)
+		.Process(this->Emblems)
 		.Process(this->IsHuman)
 		.Process(this->IsAI)
 		.Process(this->IsLowPower)
