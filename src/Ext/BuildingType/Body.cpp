@@ -131,7 +131,7 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const TechnoTypeExt::ExtData* const p
 		{
 			if (pNegType && pHouse->CountOwnedAndPresent(pNegType))
 				return false;
-			else if (pNegType->WhatAmI() == AbstractType::BuildingType && BuildingTypeExt::GetUpgradesAmount(static_cast<BuildingTypeClass*>(pNegType), pHouse))
+			else if (pNegType->WhatAmI() == AbstractType::BuildingType && BuildingTypeExt::GetUpgradesAmount(static_cast<BuildingTypeClass*>(pNegType), pHouse) > 0)
 				return false;
 		}
 	}
@@ -153,7 +153,7 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const TechnoTypeExt::ExtData* const p
 		{
 			if (pHouse->CountOwnedAndPresent(pAuxType))
 				return true;
-			else if (pAuxType->WhatAmI() == AbstractType::BuildingType && BuildingTypeExt::GetUpgradesAmount(static_cast<BuildingTypeClass*>(pAuxType), pHouse))
+			else if (pAuxType->WhatAmI() == AbstractType::BuildingType && BuildingTypeExt::GetUpgradesAmount(static_cast<BuildingTypeClass*>(pAuxType), pHouse) > 0)
 				return true;
 
 			pAuxTypeExt->CameoCheckMutex = true;
