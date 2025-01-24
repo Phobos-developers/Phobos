@@ -257,7 +257,42 @@ DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
 }
 
-DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
+// Vanilla and Ares all only hardcoded to find factory with BuildCat::DontCare...
+static inline bool CheckShouldDisableDefensesCameo(HouseClass* pHouse, TechnoTypeClass* pType)
+{
+	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+	{
+		if (pBuildingType->BuildCat == BuildCat::Combat)
+		{
+			auto count = 0;
+
+			if (const auto pFactory = pHouse->Primary_ForDefenses)
+			{
+				count = pFactory->CountTotal(pBuildingType);
+
+				if (pFactory->Object && pFactory->Object->GetType() == pBuildingType && pBuildingType->BuildLimit > 0)
+					--count;
+			}
+
+			auto buildLimitRemaining = [](HouseClass* pHouse, BuildingTypeClass* pBldType)
+			{
+				const auto BuildLimit = pBldType->BuildLimit;
+
+				if (BuildLimit >= 0)
+					return BuildLimit -  BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(pBldType, pHouse);
+				else
+					return -BuildLimit - pHouse->CountOwnedEver(pBldType);
+			};
+
+			if (buildLimitRemaining(pHouse, pBuildingType) - count <= 0)
+				return true;
+		}
+	}
+
+	return false;
+}
+
+DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoTypeClass*, pType, 0x4);
@@ -266,7 +301,7 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
 	if (aresDisable || !pType)
 		return 0;
 
-	if (HouseExt::ReachedBuildLimit(pThis, pType, false))
+	if (CheckShouldDisableDefensesCameo(pThis, pType) || HouseExt::ReachedBuildLimit(pThis, pType, false))
 		R->EAX(true);
 
 	return 0;
