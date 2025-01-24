@@ -1353,11 +1353,12 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 // Auto Build Hook -> sub_6A8B30 - Auto Build Buildings
 DEFINE_HOOK(0x6A8E34, StripClass_Update_AutoBuildBuildings, 0x7)
 {
-	enum { SkipSetStripShortCut = 0x6A8E4D };
-
 	GET(BuildingClass* const, pBuilding, ESI);
 
-	return (BuildingTypeExt::BuildLimboBuilding(pBuilding) || BuildingTypeExt::AutoPlaceBuilding(pBuilding)) ? SkipSetStripShortCut : 0;
+	BuildingTypeExt::BuildLimboBuilding(pBuilding);
+	BuildingTypeExt::AutoPlaceBuilding(pBuilding);
+
+	return 0;
 }
 
 // Limbo Build Hook -> sub_42EB50 - Check Base Node
