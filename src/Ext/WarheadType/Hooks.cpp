@@ -290,7 +290,8 @@ DEFINE_HOOK(0x4899DA, DamageArea_DamageBuilding_SetContext, 0x7)
 	{
 		if (const auto pBuilding = abstract_cast<BuildingClass*>(group->Target))
 		{
-			DamageBuildingHelper::Buildings[pBuilding] += (1.0 - (1.0 - pWH->PercentAtMax) * group->Distance / (pWH->CellSpread * 256.0));
+			const auto multiplier = 1.0 - ((1.0 - pWH->PercentAtMax) * (group->Distance / (pWH->CellSpread * 256.0)));
+			DamageBuildingHelper::Buildings[pBuilding] += multiplier > 0 ? multiplier : 0;
 			group->Distance = 0;
 		}
 	}
@@ -313,7 +314,7 @@ DEFINE_HOOK(0x489AA0, DamageArea_DamageBuilding_ReceiveDamage, 0x7)
 	{
 		if (DamageBuildingHelper::Buildings.contains(pBuilding))
 		{
-			GET(int, damage, EAX);
+			GET(const int, damage, EAX);
 			const auto multiplier = DamageBuildingHelper::Buildings[pBuilding];
 			R->EAX(Game::F2I(damage * multiplier));
 			DamageBuildingHelper::Buildings.erase(pBuilding);
