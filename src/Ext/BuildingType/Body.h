@@ -64,7 +64,7 @@ public:
 		Valueable<int> SellBuildupLength;
 		Valueable<bool> IsDestroyableObstacle;
 
-		Valueable<bool> AutoBuilding;
+		Nullable<bool> AutoBuilding;
 		Valueable<int> AutoBuilding_Gap;
 		Valueable<bool> LimboBuild;
 		Valueable<int> LimboBuildID;
@@ -125,7 +125,7 @@ public:
 			, ConsideredVehicle {}
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
-			, AutoBuilding { false }
+			, AutoBuilding {}
 			, AutoBuilding_Gap { 1 }
 			, LimboBuild { false }
 			, LimboBuildID { -1 }

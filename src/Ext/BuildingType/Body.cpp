@@ -457,7 +457,7 @@ bool BuildingTypeExt::AutoPlaceBuilding(BuildingClass* pBuilding)
 	const auto pType = pBuilding->Type;
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 
-	if (!pTypeExt->AutoBuilding || pType->LaserFence || pType->Gate || pType->ToTile)
+	if (!pTypeExt->AutoBuilding.Get(RulesExt::Global()->AutoBuilding) || pType->LaserFence || pType->Gate || pType->ToTile)
 		return false;
 
 	const auto pHouse = pBuilding->Owner;
@@ -601,7 +601,7 @@ bool BuildingTypeExt::AutoPlaceBuilding(BuildingClass* pBuilding)
 				continue;
 
 			// TODO The construction area does not actually need to be so large, the surrounding space should be able to be occupied by other things
-			// TODO It would be better if the Buildable check could be fit with ExpandBuildingPlace within this function.
+			// TODO It would be better if the Buildable check could be fit with ExtendedBuildingPlacing within this function.
 			// TODO Similarly, it would be better if the following Adjacent & NoShroud check could be made within this function.
 			auto cell = pType->PlaceAnywhere ? baseCell : MapClass::Instance->NearByLocation(baseCell, speedType, -1, MovementZone::Normal, false,
 				width, height, false, false, false, false, CellStruct::Empty, false, buildable);

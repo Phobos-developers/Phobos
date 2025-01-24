@@ -24,7 +24,7 @@ TechnoExt::ExtData::~ExtData()
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	if (RulesExt::Global()->ExpandBuildingPlace && pThis->WhatAmI() == AbstractType::Unit && pType->DeploysInto)
+	if (RulesExt::Global()->ExtendedBuildingPlacing && pThis->WhatAmI() == AbstractType::Unit && pType->DeploysInto)
 	{
 		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedDeployingUnits;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
