@@ -481,7 +481,7 @@ inline static void InvokeEventStatic(EventTypeClass* pEventTypeClass,
 
 void TechnoExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, TechnoClass* pMe, TechnoClass* pThey) const
 {
-	static std::map<EventActorType, AbstractClass*> participants = {
+	std::map<EventActorType, AbstractClass*> participants = {
 		{ EventActorType::Me, pMe },
 		{ EventActorType::They, pThey },
 	};

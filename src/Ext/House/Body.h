@@ -62,6 +62,10 @@ public:
 		};
 		std::vector<SWExt> SuperExts;
 
+		std::set<PlayerEmblemTypeClass*> PlayerEmblems;
+		std::set<TechnoTypeClass*> PlayerEmblems_BuildOptions_Allowed;
+		std::set<TechnoTypeClass*> PlayerEmblems_BuildOptions_Disallowed;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -87,6 +91,9 @@ public:
 			, AIFireSaleDelayTimer {}
 			, SuspendedEMPulseSWs {}
 			, SuperExts(SuperWeaponTypeClass::Array->Count)
+			, PlayerEmblems {}
+			, PlayerEmblems_BuildOptions_Allowed {}
+			, PlayerEmblems_BuildOptions_Disallowed {}
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
@@ -104,6 +111,8 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 
 		void UpdateVehicleProduction();
+
+		void UpdatePlayerEmblemBuildOptions();
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -179,6 +188,10 @@ public:
 	static std::vector<int> AIProduction_BestChoices;
 	static std::vector<int> AIProduction_BestChoicesNaval;
 
+	static int BuildLimitCheck(const HouseClass* pHouse, const TechnoTypeClass* pType, bool includeQueued);
+	static bool HasFactoryCheck(HouseClass const* pHouse, TechnoTypeClass const* pItem, bool requirePower);
 	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
-	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
+	static signed int BuildLimitRemaining(HouseClass const* const pHouse, TechnoTypeClass const* const pItem);
+	static int CountOwnedNowTotal(HouseClass const* const pHouse, TechnoTypeClass const* const pItem);
+	static bool ReachedBuildLimitGroup(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
 };

@@ -270,7 +270,7 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
 	if (aresDisable || !pType)
 		return 0;
 
-	if (HouseExt::ReachedBuildLimit(pThis, pType, false))
+	if (HouseExt::ReachedBuildLimitGroup(pThis, pType, false))
 		R->EAX(true);
 
 	return 0;

@@ -14,7 +14,7 @@ public:
 
 	static void AddDefaults();
 
-	// public static pointers of event types invoked by Phobos
+#pragma region TechnoEvents
 	static EventTypeClass* WhenCreated;
 	static EventTypeClass* WhenCaptured;
 	static EventTypeClass* WhenPromoted;
@@ -30,8 +30,16 @@ public:
 	static EventTypeClass* WhenBoard;
 	static EventTypeClass* WhenUnboard;
 	static EventTypeClass* WhenUpgraded;
+#pragma endregion
+
+#pragma region AttachedEffectEvents
 	static EventTypeClass* WhenAttach;
 	static EventTypeClass* WhenDetach;
+	static EventTypeClass* WhenExpired;
+	static EventTypeClass* WhenRemoved;
+	static EventTypeClass* WhenObjectDied;
+	static EventTypeClass* WhenDiscarded;
+#pragma endregion
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);

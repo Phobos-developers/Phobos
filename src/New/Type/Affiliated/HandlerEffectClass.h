@@ -3,8 +3,11 @@
 #include <Utilities/Template.h>
 #include "TypeConvertGroup.h"
 #include <New/Type/EventInvokerTypeClass.h>
+#include <New/Type/PlayerEmblemTypeClass.h>
 
 class EventInvokerTypeClass;
+
+class PlayerEmblemTypeClass;
 
 class HandlerEffectClass
 {
@@ -62,6 +65,9 @@ public:
 	Valueable<bool> HasAnyHouseEffect;
 
 	NullableIdx<VocClass> EVA;
+
+	ValueableVector<PlayerEmblemTypeClass*> PlayerEmblem_AttachTypes;
+	ValueableVector<PlayerEmblemTypeClass*> PlayerEmblem_RemoveTypes;
 
 #pragma endregion
 

@@ -9,6 +9,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
+#include <New/Type/PlayerEmblemTypeClass.h>
 #include <New/Type/EventTypeClass.h>
 #include <New/Type/EventInvokerTypeClass.h>
 #include <New/Type/EventHandlerTypeClass.h>
@@ -37,6 +38,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	ShieldTypeClass::LoadFromINIList(pINI);
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art);
 	AttachEffectTypeClass::LoadFromINIList(pINI);
+	PlayerEmblemTypeClass::LoadFromINIList(pINI);
 	EventTypeClass::LoadFromINIList(pINI);
 	EventInvokerTypeClass::LoadFromINIList(pINI);
 	EventHandlerTypeClass::LoadFromINIList(pINI);

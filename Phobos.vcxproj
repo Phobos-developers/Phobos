@@ -80,6 +80,7 @@
     <ClCompile Include="src\New\Type\EventHandlerTypeClass.cpp" />
     <ClCompile Include="src\New\Type\EventInvokerTypeClass.cpp" />
     <ClCompile Include="src\New\Type\EventTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\PlayerEmblemTypeClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
     <ClCompile Include="src\New\Type\LaserTrailTypeClass.cpp" />
@@ -228,6 +229,7 @@
     <ClInclude Include="src\New\Type\EventHandlerTypeClass.h" />
     <ClInclude Include="src\New\Type\EventInvokerTypeClass.h" />
     <ClInclude Include="src\New\Type\EventTypeClass.h" />
+    <ClInclude Include="src\New\Type\PlayerEmblemTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
     <ClInclude Include="src\New\Type\LaserTrailTypeClass.h" />

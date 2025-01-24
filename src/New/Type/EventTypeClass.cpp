@@ -7,6 +7,7 @@ const char* Enumerable<EventTypeClass>::GetMainSection()
 	return "EventTypes";
 }
 
+#pragma region TechnoEvents
 EventTypeClass* EventTypeClass::WhenCreated = nullptr;
 EventTypeClass* EventTypeClass::WhenCaptured = nullptr;
 EventTypeClass* EventTypeClass::WhenPromoted = nullptr;
@@ -22,11 +23,20 @@ EventTypeClass* EventTypeClass::WhenUnload = nullptr;
 EventTypeClass* EventTypeClass::WhenBoard = nullptr;
 EventTypeClass* EventTypeClass::WhenUnboard = nullptr;
 EventTypeClass* EventTypeClass::WhenUpgraded = nullptr;
+#pragma endregion
+
+#pragma region AttachedEffectEvents
 EventTypeClass* EventTypeClass::WhenAttach = nullptr;
 EventTypeClass* EventTypeClass::WhenDetach = nullptr;
+EventTypeClass* EventTypeClass::WhenExpired = nullptr;
+EventTypeClass* EventTypeClass::WhenRemoved = nullptr;
+EventTypeClass* EventTypeClass::WhenObjectDied = nullptr;
+EventTypeClass* EventTypeClass::WhenDiscarded = nullptr;
+#pragma endregion
 
 void EventTypeClass::AddDefaults()
 {
+#pragma region TechnoEvents
 	EventTypeClass::WhenCreated = FindOrAllocate("WhenCreated");
 	EventTypeClass::WhenCaptured = FindOrAllocate("WhenCaptured");
 	EventTypeClass::WhenPromoted = FindOrAllocate("WhenPromoted");
@@ -42,8 +52,16 @@ void EventTypeClass::AddDefaults()
 	EventTypeClass::WhenBoard = FindOrAllocate("WhenBoard");
 	EventTypeClass::WhenUnboard = FindOrAllocate("WhenUnboard");
 	EventTypeClass::WhenUpgraded = FindOrAllocate("WhenUpgraded");
+#pragma endregion
+
+#pragma region AttachedEffectEvents
 	EventTypeClass::WhenAttach = FindOrAllocate("WhenAttach");
 	EventTypeClass::WhenDetach = FindOrAllocate("WhenDetach");
+	EventTypeClass::WhenExpired = FindOrAllocate("WhenExpired");
+	EventTypeClass::WhenRemoved = FindOrAllocate("WhenRemoved");
+	EventTypeClass::WhenObjectDied = FindOrAllocate("WhenObjectDied");
+	EventTypeClass::WhenDiscarded = FindOrAllocate("WhenDiscarded");
+#pragma endregion
 }
 
 void EventTypeClass::LoadFromINI(CCINIClass* pINI)

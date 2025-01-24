@@ -6,6 +6,7 @@
 #include <Utilities/Helpers.Alex.h>
 #include <AircraftClass.h>
 
+#include <Ext/House/Body.h>
 HandlerEffectClass::HandlerEffectClass()
 	: HasAnyTechnoEffect { false }
 
@@ -44,6 +45,8 @@ HandlerEffectClass::HandlerEffectClass()
 #pragma region HouseEffects
 	, HasAnyHouseEffect { false }
 	, EVA {}
+	, PlayerEmblem_AttachTypes {}
+	, PlayerEmblem_RemoveTypes {}
 #pragma endregion
 
 #pragma region GenericEffects
@@ -232,6 +235,12 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	// EVA
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.EVA", actorName, effectName);
 	EVA.Read(exINI, pSection, tempBuffer);
+
+	// Player Emblems
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.PlayerEmblem.AttachTypes", actorName, effectName);
+	PlayerEmblem_AttachTypes.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.PlayerEmblem.RemoveTypes", actorName, effectName);
+	PlayerEmblem_RemoveTypes.Read(exINI, pSection, tempBuffer);
 
 	// defined flag
 	HasAnyHouseEffect = IsDefinedAnyHouseEffect();
@@ -579,11 +588,50 @@ void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwn
 			VoxClass::PlayIndex(EVA.Get());
 		}
 	}
+
+	// Player Emblems
+	if (!PlayerEmblem_AttachTypes.empty() || !PlayerEmblem_RemoveTypes.empty())
+	{
+		auto const pTargetExt = HouseExt::ExtMap.Find(pTarget);
+
+		bool refreshBuildOptionsFlag = false;
+
+		if (!PlayerEmblem_AttachTypes.empty())
+		{
+			for (auto const pEmblemType : PlayerEmblem_AttachTypes)
+			{
+				if (!pTargetExt->PlayerEmblems.contains(pEmblemType))
+				{
+					pTargetExt->PlayerEmblems.insert(pEmblemType);
+					pEmblemType->InvokeEventHandlers(EventTypeClass::WhenAttach, pTarget);
+					refreshBuildOptionsFlag = refreshBuildOptionsFlag || pEmblemType->AlterBuildOptions();
+				}
+			}
+		}
+
+		if (!PlayerEmblem_RemoveTypes.empty())
+		{
+			for (auto const pEmblemType : PlayerEmblem_AttachTypes)
+			{
+				if (pTargetExt->PlayerEmblems.contains(pEmblemType))
+				{
+					pTargetExt->PlayerEmblems.erase(pEmblemType);
+					pEmblemType->InvokeEventHandlers(EventTypeClass::WhenDetach, pTarget);
+					refreshBuildOptionsFlag = refreshBuildOptionsFlag || pEmblemType->AlterBuildOptions();
+				}
+			}
+		}
+
+		if (refreshBuildOptionsFlag)
+		{
+			pTargetExt->UpdatePlayerEmblemBuildOptions();
+		}
+	}
 }
 
 void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>*pParticipants, AbstractClass* pTarget) const
 {
-	static std::map<EventActorType, AbstractClass*> participants = {
+	std::map<EventActorType, AbstractClass*> participants = {
 		{ EventActorType::Me, nullptr },
 		{ EventActorType::They, nullptr },
 		{ EventActorType::Scoper, pParticipants->operator[](EventActorType::Scoper) },
@@ -609,11 +657,11 @@ void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwne
 		participants[EventActorType::They] = pOwner;
 		participants[EventActorType::Scoper] = pTarget;
 
-		std::function<void(TechnoClass*)> tryInvoke = [this, pOwnerHouse](TechnoClass* pItem)
+		std::function<void(TechnoClass*)> tryInvoke = [this, pOwnerHouse, &participants](TechnoClass* pItem)
 			{
 				if (IsEligibleForAreaSearch(pItem, pOwnerHouse))
 				{
-					participants[EventActorType::Me] = pItem;
+					participants.operator[](EventActorType::Me) = pItem;
 					for (auto pEventInvokerType : Scope_EventInvokers)
 					{
 						pEventInvokerType->TryExecute(pOwnerHouse, &participants);
@@ -851,7 +899,9 @@ bool HandlerEffectClass::IsDefinedAnyTechnoEffect() const
 
 bool HandlerEffectClass::IsDefinedAnyHouseEffect() const
 {
-	return EVA.isset();
+	return EVA.isset()
+		|| !PlayerEmblem_AttachTypes.empty()
+		|| !PlayerEmblem_RemoveTypes.empty();
 }
 
 bool HandlerEffectClass::IsDefinedAnyGenericEffect() const
@@ -912,6 +962,8 @@ bool HandlerEffectClass::Serialize(T& stm)
 #pragma region HouseEffects
 		.Process(this->HasAnyHouseEffect)
 		.Process(this->EVA)
+		.Process(this->PlayerEmblem_AttachTypes)
+		.Process(this->PlayerEmblem_RemoveTypes)
 #pragma endregion
 #pragma region GenericEffects
 		.Process(this->HasAnyGenericEffect)

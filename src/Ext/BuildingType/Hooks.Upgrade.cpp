@@ -74,7 +74,7 @@ DEFINE_HOOK(0x451409, BuildingClass_UpdateAnimsAndTurretAfterUpgrade, 0x6)
 
 #pragma region UpgradesInteraction
 
-int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
+static int BuildLimitRemainingForUpgrade(HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
 {
 	auto const BuildLimit = pItem->BuildLimit;
 
@@ -84,18 +84,17 @@ int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const*
 		return -BuildLimit - pHouse->CountOwnedEver(pItem);
 }
 
-int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* const pItem, bool const includeQueued)
+static int CheckBuildLimitForUpgrade(HouseClass const* const pHouse, BuildingTypeClass const* const pItem, bool const includeQueued)
 {
 	enum { NotReached = 1, ReachedPermanently = -1, ReachedTemporarily = 0 };
 
 	int BuildLimit = pItem->BuildLimit;
-	int Remaining = BuildLimitRemaining(pHouse, pItem);
+	int Remaining = BuildLimitRemainingForUpgrade(pHouse, pItem);
 
 	if (BuildLimit >= 0 && Remaining <= 0)
 		return (includeQueued && FactoryClass::FindByOwnerAndProduct(pHouse, pItem)) ? NotReached : ReachedPermanently;
 
 	return Remaining > 0 ? NotReached : ReachedTemporarily;
-
 }
 
 DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
@@ -106,12 +105,26 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 	GET_STACK(bool const, includeInProduction, 0xC);
 	GET(CanBuildResult const, resultOfAres, EAX);
 
+	auto const pThisExt = HouseExt::ExtMap.Find(pThis);
+	auto pItemNoConst = const_cast<TechnoTypeClass*>(pItem);
+	if (pThisExt->PlayerEmblems_BuildOptions_Disallowed.contains(pItemNoConst))
+	{
+		R->EAX(CanBuildResult::Unbuildable);
+	}
+	else if (pThisExt->PlayerEmblems_BuildOptions_Allowed.contains(pItemNoConst))
+	{
+		if (HouseExt::HasFactoryCheck(pThis, pItem, true))
+		{
+			R->EAX(HouseExt::BuildLimitCheck(pThis, pItem, includeInProduction));
+		}
+	}
+
 	if (auto const pBuilding = abstract_cast<BuildingTypeClass const* const>(pItem))
 	{
 		if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
 		{
 			if (pBuildingExt->PowersUp_Buildings.size() > 0 && resultOfAres == CanBuildResult::Buildable)
-				R->EAX(CheckBuildLimit(pThis, pBuilding, includeInProduction));
+				R->EAX(CheckBuildLimitForUpgrade(pThis, pBuilding, includeInProduction));
 		}
 	}
 
@@ -119,7 +132,7 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 	{
 		R->EAX(HouseExt::BuildLimitGroupCheck(pThis, pItem, buildLimitOnly, includeInProduction));
 
-		if (HouseExt::ReachedBuildLimit(pThis, pItem, true))
+		if (HouseExt::ReachedBuildLimitGroup(pThis, pItem, true))
 			R->EAX(CanBuildResult::TemporarilyUnbuildable);
 	}
 

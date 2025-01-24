@@ -528,7 +528,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 			auto const& map = pAE->GetType()->EventHandlersMap;
 			if (map.contains(EventTypeClass::WhenAttach))
 			{
-				static std::map<EventActorType, AbstractClass*> participants = {
+				std::map<EventActorType, AbstractClass*> participants = {
 					{ EventActorType::Me, pTarget },
 					{ EventActorType::They, pInvoker },
 					{ EventActorType::Enchanter, pInvoker },
@@ -811,14 +811,21 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 	for (auto const& pAE : detachedVector)
 	{
+		std::map<EventActorType, AbstractClass*> participants = {
+			{ EventActorType::Me, pTarget },
+			{ EventActorType::They, pAE->GetInvoker() },
+			{ EventActorType::Enchanter, pAE->GetInvoker() },
+		};
 		auto const& map = pAE->GetType()->EventHandlersMap;
+		if (map.contains(EventTypeClass::WhenRemoved))
+		{
+			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenRemoved))
+			{
+				pEventHandlerTypeClass->HandleEvent(&participants);
+			}
+		}
 		if (map.contains(EventTypeClass::WhenDetach))
 		{
-			static std::map<EventActorType, AbstractClass*> participants = {
-				{ EventActorType::Me, pTarget },
-				{ EventActorType::They, pAE->GetInvoker() },
-				{ EventActorType::Enchanter, pAE->GetInvoker() },
-			};
 			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenDetach))
 			{
 				pEventHandlerTypeClass->HandleEvent(&participants);

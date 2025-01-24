@@ -51,6 +51,7 @@ This page describes all the engine features that are either new and introduced b
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
+  - Event triggers can be associated to attach effects. Event triggers are associated using `TriggerN.EventType=` and `TriggerN.EventHandler=`entries, where N is an integer starting from 0. `Trigger.EventType` and `Trigger.EventHandler` are valid if only one pair is specified. See [Event Trigger System](#event-trigger-system) for details.
 
 - AttachEffectTypes can be attached to TechnoTypes using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
@@ -427,10 +428,10 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 ### Event Trigger System
 
-- Technos may have event triggers associated, to specify something to be done when something happened to them.
-- Event Types and Event Handlers are associated with Technos and Attached Effects by `TriggerN.EventType=` and `TriggerN.EventHandler=`, where N is an integer starting from 0. `Trigger.EventType` and `Trigger.EventHandler` is a valid alternate if only one is specified.
+- Techno Types, Attached Effects, and Player Emblems (see below), may have event triggers associated, to specify something to be done when something happened to them.
+- Event triggers are associated using `TriggerN.EventType=` and `TriggerN.EventHandler=`entries, where N is an integer starting from 0. `Trigger.EventType` and `Trigger.EventHandler` are valid if only one pair is specified.
 - <details>
-    <summary>Expand to see the list of pre-defined Techno event types that will be invoked from the game.</summary>
+    <summary>Expand to see the list of pre-defined event types that will be invoked from the game.</summary>
     <ul>
       <li>
         Single events:
@@ -487,7 +488,19 @@ Shield.InheritStateOnReplace=false          ; boolean
         <ul>
           <li>These events are only invoked for the event triggers on Attached Effects. The <code>Me</code> basic actor is the attached techno, and the <code>They</code> and <code>Enchanter</code> basic actors are the source of this Attached Effect.</li>
           <li><code>WhenAttach</code>: Invoked when this Attached Effect is attached.</li>
-          <li><code>WhenDetach</code>: Invoked when this Attached Effect is detached for any reason, such as it expired, it was removed, the object died, or it was discarded.</li>
+          <li><code>WhenExpired</code>: Invoked when this Attached Effect expired.</li>
+          <li><code>WhenRemoved</code>: Invoked when this Attached Effect is removed.</li>
+          <li><code>WhenObjectDied</code>: Invoked when this Attached Effect is lost because the object died.</li>
+          <li><code>WhenDiscarded</code>: Invoked when this Attached Effect is discarded.</li>
+          <li><code>WhenDetach</code>: Invoked when this Attached Effect is detached for any reason listed above.</li>
+        </ul>
+      </li>
+      <li>
+        Player Emblems:
+        <ul>
+          <li>These events are only invoked for the event triggers on Player Emblems. The <code>Me</code> basic actor is the owning house.</li>
+          <li><code>WhenAttach</code>: Invoked when this Player Emblems is attached to a house.</li>
+          <li><code>WhenDetach</code>: Invoked when this Player Emblems is detached from a house.</li>
         </ul>
       </li>
     </ul>
@@ -504,6 +517,10 @@ TriggerN.EventType=...                             ; EventType
 TriggerN.EventHandler=...                          ; EventHandlerType
 
 [SOMEAE]                                           ; AttachedEffectType
+TriggerN.EventType=...                             ; EventType
+TriggerN.EventHandler=...                          ; EventHandlerType
+
+[SOMEPE]                                           ; PlayerEmblemType
 TriggerN.EventType=...                             ; EventType
 TriggerN.EventHandler=...                          ; EventHandlerType
 ```
@@ -568,9 +585,8 @@ TriggerN.EventHandler=...                          ; EventHandlerType
         <li>
 		  <code>*.HouseCompare.Params/Methods/Values</code>: Compares the house's properties with an integer.
 		  <ul>
-		    <li>The three entries are all lists that support multiple inputs separated by comma (<code>,</code>).</li>
+		    <li>The three entries are all lists that support multiple inputs separated by comma (<code>,</code>). If the list sizes mismatch, the entire house compare filter is void.</li>
 		    <li>All comparason must pass. If it was a negative filter, all comparason must not pass.</li>
-		    <li>If the list sizes mismatch, the entire house compare filter is invalid and does not take effect.</li>
 		    <li>Supported house parameters are: <code>Credits|PowerSurplus|PowerOutput|PowerDrain</code></li>
 		    <li>Supported comparators are: <code>Equal|Greater|GreaterEqual|Lower|LowerEqual|NotEqual</code>; can be abbrived as: <code>e|g|ge|l|le|ne</code></li>
 		  </ul>
@@ -676,6 +692,15 @@ TriggerN.EventHandler=...                          ; EventHandlerType
           <ul>
             <li>An EVA can be played.</li>
             <li><code>*.EVA</code> will be played as an EVA announcement to the <code>(actor)</code>'s owner. It is only audible to the house.</li>
+          </ul>
+        </li>
+        <li>
+          Player Emblems:
+          <ul>
+            <li>Player Emblems can be granted to the house.</li>
+            <li><code>*.PlayerEmblem.AttachTypes</code> is a list of Player Emblem Types that will be granted to the player.</li>
+            <li><code>*.PlayerEmblem.RemoveTypes</code> is a list of Player Emblem Types that will be removed from the player.</li>
+			<li>See <a href="#player-emblems">Player Emblems</a> for details.</li>
           </ul>
         </li>
       </ol>
@@ -820,6 +845,11 @@ Next=                                              ; EventHandlerType
 
 ;; effects (house) - EVA
 (actor).Effect.EVA=                                ; sound entry
+(actor).Effect.PlayerEmblem.AttachTypes=           ; list of PlayerEmblemType
+(actor).Effect.PlayerEmblem.DurationOverrides=     ; list of integer
+(actor).Effect.PlayerEmblem.Attacher=              ; basic actor
+(actor).Effect.PlayerEmblem.AttacherExt=           ; extended actor
+(actor).Effect.PlayerEmblem.RemoveTypes=           ; list of PlayerEmblemType
 
 ;; effects (generic) - event invokers
 (actor).Effect.EventInvokerN=                      ; EventInvokerType
@@ -882,6 +912,32 @@ EventInvokerN=                             ; EventInvokerType
 
 [SOMEHANDLER]                              ; EventHandlerType
 (actor).Effect.EventInvokerN=              ; EventInvokerType
+```
+
+#### Player Emblems
+
+- Player Emblems are similar the houses' variant of Attached Effects, but has much reduced in complexity. Player Emblems have no duration and do not stack, only one instance can be present for each house, as well as it doesn't have `Enchanter` basic actor.
+- Player Emblems are granted and removed through the effects part of an Event Handler and can be associated with event triggers themselves. Player Emblems are listed under `[PlayerEmblemTypes]`. Unlike the Event Handlers and Event Invokers, an explicit listing of Player Emblems is mandatory.
+- Player Emblems may have effects.
+  - Event triggers can be associated to Player Emblems. Event triggers are associated using `TriggerN.EventType=` and `TriggerN.EventHandler=`entries, where N is an integer starting from 0. `Trigger.EventType` and `Trigger.EventHandler` are valid if only one pair is specified. See [Event Trigger System](#event-trigger-system) for details.
+  - Construction options can be modified.
+    - The house can build the techno types listed in `BuildOptions.Allow`, bypassing most prerequisites and limitations, except:
+	  - The techno type must has `Owner=` specified;
+	  - The house must own a factory that can build it;
+	  - The `BuildLimit` and `BuildLimitGroup` must not have reached;
+	  - The techno type must not have been prohibited through `BuildOptions.Disallow`.
+    - The house can't build the techno types listed in `BuildOptions.Disallow`.
+
+In `rulesmd.ini`:
+```ini
+[PlayerEmblemTypes]
+0=SOMEPE
+
+[SOMEPE]                                           ; PlayerEmblemType
+TriggerN.EventType=...                             ; EventType
+TriggerN.EventHandler=...                          ; EventHandlerType
+BuildOptions.Allow=                                ; list of TechnoTypes
+BuildOptions.Disallow=                             ; list of TechnoTypes
 ```
 
 #### Examples of making use of the Event Trigger System

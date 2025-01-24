@@ -826,8 +826,8 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	bool inTunnel = this->IsInTunnel || this->IsBurrowed;
 	bool markForRedraw = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<WeaponTypeClass*> expireWeapons;
-	std::vector<AttachEffectClass*> detachedVector;
+	static std::vector<WeaponTypeClass*> expireWeapons;
+	static std::vector<AttachEffectClass*> detachedVector;
 
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
 	{
@@ -886,23 +886,32 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	{
 		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
 	}
+	expireWeapons.clear();
 
 	for (auto const& pAE : detachedVector)
 	{
+		std::map<EventActorType, AbstractClass*> participants = {
+			{ EventActorType::Me, pThis },
+			{ EventActorType::They, pAE->GetInvoker() },
+			{ EventActorType::Enchanter, pAE->GetInvoker() },
+		};
 		auto const& map = pAE->GetType()->EventHandlersMap;
+		if (map.contains(EventTypeClass::WhenExpired))
+		{
+			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenExpired))
+			{
+				pEventHandlerTypeClass->HandleEvent(&participants);
+			}
+		}
 		if (map.contains(EventTypeClass::WhenDetach))
 		{
-			static std::map<EventActorType, AbstractClass*> participants = {
-				{ EventActorType::Me, pThis },
-				{ EventActorType::They, pAE->GetInvoker() },
-				{ EventActorType::Enchanter, pAE->GetInvoker() },
-			};
 			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenDetach))
 			{
 				pEventHandlerTypeClass->HandleEvent(&participants);
 			}
 		}
 	}
+	detachedVector.clear();
 }
 
 // Updates self-owned (defined on TechnoType) AttachEffects, called on type conversion.
@@ -911,8 +920,8 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<WeaponTypeClass*> expireWeapons;
-	std::vector<AttachEffectClass*> detachedVector;
+	static std::vector<WeaponTypeClass*> expireWeapons;
+	static std::vector<AttachEffectClass*> detachedVector;
 	bool markForRedraw = false;
 
 	// Delete ones on old type and not on current.
@@ -949,23 +958,32 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	{
 		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
 	}
+	expireWeapons.clear();
 
 	for (auto const& pAE : detachedVector)
 	{
+		std::map<EventActorType, AbstractClass*> participants = {
+			{ EventActorType::Me, pThis },
+			{ EventActorType::They, pAE->GetInvoker() },
+			{ EventActorType::Enchanter, pAE->GetInvoker() },
+		};
 		auto const& map = pAE->GetType()->EventHandlersMap;
+		if (map.contains(EventTypeClass::WhenExpired))
+		{
+			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenExpired))
+			{
+				pEventHandlerTypeClass->HandleEvent(&participants);
+			}
+		}
 		if (map.contains(EventTypeClass::WhenDetach))
 		{
-			static std::map<EventActorType, AbstractClass*> participants = {
-				{ EventActorType::Me, pThis },
-				{ EventActorType::They, pAE->GetInvoker() },
-				{ EventActorType::Enchanter, pAE->GetInvoker() },
-			};
 			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenDetach))
 			{
 				pEventHandlerTypeClass->HandleEvent(&participants);
 			}
 		}
 	}
+	detachedVector.clear();
 
 	// Add new ones.
 	int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);

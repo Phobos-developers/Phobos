@@ -32,6 +32,13 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
+bool TechnoTypeExt::ExtData::CanBeBuiltAt(BuildingTypeClass* pFactoryType) const
+{
+	auto const pBExt = TechnoTypeExt::ExtMap.Find(pFactoryType);
+	return (this->BuiltAt.empty() && !pBExt->Factory_ExplicitOnly)
+		|| this->BuiltAt.Contains(pFactoryType);
+}
+
 int TechnoTypeExt::GetTotalSoylentOfPassengers(double soylentMultiplier, TechnoClass* pTransport)
 {
 	TechnoClass* pPassenger = nullptr;
@@ -524,6 +531,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
+	this->BuiltAt.Read(exINI, pSection, "BuiltAt");
+	this->Factory_ExplicitOnly.Read(exINI, pSection, "Factory.ExplicitOnly");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
@@ -888,6 +897,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimitGroup_ExtraLimit_Nums)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxCount)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
+
+		.Process(this->BuiltAt)
+		.Process(this->Factory_ExplicitOnly)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
