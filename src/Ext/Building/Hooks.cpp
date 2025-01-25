@@ -607,7 +607,7 @@ DEFINE_HOOK(0x6A9789, StripClass_DrawStrip_NoGreyCameo, 0x6)
 DEFINE_HOOK(0x6AA88D, StripClass_RecheckCameo_FindFactoryDehardCode, 0x6)
 {
 	GET(TechnoTypeClass* const, pType, EBX);
-	LEA_STACK(BuildCat*, pBuildCat, STACK_OFFSET(0x154, -0x154));
+	LEA_STACK(BuildCat*, pBuildCat, STACK_OFFSET(0x158, -0x158));
 
 	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
 		*pBuildCat = pBuildingType->BuildCat;
