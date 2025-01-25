@@ -67,6 +67,19 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
 }
 
+int BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pType, HouseClass* pHouse)
+{
+	const auto upgrades = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
+
+	if (upgrades != -1)
+		return upgrades;
+
+	if (const auto pUndeploy = pType->UndeploysInto)
+		return pHouse->CountOwnedNow(pType) + pHouse->CountOwnedNow(pUndeploy);
+
+	return pHouse->CountOwnedNow(pType);
+}
+
 int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades
 {
 	int result = 0;
