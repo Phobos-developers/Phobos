@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <EventClass.h>
+#include <HouseClass.h>
+#include <SuperClass.h>
+
 std::unique_ptr<SidebarExt::ExtData> SidebarExt::Data = nullptr;
 
 SHPStruct* SidebarExt::TabProducingProgress[4];
@@ -12,6 +16,56 @@ void SidebarExt::Allocate(SidebarClass* pThis)
 void SidebarExt::Remove(SidebarClass* pThis)
 {
 	Data = nullptr;
+}
+
+bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
+{
+	const auto pTechnoType = TechnoTypeClass::GetByTypeAndIndex(pItem->ItemType, pItem->ItemIndex);
+	const auto pCurrent = HouseClass::CurrentPlayer();
+
+	if (pTechnoType)
+	{
+		const auto pFactory = pTechnoType->FindFactory(true, false, false, pCurrent);
+
+		if (pFactory && pFactory->Owner->CanBuild(pTechnoType, false, true) != CanBuildResult::Unbuildable)
+			return false;
+	}
+	else
+	{
+		const auto& supers = pCurrent->Supers;
+
+		if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent)
+			return false;
+	}
+
+	if (pItem->CurrentFactory)
+	{
+		EventClass event = EventClass(pCurrent->ArrayIndex, EventType::Abandon, static_cast<int>(pItem->ItemType), pItem->ItemIndex, pTechnoType && pTechnoType->Naval);
+		EventClass::AddEvent(event);
+	}
+
+	if (pItem->ItemType == AbstractType::BuildingType || pItem->ItemType == AbstractType::Building)
+	{
+		DisplayClass::Instance->CurrentBuilding = nullptr;
+		DisplayClass::Instance->CurrentBuildingType = nullptr;
+		DisplayClass::Instance->CurrentBuildingOwnerArrayIndex = -1;
+		DisplayClass::Instance->SetActiveFoundation(nullptr);
+	}
+
+	if (pTechnoType)
+	{
+		const auto absType = pTechnoType->WhatAmI();
+		const auto buildCat = absType == AbstractType::BuildingType ? static_cast<BuildingTypeClass*>(pTechnoType)->BuildCat : BuildCat::DontCare;
+		// EVERYONE likes hardcoded BuildCat::DontCare, so why is this function still designed like this? why pass this parameter???
+
+		if (pCurrent->GetPrimaryFactory(absType, pTechnoType->Naval, buildCat))
+		{
+			EventClass event = EventClass(pCurrent->ArrayIndex, EventType::AbandonAll, static_cast<int>(pItem->ItemType), pItem->ItemIndex, pTechnoType->Naval);
+			EventClass::AddEvent(event);
+		}
+	}
+
+	return true;
 }
 
 // =============================
