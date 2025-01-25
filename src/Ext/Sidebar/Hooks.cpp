@@ -156,13 +156,7 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 
 	if (pBuildingType) // Only count owned buildings
 	{
-		const auto pHouse = HouseClass::CurrentPlayer();
-		auto count = BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse);
-
-		if (count == -1)
-			count = pHouse->CountOwnedAndPresent(pBuildingType);
-
-		if (count > 0)
+		if (const auto count = BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(pBuildingType, HouseClass::CurrentPlayer()))
 		{
 			if (frames.X >= 0)
 			{

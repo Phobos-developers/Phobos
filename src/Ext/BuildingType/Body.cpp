@@ -142,7 +142,7 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const TechnoTypeExt::ExtData* const p
 	{
 		for (const auto& pNegType : pNegTypes)
 		{
-			if (pNegType && pHouse->CountOwnedAndPresent(pNegType))
+			if (pHouse->CountOwnedAndPresent(pNegType))
 				return false;
 			else if (pNegType->WhatAmI() == AbstractType::BuildingType && BuildingTypeExt::GetUpgradesAmount(static_cast<BuildingTypeClass*>(pNegType), pHouse) > 0)
 				return false;
@@ -162,7 +162,7 @@ bool BuildingTypeExt::ShouldExistGreyCameo(const TechnoTypeExt::ExtData* const p
 	{
 		const auto pAuxTypeExt = TechnoTypeExt::ExtMap.Find(pAuxType);
 
-		if (pAuxTypeExt && !pAuxTypeExt->CameoCheckMutex)
+		if (!pAuxTypeExt->CameoCheckMutex)
 		{
 			if (pHouse->CountOwnedAndPresent(pAuxType))
 				return true;
