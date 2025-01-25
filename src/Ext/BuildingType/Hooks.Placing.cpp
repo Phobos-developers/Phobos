@@ -418,8 +418,9 @@ static inline BuildingTypeClass* GetAnotherPlacingType(BuildingTypeClass* pType,
 		if (!pTypeExt->LimboBuild)
 		{
 			const auto onWater = MapClass::Instance->GetCellAt(checkCell)->LandType == LandType::Water;
+			const auto waterBound = pType->SpeedType == SpeedType::Float;
 
-			if (const auto pAnotherType = (opposite ^ onWater) ? (pType->Naval ? nullptr : pTypeExt->PlaceBuilding_OnWater) : (pType->Naval ? pTypeExt->PlaceBuilding_OnLand : nullptr))
+			if (const auto pAnotherType = (opposite ^ onWater) ? (waterBound ? nullptr : pTypeExt->PlaceBuilding_OnWater) : (waterBound ? pTypeExt->PlaceBuilding_OnLand : nullptr))
 			{
 				if (pAnotherType->BuildCat == pType->BuildCat && !pAnotherType->PlaceAnywhere && !BuildingTypeExt::ExtMap.Find(pAnotherType)->LimboBuild)
 					return pAnotherType;
@@ -492,7 +493,7 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 			}
 
 			// If the land occupation of the two buildings is different, the larger one will prevail, And the smaller one may not be placed on the shore.
-			if ((MapClass::Instance->GetCellAt(checkCell)->LandType == LandType::Water) ^ pBuildingType->Naval)
+			if ((MapClass::Instance->GetCellAt(checkCell)->LandType == LandType::Water) ^ (pBuildingType->SpeedType == SpeedType::Float))
 				pBuildingType = pAnotherType;
 		}
 

@@ -589,8 +589,8 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
   - For shortcut keys, see [User Interface -> Auto Building](User-Interface.md#Auto-Building).
 - `LimboBuild` controls whether building can be automatically placed like `LimboDelivery`.
   - `LimboBuildID` defines the numeric ID of the building placed by `LimboBuild`.
-- `PlaceBuilding.OnLand` controls building with `Naval=yes` will become which building when placed on land.
-- `PlaceBuilding.OnWater` controls building with `Naval=no` will become which building when placed on water.
+- `PlaceBuilding.OnLand` controls building with `WaterBound=yes` will become which building when placed on land.
+- `PlaceBuilding.OnWater` controls building with `WaterBound=no` will become which building when placed on water.
 
 In `rulesmd.ini`:
 ```ini
