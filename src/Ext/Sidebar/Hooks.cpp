@@ -179,7 +179,7 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 			}
 
 			if (Phobos::Config::ShowBuildingStatistics
-				&& BuildingTypeExt::ExtMap.Find(pBuildingType)->Cameo_ShouldCount.Get(pBuildingType->BuildCat != BuildCat::Combat || pBuildingType->BuildLimit))
+				&& BuildingTypeExt::ExtMap.Find(pBuildingType)->Cameo_ShouldCount.Get(pBuildingType->BuildCat != BuildCat::Combat || pBuildingType->BuildLimit != INT_MAX))
 			{
 				GET_STACK(RectangleStruct, surfaceRect, STACK_OFFSET(0x48C, -0x438));
 
