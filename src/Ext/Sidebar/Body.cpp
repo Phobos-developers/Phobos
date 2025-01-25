@@ -18,6 +18,8 @@ void SidebarExt::Remove(SidebarClass* pThis)
 	Data = nullptr;
 }
 
+// Reversed from Ares source code (In fact, it's the same as Vanilla).
+// And compared to 0.A, it has been encapsulated. That's why here's such a simple way to make modifications.
 bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 {
 	const auto pTechnoType = TechnoTypeClass::GetByTypeAndIndex(pItem->ItemType, pItem->ItemIndex);
@@ -55,8 +57,9 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 	if (pTechnoType)
 	{
 		const auto absType = pTechnoType->WhatAmI();
+
+		// Here we make correction to the hardcoded BuildCat::DontCare
 		const auto buildCat = absType == AbstractType::BuildingType ? static_cast<BuildingTypeClass*>(pTechnoType)->BuildCat : BuildCat::DontCare;
-		// EVERYONE likes hardcoded BuildCat::DontCare, so why is this function still designed like this? why pass this parameter???
 
 		if (pCurrent->GetPrimaryFactory(absType, pTechnoType->Naval, buildCat))
 		{
