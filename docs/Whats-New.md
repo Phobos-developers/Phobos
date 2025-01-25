@@ -305,7 +305,7 @@ HideLightFlashEffects=false      ; boolean
 
 ## Changelog
 
-### Version TBD (develop branch nightly builds)
+### 0.4
 
 <details open>
   <summary>Click to show</summary>
