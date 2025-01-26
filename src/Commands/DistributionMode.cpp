@@ -171,7 +171,7 @@ DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRang
 		const auto color = ((mode2 > 1)
 			? ((mode2 == 3) ? ColorStruct { 255, 0, 0 } : ColorStruct { 200, 200, 0 })
 			: (mode2 == 1) ? ColorStruct { 0, 100, 255 } : ColorStruct { 0, 255, 50 });
-		Game::DrawRadialIndicator(false, true, pCell->GetCoords(), color, (mode1 ? static_cast<float>(2 << mode1) : 0.5), false, true);
+		Game::DrawRadialIndicator(false, true, pCell->GetCoords(), color, static_cast<float>(mode1 ? (2 << mode1) : 0.5), false, true);
 	}
 
 	return 0;
