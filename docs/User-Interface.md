@@ -15,6 +15,8 @@ This page lists all user interface additions, changes, fixes that are implemente
 You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
 ```
 
+- Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold.
+
 ## Audio
 
 - You can now specify which soundtrack themes would play on win or lose.
@@ -34,7 +36,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 *Default configuration of digital display using example shapes from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries).*
 
 - You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points.
- - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
+  - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
     - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
   - By default, values are displayed in `current/maximum` format (i.e. 20/40). `HideMaxValue=yes` will make the counter show only the current value (i.e. 20). `Percentage=yes` changes the format to `percent%` (i.e. 50%).
   - `CanSee` and `CanSee.Observer` can limit visibility to specific players.
@@ -297,24 +299,27 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 - Save the current singleplayer game.
 - For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
-    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
-    - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
+  - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
+  - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
 
 ### `[ ]` Save Variables
 
-- Save local & global variables to an INI file. See [this](Miscellanous.html#save-variables-to-file) for details.
+- Save local & global variables to an INI file. See [this](Miscellanous.md#save-variables-to-file) for details.
 - For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Designator Range
+
 - Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
 - For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Digital Display
+
 - Switches on/off [digital display types](#digital-display).
 - For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Frame By Frame Mode
-- Switches on/off [frame by frame mode](Miscellanous.html#frame-step-in).
+
+- Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Aggressive Stance
@@ -365,6 +370,24 @@ DisableEmptySpawnPositions=false  ; boolean
 ```
 
 ## Sidebar / Battle UI
+
+
+### Building Production Queue
+
+![Building Production Queue](static/images/image.png)
+*Queueing multiple buildings*
+
+- Buildings can now be queued for construction like other units if `BuildingProductionQueue` is set to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingProductionQueue=false  ; boolean
+```
+
+```{note}
+When the building becomes ready to be placed, the next building's construction will not begin until the player places the current building.
+```
 
 ### Cameo Sorting
 
@@ -608,6 +631,7 @@ In `RA2MD.ini`:
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
 ```
+
 ## Miscellanous
 
 ### Skip saving game on starting a new campaign
