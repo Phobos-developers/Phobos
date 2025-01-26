@@ -9,6 +9,10 @@
 
 #include <Ext/Bullet/Trajectories/PhobosTrajectory.h>
 
+class EventTypeClass;
+
+class EventHandlerTypeClass;
+
 class BulletTypeExt
 {
 public:
