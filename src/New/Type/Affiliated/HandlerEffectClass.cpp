@@ -639,12 +639,11 @@ void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwn
 
 void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>*pParticipants, AbstractClass* pTarget) const
 {
-	std::map<EventActorType, AbstractClass*> participants = {
-		{ EventActorType::Me, nullptr },
-		{ EventActorType::They, nullptr },
-		{ EventActorType::Scoper, pParticipants->operator[](EventActorType::Scoper) },
-		{ EventActorType::Enchanter, pParticipants->operator[](EventActorType::Enchanter) },
-	};
+	static std::map<EventActorType, AbstractClass*> participants;
+	participants[EventActorType::Me] = nullptr;
+	participants[EventActorType::They] = nullptr;
+	participants[EventActorType::Scoper] = pParticipants->operator[](EventActorType::Scoper);
+	participants[EventActorType::Enchanter] = pParticipants->operator[](EventActorType::Enchanter);
 
 	// Event Invoker
 	if (!EventInvokers.empty())
@@ -665,7 +664,7 @@ void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwne
 		participants[EventActorType::They] = pOwner;
 		participants[EventActorType::Scoper] = pTarget;
 
-		std::function<void(TechnoClass*)> tryInvoke = [this, pOwnerHouse, &participants](TechnoClass* pItem)
+		std::function<void(TechnoClass*)> tryInvoke = [this, pOwnerHouse](TechnoClass* pItem)
 			{
 				if (IsEligibleForAreaSearch(pItem, pOwnerHouse))
 				{

@@ -451,6 +451,14 @@ Shield.InheritStateOnReplace=false          ; boolean
         </ul>
       </li>
       <li>
+        Factory producing:
+        <ul>
+          <li>Invoked when a unit (not building) is produced from a factory.</li>
+          <li><code>WhenProduce</code>: Invoked on the primary factory's perspective.</li>
+          <li><code>WhenProduced</code>: Invoked on the unit's perspective.</li>
+        </ul>
+      </li>
+      <li>
         Killing:
         <ul>
           <li>Invoked when a techno is killed by damage (not by crushinng). By the moment, the victim is not yet removed from the game.</li>
@@ -505,9 +513,10 @@ Shield.InheritStateOnReplace=false          ; boolean
       <li>
         Player Emblems:
         <ul>
-          <li>These events are only invoked for the event triggers on Player Emblems. The <code>Me</code> basic actor is the owning house.</li>
+          <li>These events are only invoked for the event triggers on Player Emblems. Unless stated otherwise, the <code>Me</code> basic actor is the owning house of the emblem, and the other basic actors are missing.</li>
           <li><code>WhenAttach</code>: Invoked when this Player Emblems is attached to a house.</li>
           <li><code>WhenDetach</code>: Invoked when this Player Emblems is detached from a house.</li>
+          <li><code>WhenProduce</code>: Invoked when the house produces a unit (not building) from a factory. The <code>Me</code> basic actor is the primary factory used to produce it, and the <code>They</code> basic actor is the produced unit.</li>
         </ul>
       </li>
     </ul>

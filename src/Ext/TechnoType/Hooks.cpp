@@ -122,9 +122,16 @@ DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_BeforeInfiltrate, 6)
 	GET(BuildingClass*, pBuilding, EDI);
 
 	auto pSpyExt = TechnoExt::ExtMap.Find(pSpy);
-	pSpyExt->InvokeEvent(EventTypeClass::WhenInfiltrate, pSpy, pBuilding);
 	auto pBuildingExt = TechnoExt::ExtMap.Find(pBuilding);
-	pBuildingExt->InvokeEvent(EventTypeClass::WhenInfiltrated, pBuilding, pSpy);
+
+	static std::map<EventActorType, AbstractClass*> participants;
+	participants[EventActorType::Me] = pSpy;
+	participants[EventActorType::They] = pBuilding;
+	pSpyExt->InvokeEvent(EventTypeClass::WhenInfiltrate, &participants);
+
+	participants[EventActorType::Me] = pBuilding;
+	participants[EventActorType::They] = pSpy;
+	pBuildingExt->InvokeEvent(EventTypeClass::WhenInfiltrated, &participants);
 
 	return 0;
 }

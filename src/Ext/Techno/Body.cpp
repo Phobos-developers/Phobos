@@ -466,28 +466,6 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-inline static void InvokeEventStatic(EventTypeClass* pEventTypeClass,
-	std::map<EventActorType, AbstractClass*>* pParticipants,
-	const PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>>* map)
-{
-	if (map->contains(pEventTypeClass))
-	{
-		for (auto pEventHandlerTypeClass : map->get_or_default(pEventTypeClass))
-		{
-			pEventHandlerTypeClass->HandleEvent(pParticipants);
-		}
-	}
-}
-
-void TechnoExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, TechnoClass* pMe, TechnoClass* pThey) const
-{
-	std::map<EventActorType, AbstractClass*> participants = {
-		{ EventActorType::Me, pMe },
-		{ EventActorType::They, pThey },
-	};
-	InvokeEvent(pEventTypeClass, &participants);
-}
-
 void TechnoExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, std::map<EventActorType, AbstractClass*>* pParticipants) const
 {
 	for (auto const& attachEffect : this->AttachedEffects)
@@ -495,11 +473,11 @@ void TechnoExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, std::map<E
 		auto pAttachEffect = std::move(attachEffect.get());
 		auto const& map = pAttachEffect->GetType()->EventHandlersMap;
 		pParticipants->operator[](EventActorType::Enchanter) = pAttachEffect->GetInvoker();
-		InvokeEventStatic(pEventTypeClass, pParticipants, &map);
+		EventHandlerTypeClass::InvokeEventStatic(pEventTypeClass, pParticipants, &map);
 	}
 
 	auto const& map = this->TypeExtData->EventHandlersMap;
-	InvokeEventStatic(pEventTypeClass, pParticipants, &map);
+	EventHandlerTypeClass::InvokeEventStatic(pEventTypeClass, pParticipants, &map);
 }
 
 void TechnoExt::ExtData::UnlimboAtRandomPlaceNearby(const CoordStruct* pNearCoords) const

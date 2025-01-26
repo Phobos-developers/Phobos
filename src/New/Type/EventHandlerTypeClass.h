@@ -31,6 +31,10 @@ public:
 	static void LoadTypeMapFromINI(INI_EX& exINI, const char* pSection, const char* pHeader, PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>>* map);
 
 	void HandleEvent(std::map<EventActorType, AbstractClass*>* pParticipants);
+
+	static void InvokeEventStatic(EventTypeClass* pEventTypeClass,
+		std::map<EventActorType, AbstractClass*>* pParticipants,
+		const PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>>* map);
 private:
 	template <typename T>
 	void Serialize(T& Stm);

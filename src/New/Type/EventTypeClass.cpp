@@ -12,6 +12,8 @@ EventTypeClass* EventTypeClass::WhenCreated = nullptr;
 EventTypeClass* EventTypeClass::WhenCaptured = nullptr;
 EventTypeClass* EventTypeClass::WhenPromoted = nullptr;
 EventTypeClass* EventTypeClass::WhenDemoted = nullptr;
+EventTypeClass* EventTypeClass::WhenProduce = nullptr;
+EventTypeClass* EventTypeClass::WhenProduced = nullptr;
 EventTypeClass* EventTypeClass::WhenKill = nullptr;
 EventTypeClass* EventTypeClass::WhenKilled = nullptr;
 EventTypeClass* EventTypeClass::WhenCrush = nullptr;
@@ -41,6 +43,8 @@ void EventTypeClass::AddDefaults()
 	EventTypeClass::WhenCaptured = FindOrAllocate("WhenCaptured");
 	EventTypeClass::WhenPromoted = FindOrAllocate("WhenPromoted");
 	EventTypeClass::WhenDemoted = FindOrAllocate("WhenDemoted");
+	EventTypeClass::WhenProduce = FindOrAllocate("WhenProduce");
+	EventTypeClass::WhenProduced = FindOrAllocate("WhenProduced");
 	EventTypeClass::WhenKill = FindOrAllocate("WhenKill");
 	EventTypeClass::WhenKilled = FindOrAllocate("WhenKilled");
 	EventTypeClass::WhenCrush = FindOrAllocate("WhenCrush");

@@ -21,16 +21,9 @@ bool PlayerEmblemTypeClass::AutoCreateAttachEffects() const
 
 void PlayerEmblemTypeClass::InvokeEventHandlers(EventTypeClass* pEventType, HouseClass* pHouse) const
 {
-	if (this->EventHandlersMap.contains(pEventType))
-	{
-		std::map<EventActorType, AbstractClass*> participants = {
-			{ EventActorType::Me, pHouse },
-		};
-		for (auto pEventHandlerTypeClass : this->EventHandlersMap.get_or_default(pEventType))
-		{
-			pEventHandlerTypeClass->HandleEvent(&participants);
-		}
-	}
+	static std::map<EventActorType, AbstractClass*> participants;
+	participants[EventActorType::Me] = pHouse;
+	EventHandlerTypeClass::InvokeEventStatic(pEventType, &participants, &this->EventHandlersMap);
 }
 
 void PlayerEmblemTypeClass::LoadFromINI(CCINIClass* pINI)

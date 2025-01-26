@@ -223,7 +223,9 @@ DEFINE_HOOK(0x446EE8, BuildingClass_Unlimbo_WhenCreated, 0x6)
 		if (!pTechnoExt->WhenCreatedEventFired)
 		{
 			pTechnoExt->WhenCreatedEventFired = true;
-			pTechnoExt->InvokeEvent(EventTypeClass::WhenCreated, pThis, nullptr);
+			static std::map<EventActorType, AbstractClass*> participants;
+			participants[EventActorType::Me] = pThis;
+			pTechnoExt->InvokeEvent(EventTypeClass::WhenCreated, &participants);
 		}
 	}
 

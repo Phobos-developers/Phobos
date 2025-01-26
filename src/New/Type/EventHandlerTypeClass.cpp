@@ -204,6 +204,19 @@ void EventHandlerTypeClass::HandleEvent(std::map<EventActorType, AbstractClass*>
 	}
 }
 
+void EventHandlerTypeClass::InvokeEventStatic(EventTypeClass* pEventTypeClass,
+	std::map<EventActorType, AbstractClass*>* pParticipants,
+	const PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>>* map)
+{
+	if (map->contains(pEventTypeClass))
+	{
+		for (auto pEventHandlerTypeClass : map->get_or_default(pEventTypeClass))
+		{
+			pEventHandlerTypeClass->HandleEvent(pParticipants);
+		}
+	}
+}
+
 bool EventHandlerTypeClass::CheckFilters(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType actorType) const
 {
 	for (auto const& handlerComp : this->HandlerComps)

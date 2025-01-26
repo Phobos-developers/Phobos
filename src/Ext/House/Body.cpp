@@ -579,6 +579,15 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 	return 1.0f - ((1.0f - mult) * pTechnoTypeExt->FactoryPlant_Multiplier);
 }
 
+void HouseExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, std::map<EventActorType, AbstractClass*>* pParticipants) const
+{
+	for (auto const& pEmblemType : this->PlayerEmblems)
+	{
+		auto const& map = pEmblemType->EventHandlersMap;
+		EventHandlerTypeClass::InvokeEventStatic(pEventTypeClass, pParticipants, &map);
+	}
+}
+
 void HouseExt::ExtData::UpdatePlayerEmblemBuildOptions()
 {
 	PlayerEmblems_BuildOptions_Allowed.clear();

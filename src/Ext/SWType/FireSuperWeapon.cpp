@@ -305,10 +305,9 @@ void SWTypeExt::ExtData::ApplyEventInvokers(SuperClass* pSW, const CellStruct& c
 
 	for (const auto pTargetFoot : *FootClass::Array)
 	{
-		std::map<EventActorType, AbstractClass*> participants = {
-			{ EventActorType::Me, pTargetFoot },
-			{ EventActorType::They, pSW->Owner },
-		};
+		static std::map<EventActorType, AbstractClass*> participants;
+		participants[EventActorType::Me] = pTargetFoot;
+		participants[EventActorType::They] = pSW->Owner;
 		for (auto pEventInvokerType : EventInvokers)
 		{
 			pEventInvokerType->TryExecute(pSW->Owner, &participants);

@@ -67,7 +67,9 @@ DEFINE_HOOK(0x451409, BuildingClass_UpdateAnimsAndTurretAfterUpgrade, 0x6)
 	GET(BuildingClass*, pBuilding, EBP);
 
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
-	pTechnoExt->InvokeEvent(EventTypeClass::WhenUpgraded, pBuilding, nullptr);
+	static std::map<EventActorType, AbstractClass*> participants;
+	participants[EventActorType::Me] = pBuilding;
+	pTechnoExt->InvokeEvent(EventTypeClass::WhenUpgraded, &participants);
 
 	return 0;
 }

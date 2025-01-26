@@ -115,6 +115,8 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 
+	static std::map<EventActorType, AbstractClass*> participants;
+
 	if (pSource)
 	{
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
@@ -144,10 +146,14 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 		}
 
 		auto const pSourceExt = TechnoExt::ExtMap.Find(pSource);
-		pSourceExt->InvokeEvent(EventTypeClass::WhenKill, pSource, pThis);
+		participants[EventActorType::Me] = pSource;
+		participants[EventActorType::They] = pThis;
+		pSourceExt->InvokeEvent(EventTypeClass::WhenKill, &participants);
 	}
 
-	pExt->InvokeEvent(EventTypeClass::WhenKilled, pThis, pSource);
+	participants[EventActorType::Me] = pThis;
+	participants[EventActorType::They] = pSource;
+	pExt->InvokeEvent(EventTypeClass::WhenKilled, &participants);
 
 	return 0;
 }
@@ -220,11 +226,10 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 	for (auto const& pAE : detachedVector)
 	{
-		std::map<EventActorType, AbstractClass*> participants = {
-			{ EventActorType::Me, pThis },
-			{ EventActorType::They, pAE->GetInvoker() },
-			{ EventActorType::Enchanter, pAE->GetInvoker() },
-		};
+		static std::map<EventActorType, AbstractClass*> participants;
+		participants[EventActorType::Me] = pThis;
+		participants[EventActorType::They] = pAE->GetInvoker();
+		participants[EventActorType::Enchanter] = pAE->GetInvoker();
 		auto const& map = pAE->GetType()->EventHandlersMap;
 		if (map.contains(EventTypeClass::WhenObjectDied))
 		{

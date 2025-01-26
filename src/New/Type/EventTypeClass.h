@@ -19,6 +19,8 @@ public:
 	static EventTypeClass* WhenCaptured;
 	static EventTypeClass* WhenPromoted;
 	static EventTypeClass* WhenDemoted;
+	static EventTypeClass* WhenProduce;
+	static EventTypeClass* WhenProduced;
 	static EventTypeClass* WhenKill;
 	static EventTypeClass* WhenKilled;
 	static EventTypeClass* WhenCrush;

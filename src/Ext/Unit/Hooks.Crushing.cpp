@@ -109,9 +109,15 @@ DEFINE_HOOK(0x7418AA, UnitClass_CrushCell_WhenCrushed, 6)
 	if (auto const pVictimTechno = abstract_cast<TechnoClass*>(pVictim))
 	{
 		auto pCrusherExt = TechnoExt::ExtMap.Find(pCrusher);
-		pCrusherExt->InvokeEvent(EventTypeClass::WhenCrush, pCrusher, pVictimTechno);
 		auto pVictimExt = TechnoExt::ExtMap.Find(pVictimTechno);
-		pVictimExt->InvokeEvent(EventTypeClass::WhenCrushed, pVictimTechno, pCrusher);
+
+		static std::map<EventActorType, AbstractClass*> participants;
+		participants[EventActorType::Me] = pCrusher;
+		participants[EventActorType::They] = pVictimTechno;
+		pCrusherExt->InvokeEvent(EventTypeClass::WhenCrush, &participants);
+		participants[EventActorType::Me] = pVictimTechno;
+		participants[EventActorType::They] = pCrusher;
+		pVictimExt->InvokeEvent(EventTypeClass::WhenCrushed, &participants);
 
 		if (RulesExt::Global()->InfantryPlayDieSoundWhenCrushed
 			&& pVictimTechno->WhatAmI() == AbstractType::Infantry)

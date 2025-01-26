@@ -172,10 +172,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->EventInvokers.size() > 0)
 	{
-		std::map<EventActorType, AbstractClass*> participants = {
-			{ EventActorType::Me, pTarget },
-			{ EventActorType::They, pOwner },
-		};
+		static std::map<EventActorType, AbstractClass*> participants;
+		participants[EventActorType::Me] = pTarget;
+		participants[EventActorType::They] = pOwner;
 		for (auto pEventInvokerType : EventInvokers)
 		{
 			pEventInvokerType->TryExecute(pHouse, &participants);
