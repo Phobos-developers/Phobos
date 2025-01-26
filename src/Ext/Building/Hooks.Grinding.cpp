@@ -2,6 +2,7 @@
 
 #include <InfantryClass.h>
 #include <InputManagerClass.h>
+#include <Ext/House/Body.h>
 
 DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 {
@@ -198,6 +199,23 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_DoGrindingExtras, 0x5)
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
+	auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pBuildingExt = TechnoExt::ExtMap.Find(pBuilding);
+	auto const pHouseExt = HouseExt::ExtMap.Find(pBuilding->Owner);
+
+	static std::map<EventActorType, AbstractClass*> participants;
+	participants[EventActorType::Me] = pBuilding;
+	participants[EventActorType::They] = pThis;
+	pBuildingExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
+
+	participants[EventActorType::Me] = pThis;
+	participants[EventActorType::They] = pBuilding;
+	pTechnoExt->InvokeEvent(EventTypeClass::WhenProduced, &participants);
+
+	participants[EventActorType::Me] = pBuilding;
+	participants[EventActorType::They] = pThis;
+	pHouseExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
+
 	return BuildingExt::DoGrindingExtras(pBuilding, pThis, pThis->GetRefund()) ? Continue : 0;
 }
 
@@ -220,6 +238,23 @@ DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_DoGrindingExtras, 0x5)
 
 	GET(UnitClass*, pThis, EBP);
 	GET(BuildingClass*, pBuilding, EBX);
+
+	auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pBuildingExt = TechnoExt::ExtMap.Find(pBuilding);
+	auto const pHouseExt = HouseExt::ExtMap.Find(pBuilding->Owner);
+
+	static std::map<EventActorType, AbstractClass*> participants;
+	participants[EventActorType::Me] = pBuilding;
+	participants[EventActorType::They] = pThis;
+	pBuildingExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
+
+	participants[EventActorType::Me] = pThis;
+	participants[EventActorType::They] = pBuilding;
+	pTechnoExt->InvokeEvent(EventTypeClass::WhenProduced, &participants);
+
+	participants[EventActorType::Me] = pBuilding;
+	participants[EventActorType::They] = pThis;
+	pHouseExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
 
 	// Calculated like this because it is easier than tallying up individual refunds for passengers and parasites.
 	int totalRefund = pBuilding->Owner->Balance - GrinderRefundTemp::BalanceBefore;

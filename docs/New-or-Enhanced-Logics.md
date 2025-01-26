@@ -459,6 +459,14 @@ Shield.InheritStateOnReplace=false          ; boolean
         </ul>
       </li>
       <li>
+        Unit grinding:
+        <ul>
+          <li>Invoked when a unit is sent into a Grinder (<code>Grinding=yes</code> building). By the moment, the unit is not yet removed from the game.</li>
+          <li><code>WhenGrind</code>: Invoked on the grinding building's perspective.</li>
+          <li><code>WhenGrinded</code>: Invoked on the unit's perspective.</li>
+        </ul>
+      </li>
+      <li>
         Killing:
         <ul>
           <li>Invoked when a techno is killed by damage (not by crushinng). By the moment, the victim is not yet removed from the game.</li>
@@ -517,6 +525,7 @@ Shield.InheritStateOnReplace=false          ; boolean
           <li><code>WhenAttach</code>: Invoked when this Player Emblems is attached to a house.</li>
           <li><code>WhenDetach</code>: Invoked when this Player Emblems is detached from a house.</li>
           <li><code>WhenProduce</code>: Invoked when the house produces a unit (not building) from a factory. The <code>Me</code> basic actor is the primary factory used to produce it, and the <code>They</code> basic actor is the produced unit.</li>
+          <li><code>WhenGrind</code>: Invoked when the house grinds a unit. The <code>Me</code> basic actor is the grinding building, and the <code>They</code> basic actor is the grinded unit. By the moment, the unit is not yet removed from the game.</li>
         </ul>
       </li>
     </ul>

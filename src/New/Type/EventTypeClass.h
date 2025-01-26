@@ -21,6 +21,8 @@ public:
 	static EventTypeClass* WhenDemoted;
 	static EventTypeClass* WhenProduce;
 	static EventTypeClass* WhenProduced;
+	static EventTypeClass* WhenGrind;
+	static EventTypeClass* WhenGrinded;
 	static EventTypeClass* WhenKill;
 	static EventTypeClass* WhenKilled;
 	static EventTypeClass* WhenCrush;
