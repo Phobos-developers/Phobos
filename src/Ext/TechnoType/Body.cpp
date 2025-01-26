@@ -529,6 +529,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
 	this->KeepTargetOnMove_ExtraDistance.Read(exINI, pSection, "KeepTargetOnMove.ExtraDistance");
 
+	// Event Handlers
 	EventHandlerTypeClass::LoadTypeMapFromINI(exINI, pSection, "Trigger", &this->EventHandlersMap);
 
 	// Ares 0.2
