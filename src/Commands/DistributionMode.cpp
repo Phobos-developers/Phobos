@@ -5,20 +5,9 @@
 #include <Helpers/Macro.h>
 
 #include <HouseClass.h>
-#include <WWMouseClass.h>
 
 int DistributionMode1CommandClass::Mode = 0;
 int DistributionMode2CommandClass::Mode = 0;
-
-void __fastcall PrintDistributionModeMessage()
-{
-	wchar_t text[0x40];
-	swprintf_s(text, L"Distribution Mode < Spread: r=%2d , Filter: %s >",
-		(DistributionMode1CommandClass::Mode ? (2 << DistributionMode1CommandClass::Mode) : 0),
-		((DistributionMode2CommandClass::Mode > 1) ? ((DistributionMode2CommandClass::Mode == 3) ? L"Name" : L"Type") : (DistributionMode2CommandClass::Mode == 1) ? L"Auto" : L"None")
-	);
-	MessageListClass::Instance->PrintMessage(text, 200, 5, true);
-}
 
 const char* DistributionMode1CommandClass::GetName() const
 {
@@ -43,7 +32,6 @@ const wchar_t* DistributionMode1CommandClass::GetUIDescription() const
 void DistributionMode1CommandClass::Execute(WWKey eInput) const
 {
 	DistributionMode1CommandClass::Mode = ((DistributionMode1CommandClass::Mode + 1) & 3);
-	PrintDistributionModeMessage();
 }
 
 const char* DistributionMode2CommandClass::GetName() const
@@ -69,7 +57,6 @@ const wchar_t* DistributionMode2CommandClass::GetUIDescription() const
 void DistributionMode2CommandClass::Execute(WWKey eInput) const
 {
 	DistributionMode2CommandClass::Mode = ((DistributionMode2CommandClass::Mode + 1) & 3);
-	PrintDistributionModeMessage();
 }
 
 DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
@@ -173,41 +160,18 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x4F4596, GScreenClass_DrawOnTop_DrawDistributionModeShape, 0x7)
+DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRange, 0x7)
 {
 	const auto mode1 = DistributionMode1CommandClass::Mode;
 	const auto mode2 = DistributionMode2CommandClass::Mode;
 
 	if (mode1 || mode2)
 	{
-		auto position = WWMouseClass::Instance->XY1;
-		RectangleStruct rect = DSurface::Composite->GetRect();
-		rect.Height -= 32;
-
-		if (position.X < rect.Width && position.Y < rect.Height)
-		{
-			position.Y += 20;
-			const auto mode2Text = ((mode2 > 1) ? ((mode2 == 3) ? L"Name" : L"Type") : (mode2 == 1) ? L"Auto" : L"None");
-			wchar_t text[0x20];
-			swprintf_s(text, L"%s:%2d", mode2Text, (mode1 ? (2 << mode1) : 0));
-			RectangleStruct dim = Drawing::GetTextDimensions(text, Point2D::Empty, 0);
-			dim.Width += 4;
-			const int dX = rect.Width - dim.Width;
-			const int dY = rect.Height - dim.Height;
-
-			if (position.X >= dX)
-				position.X = dX;
-
-			if (position.Y >= dY)
-				position.Y = dY;
-
-			dim.X = position.X;
-			dim.Y = position.Y;
-			ColorStruct color { 0, 0, 0 };
-			DSurface::Composite->FillRectTrans(&dim, &color, 40);
-			position.X += 2;
-			DSurface::Composite->DrawTextA(text, &rect, &position, COLOR_WHITE, COLOR_BLACK, TextPrintType::LightShadow);
-		}
+		const auto pCell = MapClass::Instance->GetCellAt(DisplayClass::Instance->CurrentFoundation_CenterCell);
+		const auto color = ((mode2 > 1)
+			? ((mode2 == 3) ? ColorStruct { 255, 0, 0 } : ColorStruct { 200, 200, 0 })
+			: (mode2 == 1) ? ColorStruct { 0, 100, 255 } : ColorStruct { 0, 255, 50 });
+		Game::DrawRadialIndicator(false, true, pCell->GetCoords(), color, (mode1 ? static_cast<float>(2 << mode1) : 0.5), false, true);
 	}
 
 	return 0;
