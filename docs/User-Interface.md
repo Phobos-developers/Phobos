@@ -15,6 +15,8 @@ This page lists all user interface additions, changes, fixes that are implemente
 You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
 ```
 
+- Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold.
+
 ## Audio
 
 - You can now specify which soundtrack themes would play on win or lose.
@@ -302,7 +304,7 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 ### `[ ]` Save Variables
 
-- Save local & global variables to an INI file. See [this](Miscellanous.html#save-variables-to-file) for details.
+- Save local & global variables to an INI file. See [this](Miscellanous.md#save-variables-to-file) for details.
 - For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Designator Range
@@ -314,7 +316,7 @@ SelectionFlashDuration=0  ; integer, number of frames
 - For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Frame By Frame Mode
-- Switches on/off [frame by frame mode](Miscellanous.html#frame-step-in).
+- Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
 ### `[ ]` Distribution Mode Spread / Filter
@@ -346,6 +348,24 @@ DisableEmptySpawnPositions=false  ; boolean
 ```
 
 ## Sidebar / Battle UI
+
+
+### Building Production Queue
+
+![Building Production Queue](static/images/image.png)
+*Queueing multiple buildings*
+
+- Buildings can now be queued for construction like other units if `BuildingProductionQueue` is set to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingProductionQueue=false  ; boolean
+```
+
+```{note}
+When the building becomes ready to be placed, the next building's construction will not begin until the player places the current building.
+```
 
 ### Cameo Sorting
 
