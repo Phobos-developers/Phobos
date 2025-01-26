@@ -286,11 +286,14 @@ DEFINE_HOOK(0x4899DA, DamageArea_DamageBuilding_SetContext, 0x7)
 
 	GET_STACK(DynamicVectorClass<DamageGroup*>, groups, STACK_OFFSET(0xE0, -0xA8));
 
+	const auto cellSpread = Game::F2I(pWH->CellSpread * Unsorted::LeptonsPerCell);
+	const auto percentDifference = 1.0 - pWH->PercentAtMax; // Vanilla will first multiply the damage and round it up, but we don't need to.
+
 	for (auto& group : groups)
 	{
 		if (const auto pBuilding = abstract_cast<BuildingClass*>(group->Target))
 		{
-			const auto multiplier = 1.0 - ((1.0 - pWH->PercentAtMax) * (group->Distance / (pWH->CellSpread * 256.0)));
+			const auto multiplier = (cellSpread && percentDifference) ? 1.0 - (percentDifference * group->Distance / cellSpread) : 1.0;
 			DamageBuildingHelper::Buildings[pBuilding] += multiplier > 0 ? multiplier : 0;
 			group->Distance = 0;
 		}
