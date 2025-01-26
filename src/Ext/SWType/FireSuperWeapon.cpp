@@ -34,6 +34,9 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (pTypeExt->Convert_Pairs.size() > 0)
 		pTypeExt->ApplyTypeConversion(pSW);
 
+	if (pTypeExt->EventHandlersMap.size() > 0)
+		pTypeExt->ApplyEventHandlers(pSW);
+
 	if (pTypeExt->EventInvokers.size() > 0)
 		pTypeExt->ApplyEventInvokers(pSW, cell);
 
@@ -289,20 +292,28 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 	}
 }
 
-void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
+void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW) const
 {
-	if (this->Convert_Pairs.size() == 0)
-		return;
-
 	for (const auto pTargetFoot : *FootClass::Array)
 		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }
 
-void SWTypeExt::ExtData::ApplyEventInvokers(SuperClass* pSW, const CellStruct& cell)
+void SWTypeExt::ExtData::ApplyEventHandlers(SuperClass* pSW) const
 {
-	if (this->EventInvokers.size() == 0)
-		return;
+	static std::map<EventActorType, AbstractClass*> participants;
+	participants[EventActorType::Me] = pSW->Owner;
+	EventHandlerTypeClass::InvokeEventStatic(EventTypeClass::WhenLaunch, &participants, &this->EventHandlersMap);
 
+	for (const auto pTargetFoot : *FootClass::Array)
+	{
+		participants[EventActorType::They] = pTargetFoot;
+
+		EventHandlerTypeClass::InvokeEventStatic(EventTypeClass::WhenImpact, &participants, &this->EventHandlersMap);
+	}
+}
+
+void SWTypeExt::ExtData::ApplyEventInvokers(SuperClass* pSW, const CellStruct& cell) const
+{
 	for (const auto pTargetFoot : *FootClass::Array)
 	{
 		static std::map<EventActorType, AbstractClass*> participants;

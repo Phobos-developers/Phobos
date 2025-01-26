@@ -70,6 +70,7 @@ public:
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
+		PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>> EventHandlersMap;
 		ValueableVector<EventInvokerTypeClass*> EventInvokers;
 
 		Valueable<bool> UseWeeds;
@@ -120,6 +121,7 @@ public:
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
+			, EventHandlersMap {}
 			, EventInvokers {}
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }
@@ -149,8 +151,9 @@ public:
 		void ApplyLimboKill(HouseClass* pHouse);
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
-		void ApplyTypeConversion(SuperClass* pSW);
-		void ApplyEventInvokers(SuperClass* pSW, const CellStruct& cell);
+		void ApplyTypeConversion(SuperClass* pSW) const;
+		void ApplyEventHandlers(SuperClass* pSW) const;
+		void ApplyEventInvokers(SuperClass* pSW, const CellStruct& cell) const;
 		void HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) const;
 		std::vector<BuildingClass*> GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const;
 		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;

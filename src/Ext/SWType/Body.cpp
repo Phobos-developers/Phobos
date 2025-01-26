@@ -49,6 +49,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimer_Priority)
 		.Process(this->Convert_Pairs)
 		.Process(this->EventInvokers)
+		.Process(this->EventHandlersMap)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->TabIndex)
 		.Process(this->UseWeeds)
@@ -169,6 +170,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
 	this->Detonate_Warhead_Full.Read(exINI, pSection, "Detonate.Warhead.Full");
 	this->Detonate_AtFirer.Read(exINI, pSection, "Detonate.AtFirer");
+
+	// Event Handler
+	EventHandlerTypeClass::LoadTypeMapFromINI(exINI, pSection, "Trigger", &this->EventHandlersMap);
 
 	// Event Invoker
 	EventInvokerTypeClass::LoadTypeListFromINI(exINI, pSection, "EventInvoker", &this->EventInvokers);

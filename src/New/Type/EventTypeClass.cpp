@@ -38,6 +38,11 @@ EventTypeClass* EventTypeClass::WhenObjectDied = nullptr;
 EventTypeClass* EventTypeClass::WhenDiscarded = nullptr;
 #pragma endregion
 
+#pragma region SuperWeaponEvents
+EventTypeClass* EventTypeClass::WhenLaunch = nullptr;
+EventTypeClass* EventTypeClass::WhenImpact = nullptr;
+#pragma endregion
+
 void EventTypeClass::AddDefaults()
 {
 #pragma region TechnoEvents
@@ -69,6 +74,11 @@ void EventTypeClass::AddDefaults()
 	EventTypeClass::WhenRemoved = FindOrAllocate("WhenRemoved");
 	EventTypeClass::WhenObjectDied = FindOrAllocate("WhenObjectDied");
 	EventTypeClass::WhenDiscarded = FindOrAllocate("WhenDiscarded");
+#pragma endregion
+
+#pragma region SuperWeaponEvents
+	EventTypeClass::WhenLaunch = FindOrAllocate("WhenLaunch");
+	EventTypeClass::WhenImpact = FindOrAllocate("WhenImpact");
 #pragma endregion
 }
 

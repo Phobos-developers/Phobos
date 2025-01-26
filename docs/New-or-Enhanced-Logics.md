@@ -435,7 +435,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 ### Event Trigger System
 
-- Techno Types, Attached Effects, and Player Emblems (see below), may have event triggers associated, to specify something to be done when something happened to them.
+- Techno Types, Attached Effects, Player Emblems (see below), and Super Weapons, may have event triggers associated, to specify something to be done when something happened to them.
 - Event triggers are associated using `TriggerN.EventType=` and `TriggerN.EventHandler=`entries, where N is an integer starting from 0. `Trigger.EventType` and `Trigger.EventHandler` are valid if only one pair is specified.
 - <details>
     <summary>Expand to see the list of pre-defined event types that will be invoked from the game.</summary>
@@ -528,6 +528,14 @@ Shield.InheritStateOnReplace=false          ; boolean
           <li><code>WhenGrind</code>: Invoked when the house grinds a unit. The <code>Me</code> basic actor is the grinding building, and the <code>They</code> basic actor is the grinded unit. By the moment, the unit is not yet removed from the game.</li>
         </ul>
       </li>
+      <li>
+        Super Weapons:
+        <ul>
+          <li>These events are only invoked for the event triggers on Super Weapons. The <code>Me</code> basic actor is the launching hause.</li>
+          <li><code>WhenLaunch</code>: Invoked when this Super Weapon is launched.</li>
+          <li><code>WhenImpact</code>: Invoked when this Super Weapon affects a techno. The <code>They</code> basic actor is the techno.</li>
+        </ul>
+      </li>
     </ul>
   </details>
 - Custom event types can be used. These events will only be invoked through Event Invokers.
@@ -546,6 +554,10 @@ TriggerN.EventType=...                             ; EventType
 TriggerN.EventHandler=...                          ; EventHandlerType
 
 [SOMEPE]                                           ; PlayerEmblemType
+TriggerN.EventType=...                             ; EventType
+TriggerN.EventHandler=...                          ; EventHandlerType
+
+[SOMESW]                                           ; SuperWeaponType
 TriggerN.EventType=...                             ; EventType
 TriggerN.EventHandler=...                          ; EventHandlerType
 ```

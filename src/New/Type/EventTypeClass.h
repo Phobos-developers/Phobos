@@ -45,6 +45,11 @@ public:
 	static EventTypeClass* WhenDiscarded;
 #pragma endregion
 
+#pragma region SuperWeaponEvents
+	static EventTypeClass* WhenLaunch;
+	static EventTypeClass* WhenImpact;
+#pragma endregion
+
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
