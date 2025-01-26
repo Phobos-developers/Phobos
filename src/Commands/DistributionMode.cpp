@@ -172,7 +172,7 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 
 	return SkipGameCode;
 }
-/*
+
 DEFINE_HOOK(0x4F4596, GScreenClass_DrawOnTop_DrawDistributionModeShape, 0x7)
 {
 	const auto mode1 = DistributionMode1CommandClass::Mode;
@@ -212,4 +212,3 @@ DEFINE_HOOK(0x4F4596, GScreenClass_DrawOnTop_DrawDistributionModeShape, 0x7)
 
 	return 0;
 }
-*/
