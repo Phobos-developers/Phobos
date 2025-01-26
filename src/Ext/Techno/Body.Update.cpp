@@ -830,7 +830,8 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	bool markForRedraw = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	static std::vector<WeaponTypeClass*> expireWeapons;
-	static std::vector<AttachEffectClass*> detachedVector;
+	static std::vector<AttachEffectClass*> detachedVectorExpired;
+	static std::vector<AttachEffectClass*> detachedVectorDiscarded;
 
 	if (pOwnerExt->PlayerEmblems_AutoAETarget.contains(pThisType))
 	{
@@ -888,7 +889,10 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 					expireWeapons.push_back(pType->ExpireWeapon);
 			}
 
-			detachedVector.push_back(attachEffect);
+			if (hasExpired)
+				detachedVectorExpired.push_back(attachEffect);
+			if (shouldDiscard)
+				detachedVectorDiscarded.push_back(attachEffect);
 
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
@@ -917,12 +921,19 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	}
 	expireWeapons.clear();
 
-	for (auto const& pAE : detachedVector)
+	for (auto const& pAE : detachedVectorExpired)
 	{
 		pAE->InvokeAEEvent(EventTypeClass::WhenExpired);
 		pAE->InvokeAEEvent(EventTypeClass::WhenDetach);
 	}
-	detachedVector.clear();
+	detachedVectorExpired.clear();
+
+	for (auto const& pAE : detachedVectorDiscarded)
+	{
+		pAE->InvokeAEEvent(EventTypeClass::WhenDiscarded);
+		pAE->InvokeAEEvent(EventTypeClass::WhenDetach);
+	}
+	detachedVectorDiscarded.clear();
 }
 
 // Updates self-owned (defined on TechnoType) AttachEffects, called on type conversion.
