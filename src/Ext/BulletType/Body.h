@@ -8,10 +8,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 
 #include <Ext/Bullet/Trajectories/PhobosTrajectory.h>
-
-class EventTypeClass;
-
-class EventHandlerTypeClass;
+#include <New/Type/EventHandlerTypeClass.h>
 
 class BulletTypeExt
 {
