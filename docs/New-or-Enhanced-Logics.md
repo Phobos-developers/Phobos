@@ -491,6 +491,14 @@ Shield.InheritStateOnReplace=false          ; boolean
         </ul>
       </li>
       <li>
+        Projectile interception:
+        <ul>
+          <li>Invoked when a projectile is intercepted.</li>
+          <li><code>WhenIntercept</code>: Invoked on the intercepting techno's perspective.</li>
+          <li><code>WhenIntercepted</code>: Invoked on the firing techno's perspective.</li>
+        </ul>
+      </li>
+      <li>
         Transport loading:
         <ul>
           <li>Invoked when a techno is loaded into a transport, a Bio Reactor, or a garrisonable structure. By the moment, the passenger is already inside the transport or building.</li>
@@ -532,9 +540,17 @@ Shield.InheritStateOnReplace=false          ; boolean
       <li>
         Super Weapons:
         <ul>
-          <li>These events are only invoked for the event triggers on Super Weapons. The <code>Me</code> basic actor is the launching hause.</li>
+          <li>These events are only invoked for the event triggers on Super Weapons. The <code>Me</code> basic actor is the launching house.</li>
           <li><code>WhenLaunch</code>: Invoked when this Super Weapon is launched.</li>
-          <li><code>WhenImpact</code>: Invoked when this Super Weapon affects a techno. The <code>They</code> basic actor is the techno.</li>
+          <li><code>WhenImpact</code>: Invoked when this Super Weapon hits a techno. The <code>They</code> basic actor is the techno that was hit. This event happens once for every techno that was hit. If no techno was affected, this event does not happen.</li>
+        </ul>
+      </li>
+      <li>
+        Projectiles:
+        <ul>
+          <li>These events are only invoked for the event triggers on projectiles. The <code>Me</code> basic actor is the firing techno.</li>
+          <li><code>WhenLaunch</code>: Invoked when this projectile is launched.</li>
+          <li><code>WhenIntercepted</code>: Invoked when this projectile is intercepted. The <code>They</code> basic actor is the techno that intercepted this projectile.</li>
         </ul>
       </li>
     </ul>
@@ -559,6 +575,10 @@ TriggerN.EventType=...                             ; EventType
 TriggerN.EventHandler=...                          ; EventHandlerType
 
 [SOMESW]                                           ; SuperWeaponType
+TriggerN.EventType=...                             ; EventType
+TriggerN.EventHandler=...                          ; EventHandlerType
+
+[SOMEPROJECTILE]                                   ; Projectile
 TriggerN.EventType=...                             ; EventType
 TriggerN.EventHandler=...                          ; EventHandlerType
 ```

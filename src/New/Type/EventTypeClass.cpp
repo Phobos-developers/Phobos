@@ -22,6 +22,8 @@ EventTypeClass* EventTypeClass::WhenCrush = nullptr;
 EventTypeClass* EventTypeClass::WhenCrushed = nullptr;
 EventTypeClass* EventTypeClass::WhenInfiltrate = nullptr;
 EventTypeClass* EventTypeClass::WhenInfiltrated = nullptr;
+EventTypeClass* EventTypeClass::WhenIntercept = nullptr;
+EventTypeClass* EventTypeClass::WhenIntercepted = nullptr;
 EventTypeClass* EventTypeClass::WhenLoad = nullptr;
 EventTypeClass* EventTypeClass::WhenUnload = nullptr;
 EventTypeClass* EventTypeClass::WhenBoard = nullptr;
@@ -61,6 +63,8 @@ void EventTypeClass::AddDefaults()
 	EventTypeClass::WhenCrushed = FindOrAllocate("WhenCrushed");
 	EventTypeClass::WhenInfiltrate = FindOrAllocate("WhenInfiltrate");
 	EventTypeClass::WhenInfiltrated = FindOrAllocate("WhenInfiltrated");
+	EventTypeClass::WhenIntercept = FindOrAllocate("WhenIntercept");
+	EventTypeClass::WhenIntercepted = FindOrAllocate("WhenIntercepted");
 	EventTypeClass::WhenLoad = FindOrAllocate("WhenLoad");
 	EventTypeClass::WhenUnload = FindOrAllocate("WhenUnload");
 	EventTypeClass::WhenBoard = FindOrAllocate("WhenBoard");

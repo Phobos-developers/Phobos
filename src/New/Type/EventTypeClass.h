@@ -29,6 +29,8 @@ public:
 	static EventTypeClass* WhenCrushed;
 	static EventTypeClass* WhenInfiltrate;
 	static EventTypeClass* WhenInfiltrated;
+	static EventTypeClass* WhenIntercept;
+	static EventTypeClass* WhenIntercepted;
 	static EventTypeClass* WhenLoad;
 	static EventTypeClass* WhenUnload;
 	static EventTypeClass* WhenBoard;

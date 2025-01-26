@@ -20,6 +20,8 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 
 		if (!pThis->Type->Inviso)
 			pExt->InitializeLaserTrails();
+
+		pExt->InvokeBulletEvent(EventTypeClass::WhenLaunch, nullptr);
 	}
 
 	return 0;

@@ -55,6 +55,8 @@ public:
 		void ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel);
 		void InitializeLaserTrails();
 
+		void InvokeBulletEvent(EventTypeClass* pEventTypeClass, AbstractClass* pThey) const;
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);

@@ -58,6 +58,8 @@ public:
 		Valueable<bool> Splits_UseWeaponTargeting;
 		Valueable<bool> AirburstWeapon_ApplyFirepowerMult;
 
+		PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>> EventHandlersMap;
+
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
@@ -96,6 +98,7 @@ public:
 			, Splits_TargetCellRange { 3 }
 			, Splits_UseWeaponTargeting { false }
 			, AirburstWeapon_ApplyFirepowerMult { false }
+			, EventHandlersMap {}
 		{ }
 
 		virtual ~ExtData() = default;

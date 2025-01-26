@@ -83,8 +83,28 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 			}
 		}
 
-		if (isIntercepted && !pInterceptorType->KeepIntact)
-			this->InterceptedStatus = InterceptedStatus::Intercepted;
+		if (isIntercepted) {
+			if (!pInterceptorType->KeepIntact) {
+				this->InterceptedStatus = InterceptedStatus::Intercepted;
+			}
+
+			this->InvokeBulletEvent(EventTypeClass::WhenIntercepted, pSource);
+
+			const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);
+			const auto pFirer = pThis->Owner;
+
+			static std::map<EventActorType, AbstractClass*> participants;
+			participants[EventActorType::Me] = pSource;
+			participants[EventActorType::They] = pFirer;
+			pSourceExt->InvokeEvent(EventTypeClass::WhenIntercept, &participants);
+
+			if (pFirer) {
+				const auto pFirerExt = TechnoExt::ExtMap.Find(pFirer);
+				participants[EventActorType::Me] = pFirer;
+				participants[EventActorType::They] = pSource;
+				pFirerExt->InvokeEvent(EventTypeClass::WhenIntercepted, &participants);
+			}
+		}
 	}
 }
 
@@ -153,6 +173,15 @@ void BulletExt::ExtData::InitializeLaserTrails()
 			this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pOwner);
 		}
 	}
+}
+
+void BulletExt::ExtData::InvokeBulletEvent(EventTypeClass* pEventTypeClass, AbstractClass* pThey) const
+{
+	auto const& map = this->TypeExtData->EventHandlersMap;
+	static std::map<EventActorType, AbstractClass*> participants;
+	participants[EventActorType::Me] = this->OwnerObject()->Owner;
+	participants[EventActorType::They] = pThey;
+	EventHandlerTypeClass::InvokeEventStatic(pEventTypeClass, &participants, &map);
 }
 
 // =============================
