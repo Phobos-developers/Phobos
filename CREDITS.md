@@ -254,6 +254,7 @@ This page lists all the individual contributions to the project by their author.
   - EM Pulse cannon logic improvements
   - `<Player @ X>` as owner for pre-placed objects
   - Custom exit cell for infantry factory
+  - Vehicles keeping target on move command
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

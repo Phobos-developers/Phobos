@@ -316,9 +316,13 @@ New:
 - Enable building production queue (by CrimRecya)
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
 - Custom exit cell for infantry factory (by Starkku)
+- Option for vehicles to keep target when issued move command (by Starkku)
 
 Vanilla fixes:
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
+
+Phobos fixes:
+- Type conversion on Warheads and Superweapons will no longer recursively convert units if applicable conversion pairs are listed, and only first applicable pair takes effect (by Starkku)
 </details>
 
 ### 0.4
