@@ -68,6 +68,7 @@ void EventTypeClass::AddDefaults()
 #pragma endregion
 
 #pragma region AttachedEffectEvents
+	EventTypeClass::WhenInitialize = FindOrAllocate("WhenInitialize");
 	EventTypeClass::WhenAttach = FindOrAllocate("WhenAttach");
 	EventTypeClass::WhenDetach = FindOrAllocate("WhenDetach");
 	EventTypeClass::WhenExpired = FindOrAllocate("WhenExpired");

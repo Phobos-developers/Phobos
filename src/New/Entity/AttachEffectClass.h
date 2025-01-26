@@ -45,6 +45,8 @@ public:
 	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
 		AbstractClass* pSource, AEAttachParams const& attachInfo);
 
+	void InvokeAEEvent(EventTypeClass* pEventTypeClass) const;
+
 private:
 	void OnlineCheck();
 	void CloakCheck();

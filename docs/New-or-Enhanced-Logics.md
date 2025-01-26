@@ -510,6 +510,7 @@ Shield.InheritStateOnReplace=false          ; boolean
         Attached Effects:
         <ul>
           <li>These events are only invoked for the event triggers on Attached Effects. The <code>Me</code> basic actor is the attached techno, and the <code>They</code> and <code>Enchanter</code> basic actors are the source of this Attached Effect.</li>
+          <li><code>WhenInitialize</code>: Invoked when this Attached Effect is initialized (<code>AttachEffect.InitialDelays</code> has passed).</li>
           <li><code>WhenAttach</code>: Invoked when this Attached Effect is attached.</li>
           <li><code>WhenExpired</code>: Invoked when this Attached Effect expired.</li>
           <li><code>WhenRemoved</code>: Invoked when this Attached Effect is removed.</li>

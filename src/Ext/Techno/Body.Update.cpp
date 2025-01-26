@@ -919,25 +919,8 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 
 	for (auto const& pAE : detachedVector)
 	{
-		static std::map<EventActorType, AbstractClass*> participants;
-		participants[EventActorType::Me] = pThis;
-		participants[EventActorType::They] = pAE->GetInvoker();
-		participants[EventActorType::Enchanter] = pAE->GetInvoker();
-		auto const& map = pAE->GetType()->EventHandlersMap;
-		if (map.contains(EventTypeClass::WhenExpired))
-		{
-			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenExpired))
-			{
-				pEventHandlerTypeClass->HandleEvent(&participants);
-			}
-		}
-		if (map.contains(EventTypeClass::WhenDetach))
-		{
-			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenDetach))
-			{
-				pEventHandlerTypeClass->HandleEvent(&participants);
-			}
-		}
+		pAE->InvokeAEEvent(EventTypeClass::WhenExpired);
+		pAE->InvokeAEEvent(EventTypeClass::WhenDetach);
 	}
 	detachedVector.clear();
 }
@@ -990,25 +973,8 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 
 	for (auto const& pAE : detachedVector)
 	{
-		static std::map<EventActorType, AbstractClass*> participants;
-		participants[EventActorType::Me] = pThis;
-		participants[EventActorType::They] = pAE->GetInvoker();
-		participants[EventActorType::Enchanter] = pAE->GetInvoker();
-		auto const& map = pAE->GetType()->EventHandlersMap;
-		if (map.contains(EventTypeClass::WhenExpired))
-		{
-			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenExpired))
-			{
-				pEventHandlerTypeClass->HandleEvent(&participants);
-			}
-		}
-		if (map.contains(EventTypeClass::WhenDetach))
-		{
-			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenDetach))
-			{
-				pEventHandlerTypeClass->HandleEvent(&participants);
-			}
-		}
+		pAE->InvokeAEEvent(EventTypeClass::WhenExpired);
+		pAE->InvokeAEEvent(EventTypeClass::WhenDetach);
 	}
 	detachedVector.clear();
 

@@ -37,6 +37,7 @@ public:
 #pragma endregion
 
 #pragma region AttachedEffectEvents
+	static EventTypeClass* WhenInitialize;
 	static EventTypeClass* WhenAttach;
 	static EventTypeClass* WhenDetach;
 	static EventTypeClass* WhenExpired;

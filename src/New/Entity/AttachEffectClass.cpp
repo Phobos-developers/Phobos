@@ -43,7 +43,10 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	this->HasInitialized = false;
 
 	if (this->InitialDelay <= 0)
+	{
 		this->HasInitialized = true;
+		InvokeAEEvent(EventTypeClass::WhenInitialize);
+	}
 
 	Duration = this->DurationOverride != 0 ? this->DurationOverride : this->Type->Duration;
 
@@ -111,6 +114,8 @@ void AttachEffectClass::AI()
 
 		if (this->Type->HasTint())
 			this->Techno->MarkForRedraw();
+
+		InvokeAEEvent(EventTypeClass::WhenInitialize);
 	}
 
 	if (this->CurrentDelay > 0)
@@ -547,18 +552,7 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 					pTargetExt->UpdateCumulativeAttachEffects(pType);
 			}
 
-			auto const& map = pAE->GetType()->EventHandlersMap;
-			if (map.contains(EventTypeClass::WhenAttach))
-			{
-				static std::map<EventActorType, AbstractClass*> participants;
-				participants[EventActorType::Me] = pTarget;
-				participants[EventActorType::They] = pInvoker;
-				participants[EventActorType::Enchanter] = pInvoker;
-				for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenAttach))
-				{
-					pEventHandlerTypeClass->HandleEvent(&participants);
-				}
-			}
+			pAE->InvokeAEEvent(EventTypeClass::WhenAttach);
 		}
 	}
 
@@ -832,25 +826,8 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 	for (auto const& pAE : detachedVector)
 	{
-		static std::map<EventActorType, AbstractClass*> participants;
-		participants[EventActorType::Me] = pTarget;
-		participants[EventActorType::They] = pAE->GetInvoker();
-		participants[EventActorType::Enchanter] = pAE->GetInvoker();
-		auto const& map = pAE->GetType()->EventHandlersMap;
-		if (map.contains(EventTypeClass::WhenRemoved))
-		{
-			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenRemoved))
-			{
-				pEventHandlerTypeClass->HandleEvent(&participants);
-			}
-		}
-		if (map.contains(EventTypeClass::WhenDetach))
-		{
-			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenDetach))
-			{
-				pEventHandlerTypeClass->HandleEvent(&participants);
-			}
-		}
+		pAE->InvokeAEEvent(EventTypeClass::WhenRemoved);
+		pAE->InvokeAEEvent(EventTypeClass::WhenDetach);
 	}
 
 	return detachedCount;
@@ -915,6 +892,16 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 
 		it = pSourceExt->AttachedEffects.erase(it);
 	}
+}
+
+void AttachEffectClass::InvokeAEEvent(EventTypeClass* pEventTypeClass) const
+{
+	auto const& map = this->Type->EventHandlersMap;
+	static std::map<EventActorType, AbstractClass*> participants;
+	participants[EventActorType::Me] = this->Techno;
+	participants[EventActorType::They] = this->Invoker;
+	participants[EventActorType::Enchanter] = this->Invoker;
+	EventHandlerTypeClass::InvokeEventStatic(pEventTypeClass, &participants, &map);
 }
 
 #pragma endregion

@@ -226,25 +226,8 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 	for (auto const& pAE : detachedVector)
 	{
-		static std::map<EventActorType, AbstractClass*> participants;
-		participants[EventActorType::Me] = pThis;
-		participants[EventActorType::They] = pAE->GetInvoker();
-		participants[EventActorType::Enchanter] = pAE->GetInvoker();
-		auto const& map = pAE->GetType()->EventHandlersMap;
-		if (map.contains(EventTypeClass::WhenObjectDied))
-		{
-			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenObjectDied))
-			{
-				pEventHandlerTypeClass->HandleEvent(&participants);
-			}
-		}
-		if (map.contains(EventTypeClass::WhenDetach))
-		{
-			for (auto pEventHandlerTypeClass : map.get_or_default(EventTypeClass::WhenDetach))
-			{
-				pEventHandlerTypeClass->HandleEvent(&participants);
-			}
-		}
+		pAE->InvokeAEEvent(EventTypeClass::WhenObjectDied);
+		pAE->InvokeAEEvent(EventTypeClass::WhenDetach);
 	}
 
 	return 0;
