@@ -30,6 +30,7 @@ EventTypeClass* EventTypeClass::WhenUpgraded = nullptr;
 #pragma endregion
 
 #pragma region AttachedEffectEvents
+EventTypeClass* EventTypeClass::WhenInitialize = nullptr;
 EventTypeClass* EventTypeClass::WhenAttach = nullptr;
 EventTypeClass* EventTypeClass::WhenDetach = nullptr;
 EventTypeClass* EventTypeClass::WhenExpired = nullptr;
