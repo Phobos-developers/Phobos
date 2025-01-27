@@ -207,6 +207,68 @@ void __fastcall AircraftClass_SetTarget_Wrapper(AircraftClass* pThis, void* _, A
 
 DEFINE_JUMP(VTABLE, 0x7E266C, GET_OFFSET(AircraftClass_SetTarget_Wrapper));
 
+DEFINE_HOOK(0x41847E, AircraftClass_MissionAttack_ScatterCell1, 0x6)
+{
+	enum { SkipScatter = 0x4184C2, Scatter = 0 };
+	return RulesExt::Global()->StrafingTargetScatter ? Scatter : SkipScatter;
+}
+
+DEFINE_HOOK(0x4186DD, AircraftClass_MissionAttack_ScatterCell2, 0x5)
+{
+	enum { SkipScatter = 0x418720, Scatter = 0 };
+	return RulesExt::Global()->StrafingTargetScatter ? Scatter : SkipScatter;
+}
+
+DEFINE_HOOK(0x41882C, AircraftClass_MissionAttack_ScatterCell3, 0x6)
+{
+	enum { SkipScatter = 0x418870, Scatter = 0 };
+	return RulesExt::Global()->StrafingTargetScatter ? Scatter : SkipScatter;
+}
+
+DEFINE_HOOK(0x41893B, AircraftClass_MissionAttack_ScatterCell4, 0x6)
+{
+	enum { SkipScatter = 0x41897F, Scatter = 0 };
+	return RulesExt::Global()->StrafingTargetScatter ? Scatter : SkipScatter;
+}
+
+DEFINE_HOOK(0x418A4A, AircraftClass_MissionAttack_ScatterCell5, 0x6)
+{
+	enum { SkipScatter = 0x418A8E, Scatter = 0 };
+	return RulesExt::Global()->StrafingTargetScatter ? Scatter : SkipScatter;
+}
+
+DEFINE_HOOK(0x418B46, AircraftClass_MissionAttack_ScatterCell6, 0x6)
+{
+	enum { SkipScatter = 0x418B8A, Scatter = 0 };
+	return RulesExt::Global()->StrafingTargetScatter ? Scatter : SkipScatter;
+}
+
+// 航味麻酱: These are WW's bullshit checks.
+//
+//if (  bHasAElite
+//   || ignoreDestination
+//   || RulesClass::Instance->PlayerScatter
+//   || pTechnoToScatter && (FootClass::HasAbility(pTechnoToScatter, Ability::Scatter)
+//   || pTechnoToScatter->Owner->IQLevel2 >= RulesClass::Instance->Scatter) )
+
+// delete the first one 'bHasAElite' and the second one 'ignoreDestination'
+// fix the third one 'RulesClass::Instance->PlayerScatter'
+DEFINE_HOOK(0x481778, CellClass_ScatterContent_Fix, 0x6)
+{
+	enum { ret = 0x481793 };
+	GET(ObjectClass*, pObject, ESI);
+
+	if (RulesExt::Global()->StrafingTargetScatter)
+		
+
+	auto pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (RulesClass::Instance()->PlayerScatter && pTechno && pTechno->Owner->IsHumanPlayer)
+		R->CL(true);
+
+	return ret;
+}
+
 #pragma endregion
 
 DEFINE_HOOK(0x414F10, AircraftClass_AI_Trailer, 0x5)
