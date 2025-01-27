@@ -171,17 +171,17 @@ bool HandlerCompClass::CheckFilters(HouseClass* pHouse, AbstractClass* pTarget) 
 	return true;
 }
 
-bool HandlerCompClass::CheckFilters(std::map<EventActorType, AbstractClass*>* pParticipants) const
+bool HandlerCompClass::CheckFilters(PhobosMap<EventActorType, AbstractClass*>* pParticipants) const
 {
-	auto pOwner = pParticipants->at(EventActorType::Me);
+	auto pOwner = pParticipants->get_or_default(EventActorType::Me, nullptr);
 	auto pHouse = GetOwningHouseOfActor(pOwner);
-	auto pTarget = pParticipants->at(this->ActorType);
+	auto pTarget = pParticipants->get_or_default(this->ActorType, nullptr);
 	return CheckFilters(pHouse, pTarget);
 }
 
-void HandlerCompClass::ExecuteEffects(std::map<EventActorType, AbstractClass*>* pParticipants) const
+void HandlerCompClass::ExecuteEffects(PhobosMap<EventActorType, AbstractClass*>* pParticipants) const
 {
-	auto pTarget = pParticipants->at(this->ActorType);
+	auto pTarget = pParticipants->get_or_default(this->ActorType, nullptr);
 	auto const pTrueTarget = HandlerCompClass::GetTrueTarget(pTarget, this->ExtendedActorType);
 
 	if (pTrueTarget)

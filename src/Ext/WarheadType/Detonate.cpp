@@ -172,7 +172,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->EventInvokers.size() > 0)
 	{
-		static std::map<EventActorType, AbstractClass*> participants;
+		static PhobosMap<EventActorType, AbstractClass*> participants;
 		participants[EventActorType::Me] = pTarget;
 		participants[EventActorType::They] = pOwner;
 		for (auto pEventInvokerType : EventInvokers)

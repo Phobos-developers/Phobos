@@ -32,7 +32,7 @@ public:
 	void LoadFromINI(INI_EX& exINI);
 	void LoadForActor(INI_EX& exINI, const char* pSection, const EventActorType actorType, const char* actorName);
 	void LoadForExtendedActor(INI_EX& exINI, const char* pSection, const EventActorType actorType, const EventExtendedActorType extendedActorType, const char* actorName, const char* extendedActorName);
-	void TryExecute(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants);
+	void TryExecute(HouseClass* pHouse, PhobosMap<EventActorType, AbstractClass*>* pParticipants);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
 
@@ -42,6 +42,6 @@ private:
 	void Serialize(T& Stm);
 	void LoadFromINIPrivate(INI_EX& exINI, const char* pSection);
 	bool CheckFilters(HouseClass* pHouse, EventActorType actorType, AbstractClass* pInvoker) const;
-	void TryExecuteOnTarget(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget);
-	void TryPassDown(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pRoot);
+	void TryExecuteOnTarget(HouseClass* pHouse, PhobosMap<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget);
+	void TryPassDown(HouseClass* pHouse, PhobosMap<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pRoot);
 };

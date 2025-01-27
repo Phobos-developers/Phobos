@@ -115,7 +115,7 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 
-	static std::map<EventActorType, AbstractClass*> participants;
+	static PhobosMap<EventActorType, AbstractClass*> participants;
 
 	if (pSource)
 	{

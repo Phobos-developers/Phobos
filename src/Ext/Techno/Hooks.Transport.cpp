@@ -147,7 +147,7 @@ DEFINE_HOOK(0x47342A, CargoClass_Attach_Hook_AfterLoad, 0x5)
 		pPassExt->HousingMe = pTransportBld;
 	}
 
-	static std::map<EventActorType, AbstractClass*> participants;
+	static PhobosMap<EventActorType, AbstractClass*> participants;
 	participants[EventActorType::Me] = pTransport;
 	participants[EventActorType::They] = pPassenger;
 	pTransExt->InvokeEvent(EventTypeClass::WhenLoad, &participants);
@@ -189,7 +189,7 @@ DEFINE_HOOK(0x4DE722, FootClass_RemoveFirstPassenger_Hook, 0x6)
 		// Revoke the Bio Reactor pointer.
 		pPassExt->HousingMe = nullptr;
 
-		static std::map<EventActorType, AbstractClass*> participants;
+		static PhobosMap<EventActorType, AbstractClass*> participants;
 		participants[EventActorType::Me] = pTransport;
 		participants[EventActorType::They] = pPassenger;
 		pTransExt->InvokeEvent(EventTypeClass::WhenUnload, &participants);
@@ -221,7 +221,7 @@ DEFINE_HOOK(0x70F6EC, TechnoClass_UpdateThreatToCell_Hook, 0x6)
 				{
 					pPassExt->HousingMe = pBld;
 
-					static std::map<EventActorType, AbstractClass*> participants;
+					static PhobosMap<EventActorType, AbstractClass*> participants;
 					participants[EventActorType::Me] = pBld;
 					participants[EventActorType::They] = pOccupant;
 					pBldExt->InvokeEvent(EventTypeClass::WhenLoad, &participants);
@@ -271,7 +271,7 @@ DEFINE_HOOK(0x4581CD, BuildingClass_Remove_Occupants_AfterHook, 0x6)
 			pPassExt->HousingMe = nullptr;
 			auto pPass = pPassExt->OwnerObject();
 
-			static std::map<EventActorType, AbstractClass*> participants;
+			static PhobosMap<EventActorType, AbstractClass*> participants;
 			participants[EventActorType::Me] = pBld;
 			participants[EventActorType::They] = pPass;
 			pBldExt->InvokeEvent(EventTypeClass::WhenUnload, &participants);

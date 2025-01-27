@@ -466,7 +466,7 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-void TechnoExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, std::map<EventActorType, AbstractClass*>* pParticipants) const
+void TechnoExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, PhobosMap<EventActorType, AbstractClass*>* pParticipants) const
 {
 	for (auto const& attachEffect : this->AttachedEffects)
 	{

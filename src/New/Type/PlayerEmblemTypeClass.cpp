@@ -21,7 +21,7 @@ bool PlayerEmblemTypeClass::AutoCreateAttachEffects() const
 
 void PlayerEmblemTypeClass::InvokeEventHandlers(EventTypeClass* pEventType, HouseClass* pHouse) const
 {
-	static std::map<EventActorType, AbstractClass*> participants;
+	static PhobosMap<EventActorType, AbstractClass*> participants;
 	participants[EventActorType::Me] = pHouse;
 	EventHandlerTypeClass::InvokeEventStatic(pEventType, &participants, &this->EventHandlersMap);
 }

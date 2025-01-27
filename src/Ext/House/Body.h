@@ -116,7 +116,7 @@ public:
 
 		void UpdateVehicleProduction();
 
-		void InvokeEvent(EventTypeClass* pEventTypeClass, std::map<EventActorType, AbstractClass*>* pParticipants) const;
+		void InvokeEvent(EventTypeClass* pEventTypeClass, PhobosMap<EventActorType, AbstractClass*>* pParticipants) const;
 
 		void UpdatePlayerEmblemBuildOptions();
 		void UpdateAutoAttachEffects();

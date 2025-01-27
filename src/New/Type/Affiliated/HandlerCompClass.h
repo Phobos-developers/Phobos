@@ -31,8 +31,8 @@ public:
 	static TechnoClass* GetParasiteTechno(TechnoClass* pTarget);
 	static TechnoClass* GetHostTechno(TechnoClass* pTarget);
 	bool CheckFilters(HouseClass* pHouse, AbstractClass* pTarget) const;
-	bool CheckFilters(std::map<EventActorType, AbstractClass*>* pParticipants) const;
-	void ExecuteEffects(std::map<EventActorType, AbstractClass*>* pParticipants) const;
+	bool CheckFilters(PhobosMap<EventActorType, AbstractClass*>* pParticipants) const;
+	void ExecuteEffects(PhobosMap<EventActorType, AbstractClass*>* pParticipants) const;
 
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;

@@ -91,7 +91,7 @@ public:
 
 	void LoadFromINI(INI_EX& exINI, const char* pSection, const char* actorName, const char* effectName);
 
-	void Execute(std::map<EventActorType, AbstractClass*>* pParticipants, AbstractClass* pTarget) const;
+	void Execute(PhobosMap<EventActorType, AbstractClass*>* pParticipants, AbstractClass* pTarget) const;
 
 	bool IsDefined() const;
 
@@ -101,9 +101,9 @@ private:
 	template <typename T>
 	bool Serialize(T& stm);
 
-	void ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget) const;
-	void ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>* pParticipants, HouseClass* pTarget) const;
-	void ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>* pParticipants, AbstractClass* pTarget) const;
+	void ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOwnerHouse, PhobosMap<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget) const;
+	void ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwnerHouse, PhobosMap<EventActorType, AbstractClass*>* pParticipants, HouseClass* pTarget) const;
+	void ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, PhobosMap<EventActorType, AbstractClass*>* pParticipants, AbstractClass* pTarget) const;
 
 	bool IsDefinedAnyTechnoEffect() const;
 	bool IsDefinedAnyHouseEffect() const;

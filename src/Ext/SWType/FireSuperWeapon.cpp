@@ -300,7 +300,7 @@ void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW) const
 
 void SWTypeExt::ExtData::ApplyEventHandlers(SuperClass* pSW) const
 {
-	static std::map<EventActorType, AbstractClass*> participants;
+	static PhobosMap<EventActorType, AbstractClass*> participants;
 	participants[EventActorType::Me] = pSW->Owner;
 	EventHandlerTypeClass::InvokeEventStatic(EventTypeClass::WhenLaunch, &participants, &this->EventHandlersMap);
 
@@ -316,7 +316,7 @@ void SWTypeExt::ExtData::ApplyEventInvokers(SuperClass* pSW, const CellStruct& c
 {
 	for (const auto pTargetFoot : *FootClass::Array)
 	{
-		static std::map<EventActorType, AbstractClass*> participants;
+		static PhobosMap<EventActorType, AbstractClass*> participants;
 		participants[EventActorType::Me] = pTargetFoot;
 		participants[EventActorType::They] = pSW->Owner;
 		for (auto pEventInvokerType : EventInvokers)

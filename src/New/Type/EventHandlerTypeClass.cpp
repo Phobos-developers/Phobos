@@ -178,24 +178,11 @@ void EventHandlerTypeClass::LoadTypeMapFromINI(INI_EX & exINI, const char* pSect
 	}
 }
 
-void EventHandlerTypeClass::HandleEvent(std::map<EventActorType, AbstractClass*>* pParticipants)
+void EventHandlerTypeClass::HandleEvent(PhobosMap<EventActorType, AbstractClass*>* pParticipants)
 {
-	bool passedFilters = true;
-	for (auto it = pParticipants->begin(); it != pParticipants->end(); ++it)
+	if (CheckFilters(pParticipants))
 	{
-		if (!CheckFilters(pParticipants, it->first))
-		{
-			passedFilters = false;
-			break;
-		}
-	}
-
-	if (passedFilters)
-	{
-		for (auto it = pParticipants->begin(); it != pParticipants->end(); ++it)
-		{
-			ExecuteEffects(pParticipants, it->first);
-		}
+		ExecuteEffects(pParticipants);
 	}
 
 	if (Next.isset())
@@ -205,7 +192,7 @@ void EventHandlerTypeClass::HandleEvent(std::map<EventActorType, AbstractClass*>
 }
 
 void EventHandlerTypeClass::InvokeEventStatic(EventTypeClass* pEventTypeClass,
-	std::map<EventActorType, AbstractClass*>* pParticipants,
+	PhobosMap<EventActorType, AbstractClass*>* pParticipants,
 	const PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>>* map)
 {
 	if (map->contains(pEventTypeClass))
@@ -217,29 +204,22 @@ void EventHandlerTypeClass::InvokeEventStatic(EventTypeClass* pEventTypeClass,
 	}
 }
 
-bool EventHandlerTypeClass::CheckFilters(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType actorType) const
+bool EventHandlerTypeClass::CheckFilters(PhobosMap<EventActorType, AbstractClass*>* pParticipants) const
 {
 	for (auto const& handlerComp : this->HandlerComps)
 	{
-		if (handlerComp.get()->ActorType == actorType)
+		if (!handlerComp.get()->CheckFilters(pParticipants))
 		{
-			if (!handlerComp.get()->CheckFilters(pParticipants))
-			{
-				return false;
-			}
+			return false;
 		}
 	}
-
 	return true;
 }
 
-void EventHandlerTypeClass::ExecuteEffects(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType actorType) const
+void EventHandlerTypeClass::ExecuteEffects(PhobosMap<EventActorType, AbstractClass*>* pParticipants) const
 {
 	for (auto const& handlerComp : this->HandlerComps)
 	{
-		if (handlerComp.get()->ActorType == actorType)
-		{
-			handlerComp.get()->ExecuteEffects(pParticipants);
-		}
+		handlerComp.get()->ExecuteEffects(pParticipants);
 	}
 }

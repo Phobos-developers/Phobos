@@ -30,16 +30,16 @@ public:
 	static void LoadTypeListFromINI(INI_EX& exINI, const char* pSection, const char* pHeader, ValueableVector<EventHandlerTypeClass*>* vec);
 	static void LoadTypeMapFromINI(INI_EX& exINI, const char* pSection, const char* pHeader, PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>>* map);
 
-	void HandleEvent(std::map<EventActorType, AbstractClass*>* pParticipants);
+	void HandleEvent(PhobosMap<EventActorType, AbstractClass*>* pParticipants);
 
 	static void InvokeEventStatic(EventTypeClass* pEventTypeClass,
-		std::map<EventActorType, AbstractClass*>* pParticipants,
+		PhobosMap<EventActorType, AbstractClass*>* pParticipants,
 		const PhobosMap<EventTypeClass*, std::vector<EventHandlerTypeClass*>>* map);
 private:
 	template <typename T>
 	void Serialize(T& Stm);
 	void LoadFromINIPrivate(INI_EX& exINI, const char* pSection);
 
-	bool CheckFilters(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType actorType) const;
-	void ExecuteEffects(std::map<EventActorType, AbstractClass*>* pParticipants, EventActorType actorType) const;
+	bool CheckFilters(PhobosMap<EventActorType, AbstractClass*>* pParticipants) const;
+	void ExecuteEffects(PhobosMap<EventActorType, AbstractClass*>* pParticipants) const;
 };

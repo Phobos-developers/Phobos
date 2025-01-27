@@ -897,7 +897,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 void AttachEffectClass::InvokeAEEvent(EventTypeClass* pEventTypeClass) const
 {
 	auto const& map = this->Type->EventHandlersMap;
-	static std::map<EventActorType, AbstractClass*> participants;
+	static PhobosMap<EventActorType, AbstractClass*> participants;
 	participants[EventActorType::Me] = this->Techno;
 	participants[EventActorType::They] = this->Invoker;
 	participants[EventActorType::Enchanter] = this->Invoker;

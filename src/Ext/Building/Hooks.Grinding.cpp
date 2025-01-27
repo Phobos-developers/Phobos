@@ -203,7 +203,7 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_DoGrindingExtras, 0x5)
 	auto const pBuildingExt = TechnoExt::ExtMap.Find(pBuilding);
 	auto const pHouseExt = HouseExt::ExtMap.Find(pBuilding->Owner);
 
-	static std::map<EventActorType, AbstractClass*> participants;
+	static PhobosMap<EventActorType, AbstractClass*> participants;
 	participants[EventActorType::Me] = pBuilding;
 	participants[EventActorType::They] = pThis;
 	pBuildingExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
@@ -243,7 +243,7 @@ DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_DoGrindingExtras, 0x5)
 	auto const pBuildingExt = TechnoExt::ExtMap.Find(pBuilding);
 	auto const pHouseExt = HouseExt::ExtMap.Find(pBuilding->Owner);
 
-	static std::map<EventActorType, AbstractClass*> participants;
+	static PhobosMap<EventActorType, AbstractClass*> participants;
 	participants[EventActorType::Me] = pBuilding;
 	participants[EventActorType::They] = pThis;
 	pBuildingExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);

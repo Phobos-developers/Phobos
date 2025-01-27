@@ -291,12 +291,12 @@ void HandlerEffectClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 #pragma endregion
 }
 
-void HandlerEffectClass::Execute(std::map<EventActorType, AbstractClass*>* pParticipants, AbstractClass* pTarget) const
+void HandlerEffectClass::Execute(PhobosMap<EventActorType, AbstractClass*>* pParticipants, AbstractClass* pTarget) const
 {
 	if (!pTarget)
 		return;
 
-	auto pOwner = pParticipants->at(EventActorType::Me);
+	auto pOwner = pParticipants->get_or_default(EventActorType::Me, nullptr);
 	auto pOwnerHouse = HandlerCompClass::GetOwningHouseOfActor(pOwner);
 
 	if (HasAnyTechnoEffect)
@@ -319,7 +319,7 @@ void HandlerEffectClass::Execute(std::map<EventActorType, AbstractClass*>* pPart
 	}
 }
 
-void HandlerEffectClass::ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget) const
+void HandlerEffectClass::ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOwnerHouse, PhobosMap<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget) const
 {
 	// Weapon Detonation
 	if (Weapon.isset())
@@ -328,7 +328,7 @@ void HandlerEffectClass::ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOw
 		AbstractClass* pFirer = pOwner;
 		if (Weapon_Firer.isset())
 		{
-			pFirer = HandlerCompClass::GetTrueTarget(pParticipants->at(Weapon_Firer.Get()), Weapon_FirerExt);
+			pFirer = HandlerCompClass::GetTrueTarget(pParticipants->get_or_default(Weapon_Firer.Get(), nullptr), Weapon_FirerExt);
 		}
 		if (pFirer)
 		{
@@ -363,7 +363,7 @@ void HandlerEffectClass::ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOw
 		auto pReceptant = pOwner;
 		if (Soylent_Receptant.isset())
 		{
-			pReceptant = HandlerCompClass::GetTrueTarget(pParticipants->at(Soylent_Receptant.Get()), Soylent_ReceptantExt);
+			pReceptant = HandlerCompClass::GetTrueTarget(pParticipants->get_or_default(Soylent_Receptant.Get(), nullptr), Soylent_ReceptantExt);
 		}
 
 		// if we don't have a proper receptant then don't bother to do at all
@@ -428,7 +428,7 @@ void HandlerEffectClass::ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOw
 		if (Passengers_Kill_Score.Get())
 		{
 			if (Passengers_Kill_Scorer.isset())
-				pScorer = HandlerCompClass::GetTrueTarget(pParticipants->at(Passengers_Kill_Scorer.Get()), Passengers_Kill_ScorerExt);
+				pScorer = HandlerCompClass::GetTrueTarget(pParticipants->get_or_default(Passengers_Kill_Scorer.Get(), nullptr), Passengers_Kill_ScorerExt);
 			else
 				pScorer = pOwner;
 		}
@@ -450,7 +450,7 @@ void HandlerEffectClass::ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOw
 	{
 		if (Passengers_Create_Owner.isset())
 		{
-			auto pPassengerOwnerActor = HandlerCompClass::GetTrueTarget(pParticipants->at(Passengers_Create_Owner.Get()), Passengers_Create_OwnerExt);
+			auto pPassengerOwnerActor = HandlerCompClass::GetTrueTarget(pParticipants->get_or_default(Passengers_Create_Owner.Get(), nullptr), Passengers_Create_OwnerExt);
 			if (pPassengerOwnerActor)
 			{
 				this->CreatePassengers(pTarget, HandlerCompClass::GetOwningHouseOfActor(pPassengerOwnerActor));
@@ -524,7 +524,7 @@ void HandlerEffectClass::ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOw
 		}
 		if (Transfer_To_Actor.isset())
 		{
-			auto pTransferTo = HandlerCompClass::GetTrueTarget(pParticipants->at(Transfer_To_Actor.Get()), Transfer_To_ActorExt);
+			auto pTransferTo = HandlerCompClass::GetTrueTarget(pParticipants->get_or_default(Transfer_To_Actor.Get(), nullptr), Transfer_To_ActorExt);
 			if (pTransferTo)
 			{
 				pTransferToHouse = HandlerCompClass::GetOwningHouseOfActor(pTransferTo);
@@ -547,7 +547,7 @@ void HandlerEffectClass::ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOw
 		case Mission::Enter:
 		case Mission::Attack:
 			if (Command_Target.isset())
-				pCommandTarget = abstract_cast<TechnoClass*>(HandlerCompClass::GetTrueTarget(pParticipants->at(Command_Target.Get()), Command_TargetExt));
+				pCommandTarget = abstract_cast<TechnoClass*>(HandlerCompClass::GetTrueTarget(pParticipants->get_or_default(Command_Target.Get(), nullptr), Command_TargetExt));
 			if (!pCommandTarget)
 				goto _EndCommand_;
 			isDestination = Command.Get() == Mission::Enter;
@@ -578,7 +578,7 @@ void HandlerEffectClass::ExecuteForTechno(AbstractClass* pOwner, HouseClass* pOw
 	}
 }
 
-void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>* pParticipants, HouseClass* pTarget) const
+void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwnerHouse, PhobosMap<EventActorType, AbstractClass*>* pParticipants, HouseClass* pTarget) const
 {
 	// EVA
 	if (EVA.isset())
@@ -637,9 +637,9 @@ void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwn
 	}
 }
 
-void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, std::map<EventActorType, AbstractClass*>*pParticipants, AbstractClass* pTarget) const
+void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, PhobosMap<EventActorType, AbstractClass*>*pParticipants, AbstractClass* pTarget) const
 {
-	static std::map<EventActorType, AbstractClass*> participants;
+	static PhobosMap<EventActorType, AbstractClass*> participants;
 	participants[EventActorType::Me] = nullptr;
 	participants[EventActorType::They] = nullptr;
 	participants[EventActorType::Scoper] = pParticipants->operator[](EventActorType::Scoper);

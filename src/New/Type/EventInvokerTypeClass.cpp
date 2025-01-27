@@ -95,14 +95,13 @@ bool EventInvokerTypeClass::CheckFilters(HouseClass* pHouse, EventActorType acto
 // We have to record the initial "Me" actor and give it back,
 // because multiple invokers may be invoked at a same time,
 // and the same participants map will be reused.
-void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants)
+void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, PhobosMap<EventActorType, AbstractClass*>* pParticipants)
 {
-	auto pTarget = abstract_cast<TechnoClass*>(pParticipants->at(EventActorType::Me));
-	if (pTarget)
+	if (auto pTarget = abstract_cast<TechnoClass*>(pParticipants->get_or_default(EventActorType::Me, nullptr)))
 	{
-		auto pInvoker = pParticipants->at(EventActorType::They);
-		auto pScoper = pParticipants->at(EventActorType::Scoper);
-		auto pEnchanter = pParticipants->at(EventActorType::Enchanter);
+		auto pInvoker = pParticipants->get_or_default(EventActorType::They, nullptr);
+		auto pScoper = pParticipants->get_or_default(EventActorType::Scoper, nullptr);
+		auto pEnchanter = pParticipants->get_or_default(EventActorType::Enchanter, nullptr);
 		if (CheckFilters(pHouse, EventActorType::They, pInvoker)
 			&& CheckFilters(pHouse, EventActorType::Scoper, pScoper)
 			&& CheckFilters(pHouse, EventActorType::Enchanter, pEnchanter))
@@ -116,7 +115,7 @@ void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, std::map<EventActorTy
 // This function is invoked internally in this invoker class.
 // This function checks for a single target, and invoke the events on it if appropriate.
 // It also tries to pass down the target to its passengers, and every appropriate additional targets will go back to this function.
-void EventInvokerTypeClass::TryExecuteOnTarget(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget)
+void EventInvokerTypeClass::TryExecuteOnTarget(HouseClass* pHouse, PhobosMap<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pTarget)
 {
 	if (CheckFilters(pHouse, EventActorType::Me, pTarget))
 	{
@@ -136,7 +135,7 @@ void EventInvokerTypeClass::TryExecuteOnTarget(HouseClass* pHouse, std::map<Even
 	TryPassDown(pHouse, pParticipants, pTarget);
 }
 
-void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, std::map<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pRoot)
+void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, PhobosMap<EventActorType, AbstractClass*>* pParticipants, TechnoClass* pRoot)
 {
 	if (PassDown_Passengers.Get())
 	{

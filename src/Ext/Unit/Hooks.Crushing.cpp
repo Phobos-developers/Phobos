@@ -111,7 +111,7 @@ DEFINE_HOOK(0x7418AA, UnitClass_CrushCell_WhenCrushed, 6)
 		auto pCrusherExt = TechnoExt::ExtMap.Find(pCrusher);
 		auto pVictimExt = TechnoExt::ExtMap.Find(pVictimTechno);
 
-		static std::map<EventActorType, AbstractClass*> participants;
+		static PhobosMap<EventActorType, AbstractClass*> participants;
 		participants[EventActorType::Me] = pCrusher;
 		participants[EventActorType::They] = pVictimTechno;
 		pCrusherExt->InvokeEvent(EventTypeClass::WhenCrush, &participants);

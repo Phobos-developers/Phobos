@@ -93,7 +93,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 			const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);
 			const auto pFirer = pThis->Owner;
 
-			static std::map<EventActorType, AbstractClass*> participants;
+			static PhobosMap<EventActorType, AbstractClass*> participants;
 			participants[EventActorType::Me] = pSource;
 			participants[EventActorType::They] = pFirer;
 			pSourceExt->InvokeEvent(EventTypeClass::WhenIntercept, &participants);
@@ -178,7 +178,7 @@ void BulletExt::ExtData::InitializeLaserTrails()
 void BulletExt::ExtData::InvokeBulletEvent(EventTypeClass* pEventTypeClass, AbstractClass* pThey) const
 {
 	auto const& map = this->TypeExtData->EventHandlersMap;
-	static std::map<EventActorType, AbstractClass*> participants;
+	static PhobosMap<EventActorType, AbstractClass*> participants;
 	participants[EventActorType::Me] = this->OwnerObject()->Owner;
 	participants[EventActorType::They] = pThey;
 	EventHandlerTypeClass::InvokeEventStatic(pEventTypeClass, &participants, &map);
