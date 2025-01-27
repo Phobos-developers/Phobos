@@ -529,6 +529,17 @@ SpyEffect.VictimSuperWeapon=      ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon= ; SuperWeaponType
 ```
 
+### Skip anim delay for burst fire
+
+- In Red Alert 1, the tesla coil will attack multiple times after charging animation. This is not possible in Red Alert 2, where the building must play the charge animation every time it fires.
+- Now you can implement the above logic using the following flag.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+AnimDontDelayBurst=false           ; boolean
+```
+
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed
