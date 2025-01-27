@@ -434,10 +434,11 @@ DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
 	enum { SkipVanillaChecks = 0x70FBAF, DoVanillaChecks = 0 };
 
 	GET(TechnoTypeClass*, pType, EAX);
+	GET(FootClass*, pThis, ESI);
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (pTypeExt && pTypeExt->BunkerableAnyWay)
+	if (pTypeExt && pTypeExt->BunkerableAnyway && !pThis->ParasiteEatingMe)
 		return SkipVanillaChecks;
 
 	return DoVanillaChecks;

@@ -457,7 +457,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
-	this->BunkerableAnyWay.Read(exINI, pSection, "BunkerableAnyWay");
+	this->BunkerableAnyway.Read(exINI, pSection, "BunkerableAnyway");
 
 	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
 	this->KeepTargetOnMove_ExtraDistance.Read(exINI, pSection, "KeepTargetOnMove.ExtraDistance");
@@ -833,7 +833,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
 
-		.Process(this->BunkerableAnyWay)
+		.Process(this->BunkerableAnyway)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->KeepTargetOnMove_ExtraDistance)
 		;
