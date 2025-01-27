@@ -3,6 +3,7 @@
 #include <TechnoClass.h>
 #include <TunnelLocomotionClass.h>
 
+#include <Ext/Building/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
@@ -66,6 +67,20 @@ void UnitDeployConvertHelpers::ChangeAmmoOnUnloading(REGISTERS* R)
 	}
 
 	R->AL(pThis->Deployed);
+}
+
+DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
+{
+	GET(UnitClass*, pUnit, EBP);
+	GET(BuildingClass*, pStructure, EBX);
+
+	if (pUnit->Type->DeployToFire && pUnit->Target)
+		pStructure->LastTarget = pUnit->Target;
+
+	if (auto pStructureExt = BuildingExt::ExtMap.Find(pStructure))
+		pStructureExt->DeployedTechno = true;
+
+	return 0;
 }
 
 DEFINE_HOOK(0x73FFE6, UnitClass_WhatAction_RemoveDeploying, 0xA)
@@ -184,20 +199,16 @@ DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
 
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		if (auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
+		auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
 			pThis->Location, 0, 1, 0x600, 0,
-			!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false))
-		{
-			pThis->DeployAnim = pAnim;
-			pAnim->SetOwnerObject(pThis);
+			!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false);
 
-			if (pExt->DeployingAnim_UseUnitDrawer)
-				return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;
-		}
-		else
-		{
-			pThis->DeployAnim = nullptr;
-		}
+		pThis->DeployAnim = pAnim;
+		pAnim->SetOwnerObject(pThis);
+
+		if (pExt->DeployingAnim_UseUnitDrawer)
+			return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;
+
 	}
 
 	return isDeploying ? Deploy : Undeploy;
