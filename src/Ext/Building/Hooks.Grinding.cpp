@@ -204,16 +204,16 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_DoGrindingExtras, 0x5)
 	auto const pHouseExt = HouseExt::ExtMap.Find(pBuilding->Owner);
 
 	static PhobosMap<EventActorType, AbstractClass*> participants;
-	participants[EventActorType::Me] = pBuilding;
-	participants[EventActorType::They] = pThis;
+	participants.insert(EventActorType::Me, pBuilding);
+	participants.insert(EventActorType::They, pThis);
 	pBuildingExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
 
-	participants[EventActorType::Me] = pThis;
-	participants[EventActorType::They] = pBuilding;
+	participants.insert(EventActorType::Me, pThis);
+	participants.insert(EventActorType::They, pBuilding);
 	pTechnoExt->InvokeEvent(EventTypeClass::WhenProduced, &participants);
 
-	participants[EventActorType::Me] = pBuilding;
-	participants[EventActorType::They] = pThis;
+	participants.insert(EventActorType::Me, pBuilding);
+	participants.insert(EventActorType::They, pThis);
 	pHouseExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
 
 	return BuildingExt::DoGrindingExtras(pBuilding, pThis, pThis->GetRefund()) ? Continue : 0;
@@ -244,16 +244,16 @@ DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_DoGrindingExtras, 0x5)
 	auto const pHouseExt = HouseExt::ExtMap.Find(pBuilding->Owner);
 
 	static PhobosMap<EventActorType, AbstractClass*> participants;
-	participants[EventActorType::Me] = pBuilding;
-	participants[EventActorType::They] = pThis;
+	participants.insert(EventActorType::Me, pBuilding);
+	participants.insert(EventActorType::They, pThis);
 	pBuildingExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
 
-	participants[EventActorType::Me] = pThis;
-	participants[EventActorType::They] = pBuilding;
+	participants.insert(EventActorType::Me, pThis);
+	participants.insert(EventActorType::They, pBuilding);
 	pTechnoExt->InvokeEvent(EventTypeClass::WhenProduced, &participants);
 
-	participants[EventActorType::Me] = pBuilding;
-	participants[EventActorType::They] = pThis;
+	participants.insert(EventActorType::Me, pBuilding);
+	participants.insert(EventActorType::They, pThis);
 	pHouseExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
 
 	// Calculated like this because it is easier than tallying up individual refunds for passengers and parasites.

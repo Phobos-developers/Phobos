@@ -148,12 +148,12 @@ DEFINE_HOOK(0x47342A, CargoClass_Attach_Hook_AfterLoad, 0x5)
 	}
 
 	static PhobosMap<EventActorType, AbstractClass*> participants;
-	participants[EventActorType::Me] = pTransport;
-	participants[EventActorType::They] = pPassenger;
+	participants.insert(EventActorType::Me, pTransport);
+	participants.insert(EventActorType::They, pPassenger);
 	pTransExt->InvokeEvent(EventTypeClass::WhenLoad, &participants);
 
-	participants[EventActorType::Me] = pPassenger;
-	participants[EventActorType::They] = pTransport;
+	participants.insert(EventActorType::Me, pPassenger);
+	participants.insert(EventActorType::They, pTransport);
 	pPassExt->InvokeEvent(EventTypeClass::WhenBoard, &participants);
 
 	return 0;
@@ -190,12 +190,12 @@ DEFINE_HOOK(0x4DE722, FootClass_RemoveFirstPassenger_Hook, 0x6)
 		pPassExt->HousingMe = nullptr;
 
 		static PhobosMap<EventActorType, AbstractClass*> participants;
-		participants[EventActorType::Me] = pTransport;
-		participants[EventActorType::They] = pPassenger;
+		participants.insert(EventActorType::Me, pTransport);
+		participants.insert(EventActorType::They, pPassenger);
 		pTransExt->InvokeEvent(EventTypeClass::WhenUnload, &participants);
 
-		participants[EventActorType::Me] = pPassenger;
-		participants[EventActorType::They] = pTransport;
+		participants.insert(EventActorType::Me, pPassenger);
+		participants.insert(EventActorType::They, pTransport);
 		pPassExt->InvokeEvent(EventTypeClass::WhenUnboard, &participants);
 	}
 
@@ -222,12 +222,12 @@ DEFINE_HOOK(0x70F6EC, TechnoClass_UpdateThreatToCell_Hook, 0x6)
 					pPassExt->HousingMe = pBld;
 
 					static PhobosMap<EventActorType, AbstractClass*> participants;
-					participants[EventActorType::Me] = pBld;
-					participants[EventActorType::They] = pOccupant;
+					participants.insert(EventActorType::Me, pBld);
+					participants.insert(EventActorType::They, pOccupant);
 					pBldExt->InvokeEvent(EventTypeClass::WhenLoad, &participants);
 
-					participants[EventActorType::Me] = pOccupant;
-					participants[EventActorType::They] = pBld;
+					participants.insert(EventActorType::Me, pOccupant);
+					participants.insert(EventActorType::They, pBld);
 					pPassExt->InvokeEvent(EventTypeClass::WhenBoard, &participants);
 				}
 			}
@@ -272,12 +272,12 @@ DEFINE_HOOK(0x4581CD, BuildingClass_Remove_Occupants_AfterHook, 0x6)
 			auto pPass = pPassExt->OwnerObject();
 
 			static PhobosMap<EventActorType, AbstractClass*> participants;
-			participants[EventActorType::Me] = pBld;
-			participants[EventActorType::They] = pPass;
+			participants.insert(EventActorType::Me, pBld);
+			participants.insert(EventActorType::They, pPass);
 			pBldExt->InvokeEvent(EventTypeClass::WhenUnload, &participants);
 
-			participants[EventActorType::Me] = pPass;
-			participants[EventActorType::They] = pBld;
+			participants.insert(EventActorType::Me, pPass);
+			participants.insert(EventActorType::They, pBld);
 			pPassExt->InvokeEvent(EventTypeClass::WhenUnboard, &participants);
 		}
 

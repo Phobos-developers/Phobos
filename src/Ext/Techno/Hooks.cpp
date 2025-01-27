@@ -77,7 +77,7 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 		auto pThisExt = TechnoExt::ExtMap.Find(pThis);
 
 		static PhobosMap<EventActorType, AbstractClass*> participants;
-		participants[EventActorType::Me] = pThis;
+		participants.insert(EventActorType::Me, pThis);
 		pThisExt->InvokeEvent((pThis->CurrentRanking < NewRanking) ? EventTypeClass::WhenPromoted : EventTypeClass::WhenDemoted, &participants);
 
 		if (NewRanking != Rank::Rookie)
@@ -489,7 +489,7 @@ DEFINE_HOOK(0x4D71A0, FootClass_Unlimbo_WhenCreated, 0x9)
 			pTechnoExt->WhenCreatedEventFired = true;
 
 			static PhobosMap<EventActorType, AbstractClass*> participants;
-			participants[EventActorType::Me] = pTechno;
+			participants.insert(EventActorType::Me, pTechno);
 			pTechnoExt->InvokeEvent(EventTypeClass::WhenCreated, &participants);
 		}
 	}

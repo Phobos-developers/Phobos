@@ -125,12 +125,12 @@ DEFINE_HOOK(0x51A002, InfantryClass_UpdatePosition_BeforeInfiltrate, 6)
 	auto pBuildingExt = TechnoExt::ExtMap.Find(pBuilding);
 
 	static PhobosMap<EventActorType, AbstractClass*> participants;
-	participants[EventActorType::Me] = pSpy;
-	participants[EventActorType::They] = pBuilding;
+	participants.insert(EventActorType::Me, pSpy);
+	participants.insert(EventActorType::They, pBuilding);
 	pSpyExt->InvokeEvent(EventTypeClass::WhenInfiltrate, &participants);
 
-	participants[EventActorType::Me] = pBuilding;
-	participants[EventActorType::They] = pSpy;
+	participants.insert(EventActorType::Me, pBuilding);
+	participants.insert(EventActorType::They, pSpy);
 	pBuildingExt->InvokeEvent(EventTypeClass::WhenInfiltrated, &participants);
 
 	return 0;

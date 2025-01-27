@@ -898,9 +898,9 @@ void AttachEffectClass::InvokeAEEvent(EventTypeClass* pEventTypeClass) const
 {
 	auto const& map = this->Type->EventHandlersMap;
 	static PhobosMap<EventActorType, AbstractClass*> participants;
-	participants[EventActorType::Me] = this->Techno;
-	participants[EventActorType::They] = this->Invoker;
-	participants[EventActorType::Enchanter] = this->Invoker;
+	participants.insert(EventActorType::Me, this->Techno);
+	participants.insert(EventActorType::They, this->Invoker);
+	participants.insert(EventActorType::Enchanter, this->Invoker);
 	EventHandlerTypeClass::InvokeEventStatic(pEventTypeClass, &participants, &map);
 }
 

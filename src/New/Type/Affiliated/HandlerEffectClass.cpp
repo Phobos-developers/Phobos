@@ -640,16 +640,16 @@ void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwn
 void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, PhobosMap<EventActorType, AbstractClass*>*pParticipants, AbstractClass* pTarget) const
 {
 	static PhobosMap<EventActorType, AbstractClass*> participants;
-	participants[EventActorType::Me] = nullptr;
-	participants[EventActorType::They] = nullptr;
-	participants[EventActorType::Scoper] = pParticipants->operator[](EventActorType::Scoper);
-	participants[EventActorType::Enchanter] = pParticipants->operator[](EventActorType::Enchanter);
+	participants.insert(EventActorType::Me, nullptr);
+	participants.insert(EventActorType::They, nullptr);
+	participants.insert(EventActorType::Scoper, pParticipants->get_or_default(EventActorType::Scoper, nullptr));
+	participants.insert(EventActorType::Enchanter, pParticipants->get_or_default(EventActorType::Enchanter, nullptr));
 
 	// Event Invoker
 	if (!EventInvokers.empty())
 	{
-		participants[EventActorType::Me] = pTarget;
-		participants[EventActorType::They] = pOwner;
+		participants.insert(EventActorType::Me, pTarget);
+		participants.insert(EventActorType::They, pOwner);
 
 		for (auto pEventInvokerType : EventInvokers)
 		{
@@ -660,15 +660,15 @@ void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwne
 	// Area Search
 	if (!Scope_EventInvokers.empty())
 	{
-		participants[EventActorType::Me] = nullptr;
-		participants[EventActorType::They] = pOwner;
-		participants[EventActorType::Scoper] = pTarget;
+		participants.insert(EventActorType::Me, nullptr);
+		participants.insert(EventActorType::They, pOwner);
+		participants.insert(EventActorType::Scoper, pTarget);
 
 		std::function<void(TechnoClass*)> tryInvoke = [this, pOwnerHouse](TechnoClass* pItem)
 			{
 				if (IsEligibleForAreaSearch(pItem, pOwnerHouse))
 				{
-					participants.operator[](EventActorType::Me) = pItem;
+					participants.insert(EventActorType::Me, pItem);
 					for (auto pEventInvokerType : Scope_EventInvokers)
 					{
 						pEventInvokerType->TryExecute(pOwnerHouse, &participants);

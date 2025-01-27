@@ -107,7 +107,7 @@ void EventInvokerTypeClass::TryExecute(HouseClass* pHouse, PhobosMap<EventActorT
 			&& CheckFilters(pHouse, EventActorType::Enchanter, pEnchanter))
 		{
 			TryExecuteOnTarget(pHouse, pParticipants, pTarget);
-			pParticipants->operator[](EventActorType::Me) = pTarget;
+			pParticipants->insert(EventActorType::Me, pTarget);
 		}
 	}
 }
@@ -145,7 +145,7 @@ void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, PhobosMap<EventActor
 			for (NextObject obj(pRoot->Passengers.FirstPassenger); obj; ++obj)
 			{
 				pPassenger = static_cast<TechnoClass*>(*obj);
-				pParticipants->operator[](EventActorType::Me) = pPassenger;
+				pParticipants->insert(EventActorType::Me, pPassenger);
 				TryExecuteOnTarget(pHouse, pParticipants, pPassenger);
 			}
 		}
@@ -154,7 +154,7 @@ void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, PhobosMap<EventActor
 			auto pBld = reinterpret_cast<BuildingClass*>(pRoot);
 			for (auto pPassenger : pBld->Occupants)
 			{
-				pParticipants->operator[](EventActorType::Me) = pPassenger;
+				pParticipants->insert(EventActorType::Me, pPassenger);
 				TryExecuteOnTarget(pHouse, pParticipants, pPassenger);
 			}
 		}
@@ -167,7 +167,7 @@ void EventInvokerTypeClass::TryPassDown(HouseClass* pHouse, PhobosMap<EventActor
 			for (auto controlNode : pRoot->CaptureManager->ControlNodes)
 			{
 				auto pMCedTechno = controlNode->Unit;
-				pParticipants->operator[](EventActorType::Me) = pMCedTechno;
+				pParticipants->insert(EventActorType::Me, pMCedTechno);
 				TryExecuteOnTarget(pHouse, pParticipants, pMCedTechno);
 			}
 		}
