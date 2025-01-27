@@ -36,7 +36,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 *Default configuration of digital display using example shapes from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries).*
 
 - You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points.
- - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
+  - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
     - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
   - By default, values are displayed in `current/maximum` format (i.e. 20/40). `HideMaxValue=yes` will make the counter show only the current value (i.e. 20). `Percentage=yes` changes the format to `percent%` (i.e. 50%).
   - `CanSee` and `CanSee.Observer` can limit visibility to specific players.
@@ -270,12 +270,19 @@ ShowTimer.Priority=0  ; integer
 
 ### Flashing Technos on selecting
 
-Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
+- Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowFlashOnSelecting` setting in `RA2MD.ini`.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-SelectionFlashDuration=0  ; integer, number of frames
+SelectionFlashDuration=0    ; integer, number of frames
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowFlashOnSelecting=false  ; boolean
 ```
 
 ## Hotkey Commands
@@ -299,8 +306,8 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 - Save the current singleplayer game.
 - For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
-    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
-    - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
+  - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
+  - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
 
 ### `[ ]` Save Variables
 
@@ -308,14 +315,17 @@ SelectionFlashDuration=0  ; integer, number of frames
 - For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Designator Range
+
 - Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
 - For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Digital Display
+
 - Switches on/off [digital display types](#digital-display).
 - For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Frame By Frame Mode
+
 - Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
@@ -603,6 +613,7 @@ In `RA2MD.ini`:
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
 ```
+
 ## Miscellanous
 
 ### Skip saving game on starting a new campaign
