@@ -391,6 +391,7 @@ This page lists all the individual contributions to the project by their author.
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
   - Global value of `RepairBaseNodes`
+  - Prevent AI from setting up anger against friendly players to prevent AI from losing intelligence early in the game
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
