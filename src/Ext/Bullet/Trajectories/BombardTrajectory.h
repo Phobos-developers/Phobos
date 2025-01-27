@@ -5,14 +5,14 @@
 class BombardTrajectoryType final : public PhobosTrajectoryType
 {
 public:
-	BombardTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Bombard)
+	BombardTrajectoryType() : PhobosTrajectoryType()
 		, Height { 0.0 }
 	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-	virtual PhobosTrajectory* CreateInstance() const override;
-
+	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const override;
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Bombard; }
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	Valueable<double> Height;
@@ -25,16 +25,16 @@ private:
 class BombardTrajectory final : public PhobosTrajectory
 {
 public:
-	BombardTrajectory(noinit_t) :PhobosTrajectory { noinit_t{} } { }
+	BombardTrajectory(noinit_t) { }
 
-	BombardTrajectory(BombardTrajectoryType const* trajType) : PhobosTrajectory(TrajectoryFlag::Bombard)
-		, IsFalling { false }
+	BombardTrajectory(BombardTrajectoryType const* trajType): IsFalling { false }
 		, Height { trajType->Height }
+		, Speed { trajType->Trajectory_Speed }
 	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
-
+	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Bombard; }
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) override;
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override { };
@@ -44,7 +44,7 @@ public:
 
 	bool IsFalling;
 	double Height;
-
+	double Speed;
 private:
 	template <typename T>
 	void Serialize(T& Stm);

@@ -321,16 +321,17 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 	{
 		// I assume you were not launching for real, Morton
 
-		auto launchTheSWHere = [this](SuperClass* const pSuper, HouseClass* const pHouse)
-		{
-			int oldstart = pSuper->RechargeTimer.StartTime;
-			int oldleft = pSuper->RechargeTimer.TimeLeft;
-			pSuper->SetReadiness(true);
-			pSuper->Launch(CellClass::Coord2Cell(this->OwnerObject()->GetCenterCoords()), pHouse->IsCurrentPlayer());
-			pSuper->Reset();
-			pSuper->RechargeTimer.StartTime = oldstart;
-			pSuper->RechargeTimer.TimeLeft = oldleft;
-		};
+		auto launchTheSWHere = [this](SuperClass* const pSuper, HouseClass* const pHouse)->void
+			{
+				int oldstart = pSuper->RechargeTimer.StartTime;
+				int oldleft = pSuper->RechargeTimer.TimeLeft;
+				pSuper->SetReadiness(true);
+				pSuper->Launch(CellClass::Coord2Cell(this->OwnerObject()->GetCenterCoords()), pHouse->IsCurrentPlayer());
+				pSuper->Reset();
+				pSuper->RechargeTimer.StartTime = oldstart;
+				pSuper->RechargeTimer.TimeLeft = oldleft;
+			};
+
 		int idx = this->TypeExtData->SpyEffect_VictimSuperWeapon;
 		if (idx >= 0)
 			launchTheSWHere(pVictimHouse->Supers.Items[idx], pVictimHouse);
@@ -341,6 +342,51 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 	}
 
 	return true;
+}
+
+// Get all cells covered by the building, optionally including those covered by OccupyHeight.
+const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* const pThis, CellStruct const baseCoords, bool includeOccupyHeight)
+{
+	const CellStruct foundationEnd = { 0x7FFF, 0x7FFF };
+	auto const pFoundation = pThis->GetFoundationData(false);
+
+	int occupyHeight = includeOccupyHeight ? pThis->Type->OccupyHeight : 1;
+
+	if (occupyHeight <= 0)
+		occupyHeight = 1;
+
+	auto pCellIterator = pFoundation;
+
+	while (*pCellIterator != foundationEnd)
+		++pCellIterator;
+
+	std::vector<CellStruct> foundationCells;
+	foundationCells.reserve(static_cast<int>(std::distance(pFoundation, pCellIterator + 1)) * occupyHeight);
+	pCellIterator = pFoundation;
+
+	while (*pCellIterator != foundationEnd)
+	{
+		auto actualCell = baseCoords + *pCellIterator;
+
+		for (auto i = occupyHeight; i > 0; --i)
+		{
+			foundationCells.push_back(actualCell);
+			--actualCell.X;
+			--actualCell.Y;
+		}
+		++pCellIterator;
+	}
+
+	std::sort(foundationCells.begin(), foundationCells.end(),
+		[](const CellStruct& lhs, const CellStruct& rhs) -> bool
+	{
+		return lhs.X > rhs.X || lhs.X == rhs.X && lhs.Y > rhs.Y;
+	});
+
+	auto const it = std::unique(foundationCells.begin(), foundationCells.end());
+	foundationCells.erase(it, foundationCells.end());
+
+	return foundationCells;
 }
 
 // =============================
@@ -361,6 +407,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->AccumulatedIncome)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->PoweredUpToLevel)
+		.Process(this->EMPulseSW)
 		;
 }
 

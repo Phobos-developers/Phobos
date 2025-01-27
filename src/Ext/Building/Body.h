@@ -35,8 +35,9 @@ public:
 		int GrindingWeapon_AccumulatedCredits;
 		BuildingClass* CurrentAirFactory;
 		int AccumulatedIncome;
-		OptionalStruct<int, true> CurrentLaserWeaponIndex;
+		std::optional<int> CurrentLaserWeaponIndex;
 		int PoweredUpToLevel; // Distinct from UpgradeLevel, and set to highest PowersUpToLevel out of applied upgrades regardless of how many are currently applied to this building.
+		SuperClass* EMPulseSW;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -50,6 +51,7 @@ public:
 			, AccumulatedIncome { 0 }
 			, CurrentLaserWeaponIndex {}
 			, PoweredUpToLevel { 0 }
+			, EMPulseSW {}
 		{ }
 
 		void DisplayIncomeString();
@@ -106,4 +108,5 @@ public:
 	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
 	static bool CanUndeployOnSell(BuildingClass* pThis);
+	static const std::vector<CellStruct> GetFoundationCells(BuildingClass* pThis, CellStruct baseCoords, bool includeOccupyHeight = false);
 };

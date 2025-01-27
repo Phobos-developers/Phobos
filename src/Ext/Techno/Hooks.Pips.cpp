@@ -3,6 +3,79 @@
 #include <TiberiumClass.h>
 #include "Body.h"
 
+DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (pTypeData->HealthBar_Hide)
+		return 0x6F6AB6;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(int, length, EBX);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	UNREFERENCED_PARAMETER(pLocation); // choom thought he was clever and recomputed the same shit again and again
+	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (const auto pShieldData = pExt->Shield.get())
+	{
+		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
+			pShieldData->DrawShieldBar_Building(length, pBound);
+	}
+
+	TechnoExt::ProcessDigitalDisplays(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
+{
+	GET(FootClass*, pThis, ESI);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	UNREFERENCED_PARAMETER(pLocation);
+	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (const auto pShieldData = pExt->Shield.get())
+	{
+		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
+		{
+			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+			pShieldData->DrawShieldBar_Other(length, pBound);
+		}
+	}
+
+	TechnoExt::ProcessDigitalDisplays(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
+{
+	enum { SkipGameCode = 0x6F5388 };
+
+	GET(TechnoClass*, pThis, EBP);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x98, 0x4));
+	GET(RectangleStruct*, pBounds, ESI);
+
+	if (pThis->VisualCharacter(false, nullptr) != VisualType::Hidden)
+	{
+		if (RulesExt::Global()->DrawInsignia_OnlyOnSelected.Get() && !pThis->IsSelected && !pThis->IsMouseHovering)
+			return SkipGameCode;
+		else
+			TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
+	}
+
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x709B2E, TechnoClass_DrawPips_Sizes, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
@@ -167,16 +240,17 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	std::vector<int> pipsToDraw;
 
 	bool isWeeder = false;
+
 	switch (pThis->WhatAmI())
 	{
-		case AbstractType::Building:
-			isWeeder = static_cast<BuildingClass*>(pThis)->Type->Weeder;
-			break;
-		case AbstractType::Unit:
-			isWeeder = static_cast<UnitClass*>(pThis)->Type->Weeder;
-			break;
-		default:
-			break;
+	case AbstractType::Building:
+		isWeeder = static_cast<BuildingClass*>(pThis)->Type->Weeder;
+		break;
+	case AbstractType::Unit:
+		isWeeder = static_cast<UnitClass*>(pThis)->Type->Weeder;
+		break;
+	default:
+		break;
 	}
 
 	if (isWeeder)

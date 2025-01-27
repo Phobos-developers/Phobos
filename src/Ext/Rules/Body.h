@@ -44,6 +44,7 @@ public:
 		Valueable<int> ChronoSphereDelay;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
+		int SubterraneanSpeed;
 		Valueable<int> SubterraneanHeight;
 		Nullable<int> AISuperWeaponDelay;
 		Valueable<bool> UseGlobalRadApplicationDelay;
@@ -91,6 +92,10 @@ public:
 		Valueable<bool> HeightShadowScaling;
 		Valueable<double> HeightShadowScaling_MinScale;
 		double AirShadowBaseScale_log;
+
+		Valueable<bool> ExtendedAircraftMissions;
+
+		Valueable<bool> BuildingProductionQueue;
 
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
@@ -161,6 +166,10 @@ public:
 		Valueable<bool> RepairBaseNodes;
 		Valueable<bool> AIAngerOnAlly;
 
+		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
+		Valueable<int> CombatLightDetailLevel;
+		Valueable<int> LightFlashAlphaImageDetailLevel;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -174,6 +183,7 @@ public:
 			, ChronoSphereDelay { 0 }
 			, AIChronoSphereSW {}
 			, AIChronoWarpSW {}
+			, SubterraneanSpeed { 19 }
 			, SubterraneanHeight { -256 }
 			, AISuperWeaponDelay {}
 			, UseGlobalRadApplicationDelay { true }
@@ -217,6 +227,10 @@ public:
 			, HeightShadowScaling { false }
 			, HeightShadowScaling_MinScale { 0.0 }
 			, AirShadowBaseScale_log { 0.693376137 }
+
+			, ExtendedAircraftMissions { false }
+
+			, BuildingProductionQueue { false }
 
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
@@ -277,6 +291,9 @@ public:
 			, AIAllToHunt { true }
 			, RepairBaseNodes { false }
 			, AIAngerOnAlly { true }
+			, WarheadParticleAlphaImageIsLightFlash { false }
+			, CombatLightDetailLevel { 0 }
+			, LightFlashAlphaImageDetailLevel { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -326,8 +343,5 @@ public:
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
-
-	static bool LoadGlobals(PhobosStreamReader& Stm);
-	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 };

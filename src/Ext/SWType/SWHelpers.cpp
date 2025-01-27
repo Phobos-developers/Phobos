@@ -191,3 +191,66 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 
 	return true;
 }
+
+std::vector<BuildingClass*> SWTypeExt::ExtData::GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const
+{
+	std::vector<BuildingClass*> emCannons;
+
+	for (auto const& pBuilding : pOwner->Buildings)
+	{
+		bool eligible = false;
+
+		if (!this->EMPulse_Cannons.empty() && this->EMPulse_Cannons.Contains(pBuilding->Type) && pBuilding->IsAlive
+			&& pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
+		{
+			eligible = true;
+		}
+		else if (pBuilding->Type->EMPulseCannon && this->IsLaunchSite(pBuilding))
+		{
+			eligible = true;
+		}
+
+		if (eligible)
+		{
+			auto range = this->GetEMPulseCannonRange(pBuilding);
+			auto const& minRange = range.first;
+			auto const& maxRange = range.second;
+			auto const center = CellClass::Coord2Cell(pBuilding->GetCenterCoords());
+			auto const distance = cell.DistanceFrom(center);
+
+			if ((minRange < 0.0 || distance >= minRange)
+				&& (maxRange < 0.0 || distance <= maxRange))
+			{
+				emCannons.push_back(pBuilding);
+			}
+		}
+	}
+
+	return emCannons;
+}
+
+std::pair<double, double> SWTypeExt::ExtData::GetEMPulseCannonRange(BuildingClass* pBuilding) const
+{
+	if (this->EMPulse_TargetSelf)
+		return std::make_pair(-1.0, -1.0);
+
+	if (!pBuilding)
+		return std::make_pair(0.0, 0.0);
+
+	if (auto pWeapon = pBuilding->GetWeapon(0)->WeaponType)
+	{
+		double maxRange = this->SW_RangeMaximum;
+		if (maxRange < 0.0)
+			maxRange = pWeapon->Range / 256.0;
+
+		double minRange = this->SW_RangeMinimum;
+		if (minRange < 0.0)
+		{
+			minRange = pWeapon->MinimumRange / 256.0;
+		}
+
+		return std::make_pair(minRange, maxRange);
+	}
+
+	return std::make_pair(this->SW_RangeMinimum.Get(), this->SW_RangeMaximum.Get());
+}

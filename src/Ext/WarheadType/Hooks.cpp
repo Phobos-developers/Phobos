@@ -106,6 +106,21 @@ DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
+{
+	enum { SkipCheck = 0x442268 };
+
+	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x9C, 0x4));
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH))
+	{
+		if (pWHExt->AllowDamageOnSelf)
+			return SkipCheck;
+	}
+
+	return 0;
+}
+
 #pragma region Fix_WW_Strength_ReceiveDamage_C4Warhead_Misuses
 
 // Suicide=yes behavior on WeaponTypes
@@ -197,13 +212,11 @@ DEFINE_HOOK(0x48922D, GetTotalDamage_NegativeDamageModifiers2, 0x5)
 	{
 		NegativeDamageTemp::ApplyNegativeDamageModifiers = false;
 		R->ECX(damage);
-
 	}
 	else
 	{
 		R->ECX(damage < 0 ? 0 : damage);
 	}
-
 
 	return SkipGameCode;
 }
@@ -343,3 +356,18 @@ DEFINE_HOOK(0x442956, BuildingClass_ReceiveDamage_Nonprovocative2, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4D73DE, FootClass_ReceiveDamage_RemoveParasite, 0x5)
+{
+	enum { Continue = 0x4D73E3, Skip = 0x4D7413 };
+
+	GET(WarheadTypeClass*, pWarhead, EBP);
+	GET(int*, damage, EDI);
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (!pTypeExt->RemoveParasite.Get(*damage < 0))
+		return Skip;
+
+	return Continue;
+}
