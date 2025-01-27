@@ -610,13 +610,15 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 
 				if (pHouseExt->CurrentBuildingType == pBufferType)
 				{
+					const bool noRevert = pHouseExt->CurrentBuildingTimes != 30;
+
 					pHouseExt->CurrentBuildingType = nullptr;
 					pHouseExt->CurrentBuildingDrawType = nullptr;
 					pHouseExt->CurrentBuildingTimes = 0;
 					pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
 					pHouseExt->CurrentBuildingTimer.Stop();
 
-					if (pHouseExt->CurrentBuildingTimes != 30)
+					if (noRevert)
 						return CanNotBuild;
 				}
 
@@ -692,7 +694,7 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 // Buildable-upon TechnoTypes Hook #4-1 -> sub_4FB0E0 - Check whether need to skip the replace command
 DEFINE_HOOK(0x4FB395, HouseClass_UnitFromFactory_SkipMouseReturn, 0x6)
 {
-	enum { SkipGameCode = 0x4FB489 };
+	enum { SkipGameCode = 0x4FB489, CheckMouseCoords = 0x4FB3E3 };
 
 	if (!RulesExt::Global()->ExtendedBuildingPlacing)
 		return 0;
@@ -704,7 +706,12 @@ DEFINE_HOOK(0x4FB395, HouseClass_UnitFromFactory_SkipMouseReturn, 0x6)
 	}
 
 	R->EBX(0);
-	return SkipGameCode;
+
+	if (!DisplayClass::Instance->CurrentBuildingTypeCopy)
+		return SkipGameCode;
+
+	R->ECX(DisplayClass::Instance->CurrentBuildingTypeCopy);
+	return CheckMouseCoords;
 }
 
 static inline bool IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeClass* pType2)
@@ -886,21 +893,11 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 						{
 							pHouseExt->CurrentBuildingType = pBuildingType;
 							pHouseExt->CurrentBuildingDrawType = pBuildingType;
-							pHouseExt->CurrentBuildingTimes = 30;
 							pHouseExt->CurrentBuildingTopLeft = topLeftCell;
-						}
-						else if (pHouseExt->CurrentBuildingTimes <= 0)
-						{
-							// This will be different from what vanilla do, but the vanilla way will still be used if in campaign
-							if (!SessionClass::IsCampaign())
-								break; // Time out
-
-							pHouseExt->CurrentBuildingTimes = 30;
 						}
 
 						if (!pHouseExt->CurrentBuildingTimer.HasTimeLeft())
 						{
-							pHouseExt->CurrentBuildingTimes -= 5;
 							pHouseExt->CurrentBuildingTimer.Start(40);
 
 							if (BuildingTypeExt::CleanUpBuildingSpace(pBuildingType, topLeftCell, pHouse))
