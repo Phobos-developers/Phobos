@@ -147,6 +147,11 @@ bool EnumFunctions::HouseParameterCompare(HouseClass* pHouse, HouseParameterType
 		return false;
 	}
 
+	return ParameterCompare(param, ct, value);
+}
+
+bool EnumFunctions::ParameterCompare(int param, ComparatorType ct, int value)
+{
 	switch (ct)
 	{
 	case ComparatorType::Equal:

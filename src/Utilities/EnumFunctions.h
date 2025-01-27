@@ -15,4 +15,5 @@ public:
 	static bool CheckVeterancy(TechnoClass* const pTechno, VeterancyType allowed);
 	static bool CheckHPPercentage(TechnoClass* const pTechno, HPPercentageType allowed);
 	static bool HouseParameterCompare(HouseClass* pHouse, HouseParameterType hpt, ComparatorType ct, int value);
+	static bool ParameterCompare(int param, ComparatorType ct, int value);
 };

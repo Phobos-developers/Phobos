@@ -18,6 +18,9 @@ public:
 	Nullable<bool> IsInAir;
 	ValueableVector<TechnoTypeClass*> TechnoTypes;
 	ValueableVector<AttachEffectTypeClass*> AttachedEffects;
+	ValueableVector<AttachEffectTypeClass*> AEStacks_Types;
+	ValueableVector<ComparatorType> AEStacks_Methods;
+	ValueableVector<int> AEStacks_Values;
 	ValueableVector<ShieldTypeClass*> ShieldTypes;
 	Nullable<VeterancyType> Veterancy;
 	Nullable<HPPercentageType> HPPercentage;

@@ -9,6 +9,9 @@ HandlerFilterClass::HandlerFilterClass()
 	, IsInAir {}
 	, TechnoTypes {}
 	, AttachedEffects {}
+	, AEStacks_Types {}
+	, AEStacks_Methods {}
+	, AEStacks_Values {}
 	, ShieldTypes {}
 	, Veterancy {}
 	, HPPercentage {}
@@ -69,6 +72,23 @@ void HandlerFilterClass::LoadFromINI(INI_EX& exINI, const char* pSection, const 
 	TechnoTypes.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.AttachedEffects", actorName, filterName);
 	AttachedEffects.Read(exINI, pSection, tempBuffer);
+	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.AEStacks.Types", actorName, filterName);
+	AEStacks_Types.Read(exINI, pSection, tempBuffer);
+	if (!AEStacks_Types.empty())
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.AEStacks.Methods", actorName, filterName);
+		AEStacks_Methods.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.AEStacks.Values", actorName, filterName);
+		AEStacks_Values.Read(exINI, pSection, tempBuffer);
+		// if the counts do not match then it is invalid input
+		if (AEStacks_Types.size() != AEStacks_Methods.size()
+			|| AEStacks_Types.size() != AEStacks_Values.size())
+		{
+			AEStacks_Types.clear();
+			AEStacks_Methods.clear();
+			AEStacks_Values.clear();
+		}
+	}
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.ShieldTypes", actorName, filterName);
 	ShieldTypes.Read(exINI, pSection, tempBuffer);
 	_snprintf_s(tempBuffer, sizeof(tempBuffer), "%s.%s.Veterancy", actorName, filterName);
@@ -206,6 +226,29 @@ bool HandlerFilterClass::CheckForTechno(HouseClass* pHouse, TechnoClass* pTarget
 			pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 		if (negative == pTargetExt->HasAttachedEffects(AttachedEffects, false, false, nullptr, nullptr, nullptr, nullptr))
 			return false;
+	}
+
+	if (!AEStacks_Types.empty())
+	{
+		if (!pTargetExt)
+			pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+		static std::map<AttachEffectTypeClass*, int> mapAE;
+		for (auto const& attachEffect : pTargetExt->AttachedEffects)
+		{
+			if (attachEffect->IsActive())
+				mapAE[attachEffect->GetType()]++;
+		}
+		for (size_t i = 0; i < AEStacks_Types.size(); i++)
+		{
+			auto const pAEType = AEStacks_Types.at(i);
+			if (EnumFunctions::ParameterCompare(mapAE[pAEType],
+				AEStacks_Methods.at(i),
+				AEStacks_Values.at(i)) == negative)
+			{
+				return false;
+			}
+		}
+		mapAE.clear();
 	}
 
 	if (!ShieldTypes.empty())
@@ -474,6 +517,7 @@ bool HandlerFilterClass::IsDefinedAnyTechnoCheck() const
 		|| IsInAir.isset()
 		|| !TechnoTypes.empty()
 		|| !AttachedEffects.empty()
+		|| !AEStacks_Types.empty()
 		|| !ShieldTypes.empty()
 		|| Veterancy.isset()
 		|| HPPercentage.isset()
@@ -524,6 +568,9 @@ bool HandlerFilterClass::Serialize(T& stm)
 		.Process(this->IsInAir)
 		.Process(this->TechnoTypes)
 		.Process(this->AttachedEffects)
+		.Process(this->AEStacks_Types)
+		.Process(this->AEStacks_Methods)
+		.Process(this->AEStacks_Values)
 		.Process(this->ShieldTypes)
 		.Process(this->Veterancy)
 		.Process(this->HPPercentage)

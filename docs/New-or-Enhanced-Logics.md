@@ -613,6 +613,14 @@ TriggerN.EventHandler=...                          ; EventHandlerType
         <li><code>*.IsInAir</code>: Techno is in air.</li>
         <li><code>*.TechnoTypes</code>: Techno is any of the listed TechnoTypes.</li>
         <li><code>*.AttachedEffects</code>: Techno has any of the listed AttachedEffectTypes.</li>
+        <li>
+          <code>*.AEStacks.Types/Methods/Values</code>: Techno has the required number of instances of certain AttachedEffectTypes.
+          <ul>
+            <li>The three entries are all lists that support multiple inputs separated by comma (<code>,</code>). If the list sizes mismatch, the entire AE stacks filter is void.</li>
+            <li>All comparason must pass. If it was a negative filter, all comparason must not pass.</li>
+            <li>Supported comparators are: <code>Equal|Greater|GreaterEqual|Lower|LowerEqual|NotEqual</code>; can be abbrived as: <code>e|g|ge|l|le|ne</code></li>
+          </ul>
+        </li>
         <li><code>*.ShieldTypes</code>: Techno has any of the listed ShieldTypes.</li>
         <li><code>*.Veterancy</code>: Techno is any of the listed veterancy.</li>
         <li><code>*.HPPercentage</code>: Techno is any of the listed HP percentage condition.</li>
