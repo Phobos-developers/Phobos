@@ -22,6 +22,7 @@ bool PlayerEmblemTypeClass::AutoCreateAttachEffects() const
 void PlayerEmblemTypeClass::InvokeEventHandlers(EventTypeClass* pEventType, HouseClass* pHouse) const
 {
 	static PhobosMap<EventActorType, AbstractClass*> participants;
+	participants.clear();
 	participants.insert(EventActorType::Me, pHouse);
 	EventHandlerTypeClass::InvokeEventStatic(pEventType, &participants, &this->EventHandlersMap);
 }

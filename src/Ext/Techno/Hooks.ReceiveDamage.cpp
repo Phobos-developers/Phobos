@@ -116,6 +116,7 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	auto const pTypeExt = pExt->TypeExtData;
 
 	static PhobosMap<EventActorType, AbstractClass*> participants;
+	participants.clear();
 
 	if (pSource)
 	{

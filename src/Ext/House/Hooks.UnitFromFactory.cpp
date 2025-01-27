@@ -39,6 +39,7 @@ DEFINE_HOOK(0x4FB64B, HouseClass_UnitFromFactory_VoiceCreated, 0x5)
 	auto const pBuildingExt = TechnoExt::ExtMap.Find(pBuilding);
 
 	static PhobosMap<EventActorType, AbstractClass*> participants;
+	participants.clear();
 	participants.insert(EventActorType::Me, pBuilding);
 	participants.insert(EventActorType::They, pThisTechno);
 	pBuildingExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);

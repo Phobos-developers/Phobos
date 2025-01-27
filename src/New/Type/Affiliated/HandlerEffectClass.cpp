@@ -640,6 +640,7 @@ void HandlerEffectClass::ExecuteForHouse(AbstractClass* pOwner, HouseClass* pOwn
 void HandlerEffectClass::ExecuteGeneric(AbstractClass* pOwner, HouseClass* pOwnerHouse, PhobosMap<EventActorType, AbstractClass*>*pParticipants, AbstractClass* pTarget) const
 {
 	static PhobosMap<EventActorType, AbstractClass*> participants;
+	participants.clear();
 	participants.insert(EventActorType::Me, nullptr);
 	participants.insert(EventActorType::They, nullptr);
 	participants.insert(EventActorType::Scoper, pParticipants->get_or_default(EventActorType::Scoper, nullptr));

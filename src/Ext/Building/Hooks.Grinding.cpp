@@ -204,6 +204,7 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_DoGrindingExtras, 0x5)
 	auto const pHouseExt = HouseExt::ExtMap.Find(pBuilding->Owner);
 
 	static PhobosMap<EventActorType, AbstractClass*> participants;
+	participants.clear();
 	participants.insert(EventActorType::Me, pBuilding);
 	participants.insert(EventActorType::They, pThis);
 	pBuildingExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
@@ -244,6 +245,7 @@ DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_DoGrindingExtras, 0x5)
 	auto const pHouseExt = HouseExt::ExtMap.Find(pBuilding->Owner);
 
 	static PhobosMap<EventActorType, AbstractClass*> participants;
+	participants.clear();
 	participants.insert(EventActorType::Me, pBuilding);
 	participants.insert(EventActorType::They, pThis);
 	pBuildingExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);

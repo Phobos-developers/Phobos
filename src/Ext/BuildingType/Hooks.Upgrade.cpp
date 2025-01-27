@@ -68,6 +68,7 @@ DEFINE_HOOK(0x451409, BuildingClass_UpdateAnimsAndTurretAfterUpgrade, 0x6)
 
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
 	static PhobosMap<EventActorType, AbstractClass*> participants;
+	participants.clear();
 	participants.insert(EventActorType::Me, pBuilding);
 	pTechnoExt->InvokeEvent(EventTypeClass::WhenUpgraded, &participants);
 

@@ -224,6 +224,7 @@ DEFINE_HOOK(0x446EE8, BuildingClass_Unlimbo_WhenCreated, 0x6)
 		{
 			pTechnoExt->WhenCreatedEventFired = true;
 			static PhobosMap<EventActorType, AbstractClass*> participants;
+			participants.clear();
 			participants.insert(EventActorType::Me, pThis);
 			pTechnoExt->InvokeEvent(EventTypeClass::WhenCreated, &participants);
 		}

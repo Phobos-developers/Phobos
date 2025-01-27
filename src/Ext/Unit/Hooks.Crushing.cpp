@@ -112,6 +112,7 @@ DEFINE_HOOK(0x7418AA, UnitClass_CrushCell_WhenCrushed, 6)
 		auto pVictimExt = TechnoExt::ExtMap.Find(pVictimTechno);
 
 		static PhobosMap<EventActorType, AbstractClass*> participants;
+		participants.clear();
 		participants.insert(EventActorType::Me, pCrusher);
 		participants.insert(EventActorType::They, pVictimTechno);
 		pCrusherExt->InvokeEvent(EventTypeClass::WhenCrush, &participants);
