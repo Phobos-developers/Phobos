@@ -1431,12 +1431,17 @@ Convert.ComputerToHuman =   ; TechnoType
 
 ### Aggressive attack move mission
 
-- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift). If a higher threat enemy techno is found in the range during this process, it will attack this enemy techno instead first.
+- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift). Default to `[General]->AttackMove.Aggressive`.
+- `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift). Also default to `[General]->AttackMove.Aggressive`.
 
 In `rulesmd.ini`:
 ```ini
 [General]
 AttackMove.Aggressive=false   ; boolean
+
+[SOMETECHNO]
+AttackMove.Aggressive=        ; boolean
+AttackMove.UpdateTarget=      ; boolean
 ```
 
 ## Terrain
