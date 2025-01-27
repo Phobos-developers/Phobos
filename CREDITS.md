@@ -253,6 +253,7 @@ This page lists all the individual contributions to the project by their author.
   - EM Pulse cannon logic improvements
   - `<Player @ X>` as owner for pre-placed objects
   - Custom exit cell for infantry factory
+  - Vehicles keeping target on move command
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -362,6 +363,7 @@ This page lists all the individual contributions to the project by their author.
   - `TurretOffset` support for SHP vehicles
   - Customizable rocker amplitude
   - Customizable wake anim
+  - Initial effort on optimization for crates' random distribution
 - **Fryone**
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
@@ -379,6 +381,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Use 2D distance instead of 3D to check whether in air team members have arrived destination
   - Enhanced Straight trajectory
+  - Enable Building Production Queue
+  - Fix for sidebar not updating queued unit numbers when on hold
   - Aggressive attack move mission
 - **Ollerus**
   - Build limit group enhancement
