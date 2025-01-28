@@ -437,8 +437,9 @@ DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
 	GET(FootClass*, pThis, ESI);
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const loco = pType->Locomotor;
 
-	if (pTypeExt && pTypeExt->BunkerableAnyway && !pThis->ParasiteEatingMe)
+	if (pTypeExt && pTypeExt->BunkerableAnyway && !pThis->ParasiteEatingMe && loco != LocomotionClass::CLSIDs::Hover && loco != LocomotionClass::CLSIDs::Mech)
 		return SkipVanillaChecks;
 
 	return DoVanillaChecks;
