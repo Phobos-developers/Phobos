@@ -233,6 +233,8 @@ public:
 		Valueable<bool> KeepTargetOnMove;
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
+		Valueable<int> Power;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -251,7 +253,6 @@ public:
 		std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
-
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -458,6 +459,8 @@ public:
 
 			, KeepTargetOnMove { false }
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
+
+			, Power { }
 		{ }
 
 		virtual ~ExtData() = default;
