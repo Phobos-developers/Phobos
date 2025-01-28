@@ -850,7 +850,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 				{
 					if (!existingAETypes.contains(pAEType))
 					{
-						const AEAttachParams info { };
+						static const AEAttachParams info { };
 						AttachEffectClass::CreateAndAttach(pAEType, pThis, this->AttachedEffects, pThis->Owner, pThis, pThis, info);
 						existingAETypes.insert(pAEType);
 					}
