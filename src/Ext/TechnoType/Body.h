@@ -233,6 +233,8 @@ public:
 		Valueable<bool> KeepTargetOnMove;
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
+		Valueable<int> Power;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -470,6 +472,8 @@ public:
 
 			, KeepTargetOnMove { false }
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
+
+			, Power { }
 
 			, Convert_UniversalDeploy {}
 			, Convert_DeployToLand { false }

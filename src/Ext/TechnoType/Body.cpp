@@ -461,6 +461,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
 	this->KeepTargetOnMove_ExtraDistance.Read(exINI, pSection, "KeepTargetOnMove.ExtraDistance");
 
+	this->Power.Read(exINI, pSection, "Power");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -857,6 +859,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->KeepTargetOnMove)
 		.Process(this->KeepTargetOnMove_ExtraDistance)
+
+		.Process(this->Power)
 
 		.Process(this->Convert_UniversalDeploy)
 		.Process(this->Convert_DeployToLand)
