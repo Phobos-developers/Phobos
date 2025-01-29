@@ -270,12 +270,19 @@ ShowTimer.Priority=0  ; integer
 
 ### Flashing Technos on selecting
 
-Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
+- Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowFlashOnSelecting` setting in `RA2MD.ini`.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-SelectionFlashDuration=0  ; integer, number of frames
+SelectionFlashDuration=0    ; integer, number of frames
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowFlashOnSelecting=false  ; boolean
 ```
 
 ## Hotkey Commands
@@ -344,7 +351,7 @@ DisableEmptySpawnPositions=false  ; boolean
 
 ### Building Production Queue
 
-![Building Production Queue](static/images/image.png)
+![Building Production Queue](_static/images/buildingQueue.png)
 *Queueing multiple buildings*
 
 - Buildings can now be queued for construction like other units if `BuildingProductionQueue` is set to true.
@@ -480,7 +487,7 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 
 ### Weeds counter
 
-- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds-weed-eaters) can be added near the credits indicator.
+- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
   - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
   - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
   - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.ini`.
