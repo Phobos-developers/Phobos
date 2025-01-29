@@ -939,10 +939,10 @@ SpawnsPipOffset=0,0                  ; X,Y, position offset from default
 In `rulesmd.ini`:
 ```ini
 [General]
-UnitPowerDrain=false                 ; boolean
+UnitPowerDrain=false  ; boolean
 
-[SOMETECHNO] ; TechnoType
-Power=0                              ; integer, positive means output, negative means drain
+[SOMETECHNO]          ; TechnoType
+Power=0               ; integer, positive means output, negative means drain
 ```
 
 ### Re-enable obsolete [JumpjetControls]
