@@ -7,20 +7,21 @@
 void TriggerCustomHotkeyClass::SetNumeralSequence(int numeralSequence)
 {
 	NumeralSequence = numeralSequence;
-	_snprintf_s(UIName, sizeof(UIName), "TXT_TRIGGER_CUSTOM_HOTKEY_%i", numeralSequence);
-	_snprintf_s(UIDescription, sizeof(UIDescription), "TXT_TRIGGER_CUSTOM_HOTKEY_%i_DESC", numeralSequence);
-	_snprintf_s(DefaultName, sizeof(DefaultName), "Trigger.CustomHotkey_%i", numeralSequence);
-	mbstowcs(UIFallback, DefaultName, sizeof(DefaultName));
+	_snprintf_s(ButtonName, sizeof(ButtonName), "Trigger.CustomHotkey_%i", numeralSequence);
+	_snprintf_s(UIName, sizeof(UIName), "TXT_CUSTOM_HOTKEY_%i", numeralSequence);
+	_snprintf_s(UIDescription, sizeof(UIDescription), "TXT_CUSTOM_HOTKEY_%i_DESC", numeralSequence);
+	mbstowcs(UINameFallback, UIName, sizeof(UIName));
+	mbstowcs(UIDescriptionFallback, UIDescription, sizeof(UIDescription));
 }
 
 const char* TriggerCustomHotkeyClass::GetName() const
 {
-	return DefaultName;
+	return ButtonName;
 }
 
 const wchar_t* TriggerCustomHotkeyClass::GetUIName() const
 {
-	return GeneralUtils::LoadStringUnlessMissing(UIName, UIFallback);
+	return GeneralUtils::LoadStringUnlessMissing(UIName, UINameFallback);
 }
 
 const wchar_t* TriggerCustomHotkeyClass::GetUICategory() const
@@ -30,7 +31,7 @@ const wchar_t* TriggerCustomHotkeyClass::GetUICategory() const
 
 const wchar_t* TriggerCustomHotkeyClass::GetUIDescription() const
 {
-	return GeneralUtils::LoadStringUnlessMissing(UIDescription, UIFallback);
+	return GeneralUtils::LoadStringUnlessMissing(UIDescription, UIDescriptionFallback);
 }
 
 void TriggerCustomHotkeyClass::Execute(WWKey eInput) const

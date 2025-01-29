@@ -8,10 +8,11 @@ class TriggerCustomHotkeyClass : public CommandClass
 {
 public:
 	int NumeralSequence;
-	char UIName [64];
-	char UIDescription [64];
-	char DefaultName[32];
-	wchar_t UIFallback[32];
+	char ButtonName[32];
+	char UIName [32];
+	char UIDescription [32];
+	wchar_t UINameFallback[32];
+	wchar_t UIDescriptionFallback[32];
 
 	void SetNumeralSequence(int numeralSequence);
 
