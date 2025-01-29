@@ -38,6 +38,21 @@ public:
 	static EventTypeClass* WhenUpgraded;
 #pragma endregion
 
+#pragma region TechnoLayerEvents
+	static EventTypeClass* EnterLayer_None;
+	static EventTypeClass* EnterLayer_Underground;
+	static EventTypeClass* EnterLayer_Surface;
+	static EventTypeClass* EnterLayer_Ground;
+	static EventTypeClass* EnterLayer_Air;
+	static EventTypeClass* EnterLayer_Top;
+	static EventTypeClass* QuitLayer_None;
+	static EventTypeClass* QuitLayer_Underground;
+	static EventTypeClass* QuitLayer_Surface;
+	static EventTypeClass* QuitLayer_Ground;
+	static EventTypeClass* QuitLayer_Air;
+	static EventTypeClass* QuitLayer_Top;
+#pragma endregion
+
 #pragma region AttachedEffectEvents
 	static EventTypeClass* WhenInitialize;
 	static EventTypeClass* WhenAttach;
@@ -58,6 +73,8 @@ public:
 	void SaveToStream(PhobosStreamWriter& Stm);
 
 	static void LoadTypeListFromINI(INI_EX& exINI, const char* pSection, const char* pHeader, ValueableVector<EventTypeClass*>* vec);
+	static EventTypeClass* EnterLayerEventType(Layer layer);
+	static EventTypeClass* QuitLayerEventType(Layer layer);
 
 private:
 	template <typename T>

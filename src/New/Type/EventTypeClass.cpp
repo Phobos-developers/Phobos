@@ -31,6 +31,21 @@ EventTypeClass* EventTypeClass::WhenUnboard = nullptr;
 EventTypeClass* EventTypeClass::WhenUpgraded = nullptr;
 #pragma endregion
 
+#pragma region TechnoLayerEvents
+EventTypeClass* EventTypeClass::EnterLayer_None = nullptr;
+EventTypeClass* EventTypeClass::EnterLayer_Underground = nullptr;
+EventTypeClass* EventTypeClass::EnterLayer_Surface = nullptr;
+EventTypeClass* EventTypeClass::EnterLayer_Ground = nullptr;
+EventTypeClass* EventTypeClass::EnterLayer_Air = nullptr;
+EventTypeClass* EventTypeClass::EnterLayer_Top = nullptr;
+EventTypeClass* EventTypeClass::QuitLayer_None = nullptr;
+EventTypeClass* EventTypeClass::QuitLayer_Underground = nullptr;
+EventTypeClass* EventTypeClass::QuitLayer_Surface = nullptr;
+EventTypeClass* EventTypeClass::QuitLayer_Ground = nullptr;
+EventTypeClass* EventTypeClass::QuitLayer_Air = nullptr;
+EventTypeClass* EventTypeClass::QuitLayer_Top = nullptr;
+#pragma endregion
+
 #pragma region AttachedEffectEvents
 EventTypeClass* EventTypeClass::WhenInitialize = nullptr;
 EventTypeClass* EventTypeClass::WhenAttach = nullptr;
@@ -70,6 +85,21 @@ void EventTypeClass::AddDefaults()
 	EventTypeClass::WhenBoard = FindOrAllocate("WhenBoard");
 	EventTypeClass::WhenUnboard = FindOrAllocate("WhenUnboard");
 	EventTypeClass::WhenUpgraded = FindOrAllocate("WhenUpgraded");
+#pragma endregion
+
+#pragma region TechnoLayerEvents
+	EventTypeClass::EnterLayer_None = FindOrAllocate("EnterLayer_None");
+	EventTypeClass::EnterLayer_Underground = FindOrAllocate("EnterLayer_Underground");
+	EventTypeClass::EnterLayer_Surface = FindOrAllocate("EnterLayer_Surface");
+	EventTypeClass::EnterLayer_Ground = FindOrAllocate("EnterLayer_Ground");
+	EventTypeClass::EnterLayer_Air = FindOrAllocate("EnterLayer_Air");
+	EventTypeClass::EnterLayer_Top = FindOrAllocate("EnterLayer_Top");
+	EventTypeClass::QuitLayer_None = FindOrAllocate("QuitLayer_None");
+	EventTypeClass::QuitLayer_Underground = FindOrAllocate("QuitLayer_Underground");
+	EventTypeClass::QuitLayer_Surface = FindOrAllocate("QuitLayer_Surface");
+	EventTypeClass::QuitLayer_Ground = FindOrAllocate("QuitLayer_Ground");
+	EventTypeClass::QuitLayer_Air = FindOrAllocate("QuitLayer_Air");
+	EventTypeClass::QuitLayer_Top = FindOrAllocate("QuitLayer_Top");
 #pragma endregion
 
 #pragma region AttachedEffectEvents
@@ -137,4 +167,44 @@ void EventTypeClass::LoadTypeListFromINI(INI_EX& exINI, const char* pSection, co
 			vec->push_back(eventTypeNullable.Get());
 		}
 	}
+}
+
+EventTypeClass* EventTypeClass::EnterLayerEventType(Layer layer)
+{
+	switch (layer)
+	{
+	case Layer::None:
+		return EventTypeClass::EnterLayer_None;
+	case Layer::Underground:
+		return EventTypeClass::EnterLayer_Underground;
+	case Layer::Surface:
+		return EventTypeClass::EnterLayer_Surface;
+	case Layer::Ground:
+		return EventTypeClass::EnterLayer_Ground;
+	case Layer::Air:
+		return EventTypeClass::EnterLayer_Air;
+	case Layer::Top:
+		return EventTypeClass::EnterLayer_Top;
+	}
+	return nullptr;
+}
+
+EventTypeClass* EventTypeClass::QuitLayerEventType(Layer layer)
+{
+	switch (layer)
+	{
+	case Layer::None:
+		return EventTypeClass::QuitLayer_None;
+	case Layer::Underground:
+		return EventTypeClass::QuitLayer_Underground;
+	case Layer::Surface:
+		return EventTypeClass::QuitLayer_Surface;
+	case Layer::Ground:
+		return EventTypeClass::QuitLayer_Ground;
+	case Layer::Air:
+		return EventTypeClass::QuitLayer_Air;
+	case Layer::Top:
+		return EventTypeClass::QuitLayer_Top;
+	}
+	return nullptr;
 }

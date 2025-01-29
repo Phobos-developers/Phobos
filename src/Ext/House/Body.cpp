@@ -579,6 +579,20 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 	return 1.0f - ((1.0f - mult) * pTechnoTypeExt->FactoryPlant_Multiplier);
 }
 
+bool HouseExt::ExtData::CanHandleEvent(EventTypeClass* pEventTypeClass) const
+{
+	for (auto const& pEmblemType : this->PlayerEmblems)
+	{
+		auto const& map = pEmblemType->EventHandlersMap;
+		if (map.contains(pEventTypeClass))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void HouseExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, PhobosMap<EventActorType, AbstractClass*>* pParticipants) const
 {
 	for (auto const& pEmblemType : this->PlayerEmblems)

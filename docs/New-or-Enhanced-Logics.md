@@ -29,7 +29,7 @@ This page describes all the engine features that are either new and introduced b
   - `Discard.HasEmblem` and `Discard.HasNoEmblem` can be used to discard this attach effect when the techno's owning house has or has not an emblem type.
     - The attach effect is discarded if the owning house has any one emblem listed in `Discard.HasEmblem`.
     - The attach effect is discarded if the owning house has no any emblems listed in `Discard.HasNoEmblem`.
-    - See See [Player Emblems](#player-emblems) for more info about Player Emblems.
+    - See [Player Emblems](#player-emblems) for more info about Player Emblems.
   - `CumulativeAnimations` can be used to declare a list of animations used for `Cumulative=true` types instead of `Animation`. An animation is picked from the list in order matching the number of active instances of the type on the object, with last listed animation used if number is higher than the number of listed animations. This animation is only displayed once and is transferred from the effect to another of same type (specifically one with longest remaining duration), if such exists, upon expiration or removal. Note that because `Cumulative.MaxCount` limits the number of effects of same type that can be applied this can cause animations to 'flicker' here as effects expire before new ones can be applied in some circumstances.
     - `CumulativeAnimations.RestartOnChange` determines if the animation playback is restarted when the type of animation changes, if not then playback resumes at frame at same position relative to the animation's length.
   - Attached effect can fire off a weapon when expired / removed / object dies by setting `ExpireWeapon`.
@@ -515,6 +515,30 @@ Shield.InheritStateOnReplace=false          ; boolean
         </ul>
       </li>
       <li>
+        Layer changing:
+        <ul>
+          <li><code>EnterLayer_(...)</code>, <code>QuitLayer_(...)</code>: Invoked when the unit changes its layer on the map, where <code>(...)</code> is the layer type. These events do not fire for building types.</li>
+          <li>For example, <code>EnterLayer_Underground</code> is fired for a subterranean vehicle when it just started moving underground.</li>
+          <li>
+		    Available layer types are: <code>None</code>, <code>Underground</code>, <code>Surface</code>, <code>Ground</code>, <code>Air</code>, <code>Top</code>.
+			<ul>
+			  <li>Jumpjets are in the <code>Top</code> layer when it is at the height of its flight, in the <code>Air</code> layer if it's rising or landing, in the <code>Ground</code> layer if close to the ground.</li>
+			  <li>Aircrafts are either in the <code>Top</code> layer when it is on the flight, or in the <code>Ground</code> layer if landed.</li>
+			  <li>Subterranean vehicles are in the <code>Underground</code> layer when moving underground, otherwise they are in the <code>Ground</code> layer, even when diving or elevating.</li>
+			  <li>Drop pods and rockets are in the <code>Air</code> layer.</li>
+			  <li>Naval objects are in the <code>Ground</code> layer.</li>
+			</ul>
+		  </li>
+        </ul>
+      </li>
+      <li>
+        Custom hotkey:
+        <ul>
+          <li><code>CustomHotkey_N</code>, where N is the numeral sequence of the custom hotkey, starts from 1: Invoked when a custom hotkey is pressed. See <a href="User-Interface.md#--custom-event-call-hotkeys">User Interface -> Custom Event Call Hotkeys</a> for details.</li>
+          <li>In these events, the <code>Me</code> basic actor is each of the selected objects of the player who pressed the hotkey, and the <code>They</code> basic actor is the house that represents the said player.</li>
+        </ul>
+      </li>
+      <li>
         Attached Effects:
         <ul>
           <li>These events are only invoked for the event triggers on Attached Effects. The <code>Me</code> basic actor is the attached techno, and the <code>They</code> and <code>Enchanter</code> basic actors are the source of this Attached Effect.</li>
@@ -535,6 +559,13 @@ Shield.InheritStateOnReplace=false          ; boolean
           <li><code>WhenDetach</code>: Invoked when this Player Emblems is detached from a house.</li>
           <li><code>WhenProduce</code>: Invoked when the house produces a unit (not building) from a factory. The <code>Me</code> basic actor is the primary factory used to produce it, and the <code>They</code> basic actor is the produced unit.</li>
           <li><code>WhenGrind</code>: Invoked when the house grinds a unit. The <code>Me</code> basic actor is the grinding building, and the <code>They</code> basic actor is the grinded unit. By the moment, the unit is not yet removed from the game.</li>
+		  <li>
+			Custom hotkey:
+			<ul>
+			  <li><code>CustomHotkey_N</code>, where N is the numeral sequence of the custom hotkey, starts from 1: Invoked when a custom hotkey is pressed. See <a href="User-Interface.md#--custom-event-call-hotkeys">User Interface -> Custom Event Call Hotkeys</a> for details.</li>
+			  <li>In these events, the <code>Me</code> and the <code>They</code> basic actors are the house that represents the player who pressed the hotkey.</li>
+			</ul>
+		  </li>
         </ul>
       </li>
       <li>

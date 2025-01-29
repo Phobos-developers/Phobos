@@ -18,6 +18,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Commands\TriggerCustomHotkeyClass.cpp" />
+    <ClCompile Include="src\Ext\Event\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.MatrixOp.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\HandlerEffectClass.cpp" />
@@ -190,6 +192,8 @@
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Commands\TriggerCustomHotkeyClass.h" />
+    <ClInclude Include="src\Ext\Event\Body.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\HandlerEffectClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\HandlerFilterClass.h" />

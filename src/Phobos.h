@@ -73,6 +73,7 @@ public:
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
+		static int NumCustomHotkeys;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;

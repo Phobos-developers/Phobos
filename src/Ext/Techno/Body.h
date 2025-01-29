@@ -62,6 +62,7 @@ public:
 
 		BuildingClass* HousingMe;              // The pointer to the Bio Reactor or garrisonable structure holding this techno.
 		bool WhenCreatedEventFired;            // This is true if the techno's "WhenCreated" event is fired, so it doesn't fire again when loading a save.
+		Layer CurrentLayer;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -99,6 +100,7 @@ public:
 			, KeepTargetOnMove { false }
 			, HousingMe {}
 			, WhenCreatedEventFired { false }
+			, CurrentLayer { Layer::None }
 		{ }
 
 		void OnEarlyUpdate();
@@ -123,8 +125,9 @@ public:
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 
+		bool CanHandleEvent(EventTypeClass* pEventTypeClass) const;
 		void InvokeEvent(EventTypeClass* pEventTypeClass, PhobosMap<EventActorType, AbstractClass*>* pParticipants) const;
-
+		void UpdateTechnoCurrentLayer();
 		void UnlimboAtRandomPlaceNearby(const CoordStruct* pNearCoords) const;
 
 		virtual ~ExtData() override;

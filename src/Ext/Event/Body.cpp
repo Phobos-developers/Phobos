@@ -1,8 +1,10 @@
-/*
 #include "Body.h"
 
 #include <Helpers/Macro.h>
 #include <EventClass.h>
+#include <HouseClass.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/House/Body.h>
 
 bool EventExt::AddEvent()
 {
@@ -13,9 +15,66 @@ void EventExt::RespondEvent()
 {
 	switch (this->Type)
 	{
-	case EventTypeExt::Sample:
-		// Place the handler here
+	case EventTypeExt::TriggerCustomHotkey:
+		RespondToTriggerCustomHotkey();
 		break;
+	}
+}
+
+void EventExt::RaiseTriggerCustomHotkey(AbstractClass* pTarget, HouseClass* pHouse, int numeralSequence)
+{
+	EventExt eventExt {};
+	eventExt.Type = EventTypeExt::TriggerCustomHotkey;
+	eventExt.HouseIndex = static_cast<char>(pHouse->ArrayIndex);
+	eventExt.Frame = Unsorted::CurrentFrame;
+	eventExt.TriggerCustomHotkey.Who = TargetClass(pTarget);
+	eventExt.TriggerCustomHotkey.House = TargetClass(pHouse);
+	eventExt.TriggerCustomHotkey.NumeralSequence = numeralSequence;
+	eventExt.AddEvent();
+}
+
+void EventExt::RespondToTriggerCustomHotkey()
+{
+	auto const pPressingHouse = this->TriggerCustomHotkey.House.As_House();
+
+	auto numeralSequence = this->TriggerCustomHotkey.NumeralSequence;
+
+	static PhobosMap<int, EventTypeClass*> CachedEventTypeMap;
+
+	if (!CachedEventTypeMap.contains(numeralSequence))
+	{
+		static char tempBuffer[32];
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "CustomHotkey_%i", numeralSequence);
+		// Since if this event type is not in use, there is no need to fire it in the first place.
+		// Thus, we only find here, we don't allocate.
+		auto pEventType = EventTypeClass::Find(tempBuffer);
+		CachedEventTypeMap.insert(numeralSequence, pEventType);
+	}
+
+	auto pEventType = CachedEventTypeMap.get_or_default(numeralSequence, nullptr);
+
+	if (pEventType)
+	{
+		static PhobosMap<EventActorType, AbstractClass*> participants;
+		participants.clear();
+		participants.insert(EventActorType::They, pPressingHouse);
+
+		if (auto const pTechno = this->TriggerCustomHotkey.Who.As_Techno())
+		{
+			if (auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
+			{
+				participants.insert(EventActorType::Me, pTechno);
+				pTechnoExt->InvokeEvent(pEventType, &participants);
+			}
+		}
+		else if (auto const pHouse = this->TriggerCustomHotkey.Who.As_House())
+		{
+			if (auto const pHouseExt = HouseExt::ExtMap.Find(pHouse))
+			{
+				participants.insert(EventActorType::Me, pHouse);
+				pHouseExt->InvokeEvent(pEventType, &participants);
+			}
+		}
 	}
 }
 
@@ -23,8 +82,8 @@ size_t EventExt::GetDataSize(EventTypeExt type)
 {
 	switch (type)
 	{
-	case EventTypeExt::Sample:
-		return sizeof(EventExt::Sample);
+	case EventTypeExt::TriggerCustomHotkey:
+		return sizeof(EventExt::TriggerCustomHotkey);
 	}
 
 	return 0;
@@ -98,4 +157,3 @@ DEFINE_HOOK(0x64C30E, sub_64BDD0_GetEventSize2, 0x6)
 
 	return 0;
 }
-*/

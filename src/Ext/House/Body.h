@@ -116,6 +116,7 @@ public:
 
 		void UpdateVehicleProduction();
 
+		bool CanHandleEvent(EventTypeClass* pEventTypeClass) const;
 		void InvokeEvent(EventTypeClass* pEventTypeClass, PhobosMap<EventActorType, AbstractClass*>* pParticipants) const;
 
 		void UpdatePlayerEmblemBuildOptions();

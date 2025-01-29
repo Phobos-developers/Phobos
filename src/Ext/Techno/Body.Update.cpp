@@ -42,6 +42,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplySpawnLimitRange();
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
+	this->UpdateTechnoCurrentLayer();
 	this->UpdateAttachEffects();
 }
 
@@ -817,6 +818,26 @@ void TechnoExt::ExtData::UpdateTemporal()
 
 	for (auto const& ae : this->AttachedEffects)
 		ae->AI_Temporal();
+}
+
+void TechnoExt::ExtData::UpdateTechnoCurrentLayer()
+{
+	auto const pThis = this->OwnerObject();
+	if (pThis->WhatAmI() != AbstractType::Building)
+	{
+		auto const OldLayer = this->CurrentLayer;
+		auto const NewLayer = pThis->InWhichLayer();
+
+		if (OldLayer != NewLayer)
+		{
+			this->CurrentLayer = NewLayer;
+			static PhobosMap<EventActorType, AbstractClass*> participants;
+			participants.clear();
+			participants.insert(EventActorType::Me, pThis);
+			this->InvokeEvent(EventTypeClass::QuitLayerEventType(OldLayer), &participants);
+			this->InvokeEvent(EventTypeClass::EnterLayerEventType(NewLayer), &participants);
+		}
+	}
 }
 
 // Updates state of all AttachEffects on techno.

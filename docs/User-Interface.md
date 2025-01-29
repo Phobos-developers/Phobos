@@ -329,6 +329,19 @@ ShowFlashOnSelecting=false  ; boolean
 - Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
+### `[ ]` Custom Event Call Hotkeys
+
+- Custom event triggers can be called when a certain hotkey is pressed. See [Event Trigger System](#event-trigger-system) to learn more about the Event Trigger system of Phobos.
+- The number of hotkeys can be configured through `Trigger.NumCustomHotkeys` under `[GlobalControls]`. Up to 10 is supported. Set as 0 or negative to disable the custom hotkeys.
+- Each enabled hotkey fires the event `CustomHotkey_N` respectively, where N is the numeral sequence of the custom hotkey, starts from 1. The event is fired on every selected object of the player, as well as the pressing player's house itself, which may ask for the player to have a Player Emblem to handle the event.
+- For localization, add the keys into your `.csf` file: `TXT_TRIGGER_CUSTOM_HOTKEY_N` and `TXT_TRIGGER_CUSTOM_HOTKEY_N_DESC`, where N is the numeral sequence of the custom hotkey, starts from 1.
+
+In `rulesmd.ini`
+```ini
+[GlobalControls]
+Trigger.NumCustomHotkeys=0          ; integer, from 1 to 10
+```
+
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.

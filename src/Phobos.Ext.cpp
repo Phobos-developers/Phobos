@@ -229,7 +229,11 @@ using PhobosTypeRegistry = TypeRegistry <
 	ShieldClass,
 	DigitalDisplayTypeClass,
 	AttachEffectTypeClass,
-	AttachEffectClass
+	AttachEffectClass,
+	EventTypeClass,
+	EventHandlerTypeClass,
+	EventInvokerTypeClass,
+	PlayerEmblemTypeClass
 	// other classes
 > ;
 

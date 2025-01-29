@@ -1,7 +1,9 @@
 #pragma once
-/*
+
 #include <cstddef>
 #include <stdint.h>
+#include <TechnoClass.h>
+#include <TargetClass.h>
 
 enum class EventTypeExt : uint8_t
 {
@@ -9,10 +11,10 @@ enum class EventTypeExt : uint8_t
 	// CnCNet reserved Events from 0x30 to 0x3F
 	// Ares used Events 0x60 and 0x61
 
-	Sample = 0x40, // Sample event, remove it when Phobos needs its own events
+	TriggerCustomHotkey = 0x70,
 
-	FIRST = Sample,
-	LAST = Sample
+	FIRST = TriggerCustomHotkey,
+	LAST = TriggerCustomHotkey
 };
 
 #pragma pack(push, 1)
@@ -27,14 +29,19 @@ public:
 	{
 		char DataBuffer[104];
 
-		struct Sample
+		struct TriggerCustomHotkey
 		{
-			char DataBuffer[104];
-		} Sample;
+			TargetClass Who;
+			TargetClass House;
+			int NumeralSequence;
+		} TriggerCustomHotkey;
 	};
 
 	bool AddEvent();
 	void RespondEvent();
+
+	static void RaiseTriggerCustomHotkey(AbstractClass* pTarget, HouseClass* pHouse, int numeralSequence);
+	void RespondToTriggerCustomHotkey();
 
 	static size_t GetDataSize(EventTypeExt type);
 	static bool IsValidType(EventTypeExt type);
@@ -43,4 +50,3 @@ public:
 static_assert(sizeof(EventExt) == 111);
 static_assert(offsetof(EventExt, DataBuffer) == 7);
 #pragma pack(pop)
-*/

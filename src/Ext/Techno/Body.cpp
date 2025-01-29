@@ -466,6 +466,22 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+bool TechnoExt::ExtData::CanHandleEvent(EventTypeClass* pEventTypeClass) const
+{
+	for (auto const& attachEffect : this->AttachedEffects)
+	{
+		auto pAttachEffect = std::move(attachEffect.get());
+		auto const& map = pAttachEffect->GetType()->EventHandlersMap;
+		if (map.contains(pEventTypeClass))
+		{
+			return true;
+		}
+	}
+
+	auto const& map = this->TypeExtData->EventHandlersMap;
+	return map.contains(pEventTypeClass);
+}
+
 void TechnoExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, PhobosMap<EventActorType, AbstractClass*>* pParticipants) const
 {
 	for (auto const& attachEffect : this->AttachedEffects)
@@ -529,6 +545,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->HousingMe)
 		.Process(this->WhenCreatedEventFired)
+		.Process(this->CurrentLayer)
 		;
 }
 
