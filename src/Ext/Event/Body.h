@@ -32,7 +32,6 @@ public:
 		struct TriggerCustomHotkey
 		{
 			TargetClass Who;
-			TargetClass House;
 			int NumeralSequence;
 		} TriggerCustomHotkey;
 	};

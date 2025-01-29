@@ -28,15 +28,12 @@ void EventExt::RaiseTriggerCustomHotkey(AbstractClass* pTarget, HouseClass* pHou
 	eventExt.HouseIndex = static_cast<char>(pHouse->ArrayIndex);
 	eventExt.Frame = Unsorted::CurrentFrame;
 	eventExt.TriggerCustomHotkey.Who = TargetClass(pTarget);
-	eventExt.TriggerCustomHotkey.House = TargetClass(pHouse);
 	eventExt.TriggerCustomHotkey.NumeralSequence = numeralSequence;
 	eventExt.AddEvent();
 }
 
 void EventExt::RespondToTriggerCustomHotkey()
 {
-	auto const pPressingHouse = this->TriggerCustomHotkey.House.As_House();
-
 	auto numeralSequence = this->TriggerCustomHotkey.NumeralSequence;
 
 	static PhobosMap<int, EventTypeClass*> CachedEventTypeMap;
@@ -57,7 +54,6 @@ void EventExt::RespondToTriggerCustomHotkey()
 	{
 		static PhobosMap<EventActorType, AbstractClass*> participants;
 		participants.clear();
-		participants.insert(EventActorType::They, pPressingHouse);
 
 		if (auto const pTechno = this->TriggerCustomHotkey.Who.As_Techno())
 		{

@@ -59,8 +59,8 @@ void TriggerCustomHotkeyClass::Execute(WWKey eInput) const
 		// try to cast to TechnoClass
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
-		// if not a techno then ignore it
-		if (!pTechno)
+		// if not a techno or is in berserk or is not controlled by the local player then ignore it
+		if (!pTechno || pTechno->Berzerk || !pTechno->Owner->IsControlledByCurrentPlayer())
 			continue;
 
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno))

@@ -535,7 +535,7 @@ Shield.InheritStateOnReplace=false          ; boolean
         Custom hotkey:
         <ul>
           <li><code>CustomHotkey_N</code>, where N is the numeral sequence of the custom hotkey, starts from 1: Invoked when a custom hotkey is pressed. See <a href="User-Interface.md#--custom-event-call-hotkeys">User Interface -> Custom Event Call Hotkeys</a> for details.</li>
-          <li>In these events, the <code>Me</code> basic actor is each of the selected objects of the player who pressed the hotkey, and the <code>They</code> basic actor is the house that represents the said player.</li>
+          <li>In these events, the <code>Me</code> basic actor is each of the selected objects of the player who pressed the hotkey.</li>
         </ul>
       </li>
       <li>
@@ -563,7 +563,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 			Custom hotkey:
 			<ul>
 			  <li><code>CustomHotkey_N</code>, where N is the numeral sequence of the custom hotkey, starts from 1: Invoked when a custom hotkey is pressed. See <a href="User-Interface.md#--custom-event-call-hotkeys">User Interface -> Custom Event Call Hotkeys</a> for details.</li>
-			  <li>In these events, the <code>Me</code> and the <code>They</code> basic actors are the house that represents the player who pressed the hotkey.</li>
+			  <li>In these events, the <code>Me</code> basic actor is the house that represents the player who pressed the hotkey. If the player controlled multiple houses, each house receives this event.</li>
 			</ul>
 		  </li>
         </ul>
