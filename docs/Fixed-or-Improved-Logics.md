@@ -932,6 +932,19 @@ SpawnsPipSize=                       ; X,Y, increment in pixels to next pip
 SpawnsPipOffset=0,0                  ; X,Y, position offset from default
 ```
 
+### Power drain for units
+
+- Infantry, vehicles and aircraft can now drain or provide `Power` if `UnitPowerDrain=true` is set.
+
+In `rulesmd.ini`:
+```ini
+[General]
+UnitPowerDrain=false  ; boolean
+
+[SOMETECHNO]          ; TechnoType
+Power=0               ; integer, positive means output, negative means drain
+```
+
 ### Re-enable obsolete [JumpjetControls]
 
 - Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
