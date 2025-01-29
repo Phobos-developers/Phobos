@@ -43,6 +43,50 @@ DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 	return 0x508D07;
 }
 
+// Trigger power recalculation on gain/loss of any techno, not just buildings.
+DEFINE_HOOK_AGAIN(0x5025F0, HouseClass_RegisterGain, 0x5) // RegisterLoss
+DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)
+{
+	if (!Phobos::Config::UnitPowerDrain)
+		return 0;
+
+	GET(HouseClass*, pThis, ECX);
+
+	pThis->RecheckPower = true;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_Techno, 0x6)
+{
+	if (!Phobos::Config::UnitPowerDrain)
+		return 0;
+
+	GET(HouseClass*, pThis, ESI);
+
+	auto updateDrainForThisType = [pThis](const TechnoTypeClass* pType)
+	{
+			const int count = pThis->CountOwnedAndPresent(pType);
+			if (count == 0)
+				return;
+			const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+			if (pExt->Power > 0)
+				pThis->PowerOutput += pExt->Power * count;
+			else
+				pThis->PowerDrain -= pExt->Power * count;
+	};
+
+	for (const auto pType : *InfantryTypeClass::Array)
+		updateDrainForThisType(pType);
+	for (const auto pType : *UnitTypeClass::Array)
+		updateDrainForThisType(pType);
+	for (const auto pType : *AircraftTypeClass::Array)
+		updateDrainForThisType(pType);
+	// Don't do this for buildings, they've already been counted.
+
+	return 0;
+}
+
 DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 {
 	GET(BuildingClass* const, pBuilding, EDI);
