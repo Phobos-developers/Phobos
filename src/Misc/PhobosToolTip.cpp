@@ -82,6 +82,9 @@ inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 	case AbstractType::InfantryType:
 	case AbstractType::UnitType:
 		{
+			if (!Phobos::Config::UnitPowerDrain)
+				return 0;
+
 			const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 			return pExt->Power;
 		}

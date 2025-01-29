@@ -91,6 +91,7 @@ public:
 		static bool ShowPlanningPath;
 		static bool HideLightFlashEffects;
 		static bool ShowFlashOnSelecting;
+		static bool UnitPowerDrain;
 	};
 
 	class Misc

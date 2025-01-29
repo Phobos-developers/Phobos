@@ -187,7 +187,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
-- Extending `Power` to all TechnoTypes: infantry, vehicles and aircraft can now provide or drain power just like buildings.
 
 ## Fixes / interactions with other extensions
 
@@ -931,6 +930,19 @@ SpawnsPipFrame=1                     ; integer, frame of pips.shp (buildings) or
 EmptySpawnsPipFrame=0                ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
 SpawnsPipSize=                       ; X,Y, increment in pixels to next pip
 SpawnsPipOffset=0,0                  ; X,Y, position offset from default
+```
+
+### Power drain for units
+
+- Infantry, vehicles and aircraft can now drain or provide `Power` if `UnitPowerDrain=true` is set.
+
+In `rulesmd.ini`:
+```ini
+[General]
+UnitPowerDrain=false                 ; boolean
+
+[SOMETECHNO] ; TechnoType
+Power=0                              ; integer, positive means output, negative means drain
 ```
 
 ### Re-enable obsolete [JumpjetControls]

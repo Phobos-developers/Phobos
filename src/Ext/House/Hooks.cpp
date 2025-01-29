@@ -47,6 +47,9 @@ DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 DEFINE_HOOK_AGAIN(0x5025F0, HouseClass_RegisterGain, 0x5) // RegisterLoss
 DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)
 {
+	if (!Phobos::Config::UnitPowerDrain)
+		return 0;
+
 	GET(HouseClass*, pThis, ECX);
 
 	pThis->RecheckPower = true;
@@ -56,6 +59,9 @@ DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)
 
 DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_Techno, 0x6)
 {
+	if (!Phobos::Config::UnitPowerDrain)
+		return 0;
+
 	GET(HouseClass*, pThis, ESI);
 
 	auto updateDrainForThisType = [pThis](const TechnoTypeClass* pType)
