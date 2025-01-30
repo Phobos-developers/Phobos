@@ -524,22 +524,6 @@ Adjacent.Disallowed=        ; list of BuildingTypes
 NoBuildAreaOnBuildup=false  ; boolean
 ```
 
-### Bunker entering check dehardcode
-
-- In vanilla, vehicles entering tank bunkers are subject to a series of hardcoding restrictions, including having to have turrets, having to have weapons, and not having Hover speed types. Now you can skip these restrictions.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]              ; VehicleType
-BunkerableAnyway=false     ; boolean
-```
-
-```{note}
-1.It needs to be used with `Bunkerable=yes`.
-2.This flag only skips the static check, that is, the check on the unit type. The dynamic check (cannot be parasitized) remains unchanged.
-3.Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly.
-```
-
 ### Extended building upgrades
 
 ![image](_static/images/powersup.owner-01.png)
@@ -1456,6 +1440,24 @@ In `rulesmd.ini`:
 [SOMETERRAINTYPE]  ; TerrainType
 DestroyAnim=       ; Animation
 DestroySound=      ; Sound
+```
+
+## Vehicles
+
+### Bunker entering check dehardcode
+
+- In vanilla, vehicles entering tank bunkers are subject to a series of hardcoding restrictions, including having to have turrets, having to have weapons, and not having Hover speed types. Now you can skip these restrictions.
+- This needs to be used with `Bunkerable=yes`.
+- This flag only skips the static check, that is, the check on the unit type. The dynamic check (cannot be parasitized) remains unchanged.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]              ; VehicleType
+BunkerableAnyway=false     ; boolean
+```
+
+```{warning}
+Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly.
 ```
 
 ## Warheads
