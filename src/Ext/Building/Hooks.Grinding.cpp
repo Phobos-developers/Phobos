@@ -207,15 +207,15 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_DoGrindingExtras, 0x5)
 	participants.clear();
 	participants.insert(EventActorType::Me, pBuilding);
 	participants.insert(EventActorType::They, pThis);
-	pBuildingExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
+	pBuildingExt->InvokeEvent(EventTypeClass::WhenGrind, &participants);
 
 	participants.insert(EventActorType::Me, pThis);
 	participants.insert(EventActorType::They, pBuilding);
-	pTechnoExt->InvokeEvent(EventTypeClass::WhenProduced, &participants);
+	pTechnoExt->InvokeEvent(EventTypeClass::WhenGrinded, &participants);
 
 	participants.insert(EventActorType::Me, pBuilding);
 	participants.insert(EventActorType::They, pThis);
-	pHouseExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
+	pHouseExt->InvokeEvent(EventTypeClass::WhenGrind, &participants);
 
 	return BuildingExt::DoGrindingExtras(pBuilding, pThis, pThis->GetRefund()) ? Continue : 0;
 }
@@ -248,15 +248,15 @@ DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_DoGrindingExtras, 0x5)
 	participants.clear();
 	participants.insert(EventActorType::Me, pBuilding);
 	participants.insert(EventActorType::They, pThis);
-	pBuildingExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
+	pBuildingExt->InvokeEvent(EventTypeClass::WhenGrind, &participants);
 
 	participants.insert(EventActorType::Me, pThis);
 	participants.insert(EventActorType::They, pBuilding);
-	pTechnoExt->InvokeEvent(EventTypeClass::WhenProduced, &participants);
+	pTechnoExt->InvokeEvent(EventTypeClass::WhenGrinded, &participants);
 
 	participants.insert(EventActorType::Me, pBuilding);
 	participants.insert(EventActorType::They, pThis);
-	pHouseExt->InvokeEvent(EventTypeClass::WhenProduce, &participants);
+	pHouseExt->InvokeEvent(EventTypeClass::WhenGrind, &participants);
 
 	// Calculated like this because it is easier than tallying up individual refunds for passengers and parasites.
 	int totalRefund = pBuilding->Owner->Balance - GrinderRefundTemp::BalanceBefore;
