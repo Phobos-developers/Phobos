@@ -1457,8 +1457,22 @@ BunkerableAnyway=false     ; boolean
 ```
 
 ```{warning}
-Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Fly, Hover, and Mech Locomotors are currently never allowed to enter tank bunkers, so vehicles with these Locomotors is prohibited from entering.
+Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, Bunkerability is mainly determined by Locomotor. The details are shown in the table below.
 ```
+
+| *Locomotor* | *Bunkerability*                 |
+| ----------: | :-----------------------------: |
+|Drive        | Fuctional.                      |
+|Jumpjet      | Bunkerable but weird.           |
+|Hover        | Unbunkerable.                   |
+|Rocket       | The game crash before entering. |
+|Tunnel       | Bunkerable but weird.           |
+|Walk         | Bunkerable but weird.           |
+|DropPod      | The game crash before entering. |
+|Fly          | Unbunkerable.                   |
+|Teleport     | Bunkerable but weird.           |
+|Mech         | Unbunkerable.                   |
+|Ship         | The game crash when entering.   |
 
 ## Warheads
 
