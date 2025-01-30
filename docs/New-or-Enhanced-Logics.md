@@ -1457,7 +1457,7 @@ BunkerableAnyway=false     ; boolean
 ```
 
 ```{warning}
-Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly.
+Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Fly, Hover, and Mech Locomotors are currently never allowed to enter tank bunkers, so vehicles with these Locomotors is prohibited from entering.
 ```
 
 ## Warheads
