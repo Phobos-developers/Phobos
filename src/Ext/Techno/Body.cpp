@@ -493,6 +493,7 @@ void TechnoExt::ExtData::InvokeEvent(EventTypeClass* pEventTypeClass, PhobosMap<
 	}
 
 	auto const& map = this->TypeExtData->EventHandlersMap;
+	pParticipants->insert(EventActorType::Enchanter, nullptr);
 	EventHandlerTypeClass::InvokeEventStatic(pEventTypeClass, pParticipants, &map);
 }
 
