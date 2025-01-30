@@ -520,15 +520,15 @@ Shield.InheritStateOnReplace=false          ; boolean
           <li><code>EnterLayer_(...)</code>, <code>QuitLayer_(...)</code>: Invoked when the unit changes its layer on the map, where <code>(...)</code> is the layer type. These events do not fire for building types.</li>
           <li>For example, <code>EnterLayer_Underground</code> is fired for a subterranean vehicle when it just started moving underground.</li>
           <li>
-		    Available layer types are: <code>None</code>, <code>Underground</code>, <code>Surface</code>, <code>Ground</code>, <code>Air</code>, <code>Top</code>.
-			<ul>
-			  <li>Jumpjets are in the <code>Top</code> layer when it is at the height of its flight, in the <code>Air</code> layer if it's rising or landing, in the <code>Ground</code> layer if close to the ground.</li>
-			  <li>Aircrafts are either in the <code>Top</code> layer when it is on the flight, or in the <code>Ground</code> layer if landed.</li>
-			  <li>Subterranean vehicles are in the <code>Underground</code> layer when moving underground, otherwise they are in the <code>Ground</code> layer, even when diving or elevating.</li>
-			  <li>Drop pods and rockets are in the <code>Air</code> layer.</li>
-			  <li>Naval objects are in the <code>Ground</code> layer.</li>
-			</ul>
-		  </li>
+            Available layer types are: <code>None</code>, <code>Underground</code>, <code>Surface</code>, <code>Ground</code>, <code>Air</code>, <code>Top</code>.
+            <ul>
+              <li>Jumpjets are in the <code>Top</code> layer when it is at the height of its flight, in the <code>Air</code> layer if it's rising or landing, in the <code>Ground</code> layer if close to the ground.</li>
+              <li>Aircrafts are either in the <code>Top</code> layer when it is on the flight, or in the <code>Ground</code> layer if landed.</li>
+              <li>Subterranean vehicles are in the <code>Underground</code> layer when moving underground, otherwise they are in the <code>Ground</code> layer, even when diving or elevating.</li>
+              <li>Drop pods and rockets are in the <code>Air</code> layer.</li>
+              <li>Naval objects are in the <code>Ground</code> layer.</li>
+            </ul>
+          </li>
         </ul>
       </li>
       <li>
@@ -559,13 +559,13 @@ Shield.InheritStateOnReplace=false          ; boolean
           <li><code>WhenDetach</code>: Invoked when this Player Emblems is detached from a house.</li>
           <li><code>WhenProduce</code>: Invoked when the house produces a unit (not building) from a factory. The <code>Me</code> basic actor is the primary factory used to produce it, and the <code>They</code> basic actor is the produced unit.</li>
           <li><code>WhenGrind</code>: Invoked when the house grinds a unit. The <code>Me</code> basic actor is the grinding building, and the <code>They</code> basic actor is the grinded unit. By the moment, the unit is not yet removed from the game.</li>
-		  <li>
-			Custom hotkey:
-			<ul>
-			  <li><code>CustomHotkey_N</code>, where N is the numeral sequence of the custom hotkey, starts from 1: Invoked when a custom hotkey is pressed. See <a href="User-Interface.md#--custom-event-call-hotkeys">User Interface -> Custom Event Call Hotkeys</a> for details.</li>
-			  <li>In these events, the <code>Me</code> basic actor is the house that represents the player who pressed the hotkey. If the player controlled multiple houses, each house receives this event.</li>
-			</ul>
-		  </li>
+          <li>
+            Custom hotkey:
+            <ul>
+              <li><code>CustomHotkey_N</code>, where N is the numeral sequence of the custom hotkey, starts from 1: Invoked when a custom hotkey is pressed. See <a href="User-Interface.md#--custom-event-call-hotkeys">User Interface -> Custom Event Call Hotkeys</a> for details.</li>
+              <li>In these events, the <code>Me</code> basic actor is the house that represents the player who pressed the hotkey. If the player controlled multiple houses, each house receives this event.</li>
+            </ul>
+          </li>
         </ul>
       </li>
       <li>
@@ -623,7 +623,7 @@ TriggerN.EventHandler=...                          ; EventHandlerType
     - `Me`: Techno to which this handler is attached to.
     - `They`: The other actor of the event. Whatever it is is up to the event. Some events do not have `They`.
   - There are more basic actors for advanced use.
-    - `Enchanter`: If this Event Handler is associated to an Attached Effect, this basic actor refers to the source of the said attached effect. This basic actor is consistent through the whole event chain.
+    - `Enchanter`: If this Event Handler is associated to an Attached Effect, this basic actor refers to the source of the said attached effect. This basic actor is consistent for the subsequent event chain, until another Event Handler associated to an Attached Effect is invoked in the process.
     - `Scoper`: If this Event Handler is a consequence of an area search effect of an Event Handler, this basic actor refers to the actor that the `Scope` effect was used on. This basic actor persists for the subsequent event chain, until another area search effect is initiated.
   - The extended actors can be used to access other related actors. Filters and Effects can be assigned to them as well. Extended actors may not nest each other, they can only follow basic actors.
     - `(actor).Owner`: The owning house of the actor. If this is used on an house actor, the identical house actor is returned.
@@ -975,7 +975,7 @@ Next=                                              ; EventHandlerType
     - `Invoker`: The firer of the warhead, the firing house of the super weapon, or the actor this invoker is invoked upon through a handler's effect.
     - `Target`: The techno hit by the warhead or super weapon, or the `Me` actor of the original event handler.
   - There are more basic actors for advanced use.
-    - `Enchanter`: If this Event Invoker is a consequence of an Event Handler associated to an Attached Effect, this basic actor refers to the source of the said attached effect. This basic actor is consistent through the whole event chain.
+    - `Enchanter`: If this Event Invoker is a consequence of an Event Handler associated to an Attached Effect, this basic actor refers to the source of the said attached effect. This basic actor is consistent for the subsequent event chain, until another Event Handler associated to an Attached Effect is invoked in the process.
     - `Scoper`: If this Event Invoker is a consequence of an area search effect of an Event Handler, this basic actor refers to the actor that the `Scope` effect was used on. This basic actor persists for the subsequent event chain, until another area search effect is initiated.
   - Extended actors can be used here as well. See [Event Handlers -> Actors](#event-handlers) to learn more about extended actors.
 - Filters:
