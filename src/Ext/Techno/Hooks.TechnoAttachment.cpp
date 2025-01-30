@@ -5,6 +5,7 @@
 #include <TacticalClass.h>
 
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Cell/Body.h>
 
 #include <Utilities/Macro.h>
 
@@ -140,7 +141,7 @@ bool IsOccupierIgnorable(TechnoClass* pThis, ObjectClass* pOccupier, byte& occup
 
 DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
 {
-	enum { IgnoreOccupier = 0x73FA87, Continue = 0x73F530 };
+	enum { SkipToNextOccupier = 0x73FA87, ContinueCheck = 0x73F530 };
 
 	GET(UnitClass*, pThis, EBX);
 	GET(ObjectClass*, pOccupier, ESI);
@@ -149,41 +150,20 @@ DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
 	REF_STACK(bool, isVehicleFlagSet, STACK_OFFSET(0x90, -0x7B));
 
 	return IsOccupierIgnorable(pThis, pOccupier, occupyFlags, isVehicleFlagSet)
-		? IgnoreOccupier : Continue;
+		? SkipToNextOccupier : ContinueCheck;
 }
-
-// Also because the occupancy can be marked by something moving into the spot
-// we also check the nearby (yes this is an assumption, if you are reviewing
-// this voice your opinion in the review) cells for the presence of technos
-// that are moving into this spot right now - Kerbiter
 
 void AccountForMovingInto(CellClass* into, bool isAlt, TechnoClass* pThis, byte& occupyFlags, bool& isVehicleFlagSet)
 {
-	// see 42B080, A* checks 2 cells around, this is approx. it
-	CellStruct center = into->MapCoords;
-	CoordStruct intoCoords = into->GetCellCoords();
-	if (isAlt)
-		intoCoords.Z += CellClass::BridgeHeight;
+	auto const pCellExt = CellExt::ExtMap.Find(into);
+	auto const& pIncoming = isAlt ? pCellExt->IncomingUnitAlt : pCellExt->IncomingUnit;
 
-	for (CellRectEnumerator cell({ center.X - 2, center.Y - 2, center.X + 2, center.Y + 2}); cell; ++cell)
+	// Non-occupiers shouldn't be inserted as incoming units anyways so don't check that
+	if (pIncoming && pIncoming != pThis &&
+		!TechnoExt::IsChildOf(pIncoming, pThis))
 	{
-		if (auto const pCell = MapClass::Instance->TryGetCellAt(*cell))
-		{
-			for (NextObject object(isAlt ? pCell->AltObject : pCell->FirstObject); object; ++object)
-			{
-				if (*object == pThis)
-					continue;
-
-				auto const pUnit = abstract_cast<UnitClass*>(*object);
-				if (pUnit && pUnit->Locomotor->Is_Moving_Here(intoCoords)
-					&& !TechnoExt::DoesntOccupyCellAsChild(pUnit)
-					&& !TechnoExt::IsChildOf(pUnit, pThis))
-				{
-					occupyFlags |= TechnoAttachmentTemp::storedVehicleFlag;
-					isVehicleFlagSet = TechnoAttachmentTemp::storedVehicleFlag != 0;
-				}
-			}
-		}
+		occupyFlags |= TechnoAttachmentTemp::storedVehicleFlag;
+		isVehicleFlagSet = TechnoAttachmentTemp::storedVehicleFlag != 0;
 	}
 }
 
@@ -235,7 +215,7 @@ DEFINE_HOOK(0x51C251, InfantryClass_CanEnterCell_SkipChildren, 0x0)
 	return IsOccupierIgnorable(pThis, pOccupier, occupyFlags, isVehicleFlagSet)
 		? IgnoreOccupier : Continue;
 }
-
+/*
 DEFINE_HOOK(0x51C78F, InfantryClass_CanEnterCell_CheckMovingInto, 0x6)
 {
 	GET_STACK(CellClass*, into, STACK_OFFSET(0x34, 0x4));
@@ -249,7 +229,7 @@ DEFINE_HOOK(0x51C78F, InfantryClass_CanEnterCell_CheckMovingInto, 0x6)
 
 	return 0;
 }
-
+*/
 enum class CellTechnoMode
 {
 	NoAttachments,

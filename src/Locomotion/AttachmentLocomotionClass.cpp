@@ -135,7 +135,7 @@ bool AttachmentLocomotionClass::Process()
 		this->PreviousCell = newPos;
 	}
 
-	// TODO sensors and sight
+	// sight is handled in FootClass::AI
 
 	AttachmentClass* pAttachment = this->GetAttachment();
 	if (pAttachment && pAttachment->GetType()->InheritHeightStatus)

@@ -40,6 +40,8 @@
     <ClCompile Include="src\Ext\Bullet\Trajectories\StraightTrajectory.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Hooks.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
+    <ClCompile Include="src\Ext\Cell\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Cell\Body.cpp" />
     <ClCompile Include="src\Ext\OverlayType\Body.cpp" />
     <ClCompile Include="src\Ext\OverlayType\Hooks.cpp" />
     <ClCompile Include="src\Ext\ParticleType\Body.cpp" />
@@ -215,6 +217,7 @@
     <ClInclude Include="src\Locomotion\AttachmentLocomotionClass.h"/>
     <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
+    <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\Misc\SyncLogging.h" />
