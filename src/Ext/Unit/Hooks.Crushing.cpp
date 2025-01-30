@@ -5,6 +5,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/TemplateDef.h>
+#include <Randomizer.h>
 
 DEFINE_HOOK(0x073B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 {
@@ -98,4 +99,25 @@ DEFINE_HOOK(0x6A108D, ShipLocomotionClass_WhileMoving_CrushTilt, 0xD)
 	pLinkedTo->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.02));
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x7418AA, UnitClass_CrushCell_WhenCrushed, 6)
+{
+	GET(UnitClass* const, pCrusher, EDI);
+	GET(ObjectClass* const, pVictim, ESI);
+
+	if (auto const pVictimTechno = abstract_cast<TechnoClass*>(pVictim))
+	{
+		if (RulesExt::Global()->InfantryPlayDieSoundWhenCrushed
+			&& pVictimTechno->WhatAmI() == AbstractType::Infantry)
+		{
+			if (auto const count = pVictimTechno->GetTechnoType()->DieSound.Count)
+			{
+				int soundIndex = pVictimTechno->GetTechnoType()->DieSound[Randomizer::Global->Random() % count];
+				VocClass::PlayAt(soundIndex, pVictim->Location);
+			}
+		}
+	}
+
+	return 0;
 }
