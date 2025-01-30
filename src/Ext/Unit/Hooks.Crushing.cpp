@@ -119,16 +119,6 @@ DEFINE_HOOK(0x7418AA, UnitClass_CrushCell_WhenCrushed, 6)
 		participants.insert(EventActorType::Me, pVictimTechno);
 		participants.insert(EventActorType::They, pCrusher);
 		pVictimExt->InvokeEvent(EventTypeClass::WhenCrushed, &participants);
-
-		if (RulesExt::Global()->InfantryPlayDieSoundWhenCrushed
-			&& pVictimTechno->WhatAmI() == AbstractType::Infantry)
-		{
-			if (auto const count = pVictimTechno->GetTechnoType()->DieSound.Count)
-			{
-				int soundIndex = pVictimTechno->GetTechnoType()->DieSound[Randomizer::Global->Random() % count];
-				VocClass::PlayAt(soundIndex, pVictim->Location);
-			}
-		}
 	}
 
 	return 0;

@@ -395,7 +395,6 @@ This page lists all the individual contributions to the project by their author.
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Aephiex**
   - Basic event handler system
-  - Infantry can play die sound when crushed
   - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
