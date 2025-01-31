@@ -429,14 +429,14 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	return Continue;
 }
 
-bool LocomotorCheckForBunkerable(TechnoTypeClasss* pType)
+bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
 {
 	auto const loco = pType->Locomotor;
 
 	return  loco != LocomotionClass::CLSIDs::Hover && 
 	loco != LocomotionClass::CLSIDs::Mech && 
 	loco != LocomotionClass::CLSIDs::Fly && 
-	loco != LocomotionClass::CLSIDs::DropPod && 
+	loco != LocomotionClass::CLSIDs::Droppod && 
 	loco != LocomotionClass::CLSIDs::Rocket && 
 	loco != LocomotionClass::CLSIDs::Ship;
 }
