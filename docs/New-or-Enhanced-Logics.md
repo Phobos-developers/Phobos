@@ -590,7 +590,7 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 In `artmd.ini`:
 ```ini
 [SOMEBUILDING]                     ; BuildingType
-AnimDontDelayBurst=false           ; boolean
+IsAnimDelayedBurst=false           ; boolean
 ```
 
 ## Infantry

@@ -64,7 +64,7 @@ public:
 		Valueable<int> SellBuildupLength;
 		Valueable<bool> IsDestroyableObstacle;
 
-		Valueable<bool> AnimDontDelayBurst;
+		Valueable<bool> IsAnimDelayedBurst;
 
 		std::vector<std::optional<DirType>> AircraftDockingDirs;
 
@@ -122,7 +122,7 @@ public:
 			, AircraftDockingDirs {}
 			, FactoryPlant_AllowTypes {}
 			, FactoryPlant_DisallowTypes {}
-			, AnimDontDelayBurst { false }
+			, IsAnimDelayedBurst { false }
 			, IsDestroyableObstacle { false }
 			, Units_RepairRate {}
 			, Units_RepairStep {}
