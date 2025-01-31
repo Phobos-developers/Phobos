@@ -429,6 +429,18 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	return Continue;
 }
 
+bool LocomotorCheckForBunkerable(TechnoTypeClasss* pType)
+{
+	auto const loco = pType->Locomotor;
+
+	return  loco != LocomotionClass::CLSIDs::Hover && 
+	loco != LocomotionClass::CLSIDs::Mech && 
+	loco != LocomotionClass::CLSIDs::Fly && 
+	loco != LocomotionClass::CLSIDs::DropPod && 
+	loco != LocomotionClass::CLSIDs::Rocket && 
+	loco != LocomotionClass::CLSIDs::Ship;
+}
+
 DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
 {
 	enum { SkipVanillaChecks = 0x70FBAF, DoVanillaChecks = 0 };
@@ -439,7 +451,7 @@ DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	auto const loco = pType->Locomotor;
 
-	if (pTypeExt && pTypeExt->BunkerableAnyway && !pThis->ParasiteEatingMe && loco != LocomotionClass::CLSIDs::Hover && loco != LocomotionClass::CLSIDs::Mech && loco != LocomotionClass::CLSIDs::Fly)
+	if (pTypeExt && pTypeExt->BunkerableAnyway && !pThis->ParasiteEatingMe && LocomotorCheckForBunkerable(pType))
 		return SkipVanillaChecks;
 
 	return DoVanillaChecks;
