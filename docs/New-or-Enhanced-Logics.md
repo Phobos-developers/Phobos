@@ -1172,6 +1172,43 @@ Me.Effect.Command.Target=They
 Me.Effect.Voice=CertainArtilleryAttackVoice</code></pre>
     </details>
   </li>
+  <li>
+    <details>
+      <summary>A certain open-topped helicopter does not automatically land when no move or attack orders are given; it can be ordered to land using a hotkey to allow infantry units to board or unboard.</summary>
+      This implementation requires <a href="User-Interface.md#--custom-event-call-hotkeys">User Interface -> Custom Event Call Hotkeys</a>.
+      <pre lang="ini"><code>[HELI]
+;; This is a jumpjet vehicle. Only critical code are listed here.
+PipScale=Passengers
+Passengers=2
+SizeLimit=2
+OpenTopped=yes
+BalloonHover=yes
+NoManualEnter=yes     ;; Ares feature
+NoManualUnload=yes    ;; Ares feature
+Trigger.EventType=CustomHotkey_1
+Trigger.EventHandler=EH_HELI_Convert
+<br/>
+[EH_HELI_Convert]
+;; [HELI] will be converted to [HELI_LAND] when received the hotkey command.
+;; It wants to land when no move or attack orders are given.
+Me.Effect.Convert.From=HELI
+Me.Effect.Convert.To=HELI_LAND
+<br/>
+[HELI_LAND]
+;; otherwise identical to [HELI]
+BalloonHover=no
+NoManualEnter=no
+NoManualUnload=no
+Trigger.EventType=QuitLayer_Ground
+Trigger.EventHandler=EH_HELI_LAND_Convert
+<br/>
+[EH_HELI_LAND_Convert]
+;; [HELI_LAND] will be converted to [HELI] when it leaves the ground.
+;; It wants to hover by default.
+Me.Effect.Convert.From=HELI_LAND
+Me.Effect.Convert.To=HELI</code></pre>
+    </details>
+  </li>
 </ul>
 
 ## Animations
