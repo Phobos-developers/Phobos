@@ -5,8 +5,6 @@
 
 #include "AutoLoad.h"
 #include "Utilities/GeneralUtils.h"
-#include "Ext/Techno/Body.h"
-#include <unordered_map>
 
 const char* AutoLoadCommandClass::GetName() const
 {
@@ -20,7 +18,7 @@ const wchar_t* AutoLoadCommandClass::GetUIName() const
 
 const wchar_t* AutoLoadCommandClass::GetUICategory() const
 {
-	return CATEGORY_SELECTION;
+	return CATEGORY_CONTROL;
 }
 
 const wchar_t* AutoLoadCommandClass::GetUIDescription() const
@@ -58,7 +56,7 @@ inline static const bool IsParasited(TechnoClass* pTechno)
 
 // Gets the passenger budgets of a building.
 // If return value <= 0 then the building can't be a "transport".
-inline static const int GetBuildingPassengerBudget(BuildingClass* pBuilding)
+int AutoLoadCommandClass::GetBuildingPassengerBudget(BuildingClass* pBuilding)
 {
 	auto pBuildingType = pBuilding->Type;
 	// Bio Reactor
@@ -79,8 +77,7 @@ inline static const int GetBuildingPassengerBudget(BuildingClass* pBuilding)
 	return 0;
 }
 
-// Gets if a unit can potentially be a building's passenger.
-inline static const bool CanBeBuildingPassenger(TechnoClass* pPassenger)
+bool AutoLoadCommandClass::CanBeBuildingPassenger(TechnoClass* pPassenger)
 {
 	if (pPassenger->WhatAmI() == AbstractType::Infantry)
 	{
@@ -195,22 +192,21 @@ inline static bool DeselectMe(TechnoClass* pTransport)
 	return false;
 }
 
-template <typename TPassenger, typename TTransport>
-std::set<TPassenger> SpreadPassengersToTransports(std::vector<TPassenger>& passengers, std::vector<std::pair<TTransport, int>>& transports)
+std::set<TechnoClass*> AutoLoadCommandClass::SpreadPassengersToTransports(std::vector<TechnoClass*>& passengers, std::vector<std::pair<TechnoClass*, int>>& transports)
 {
-	std::set<TPassenger> foundTransportSet;
+	std::set<TechnoClass*> foundTransportSet;
 	// 1. Get the least kind of passengers
 	// 2. Send the passengers to the transport in round robin, if the transport is full, remove it from the vector transports;
 	// if the pID vector is empty, remove it from the map, if not, move it to passengerMapIdle. We try to fill the transport evenly for each kind of passengers.
 	// 3. Repeat until all passengers are sent or the vector transports is empty.
-	std::unordered_map<const char*, std::vector<TPassenger>> passengerMap;
-	std::unordered_map<const char*, std::vector<TPassenger>> passengerMapIdle;
+	std::unordered_map<const char*, std::vector<TechnoClass*>> passengerMap;
+	std::unordered_map<const char*, std::vector<TechnoClass*>> passengerMapIdle;
 
 	for (auto pPassenger : passengers)
 	{
 		auto pID = pPassenger->get_ID();
 		if (passengerMap.find(pID) == passengerMap.end())
-			passengerMap[pID] = std::vector<TPassenger>();
+			passengerMap[pID] = std::vector<TechnoClass*>();
 
 		passengerMap[pID].push_back(pPassenger);
 	}
@@ -330,10 +326,9 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		// try to cast to TechnoClass
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pUnit);
 
-		// If not a techno, or is in air, or is bunkered, or is a loaded tank bunker, or is parasited, then exclude it from the first iteration.
-		// A unit on air can't be a passenger, a bunkered vehicle can't enter transports or further tank bunkers,
-		// and a loaded tank bunker can't load further vehicles.
-		if (!pTechno || pTechno->IsInAir() || pTechno->BunkerLinkedItem)
+		// If not a techno, or is not under control of the current player, or is in air,
+		// or is bunkered, or is a loaded tank bunker, then exclude it from the first iteration.
+		if (!pTechno || pTechno->Berzerk || !pTechno->Owner->IsControlledByCurrentPlayer() || pTechno->IsInAir() || pTechno->BunkerLinkedItem)
 			continue;
 
 		// Detect enterable buildings.

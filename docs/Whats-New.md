@@ -473,7 +473,8 @@ New:
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - Custom exit cell for infantry factory (by Starkku)
-- Autoload hotkey command (by psi-cmd, Aephiex)
+- Auto load hotkey command (by psi-cmd, Aephiex)
+- Auto garrison hotkey command (by Aephiex)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

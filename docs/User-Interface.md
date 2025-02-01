@@ -327,8 +327,12 @@ SelectionFlashDuration=0  ; integer, number of frames
   - If auto board transport can happen among selected units, then said logic takes precedence.
   - A building is viewed as a Bio Reactor if it has `Passengers` >= 1, and it has `InfantryAbsorb=yes`.
   - A building is viewed as a Tank Bunker if it has `Bunker=yes`.
-  - Neutral buildings can't be selected with own troops at a same time. Select either multiple Battle Bunkers or already partly garrisoned civilian structures to make use of the auto load hotkey.
+  - Neutral buildings can't be selected with own troops at a same time. Select Battle Bunkers or already garrisoned civilian structures with empty slots and the infantry units at a same time to make use of the auto load hotkey. Alternatively, make use of the auto garrison hotkey (see below).
 - For localization add `TXT_AUTO_LOAD` and `TXT_AUTO_LOAD_DESC` into your `.csf` file.
+
+### `[ ]` Auto Garrison
+- A shortcut to quickly command multiple infantry units to garrison structures at a same time. Select infantry units, then press the auto garrison hotkey, the units will be distributed among the garrisonable structures visible in the player's camera and will be ordered to garrison them. Player controlled buildings, namely Battle Bunkers and already garrisoned civilian structures with empty slots, will take precedence. Neutral structures will be used if no such available.
+- For localization add `TXT_AUTO_GARRISON` and `TXT_AUTO_GARRISON_DESC` into your `.csf` file.
 
 ## Loading screen
 
