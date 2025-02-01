@@ -83,7 +83,7 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 				{
 					occupiedVectorOwned.push_back(std::make_pair(pBuilding, budget));
 				}
-				else if (pBuilding->Owner->IsNeutral())
+				else if (pBuilding->Owner->IsNeutral() && !pBuilding->IsRedHP())
 				{
 					occupiedVectorNeutral.push_back(std::make_pair(pBuilding, budget));
 				}
