@@ -164,6 +164,7 @@ public:
 		Valueable<int> AIFireSaleDelay;
 		Valueable<bool> AIAllToHunt;
 		Valueable<bool> RepairBaseNodes;
+		Valueable<bool> AIAngerOnAlly;
 
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
@@ -289,6 +290,7 @@ public:
 			, AIFireSaleDelay { 0 }
 			, AIAllToHunt { true }
 			, RepairBaseNodes { false }
+			, AIAngerOnAlly { true }
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
