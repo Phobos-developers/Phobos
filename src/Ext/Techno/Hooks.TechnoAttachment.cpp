@@ -60,25 +60,7 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo_LimboAttachments, 0x6)
 
 #pragma region Cell occupation handling
 
-// because Ares hooks in the single usable position we need to do a detour instead
-// screw Ares
-
-void __fastcall UnitClass_SetOccupyBit_SkipVirtual(UnitClass* pThis, discard_t, const CoordStruct& coords)
-{
-	if (!TechnoExt::DoesntOccupyCellAsChild(pThis))
-		pThis->UnitClass::MarkAllOccupationBits(coords);
-}
-
-void __fastcall UnitClass_ClearOccupyBit_SkipVirtual(UnitClass* pThis, discard_t, const CoordStruct& coords)
-{
-	if (!TechnoExt::DoesntOccupyCellAsChild(pThis))
-		pThis->UnitClass::UnmarkAllOccupationBits(coords);
-}
-
-DEFINE_JUMP(VTABLE, 0x7F5D60, GET_OFFSET(UnitClass_SetOccupyBit_SkipVirtual))
-DEFINE_JUMP(VTABLE, 0x7F5D64, GET_OFFSET(UnitClass_ClearOccupyBit_SkipVirtual))
-
-// TODO ^ same for non-UnitClass, not needed so cba for now
+// see hooks for CellExt
 
 namespace TechnoAttachmentTemp
 {

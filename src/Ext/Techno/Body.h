@@ -60,6 +60,9 @@ public:
 		AttachmentClass* ParentAttachment;
 		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
 
+		// Ares
+		OptionalStruct<bool, true> AltOccupation; // if the unit marks cell occupation flags, this is set to whether it uses the "high" occupation members
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -92,6 +95,8 @@ public:
 			, IsBeingChronoSphered { false}
 			, ParentAttachment {}
 			, ChildAttachments {}
+
+			, AltOccupation { }
 		{ }
 
 		void OnEarlyUpdate();

@@ -2,71 +2,75 @@
 
 #include <Ext/Techno/Body.h>
 
-namespace CellExtTemp
+
+// because 🦅💣 takes over, we have to do reimpl even more of the func and replicate Ares code
+
+void __fastcall UnitClass_SetOccupyBit_Reimpl(UnitClass* pThis, discard_t, CoordStruct* pCrd)
 {
-	UnitClass* pThis = nullptr;
-}
-
-DEFINE_HOOK(0x7441B0, UnitClass_SetOccupyBit_Prefix, 0x5)
-{
-	enum { SkipFuncAndReturn = 0x74420B };
-
-	GET(UnitClass*, pThis, ECX);
-
 	if (TechnoExt::DoesntOccupyCellAsChild(pThis))
-		return SkipFuncAndReturn;
+		return;
 
-	CellExtTemp::pThis = pThis;
+	CellClass* pCell = MapClass::Instance->GetCellAt(*pCrd);
+	auto pCellExt = CellExt::ExtMap.Find(pCell);
+	int height = MapClass::Instance->GetCellFloorHeight(*pCrd) + CellClass::BridgeHeight;
+	bool alt = (pCrd->Z >= height && pCell->ContainsBridge());
 
-	return 0;
+	// remember which occupation bit we set
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->AltOccupation = alt;
+
+	if (alt)
+	{
+		pCell->AltOccupationFlags |= 0x20;
+		// Phobos addition: set incoming unit tracker
+		pCellExt->IncomingUnitAlt = pThis;
+	}
+	else
+	{
+		pCell->OccupationFlags |= 0x20;
+		// Phobos addition: set incoming unit tracker
+		pCellExt->IncomingUnit = pThis;
+	}
 }
 
-DEFINE_HOOK(0x744209, UnitClass_SetOccupyBit_IncomingUnit, 0x5)
+DEFINE_JUMP(VTABLE, 0x7F5D60, GET_OFFSET(UnitClass_SetOccupyBit_Reimpl));
+
+void __fastcall UnitClass_ClearOccupyBit_Reimpl(UnitClass* pThis, discard_t, CoordStruct* pCrd)
 {
-	GET(CellClass*, pCell, EDI);
-
-	CellExt::ExtMap.Find(pCell)->IncomingUnit = CellExtTemp::pThis;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x7441F6, UnitClass_SetOccupyBit_IncomingUnitAlt, 0x5)
-{
-	GET(CellClass*, pCell, EDI);
-
-	CellExt::ExtMap.Find(pCell)->IncomingUnitAlt = CellExtTemp::pThis;
-
-	return 0;
-}
-
-// currently the game, at least without other exts, doesn't do any checks if it's clearing a unit's occupy bit
-
-DEFINE_HOOK(0x744210, UnitClass_ClearOccupyBit_Prefix, 0x5)
-{
-	enum { SkipFuncAndReturn = 0x74424D };
-
-	GET(UnitClass*, pThis, ECX);
-
 	if (TechnoExt::DoesntOccupyCellAsChild(pThis))
-		return SkipFuncAndReturn;
+		return;
 
-	return 0;
+	enum { obNormal = 1, obAlt = 2 };
+
+	CellClass* pCell = MapClass::Instance->GetCellAt(*pCrd);
+	auto pCellExt = CellExt::ExtMap.Find(pCell);
+	int height = MapClass::Instance->GetCellFloorHeight(*pCrd) + CellClass::BridgeHeight;
+	int alt = (pCrd->Z >= height) ? obAlt : obNormal;
+
+	// also clear the last occupation bit, if set
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if(!pExt->AltOccupation.empty())
+	{
+		int lastAlt = pExt->AltOccupation ? obAlt : obNormal;
+		alt |= lastAlt;
+		pExt->AltOccupation.clear();
+	}
+
+	if (alt & obAlt)
+	{
+		pCell->AltOccupationFlags &= ~0x20;
+		// Phobos addition: clear incoming unit tracker
+		pCellExt->IncomingUnitAlt = nullptr;
+	}
+
+	if (alt & obNormal)
+	{
+		pCell->OccupationFlags &= ~0x20;
+		// Phobos addition: clear incoming unit tracker
+		pCellExt->IncomingUnit = nullptr;
+	}
 }
 
-DEFINE_HOOK(0x74425E, UnitClass_ClearOccupyBit_IncomingUnit, 0x5)
-{
-	GET(CellClass*, pCell, EDI);
+DEFINE_JUMP(VTABLE, 0x7F5D64, GET_OFFSET(UnitClass_ClearOccupyBit_Reimpl));
 
-	CellExt::ExtMap.Find(pCell)->IncomingUnit = nullptr;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x74424B, UnitClass_ClearOccupyBit_IncomingUnitAlt, 0x5)
-{
-	GET(CellClass*, pCell, EDI);
-
-	CellExt::ExtMap.Find(pCell)->IncomingUnitAlt = nullptr;
-
-	return 0;
-}
+// TODO ^ same for TA for non-UnitClass, not needed so cba for now
