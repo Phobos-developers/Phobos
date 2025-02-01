@@ -202,6 +202,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory.
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions.
+
 ## Aircraft
 
 ### Carryall pickup voice
@@ -310,13 +311,13 @@ ExtraShadow=true              ; boolean
   - `FireAnimDisallowedLandTypes` controls which landtypes the fire animations are not allowed to spawn on. Defaults to `water,rock,beach,ice` for `Scorch=true`, `none` otherwise.
   - `AttachFireAnimsToParent` controls if the spawned animations are attached to the owner of the parent animation if it is also attached. Defaults to true for `Scorch=true`, otherwise false.
   - `SmallFireCount` determines number of small fire animations to spawn by both `Scorch=true` and `Flamer=true` animations. Defaults to 2 for `Flamer=true`, otherwise 1.
-     - `SmallFireAnims` can be used to set the animation types, defaults to `[AudioVisual]` -> `SmallFire` (single animation).
-     - `SmallFireChances` is a list of probabilities for the animations to spawn, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `1.0,0.5` for `Flamer=true`, `1.0` otherwise.
-     - `SmallFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `0.25,0.625` for `Flamer=true`, `0.0` otherwise.
+    - `SmallFireAnims` can be used to set the animation types, defaults to `[AudioVisual]` -> `SmallFire` (single animation).
+    - `SmallFireChances` is a list of probabilities for the animations to spawn, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `1.0,0.5` for `Flamer=true`, `1.0` otherwise.
+    - `SmallFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `0.25,0.625` for `Flamer=true`, `0.0` otherwise.
   - `LargeFireCount` determines number of large fire animations to spawn by`Flamer=true` animations only.
-     - `LargeFireAnims` can be used to set the animation types, defaults to `[AudioVisual]` -> `LargeFire` (single animation).
-     - `LargeFireChances` is a list of probabilities for the animations to spawn, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
-     - `LargeFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
+    - `LargeFireAnims` can be used to set the animation types, defaults to `[AudioVisual]` -> `LargeFire` (single animation).
+    - `LargeFireChances` is a list of probabilities for the animations to spawn, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
+    - `LargeFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
 
 In `artmd.ini`:
 ```ini
@@ -443,7 +444,7 @@ BarracksExitCell=  ; X,Y - cell offset
   - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`.
   - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
     - `Grinding.Weapon.RequiredCredits` can be set to have the weapon require accumulated credits from grinding to fire. Accumulated credits for this purpose are reset every time when the weapon fires.
-- For money string indication upon grinding, please refer to [`DisplayIncome`](User-Interface.md/#Visual-indication-of-income-from-grinders-and-refineries).
+- For money string indication upon grinding, please refer to [`DisplayIncome`](User-Interface.md#visual-indication-of-income-from-grinders-and-refineries).
 
 In `rulesmd.ini`:
 ```ini
@@ -531,7 +532,7 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
     - `RetargetSelf.Probability` is the probability that if the original firer is chosen as a target, it is kept as the target instead of rerolled to another.
   - `Splits.TargetingDistance` is the distance in cells that any potential target has to be within from the original target coordinates to be eligible for targeting by the splitted projectiles.
   - `Splits.TargetCellRange` is the distance in whole cells from the original target cell from which the splitted projectiles can pick new target cells if not enough TechnoType targets were found nearby.
-  - `Splits.UseWeaponTargeting`, if set to true, enables weapon targeting filter for when checking targets for splitted projectiles. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `AirburstWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
+  - `Splits.UseWeaponTargeting`, if set to true, enables weapon targeting filter for when checking targets for splitted projectiles. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `AirburstWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
     - Do note that this overrides checking Warhead for `AffectsAllies/Owner/Enemies` for targeting. You can use `CanTargetHouses` on `AirburstWeapon` to achieve similar behaviour, however.
 - Behaviour for if `Airburst` is set to true can also be customized.
   - `AirburstSpread` is the distance in cells that the effect covers, with each cell in range being targeted by `AirburstWeapon` by default.
@@ -574,8 +575,8 @@ ClusterScatter.Max=2.0  ; floating point value, distance in cells
 
 ### Customizable projectile gravity
 
--  You can now specify individual projectile gravity.
-    - Setting `Gravity=0` is not recommended as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. We suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+- You can now specify individual projectile gravity.
+  - Setting `Gravity=0` is not recommended as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. We suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 
 In `rulesmd.ini`:
 ```ini
@@ -802,7 +803,7 @@ Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [SOMETECHN
 - It is now possible to customize how air units are affected by level lighting, separately for AircraftTypes and infantry/vehicles with Jumpjet `Locomotor`.
   - `AircraftLevelLightMultiplier` & `JumpjetLevelLightMultiplier` are direct multipliers to level lighting applied on the units, for height levels above the cell they are on.
 
-  - In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
@@ -929,6 +930,19 @@ SpawnsPipFrame=1                     ; integer, frame of pips.shp (buildings) or
 EmptySpawnsPipFrame=0                ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
 SpawnsPipSize=                       ; X,Y, increment in pixels to next pip
 SpawnsPipOffset=0,0                  ; X,Y, position offset from default
+```
+
+### Power drain for units
+
+- Infantry, vehicles and aircraft can now drain or provide `Power` if `UnitPowerDrain=true` is set.
+
+In `rulesmd.ini`:
+```ini
+[General]
+UnitPowerDrain=false  ; boolean
+
+[SOMETECHNO]          ; TechnoType
+Power=0               ; integer, positive means output, negative means drain
 ```
 
 ### Re-enable obsolete [JumpjetControls]
@@ -1112,7 +1126,7 @@ Palette=           ; filename - excluding .pal extension and three-character the
   - Crumbling frames start from first frame after both regular & damaged frames and ends at halfway point of the frames in TerrainType's image.
     - Note that the number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes). Exercise caution and ensure there are correct amount of frames to display.
   - Sound event from `CrumblingSound` (if set) is played when crumbling animation starts playing.
-  - [Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation-sound) only play after crumbling animation has finished.
+  - [Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation--sound) only play after crumbling animation has finished.
 
 In `rulesmd.ini`:
 ```ini
@@ -1226,6 +1240,20 @@ IronCurtain.KeptOnDeploy=       ; boolean, default to [CombatDamage]->IronCurtai
 ForceShield.KeptOnDeploy=       ; boolean, default to [CombatDamage]->ForceShield.KeptOnDeploy
 ```
 
+### Retain target on movement command
+
+- It is now possible for vehicles to retain their target when issued movement command by setting `KeepTargetOnMove` to true.
+  - Note that no check is done whether or not the vehicle or the weapon can actually fire while moving, this is on modder's discretion.
+  - The target is automatically reset if the vehicle moves beyond the weapon's range from the target.
+- `KeepTargetOnMove.ExtraDistance` can be used to modify the distance considered 'out of range' from target (it is added to weapon range), negative values work to reduce the distance.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                     ; VehicleType
+KeepTargetOnMove=false            ; boolean
+KeepTargetOnMove.ExtraDistance=0  ; floating point value, distance in cells
+```
+
 ### Stationary vehicles
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
@@ -1276,7 +1304,6 @@ In `rulesmd.ini`:
 [SOMEVEHICLE]           ; VehicleType
 Ammo.AddOnDeploy=0      ; integer
 ```
-
 
 ## Veinholes & Weeds
 
@@ -1336,7 +1363,6 @@ In `rulesmd.ini`:
 178=VEINHOLEDUMMY             ; A technical overlay
 ```
 
-
 ### Weeds & Weed Eaters
 
 - Vehicles with `Weeder=yes` can now collect weeds. The weeds can then be deposited into a building with `Weeder=yes`.
@@ -1366,7 +1392,7 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 
 ### Customizable debris & meteor impact and warhead detonation behaviour
 
-- The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris-%26-meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
+- The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
 
 ## Warheads
 
@@ -1463,7 +1489,6 @@ In `rulesmd.ini`:
 Nonprovocative=false  ; boolean
 ```
 
-
 ```{note}
 Due to technical constraints, this does not suppress warnings from Ares' EMP effect.
 ```
@@ -1508,7 +1533,7 @@ AmbientDamage.IgnoreTarget=false  ; boolean
 - It is now possible to customize the delay of `IsChargeTurret=true` unit turret animation per weapon, per `Burst` shot instead of defaulting to weapon's rearm timer (`ROF`, `BurstDelays` etc). Delay in the list corresponding to burst shot is used, or last delay listed if number of listed values is lower than the current burst index. Delay of 0 or less means previous delay, if applicable, is not restarted.
   - Note that unlike the default rearm timer that uses `ROF`, any modifiers are not applied to explicitly set charge turret delays.
 
-  In `rulesmd.ini`:
+In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]          ; WeaponType
 ChargeTurret.Delays=  ; list of integers - game frames
