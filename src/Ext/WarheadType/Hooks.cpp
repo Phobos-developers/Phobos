@@ -294,6 +294,9 @@ DEFINE_HOOK(0x4899DA, DamageArea_DamageBuilding_CauseMergeBuildingDamage, 0x7)
 		{
 			if (const auto pBuilding = abstract_cast<BuildingClass*>(group->Target))
 			{
+				if (group->Distance > cellSpread)
+					continue;
+
 				const auto multiplier = (cellSpread && percentDifference) ? 1.0 - (percentDifference * group->Distance / cellSpread) : 1.0;
 				MapBuildings[pBuilding] += multiplier > 0 ? multiplier : 0;
 			}
