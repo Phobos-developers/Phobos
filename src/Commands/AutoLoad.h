@@ -18,5 +18,5 @@ public:
 
 	static int GetBuildingPassengerBudget(BuildingClass* pBuilding);
 	static bool CanBeBuildingPassenger(TechnoClass* pPassenger);
-	static std::set<TechnoClass*> SpreadPassengersToTransports(std::vector<TechnoClass*>& passengers, std::vector<std::pair<TechnoClass*, int>>& transports);
+	static std::set<TechnoClass*> SpreadPassengersToTransports(std::vector<TechnoClass*>& passengers, std::vector<std::pair<TechnoClass*, int>>& transports, Action actionType = Action::Enter);
 };

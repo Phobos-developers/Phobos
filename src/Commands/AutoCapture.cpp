@@ -103,6 +103,6 @@ void AutoCaptureCommandClass::Execute(WWKey eInput) const
 
 	if (!capturableStructuresVector.empty())
 	{
-		AutoLoadCommandClass::SpreadPassengersToTransports(engineerVector, capturableStructuresVector);
+		AutoLoadCommandClass::SpreadPassengersToTransports(engineerVector, capturableStructuresVector, Action::Capture);
 	}
 }

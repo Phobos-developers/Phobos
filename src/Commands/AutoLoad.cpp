@@ -192,7 +192,7 @@ inline static bool DeselectMe(TechnoClass* pTransport)
 	return false;
 }
 
-std::set<TechnoClass*> AutoLoadCommandClass::SpreadPassengersToTransports(std::vector<TechnoClass*>& passengers, std::vector<std::pair<TechnoClass*, int>>& transports)
+std::set<TechnoClass*> AutoLoadCommandClass::SpreadPassengersToTransports(std::vector<TechnoClass*>& passengers, std::vector<std::pair<TechnoClass*, int>>& transports, Action actionType)
 {
 	std::set<TechnoClass*> foundTransportSet;
 	// 1. Get the least kind of passengers
@@ -260,7 +260,7 @@ std::set<TechnoClass*> AutoLoadCommandClass::SpreadPassengersToTransports(std::v
 					{
 						bool deselected = DeselectMe(pTransport);
 						bool moveFeedbackOld = std::exchange(Unsorted::MoveFeedback(), false);
-						pPassenger->ObjectClickedAction(Action::Enter, pTransport, true);
+						pPassenger->ObjectClickedAction(actionType, pTransport, true);
 						if (deselected)
 							pTransport->Select();
 						Unsorted::MoveFeedback = moveFeedbackOld;
