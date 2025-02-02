@@ -34,10 +34,6 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 
 	std::vector<TechnoClass*> occupantVector;
 
-	std::vector<std::pair<TechnoClass*, int>> occupiedVectorOwned;
-
-	std::vector<std::pair<TechnoClass*, int>> occupiedVectorNeutral;
-
 	for (const auto& pUnit : ObjectClass::CurrentObjects())
 	{
 		// try to cast to InfantryClass
@@ -57,7 +53,11 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 	if (occupantVector.empty())
 		return;
 
-	auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
+	std::vector<std::pair<TechnoClass*, int>> occupiedVectorOwned;
+
+	std::vector<std::pair<TechnoClass*, int>> occupiedVectorNeutral;
+
+	static auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
 	{
 		std::vector<T> vec(dvc.Count);
 		std::copy(dvc.begin(), dvc.end(), vec.begin());

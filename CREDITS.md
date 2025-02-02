@@ -396,6 +396,7 @@ This page lists all the individual contributions to the project by their author.
 - **Aephiex**
   - Auto load hotkey command (supplement)
   - Auto garrison hotkey command
+  - Auto capture hotkey command
   - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares

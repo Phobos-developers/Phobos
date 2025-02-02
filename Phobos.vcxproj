@@ -18,6 +18,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Commands\AutoCapture.cpp" />
     <ClCompile Include="src\Commands\AutoGarrison.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.MatrixOp.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
@@ -185,6 +186,7 @@
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Commands\AutoCapture.h" />
     <ClInclude Include="src\Commands\AutoGarrison.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />
