@@ -264,19 +264,12 @@ DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
 
 #pragma region MergeBuildingDamage
 
-namespace DamageBuildingHelper
+DEFINE_HOOK(0x4899DA, DamageArea_DamageBuilding_CauseMergeBuildingDamage, 0x7)
 {
-	std::map<BuildingClass*, double> Buildings;
-}
-
-DEFINE_HOOK(0x4899DA, DamageArea_DamageBuilding_SetContext, 0x7)
-{
-	GET_BASE(WarheadTypeClass* const, pWH, 0xC);
+	GET_BASE(WarheadTypeClass* const, pWH, 0x0C);
 
 	if (!WarheadTypeExt::ExtMap.Find(pWH)->MergeBuildingDamage.Get(RulesExt::Global()->MergeBuildingDamage))
 		return 0;
-
-	DamageBuildingHelper::Buildings.clear();
 
 	struct DamageGroup
 	{
@@ -284,51 +277,53 @@ DEFINE_HOOK(0x4899DA, DamageArea_DamageBuilding_SetContext, 0x7)
 		int Distance;
 	};
 
-	GET_STACK(DynamicVectorClass<DamageGroup*>, groups, STACK_OFFSET(0xE0, -0xA8));
+	GET_STACK(const DynamicVectorClass<DamageGroup*>, groups, STACK_OFFSET(0xE0, -0xA8));
+	GET_STACK(const bool, invincibleWithoutPenetrateAndCloseTo, STACK_OFFSET(0xE0, -0xC9));
+	GET_STACK(const int, baseDamage, STACK_OFFSET(0xE0, -0xBC));
+	GET_BASE(TechnoClass* const, pAttacker, 0x08);
+	GET_BASE(HouseClass* const, pAttackHouse, 0x14);
 
-	const auto cellSpread = Game::F2I(pWH->CellSpread * Unsorted::LeptonsPerCell);
-	const auto percentDifference = 1.0 - pWH->PercentAtMax; // Vanilla will first multiply the damage and round it up, but we don't need to.
+	// Because during the process of causing damage, fragments may be generated that need to continue causing damage, resulting in nested calls
+	// to this function. Therefore, a single global variable cannot be used to store this data.
+	PhobosMap<BuildingClass*, double> MapBuildings;
+	{
+		const auto cellSpread = Game::F2I(pWH->CellSpread * Unsorted::LeptonsPerCell);
+		const auto percentDifference = 1.0 - pWH->PercentAtMax; // Vanilla will first multiply the damage and round it up, but we don't need to.
 
-	for (auto& group : groups)
+		for (const auto& group : groups)
+		{
+			if (const auto pBuilding = abstract_cast<BuildingClass*>(group->Target))
+			{
+				const auto multiplier = (cellSpread && percentDifference) ? 1.0 - (percentDifference * group->Distance / cellSpread) : 1.0;
+				MapBuildings[pBuilding] += multiplier > 0 ? multiplier : 0;
+			}
+		}
+	}
+
+	for (const auto& group : groups) // Causing damage to the building alone and avoiding repeated injuries later.
 	{
 		if (const auto pBuilding = abstract_cast<BuildingClass*>(group->Target))
 		{
-			const auto multiplier = (cellSpread && percentDifference) ? 1.0 - (percentDifference * group->Distance / cellSpread) : 1.0;
-			DamageBuildingHelper::Buildings[pBuilding] += multiplier > 0 ? multiplier : 0;
-			group->Distance = 0;
+			if (pBuilding->IsAlive && !pBuilding->Type->InvisibleInGame && (!invincibleWithoutPenetrateAndCloseTo || pBuilding->IsIronCurtained())
+				&& pBuilding->Health > 0 && pBuilding->IsOnMap && !pBuilding->InLimbo && MapBuildings.contains(pBuilding))
+			{
+				auto receiveDamage = Game::F2I(baseDamage * MapBuildings[pBuilding]);
+				pBuilding->ReceiveDamage(&receiveDamage, 0, pWH, pAttacker, false, false, pAttackHouse);
+				MapBuildings.erase(pBuilding);
+			}
 		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x489AA0, DamageArea_DamageBuilding_ReceiveDamage, 0x7)
+DEFINE_HOOK(0x489A1B, DamageArea_DamageBuilding_SkipVanillaBuildingDamage, 0x6)
 {
-	enum { SkipGameCode = 0x489ABC };
+	enum { SkipGameCode = 0x489AC1 };
 
-	GET(WarheadTypeClass* const, pWH, ECX);
+	GET_BASE(WarheadTypeClass* const, pWH, 0x0C);
 
-	if (!WarheadTypeExt::ExtMap.Find(pWH)->MergeBuildingDamage.Get(RulesExt::Global()->MergeBuildingDamage))
-		return 0;
-
-	GET(ObjectClass* const, pTechno, ESI);
-
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
-	{
-		if (DamageBuildingHelper::Buildings.contains(pBuilding))
-		{
-			GET(const int, damage, EAX);
-			const auto multiplier = DamageBuildingHelper::Buildings[pBuilding];
-			R->EAX(Game::F2I(damage * multiplier));
-			DamageBuildingHelper::Buildings.erase(pBuilding);
-		}
-		else
-		{
-			return SkipGameCode;
-		}
-	}
-
-	return 0;
+	return WarheadTypeExt::ExtMap.Find(pWH)->MergeBuildingDamage.Get(RulesExt::Global()->MergeBuildingDamage) ? SkipGameCode : 0;
 }
 
 #pragma endregion
