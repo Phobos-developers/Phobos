@@ -610,9 +610,9 @@ DEFINE_HOOK(0x6A9789, StripClass_DrawStrip_NoGreyCameo, 0x6)
 	{
 		if (const auto pFactory = HouseClass::CurrentPlayer->GetPrimaryFactory(AbstractType::BuildingType, pType->Naval, pBuildingType->BuildCat))
 		{
-			if (const auto pProduct = pFactory->Object)
+			if (const auto pProduct = abstract_cast<BuildingClass*>(pFactory->Object))
 			{
-				if (pFactory->IsDone() && pProduct->GetTechnoType() != pType)
+				if (pFactory->IsDone() && pProduct->Type != pType && ((pProduct->Type->BuildCat != BuildCat::Combat) ^ (pBuildingType->BuildCat == BuildCat::Combat)))
 					return SkipGameCode;
 			}
 		}
