@@ -560,24 +560,6 @@ bool BuildingTypeExt::AutoPlaceBuilding(BuildingClass* pBuilding)
 
 		return false;
 	}
-	else if (pType->PlaceAnywhere)
-	{
-		for (const auto& pOwned : pHouse->Buildings)
-		{
-			if (!pOwned->Type->BaseNormal)
-				continue;
-
-			const auto cell = getMapCell(pOwned);
-
-			if (cell == CellStruct::Empty || !canBuildHere(cell))
-				continue;
-
-			addPlaceEvent(cell);
-			return true;
-		}
-
-		return false;
-	}
 	else if (pType->PowersUpBuilding[0])
 	{
 		for (const auto& pOwned : pHouse->Buildings)
@@ -588,6 +570,24 @@ bool BuildingTypeExt::AutoPlaceBuilding(BuildingClass* pBuilding)
 			const auto cell = getMapCell(pOwned);
 
 			if (cell == CellStruct::Empty || pOwned->CurrentMission == Mission::Selling || !canBuildHere(cell))
+				continue;
+
+			addPlaceEvent(cell);
+			return true;
+		}
+
+		return false;
+	}
+	else if (pType->PlaceAnywhere)
+	{
+		for (const auto& pOwned : pHouse->Buildings)
+		{
+			if (!pOwned->Type->BaseNormal)
+				continue;
+
+			const auto cell = getMapCell(pOwned);
+
+			if (cell == CellStruct::Empty || !canBuildHere(cell))
 				continue;
 
 			addPlaceEvent(cell);
