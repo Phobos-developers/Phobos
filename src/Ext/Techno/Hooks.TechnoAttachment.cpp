@@ -115,7 +115,7 @@ bool IsOccupierIgnorable(TechnoClass* pThis, ObjectClass* pOccupier, byte& occup
 	if (abstract_cast<UnitClass*>(pOccupier))
 	{
 		occupyFlags |= TechnoAttachmentTemp::storedVehicleFlag;
-		isVehicleFlagSet = TechnoAttachmentTemp::storedVehicleFlag != 0;
+		isVehicleFlagSet = (occupyFlags & 0x20) != 0;
 	}
 
 	return false;
@@ -145,7 +145,7 @@ void AccountForMovingInto(CellClass* into, bool isAlt, TechnoClass* pThis, byte&
 		!TechnoExt::IsChildOf(pIncoming, pThis))
 	{
 		occupyFlags |= TechnoAttachmentTemp::storedVehicleFlag;
-		isVehicleFlagSet = TechnoAttachmentTemp::storedVehicleFlag != 0;
+		isVehicleFlagSet = (occupyFlags & 0x20) != 0;
 	}
 }
 
