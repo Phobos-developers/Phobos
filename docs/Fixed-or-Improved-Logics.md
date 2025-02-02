@@ -1124,7 +1124,7 @@ Palette=           ; filename - excluding .pal extension and three-character the
   - Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual]` -> `ConditionYellow.Terrain` percentage of their maximum health. Defaults to `ConditionYellow` if not set.
 - In addition, TerrainTypes can now show 'crumbling' animation after their health has reached zero and before they are deleted from the map by setting `HasCrumblingFrames` to true.
   - Crumbling frames start from first frame after both regular & damaged frames and ends at halfway point of the frames in TerrainType's image.
-    - Note that the number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes). Exercise caution and ensure there are correct amount of frames to display.
+    - Note that the number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes)). Exercise caution and ensure there are correct amount of frames to display.
   - Sound event from `CrumblingSound` (if set) is played when crumbling animation starts playing.
   - [Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation--sound) only play after crumbling animation has finished.
 
