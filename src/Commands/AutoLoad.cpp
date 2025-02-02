@@ -192,7 +192,10 @@ inline static bool DeselectMe(TechnoClass* pTransport)
 	return false;
 }
 
-std::set<TechnoClass*> AutoLoadCommandClass::SpreadPassengersToTransports(std::vector<TechnoClass*>& passengers, std::vector<std::pair<TechnoClass*, int>>& transports, Action actionType)
+std::set<TechnoClass*> AutoLoadCommandClass::SpreadPassengersToTransports(std::vector<TechnoClass*>& passengers,
+	std::vector<std::pair<TechnoClass*, int>>& transports,
+	Action actionType,
+	bool bypassCanHoldCheck)
 {
 	std::set<TechnoClass*> foundTransportSet;
 	// 1. Get the least kind of passengers
@@ -234,7 +237,7 @@ std::set<TechnoClass*> AutoLoadCommandClass::SpreadPassengersToTransports(std::v
 					auto pTransport = transports[index].first;
 
 					// If this transport can't hold this passenger then skip.
-					if (!CanHoldPassenger(pTransport, pPassenger))
+					if (!bypassCanHoldCheck && !CanHoldPassenger(pTransport, pPassenger))
 						goto seeNextTransport; // "continue" causes to skip the passenger, not to skip the transport, so we shouldn't use "continue" here
 
 					// Gets the passenger slot budget that would be substracted.
