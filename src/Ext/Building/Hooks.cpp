@@ -601,7 +601,24 @@ DEFINE_HOOK(0x6A9789, StripClass_DrawStrip_NoGreyCameo, 0x6)
 	GET(TechnoTypeClass* const, pType, EBX);
 	GET_STACK(bool, clicked, STACK_OFFSET(0x48C, -0x475));
 
-	return (!RulesExt::Global()->BuildingProductionQueue && pType->WhatAmI() == AbstractType::BuildingType && clicked) ? SkipGameCode : ContinueCheck;
+	if (!RulesExt::Global()->BuildingProductionQueue)
+	{
+		if (pType->WhatAmI() == AbstractType::BuildingType && clicked)
+			return SkipGameCode;
+	}
+	else if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+	{
+		if (const auto pFactory = HouseClass::CurrentPlayer->GetPrimaryFactory(AbstractType::BuildingType, pType->Naval, pBuildingType->BuildCat))
+		{
+			if (const auto pProduct = pFactory->Object)
+			{
+				if (pFactory->IsDone() && pProduct->GetTechnoType() != pType)
+					return SkipGameCode;
+			}
+		}
+	}
+
+	return ContinueCheck;
 }
 
 DEFINE_HOOK(0x6AA88D, StripClass_RecheckCameo_FindFactoryDehardCode, 0x6)
