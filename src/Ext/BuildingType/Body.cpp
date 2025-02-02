@@ -118,7 +118,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 // Check whether can call the occupiers leave
 bool BuildingTypeExt::CheckOccupierCanLeave(HouseClass* pBuildingHouse, HouseClass* pOccupierHouse)
 {
-	if (!pOccupierHouse)
+	if (!pOccupierHouse || !pBuildingHouse)
 		return false;
 	else if (pBuildingHouse == pOccupierHouse)
 		return true;
