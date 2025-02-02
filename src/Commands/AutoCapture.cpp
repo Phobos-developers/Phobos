@@ -85,7 +85,8 @@ void AutoCaptureCommandClass::Execute(WWKey eInput) const
 			continue;
 
 		// checks if the building is visible in the player's camera
-		if (!TacticalClass::Instance->CoordsToClient(pBuilding->GetCenterCoords()).second)
+		if (!MapClass::Instance->IsWithinUsableArea(pBuilding->GetCoords())
+			|| !TacticalClass::Instance->CoordsToClient(pBuilding->GetCoords()).second)
 			continue;
 
 		if (pBuilding->IsVisible
