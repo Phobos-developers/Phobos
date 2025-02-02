@@ -89,7 +89,10 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 			int current = 1;
 
 			for (const auto& pItem : pItems)
-				record[pItem] = 0;
+			{
+				if (pItem->CloakState != CloakState::Cloaked || pItem->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex))
+					record[pItem] = 0;
+			}
 
 			for (const auto& pSelect : ObjectClass::CurrentObjects())
 			{
