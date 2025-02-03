@@ -24,11 +24,12 @@ public:
 		, CruiseAltitude { 800 }
 		, CruiseAlongLevel { false }
 		, LeadTimeCalculate { true }
-		, TargetSnapDistance { Leptons(128) }
+		, RecordSourceCoord { false }
 		, RetargetAllies { false }
 		, RetargetRadius { 0 }
-		, SuicideShortOfROT { true }
+		, TargetSnapDistance { Leptons(128) }
 		, SuicideAboveRange { 0 }
+		, SuicideShortOfROT { true }
 		, SuicideIfNoWeapon { true }
 		, Weapons {}
 		, WeaponBurst {}
@@ -69,11 +70,12 @@ public:
 	Valueable<int> CruiseAltitude;
 	Valueable<bool> CruiseAlongLevel;
 	Valueable<bool> LeadTimeCalculate;
-	Valueable<Leptons> TargetSnapDistance;
+	Valueable<bool> RecordSourceCoord;
 	Valueable<bool> RetargetAllies;
 	Valueable<double> RetargetRadius;
-	Valueable<bool> SuicideShortOfROT;
+	Valueable<Leptons> TargetSnapDistance;
 	Valueable<double> SuicideAboveRange;
+	Valueable<bool> SuicideShortOfROT;
 	Valueable<bool> SuicideIfNoWeapon;
 	ValueableVector<WeaponTypeClass*> Weapons;
 	ValueableVector<int> WeaponBurst;
@@ -118,6 +120,8 @@ public:
 		, LastTargetCoord {}
 		, PreAimDistance { 0 }
 		, LastReviseMult { 0 }
+		, FLHCoord {}
+		, BuildingCoord {}
 		, FirepowerMult { 1.0 }
 	{ }
 
@@ -149,12 +153,15 @@ public:
 	CoordStruct LastTargetCoord;
 	double PreAimDistance;
 	double LastReviseMult;
+	CoordStruct FLHCoord;
+	CoordStruct BuildingCoord;
 	double FirepowerMult;
 
 private:
 	template <typename T>
 	void Serialize(T& Stm);
 
+	void GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno);
 	void InitializeBulletNotCurve(BulletClass* pBullet, bool facing);
 	inline BulletVelocity RotateAboutTheAxis(BulletVelocity theSpeed, BulletVelocity theAxis, double theRadian);
 	bool CalculateBulletVelocity(BulletClass* pBullet, double trajectorySpeed);

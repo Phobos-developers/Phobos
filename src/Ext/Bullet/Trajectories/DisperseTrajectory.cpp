@@ -47,11 +47,12 @@ void DisperseTrajectoryType::Serialize(T& Stm)
 		.Process(this->CruiseAltitude)
 		.Process(this->CruiseAlongLevel)
 		.Process(this->LeadTimeCalculate)
-		.Process(this->TargetSnapDistance)
+		.Process(this->RecordSourceCoord)
 		.Process(this->RetargetRadius)
 		.Process(this->RetargetAllies)
-		.Process(this->SuicideShortOfROT)
+		.Process(this->TargetSnapDistance)
 		.Process(this->SuicideAboveRange)
+		.Process(this->SuicideShortOfROT)
 		.Process(this->SuicideIfNoWeapon)
 		.Process(this->Weapons)
 		.Process(this->WeaponBurst)
@@ -108,11 +109,12 @@ void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->CruiseAltitude.Read(exINI, pSection, "Trajectory.Disperse.CruiseAltitude");
 	this->CruiseAlongLevel.Read(exINI, pSection, "Trajectory.Disperse.CruiseAlongLevel");
 	this->LeadTimeCalculate.Read(exINI, pSection, "Trajectory.Disperse.LeadTimeCalculate");
-	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.Disperse.TargetSnapDistance");
-	this->RetargetRadius.Read(exINI, pSection, "Trajectory.Disperse.RetargetRadius");
+	this->RecordSourceCoord.Read(exINI, pSection, "Trajectory.Disperse.RecordSourceCoord");
 	this->RetargetAllies.Read(exINI, pSection, "Trajectory.Disperse.RetargetAllies");
-	this->SuicideShortOfROT.Read(exINI, pSection, "Trajectory.Disperse.SuicideShortOfROT");
+	this->RetargetRadius.Read(exINI, pSection, "Trajectory.Disperse.RetargetRadius");
+	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.Disperse.TargetSnapDistance");
 	this->SuicideAboveRange.Read(exINI, pSection, "Trajectory.Disperse.SuicideAboveRange");
+	this->SuicideShortOfROT.Read(exINI, pSection, "Trajectory.Disperse.SuicideShortOfROT");
 	this->SuicideIfNoWeapon.Read(exINI, pSection, "Trajectory.Disperse.SuicideIfNoWeapon");
 	this->Weapons.Read(exINI, pSection, "Trajectory.Disperse.Weapons");
 	this->WeaponBurst.Read(exINI, pSection, "Trajectory.Disperse.WeaponBurst");
@@ -153,6 +155,8 @@ void DisperseTrajectory::Serialize(T& Stm)
 		.Process(this->LastTargetCoord)
 		.Process(this->PreAimDistance)
 		.Process(this->LastReviseMult)
+		.Process(this->FLHCoord)
+		.Process(this->BuildingCoord)
 		.Process(this->FirepowerMult)
 		;
 }
@@ -194,6 +198,9 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 
 		if (pType->MirrorCoord && pFirer->CurrentBurstIndex % 2 == 1)
 			this->PreAimCoord.Y = -(this->PreAimCoord.Y);
+
+		if (pType->Weapons.size() && pType->RecordSourceCoord)
+			this->GetTechnoFLHCoord(pBullet, pFirer);
 	}
 
 	if (pType->UniqueCurve)
@@ -282,6 +289,35 @@ TrajectoryCheckReturnType DisperseTrajectory::OnAITargetCoordCheck(BulletClass* 
 TrajectoryCheckReturnType DisperseTrajectory::OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno)
 {
 	return TrajectoryCheckReturnType::SkipGameCheck;
+}
+
+void DisperseTrajectory::GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno)
+{
+	const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+
+	if (!pExt || !pExt->LastWeaponType || pExt->LastWeaponType->Projectile != pBullet->Type)
+	{
+		this->FLHCoord = CoordStruct::Empty;
+		return;
+	}
+	else if (pTechno->WhatAmI() == AbstractType::Building)
+	{
+		const auto pBuilding = static_cast<BuildingClass*>(pTechno);
+		Matrix3D mtx;
+		mtx.MakeIdentity();
+
+		if (pTechno->HasTurret())
+		{
+			TechnoTypeExt::ApplyTurretOffset(pBuilding->Type, &mtx);
+			mtx.RotateZ(static_cast<float>(pTechno->TurretFacing().GetRadian<32>()));
+		}
+
+		mtx.Translate(static_cast<float>(pExt->LastWeaponFLH.X), static_cast<float>(pExt->LastWeaponFLH.Y), static_cast<float>(pExt->LastWeaponFLH.Z));
+		const auto result = mtx.GetTranslation();
+		this->BuildingCoord = pBullet->SourceCoords - pBuilding->GetCoords() - CoordStruct { static_cast<int>(result.X), -static_cast<int>(result.Y), static_cast<int>(result.Z) };
+	}
+
+	this->FLHCoord = pExt->LastWeaponFLH;
 }
 
 void DisperseTrajectory::InitializeBulletNotCurve(BulletClass* pBullet, bool facing)
@@ -1217,9 +1253,15 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				const auto pTrajType = pTrajectory->Type;
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 
-				//The created bullet's velocity calculation has been completed, so we should stack the calculations.
+				// The created bullet's velocity calculation has been completed, so we should stack the calculations.
 				if (pTrajectory->UseDisperseBurst && std::abs(pTrajType->RotateCoord) > 1e-10 && curBurst >= 0 && maxBurst > 1 && !pTrajType->UniqueCurve && pTrajectory->PreAimCoord != CoordStruct::Empty)
 					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
+
+				if (pTrajType->RecordSourceCoord && pBullet->Owner && this->Type->RecordSourceCoord && this->FLHCoord != CoordStruct::Empty)
+				{
+					pTrajectory->FLHCoord = this->FLHCoord;
+					pTrajectory->BuildingCoord = this->BuildingCoord;
+				}
 			}
 			else if (flag == TrajectoryFlag::Straight)
 			{
@@ -1227,7 +1269,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				const auto pTrajType = pTrajectory->Type;
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 
-				//The straight trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
+				// The straight trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
 				if (pTrajectory->UseDisperseBurst && std::abs(pTrajType->RotateCoord) > 1e-10 && curBurst >= 0 && maxBurst > 1)
 				{
 					if (pTrajType->LeadTimeCalculate && abstract_cast<FootClass*>(pTarget))
@@ -1247,7 +1289,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				const auto pTrajectory = static_cast<BombardTrajectory*>(pTraj);
 				const auto pTrajType = pTrajectory->Type;
 
-				//The bombard trajectory bullets without NoLaunch and FreeFallOnTarget can change the velocity.
+				// The bombard trajectory bullets without NoLaunch and FreeFallOnTarget can change the velocity.
 				if (pTrajectory->UseDisperseBurst && std::abs(pTrajType->RotateCoord) > 1e-10 && curBurst >= 0 && maxBurst > 1 && (!pTrajType->NoLaunch || !pTrajType->FreeFallOnTarget))
 				{
 					pTrajectory->CurrentBurst = curBurst;
@@ -1261,14 +1303,25 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 /*			else if (flag == TrajectoryFlag::Engrave) // TODO If merge #1293
 			{
 				const auto pTrajectory = static_cast<EngraveTrajectory*>(pTraj);
-				pTrajectory->NotMainWeapon = true;
+				const auto pTrajType = pTrajectory->Type;
+
+				if (pTrajType->UseDisperseCoord && pBullet->Owner && this->Type->RecordSourceCoord && this->FLHCoord != CoordStruct::Empty)
+				{
+					pTrajectory->FLHCoord = this->FLHCoord;
+					pTrajectory->BuildingCoord = this->BuildingCoord;
+					pTrajectory->NotMainWeapon = false;
+				}
+				else
+				{
+					pTrajectory->NotMainWeapon = true;
+				}
 			}*/
 /*			else if (flag == TrajectoryFlag::Parabola) // TODO If merge #1374
 			{
 				const auto pTrajectory = static_cast<ParabolaTrajectory*>(pTraj);
 				const auto pTrajType = pTrajectory->Type;
 
-				//The parabola trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
+				// The parabola trajectory bullets has LeadTimeCalculate=true are not calculate its velocity yet.
 				if (pTrajectory->UseDisperseBurst && std::abs(pTrajType->RotateCoord) > 1e-10 && curBurst >= 0 && maxBurst > 1)
 				{
 					if (pTrajType->LeadTimeCalculate && abstract_cast<FootClass*>(pTarget))
@@ -1286,8 +1339,19 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 /*			else if (flag == TrajectoryFlag::Tracing) // TODO If merge #1481
 			{
 				const auto pTrajectory = static_cast<TracingTrajectory*>(pTraj);
+				const auto pTrajType = pTrajectory->Type;
 				pTrajectory->FirepowerMult = this->FirepowerMult;
-				pTrajectory->NotMainWeapon = true;
+
+				if (pTrajType->UseDisperseCoord && pBullet->Owner && this->Type->RecordSourceCoord && this->FLHCoord != CoordStruct::Empty)
+				{
+					pTrajectory->FLHCoord = this->FLHCoord;
+					pTrajectory->BuildingCoord = this->BuildingCoord;
+					pTrajectory->NotMainWeapon = false;
+				}
+				else
+				{
+					pTrajectory->NotMainWeapon = true;
+				}
 			}*/
 		}
 
