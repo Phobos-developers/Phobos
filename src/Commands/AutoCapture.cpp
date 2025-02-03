@@ -138,7 +138,7 @@ void AutoCaptureCommandClass::Execute(WWKey eInput) const
 
 	if (!capturableStructuresSelectedVector.empty())
 	{
-		auto foundTransportSet = AutoLoadCommandClass::SpreadPassengersToTransports(engineerVector, capturableStructuresSelectedVector);
+		auto foundTransportSet = AutoLoadCommandClass::SpreadPassengersToTransports(engineerVector, capturableStructuresSelectedVector, Action::Capture, true);
 		engineerVector.erase(
 			std::remove_if(engineerVector.begin(), engineerVector.end(),
 				[foundTransportSet](auto pPassenger)
