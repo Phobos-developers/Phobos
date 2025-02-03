@@ -318,6 +318,7 @@ New:
 - Custom exit cell for infantry factory (by Starkku)
 - Option for vehicles to keep target when issued move command (by Starkku)
 - Skip anim delay for burst fire (by TaranDahl)
+- New Parabola trajectory (by CrimRecya)
 
 Vanilla fixes:
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
@@ -476,7 +477,6 @@ New:
 - Custom object palettes for TerrainTypes (by Starkku)
 - Forbidding parallel AI queues for specific TechnoTypes (by Starkku)
 - Nonprovocative Warheads (by Starkku)
-- New Parabola trajectory (by CrimRecya)
 - Buildings considered as destroyable pathfinding obstacles (by Starkku)
 - `FireOnce` infantry sequence reset toggle (by Starkku)
 - Assign Super Weapon cameo to any sidebar tab (by NetsuNegi)
