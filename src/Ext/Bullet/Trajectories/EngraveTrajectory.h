@@ -9,6 +9,7 @@ public:
 		, SourceCoord { { 0, 0 } }
 		, TargetCoord { { 0, 0 } }
 		, MirrorCoord { true }
+		, UseDisperseCoord { false }
 		, ApplyRangeModifiers { false }
 		, TheDuration { 0 }
 		, IsLaser { true }
@@ -33,6 +34,7 @@ public:
 	Valueable<Point2D> SourceCoord;
 	Valueable<Point2D> TargetCoord;
 	Valueable<bool> MirrorCoord;
+	Valueable<bool> UseDisperseCoord;
 	Valueable<bool> ApplyRangeModifiers;
 	Valueable<int> TheDuration;
 	Valueable<bool> IsLaser;

@@ -20,6 +20,7 @@ void EngraveTrajectoryType::Serialize(T& Stm)
 		.Process(this->SourceCoord)
 		.Process(this->TargetCoord)
 		.Process(this->MirrorCoord)
+		.Process(this->UseDisperseCoord)
 		.Process(this->ApplyRangeModifiers)
 		.Process(this->TheDuration)
 		.Process(this->IsLaser)
@@ -59,6 +60,7 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->SourceCoord.Read(exINI, pSection, "Trajectory.Engrave.SourceCoord");
 	this->TargetCoord.Read(exINI, pSection, "Trajectory.Engrave.TargetCoord");
 	this->MirrorCoord.Read(exINI, pSection, "Trajectory.Engrave.MirrorCoord");
+	this->UseDisperseCoord.Read(exINI, pSection, "Trajectory.Engrave.UseDisperseCoord");
 	this->TheDuration.Read(exINI, pSection, "Trajectory.Engrave.TheDuration");
 	this->IsLaser.Read(exINI, pSection, "Trajectory.Engrave.IsLaser");
 	this->IsSupported.Read(exINI, pSection, "Trajectory.Engrave.IsSupported");
