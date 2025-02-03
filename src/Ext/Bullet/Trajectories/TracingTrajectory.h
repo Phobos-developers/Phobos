@@ -28,6 +28,7 @@ public:
 		, CreateCoord { { 0, 0, 0 } }
 		, OffsetCoord { { 0, 0, 0 } }
 		, WeaponCoord { { 0, 0, 0 } }
+		, UseDisperseCoord { false }
 		, Weapons {}
 		, WeaponCount {}
 		, WeaponDelay {}
@@ -56,6 +57,7 @@ public:
 	Valueable<CoordStruct> CreateCoord;
 	Valueable<CoordStruct> OffsetCoord;
 	Valueable<CoordStruct> WeaponCoord;
+	Valueable<bool> UseDisperseCoord;
 	ValueableVector<WeaponTypeClass*> Weapons;
 	ValueableVector<int> WeaponCount;
 	ValueableVector<int> WeaponDelay;

@@ -37,6 +37,7 @@ void TracingTrajectoryType::Serialize(T& Stm)
 		.Process(this->CreateCoord)
 		.Process(this->OffsetCoord)
 		.Process(this->WeaponCoord)
+		.Process(this->UseDisperseCoord)
 		.Process(this->Weapons)
 		.Process(this->WeaponCount)
 		.Process(this->WeaponDelay)
@@ -93,6 +94,7 @@ void TracingTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->CreateCoord.Read(exINI, pSection, "Trajectory.Tracing.CreateCoord");
 	this->OffsetCoord.Read(exINI, pSection, "Trajectory.Tracing.OffsetCoord");
 	this->WeaponCoord.Read(exINI, pSection, "Trajectory.Tracing.WeaponCoord");
+	this->UseDisperseCoord.Read(exINI, pSection, "Trajectory.Tracing.UseDisperseCoord");
 	this->Weapons.Read(exINI, pSection, "Trajectory.Tracing.Weapons");
 	this->WeaponCount.Read(exINI, pSection, "Trajectory.Tracing.WeaponCount");
 	this->WeaponDelay.Read(exINI, pSection, "Trajectory.Tracing.WeaponDelay");
