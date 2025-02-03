@@ -354,7 +354,7 @@ ShowFlashOnSelecting=false  ; boolean
 - A shortcut to quickly command multiple engineers to capture tech buildings at a same time. Select engineers, then press the hotkey, up to one each engineer will be ordered to capture the tech buildings visible in the player's camera.
   - Only tech buildings will be targeted (those with `NeedsEngineer=yes`). To capture enemy base, make ues of the Auto Capture Enemy Base hotkey (see below).
   - If `EngineerCaptureLevel` is below 1.0, and `[General]->EngineerAlwaysCaptureTech=false` (*Ares feature*), more than one engineer may be assigned to each tech building.
-  - Player selected buildings are the top priority and will be targeted nevertheless even if not currently visible in the player's camera. To multi-select owned units and neutral structures at the same time, make use of [this feature](Fixed-or-Improved-Logics.md#--limited-multi-selection-of-not-owned-buildings).
+  - Player selected buildings are the top priority and will be targeted nevertheless even if not currently visible in the player's camera. To multi-select owned units and neutral structures at the same time, make use of [this feature](Fixed-or-Improved-Logics.md#limited-multi-selection-of-not-owned-buildings).
 - For localization add `TXT_AUTO_CAPTURE_T` and `TXT_AUTO_CAPTURE_T_DESC` into your `.csf` file.
 
 ### `[ ]` Auto Capture Enemy Base
