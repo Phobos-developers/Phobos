@@ -67,6 +67,9 @@ int AutoLoadCommandClass::GetBuildingPassengerBudget(BuildingClass* pBuilding)
 	// garrisonable structure
 	else if (pBuildingType->CanBeOccupied)
 	{
+		// neutral civilian buildings can't be garrisoned at red HP
+		if (pBuilding->Owner->IsNeutral() && pBuilding->IsRedHP())
+			return 0;
 		return pBuildingType->MaxNumberOccupants - pBuilding->Occupants.Count;
 	}
 	// Tank Bunker
@@ -331,8 +334,14 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 
 		// If not a techno, or is not under control of the current player, or is in air,
 		// or is bunkered, or is a loaded tank bunker, then exclude it from the first iteration.
-		if (!pTechno || pTechno->Berzerk || !pTechno->Owner->IsControlledByCurrentPlayer() || pTechno->IsInAir() || pTechno->BunkerLinkedItem)
+		if (!pTechno || pTechno->Berzerk || pTechno->IsInAir() || pTechno->BunkerLinkedItem)
 			continue;
+
+		// - There is currently no need to check if object owner is current player,
+		//   because this hotkey requires at least 2 objects to be selected to do something,
+		//   however the player is normally unable to select 2 objects that are not owned at a same time.
+		// - Even though we can make use of "MultiSelectNeutrals.Garrisonable" and like,
+		//   this hotkey does nothing anyway if no owned units are selected.
 
 		// Detect enterable buildings.
 		if (auto pBuilding = abstract_cast<BuildingClass*>(pTechno))

@@ -34,6 +34,16 @@ const wchar_t* AutoCaptureCommandClass::GetUIDescription() const
 		return GeneralUtils::LoadStringUnlessMissing("TXT_AUTO_CAPTURE_B_DESC", L"Auto Capture Base");
 }
 
+inline const static bool CanCaptureBuilding(HouseClass* pEngineerOwner, BuildingClass* pBuilding, bool TechBuildingsOnly)
+{
+	if (pBuilding->Type->Capturable
+		&& (pBuilding->Owner->IsNeutral() || !pBuilding->Owner->IsAlliedWith(pEngineerOwner)))
+	{
+		return !TechBuildingsOnly || pBuilding->Type->NeedsEngineer;
+	}
+	return false;
+}
+
 void AutoCaptureCommandClass::Execute(WWKey eInput) const
 {
 	MapClass::Instance->SetTogglePowerMode(0);
@@ -66,7 +76,33 @@ void AutoCaptureCommandClass::Execute(WWKey eInput) const
 	if (engineerVector.empty())
 		return;
 
+	std::vector<std::pair<TechnoClass*, int>> capturableStructuresSelectedVector;
+
 	std::vector<std::pair<TechnoClass*, int>> capturableStructuresVector;
+
+	for (const auto& pUnit : ObjectClass::CurrentObjects())
+	{
+		// try to cast to BuildingClass
+		BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pUnit);
+
+		// If not an building, or is not under control of the current player, or is in air, then exclude it from the iteration.
+		if (!pBuilding || pBuilding->Berzerk || pBuilding->IsInAir())
+			continue;
+
+		// - There is currently no need to check if object owner is current player,
+		//   because this hotkey requires at least 2 objects to be selected to do something,
+		//   however the player is normally unable to select 2 objects that are not owned at a same time.
+		// - Even though we can make use of "MultiSelectNeutrals.Garrisonable" and like,
+		//   this hotkey does nothing anyway if no owned units are selected.
+
+		// If it can be captured then add into the top priority list
+		if (CanCaptureBuilding(pEngineerOwner, pBuilding, TechBuildingsOnly))
+		{
+			auto const pBuildingExt = TechnoExt::ExtMap.Find(pBuilding);
+			auto const budget = pBuildingExt->NeedsMultipleEngineers() ? 10 : 1;
+			capturableStructuresSelectedVector.push_back(std::make_pair(pBuilding, budget));
+		}
+	}
 
 	static auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
 	{
@@ -75,13 +111,14 @@ void AutoCaptureCommandClass::Execute(WWKey eInput) const
 		return vec;
 	};
 
-	auto const multiEngineer = RulesClass::Instance()->EngineerCaptureLevel < 1.0;
-	auto const multiEngineerTech = multiEngineer && !RulesExt::Global()->EngineerAlwaysCaptureTech;
-
 	// find capturable structures in the player's camera
 	for (auto pBuilding : copy_dvc(*BuildingClass::Array))
 	{
 		if (!pBuilding || !pBuilding->IsOnMap || !pBuilding->IsAlive || pBuilding->InLimbo || pBuilding->IsSinking)
+			continue;
+
+		// already checked above, no need to do here
+		if (pBuilding->IsSelected)
 			continue;
 
 		// checks if the building is visible in the player's camera
@@ -91,16 +128,26 @@ void AutoCaptureCommandClass::Execute(WWKey eInput) const
 			continue;
 
 		if (pBuilding->IsVisible
-			&& pBuilding->Type->Capturable
-			&& (pBuilding->Owner->IsNeutral() || !pBuilding->Owner->IsAlliedWith(pEngineerOwner)))
+			&& CanCaptureBuilding(pEngineerOwner, pBuilding, TechBuildingsOnly))
 		{
-			auto const isTechBuilding = pBuilding->Type->NeedsEngineer;
-			if (TechBuildingsOnly && !isTechBuilding)
-				continue;
-
-			auto const budget = (isTechBuilding ? multiEngineerTech : multiEngineer) ? 10 : 1;
+			auto const pBuildingExt = TechnoExt::ExtMap.Find(pBuilding);
+			auto const budget = pBuildingExt->NeedsMultipleEngineers() ? 10 : 1;
 			capturableStructuresVector.push_back(std::make_pair(pBuilding, budget));
 		}
+	}
+
+	if (!capturableStructuresSelectedVector.empty())
+	{
+		auto foundTransportSet = AutoLoadCommandClass::SpreadPassengersToTransports(engineerVector, capturableStructuresSelectedVector);
+		engineerVector.erase(
+			std::remove_if(engineerVector.begin(), engineerVector.end(),
+				[foundTransportSet](auto pPassenger)
+				{
+					return foundTransportSet.contains(pPassenger);
+				}),
+			engineerVector.end());
+		if (engineerVector.empty())
+			return;
 	}
 
 	if (!capturableStructuresVector.empty())

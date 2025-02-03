@@ -497,6 +497,21 @@ Units.RepairPercent=  ; floating point value, percents or absolute
 Units.UseRepairCost=  ; boolean
 ```
 
+### Limited multi selection of not owned buildings
+
+- It is now possible to multi select (press shift + select) not owned buildings under limited conditions. This is primarily designed to make better use of the [Auto Load](User-Interface.md#--auto-load) command hotkey.
+- Garrisonable civilian structures not owned by any house can be made multi-selectable by `[General]->MultiSelectNeutrals.Garrisonable=true`.
+- Tech buildings not owned by any house can be made multi-selectable by `[General]->MultiSelectNeutrals.TechBuilding=true`.
+- Tech buildings owned by another house can be made multi-selectable by `[General]->MultiSelectNotOwned.TechBuilding=true`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+MultiSelectNeutrals.Garrisonable=false
+MultiSelectNeutrals.TechBuilding=false
+MultiSelectNotOwned.TechBuilding=false
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates

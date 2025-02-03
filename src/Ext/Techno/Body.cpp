@@ -513,6 +513,37 @@ bool TechnoExt::ExtData::CanLoadAny(std::map<int, std::vector<TechnoClass*>> pas
 	return false;
 }
 
+bool TechnoExt::ExtData::IsMultiSelectableNotOwned() const
+{
+	if (auto pBuilding = abstract_cast<BuildingClass*>(this->OwnerObject()))
+	{
+		if (pBuilding->Owner->IsNeutral())
+		{
+			if (pBuilding->Type->CanBeOccupied)
+				return RulesExt::Global()->MultiSelectNeutrals_Garrisonable;
+			else if (pBuilding->Type->NeedsEngineer)
+				return RulesExt::Global()->MultiSelectNeutrals_TechBuilding;
+		}
+		else
+		{
+			if (pBuilding->Type->NeedsEngineer)
+				return RulesExt::Global()->MultiSelectNotOwned_TechBuilding;
+		}
+	}
+	return false;
+}
+
+bool TechnoExt::ExtData::NeedsMultipleEngineers() const
+{
+	if (auto pBuilding = abstract_cast<BuildingClass*>(this->OwnerObject()))
+	{
+		auto const multiEngineer = RulesClass::Instance()->EngineerCaptureLevel < 1.0;
+		auto const multiEngineerTech = multiEngineer && !RulesExt::Global()->EngineerAlwaysCaptureTech;
+		return pBuilding->Type->NeedsEngineer ? multiEngineerTech : multiEngineer;
+	}
+	return false;
+}
+
 // Ares 0.2 source
 // Checks if a garrisonable structure can garrison a unit.
 // It is assumed that "whom" is an infantry.

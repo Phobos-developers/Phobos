@@ -211,6 +211,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CombatLightDetailLevel.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel");
 	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
 
+	this->MultiSelectNeutrals_Garrisonable.Read(exINI, GameStrings::General, "MultiSelectNeutrals.Garrisonable");
+	this->MultiSelectNeutrals_TechBuilding.Read(exINI, GameStrings::General, "MultiSelectNeutrals.TechBuilding");
+	this->MultiSelectNotOwned_TechBuilding.Read(exINI, GameStrings::General, "MultiSelectNotOwned.TechBuilding");
+
 	// Ares 0.2
 	this->EngineerAlwaysCaptureTech.Read(exINI, GameStrings::General, "EngineerAlwaysCaptureTech");
 
@@ -398,6 +402,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarheadParticleAlphaImageIsLightFlash)
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->LightFlashAlphaImageDetailLevel)
+		.Process(this->MultiSelectNeutrals_Garrisonable)
+		.Process(this->MultiSelectNeutrals_TechBuilding)
+		.Process(this->MultiSelectNotOwned_TechBuilding)
 		.Process(this->EngineerAlwaysCaptureTech)
 		;
 }

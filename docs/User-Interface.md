@@ -339,23 +339,26 @@ ShowFlashOnSelecting=false  ; boolean
   - If auto board transport can happen among selected units, then said logic takes precedence.
   - A building is viewed as a Bio Reactor if it has `Passengers` >= 1, and it has `InfantryAbsorb=yes`.
   - A building is viewed as a Tank Bunker if it has `Bunker=yes`.
-  - Neutral buildings can't be selected with own troops at a same time. Select Battle Bunkers or already garrisoned civilian structures with empty slots and the infantry units at a same time to make use of the auto load hotkey. Alternatively, make use of the Auto Garrison hotkey (see below).
+  - Neutral buildings can't be selected with own units at a same time. Either make use of [this feature](Fixed-or-Improved-Logics.md#--limited-multi-selection-of-not-owned-buildings) to make neutral buildings selectable with own units at a same time, or make use of the Auto Garrison hotkey (see below).
 - For localization add `TXT_AUTO_LOAD` and `TXT_AUTO_LOAD_DESC` into your `.csf` file.
 
 ### `[ ]` Auto Garrison
 - A shortcut to quickly command multiple infantry units to garrison structures at a same time. Select infantry units who are `Occupier=yes`, then press the hotkey, the units will be distributed among the garrisonable structures visible in the player's camera and will be ordered to garrison them.
-  - Player controlled buildings, namely Battle Bunkers and already garrisoned civilian structures with empty slots, will take precedence.
-  - Neutral structures that are not critically damaged (red HP) will be taken if no such available.
+  - Player selected buildings are the top priority and will be targeted nevertheless even if not currently visible in the player's camera. To multi-select owned units and neutral structures at the same time, make use of [this feature](Fixed-or-Improved-Logics.md#--limited-multi-selection-of-not-owned-buildings).
+  - Unlike the Auto Load command, the Auto Garrison command will not stop here.
+    - Player controlled buildings, namely Battle Bunkers and already garrisoned civilian structures with empty slots, are the 2nd priority and will be targeted if currently visible in the player's camera.
+    - Neutral structures that are not critically damaged (red HP) will be targeted last.
 - For localization add `TXT_AUTO_GARRISON` and `TXT_AUTO_GARRISON_DESC` into your `.csf` file.
 
 ### `[ ]` Auto Capture Tech Buildings
 - A shortcut to quickly command multiple engineers to capture tech buildings at a same time. Select engineers, then press the hotkey, up to one each engineer will be ordered to capture the tech buildings visible in the player's camera.
   - Only tech buildings will be targeted (those with `NeedsEngineer=yes`). To capture enemy base, make ues of the Auto Capture Enemy Base hotkey (see below).
   - If `EngineerCaptureLevel` is below 1.0, and `[General]->EngineerAlwaysCaptureTech=false` (*Ares feature*), more than one engineer may be assigned to each tech building.
+  - Player selected buildings are the top priority and will be targeted nevertheless even if not currently visible in the player's camera. To multi-select owned units and neutral structures at the same time, make use of [this feature](Fixed-or-Improved-Logics.md#--limited-multi-selection-of-not-owned-buildings).
 - For localization add `TXT_AUTO_CAPTURE_T` and `TXT_AUTO_CAPTURE_T_DESC` into your `.csf` file.
 
 ### `[ ]` Auto Capture Enemy Base
-- A shortcut to quickly command multiple engineers to capture the enemy base at a same time. Select engineers, then press the hotkey, up to one each engineer will be ordered to capture buildings visible in the player's camera.
+- This is a more aggressive variant of the Auto Capture Tech Buildings hotkey command, that the enemy base buildings will be targeted as well.
   - If `EngineerCaptureLevel` is below 1.0, more than one engineer may be assigned to each enemy base building.
 - For localization add `TXT_AUTO_CAPTURE_B` and `TXT_AUTO_CAPTURE_B_DESC` into your `.csf` file.
 

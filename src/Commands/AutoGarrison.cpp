@@ -34,6 +34,12 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 
 	std::vector<TechnoClass*> occupantVector;
 
+	std::vector<std::pair<TechnoClass*, int>> occupiedVectorSelected;
+
+	std::vector<std::pair<TechnoClass*, int>> occupiedVectorOwned;
+
+	std::vector<std::pair<TechnoClass*, int>> occupiedVectorNeutral;
+
 	for (const auto& pUnit : ObjectClass::CurrentObjects())
 	{
 		// try to cast to InfantryClass
@@ -53,9 +59,31 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 	if (occupantVector.empty())
 		return;
 
-	std::vector<std::pair<TechnoClass*, int>> occupiedVectorOwned;
+	for (const auto& pUnit : ObjectClass::CurrentObjects())
+	{
+		// try to cast to BuildingClass
+		BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pUnit);
 
-	std::vector<std::pair<TechnoClass*, int>> occupiedVectorNeutral;
+		// If not an building, or is not under control of the current player, or is in air, then exclude it from the iteration.
+		if (!pBuilding || pBuilding->Berzerk || pBuilding->IsInAir())
+			continue;
+
+		// - There is currently no need to check if object owner is current player,
+		//   because this hotkey requires at least 2 objects to be selected to do something,
+		//   however the player is normally unable to select 2 objects that are not owned at a same time.
+		// - Even though we can make use of "MultiSelectNeutrals.Garrisonable" and like,
+		//   this hotkey does nothing anyway if no owned units are selected.
+
+		// If it can be occupied then add into the top priority list
+		if (pBuilding->Type->CanBeOccupied)
+		{
+			int const budget = AutoLoadCommandClass::GetBuildingPassengerBudget(pBuilding);
+			if (budget > 0)
+			{
+				occupiedVectorSelected.push_back(std::make_pair(pBuilding, budget));
+			}
+		}
+	}
 
 	static auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
 	{
@@ -70,6 +98,10 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 		if (!pBuilding || !pBuilding->IsOnMap || !pBuilding->IsAlive || pBuilding->InLimbo || pBuilding->IsSinking)
 			continue;
 
+		// already checked above, no need to do here
+		if (pBuilding->IsSelected)
+			continue;
+
 		// checks if the building is visible in the player's camera
 		if (!MapClass::Instance->IsWithinUsableArea(pBuilding->GetCoords())
 			|| !pBuilding->DiscoveredByCurrentPlayer
@@ -82,15 +114,25 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 			if (budget > 0)
 			{
 				if (pBuilding->Owner->IsControlledByCurrentPlayer())
-				{
 					occupiedVectorOwned.push_back(std::make_pair(pBuilding, budget));
-				}
-				else if (pBuilding->Owner->IsNeutral() && !pBuilding->IsRedHP())
-				{
+				else if (pBuilding->Owner->IsNeutral())
 					occupiedVectorNeutral.push_back(std::make_pair(pBuilding, budget));
-				}
 			}
 		}
+	}
+
+	if (!occupiedVectorSelected.empty())
+	{
+		auto foundTransportSet = AutoLoadCommandClass::SpreadPassengersToTransports(occupantVector, occupiedVectorSelected);
+		occupantVector.erase(
+			std::remove_if(occupantVector.begin(), occupantVector.end(),
+				[foundTransportSet](auto pPassenger)
+				{
+					return foundTransportSet.contains(pPassenger);
+				}),
+			occupantVector.end());
+		if (occupantVector.empty())
+			return;
 	}
 
 	if (!occupiedVectorOwned.empty())

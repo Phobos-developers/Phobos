@@ -121,6 +121,8 @@ public:
 		bool CanLoadPassenger(TechnoClass* pPassenger) const;
 		bool CanLoadAny(std::vector<TechnoClass*> pPassengerList) const;
 		bool CanLoadAny(std::map<int, std::vector<TechnoClass*>> passengerMap) const;
+		bool IsMultiSelectableNotOwned() const;
+		bool NeedsMultipleEngineers() const;
 
 		// Ares 0.2
 		bool CanBeOccupiedBy(TechnoClass* whom) const;

@@ -430,3 +430,19 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x5F45AF, ObjectClass_Select_MultiSelectNotOwned, 0x5)
+{
+	GET(ObjectClass*, pThis, ESI);
+
+	if (auto pTechno = abstract_cast<TechnoClass*>(pThis))
+	{
+		auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+		if (pTechnoExt->IsMultiSelectableNotOwned())
+		{
+			return 0x5F45FD;
+		}
+	}
+
+	return 0;
+}
