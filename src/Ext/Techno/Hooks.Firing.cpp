@@ -410,6 +410,16 @@ DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
 #pragma endregion
 
 #pragma region TechnoClass_Fire
+DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
+{
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+		pExt->LastWeaponType = pWeapon;
+
+	return 0;
+}
 
 DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DiscardAEOnFire, 0x6)
 {
@@ -670,15 +680,27 @@ namespace BurstFLHTemp
 DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 {
 	GET(TechnoClass*, pThis, EBX);
+	GET(int, OriginalX, ECX);
+	GET(int, OriginalY, EBP);
+	GET(int, OriginalZ, EAX);
 	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
 
 	if (weaponIndex < 0)
+	{
+		auto currentPassenger = pThis->Passengers.FirstPassenger;
+		const auto passengerIndex = -weaponIndex - 1;
+
+		for (int i = 0; i < passengerIndex && currentPassenger; i++)
+			currentPassenger = abstract_cast<FootClass*>(currentPassenger->NextObject);
+
+		if (const auto pPassengerExt = TechnoExt::ExtMap.Find(currentPassenger))
+			pPassengerExt->LastWeaponFLH = { OriginalX, OriginalY, OriginalZ };
+
 		return 0;
+	}
 
 	bool FLHFound = false;
-	CoordStruct FLH = CoordStruct::Empty;
-
-	FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+	auto FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
 	BurstFLHTemp::FLHFound = FLHFound;
 
 	if (!FLHFound)
@@ -689,9 +711,16 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
 
 	if (FLHFound)
 	{
+		if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+			pExt->LastWeaponFLH = FLH;
+
 		R->ECX(FLH.X);
 		R->EBP(FLH.Y);
 		R->EAX(FLH.Z);
+	}
+	else if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		pExt->LastWeaponFLH = { OriginalX, ((pThis->CurrentBurstIndex % 2 == 1) ? -OriginalY : OriginalY), OriginalZ };
 	}
 
 	return 0;
