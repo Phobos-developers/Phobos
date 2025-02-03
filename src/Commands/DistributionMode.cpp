@@ -8,6 +8,8 @@
 
 int DistributionMode1CommandClass::Mode = 0;
 int DistributionMode2CommandClass::Mode = 0;
+bool DistributionMode3CommandClass::Enabled = false;
+int DistributionMode3CommandClass::ShowTime = 0;
 
 const char* DistributionMode1CommandClass::GetName() const
 {
@@ -32,6 +34,7 @@ const wchar_t* DistributionMode1CommandClass::GetUIDescription() const
 void DistributionMode1CommandClass::Execute(WWKey eInput) const
 {
 	DistributionMode1CommandClass::Mode = ((DistributionMode1CommandClass::Mode + 1) & 3);
+	DistributionMode3CommandClass::ShowTime = SystemTimer::GetTime();
 }
 
 const char* DistributionMode2CommandClass::GetName() const
@@ -57,6 +60,40 @@ const wchar_t* DistributionMode2CommandClass::GetUIDescription() const
 void DistributionMode2CommandClass::Execute(WWKey eInput) const
 {
 	DistributionMode2CommandClass::Mode = ((DistributionMode2CommandClass::Mode + 1) & 3);
+	DistributionMode3CommandClass::ShowTime = SystemTimer::GetTime();
+}
+
+const char* DistributionMode3CommandClass::GetName() const
+{
+	return "Distribution Mode Hold Down";
+}
+
+const wchar_t* DistributionMode3CommandClass::GetUIName() const
+{
+	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_HOLDDOWN", L"Distribution hold down");
+}
+
+const wchar_t* DistributionMode3CommandClass::GetUICategory() const
+{
+	return CATEGORY_CONTROL;
+}
+
+const wchar_t* DistributionMode3CommandClass::GetUIDescription() const
+{
+	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_HOLDDOWN_DESC", L"Automatically and averagely select similar targets around the original target. This is for holding down to toggle on/off");
+}
+
+bool DistributionMode3CommandClass::ExtraTriggerCondition(WWKey eInput) const
+{
+	return true;
+}
+
+void DistributionMode3CommandClass::Execute(WWKey eInput) const
+{
+	if (eInput & WWKey::Release)
+		DistributionMode3CommandClass::Enabled = false;
+	else
+		DistributionMode3CommandClass::Enabled = true;
 }
 
 DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
@@ -74,7 +111,8 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 		const auto mode2 = DistributionMode2CommandClass::Mode;
 
 		// Distribution mode main
-		if (mode1 && count > 1 && mouseAction != Action::NoMove && !PlanningNodeClass::PlanningModeActive && (pTarget->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None && !pTarget->IsInAir())
+		if (DistributionMode3CommandClass::Enabled && mode1 && count > 1 && mouseAction != Action::NoMove && !PlanningNodeClass::PlanningModeActive
+			&& (pTarget->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None && !pTarget->IsInAir())
 		{
 			const auto pSpecial = HouseClass::FindSpecial();
 			const auto pCivilian = HouseClass::FindCivilianSide();
@@ -165,6 +203,9 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 
 DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRange, 0x7)
 {
+	if (!DistributionMode3CommandClass::Enabled && SystemTimer::GetTime() - DistributionMode3CommandClass::ShowTime > 30)
+		return 0;
+
 	const auto mode1 = DistributionMode1CommandClass::Mode;
 	const auto mode2 = DistributionMode2CommandClass::Mode;
 
