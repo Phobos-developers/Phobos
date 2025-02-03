@@ -72,6 +72,7 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 
 		// checks if the building is visible in the player's camera
 		if (!MapClass::Instance->IsWithinUsableArea(pBuilding->GetCoords())
+			|| pBuilding->IsAllFogged()
 			|| !TacticalClass::Instance->CoordsToClient(pBuilding->GetCoords()).second)
 			continue;
 
