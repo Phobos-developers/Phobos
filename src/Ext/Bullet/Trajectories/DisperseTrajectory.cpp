@@ -446,24 +446,17 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet)
 					if (!pTechnoType->LegalTarget)
 						continue;
 
-					const auto absType = pTechno->WhatAmI();
-
-					if (absType == AbstractType::Building && static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
+					if (pTechno->WhatAmI() == AbstractType::Building && static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
 						continue;
 
-					const auto pHouse = pTechno->Owner;
-
-					if (pOwner->IsAlliedWith(pHouse))
+					if (pOwner->IsAlliedWith(pTechno->Owner))
 					{
 						if (!pType->RetargetAllies)
 							continue;
 					}
 					else
 					{
-						if (!pType->RetargetAllies && absType == AbstractType::Infantry && pTechno->IsDisguisedAs(pOwner) && !pCell->DisguiseSensors_InclHouse(pOwner->ArrayIndex))
-							continue;
-
-						if (absType == AbstractType::Unit && pTechno->IsDisguised() && !pCell->DisguiseSensors_InclHouse(pOwner->ArrayIndex))
+						if (!pType->RetargetAllies && pTechno->IsDisguisedAs(pOwner))
 							continue;
 
 						if (pTechno->CloakState == CloakState::Cloaked && !pCell->Sensors_InclHouse(pOwner->ArrayIndex))
@@ -978,9 +971,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet)
 							if (pType->WeaponTendency && pTechno == pTarget)
 								continue;
 
-							const auto absType = pTechno->WhatAmI();
-
-							if (absType == AbstractType::Building)
+							if (pTechno->WhatAmI() == AbstractType::Building)
 							{
 								if (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
 									continue;
@@ -989,19 +980,14 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet)
 									continue;
 							}
 
-							const auto pHouse = pTechno->Owner;
-
-							if (pOwner->IsAlliedWith(pHouse))
+							if (pOwner->IsAlliedWith(pTechno->Owner))
 							{
 								if (!pType->WeaponToAllies)
 									continue;
 							}
 							else
 							{
-								if (!pType->WeaponToAllies && absType == AbstractType::Infantry && pTechno->IsDisguisedAs(pOwner) && !pCell->DisguiseSensors_InclHouse(pOwner->ArrayIndex))
-									continue;
-
-								if (absType == AbstractType::Unit && pTechno->IsDisguised() && !pCell->DisguiseSensors_InclHouse(pOwner->ArrayIndex))
+								if (!pType->WeaponToAllies && pTechno->IsDisguisedAs(pOwner))
 									continue;
 
 								if (pTechno->CloakState == CloakState::Cloaked && !pCell->Sensors_InclHouse(pOwner->ArrayIndex))
