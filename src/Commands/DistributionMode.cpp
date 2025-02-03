@@ -133,6 +133,10 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 					&& !pItem->IsDisguisedAs(HouseClass::CurrentPlayer))
 				{
 					auto coords = pItem->GetCoords();
+
+					if (!MapClass::Instance->IsWithinUsableArea(coords))
+						continue;
+
 					coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
 
 					if (MapClass::Instance->GetCellAt(coords)->ContainsBridge())
