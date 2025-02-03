@@ -588,20 +588,13 @@ AbstractClass* TracingTrajectory::GetBulletTarget(BulletClass* pBullet, TechnoCl
 		if (!pOptType->LegalTarget || pOpt == pTechno)
 			continue;
 
-		const auto absType = pOpt->WhatAmI();
-
 		if (pOwner->IsAlliedWith(pOpt->Owner))
 			continue;
 
-		const auto pCell = pOpt->GetCell();
-
-		if (absType == AbstractType::Infantry && pOpt->IsDisguisedAs(pOwner) && !pCell->DisguiseSensors_InclHouse(pOwner->ArrayIndex))
+		if (pOpt->IsDisguisedAs(pOwner))
 			continue;
 
-		if (absType == AbstractType::Unit && pOpt->IsDisguised() && !pCell->DisguiseSensors_InclHouse(pOwner->ArrayIndex))
-			continue;
-
-		if (pOpt->CloakState == CloakState::Cloaked && !pCell->Sensors_InclHouse(pOwner->ArrayIndex))
+		if (pOpt->CloakState == CloakState::Cloaked && !pOpt->GetCell()->Sensors_InclHouse(pOwner->ArrayIndex))
 			continue;
 
 		if (MapClass::GetTotalDamage(100, pWeapon->Warhead, pOptType->Armor, 0) == 0)
