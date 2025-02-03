@@ -1,5 +1,5 @@
 #include "DisperseTrajectory.h"
-// #include "StraightTrajectory.h" // TODO If merge #1294
+#include "StraightTrajectory.h"
 // #include "BombardTrajectory.h" // TODO If merge #1404
 // #include "EngraveTrajectory.h" // TODO If merge #1293
 // #include "ParabolaTrajectory.h" // TODO If merge #1374
@@ -1221,7 +1221,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				if (pTrajectory->UseDisperseBurst && std::abs(pTrajType->RotateCoord) > 1e-10 && curBurst >= 0 && maxBurst > 1 && !pTrajType->UniqueCurve && pTrajectory->PreAimCoord != CoordStruct::Empty)
 					this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 			}
-/*			else if (flag == TrajectoryFlag::Straight) // TODO If merge #1294
+			else if (flag == TrajectoryFlag::Straight)
 			{
 				const auto pTrajectory = static_cast<StraightTrajectory*>(pTraj);
 				const auto pTrajType = pTrajectory->Type;
@@ -1241,7 +1241,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 						this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 					}
 				}
-			}*/
+			}
 /*			else if (flag == TrajectoryFlag::Bombard) // TODO If merge #1404
 			{
 				const auto pTrajectory = static_cast<BombardTrajectory*>(pTraj);
