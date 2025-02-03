@@ -129,7 +129,16 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 			for (const auto& pItem : pItems)
 			{
 				if (pItem->CloakState != CloakState::Cloaked || pItem->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex))
-					record[pItem] = 0;
+				{
+					auto coords = pItem->GetCoords();
+					coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
+
+					if (MapClass::Instance->GetCellAt(coords)->ContainsBridge())
+						coords.Z += CellClass::BridgeHeight;
+
+					if (!MapClass::Instance->IsLocationShrouded(coords))
+						record[pItem] = 0;
+				}
 			}
 
 			for (const auto& pSelect : ObjectClass::CurrentObjects())
