@@ -339,12 +339,12 @@ ShowFlashOnSelecting=false  ; boolean
   - If auto board transport can happen among selected units, then said logic takes precedence.
   - A building is viewed as a Bio Reactor if it has `Passengers` >= 1, and it has `InfantryAbsorb=yes`.
   - A building is viewed as a Tank Bunker if it has `Bunker=yes`.
-  - Neutral buildings can't be selected with own units at a same time. Either make use of [this feature](Fixed-or-Improved-Logics.md#--limited-multi-selection-of-not-owned-buildings) to make neutral buildings selectable with own units at a same time, or make use of the Auto Garrison hotkey (see below).
+  - Neutral buildings can't be selected with own units at a same time. Either make use of [this feature](Fixed-or-Improved-Logics.md#limited-multi-selection-of-not-owned-buildings) to make neutral buildings selectable with own units at a same time, or make use of the Auto Garrison hotkey (see below).
 - For localization add `TXT_AUTO_LOAD` and `TXT_AUTO_LOAD_DESC` into your `.csf` file.
 
 ### `[ ]` Auto Garrison
 - A shortcut to quickly command multiple infantry units to garrison structures at a same time. Select infantry units who are `Occupier=yes`, then press the hotkey, the units will be distributed among the garrisonable structures visible in the player's camera and will be ordered to garrison them.
-  - Player selected buildings are the top priority and will be targeted nevertheless even if not currently visible in the player's camera. To multi-select owned units and neutral structures at the same time, make use of [this feature](Fixed-or-Improved-Logics.md#--limited-multi-selection-of-not-owned-buildings).
+  - Player selected buildings are the top priority and will be targeted nevertheless even if not currently visible in the player's camera. To multi-select owned units and neutral structures at the same time, make use of [this feature](Fixed-or-Improved-Logics.md#limited-multi-selection-of-not-owned-buildings).
   - Unlike the Auto Load command, the Auto Garrison command will not stop here.
     - Player controlled buildings, namely Battle Bunkers and already garrisoned civilian structures with empty slots, are the 2nd priority and will be targeted if currently visible in the player's camera.
     - Neutral structures that are not critically damaged (red HP) will be targeted last.
