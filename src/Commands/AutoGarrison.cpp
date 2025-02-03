@@ -33,6 +33,7 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 	MapClass::Instance->SetSellMode(0);
 
 	std::vector<TechnoClass*> occupantVector;
+	HouseClass* pOccupantOwner = nullptr;
 
 	std::vector<std::pair<TechnoClass*, int>> occupiedVectorSelected;
 
@@ -49,9 +50,12 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 		if (!pInfantry || pInfantry->Berzerk || !pInfantry->Owner->IsControlledByCurrentPlayer() || pInfantry->IsInAir())
 			continue;
 
-		if (AutoLoadCommandClass::CanBeBuildingPassenger(pInfantry))
+		if (pInfantry->Type->Occupier)
 		{
-			occupantVector.push_back(pInfantry);
+			if (!pOccupantOwner)
+				pOccupantOwner = pInfantry->Owner;
+			if (pInfantry->Owner == pOccupantOwner)
+				occupantVector.push_back(pInfantry);
 		}
 	}
 
@@ -77,10 +81,13 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 		// If it can be occupied then add into the top priority list
 		if (pBuilding->Type->CanBeOccupied)
 		{
-			int const budget = AutoLoadCommandClass::GetBuildingPassengerBudget(pBuilding);
-			if (budget > 0)
+			if (pBuilding->Owner == pOccupantOwner || pBuilding->Owner->IsNeutral())
 			{
-				occupiedVectorSelected.push_back(std::make_pair(pBuilding, budget));
+				int const budget = AutoLoadCommandClass::GetBuildingPassengerBudget(pBuilding);
+				if (budget > 0)
+				{
+					occupiedVectorSelected.push_back(std::make_pair(pBuilding, budget));
+				}
 			}
 		}
 	}
@@ -113,7 +120,7 @@ void AutoGarrisonCommandClass::Execute(WWKey eInput) const
 			int const budget = AutoLoadCommandClass::GetBuildingPassengerBudget(pBuilding);
 			if (budget > 0)
 			{
-				if (pBuilding->Owner->IsControlledByCurrentPlayer())
+				if (pBuilding->Owner == pOccupantOwner)
 					occupiedVectorOwned.push_back(std::make_pair(pBuilding, budget));
 				else if (pBuilding->Owner->IsNeutral())
 					occupiedVectorNeutral.push_back(std::make_pair(pBuilding, budget));
