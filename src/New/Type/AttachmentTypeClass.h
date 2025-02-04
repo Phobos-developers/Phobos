@@ -47,9 +47,9 @@ public:
 		, ParentDetachmentMission { }
 	{ }
 
-	virtual ~AttachmentTypeClass() override = default;
+	virtual ~AttachmentTypeClass() = default;
 
-	virtual void LoadFromINI(CCINIClass* pINI) override;
+	virtual void LoadFromINI(CCINIClass* pINI);
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
 

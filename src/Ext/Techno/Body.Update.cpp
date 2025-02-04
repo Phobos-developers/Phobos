@@ -751,7 +751,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 
 void TechnoExt::Kill(TechnoClass* pThis, ObjectClass* pAttacker, HouseClass* pAttackingHouse)
 {
-	if (IS_ARES_FUN_AVAILABLE(SpawnSurvivors))
+	if (AresFunctions::SpawnSurvivors)
 	{
 		switch (pThis->WhatAmI())
 		{

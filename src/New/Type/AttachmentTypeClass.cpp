@@ -2,8 +2,6 @@
 
 #include <Utilities/TemplateDef.h>
 
-Enumerable<AttachmentTypeClass>::container_t Enumerable<AttachmentTypeClass>::Array;
-
 const char* Enumerable<AttachmentTypeClass>::GetMainSection()
 {
 	return "AttachmentTypes";

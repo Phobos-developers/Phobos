@@ -489,7 +489,7 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 	REF_STACK(int, idxPath, STACK_OFFSET(0x18, -0x8));
 	REF_STACK(unsigned char, idxWP, STACK_OFFSET(0x18, -0xC));
 
-	for (auto const& pObject : ObjectClass::CurrentObjects.get())
+	for (auto const& pObject : ObjectClass::CurrentObjects())
 	{
 		if (auto pTechno = abstract_cast<TechnoClass*>(pObject))
 			ParentClickedWaypoint(pTechno, idxPath, idxWP);
@@ -505,7 +505,7 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 	if (action == Action::Move || action == Action::PatrolWaypoint || action == Action::NoMove)
 		pSecondCell = pCell;
 
-	for (auto const& pObject : ObjectClass::CurrentObjects.get())
+	for (auto const& pObject : ObjectClass::CurrentObjects())
 	{
 		if (auto pTechno = abstract_cast<TechnoClass*>(pObject))
 			ParentClickedAction(pTechno, pTarget, pCell, pSecondCell);
