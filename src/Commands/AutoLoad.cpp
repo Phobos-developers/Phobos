@@ -337,6 +337,10 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		if (!pTechno || pTechno->Berzerk || pTechno->IsInAir() || pTechno->BunkerLinkedItem)
 			continue;
 
+		// If not within usable area then exclude it from the iteration.
+		if (!MapClass::Instance->IsWithinUsableArea(pTechno->GetCoords()))
+			continue;
+
 		// - There is currently no need to check if object owner is current player,
 		//   because this hotkey requires at least 2 objects to be selected to do something,
 		//   however the player is normally unable to select 2 objects that are not owned at a same time.
@@ -379,6 +383,10 @@ void AutoLoadCommandClass::Execute(WWKey eInput) const
 		// If not a techno, or is in air, or is bunkered, then exclude it from the second iteration.
 		// A unit on air can't be a transport, a bunkered vehicle can't load passengers.
 		if (!pTechno || pTechno->IsInAir() || pTechno->BunkerLinkedItem)
+			continue;
+
+		// If not within usable area then exclude it from the iteration.
+		if (!MapClass::Instance->IsWithinUsableArea(pTechno->GetCoords()))
 			continue;
 
 		auto pTechnoType = pTechno->GetTechnoType();

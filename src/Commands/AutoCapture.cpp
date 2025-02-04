@@ -63,6 +63,10 @@ void AutoCaptureCommandClass::Execute(WWKey eInput) const
 		if (!pInfantry || pInfantry->Berzerk || !pInfantry->Owner->IsControlledByCurrentPlayer() || pInfantry->IsInAir())
 			continue;
 
+		// If not within usable area then exclude it from the iteration.
+		if (!MapClass::Instance->IsWithinUsableArea(pInfantry->GetCoords()))
+			continue;
+
 		if (pInfantry->Type->Engineer)
 		{
 			if (!pEngineerOwner)
@@ -87,6 +91,10 @@ void AutoCaptureCommandClass::Execute(WWKey eInput) const
 
 		// If not an building, or is not under control of the current player, or is in air, then exclude it from the iteration.
 		if (!pBuilding || pBuilding->Berzerk || pBuilding->IsInAir())
+			continue;
+
+		// If not within usable area then exclude it from the iteration.
+		if (!MapClass::Instance->IsWithinUsableArea(pBuilding->GetCoords()))
 			continue;
 
 		// - There is currently no need to check if object owner is current player,
