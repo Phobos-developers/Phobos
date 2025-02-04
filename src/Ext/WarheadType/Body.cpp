@@ -35,12 +35,11 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::E
 	if (!pTarget)
 		return false;
 
-	auto hp = pTarget->GetHealthPercentage();
+	double hp = pTarget->GetHealthPercentage();
+	bool hpBelowPercent = hp <= this->AffectsBelowPercent;
+	bool hpAbovePercent = hp > this->AffectsAbovePercent;
 
-	if (hp < this->AffectsAbovePercent)
-		return false;
-
-	if (this->AffectsBelowPercent < hp)
+	if (!hpBelowPercent || !hpAbovePercent)
 		return false;
 
 	if (!this->EffectsRequireVerses)

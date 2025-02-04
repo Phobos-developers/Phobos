@@ -21,15 +21,36 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 	return 0x4692D5;
 }
 
-DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
+DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 {
-	enum { SkipShaking = 0x469130 };
+	enum { SkipShaking = 0x469130, SkipFunction = 0x46A290, GoToExtras = 0x469AA4 };
 
+	GET(BulletClass*, pBullet, ESI);
 	GET(WarheadTypeClass*, pWarhead, EAX);
 	GET_BASE(CoordStruct*, pCoords, 0x8);
 
 	if (auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
+		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+		{
+			// Check if the WH should affect the techno target or skip it
+			double hp = pTarget->GetHealthPercentage();
+			bool hpBelowPercent = hp <= pExt->AffectsBelowPercent;
+			bool hpAbovePercent = hp > pExt->AffectsAbovePercent;
+
+			if (!hpBelowPercent || !hpAbovePercent)
+			{
+				double versus = GeneralUtils::GetWarheadVersusArmor(pWarhead, pTarget->GetTechnoType()->Armor);
+
+				// Allow WH effects if under a valid health threshold ? Specially ExtraWarheads
+				if ((pExt->EffectsRequireVerses && versus != 0.0))
+					return GoToExtras;
+				else
+					return SkipFunction;
+			}
+		}
+
+		// Check for ScreenShake
 		auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
 
 		if (pExt->ShakeIsLocal && !visible)
@@ -304,6 +325,23 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 			int damage = defaultDamage;
 			size_t size = pWeaponExt->ExtraWarheads_DamageOverrides.size();
+			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+			if (auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target))
+			{
+				double versus = GeneralUtils::GetWarheadVersusArmor(pWH, pTarget->GetTechnoType()->Armor);
+
+				// Allow WH effects if under a valid health threshold ? Specially ExtraWarheads
+				if ((pWHExt->EffectsRequireVerses && versus == 0.0))
+					continue;
+
+				double hp = pTarget->GetHealthPercentage();
+				bool hpBelowPercent = hp <= pWHExt->AffectsBelowPercent;
+				bool hpAbovePercent = hp > pWHExt->AffectsAbovePercent;
+
+				if (!hpBelowPercent || !hpAbovePercent)
+					continue;
+			}
 
 			if (size > i)
 				damage = pWeaponExt->ExtraWarheads_DamageOverrides[i];
@@ -334,7 +372,6 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 				}
 				else
 				{
-					auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 					pWHExt->DamageAreaWithTarget(*coords, damage, pThis->Owner, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
 				}
 			}

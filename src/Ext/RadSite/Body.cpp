@@ -15,6 +15,14 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 {
 	auto const pWarhead = this->Type->GetWarhead();
 
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	double hp = pTarget->GetHealthPercentage();
+	bool hpBelowPercent = hp <= pWHExt->AffectsBelowPercent;
+	bool hpAbovePercent = hp > pWHExt->AffectsAbovePercent;
+
+	if (!hpBelowPercent || !hpAbovePercent)
+		return false;
+
 	if (!this->Type->GetWarheadDetonate())
 	{
 		if (pTarget->ReceiveDamage(&damage, distance, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
