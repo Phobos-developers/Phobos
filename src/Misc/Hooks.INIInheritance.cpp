@@ -245,10 +245,9 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 		INIInheritance::SavedIncludes.insert(filename);
 
 		// merge included file into the current CCINIClass
-		const auto file = GameCreate<CCFileClass>(node.Data->Value);
-		if (file->Exists())
-			INIInheritance::LastINIFile->ReadCCFile(file, false, false);
-		GameDelete(file);
+		CCFileClass file (node.Data->Value);
+		if (file.Exists())
+			INIInheritance::LastINIFile->ReadCCFile(&file, false, false);
 	}
 
 	return 0;

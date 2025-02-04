@@ -51,6 +51,11 @@ public:
 			int nLocalX = selectable.X - pThis->TacticalPos.X;
 			int nLocalY = selectable.Y - pThis->TacticalPos.Y;
 
+			if ((nLocalX >= pRect->Left && nLocalX < pRect->Right + pRect->Left) &&
+				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top))
+			{
+				return true;
+			}
 			return (nLocalX >= pRect->Left && nLocalX < pRect->Right + pRect->Left) &&
 				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top);
 		}
@@ -127,7 +132,8 @@ public:
 	static // Reversed from Tactical::MakeSelection
 	void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void*_, callback_type fpCheckCallback)
 	{
-		if (pThis->Band.Left || pThis->Band.Top) {
+		if (pThis->Band.Left || pThis->Band.Top)
+		{
 			int nLeft = pThis->Band.Left;
 			int nRight = pThis->Band.Right;
 			int nTop = pThis->Band.Top;

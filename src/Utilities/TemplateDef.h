@@ -33,7 +33,7 @@
 #pragma once
 
 #include <Windows.h>
-
+#include <ranges>
 #include "Template.h"
 
 #include "INIParser.h"
@@ -53,14 +53,13 @@
 #include <VoxClass.h>
 #include <CRT.h>
 #include <LocomotionClass.h>
-
 #include <Locomotion/TestLocomotionClass.h>
 #include <Locomotion/AttachmentLocomotionClass.h>
 
 namespace detail
 {
 	template <typename T, bool allocate = false>
-	inline bool read(T &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read(T& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -87,7 +86,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<bool>(bool &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<bool>(bool& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		bool buffer;
 
@@ -105,7 +104,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<int>(int &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<int>(int& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		int buffer;
 
@@ -123,7 +122,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<ArmorType>(ArmorType &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<ArmorType>(ArmorType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		int buffer = value;
 
@@ -144,7 +143,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<unsigned short>(unsigned short &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<unsigned short>(unsigned short& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		int buffer;
 
@@ -158,7 +157,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<BYTE>(BYTE &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<BYTE>(BYTE& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		int buffer;
 
@@ -183,7 +182,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<float>(float &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<float>(float& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		double buffer;
 
@@ -201,7 +200,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<double>(double &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<double>(double& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		double buffer;
 
@@ -219,16 +218,16 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<Point2D>(Point2D &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<Point2D>(Point2D& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		if (parser.Read2Integers(pSection, pKey, (int *)&value))
+		if (parser.Read2Integers(pSection, pKey, (int*)&value))
 			return true;
 
 		return false;
 	}
 
 	template <>
-	inline bool read<Vector2D<double>>(Vector2D<double> &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<Vector2D<double>>(Vector2D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.Read2Doubles(pSection, pKey, (double*)&value))
 			return true;
@@ -237,7 +236,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<Vector3D<float>>(Vector3D<float> &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<Vector3D<float>>(Vector3D<float>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.Read<float, 3>(pSection, pKey, (float*)&value))
 			return true;
@@ -246,7 +245,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<CoordStruct>(CoordStruct &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.Read3Integers(pSection, pKey, (int*)&value))
 			return true;
@@ -255,7 +254,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<ColorStruct>(ColorStruct &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<ColorStruct>(ColorStruct& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		ColorStruct buffer;
 
@@ -273,7 +272,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<PartialVector2D<int>>(PartialVector2D<int> &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<PartialVector2D<int>>(PartialVector2D<int>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 2);
 
@@ -284,7 +283,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<PartialVector2D<double>>(PartialVector2D<double> &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<PartialVector2D<double>>(PartialVector2D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 2);
 
@@ -295,9 +294,9 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<PartialVector3D<int>>(PartialVector3D<int> &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<PartialVector3D<int>>(PartialVector3D<int>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int *)&value, 3);
+		value.ValueCount = parser.ReadMultipleIntegers(pSection, pKey, (int*)&value, 3);
 
 		if (value.ValueCount > 0)
 			return true;
@@ -306,7 +305,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<PartialVector3D<double>>(PartialVector3D<double> &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<PartialVector3D<double>>(PartialVector3D<double>& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		value.ValueCount = parser.ReadMultipleDoubles(pSection, pKey, (double*)&value, 3);
 
@@ -317,7 +316,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<CSFText>(CSFText &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<CSFText>(CSFText& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -329,7 +328,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<SHPStruct *>(SHPStruct *&value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<SHPStruct*>(SHPStruct*& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -355,7 +354,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<MouseCursor>(MouseCursor &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<MouseCursor>(MouseCursor& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		auto ret = false;
 
@@ -418,7 +417,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<RocketStruct>(RocketStruct &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<RocketStruct>(RocketStruct& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		auto ret = false;
 
@@ -472,7 +471,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<Leptons>(Leptons &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<Leptons>(Leptons& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		double buffer;
 
@@ -489,57 +488,13 @@ namespace detail
 		return false;
 	}
 
-	template <>
-	inline bool read<OwnerHouseKind>(OwnerHouseKind &value, INI_EX &parser, const char *pSection, const char *pKey)
-	{
-		if (parser.ReadString(pSection, pKey))
-		{
-			if (_strcmpi(parser.value(), "default") == 0)
-			{
-				value = OwnerHouseKind::Default;
-			}
-			else if (_strcmpi(parser.value(), "invoker") == 0)
-			{
-				value = OwnerHouseKind::Invoker;
-			}
-			else if (_strcmpi(parser.value(), "killer") == 0)
-			{
-				value = OwnerHouseKind::Killer;
-			}
-			else if (_strcmpi(parser.value(), "victim") == 0)
-			{
-				value = OwnerHouseKind::Victim;
-			}
-			else if (_strcmpi(parser.value(), "civilian") == 0)
-			{
-				value = OwnerHouseKind::Civilian;
-			}
-			else if (_strcmpi(parser.value(), "special") == 0)
-			{
-				value = OwnerHouseKind::Special;
-			}
-			else if (_strcmpi(parser.value(), "neutral") == 0)
-			{
-				value = OwnerHouseKind::Neutral;
-			}
-			else if (_strcmpi(parser.value(), "random") == 0)
-			{
-				value = OwnerHouseKind::Random;
-			}
-			else
-			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a owner house kind");
-				return false;
-			}
-
-			return true;
-		}
-
-		return false;
-	}
+	// Wait, I know it's ugly to copy paste the same shit every single time, I know compile time reflexion is easy
+	// but first you need to make sure no one else is fucking around, which is still common atm
+	template <typename T, bool allocate = false> requires std::is_enum_v<T>
+	inline bool read(T& value, INI_EX& parser, const char* pSection, const char* pKey) = delete;
 
 	template <>
-	inline bool read<Mission>(Mission &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<Mission>(Mission& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -560,7 +515,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<DirType>(DirType &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<DirType>(DirType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		int buffer;
 
@@ -584,7 +539,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<FacingType>(FacingType &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<FacingType>(FacingType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		int buffer;
 
@@ -638,7 +593,38 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<SuperWeaponAITargetingMode>(SuperWeaponAITargetingMode &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<LandTypeFlags>(LandTypeFlags& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = LandTypeFlags::None;
+			auto str = parser.value();
+			char* context = nullptr;
+
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				auto const landType = GroundType::GetLandTypeFromName(parser.value());
+
+				if (landType >= LandType::Clear && landType <= LandType::Weeds)
+				{
+					parsed |= (LandTypeFlags)(1 << (char)landType);
+				}
+				else
+				{
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a land type name");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<SuperWeaponAITargetingMode>(SuperWeaponAITargetingMode& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -664,52 +650,79 @@ namespace detail
 		return false;
 	}
 
+	// Play nostalgic game, write nostaglic code, preem
+	// Time to party like it's 1998
+
 	template <>
-	inline bool read<AffectedTarget>(AffectedTarget &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<OwnerHouseKind>(OwnerHouseKind& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
+			static const std::pair<const char*, OwnerHouseKind> Names[] =
+			{
+				{"default", OwnerHouseKind::Default},
+				{"invoker", OwnerHouseKind::Invoker},
+				{"killer", OwnerHouseKind::Killer},
+				{"victim", OwnerHouseKind::Victim},
+				{"civilian", OwnerHouseKind::Civilian},
+				{"special", OwnerHouseKind::Special},
+				{"neutral", OwnerHouseKind::Neutral},
+				{"random", OwnerHouseKind::Random}
+			};
+
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a owner house kind");
+
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<AffectedTarget>(AffectedTarget& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			static const std::pair<const char*, AffectedTarget> Names[] =
+			{
+				{"land", AffectedTarget::Land},
+				{"water", AffectedTarget::Water},
+				{"empty", AffectedTarget::NoContent},
+				{"infantry", AffectedTarget::Infantry},
+				{"units", AffectedTarget::Unit},
+				{"buildings", AffectedTarget::Building},
+				{"aircraft", AffectedTarget::Aircraft},
+				{"all", AffectedTarget::All},
+				{"none", AffectedTarget::None},
+			};
+
 			auto parsed = AffectedTarget::None;
-			auto str = parser.value();
-			char* context = nullptr;
-
-			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
 			{
-				if (!_strcmpi(cur, "land"))
+				std::string_view&& cur { part.begin(),part.end() };
+				*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+				auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+				bool matched = false;
+				for (auto const& [name, val] : Names)
 				{
-					parsed |= AffectedTarget::Land;
+					if (_strcmpi(pCur, name) == 0)
+					{
+						parsed |= val;
+						matched = true;
+						break;
+					}
 				}
-				else if (!_strcmpi(cur, "water"))
+				if (!matched)
 				{
-					parsed |= AffectedTarget::Water;
-				}
-				else if (!_strcmpi(cur, "empty"))
-				{
-					parsed |= AffectedTarget::NoContent;
-				}
-				else if (!_strcmpi(cur, "infantry"))
-				{
-					parsed |= AffectedTarget::Infantry;
-				}
-				else if (!_strcmpi(cur, "units"))
-				{
-					parsed |= AffectedTarget::Unit;
-				}
-				else if (!_strcmpi(cur, "buildings"))
-				{
-					parsed |= AffectedTarget::Building;
-				}
-				else if (!_strcmpi(cur, "aircraft"))
-				{
-					parsed |= AffectedTarget::Aircraft;
-				}
-				else if (!_strcmpi(cur, "all"))
-				{
-					parsed |= AffectedTarget::All;
-				}
-				else if (_strcmpi(cur, "none"))
-				{
-					Debug::INIParseFailed(pSection, pKey, cur, "Expected an affected target");
+					Debug::INIParseFailed(pSection, pKey, pCur, "Expected an affected target");
 					return false;
 				}
 			}
@@ -722,43 +735,44 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<AffectedHouse>(AffectedHouse &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<AffectedHouse>(AffectedHouse& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
+			static const std::pair<const char*, AffectedHouse> Names[] =
+			{
+				{"owner", AffectedHouse::Owner},
+				{"self", AffectedHouse::Owner},
+				{"allies", AffectedHouse::Allies},
+				{"ally", AffectedHouse::Allies},
+				{"enemies", AffectedHouse::Enemies},
+				{"enemy", AffectedHouse::Enemies},
+				{"team", AffectedHouse::Team},
+				{"others", AffectedHouse::NotOwner},
+				{"all", AffectedHouse::All},
+				{"none", AffectedHouse::None},
+			};
+
+
 			auto parsed = AffectedHouse::None;
-
-			auto str = parser.value();
-			char* context = nullptr;
-			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
 			{
-				if (!_strcmpi(cur, "owner") || !_strcmpi(cur, "self"))
+				std::string_view&& cur { part.begin(),part.end() };
+				*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+				auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+				bool matched = false;
+				for (auto const& [name, val] : Names)
 				{
-					parsed |= AffectedHouse::Owner;
+					if (_strcmpi(pCur, name) == 0)
+					{
+						parsed |= val;
+						matched = true;
+						break;
+					}
 				}
-				else if (!_strcmpi(cur, "allies") || !_strcmpi(cur, "ally"))
+				if (!matched)
 				{
-					parsed |= AffectedHouse::Allies;
-				}
-				else if (!_strcmpi(cur, "enemies") || !_strcmpi(cur, "enemy"))
-				{
-					parsed |= AffectedHouse::Enemies;
-				}
-				else if (!_strcmpi(cur, "team"))
-				{
-					parsed |= AffectedHouse::Team;
-				}
-				else if (!_strcmpi(cur, "others"))
-				{
-					parsed |= AffectedHouse::NotOwner;
-				}
-				else if (!_strcmpi(cur, "all"))
-				{
-					parsed |= AffectedHouse::All;
-				}
-				else if (_strcmpi(cur, "none"))
-				{
-					Debug::INIParseFailed(pSection, pKey, cur, "Expected an affected house");
+					Debug::INIParseFailed(pSection, pKey, pCur, "Expected an affected house");
 					return false;
 				}
 			}
@@ -771,45 +785,36 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<AttachedAnimFlag>(AttachedAnimFlag &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<AttachedAnimFlag>(AttachedAnimFlag& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			auto parsed = AttachedAnimFlag::None;
+			static const std::pair<const char*, AttachedAnimFlag> Names[] =
+			{
+				{"hides", AttachedAnimFlag::Hides},
+				{"temporal", AttachedAnimFlag::Temporal},
+				{"paused", AttachedAnimFlag::Paused},
+				{"pausedtemporal", AttachedAnimFlag::PausedTemporal},
+				{"none", AttachedAnimFlag::None},
+			};
 
-			auto str = parser.value();
-
-			if (_strcmpi(str, "hides") == 0)
+			for (auto const& [name, val] : Names)
 			{
-				parsed = AttachedAnimFlag::Hides;
-			}
-			else if (_strcmpi(str, "temporal") == 0)
-			{
-				parsed = AttachedAnimFlag::Temporal;
-			}
-			else if (_strcmpi(str, "paused") == 0)
-			{
-				parsed = AttachedAnimFlag::Paused;
-			}
-			else if (_strcmpi(str, "pausedtemporal") == 0)
-			{
-				parsed = AttachedAnimFlag::PausedTemporal;
-			}
-			else if (_strcmpi(str, "none"))
-			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a AttachedAnimFlag");
-				return false;
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
 			}
 
-			value = parsed;
-			return true;
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an AttachedAnimFlag");
 		}
 
 		return false;
 	}
 
 	template <>
-	inline bool read<AreaFireTarget>(AreaFireTarget &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<AreaFireTarget>(AreaFireTarget& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -838,138 +843,123 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<SelfHealGainType>(SelfHealGainType &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<SelfHealGainType>(SelfHealGainType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			if (_strcmpi(parser.value(), "none") == 0)
+			static const std::pair<const char*, SelfHealGainType> Names[] =
 			{
-				value = SelfHealGainType::None;
-			}
-			else if (_strcmpi(parser.value(), "infantry") == 0)
+				{"noheal", SelfHealGainType::NoHeal},
+				{"infantry", SelfHealGainType::Infantry},
+				{"units", SelfHealGainType::Units},
+			};
+
+			for (auto const& [name, val] : Names)
 			{
-				value = SelfHealGainType::Infantry;
-			}
-			else if (_strcmpi(parser.value(), "units") == 0)
-			{
-				value = SelfHealGainType::Units;
-			}
-			else
-			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a self heal gain type");
-				return false;
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
 			}
 
-			return true;
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a self heal gain type");
 		}
 
 		return false;
 	}
 
 	template <>
-	inline bool read<SlaveChangeOwnerType>(SlaveChangeOwnerType &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<SlaveChangeOwnerType>(SlaveChangeOwnerType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			if (_strcmpi(parser.value(), "suicide") == 0)
+			static const std::pair<const char*, SlaveChangeOwnerType> Names[] =
 			{
-				value = SlaveChangeOwnerType::Suicide;
-			}
-			else if (_strcmpi(parser.value(), "master") == 0)
+				{"suicide", SlaveChangeOwnerType::Suicide},
+				{"master", SlaveChangeOwnerType::Master},
+				{"neutral", SlaveChangeOwnerType::Neutral},
+				{"killer", SlaveChangeOwnerType::Killer},
+			};
+
+			for (auto const& [name, val] : Names)
 			{
-				value = SlaveChangeOwnerType::Master;
-			}
-			else if (_strcmpi(parser.value(), "neutral") == 0)
-			{
-				value = SlaveChangeOwnerType::Neutral;
-			}
-			else
-			{
-				if (_strcmpi(parser.value(), "killer") != 0)
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a slave ownership option, default killer");
-				value = SlaveChangeOwnerType::Killer;
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
 			}
 
-			return true;
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a slave ownership option");
 		}
 
 		return false;
 	}
 
 	template <>
-	inline bool read<AutoDeathBehavior>(AutoDeathBehavior &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<AutoDeathBehavior>(AutoDeathBehavior& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			if (_strcmpi(parser.value(), "sell") == 0)
+			static const std::pair<const char*, AutoDeathBehavior> Names[] =
 			{
-				value = AutoDeathBehavior::Sell;
-			}
-			else if (_strcmpi(parser.value(), "vanish") == 0)
-			{
-				value = AutoDeathBehavior::Vanish;
-			}
-			else
-			{
-				if (_strcmpi(parser.value(), "kill") != 0)
-					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a self-destruction behavior, default to kill if set");
-				value = AutoDeathBehavior::Kill;
-			}
+				{"kill", AutoDeathBehavior::Kill},
+				{"sell", AutoDeathBehavior::Sell},
+				{"vanish", AutoDeathBehavior::Vanish},
+			};
 
-			return true;
+			for (auto const& [name, val] : Names)
+			{
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
+			}
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an auto-death behavior");
 		}
 
 		return false;
 	}
 
 	template <>
-	inline bool read<TextAlign>(TextAlign &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<TextAlign>(TextAlign& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			auto parsed = TextAlign::None;
-			auto str = parser.value();
+			static const std::pair<const char*, TextAlign> Names[] =
+			{
+				{"left", TextAlign::Left},
+				{"center", TextAlign::Center},
+				{"centre", TextAlign::Center},
+				{"right", TextAlign::Right},
+				{"none", TextAlign::None},
+			};
 
-			if (_strcmpi(str, "left") == 0)
+			for (auto const& [name, val] : Names)
 			{
-				parsed = TextAlign::Left;
+				if (_strcmpi(parser.value(), name) == 0)
+				{
+					value = val;
+					return true;
+				}
 			}
-			else if (_strcmpi(str, "center") == 0)
-			{
-				parsed = TextAlign::Center;
-			}
-			else if (_strcmpi(str, "centre") == 0)
-			{
-				parsed = TextAlign::Center;
-			}
-			else if (_strcmpi(str, "right") == 0)
-			{
-				parsed = TextAlign::Right;
-			}
-			else if (_strcmpi(str, "none") == 0)
-			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Text Alignment can be either Left, Center/Centre or Right");
-				return false;
-			}
-
-			if (parsed != TextAlign::None)
-				value = parsed;
-
-			return true;
+			Debug::INIParseFailed(pSection, pKey, parser.value(), "Text Alignment can be either Left, Center/Centre or Right");
 		}
 
 		return false;
 	}
 
 	template <>
-	inline bool read<TranslucencyLevel>(TranslucencyLevel &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<TranslucencyLevel>(TranslucencyLevel& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		return value.Read(parser, pSection, pKey);
 	}
 
 
 	template <>
-	inline bool read<IronCurtainEffect>(IronCurtainEffect &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<IronCurtainEffect>(IronCurtainEffect& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -998,7 +988,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<TargetZoneScanType>(TargetZoneScanType &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<TargetZoneScanType>(TargetZoneScanType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -1027,7 +1017,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<ChronoSparkleDisplayPosition>(ChronoSparkleDisplayPosition &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<ChronoSparkleDisplayPosition>(ChronoSparkleDisplayPosition& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -1049,7 +1039,7 @@ namespace detail
 				{
 					parsed |= ChronoSparkleDisplayPosition::OccupantSlots;
 				}
-				else if (!_strcmpi(cur, "all") )
+				else if (!_strcmpi(cur, "all"))
 				{
 					parsed |= ChronoSparkleDisplayPosition::All;
 				}
@@ -1068,105 +1058,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<DiscardCondition>(DiscardCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
-	{
-		if (parser.ReadString(pSection, pKey))
-		{
-			auto parsed = DiscardCondition::None;
-
-			auto str = parser.value();
-			char* context = nullptr;
-			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
-			{
-				if (!_strcmpi(cur, "none"))
-				{
-					parsed |= DiscardCondition::None;
-				}
-				else if (!_strcmpi(cur, "entry"))
-				{
-					parsed |= DiscardCondition::Entry;
-				}
-				else if (!_strcmpi(cur, "move"))
-				{
-					parsed |= DiscardCondition::Move;
-				}
-				else if (!_strcmpi(cur, "stationary"))
-				{
-					parsed |= DiscardCondition::Stationary;
-				}
-				else if (!_strcmpi(cur, "drain"))
-				{
-					parsed |= DiscardCondition::Drain;
-				}
-				else if (!_strcmpi(cur, "inrange"))
-				{
-					parsed |= DiscardCondition::InRange;
-				}
-				else if (!_strcmpi(cur, "outofrange"))
-				{
-					parsed |= DiscardCondition::OutOfRange;
-				}
-				else
-				{
-					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");
-					return false;
-				}
-			}
-
-			value = parsed;
-			return true;
-		}
-
-		return false;
-	}
-
-	template <>
-	inline bool read<ExpireWeaponCondition>(ExpireWeaponCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
-	{
-		if (parser.ReadString(pSection, pKey))
-		{
-			auto parsed = ExpireWeaponCondition::None;
-
-			auto str = parser.value();
-			char* context = nullptr;
-			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
-			{
-				if (!_strcmpi(cur, "none"))
-				{
-					parsed |= ExpireWeaponCondition::None;
-				}
-				else if (!_strcmpi(cur, "expire"))
-				{
-					parsed |= ExpireWeaponCondition::Expire;
-				}
-				else if (!_strcmpi(cur, "remove"))
-				{
-					parsed |= ExpireWeaponCondition::Remove;
-				}
-				else if (!_strcmpi(cur, "death"))
-				{
-					parsed |= ExpireWeaponCondition::Death;
-				}
-				else if (!_strcmpi(cur, "all"))
-				{
-					parsed |= ExpireWeaponCondition::All;
-				}
-				else
-				{
-					Debug::INIParseFailed(pSection, pKey, cur, "Expected a expire weapon trigger condition type");
-					return false;
-				}
-			}
-
-			value = parsed;
-			return true;
-		}
-
-		return false;
-	}
-
-	template <>
-	inline bool read<CLSID>(CLSID &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<CLSID>(CLSID& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (!parser.ReadString(pSection, pKey))
 			return false;
@@ -1194,7 +1086,7 @@ if(_strcmpi(parser.value(), #name) == 0){ value = LocomotionClass::CLSIDs::name;
 #define PARSE_IF_IS_PHOBOS_LOCO(name)\
 if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionClass); return true; }
 
-		// Add your locomotor parsing here
+			// Add your locomotor parsing here
 #ifdef CUSTOM_LOCO_EXAMPLE_ENABLED // Add semantic parsing for loco
 			PARSE_IF_IS_PHOBOS_LOCO(Test);
 #endif
@@ -1222,7 +1114,7 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	}
 
 	template <>
-	inline bool read<HorizontalPosition>(HorizontalPosition &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<HorizontalPosition>(HorizontalPosition& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -1250,7 +1142,7 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	}
 
 	template <>
-	inline bool read<VerticalPosition>(VerticalPosition &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<VerticalPosition>(VerticalPosition& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -1278,7 +1170,7 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	}
 
 	template <>
-	inline bool read<BuildingSelectBracketPosition>(BuildingSelectBracketPosition &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<BuildingSelectBracketPosition>(BuildingSelectBracketPosition& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -1319,7 +1211,7 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	}
 
 	template <>
-	inline bool read<DisplayInfoType>(DisplayInfoType &value, INI_EX &parser, const char *pSection, const char *pKey)
+	inline bool read<DisplayInfoType>(DisplayInfoType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
@@ -1404,12 +1296,13 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		char* context = nullptr;
-
-		for (auto pCur = strtok_s(parser.value(), Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
+		for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
 		{
 			T buffer = T();
-
+			std::string_view&& cur { part.begin(),part.end() };
+			auto pCur = cur.data();
+			// you're on a buffer so you can play this shit like that
+			const_cast<char&>(*cur.end()) = 0;
 			if (Parser<T>::Parse(pCur, &buffer))
 				vector.push_back(buffer);
 			else if (!INIClass::IsBlank(pCur))
@@ -1420,12 +1313,13 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	template <typename Lookuper, typename T>
 	void parse_indexes(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{
-		char* context = nullptr;
-
-		for (auto pCur = strtok_s(parser.value(), Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
+		for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
 		{
+			std::string_view&& cur { part.begin(),part.end() };
+			// you forgot to trim, suckers
+			auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+			*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
 			int idx = Lookuper::FindIndex(pCur);
-
 			if (idx != -1)
 				vector.push_back(idx);
 			else if (!INIClass::IsBlank(pCur))
@@ -1439,9 +1333,9 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 
 template <typename T>
 template <bool Allocate>
-void __declspec(noinline) Valueable<T>::Read(INI_EX &parser, const char *pSection, const char *pKey)
+void __declspec(noinline) Valueable<T>::Read(INI_EX& parser, const char* pSection, const char* pKey)
 {
-	detail::read<T,Allocate>(this->Value, parser, pSection, pKey);
+	detail::read<T, Allocate>(this->Value, parser, pSection, pKey);
 }
 
 template <typename T>
