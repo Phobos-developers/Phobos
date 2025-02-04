@@ -43,6 +43,7 @@ public:
 		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
+		Nullable<bool> RemoveParasite;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
@@ -60,6 +61,7 @@ public:
 		Valueable<AffectedHouse> Crit_AffectsHouses;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
 		Nullable<bool> Crit_AnimList_PickRandom;
+		Nullable<bool> Crit_AnimList_CreateAll;
 		ValueableVector<AnimTypeClass*> Crit_ActiveChanceAnims;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
 		Valueable<double> Crit_AffectBelowPercent;
@@ -131,18 +133,17 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
+		AEAttachInfoTypeClass AttachEffects;
 
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
 		Valueable<bool> Nonprovocative;
 
-		ValueableVector<AttachEffectTypeClass*> AttachEffect_AttachTypes;
-		ValueableVector<AttachEffectTypeClass*> AttachEffect_RemoveTypes;
-		std::vector<std::string> AttachEffect_RemoveGroups;
-		ValueableVector<int> AttachEffect_CumulativeRemoveMinCounts;
-		ValueableVector<int> AttachEffect_CumulativeRemoveMaxCounts;
-		ValueableVector<int> AttachEffect_DurationOverrides;
+		Nullable<int> CombatLightDetailLevel;
+		Valueable<double> CombatLightChance;
+		Valueable<bool> CLIsBlack;
+		Nullable<bool> Particle_AlphaImageIsLightFlash;
 
 		Valueable<bool> SuppressRevengeWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
@@ -197,6 +198,7 @@ public:
 			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
+			, RemoveParasite {}
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
@@ -214,6 +216,7 @@ public:
 			, Crit_AffectsHouses { AffectedHouse::All }
 			, Crit_AnimList {}
 			, Crit_AnimList_PickRandom {}
+			, Crit_AnimList_CreateAll {}
 			, Crit_ActiveChanceAnims {}
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
@@ -285,18 +288,17 @@ public:
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
 			, Convert_Pairs {}
+			, AttachEffects {}
 
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
 
 			, Nonprovocative { false }
 
-			, AttachEffect_AttachTypes {}
-			, AttachEffect_RemoveTypes {}
-			, AttachEffect_RemoveGroups {}
-			, AttachEffect_CumulativeRemoveMinCounts {}
-			, AttachEffect_CumulativeRemoveMaxCounts {}
-			, AttachEffect_DurationOverrides {}
+			, CombatLightDetailLevel {}
+			, CombatLightChance { 1.0 }
+		    , CLIsBlack { false }
+			, Particle_AlphaImageIsLightFlash {}
 
 			, SuppressRevengeWeapons { false }
 			, SuppressRevengeWeapons_Types {}
@@ -318,7 +320,7 @@ public:
 			, Splashed { false }
 			, Reflected { false }
 			, RemainingAnimCreationInterval { 0 }
-			, PossibleCellSpreadDetonate {false}
+			, PossibleCellSpreadDetonate { false }
 			, DamageAreaTarget {}
 		{ }
 
@@ -349,7 +351,7 @@ public:
 	private:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyRemoveMindControl(TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
 		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
