@@ -32,7 +32,7 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 				double versus = GeneralUtils::GetWarheadVersusArmor(pWarhead, pTarget->GetTechnoType()->Armor);
 
 				// Allow WH effects if under a valid health threshold ? Specially ExtraWarheads
-				if ((pExt->EffectsRequireVerses && versus != 0.0))
+				if (pExt->EffectsRequireVerses && versus != 0.0)
 					return GoToExtras;
 				else
 					return SkipFunction;
@@ -339,7 +339,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 				double versus = GeneralUtils::GetWarheadVersusArmor(pWH, pTarget->GetTechnoType()->Armor);
 
 				// Allow WH effects if under a valid health threshold ? Specially ExtraWarheads
-				if ((pWHExt->EffectsRequireVerses && versus == 0.0))
+				if (pWHExt->EffectsRequireVerses && versus == 0.0)
 					continue;
 
 				double hp = pTarget->GetHealthPercentage();

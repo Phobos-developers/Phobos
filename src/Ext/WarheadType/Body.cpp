@@ -42,8 +42,10 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::E
 	if (!hpBelowPercent || !hpAbovePercent)
 		return false;
 
-	if (!this->EffectsRequireVerses)
-		return true;
+	double versus = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor);
+
+	if (this->EffectsRequireVerses && versus == 0.0)
+		return false;
 
 	auto armorType = pTarget->GetTechnoType()->Armor;
 
