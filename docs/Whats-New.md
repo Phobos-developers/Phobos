@@ -317,6 +317,7 @@ New:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
 - Custom exit cell for infantry factory (by Starkku)
 - Option for vehicles to keep target when issued move command (by Starkku)
+- Skip anim delay for burst fire (by TaranDahl)
 - Building placing and deploying logic enhancement (by CrimRecya)
 
 Vanilla fixes:

@@ -613,6 +613,17 @@ PlaceBuilding.OnWater=          ; BuildingType
 - `PlaceBuilding.OnLand` and `PlaceBuilding.OnWater` are only work for players.
 ```
 
+### Skip anim delay for burst fire
+
+- In Red Alert 1, the tesla coil will attack multiple times after charging animation. This is not possible in Red Alert 2, where the building must play the charge animation every time it fires.
+- Now you can implement the above logic using the following flag.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+IsAnimDelayedBurst=true            ; boolean
+```
+
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed
