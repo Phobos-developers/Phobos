@@ -394,7 +394,7 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
   - `ShowBuildingStatistics` controls whether the number of buildings of this type that you currently own needs to be displayed in the upper left corner of the building cameo (requires the cameo exist).
     - `Cameo.ShouldCount` controls whether this type of building need to count if `ShowBuildingStatistics=true`. Default to check if building's own `BuildCat` is not `Combat` or `BuildLimit` is set.
   - `Cameo.OverlayShapes` controls the drawn image file.
-  - `Cameo.OverlayFrames` controls which frame in `Cameo.OverlayShapes` to draw in three different situations: currently owned this building type, grey cameo and have its prerequisite, grey cameo but have no prerequisite (The last situation requires `Cameo.AlwaysExist` to be true). When set to a negative number, it means that there is no need to draw under the corresponding conditions.
+  - `Cameo.OverlayFrames` controls which frame in `Cameo.OverlayShapes` to draw in four different situations: currently owned this building type, can automatically build this building, grey cameo and have its prerequisite, grey cameo but have no prerequisite (The second situation requires `AutoBuilding` to be true, the last situation requires `Cameo.AlwaysExist` to be true). When set to a negative number, it means that there is no need to draw under the corresponding conditions.
   - `Cameo.OverlayPalette` the color palette used when drawing `Cameo.OverlayShapes`.
   - If `Cameo.AuxTechnos` is not set, in addition to basic conditions, the grey cameo will only show when `AIBasePlanningSide` condition is satisfied. Otherwise, the grey cameo will only show when at least one of these types is owned by you or its `TechnoLevel`, `Owner`, `RequiredHouses`, `ForbiddenHouses`, `Cameo.AuxTechnos` (use `AIBasePlanningSide` if not set) and `Cameo.NegTechnos` (if set) conditions are satisfied.
   - If `Cameo.NegTechnos` is set, the grey cameo will not show when you have a techno in one of these types.
@@ -411,7 +411,7 @@ In `rulesmd.ini`:
 [AudioVisual]
 Cameo.AlwaysExist=false          ; boolean
 Cameo.OverlayShapes=pips.shp     ; filename - including the .shp extension
-Cameo.OverlayFrames=-1,-1,-1     ; integer - owned this building, grey and have its prerequisite, grey but have no prerequisite
+Cameo.OverlayFrames=             ; integer - owned this building, can automatically build, grey and have its prerequisite, grey but have no prerequisite
 Cameo.OverlayPalette=palette.pal ; filename - including the .pal extension
 
 [SOMETECHNO]                     ; TechnoType

@@ -120,14 +120,15 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 
 	const auto position = Point2D { destX + 30, destY + 24 };
 	const auto pRulesExt = RulesExt::Global();
-	const auto frames = pRulesExt->Cameo_OverlayFrames.Get();
+	const auto& frames = pRulesExt->Cameo_OverlayFrames;
+	const auto frameSize = frames.size();
 
-	if (greyCameo) // Only draw extras over grey cameos
+	if (greyCameo && frameSize > 2) // Only draw extras over grey cameos
 	{
-		auto frame = frames.Y;
+		auto frame = frames[2];
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-		if (pTypeExt && pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
+		if (frameSize > 3 && pTypeExt && pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
 		{
 			auto& vec = ScenarioExt::Global()->OwnedExistCameoTechnoTypes;
 
@@ -139,7 +140,7 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 					PCX::Instance->BlitToSurface(&drawRect, DSurface::Sidebar, CameoPCX);
 				}
 
-				frame = frames.Z;
+				frame = frames[3];
 			}
 		}
 
@@ -158,44 +159,63 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 		}
 	}
 
-	const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
-
-	if (pBuildingType) // Only count owned buildings
+	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType)) // Only count owned buildings
 	{
-		const auto pHouse = HouseClass::CurrentPlayer();
-		auto count = BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse);
-
-		if (count == -1)
-			count = pHouse->CountOwnedAndPresent(pBuildingType);
-
-		if (count > 0)
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
+/* TODO if merge #1479
+		if (Phobos::Config::AutoBuilding_Enable && frameSize > 1 && frames[1] >= 0 && !greyCameo && pTypeExt->AutoBuilding.Get(RulesExt::Global()->AutoBuilding))
 		{
-			if (frames.X >= 0)
+			DSurface::Sidebar->DrawSHP(
+				pRulesExt->Cameo_OverlayPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
+				pRulesExt->Cameo_OverlayShapes,
+				frames[1],
+				&position,
+				&boundingRect,
+				BlitterFlags(0x600),
+				0, 0,
+				ZGradient::Ground,
+				1000, 0, 0, 0, 0, 0);
+		}
+*/
+		const bool statistics = Phobos::Config::ShowBuildingStatistics
+			&& pTypeExt->Cameo_ShouldCount.Get(pBuildingType->BuildCat != BuildCat::Combat || pBuildingType->BuildLimit != INT_MAX);
+
+		if ((frameSize && frames[0] >= 0) || statistics)
+		{
+			const auto pHouse = HouseClass::CurrentPlayer();
+			auto count = BuildingTypeExt::GetUpgradesAmount(pBuildingType, pHouse);
+
+			if (count == -1)
+				count = pHouse->CountOwnedAndPresent(pBuildingType);
+
+			if (count > 0)
 			{
-				DSurface::Sidebar->DrawSHP(
-					pRulesExt->Cameo_OverlayPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
-					pRulesExt->Cameo_OverlayShapes,
-					frames.X,
-					&position,
-					&boundingRect,
-					BlitterFlags(0x600),
-					0, 0,
-					ZGradient::Ground,
-					1000, 0, 0, 0, 0, 0);
-			}
+				if (frames[0] >= 0)
+				{
+					DSurface::Sidebar->DrawSHP(
+						pRulesExt->Cameo_OverlayPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
+						pRulesExt->Cameo_OverlayShapes,
+						frames[0],
+						&position,
+						&boundingRect,
+						BlitterFlags(0x600),
+						0, 0,
+						ZGradient::Ground,
+						1000, 0, 0, 0, 0, 0);
+				}
 
-			if (Phobos::Config::ShowBuildingStatistics
-				&& BuildingTypeExt::ExtMap.Find(pBuildingType)->Cameo_ShouldCount.Get(pBuildingType->BuildCat != BuildCat::Combat || pBuildingType->BuildLimit != INT_MAX))
-			{
-				GET_STACK(RectangleStruct, surfaceRect, STACK_OFFSET(0x48C, -0x438));
+				if (statistics)
+				{
+					GET_STACK(RectangleStruct, surfaceRect, STACK_OFFSET(0x48C, -0x438));
 
-				const COLORREF color = Drawing::RGB_To_Int(Drawing::TooltipColor);
-				const TextPrintType printType = TextPrintType::Background | TextPrintType::FullShadow | TextPrintType::Point8;
-				auto textPosition = Point2D { destX, destY + 1 };
+					const COLORREF color = Drawing::RGB_To_Int(Drawing::TooltipColor);
+					const TextPrintType printType = TextPrintType::Background | TextPrintType::FullShadow | TextPrintType::Point8;
+					auto textPosition = Point2D { destX, destY + 1 };
 
-				wchar_t text[0x20];
-				swprintf_s(text, L"%d", count);
-				DSurface::Sidebar->DrawTextA(text, &surfaceRect, &textPosition, color, 0, printType);
+					wchar_t text[0x20];
+					swprintf_s(text, L"%d", count);
+					DSurface::Sidebar->DrawTextA(text, &surfaceRect, &textPosition, color, 0, printType);
+				}
 			}
 		}
 	}

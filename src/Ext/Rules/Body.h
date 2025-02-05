@@ -95,7 +95,7 @@ public:
 
 		Valueable<bool> Cameo_AlwaysExist;
 		Valueable<SHPStruct*> Cameo_OverlayShapes;
-		Valueable<Vector3D<int>> Cameo_OverlayFrames;
+		ValueableVector<int> Cameo_OverlayFrames;
 		CustomPalette Cameo_OverlayPalette;
 		Valueable<bool> ExtendedAircraftMissions;
 
@@ -233,7 +233,7 @@ public:
 
 			, Cameo_AlwaysExist { false }
 			, Cameo_OverlayShapes { FileSystem::PIPS_SHP }
-			, Cameo_OverlayFrames { { -1, -1, -1 } }
+			, Cameo_OverlayFrames {}
 			, Cameo_OverlayPalette {}
 			, ExtendedAircraftMissions { false }
 
