@@ -27,11 +27,11 @@ const wchar_t* AutoBuildingCommandClass::GetUIDescription() const
 void AutoBuildingCommandClass::Execute(WWKey eInput) const
 {
 	Phobos::Config::AutoBuilding_Enable = !Phobos::Config::AutoBuilding_Enable;
+	const int tabIndex = SidebarClass::Instance->ActiveTabIndex;
 
-	MessageListClass::Instance->PrintMessage(
-		Phobos::Config::AutoBuilding_Enable ? L"Auto Building Switch On." : L"Auto Building Switch Off.",
-		150,
-		HouseClass::CurrentPlayer->ColorSchemeIndex,
-		true
-	);
+	if (!tabIndex || tabIndex == 1)
+	{
+		SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+		SidebarClass::Instance->RepaintSidebar(tabIndex);
+	}
 }
