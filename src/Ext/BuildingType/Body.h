@@ -189,6 +189,7 @@ public:
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static bool CheckOccupierCanLeave(HouseClass* pBuildingHouse, HouseClass* pOccupierHouse);
 	static bool CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, CellStruct topLeftCell, HouseClass* pHouse, TechnoClass* pExceptTechno = nullptr);
+	static bool IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeClass* pType2);
 	static bool AutoPlaceBuilding(BuildingClass* pBuilding);
 	static bool BuildLimboBuilding(BuildingClass* pBuilding);
 	static void CreateLimboBuilding(BuildingClass* pBuilding, BuildingTypeClass* pType, HouseClass* pOwner, int ID);

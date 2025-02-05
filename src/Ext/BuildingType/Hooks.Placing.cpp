@@ -714,29 +714,6 @@ DEFINE_HOOK(0x4FB395, HouseClass_UnitFromFactory_SkipMouseReturn, 0x6)
 	return CheckMouseCoords;
 }
 
-static inline bool IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeClass* pType2)
-{
-	if (pType1 == pType2)
-		return true;
-
-	if (pType1->BuildCat != pType2->BuildCat || pType1->PlaceAnywhere || pType2->PlaceAnywhere)
-		return false;
-
-	const auto pType1Ext = BuildingTypeExt::ExtMap.Find(pType1);
-	const auto pType2Ext = BuildingTypeExt::ExtMap.Find(pType2);
-
-	if (pType1Ext->LimboBuild || pType2Ext->LimboBuild)
-		return false;
-
-	if (pType1Ext->PlaceBuilding_OnLand == pType2 || pType1Ext->PlaceBuilding_OnWater == pType2)
-		return true;
-
-	if (pType2Ext->PlaceBuilding_OnLand == pType1 || pType2Ext->PlaceBuilding_OnWater == pType1)
-		return true;
-
-	return false;
-}
-
 // Buildable-upon TechnoTypes Hook #4-2 -> sub_4FB0E0 - Check whether need to skip the clear command
 DEFINE_HOOK(0x4FB339, HouseClass_UnitFromFactory_SkipMouseClear, 0x6)
 {
@@ -750,7 +727,7 @@ DEFINE_HOOK(0x4FB339, HouseClass_UnitFromFactory_SkipMouseClear, 0x6)
 		{
 			if (const auto pCurrentType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingType))
 			{
-				if (!IsSameBuildingType(pBuilding->Type, pCurrentType))
+				if (!BuildingTypeExt::IsSameBuildingType(pBuilding->Type, pCurrentType))
 					return SkipGameCode;
 			}
 		}
@@ -770,7 +747,7 @@ DEFINE_HOOK(0x4FAB83, HouseClass_AbandonProductionOf_SkipMouseClear, 0x7)
 	{
 		if (const auto pCurrentBuildingType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingType))
 		{
-			if (!IsSameBuildingType(BuildingTypeClass::Array->Items[index], pCurrentBuildingType))
+			if (!BuildingTypeExt::IsSameBuildingType(BuildingTypeClass::Array->Items[index], pCurrentBuildingType))
 				return SkipGameCode;
 		}
 	}
