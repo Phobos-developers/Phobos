@@ -1483,7 +1483,7 @@ RemoveMindControl=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; Warhead
-CanKill=false  ; boolean
+CanKill=true  ; boolean
 ```
 
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
