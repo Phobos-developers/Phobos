@@ -29,7 +29,7 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 	{
 		const auto pFactory = pTechnoType->FindFactory(true, false, false, pCurrent);
 
-		if (pFactory && pFactory->Owner->CanBuild(pTechnoType, false, true) != CanBuildResult::Unbuildable)
+		if (pFactory && pCurrent->CanBuild(pTechnoType, false, true) != CanBuildResult::Unbuildable)
 			return false;
 	}
 	else
@@ -40,32 +40,27 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 			return false;
 	}
 
-	if (pItem->CurrentFactory)
+	// Here we just raise AbandonAll without find factory, rather than check factory and Abandon then find factory and AbandonAll
+	if (pTechnoType)
 	{
-		EventClass event = EventClass(pCurrent->ArrayIndex, EventType::Abandon, static_cast<int>(pItem->ItemType), pItem->ItemIndex, pTechnoType && pTechnoType->Naval);
+		const EventClass event
+		(
+			pCurrent->ArrayIndex,
+			EventType::AbandonAll,
+			static_cast<int>(pItem->ItemType),
+			pItem->ItemIndex,
+			pTechnoType->Naval
+		);
 		EventClass::AddEvent(event);
 	}
 
 	if (pItem->ItemType == AbstractType::BuildingType || pItem->ItemType == AbstractType::Building)
 	{
-		DisplayClass::Instance->CurrentBuilding = nullptr;
-		DisplayClass::Instance->CurrentBuildingType = nullptr;
-		DisplayClass::Instance->CurrentBuildingOwnerArrayIndex = -1;
-		DisplayClass::Instance->SetActiveFoundation(nullptr);
-	}
-
-	if (pTechnoType)
-	{
-		const auto absType = pTechnoType->WhatAmI();
-
-		// Here we make correction to the hardcoded BuildCat::DontCare
-		const auto buildCat = absType == AbstractType::BuildingType ? static_cast<BuildingTypeClass*>(pTechnoType)->BuildCat : BuildCat::DontCare;
-
-		if (pCurrent->GetPrimaryFactory(absType, pTechnoType->Naval, buildCat))
-		{
-			EventClass event = EventClass(pCurrent->ArrayIndex, EventType::AbandonAll, static_cast<int>(pItem->ItemType), pItem->ItemIndex, pTechnoType->Naval);
-			EventClass::AddEvent(event);
-		}
+		const auto pDisplay = DisplayClass::Instance();
+		pDisplay->SetActiveFoundation(nullptr);
+		pDisplay->CurrentBuilding = nullptr;
+		pDisplay->CurrentBuildingType = nullptr;
+		pDisplay->CurrentBuildingOwnerArrayIndex = -1;
 	}
 
 	return true;
