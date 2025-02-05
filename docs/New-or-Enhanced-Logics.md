@@ -1475,6 +1475,17 @@ In `rulesmd.ini`:
 RemoveMindControl=false  ; boolean
 ```
 
+### Warhead that can not kill
+
+- Warheads can now damage the enemy without killing them (minimum health will be 1).
+- Verified in conventional weapons and radiation types.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]  ; Warhead
+CanKill=false  ; boolean
+```
+
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.

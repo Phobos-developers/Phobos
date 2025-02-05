@@ -12,19 +12,36 @@ namespace ReceiveDamageTemp
 // #issue 88 : shield logic
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 {
+	enum { SkipGameCode = 0x701A38 };
+
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	int nDamageLeft = *args->Damage;
+	double versus = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
+	int nDamageTotal = nDamageLeft * versus;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	if (!args->IgnoreDefenses)
 	{
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (!pShieldData->IsActive())
+			{
+				// Check if the warhead can not kill targets
+				if (pThis->Health > 0 && !pWHExt->CanKill && nDamageTotal >= pThis->Health)
+				{
+					*args->Damage = 0;
+					pThis->Health = 1;
+					pThis->EstimatedHealth = 1;
+
+					return SkipGameCode;
+				}
+
 				return 0;
+			}
 
 			nDamageLeft = pShieldData->ReceiveDamage(args);
 
@@ -39,6 +56,18 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (nDamageLeft == 0)
 				ReceiveDamageTemp::SkipLowDamageCheck = true;
 		}
+	}
+
+	// Update remaining damage and check if the target will die and should be avoided
+	nDamageTotal = nDamageLeft * versus;
+
+	if (pThis->Health > 0 && !pWHExt->CanKill && nDamageTotal >= pThis->Health)
+	{
+		*args->Damage = 0;
+		pThis->Health = 1;
+		pThis->EstimatedHealth = 1;
+
+		return SkipGameCode;
 	}
 
 	return 0;
