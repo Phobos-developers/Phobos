@@ -18,7 +18,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled.
 - Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
-- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set.
+- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` -> `AllowParallelAIQueues=no` is set.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
 - Fixed `DeathWeapon` not detonating properly.
   - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
@@ -1622,4 +1622,8 @@ DropPod.Trailer.Attached =    ; boolean, default to no
 DropPod.Trailer.SpawnDelay =  ; int, number of frames between each spawn of DropPod.Trailer, default to 6
 DropPod.Weapon =              ; weapon, default to [General]->DropPodWeapon
 DropPod.Weapon.HitLandOnly =  ; boolean, default to no
+```
+
+```{note}
+`[General]` -> `DropPodTrailer`is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```
