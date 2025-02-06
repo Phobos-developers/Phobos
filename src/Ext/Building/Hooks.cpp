@@ -10,6 +10,8 @@
 #include <Ext/WarheadType/Body.h>
 #include <TacticalClass.h>
 
+#pragma region Update
+
 //After TechnoClass_AI?
 DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 {
@@ -62,8 +64,7 @@ DEFINE_HOOK(0x4403D4, BuildingClass_AI_ChronoSparkle, 0x6)
 					coords.Y += offset.Y;
 					coords += renderCoords;
 
-					if (auto const pAnim = GameCreate<AnimClass>(RulesClass::Instance->ChronoSparkle1, coords))
-						pAnim->ZAdjust = -200;
+					GameCreate<AnimClass>(RulesClass::Instance->ChronoSparkle1, coords)->ZAdjust = -200;
 				}
 			}
 		}
@@ -78,16 +79,25 @@ DEFINE_HOOK(0x4403D4, BuildingClass_AI_ChronoSparkle, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
+#pragma endregion
+
+DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 {
-	GET(UnitClass*, pUnit, EBP);
-	GET(BuildingClass*, pStructure, EBX);
+	GET(BuildingClass*, pBuilding, ESI);
+	if (auto const pInf = abstract_cast<InfantryClass*>(R->EDI<FootClass*>()))
+	{
+		if (pBuilding && pBuilding->Type->Cloning)
+		{
+			if (auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+			{
+				double percentage = GeneralUtils::GetRangedRandomOrSingleValue(pTypeExt->InitialStrength_Cloning);
+				int strength = Math::clamp(static_cast<int>(pInf->Type->Strength * percentage), 1, pInf->Type->Strength);
 
-	if (pUnit->Type->DeployToFire && pUnit->Target)
-		pStructure->LastTarget = pUnit->Target;
-
-	if (auto pStructureExt = BuildingExt::ExtMap.Find(pStructure))
-		pStructureExt->DeployedTechno = true;
+				pInf->Health = strength;
+				pInf->EstimatedHealth = strength;
+			}
+		}
+	}
 
 	return 0;
 }
@@ -108,36 +118,6 @@ DEFINE_HOOK(0x449ADA, BuildingClass_MissionConstruction_DeployToFireFix, 0x0)
 	}
 
 	return 0x449AE8;
-}
-
-DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
-{
-	GET(BuildingClass*, pBuilding, ESI);
-
-	auto pRulesExt = RulesExt::Global();
-	HouseClass* pOwner = pBuilding->Owner;
-	int index = pOwner->ProducingAircraftTypeIndex;
-	auto const pType = index >= 0 ? AircraftTypeClass::Array()->GetItem(index) : nullptr;
-
-	if (pRulesExt->AllowParallelAIQueues && !pRulesExt->ForbidParallelAIQueues_Aircraft && (!pType || !TechnoTypeExt::ExtMap.Find(pType)->ForbidParallelAIQueues))
-		return 0;
-
-	if (pOwner->Type->MultiplayPassive
-		|| pOwner->IsCurrentPlayer()
-		|| pOwner->IsNeutral())
-		return 0;
-
-	if (pBuilding->Type->Factory == AbstractType::AircraftType)
-	{
-		if (pBuilding->Factory
-			&& !BuildingExt::HasFreeDocks(pBuilding))
-		{
-			if (auto pBldExt = BuildingExt::ExtMap.Find(pBuilding))
-				pBldExt->UpdatePrimaryFactoryAI();
-		}
-	}
-
-	return 0;
 }
 
 #pragma region EMPulseCannon
@@ -184,15 +164,15 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	{
 		auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
 
-		if (pHouseExt->SuspendedEMPulseSWs.count(pExt->EMPulseSW))
+		if (pHouseExt->SuspendedEMPulseSWs.count(pExt->EMPulseSW->Type->ArrayIndex))
 		{
-			for (auto const& pSuper : pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW])
+			for (auto const& swidx : pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW->Type->ArrayIndex])
 			{
-				pSuper->IsSuspended = false;
+				pThis->Owner->Supers[swidx]->IsSuspended = false;
 			}
 
-			pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW].clear();
-			pHouseExt->SuspendedEMPulseSWs.erase(pExt->EMPulseSW);
+			pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW->Type->ArrayIndex].clear();
+			pHouseExt->SuspendedEMPulseSWs.erase(pExt->EMPulseSW->Type->ArrayIndex);
 		}
 	}
 
@@ -222,226 +202,6 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPulseBulletWeapon, 0x8)
 }
 
 #pragma endregion
-
-DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
-{
-	enum { SkipCheck = 0x442268 };
-
-	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x9C, 0x4));
-
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH))
-	{
-		if (pWHExt->AllowDamageOnSelf)
-			return SkipCheck;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
-{
-	GET(BuildingClass*, pThis, ESI);
-	HouseClass* pOwner = pThis->Owner;
-
-	auto pRulesExt = RulesExt::Global();
-
-	if (pOwner->Production && pRulesExt->AllowParallelAIQueues)
-	{
-		auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
-		BuildingClass** currFactory = nullptr;
-
-		switch (pThis->Type->Factory)
-		{
-		case AbstractType::BuildingType:
-			currFactory = &pOwnerExt->Factory_BuildingType;
-			break;
-		case AbstractType::UnitType:
-			currFactory = pThis->Type->Naval ? &pOwnerExt->Factory_NavyType : &pOwnerExt->Factory_VehicleType;
-			break;
-		case AbstractType::InfantryType:
-			currFactory = &pOwnerExt->Factory_InfantryType;
-			break;
-		case AbstractType::AircraftType:
-			currFactory = &pOwnerExt->Factory_AircraftType;
-			break;
-		default:
-			break;
-		}
-
-		if (!*currFactory)
-		{
-			*currFactory = pThis;
-			return 0;
-		}
-		else if (*currFactory != pThis)
-		{
-			enum { Skip = 0x4503CA };
-
-
-			TechnoTypeClass* pType = nullptr;
-			int index = -1;
-
-			switch (pThis->Type->Factory)
-			{
-			case AbstractType::BuildingType:
-				if (pRulesExt->ForbidParallelAIQueues_Building)
-					return Skip;
-
-				index = pOwner->ProducingBuildingTypeIndex;
-				pType = index >= 0 ? BuildingTypeClass::Array()->GetItem(index) : nullptr;
-				break;
-			case AbstractType::InfantryType:
-				if (pRulesExt->ForbidParallelAIQueues_Infantry)
-					return Skip;
-
-				index = pOwner->ProducingInfantryTypeIndex;
-				pType = index >= 0 ? InfantryTypeClass::Array()->GetItem(index) : nullptr;
-				break;
-			case AbstractType::AircraftType:
-				if (pRulesExt->ForbidParallelAIQueues_Aircraft)
-					return Skip;
-
-				index = pOwner->ProducingAircraftTypeIndex;
-				pType = index >= 0 ? AircraftTypeClass::Array()->GetItem(index) : nullptr;
-				break;
-			case AbstractType::UnitType:
-				if (pThis->Type->Naval ? pRulesExt->ForbidParallelAIQueues_Navy : pRulesExt->ForbidParallelAIQueues_Vehicle)
-					return Skip;
-
-				if (pThis->Type->Naval)
-				{
-					auto const pExt = HouseExt::ExtMap.Find(pOwner);
-					index = pExt->ProducingNavalUnitTypeIndex;
-				}
-				else
-				{
-					index = pOwner->ProducingUnitTypeIndex;
-				}
-
-				pType = index >= 0 ? UnitTypeClass::Array()->GetItem(index) : nullptr;
-
-				break;
-			default:
-				break;
-			}
-
-			if (pType && TechnoTypeExt::ExtMap.Find(pType)->ForbidParallelAIQueues)
-				return Skip;
-		}
-	}
-
-	return 0;
-}
-
-//const byte old_empty_log[] = { 0xC3 };
-DEFINE_JUMP(CALL, 0x4CA016, 0x4CA19F); // randomly chosen 0xC3
-
-DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
-{
-	GET(FactoryClass*, pFactory, ESI);
-	GET_STACK(DWORD const, calledby, 0x18);
-
-	TechnoClass* pTechno = pFactory->Object;
-	if (calledby < 0x7F0000) // Replace the old log with this to figure out where keeps flushing the stream
-	{
-		Debug::LogGame("(%08x) : %s is abandoning production of %s[%s]\n"
-			, calledby - 5
-			, pFactory->Owner->PlainName
-			, pTechno->GetType()->Name
-			, pTechno->get_ID());
-	}
-
-	auto pRulesExt = RulesExt::Global();
-
-	if (!pRulesExt->AllowParallelAIQueues)
-		return 0;
-
-	auto const pOwnerExt = HouseExt::ExtMap.Find(pFactory->Owner);
-	bool forbid = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->ForbidParallelAIQueues;
-
-	switch (pTechno->WhatAmI())
-	{
-	case AbstractType::Building:
-		if (pRulesExt->ForbidParallelAIQueues_Building || forbid)
-			pOwnerExt->Factory_BuildingType = nullptr;
-		break;
-	case AbstractType::Unit:
-		if (!pTechno->GetTechnoType()->Naval)
-		{
-			if (pRulesExt->ForbidParallelAIQueues_Vehicle || forbid)
-				pOwnerExt->Factory_VehicleType = nullptr;
-		}
-		else
-		{
-			if (pRulesExt->ForbidParallelAIQueues_Navy || forbid)
-				pOwnerExt->Factory_NavyType = nullptr;
-		}
-		break;
-	case AbstractType::Infantry:
-		if (pRulesExt->ForbidParallelAIQueues_Infantry || forbid)
-			pOwnerExt->Factory_InfantryType = nullptr;
-		break;
-	case AbstractType::Aircraft:
-		if (pRulesExt->ForbidParallelAIQueues_Aircraft || forbid)
-			pOwnerExt->Factory_AircraftType = nullptr;
-		break;
-	default:
-		break;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType_Phobos, 0x6)
-{
-	GET(UnitClass*, pUnit, EDI);
-	GET(BuildingClass*, pFactory, ESI);
-
-	auto const pHouseExt = HouseExt::ExtMap.Find(pFactory->Owner);
-
-	if (pUnit->Type->Naval && pHouseExt->Factory_NavyType == pFactory)
-		pHouseExt->Factory_NavyType = nullptr;
-	else if (pHouseExt->Factory_VehicleType == pFactory)
-		pHouseExt->Factory_VehicleType = nullptr;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType_Phobos, 0x6)
-{
-	GET(BuildingClass*, pFactory, ESI);
-
-	auto const pHouseExt = HouseExt::ExtMap.Find(pFactory->Owner);
-
-	if (pHouseExt->Factory_InfantryType == pFactory)
-		pHouseExt->Factory_InfantryType = nullptr;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType_Phobos, 0xA)
-{
-	GET(BuildingClass*, pFactory, ESI);
-
-	auto const pHouseExt = HouseExt::ExtMap.Find(pFactory->Owner);
-
-	if (pHouseExt->Factory_BuildingType == pFactory)
-		pHouseExt->Factory_BuildingType = nullptr;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
-{
-	GET(BuildingClass*, pFactory, ESI);
-
-	auto const pHouseExt = HouseExt::ExtMap.Find(pFactory->Owner);
-
-	if (pHouseExt->Factory_AircraftType == pFactory)
-		pHouseExt->Factory_AircraftType = nullptr;
-
-	return 0;
-}
 
 // Ares didn't have something like 0x7397E4 in its UnitDelivery code
 DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
@@ -490,7 +250,6 @@ DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
 
 	return 0;
 }
-
 
 DEFINE_HOOK(0x43D6E5, BuildingClass_Draw_ZShapePointMove, 0x5)
 {
@@ -694,6 +453,19 @@ DEFINE_HOOK(0x44C836, BuildingClass_Mission_Repair_UnitReload, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x44B8F1, BuildingClass_Mission_Repair_Hospital, 0x6)
+{
+	enum { SkipGameCode = 0x44B8F7 };
+
+	GET(BuildingClass*, pThis, EBP);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	double repairRate = pTypeExt->Units_RepairRate.Get(RulesClass::Instance->IRepairRate);
+	__asm { fld repairRate }
+
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x44BD38, BuildingClass_Mission_Repair_UnitRepair, 0x6)
 {
 	enum { SkipGameCode = 0x44BD3E };
@@ -726,7 +498,7 @@ DEFINE_HOOK(0x6F4D1A, TechnoClass_ReceiveCommand_Repair, 0x5)
 		double repairPercent = pTypeExt->Units_RepairPercent.Get(RulesClass::Instance->RepairPercent);
 		int repairCost = 0;
 
-		if (!pTypeExt->Units_DisableRepairCost)
+		if (pTypeExt->Units_UseRepairCost.Get(pThis->WhatAmI() != AbstractType::Infantry))
 		{
 			auto const pType = pThis->GetTechnoType();
 			repairCost = static_cast<int>((pType->GetCost() / (pType->Strength / static_cast<double>(repairStep))) * repairPercent);
@@ -740,6 +512,195 @@ DEFINE_HOOK(0x6F4D1A, TechnoClass_ReceiveCommand_Repair, 0x5)
 	}
 
 	return 0;
+}
+
+#pragma endregion
+
+#pragma region EnableBuildingProductionQueue
+
+DEFINE_HOOK(0x6AB689, SelectClass_Action_SkipBuildingProductionCheck, 0x5)
+{
+	enum { SkipGameCode = 0x6AB6CE };
+	return RulesExt::Global()->BuildingProductionQueue ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x4FA520, HouseClass_BeginProduction_SkipBuilding, 0x5)
+{
+	enum { SkipGameCode = 0x4FA553 };
+	return RulesExt::Global()->BuildingProductionQueue ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x4FA612, HouseClass_BeginProduction_ForceRedrawStrip, 0x5)
+{
+	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+	return 0;
+}
+
+DEFINE_HOOK(0x4C9C7B, FactoryClass_QueueProduction_ForceCheckBuilding, 0x7)
+{
+	enum { SkipGameCode = 0x4C9C9E };
+	return RulesExt::Global()->BuildingProductionQueue ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
+{
+	enum { CheckSame = 0x4FAB3D, SkipCheck = 0x4FAB64, Return = 0x4FAC9B };
+
+	GET_STACK(const bool, all, STACK_OFFSET(0x18, 0x10));
+	GET(const int, index, EBX);
+	GET(const BuildCat, buildCat, ECX);
+	GET(const AbstractType, absType, EBP);
+	GET(FactoryClass* const, pFactory, ESI);
+
+	if (buildCat == BuildCat::DontCare || all)
+	{
+		const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index);
+		const auto firstRemoved = pFactory->RemoveOneFromQueue(pType);
+
+		if (firstRemoved)
+		{
+			SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+			SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+
+			if (all)
+				while (pFactory->RemoveOneFromQueue(pType));
+			else
+				return Return;
+		}
+
+		return CheckSame;
+	}
+
+	if (!pFactory->Object)
+		return SkipCheck;
+
+	if (!pFactory->RemoveOneFromQueue(TechnoTypeClass::GetByTypeAndIndex(absType, index)))
+		return CheckSame;
+
+	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+	SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+
+	return Return;
+}
+
+DEFINE_HOOK(0x6A9C54, StripClass_DrawStrip_FindFactoryDehardCode, 0x6)
+{
+	GET(TechnoTypeClass* const, pType, ECX);
+	LEA_STACK(BuildCat*, pBuildCat, STACK_OFFSET(0x490, -0x490));
+
+	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+		*pBuildCat = pBuildingType->BuildCat;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6A9789, StripClass_DrawStrip_NoGreyCameo, 0x6)
+{
+	enum { ContinueCheck = 0x6A9799, SkipGameCode = 0x6A97FB };
+
+	GET(TechnoTypeClass* const, pType, EBX);
+	GET_STACK(bool, clicked, STACK_OFFSET(0x48C, -0x475));
+
+	if (!RulesExt::Global()->BuildingProductionQueue)
+	{
+		if (pType->WhatAmI() == AbstractType::BuildingType && clicked)
+			return SkipGameCode;
+	}
+	else if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+	{
+		if (const auto pFactory = HouseClass::CurrentPlayer->GetPrimaryFactory(AbstractType::BuildingType, pType->Naval, pBuildingType->BuildCat))
+		{
+			if (const auto pProduct = abstract_cast<BuildingClass*>(pFactory->Object))
+			{
+				if (pFactory->IsDone() && pProduct->Type != pType && ((pProduct->Type->BuildCat != BuildCat::Combat) ^ (pBuildingType->BuildCat == BuildCat::Combat)))
+					return SkipGameCode;
+			}
+		}
+	}
+
+	return ContinueCheck;
+}
+
+DEFINE_HOOK(0x6AA88D, StripClass_RecheckCameo_FindFactoryDehardCode, 0x6)
+{
+	GET(TechnoTypeClass* const, pType, EBX);
+	LEA_STACK(BuildCat*, pBuildCat, STACK_OFFSET(0x158, -0x158));
+
+	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+		*pBuildCat = pBuildingType->BuildCat;
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region BarracksExitCell
+
+DEFINE_HOOK(0x44EFD8, BuildingClass_FindExitCell_BarracksExitCell, 0x6)
+{
+	enum { SkipGameCode = 0x44F13B, ReturnFromFunction = 0x44F037 };
+
+	GET(BuildingClass*, pThis, EBX);
+	REF_STACK(CellStruct, resultCell, STACK_OFFSET(0x30, -0x20));
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->BarracksExitCell.isset())
+	{
+		Point2D offset = pTypeExt->BarracksExitCell.Get();
+		auto exitCell = pThis->GetMapCoords();
+		exitCell.X += (short)offset.X;
+		exitCell.Y += (short)offset.Y;
+
+		if (MapClass::Instance->CoordinatesLegal(exitCell))
+		{
+			GET(TechnoClass*, pTechno, ESI);
+			auto const pCell = MapClass::Instance->GetCellAt(exitCell);
+
+			if (pTechno->IsCellOccupied(pCell, FacingType::None, -1, nullptr, true) == Move::OK)
+			{
+				resultCell = exitCell;
+				return ReturnFromFunction;
+			}
+		}
+
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x444B83, BuildingClass_ExitObject_BarracksExitCell, 0x7)
+{
+	enum { SkipGameCode = 0x444C7C };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET(int, xCoord, EBP);
+	GET(int, yCoord, EDX);
+	REF_STACK(CoordStruct, resultCoords, STACK_OFFSET(0x140, -0x108));
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->BarracksExitCell.isset())
+	{
+		auto const exitCoords = pThis->Type->ExitCoord;
+		resultCoords = CoordStruct{ xCoord + exitCoords.X, yCoord + exitCoords.Y, exitCoords.Z };
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region BuildingFiring
+
+DEFINE_HOOK(0x44B630, BuildingClass_MissionAttack_AnimDelayedFire, 0x6)
+{
+	enum { JustFire = 0x44B6C4, VanillaCheck = 0 };
+	GET(BuildingClass* const, pThis, ESI);
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	return (pTypeExt && !pTypeExt->IsAnimDelayedBurst && pThis->CurrentBurstIndex != 0) ? JustFire : VanillaCheck;
 }
 
 #pragma endregion

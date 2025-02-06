@@ -32,7 +32,6 @@
 
 #pragma once
 
-#include <Phobos.h>
 #include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
@@ -88,7 +87,7 @@ enum class LandTypeFlags : unsigned short
 
 MAKE_ENUM_FLAGS(LandTypeFlags);
 
-inline bool IsLandTypeInFlags(LandTypeFlags flags, LandType type)
+constexpr bool IsLandTypeInFlags(LandTypeFlags flags, LandType type)
 {
 	return (bool)((LandTypeFlags)(1 << (char)type) & flags);
 }
@@ -240,18 +239,6 @@ enum class ChronoSparkleDisplayPosition : unsigned char
 };
 
 MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
-
-enum class ExpireWeaponCondition : unsigned char
-{
-	None = 0x0,
-	Expire = 0x1,
-	Remove = 0x2,
-	Death = 0x4,
-
-	All = 0xFF,
-};
-
-MAKE_ENUM_FLAGS(ExpireWeaponCondition);
 
 enum class HorizontalPosition : BYTE
 {

@@ -101,8 +101,11 @@ void AttachEffectClass::AI()
 		{
 			double ROFModifier = this->Type->ROFMultiplier;
 			auto const pTechno = this->Techno;
+			auto const pExt = TechnoExt::ExtMap.Find(this->Techno);
 			pTechno->RearmTimer.Start(static_cast<int>(pTechno->RearmTimer.GetTimeLeft() * ROFModifier));
-			pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
+
+			if (!pExt->ChargeTurretTimer.HasStarted() && pExt->LastRearmWasFullDelay)
+				pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
 		}
 
 		if (this->Type->HasTint())
@@ -121,7 +124,7 @@ void AttachEffectClass::AI()
 
 	if (this->NeedsDurationRefresh)
 	{
-		if (AllowedToBeActive())
+		if (!this->ShouldBeDiscardedNow())
 		{
 			this->RefreshDuration();
 			this->NeedsDurationRefresh = false;
@@ -142,7 +145,7 @@ void AttachEffectClass::AI()
 
 		if (this->Delay > 0)
 			this->KillAnim();
-		else if (AllowedToBeActive())
+		else if (!this->ShouldBeDiscardedNow())
 			this->RefreshDuration();
 		else
 			this->NeedsDurationRefresh = true;
@@ -302,19 +305,19 @@ void AttachEffectClass::CreateAnim()
 
 	if (!this->Animation && pAnimType)
 	{
-		if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
-		{
-			pAnim->SetOwnerObject(this->Techno);
-			pAnim->Owner = this->Type->Animation_UseInvokerAsOwner ? InvokerHouse : this->Techno->Owner;
-			pAnim->RemainingIterations = 0xFFu;
-			this->Animation = pAnim;
+		auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location);
 
-			if (this->Type->Animation_UseInvokerAsOwner)
-			{
-				auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-				pAnimExt->SetInvoker(Invoker);
-			}
+		pAnim->SetOwnerObject(this->Techno);
+		pAnim->Owner = this->Type->Animation_UseInvokerAsOwner ? InvokerHouse : this->Techno->Owner;
+		pAnim->RemainingIterations = 0xFFu;
+		this->Animation = pAnim;
+
+		if (this->Type->Animation_UseInvokerAsOwner)
+		{
+			auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+			pAnimExt->SetInvoker(Invoker);
 		}
+
 	}
 }
 
@@ -406,10 +409,10 @@ bool AttachEffectClass::HasExpired() const
 	return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration;
 }
 
-bool AttachEffectClass::AllowedToBeActive() const
+bool AttachEffectClass::ShouldBeDiscardedNow() const
 {
 	if (this->ShouldBeDiscarded)
-		return false;
+		return true;
 
 	auto const pTechno = this->Techno;
 
@@ -418,14 +421,14 @@ bool AttachEffectClass::AllowedToBeActive() const
 		bool isMoving = pFoot->Locomotor->Is_Really_Moving_Now();
 
 		if (isMoving && (this->Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
-			return false;
+			return true;
 
 		if (!isMoving && (this->Type->DiscardOn & DiscardCondition::Stationary) != DiscardCondition::None)
-			return false;
+			return true;
 	}
 
 	if (pTechno->DrainingMe && (this->Type->DiscardOn & DiscardCondition::Drain) != DiscardCondition::None)
-		return false;
+		return true;
 
 	if (pTechno->Target)
 	{
@@ -452,11 +455,11 @@ bool AttachEffectClass::AllowedToBeActive() const
 			int distanceFromTgt = pTechno->DistanceFrom(pTechno->Target);
 
 			if ((inRange && distanceFromTgt <= distance) || (outOfRange && distanceFromTgt >= distance))
-				return false;
+				return true;
 		}
 	}
 
-	return true;
+	return false;
 }
 
 bool AttachEffectClass::IsActive() const
@@ -522,7 +525,9 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	if (ROFModifier != 1.0)
 	{
 		pTarget->RearmTimer.Start(static_cast<int>(pTarget->RearmTimer.GetTimeLeft() * ROFModifier));
-		pTarget->ChargeTurretDelay = static_cast<int>(pTarget->ChargeTurretDelay * ROFModifier);
+
+		if (!pTargetExt->ChargeTurretTimer.HasStarted() && pTargetExt->LastRearmWasFullDelay)
+			pTarget->ChargeTurretDelay = static_cast<int>(pTarget->ChargeTurretDelay * ROFModifier);
 	}
 
 	if (attachedCount > 0)

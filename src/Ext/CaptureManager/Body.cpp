@@ -106,14 +106,14 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 
 				if (auto const pAnimType = pControlledAnimType)
 				{
-					if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
-					{
-						pTarget->MindControlRingAnim = pAnim;
-						pAnim->SetOwnerObject(pTarget);
+					auto const pAnim = GameCreate<AnimClass>(pAnimType, location);
 
-						if (pBld)
-							pAnim->ZAdjust = -1024;
-					}
+					pTarget->MindControlRingAnim = pAnim;
+					pAnim->SetOwnerObject(pTarget);
+
+					if (pBld)
+						pAnim->ZAdjust = -1024;
+
 				}
 
 				return true;
