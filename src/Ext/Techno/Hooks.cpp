@@ -3,6 +3,8 @@
 
 #include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
+#include <EventClass.h>
+#include <TargetClass.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
@@ -545,3 +547,46 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
+#pragma region CacheClick
+
+DEFINE_HOOK(0x6FFE00, TechnoClass_ClickedEvent_CacheClickedEvent, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(EventType, event, 0x4);
+
+	if (EventClass::OutList->Count >= 128)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->HasCachedClickEvent = true;
+		pExt->CachedEventType = event;
+		// one cache at a time
+		pExt->HasCachedClickMission = false;
+		pExt->CachedMission = Mission::None;
+		pExt->CachedCell = nullptr;
+		pExt->CachedTarget = nullptr;
+	}
+}
+
+DEFINE_HOOK(0x6FFDA5, TechnoClass_ClickedMission_CacheClickedMission, 0x7)
+{
+	GET_STACK(AbstractClass* const, pCell, STACK_OFFSET(0x98, 0xC));
+	GET(TechnoClass* const, pThis, ESI);
+	GET(AbstractClass* const, pTarget, EBP);
+	GET(Mission const, mission, EDI);
+
+	if (EventClass::OutList->Count >= 128)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->HasCachedClickMission = true;
+		pExt->CachedMission = mission;
+		pExt->CachedCell = pCell;
+		pExt->CachedTarget = pTarget;
+		// one cache at a time
+		pExt->HasCachedClickEvent = false;
+		pExt->CachedEventType = EventType::LAST_EVENT;
+	}
+
+	return 0;
+}
+
+#pragma endregion

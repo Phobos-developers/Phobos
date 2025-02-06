@@ -3,6 +3,8 @@
 
 #include <SpawnManagerClass.h>
 #include <ParticleSystemClass.h>
+#include <EventClass.h>
+#include <TargetClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -43,6 +45,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
 	this->UpdateAttachEffects();
+	this->UpdateCachedClick();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -1027,4 +1030,36 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
+}
+
+void TechnoExt::ExtData::UpdateCachedClick()
+{
+	if (EventClass::OutList->Count >= 128)
+		return;
+
+	if (this->HasCachedClickMission)
+	{
+		// process
+		TargetClass target1 = TargetClass(this->CachedCell);
+		TargetClass target2 = TargetClass(this->CachedTarget);
+		TargetClass target3 = TargetClass(this->OwnerObject());
+		TargetClass target4;
+		target4.m_ID = target3.m_ID;
+		target4.m_RTTI = 0;
+		EventClass event = EventClass(HouseClass::CurrentPlayer->ArrayIndex, target3, this->CachedMission, target2, target1, target4);
+		EventClass::AddEvent(event);
+		// clear
+		this->HasCachedClickMission = false;
+		this->CachedMission = Mission::None;
+		this->CachedCell = nullptr;
+		this->CachedTarget = nullptr;
+	}
+	else if (this->HasCachedClickEvent)
+	{
+		// process
+		this->OwnerObject()->ClickedEvent(this->CachedEventType);
+		// clear
+		this->HasCachedClickEvent = false;
+		this->CachedEventType = EventType::LAST_EVENT;
+	}
 }

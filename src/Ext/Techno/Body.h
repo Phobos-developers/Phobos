@@ -59,6 +59,14 @@ public:
 		int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
 
+		// Used for cached click
+		bool HasCachedClick;
+		Mission CachedMission;
+		AbstractClass* CachedCell;
+		AbstractClass* CachedTarget;
+		bool HasCachedClickEvent;
+		EventType CachedEventType;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -92,6 +100,12 @@ public:
 			, HasRemainingWarpInDelay { false }
 			, LastWarpInDelay { 0 }
 			, IsBeingChronoSphered { false }
+			, HasCachedClick { false }
+			, CachedMission { Mission::None }
+			, CachedCell { nullptr }
+			, CachedTarget { nullptr }
+			, HasCachedClickEvent { false }
+			, CachedEventType { EventType::LAST_EVENT }
 		{ }
 
 		void OnEarlyUpdate();
@@ -115,6 +129,7 @@ public:
 		void UpdateSelfOwnedAttachEffects();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
+		void UpdateCachedClick();
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
