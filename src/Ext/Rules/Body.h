@@ -113,6 +113,8 @@ public:
 		Valueable<IronCurtainEffect> ForceShield_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> ForceShield_KillOrganicsWarhead;
 
+		Valueable<bool> AllowWeaponSelectAgainstWalls;
+
 		Valueable<double> IronCurtain_ExtraTintIntensity;
 		Valueable<double> ForceShield_ExtraTintIntensity;
 		Valueable<bool> ColorAddUse8BitRGB;
@@ -240,6 +242,7 @@ public:
 			, ForceShield_KillOrganicsWarhead { }
 			, IronCurtain_ExtraTintIntensity { 0.0 }
 			, ForceShield_ExtraTintIntensity { 0.0 }
+			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
