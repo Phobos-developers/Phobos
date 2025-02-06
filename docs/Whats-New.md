@@ -21,6 +21,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Lunar theater tileset parsing unhardcoding is now only applied if `lunarmd.ini` has `[General]` -> `ApplyLunarFixes` set to true.
 - `Units.DisableRepairCost` was changed to `Units.UseRepairCost` (note inverted expected value) as it no longer has discrete default value and affects `Hospital=true` buildings, infantry do not have repair cost by default.
 - Critical hit animations created by `Crit.AnimOnAffectedTargets=true` Warheads no longer default to `AnimList.PickRandom` if `Crit.AnimList.PickRandom` is not set.
 - `SelfHealGainType` value `none` has been changed to `noheal` due to `none` being treated as a blank string and not parsed by the game.
@@ -310,6 +311,27 @@ HideLightFlashEffects=false      ; boolean
   <summary>Click to show</summary>
 
 New:
+- Allow using waypoints, area guard and attack move with aircraft (by CrimRecya)
+- Enhanced Straight trajectory (by CrimRecya)
+- Enable building production queue (by CrimRecya)
+- Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
+- Custom exit cell for infantry factory (by Starkku)
+- Option for vehicles to keep target when issued move command (by Starkku)
+- Skip anim delay for burst fire (by TaranDahl)
+
+Vanilla fixes:
+- Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
+
+Phobos fixes:
+- Type conversion on Warheads and Superweapons will no longer recursively convert units if applicable conversion pairs are listed, and only first applicable pair takes effect (by Starkku)
+</details>
+
+### 0.4
+
+<details>
+  <summary>Click to show</summary>
+
+New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
 - Warhead or weapon detonation at superweapon target cell (by Starkku)
 - Super Weapons launching other Super Weapons (by Morton)
@@ -367,7 +389,7 @@ New:
 - Chrono sparkle animation display customization and improvements (by Starkku)
 - Script action to Chronoshift teams to enemy base (by Starkku)
 - Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
-- Digital display of HP and SP (by ststl, FlyStar, Saigyouji, JunJacobYoung)
+- Digital display of HP and SP (by ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, based on knowledge of DeathFish)
 - PipScale pip customizations (size, ammo / spawn / tiberium frames or offsets) (by Starkku)
 - Auto-deploy/Deploy block on ammo change (by Fryone)
 - `AltPalette` lighting toggle (by Starkku)
@@ -422,6 +444,8 @@ New:
 - Allow customizing Aircraft weapon strafing regardless of `ROT` and `Strafing.Shots` values beyond 5 (by Trsdy)
 - Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
 - Allow `CloakVisible=true` laser trails optinally be seen only if unit is detected (by Starkku)
+- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl/航味麻酱)
+- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl/航味麻酱)
 - Customizing whether passengers are kicked out when an aircraft fires (by ststl)
 - Shield hit flash (by Starkku)
 - Option to scatter `Anim/SplashList` animations around impact coordinates (by Starkku)
@@ -469,7 +493,11 @@ New:
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps (by Starkku)
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
+<<<<<<< HEAD
 - `RevengeWeapon` for shield breaking & overridden by warheads (by Ollerus)
+=======
+- Extending `Power` to all TechnoTypes (by Morton)
+>>>>>>> upstream/develop
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -547,11 +575,13 @@ Vanilla fixes:
 - Removed the 0 damage effect from `InfDeath=9` warheads to in-air infantries (by Trsdy)
 - Projectiles created from `AirburstWeapon` now remember their WeaponType and can apply radiation etc. (by Starkku)
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first (by Starkku)
-- Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) are now correctly parsed for Lunar theater (by Starkku)
+- Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater (by Starkku)
 - Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being displayed in water instead of `WetAttack` (by Starkku)
 - Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings (by Starkku)
 - Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers (by Starkku)
 - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix (by tyuah8)
+- Fix `Stop` command not working so well in some cases (by CrimRecya)
+- Use 2D distance instead of 3D to check whether in air team members have arrived destination (by CrimRecya)
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc. (by Starkku)
 
 Phobos fixes:
@@ -598,6 +628,7 @@ Phobos fixes:
 - Fixed `SelfHealGainType=none` not working (changed to `noheal`) (by Starkku)
 - Fixed AircraftTypes gaining self-healing from `UnitsGainSelfHeal` by default (while not displaying the pip) when they should not (by Starkku)
 - Fixed `LaunchSW.IgnoreInhibitors` and `SW.Next.IgnoreInhibitors` overriding corresponding `IgnoreDesignators` settings (by Ollerus)
+- Type conversion on Warheads and Superweapons will no longer recursively convert units if applicable conversion pairs are listed, and only first applicable pair takes effect (by Starkku)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.
@@ -610,6 +641,8 @@ Fixes / interactions with other extensions:
 - Appended Ares' `SW.Shots` usage to extended tooltips (by Trsdy)
 - Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles (by Trsdy)
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by Trsdy)
+- Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory (by Trsdy, supersedes Aephiex impl.)
+- Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
 </details>
 
 ### 0.3.0.1
@@ -746,8 +779,6 @@ New:
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for Explodes=true units (by Starkku)
 - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist (by FlyStar)
-- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl/航味麻酱)
-- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl/航味麻酱)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
