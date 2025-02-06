@@ -252,6 +252,8 @@ This page lists all the individual contributions to the project by their author.
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
   - `<Player @ X>` as owner for pre-placed objects
+  - Custom exit cell for infantry factory
+  - Vehicles keeping target on move command
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -269,8 +271,9 @@ This page lists all the individual contributions to the project by their author.
   - Show designator & inhibitor range
   - Dump variables to file on scenario end / hotkey
   - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
-  - Help with docs
   - Voxel light source position customization
+  - Extending `Power` to all TechnoTypes
+  - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
    - Interceptor logic prototype
@@ -333,6 +336,9 @@ This page lists all the individual contributions to the project by their author.
    - Skip rally point line drawing when undeploying a building
    - Ares' `SW.Shots` hint on extended tooltips
    - Ares' Abductor weapon fix
+   - Suppress Ares' swizzle warning when parsing tags and taskforces
+   - Better fix for Ares academy not working on the initial payloads of vehicles built from a war factory
+   - Fix Ares' InitialPayload for teams spawned by trigger actions
    - Misc code refactor & maintenance, CN doc fixes, bugfixes
 - **FlyStar**
    - Campaign load screen PCX support
@@ -358,6 +364,7 @@ This page lists all the individual contributions to the project by their author.
   - `TurretOffset` support for SHP vehicles
   - Customizable rocker amplitude
   - Customizable wake anim
+  - Initial effort on optimization for crates' random distribution 
 - **Fryone**
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
@@ -370,6 +377,13 @@ This page lists all the individual contributions to the project by their author.
   - Allow to change the speed of gas particles
 - **CrimRecya**
   - Fix `LimboKill` not working reliably
+  - Allow using waypoints, area guard and attack move with aircraft
+  - Fix `Stop` command not working so well in some cases
+  - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
+  - Use 2D distance instead of 3D to check whether in air team members have arrived destination
+  - Enhanced Straight trajectory
+  - Enable Building Production Queue
+  - Fix for sidebar not updating queued unit numbers when on hold
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -379,7 +393,9 @@ This page lists all the individual contributions to the project by their author.
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
   - Global value of `RepairBaseNodes`
+  - Skip anim delay for burst fire
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
+- **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
@@ -387,7 +403,7 @@ This page lists all the individual contributions to the project by their author.
   - Superweapon launch site & availability code
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
-- **ststl, FlyStar, Saigyouji, JunJacobYoung** - Digital Display
+- **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
@@ -405,6 +421,7 @@ This page lists all the individual contributions to the project by their author.
 - **thomassneddon** - general assistance, knowledge about voxel lighting model
 - **Xkein** - general assistance, YRpp edits
 - **mevitar** - honorary shield tester *triple* award
+- **Phobos CN Tester Group (Reedom, Mantis, Swim Wing, Takitoru, Examon, AKB, Pusheen, ZQ, Claptrap, BunkerGeneral, Big J, Skywalker, ChickEmperor, Shifty, Mikain, Tobiichi Origami, Feiron, W_S502, Ailink, AbrahamMikhail, Tide, Fnfalsc, Yumeri_Rei, Nacho, Zhuzi, Ika_Aru)** - extensive and thorough testing
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features

@@ -230,12 +230,17 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
+		Valueable<bool> KeepTargetOnMove;
+		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
+
+		Valueable<int> Power;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
-			LaserTrailTypeClass* GetType() const { return &LaserTrailTypeClass::Array[idxType]; }
+			LaserTrailTypeClass* GetType() const { return LaserTrailTypeClass::Array[idxType].get(); }
 		};
 
 		std::vector<LaserTrailDataEntry> LaserTrailData;
@@ -458,6 +463,10 @@ public:
 
 			, SuppressKillWeapons { false }
 			, SuppressKillWeapons_Types {}
+			, KeepTargetOnMove { false }
+			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
+
+			, Power { }
 		{ }
 
 		virtual ~ExtData() = default;
