@@ -218,8 +218,8 @@ msgid ""
 " (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-"
 "final-alert-2))."
 msgstr ""
-"地图触发动作`125将建筑建造于...`现在可选是否播放建造动画 (需要[自行修改`fadata.ini`](Whats-New.md#for-"
-"map-editor-final-alert-2)。"
+"地图触发动作`125将建筑建造于...`现在可选是否播放建造动画 （需要[自行修改`fadata.ini`](Whats-New.md#for-"
+"map-editor-final-alert-2)）。"
 
 #: ../Fixed-or-Improved-Logics.md:41
 msgid ""
