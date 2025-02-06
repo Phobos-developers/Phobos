@@ -21,7 +21,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	int nDamageLeft = *args->Damage;
 	double versus = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
-	int nDamageTotal = nDamageLeft * versus;
+	int nDamageTotal = static_cast<int>(nDamageLeft * versus);
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	if (!args->IgnoreDefenses)
@@ -59,7 +59,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	}
 
 	// Update remaining damage and check if the target will die and should be avoided
-	nDamageTotal = nDamageLeft * versus;
+	nDamageTotal = static_cast<int>(nDamageLeft * versus);
 
 	if (pThis->Health > 0 && !pWHExt->CanKill && nDamageTotal >= pThis->Health)
 	{

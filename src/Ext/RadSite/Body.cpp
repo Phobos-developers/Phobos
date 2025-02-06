@@ -18,7 +18,7 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 
 	// Check if the WH should affect the techno target or skip it
 	double versus = MapClass::GetTotalDamage(damage, pWarhead, pTarget->GetTechnoType()->Armor, 0);
-	int nDamageTotal = damage * versus;
+	int nDamageTotal = static_cast<int>(damage * versus);
 
 	if (pTarget->Health > 0 && !pWHExt->CanKill && nDamageTotal >= pTarget->Health)
 	{
@@ -36,14 +36,9 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 	else
 	{
 		if (this->Type->GetWarheadDetonateFull())
-		{
 			WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage, this->RadHouse);
-		}
 		else
-		{
-			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 			pWHExt->DamageAreaWithTarget(pTarget->GetCoords(), damage, this->RadInvoker, pWarhead, true, this->RadHouse, pTarget);
-		}
 
 		if (!pTarget->IsAlive)
 			return false;
