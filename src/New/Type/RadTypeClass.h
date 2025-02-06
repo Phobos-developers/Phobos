@@ -48,8 +48,6 @@ public:
 		, HasInvoker { }
 	{ }
 
-	virtual ~RadTypeClass() override = default;
-
 	static void AddDefaults();
 
 	WarheadTypeClass* GetWarhead() const
@@ -132,9 +130,9 @@ public:
 		return this->HasInvoker.Get(RulesExt::Global()->RadHasInvoker);
 	}
 
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	void LoadFromINI(CCINIClass* pINI);
+	void LoadFromStream(PhobosStreamReader& Stm);
+	void SaveToStream(PhobosStreamWriter& Stm);
 
 private:
 	template <typename T>
