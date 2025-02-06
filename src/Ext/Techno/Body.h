@@ -60,7 +60,7 @@ public:
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
 
 		// Used for cached click
-		bool HasCachedClick;
+		bool HasCachedClickMission;
 		Mission CachedMission;
 		AbstractClass* CachedCell;
 		AbstractClass* CachedTarget;
@@ -100,7 +100,7 @@ public:
 			, HasRemainingWarpInDelay { false }
 			, LastWarpInDelay { 0 }
 			, IsBeingChronoSphered { false }
-			, HasCachedClick { false }
+			, HasCachedClickMission { false }
 			, CachedMission { Mission::None }
 			, CachedCell { nullptr }
 			, CachedTarget { nullptr }
