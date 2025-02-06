@@ -33,7 +33,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	DigitalDisplayTypeClass::LoadFromINIList(pINI);
 	RadTypeClass::LoadFromINIList(pINI);
 	ShieldTypeClass::LoadFromINIList(pINI);
-	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
+	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art);
 	AttachEffectTypeClass::LoadFromINIList(pINI);
 	InsigniaTypeClass::LoadFromINIList(pINI);
 
@@ -80,6 +80,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ChronoSphereDelay.Read(exINI, GameStrings::General, "ChronoSphereDelay");
 	this->AIChronoSphereSW.Read(exINI, GameStrings::General, "AIChronoSphereSW");
 	this->AIChronoWarpSW.Read(exINI, GameStrings::General, "AIChronoWarpSW");
+
+	exINI.ReadSpeed(GameStrings::General, "SubterraneanSpeed", &this->SubterraneanSpeed);
 	this->SubterraneanHeight.Read(exINI, GameStrings::General, "SubterraneanHeight");
 	this->AISuperWeaponDelay.Read(exINI, GameStrings::General, "AISuperWeaponDelay");
 	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
@@ -136,6 +138,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (AirShadowBaseScale.isset() && AirShadowBaseScale.Get() > 0.98 && this->HeightShadowScaling.Get())
 		this->HeightShadowScaling = false;
 	this->HeightShadowScaling_MinScale.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling.MinScale");
+
+	this->ExtendedAircraftMissions.Read(exINI, GameStrings::General, "ExtendedAircraftMissions");
+
+	this->BuildingProductionQueue.Read(exINI, GameStrings::General, "BuildingProductionQueue");
 
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
 	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Aircraft");
@@ -287,6 +293,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoSphereDelay)
 		.Process(this->AIChronoSphereSW)
 		.Process(this->AIChronoWarpSW)
+		.Process(this->SubterraneanSpeed)
 		.Process(this->SubterraneanHeight)
 		.Process(this->AISuperWeaponDelay)
 		.Process(this->UseGlobalRadApplicationDelay)
@@ -329,6 +336,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AirShadowBaseScale_log)
 		.Process(this->HeightShadowScaling)
 		.Process(this->HeightShadowScaling_MinScale)
+		.Process(this->ExtendedAircraftMissions)
+		.Process(this->BuildingProductionQueue)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)
@@ -413,7 +422,7 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 	{
 		needCacheFlush = true;
 		auto source = this->VoxelLightSource.Get().Normalized();
-		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix.get() * source;
+		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix() * source;
 	}
 
 	/*
@@ -422,7 +431,7 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 	{
 		needCacheFlush = true;
 		auto source = this->VoxelShadowLightSource.Get().Normalized();
-		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix.get() * source;
+		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix() * source;
 	}
 	*/
 

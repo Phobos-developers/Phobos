@@ -5,8 +5,8 @@
 #include <BulletClass.h>
 #include <Helpers/Macro.h>
 
-#include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
+#include "BombardTrajectory.h"
 
 TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 {
@@ -62,6 +62,7 @@ void TrajectoryTypePointer::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	if (_ptr)
 	{
 		_ptr->Trajectory_Speed.Read(exINI, pSection, "Trajectory.Speed");
+		_ptr->Trajectory_Speed = Math::max(0.001,_ptr->Trajectory_Speed);
 		_ptr->Read(pINI, pSection);
 	}
 }
@@ -167,24 +168,6 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 	if (detonate && !pThis->SpawnNextAnim)
 		return Detonate;
 
-	if (pExt->Trajectory && pExt->LaserTrails.size())
-	{
-		CoordStruct futureCoords
-		{
-			pThis->Location.X + static_cast<int>(pThis->Velocity.X),
-			pThis->Location.Y + static_cast<int>(pThis->Velocity.Y),
-			pThis->Location.Z + static_cast<int>(pThis->Velocity.Z)
-		};
-
-		for (auto& trail : pExt->LaserTrails)
-		{
-			if (!trail.LastLocation.isset())
-				trail.LastLocation = pThis->Location;
-
-			trail.Update(futureCoords);
-		}
-	}
-
 	return 0;
 }
 
@@ -210,6 +193,26 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 
 	if (auto pTraj = pExt->Trajectory.get())
 		pTraj->OnAIVelocity(pThis, pSpeed, pPosition);
+
+	// Trajectory can use Velocity only for turning Image's direction
+	// The true position in the next frame will be calculate after here
+	if (pExt->Trajectory && pExt->LaserTrails.size())
+	{
+		CoordStruct futureCoords
+		{
+			static_cast<int>(pSpeed->X + pPosition->X),
+			static_cast<int>(pSpeed->Y + pPosition->Y),
+			static_cast<int>(pSpeed->Z + pPosition->Z)
+		};
+
+		for (auto& trail : pExt->LaserTrails)
+		{
+			if (!trail.LastLocation.isset())
+				trail.LastLocation = pThis->Location;
+
+			trail.Update(futureCoords);
+		}
+	}
 
 	return 0;
 }
