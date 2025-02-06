@@ -70,7 +70,8 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<TerrainTypeExt> {
+	class ExtContainer final : public Container<TerrainTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

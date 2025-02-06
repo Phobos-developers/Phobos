@@ -3,7 +3,7 @@
 #include <Utilities/SavegameDef.h>
 #include <Utilities/TemplateDef.h>
 
-std::pair<bool,bool> PassengerDeletionTypeClass::CanParse(INI_EX exINI, const char* pSection)
+std::pair<bool, bool> PassengerDeletionTypeClass::CanParse(INI_EX exINI, const char* pSection)
 {
 	Nullable<int> rate;
 	rate.Read(exINI, pSection, "PassengerDeletion.Rate");
@@ -32,8 +32,7 @@ PassengerDeletionTypeClass::PassengerDeletionTypeClass(TechnoTypeClass* pOwnerTy
 	, DisplaySoylentOffset { { 0, 0 } }
 	, ReportSound {}
 	, Anim {}
-{
-}
+{ }
 void PassengerDeletionTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
