@@ -35,11 +35,7 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::E
 	if (!pTarget)
 		return false;
 
-	double hp = pTarget->GetHealthPercentage();
-	bool hpBelowPercent = hp <= this->AffectsBelowPercent;
-	bool hpAbovePercent = hp > this->AffectsAbovePercent;
-
-	if (!hpBelowPercent || !hpAbovePercent)
+	if (!IsHealthInThreshold(pTarget))
 		return false;
 
 	double versus = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor);
@@ -65,6 +61,19 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::E
 	}
 
 	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0;
+}
+
+bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
+{
+	// Check if the WH should affect the techno target or skip it
+	double hp = pTarget->GetHealthPercentage();
+	bool hpBelowPercent = hp <= this->AffectsBelowPercent;
+	bool hpAbovePercent = hp > this->AffectsAbovePercent;
+
+	if (hpBelowPercent && hpAbovePercent)
+		return true;
+
+	return false;
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.

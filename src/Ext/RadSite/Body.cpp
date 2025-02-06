@@ -14,13 +14,9 @@ void RadSiteExt::ExtData::Initialize()
 bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)
 {
 	auto const pWarhead = this->Type->GetWarhead();
-
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
-	double hp = pTarget->GetHealthPercentage();
-	bool hpBelowPercent = hp <= pWHExt->AffectsBelowPercent;
-	bool hpAbovePercent = hp > pWHExt->AffectsAbovePercent;
 
-	if (!hpBelowPercent || !hpAbovePercent)
+	if (!pWHExt->IsHealthInThreshold(pTarget))
 		return false;
 
 	if (!this->Type->GetWarheadDetonate())
@@ -31,14 +27,9 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 	else
 	{
 		if (this->Type->GetWarheadDetonateFull())
-		{
 			WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage, this->RadHouse);
-		}
 		else
-		{
-			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 			pWHExt->DamageAreaWithTarget(pTarget->GetCoords(), damage, this->RadInvoker, pWarhead, true, this->RadHouse, pTarget);
-		}
 
 		if (!pTarget->IsAlive)
 			return false;

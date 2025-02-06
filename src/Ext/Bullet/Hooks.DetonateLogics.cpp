@@ -18,33 +18,28 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 	GET(WarheadTypeClass*, pWarhead, EAX);
 	GET_BASE(CoordStruct*, pCoords, 0x8);
 
-	if (auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 	{
-		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+		// Check if the WH should affect the techno target or skip it
+		if (!pExt->IsHealthInThreshold(pTarget))
 		{
-			// Check if the WH should affect the techno target or skip it
-			double hp = pTarget->GetHealthPercentage();
-			bool hpBelowPercent = hp <= pExt->AffectsBelowPercent;
-			bool hpAbovePercent = hp > pExt->AffectsAbovePercent;
+			double versus = GeneralUtils::GetWarheadVersusArmor(pWarhead, pTarget->GetTechnoType()->Armor);
 
-			if (!hpBelowPercent || !hpAbovePercent)
-			{
-				double versus = GeneralUtils::GetWarheadVersusArmor(pWarhead, pTarget->GetTechnoType()->Armor);
-
-				// Allow WH effects if under a valid health threshold ? Specially ExtraWarheads
-				if (pExt->EffectsRequireVerses && versus != 0.0)
-					return GoToExtras;
-				else
-					return SkipFunction;
-			}
+			// Allow WH effects if under a valid health threshold ? Specially ExtraWarheads
+			if (pExt->EffectsRequireVerses && versus != 0.0)
+				return GoToExtras;
+			else
+				return SkipFunction;
 		}
-
-		// Check for ScreenShake
-		auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
-
-		if (pExt->ShakeIsLocal && !visible)
-			return SkipShaking;
 	}
+
+	// Check for ScreenShake
+	auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
+
+	if (pExt->ShakeIsLocal && !visible)
+		return SkipShaking;
 
 	return 0;
 }
