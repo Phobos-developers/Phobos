@@ -15,6 +15,8 @@ This page lists all user interface additions, changes, fixes that are implemente
 You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
 ```
 
+- Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold.
+
 ## Audio
 
 - You can now specify which soundtrack themes would play on win or lose.
@@ -274,12 +276,19 @@ ShowTimer.Priority=0  ; integer
 
 ### Flashing Technos on selecting
 
-Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
+- Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowFlashOnSelecting` setting in `RA2MD.ini`.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-SelectionFlashDuration=0  ; integer, number of frames
+SelectionFlashDuration=0    ; integer, number of frames
+```
+
+In `RA2MD.ini`:
+```ini
+[Phobos]
+ShowFlashOnSelecting=false  ; boolean
 ```
 
 ## Hotkey Commands
@@ -303,24 +312,27 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 - Save the current singleplayer game.
 - For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
-    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
-    - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
+  - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
+  - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
 
 ### `[ ]` Save Variables
 
-- Save local & global variables to an INI file. See [this](Miscellanous.html#save-variables-to-file) for details.
+- Save local & global variables to an INI file. See [this](Miscellanous.md#save-variables-to-file) for details.
 - For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Designator Range
+
 - Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
 - For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Digital Display
+
 - Switches on/off [digital display types](#digital-display).
 - For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
 
 ### `[ ]` Toggle Frame By Frame Mode
-- Switches on/off [frame by frame mode](Miscellanous.html#frame-step-in).
+
+- Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
 ## Loading screen
@@ -341,6 +353,24 @@ DisableEmptySpawnPositions=false  ; boolean
 ```
 
 ## Sidebar / Battle UI
+
+
+### Building Production Queue
+
+![Building Production Queue](_static/images/buildingQueue.png)
+*Queueing multiple buildings*
+
+- Buildings can now be queued for construction like other units if `BuildingProductionQueue` is set to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingProductionQueue=false  ; boolean
+```
+
+```{note}
+When the building becomes ready to be placed, the next building's construction will not begin until the player places the current building.
+```
 
 ### Cameo Sorting
 
@@ -463,7 +493,7 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 
 ### Weeds counter
 
-- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds-weed-eaters) can be added near the credits indicator.
+- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
   - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
   - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
   - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.ini`.
@@ -584,6 +614,7 @@ In `RA2MD.ini`:
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
 ```
+
 ## Miscellanous
 
 ### Skip saving game on starting a new campaign
