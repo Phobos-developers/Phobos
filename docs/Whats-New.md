@@ -495,6 +495,7 @@ New:
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - Extending `Power` to all TechnoTypes (by Morton)
 - Passenger-based insignias (by Ollerus)
+- Use `InsigniaType` to set the properties of insignia in a batch (by Ollerus)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
