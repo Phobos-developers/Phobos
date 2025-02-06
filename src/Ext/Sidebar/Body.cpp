@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <EventClass.h>
+#include <HouseClass.h>
+#include <SuperClass.h>
+
 std::unique_ptr<SidebarExt::ExtData> SidebarExt::Data = nullptr;
 
 SHPStruct* SidebarExt::TabProducingProgress[4];
@@ -12,6 +16,54 @@ void SidebarExt::Allocate(SidebarClass* pThis)
 void SidebarExt::Remove(SidebarClass* pThis)
 {
 	Data = nullptr;
+}
+
+// Reversed from Ares source code (In fact, it's the same as Vanilla).
+// And compared to 0.A, it has been encapsulated. That's why here's such a simple way to make modifications.
+bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
+{
+	const auto pTechnoType = TechnoTypeClass::GetByTypeAndIndex(pItem->ItemType, pItem->ItemIndex);
+	const auto pCurrent = HouseClass::CurrentPlayer();
+
+	if (pTechnoType)
+	{
+		const auto pFactory = pTechnoType->FindFactory(true, false, false, pCurrent);
+
+		if (pFactory && pCurrent->CanBuild(pTechnoType, false, true) != CanBuildResult::Unbuildable)
+			return false;
+	}
+	else
+	{
+		const auto& supers = pCurrent->Supers;
+
+		if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent)
+			return false;
+	}
+
+	// Here we just raise AbandonAll without find factory, rather than check factory and Abandon then find factory and AbandonAll
+	if (pTechnoType)
+	{
+		const EventClass event
+		(
+			pCurrent->ArrayIndex,
+			EventType::AbandonAll,
+			static_cast<int>(pItem->ItemType),
+			pItem->ItemIndex,
+			pTechnoType->Naval
+		);
+		EventClass::AddEvent(event);
+	}
+
+	if (pItem->ItemType == AbstractType::BuildingType || pItem->ItemType == AbstractType::Building)
+	{
+		const auto pDisplay = DisplayClass::Instance();
+		pDisplay->SetActiveFoundation(nullptr);
+		pDisplay->CurrentBuilding = nullptr;
+		pDisplay->CurrentBuildingType = nullptr;
+		pDisplay->CurrentBuildingOwnerArrayIndex = -1;
+	}
+
+	return true;
 }
 
 // =============================

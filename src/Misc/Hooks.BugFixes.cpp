@@ -719,7 +719,7 @@ DEFINE_HOOK(0x4D580B, FootClass_ApproachTarget_DeployToFire, 0x6)
 
 DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
 {
-	enum { SkipGameCode = 0x741086, MustDeploy = 0x7410A8 };
+	enum { SkipGameCode = 0x7410B7, MustDeploy = 0x7410A8 };
 
 	GET(UnitClass*, pThis, ESI);
 
@@ -1121,6 +1121,14 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 		const auto pFoot = abstract_cast<FootClass*>(pTechno);
 		const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
 
+		// Clear archive target for infantries and vehicles like receive a mega mission
+		if (pFoot && !pAircraft)
+			pTechno->SetArchiveTarget(nullptr);
+
+		// To avoid foots stuck in Mission::Area_Guard
+		if (pTechno->CurrentMission == Mission::Area_Guard && !pTechno->GetTechnoType()->DefaultToGuardArea)
+			pTechno->QueueMission(Mission::Guard, true);
+
 		// To avoid jumpjets falling into a state of standing idly by
 		if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
 			pTechno->SetDestination(nullptr, true);
@@ -1133,6 +1141,21 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 	return SkipGameCode;
 }
+
+#pragma endregion
+
+#pragma region TeamCloseRangeFix
+
+int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
+{
+	// At present, it seems that aircraft use their own mapcoords and the team destination's mapcoords to check.
+    // During the previous test, it was found that if the aircraft uses this and needs to return to the airport
+	// with the script first, it will interrupt the remaining tasks for unknown reasons - CrimRecya
+	return (pSource->IsInAir() && pSource->WhatAmI() != AbstractType::Aircraft) // Jumpjets or sth in the air
+		? (pSource->DistanceFrom(pTarget) * 2) // 2D distance (2x is the bonus to units in the air)
+		: pSource->DistanceFrom3D(pTarget); // 3D distance (vanilla)
+}
+DEFINE_JUMP(CALL, 0x6EBCC9, GET_OFFSET(Check2DDistanceInsteadOf3D));
 
 #pragma endregion
 
