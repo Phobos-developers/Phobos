@@ -166,15 +166,10 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 	if (auto pDesc = this->GetUIDescription(pData))
 		oss << L"\n" << pDesc;
 
-	if (pData->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
+	if (pData->IsGreyCameoForCurrentPlayer)
 	{
-		auto& vec = ScenarioExt::Global()->OwnedExistCameoTechnoTypes;
-
-		if (std::find(vec.begin(), vec.end(), pData) != vec.end())
-		{
-			if (auto pExDesc = this->GetUnbuildableUIDescription(pData))
-				oss << L"\n" << pExDesc;
-		}
+		if (auto pExDesc = this->GetUnbuildableUIDescription(pData))
+			oss << L"\n" << pExDesc;
 	}
 
 	this->TextBuffer = oss.str();

@@ -36,7 +36,11 @@ public:
 		std::vector<TechnoExt::ExtData*> AutoDeathObjects;
 		std::vector<TechnoExt::ExtData*> TransportReloaders; // Objects that can reload ammo in limbo
 
-		std::vector<TechnoTypeExt::ExtData*> OwnedExistCameoTechnoTypes;
+		DWORD OwnerBitfield_BuildingType;
+		DWORD OwnerBitfield_InfantryType;
+		DWORD OwnerBitfield_VehicleType;
+		DWORD OwnerBitfield_NavyType;
+		DWORD OwnerBitfield_AircraftType;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -45,7 +49,11 @@ public:
 			, Variables { }
 			, AutoDeathObjects {}
 			, TransportReloaders {}
-			, OwnedExistCameoTechnoTypes {}
+			, OwnerBitfield_BuildingType { 0 }
+			, OwnerBitfield_InfantryType { 0 }
+			, OwnerBitfield_VehicleType { 0 }
+			, OwnerBitfield_NavyType { 0 }
+			, OwnerBitfield_AircraftType { 0 }
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

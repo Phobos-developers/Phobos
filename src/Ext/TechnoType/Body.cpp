@@ -6,13 +6,16 @@
 #include <JumpjetLocomotionClass.h>
 #include <TechnoTypeClass.h>
 #include <StringTable.h>
+#include <EventClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/House/Body.h>
 
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/AresFunctions.h>
 
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 
@@ -258,6 +261,103 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 	return nullptr;
 }
 
+int __fastcall TechnoTypeExt::RequirementsMetExtraCheck(void* pAresHouseExt, void* _, TechnoTypeClass* pType)
+{
+	// Only with Ares will call this function, so skip sanity check.
+	const auto result = AresFunctions::RequirementsMet(pAresHouseExt, pType);
+
+	if (*reinterpret_cast<HouseClass**>(pAresHouseExt) == HouseClass::CurrentPlayer())
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
+			pTypeExt->IsMetTheEssentialConditions = (result > 2);
+	}
+
+	return result;
+}
+
+CanBuildResult TechnoTypeExt::CheckAlwaysExistCameo(TechnoTypeClass* pType, CanBuildResult canBuild)
+{
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto ForceRedrawSidebar = [pType]()
+	{
+		const auto tabIndex = SidebarClass::GetObjectTabIdx(pType->WhatAmI(), pType->GetArrayIndex(), 0);
+		const auto pSidebar = SidebarClass::Instance();
+
+		if (tabIndex != pSidebar->ActiveTabIndex)
+			return;
+
+		pSidebar->SidebarNeedsRedraw = true;
+		pSidebar->SidebarBackgroundNeedsRedraw = true; // Necessary
+		pSidebar->Tabs[tabIndex].NeedsRedraw = true;
+		pSidebar->RedrawSidebar(0);
+	};
+
+	if (canBuild == CanBuildResult::Unbuildable)
+	{
+		auto CheckOverrideTechnos = [pTypeExt]()
+		{
+			const auto& pAuxTypes = pTypeExt->Cameo_OverrideTechnos;
+
+			if (pAuxTypes.size())
+			{
+				for (const auto& pAuxType : pAuxTypes)
+				{
+					if (HouseExt::CountOwnedPresentExt(HouseClass::CurrentPlayer, pAuxType, true, true))
+						return true;
+				}
+			}
+
+			return false;
+		};
+
+		if (pTypeExt->IsMetTheEssentialConditions && (CheckOverrideTechnos() || HouseExt::CheckOwnerBitfieldForCurrentPlayer(pType)))
+		{
+			if (!pTypeExt->IsGreyCameoForCurrentPlayer)
+			{
+				pTypeExt->IsGreyCameoForCurrentPlayer = true;
+				ForceRedrawSidebar();
+
+				if (const auto pBldType = abstract_cast<BuildingTypeClass*>(pType))
+				{
+					const auto pDisplay = DisplayClass::Instance();
+/*					const auto pCurType = abstract_cast<BuildingTypeClass*>(pDisplay->CurrentBuildingType); // TODO If merge #1479
+
+					if (!RulesExt::Global()->ExtendedBuildingPlacing || !pCurType || BuildingTypeExt::IsSameBuildingType(pBldType, pCurType))*/
+					{
+						pDisplay->SetActiveFoundation(nullptr);
+						pDisplay->CurrentBuilding = nullptr;
+						pDisplay->CurrentBuildingType = nullptr;
+						pDisplay->CurrentBuildingOwnerArrayIndex = -1;
+					}
+				}
+
+				const EventClass event
+				(
+					HouseClass::CurrentPlayer->ArrayIndex,
+					EventType::AbandonAll,
+					static_cast<int>(pType->WhatAmI()),
+					pType->GetArrayIndex(),
+					pType->Naval
+				);
+				EventClass::AddEvent(event);
+			}
+
+			canBuild = CanBuildResult::TemporarilyUnbuildable;
+		}
+	}
+	else if (pTypeExt->IsGreyCameoForCurrentPlayer)
+	{
+		pTypeExt->IsGreyCameoForCurrentPlayer = false;
+		pTypeExt->IsGreyCameoAbandonedProduct = false;
+		VoxClass::Play(&Make_Global<const char>(0x83FA64)); // 0x83FA64 -> EVA_NewConstructionOptions
+		ForceRedrawSidebar();
+	}
+
+	return canBuild;
+}
+
 // =============================
 // load / save
 
@@ -456,8 +556,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
 
 	this->Cameo_AlwaysExist.Read(exINI, pSection, "Cameo.AlwaysExist");
-	this->Cameo_AuxTechnos.Read(exINI, pSection, "Cameo.AuxTechnos");
-	this->Cameo_NegTechnos.Read(exINI, pSection, "Cameo.NegTechnos");
+	this->Cameo_OverrideTechnos.Read(exINI, pSection, "Cameo.OverrideTechnos");
+	this->Cameo_RequiredHouses = pINI->ReadHouseTypesList(pSection, "Cameo.RequiredHouses", this->Cameo_RequiredHouses);
 	this->UIDescription_Unbuildable.Read(exINI, pSection, "UIDescription.Unbuildable");
 
 	this->Wake.Read(exINI, pSection, "Wake");
@@ -839,9 +939,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
 
 		.Process(this->Cameo_AlwaysExist)
-		.Process(this->Cameo_AuxTechnos)
-		.Process(this->Cameo_NegTechnos)
-		.Process(this->CameoCheckMutex)
+		.Process(this->Cameo_OverrideTechnos)
+		.Process(this->Cameo_RequiredHouses)
+		.Process(this->IsMetTheEssentialConditions)
+		.Process(this->IsGreyCameoForCurrentPlayer)
+		.Process(this->IsGreyCameoAbandonedProduct)
 		.Process(this->UIDescription_Unbuildable)
 		.Process(this->GreyCameoPCX)
 

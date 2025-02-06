@@ -227,9 +227,11 @@ public:
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
 		Nullable<bool> Cameo_AlwaysExist;
-		ValueableVector<TechnoTypeClass*> Cameo_AuxTechnos;
-		ValueableVector<TechnoTypeClass*> Cameo_NegTechnos;
-		bool CameoCheckMutex; // Not read from ini
+		ValueableVector<TechnoTypeClass*> Cameo_OverrideTechnos;
+		DWORD Cameo_RequiredHouses;
+		bool IsMetTheEssentialConditions; // Not read from ini
+		bool IsGreyCameoForCurrentPlayer; // Not read from ini
+		bool IsGreyCameoAbandonedProduct; // Not read from ini
 		Valueable<CSFText> UIDescription_Unbuildable;
 		PhobosPCXFile GreyCameoPCX;
 
@@ -461,9 +463,11 @@ public:
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
 
 			, Cameo_AlwaysExist {}
-			, Cameo_AuxTechnos {}
-			, Cameo_NegTechnos {}
-			, CameoCheckMutex { false }
+			, Cameo_OverrideTechnos {}
+			, Cameo_RequiredHouses { 0xFFFFFFFF }
+			, IsMetTheEssentialConditions { false }
+			, IsGreyCameoForCurrentPlayer { false }
+			, IsGreyCameoAbandonedProduct { true }
 			, UIDescription_Unbuildable {}
 			, GreyCameoPCX {}
 
@@ -514,6 +518,9 @@ public:
 	static TechnoClass* CreateUnit(TechnoTypeClass* pType, CoordStruct location, DirType facing, DirType* secondaryFacing, HouseClass* pOwner,
 		TechnoClass* pInvoker = nullptr, HouseClass* pInvokerHouse = nullptr, AnimTypeClass* pSpawnAnimType = nullptr, int spawnHeight = -1,
 		bool alwaysOnGround = false, bool checkPathfinding = false, bool parachuteIfInAir = false, Mission mission = Mission::Guard, Mission* missionAI = nullptr);
+
+	static int __fastcall RequirementsMetExtraCheck(void* pAresHouseExt, void* _, TechnoTypeClass* pType);
+	static CanBuildResult CheckAlwaysExistCameo(TechnoTypeClass* pType, CanBuildResult canBuild);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);

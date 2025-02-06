@@ -5,6 +5,7 @@
 
 decltype(AresFunctions::ConvertTypeTo) AresFunctions::ConvertTypeTo = nullptr;
 decltype(AresFunctions::SpawnSurvivors) AresFunctions::SpawnSurvivors = nullptr;
+decltype(AresFunctions::RequirementsMet) AresFunctions::RequirementsMet = nullptr;
 std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> AresFunctions::SWTypeExtMap_Find;
 
 void* AresFunctions::_SWTypeExtMap = nullptr;
@@ -23,6 +24,8 @@ void AresFunctions::InitAres3_0()
 	}
 	else
 		NOTE_ARES_FUN(SpawnSurvivors, 0x464C0);
+
+	NOTE_ARES_FUN(RequirementsMet, 0x021FF0);
 
 	NOTE_ARES_FUN(_SWTypeExtMapFind, 0x57C70);
 	NOTE_ARES_FUN(_SWTypeExtMap, 0xC1C54);
@@ -43,6 +46,8 @@ void AresFunctions::InitAres3_0p1()
 	}
 	else
 		NOTE_ARES_FUN(SpawnSurvivors, 0x47030);
+
+	NOTE_ARES_FUN(RequirementsMet, 0x022A70);
 
 	NOTE_ARES_FUN(_SWTypeExtMapFind, 0x58900);
 	NOTE_ARES_FUN(_SWTypeExtMap, 0xC2C50);

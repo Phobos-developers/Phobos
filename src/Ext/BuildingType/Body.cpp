@@ -2,7 +2,6 @@
 
 #include <EventClass.h>
 #include <TacticalClass.h>
-#include <TunnelLocomotionClass.h>
 
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
@@ -67,19 +66,6 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
 }
 
-int BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pType, HouseClass* pHouse)
-{
-	const auto upgrades = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
-
-	if (upgrades != -1)
-		return upgrades;
-
-	if (const auto pUndeploy = pType->UndeploysInto)
-		return pHouse->CountOwnedNow(pType) + pHouse->CountOwnedNow(pUndeploy);
-
-	return pHouse->CountOwnedNow(pType);
-}
-
 int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades
 {
 	int result = 0;
@@ -115,116 +101,6 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 	}
 
 	return isUpgrade ? result : -1;
-}
-
-bool BuildingTypeExt::ShouldExistGreyCameo(const TechnoTypeExt::ExtData* const pTypeExt)
-{
-	const auto pType = pTypeExt->OwnerObject();
-	const auto techLevel = pType->TechLevel;
-
-	if (techLevel <= 0 || techLevel > Game::TechLevel)
-		return false;
-
-	const auto pHouse = HouseClass::CurrentPlayer();
-
-	if (!pHouse->InOwners(pType))
-		return false;
-
-	if (!pHouse->InRequiredHouses(pType))
-		return false;
-
-	if (pHouse->InForbiddenHouses(pType))
-		return false;
-
-	const auto& pNegTypes = pTypeExt->Cameo_NegTechnos;
-
-	if (pNegTypes.size())
-	{
-		for (const auto& pNegType : pNegTypes)
-		{
-			if (pHouse->CountOwnedAndPresent(pNegType))
-				return false;
-			else if (pNegType->WhatAmI() == AbstractType::BuildingType && BuildingTypeExt::GetUpgradesAmount(static_cast<BuildingTypeClass*>(pNegType), pHouse) > 0)
-				return false;
-		}
-	}
-
-	const auto& pAuxTypes = pTypeExt->Cameo_AuxTechnos;
-
-	if (!pAuxTypes.size())
-	{
-		const auto sideIndex = pType->AIBasePlanningSide;
-
-		return (sideIndex == -1 || sideIndex == pHouse->Type->SideIndex);
-	}
-
-	for (const auto& pAuxType : pAuxTypes)
-	{
-		const auto pAuxTypeExt = TechnoTypeExt::ExtMap.Find(pAuxType);
-
-		if (!pAuxTypeExt->CameoCheckMutex)
-		{
-			if (pHouse->CountOwnedAndPresent(pAuxType))
-				return true;
-			else if (pAuxType->WhatAmI() == AbstractType::BuildingType && BuildingTypeExt::GetUpgradesAmount(static_cast<BuildingTypeClass*>(pAuxType), pHouse) > 0)
-				return true;
-
-			pAuxTypeExt->CameoCheckMutex = true;
-			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pAuxTypeExt);
-			pAuxTypeExt->CameoCheckMutex = false;
-
-			if (exist)
-				return true;
-		}
-	}
-
-	return false;
-}
-
-// Check the cameo change
-CanBuildResult BuildingTypeExt::CheckAlwaysExistCameo(const TechnoTypeClass* const pType, CanBuildResult canBuild)
-{
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-	if (pTypeExt->Cameo_AlwaysExist.Get(RulesExt::Global()->Cameo_AlwaysExist))
-	{
-		auto& vec = ScenarioExt::Global()->OwnedExistCameoTechnoTypes;
-
-		if (canBuild == CanBuildResult::Unbuildable) // Unbuildable + Satisfy basic limitations = Change it to TemporarilyUnbuildable
-		{
-			pTypeExt->CameoCheckMutex = true;
-			const auto exist = BuildingTypeExt::ShouldExistGreyCameo(pTypeExt);
-			pTypeExt->CameoCheckMutex = false;
-
-			if (exist)
-			{
-				if (std::find(vec.begin(), vec.end(), pTypeExt) == vec.end()) // … + Not in the list = Need to add it into list
-				{
-					vec.push_back(pTypeExt);
-					SidebarClass::Instance->SidebarNeedsRepaint();
-					const EventClass event
-					(
-						HouseClass::CurrentPlayer->ArrayIndex,
-						EventType::AbandonAll,
-						static_cast<int>(pType->WhatAmI()),
-						pType->GetArrayIndex(),
-						pType->Naval
-					);
-					EventClass::AddEvent(event);
-				}
-
-				canBuild = CanBuildResult::TemporarilyUnbuildable;
-			}
-		}
-		else if (std::find(vec.begin(), vec.end(), pTypeExt) != vec.end()) // Not Unbuildable + In the list = remove it from the list and play EVA
-		{
-			vec.erase(std::remove(vec.begin(), vec.end(), pTypeExt), vec.end());
-			SidebarClass::Instance->SidebarNeedsRepaint();
-			VoxClass::Play(&Make_Global<const char>(0x83FA64)); // 0x83FA64 -> EVA_NewConstructionOptions
-		}
-	}
-
-	return canBuild;
 }
 
 void BuildingTypeExt::ExtData::Initialize()
@@ -279,6 +155,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
 	this->IsDestroyableObstacle.Read(exINI, pSection, "IsDestroyableObstacle");
 
+	this->Cameo_ShouldCount.Read(exINI, pSection, "Cameo.ShouldCount");
+
 	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
 	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
 
@@ -287,8 +165,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Units_RepairStep.Read(exINI, pSection, "Units.RepairStep");
 	this->Units_RepairPercent.Read(exINI, pSection, "Units.RepairPercent");
 	this->Units_UseRepairCost.Read(exINI, pSection, "Units.UseRepairCost");
-
-	this->Cameo_ShouldCount.Read(exINI, pSection, "Cameo.ShouldCount");
 
 	this->NoBuildAreaOnBuildup.Read(exINI, pSection, "NoBuildAreaOnBuildup");
 	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");

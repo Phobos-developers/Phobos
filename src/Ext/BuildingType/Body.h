@@ -174,8 +174,5 @@ public:
 
 	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
-	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
-	static bool ShouldExistGreyCameo(const TechnoTypeExt::ExtData* const pTypeExt);
-	static CanBuildResult CheckAlwaysExistCameo(const TechnoTypeClass* const pType, CanBuildResult canBuild);
 };

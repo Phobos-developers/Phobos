@@ -87,21 +87,18 @@ CanBuildResult CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass
 
 DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 {
-	GET(HouseClass const* const, pThis, ECX);
-	GET_STACK(TechnoTypeClass const* const, pItem, 0x4);
-	GET_STACK(bool, buildLimitOnly, 0x8);
-	GET_STACK(bool const, includeInProduction, 0xC);
+	GET(HouseClass* const, pThis, ECX);
+	GET_STACK(TechnoTypeClass* const, pItem, 0x4);
+	GET_STACK(const bool, buildLimitOnly, 0x8);
+	GET_STACK(const bool, includeInProduction, 0xC);
 	GET(CanBuildResult, canBuild, EAX); // resultOfAres
 
 	if (canBuild == CanBuildResult::Buildable)
 	{
-		if (auto const pBuilding = abstract_cast<BuildingTypeClass const* const>(pItem))
+		if (auto const pBuilding = abstract_cast<BuildingTypeClass* const>(pItem))
 		{
-			if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
-			{
-				if (pBuildingExt->PowersUp_Buildings.size() > 0)
-					canBuild = CheckBuildLimit(pThis, pBuilding, includeInProduction);
-			}
+			if (BuildingTypeExt::ExtMap.Find(pBuilding)->PowersUp_Buildings.size() > 0)
+				canBuild = CheckBuildLimit(pThis, pBuilding, includeInProduction);
 		}
 	}
 
@@ -113,8 +110,8 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 			canBuild = CanBuildResult::TemporarilyUnbuildable;
 	}
 
-	if (!buildLimitOnly && includeInProduction && pThis == HouseClass::CurrentPlayer()) // Eliminate any non-producible calls to change the list safely
-		canBuild = BuildingTypeExt::CheckAlwaysExistCameo(pItem, canBuild);
+	if (!buildLimitOnly && includeInProduction && pThis == HouseClass::CurrentPlayer()) // Eliminate any non-producible calls
+		canBuild = TechnoTypeExt::CheckAlwaysExistCameo(pItem, canBuild);
 
 	R->EAX(canBuild);
 	return 0;

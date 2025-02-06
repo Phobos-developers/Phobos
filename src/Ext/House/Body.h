@@ -181,4 +181,10 @@ public:
 
 	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
 	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
+	static int CountOwnedPresentExt(HouseClass* pHouse, TechnoTypeClass* pTechnoType, bool upgrade = false, bool deploy = false);
+	static int CountOwnedPresentWithDeploy(HouseClass* pHouse, UnitTypeClass* pUnitType, bool deploy = false);
+	static int CountOwnedPresentWithDeployOrUpgrade(HouseClass* pHouse, BuildingTypeClass* pBuildingType, bool upgrade = false, bool deploy = false);
+	static int CountOwnedNowWithDeployOrUpgrade(HouseClass* pHouse, BuildingTypeClass* pBuildingType, bool upgrade = true, bool deploy = true);
+	static bool CheckOwnerBitfieldForCurrentPlayer(TechnoTypeClass* pType);
+	static void RecheckOwnerBitfieldForCurrentPlayer();
 };
