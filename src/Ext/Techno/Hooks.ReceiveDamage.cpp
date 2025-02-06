@@ -20,8 +20,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	int nDamageLeft = *args->Damage;
-	double versus = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
-	int nDamageTotal = static_cast<int>(nDamageLeft * versus);
+	int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	if (!args->IgnoreDefenses)
@@ -36,8 +35,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 					*args->Damage = 0;
 					pThis->Health = 1;
 					pThis->EstimatedHealth = 1;
-
-					return SkipGameCode;
+					ReceiveDamageTemp::SkipLowDamageCheck = true;
 				}
 
 				return 0;
@@ -59,15 +57,14 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	}
 
 	// Update remaining damage and check if the target will die and should be avoided
-	nDamageTotal = static_cast<int>(nDamageLeft * versus);
+	nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
 
 	if (pThis->Health > 0 && !pWHExt->CanKill && nDamageTotal >= pThis->Health)
 	{
 		*args->Damage = 0;
 		pThis->Health = 1;
 		pThis->EstimatedHealth = 1;
-
-		return SkipGameCode;
+		ReceiveDamageTemp::SkipLowDamageCheck = true;
 	}
 
 	return 0;
