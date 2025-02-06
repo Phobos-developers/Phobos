@@ -315,8 +315,15 @@ DEFINE_HOOK(0x51A0D4, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x6)
 					pDest->AddPassenger(pThis);
 					pThis->Undiscover();
 
-					pThis->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
-					pThis->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
+					// Added, to prevent passengers from wanting to get on after getting off
+					pThis->QueueUpToEnter = nullptr;
+
+					// Added, to stop the passengers and let OpenTopped work normally
+					pThis->SetSpeedPercentage(0.0);
+
+					// Added, to stop hover unit's meaningless behavior
+					if (VTable::Get(pThis->Locomotor.GetInterfacePtr()) == 0x7EACFC) // Hover
+						*reinterpret_cast<double*>(reinterpret_cast<int*>(pThis->Locomotor.GetInterfacePtr()) + 0x11) = 0; // CurrentSpeed
 
 					return EnteredThenReturn;
 				}
@@ -371,8 +378,15 @@ DEFINE_HOOK(0x73A5EA, UnitClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 
 					pThis->Undiscover();
 
-					pThis->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
-					pThis->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
+					// Added, to prevent passengers from wanting to get on after getting off
+					pThis->QueueUpToEnter = nullptr;
+
+					// Added, to stop the passengers and let OpenTopped work normally
+					pThis->SetSpeedPercentage(0.0);
+
+					// Added, to stop hover unit's meaningless behavior
+					if (VTable::Get(pThis->Locomotor.GetInterfacePtr()) == 0x7EACFC) // Hover
+						*reinterpret_cast<double*>(reinterpret_cast<int*>(pThis->Locomotor.GetInterfacePtr()) + 0x11) = 0; // CurrentSpeed
 
 					return EnteredThenReturn;
 				}
