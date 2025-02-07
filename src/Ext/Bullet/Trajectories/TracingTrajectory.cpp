@@ -568,7 +568,7 @@ BulletVelocity TracingTrajectory::ChangeVelocity(BulletClass* pBullet)
 	return velocity;
 }
 
-AbstractClass* TracingTrajectory::GetBulletTarget(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, WeaponTypeClass* pWeapon, WeaponTypeExt::ExtData* pWeaponExt)
+AbstractClass* TracingTrajectory::GetBulletTarget(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, WeaponTypeClass* pWeapon)
 {
 	const auto pType = this->Type;
 
@@ -578,6 +578,7 @@ AbstractClass* TracingTrajectory::GetBulletTarget(BulletClass* pBullet, TechnoCl
 	if (pType->Synchronize)
 		return pBullet->Target;
 
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	const auto vec = Helpers::Alex::getCellSpreadItems(pBullet->Location, (pWeapon->Range / 256.0), pWeapon->Projectile->AA);
 
 	for (const auto& pOpt : vec)
@@ -707,8 +708,7 @@ void TracingTrajectory::CreateTracingBullets(BulletClass* pBullet, WeaponTypeCla
 			return;
 	}
 
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	const auto pTarget = this->GetBulletTarget(pBullet, pTechno, pOwner, pWeapon, pWeaponExt);
+	const auto pTarget = this->GetBulletTarget(pBullet, pTechno, pOwner, pWeapon);
 
 	if (!pTarget)
 		return;

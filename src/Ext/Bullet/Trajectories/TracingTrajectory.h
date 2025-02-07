@@ -1,7 +1,6 @@
 #pragma once
 
 #include "PhobosTrajectory.h"
-#include <Ext/WeaponType/Body.h>
 
 enum class TraceTargetMode
 {
@@ -127,7 +126,7 @@ private:
 	void ChangeFacing(BulletClass* pBullet);
 	bool CheckFireFacing(BulletClass* pBullet);
 	BulletVelocity ChangeVelocity(BulletClass* pBullet);
-	AbstractClass* GetBulletTarget(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, WeaponTypeClass* pWeapon, WeaponTypeExt::ExtData* pWeaponExt);
+	AbstractClass* GetBulletTarget(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner, WeaponTypeClass* pWeapon);
 	CoordStruct GetWeaponFireCoord(BulletClass* pBullet, TechnoClass* pTechno);
 	bool PrepareTracingWeapon(BulletClass* pBullet);
 	void CreateTracingBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon);
