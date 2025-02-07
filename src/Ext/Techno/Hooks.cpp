@@ -554,7 +554,7 @@ DEFINE_HOOK(0x6FFE00, TechnoClass_ClickedEvent_CacheClickedEvent, 0x5)
 	GET(TechnoClass*, pThis, ECX);
 	GET_STACK(EventType, event, 0x4);
 
-	if (EventClass::OutList->Count >= 128)
+	if (EventClass::OutList->Count >= 128 && RulesExt::Global()->CacheClick)
 	{
 		auto const pExt = TechnoExt::ExtMap.Find(pThis);
 		pExt->HasCachedClickEvent = true;
@@ -576,7 +576,7 @@ DEFINE_HOOK(0x6FFDA5, TechnoClass_ClickedMission_CacheClickedMission, 0x7)
 	GET(AbstractClass* const, pTarget, EBP);
 	GET(Mission const, mission, EDI);
 
-	if (EventClass::OutList->Count >= 128)
+	if (EventClass::OutList->Count >= 128 && RulesExt::Global()->CacheClick)
 	{
 		auto const pExt = TechnoExt::ExtMap.Find(pThis);
 		pExt->HasCachedClickMission = true;
