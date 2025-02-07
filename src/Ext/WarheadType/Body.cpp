@@ -38,10 +38,8 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::E
 	if (!IsHealthInThreshold(pTarget))
 		return false;
 
-	double versus = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor);
-
-	if (this->EffectsRequireVerses && versus == 0.0)
-		return false;
+	if (!this->EffectsRequireVerses)
+		return true;
 
 	auto armorType = pTarget->GetTechnoType()->Armor;
 

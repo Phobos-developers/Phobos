@@ -24,15 +24,7 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 	{
 		// Check if the WH should affect the techno target or skip it
 		if (!pExt->IsHealthInThreshold(pTarget))
-		{
-			double versus = GeneralUtils::GetWarheadVersusArmor(pWarhead, pTarget->GetTechnoType()->Armor);
-
-			// Allow WH effects if under a valid health threshold ? Specially ExtraWarheads
-			if (pExt->EffectsRequireVerses && versus != 0.0)
-				return GoToExtras;
-			else
-				return SkipFunction;
-		}
+			return GoToExtras;
 	}
 
 	// Check for ScreenShake
