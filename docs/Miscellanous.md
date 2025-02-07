@@ -79,6 +79,25 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 |Mech     | `{55D141B8-DB94-11d1-AC98-006008055BB5}` |
 |Ship     | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
 
+## Event Buffer
+
+### Cache click if the event buffer is full
+
+- 在vanilla中，玩家同时只能对至多128个techno下达命令。这是由于单位执行命令需要发送event，而event buffer长度为128。
+- 现在你可以通过以下flag让单位在event buffer已满的情况下缓存接收的指令，并在buffer有空位的情况下再次发送。
+  - 如果单位尝试缓存指令时已经缓存了其它指令，那么原有的缓存将被覆盖。通常来说不必担心这个问题，你很难在短时间内多次下令。
+  - 目前暂时不支持路径点模式。可能会在将来改变。
+
+In `rulesmd.ini`:
+```ini
+[General]
+CacheClick=false    ; boolean
+```
+
+```{warning}
+对于鼠标点击，这个功能会缓存鼠标点击产生的动作。这意味着单位有可能因此而去执行一些当前不允许的动作（举个例子，这一帧载具A缓存了一个进入坦克碉堡的命令，但下一帧载具A被寄生了，此时选择载具A将不能下达进入坦克碉堡的指令，但缓存能）。这些情况通常来说是无害的，但我们无法对此做出保证。所以请使用时自己承担风险。
+```
+
 ## Game Speed
 
 ### Single player game speed

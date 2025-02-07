@@ -364,7 +364,7 @@ This page lists all the individual contributions to the project by their author.
   - `TurretOffset` support for SHP vehicles
   - Customizable rocker amplitude
   - Customizable wake anim
-  - Initial effort on optimization for crates' random distribution 
+  - Initial effort on optimization for crates' random distribution
 - **Fryone**
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
@@ -393,6 +393,7 @@ This page lists all the individual contributions to the project by their author.
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
   - Global value of `RepairBaseNodes`
   - Skip anim delay for burst fire
+  - Cache click if the event buffer is full
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
