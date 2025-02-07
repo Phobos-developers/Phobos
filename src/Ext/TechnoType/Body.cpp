@@ -296,7 +296,8 @@ CanBuildResult TechnoTypeExt::CheckAlwaysExistCameo(TechnoTypeClass* pType, CanB
 
 	if (canBuild == CanBuildResult::Unbuildable)
 	{
-		auto CheckOverrideTechnos = [pTypeExt]()
+		const auto pCurrent = HouseClass::CurrentPlayer();
+		auto CheckOverrideTechnos = [pCurrent, pTypeExt]()
 		{
 			const auto& pAuxTypes = pTypeExt->Cameo_OverrideTechnos;
 
@@ -304,7 +305,7 @@ CanBuildResult TechnoTypeExt::CheckAlwaysExistCameo(TechnoTypeClass* pType, CanB
 			{
 				for (const auto& pAuxType : pAuxTypes)
 				{
-					if (HouseExt::CountOwnedPresentExt(HouseClass::CurrentPlayer, pAuxType, true, true))
+					if (HouseExt::CountOwnedPresentExt(pCurrent, pAuxType, true, true))
 						return true;
 				}
 			}
@@ -318,9 +319,11 @@ CanBuildResult TechnoTypeExt::CheckAlwaysExistCameo(TechnoTypeClass* pType, CanB
 			{
 				pTypeExt->IsGreyCameoForCurrentPlayer = true;
 				ForceRedrawSidebar();
+				auto buildCat = BuildCat::DontCare;
 
 				if (const auto pBldType = abstract_cast<BuildingTypeClass*>(pType))
 				{
+					buildCat = pBldType->BuildCat;
 					const auto pDisplay = DisplayClass::Instance();
 /*					const auto pCurType = abstract_cast<BuildingTypeClass*>(pDisplay->CurrentBuildingType); // TODO If merge #1479
 
@@ -333,15 +336,18 @@ CanBuildResult TechnoTypeExt::CheckAlwaysExistCameo(TechnoTypeClass* pType, CanB
 					}
 				}
 
-				const EventClass event
-				(
-					HouseClass::CurrentPlayer->ArrayIndex,
-					EventType::AbandonAll,
-					static_cast<int>(pType->WhatAmI()),
-					pType->GetArrayIndex(),
-					pType->Naval
-				);
-				EventClass::AddEvent(event);
+				if (pCurrent->GetPrimaryFactory(pType->WhatAmI(), pType->Naval, buildCat))
+				{
+					const EventClass event
+					(
+						pCurrent->ArrayIndex,
+						EventType::AbandonAll,
+						static_cast<int>(pType->WhatAmI()),
+						pType->GetArrayIndex(),
+						pType->Naval
+					);
+					EventClass::AddEvent(event);
+				}
 			}
 
 			canBuild = CanBuildResult::TemporarilyUnbuildable;
