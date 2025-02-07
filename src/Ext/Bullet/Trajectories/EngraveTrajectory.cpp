@@ -119,17 +119,20 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	if (pTechno)
 	{
 		this->TechnoInTransport = static_cast<bool>(pTechno->Transporter);
-
 		this->GetTechnoFLHCoord(pBullet, pTechno);
 		this->CheckMirrorCoord(pTechno);
-		this->SetEngraveDirection(pBullet, pTechno->GetCoords(), pBullet->TargetCoords);
+
+		const auto theSource = pTechno->GetCoords();
+		const auto rotateAngle = Math::atan2(pBullet->TargetCoords.Y - theSource.Y , pBullet->TargetCoords.X - theSource.X);
+		this->SetEngraveDirection(pBullet, rotateAngle);
 	}
 	else
 	{
 		this->TechnoInTransport = false;
 		this->NotMainWeapon = true;
 
-		this->SetEngraveDirection(pBullet, pBullet->SourceCoords, pBullet->TargetCoords);
+		const auto rotateAngle = Math::atan2(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y , pBullet->TargetCoords.X - pBullet->SourceCoords.X);
+		this->SetEngraveDirection(pBullet, rotateAngle);
 	}
 
 	auto coordDistance = pBullet->Velocity.Magnitude();
@@ -229,9 +232,10 @@ inline void EngraveTrajectory::CheckMirrorCoord(TechnoClass* pTechno)
 	}
 }
 
-void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, CoordStruct theSource, CoordStruct theTarget)
+void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, double rotateAngle)
 {
-	const auto rotateAngle = Math::atan2(theTarget.Y - theSource.Y , theTarget.X - theSource.X);
+	auto theSource = pBullet->SourceCoords;
+	auto theTarget = pBullet->TargetCoords;
 
 	if (this->SourceCoord.X != 0 || this->SourceCoord.Y != 0)
 	{
@@ -265,7 +269,7 @@ inline bool EngraveTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 		|| pTechno->IsUnderEMP());
 }
 
-int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, CoordStruct coord)
+int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, const CoordStruct& coord)
 {
 	if (const auto pCell = MapClass::Instance->GetCellAt(coord))
 	{
