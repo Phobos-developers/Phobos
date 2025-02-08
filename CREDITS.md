@@ -394,7 +394,11 @@ This page lists all the individual contributions to the project by their author.
   - Global value of `RepairBaseNodes`
   - Skip anim delay for burst fire
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
-- **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
+- **Aephiex**
+  - Auto load hotkey command (supplement)
+  - Auto garrison hotkey command
+  - Auto capture hotkey command
+  - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
@@ -413,6 +417,7 @@ This page lists all the individual contributions to the project by their author.
 - **Joshy** - Original FlyingStrings implementation
 - **CnCVK** - Original custom locomotors experiment
 - **ZΞPHYɌUS** - win/lose themes code
+- **psi-cmd** - Auto load hotkey command (implementation)
 - **Neargye (Daniil Goncharov)** - [nameof library](https://github.com/Neargye/nameof) (MIT)
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing

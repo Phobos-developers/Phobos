@@ -465,6 +465,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
+	this->AllowedOccupiers.Read(exINI, pSection, "CanBeOccupiedBy");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
@@ -472,10 +473,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
+	this->NoManualEnter.Read(exINI, pSection, "NoManualEnter");
+	this->PassengersWhitelist.Read(exINI, pSection, "Passengers.Allowed");
+	this->PassengersBlacklist.Read(exINI, pSection, "Passengers.Disallowed");
 
 	// Ares 0.C
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
+
+	// Ares 2.0
+	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
 
 	char tempBuffer[32];
 
@@ -748,6 +755,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
+
+		.Process(this->PassengersWhitelist)
+		.Process(this->PassengersBlacklist)
+		.Process(this->AllowedOccupiers)
+		.Process(this->Passengers_BySize)
+		.Process(this->NoManualEnter)
 
 		.Process(this->OnlyUseLandSequences)
 

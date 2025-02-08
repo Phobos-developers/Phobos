@@ -466,6 +466,94 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+// Checks if this transport can load a passenger.
+// Note that this function only checks the size limit and Ares passenger whitelist and blacklist,
+// it doesn't check if this transport is actually a transport or not.
+bool TechnoExt::ExtData::CanLoadPassenger(TechnoClass* pPassenger) const
+{
+	auto const pTransport = this->OwnerObject();
+	auto const pTransportTypeExt = this->TypeExtData;
+	auto const pTransportType = pTransportTypeExt->OwnerObject();
+	auto const pPassengerType = pPassenger->GetTechnoType();
+	auto const sizeLimit = static_cast<int>(pTransportType->SizeLimit);
+	auto const size = static_cast<int>(pPassengerType->Size);
+	return (sizeLimit <= 0 || sizeLimit >= size)
+		&& (!pTransportTypeExt->Passengers_BySize || (pTransport->Passengers.GetTotalSize() + size) <= pTransportType->Passengers)
+		&& (pTransportTypeExt->PassengersWhitelist.empty() || pTransportTypeExt->PassengersWhitelist.Contains(pPassengerType))
+		&& !pTransportTypeExt->PassengersBlacklist.Contains(pPassengerType);
+}
+
+// Checks if this transport can load any of the passengers inside a vector.
+// Note that this function only checks the size limit and Ares passenger whitelist and blacklist,
+// it doesn't check if this transport is actually a transport or not.
+bool TechnoExt::ExtData::CanLoadAny(std::vector<TechnoClass*> pPassengerList) const
+{
+	for (auto pPassenger : pPassengerList)
+		if (this->CanLoadPassenger(pPassenger))
+			return true;
+	return false;
+}
+
+// Checks if a transport can load any of the passengers inside a map.
+bool TechnoExt::ExtData::CanLoadAny(std::map<int, std::vector<TechnoClass*>> passengerMap) const
+{
+	auto const pTransportTypeExt = this->TypeExtData;
+	auto const pTransportType = pTransportTypeExt->OwnerObject();
+	auto const sizeLimit = static_cast<int>(pTransportType->SizeLimit);
+	for (auto const& passengerMapPair : passengerMap)
+	{
+		auto const passengerSize = passengerMapPair.first;
+		// there is no passenger small enough it can load, or the passenger list of this size is somehow empty
+		if ((sizeLimit > 0 && passengerSize > sizeLimit) || passengerMapPair.second.empty())
+			continue;
+		// then check the function for list
+		if (this->CanLoadAny(passengerMapPair.second))
+			return true;
+	}
+	return false;
+}
+
+bool TechnoExt::ExtData::IsMultiSelectableNotOwned() const
+{
+	if (auto pBuilding = abstract_cast<BuildingClass*>(this->OwnerObject()))
+	{
+		if (pBuilding->Owner->IsNeutral())
+		{
+			if (pBuilding->Type->CanBeOccupied)
+				return RulesExt::Global()->MultiSelectNeutrals_Garrisonable;
+			else if (pBuilding->Type->NeedsEngineer)
+				return RulesExt::Global()->MultiSelectNeutrals_TechBuilding;
+		}
+		else
+		{
+			if (pBuilding->Type->NeedsEngineer)
+				return RulesExt::Global()->MultiSelectNotOwned_TechBuilding;
+		}
+	}
+	return false;
+}
+
+bool TechnoExt::ExtData::NeedsMultipleEngineers() const
+{
+	if (auto pBuilding = abstract_cast<BuildingClass*>(this->OwnerObject()))
+	{
+		auto const multiEngineer = RulesClass::Instance()->EngineerCaptureLevel < 1.0;
+		auto const multiEngineerTech = multiEngineer && !RulesExt::Global()->EngineerAlwaysCaptureTech;
+		return pBuilding->Type->NeedsEngineer ? multiEngineerTech : multiEngineer;
+	}
+	return false;
+}
+
+// Ares 0.2 source
+// Checks if a garrisonable structure can garrison a unit.
+// It is assumed that "whom" is an infantry.
+// This function only checks about the Ares occupier whitelist, it does not check if this is a garrisonable structure or not.
+bool TechnoExt::ExtData::CanBeOccupiedBy(TechnoClass* whom) const
+{
+	return this->TypeExtData->AllowedOccupiers.empty()
+		|| this->TypeExtData->AllowedOccupiers.Contains(whom->GetTechnoType());
+}
+
 // =============================
 // load / save
 

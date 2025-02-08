@@ -10,6 +10,9 @@
 #include "ToggleDigitalDisplay.h"
 #include "ToggleDesignatorRange.h"
 #include "SaveVariablesToFile.h"
+#include "AutoLoad.h"
+#include "AutoGarrison.h"
+#include "AutoCapture.h"
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -19,6 +22,14 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
+	MakeCommand<AutoLoadCommandClass>();
+	MakeCommand<AutoGarrisonCommandClass>();
+	AutoCaptureCommandClass* autoCaptureT = GameCreate<AutoCaptureCommandClass>();
+	autoCaptureT->TechBuildingsOnly = true;
+	CommandClass::Array->AddItem(autoCaptureT);
+	AutoCaptureCommandClass* autoCaptureB = GameCreate<AutoCaptureCommandClass>();
+	autoCaptureB->TechBuildingsOnly = false;
+	CommandClass::Array->AddItem(autoCaptureB);
 
 	if (Phobos::Config::DevelopmentCommands)
 	{

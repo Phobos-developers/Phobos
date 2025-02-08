@@ -171,6 +171,12 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
+		Valueable<bool> MultiSelectNeutrals_Garrisonable;
+		Valueable<bool> MultiSelectNeutrals_TechBuilding;
+		Valueable<bool> MultiSelectNotOwned_TechBuilding;
+
+		Valueable<bool> EngineerAlwaysCaptureTech;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -295,6 +301,12 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+
+			, MultiSelectNeutrals_Garrisonable { false }
+			, MultiSelectNeutrals_TechBuilding { false }
+			, MultiSelectNotOwned_TechBuilding { false }
+
+			, EngineerAlwaysCaptureTech { true }
 		{ }
 
 		virtual ~ExtData() = default;

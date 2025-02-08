@@ -158,6 +158,12 @@ public:
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
+		ValueableVector<TechnoTypeClass*> PassengersWhitelist;
+		ValueableVector<TechnoTypeClass*> PassengersBlacklist;
+		ValueableVector<TechnoTypeClass*> AllowedOccupiers;
+		Valueable<bool> Passengers_BySize;
+		Valueable<bool> NoManualEnter;
+
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
@@ -375,6 +381,12 @@ public:
 			, SelfHealGainType {}
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
+
+			, PassengersWhitelist {}
+			, PassengersBlacklist {}
+			, AllowedOccupiers {}
+			, Passengers_BySize { true }
+			, NoManualEnter { false }
 
 			, OnlyUseLandSequences { false }
 
