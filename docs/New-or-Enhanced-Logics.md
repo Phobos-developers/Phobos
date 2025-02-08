@@ -817,8 +817,7 @@ Trajectory.Straight.CountAttenuation=1.0        ; floating point value
 
 ```{note}
 - Make sure you set a low `Trajectory.Straight.ProximityRadius` value unless necessary.
-- Note that if `Trajectory.Straight.ProximityFlight` is true, it will consume more CPU performance.
-- Note that the listed Warheads in `Trajectory.Straight.PassDetonateWarhead` and `Trajectory.Straight.ProximityWarhead` must be listed in `[Warheads]` for them to work.
+- The listed Warheads in `Trajectory.Straight.PassDetonateWarhead` and `Trajectory.Straight.ProximityWarhead` must be listed in `[Warheads]` for them to work.
 ```
 
 #### Bombard trajectory
