@@ -92,9 +92,9 @@ msgstr "修复了`Naval=yes`会无视`WaterBound=no`强制将建筑限制在水�
 
 #: ../Fixed-or-Improved-Logics.md:17
 msgid ""
-"Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > "
+"Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` -> "
 "`AllowParallelAIQueues=no` is set."
-msgstr "修复了AI的飞机停机坪在Ares标签`[GlobalControls]` > `AllowParallelAIQueues=no`时有bug的问题。"
+msgstr "修复了AI的飞机停机坪在Ares标签`[GlobalControls]` -> `AllowParallelAIQueues=no`时有bug的问题。"
 
 #: ../Fixed-or-Improved-Logics.md:18
 msgid ""
@@ -216,10 +216,10 @@ msgstr "路径点上限由702增加至2147483647。"
 msgid ""
 "Map trigger action `125 Build At...` can now play buildup anim optionally"
 " (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-"
-"final-alert-2)."
+"final-alert-2))."
 msgstr ""
-"地图触发动作`125将建筑建造于...`现在可选是否播放建造动画 (需要[自行修改`fadata.ini`](Whats-New.md#for-"
-"map-editor-final-alert-2)。"
+"地图触发动作`125将建筑建造于...`现在可选是否播放建造动画 （需要[自行修改`fadata.ini`](Whats-New.md#for-"
+"map-editor-final-alert-2)）。"
 
 #: ../Fixed-or-Improved-Logics.md:41
 msgid ""
