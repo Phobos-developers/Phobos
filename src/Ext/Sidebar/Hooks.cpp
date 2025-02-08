@@ -179,7 +179,7 @@ DEFINE_HOOK(0x6A9BC5, StripClass_Draw_DrawGreyCameoExtraCover, 0x6)
 		{
 			if (const auto count = HouseExt::CountOwnedPresentWithDeployOrUpgrade(HouseClass::CurrentPlayer(), pBuildingType, true))
 			{
-				if (frames[0] >= 0)
+				if (frameSize && frames[0] >= 0)
 				{
 					DSurface::Sidebar->DrawSHP(
 						pRulesExt->Cameo_OverlayPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
