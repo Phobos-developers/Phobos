@@ -116,6 +116,7 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->FLHCoord = pBullet->SourceCoords;
 	const auto pTechno = pBullet->Owner;
 
+	// When the launcher exists, the launcher's location will be used to calculate the direction of the coordinate axis instead of bullet's SourceCoords
 	if (pTechno)
 	{
 		this->TechnoInTransport = static_cast<bool>(pTechno->Transporter);
@@ -135,14 +136,17 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		this->SetEngraveDirection(pBullet, rotateAngle);
 	}
 
+	// Substitute the speed to calculate velocity
 	auto coordDistance = pBullet->Velocity.Magnitude();
 	pBullet->Velocity *= (coordDistance > 1e-10) ? (pType->Trajectory_Speed / coordDistance) : 0;
 
+	// Calculate additional range
 	const auto pWeapon = pBullet->WeaponType;
 
 	if (pType->ApplyRangeModifiers && pWeapon && pTechno)
 		coordDistance = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno, static_cast<int>(coordDistance)));
 
+	// Automatically calculate duration
 	if (this->TheDuration <= 0)
 		this->TheDuration = static_cast<int>(coordDistance / pType->Trajectory_Speed) + 1;
 }
@@ -195,6 +199,7 @@ void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTe
 {
 	const auto pExt = TechnoExt::ExtMap.Find(pTechno);
 
+	// Record the launch location, the building has an additional offset
 	if (!pExt || !pExt->LastWeaponType || pExt->LastWeaponType->Projectile != pBullet->Type)
 	{
 		this->NotMainWeapon = true;
@@ -237,6 +242,7 @@ void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, double rotateA
 	auto theSource = pBullet->SourceCoords;
 	auto theTarget = pBullet->TargetCoords;
 
+	// Special case: Starting from the launch position
 	if (this->SourceCoord.X != 0 || this->SourceCoord.Y != 0)
 	{
 		theSource = theTarget;
@@ -271,18 +277,11 @@ inline bool EngraveTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 
 int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, const CoordStruct& coord)
 {
-	if (const auto pCell = MapClass::Instance->GetCellAt(coord))
-	{
-		const auto onFloor = MapClass::Instance->GetCellFloorHeight(coord);
-		const auto onBridge = pCell->GetCoordsWithBridge().Z;
+	const auto pCell = MapClass::Instance->GetCellAt(coord);
+	const auto onFloor = MapClass::Instance->GetCellFloorHeight(coord);
+	const auto onBridge = pCell->GetCoordsWithBridge().Z;
 
-		if (pBullet->SourceCoords.Z >= onBridge || pBullet->TargetCoords.Z >= onBridge)
-			return onBridge;
-
-		return onFloor;
-	}
-
-	return coord.Z;
+	return (pBullet->SourceCoords.Z >= onBridge || pBullet->TargetCoords.Z >= onBridge) ? onBridge : onFloor;
 }
 
 bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
@@ -295,8 +294,10 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 		bulletCoords.Z + static_cast<int>(pBullet->Velocity.Z)
 	};
 
+	// Calculate where will be located in the next frame
 	const auto checkDifference = this->GetFloorCoordHeight(pBullet, futureCoords) - futureCoords.Z;
 
+	// When crossing the cliff, directly move the position of the bullet, otherwise change the vertical velocity
 	if (std::abs(checkDifference) >= 384)
 	{
 		if (pBullet->Type->SubjectToCliffs)
@@ -334,6 +335,7 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 	const auto pTransporter = pTechno->Transporter;
 	auto fireCoord = pBullet->SourceCoords;
 
+	// Considering that the CurrentBurstIndex may be different, it is not possible to call existing functions
 	if (!this->NotMainWeapon && pTechno && (pTransporter || !pTechno->InLimbo))
 	{
 		if (pTechno->WhatAmI() != AbstractType::Building)
@@ -361,6 +363,7 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 		}
 	}
 
+	// Draw laser from head to tail
 	if (pType->IsHouseColor || pType->IsSingleColor)
 	{
 		const auto pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, ((pType->IsHouseColor && pOwner) ? pOwner->LaserColor : pType->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pType->LaserDuration);
