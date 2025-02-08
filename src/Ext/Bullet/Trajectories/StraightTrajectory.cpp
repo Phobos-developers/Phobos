@@ -787,7 +787,8 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		return;
 
 	// Step 1: Find valid targets on the ground within range.
-	std::vector<CellClass*> recCellClass = PhobosTrajectoryType::GetCellsInProximityRadius(pBullet, pType->ProximityRadius.Get());
+	const auto radius = pType->ProximityRadius.Get();
+	std::vector<CellClass*> recCellClass = PhobosTrajectoryType::GetCellsInProximityRadius(pBullet, radius);
 	const size_t cellSize = recCellClass.size() * 2;
 	size_t vectSize = cellSize;
 	size_t thisSize = 0;
@@ -798,10 +799,11 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		static_cast<int>(pBullet->Velocity.Y),
 		static_cast<int>(pBullet->Velocity.Z)
 	};
+	const auto velocitySq = velocityCrd.MagnitudeSquared();
+	const auto pTarget = pBullet->Target;
 
 	std::vector<TechnoClass*> validTechnos;
 	validTechnos.reserve(vectSize);
-	const auto pTarget = pBullet->Target;
 
 	for (const auto& pRecCell : recCellClass)
 	{
@@ -824,19 +826,23 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
 				continue;
 
-			const auto distanceCrd = pTechno->GetCoords() - pBullet->SourceCoords;
-			const auto locationCrd = (velocityCrd + (pBullet->Location - pBullet->SourceCoords));
-			const auto terminalCrd = distanceCrd - locationCrd;
-			auto distance = locationCrd.MagnitudeSquared(); // Not true distance yet.
+			// Check distance
+			const auto targetCrd = pTechno->GetCoords();
+			const auto pathCrd = targetCrd - pBullet->SourceCoords;
 
-			// Between front and back
-			if (distanceCrd * velocityCrd < 0 || terminalCrd * velocityCrd > 0)
+			if (pathCrd * velocityCrd < 0) // In front of the techno
 				continue;
 
-			distance = (distance > 1e-10) ? sqrt(distanceCrd.CrossProduct(terminalCrd).MagnitudeSquared() / distance) : distanceCrd.Magnitude();
+			const auto distanceCrd = targetCrd - pBullet->Location;
+			const auto nextDistanceCrd = distanceCrd - velocityCrd;
 
-			// Between left and right (cylindrical)
-			if (technoType != AbstractType::Building && distance > pType->ProximityRadius.Get())
+			if (nextDistanceCrd * velocityCrd > 0) // Behind the bullet
+				continue;
+
+			const auto cross = distanceCrd.CrossProduct(nextDistanceCrd).MagnitudeSquared();
+			const auto distance = (velocitySq > 1e-10) ? sqrt(cross / velocitySq) : distanceCrd.Magnitude();
+
+			if (technoType != AbstractType::Building && distance > radius) // In the cylinder
 				continue;
 
 			if (thisSize >= vectSize)
@@ -854,26 +860,35 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	if (pType->ProximityFlight)
 	{
 		const auto airTracker = &AircraftTrackerClass::Instance;
-		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5), static_cast<int>((pType->ProximityRadius.Get() + pType->Trajectory_Speed / 2) / Unsorted::LeptonsPerCell));
+		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5),
+			Game::F2I(sqrt(radius * radius + (velocitySq / 4)) / Unsorted::LeptonsPerCell));
 
 		for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
 			if (!pTechno->IsAlive || !pTechno->IsOnMap || pTechno->Health <= 0 || pTechno->InLimbo || pTechno->IsSinking)
 				continue;
 
+			// Not directly harming friendly forces
 			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
 				continue;
 
-			const auto distanceCrd = pTechno->GetCoords() - pBullet->Location;
-			const auto terminalCrd = distanceCrd - velocityCrd;
-			auto distance = velocityCrd.MagnitudeSquared(); // Not true distance yet.
+			// Check distance
+			const auto targetCrd = pTechno->GetCoords();
+			const auto pathCrd = targetCrd - pBullet->SourceCoords;
 
-			if (distanceCrd * velocityCrd < 0 || terminalCrd * velocityCrd > 0)
+			if (pathCrd * velocityCrd < 0) // In front of the techno
 				continue;
 
-			distance = (distance > 1e-10) ? sqrt(distanceCrd.CrossProduct(terminalCrd).MagnitudeSquared() / distance) : distanceCrd.Magnitude();
+			const auto distanceCrd = targetCrd - pBullet->Location;
+			const auto nextDistanceCrd = distanceCrd - velocityCrd;
 
-			if (distance > pType->ProximityRadius.Get())
+			if (nextDistanceCrd * velocityCrd > 0) // Behind the bullet
+				continue;
+
+			const auto cross = distanceCrd.CrossProduct(nextDistanceCrd).MagnitudeSquared();
+			const auto distance = (velocitySq > 1e-10) ? sqrt(cross / velocitySq) : distanceCrd.Magnitude();
+
+			if (distance > radius) // In the cylinder
 				continue;
 
 			if (thisSize >= vectSize)
