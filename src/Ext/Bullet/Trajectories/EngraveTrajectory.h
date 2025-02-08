@@ -23,6 +23,14 @@ public:
 		, LaserDuration { 1 }
 		, LaserDelay { 1 }
 		, DamageDelay { 2 }
+		, ProximityImpact { 0 }
+		, ProximityWarhead {}
+		, ProximityDamage { 0 }
+		, ProximityRadius { Leptons(179) }
+		, ProximityDirect { false }
+		, ProximityMedial { false }
+		, ProximityAllies { false }
+		, ProximitySuicide { false }
 	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -48,6 +56,14 @@ public:
 	Valueable<int> LaserDuration;
 	Valueable<int> LaserDelay;
 	Valueable<int> DamageDelay;
+	Valueable<int> ProximityImpact;
+	Valueable<WarheadTypeClass*> ProximityWarhead;
+	Valueable<int> ProximityDamage;
+	Valueable<Leptons> ProximityRadius;
+	Valueable<bool> ProximityDirect;
+	Valueable<bool> ProximityMedial;
+	Valueable<bool> ProximityAllies;
+	Valueable<bool> ProximitySuicide;
 
 private:
 	template <typename T>
@@ -69,6 +85,9 @@ public:
 		, NotMainWeapon { false }
 		, FLHCoord {}
 		, BuildingCoord {}
+		, StartCoord {}
+		, ProximityImpact { trajType->ProximityImpact }
+		, TheCasualty {}
 	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -91,6 +110,9 @@ public:
 	bool NotMainWeapon;
 	CoordStruct FLHCoord;
 	CoordStruct BuildingCoord;
+	CoordStruct StartCoord;
+	int ProximityImpact;
+	std::map<int, int> TheCasualty; // Only for recording existence
 
 private:
 	template <typename T>
@@ -104,4 +126,5 @@ private:
 	bool PlaceOnCorrectHeight(BulletClass* pBullet);
 	void DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
 	inline void DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);
+	void PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner);
 };

@@ -34,6 +34,14 @@ void EngraveTrajectoryType::Serialize(T& Stm)
 		.Process(this->LaserDuration)
 		.Process(this->LaserDelay)
 		.Process(this->DamageDelay)
+		.Process(this->ProximityImpact)
+		.Process(this->ProximityWarhead)
+		.Process(this->ProximityDamage)
+		.Process(this->ProximityRadius)
+		.Process(this->ProximityDirect)
+		.Process(this->ProximityMedial)
+		.Process(this->ProximityAllies)
+		.Process(this->ProximitySuicide)
 		;
 }
 
@@ -77,6 +85,14 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->LaserDelay = Math::max(1, this->LaserDelay);
 	this->DamageDelay.Read(exINI, pSection, "Trajectory.Engrave.DamageDelay");
 	this->DamageDelay = Math::max(1, this->DamageDelay);
+	this->ProximityImpact.Read(exINI, pSection, "Trajectory.Engrave.ProximityImpact");
+	this->ProximityWarhead.Read<true>(exINI, pSection, "Trajectory.Engrave.ProximityWarhead");
+	this->ProximityDamage.Read(exINI, pSection, "Trajectory.Engrave.ProximityDamage");
+	this->ProximityRadius.Read(exINI, pSection, "Trajectory.Engrave.ProximityRadius");
+	this->ProximityDirect.Read(exINI, pSection, "Trajectory.Engrave.ProximityDirect");
+	this->ProximityMedial.Read(exINI, pSection, "Trajectory.Engrave.ProximityMedial");
+	this->ProximityAllies.Read(exINI, pSection, "Trajectory.Engrave.ProximityAllies");
+	this->ProximitySuicide.Read(exINI, pSection, "Trajectory.Engrave.ProximitySuicide");
 }
 
 template<typename T>
@@ -93,6 +109,9 @@ void EngraveTrajectory::Serialize(T& Stm)
 		.Process(this->NotMainWeapon)
 		.Process(this->FLHCoord)
 		.Process(this->BuildingCoord)
+		.Process(this->StartCoord)
+		.Process(this->ProximityImpact)
+		.Process(this->TheCasualty)
 		;
 }
 
@@ -168,6 +187,9 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 
 	if (this->DamageTimer.Completed())
 		this->DetonateLaserWarhead(pBullet, pTechno, pOwner);
+
+	if (this->ProximityImpact != 0 && this->Type->ProximityRadius.Get() > 0)
+		this->PrepareForDetonateAt(pBullet, pOwner);
 
 	return false;
 }
@@ -251,6 +273,7 @@ void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, double rotateA
 	}
 
 	theSource.Z = this->GetFloorCoordHeight(pBullet, theSource);
+	this->StartCoord = theSource;
 	pBullet->SetLocation(theSource);
 
 	theTarget.X += static_cast<int>(this->TargetCoord.X * Math::cos(rotateAngle) + this->TargetCoord.Y * Math::sin(rotateAngle));
@@ -385,4 +408,156 @@ inline void EngraveTrajectory::DetonateLaserWarhead(BulletClass* pBullet, Techno
 	const auto pType = this->Type;
 	this->DamageTimer.Start(pType->DamageDelay);
 	WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, pBullet->Health, pOwner);
+}
+
+// Select suitable targets and choose the closer targets then attack each target only once.
+void EngraveTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* pOwner)
+{
+	const auto pType = this->Type;
+	const auto pWH = pType->ProximityWarhead;
+
+	if (!pWH)
+		return;
+
+	// Step 1: Find valid targets on the ground within range.
+	const auto radius = pType->ProximityRadius.Get();
+	std::vector<CellClass*> recCellClass = PhobosTrajectoryType::GetCellsInProximityRadius(pBullet, radius);
+	const size_t cellSize = recCellClass.size() * 2;
+	size_t vectSize = cellSize;
+	size_t thisSize = 0;
+
+	const CoordStruct velocityCrd
+	{
+		static_cast<int>(pBullet->Velocity.X),
+		static_cast<int>(pBullet->Velocity.Y),
+		static_cast<int>(pBullet->Velocity.Z)
+	};
+	const auto velocitySq = velocityCrd.MagnitudeSquared();
+	const auto pTarget = pBullet->Target;
+
+	std::vector<TechnoClass*> validTechnos;
+	validTechnos.reserve(vectSize);
+
+	for (const auto& pRecCell : recCellClass)
+	{
+		auto pObject = pRecCell->GetContent();
+
+		while (pObject)
+		{
+			const auto pTechno = abstract_cast<TechnoClass*>(pObject);
+			pObject = pObject->NextObject;
+
+			if (!pTechno || !pTechno->IsAlive || !pTechno->IsOnMap || pTechno->Health <= 0 || pTechno->InLimbo || pTechno->IsSinking)
+				continue;
+
+			const auto technoType = pTechno->WhatAmI();
+
+			if (technoType == AbstractType::Building && static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
+				continue;
+
+			// Not directly harming friendly forces
+			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
+				continue;
+
+			// Check distance
+			const auto targetCrd = pTechno->GetCoords();
+			const auto pathCrd = targetCrd - this->StartCoord;
+
+			if (pathCrd * velocityCrd < 0) // In front of the techno
+				continue;
+
+			const auto distanceCrd = targetCrd - pBullet->Location;
+			const auto nextDistanceCrd = distanceCrd - velocityCrd;
+
+			if (nextDistanceCrd * velocityCrd > 0) // Behind the bullet
+				continue;
+
+			const auto cross = distanceCrd.CrossProduct(nextDistanceCrd).MagnitudeSquared();
+			const auto distance = (velocitySq > 1e-10) ? sqrt(cross / velocitySq) : distanceCrd.Magnitude();
+
+			if (technoType != AbstractType::Building && distance > radius) // In the cylinder
+				continue;
+
+			if (thisSize >= vectSize)
+			{
+				vectSize += cellSize;
+				validTechnos.reserve(vectSize);
+			}
+
+			validTechnos.push_back(pTechno);
+			thisSize += 1;
+		}
+	}
+
+	// Step 2: Record each target without repetition.
+	std::vector<int> casualtyChecked;
+	casualtyChecked.reserve(std::max(validTechnos.size(), this->TheCasualty.size()));
+
+	if (const auto pFirer = pBullet->Owner)
+		this->TheCasualty[pFirer->UniqueID] = 20;
+
+	// Update Record
+	for (const auto& [ID, remainTime] : this->TheCasualty)
+	{
+		if (remainTime > 0)
+			this->TheCasualty[ID] = remainTime - 1;
+		else
+			casualtyChecked.push_back(ID);
+	}
+
+	for (const auto& ID : casualtyChecked)
+		this->TheCasualty.erase(ID);
+
+	std::vector<TechnoClass*> validTargets;
+
+	// checking for duplicate
+	for (const auto& pTechno : validTechnos)
+	{
+		if (!this->TheCasualty.contains(pTechno->UniqueID))
+			validTargets.push_back(pTechno);
+
+		this->TheCasualty[pTechno->UniqueID] = 20;
+	}
+
+	// Step 3: Detonate warheads in sequence based on distance.
+	const auto targetsSize = validTargets.size();
+
+	if (this->ProximityImpact > 0 && static_cast<int>(targetsSize) > this->ProximityImpact)
+	{
+		std::sort(&validTargets[0], &validTargets[targetsSize],[this](TechnoClass* pTechnoA, TechnoClass* pTechnoB)
+		{
+			const auto distanceA = pTechnoA->GetCoords().DistanceFromSquared(this->StartCoord);
+			const auto distanceB = pTechnoB->GetCoords().DistanceFromSquared(this->StartCoord);
+
+			// Distance priority
+			if (distanceA < distanceB)
+				return true;
+
+			if (distanceA > distanceB)
+				return false;
+
+			return pTechnoA->UniqueID < pTechnoB->UniqueID;
+		});
+	}
+
+	for (const auto& pTechno : validTargets)
+	{
+		// Cause damage
+		auto damage = pType->ProximityDamage;
+
+		if (pType->ProximityDirect)
+			pTechno->ReceiveDamage(&damage, 0, pWH, pBullet->Owner, false, false, pOwner);
+		else if (pType->ProximityMedial)
+			WarheadTypeExt::DetonateAt(pWH, pBullet->Location, pBullet->Owner, damage, pOwner);
+		else
+			WarheadTypeExt::DetonateAt(pWH, pTechno->GetCoords(), pBullet->Owner, damage, pOwner, pTechno);
+
+		if (this->ProximityImpact > 0 && --this->ProximityImpact == 0)
+		{
+			if (pType->ProximitySuicide)
+				this->TheDuration = 0;
+
+			break;
+		}
+	}
 }
