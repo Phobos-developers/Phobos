@@ -854,6 +854,13 @@ Trajectory.Bombard.Height=0.0  ; double
     - `Trajectory.Engrave.LaserDuration` controls the duration of the engrave laser.
     - `Trajectory.Engrave.LaserDelay` controls how often to draw the engrave laser.
   - `Trajectory.Engrave.DamageDelay` controls how often to detonate warheads.
+  - `Trajectory.Engrave.ProximityImpact` controls the initial proximity fuse times. When there are enough remaining times and the projectile approaches another valid target, it will detonate a warhead defined by `Trajectory.Engrave.ProximityWarhead` on it. If the number of times is exhausted, the engraving process can still continue, but it will not detonate additional warhead as a result. This function can be cancelled by setting to 0. A negative integer means unlimited times. (You can use this to cause non repeated damage to all units encountered during the flight of the projectile.)
+    - `Trajectory.Engrave.ProximityWarhead` defines the warhead detonated by `Trajectory.Engrave.ProximityImpact`, and `Trajectory.Engrave.ProximityDamage` defines the damage caused by `Trajectory.Engrave.ProximityWarhead`.
+    - `Trajectory.Engrave.ProximityRadius` controls the range of proximity fuse. It can NOT be set as a negative integer.
+    - `Trajectory.Engrave.ProximityDirect` controls whether let the target receive damage instead of detonating the warhead.
+    - `Trajectory.Engrave.ProximityMedial` controls whether to detonate `Trajectory.Engrave.ProximityWarhead` at the bullet's location rather than the proximity target's location.
+    - `Trajectory.Engrave.ProximityAllies` controls whether allies will also trigger the proximity fuse.
+    - `Trajectory.Engrave.ProximitySuicide` controls whether the projectile will self destruct after the number of proximity fuse times has been exhausted. If `Trajectory.Engrave.ProximityImpact` set to 0, this will not be enabled.
 
 In `rulesmd.ini`:
 ```ini
@@ -876,6 +883,14 @@ Trajectory.Engrave.LaserThickness=3            ; integer
 Trajectory.Engrave.LaserDuration=1             ; integer
 Trajectory.Engrave.LaserDelay=1                ; integer
 Trajectory.Engrave.DamageDelay=2               ; integer
+Trajectory.Engrave.ProximityImpact=0           ; integer
+Trajectory.Engrave.ProximityWarhead=           ; WarheadType
+Trajectory.Engrave.ProximityDamage=0           ; integer
+Trajectory.Engrave.ProximityRadius=0.7         ; floating point value
+Trajectory.Engrave.ProximityDirect=false       ; boolean
+Trajectory.Engrave.ProximityMedial=false       ; boolean
+Trajectory.Engrave.ProximityAllies=false       ; boolean
+Trajectory.Engrave.ProximitySuicide=false      ; boolean
 ```
 
 ```{note}
