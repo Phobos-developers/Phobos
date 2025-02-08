@@ -40,17 +40,39 @@ DEFINE_HOOK(0x4A8FCA, DisplayClass_BuildingProximityCheck_BaseNormalExtra, 0x7)
 
 	if (RulesExt::Global()->CheckUnitBaseNormal)
 	{
-		if (const auto pUnit = pCell->GetUnit(false))
+		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
-			if (const auto pOwner = pUnit->Owner)
+			const auto pCellUnit = abstract_cast<UnitClass*>(pObject);
+
+			if (!pCellUnit)
+				continue;
+
+			const auto pOwner = pCellUnit->Owner;
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pCellUnit->Type);
+
+			auto canBeBaseNormal = [&]()
 			{
-				if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type))
-				{
-					if (pOwner->ArrayIndex == idxHouse && pTypeExt->UnitBaseNormal)
-						return CanBuild;
-					else if (RulesClass::Instance->BuildOffAlly && pOwner->IsAlliedWith(HouseClass::Array->Items[idxHouse]) && pTypeExt->UnitBaseForAllyBuilding)
-						return CanBuild;
-				}
+				if (pOwner->ArrayIndex == idxHouse)
+					return pTypeExt->UnitBaseNormal.Get();
+				else if (RulesClass::Instance->BuildOffAlly && pOwner->IsAlliedWith(HouseClass::Array->Items[idxHouse]))
+					return pTypeExt->UnitBaseForAllyBuilding.Get();
+
+				return false;
+			};
+
+			if (canBeBaseNormal())
+			{
+				const auto& pUnitsAllowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::BuildType)->Adjacent_AllowedUnit;
+
+				if (pUnitsAllowed.size() > 0 && !pUnitsAllowed.Contains(pCellUnit->Type))
+					continue;
+
+				const auto& pUnitsDisallowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::BuildType)->Adjacent_DisallowedUnit;
+
+				if (pUnitsDisallowed.size() > 0 && pUnitsDisallowed.Contains(pCellUnit->Type))
+					continue;
+
+				return CanBuild;
 			}
 		}
 	}

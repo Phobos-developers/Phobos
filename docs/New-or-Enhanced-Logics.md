@@ -514,6 +514,7 @@ DetachedReport=  ; sound entry
 - There are now additional customizations available for building placement next to other buildings.
   - `Adjacent.Allowed` lists BuildingTypes this BuildingType can be placed off (within distance defined by `Adjacent`). If empty, any BuildingType not listed in `Adjacent.Disallowed` is okay.
   - `Adjacent.Disallowed` lists BuildingTypes this BuildingType cannot be placed next to. If empty, any BuildingTypes are okay as long as `Adjacent.Allowed` is empty or they are listed on it.
+  - If `CheckUnitBaseNormal` ([Check building adjacent by using units](Fixed-or-Improved-Logics.md#Check-building-adjacent-by-using-units)) is set to true , `Adjacent.AllowedUnit` and `Adjacent.DisallowedUnit` will work for units as what `Adjacent.Allowed` and `Adjacent.Disallowed` do.
   - If `NoBuildAreaOnBuildup` is set to true, no building can be built next to this building regardless of any other settings if it is currently displaying its buildup animation.
 
 In `rulesmd.ini`:
@@ -521,6 +522,8 @@ In `rulesmd.ini`:
 [SOMEBUILDING]              ; BuildingType
 Adjacent.Allowed=           ; list of BuildingTypes
 Adjacent.Disallowed=        ; list of BuildingTypes
+Adjacent.AllowedUnit=       ; list of UnitTypes
+Adjacent.DisallowedUnit=    ; list of UnitTypes
 NoBuildAreaOnBuildup=false  ; boolean
 ```
 
