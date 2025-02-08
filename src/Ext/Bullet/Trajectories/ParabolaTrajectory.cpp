@@ -131,6 +131,7 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	const auto pTarget = abstract_cast<FootClass*>(pBullet->Target);
 	bool resetTarget = false;
 
+	// Special case: Set the target to the ground
 	if (pType->DetonationDistance.Get() <= -1e-10 && pTarget)
 	{
 		if (const auto pCell = MapClass::Instance->TryGetCellAt(pTarget->GetCoords()))
@@ -141,6 +142,7 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 		}
 	}
 
+	// Record some information, and try to see if mirror offset is needed like Straight
 	if (const auto pWeapon = pBullet->WeaponType)
 		this->CountOfBurst = pWeapon->Burst;
 
@@ -152,6 +154,7 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
 	}
 
+	// Wait, or launch immediately?
 	if (!pType->LeadTimeCalculate || !pTarget || resetTarget)
 		this->PrepareForOpenFire(pBullet);
 	else
@@ -179,6 +182,7 @@ void ParabolaTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
 	const auto targetSnapDistance = this->Type->TargetSnapDistance.Get();
 
+	// Whether to snap to target?
 	if (targetSnapDistance > 0)
 	{
 		const auto pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
@@ -193,6 +197,7 @@ void ParabolaTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 		}
 	}
 
+	// If the speed is too fast, it may smash through the floor
 	const auto cellHeight = MapClass::Instance->GetCellFloorHeight(pBullet->Location);
 
 	if (pBullet->Location.Z < cellHeight)
@@ -224,6 +229,7 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	leadTimeCalculate &= theTargetCoords != this->LastTargetCoord;
 	double rotateAngle = 0.0;
 
+	// Calculate the orientation of the coordinate system
 	if (!pType->LeadTimeCalculate && theTargetCoords == theSourceCoords && pBullet->Owner) //For disperse.
 	{
 		const auto theOwnerCoords = pBullet->Owner->GetCoords();
@@ -234,6 +240,7 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		rotateAngle = Math::atan2(theTargetCoords.Y - theSourceCoords.Y , theTargetCoords.X - theSourceCoords.X);
 	}
 
+	// Add the fixed offset value
 	if (this->OffsetCoord != CoordStruct::Empty)
 	{
 		theTargetCoords.X += static_cast<int>(this->OffsetCoord.X * Math::cos(rotateAngle) + this->OffsetCoord.Y * Math::sin(rotateAngle));
@@ -241,6 +248,7 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		theTargetCoords.Z += this->OffsetCoord.Z;
 	}
 
+	// Add random offset value
 	if (pBullet->Type->Inaccurate)
 	{
 		const auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
@@ -252,6 +260,8 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	}
 
 	pBullet->TargetCoords = theTargetCoords;
+
+	// Non positive gravity is not accepted
 	const auto gravity = BulletTypeExt::GetAdjustedGravity(pBullet->Type);
 
 	if (gravity <= 1e-10)
@@ -261,11 +271,13 @@ void ParabolaTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		return;
 	}
 
+	// Calculate the firing velocity vector of the bullet
 	if (leadTimeCalculate)
 		this->CalculateBulletVelocityLeadTime(pBullet, &theSourceCoords, gravity);
 	else
 		this->CalculateBulletVelocityRightNow(pBullet, &theSourceCoords, gravity);
 
+	// Rotate the selected angle
 	if (!this->UseDisperseBurst && std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
 	{
 		const auto axis = pType->AxisOfRotation.Get();
@@ -871,15 +883,18 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(BulletClass* pBullet
 {
 	const auto pType = this->Type;
 
+	// Can bounce on water surface?
 	if (pCell->LandType == LandType::Water && !pType->BounceOnWater)
 		return true;
 
 	--this->BounceTimes;
 	this->ShouldBounce = false;
 
+	// Calculate the velocity vector after bouncing
 	const auto groundNormalVector = this->GetGroundNormalVector(pBullet, pCell);
 	pBullet->Velocity = (this->LastVelocity - groundNormalVector * (this->LastVelocity * groundNormalVector) * 2) * pType->BounceCoefficient;
 
+	// Detonate an additional warhead when bouncing?
 	if (pType->BounceDetonate)
 	{
 		const auto pFirer = pBullet->Owner;
@@ -887,6 +902,7 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(BulletClass* pBullet
 		WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pFirer, pBullet->Health, pOwner);
 	}
 
+	// Calculate the attenuation damage after bouncing
 	if (const int damage = pBullet->Health)
 	{
 		if (const int newDamage = static_cast<int>(damage * pType->BounceAttenuation))
@@ -957,6 +973,7 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(BulletClass* pBullet, C
 	const auto bulletHeight = pBullet->Location.Z;
 	const auto lastCellHeight = MapClass::Instance->GetCellFloorHeight(pBullet->Location - velocityCoords);
 
+	// Check if it has hit a cliff
 	if (bulletHeight < cellHeight && (cellHeight - lastCellHeight) > 384)
 	{
 		auto cell = pCell->MapCoords;
@@ -1003,6 +1020,7 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(BulletClass* pBullet, C
 		return BulletVelocity{ 0.7071067811865475244008443621049 * reverseSgnX, 0.7071067811865475244008443621049 * reverseSgnY, 0.0 };
 	}
 
+	// Just ordinary ground
 	return BulletVelocity{ 0.0, 0.0, 1.0 };
 }
 
@@ -1026,6 +1044,7 @@ bool ParabolaTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 
 	const auto pType = this->Type;
 
+	// Check all conditions for premature detonation
 	if (pType->DetonationHeight >= 0 && pBullet->Velocity.Z < 1e-10 && (pBullet->Location.Z - pBullet->SourceCoords.Z) < pType->DetonationHeight)
 		return true;
 
@@ -1049,10 +1068,7 @@ bool ParabolaTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 		}
 	}
 
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < pType->DetonationDistance.Get())
-		return true;
-
-	return false;
+	return (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < pType->DetonationDistance.Get());
 }
 
 bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, CellClass* pCell, double gravity, bool bounce)
@@ -1062,6 +1078,7 @@ bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, CellClass
 	const CoordStruct velocityCoords { static_cast<int>(pBullet->Velocity.X), static_cast<int>(pBullet->Velocity.Y), static_cast<int>(pBullet->Velocity.Z) };
 	const auto futureCoords = pBullet->Location + velocityCoords;
 
+	// Check all the cells that the next frame passes through like Straight
 	if (this->NeedExtraCheck)
 	{
 		const auto cellDist = CellClass::Coord2Cell(pBullet->Location) - CellClass::Coord2Cell(futureCoords);
@@ -1072,6 +1089,7 @@ bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, CellClass
 
 		for (size_t i = 1; i <= largePace; ++i)
 		{
+			// Below ground level?
 			const auto cellHeight = MapClass::Instance->GetCellFloorHeight(curCoord);
 
 			if (curCoord.Z < cellHeight)
@@ -1084,6 +1102,7 @@ bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, CellClass
 				break;
 			}
 
+			// Impact on the wall?
 			if (pBullet->Type->SubjectToWalls && pCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array->GetItem(pCell->OverlayTypeIndex)->Wall)
 			{
 				pBullet->Velocity *= static_cast<double>(i) / largePace;
@@ -1117,6 +1136,7 @@ void ParabolaTrajectory::BulletDetonateEffectuate(BulletClass* pBullet, double v
 	if (velocityMult < 1.0)
 		pBullet->Velocity *= velocityMult;
 
+	// Is it detonating or bouncing?
 	if (this->BounceTimes > 0)
 		this->ShouldBounce = true;
 	else
