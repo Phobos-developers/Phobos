@@ -320,6 +320,8 @@ New:
 - Option for vehicles to keep target when issued move command (by Starkku)
 - Skip anim delay for burst fire (by TaranDahl)
 - New Parabola trajectory (by CrimRecya)
+- Type select for buildings (code by TaranDahl(航味麻酱), doc by Ollerus)
+- Raise alert when technos are taking damage (by TaranDahl)
 - Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 
 Vanilla fixes:
