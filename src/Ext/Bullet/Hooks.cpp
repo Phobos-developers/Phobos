@@ -292,9 +292,7 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 
 constexpr bool CheckTrajectoryCanNotAlwaysSnap(const TrajectoryFlag flag)
 {
-	return flag == TrajectoryFlag::Straight
-		|| flag == TrajectoryFlag::Bombard
-		|| flag == TrajectoryFlag::Parabola;
+	return flag != TrajectoryFlag::Invalid;
 }
 
 DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
