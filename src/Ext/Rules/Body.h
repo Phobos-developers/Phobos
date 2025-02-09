@@ -158,6 +158,7 @@ public:
 		Valueable<double> JumpjetLevelLightMultiplier;
 
 		Valueable<bool> CombatAlert;
+		Nullable<bool> CombatAlert_Default;
 		Valueable<bool> CombatAlert_IgnoreBuilding;
 		Valueable<bool> CombatAlert_SuppressIfInScreen;
 		Valueable<int> CombatAlert_Interval;
@@ -301,6 +302,7 @@ public:
 			// , VoxelShadowLightSource { }
 
 			, CombatAlert { false }
+			, CombatAlert_Default {}
 			, CombatAlert_IgnoreBuilding { true }
 			, CombatAlert_SuppressIfInScreen { true }
 			, CombatAlert_Interval { 150 }
