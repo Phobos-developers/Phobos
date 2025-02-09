@@ -430,10 +430,3 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 }
 
 #pragma endregion
-
-bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
-{
-	return RulesExt::Global()->BuildingWaypoint;
-}
-
-DEFINE_JUMP(VTABLE, 0x7E4610, GET_OFFSET(BuildingTypeClass_CanUseWaypoint))
