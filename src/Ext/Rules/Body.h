@@ -166,7 +166,7 @@ public:
 		Valueable<bool> CombatAlert_UseFeedbackVoice;
 		Valueable<bool> CombatAlert_UseAttackVoice;
 		Valueable<bool> CombatAlert_UseEVA;
-		
+
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
@@ -181,7 +181,8 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
-		
+		Valueable<bool> BuildingTypeSelectable;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -316,6 +317,7 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, BuildingTypeSelectable { false }
 		{ }
 
 		virtual ~ExtData() = default;
