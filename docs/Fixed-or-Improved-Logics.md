@@ -188,6 +188,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
 - Allowed `AuxBuilding` to count building upgrades.
+- Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
 
 ## Fixes / interactions with other extensions
 

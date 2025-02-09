@@ -52,6 +52,32 @@ DEFINE_JUMP(LJMP, 0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 // to proper techno but to their transports
 DEFINE_PATCH(0x707CF2, 0x55);
 
+//Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
+DEFINE_HOOK(0x62AA32, ParasiteClass_TryInfect_MissBehaviorFix, 0x5)
+{
+	GET(bool, isReturnSuccess, EAX);
+	GET(ParasiteClass* const, pParasite, ESI);
+
+	auto pParasiteTechno = pParasite->Owner;
+
+	if (isReturnSuccess || !pParasiteTechno)
+		return 0;
+
+	const auto pType = pParasiteTechno->GetTechnoType();
+
+	if (!pType)
+		return 0;
+
+	auto cell = MapClass::Instance->NearByLocation(pParasiteTechno->LastMapCoords,
+				pType->SpeedType, -1, pType->MovementZone, false, 1, 1, false,
+				false, false, true, CellStruct::Empty, false, false);
+	auto crd = CellClass::Cell2Coord(cell);
+	isReturnSuccess = pParasiteTechno->Unlimbo(crd, DirType::North);
+	R->AL(isReturnSuccess);
+
+	return 0;
+}
+
 // WWP's shit code! Wrong check.
 // To avoid units dying when they are already dead.
 DEFINE_HOOK(0x5F53AA, ObjectClass_ReceiveDamage_DyingFix, 0x6)
