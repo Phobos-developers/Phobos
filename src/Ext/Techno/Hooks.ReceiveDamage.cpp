@@ -25,8 +25,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	const auto pRules = RulesExt::Global();
 
-	int nDamageLeft = *args->Damage;
-
 	if (pRules->CombatAlert && nDamageLeft > 1)
 	{
 		do
@@ -93,8 +91,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		}
 		while (false);
 	}
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (!args->IgnoreDefenses)
 	{
