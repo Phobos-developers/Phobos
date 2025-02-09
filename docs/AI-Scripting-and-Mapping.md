@@ -6,8 +6,8 @@ This page describes all AI scripting and mapping related additions and changes i
 
 - Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)
 - The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
-- Map trigger action `41 Play Animation At...` can now create 'non-inert' animations which can play sounds, deal damage and apply `TiberiumChainReaction` if a parameter is set (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
-- Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
+- Map trigger action `41 Play Animation At...` can now create 'non-inert' animations which can play sounds, deal damage and apply `TiberiumChainReaction` if a parameter is set (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2)).
+- Map trigger action `125 Build At...` can now play buildup anim and becomes singleplayer-AI-repairable optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2)).
 - Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally. `InitialPayload` logic from Ares is not supported yet.
@@ -38,7 +38,7 @@ RepairBaseNodes=                   ; list of 3 booleans indicating whether AI re
 - It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
   - Note that despite the key name being `DefaultLS800BkgdPal`, this applies to both shapes just like the original scenario-specific `LS800BkgdPal` does.
 
-- In `missionmd.ini`:
+In `missionmd.ini`:
 ```ini
 [Defaults]
 DefaultLS640BriefLocX=0  ; integer
@@ -53,7 +53,6 @@ DefaultLS800BkgdPal=     ; filename - including the .pal extension
 ### MCV redeploying
 
 - You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `[Basic]->MCVRedeploys`. Overrides `[MultiplayerDialogSettings]`->`MCVRedeploys` only in singleplayer campaign missions.
-
 
 In map file:
 ```ini
@@ -243,6 +242,7 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=10100,n            ; integer, time in ingame seconds
 ```
+
 ##### `10101` Wait Until Ammo is Full
 
 - If the TaskForce contains unit(s) that use ammo then the the script will not continue until all these units have fully refilled the ammo.
@@ -252,6 +252,7 @@ In `aimd.ini`:
 [SOMESCRIPTTYPE]  ; ScriptType
 x=10101,0
 ```
+
 ##### `10102` Regroup Temporarily Around the Team Leader
 
 - Puts the TaskForce into Area Guard mode for the given amount of time around the Team Leader (this unit remains almost immobile until the action ends). The default radius around the leader is `[General] > CloseEnough` and the units will not leave that area.
@@ -439,6 +440,7 @@ x=16005,0
 ### `18000-18999` Variable Manipulation
 
 #### `18000-18023` Edit Variable
+
 - Operate a variable's value
 - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
 - Any numbers exceeding this limit will lead to unexpected results!
@@ -450,6 +452,7 @@ x=i,n             ; where 18000 <= i <= 18023, n is made up of two parts, the lo
 ```
 
 #### `18024 - 18047` Edit Variable using Local Variable
+
 - Operate a variable's value using a local variable's value
 - Similar to 18000-18023, but the number to operate the value is being read from a local variable
 
@@ -460,6 +463,7 @@ x=i,n             ; where 18024 <= i <= 18047, n is made up of two parts, the lo
 ```
 
 #### `18000 - 18071` Edit Variable using Global Variable
+
 - Operate a variable's value using a global variable's value
 - Similar to 18000-18023, but the number to operate the value is being read from a global variable
 
@@ -476,6 +480,7 @@ This category is empty for now.
 ## Trigger Actions
 
 ### `500` Save Game
+
 - Save the current game immediately (singleplayer game only).
 - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
 - The save's description will look like `MapDescName - CSFText`.
@@ -490,6 +495,7 @@ ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
 ```
 
 ### `501` Edit Variable
+
 - Operate a variable's value
 - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
 - Any numbers exceeding this limit will lead to unexpected results!
@@ -518,6 +524,7 @@ ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVar
 | 11          | CurrentValue = CurrentValue and Number        |
 
 ### `502` Generate random number
+
 - Generate a random integer ranged in [Min, Max] and store it in a given variable
 
 In `mycampaign.map`:
@@ -529,6 +536,7 @@ ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,
 ```
 
 ### `503` Print variable value
+
 - Print a variable value to the message list
 
 In `mycampaign.map`:
@@ -540,6 +548,7 @@ ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[Actio
 ```
 
 ### `504` Binary Operation
+
 - Operate a variable's value with another variable's value
 - Similar to 501, but the operation number is read from another variable
 
@@ -605,6 +614,7 @@ ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 ## Trigger events
 
 ### `500-511` Variable comparation
+
 - Compares the variable's value with given number
 
 In `mycampaign.map`:
@@ -631,6 +641,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
 | 511        | CurrentValue & Number  | Yes      |
 
 ### `512-523` Variable comparation with local variable
+
 - Compares the variable's value with given local variable value
 
 In `mycampaign.map`:
@@ -657,6 +668,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
 | 523        | CurrentValue & LocalVariableValue  | Yes      |
 
 ### `524-535` Variable comparation with global variable
+
 - Compares the variable's value with given global variable value
 
 In `mycampaign.map`:
@@ -693,6 +705,7 @@ ID=EventCount,...,600,2,0,0,...
 ```
 
 ### `601-602` House owns/doesn't own Techno Type
+
 - 601: Springs when specified house owns at least 1 instance of set TechnoType.
 - 602: Springs when specified house doesn't own a single instance of set TechnoType.
   - Multiplayer houses (indices 4475 through 4482) are supported.
@@ -710,6 +723,7 @@ ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 ```
 
 ### `604-605` Checking if a specific Techno enters in a cell
+
 - 604: Checks if the techno that entered in the cell has the same ID specified in the event.
 - 605: Checks if the techno that entered in the cell appears in the selected list in `AITargetTypes`.
 - `HouseIndex` can be customized to focus in a specified house.
