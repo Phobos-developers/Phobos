@@ -104,7 +104,7 @@ DEFINE_HOOK(0x54D208, JumpjetLocomotionClass_MovementAI_EMPWobble, 0x5)
 	GET(JumpjetLocomotionClass* const, pThis, ESI);
 	enum { ZeroWobble = 0x54D22C };
 
-	if (pThis->LinkedTo->IsUnderEMP())
+	if (pThis->LinkedTo->Deactivated || pThis->LinkedTo->IsUnderEMP())
 		return ZeroWobble;
 
 	return 0;
