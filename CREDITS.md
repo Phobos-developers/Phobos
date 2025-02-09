@@ -364,7 +364,7 @@ This page lists all the individual contributions to the project by their author.
   - `TurretOffset` support for SHP vehicles
   - Customizable rocker amplitude
   - Customizable wake anim
-  - Initial effort on optimization for crates' random distribution 
+  - Initial effort on optimization for crates' random distribution
 - **Fryone**
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
@@ -384,6 +384,7 @@ This page lists all the individual contributions to the project by their author.
   - Enhanced Straight trajectory
   - Enable Building Production Queue
   - Fix for sidebar not updating queued unit numbers when on hold
+  - New Parabola trajectory
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
