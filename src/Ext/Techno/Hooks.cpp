@@ -9,6 +9,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/AresHelper.h>
 
 #pragma region Update
 
@@ -572,6 +573,11 @@ DEFINE_HOOK(0x732C97, TechnoClass_IDMatches_ResetContext, 0x5)
 DEFINE_HOOK(0x465D40, BuildingClass_Is1x1AndUndeployable_BuildingMassSelectable, 0x6)
 {
     enum { SkipGameCode = 0x465D6A };
+	
+	// Since Ares hooks around, we have difficulty juggling Ares and no Ares.
+	// So we simply disable this feature if no Ares.
+	if (!AresHelper::CanUseAres) 
+		return 0;
 
     if (!BuildingTypeSelectable::ProcessingIDMatches || !RulesExt::Global()->BuildingTypeSelectable)
         return 0;
