@@ -181,6 +181,7 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
+		Valueable<bool> BuildingWaypoint;
 		Valueable<bool> BuildingTypeSelectable;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -317,6 +318,7 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, BuildingWaypoint { false }
 			, BuildingTypeSelectable { false }
 		{ }
 
