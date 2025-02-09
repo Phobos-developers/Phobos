@@ -18,7 +18,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled.
 - Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
-- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set.
+- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` -> `AllowParallelAIQueues=no` is set.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
 - Fixed `DeathWeapon` not detonating properly.
   - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
@@ -64,7 +64,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 - Aircraft & jumpjet units are now affected by speed modifiers such as `SpeedAircraft/Infantry/UnitsMult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect (Ares feature).
 - Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
-- Weapons fired by EMPulse superweapons without `EMPulse.TargetSelf=true` *(Ares feature)* can now create radiation.
 - Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
 - Mind control indicator animations will now correctly restore on mind controlled objects when uncloaked.
 - Animations from Warhead `AnimList` & `SplashList` etc. as well as animations created through map trigger `41 Play Anim At` now have the appropriate house set as owner of the animation by default.
@@ -82,7 +81,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 ![Waving trees](_static/images/tree-shake.gif)
 *Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
 
-- `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true. Note that this might impact performance.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
 ![image](_static/images/translucency-fix.png)
@@ -128,10 +126,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `DeployToFire` not considering building placement rules for `DeploysInto` buildings and as a result not working properly with `WaterBound` buildings.
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
-- `EMPulseCannon=yes` building weapons now respect `Floater` and Phobos-added `Gravity` setting.
-- You can now specify houses named `<Player @ A>` through `<Player @ H>` as the owner of TechnoTypes preplaced on the map in the editor, and they will be correctly given to players starting on points 1-8. Originally, it was only possible to use these house names in events, actions and teams.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
-- `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
+- If `[CombatDamage]`->`AllowWeaponSelectAgainstWalls` is set to true, `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
@@ -162,13 +158,53 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini` entry.
 - Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`.
 - Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge.
+- Fixed disguised units not using the correct palette if target has custom palette.
+- Building upgrades now consistently use building's `PowerUpN` animation settings corresponding to the upgrade's `PowersUpToLevel` where possible.
+- Subterranean units are no longer allowed to perform deploy functions like firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they will instead emerge first like they do for transport unloading.
+- The otherwise unused setting `[AI]` -> `PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI]` -> `EnablePowerSurplus` to true.
+- Planning paths are now shown for all units under player control or when `[GlobalControls]->DebugPlanningPaths=yes` in singleplayer game modes.
+- Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry.
+- Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too fast.
+- Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them.
+- Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead.
+- Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
+- Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
+- Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first.
+- Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater by setting `[General]` -> `ApplyLunarFixes` to true in `lunarmd.ini`. Do note that enabling this without fixing f.ex `WoodBridgeTileSet` pointing to a tileset with `TilesInSet=0` will cause issues in-game.
+- Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being displayed in water instead of `WetAttack`.
+- Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings.
+- `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps.
+- Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers.
+- Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
+- Stop command (`[S]` by default) behavior is now more correct:
+  - Jumpjets no longer fall into a state of standing by idly.
+  - Technos are no longer unable to stop the attack move mission.
+  - Technos are no longer unable to stop the area guard mission.
+  - Aircraft no longer find airport twice and overlap.
+  - Aircraft no longer briefly pause in the air before returning.
+  - Aircraft with `AirportBound=no` continue moving forward.
+- Now in air team members will use the 2D distance instead of the 3D distance to judge whether have reached the mission destination, so as to prevent the problem that the mission is stuck and cannot continue in some cases (such as when the jumpjet stops on the building).
+- Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
+- Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
+- Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
+- Allowed `AuxBuilding` to count building upgrades.
 - Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
 
 ## Fixes / interactions with other extensions
 
+- Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.
+- Weapons fired by EMPulse superweapons *(Ares feature)* without `EMPulse.TargetSelf=true` can now create radiation.
+- Weapons fired by EMPulse superweapons *(Ares feature)* now respect `Floater` and Phobos-added `Gravity` setting.
+- `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely.
+- All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
 - Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
+- Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles.
+- Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
+- Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory.
+- Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions.
+- Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 
 ## Aircraft
 
@@ -203,6 +239,20 @@ In `rulesmd.ini`:
 ```ini
 [SOMEAIRCRAFT]  ; AircraftType
 LandingDir=     ; Direction type (integers from 0-255). Accepts negative values as a special case.
+```
+
+### Extended Aircraft Missions
+
+- Aircraft will now be able to use waypoints.
+- When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
+  - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
+- When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.
+  - If the automatically selected target is destroyed but ammo is not depleted yet during the process, the aircraft will continue flying to the destination.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtendedAircraftMissions=false  ; boolean
 ```
 
 ## Animations
@@ -257,6 +307,41 @@ SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
 
+### Fire animations spawned by Scorch & Flamer
+
+- Tiberian Sun allowed `Scorch=true` and `Flamer=true` animations to spawn fire animations from `[AudioVisual]` -> `SmallFire` & `LargeFire`. This behaviour has been reimplemented and is fully customizable.
+  - `ConstrainFireAnimsToCellSpots` controls whether or not spawned animations are locked to cell spots (e.g the subcell positions infantry are also constrained to).
+  - `FireAnimDisallowedLandTypes` controls which landtypes the fire animations are not allowed to spawn on. Defaults to `water,rock,beach,ice` for `Scorch=true`, `none` otherwise.
+  - `AttachFireAnimsToParent` controls if the spawned animations are attached to the owner of the parent animation if it is also attached. Defaults to true for `Scorch=true`, otherwise false.
+  - `SmallFireCount` determines number of small fire animations to spawn by both `Scorch=true` and `Flamer=true` animations. Defaults to 2 for `Flamer=true`, otherwise 1.
+    - `SmallFireAnims` can be used to set the animation types, defaults to `[AudioVisual]` -> `SmallFire` (single animation).
+    - `SmallFireChances` is a list of probabilities for the animations to spawn, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `1.0,0.5` for `Flamer=true`, `1.0` otherwise.
+    - `SmallFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `0.25,0.625` for `Flamer=true`, `0.0` otherwise.
+  - `LargeFireCount` determines number of large fire animations to spawn by`Flamer=true` animations only.
+    - `LargeFireAnims` can be used to set the animation types, defaults to `[AudioVisual]` -> `LargeFire` (single animation).
+    - `LargeFireChances` is a list of probabilities for the animations to spawn, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
+    - `LargeFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                          ; AnimationType
+ConstrainFireAnimsToCellSpots=true  ; boolean
+FireAnimDisallowedLandTypes=        ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
+AttachFireAnimsToParent=            ; boolean
+SmallFireCount=                     ; integer
+SmallFireAnims=                     ; list of animations
+SmallFireChances=                   ; list of floating point values (percent or absolute)
+SmallFireDistances=                 ; list of floating point values, distance in cells
+LargeFireCount=1                    ; integer
+LargeFireAnims=                     ; list of animations
+LargeFireChances=0.5                ; list of floating point values (percent or absolute)
+LargeFireDistances=0.4375           ; list of floating point values, distance in cells
+```
+
+```{note}
+Save for the change that `Flamer` does not spawn animations if the parent animation is in air, the default settings should provide identical results to similar feature from Ares.
+```
+
 ### Layer on animations attached to objects
 
 - You can now customize whether or not animations attached to objects follow the object's layer or respect their own `Layer` setting. If this is unset, attached animations use `ground` layer.
@@ -299,6 +384,18 @@ In `rulesmd.ini`:
 AllowAirstrike=  ; boolean
 ```
 
+### Allowed / disallowed types for FactoryPlant
+
+- It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
+  - `FactoryPlant.Multiplier` (Ares feature) is still applied on the bonuses if they are in effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]               ; BuildingType
+FactoryPlant.AllowTypes=     ; List of TechnoTypes
+FactoryPlant.DisallowTypes=  ; List of TechnoTypes
+```
+
 ### Apply ZShapePointMove during buildups
 
 - By default buildings do not apply `ZShapePointMove` (which offsets the 'z shape' applied on buildings which is used to adjust them in depth buffer and is used to fix issues related to that such as corners of buildings getting cut off when drawn) when buildup is being displayed. This behaviour can now be toggled by setting `ZShapePointMove.OnBuildup`.
@@ -320,6 +417,22 @@ In `rulesmd.ini`:
 ConsideredVehicle=  ; boolean
 ```
 
+### Custom exit cell for infantry factory
+
+- By default `Factory=InfantryType` buildings use exit cell for the created infantry based on hardcoded settings if any of `GDIBarracks`, `NODBarracks` or `YuriBarracks` are set to true. It is now possible to define arbitrary exit cell for such building via `BarracksExitCell`. Below is a reference of the cell offsets for the hardcoded values.
+
+| Key            | Cell Offset |
+|----------------|-------------|
+| `GDIBarracks`  | 1,2         |
+| `NODBarracks`  | 2,2         |
+| `YuriBarracks` | 2,1         |
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]     ; BuildingType
+BarracksExitCell=  ; X,Y - cell offset
+```
+
 ### Customizable & new grinder properties
 
 ![image](_static/images/grinding.gif)
@@ -334,7 +447,7 @@ ConsideredVehicle=  ; boolean
   - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`.
   - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
     - `Grinding.Weapon.RequiredCredits` can be set to have the weapon require accumulated credits from grinding to fire. Accumulated credits for this purpose are reset every time when the weapon fires.
-- For money string indication upon grinding, please refer to [`DisplayIncome`](User-Interface.md/#Visual-indication-of-income-from-grinders-and-refineries).
+- For money string indication upon grinding, please refer to [`DisplayIncome`](User-Interface.md#visual-indication-of-income-from-grinders-and-refineries).
 
 In `rulesmd.ini`:
 ```ini
@@ -357,6 +470,34 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]        ; BuildingType
 SellBuildupLength=23  ; integer, number of buildup frames to play
+```
+
+### Exclude Factory from providing multiple factory bonus
+
+- It is now possible to exclude a building with `Factory` from counting towards `MultipleFactory` bonus.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                         ; BuildingType
+ExcludeFromMultipleFactoryBonus=false  ; boolean
+```
+
+### Unit repair customization
+
+- It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.
+  - `Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General]`->`ReloadRate` if `UnitReload=true` and if overridden per AircraftType (Ares feature) can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General]`->`URepairRate`.
+    - On `UnitReload=true` building setting this to negative value will fully disable the repair functionality.
+  - `Units.RepairStep` how much `Strength` is restored per repair tick. Defaults to `[General]`->`RepairStep`.
+  - `Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Defaults to `[General]`->`RepairPercent`. Note that the final cost is set to 1 if it is less than that.
+    - `Units.UseRepairCost` can be used to customize if repair cost is applied at all. Defaults to false for infantry, true for everything else.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]        ; BuildingType
+Units.RepairRate=     ; floating point value, ingame minutes
+Units.RepairStep=     ; integer
+Units.RepairPercent=  ; floating point value, percents or absolute
+Units.UseRepairCost=  ; boolean
 ```
 
 ## Particle systems
@@ -385,6 +526,45 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
 
 ## Projectiles
 
+### Airburst & Splits
+
+- `AirburstWeapon` logic has been reimplemented and thus there are several additions & changes to it.
+- `Splits` can be set to true to use projectile splitting logic from Firestorm, with the number of split projectiles defined by `Cluster`.
+  - `RetargetAccuracy` defines the probability that the splitted projectiles head to the same target as the original projectile.
+  - `RetargetSelf` determines if it is possible for the splitted projectiles to aim at the firer of the original projectile.
+    - `RetargetSelf.Probability` is the probability that if the original firer is chosen as a target, it is kept as the target instead of rerolled to another.
+  - `Splits.TargetingDistance` is the distance in cells that any potential target has to be within from the original target coordinates to be eligible for targeting by the splitted projectiles.
+  - `Splits.TargetCellRange` is the distance in whole cells from the original target cell from which the splitted projectiles can pick new target cells if not enough TechnoType targets were found nearby.
+  - `Splits.UseWeaponTargeting`, if set to true, enables weapon targeting filter for when checking targets for splitted projectiles. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `AirburstWeapon` [weapon targeting filters](New-or-Enhanced-Logics.md#weapon-targeting-filter) & [AttachEffect filters](New-or-Enhanced-Logics.md#attached-effects) will be checked.
+    - Do note that this overrides checking Warhead for `AffectsAllies/Owner/Enemies` for targeting. You can use `CanTargetHouses` on `AirburstWeapon` to achieve similar behaviour, however.
+- Behaviour for if `Airburst` is set to true can also be customized.
+  - `AirburstSpread` is the distance in cells that the effect covers, with each cell in range being targeted by `AirburstWeapon` by default.
+  - `Airburst.UseCluster`, if set to true, makes it so that only number of cells in the affected area dictated by `Cluster` will be affected, instead of all of them.
+    - If `Airburst.RandomClusters` is set to true, the cells affected will be picked by random. Otherwise they will be evenly spaced (counting from center to edges of affected area).
+- `AroundTarget` controls whether or not targets for projectiles created by `Airburst` or `Splits` are checked for in area around the original projectile's intended target, or where the original projectile detonated. Defaults to value of `Splits`.
+- `AirburstWeapon.ApplyFirepowerMult` determines whether or not firepower modifiers from the firer of the original projectile are applied on the projectiles created from `AirburstWeapon`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]                         ; Projectile
+Splits=                                  ; boolean
+RetargetAccuracy=0.0                     ; floating point value, percents or absolute (0.0-1.0)
+RetargetSelf=true                        ; boolean
+RetargetSelf.Probability=0.5             ; floating point value, percents or absolute (0.0-1.0)
+Splits.TargetingDistance=5.0             ; floating point value, distance in cells
+Splits.TargetCellRange=3                 ; integer, cell offset
+Splits.UseWeaponTargeting=false          ; boolean
+AirburstSpread=1.5                       ; floating point value, distance in cells
+Airburst.UseCluster=false                ; boolean
+Airburst.RandomClusters=false            ; boolean
+AroundTarget=                            ; boolean
+AirburstWeapon.ApplyFirepowerMult=false  ; boolean
+```
+
+```{note}
+`Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and `AroundTarget`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
+```
+
 ### Cluster scatter distance customization
 
 - `ClusterScatter.Min` and `ClusterScatter.Max` can be used to set minimum and maximum distance, respectively, in cells from the original detonation coordinate any additional detonations if `Cluster` is set to value higher than 1 can appear at.
@@ -398,8 +578,8 @@ ClusterScatter.Max=2.0  ; floating point value, distance in cells
 
 ### Customizable projectile gravity
 
--  You can now specify individual projectile gravity.
-    - Setting `Gravity=0` is not recommended as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. We suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+- You can now specify individual projectile gravity.
+  - Setting `Gravity=0` is not recommended as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. We suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 
 In `rulesmd.ini`:
 ```ini
@@ -445,7 +625,7 @@ Pips.SelfHeal.Units.Offset=33,-32       ; X,Y, pixels relative to default
 Pips.SelfHeal.Buildings.Offset=15,10    ; X,Y, pixels relative to default
 
 [SOMETECHNO]                            ; TechnoType
-SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (none|infantry|units)
+SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (noheal|infantry|units)
 ```
 
 ### Chrono sparkle animation customization & improvements
@@ -463,6 +643,25 @@ ChronoSparkleDisplayDelay=24                         ; integer, game frames
 ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle position enum (building | occupants | occupantslots | all)
 ```
 
+### Customizable ChronoSphere teleport delays for units
+
+- It is now possible to customize (globally and per TechnoType) the warp-in delay for units teleporting through `Type=ChronoSphere/Warp` Superweapon, both before and after the jump.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ChronoSphereDelay=60    ; integer, game frames
+ChronoSpherePreDelay=0  ; integer, game frames
+
+[SOMETECHNO]            ; TechnoType
+ChronoSphereDelay=      ; integer, game frames
+ChronoSpherePreDelay=   ; integer, game frames
+```
+
+```{warning}
+Due to technical constraints, these settings do not apply to buildings teleported by Ares' customizable ChronoSphere SW. They only have a pre-teleport delay equal to `[General]` -> ChronoDelay.
+```
+
 ### Customizable veterancy insignias
 
 - You can now customize veterancy insignia of TechnoTypes.
@@ -474,7 +673,6 @@ ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle po
   - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
   - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
   - `DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to anchor the insignia position relative to the building's selection bracket. By default the insignia position is not anchored to the selection bracket.
-
 
 In `rulesmd.ini`:
 ```ini
@@ -603,6 +801,18 @@ Wake.Grapple=        ; Anim (played when Techno being parasited on the water), d
 Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [SOMETECHNO]->Wake
 ```
 
+### Customizing effect of level lighting on air units
+
+- It is now possible to customize how air units are affected by level lighting, separately for AircraftTypes and infantry/vehicles with Jumpjet `Locomotor`.
+  - `AircraftLevelLightMultiplier` & `JumpjetLevelLightMultiplier` are direct multipliers to level lighting applied on the units, for height levels above the cell they are on.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
+JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
@@ -725,6 +935,19 @@ SpawnsPipSize=                       ; X,Y, increment in pixels to next pip
 SpawnsPipOffset=0,0                  ; X,Y, position offset from default
 ```
 
+### Power drain for units
+
+- Infantry, vehicles and aircraft can now drain or provide `Power` if `UnitPowerDrain=true` is set.
+
+In `rulesmd.ini`:
+```ini
+[General]
+UnitPowerDrain=false  ; boolean
+
+[SOMETECHNO]          ; TechnoType
+Power=0               ; integer, positive means output, negative means drain
+```
+
 ### Re-enable obsolete [JumpjetControls]
 
 - Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
@@ -741,21 +964,42 @@ NoWobbles=false  ; boolean
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
 ```
 
-### Subterranean unit travel height
+### Skirmish AI behavior dehardcode
+
+- In vanilla, there is a hardcoded behavior that when an skirmish AI player has no factory and has not taken damage for a while, it will sell its buildings and set its units to hunt. This can be customized now.
+  - `[General]->AIFireSale` and `[General]->AIAllToHunt` control whether the AI will act selling and hunting respectively.
+  - `[General]->AIFireSaleDelay` defines a timer, it will only work if `[General]->AIFireSale` is set to `true`. When the first time the AI reaches the trigger condition of vanilla behavior, the timer starts and prevents the selling behavior from happening until the timer is expired.
+  - You can use these flags to make the AIs "all in" before they are defeated.
+- Another hardcoded behavior is that, when the AI deploys a MCV, it will gather all of its forces to that place. This can be toggle off now.
+  - `[General]->GatherWhenMCVDeploy` controls this behavior.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AIFireSale=true           ; boolean
+AIFireSaleDelay=0         ; integer, number of frames
+AIAllToHunt=true          ; boolean
+GatherWhenMCVDeploy=true  ; boolean
+```
+
+### Subterranean unit travel height and speed
 
 - It is now possible to control the height at which units with subterranean (Tunnel) `Locomotor` travel, globally or per TechnoType.
+- Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used. This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General]`->`TunnelSpeed`.
 
 In `rulesmd.ini`:
 ```ini
 [General]
 SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
+SubterraneanSpeed=7.5    ; floating point value
 
 [SOMETECHNO]             ; TechnoType
 SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
+SubterraneanSpeed=-1     ; floating point value
 ```
 
 ```{warning}
-This expects negative values to be used and may behave erratically if set to above -50.
+SubterraneanHeight expects negative values to be used and may behave erratically if set to above -50.
 ```
 
 ### Voxel body multi-section shadows
@@ -771,22 +1015,32 @@ ShadowIndex.Frame=0   ; integer (HVA animation frame index)
 ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
 ```
 
-### Voxel light source position customization
+### Voxel light source customization
+
+- Vanilla game applies some weird unnecessary math which resulted in the voxel light source being "nudged" up by a bit and light being applied incorrectly on tilted voxels. It is now possible to fix that.
+
+```{note}
+Please note that enabling this will remove the vertical offset vanilla engine applies to the light source position. Assuming vanilla lighting this will make the light shine even more from below the ground than it was before, so it is recommended to turn the Z value up in value of `VoxelLightSource`.
+```
 
 ![image](_static/images/VoxelLightSourceComparison.png)
-*New lighting with `VoxelLightSource=0.02,-0.69,0.36` vs default lighting, Prism Tank voxel by [CCS_qkl](https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index)*
+*Applying `VoxelLightSource=0.02,-0.69,0.36` (assuming `UseFixedVoxelLighting=false`) vs default lighting, Prism Tank voxel by [CCS_qkl](https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index)*
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
+  - Vanilla light (assuming `UseFixedVoxelLighting=false`) is located roughly at `VoxelLightSource=0.201,-0.907,-0.362`.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-VoxelLightSource=  ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
+UseFixedVoxelLighting=false  ; boolean, whether to fix the lighting
+VoxelLightSource=            ; X,Y,Z - position of the light in the world relative to each voxel, floating point values
 ```
 
 ```{hint}
 In order to easily preview the light source settings use the [VXL Viewer and VPL Generator tool by thomassneddon](https://github.com/ThomasSneddon/vxl-renderer/releases). To use the tool unpack it somewhere, then drag the main VXL file of a voxel that you will use to preview onto it (auxilliary VXL and HVA files must be in the same folder).
+
+Keep in mind that the tool doesn't account for `UseFixedVoxelLighting=true` as of yet, so the values shown in tool need to be offset when putting in the game with with fixed voxel lighting.
 ```
 
 ### Voxel shadow scaling in air
@@ -809,6 +1063,7 @@ ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 
 - You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
   - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
+- You can also exclude specific TechnoTypes from being built in parallel by AI by setting `ForbidParallelAIQueues` to true on a TechnoType.
 
 In `rulesmd.ini`
 ```ini
@@ -819,9 +1074,23 @@ ForbidParallelAIQueues.Vehicle=no   ; boolean
 ForbidParallelAIQueues.Navy=no      ; boolean
 ForbidParallelAIQueues.Aircraft=no  ; boolean
 ForbidParallelAIQueues.Building=no  ; boolean
+
+[SOMETECHNO]                        ; TechnoType
+ForbidParallelAIQueues=false        ; boolean
 ```
 
 ## Terrains
+
+### Animated TerrainTypes
+
+- By default `IsAnimated`, `AnimationRate` and `AnimationProbability` only work on TerrainTypes with `SpawnsTiberium` set to true. This restriction has now been lifted.
+  - Length of the animation can now be customized by setting `AnimationLength` as well, defaulting to half (or quarter if [damaged frames](#damaged-frames-and-crumbling-animation) are enabled) the number of frames in TerrainType's image.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+AnimationLength=   ; integer, number of frames
+```
 
 ### Customizable ore spawners
 
@@ -839,6 +1108,38 @@ SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
+```
+
+### Custom palette
+
+- You can now specify custom palette for TerrainTypes in similar manner as TechnoTypes can.
+  - Note that this palette behaves like an object palette and does not use tint etc. that have been applied to the tile the TerrainType resides on like a TerrainType using tile palette would.
+
+In `artmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+Palette=           ; filename - excluding .pal extension and three-character theater-specific suffix
+```
+
+### Damaged frames and crumbling animation
+
+- By default game shows damage frame only for TerrainTypes alive at only 1 point of health left. Because none of the original game TerrainType assets were made with this in mind, the logic is now locked behind a new key `HasDamagedFrames`.
+  - Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual]` -> `ConditionYellow.Terrain` percentage of their maximum health. Defaults to `ConditionYellow` if not set.
+- In addition, TerrainTypes can now show 'crumbling' animation after their health has reached zero and before they are deleted from the map by setting `HasCrumblingFrames` to true.
+  - Crumbling frames start from first frame after both regular & damaged frames and ends at halfway point of the frames in TerrainType's image.
+    - Note that the number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes)). Exercise caution and ensure there are correct amount of frames to display.
+  - Sound event from `CrumblingSound` (if set) is played when crumbling animation starts playing.
+  - [Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation--sound) only play after crumbling animation has finished.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ConditionYellow.Terrain=  ; floating-point value
+
+[SOMETERRAINTYPE]         ; TerrainType
+HasDamagedFrames=false    ; boolean
+HasCrumblingFrames=false
+CrumblingSound=           ; Sound
 ```
 
 ### Minimap color customization
@@ -942,6 +1243,20 @@ IronCurtain.KeptOnDeploy=       ; boolean, default to [CombatDamage]->IronCurtai
 ForceShield.KeptOnDeploy=       ; boolean, default to [CombatDamage]->ForceShield.KeptOnDeploy
 ```
 
+### Retain target on movement command
+
+- It is now possible for vehicles to retain their target when issued movement command by setting `KeepTargetOnMove` to true.
+  - Note that no check is done whether or not the vehicle or the weapon can actually fire while moving, this is on modder's discretion.
+  - The target is automatically reset if the vehicle moves beyond the weapon's range from the target.
+- `KeepTargetOnMove.ExtraDistance` can be used to modify the distance considered 'out of range' from target (it is added to weapon range), negative values work to reduce the distance.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                     ; VehicleType
+KeepTargetOnMove=false            ; boolean
+KeepTargetOnMove.ExtraDistance=0  ; floating point value, distance in cells
+```
+
 ### Stationary vehicles
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
@@ -992,7 +1307,6 @@ In `rulesmd.ini`:
 [SOMEVEHICLE]           ; VehicleType
 Ammo.AddOnDeploy=0      ; integer
 ```
-
 
 ## Veinholes & Weeds
 
@@ -1052,7 +1366,6 @@ In `rulesmd.ini`:
 178=VEINHOLEDUMMY             ; A technical overlay
 ```
 
-
 ### Weeds & Weed Eaters
 
 - Vehicles with `Weeder=yes` can now collect weeds. The weeds can then be deposited into a building with `Weeder=yes`.
@@ -1082,7 +1395,7 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 
 ### Customizable debris & meteor impact and warhead detonation behaviour
 
-- The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris-%26-meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
+- The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
 
 ## Warheads
 
@@ -1138,6 +1451,23 @@ In `rulesmd.ini`:
 AllowDamageOnSelf=false  ; boolean
 ```
 
+### Combat light customizations
+
+- You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual]` -> `CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead, latter defaults to former.
+- You can now set a percentage chance a combat light effect is shown on Warhead impact by setting `CombatLightChance`.
+- Setting `CLIsBlack` to true on Warhead will now turn the flash black like on hitting an Iron Curtained object, irregardless of other color settings.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+CombatLightDetailLevel=0  ; integer
+
+[SOMEWARHEAD]             ; WarheadType
+CombatLightDetailLevel=   ; integer
+CombatLightChance=1.0     ; floating point value, percents or absolute (0.0-1.0)
+CLIsBlack=false           ; boolean
+```
+
 ### Customizing decloak on damaging targets
 
 - You can now specify whether or not the warhead decloaks objects that are damaged by the warhead.
@@ -1148,6 +1478,24 @@ In `rulesmd.ini`:
 DecloakDamagedTargets=true  ; boolean
 ```
 
+### Nonprovocative Warheads
+
+- You can now make Warheads behave in nonprovocative fashion. Warheads with `Nonprovocative=true` exhibit following behaviours:
+  - They will not generate any EVA announcements upon hitting targets, be it for attacking ore miners, base buildings or ally base buildings.
+  - They will not spring 'attacked' / 'attacked by' events. Note that if the Warhead deals actual damage, events that check for that can still be sprung.
+  - They will not evoke defense response from AI players when used to attack base buildings, `ToProtect=true` TechnoTypes or members of TeamTypes with `Whiner=true`.
+  - They will not evoke retaliation from TechnoTypes hit by the Warhead.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]         ; WarheadType
+Nonprovocative=false  ; boolean
+```
+
+```{note}
+Due to technical constraints, this does not suppress warnings from Ares' EMP effect.
+```
+
 ### Restricting screen shaking to current view
 
 - You can now specify whether or not the warhead can only shake screen (`ShakeX/Ylo/hi`) if it is detonated while visible on current screen view.
@@ -1156,6 +1504,18 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]       ; WarheadType
 ShakeIsLocal=false  ; boolean
+```
+
+### Customizable rocker amplitude
+
+- The rocker amplitude of warheads with `Rocker=yes` used to be determined by `Damage` value of the weapon. You can now override it with fixed value and add a multiplier to it.
+  - When both multiplier and override values are set - both are used.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; WarheadType
+Rocker.AmplitudeMultiplier=1.0  ; double
+Rocker.AmplitudeOverride=       ; integer
 ```
 
 ## Weapons
@@ -1169,6 +1529,17 @@ In `rulesmd.ini`:
 [SOMEWEAPON]                      ; WeaponType
 AmbientDamage.Warhead=            ; WarheadType
 AmbientDamage.IgnoreTarget=false  ; boolean
+```
+
+### Charge turret delays
+
+- It is now possible to customize the delay of `IsChargeTurret=true` unit turret animation per weapon, per `Burst` shot instead of defaulting to weapon's rearm timer (`ROF`, `BurstDelays` etc). Delay in the list corresponding to burst shot is used, or last delay listed if number of listed values is lower than the current burst index. Delay of 0 or less means previous delay, if applicable, is not restarted.
+  - Note that unlike the default rearm timer that uses `ROF`, any modifiers are not applied to explicitly set charge turret delays.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]          ; WeaponType
+ChargeTurret.Delays=  ; list of integers - game frames
 ```
 
 ### Customizable disk laser radius
@@ -1204,6 +1575,16 @@ In `rulesmd.ini`
 ```ini
 [SOMEWEAPON]
 KickOutPassengers=true  ; boolean
+```
+
+### Disable FireOnce resetting infantry sequence
+
+- It is now possible to disable `FireOnce=true` weapon resetting infantry sequences after firing via `FireOnce.ResetSequence`. Target will be forgotten like before, the firing sequence will simply continue playing after firing if there are any frames left.
+
+In `rulesmd.ini`
+```ini
+[SOMEWEAPON]
+FireOnce.ResetSequence=true  ; boolean
 ```
 
 ### Single-color lasers
@@ -1303,11 +1684,15 @@ DropPod.AtmosphereEntry =     ; anim, default to [AudioVisual]->AtmosphereEntry
 DropPod.GroundAnim =          ; 2 anims, default to [General]->DropPod
 DropPod.AirImage =            ; SHP file, the pod's shape, default to POD
 DropPod.Height =              ; int, default to [General]->DropPodHeight
-DropPod.Puff =                ; anim, default to [General]->DropPodPuff
+DropPod.Puff =                ; anim, default to [AudioVisual]->DropPodPuff
 DropPod.Speed =               ; int, default to [General]->DropPodSpeed
 DropPod.Trailer =             ; anim, default to [General]->DropPodTrailer, which by default is SMOKEY
 DropPod.Trailer.Attached =    ; boolean, default to no
 DropPod.Trailer.SpawnDelay =  ; int, number of frames between each spawn of DropPod.Trailer, default to 6
 DropPod.Weapon =              ; weapon, default to [General]->DropPodWeapon
 DropPod.Weapon.HitLandOnly =  ; boolean, default to no
+```
+
+```{note}
+`[General]` -> `DropPodTrailer`is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```

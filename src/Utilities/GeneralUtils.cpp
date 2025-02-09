@@ -6,6 +6,7 @@
 
 #include <Ext/Rules/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <Utilities/Constructs.h>
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -215,6 +216,19 @@ void GeneralUtils::DisplayDamageNumberString(int damage, DamageDisplayType type,
 	FlyingStrings::Add(damageStr, coords, color, Point2D { offset - (width / 2), 0 });
 
 	offset = offset + width;
+}
+
+DynamicVectorClass<ColorScheme*>* GeneralUtils::BuildPalette(const char* paletteFileName)
+{
+	if (GeneralUtils::IsValidString(paletteFileName))
+	{
+		char pFilename[0x20];
+		strcpy_s(pFilename, paletteFileName);
+
+		return ColorScheme::GeneratePalette(pFilename);
+	}
+
+	return nullptr;
 }
 
 // Gets integer representation of color from ColorAdd corresponding to given index, or 0 if there's no color found.

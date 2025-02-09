@@ -40,13 +40,18 @@ public:
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
 		Valueable<ChronoSparkleDisplayPosition> ChronoSparkleBuildingDisplayPositions;
+		Valueable<int> ChronoSpherePreDelay;
+		Valueable<int> ChronoSphereDelay;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
+		int SubterraneanSpeed;
 		Valueable<int> SubterraneanHeight;
+		Nullable<int> AISuperWeaponDelay;
 		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<int> RadBuildingDamageMaxCount;
 		Valueable<bool> RadSiteWarhead_Detonate;
+		Valueable<bool> RadSiteWarhead_Detonate_Full;
 		Valueable<bool> RadHasOwner;
 		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
@@ -61,6 +66,7 @@ public:
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
 
+		Nullable<double> ConditionYellow_Terrain;
 		Nullable<double> Shield_ConditionYellow;
 		Nullable<double> Shield_ConditionRed;
 		Valueable<Vector3D<int>> Pips_Shield;
@@ -87,12 +93,18 @@ public:
 		Valueable<double> HeightShadowScaling_MinScale;
 		double AirShadowBaseScale_log;
 
+		Valueable<bool> ExtendedAircraftMissions;
+
+		Valueable<bool> BuildingProductionQueue;
+
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
 		Valueable<bool> ForbidParallelAIQueues_Building;
 		Valueable<bool> ForbidParallelAIQueues_Infantry;
 		Valueable<bool> ForbidParallelAIQueues_Navy;
 		Valueable<bool> ForbidParallelAIQueues_Vehicle;
+
+		Valueable<bool> EnablePowerSurplus;
 
 		Valueable<bool> DisplayIncome;
 		Valueable<bool> DisplayIncome_AllowAI;
@@ -104,6 +116,8 @@ public:
 		Valueable<bool> ForceShield_KeptOnDeploy;
 		Valueable<IronCurtainEffect> ForceShield_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> ForceShield_KillOrganicsWarhead;
+
+		Valueable<bool> AllowWeaponSelectAgainstWalls;
 
 		Valueable<double> IronCurtain_ExtraTintIntensity;
 		Valueable<double> ForceShield_ExtraTintIntensity;
@@ -140,8 +154,34 @@ public:
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Valueable<double> AircraftLevelLightMultiplier;
+		Valueable<double> JumpjetLevelLightMultiplier;
+
+		Valueable<bool> CombatAlert;
+		Valueable<bool> CombatAlert_IgnoreBuilding;
+		Valueable<bool> CombatAlert_SuppressIfInScreen;
+		Valueable<int> CombatAlert_Interval;
+		Valueable<bool> CombatAlert_SuppressIfAllyDamage;
+		Valueable<bool> CombatAlert_MakeAVoice;
+		Valueable<bool> CombatAlert_UseFeedbackVoice;
+		Valueable<bool> CombatAlert_UseAttackVoice;
+		Valueable<bool> CombatAlert_UseEVA;
+
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
+		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<bool> GatherWhenMCVDeploy;
+		Valueable<bool> AIFireSale;
+		Valueable<int> AIFireSaleDelay;
+		Valueable<bool> AIAllToHunt;
+		Valueable<bool> RepairBaseNodes;
+
+		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
+		Valueable<int> CombatLightDetailLevel;
+		Valueable<int> LightFlashAlphaImageDetailLevel;
+
+		Valueable<bool> BuildingTypeSelectable;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -152,13 +192,18 @@ public:
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
 			, ChronoSparkleBuildingDisplayPositions { ChronoSparkleDisplayPosition::OccupantSlots }
+			, ChronoSpherePreDelay { 60 }
+			, ChronoSphereDelay { 0 }
 			, AIChronoSphereSW {}
 			, AIChronoWarpSW {}
+			, SubterraneanSpeed { 19 }
 			, SubterraneanHeight { -256 }
+			, AISuperWeaponDelay {}
 			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadBuildingDamageMaxCount { -1 }
 			, RadSiteWarhead_Detonate { false }
+			, RadSiteWarhead_Detonate_Full { true }
 			, RadHasOwner { false }
 			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
@@ -196,12 +241,19 @@ public:
 			, HeightShadowScaling_MinScale { 0.0 }
 			, AirShadowBaseScale_log { 0.693376137 }
 
+			, ExtendedAircraftMissions { false }
+
+			, BuildingProductionQueue { false }
+
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
 			, ForbidParallelAIQueues_Infantry { false }
 			, ForbidParallelAIQueues_Navy { false }
 			, ForbidParallelAIQueues_Vehicle { false }
+
+			, EnablePowerSurplus { false }
+
 			, IronCurtain_KeptOnDeploy { true }
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
@@ -210,6 +262,7 @@ public:
 			, ForceShield_KillOrganicsWarhead { }
 			, IronCurtain_ExtraTintIntensity { 0.0 }
 			, ForceShield_ExtraTintIntensity { 0.0 }
+			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
@@ -241,8 +294,30 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, AircraftLevelLightMultiplier { 1.0 }
+			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
+
+			, CombatAlert { false }
+			, CombatAlert_IgnoreBuilding { true }
+			, CombatAlert_SuppressIfInScreen { true }
+			, CombatAlert_Interval { 150 }
+			, CombatAlert_SuppressIfAllyDamage { true }
+			, CombatAlert_MakeAVoice { true }
+			, CombatAlert_UseFeedbackVoice { true }
+			, CombatAlert_UseAttackVoice { true }
+			, CombatAlert_UseEVA { true }
+			, UseFixedVoxelLighting { false }
+			, GatherWhenMCVDeploy { true }
+			, AIFireSale { true }
+			, AIFireSaleDelay { 0 }
+			, AIAllToHunt { true }
+			, RepairBaseNodes { false }
+			, WarheadParticleAlphaImageIsLightFlash { false }
+			, CombatLightDetailLevel { 0 }
+			, LightFlashAlphaImageDetailLevel { 0 }
+			, BuildingTypeSelectable { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -292,8 +367,5 @@ public:
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
-
-	static bool LoadGlobals(PhobosStreamReader& Stm);
-	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 };
