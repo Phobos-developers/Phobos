@@ -322,12 +322,16 @@ New:
 - New Parabola trajectory (by CrimRecya)
 - Type select for buildings (code by TaranDahl(航味麻酱), doc by Ollerus)
 - Raise alert when technos are taking damage (by TaranDahl)
+- Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 
 Vanilla fixes:
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
 
 Phobos fixes:
 - Type conversion on Warheads and Superweapons will no longer recursively convert units if applicable conversion pairs are listed, and only first applicable pair takes effect (by Starkku)
+
+Fixes / interactions with other extensions:
+- Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 </details>
 
 ### 0.4
@@ -643,7 +647,6 @@ Fixes / interactions with other extensions:
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by Trsdy)
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory (by Trsdy, supersedes Aephiex impl.)
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
-- Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 </details>
 
 ### 0.3.0.1
