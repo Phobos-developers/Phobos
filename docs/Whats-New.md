@@ -319,6 +319,7 @@ New:
 - Custom exit cell for infantry factory (by Starkku)
 - Option for vehicles to keep target when issued move command (by Starkku)
 - Skip anim delay for burst fire (by TaranDahl)
+- Jumpjet Climbing Logic Enhancement (by CrimRecya)
 
 Vanilla fixes:
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
@@ -462,7 +463,6 @@ New:
 - Allow anchoring extended tooltips to the left side of the sidebar (by Trsdy)
 - Toggle to allow spawned aircraft to attack immediately after being spawned (by Starkku)
 - `ZAdjust` for OverlayTypes (by Starkku)
-- Jumpjet Climbing Logic Enhancement (by CrimRecya)
 - Allow customizing extra tint intensity for Iron Curtain & Force Shield (by Starkku)
 - Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of RGB565 (by Starkku)
 - Customizing height and speed at which subterranean units travel (by Starkku)
