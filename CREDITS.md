@@ -398,6 +398,7 @@ This page lists all the individual contributions to the project by their author.
   - Global value of `RepairBaseNodes`
   - Skip anim delay for burst fire
   - Type select for buildings (code)
+  - Raise alert when technos are taking damage
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**

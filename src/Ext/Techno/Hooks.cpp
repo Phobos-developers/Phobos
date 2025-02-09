@@ -9,6 +9,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresHelper.h>
 
@@ -565,7 +566,7 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
 
 	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
 	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-	
+
 	if ((mission == Mission::Move) && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target && !pTarget)
 	{
 		if (pTechno->IsCloseEnoughToAttack(pTechno->Target))
@@ -614,7 +615,6 @@ DEFINE_HOOK(0x736480, UnitClass_AI_KeepTargetOnMove, 0x6)
 
 #pragma endregion
 
-
 #pragma region BuildingTypeSelectable
 
 namespace BuildingTypeSelectable
@@ -641,10 +641,10 @@ DEFINE_HOOK(0x732C97, TechnoClass_IDMatches_ResetContext, 0x5)
 DEFINE_HOOK(0x465D40, BuildingClass_Is1x1AndUndeployable_BuildingMassSelectable, 0x6)
 {
     enum { SkipGameCode = 0x465D6A };
-	
+
 	// Since Ares hooks around, we have difficulty juggling Ares and no Ares.
 	// So we simply disable this feature if no Ares.
-	if (!AresHelper::CanUseAres) 
+	if (!AresHelper::CanUseAres)
 		return 0;
 
     if (!BuildingTypeSelectable::ProcessingIDMatches || !RulesExt::Global()->BuildingTypeSelectable)
