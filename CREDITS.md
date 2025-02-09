@@ -377,7 +377,6 @@ This page lists all the individual contributions to the project by their author.
   - Allow to change the speed of gas particles
 - **CrimRecya**
   - Fix `LimboKill` not working reliably
-  - Enhance bombard trajectory
   - Allow using waypoints, area guard and attack move with aircraft
   - Fix `Stop` command not working so well in some cases
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
@@ -386,11 +385,12 @@ This page lists all the individual contributions to the project by their author.
   - Enable Building Production Queue
   - Fix for sidebar not updating queued unit numbers when on hold
   - New Parabola trajectory
+  - Enhanced Bombard trajectory
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
   - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
-  - Enhance bombard trajectory
+  - Enhanced Bombard trajectory
 - **NaotoYuuki**
   - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to jump back to previous script

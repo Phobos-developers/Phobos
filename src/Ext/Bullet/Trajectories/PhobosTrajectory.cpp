@@ -567,7 +567,7 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 
-	if (pTypeExt && pTypeExt->TrajectoryType && !pExt->Trajectory)
+	if (pTypeExt && pTypeExt->TrajectoryType)
 	{
 		pExt->Trajectory = pTypeExt->TrajectoryType->CreateInstance();
 		pExt->Trajectory->OnUnlimbo(pThis, pCoord, pVelocity);

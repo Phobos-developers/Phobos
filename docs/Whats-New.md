@@ -320,12 +320,16 @@ New:
 - Option for vehicles to keep target when issued move command (by Starkku)
 - Skip anim delay for burst fire (by TaranDahl)
 - New Parabola trajectory (by CrimRecya)
+- Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 
 Vanilla fixes:
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
 
 Phobos fixes:
 - Type conversion on Warheads and Superweapons will no longer recursively convert units if applicable conversion pairs are listed, and only first applicable pair takes effect (by Starkku)
+
+Fixes / interactions with other extensions:
+- Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 </details>
 
 ### 0.4
@@ -496,7 +500,6 @@ New:
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - Extending `Power` to all TechnoTypes (by Morton)
-- Enhance bombard trajectory with vertical and meteor trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -642,7 +645,6 @@ Fixes / interactions with other extensions:
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by Trsdy)
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory (by Trsdy, supersedes Aephiex impl.)
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
-- Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 </details>
 
 ### 0.3.0.1
