@@ -272,7 +272,8 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 	// If is moving
 	if (pThis->CurrentSpeed > 0.0)
 	{
-		constexpr int checkLength = Unsorted::LeptonsPerCell * 5;
+		const auto checkLength = pThis->LocomotionFacing.IsRotating() ? Unsorted::LeptonsPerCell
+			: (pFoot->Destination ? Math::min((Unsorted::LeptonsPerCell * 5), pFoot->DistanceFrom(pFoot->Destination)) : Unsorted::LeptonsPerCell);
 		const auto angle = -pThis->LocomotionFacing.Current().GetRadian<65536>();
 		const auto checkCoord = Point2D { static_cast<int>(checkLength * cos(angle) + 0.5), static_cast<int>(checkLength * sin(angle) + 0.5) };
 		const auto largeStep = Math::max(abs(checkCoord.X), abs(checkCoord.Y));
