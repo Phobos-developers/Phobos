@@ -455,8 +455,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimitGroup_ExtraLimit_MaxCount.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxCount");
 	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
 
-	this->UnitBaseNormal.Read(exINI, pSection, "UnitBaseNormal");
-	this->UnitBaseForAllyBuilding.Read(exINI, pSection, "UnitBaseForAllyBuilding");
+	this->ExtraBaseNormal.Read(exINI, pSection, "ExtraBaseNormal");
+	this->ExtraBaseForAllyBuilding.Read(exINI, pSection, "ExtraBaseForAllyBuilding");
 
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
@@ -834,8 +834,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxCount)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
 
-		.Process(this->UnitBaseNormal)
-		.Process(this->UnitBaseForAllyBuilding)
+		.Process(this->ExtraBaseNormal)
+		.Process(this->ExtraBaseForAllyBuilding)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)

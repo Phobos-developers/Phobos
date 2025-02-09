@@ -147,7 +147,6 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		this->ShowBriefing = ini_missionmd.ReadBool(scenarioName, "ShowBriefing", pINI->ReadBool(GameStrings::Basic, "ShowBriefing", this->ShowBriefing));
 		this->BriefingTheme = ini_missionmd.ReadTheme(scenarioName, "BriefingTheme", pINI->ReadTheme(GameStrings::Basic, "BriefingTheme", this->BriefingTheme));
-
 	}
 }
 
@@ -163,6 +162,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoDeathObjects)
 		.Process(this->TransportReloaders)
 		.Process(this->BaseNormalCells)
+		.Process(this->BaseNormalTechnos)
 		;
 }
 

@@ -9,6 +9,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 #pragma region Update
@@ -139,6 +140,9 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeLaserTrails();
 	pExt->InitializeAttachEffects();
+
+	if (RulesExt::Global()->CheckExtraBaseNormal && pExt->TypeExtData->ExtraBaseNormal)
+		ScenarioExt::Global()->BaseNormalTechnos.push_back(pExt);
 
 	return 0;
 }
@@ -564,7 +568,7 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
 
 	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
 	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-	
+
 	if ((mission == Mission::Move) && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target && !pTarget)
 	{
 		if (pTechno->IsCloseEnoughToAttack(pTechno->Target))

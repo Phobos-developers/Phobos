@@ -137,7 +137,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		this->HeightShadowScaling = false;
 	this->HeightShadowScaling_MinScale.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling.MinScale");
 
-	this->CheckUnitBaseNormal.Read(exINI, GameStrings::General, "CheckUnitBaseNormal");
+	this->CheckExtraBaseNormal.Read(exINI, GameStrings::General, "CheckExtraBaseNormal");
 	this->PlacementGrid_Expand.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.Expand");
 	this->PlacementGrid_LandFrames.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.LandFrames");
 	this->PlacementGrid_WaterFrames.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.WaterFrames");
@@ -339,7 +339,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AirShadowBaseScale_log)
 		.Process(this->HeightShadowScaling)
 		.Process(this->HeightShadowScaling_MinScale)
-		.Process(this->CheckUnitBaseNormal)
+		.Process(this->CheckExtraBaseNormal)
 		.Process(this->PlacementGrid_Expand)
 		.Process(this->PlacementGrid_LandFrames)
 		.Process(this->PlacementGrid_WaterFrames)

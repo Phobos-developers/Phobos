@@ -28,60 +28,7 @@ DEFINE_HOOK(0x4A8F20, DisplayClass_BuildingProximityCheck_SetContext, 0x5)
 	return 0;
 }
 
-// BaseNormal extra checking Hook #1-2 -> sub_4A8EB0 - Check unit base normal
-DEFINE_HOOK(0x4A8FCA, DisplayClass_BuildingProximityCheck_BaseNormalExtra, 0x7)
-{
-	enum { CanBuild = 0x4A9027, ContinueCheck = 0x4A8FD1 };
-
-	GET(CellClass*, pCell, EAX);
-	GET_STACK(const int, idxHouse, STACK_OFFSET(0x30, 0x8));
-
-	ProximityTemp::CurrentCell = pCell;
-
-	if (RulesExt::Global()->CheckUnitBaseNormal)
-	{
-		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
-		{
-			const auto pCellUnit = abstract_cast<UnitClass*>(pObject);
-
-			if (!pCellUnit)
-				continue;
-
-			const auto pOwner = pCellUnit->Owner;
-			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pCellUnit->Type);
-
-			auto canBeBaseNormal = [&]()
-			{
-				if (pOwner->ArrayIndex == idxHouse)
-					return pTypeExt->UnitBaseNormal.Get();
-				else if (RulesClass::Instance->BuildOffAlly && pOwner->IsAlliedWith(HouseClass::Array->Items[idxHouse]))
-					return pTypeExt->UnitBaseForAllyBuilding.Get();
-
-				return false;
-			};
-
-			if (canBeBaseNormal())
-			{
-				const auto& pUnitsAllowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::BuildType)->Adjacent_AllowedUnit;
-
-				if (pUnitsAllowed.size() > 0 && !pUnitsAllowed.Contains(pCellUnit->Type))
-					continue;
-
-				const auto& pUnitsDisallowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::BuildType)->Adjacent_DisallowedUnit;
-
-				if (pUnitsDisallowed.size() > 0 && pUnitsDisallowed.Contains(pCellUnit->Type))
-					continue;
-
-				return CanBuild;
-			}
-		}
-	}
-
-	R->EAX(pCell->GetBuilding());
-	return ContinueCheck;
-}
-
-// BaseNormal extra checking Hook #1-3 -> sub_4A8EB0 - Check allowed building
+// BaseNormal extra checking Hook #1-2 -> sub_4A8EB0 - Check allowed building
 DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 {
 	enum { SkipBuilding = 0x4A902C };
@@ -106,7 +53,7 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 	return 0;
 }
 
-// BaseNormal extra checking Hook #1-4 -> sub_4A8EB0 - Break loop or record cell for drawing
+// BaseNormal extra checking Hook #1-3 -> sub_4A8EB0 - Break loop or record cell for drawing
 DEFINE_HOOK(0x4A902C, MapClass_PassesProximityCheck_BaseNormalExtra, 0x5)
 {
 	enum { CheckCompleted = 0x4A904E };
@@ -118,18 +65,96 @@ DEFINE_HOOK(0x4A902C, MapClass_PassesProximityCheck_BaseNormalExtra, 0x5)
 		if (!RulesExt::Global()->PlacementGrid_Expand)
 			return CheckCompleted;
 
-		canBuild = false;
+		canBuild = false; // Reset to false so that cells with BaseNormal can be correctly identified
 		ProximityTemp::Build = true;
-		ScenarioExt::Global()->BaseNormalCells.push_back(ProximityTemp::CurrentCell->MapCoords);
+
+		GET_STACK(const CellStruct, currentCell, STACK_OFFSET(0x30, -0x20));
+		ScenarioExt::Global()->BaseNormalCells.push_back(currentCell);
 	}
 
 	return 0;
 }
 
-// BaseNormal extra checking Hook #1-5 -> sub_4A8EB0 - Restore the correct result
+// BaseNormal extra checking Hook #1-4 -> sub_4A8EB0 - Restore the correct result
 DEFINE_HOOK(0x4A904E, MapClass_PassesProximityCheck_RestoreResult, 0x5)
 {
-	if (RulesExt::Global()->PlacementGrid_Expand)
+	GET_STACK(bool, canBuild, STACK_OFFSET(0x30, 0xC));
+	GET_STACK(const int, idxHouse, STACK_OFFSET(0x30, 0x8));
+
+	const bool gridExpand = RulesExt::Global()->PlacementGrid_Expand;
+
+	if (RulesExt::Global()->CheckExtraBaseNormal && (!canBuild || gridExpand))
+	{
+		const auto& baseNormalTechnos = ScenarioExt::Global()->BaseNormalTechnos;
+
+		if (baseNormalTechnos.size())
+		{
+			GET(const int, topLeftX, EBP);
+			GET_STACK(const int, foundationWidth, STACK_OFFSET(0x30, -0x1C));
+			GET_STACK(const int, topLeftY, STACK_OFFSET(0x30, -0xC));
+			GET_STACK(const int, foundationHeight, STACK_OFFSET(0x30, 0x4));
+
+			const auto pBuildType = ProximityTemp::BuildType;
+			const auto pBuildTypeExt = BuildingTypeExt::ExtMap.Find(ProximityTemp::BuildType);
+			const auto range = pBuildType->Adjacent + 1;
+			const auto maxX = topLeftX + range + foundationWidth;
+			const auto maxY = topLeftY + range + foundationHeight;
+			const auto minX = topLeftX - range;
+			const auto minY = topLeftY - range;
+
+			for (const auto& pExt : baseNormalTechnos)
+			{
+				const auto pTechno = pExt->OwnerObject();
+
+				if (!TechnoExt::IsActive(pTechno) || pTechno->Deactivated)
+					continue;
+
+				const auto technoMapCell = pTechno->GetMapCoords();
+
+				if (technoMapCell.X < minX || technoMapCell.Y < minY || technoMapCell.X >= maxX || technoMapCell.Y >= maxY)
+					continue;
+
+				const auto pOwner = pTechno->Owner;
+				const auto pTypeExt = pExt->TypeExtData;
+
+				auto canBeBaseNormal = [&]()
+				{
+					if (pOwner->ArrayIndex == idxHouse)
+						return pTypeExt->ExtraBaseNormal.Get();
+					else if (RulesClass::Instance->BuildOffAlly && pOwner->IsAlliedWith(HouseClass::Array->Items[idxHouse]))
+						return pTypeExt->ExtraBaseForAllyBuilding.Get();
+
+					return false;
+				};
+
+				if (!canBeBaseNormal())
+					continue;
+
+				const auto& pExtraAllowed = pBuildTypeExt->Adjacent_AllowedExtra;
+
+				if (pExtraAllowed.size() > 0 && !pExtraAllowed.Contains(pTypeExt->OwnerObject()))
+					continue;
+
+				const auto& pExtraDisallowed = pBuildTypeExt->Adjacent_DisallowedExtra;
+
+				if (pExtraDisallowed.size() > 0 && pExtraDisallowed.Contains(pTypeExt->OwnerObject()))
+					continue;
+
+				if (gridExpand)
+				{
+					ProximityTemp::Build = true;
+					ScenarioExt::Global()->BaseNormalCells.push_back(technoMapCell);
+				}
+				else
+				{
+					R->Stack<bool>(STACK_OFFSET(0x30, 0xC), true);
+					break;
+				}
+			}
+		}
+	}
+
+	if (gridExpand)
 		R->Stack<bool>(STACK_OFFSET(0x30, 0xC), ProximityTemp::Build);
 
 	return 0;
@@ -138,13 +163,13 @@ DEFINE_HOOK(0x4A904E, MapClass_PassesProximityCheck_RestoreResult, 0x5)
 // BaseNormal for units Hook #2-1 -> sub_4AAC10 - Let the game do the PassesProximityCheck when the cell which mouse is pointing at has not changed
 DEFINE_HOOK(0x4AACD9, MapClass_TacticalAction_BaseNormalRecheck, 0x5)
 {
-	return (RulesExt::Global()->CheckUnitBaseNormal && !(Unsorted::CurrentFrame % 8)) ? 0x4AACF5 : 0;
+	return (RulesExt::Global()->CheckExtraBaseNormal && !(Unsorted::CurrentFrame % 8)) ? 0x4AACF5 : 0;
 }
 
 // BaseNormal for units Hook #2-2 -> sub_4A91B0 - Let the game do the PassesProximityCheck when the cell which mouse is pointing at has not changed
 DEFINE_HOOK(0x4A9361, MapClass_CallBuildingPlaceCheck_BaseNormalRecheck, 0x5)
 {
-	return (RulesExt::Global()->CheckUnitBaseNormal && !(Unsorted::CurrentFrame % 8)) ? 0x4A9371 : 0;
+	return (RulesExt::Global()->CheckExtraBaseNormal && !(Unsorted::CurrentFrame % 8)) ? 0x4A9371 : 0;
 }
 
 // Buildable-upon TechnoTypes Hook #2-1 -> sub_47EC90 - Record cell before draw it then skip vanilla AltFlags check
@@ -183,6 +208,7 @@ DEFINE_HOOK(0x47EF52, CellClass_DrawPlaceGrid_DrawGrids, 0x6)
 	bool green = false;
 	const auto& cells = ScenarioExt::Global()->BaseNormalCells;
 
+	// Brute force
 	for (const auto& baseCell : cells)
 	{
 		if (baseCell.X >= minX && baseCell.Y >= minY && baseCell.X <= maxX && baseCell.Y <= maxY)

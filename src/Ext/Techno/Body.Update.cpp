@@ -419,6 +419,26 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	this->UpdateSelfOwnedAttachEffects();
 
+	// Reset ExtraBaseNormal
+	if (RulesExt::Global()->CheckExtraBaseNormal)
+	{
+		if (pOldTypeExt->ExtraBaseNormal)
+		{
+			if (!this->TypeExtData->ExtraBaseNormal)
+			{
+				auto& vec = ScenarioExt::Global()->BaseNormalTechnos;
+				vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+			}
+		}
+		else if (this->TypeExtData->ExtraBaseNormal)
+		{
+			auto& vec = ScenarioExt::Global()->BaseNormalTechnos;
+
+			if (std::find(vec.begin(), vec.end(), this) == vec.end())
+				vec.push_back(this);
+		}
+	}
+
 	// Recreate Laser Trails
 	for (auto const& entry : this->TypeExtData->LaserTrailData)
 	{

@@ -226,8 +226,8 @@ public:
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
-		Valueable<bool> UnitBaseNormal;
-		Valueable<bool> UnitBaseForAllyBuilding;
+		Valueable<bool> ExtraBaseNormal;
+		Valueable<bool> ExtraBaseForAllyBuilding;
 
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
@@ -456,8 +456,8 @@ public:
 			, BuildLimitGroup_ExtraLimit_MaxCount {}
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
 
-			, UnitBaseNormal { false }
-			, UnitBaseForAllyBuilding { false }
+			, ExtraBaseNormal { false }
+			, ExtraBaseForAllyBuilding { false }
 
 			, Wake { }
 			, Wake_Grapple { }

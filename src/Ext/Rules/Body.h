@@ -93,7 +93,7 @@ public:
 		Valueable<double> HeightShadowScaling_MinScale;
 		double AirShadowBaseScale_log;
 
-		Valueable<bool> CheckUnitBaseNormal;
+		Valueable<bool> CheckExtraBaseNormal;
 		Valueable<bool> PlacementGrid_Expand;
 		Valueable<Vector3D<int>> PlacementGrid_LandFrames;
 		Valueable<Vector3D<int>> PlacementGrid_WaterFrames;
@@ -233,7 +233,7 @@ public:
 			, HeightShadowScaling_MinScale { 0.0 }
 			, AirShadowBaseScale_log { 0.693376137 }
 
-			, CheckUnitBaseNormal { false }
+			, CheckExtraBaseNormal { false }
 			, PlacementGrid_Expand { false }
 			, PlacementGrid_LandFrames { { 1, 0, 0 } }
 			, PlacementGrid_WaterFrames { { 1, 0, 0 } }
