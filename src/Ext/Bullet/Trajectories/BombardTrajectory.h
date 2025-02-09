@@ -27,8 +27,7 @@ public:
 		, UseDisperseBurst { false }
 		, AxisOfRotation { { 0, 0, 1 } }
 		, SubjectToGround { false }
-	{
-	}
+	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
@@ -82,8 +81,7 @@ public:
 		, CurrentBurst { 0 }
 		, RotateAngle { 0 }
 		, WaitOneFrame { 0 }
-	{
-	}
+	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
