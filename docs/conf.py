@@ -18,10 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Phobos'
-copyright = '2024, The Phobos Contributors'
+copyright = '2025, The Phobos Contributors'
 author = 'The Phobos Contributors'
-
-
 
 # -- General configuration ---------------------------------------------------
 
