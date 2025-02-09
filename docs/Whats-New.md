@@ -320,6 +320,7 @@ New:
 - Option for vehicles to keep target when issued move command (by Starkku)
 - Skip anim delay for burst fire (by TaranDahl)
 - New Parabola trajectory (by CrimRecya)
+- Type select for buildings (code by TaranDahl(航味麻酱), doc by Ollerus)
 
 Vanilla fixes:
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
