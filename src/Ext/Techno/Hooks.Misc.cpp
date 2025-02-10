@@ -433,12 +433,12 @@ bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
 {
 	auto const loco = pType->Locomotor;
 
-	return  loco != LocomotionClass::CLSIDs::Hover && 
-	loco != LocomotionClass::CLSIDs::Mech && 
-	loco != LocomotionClass::CLSIDs::Fly && 
-	loco != LocomotionClass::CLSIDs::Droppod && 
-	loco != LocomotionClass::CLSIDs::Rocket && 
-	loco != LocomotionClass::CLSIDs::Ship;
+	return loco != LocomotionClass::CLSIDs::Hover
+		&& loco != LocomotionClass::CLSIDs::Mech
+		&& loco != LocomotionClass::CLSIDs::Fly
+		&& loco != LocomotionClass::CLSIDs::Droppod
+		&& loco != LocomotionClass::CLSIDs::Rocket
+		&& loco != LocomotionClass::CLSIDs::Ship;
 }
 
 DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
