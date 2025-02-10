@@ -23,9 +23,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	int nDamageLeft = *args->Damage;
 
+	// Raise Combat Alert
 	if (pRules->CombatAlert && nDamageLeft > 1)
 	{
-		auto raiseCombatAlert = [pThis, pExt, pRules, args]()
+		auto raiseCombatAlert = [&]()
 		{
 			const auto pHouse = pThis->Owner;
 
@@ -57,7 +58,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 			if (pRules->CombatAlert_SuppressIfInScreen)
 			{
-				TacticalClass* const pTactical = TacticalClass::Instance;
+				const auto pTactical = TacticalClass::Instance();
 				const auto coordInScreen = pTactical->CoordsToScreen(coordInMap) - pTactical->TacticalPos;
 				const auto screenArea = DSurface::Composite->GetRect();
 
@@ -84,6 +85,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		raiseCombatAlert();
 	}
 
+	// Shield Receive Damage
 	if (!args->IgnoreDefenses)
 	{
 		if (const auto pShieldData = pExt->Shield.get())

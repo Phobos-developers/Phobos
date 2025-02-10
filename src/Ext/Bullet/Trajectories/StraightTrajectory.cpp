@@ -1046,11 +1046,14 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet)
 	};
 
 	auto checkDifference = MapClass::Instance->GetCellFloorHeight(futureCoords) - futureCoords.Z;
-	const auto cellCoords = MapClass::Instance->GetCellAt(futureCoords)->GetCoordsWithBridge();
-	const auto differenceOnBridge = cellCoords.Z - futureCoords.Z;
 
-	if (std::abs(differenceOnBridge) < std::abs(checkDifference))
-		checkDifference = differenceOnBridge;
+	if (MapClass::Instance->GetCellAt(futureCoords)->ContainsBridge())
+	{
+		const auto differenceOnBridge = checkDifference + CellClass::BridgeHeight;
+
+		if (std::abs(differenceOnBridge) < std::abs(checkDifference))
+			checkDifference = differenceOnBridge;
+	}
 
 	// The height does not exceed the cliff, or the cliff can be ignored?
 	if (std::abs(checkDifference) < 384 || !pBullet->Type->SubjectToCliffs)
