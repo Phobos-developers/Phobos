@@ -866,7 +866,7 @@ Trajectory.Bombard.Height=0.0  ; double
   - `Trajectory.Tracing.SuicideAboveRange` controls whether the projectile will explode if its target exceeds the range.
   - `Trajectory.Tracing.SuicideIfNoWeapon` controls whether the projectile will explode after firing the final weapon.
 
-在 `rulesmd.ini` 之中：
+In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]                            ; Projectile
 Trajectory=Tracing                          ; Trajectory type
