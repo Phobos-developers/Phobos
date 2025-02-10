@@ -1,8 +1,8 @@
 #include "DisperseTrajectory.h"
 #include "StraightTrajectory.h"
-// #include "BombardTrajectory.h" // TODO If merge #1404
+#include "BombardTrajectory.h"
 // #include "EngraveTrajectory.h" // TODO If merge #1293
-// #include "ParabolaTrajectory.h" // TODO If merge #1374
+#include "ParabolaTrajectory.h"
 // #include "TracingTrajectory.h" // TODO If merge #1481
 
 #include <AnimClass.h>
@@ -1284,7 +1284,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					}
 				}
 			}
-/*			else if (flag == TrajectoryFlag::Bombard) // TODO If merge #1404
+			else if (flag == TrajectoryFlag::Bombard)
 			{
 				const auto pTrajectory = static_cast<BombardTrajectory*>(pTraj);
 				const auto pTrajType = pTrajectory->Type;
@@ -1299,7 +1299,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					if (!pTrajType->NoLaunch || !pTrajType->LeadTimeCalculate || !abstract_cast<FootClass*>(pTarget))
 						this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 				}
-			}*/
+			}
 /*			else if (flag == TrajectoryFlag::Engrave) // TODO If merge #1293
 			{
 				const auto pTrajectory = static_cast<EngraveTrajectory*>(pTraj);
@@ -1316,7 +1316,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					pTrajectory->NotMainWeapon = true;
 				}
 			}*/
-/*			else if (flag == TrajectoryFlag::Parabola) // TODO If merge #1374
+			else if (flag == TrajectoryFlag::Parabola)
 			{
 				const auto pTrajectory = static_cast<ParabolaTrajectory*>(pTraj);
 				const auto pTrajType = pTrajectory->Type;
@@ -1335,7 +1335,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 						this->DisperseBurstSubstitution(pCreateBullet, pTrajType->AxisOfRotation.Get(), pTrajType->RotateCoord, curBurst, maxBurst, pTrajType->MirrorCoord);
 					}
 				}
-			}*/
+			}
 /*			else if (flag == TrajectoryFlag::Tracing) // TODO If merge #1481
 			{
 				const auto pTrajectory = static_cast<TracingTrajectory*>(pTraj);
