@@ -433,6 +433,7 @@ bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
 {
 	auto const loco = pType->Locomotor;
 
+	// These locomotors either cause the game to crash or fail to enter the tank bunker properly.
 	return loco != LocomotionClass::CLSIDs::Hover
 		&& loco != LocomotionClass::CLSIDs::Mech
 		&& loco != LocomotionClass::CLSIDs::Fly
@@ -443,17 +444,15 @@ bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
 
 DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
 {
-	enum { SkipVanillaChecks = 0x70FBAF, DoVanillaChecks = 0 };
+	enum { CanEnter = 0x70FBAF, NoEnter = 0x70FB7D };
 
 	GET(TechnoTypeClass*, pType, EAX);
 	GET(FootClass*, pThis, ESI);
 
+	if (!LocomotorCheckForBunkerable(pType) || pThis->ParasiteEatingMe)
+		return NoEnter;
+
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto const loco = pType->Locomotor;
-
-	if (pTypeExt && pTypeExt->BunkerableAnyway && !pThis->ParasiteEatingMe && LocomotorCheckForBunkerable(pType))
-		return SkipVanillaChecks;
-
-	return DoVanillaChecks;
+	return pTypeExt->BunkerableAnyway ? CanEnter : 0;
 }
 #pragma endregion
