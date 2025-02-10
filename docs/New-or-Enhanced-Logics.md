@@ -1599,16 +1599,6 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
-### Waypoint for building
-
-- In vanilla, building and aircraft is forbiddened to use waypoint. Now you can turn it on by the following flags.
-
-In `rulesmd.ini`:
-```ini
-[General]
-BuildingWaypoint=false    ; boolean
-```
-
 ## Terrain
 
 ### Destroy animation & sound
