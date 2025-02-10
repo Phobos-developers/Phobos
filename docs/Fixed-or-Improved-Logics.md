@@ -500,6 +500,16 @@ Units.RepairPercent=  ; floating point value, percents or absolute
 Units.UseRepairCost=  ; boolean
 ```
 
+### Waypoints for buildings
+
+- In vanilla, buildings are forbidden to use waypoints. Now you can allow that using the following flag.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingWaypoints=false  ; boolean
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
