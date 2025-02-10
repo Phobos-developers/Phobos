@@ -8,6 +8,7 @@
 #include "StraightTrajectory.h"
 #include "BombardTrajectory.h"
 #include "DisperseTrajectory.h"
+#include "ParabolaTrajectory.h"
 
 TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 {
@@ -21,6 +22,9 @@ TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 		return;
 	case TrajectoryFlag::Disperse:
 		_ptr = std::make_unique<DisperseTrajectoryType>();
+		return;
+	case TrajectoryFlag::Parabola:
+		_ptr = std::make_unique<ParabolaTrajectoryType>();
 		return;
 	}
 	_ptr.reset();
@@ -38,6 +42,7 @@ namespace detail
 				{"Straight", TrajectoryFlag::Straight},
 				{"Bombard" ,TrajectoryFlag::Bombard},
 				{"Disperse", TrajectoryFlag::Disperse},
+				{"Parabola", TrajectoryFlag::Parabola},
 			};
 			for (auto [name, flag] : FlagNames)
 			{
@@ -119,6 +124,9 @@ bool TrajectoryPointer::Load(PhobosStreamReader& Stm, bool registerForChange)
 		case TrajectoryFlag::Disperse:
 			_ptr = std::make_unique<DisperseTrajectory>(noinit_t {});
 			break;
+		case TrajectoryFlag::Parabola:
+			_ptr = std::make_unique<ParabolaTrajectory>(noinit_t {});
+			break;
 		default:
 			_ptr.reset();
 			break;
@@ -146,6 +154,283 @@ bool TrajectoryPointer::Save(PhobosStreamWriter& Stm) const
 }
 
 // ------------------------------------------------------------------------------ //
+
+// A rectangular shape with a custom width from the current frame to the next frame in length.
+std::vector<CellClass*> PhobosTrajectoryType::GetCellsInProximityRadius(BulletClass* pBullet, Leptons trajectoryProximityRange)
+{
+	// Seems like the y-axis is reversed, but it's okay.
+	const CoordStruct walkCoord { static_cast<int>(pBullet->Velocity.X), static_cast<int>(pBullet->Velocity.Y), 0 };
+	const auto sideMult = trajectoryProximityRange / walkCoord.Magnitude();
+
+	const CoordStruct cor1Coord { static_cast<int>(walkCoord.Y * sideMult), static_cast<int>((-walkCoord.X) * sideMult), 0 };
+	const CoordStruct cor4Coord { static_cast<int>((-walkCoord.Y) * sideMult), static_cast<int>(walkCoord.X * sideMult), 0 };
+	const auto thisCell = CellClass::Coord2Cell(pBullet->Location);
+
+	auto cor1Cell = CellClass::Coord2Cell((pBullet->Location + cor1Coord));
+	auto cor4Cell = CellClass::Coord2Cell((pBullet->Location + cor4Coord));
+
+	const auto off1Cell = cor1Cell - thisCell;
+	const auto off4Cell = cor4Cell - thisCell;
+	const auto nextCell = CellClass::Coord2Cell((pBullet->Location + walkCoord));
+
+	auto cor2Cell = nextCell + off1Cell;
+	auto cor3Cell = nextCell + off4Cell;
+
+	// Arrange the vertices of the rectangle in order from bottom to top.
+	int cornerIndex = 0;
+	CellStruct corner[4] = { cor1Cell, cor2Cell, cor3Cell, cor4Cell };
+
+	for (int i = 1; i < 4; ++i)
+	{
+		if (corner[cornerIndex].Y > corner[i].Y)
+			cornerIndex = i;
+	}
+
+	cor1Cell = corner[cornerIndex];
+	++cornerIndex %= 4;
+	cor2Cell = corner[cornerIndex];
+	++cornerIndex %= 4;
+	cor3Cell = corner[cornerIndex];
+	++cornerIndex %= 4;
+	cor4Cell = corner[cornerIndex];
+
+	std::vector<CellStruct> recCells = PhobosTrajectoryType::GetCellsInRectangle(cor1Cell, cor4Cell, cor2Cell, cor3Cell);
+	std::vector<CellClass*> recCellClass;
+	recCellClass.reserve(recCells.size());
+
+	for (const auto& pCells : recCells)
+	{
+		if (CellClass* pRecCell = MapClass::Instance->TryGetCellAt(pCells))
+			recCellClass.push_back(pRecCell);
+	}
+
+	return recCellClass;
+}
+
+// Can ONLY fill RECTANGLE. Record cells in the order of "draw left boundary, draw right boundary, fill middle, and move up one level".
+std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bottomStaCell, CellStruct leftMidCell, CellStruct rightMidCell, CellStruct topEndCell)
+{
+	std::vector<CellStruct> recCells;
+	const auto cellNums = (std::abs(topEndCell.Y - bottomStaCell.Y) + 1) * (std::abs(rightMidCell.X - leftMidCell.X) + 1);
+	recCells.reserve(cellNums);
+	recCells.push_back(bottomStaCell);
+
+	if (bottomStaCell == leftMidCell || bottomStaCell == rightMidCell) // A straight line
+	{
+		auto middleCurCell = bottomStaCell;
+
+		const auto middleTheDist = topEndCell - bottomStaCell;
+		const CellStruct middleTheUnit { static_cast<short>(Math::sgn(middleTheDist.X)), static_cast<short>(Math::sgn(middleTheDist.Y)) };
+		const CellStruct middleThePace { static_cast<short>(middleTheDist.X * middleTheUnit.X), static_cast<short>(middleTheDist.Y * middleTheUnit.Y) };
+		auto mTheCurN = static_cast<float>((middleThePace.Y - middleThePace.X) / 2.0);
+
+		while (middleCurCell != topEndCell)
+		{
+			if (mTheCurN > 0)
+			{
+				mTheCurN -= middleThePace.X;
+				middleCurCell.Y += middleTheUnit.Y;
+				recCells.push_back(middleCurCell);
+			}
+			else if (mTheCurN < 0)
+			{
+				mTheCurN += middleThePace.Y;
+				middleCurCell.X += middleTheUnit.X;
+				recCells.push_back(middleCurCell);
+			}
+			else
+			{
+				mTheCurN += middleThePace.Y - middleThePace.X;
+				middleCurCell.X += middleTheUnit.X;
+				recCells.push_back(middleCurCell);
+				middleCurCell.X -= middleTheUnit.X;
+				middleCurCell.Y += middleTheUnit.Y;
+				recCells.push_back(middleCurCell);
+				middleCurCell.X += middleTheUnit.X;
+				recCells.push_back(middleCurCell);
+			}
+		}
+	}
+	else // Complete rectangle
+	{
+		auto leftCurCell = bottomStaCell;
+		auto rightCurCell = bottomStaCell;
+		auto middleCurCell = bottomStaCell;
+
+		bool leftNext = false;
+		bool rightNext = false;
+		bool leftSkip = false;
+		bool rightSkip = false;
+		bool leftContinue = false;
+		bool rightContinue = false;
+
+		const auto left1stDist = leftMidCell - bottomStaCell;
+		const CellStruct left1stUnit { static_cast<short>(Math::sgn(left1stDist.X)), static_cast<short>(Math::sgn(left1stDist.Y)) };
+		const CellStruct left1stPace { static_cast<short>(left1stDist.X * left1stUnit.X), static_cast<short>(left1stDist.Y * left1stUnit.Y) };
+		auto left1stCurN = static_cast<float>((left1stPace.Y - left1stPace.X) / 2.0);
+
+		const auto left2ndDist = topEndCell - leftMidCell;
+		const CellStruct left2ndUnit { static_cast<short>(Math::sgn(left2ndDist.X)), static_cast<short>(Math::sgn(left2ndDist.Y)) };
+		const CellStruct left2ndPace { static_cast<short>(left2ndDist.X * left2ndUnit.X), static_cast<short>(left2ndDist.Y * left2ndUnit.Y) };
+		auto left2ndCurN = static_cast<float>((left2ndPace.Y - left2ndPace.X) / 2.0);
+
+		const auto right1stDist = rightMidCell - bottomStaCell;
+		const CellStruct right1stUnit { static_cast<short>(Math::sgn(right1stDist.X)), static_cast<short>(Math::sgn(right1stDist.Y)) };
+		const CellStruct right1stPace { static_cast<short>(right1stDist.X * right1stUnit.X), static_cast<short>(right1stDist.Y * right1stUnit.Y) };
+		auto right1stCurN = static_cast<float>((right1stPace.Y - right1stPace.X) / 2.0);
+
+		const auto right2ndDist = topEndCell - rightMidCell;
+		const CellStruct right2ndUnit { static_cast<short>(Math::sgn(right2ndDist.X)), static_cast<short>(Math::sgn(right2ndDist.Y)) };
+		const CellStruct right2ndPace { static_cast<short>(right2ndDist.X * right2ndUnit.X), static_cast<short>(right2ndDist.Y * right2ndUnit.Y) };
+		auto right2ndCurN = static_cast<float>((right2ndPace.Y - right2ndPace.X) / 2.0);
+
+		while (leftCurCell != topEndCell || rightCurCell != topEndCell)
+		{
+			while (leftCurCell != topEndCell) // Left
+			{
+				if (!leftNext) // Bottom Left Side
+				{
+					if (left1stCurN > 0)
+					{
+						left1stCurN -= left1stPace.X;
+						leftCurCell.Y += left1stUnit.Y;
+
+						if (leftCurCell == leftMidCell)
+						{
+							leftNext = true;
+						}
+						else
+						{
+							recCells.push_back(leftCurCell);
+							break;
+						}
+					}
+					else
+					{
+						left1stCurN += left1stPace.Y;
+						leftCurCell.X += left1stUnit.X;
+
+						if (leftCurCell == leftMidCell)
+						{
+							leftNext = true;
+							leftSkip = true;
+						}
+					}
+				}
+				else // Top Left Side
+				{
+					if (left2ndCurN >= 0)
+					{
+						if (leftSkip)
+						{
+							leftSkip = false;
+							left2ndCurN -= left2ndPace.X;
+							leftCurCell.Y += left2ndUnit.Y;
+						}
+						else
+						{
+							leftContinue = true;
+							break;
+						}
+					}
+					else
+					{
+						left2ndCurN += left2ndPace.Y;
+						leftCurCell.X += left2ndUnit.X;
+					}
+				}
+
+				if (leftCurCell != rightCurCell) // Avoid double counting cells.
+					recCells.push_back(leftCurCell);
+			}
+
+			while (rightCurCell != topEndCell) // Right
+			{
+				if (!rightNext) // Bottom Right Side
+				{
+					if (right1stCurN > 0)
+					{
+						right1stCurN -= right1stPace.X;
+						rightCurCell.Y += right1stUnit.Y;
+
+						if (rightCurCell == rightMidCell)
+						{
+							rightNext = true;
+						}
+						else
+						{
+							recCells.push_back(rightCurCell);
+							break;
+						}
+					}
+					else
+					{
+						right1stCurN += right1stPace.Y;
+						rightCurCell.X += right1stUnit.X;
+
+						if (rightCurCell == rightMidCell)
+						{
+							rightNext = true;
+							rightSkip = true;
+						}
+					}
+				}
+				else // Top Right Side
+				{
+					if (right2ndCurN >= 0)
+					{
+						if (rightSkip)
+						{
+							rightSkip = false;
+							right2ndCurN -= right2ndPace.X;
+							rightCurCell.Y += right2ndUnit.Y;
+						}
+						else
+						{
+							rightContinue = true;
+							break;
+						}
+					}
+					else
+					{
+						right2ndCurN += right2ndPace.Y;
+						rightCurCell.X += right2ndUnit.X;
+					}
+				}
+
+				if (rightCurCell != leftCurCell) // Avoid double counting cells.
+					recCells.push_back(rightCurCell);
+			}
+
+			middleCurCell = leftCurCell;
+			middleCurCell.X += 1;
+
+			while (middleCurCell.X < rightCurCell.X) // Center
+			{
+				recCells.push_back(middleCurCell);
+				middleCurCell.X += 1;
+			}
+
+			if (leftContinue) // Continue Top Left Side
+			{
+				leftContinue = false;
+				left2ndCurN -= left2ndPace.X;
+				leftCurCell.Y += left2ndUnit.Y;
+				recCells.push_back(leftCurCell);
+			}
+
+			if (rightContinue) // Continue Top Right Side
+			{
+				rightContinue = false;
+				right2ndCurN -= right2ndPace.X;
+				rightCurCell.Y += right2ndUnit.Y;
+				recCells.push_back(rightCurCell);
+			}
+		}
+	}
+
+	return recCells;
+}
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {

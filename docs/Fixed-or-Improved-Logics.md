@@ -18,7 +18,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled.
 - Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
-- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set.
+- Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` -> `AllowParallelAIQueues=no` is set.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
 - Fixed `DeathWeapon` not detonating properly.
   - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
@@ -127,7 +127,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `DeployToFire` not recalculating firer's position on land if it cannot currently deploy.
 - `Arcing=true` projectile elevation inaccuracy can now be fixed by setting `Arcing.AllowElevationInaccuracy=false`.
 - Wall overlays are now drawn with the custom palette defined in `Palette` in `artmd.ini` if possible.
-- `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
+- If `[CombatDamage]`->`AllowWeaponSelectAgainstWalls` is set to true, `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true.
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
@@ -187,6 +187,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
+- Allowed `AuxBuilding` to count building upgrades.
+- Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
 
 ## Fixes / interactions with other extensions
 
@@ -202,6 +204,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory.
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions.
+- Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 
 ## Aircraft
 
@@ -1681,11 +1684,15 @@ DropPod.AtmosphereEntry =     ; anim, default to [AudioVisual]->AtmosphereEntry
 DropPod.GroundAnim =          ; 2 anims, default to [General]->DropPod
 DropPod.AirImage =            ; SHP file, the pod's shape, default to POD
 DropPod.Height =              ; int, default to [General]->DropPodHeight
-DropPod.Puff =                ; anim, default to [General]->DropPodPuff
+DropPod.Puff =                ; anim, default to [AudioVisual]->DropPodPuff
 DropPod.Speed =               ; int, default to [General]->DropPodSpeed
 DropPod.Trailer =             ; anim, default to [General]->DropPodTrailer, which by default is SMOKEY
 DropPod.Trailer.Attached =    ; boolean, default to no
 DropPod.Trailer.SpawnDelay =  ; int, number of frames between each spawn of DropPod.Trailer, default to 6
 DropPod.Weapon =              ; weapon, default to [General]->DropPodWeapon
 DropPod.Weapon.HitLandOnly =  ; boolean, default to no
+```
+
+```{note}
+`[General]` -> `DropPodTrailer`is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```
