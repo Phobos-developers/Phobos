@@ -177,13 +177,13 @@ msgstr ""
 
 #: ../../README.md:25
 msgid ""
-"[🇨🇳 Chinese QQ Phobos group / Phobos 中文用户QQ群 (630590659)](http://qm.qq."
+"[🇨🇳 Chinese QQ Phobos group](http://qm.qq."
 "com/cgi-bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--"
-"ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)"
+"ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)(630590659)"
 msgstr ""
-"[Phobos 中文用户QQ群 (630590659)](http://qm.qq.com/cgi-bin/qm/qr?"
+"[Phobos 中文用户QQ群](http://qm.qq.com/cgi-bin/qm/qr?"
 "_wv=1027&k=f_h7TZoVX_8--"
-"ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)"
+"ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)（630590659）"
 
 #: ../../README.md:27
 msgid "Downloads"
@@ -439,7 +439,7 @@ msgid ""
 "**Kerbiter (Metadorius)** - project co-author, BDFL, maintainer ([Patreon]"
 "(https://www.patreon.com/kerbiter), PM me for PayPal to avoid fees)"
 msgstr ""
-"**Kerbiter (Metadorius)** - 项目共同者，BDFL，维护者（[Patreon](https://www."
+"**Kerbiter (Metadorius)** - 项目共同作者，BDFL，维护者（[Patreon](https://www."
 "patreon.com/kerbiter)）"
 
 #: ../../README.md:96

@@ -10,6 +10,7 @@ enum class TrajectoryFlag : int
 	Invalid = -1,
 	Straight = 0,
 	Bombard = 1,
+	Parabola = 4,
 	Tracing = 5
 };
 
@@ -33,6 +34,11 @@ public:
 	virtual void Read(CCINIClass* const pINI, const char* pSection) = 0;
 	[[nodiscard]] virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const = 0;
 
+	static std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet, Leptons trajectoryProximityRange);
+private:
+	static std::vector<CellStruct> GetCellsInRectangle(CellStruct bottomStaCell, CellStruct leftMidCell, CellStruct rightMidCell, CellStruct topEndCell);
+
+public:
 	Valueable<double> Trajectory_Speed { 100.0 };
 };
 
