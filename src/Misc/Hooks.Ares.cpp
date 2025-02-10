@@ -6,6 +6,8 @@
 #include <Utilities/Helpers.Alex.h>
 #include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>
 
+#include <Ext/Sidebar/Body.h>
+
 // In vanilla YR, game destroys building animations directly by calling constructor.
 // Ares changed this to call UnInit() which has a consequence of doing pointer invalidation on the AnimClass pointer.
 // This notably causes an issue with Grinder that restores ActiveAnim if the building is sold/destroyed while SpecialAnim is playing even if the building is gone or in limbo.

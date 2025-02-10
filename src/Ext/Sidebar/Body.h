@@ -62,4 +62,6 @@ public:
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
+
+	static bool __stdcall AresTabCameo_RemoveCameo(BuildType* pItem);
 };

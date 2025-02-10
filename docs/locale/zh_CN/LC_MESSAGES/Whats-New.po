@@ -621,9 +621,9 @@ msgstr "修复了AITriggerTypes不能正确识别建筑升级的问题 (by Uranu
 
 #: ../Whats-New.md:341
 msgid ""
-"Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > "
+"Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` -> "
 "`AllowParallelAIQueues=no` is set (by FS-21)"
-msgstr "修复了AI停机坪bug当`[GlobalControls]` > `AllowParallelAIQueues=no`时 (by FS-21)"
+msgstr "修复了AI停机坪bug当`[GlobalControls]` -> `AllowParallelAIQueues=no`时 (by FS-21)"
 
 #: ../Whats-New.md:342
 msgid ""

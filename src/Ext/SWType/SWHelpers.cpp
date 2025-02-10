@@ -165,8 +165,14 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 	const auto pThis = this->OwnerObject();
 
 	// check whether the optional aux building exists
-	if (pThis->AuxBuilding && pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
-		return false;
+	if (pThis->AuxBuilding)
+	{
+		if ((BuildingTypeExt::ExtMap.Find(pThis->AuxBuilding)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pThis->AuxBuilding->PowersUpBuilding))
+			&& BuildingTypeExt::GetUpgradesAmount(pThis->AuxBuilding, pHouse) <= 0)
+			return false;
+		else if (pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
+			return false;
+	}
 
 	// allow only certain houses, disallow forbidden houses
 	const auto OwnerBits = 1u << pHouse->Type->ArrayIndex;
@@ -177,7 +183,15 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 	// check that any aux building exist and no neg building
 	auto IsBuildingPresent = [pHouse](BuildingTypeClass* pType)
 		{
-			return pType && pHouse->CountOwnedAndPresent(pType) > 0;
+			if (pType)
+			{
+				if (BuildingTypeExt::ExtMap.Find(pType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pType->PowersUpBuilding))
+					return BuildingTypeExt::GetUpgradesAmount(pType, pHouse) > 0;
+				else
+					return pHouse->CountOwnedAndPresent(pType) > 0;
+			}
+
+			return false;
 		};
 
 	const auto& Aux = this->SW_AuxBuildings;
