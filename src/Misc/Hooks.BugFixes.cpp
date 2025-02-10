@@ -58,7 +58,7 @@ DEFINE_HOOK(0x62AA32, ParasiteClass_TryInfect_MissBehaviorFix, 0x5)
 	GET(bool, isReturnSuccess, EAX);
 	GET(ParasiteClass* const, pParasite, ESI);
 
-	auto pParasiteTechno = pParasite->Owner;
+	const auto pParasiteTechno = pParasite->Owner;
 
 	if (isReturnSuccess || !pParasiteTechno)
 		return 0;
@@ -68,12 +68,11 @@ DEFINE_HOOK(0x62AA32, ParasiteClass_TryInfect_MissBehaviorFix, 0x5)
 	if (!pType)
 		return 0;
 
-	auto cell = MapClass::Instance->NearByLocation(pParasiteTechno->LastMapCoords,
-				pType->SpeedType, -1, pType->MovementZone, false, 1, 1, false,
-				false, false, true, CellStruct::Empty, false, false);
-	auto crd = CellClass::Cell2Coord(cell);
-	isReturnSuccess = pParasiteTechno->Unlimbo(crd, DirType::North);
-	R->AL(isReturnSuccess);
+	const auto cell = MapClass::Instance->NearByLocation(pParasiteTechno->LastMapCoords, pType->SpeedType, -1,
+		pType->MovementZone, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
+
+	if (cell != CellStruct::Empty) // Cell2Coord makes X/Y values of CoordStruct non-zero, additional checks are required
+		R->AL(pParasiteTechno->Unlimbo(CellClass::Cell2Coord(cell), DirType::North));
 
 	return 0;
 }
