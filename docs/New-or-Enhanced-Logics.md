@@ -1457,8 +1457,10 @@ BunkerableAnyway=false     ; boolean
 ```
 
 ```{warning}
-Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, bunkerability is mainly determined by Locomotor. The details can be found on ModEnc.
+Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, bunkerability is mainly determined by Locomotor. 
 ```
+
+The details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable "ModEnc").
 
 ## Warheads
 
