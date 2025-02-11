@@ -268,6 +268,23 @@ ShowTimer=yes
 ShowTimer.Priority=0  ; integer
 ```
 
+### Type select for buildings
+- In vanilla game, type select can almost only be used on 1x1 buildings with `UndeploysInto`. Now it's possible to use it on all buildings if `BuildingTypeSelectable` set to true.
+
+In `rulesmd.ini`
+```ini
+[General]
+BuildingTypeSelectable=false  ; boolean
+```
+
+```{note}
+In Vanilla, you can type select a building by holding down the T key in advance and then clicking on the building. However, other type selection methods (such as selecting a building first and then pressing the T key, or selecting a building first and then pressing the type select button in the bottom sidebar) are not valid for buildings.
+```
+
+```{warning}
+Due to technical limitations, this feature is forcibly disabled without Ares.
+```
+
 ### Flashing Technos on selecting
 
 - Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0.
@@ -351,7 +368,7 @@ DisableEmptySpawnPositions=false  ; boolean
 
 ### Building Production Queue
 
-![Building Production Queue](static/images/image.png)
+![Building Production Queue](_static/images/buildingQueue.png)
 *Queueing multiple buildings*
 
 - Buildings can now be queued for construction like other units if `BuildingProductionQueue` is set to true.
@@ -487,7 +504,7 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 
 ### Weeds counter
 
-- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds-weed-eaters) can be added near the credits indicator.
+- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
   - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
   - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
   - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.ini`.
