@@ -64,10 +64,7 @@ void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->FallScatter_Min.Read(exINI, pSection, "Trajectory.Bombard.FallScatter.Min");
 	this->FallScatter_Linear.Read(exINI, pSection, "Trajectory.Bombard.FallScatter.Linear");
 	this->FallSpeed.Read(exINI, pSection, "Trajectory.Bombard.FallSpeed");
-
-	if (abs(this->FallSpeed.Get()) < 1e-10)
-		this->FallSpeed = this->Trajectory_Speed;
-
+	this->FallSpeed = std::abs(this->FallSpeed.Get()) < 1e-10 ? this->Trajectory_Speed.Get() : this->FallSpeed.Get();
 	this->DetonationDistance.Read(exINI, pSection, "Trajectory.Bombard.DetonationDistance");
 	this->DetonationHeight.Read(exINI, pSection, "Trajectory.Bombard.DetonationHeight");
 	this->EarlyDetonation.Read(exINI, pSection, "Trajectory.Bombard.EarlyDetonation");
@@ -123,10 +120,13 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	this->Height += pBullet->TargetCoords.Z;
 	// use scaling since RandomRanged only support int
 	this->FallPercent += ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(200 * pType->FallPercentShift)) / 100.0;
+
+	// Record the initial target coordinates without offset
 	this->InitialTargetCoord = pBullet->TargetCoords;
 	this->LastTargetCoord = pBullet->TargetCoords;
 	pBullet->Velocity = BulletVelocity::Empty;
 
+	// Record some information
 	if (const auto pWeapon = pBullet->WeaponType)
 		this->CountOfBurst = pWeapon->Burst;
 
@@ -138,6 +138,7 @@ void BombardTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
 	}
 
+	// Wait, or launch immediately?
 	if (!pType->NoLaunch || !pType->LeadTimeCalculate || !abstract_cast<FootClass*>(pBullet->Target))
 		this->PrepareForOpenFire(pBullet);
 	else
@@ -240,7 +241,7 @@ void BombardTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		this->RefreshBulletLineTrail(pBullet);
 
 		pBullet->SetLocation(middleLocation);
-		const auto pOwner = pBullet->Owner ? pBullet->Owner->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+		const auto pOwner = pBullet->Owner ? pBullet->Owner->Owner : pExt->FirerHouse;
 		AnimExt::CreateRandomAnim(pType->TurningPointAnims, middleLocation, pBullet->Owner, pOwner, true);
 	}
 }
@@ -292,6 +293,7 @@ void BombardTrajectory::CalculateTargetCoords(BulletClass* pBullet)
 
 	pBullet->TargetCoords = theTargetCoords;
 
+	// Calculate the orientation of the coordinate system
 	if (!pType->LeadTimeCalculate && theTargetCoords == theSourceCoords && pBullet->Owner) //For disperse.
 	{
 		const auto theOwnerCoords = pBullet->Owner->GetCoords();
@@ -302,6 +304,7 @@ void BombardTrajectory::CalculateTargetCoords(BulletClass* pBullet)
 		this->RotateAngle = Math::atan2(theTargetCoords.Y - theSourceCoords.Y , theTargetCoords.X - theSourceCoords.X);
 	}
 
+	// Add the fixed offset value
 	if (this->OffsetCoord != CoordStruct::Empty)
 	{
 		pBullet->TargetCoords.X += static_cast<int>(this->OffsetCoord.X * Math::cos(this->RotateAngle) + this->OffsetCoord.Y * Math::sin(this->RotateAngle));
@@ -309,6 +312,7 @@ void BombardTrajectory::CalculateTargetCoords(BulletClass* pBullet)
 		pBullet->TargetCoords.Z += this->OffsetCoord.Z;
 	}
 
+	// Add random offset value
 	if (pBullet->Type->Inaccurate)
 	{
 		const auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
@@ -332,6 +336,7 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime(BulletClass* pBullet)
 			const auto theTargetCoords = pTarget->GetCoords();
 			const auto theSourceCoords = pBullet->Location;
 
+			// Solving trigonometric functions
 			if (theTargetCoords != this->LastTargetCoord)
 			{
 				int travelTime = 0;
@@ -342,6 +347,11 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime(BulletClass* pBullet)
 				if (pType->FreeFallOnTarget)
 				{
 					travelTime += static_cast<int>(sqrt(2 * (this->Height - theTargetCoords.Z) / BulletTypeExt::GetAdjustedGravity(pBullet->Type)));
+					coords += extraOffsetCoord * (travelTime + 1);
+				}
+				else if (pType->NoLaunch)
+				{
+					travelTime += static_cast<int>((this->Height - theTargetCoords.Z) / pType->FallSpeed);
 					coords += extraOffsetCoord * (travelTime + 1);
 				}
 				else
@@ -356,19 +366,18 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime(BulletClass* pBullet)
 					const auto horizonDistanceSquared = theDistanceSquared - verticalDistanceSquared;
 					const auto horizonDistance = sqrt(horizonDistanceSquared);
 
-					const auto straightSpeed = pType->FreeFallOnTarget ? pType->Trajectory_Speed : pType->FallSpeed;
-					const auto straightSpeedSquared = straightSpeed * straightSpeed;
-
+					const auto straightSpeedSquared = pType->FallSpeed * pType->FallSpeed;
 					const auto baseFactor = straightSpeedSquared - targetSpeedSquared;
 					const auto squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
 
+					// Is there a solution?
 					if (squareFactor > 1e-10)
 					{
 						const auto minusFactor = -(horizonDistance * targetSpeed);
 
-						if (abs(baseFactor) < 1e-10)
+						if (std::abs(baseFactor) < 1e-10)
 						{
-							travelTime = abs(horizonDistance) > 1e-10 ? (static_cast<int>(theDistanceSquared / (2 * horizonDistance * targetSpeed)) + 1) : 0;
+							travelTime = std::abs(horizonDistance) > 1e-10 ? (static_cast<int>(theDistanceSquared / (2 * horizonDistance * targetSpeed)) + 1) : 0;
 						}
 						else
 						{
@@ -402,7 +411,7 @@ void BombardTrajectory::CalculateDisperseBurst(BulletClass* pBullet)
 {
 	const auto pType = this->Type;
 
-	if (!this->UseDisperseBurst && abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+	if (!this->UseDisperseBurst && std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
 	{
 		const auto axis = pType->AxisOfRotation.Get();
 
@@ -415,7 +424,7 @@ void BombardTrajectory::CalculateDisperseBurst(BulletClass* pBullet)
 
 		const auto rotationAxisLengthSquared = rotationAxis.MagnitudeSquared();
 
-		if (abs(rotationAxisLengthSquared) > 1e-10)
+		if (std::abs(rotationAxisLengthSquared) > 1e-10)
 		{
 			double extraRotate = 0.0;
 			rotationAxis *= 1 / sqrt(rotationAxisLengthSquared);
@@ -570,7 +579,7 @@ void BombardTrajectory::BulletVelocityChange(BulletClass* pBullet)
 				if (pType->LeadTimeCalculate && pTarget)
 					this->LastTargetCoord = pTarget->GetCoords();
 
-				pBullet->Velocity *= abs((this->Height - pBullet->Location.Z) / pBullet->Velocity.Z);
+				pBullet->Velocity *= std::abs((this->Height - pBullet->Location.Z) / pBullet->Velocity.Z);
 			}
 		}
 	}
