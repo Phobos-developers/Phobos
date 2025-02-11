@@ -386,6 +386,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix for sidebar not updating queued unit numbers when on hold
   - New Parabola trajectory
   - Enhanced Bombard trajectory
+  - Change the scrolling action of the sidebar and trigger hook of mouse wheel scroll
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude

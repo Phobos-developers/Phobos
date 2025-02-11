@@ -324,6 +324,7 @@ New:
 - Raise alert when technos are taking damage (by TaranDahl)
 - Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 - Toggle waypoint for building (by TaranDahl)
+- Change the scrolling action of the sidebar and trigger hook of mouse wheel scroll (by CrimRecya)
 
 Vanilla fixes:
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)

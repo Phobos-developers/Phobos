@@ -637,3 +637,17 @@ In `RA2MD.ini`:
 [Phobos]
 SaveGameOnScenarioStart=true ; boolean
 ```
+
+### Change the scrolling action of the sidebar
+
+- Allow players to decide for themselves:
+  - Whether can use mouse wheel to scroll sidebar strip when the mouse is not on it by `ScrollSidebarStripInTactical` .
+  - Whether can use mouse wheel to scroll sidebar strip when pressing Ctrl, Alt, or Shift by `ScrollSidebarStripWhenHoldKey`.
+
+In `RA2MD.ini`:
+
+```ini
+[Phobos]
+ScrollSidebarStripInTactical=true   ; boolean
+ScrollSidebarStripWhenHoldKey=true  ; boolean
+```
