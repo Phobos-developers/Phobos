@@ -11,9 +11,9 @@ public:
 		, MirrorCoord { true }
 		, UseDisperseCoord { false }
 		, ApplyRangeModifiers { false }
-		, TheDuration { 0 }
+		, Duration { 0 }
 		, IsLaser { true }
-		, IsSupported { false }
+		, IsIntense { false }
 		, IsHouseColor { false }
 		, IsSingleColor { false }
 		, LaserInnerColor { { 0, 0, 0 } }
@@ -44,9 +44,9 @@ public:
 	Valueable<bool> MirrorCoord;
 	Valueable<bool> UseDisperseCoord;
 	Valueable<bool> ApplyRangeModifiers;
-	Valueable<int> TheDuration;
+	Valueable<int> Duration;
 	Valueable<bool> IsLaser;
-	Valueable<bool> IsSupported;
+	Valueable<bool> IsIntense;
 	Valueable<bool> IsHouseColor;
 	Valueable<bool> IsSingleColor;
 	Valueable<ColorStruct> LaserInnerColor;
@@ -78,7 +78,7 @@ public:
 	EngraveTrajectory(EngraveTrajectoryType const* trajType) : Type { trajType }
 		, SourceCoord { trajType->SourceCoord.Get() }
 		, TargetCoord { trajType->TargetCoord.Get() }
-		, TheDuration { trajType->TheDuration }
+		, Duration { trajType->Duration }
 		, LaserTimer {}
 		, DamageTimer {}
 		, TechnoInTransport { false }
@@ -103,7 +103,7 @@ public:
 	const EngraveTrajectoryType* Type;
 	Point2D SourceCoord;
 	Point2D TargetCoord;
-	int TheDuration;
+	int Duration;
 	CDTimerClass LaserTimer;
 	CDTimerClass DamageTimer;
 	bool TechnoInTransport;

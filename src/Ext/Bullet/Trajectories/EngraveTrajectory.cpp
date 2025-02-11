@@ -22,9 +22,9 @@ void EngraveTrajectoryType::Serialize(T& Stm)
 		.Process(this->MirrorCoord)
 		.Process(this->UseDisperseCoord)
 		.Process(this->ApplyRangeModifiers)
-		.Process(this->TheDuration)
+		.Process(this->Duration)
 		.Process(this->IsLaser)
-		.Process(this->IsSupported)
+		.Process(this->IsIntense)
 		.Process(this->IsHouseColor)
 		.Process(this->IsSingleColor)
 		.Process(this->LaserInnerColor)
@@ -69,9 +69,9 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->TargetCoord.Read(exINI, pSection, "Trajectory.Engrave.TargetCoord");
 	this->MirrorCoord.Read(exINI, pSection, "Trajectory.Engrave.MirrorCoord");
 	this->UseDisperseCoord.Read(exINI, pSection, "Trajectory.Engrave.UseDisperseCoord");
-	this->TheDuration.Read(exINI, pSection, "Trajectory.Engrave.TheDuration");
+	this->Duration.Read(exINI, pSection, "Trajectory.Engrave.Duration");
 	this->IsLaser.Read(exINI, pSection, "Trajectory.Engrave.IsLaser");
-	this->IsSupported.Read(exINI, pSection, "Trajectory.Engrave.IsSupported");
+	this->IsIntense.Read(exINI, pSection, "Trajectory.Engrave.IsIntense");
 	this->IsHouseColor.Read(exINI, pSection, "Trajectory.Engrave.IsHouseColor");
 	this->IsSingleColor.Read(exINI, pSection, "Trajectory.Engrave.IsSingleColor");
 	this->LaserInnerColor.Read(exINI, pSection, "Trajectory.Engrave.LaserInnerColor");
@@ -102,7 +102,7 @@ void EngraveTrajectory::Serialize(T& Stm)
 		.Process(this->Type)
 		.Process(this->SourceCoord)
 		.Process(this->TargetCoord)
-		.Process(this->TheDuration)
+		.Process(this->Duration)
 		.Process(this->LaserTimer)
 		.Process(this->DamageTimer)
 		.Process(this->TechnoInTransport)
@@ -166,8 +166,8 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 		coordDistance = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno, static_cast<int>(coordDistance)));
 
 	// Automatically calculate duration
-	if (this->TheDuration <= 0)
-		this->TheDuration = static_cast<int>(coordDistance / pType->Trajectory_Speed) + 1;
+	if (this->Duration <= 0)
+		this->Duration = static_cast<int>(coordDistance / pType->Trajectory_Speed) + 1;
 }
 
 bool EngraveTrajectory::OnAI(BulletClass* pBullet)
@@ -177,7 +177,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 	if (!this->NotMainWeapon && this->InvalidFireCondition(pTechno))
 		return true;
 
-	if (--this->TheDuration < 0 || this->PlaceOnCorrectHeight(pBullet))
+	if (--this->Duration < 0 || this->PlaceOnCorrectHeight(pBullet))
 		return true;
 
 	const auto pOwner = pTechno ? pTechno->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
@@ -392,7 +392,7 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 		const auto pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, ((pType->IsHouseColor && pOwner) ? pOwner->LaserColor : pType->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pType->LaserDuration);
 		pLaser->IsHouseColor = true;
 		pLaser->Thickness = pType->LaserThickness;
-		pLaser->IsSupported = pType->IsSupported;
+		pLaser->IsSupported = pType->IsIntense;
 	}
 	else
 	{
@@ -555,7 +555,7 @@ void EngraveTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* p
 		if (this->ProximityImpact > 0 && --this->ProximityImpact == 0)
 		{
 			if (pType->ProximitySuicide)
-				this->TheDuration = 0;
+				this->Duration = 0;
 
 			break;
 		}

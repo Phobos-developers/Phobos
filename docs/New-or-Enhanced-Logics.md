@@ -939,11 +939,11 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
   - `Trajectory.Engrave.TargetCoord` controls the end point of engraving line segment. Taking the target as the coordinate center. The height of the point will always at ground level.
     - `Trajectory.Engrave.MirrorCoord` controls whether `Trajectory.Engrave.SourceCoord` and `Trajectory.Engrave.TargetCoord` need to mirror the lateral value to adapt to the current FLH.
   - `Trajectory.Engrave.UseDisperseCoord` controls whether the emission position of the engrave laser need to replaced with the FLH of its superior's dispersed trajectory, which set `Trajectory.Disperse.RecordSourceCoord` to true.
-  - `Trajectory.Engrave.TheDuration` controls the duration of the entire engrave process. Set to 0 will automatically use `Trajectory.Engrave.SourceCoord` and `Trajectory.Engrave.TargetCoord` to calculate the process duration.
+  - `Trajectory.Engrave.Duration` controls the duration of the entire engrave process. Set to 0 will automatically use `Trajectory.Engrave.SourceCoord` and `Trajectory.Engrave.TargetCoord` to calculate the process duration.
   - `Trajectory.Engrave.IsLaser` controls whether laser drawing is required.
-    - `Trajectory.Engrave.IsSupported` controls whether the engrave laser will be brighter and thicker. Need to set `Trajectory.Engrave.IsHouseColor` or `Trajectory.Engrave.IsSingleColor` to true.
-    - `Trajectory.Engrave.IsHouseColor` controls whether set the engrave laser to draw using player's team color. These lasers respect `Trajectory.Engrave.LaserThickness` and `Trajectory.Engrave.IsSupported`.
-    - `Trajectory.Engrave.IsSingleColor` controls whether set the engrave laser to draw using only `Trajectory.Engrave.LaserInnerColor`. These lasers respect `Trajectory.Engrave.LaserThickness` and `Trajectory.Engrave.IsSupported`.
+    - `Trajectory.Engrave.IsIntense` controls whether the engrave laser will be brighter and thicker. Need to set `Trajectory.Engrave.IsHouseColor` or `Trajectory.Engrave.IsSingleColor` to true.
+    - `Trajectory.Engrave.IsHouseColor` controls whether set the engrave laser to draw using player's team color. These lasers respect `Trajectory.Engrave.LaserThickness` and `Trajectory.Engrave.IsIntense`.
+    - `Trajectory.Engrave.IsSingleColor` controls whether set the engrave laser to draw using only `Trajectory.Engrave.LaserInnerColor`. These lasers respect `Trajectory.Engrave.LaserThickness` and `Trajectory.Engrave.IsIntense`.
     - `Trajectory.Engrave.LaserInnerColor` controls the inner color of the engrave laser.
     - `Trajectory.Engrave.LaserOuterColor` controls the outer color of the engrave laser.
     - `Trajectory.Engrave.LaserOuterSpread` controls the spread color of the engrave laser.
@@ -968,9 +968,9 @@ Trajectory.Engrave.SourceCoord=0,0             ; integer - Forward,Lateral
 Trajectory.Engrave.TargetCoord=0,0             ; integer - Forward,Lateral
 Trajectory.Engrave.MirrorCoord=true            ; boolean
 Trajectory.Engrave.UseDisperseCoord=false      ; boolean
-Trajectory.Engrave.TheDuration=0               ; integer
+Trajectory.Engrave.Duration=0                  ; integer
 Trajectory.Engrave.IsLaser=true                ; boolean
-Trajectory.Engrave.IsSupported=false           ; boolean
+Trajectory.Engrave.IsIntense=false             ; boolean
 Trajectory.Engrave.IsHouseColor=false          ; boolean
 Trajectory.Engrave.IsSingleColor=false         ; boolean
 Trajectory.Engrave.LaserInnerColor=0,0,0       ; integer - Red,Green,Blue
