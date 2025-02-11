@@ -157,6 +157,8 @@ public:
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
 
+		Valueable<bool> JumpjetTiltWhenMoving;
+
 		Valueable<bool> CombatAlert;
 		Nullable<bool> CombatAlert_Default;
 		Valueable<bool> CombatAlert_IgnoreBuilding;
@@ -298,6 +300,7 @@ public:
 			, PodImage { }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
+			, JumpjetTiltWhenMoving { false }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
 

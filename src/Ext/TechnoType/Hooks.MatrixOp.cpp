@@ -149,7 +149,8 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	// Man, what can I say, you don't want to stick your rotor into the ground
 	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
 	*ret = Matrix3D::VoxelRampMatrix[onGround ? slope_idx : 0];
-	auto curf = pThis->LocomotionFacing.Current();
+	// Only use LocomotionFacing for general Jumpjet to avoid the problem that ground units being lifted will turn to attacker weirdly.
+	auto curf = linked->IsAttackedByLocomotor ? linked->PrimaryFacing.Current() : pThis->LocomotionFacing.Current();
 	ret->RotateZ((float)curf.GetRadian<32>());
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
@@ -173,6 +174,33 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 		else
 		{
 			// No more translation because I don't like it
+			ret->RotateX(ars);
+			ret->RotateY(arf);
+		}
+	}
+	else if (TechnoTypeExt::ExtMap.Find(linked->GetTechnoType())->JumpjetTilt.Get(RulesExt::Global()->JumpjetTiltWhenMoving)
+		&& !onGround && linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
+	{
+		if (pThis->CurrentSpeed > 0.0)
+		{
+			constexpr auto factor = (Math::HalfPi / 4) / 32;
+			arf += static_cast<float>(std::min(32.0, pThis->CurrentSpeed) * factor);
+		}
+
+		const auto& locoFace = pThis->LocomotionFacing;
+
+		if (locoFace.IsRotating())
+		{
+			constexpr auto factor = (Math::HalfPi / 4) / 32768 / 65536;
+			const auto leftRaw = locoFace.RotationTimer.GetTimeLeft() * locoFace.ROT.Raw;
+			const auto dirMult = (static_cast<short>(locoFace.Difference().Raw) * leftRaw);
+			ars += static_cast<float>(dirMult * factor);
+		}
+
+		if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+		{
+			if (pIndex) *pIndex = -1;
+
 			ret->RotateX(ars);
 			ret->RotateY(arf);
 		}

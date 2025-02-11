@@ -184,6 +184,8 @@ public:
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
 		std::vector<Vector3D<int>> InsigniaFrames_Weapon;
 
+		Nullable<bool> JumpjetTilt;
+
 		Nullable<bool> TiltsWhenCrushes_Vehicles;
 		Nullable<bool> TiltsWhenCrushes_Overlays;
 		Nullable<double> CrushForwardTiltPerFrame;
@@ -417,6 +419,8 @@ public:
 			, Insignia_Weapon {}
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
+
+			, JumpjetTilt {}
 
 			, TiltsWhenCrushes_Vehicles {}
 			, TiltsWhenCrushes_Overlays {}

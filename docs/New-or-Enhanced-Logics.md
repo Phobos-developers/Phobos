@@ -1585,6 +1585,19 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
+### Jumpjet Tilts While Moving
+
+- Now you can make jumpjet tilts forward when moving forward and tilts sideward when turning by set `JumpjetTilt` to true. Default to `[AudioVisual]->JumpjetTiltWhenMoving`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+JumpjetTiltWhenMoving=false   ; boolean
+
+[SOMEUNIT]                    ; UnitType, with Locomotor=Jumpjet
+JumpjetTilt=                  ; sound entry
+```
+
 ## Terrain
 
 ### Destroy animation & sound

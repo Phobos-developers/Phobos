@@ -386,6 +386,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix for sidebar not updating queued unit numbers when on hold
   - New Parabola trajectory
   - Enhanced Bombard trajectory
+  - Jumpjet Tilts While Moving
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
