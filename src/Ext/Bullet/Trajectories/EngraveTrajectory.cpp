@@ -148,7 +148,6 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	}
 	else
 	{
-		this->TechnoInTransport = false;
 		this->NotMainWeapon = true;
 
 		const auto rotateAngle = Math::atan2(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y , pBullet->TargetCoords.X - pBullet->SourceCoords.X);
@@ -160,10 +159,11 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	pBullet->Velocity *= (coordDistance > 1e-10) ? (pType->Trajectory_Speed / coordDistance) : 0;
 
 	// Calculate additional range
-	const auto pWeapon = pBullet->WeaponType;
-
-	if (pType->ApplyRangeModifiers && pWeapon && pTechno)
-		coordDistance = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno, static_cast<int>(coordDistance)));
+	if (pType->ApplyRangeModifiers && pTechno)
+	{
+		if (const auto pWeapon = pBullet->WeaponType)
+			coordDistance = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno, static_cast<int>(coordDistance)));
+	}
 
 	// Automatically calculate duration
 	if (this->Duration <= 0)
@@ -354,16 +354,14 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 {
 	const auto pType = this->Type;
 	this->LaserTimer.Start(pType->LaserDelay);
-
-	const auto pTransporter = pTechno->Transporter;
 	auto fireCoord = pBullet->SourceCoords;
 
 	// Considering that the CurrentBurstIndex may be different, it is not possible to call existing functions
-	if (!this->NotMainWeapon && pTechno && (pTransporter || !pTechno->InLimbo))
+	if (!this->NotMainWeapon && pTechno && (pTechno->Transporter || !pTechno->InLimbo))
 	{
 		if (pTechno->WhatAmI() != AbstractType::Building)
 		{
-			if (pTransporter)
+			if (const auto pTransporter = pTechno->Transporter)
 				fireCoord = TechnoExt::GetFLHAbsoluteCoords(pTransporter, this->FLHCoord, pTransporter->HasTurret());
 			else
 				fireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
@@ -405,8 +403,7 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 
 inline void EngraveTrajectory::DetonateLaserWarhead(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner)
 {
-	const auto pType = this->Type;
-	this->DamageTimer.Start(pType->DamageDelay);
+	this->DamageTimer.Start(this->Type->DamageDelay);
 	WarheadTypeExt::DetonateAt(pBullet->WH, pBullet->Location, pTechno, pBullet->Health, pOwner);
 }
 
@@ -433,7 +430,6 @@ void EngraveTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* p
 		static_cast<int>(pBullet->Velocity.Z)
 	};
 	const auto velocitySq = velocityCrd.MagnitudeSquared();
-	const auto pTarget = pBullet->Target;
 
 	std::vector<TechnoClass*> validTechnos;
 	validTechnos.reserve(vectSize);
@@ -456,7 +452,7 @@ void EngraveTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* p
 				continue;
 
 			// Not directly harming friendly forces
-			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
+			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pBullet->Target)
 				continue;
 
 			// Check distance
