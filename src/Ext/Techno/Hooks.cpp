@@ -558,7 +558,7 @@ DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 	{
 		bool DefaultValue = RulesExt::Global()->AttackMove_StopWhenTargetAcquired_UseOpportunityFireAsDefault ? !pType->OpportunityFire : false;
 
-		if (pTypeExt->AttackMove_StopWhenTargetAcquired.Get(DefaultValue))
+		if (pThis->IsCloseEnoughToAttack(pThis->Target) && pTypeExt->AttackMove_StopWhenTargetAcquired.Get(DefaultValue))
 		{
 			auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor);
 
