@@ -119,7 +119,7 @@ private:
 	void CalculateDisperseBurst(BulletClass* pBullet);
 	bool BulletPrepareCheck(BulletClass* pBullet);
 	bool BulletDetonatePreCheck(BulletClass* pBullet);
-	bool BulletDetonateRemainCheck(BulletClass* pBullet, HouseClass* pOwner);
+	bool BulletDetonateRemainCheck(BulletClass* pBullet);
 	void BulletVelocityChange(BulletClass* pBullet);
 	void RefreshBulletLineTrail(BulletClass* pBullet);
 };
