@@ -183,18 +183,29 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	{
 		if (pThis->CurrentSpeed > 0.0)
 		{
-			constexpr auto factor = (Math::HalfPi / 4) / 32;
-			arf += static_cast<float>(std::min(32.0, pThis->CurrentSpeed) * factor);
-		}
+			constexpr auto maxTilt = static_cast<float>(Math::HalfPi / 2);
+			constexpr auto baseSpeed = 32;
+			constexpr auto baseTilt = Math::HalfPi / 4;
 
-		const auto& locoFace = pThis->LocomotionFacing;
+			constexpr auto forwardBaseTilt = baseTilt / baseSpeed;
+			const auto forwardSpeedFactor = pThis->CurrentSpeed;
+			const auto forwardAccelFactor = pThis->Accel;
 
-		if (locoFace.IsRotating())
-		{
-			constexpr auto factor = (Math::HalfPi / 4) / 32768 / 65536;
-			const auto leftRaw = locoFace.RotationTimer.GetTimeLeft() * locoFace.ROT.Raw;
-			const auto dirMult = (static_cast<short>(locoFace.Difference().Raw) * leftRaw);
-			ars += static_cast<float>(dirMult * factor);
+			arf += std::min(maxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor) * forwardBaseTilt));
+
+			const auto& locoFace = pThis->LocomotionFacing;
+
+			if (locoFace.IsRotating())
+			{
+				constexpr auto baseTurnRaw = 32768;
+				constexpr auto baseTurnRate = 8;
+
+				constexpr auto sidewaysBaseTilt = baseTilt / (baseTurnRaw * baseTurnRate);
+				const auto sidewaysSpeedFactor = static_cast<short>(locoFace.Difference().Raw);
+				const auto sidewaysRotationFactor = pThis->TurnRate;
+
+				ars += std::min(maxTilt, static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor * sidewaysBaseTilt));
+			}
 		}
 
 		if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
