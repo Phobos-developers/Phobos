@@ -329,11 +329,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 				if (pWHExt->EffectsRequireVerses && versus == 0.0)
 					continue;
 
-				double hp = pTarget->GetHealthPercentage();
-				bool hpBelowPercent = hp <= pWHExt->AffectsBelowPercent;
-				bool hpAbovePercent = hp > pWHExt->AffectsAbovePercent;
-
-				if (!hpBelowPercent || !hpAbovePercent)
+				if (!pWHExt->IsHealthInThreshold(pTarget))
 					continue;
 			}
 
