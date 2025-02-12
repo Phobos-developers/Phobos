@@ -1,0 +1,3 @@
+.content p img ~ em {
+  display: block;
+}
