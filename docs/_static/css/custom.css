@@ -1,3 +1,7 @@
+:root {
+  --readthedocs-notification-font-size: 1rem;
+}
+
 .content p img ~ em {
   display: block;
 }
