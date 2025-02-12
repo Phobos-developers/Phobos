@@ -68,10 +68,7 @@ bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 	bool hpBelowPercent = hp <= this->AffectsBelowPercent;
 	bool hpAbovePercent = hp > this->AffectsAbovePercent;
 
-	if (hpBelowPercent && hpAbovePercent)
-		return true;
-
-	return false;
+	return hpBelowPercent && hpAbovePercent;
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
