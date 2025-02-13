@@ -902,8 +902,9 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 			pHouseExt->CurrentBuildingTopLeft = CellStruct::Empty;
 			pHouseExt->CurrentBuildingTimer.Stop();
 		}
-		else if (const auto pCell = MapClass::Instance->GetCellAt(topLeftCell))
+		else
 		{
+			const auto pCell = MapClass::Instance->GetCellAt(topLeftCell);
 			const auto pCellBuilding = pCell->GetBuilding();
 
 			if (!pCellBuilding || !reinterpret_cast<bool(__thiscall*)(BuildingClass*, BuildingTypeClass*, HouseClass*)>(0x452670)(pCellBuilding, pBuildingType, pHouse)) // CanUpgradeBuilding
