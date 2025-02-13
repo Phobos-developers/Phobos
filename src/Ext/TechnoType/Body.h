@@ -243,6 +243,7 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
+		Valueable<bool> BunkerableAnyway;
 		Valueable<bool> KeepTargetOnMove;
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
@@ -484,6 +485,7 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
+			, BunkerableAnyway { false }
 			, KeepTargetOnMove { false }
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 
