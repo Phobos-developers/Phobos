@@ -29,6 +29,7 @@ public:
 	Valueable<Point2D> DisplaySoylentOffset;
 	ValueableIdx<VocClass> ReportSound;
 	ValueableVector<AnimTypeClass*> Anim;
+	Valueable<bool> UnderEMP;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);

@@ -32,6 +32,7 @@ PassengerDeletionTypeClass::PassengerDeletionTypeClass(TechnoTypeClass* pOwnerTy
 	, DisplaySoylentOffset { { 0, 0 } }
 	, ReportSound {}
 	, Anim {}
+	, UnderEMP { false }
 { }
 void PassengerDeletionTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 {
@@ -53,6 +54,7 @@ void PassengerDeletionTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSect
 	this->ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
 	this->Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
 	this->Anim.Read(exINI, pSection, "PassengerDeletion.Anims");
+	this->UnderEMP.Read(exINI, pSection, "PassengerDeletion.UnderEMP");
 }
 
 #pragma region(save/load)
@@ -77,6 +79,7 @@ bool PassengerDeletionTypeClass::Serialize(T& stm)
 		.Process(this->DisplaySoylentOffset)
 		.Process(this->ReportSound)
 		.Process(this->Anim)
+		.Process(this->UnderEMP)
 		.Success();
 }
 
