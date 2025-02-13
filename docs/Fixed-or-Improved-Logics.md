@@ -187,6 +187,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
+- Allowed `AuxBuilding` to count building upgrades.
+- Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
+- Prevent the units with locomotors that cause problems from entering the tank bunker.
 
 ## Fixes / interactions with other extensions
 
@@ -202,6 +205,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory.
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions.
+- Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 
 ## Aircraft
 
@@ -495,6 +499,16 @@ Units.RepairRate=     ; floating point value, ingame minutes
 Units.RepairStep=     ; integer
 Units.RepairPercent=  ; floating point value, percents or absolute
 Units.UseRepairCost=  ; boolean
+```
+
+### Waypoints for buildings
+
+- In vanilla, buildings are forbidden to use waypoints. Now you can allow that using the following flag.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingWaypoints=false  ; boolean
 ```
 
 ## Particle systems
@@ -1196,6 +1210,23 @@ MinimapColor=  ; integer - Red,Green,Blue
 ```
 
 ## Vehicles
+
+### Bunker entering check dehardcode
+
+- In vanilla, vehicles entering tank bunkers are subject to a series of hardcoding restrictions, including having to have turrets, having to have weapons, and not having Hover speed types. Now you can skip these restrictions.
+- This needs to be used with `Bunkerable=yes`.
+- This flag only skips the static check, that is, the check on the unit type. The dynamic check (cannot be parasitized) remains unchanged.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]              ; VehicleType
+BunkerableAnyway=false     ; boolean
+```
+
+```{warning}
+Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, bunkerability is mainly determined by Locomotor. The details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
+```
+
 
 ### Customizing crushing tilt and slowdown
 

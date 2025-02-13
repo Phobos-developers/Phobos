@@ -351,9 +351,9 @@ msgstr ""
 #: ../../README.md:59
 msgid ""
 "You can switch between versions (displays latest develop nightly version by "
-"default) in the bottom left corner, as well as download a PDF version."
+"default) in the bottom right corner, as well as download a PDF version."
 msgstr ""
-"您可以在左下角切换版本（默认显示最新开发的每夜构建版本），也可以下载 PDF 版"
+"您可以在右下角切换版本（默认显示最新开发的每夜构建版本），也可以下载 PDF 版"
 "本。"
 
 #: ../../README.md:61
