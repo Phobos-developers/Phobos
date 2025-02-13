@@ -257,7 +257,9 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 			cell = newCell;
 	}
 
-	pBuilding->SetArchiveTarget(MapClass::Instance->GetCellAt(cell));
+	if (const auto pCell = MapClass::Instance->TryGetCellAt(cell))
+		pBuilding->SetArchiveTarget(pCell);
+
 	pBuilding->Sell(1);
 }
 
