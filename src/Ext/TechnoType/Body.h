@@ -256,6 +256,7 @@ public:
 
 		Valueable<int> DigitalDisplay_Health_FakeStrength;
 		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
+		Valueable<bool> DigitalDisplay_Health_FakeVisibleToAll;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -462,6 +463,7 @@ public:
 
 			, DigitalDisplay_Health_FakeStrength { -1 }
 			, DigitalDisplay_Health_FakeAtDisguise { true }
+			, DigitalDisplay_Health_FakeVisibleToAll { false }
 			, KeepTargetOnMove { false }
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 

@@ -51,6 +51,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - If a TechnoType has a DigitalDisplayType with `InfoType=Health`, it's allowed to display fake values to enemy players.
     - `DigitalDisplay.Health.FakeStrength`, if set, will be used as the maximum value of health display. The current value will be displayed as the percentage of its current health multiplies the new maximum value.
     - `DigitalDisplay.Health.FakeAtDisguise`, if set to true on an InfantryType with Disguise, will use the disguised TechnoType's `Strength` value as the maximum value of health display. The current value will be displayed as the percentage of its current health multiplies the new maximum value. This will be applied before `DigitalDisplay.Health.FakeStrength`.
+    - `DigitalDisplay.Health.FakeVisibleToAll`, if set, will display fake values to all players, including the owner of the TechnoType.
 
 In `rulesmd.ini`:
 ```ini
@@ -58,46 +59,47 @@ In `rulesmd.ini`:
 0=SOMEDIGITALDISPLAYTYPE
 
 [AudioVisual]
-Buildings.DefaultDigitalDisplayTypes=       ; list of DigitalDisplayTypes
-Infantry.DefaultDigitalDisplayTypes=        ; list of DigitalDisplayTypes
-Vehicles.DefaultDigitalDisplayTypes=        ; list of DigitalDisplayTypes
-Aircraft.DefaultDigitalDisplayTypes=        ; list of DigitalDisplayTypes
+Buildings.DefaultDigitalDisplayTypes=          ; list of DigitalDisplayTypes
+Infantry.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
+Vehicles.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
+Aircraft.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
 
-[SOMEDIGITALDISPLAYTYPE]                    ; DigitalDisplayType
+[SOMEDIGITALDISPLAYTYPE]                       ; DigitalDisplayType
 ; Generic
-InfoType=Health                             ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage)
-Offset=0,0                                  ; integers - horizontal, vertical
-Offset.ShieldDelta=                         ; integers - horizontal, vertical
-Align=right                                 ; Text alignment enumeration (left|right|center/centre)
-Anchor.Horizontal=right                     ; Horizontal position enumeration (left|center/centre|right)
-Anchor.Vertical=top                         ; Vertical position enumeration (top|center/centre|bottom)
-Anchor.Building=top                         ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
-Percentage=false                            ; boolean
-HideMaxValue=false                          ; boolean
-VisibleToHouses=owner                       ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-VisibleToHouses.Observer=true               ; boolean
-ValueScaleDivisor=1                         ; integer
+InfoType=Health                                ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage)
+Offset=0,0                                     ; integers - horizontal, vertical
+Offset.ShieldDelta=                            ; integers - horizontal, vertical
+Align=right                                    ; Text alignment enumeration (left|right|center/centre)
+Anchor.Horizontal=right                        ; Horizontal position enumeration (left|center/centre|right)
+Anchor.Vertical=top                            ; Vertical position enumeration (top|center/centre|bottom)
+Anchor.Building=top                            ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+Percentage=false                               ; boolean
+HideMaxValue=false                             ; boolean
+VisibleToHouses=owner                          ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses.Observer=true                  ; boolean
+ValueScaleDivisor=1                            ; integer
 ; Text
-Text.Color=0,255,0                          ; integers - Red, Green, Blue
-Text.Color.ConditionYellow=255,255,0        ; integers - Red, Green, Blue
-Text.Color.ConditionRed=255,0,0             ; integers - Red, Green, Blue
-Text.Background=false                       ; boolean
+Text.Color=0,255,0                             ; integers - Red, Green, Blue
+Text.Color.ConditionYellow=255,255,0           ; integers - Red, Green, Blue
+Text.Color.ConditionRed=255,0,0                ; integers - Red, Green, Blue
+Text.Background=false                          ; boolean
 ; Shape
-Shape=                                      ; filename with .shp extension, if not present, game-drawn text will be used instead
-Palette=palette.pal                         ; filename with .pal extension
-Shape.Spacing=                              ; integers - horizontal, vertical spacing between digits
+Shape=                                         ; filename with .shp extension, if not present, game-drawn text will be used instead
+Palette=palette.pal                            ; filename with .pal extension
+Shape.Spacing=                                 ; integers - horizontal, vertical spacing between digits
 
 [SOMETECHNOTYPE]
-DigitalDisplay.Disable=false                ; boolean
-DigitalDisplayTypes=                        ; list of DigitalDisplayTypes
-DigitalDisplay.Health.FakeStrength=-1       ; integer
-DigitalDisplay.Health.FakeAtDisguise=true   ; boolean
+DigitalDisplay.Disable=false                   ; boolean
+DigitalDisplayTypes=                           ; list of DigitalDisplayTypes
+DigitalDisplay.Health.FakeStrength=-1          ; integer
+DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
+DigitalDisplay.Health.FakeVisibleToAll=false   ; boolean
 ```
 
 In `RA2MD.ini`:
 ```ini
 [Phobos]
-DigitalDisplay.Enable=false                 ; boolean
+DigitalDisplay.Enable=false                    ; boolean
 ```
 
 ```{note}

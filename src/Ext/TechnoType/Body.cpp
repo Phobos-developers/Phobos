@@ -460,6 +460,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DigitalDisplay_Health_FakeStrength.Read(exINI, pSection, "DigitalDisplay.Health.FakeStrength");
 	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, pSection, "DigitalDisplay.Health.FakeAtDisguise");
+	this->DigitalDisplay_Health_FakeVisibleToAll.Read(exINI, pSection, "DigitalDisplay.Health.FakeVisibleToAll");
 	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
 	this->KeepTargetOnMove_ExtraDistance.Read(exINI, pSection, "KeepTargetOnMove.ExtraDistance");
 
@@ -838,6 +839,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->DigitalDisplay_Health_FakeStrength)
 		.Process(this->DigitalDisplay_Health_FakeAtDisguise)
+		.Process(this->DigitalDisplay_Health_FakeVisibleToAll)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->KeepTargetOnMove_ExtraDistance)
 

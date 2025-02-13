@@ -372,7 +372,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		value = pThis->Health;
 		maxValue = pType->Strength;
 
-		if (!pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
+		if (TechnoTypeExt::ExtMap.Find(pType)->DigitalDisplay_Health_FakeVisibleToAll || !pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
 			GetDigitalDisplayFakeHealth(pThis, value, maxValue);
 
 		break;
