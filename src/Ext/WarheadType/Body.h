@@ -154,11 +154,14 @@ public:
 		Valueable<bool> BuildingUndeploy;
 		Valueable<bool> BuildingUndeploy_Leave;
 
+		Nullable<bool> CombatAlert_Suppress;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> EffectsRequireVerses;
+		Valueable<bool> Malicious;
 
 		double Crit_RandomBuffer;
 		double Crit_CurrentChance;
@@ -310,9 +313,12 @@ public:
 			, BuildingUndeploy { false }
 			, BuildingUndeploy_Leave { false }
 
+			, CombatAlert_Suppress {}
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 			, EffectsRequireVerses { true }
+			, Malicious { true }
 
 			, Crit_RandomBuffer { 0.0 }
 			, Crit_CurrentChance { 0.0 }

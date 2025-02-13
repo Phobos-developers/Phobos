@@ -46,7 +46,7 @@ msgstr "路径点的范围由[0,701]扩展到[0, 2147483647]。"
 msgid ""
 "Map trigger action `125 Build At...` can now play buildup anim optionally"
 " (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-"
-"final-alert-2)."
+"final-alert-2))."
 msgstr "地图触发动作`125 将建筑建造于...`现在可以设置是否播放建造动画（需要[下述设置](Whats-New.md#for-map-editor-final-alert-2)）。"
 
 #: ../AI-Scripting-and-Mapping.md:10
