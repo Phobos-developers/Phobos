@@ -323,6 +323,9 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	auto cellStruct = CellClass::Coord2Cell(newCoords);
 	cellStruct = MapClass::Instance->NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
 
+	if (cellStruct == CellStruct::Empty)
+		return nullptr;
+
 	return MapClass::Instance->TryGetCellAt(cellStruct);
 }
 
