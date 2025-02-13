@@ -439,7 +439,6 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 		const auto pCheckedTechno = pThisOrder.techno;
 		const auto pDestinationCell = pThisOrder.destination;
 		const auto absType = pCheckedTechno->WhatAmI();
-		pCheckedTechno->ForceMission(Mission::Guard);
 
 		if (absType == AbstractType::Infantry)
 		{
@@ -448,8 +447,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 			if (pInfantry->IsDeployed())
 				pInfantry->PlayAnim(Sequence::Undeploy, true);
 
-			pInfantry->SetDestination(pDestinationCell, false);
-			pInfantry->QueueMission(Mission::QMove, false); // To force every three infantries gather together, it should be QMove
+			pInfantry->SetDestination(pDestinationCell, true);
 		}
 		else if (absType == AbstractType::Unit)
 		{
@@ -458,7 +456,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 			if (pUnit->Deployed)
 				pUnit->Undeploy();
 
-			pUnit->SetDestination(pDestinationCell, false);
+			pUnit->SetDestination(pDestinationCell, true);
 		}
 	}
 
