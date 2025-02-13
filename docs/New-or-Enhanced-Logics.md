@@ -1587,15 +1587,22 @@ Convert.ComputerToHuman =   ; TechnoType
 
 ### Jumpjet Tilts While Moving
 
-- Now you can make jumpjet tilts forward when moving forward and tilts sideward when turning by set `JumpjetTilt` to true. Default to `[AudioVisual]->JumpjetTiltWhenMoving`.
+- Now you can make jumpjets tilt forward when moving forward and sideways when turning by setting `JumpjetTilt` to true.
+- The maximum tilt angle will not exceed 45 degrees.
+  - The magnitude of the forward tilt is related to the current speed and acceleration. They are additive and have two coefficients that can be adjusted for details.
+  - The magnitude of the sideways tilt is related to the current speed and rotation angle. They are multiplied and also have two coefficients that can be adjusted for details.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-JumpjetTiltWhenMoving=false   ; boolean
+JumpjetTilt=false                       ; boolean
 
-[SOMEUNIT]                    ; UnitType, with Locomotor=Jumpjet
-JumpjetTilt=                  ; boolean
+[SOMEUNIT]                              ; UnitType, with Locomotor=Jumpjet
+JumpjetTilt=                            ; boolean, defaults to [AudioVisual]->JumpjetTilt
+JumpjetTilt.ForwardAccelFactor=1.0      ; floating point value
+JumpjetTilt.ForwardSpeedFactor=1.0      ; floating point value
+JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
+JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 ```
 
 ## Terrain

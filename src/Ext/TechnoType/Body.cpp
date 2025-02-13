@@ -416,6 +416,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
 	this->JumpjetTilt.Read(exINI, pSection, "JumpjetTilt");
+	this->JumpjetTilt_ForwardAccelFactor.Read(exINI, pSection, "JumpjetTilt.ForwardAccelFactor");
+	this->JumpjetTilt_ForwardSpeedFactor.Read(exINI, pSection, "JumpjetTilt.ForwardSpeedFactor");
+	this->JumpjetTilt_SidewaysRotationFactor.Read(exINI, pSection, "JumpjetTilt.SidewaysRotationFactor");
+	this->JumpjetTilt_SidewaysSpeedFactor.Read(exINI, pSection, "JumpjetTilt.SidewaysSpeedFactor");
 
 	this->TiltsWhenCrushes_Vehicles.Read(exINI, pSection, "TiltsWhenCrushes.Vehicles");
 	this->TiltsWhenCrushes_Overlays.Read(exINI, pSection, "TiltsWhenCrushes.Overlays");
@@ -797,6 +801,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InsigniaFrames_Weapon)
 
 		.Process(this->JumpjetTilt)
+		.Process(this->JumpjetTilt_ForwardAccelFactor)
+		.Process(this->JumpjetTilt_ForwardSpeedFactor)
+		.Process(this->JumpjetTilt_SidewaysRotationFactor)
+		.Process(this->JumpjetTilt_SidewaysSpeedFactor)
 
 		.Process(this->TiltsWhenCrushes_Vehicles)
 		.Process(this->TiltsWhenCrushes_Overlays)

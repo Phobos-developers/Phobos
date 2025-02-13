@@ -178,42 +178,46 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 			ret->RotateY(arf);
 		}
 	}
-	else if (TechnoTypeExt::ExtMap.Find(linked->GetTechnoType())->JumpjetTilt.Get(RulesExt::Global()->JumpjetTiltWhenMoving)
-		&& !onGround && linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
+	else
 	{
-		if (pThis->CurrentSpeed > 0.0)
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(linked->GetTechnoType());
+
+		if (pTypeExt->JumpjetTilt.Get(RulesExt::Global()->JumpjetTilt)
+			&& !onGround && linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
 		{
-			constexpr auto maxTilt = static_cast<float>(Math::HalfPi / 2);
-			constexpr auto baseSpeed = 32;
-			constexpr auto baseTilt = Math::HalfPi / 4;
-
-			constexpr auto forwardBaseTilt = baseTilt / baseSpeed;
-			const auto forwardSpeedFactor = pThis->CurrentSpeed;
-			const auto forwardAccelFactor = pThis->Accel;
-
-			arf += std::min(maxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor) * forwardBaseTilt));
-
-			const auto& locoFace = pThis->LocomotionFacing;
-
-			if (locoFace.IsRotating())
+			if (pThis->CurrentSpeed > 0.0)
 			{
-				constexpr auto baseTurnRaw = 32768;
-				constexpr auto baseTurnRate = 8;
+				constexpr auto maxTilt = static_cast<float>(Math::HalfPi / 2);
+				constexpr auto baseSpeed = 32;
+				constexpr auto baseTilt = Math::HalfPi / 4;
 
-				constexpr auto sidewaysBaseTilt = baseTilt / (baseTurnRaw * baseTurnRate);
-				const auto sidewaysSpeedFactor = static_cast<short>(locoFace.Difference().Raw);
-				const auto sidewaysRotationFactor = pThis->TurnRate;
+				constexpr auto forwardBaseTilt = baseTilt / baseSpeed;
+				const auto forwardSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor;
+				const auto forwardAccelFactor = pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor;
 
-				ars += std::min(maxTilt, static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor * sidewaysBaseTilt));
+				arf += std::min(maxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor) * forwardBaseTilt));
+
+				const auto& locoFace = pThis->LocomotionFacing;
+
+				if (locoFace.IsRotating())
+				{
+					constexpr auto baseTurnRaw = 32768;
+
+					constexpr auto sidewaysBaseTilt = baseTilt / (baseTurnRaw * baseSpeed);
+					const auto sidewaysSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_SidewaysSpeedFactor;
+					const auto sidewaysRotationFactor = static_cast<short>(locoFace.Difference().Raw) * pTypeExt->JumpjetTilt_SidewaysRotationFactor;
+
+					ars += Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor * sidewaysBaseTilt), -maxTilt, maxTilt);
+				}
 			}
-		}
 
-		if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
-		{
-			if (pIndex) *pIndex = -1;
+			if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+			{
+				if (pIndex) *pIndex = -1;
 
-			ret->RotateX(ars);
-			ret->RotateY(arf);
+				ret->RotateX(ars);
+				ret->RotateY(arf);
+			}
 		}
 	}
 

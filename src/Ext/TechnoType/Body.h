@@ -185,6 +185,10 @@ public:
 		std::vector<Vector3D<int>> InsigniaFrames_Weapon;
 
 		Nullable<bool> JumpjetTilt;
+		Valueable<double> JumpjetTilt_ForwardAccelFactor;
+		Valueable<double> JumpjetTilt_ForwardSpeedFactor;
+		Valueable<double> JumpjetTilt_SidewaysRotationFactor;
+		Valueable<double> JumpjetTilt_SidewaysSpeedFactor;
 
 		Nullable<bool> TiltsWhenCrushes_Vehicles;
 		Nullable<bool> TiltsWhenCrushes_Overlays;
@@ -421,6 +425,10 @@ public:
 			, InsigniaFrames_Weapon {}
 
 			, JumpjetTilt {}
+			, JumpjetTilt_ForwardAccelFactor { 1.0 }
+			, JumpjetTilt_ForwardSpeedFactor { 1.0 }
+			, JumpjetTilt_SidewaysRotationFactor { 1.0 }
+			, JumpjetTilt_SidewaysSpeedFactor { 1.0 }
 
 			, TiltsWhenCrushes_Vehicles {}
 			, TiltsWhenCrushes_Overlays {}
