@@ -141,6 +141,7 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static bool IsActive(TechnoClass* pThis);
+	static bool IsActiveIgnoreEMP(TechnoClass* pThis);
 
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);
