@@ -28,6 +28,7 @@ public:
 		, OffsetCoord { { 0, 0, 0 } }
 		, WeaponCoord { { 0, 0, 0 } }
 		, UseDisperseCoord { false }
+		, AllowFirerTurning { true }
 		, Weapons {}
 		, WeaponCount {}
 		, WeaponDelay {}
@@ -57,6 +58,7 @@ public:
 	Valueable<CoordStruct> OffsetCoord;
 	Valueable<CoordStruct> WeaponCoord;
 	Valueable<bool> UseDisperseCoord;
+	Valueable<bool> AllowFirerTurning;
 	ValueableVector<WeaponTypeClass*> Weapons;
 	ValueableVector<int> WeaponCount;
 	ValueableVector<int> WeaponDelay;
@@ -120,8 +122,8 @@ private:
 
 	void GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno);
 	void SetSourceLocation(BulletClass* pBullet);
-	inline void InitializeDuration(BulletClass* pBullet, int duration);
-	inline bool InvalidFireCondition(TechnoClass* pTechno);
+	void InitializeDuration(BulletClass* pBullet, int duration);
+	bool InvalidFireCondition(BulletClass* pBullet, TechnoClass* pTechno);
 	bool BulletDetonatePreCheck(BulletClass* pBullet);
 	void ChangeFacing(BulletClass* pBullet);
 	bool CheckFireFacing(BulletClass* pBullet);

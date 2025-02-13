@@ -1,7 +1,7 @@
 #include "TracingTrajectory.h"
 #include "StraightTrajectory.h"
-// #include "DisperseTrajectory.h" // TODO If merge #1295
-// #include "EngraveTrajectory.h" // TODO If merge #1293
+#include "DisperseTrajectory.h"
+#include "EngraveTrajectory.h"
 
 #include <AnimClass.h>
 #include <LaserDrawClass.h>
@@ -38,6 +38,7 @@ void TracingTrajectoryType::Serialize(T& Stm)
 		.Process(this->OffsetCoord)
 		.Process(this->WeaponCoord)
 		.Process(this->UseDisperseCoord)
+		.Process(this->AllowFirerTurning)
 		.Process(this->Weapons)
 		.Process(this->WeaponCount)
 		.Process(this->WeaponDelay)
@@ -95,6 +96,7 @@ void TracingTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->OffsetCoord.Read(exINI, pSection, "Trajectory.Tracing.OffsetCoord");
 	this->WeaponCoord.Read(exINI, pSection, "Trajectory.Tracing.WeaponCoord");
 	this->UseDisperseCoord.Read(exINI, pSection, "Trajectory.Tracing.UseDisperseCoord");
+	this->AllowFirerTurning.Read(exINI, pSection, "Trajectory.Engrave.AllowFirerTurning");
 	this->Weapons.Read(exINI, pSection, "Trajectory.Tracing.Weapons");
 	this->WeaponCount.Read(exINI, pSection, "Trajectory.Tracing.WeaponCount");
 	this->WeaponDelay.Read(exINI, pSection, "Trajectory.Tracing.WeaponDelay");
@@ -174,7 +176,7 @@ bool TracingTrajectory::OnAI(BulletClass* pBullet)
 {
 	const auto pTechno = pBullet->Owner;
 
-	if (!this->NotMainWeapon && this->InvalidFireCondition(pTechno))
+	if (!this->NotMainWeapon && this->InvalidFireCondition(pBullet, pTechno))
 		return true;
 
 	if (this->BulletDetonatePreCheck(pBullet))
@@ -287,7 +289,7 @@ void TracingTrajectory::SetSourceLocation(BulletClass* pBullet)
 	pBullet->Velocity = facing * (1 / facing.Magnitude());
 }
 
-inline void TracingTrajectory::InitializeDuration(BulletClass* pBullet, int duration)
+void TracingTrajectory::InitializeDuration(BulletClass* pBullet, int duration)
 {
 	if (duration <= 0)
 	{
@@ -300,9 +302,9 @@ inline void TracingTrajectory::InitializeDuration(BulletClass* pBullet, int dura
 	this->ExistTimer.Start(duration);
 }
 
-inline bool TracingTrajectory::InvalidFireCondition(TechnoClass* pTechno)
+bool TracingTrajectory::InvalidFireCondition(BulletClass* pBullet, TechnoClass* pTechno)
 {
-	return (!pTechno
+	if (!pTechno
 		|| !pTechno->IsAlive
 		|| (pTechno->InLimbo && !pTechno->Transporter)
 		|| pTechno->IsSinking
@@ -311,7 +313,24 @@ inline bool TracingTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 		|| pTechno->Deactivated
 		|| pTechno->TemporalTargetingMe
 		|| pTechno->BeingWarpedOut
-		|| pTechno->IsUnderEMP());
+		|| pTechno->IsUnderEMP())
+	{
+		return true;
+	}
+
+	if (this->Type->AllowFirerTurning)
+		return false;
+
+	const auto SourceCrd = pTechno->GetCoords();
+	const auto TargetCrd = pBullet->TargetCoords;
+
+	const auto rotateAngle = Math::atan2(TargetCrd.Y - SourceCrd.Y , TargetCrd.X - SourceCrd.X);
+	const auto tgtDir = DirStruct(rotateAngle);
+
+	const auto& face = pTechno->HasTurret() ? pTechno->SecondaryFacing : pTechno->PrimaryFacing;
+	const auto curDir = face.Current();
+
+	return (std::abs(static_cast<short>(static_cast<short>(tgtDir.Raw) - static_cast<short>(curDir.Raw))) >= 4096);
 }
 
 bool TracingTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
@@ -746,16 +765,16 @@ void TracingTrajectory::CreateTracingBullets(BulletClass* pBullet, WeaponTypeCla
 				const auto pTrajectory = static_cast<StraightTrajectory*>(pTraj);
 				pTrajectory->FirepowerMult = this->FirepowerMult;
 			}
-/*			else if (flag == TrajectoryFlag::Disperse) // TODO If merge #1295
+			else if (flag == TrajectoryFlag::Disperse)
 			{
 				const auto pTrajectory = static_cast<DisperseTrajectory*>(pTraj);
 				pTrajectory->FirepowerMult = this->FirepowerMult;
-			}*/
-/*			else if (flag == TrajectoryFlag::Engrave) // TODO If merge #1293
+			}
+			else if (flag == TrajectoryFlag::Engrave)
 			{
 				const auto pTrajectory = static_cast<EngraveTrajectory*>(pTraj);
 				pTrajectory->NotMainWeapon = true;
-			}*/
+			}
 		}
 
 		const auto pAttach = pType->TraceTheTarget ? (!this->NotMainWeapon ? static_cast<ObjectClass*>(pTechno) : nullptr) : pBullet;
