@@ -329,9 +329,9 @@ ShowFlashOnSelecting=false  ; boolean
 - Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
 - For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
 
-### `[ ]` Distribution Mode Spread / Filter
+### `[ ]` Distribution Mode Spread / Filter / Enable
 
-- Change the click action when hold down the specific hotkey.
+- Change the click action when hold down the specific hotkey if enabled `AllowDistributionCommand`.
   - When the range is 0, it is the original default behavior of the game. The range can be adjusted to 4, 8 or 16 cells by shortcut keys.
     - The targets within the range will be allocated equally to the selected technos. Only when the behavior to be performed by the current techno is the same as that displayed by the mouse will it be allocated. Otherwise, it will return to the original default behavior of the game (it will not be effective for technos in the air). This will display a range ring.
   - When the filter is `None`, it is the default behavior of the game. If the range is not zero at this time, a green ring will be displayed. You can adjust the filter mode to:
@@ -339,6 +339,12 @@ ShowFlashOnSelecting=false  ; boolean
     - `Type` - on the basis of `Auto`, only targets of the same type (like infantries, vehicles or buildings) will be selected among the targets allocated in the range. At this time, a yellow ring will be displayed.
     - `Name` - on the basis of `Type`, only targets of the same name (or with the same `GroupAs`) will be selected among the targets allocated in the range. At this time, a red ring will be displayed.
 - For localization add `TXT_DISTR_SPREAD`, `TXT_DISTR_FILTER`, `TXT_DISTR_HOLDDOWN`, `TXT_DISTR_SPREAD_DESC`, `TXT_DISTR_FILTER_DESC` and `TXT_DISTR_HOLDDOWN_DESC` into your `.csf` file.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+AllowDistributionCommand=false  ; boolean
+```
 
 ## Loading screen
 

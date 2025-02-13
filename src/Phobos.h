@@ -92,6 +92,7 @@ public:
 		static bool HideLightFlashEffects;
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
+		static bool AllowDistributionCommand;
 	};
 
 	class Misc
