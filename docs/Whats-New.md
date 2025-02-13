@@ -324,11 +324,13 @@ New:
 - Raise alert when technos are taking damage (by TaranDahl)
 - Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 - Toggle waypoint for building (by TaranDahl)
+- Bunkerable checks dehardcode (by TaranDahl)
 - New Tracing trajectory (by CrimRecya)
 
 Vanilla fixes:
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
 - Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied (by 航味麻酱)
+- Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 
 Phobos fixes:
 - Type conversion on Warheads and Superweapons will no longer recursively convert units if applicable conversion pairs are listed, and only first applicable pair takes effect (by Starkku)
