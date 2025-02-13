@@ -714,22 +714,18 @@ bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
 }
 DEFINE_JUMP(VTABLE, 0x7E4610, GET_OFFSET(BuildingTypeClass_CanUseWaypoint))
 
-DEFINE_HOOK(0x4AE95E, DisplayClass_sub_4AE750_AntiStupid, 0x5)
+DEFINE_HOOK(0x4AE95E, DisplayClass_sub_4AE750_DisallowBuildingNonAttackPlanning, 0x5)
 {
-	enum { Ret = 0x4AE982 };
+	enum { SkipGameCode = 0x4AE982 };
 
-	GET(ObjectClass*, pObject, ECX);
-	GET(int, address, ESP);
+	GET(ObjectClass* const, pObject, ECX);
+	GET_STACK(CellStruct, cell, STACK_OFFSET(0x20, 0x8));
 
-	CellStruct* pCell = (CellStruct*)((int)address + 0x20 + 0x8);
-	auto action = pObject->MouseOverCell(pCell);
+	auto action = pObject->MouseOverCell(&cell);
 
-	bool shouldSkip = PlanningNodeClass::PlanningModeActive && pObject->WhatAmI() == AbstractType::Building && action != Action::Attack;
+	if (!PlanningNodeClass::PlanningModeActive || pObject->WhatAmI() != AbstractType::Building || action == Action::Attack)
+		pObject->CellClickedAction(action, &cell, &cell, false);
 
-	if (!shouldSkip)
-		pObject->CellClickedAction(action, pCell, pCell, false);
-
-	return Ret;
+	return SkipGameCode;
 }
-
 #pragma endregion
