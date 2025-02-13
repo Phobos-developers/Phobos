@@ -309,7 +309,7 @@ bool EngraveTrajectory::InvalidFireCondition(BulletClass* pBullet, TechnoClass* 
 	const auto TargetCrd = pBullet->TargetCoords;
 
 	const auto rotateAngle = Math::atan2(TargetCrd.Y - SourceCrd.Y , TargetCrd.X - SourceCrd.X);
-	const auto tgtDir = DirStruct(rotateAngle);
+	const auto tgtDir = DirStruct(-rotateAngle);
 
 	const auto& face = pTechno->HasTurret() ? pTechno->SecondaryFacing : pTechno->PrimaryFacing;
 	const auto curDir = face.Current();
