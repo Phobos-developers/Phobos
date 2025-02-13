@@ -11,6 +11,7 @@ public:
 		, MirrorCoord { true }
 		, UseDisperseCoord { false }
 		, ApplyRangeModifiers { false }
+		, AllowFirerTurning { true }
 		, Duration { 0 }
 		, IsLaser { true }
 		, IsIntense { false }
@@ -44,6 +45,7 @@ public:
 	Valueable<bool> MirrorCoord;
 	Valueable<bool> UseDisperseCoord;
 	Valueable<bool> ApplyRangeModifiers;
+	Valueable<bool> AllowFirerTurning;
 	Valueable<int> Duration;
 	Valueable<bool> IsLaser;
 	Valueable<bool> IsIntense;
@@ -121,7 +123,7 @@ private:
 	void GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno);
 	inline void CheckMirrorCoord(TechnoClass* pTechno);
 	void SetEngraveDirection(BulletClass* pBullet, double rotateAngle);
-	inline bool InvalidFireCondition(TechnoClass* pTechno);
+	bool InvalidFireCondition(BulletClass* pBullet, TechnoClass* pTechno);
 	int GetFloorCoordHeight(BulletClass* pBullet, const CoordStruct& coord);
 	bool PlaceOnCorrectHeight(BulletClass* pBullet);
 	void DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTechno, HouseClass* pOwner);

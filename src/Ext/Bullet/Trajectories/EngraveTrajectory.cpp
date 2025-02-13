@@ -22,6 +22,7 @@ void EngraveTrajectoryType::Serialize(T& Stm)
 		.Process(this->MirrorCoord)
 		.Process(this->UseDisperseCoord)
 		.Process(this->ApplyRangeModifiers)
+		.Process(this->AllowFirerTurning)
 		.Process(this->Duration)
 		.Process(this->IsLaser)
 		.Process(this->IsIntense)
@@ -64,11 +65,12 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	INI_EX exINI(pINI);
 
 	this->Trajectory_Speed = Math::min(128.0, this->Trajectory_Speed);
-	this->ApplyRangeModifiers.Read(exINI, pSection, "Trajectory.Engrave.ApplyRangeModifiers");
 	this->SourceCoord.Read(exINI, pSection, "Trajectory.Engrave.SourceCoord");
 	this->TargetCoord.Read(exINI, pSection, "Trajectory.Engrave.TargetCoord");
 	this->MirrorCoord.Read(exINI, pSection, "Trajectory.Engrave.MirrorCoord");
 	this->UseDisperseCoord.Read(exINI, pSection, "Trajectory.Engrave.UseDisperseCoord");
+	this->ApplyRangeModifiers.Read(exINI, pSection, "Trajectory.Engrave.ApplyRangeModifiers");
+	this->AllowFirerTurning.Read(exINI, pSection, "Trajectory.Engrave.AllowFirerTurning");
 	this->Duration.Read(exINI, pSection, "Trajectory.Engrave.Duration");
 	this->IsLaser.Read(exINI, pSection, "Trajectory.Engrave.IsLaser");
 	this->IsIntense.Read(exINI, pSection, "Trajectory.Engrave.IsIntense");
@@ -174,7 +176,7 @@ bool EngraveTrajectory::OnAI(BulletClass* pBullet)
 {
 	const auto pTechno = pBullet->Owner;
 
-	if (!this->NotMainWeapon && this->InvalidFireCondition(pTechno))
+	if (!this->NotMainWeapon && this->InvalidFireCondition(pBullet, pTechno))
 		return true;
 
 	if (--this->Duration < 0 || this->PlaceOnCorrectHeight(pBullet))
@@ -284,9 +286,9 @@ void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, double rotateA
 	pBullet->Velocity.Z = 0;
 }
 
-inline bool EngraveTrajectory::InvalidFireCondition(TechnoClass* pTechno)
+bool EngraveTrajectory::InvalidFireCondition(BulletClass* pBullet, TechnoClass* pTechno)
 {
-	return (!pTechno
+	if (!pTechno
 		|| !pTechno->IsAlive
 		|| (pTechno->InLimbo && !pTechno->Transporter)
 		|| pTechno->IsSinking
@@ -295,7 +297,24 @@ inline bool EngraveTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 		|| pTechno->Deactivated
 		|| pTechno->TemporalTargetingMe
 		|| pTechno->BeingWarpedOut
-		|| pTechno->IsUnderEMP());
+		|| pTechno->IsUnderEMP())
+	{
+		return true;
+	}
+
+	if (this->Type->AllowFirerTurning)
+		return false;
+
+	const auto SourceCrd = pTechno->GetCoords();
+	const auto TargetCrd = pBullet->TargetCoords;
+
+	const auto rotateAngle = Math::atan2(TargetCrd.Y - SourceCrd.Y , TargetCrd.X - SourceCrd.X);
+	const auto tgtDir = DirStruct(rotateAngle);
+
+	const auto& face = pTechno->HasTurret() ? pTechno->SecondaryFacing : pTechno->PrimaryFacing;
+	const auto curDir = face.Current();
+
+	return (std::abs(static_cast<short>(static_cast<short>(tgtDir.Raw) - static_cast<short>(curDir.Raw))) >= 4096);
 }
 
 int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, const CoordStruct& coord)
