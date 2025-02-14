@@ -139,14 +139,12 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	if (maxAttempts < 1)
 		maxAttempts = 1;
 
-	CellClass* pCell;
-	CellStruct placeCoords = CellStruct::Empty;
-	auto pTypePassenger = pPassenger->GetTechnoType();
-	CoordStruct finalLocation = CoordStruct::Empty;
+	const auto pTypePassenger = pPassenger->GetTechnoType();
+	auto placeCoords = CellStruct::Empty;
 	short extraDistanceX = 1;
 	short extraDistanceY = 1;
-	SpeedType speedType = pTypePassenger->SpeedType;
-	MovementZone movementZone = pTypePassenger->MovementZone;
+	auto speedType = pTypePassenger->SpeedType;
+	auto movementZone = pTypePassenger->MovementZone;
 
 	if (pTypePassenger->WhatAmI() == AbstractType::AircraftType)
 	{
@@ -155,20 +153,26 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	}
 	do
 	{
-		placeCoords = pThis->GetCell()->MapCoords - CellStruct { (short)(extraDistanceX / 2), (short)(extraDistanceY / 2) };
+		placeCoords = pThis->GetMapCoords() - CellStruct { static_cast<short>(extraDistanceX / 2), static_cast<short>(extraDistanceY / 2) };
 		placeCoords = MapClass::Instance->NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistanceX, extraDistanceY, true, false, false, false, CellStruct::Empty, false, false);
 
-		pCell = MapClass::Instance->GetCellAt(placeCoords);
+		if (placeCoords == CellStruct::Empty)
+			return CoordStruct::Empty;
+
+		const auto pCell = MapClass::Instance->GetCellAt(placeCoords);
+
+		if (pThis->IsCellOccupied(pCell, FacingType::None, -1, nullptr, false) == Move::OK)
+			break;
+
 		extraDistanceX += 1;
 		extraDistanceY += 1;
 	}
-	while (extraDistanceX < maxAttempts && (pThis->IsCellOccupied(pCell, FacingType::None, -1, nullptr, false) != Move::OK) && pCell->MapCoords != CellStruct::Empty);
+	while (extraDistanceX <= maxAttempts);
 
-	pCell = MapClass::Instance->TryGetCellAt(placeCoords);
-	if (pCell)
-		finalLocation = pCell->GetCoordsWithBridge();
+	if (const auto pCell = MapClass::Instance->TryGetCellAt(placeCoords))
+		return pCell->GetCoordsWithBridge();
 
-	return finalLocation;
+	return CoordStruct::Empty;
 }
 
 bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon, bool useZone, int zone)
