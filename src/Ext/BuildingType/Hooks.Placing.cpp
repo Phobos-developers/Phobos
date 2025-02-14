@@ -476,6 +476,36 @@ static inline bool CheckBuildingFoundation(BuildingTypeClass* const pBuildingTyp
 	return true;
 }
 
+static inline BuildingTypeClass* GetAnotherPlacingType(BuildingTypeClass* pType, CellStruct checkCell, bool opposite)
+{
+	if (!pType->PlaceAnywhere)
+	{
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+
+		if (!pTypeExt->LimboBuild)
+		{
+			const auto onWater = MapClass::Instance->GetCellAt(checkCell)->LandType == LandType::Water;
+			const auto waterBound = pType->SpeedType == SpeedType::Float;
+
+			if (const auto pAnotherType = (opposite ^ onWater) ? (waterBound ? nullptr : pTypeExt->PlaceBuilding_OnWater) : (waterBound ? pTypeExt->PlaceBuilding_OnLand : nullptr))
+			{
+				if (pAnotherType->BuildCat == pType->BuildCat && !pAnotherType->PlaceAnywhere && !BuildingTypeExt::ExtMap.Find(pAnotherType)->LimboBuild)
+					return pAnotherType;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+static inline BuildingTypeClass* GetAnotherPlacingType(DisplayClass* pDisplay)
+{
+	if (const auto pCurrentBuilding = abstract_cast<BuildingClass*>(pDisplay->CurrentBuilding))
+		return GetAnotherPlacingType(pCurrentBuilding->Type, pDisplay->CurrentFoundation_CenterCell, false);
+
+	return nullptr;
+}
+
 // Place Another Type Hook #1 -> sub_4FB0E0 - Replace the factory product
 // Buildable-upon TechnoTypes Hook #3 -> sub_4FB0E0 - Hang up place event if there is only infantries and units on the cell
 DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
@@ -518,27 +548,67 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 	}
 
 	const bool expand = RulesExt::Global()->ExtendedBuildingPlacing && !pBuildingType->PlaceAnywhere && !pBuildingType->PowersUpBuilding[0];
-	auto tryGetAnotherType = [&]()
-	{
-		if (expand)
-		{
-			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-			auto& place = pBufferType->BuildCat != BuildCat::Combat ? pHouseExt->Common : pHouseExt->Combat;
-
-			if (place.DrawType && (place.DrawType == pTypeExt->PlaceBuilding_OnLand || place.DrawType == pTypeExt->PlaceBuilding_OnWater))
-				return place.DrawType;
-		}
-
-		const auto& pTypeCopy = pDisplay->CurrentBuildingTypeCopy;
-
-		if (pTypeCopy && (pTypeCopy == pTypeExt->PlaceBuilding_OnLand || pTypeCopy == pTypeExt->PlaceBuilding_OnWater))
-			return static_cast<BuildingTypeClass*>(pTypeCopy);
-
-		return pBufferType;
-	};
 
 	if (pTypeExt->PlaceBuilding_OnWater || pTypeExt->PlaceBuilding_OnLand)
-		pBuildingType = tryGetAnotherType();
+	{
+		if (!SessionClass::IsMultiplayer())
+		{
+			if (expand)
+			{
+				const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+				auto& place = pBufferType->BuildCat != BuildCat::Combat ? pHouseExt->Common : pHouseExt->Combat;
+
+				if (place.DrawType && (place.DrawType == pTypeExt->PlaceBuilding_OnLand || place.DrawType == pTypeExt->PlaceBuilding_OnWater))
+					pBuildingType = place.DrawType;
+			}
+
+			const auto& pTypeCopy = pDisplay->CurrentBuildingTypeCopy;
+
+			if (pTypeCopy && (pTypeCopy == pTypeExt->PlaceBuilding_OnLand || pTypeCopy == pTypeExt->PlaceBuilding_OnWater))
+				pBuildingType = static_cast<BuildingTypeClass*>(pTypeCopy);
+		}
+		else // When playing online, this can not rely on locally stored replicas, and must made speculation based on the event
+		{
+			auto checkCell = topLeftCell;
+
+			if (pBuildingType->Gate)
+			{
+				if (pBuildingType->GetFoundationWidth() > 2)
+					checkCell.X += 1;
+				else if (pBuildingType->GetFoundationHeight(false) > 2)
+					checkCell.Y += 1;
+			}
+			else if (pBuildingType->GetFoundationWidth() > 2 || pBuildingType->GetFoundationHeight(false) > 2)
+			{
+				checkCell += CellStruct { 1, 1 };
+			}
+
+			if (const auto pOtherType = GetAnotherPlacingType(pBuildingType, checkCell, false))
+			{
+				pBuildingType = pOtherType;
+			}
+			else if (const auto pAnotherType = GetAnotherPlacingType(pBuildingType, topLeftCell, true)) // Center cell may be different, so make assumptions
+			{
+				checkCell = topLeftCell;
+
+				if (pAnotherType->Gate)
+				{
+					if (pAnotherType->GetFoundationWidth() > 2)
+						checkCell.X += 1;
+					else if (pAnotherType->GetFoundationHeight(false) > 2)
+						checkCell.Y += 1;
+				}
+				else if (pAnotherType->GetFoundationWidth() > 2 || pAnotherType->GetFoundationHeight(false) > 2)
+				{
+					checkCell += CellStruct { 1, 1 };
+				}
+
+				// If the land occupation of the two buildings is different, the larger one will prevail, And the smaller one may not be placed on the shore.
+				if ((MapClass::Instance->GetCellAt(checkCell)->LandType == LandType::Water) ^ (pBuildingType->SpeedType == SpeedType::Float))
+					pBuildingType = pAnotherType;
+			}
+		}
+	}
 
 	bool revert = false;
 
@@ -1094,33 +1164,6 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 	}
 
 	return 0;
-}
-
-static inline BuildingTypeClass* GetAnotherPlacingType(DisplayClass* pDisplay)
-{
-	if (const auto pCurrentBuilding = abstract_cast<BuildingClass*>(pDisplay->CurrentBuilding))
-	{
-		const auto pType = pCurrentBuilding->Type;
-
-		if (!pType->PlaceAnywhere)
-		{
-			const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-
-			if (!pTypeExt->LimboBuild)
-			{
-				const auto onWater = MapClass::Instance->GetCellAt(pDisplay->CurrentFoundation_CenterCell)->LandType == LandType::Water;
-				const auto waterBound = pType->SpeedType == SpeedType::Float;
-
-				if (const auto pAnotherType = onWater ? (waterBound ? nullptr : pTypeExt->PlaceBuilding_OnWater) : (waterBound ? pTypeExt->PlaceBuilding_OnLand : nullptr))
-				{
-					if (pAnotherType->BuildCat == pType->BuildCat && !pAnotherType->PlaceAnywhere && !BuildingTypeExt::ExtMap.Find(pAnotherType)->LimboBuild)
-						return pAnotherType;
-				}
-			}
-		}
-	}
-
-	return nullptr;
 }
 
 // Place Another Type Hook #2 -> sub_4AB9B0 - Replace current building type for check
