@@ -348,6 +348,14 @@ msgstr ""
 "[官方文档](https://phobos.readthedocs.io/zh_CN/latest) （也支持 [英文]"
 "(https://phobos.readthedocs.io)）"
 
+#: ../../../README.md:58
+msgid "[Community Chinese docs](https://docs.qq.com/doc/p/dc3da1ce39a6e787b6e133f7d33d6aebef581cb4)"
+msgstr "[社区中文文档](https://docs.qq.com/doc/p/dc3da1ce39a6e787b6e133f7d33d6aebef581cb4)"
+
+#: ../../../README.md:59
+msgid "Because the Chinese translation of the official docs is currently underdeveloped, at the time it is recommended to use the community docs for Chinese users."
+msgstr "由于官方文档的中文翻译尚不完善，目前建议中国用户使用社区文档"
+
 #: ../../README.md:59
 msgid ""
 "You can switch between versions (displays latest develop nightly version by "
