@@ -21,6 +21,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Aircraft with weapons that have `Strafing.Shots` < 5 will now keep flying after last shot like those with `Strafing.Shots` >= 5 do. This delay can now be customized explicitly by setting `Strafing.EndDelay` on the weapon.
 - Selecting weapons other than primary against walls based on `Wall=true` on Warhead etc. now requires `[CombatDamage]`->`AllowWeaponSelectAgainstWalls` to be set to true first.
 - Lunar theater tileset parsing unhardcoding is now only applied if `lunarmd.ini` has `[General]` -> `ApplyLunarFixes` set to true.
 - `Units.DisableRepairCost` was changed to `Units.UseRepairCost` (note inverted expected value) as it no longer has discrete default value and affects `Hospital=true` buildings, infantry do not have repair cost by default.

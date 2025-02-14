@@ -4,7 +4,6 @@
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
@@ -23,49 +22,28 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 		pExt->CurrentAircraftWeaponIndex = weaponIndex;
 	}
 
+	AirAttackStatus const state = (AirAttackStatus)pThis->MissionStatus;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (pThis->MissionStatus < (int)AirAttackStatus::FireAtTarget2_Strafe
-		|| pThis->MissionStatus >(int)AirAttackStatus::FireAtTarget5_Strafe)
+	if (state < AirAttackStatus::FireAtTarget2_Strafe
+		|| state > AirAttackStatus::FireAtTarget5_Strafe)
 	{
 		pExt->Strafe_BombsDroppedThisRound = 0;
 		return 0;
 	}
 
-	if (pThis->Is_Strafe() && pWeaponExt->Strafing_UseAmmoPerShot && pExt->Strafe_BombsDroppedThisRound)
-	{
-		pThis->Ammo--;
-		pThis->ShouldLoseAmmo = false;
-
-		if (!pThis->Ammo)
-		{
-			pThis->IsLocked = false;
-			pThis->MissionStatus = (int)AirAttackStatus::ReturnToBase;
-
-			return 0;
-		}
-	}
-
-	int fireCount = pThis->MissionStatus - 4;
 	int strafingShots = pWeaponExt->Strafing_Shots.Get(5);
 
 	if (strafingShots > 5)
 	{
-		if (pThis->MissionStatus == (int)AirAttackStatus::FireAtTarget3_Strafe)
+		if (state == AirAttackStatus::FireAtTarget3_Strafe)
 		{
 			int remainingShots = strafingShots - 3 - pExt->Strafe_BombsDroppedThisRound;
 
 			if (remainingShots > 0)
 				pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget2_Strafe;
 		}
-	}
-	else if (fireCount > 1 && strafingShots < fireCount)
-	{
-		if (!pThis->Ammo)
-			pThis->IsLocked = false;
-
-		pThis->MissionStatus = (int)AirAttackStatus::ReturnToBase;
 	}
 
 	return 0;
@@ -131,7 +109,7 @@ DEFINE_HOOK(0x418403, AircraftClass_Mission_Attack_FireAtTarget_BurstFix, 0x8)
 
 	pThis->ShouldLoseAmmo = true;
 
-	AircraftExt::FireWeapon(pThis, pThis->Target, 0);
+	AircraftExt::FireWeapon(pThis, pThis->Target);
 
 	return 0x418478;
 }
@@ -140,7 +118,7 @@ DEFINE_HOOK(0x4186B6, AircraftClass_Mission_Attack_FireAtTarget2_BurstFix, 0x8)
 {
 	GET(AircraftClass*, pThis, ESI);
 
-	AircraftExt::FireWeapon(pThis, pThis->Target, 0);
+	AircraftExt::FireWeapon(pThis, pThis->Target);
 
 	return 0x4186D7;
 }
@@ -149,7 +127,7 @@ DEFINE_HOOK(0x418805, AircraftClass_Mission_Attack_FireAtTarget2Strafe_BurstFix,
 {
 	GET(AircraftClass*, pThis, ESI);
 
-	AircraftExt::FireWeapon(pThis, pThis->Target, 1);
+	AircraftExt::FireWeapon(pThis, pThis->Target);
 
 	return 0x418826;
 }
@@ -158,7 +136,7 @@ DEFINE_HOOK(0x418914, AircraftClass_Mission_Attack_FireAtTarget3Strafe_BurstFix,
 {
 	GET(AircraftClass*, pThis, ESI);
 
-	AircraftExt::FireWeapon(pThis, pThis->Target, 2);
+	AircraftExt::FireWeapon(pThis, pThis->Target);
 
 	return 0x418935;
 }
@@ -167,7 +145,7 @@ DEFINE_HOOK(0x418A23, AircraftClass_Mission_Attack_FireAtTarget4Strafe_BurstFix,
 {
 	GET(AircraftClass*, pThis, ESI);
 
-	AircraftExt::FireWeapon(pThis, pThis->Target, 3);
+	AircraftExt::FireWeapon(pThis, pThis->Target);
 
 	return 0x418A44;
 }
@@ -176,28 +154,92 @@ DEFINE_HOOK(0x418B1F, AircraftClass_Mission_Attack_FireAtTarget5Strafe_BurstFix,
 {
 	GET(AircraftClass*, pThis, ESI);
 
-	AircraftExt::FireWeapon(pThis, pThis->Target, 4);
+	AircraftExt::FireWeapon(pThis, pThis->Target);
 
 	return 0x418B40;
 }
 
-WeaponStruct* __fastcall AircraftClass_GetWeapon_Wrapper(AircraftClass* pThis, void* _, int weaponIndex)
+#pragma region After_Shot_Delays
+
+static int GetDelay(AircraftClass* pThis, bool isLastShot)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	int weaponIndex = pExt->CurrentAircraftWeaponIndex >= 0 ? pExt->CurrentAircraftWeaponIndex : pThis->SelectWeapon(pThis->Target);
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	int delay = pWeapon->ROF;
 
-	if (pExt->CurrentAircraftWeaponIndex >= 0)
-		return pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex);
-	else
-		return pThis->GetWeapon(pThis->SelectWeapon(pThis->Target));
+	if (isLastShot || pExt->Strafe_BombsDroppedThisRound == pWeaponExt->Strafing_Shots || (pWeaponExt->Strafing_UseAmmoPerShot && !pThis->Ammo))
+	{
+		pThis->MissionStatus = (int)AirAttackStatus::FlyToPosition;
+		delay = pWeaponExt->Strafing_EndDelay.Get((pWeapon->Range + 1024) / pThis->Type->Speed);
+	}
+
+	return delay;
 }
 
-DEFINE_JUMP(CALL6, 0x4180F9, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x4184E3, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x41852B, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x418893, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x4189A2, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x418AB1, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x418B9A, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
+DEFINE_HOOK(0x4184CC, AircraftClass_Mission_Attack_Delay1A, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+
+	pThis->IsLocked = true;
+	pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget2_Strafe;
+	R->EAX(GetDelay(pThis, false));
+
+	return 0x4184F1;
+}
+
+DEFINE_HOOK(0x418525, AircraftClass_Mission_Attack_Delay1B, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+	GET(int, status, EDX);
+
+	pThis->MissionStatus = status;
+	R->EAX(GetDelay(pThis, false));
+
+	return 0x418539;
+}
+
+DEFINE_HOOK(0x418883, AircraftClass_Mission_Attack_Delay2, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+
+	pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget3_Strafe;
+	R->EAX(GetDelay(pThis, false));
+
+	return 0x4188A1;
+}
+
+DEFINE_HOOK(0x418992, AircraftClass_Mission_Attack_Delay3, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+
+	pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget4_Strafe;
+	R->EAX(GetDelay(pThis, false));
+
+	return 0x4189B0;
+}
+
+DEFINE_HOOK(0x418AA1, AircraftClass_Mission_Attack_Delay4, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+
+	pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget5_Strafe;
+	R->EAX(GetDelay(pThis, false));
+
+	return 0x418ABF;
+}
+
+DEFINE_HOOK(0x418B8A, AircraftClass_Mission_Attack_Delay5, 0x6)
+{
+	GET(AircraftClass*, pThis, ESI);
+
+	R->EAX(GetDelay(pThis, true));
+
+	return 0x418BBA;
+}
+
+#pragma endregion
 
 void __fastcall AircraftClass_SetTarget_Wrapper(AircraftClass* pThis, void* _, AbstractClass* pTarget)
 {
