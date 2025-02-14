@@ -1521,7 +1521,7 @@ FireOnce.ResetSequence=true  ; boolean
 ### Single-color lasers
 
 ![image](_static/images/issinglecolor.gif)
-*Comparison of `IsSingleColor=yes` lasers with higher thickness to regular ones* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
+*Comparison of `IsSingleColor=yes` lasers with higher thickness to regular ones ([RA2: Reboot](https://www.moddb.com/mods/reboot))*
 
 - You can now set laser to draw using only `LaserInnerColor` by setting `IsSingleColor`, in same manner as `IsHouseColor` lasers do using player's team color. These lasers respect laser thickness. Note that this is not available on prism support weapons.
 
@@ -1534,7 +1534,7 @@ IsSingleColor=false  ; boolean
 ### Toggle-able ElectricBolt visuals
 
 ![image](_static/images/ebolt.gif)
-*EBolt customization utilized for different Tesla bolt weapon usage* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
+*EBolt customization utilized for different Tesla bolt weapon usage ([RA2: Reboot](https://www.moddb.com/mods/reboot))*
 
 - You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
 
