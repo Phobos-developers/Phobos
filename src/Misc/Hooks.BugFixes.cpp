@@ -1099,7 +1099,7 @@ DEFINE_HOOK(0x71872C, TeleportLocomotionClass_MakeRoom_OccupationFix, 0x9)
 
 	const auto pFoot = pLoco->LinkedTo;
 
-	return (pFoot && pFoot->IsAlive && pFoot->Health > 0 && !pFoot->IsSinking) ? 0 : SkipMarkOccupation;
+	return (pFoot && pFoot->IsAlive && !pFoot->InLimbo && pFoot->Health > 0 && !pFoot->IsSinking) ? 0 : SkipMarkOccupation;
 }
 
 #pragma endregion
