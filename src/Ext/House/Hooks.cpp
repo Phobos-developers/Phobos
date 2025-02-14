@@ -328,11 +328,11 @@ DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 	GET(BaseClass* const, pBase, ESI);
 	GET(BaseNodeClass* const, pBaseNode, EAX);
 
-	if (pBaseNode->Placed)
+	if (RulesExt::Global()->AIForbidConYard && pBaseNode->Placed)
 	{
 		const auto index = pBaseNode->BuildingTypeIndex;
 
-		if (index >= 0 && index < BuildingTypeClass::Array->Count && BuildingTypeClass::Array->Items[index]->ConstructionYard && RulesExt::Global()->AIForbidConYard)
+		if (index >= 0 && index < BuildingTypeClass::Array->Count && BuildingTypeClass::Array->Items[index]->ConstructionYard)
 			return Invalid;
 	}
 
