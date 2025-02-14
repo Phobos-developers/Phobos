@@ -141,8 +141,7 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 
 	const auto pTypePassenger = pPassenger->GetTechnoType();
 	auto placeCoords = CellStruct::Empty;
-	short extraDistanceX = 1;
-	short extraDistanceY = 1;
+	short extraDistance = 1;
 	auto speedType = pTypePassenger->SpeedType;
 	auto movementZone = pTypePassenger->MovementZone;
 
@@ -153,8 +152,8 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	}
 	do
 	{
-		placeCoords = pThis->GetMapCoords() - CellStruct { static_cast<short>(extraDistanceX / 2), static_cast<short>(extraDistanceY / 2) };
-		placeCoords = MapClass::Instance->NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistanceX, extraDistanceY, true, false, false, false, CellStruct::Empty, false, false);
+		placeCoords = pThis->GetMapCoords() - CellStruct { static_cast<short>(extraDistance / 2), static_cast<short>(extraDistance / 2) };
+		placeCoords = MapClass::Instance->NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistance, extraDistance, true, false, false, false, CellStruct::Empty, false, false);
 
 		if (placeCoords == CellStruct::Empty)
 			return CoordStruct::Empty;
@@ -164,10 +163,9 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 		if (pThis->IsCellOccupied(pCell, FacingType::None, -1, nullptr, false) == Move::OK)
 			break;
 
-		extraDistanceX += 1;
-		extraDistanceY += 1;
+		extraDistance++;
 	}
-	while (extraDistanceX <= maxAttempts);
+	while (extraDistance <= maxAttempts);
 
 	if (const auto pCell = MapClass::Instance->TryGetCellAt(placeCoords))
 		return pCell->GetCoordsWithBridge();
