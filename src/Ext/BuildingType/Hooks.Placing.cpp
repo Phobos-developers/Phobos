@@ -1005,7 +1005,7 @@ DEFINE_HOOK(0x4C7665, EventClass_RespondToEvent_StopDeployInIdleEvent, 0x6)
 // Buildable-upon TechnoTypes Hook #11 -> sub_4F8440 - Check whether can place again in each house
 DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 {
-	GET(const HouseClass* const, pHouse, ESI);
+	GET(HouseClass* const, pHouse, ESI);
 
 	if (!pHouse->IsControlledByHuman())
 		return 0;
@@ -1034,55 +1034,62 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 	if (!RulesExt::Global()->ExtendedBuildingPlacing)
 		return 0;
 
-	if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
+	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	if (pHouse == HouseClass::CurrentPlayer) // Prevent unexpected wrong event
 	{
-		if (pHouse == HouseClass::CurrentPlayer) // Prevent unexpected wrong event
+		auto buildCurrent = [&pHouse, &pHouseExt](BuildingTypeClass* pType, CellStruct cell)
 		{
-			auto buildCurrent = [](const BuildingTypeClass* const pType, const int index, const CellStruct cell)
-			{
-				if (pType)
-				{
-					const EventClass event (index, EventType::Place, AbstractType::Building, pType->GetArrayIndex(), pType->Naval, cell);
-					EventClass::AddEvent(event);
-				}
-			};
+			if (!pType)
+				return;
 
-			if (pHouseExt->Common.Timer.Completed())
+			if (reinterpret_cast<bool(__thiscall*)(HouseClass*, TechnoTypeClass*)>(0x50B370)(pHouse, pType)) // ShouldDisableCameo
 			{
-				pHouseExt->Common.Timer.Stop();
-				buildCurrent(pHouseExt->Common.Type, pHouse->ArrayIndex, pHouseExt->Common.TopLeft);
+				auto& place = pType->BuildCat != BuildCat::Combat ? pHouseExt->Common : pHouseExt->Combat;
+				ClearPlacingBuildingData(&place);
 			}
+			else
+			{
+				const EventClass event (pHouse->ArrayIndex, EventType::Place, AbstractType::Building, pType->GetArrayIndex(), pType->Naval, cell);
+				EventClass::AddEvent(event);
+			}
+		};
 
-			if (pHouseExt->Combat.Timer.Completed())
-			{
-				pHouseExt->Combat.Timer.Stop();
-				buildCurrent(pHouseExt->Combat.Type, pHouse->ArrayIndex, pHouseExt->Combat.TopLeft);
-			}
+		if (pHouseExt->Common.Timer.Completed())
+		{
+			pHouseExt->Common.Timer.Stop();
+			buildCurrent(pHouseExt->Common.Type, pHouseExt->Common.TopLeft);
 		}
 
-		if (pHouseExt->OwnedDeployingUnits.size() > 0)
+		if (pHouseExt->Combat.Timer.Completed())
 		{
-			auto& vec = pHouseExt->OwnedDeployingUnits;
+			pHouseExt->Combat.Timer.Stop();
+			buildCurrent(pHouseExt->Combat.Type, pHouseExt->Combat.TopLeft);
+		}
+	}
 
-			for (auto it = vec.begin(); it != vec.end(); )
+	if (pHouseExt->OwnedDeployingUnits.size() > 0)
+	{
+		auto& vec = pHouseExt->OwnedDeployingUnits;
+
+		for (auto it = vec.begin(); it != vec.end(); )
+		{
+			const auto pUnit = *it;
+
+			if (!pUnit->InLimbo && pUnit->IsOnMap && !pUnit->IsSinking && pUnit->Owner == pHouse && !pUnit->Destination && pUnit->CurrentMission == Mission::Guard
+				&& !pUnit->ParasiteEatingMe && !pUnit->TemporalTargetingMe && pUnit->Type->DeploysInto)
 			{
-				const auto pUnit = *it;
-
-				if (!pUnit->InLimbo && pUnit->IsOnMap && !pUnit->IsSinking && pUnit->Owner == pHouse && !pUnit->Destination && pUnit->CurrentMission == Mission::Guard
-					&& !pUnit->ParasiteEatingMe && !pUnit->TemporalTargetingMe && pUnit->Type->DeploysInto)
+				if (const auto pExt = TechnoExt::ExtMap.Find(pUnit))
 				{
-					if (const auto pExt = TechnoExt::ExtMap.Find(pUnit))
-					{
-						if (!(pExt->UnitAutoDeployTimer.GetTimeLeft() % 8))
-							pUnit->QueueMission(Mission::Unload, true);
+					if (!(pExt->UnitAutoDeployTimer.GetTimeLeft() % 8))
+						pUnit->QueueMission(Mission::Unload, true);
 
-						++it;
-						continue;
-					}
+					++it;
+					continue;
 				}
-
-				it = vec.erase(it);
 			}
+
+			it = vec.erase(it);
 		}
 	}
 
