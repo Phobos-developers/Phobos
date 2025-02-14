@@ -23,15 +23,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `DeathWeapon` not detonating properly.
   - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
-- Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
-- Fixed jumpjet units being unable to turn to the target when firing from a different direction.
-- Fixed jumpjet units being able to continue firing at enemy target when crashing.
+- Fixed the bug where jumpjet units that are `Crashable` do not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
+- Fixed the bug that prevents jumpjet units from turn to the target when firing from a different direction.
+- Fixed the bug allowing jumpjet units to continue firing at enemy target when crashing.
 
 ![image](_static/images/jumpjet-turning.gif)
 *Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
 
-- Fixed turreted jumpjet units always facing bottom-right direction when motion stops.
-- Fixed jumpjet objects being unable to use `Sensors`.
+- Fixed the bug when turreted jumpjet units always facing bottom-right direction when motion stops.
+- Fixed the bug when jumpjet objects are unable to use `Sensors`.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
