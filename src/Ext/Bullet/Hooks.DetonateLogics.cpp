@@ -320,7 +320,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 
 			if (size > i)
 				detonate = pWeaponExt->ExtraWarheads_DetonationChances[i] >= ScenarioClass::Instance->Random.RandomDouble();
-			if (size > 0)
+			else if (size > 0)
 				detonate = pWeaponExt->ExtraWarheads_DetonationChances[size - 1] >= ScenarioClass::Instance->Random.RandomDouble();
 
 			bool isFull = true;
@@ -328,21 +328,16 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 
 			if (size > i)
 				isFull = pWeaponExt->ExtraWarheads_FullDetonation[i];
-			if (size > 0)
+			else if (size > 0)
 				isFull = pWeaponExt->ExtraWarheads_FullDetonation[size - 1];
 
-			if (detonate)
-			{
-				if (isFull)
-				{
-					WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
-				}
-				else
-				{
-					auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-					pWHExt->DamageAreaWithTarget(*coords, damage, pThis->Owner, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
-				}
-			}
+			if (!detonate)
+				continue;
+
+			if (isFull)
+				WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
+			else
+				WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(*coords, damage, pThis->Owner, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
 		}
 	}
 

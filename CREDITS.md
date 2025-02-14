@@ -252,6 +252,8 @@ This page lists all the individual contributions to the project by their author.
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
   - `<Player @ X>` as owner for pre-placed objects
+  - Custom exit cell for infantry factory
+  - Vehicles keeping target on move command
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -269,8 +271,9 @@ This page lists all the individual contributions to the project by their author.
   - Show designator & inhibitor range
   - Dump variables to file on scenario end / hotkey
   - "House owns TechnoType" and "House doesn't own TechnoType" trigger events
-  - Help with docs
   - Voxel light source position customization
+  - Extending `Power` to all TechnoTypes
+  - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
    - Interceptor logic prototype
@@ -361,6 +364,7 @@ This page lists all the individual contributions to the project by their author.
   - `TurretOffset` support for SHP vehicles
   - Customizable rocker amplitude
   - Customizable wake anim
+  - Initial effort on optimization for crates' random distribution
 - **Fryone**
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
@@ -375,15 +379,34 @@ This page lists all the individual contributions to the project by their author.
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
   - Fix `Stop` command not working so well in some cases
+  - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
+  - Use 2D distance instead of 3D to check whether in air team members have arrived destination
+  - Enhanced Straight trajectory
+  - Enable Building Production Queue
+  - Fix for sidebar not updating queued unit numbers when on hold
+  - New Parabola trajectory
+  - Enhanced Bombard trajectory
   - Draw visual effects for airburst weapons
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
+  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+  - Type select for buildings (doc)
+  - Enhanced Bombard trajectory
+- **NaotoYuuki**
+  - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to jump back to previous script
 - **TaranDahl (航味麻酱)**
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
   - Global value of `RepairBaseNodes`
+  - Skip anim delay for burst fire
+  - Type select for buildings (code)
+  - Raise alert when technos are taking damage
+  - Toggle waypoint for building
+  - Parasite returning bug fix
+  - Bunkerable checks dehardcode
+  - Prevent the units with locomotors that cause problems from entering the tank bunker
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Ares developers**
@@ -393,7 +416,7 @@ This page lists all the individual contributions to the project by their author.
   - Superweapon launch site & availability code
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
-- **ststl, FlyStar, Saigyouji, JunJacobYoung** - Digital Display
+- **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - Digital Display
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
