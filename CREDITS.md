@@ -392,6 +392,7 @@ This page lists all the individual contributions to the project by their author.
   - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
+  - Fix `Insignia.Weapon` failing to parse in map
 - **NaotoYuuki**
   - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to jump back to previous script
