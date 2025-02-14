@@ -476,22 +476,17 @@ static inline bool CheckBuildingFoundation(BuildingTypeClass* const pBuildingTyp
 	return true;
 }
 
-static inline BuildingTypeClass* GetAnotherPlacingType(BuildingTypeClass* pType, CellStruct checkCell, bool opposite)
+static inline BuildingTypeClass* GetAnotherPlacingType(BuildingTypeClass* pType, BuildingTypeExt::ExtData* pTypeExt, CellStruct checkCell, bool opposite)
 {
-	if (!pType->PlaceAnywhere)
+	if (!pType->PlaceAnywhere && !pTypeExt->LimboBuild)
 	{
-		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		const auto onWater = MapClass::Instance->GetCellAt(checkCell)->LandType == LandType::Water;
+		const auto waterBound = pType->SpeedType == SpeedType::Float;
 
-		if (!pTypeExt->LimboBuild)
+		if (const auto pAnotherType = (opposite ^ onWater) ? (waterBound ? nullptr : pTypeExt->PlaceBuilding_OnWater) : (waterBound ? pTypeExt->PlaceBuilding_OnLand : nullptr))
 		{
-			const auto onWater = MapClass::Instance->GetCellAt(checkCell)->LandType == LandType::Water;
-			const auto waterBound = pType->SpeedType == SpeedType::Float;
-
-			if (const auto pAnotherType = (opposite ^ onWater) ? (waterBound ? nullptr : pTypeExt->PlaceBuilding_OnWater) : (waterBound ? pTypeExt->PlaceBuilding_OnLand : nullptr))
-			{
-				if (pAnotherType->BuildCat == pType->BuildCat && !pAnotherType->PlaceAnywhere && !BuildingTypeExt::ExtMap.Find(pAnotherType)->LimboBuild)
-					return pAnotherType;
-			}
+			if (pAnotherType->BuildCat == pType->BuildCat && !pAnotherType->PlaceAnywhere && !BuildingTypeExt::ExtMap.Find(pAnotherType)->LimboBuild)
+				return pAnotherType;
 		}
 	}
 
@@ -501,7 +496,13 @@ static inline BuildingTypeClass* GetAnotherPlacingType(BuildingTypeClass* pType,
 static inline BuildingTypeClass* GetAnotherPlacingType(DisplayClass* pDisplay)
 {
 	if (const auto pCurrentBuilding = abstract_cast<BuildingClass*>(pDisplay->CurrentBuilding))
-		return GetAnotherPlacingType(pCurrentBuilding->Type, pDisplay->CurrentFoundation_CenterCell, false);
+	{
+		const auto pType = pCurrentBuilding->Type;
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt->PlaceBuilding_OnLand || pTypeExt->PlaceBuilding_OnWater)
+			return GetAnotherPlacingType(pType, pTypeExt, pDisplay->CurrentFoundation_CenterCell, false);
+	}
 
 	return nullptr;
 }
@@ -583,11 +584,11 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 				checkCell += CellStruct { 1, 1 };
 			}
 
-			if (const auto pOtherType = GetAnotherPlacingType(pBuildingType, checkCell, false))
+			if (const auto pOtherType = GetAnotherPlacingType(pBuildingType, pTypeExt, checkCell, false))
 			{
 				pBuildingType = pOtherType;
 			}
-			else if (const auto pAnotherType = GetAnotherPlacingType(pBuildingType, topLeftCell, true)) // Center cell may be different, so make assumptions
+			else if (const auto pAnotherType = GetAnotherPlacingType(pBuildingType, pTypeExt, topLeftCell, true)) // Center cell may be different, so make assumptions
 			{
 				checkCell = topLeftCell;
 
