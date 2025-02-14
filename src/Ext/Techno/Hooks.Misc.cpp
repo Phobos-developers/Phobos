@@ -349,12 +349,14 @@ DEFINE_HOOK(0x7410BB, UnitClass_GetFireError_CheckFacingError, 0x8)
 	if (fireError == FireError::OK)
 		return ContinueCheck;
 
-	if (!RulesExt::Global()->UnitWithoutTurretAlwaysTurnToTarget)
-		return NoNeedToCheck;
-
 	GET(UnitClass* const, pThis, ESI);
 
-	return (fireError == FireError::REARM && !pThis->Type->Turret && !pThis->IsWarpingIn()) ? ContinueCheck : NoNeedToCheck;
+	const auto pType = pThis->Type;
+
+	if (!TechnoTypeExt::ExtMap.Find(pType)->NoTurret_EarlyTurnToTarget.Get(RulesExt::Global()->NoTurret_EarlyTurnToTarget))
+		return NoNeedToCheck;
+
+	return (fireError == FireError::REARM && !pType->Turret && !pThis->IsWarpingIn()) ? ContinueCheck : NoNeedToCheck;
 }
 
 #pragma endregion

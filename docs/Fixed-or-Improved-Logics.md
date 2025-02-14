@@ -1338,12 +1338,15 @@ Ammo.AddOnDeploy=0      ; integer
 
 ### Unit Without Turret Always Turn To Target
 
-- Now vehicles (exclude jumpjets) without turret will attempt to turn to the target while the weapon cools down, rather than after the weapon has cooled down.
+- Now vehicles (exclude jumpjets) without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting to `NoTurret.EarlyTurnToTarget` true.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-UnitWithoutTurretAlwaysTurnToTarget=false  ; boolean
+NoTurret.EarlyTurnToTarget=false   ; boolean
+
+[SOMEUNIT]                         ; UnitType
+NoTurret.EarlyTurnToTarget=        ; boolean, defaults to [General]->NoTurret.EarlyTurnToTarget
 ```
 
 ## Veinholes & Weeds

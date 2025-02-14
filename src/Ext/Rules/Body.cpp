@@ -215,7 +215,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->UseFixedVoxelLighting.Read(exINI, GameStrings::AudioVisual, "UseFixedVoxelLighting");
 
-	this->UnitWithoutTurretAlwaysTurnToTarget.Read(exINI, GameStrings::General, "UnitWithoutTurretAlwaysTurnToTarget");
+	this->NoTurret_EarlyTurnToTarget.Read(exINI, GameStrings::General, "NoTurret.EarlyTurnToTarget");
 
 	this->GatherWhenMCVDeploy.Read(exINI, GameStrings::General, "GatherWhenMCVDeploy");
 	this->AIFireSale.Read(exINI, GameStrings::General, "AIFireSale");
@@ -417,7 +417,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatAlert_UseAttackVoice)
 		.Process(this->CombatAlert_UseEVA)
 		.Process(this->UseFixedVoxelLighting)
-		.Process(this->UnitWithoutTurretAlwaysTurnToTarget)
+		.Process(this->NoTurret_EarlyTurnToTarget)
 		.Process(this->GatherWhenMCVDeploy)
 		.Process(this->AIFireSale)
 		.Process(this->AIFireSaleDelay)

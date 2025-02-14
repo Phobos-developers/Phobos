@@ -172,7 +172,7 @@ public:
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
 
-		Valueable<bool> UnitWithoutTurretAlwaysTurnToTarget;
+		Valueable<bool> NoTurret_EarlyTurnToTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;
 		Valueable<bool> AIFireSale;
@@ -314,7 +314,7 @@ public:
 			, CombatAlert_UseAttackVoice { true }
 			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
-			, UnitWithoutTurretAlwaysTurnToTarget { false }
+			, NoTurret_EarlyTurnToTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
 			, AIFireSaleDelay { 0 }
