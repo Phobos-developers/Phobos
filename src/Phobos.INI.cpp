@@ -5,6 +5,7 @@
 #include <SessionClass.h>
 #include <MessageListClass.h>
 #include <HouseClass.h>
+#include <EventClass.h>
 
 #include <Utilities/Parser.h>
 #include <Utilities/GeneralUtils.h>
@@ -267,7 +268,8 @@ DEFINE_HOOK(0x55DBCD, MainLoop_SaveGame, 0x6)
 		scenario_saved = true;
 		if (Phobos::ShouldQuickSave)
 		{
-			Phobos::PassiveSaveGame();
+			// Phobos::PassiveSaveGame();
+			EventClass::AddEvent(EventClass(HouseClass::CurrentPlayer->ArrayIndex, EventType::SaveGame));
 			Phobos::ShouldQuickSave = false;
 			Phobos::CustomGameSaveDescription.clear();
 		}
