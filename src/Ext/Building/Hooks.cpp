@@ -516,6 +516,124 @@ DEFINE_HOOK(0x6F4D1A, TechnoClass_ReceiveCommand_Repair, 0x5)
 
 #pragma endregion
 
+#pragma region EnableBuildingProductionQueue
+
+DEFINE_HOOK(0x6AB689, SelectClass_Action_SkipBuildingProductionCheck, 0x5)
+{
+	enum { SkipGameCode = 0x6AB6CE };
+	return RulesExt::Global()->BuildingProductionQueue ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x4FA520, HouseClass_BeginProduction_SkipBuilding, 0x5)
+{
+	enum { SkipGameCode = 0x4FA553 };
+	return RulesExt::Global()->BuildingProductionQueue ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x4FA612, HouseClass_BeginProduction_ForceRedrawStrip, 0x5)
+{
+	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+	return 0;
+}
+
+DEFINE_HOOK(0x4C9C7B, FactoryClass_QueueProduction_ForceCheckBuilding, 0x7)
+{
+	enum { SkipGameCode = 0x4C9C9E };
+	return RulesExt::Global()->BuildingProductionQueue ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
+{
+	enum { CheckSame = 0x4FAB3D, SkipCheck = 0x4FAB64, Return = 0x4FAC9B };
+
+	GET_STACK(const bool, all, STACK_OFFSET(0x18, 0x10));
+	GET(const int, index, EBX);
+	GET(const BuildCat, buildCat, ECX);
+	GET(const AbstractType, absType, EBP);
+	GET(FactoryClass* const, pFactory, ESI);
+
+	if (buildCat == BuildCat::DontCare || all)
+	{
+		const auto pType = TechnoTypeClass::GetByTypeAndIndex(absType, index);
+		const auto firstRemoved = pFactory->RemoveOneFromQueue(pType);
+
+		if (firstRemoved)
+		{
+			SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+			SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+
+			if (all)
+				while (pFactory->RemoveOneFromQueue(pType));
+			else
+				return Return;
+		}
+
+		return CheckSame;
+	}
+
+	if (!pFactory->Object)
+		return SkipCheck;
+
+	if (!pFactory->RemoveOneFromQueue(TechnoTypeClass::GetByTypeAndIndex(absType, index)))
+		return CheckSame;
+
+	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+	SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+
+	return Return;
+}
+
+DEFINE_HOOK(0x6A9C54, StripClass_DrawStrip_FindFactoryDehardCode, 0x6)
+{
+	GET(TechnoTypeClass* const, pType, ECX);
+	LEA_STACK(BuildCat*, pBuildCat, STACK_OFFSET(0x490, -0x490));
+
+	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+		*pBuildCat = pBuildingType->BuildCat;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6A9789, StripClass_DrawStrip_NoGreyCameo, 0x6)
+{
+	enum { ContinueCheck = 0x6A9799, SkipGameCode = 0x6A97FB };
+
+	GET(TechnoTypeClass* const, pType, EBX);
+	GET_STACK(bool, clicked, STACK_OFFSET(0x48C, -0x475));
+
+	if (!RulesExt::Global()->BuildingProductionQueue)
+	{
+		if (pType->WhatAmI() == AbstractType::BuildingType && clicked)
+			return SkipGameCode;
+	}
+	else if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+	{
+		if (const auto pFactory = HouseClass::CurrentPlayer->GetPrimaryFactory(AbstractType::BuildingType, pType->Naval, pBuildingType->BuildCat))
+		{
+			if (const auto pProduct = abstract_cast<BuildingClass*>(pFactory->Object))
+			{
+				if (pFactory->IsDone() && pProduct->Type != pType && ((pProduct->Type->BuildCat != BuildCat::Combat) ^ (pBuildingType->BuildCat == BuildCat::Combat)))
+					return SkipGameCode;
+			}
+		}
+	}
+
+	return ContinueCheck;
+}
+
+DEFINE_HOOK(0x6AA88D, StripClass_RecheckCameo_FindFactoryDehardCode, 0x6)
+{
+	GET(TechnoTypeClass* const, pType, EBX);
+	LEA_STACK(BuildCat*, pBuildCat, STACK_OFFSET(0x158, -0x158));
+
+	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+		*pBuildCat = pBuildingType->BuildCat;
+
+	return 0;
+}
+
+#pragma endregion
+
 #pragma region BarracksExitCell
 
 DEFINE_HOOK(0x44EFD8, BuildingClass_FindExitCell_BarracksExitCell, 0x6)
@@ -575,3 +693,24 @@ DEFINE_HOOK(0x444B83, BuildingClass_ExitObject_BarracksExitCell, 0x7)
 
 #pragma endregion
 
+#pragma region BuildingFiring
+
+DEFINE_HOOK(0x44B630, BuildingClass_MissionAttack_AnimDelayedFire, 0x6)
+{
+	enum { JustFire = 0x44B6C4, VanillaCheck = 0 };
+	GET(BuildingClass* const, pThis, ESI);
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	return (pTypeExt && !pTypeExt->IsAnimDelayedBurst && pThis->CurrentBurstIndex != 0) ? JustFire : VanillaCheck;
+}
+
+#pragma endregion
+
+#pragma region BuildingWaypoints
+
+bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
+{
+	return RulesExt::Global()->BuildingWaypoints;
+}
+DEFINE_JUMP(VTABLE, 0x7E4610, GET_OFFSET(BuildingTypeClass_CanUseWaypoint))
+
+#pragma endregion
