@@ -465,25 +465,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 bool BuildingTypeExt::IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeClass* pType2)
 {
-	if (pType1 == pType2)
-		return true;
-
-	if (pType1->BuildCat != pType2->BuildCat || pType1->PlaceAnywhere || pType2->PlaceAnywhere)
-		return false;
-
-	const auto pType1Ext = BuildingTypeExt::ExtMap.Find(pType1);
-	const auto pType2Ext = BuildingTypeExt::ExtMap.Find(pType2);
-
-	if (pType1Ext->LimboBuild || pType2Ext->LimboBuild)
-		return false;
-
-	if (pType1Ext->PlaceBuilding_OnLand == pType2 || pType1Ext->PlaceBuilding_OnWater == pType2)
-		return true;
-
-	if (pType2Ext->PlaceBuilding_OnLand == pType1 || pType2Ext->PlaceBuilding_OnWater == pType1)
-		return true;
-
-	return false;
+	return ((pType1->BuildCat != BuildCat::Combat) == (pType2->BuildCat != BuildCat::Combat));
 }
 
 bool BuildingTypeExt::AutoPlaceBuilding(BuildingClass* pBuilding)

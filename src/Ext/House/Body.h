@@ -9,6 +9,15 @@
 
 #include <map>
 
+struct PlacingBuildingStruct
+{
+	BuildingTypeClass* Type;
+	BuildingTypeClass* DrawType;
+	int Times;
+	CDTimerClass Timer;
+	CellStruct TopLeft;
+};
+
 class HouseExt
 {
 public:
@@ -25,11 +34,8 @@ public:
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 
 		std::vector<UnitClass*> OwnedDeployingUnits;
-		BuildingTypeClass* CurrentBuildingType;
-		BuildingTypeClass* CurrentBuildingDrawType;
-		CellStruct CurrentBuildingTopLeft;
-		CDTimerClass CurrentBuildingTimer;
-		int CurrentBuildingTimes;
+		PlacingBuildingStruct Common;
+		PlacingBuildingStruct Combat;
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 		CounterClass LimboBuildings; // Currently owned buildings in limbo
@@ -74,11 +80,8 @@ public:
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
 			, OwnedDeployingUnits {}
-			, CurrentBuildingType { nullptr }
-			, CurrentBuildingDrawType { nullptr }
-			, CurrentBuildingTopLeft {}
-			, CurrentBuildingTimer {}
-			, CurrentBuildingTimes { 0 }
+			, Common { nullptr, nullptr, 0 }
+			, Combat { nullptr, nullptr, 0 }
 			, LimboAircraft {}
 			, LimboBuildings {}
 			, LimboInfantry {}
