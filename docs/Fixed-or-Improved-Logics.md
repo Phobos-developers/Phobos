@@ -794,7 +794,7 @@ Explodes.DuringBuildup=true  ; boolean
 - `IronCurtain.KillOrganicsWarhead` and `IronCurtain.KillWarhead` can be used to customize the Warhead used to kill units, globally or per TechnoType-basis respectively, with latter defaulting to former and former defaulting to `[CombatDamage]` -> `C4Warhead`.
 - Identical controls are available for Force Shield as well.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 IronCurtain.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
@@ -813,7 +813,7 @@ ForceShield.KillWarhead=           ; Warhead
 
 - It is now possible to specify additional tint intensity applied to Iron Curtained and Force Shielded units.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 IronCurtain.ExtraTintIntensity=0.0  ; floating point value
@@ -1010,7 +1010,7 @@ ShadowSizeCharacteristicHeight=   ; integer, height in leptons
   - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
 - You can also exclude specific TechnoTypes from being built in parallel by AI by setting `ForbidParallelAIQueues` to true on a TechnoType.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [GlobalControls]
 AllowParallelAIQueues=yes           ; must be set yes/true unless you don't use Ares
@@ -1502,7 +1502,7 @@ ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
 
 - You can now customize whether aircraft will forcefully eject passengers (vanilla behavior) or fire its weapon when attempting to fire.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]
 KickOutPassengers=true  ; boolean
@@ -1512,7 +1512,7 @@ KickOutPassengers=true  ; boolean
 
 - It is now possible to disable `FireOnce=true` weapon resetting infantry sequences after firing via `FireOnce.ResetSequence`. Target will be forgotten like before, the firing sequence will simply continue playing after firing if there are any frames left.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]
 FireOnce.ResetSequence=true  ; boolean
@@ -1607,7 +1607,7 @@ DropPod properties can now be customized on a per-InfantryType basis.
 - If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
 - The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEINFANTRY]
 DropPod.Angle =               ; double, default to [General]->DropPodAngle, measured in radians
