@@ -944,7 +944,7 @@ SubterraneanSpeed=-1     ; floating point value
 ```
 
 ```{warning}
-SubterraneanHeight expects negative values to be used and may behave erratically if set to above -50.
+`SubterraneanHeight` expects negative values to be used and may behave erratically if set to above -50.
 ```
 
 ### Voxel body multi-section shadows
