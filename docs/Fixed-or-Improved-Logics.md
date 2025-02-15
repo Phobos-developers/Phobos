@@ -617,7 +617,7 @@ ChronoSpherePreDelay=   ; integer, game frames
 ```
 
 ```{warning}
-Due to technical constraints, these settings do not apply to buildings teleported by Ares' customizable ChronoSphere SW. They only have a pre-teleport delay equal to `[General]` -> ChronoDelay.
+Due to technical constraints, these settings do not apply to buildings teleported by Ares' customizable ChronoSphere SW. They only have a pre-teleport delay equal to `[General]` -> `ChronoDelay`.
 ```
 
 ### Customizable veterancy insignias
