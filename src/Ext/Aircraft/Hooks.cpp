@@ -351,13 +351,30 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 	const int distance = Game::F2I(Point2D { pCoords->X, pCoords->Y }.DistanceFrom(Point2D { pThis->Location.X, pThis->Location.Y }));
 
 	// When the horizontal distance between the aircraft and its destination is greater than half of its deceleration distance
-	// or its turning radius, continue to move forward, otherwise return to airbase or execute the next planning path
+	// or its turning radius, continue to move forward, otherwise return to airbase or execute the next planning waypoint
 	if (distance > std::max((pType->SlowdownDistance >> 1), (2048 / pType->ROT)))
 		return (R->Origin() == 0x4168C7 ? ContinueMoving1 : ContinueMoving2);
 
-	pThis->EnterIdleMode(false, true);
+	// Try next planning waypoint first, then return to air base if it does not exist or cannot be taken
+	if (!pThis->TryNextPlanningTokenNode())
+		pThis->EnterIdleMode(false, true);
 
 	return EnterIdleAndReturn;
+}
+
+DEFINE_HOOK(0x4DDD66, FootClass_IsLandZoneClear_ReplaceHardcode, 0x6) // To avoid that the aircraft cannot fly towards the water surface normally
+{
+	enum { SkipGameCode = 0x4DDD8A };
+
+	GET(FootClass* const, pThis, EBP);
+	GET_STACK(CellStruct, cell, STACK_OFFSET(0x20, 0x4));
+
+	const auto pType = pThis->GetTechnoType();
+
+	// In vanilla, only aircrafts or `foots with fly locomotion` will call this virtual function
+	// So I don't know why WW use hard-coded `SpeedType::Track` and `MovementZone::Normal` to check this
+	R->AL(MapClass::Instance->GetCellAt(cell)->IsClearToMove(pType->SpeedType, false, false, -1, pType->MovementZone, -1, true));
+	return SkipGameCode;
 }
 
 // AreaGuard: return when no ammo or first target died
