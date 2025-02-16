@@ -709,7 +709,7 @@ msgstr "现在钻地移动受益于所有来源的速度加成例如升级、Att
 
 #: ../../Fixed-or-Improved-Logics.md:189
 msgid "Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby."
-msgstr ""
+msgstr "战机现在会根据其 `MovementZone` 和 `SpeedType` 在移动到不同地形上时表现得像预期一样。特别是，这修复了原版中战机被命令移动到水面却将移动命令改为附近的岸边这一异常行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:190
 msgid "Allowed `AuxBuilding` to count building upgrades."
@@ -1197,7 +1197,7 @@ msgstr "`Grinding.DisallowTypes` 可以定义不可被这座建筑回收的步�
 
 #: ../../Fixed-or-Improved-Logics.md:447
 msgid "`Grinding.PlayDieSound` controls if the units' `DieSound` and `VoiceDie` are played when entering the grinder. Default to `yes`."
-msgstr ""
+msgstr "`Grinding.PlayDieSound` 控制单位的 `DieSound` 和 `VoiceDie` 是否都会在进入回收站时播放。默认 `yes`。"
 
 #: ../../Fixed-or-Improved-Logics.md:448
 msgid "`Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`."
@@ -1381,7 +1381,7 @@ msgstr "现在你可以为特定抛射体指定其重力。"
 
 #: ../../Fixed-or-Improved-Logics.md:593
 msgid "Setting `Gravity=0` is not recommended as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. We suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories)."
-msgstr "由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不在相同高度的目标因此不推荐设置 `Gravity=0` 。我们建议使用 `Straight` 轨迹替代。见 [这里](New-or-Enhanced-Logics.md#projectile-trajectories)。"
+msgstr "由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不在相同高度的目标因此不推荐设置 `Gravity=0` 。我们建议使用 `Straight` 轨迹替代。见[这里](New-or-Enhanced-Logics.md#projectile-trajectories)。"
 
 #: ../../Fixed-or-Improved-Logics.md:601
 msgid "FlakScatter distance customization"
@@ -1457,7 +1457,7 @@ msgstr "现在可以自定义（全局和所有技术类型）单位通过 `Type
 
 #: ../../Fixed-or-Improved-Logics.md:673
 msgid "Due to technical constraints, these settings do not apply to buildings teleported by Ares' customizable ChronoSphere SW. They only have a pre-teleport delay equal to `[General]` -> `ChronoDelay`."
-msgstr "由于技术限制，这些设置不适用于 Ares 的自定义 ChronoSphere 超级武器传送的建筑。它们仅有一个等于 `[General]` -> `ChronoDelay` "
+msgstr "由于技术限制，这些设置不适用于 Ares 的自定义 ChronoSphere 超级武器传送的建筑。它们仅有一个共用的 `[General]` -> `ChronoDelay`。"
 
 #: ../../Fixed-or-Improved-Logics.md:676
 msgid "Customizable veterancy insignias"
