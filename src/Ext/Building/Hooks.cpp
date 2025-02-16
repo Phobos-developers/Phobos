@@ -691,6 +691,20 @@ DEFINE_HOOK(0x444B83, BuildingClass_ExitObject_BarracksExitCell, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x54BC99, JumpjetLocomotionClass_Ascending_BarracksExitCell, 0x6)
+{
+	enum { Continue = 0x54BCA3 };
+
+	GET(BuildingTypeClass*, pType, EAX);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->BarracksExitCell.isset())
+		return Continue;
+
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region BuildingFiring
@@ -702,5 +716,15 @@ DEFINE_HOOK(0x44B630, BuildingClass_MissionAttack_AnimDelayedFire, 0x6)
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 	return (pTypeExt && !pTypeExt->IsAnimDelayedBurst && pThis->CurrentBurstIndex != 0) ? JustFire : VanillaCheck;
 }
+
+#pragma endregion
+
+#pragma region BuildingWaypoints
+
+bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
+{
+	return RulesExt::Global()->BuildingWaypoints;
+}
+DEFINE_JUMP(VTABLE, 0x7E4610, GET_OFFSET(BuildingTypeClass_CanUseWaypoint))
 
 #pragma endregion
