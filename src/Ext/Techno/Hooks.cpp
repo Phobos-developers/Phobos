@@ -9,7 +9,9 @@
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/AresHelper.h>
 
 #pragma region Update
 
@@ -547,7 +549,6 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 }
 
 
-
 #pragma region KeepTargetOnMove
 
 // Do not explicitly reset target for KeepTargetOnMove vehicles when issued move command.
@@ -564,7 +565,7 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
 
 	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
 	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-	
+
 	if ((mission == Mission::Move) && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target && !pTarget)
 	{
 		if (pTechno->IsCloseEnoughToAttack(pTechno->Target))
@@ -609,6 +610,47 @@ DEFINE_HOOK(0x736480, UnitClass_AI_KeepTargetOnMove, 0x6)
 	}
 
 	return 0;
+}
+
+#pragma endregion
+
+#pragma region BuildingTypeSelectable
+
+namespace BuildingTypeSelectable
+{
+    bool ProcessingIDMatches = false;
+}
+
+DEFINE_HOOK_AGAIN(0x732B28, TypeSelectExecute_SetContext, 0x6)
+DEFINE_HOOK(0x732A85, TypeSelectExecute_SetContext, 0x7)
+{
+    BuildingTypeSelectable::ProcessingIDMatches = true;
+    return 0;
+}
+
+// This func has two retn, but one of them is affected by Ares' hook. Thus we only hook the other one.
+// If you have any problem, check Ares in IDA before making any changes.
+DEFINE_HOOK(0x732C97, TechnoClass_IDMatches_ResetContext, 0x5)
+{
+    BuildingTypeSelectable::ProcessingIDMatches = false;
+    return 0;
+}
+
+// If the context is set as well as the flags is enabled, this will make the vfunc CanBeSelectedNow return true to enable the type selection.
+DEFINE_HOOK(0x465D40, BuildingClass_Is1x1AndUndeployable_BuildingMassSelectable, 0x6)
+{
+    enum { SkipGameCode = 0x465D6A };
+
+	// Since Ares hooks around, we have difficulty juggling Ares and no Ares.
+	// So we simply disable this feature if no Ares.
+	if (!AresHelper::CanUseAres)
+		return 0;
+
+    if (!BuildingTypeSelectable::ProcessingIDMatches || !RulesExt::Global()->BuildingTypeSelectable)
+        return 0;
+
+    R->EAX(true);
+    return SkipGameCode;
 }
 
 #pragma endregion
