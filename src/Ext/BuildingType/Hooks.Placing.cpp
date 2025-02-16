@@ -1106,8 +1106,6 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 		return 0;
 
 	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-
-	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 	auto buildCurrent = [&pHouse, &pHouseExt](BuildingTypeClass* pType, CellStruct cell)
 	{
 		if (!pType)
