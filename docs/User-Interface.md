@@ -642,12 +642,14 @@ SaveGameOnScenarioStart=true ; boolean
 
 - Allow players to decide for themselves:
   - Whether can use mouse wheel to scroll sidebar strip when the mouse is not on it by `ScrollSidebarStripInTactical` .
-  - Whether can use mouse wheel to scroll sidebar strip when pressing Ctrl, Alt, or Shift by `ScrollSidebarStripWhenHoldKey`.
+  - Whether can use mouse wheel to scroll sidebar strip when pressing Ctrl by `ScrollSidebarStripWhenHoldCtrl`, Alt by `ScrollSidebarStripWhenHoldAlt`, or Shift by `ScrollSidebarStripWhenHoldShift`.
 
 In `RA2MD.ini`:
 
 ```ini
 [Phobos]
-ScrollSidebarStripInTactical=true   ; boolean
-ScrollSidebarStripWhenHoldKey=true  ; boolean
+ScrollSidebarStripInTactical=true     ; boolean
+ScrollSidebarStripWhenHoldAlt=true    ; boolean
+ScrollSidebarStripWhenHoldCtrl=true   ; boolean
+ScrollSidebarStripWhenHoldShift=true  ; boolean
 ```

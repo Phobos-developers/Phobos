@@ -69,25 +69,16 @@ DEFINE_HOOK(0x777998, Game_WndProc_ScrollMouseWheel, 0x6)
 	return 0;
 }
 
+static inline bool CheckSkipScrollSidebar()
+{
+	return !Phobos::Config::ScrollSidebarStripWhenHoldAlt && InputManagerClass::Instance->IsForceMoveKeyPressed()
+		|| !Phobos::Config::ScrollSidebarStripWhenHoldCtrl && InputManagerClass::Instance->IsForceFireKeyPressed()
+		|| !Phobos::Config::ScrollSidebarStripWhenHoldShift && InputManagerClass::Instance->IsForceSelectKeyPressed()
+		|| !Phobos::Config::ScrollSidebarStripInTactical && WWMouseClass::Instance->XY1.X < Make_Global<int>(0xB0CE30); // TacticalClass::view_bound.Width
+}
+
 DEFINE_HOOK(0x533F50, Game_ScrollSidebar_Skip, 0x5)
 {
 	enum { SkipScrollSidebar = 0x533FC3 };
-
-	if (!Phobos::Config::ScrollSidebarStripWhenHoldKey)
-	{
-		const auto pInput = InputManagerClass::Instance();
-
-		if (pInput->IsForceFireKeyPressed() || pInput->IsForceMoveKeyPressed() || pInput->IsForceSelectKeyPressed())
-			return SkipScrollSidebar;
-	}
-
-	if (!Phobos::Config::ScrollSidebarStripInTactical)
-	{
-		const auto pMouse = WWMouseClass::Instance();
-
-		if (pMouse->XY1.X < Make_Global<int>(0xB0CE30)) // TacticalClass::view_bound.Width
-			return SkipScrollSidebar;
-	}
-
-	return 0;
+	return CheckSkipScrollSidebar() ? SkipScrollSidebar : 0;
 }
