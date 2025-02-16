@@ -285,7 +285,7 @@ DEFINE_HOOK(0x4899DA, DamageArea_DamageBuilding_CauseMergeBuildingDamage, 0x7)
 
 	// Because during the process of causing damage, fragments may be generated that need to continue causing damage, resulting in nested calls
 	// to this function. Therefore, a single global variable cannot be used to store this data.
-	PhobosMap<BuildingClass*, double> MapBuildings;
+	std::unordered_map<BuildingClass*, double> MapBuildings;
 	{
 		const auto cellSpread = Game::F2I(pWH->CellSpread * Unsorted::LeptonsPerCell);
 		const auto percentDifference = 1.0 - pWH->PercentAtMax; // Vanilla will first multiply the damage and round it up, but we don't need to.
