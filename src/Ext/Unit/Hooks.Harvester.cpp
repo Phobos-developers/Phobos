@@ -1,13 +1,10 @@
-#include <AircraftClass.h>
-#include "Body.h"
-#include <ScenarioClass.h>
-#include <TunnelLocomotionClass.h>
+#include "Ext/Techno/Body.h"
+
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
-#include <Ext/Anim/Body.h>
-#include <Ext/WarheadType/Body.h>
-#include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
+
+#pragma region HarvesterQuickUnloader
 
 void __fastcall ArrivingRefineryNearBy(UnitClass* pThis, BuildingClass* pDock)
 {
@@ -185,6 +182,8 @@ DEFINE_HOOK(0x73EB2C, UnitClass_MissionHarvest_Status2, 0x6)
 
 	if (pType->Teleporter && (move == MovementZone::AmphibiousCrusher || move == MovementZone::AmphibiousDestroyer))
 		move = MovementZone::Amphibious;
+	else if (move == MovementZone::Subterrannean)
+		move = MovementZone::Fly;
 
 	const auto destLocation = pThis->GetDestination();
 	auto destCell = CellStruct { static_cast<short>(destLocation.X >> 8), static_cast<short>(destLocation.Y >> 8) };
@@ -295,3 +294,5 @@ DEFINE_HOOK(0x441226, BuildingClass_Unlimbo_RecheckRefinery, 0x6)
 
 	return 0;
 }
+
+#pragma endregion
