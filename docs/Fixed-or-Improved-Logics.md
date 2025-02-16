@@ -1244,7 +1244,7 @@ Ammo.AddOnDeploy=0      ; integer
 ### Veinholes
 
 - Veinhole monsters now work like they used to in Tiberian Sun.
-- Their core parameters are still loaded from `[General]`
+- Their core parameters are still loaded from `[General]`.
 - The Warhead used by veins is specified under `[CombatDamage]`. The warhead has to have `Veinhole=yes` set.
 - Veinholes are hardcoded to use several overlay types.
 - The vein attack animation specified under `[AudioVisual]` is what deals the damage. The animation has to be properly listed under `[Animations]` as well.
