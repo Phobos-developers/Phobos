@@ -498,7 +498,7 @@ ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
 
 - Operate a variable's value
 - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
-- Any numbers exceeding this limit will lead to unexpected results!
+- **Any numbers exceeding this limit will lead to unexpected results!**
 
 In `mycampaign.map`:
 ```ini

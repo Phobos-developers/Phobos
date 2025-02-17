@@ -1083,7 +1083,7 @@ msgstr "变量值由于某些原因在触发行为中值类型为 int16 而非 i
 
 #: ../../AI-Scripting-and-Mapping.md:446
 #: ../../AI-Scripting-and-Mapping.md:501
-msgid "Any numbers exceeding this limit will lead to unexpected results!"
+msgid "**Any numbers exceeding this limit will lead to unexpected results!**"
 msgstr "**任何超出此范围限制的数值都可能导致无法预测的结果！**"
 
 #: ../../AI-Scripting-and-Mapping.md:454
