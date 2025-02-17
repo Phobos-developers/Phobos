@@ -405,7 +405,7 @@ CenterPauseMenuBackground=false  ; boolean
 
 ### Custom Missing Cameo (`XXICON.SHP`)
 
-- You can now specify any SHP/PCX file as XXICON.SHP for missing cameo.
+- You can now specify any SHP/PCX file as `XXICON.SHP` for missing cameo.
 
 In `rulesmd.ini`:
 ```ini
