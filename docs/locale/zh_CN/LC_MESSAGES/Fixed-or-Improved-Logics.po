@@ -1908,8 +1908,8 @@ msgid "Customizable ore spawners"
 msgstr "自定义矿石生成者"
 
 #: ../../Fixed-or-Improved-Logics.md:1108
-msgid "![image](_static/images/ore-01.png) *Different ore spawners in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*"
-msgstr "![image](_static/images/ore-01.png) *[东方崛起](https://www.moddb.com/mods/riseoftheeast) mod 中不同的矿石生成者（矿柱）*"
+msgid "![image](_static/images/ore-01.png) *Different ore spawners in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*"
+msgstr "![image](_static/images/ore-01.png) *[东方崛起](https://www.moddb.com/mods/riseoftheeast) 中不同的矿石生成者（矿柱）*"
 
 #: ../../Fixed-or-Improved-Logics.md:1111
 msgid "You can now specify which type of ore certain TerrainType would generate."
