@@ -8,7 +8,7 @@ This page lists all user interface additions, changes, fixes that are implemente
 - You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
 - Fixed `Blowfish.dll`-caused error `***FATAL*** String Manager failed to initialize properly`, which occurred if `Blowfish.dll` could not be registered in the OS, for example, it happened when the player did not have administrator rights. With Phobos, if the game did not find a registered file in the system, it will no longer try to register this file, but will load it bypassing registration.
 - Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (font support required).
-- Fixed position and layer of info tip and reveal production cameo on selected building
+- Fixed position and layer of info tip and reveal production cameo on selected building.
 - Timer (superweapon, mission etc) blinking color scheme can be customized by setting `[AudioVisual]` -> `TimerBlinkColorScheme`. Defaults to third color scheme listed in `[Colors]`.
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold.
 
@@ -323,7 +323,7 @@ ShowFlashOnSelecting=false  ; boolean
 - Save the current singleplayer game.
 - For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
   - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
-  - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
+  - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`.
 
 ### `[ ]` Save Variables
 
