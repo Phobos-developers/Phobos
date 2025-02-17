@@ -1213,7 +1213,7 @@ msgstr "`Grinding.Weapon.RequiredCredits` 可以设置武器开火所需的资�
 
 #: ../../Fixed-or-Improved-Logics.md:451
 msgid "For money string indication upon grinding, please refer to [`DisplayIncome`](User-Interface.md#visual-indication-of-income-from-grinders-and-refineries)."
-msgstr "关于回收时的资金字符串提示，请参考[`DisplayIncome`](User-Interface.md#visual-indication-of-income-from-grinders-and-refineries)。"
+msgstr "关于回收时的资金字符串提示，请参考 [`DisplayIncome`](User-Interface.md#visual-indication-of-income-from-grinders-and-refineries)。"
 
 #: ../../Fixed-or-Improved-Logics.md:466
 msgid "Customizable selling buildup sequence length for buildings that can undeploy"
@@ -1908,8 +1908,8 @@ msgid "Customizable ore spawners"
 msgstr "自定义矿石生成者"
 
 #: ../../Fixed-or-Improved-Logics.md:1108
-msgid "![image](_static/images/ore-01.png) *Different ore spawners in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*"
-msgstr "![image](_static/images/ore-01.png) *[东方崛起](https://www.moddb.com/mods/riseoftheeast) mod 中不同的矿石生成者（矿柱）*"
+msgid "![image](_static/images/ore-01.png) *Different ore spawners in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*"
+msgstr "![image](_static/images/ore-01.png) *[东方崛起](https://www.moddb.com/mods/riseoftheeast) 中不同的矿石生成者（矿柱）*"
 
 #: ../../Fixed-or-Improved-Logics.md:1111
 msgid "You can now specify which type of ore certain TerrainType would generate."
@@ -2022,7 +2022,7 @@ msgstr "这个标签近跳过惊叹检查，即对单位类型的检查。动态
 
 #: ../../Fixed-or-Improved-Logics.md:1206
 msgid "Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, bunkerability is mainly determined by Locomotor. The details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable)."
-msgstr "使用此功能跳过检查并不意味着载具和坦克碉堡就可以正确的交互。根据次功能提供者的简单检查，坦克碉堡的效果主要受到运动模式影响。不同运动模式进入坦克碉堡的详细信息可以在 MODENC(https://modenc.renegadeprojects.com/Bunkerable) 上找到。"
+msgstr "使用此功能跳过检查并不意味着载具和坦克碉堡就可以正确的交互。根据次功能提供者的简单检查，坦克碉堡的效果主要受到运动模式影响。不同运动模式进入坦克碉堡的详细信息可以在 [MODENC](https://modenc.renegadeprojects.com/Bunkerable) 上找到。"
 
 #: ../../Fixed-or-Improved-Logics.md:1210
 msgid "Customizing crushing tilt and slowdown"

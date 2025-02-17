@@ -22,7 +22,7 @@ msgstr "AI 脚本与触发"
 
 #: ../../AI-Scripting-and-Mapping.md:3
 msgid "This page describes all AI scripting and mapping related additions and changes introduced by Phobos."
-msgstr "这个页面列出了所有 Phobos 引入的 AI 脚本与地图触发相关的修改。"
+msgstr "此页面列出了所有 Phobos 引入的 AI 脚本与地图触发相关的修改。"
 
 #: ../../AI-Scripting-and-Mapping.md:5
 msgid "Bugfixes and Miscellanous"
