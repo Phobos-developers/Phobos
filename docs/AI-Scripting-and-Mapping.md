@@ -96,13 +96,13 @@ ShowBriefing=false  ; boolean
 BriefingTheme=      ; Theme name
 ```
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMESIDE]      ; Side
 BriefingTheme=  ; Theme name
 ```
 
-In `uimd.ini`
+In `uimd.ini`:
 ```ini
 [UISettings]
 ShowBriefingResumeButtonLabel=GUI:Resume                      ; CSF entry key
