@@ -1286,6 +1286,12 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					{
 						pTrajectory->SourceCoord.Y = -(pTrajectory->SourceCoord.Y);
 						pTrajectory->TargetCoord.Y = -(pTrajectory->TargetCoord.Y);
+
+						const auto theSource = pBullet->Owner->GetCoords();
+						const auto rotateAngle = Math::atan2(pBullet->TargetCoords.Y - theSource.Y , pBullet->TargetCoords.X - theSource.X);
+						pTrajectory->SetEngraveDirection(pCreateBullet, rotateAngle);
+						auto coordDistance = pCreateBullet->Velocity.Magnitude();
+						pCreateBullet->Velocity *= (coordDistance > 1e-10) ? (pTrajType->Trajectory_Speed / coordDistance) : 0;
 					}
 				}
 				else
