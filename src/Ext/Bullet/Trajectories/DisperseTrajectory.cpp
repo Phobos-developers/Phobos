@@ -89,7 +89,6 @@ void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
 
-	this->Trajectory_Speed = Math::min(512.0, this->Trajectory_Speed);
 	this->UniqueCurve.Read(exINI, pSection, "Trajectory.Disperse.UniqueCurve");
 	this->PreAimCoord.Read(exINI, pSection, "Trajectory.Disperse.PreAimCoord");
 	this->RotateCoord.Read(exINI, pSection, "Trajectory.Disperse.RotateCoord");
@@ -99,10 +98,10 @@ void DisperseTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->UseDisperseBurst.Read(exINI, pSection, "Trajectory.Disperse.UseDisperseBurst");
 	this->AxisOfRotation.Read(exINI, pSection, "Trajectory.Disperse.AxisOfRotation");
 	this->LaunchSpeed.Read(exINI, pSection, "Trajectory.Disperse.LaunchSpeed");
-	this->LaunchSpeed = Math::clamp(this->LaunchSpeed, 0.001, 512.0);
+	this->LaunchSpeed = Math::max(0.001, this->LaunchSpeed);
 	this->Acceleration.Read(exINI, pSection, "Trajectory.Disperse.Acceleration");
 	this->ROT.Read(exINI, pSection, "Trajectory.Disperse.ROT");
-	this->ROT = Math::max(0, this->ROT);
+	this->ROT = Math::max(0.0, this->ROT);
 	this->LockDirection.Read(exINI, pSection, "Trajectory.Disperse.LockDirection");
 	this->CruiseEnable.Read(exINI, pSection, "Trajectory.Disperse.CruiseEnable");
 	this->CruiseUnableRange.Read(exINI, pSection, "Trajectory.Disperse.CruiseUnableRange");

@@ -740,7 +740,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
   - The speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
     - In `Trajectory=Straight`, it refers to the whole distance speed of the projectile and it has no restrictions.
     - In `Trajectory=Bombard`, it refers to the initial speed of the projectile and it has no restrictions.
-    - In `Trajectory=Disperse`, it refers to the final speed of the projectile and it cannot exceed 512. `Trajectory.Speed` will be fixed at 192 by setting `Trajectory.Disperse.UniqueCurve=true`.
+    - In `Trajectory=Disperse`, it refers to the final speed of the projectile and it has no restrictions. `Trajectory.Speed` will be fixed at 192 by setting `Trajectory.Disperse.UniqueCurve=true`.
     - In `Trajectory=Parabola`, it refers to the horizontal velocity of the projectile and is only used for modes 0, 3, or 5 and it has no restrictions.
 
 In `rulesmd.ini`:
