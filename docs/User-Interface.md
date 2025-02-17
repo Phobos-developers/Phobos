@@ -94,7 +94,7 @@ DigitalDisplay.Enable=false             ; boolean
 ```
 
 ```{note}
-An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)).
+An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
 ```
 
 ### Show designator & inhibitor range
