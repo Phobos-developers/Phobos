@@ -17,7 +17,7 @@ public:
 		, AxisOfRotation { { 0, 0, 1 } }
 		, LaunchSpeed { 0 }
 		, Acceleration { 10.0 }
-		, ROT { 30.0 }
+		, ROT { 10.0 }
 		, LockDirection { false }
 		, CruiseEnable { false }
 		, CruiseUnableRange { Leptons(1280) }
@@ -119,7 +119,7 @@ public:
 		, ThisWeaponIndex { 0 }
 		, LastTargetCoord {}
 		, PreAimDistance { 0 }
-		, LastReviseMult { 0 }
+		, LastDotProduct { 0 }
 		, FLHCoord {}
 		, BuildingCoord {}
 		, FirepowerMult { 1.0 }
@@ -152,7 +152,7 @@ public:
 	int ThisWeaponIndex;
 	CoordStruct LastTargetCoord;
 	double PreAimDistance;
-	double LastReviseMult;
+	double LastDotProduct;
 	CoordStruct FLHCoord;
 	CoordStruct BuildingCoord;
 	double FirepowerMult;
@@ -162,8 +162,9 @@ private:
 	void Serialize(T& Stm);
 
 	void GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno);
-	void InitializeBulletNotCurve(BulletClass* pBullet, bool facing);
-	inline BulletVelocity RotateAboutTheAxis(BulletVelocity theSpeed, BulletVelocity theAxis, double theRadian);
+	void InitializeBulletNotCurve(BulletClass* pBullet);
+	inline bool CalculateReducedVelocity(BulletClass* pBullet, double rotateAngle);
+	inline BulletVelocity RotateAboutTheAxis(const BulletVelocity& theSpeed, BulletVelocity& theAxis, double theRadian);
 	bool CalculateBulletVelocity(BulletClass* pBullet, double trajectorySpeed);
 	bool BulletRetargetTechno(BulletClass* pBullet);
 	inline bool CheckTechnoIsInvalid(TechnoClass* pTechno);
@@ -171,8 +172,8 @@ private:
 	bool CurveVelocityChange(BulletClass* pBullet);
 	bool NotCurveVelocityChange(BulletClass* pBullet);
 	bool StandardVelocityChange(BulletClass* pBullet);
-	bool ChangeBulletVelocity(BulletClass* pBullet, CoordStruct targetLocation, double turningRadius, bool curve);
+	bool ChangeBulletVelocity(BulletClass* pBullet, const CoordStruct& targetLocation);
 	bool PrepareDisperseWeapon(BulletClass* pBullet);
 	void CreateDisperseBullets(BulletClass* pBullet, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst);
-	void DisperseBurstSubstitution(BulletClass* pBullet, CoordStruct axis, double rotateCoord, int curBurst, int maxBurst, bool mirror);
+	void DisperseBurstSubstitution(BulletClass* pBullet, const CoordStruct& axis, double rotateCoord, int curBurst, int maxBurst, bool mirror);
 };

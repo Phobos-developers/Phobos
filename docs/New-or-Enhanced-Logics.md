@@ -740,7 +740,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
   - The speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
     - In `Trajectory=Straight`, it refers to the whole distance speed of the projectile and it has no restrictions.
     - In `Trajectory=Bombard`, it refers to the initial speed of the projectile and it has no restrictions.
-    - In `Trajectory=Disperse`, it refers to the final speed of the projectile and it cannot exceed 256. `Trajectory.Speed` will be fixed at 192 by setting `Trajectory.Disperse.UniqueCurve=true`.
+    - In `Trajectory=Disperse`, it refers to the final speed of the projectile and it cannot exceed 512. `Trajectory.Speed` will be fixed at 192 by setting `Trajectory.Disperse.UniqueCurve=true`.
     - In `Trajectory=Parabola`, it refers to the horizontal velocity of the projectile and is only used for modes 0, 3, or 5 and it has no restrictions.
 
 In `rulesmd.ini`:
@@ -942,9 +942,9 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
     - `Trajectory.Disperse.ReduceCoord` controls whether `Trajectory.Disperse.PreAimCoord` defines the initial movement coordinates when the attack distance is 10 cells, and the actual initial movement coordinates will change with the length of the attack distance. It can be simply understood as an optimization term aimed at ensuring hits at close range.
     - `Trajectory.Disperse.UseDisperseBurst` controls whether the calculation of `Trajectory.Disperse.RotateCoord` is based on its superior's `Trajectory.Disperse.WeaponBurst` of the dispersed trajectory, rather than `Burst` of the weapon. If this value is not appropriate, it will result in unsatisfactory visual displays.
     - `Trajectory.Disperse.AxisOfRotation` controls the rotation axis when calculating `Trajectory.Disperse.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position.
-  - `Trajectory.Disperse.LaunchSpeed` controls the initial flight speed of the projectile, it will be directly reduced to this value if it exceeds `Trajectory.Speed`.
-  - `Trajectory.Disperse.Acceleration` controls the acceleration of the projectile's flight speed, increasing the speed per frame according to this value, the final speed will not exceed `Trajectory.Speed`.
-  - `Trajectory.Disperse.ROT` controls the turning speed of the projectile and can determine the turning radius of the projectile. The turning speed will increase with the increase of speed.
+  - `Trajectory.Disperse.LaunchSpeed` controls the initial flight speed of the projectile.
+  - `Trajectory.Disperse.Acceleration` controls the acceleration of the projectile's flight speed, increasing or decreasing the speed per frame according to this value, the final speed will be `Trajectory.Speed`.
+  - `Trajectory.Disperse.ROT` controls the turning speed of the projectile which refers to the maximum angle that the projectile can rotate per frame in terms of direction.
   - `Trajectory.Disperse.LockDirection` controls whether after reaching `Trajectory.Disperse.PreAimCoord` and completing the first turn, the projectile will lock the direction of motion without further adjustment.
   - `Trajectory.Disperse.CruiseEnable` controls whether after reaching `Trajectory.Disperse.PreAimCoord` and completing the first turn, the projectile will maintain altitude while moving towards the target.
     - `Trajectory.Disperse.CruiseUnableRange` controls how far away it is from the target to end the cruise phase, no longer maintaining the cruise altitude, and begins to move directly towards the target. If the distance is already below this value by the time `Trajectory.Disperse.PreAimCoord` is reached, the cruise phase will be skipped.
@@ -987,7 +987,7 @@ Trajectory.Disperse.UseDisperseBurst=false      ; boolean
 Trajectory.Disperse.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Height
 Trajectory.Disperse.LaunchSpeed=0               ; floating point value
 Trajectory.Disperse.Acceleration=10.0           ; floating point value
-Trajectory.Disperse.ROT=30.0                    ; floating point value
+Trajectory.Disperse.ROT=10.0                    ; floating point value
 Trajectory.Disperse.LockDirection=false         ; boolean
 Trajectory.Disperse.CruiseEnable=false          ; boolean
 Trajectory.Disperse.CruiseUnableRange=5         ; floating point value
