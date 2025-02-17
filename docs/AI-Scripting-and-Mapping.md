@@ -297,7 +297,7 @@ x=12000,n            ; integer n=0
 
 #### `12001` Modify Target Distance
 
-- By default `Moving Team to techno location` actions ends when the Team Leader reaches a distance declared in rulesmd.ini called `CloseEnough`. When this action is executed before the actions `Moving Team to techno location` overwrites `CloseEnough` value. This action works only the first time and `CloseEnough` will be used again the next Movement action.
+- By default `Move Team to Techno Location` actions ends when the Team Leader reaches a distance declared in `rulesmd.ini` called `CloseEnough`. When this action is executed before the actions `Move Team to Techno Location` overwrites `CloseEnough` value. This action works only the first time and `CloseEnough` will be used again the next Movement action.
 
 In `aimd.ini`:
 ```ini
