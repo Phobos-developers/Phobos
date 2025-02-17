@@ -1231,6 +1231,7 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 				{
 					pTrajectory->FLHCoord = this->FLHCoord;
 					pTrajectory->BuildingCoord = this->BuildingCoord;
+					pTrajectory->CurrentBurst = this->CurrentBurst;
 				}
 			}
 			else if (flag == TrajectoryFlag::Straight)
@@ -1280,6 +1281,12 @@ void DisperseTrajectory::CreateDisperseBullets(BulletClass* pBullet, WeaponTypeC
 					pTrajectory->FLHCoord = this->FLHCoord;
 					pTrajectory->BuildingCoord = this->BuildingCoord;
 					pTrajectory->NotMainWeapon = false;
+
+					if ((this->CurrentBurst % 2) && pTrajType->MirrorCoord)
+					{
+						pTrajectory->SourceCoord.Y = -(pTrajectory->SourceCoord.Y);
+						pTrajectory->TargetCoord.Y = -(pTrajectory->TargetCoord.Y);
+					}
 				}
 				else
 				{
