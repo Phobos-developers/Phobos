@@ -207,7 +207,7 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 - The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is disabled and `PlacementGrid.TranslucencyWithPreview` if enabled.
 - If using the building's appropriate `Buildup` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to show as preview through `PlacementPreview.Shape`, `PlacementPreview.ShapeFrame` and `PlacementPreview.Palette`.
   - You can specify theater-specific palettes and shapes by putting three `~` marks to the theater specific part of the filename. `~~~` is replaced with the theater’s three-letter extension.
-- `PlacementPreview.ShapeFrame=` tag defaults to building's artmd.ini `Buildup` entry's last non-shadow frame. If there is no 'Buildup' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
+- `PlacementPreview.ShapeFrame` tag defaults to building's artmd.ini `Buildup` entry's last non-shadow frame. If there is no 'Buildup' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
 
 In `rulesmd.ini`:
 ```ini
@@ -229,7 +229,7 @@ PlacementPreview.Translucency=       ; translucency level (0/25/50/75), defaults
 ```
 
 ```{note}
-The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap=yes` is set to yes. This may change in future.
+The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap` is set to yes. This may change in future.
 ```
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
