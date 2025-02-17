@@ -86,7 +86,7 @@ DigitalDisplay.Disable=false            ; boolean
 DigitalDisplayTypes=                    ; list of DigitalDisplayTypes
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 DigitalDisplay.Enable=false             ; boolean
@@ -101,7 +101,7 @@ An example shape file for digits can be found on [Phobos supplementaries repo](h
 - It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon]->SW.Designators` will display a circle with radius set in `[TechnoType]->DesignatorRange` or `Sight`.
   - In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon]->SW.Inhibitors` will display a circle with radius set in `[TechnoType]->InhibitorRange` or `Sight`.
 - This feature can be disabled globally with `[AudioVisual]->ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon]->ShowDesignatorRange=false`.
-- This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `Ra2MD.ini` or with "Toggle Designator Range" hotkey in "Interface" category.
+- This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `RA2MD.INI` or with "Toggle Designator Range" hotkey in "Interface" category.
 
 In `rulesmd.ini`:
 ```ini
@@ -112,7 +112,7 @@ ShowDesignatorRange=true    ; boolean
 ShowDesignatorRange=true    ; boolean
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ShowDesignatorRange=false             ; boolean
@@ -148,7 +148,7 @@ LightFlashAlphaImageDetailLevel=0            ; integer
 Particle.AlphaImageIsLightFlash=             ; boolean
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 HideLightFlashEffects=false  ; boolean
@@ -169,7 +169,7 @@ LowSelectionPriority=false  ; boolean
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 PrioritySelectionFiltering=true  ; boolean
@@ -233,7 +233,7 @@ The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap=y
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ShowPlacementPreview=yes   ; boolean
@@ -248,7 +248,7 @@ ShowPlacementPreview=yes   ; boolean
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
-In `ra2md.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 RealTimeTimers=false            ; boolean
@@ -381,7 +381,7 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
   - The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
   - You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
   - By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
-  - The feature can be toggled on/off by user if enabled in mod via `ShowHarvesterCounter` setting in `RA2MD.ini`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowHarvesterCounter` setting in `RA2MD.INI`.
 
 In `uimd.ini`:
 ```ini
@@ -403,7 +403,7 @@ Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - R,G,B
 Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ShowHarvesterCounter=true  ; boolean
@@ -427,7 +427,7 @@ Additionally, default position for harvester counter overlaps with [weeds counte
   - You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, acceptable values are left, right, center/centre.
   - By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, the game will warn player by changing the color of counter whenever the percentage of used power exceeds the value (i.e. when drain to output ratio is above 100%, the counter will turn red).
   - The exception for this rule is when both power output and drain are 0 - in this case the counter will default to yellow.
-  - The feature can be toggled on/off by user if enabled in mod via `ShowPowerDelta` setting in `RA2MD.ini`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowPowerDelta` setting in `RA2MD.INI`.
 
 In `uimd.ini`:
 ```ini
@@ -448,7 +448,7 @@ Sidebar.PowerDelta.ColorGrey=128,128,128  ; integer - R,G,B
 Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left | center/centre | right
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ShowPowerDelta=true  ; boolean
@@ -463,7 +463,7 @@ If you use the vanilla font in your mod, you can use the improved font (v4 and h
 - Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
   - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
   - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
-  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.ini`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.INI`.
 
 In `uimd.ini`:
 ```ini
@@ -478,7 +478,7 @@ Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
 Sidebar.WeedsCounter.Color=      ; integer - R,G,B
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ShowWeedsCounter=true  ; boolean
@@ -552,7 +552,7 @@ UIDescription=<none>  ; CSF entry key
 
 - The descriptions are designed to be toggleable by users. For now you can only do that externally via client or manually.
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ToolTipDescriptions=true  ; boolean
@@ -576,7 +576,7 @@ ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual]->ToolTip.
 The blur effect is resource intensive. Please make sure you really want to enable this effect, otherwise leave it to 0.0 so it stays disabled.
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
@@ -588,7 +588,7 @@ ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enable
 
 When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 SaveGameOnScenarioStart=true ; boolean
