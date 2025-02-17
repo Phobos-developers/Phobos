@@ -736,7 +736,7 @@ msgstr "超级武器类型的工具提示将显示其名称、成本和 CD（如
 
 #: ../../User-Interface.md:573
 msgid "If `SW.Shots` from Ares is used, a C-style format string default to `Shots: %d` is appended. The format is customizable in csf. If a 2-parameter format (like `%d/%d shots left`) is used, the second integer is `SW.Shots`."
-msgstr "如果使用了 Ares 的 `SW.Shots`，那么将会附加一个 C 语言风格的格式化字符，默认为 `Shots: %d`。格式可以在 csf 中自定义。如果使用双参数格式（例如 `%d/%d shots left`），第二个整数是 `SW.Shots`。"
+msgstr "如果使用了 Ares 的 `SW.Shots`，那么将会附加一个 C 语言风格的格式化字符，默认为 `Shots: %d`。格式可以在 csf 中自定义。如果使用双参数格式（例如 `还剩 %d/%d 发`），第二个整数是 `SW.Shots`。"
 
 #: ../../User-Interface.md:574
 msgid "Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default."
