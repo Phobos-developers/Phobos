@@ -453,8 +453,8 @@ x=i,n             ; where 18000 <= i <= 18023, n is made up of two parts, the lo
 
 #### `18024 - 18047` Edit Variable using Local Variable
 
-- Operate a variable's value using a local variable's value
-- Similar to `18000-18023`, but the number to operate the value is being read from a local variable
+- Operate a variable's value using a local variable's value.
+- Similar to `18000-18023`, but the number to operate the value is being read from a local variable.
 
 In `aimd.ini`:
 ```ini
@@ -464,8 +464,8 @@ x=i,n             ; where 18024 <= i <= 18047, n is made up of two parts, the lo
 
 #### `18000 - 18071` Edit Variable using Global Variable
 
-- Operate a variable's value using a global variable's value
-- Similar to `18000-18023`, but the number to operate the value is being read from a global variable
+- Operate a variable's value using a global variable's value.
+- Similar to `18000-18023`, but the number to operate the value is being read from a global variable.
 
 In `aimd.ini`:
 ```ini
