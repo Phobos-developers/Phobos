@@ -388,7 +388,7 @@ msgstr "`[ ]` 显示伤害数字"
 
 #: ../../User-Interface.md:309
 msgid "Switches on/off floating numbers when dealing damage. See [this](Miscellanous.md#display-damage-numbers) for details."
-msgstr "切换在造成杀伤时显示/隐藏浮动数字。详见[此处](Miscellanous.md#display-damage-numbers) 以了解。"
+msgstr "切换在造成杀伤时显示/隐藏浮动数字。详见 [此处](Miscellanous.md#display-damage-numbers) 以了解。"
 
 #: ../../User-Interface.md:310
 msgid "For localization add `TXT_DISPLAY_DAMAGE` and `TXT_DISPLAY_DAMAGE_DESC` into your `.csf` file."
@@ -400,7 +400,7 @@ msgstr "`[ ]` 输出对象信息"
 
 #: ../../User-Interface.md:314
 msgid "Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details."
-msgstr "将当前悬停或最后选中的对象的信息写入日志并显示消息。详见[此处](Miscellanous.md#dump-object-info) 以了解。"
+msgstr "将当前悬停或最后选中的对象的信息写入日志并显示消息。详见 [此处](Miscellanous.md#dump-object-info) 以了解。"
 
 #: ../../User-Interface.md:315
 msgid "For localization add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file."
@@ -444,7 +444,7 @@ msgstr "`[ ]` 保存变量"
 
 #: ../../User-Interface.md:331
 msgid "Save local & global variables to an INI file. See [this](Miscellanous.md#save-variables-to-file) for details."
-msgstr "将局部变量和全局变量保存到一个 INI 文件。参见[此处](Miscellanous.md#save-variables-to-file) 以了解。"
+msgstr "将局部变量和全局变量保存到一个 INI 文件。参见 [此处](Miscellanous.md#save-variables-to-file) 以了解。"
 
 #: ../../User-Interface.md:332
 msgid "For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file."
