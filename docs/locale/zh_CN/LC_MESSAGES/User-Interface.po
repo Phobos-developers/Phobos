@@ -152,8 +152,8 @@ msgid ""
 msgstr "用户可以自由指定是否启用这个逻辑。目前只能人工设置或内置到客户端中。"
 
 #: ../User-Interface.md:57 ../User-Interface.md:290
-msgid "In `RA2MD.ini`:"
-msgstr "在`RA2MD.ini`中："
+msgid "In `RA2MD.INI`:"
+msgstr "在`RA2MD.INI`中："
 
 #: ../User-Interface.md:63
 msgid "Placement preview"
@@ -204,8 +204,8 @@ msgid ""
 msgstr "`PlacementPreview.ShapeFrame`默认为建筑art节中`Buildup`的最后一非影子帧。如果没有`Buildup`则会选取默认图像第一帧（其中不会包含动画和Bibs）。"
 
 #: ../User-Interface.md:91
-msgid "In `RA2MD.ini`:"
-msgstr "在`RA2MD.ini`中："
+msgid "In `RA2MD.INI`:"
+msgstr "在`RA2MD.INI`中："
 
 #: ../User-Interface.md:97
 msgid "Hotkey Commands"
