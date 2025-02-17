@@ -260,7 +260,7 @@ RealTimeTimers.Adaptive=false   ; boolean
 
 - You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMESWTYPE]
 ShowTimer=yes
@@ -270,7 +270,7 @@ ShowTimer.Priority=0  ; integer
 ### Type select for buildings
 - In vanilla game, type select can almost only be used on 1x1 buildings with `UndeploysInto`. Now it's possible to use it on all buildings if `BuildingTypeSelectable` set to true.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [General]
 BuildingTypeSelectable=false  ; boolean
