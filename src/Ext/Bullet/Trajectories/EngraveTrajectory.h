@@ -116,13 +116,13 @@ public:
 	int ProximityImpact;
 	std::map<int, int> TheCasualty; // Only for recording existence
 
+	void SetEngraveDirection(BulletClass* pBullet, double rotateAngle);
 private:
 	template <typename T>
 	void Serialize(T& Stm);
 
 	void GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTechno);
 	inline void CheckMirrorCoord(TechnoClass* pTechno);
-	void SetEngraveDirection(BulletClass* pBullet, double rotateAngle);
 	bool InvalidFireCondition(BulletClass* pBullet, TechnoClass* pTechno);
 	int GetFloorCoordHeight(BulletClass* pBullet, const CoordStruct& coord);
 	bool PlaceOnCorrectHeight(BulletClass* pBullet);
