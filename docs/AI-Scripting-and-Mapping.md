@@ -275,7 +275,7 @@ x=10103,0
 
 ##### `10104` Chronoshift to Enemy Base
 
-- Chronoshifts the members of the TeamType using first available `Type=Chronosphere` superweapon to a location within `[General]` -> `AISafeDistance` (plus the additional distance defined in parameter, can be negative) cells from enemy house's base. The superweapon must be charged up to atleast `[General]` -> `AIMinorSuperReadyPercent` percentage of its recharge time to be available for use by this action.
+- Chronoshifts the members of the TeamType using first available `Type=ChronoSphere` superweapon to a location within `[General]` -> `AISafeDistance` (plus the additional distance defined in parameter, can be negative) cells from enemy house's base. The superweapon must be charged up to atleast `[General]` -> `AIMinorSuperReadyPercent` percentage of its recharge time to be available for use by this action.
 
 In `aimd.ini`:
 ```ini
@@ -443,7 +443,7 @@ x=16005,0
 
 - Operate a variable's value
 - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
-- Any numbers exceeding this limit will lead to unexpected results!
+- **Any numbers exceeding this limit will lead to unexpected results!**
 
 In `aimd.ini`:
 ```ini
