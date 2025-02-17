@@ -1109,7 +1109,7 @@ AnimationLength=   ; integer, number of frames
 ### Customizable ore spawners
 
 ![image](_static/images/ore-01.png)
-*Different ore spawners in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
+*Different ore spawners in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - You can now specify which type of ore certain TerrainType would generate.
 - It's also now possible to specify a range value for an ore generation area different compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.

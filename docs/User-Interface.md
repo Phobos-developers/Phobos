@@ -158,7 +158,7 @@ HideLightFlashEffects=false  ; boolean
 ### Low priority for box selection
 
 ![smartvesters](_static/images/lowpriority-01.gif)
-*Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
+*Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - You can now set lower priority for an ingame object (currently has effect on units mostly), which means it will be excluded from box selection if there's at least one normal priority unit in the box. Otherwise it would be selected as normal. Works with box+type selecting (type select hotkey + drag) and regular box selecting. Box shift-selection adds low-priority units to the group if there are no normal priority units among the appended ones.
 
