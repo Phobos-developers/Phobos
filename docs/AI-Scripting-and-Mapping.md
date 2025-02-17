@@ -18,7 +18,7 @@ This page describes all AI scripting and mapping related additions and changes i
 
 ### Base node repairing
 
-- In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW (Ares).
+- In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW *(Ares feature)*.
   - You can control it globally by setting `[Basic]->RepairBaseNodes`, or locally by setting the flag with same name in `[Some House]` in certain map file. The global one will be overriden if the local one is set.
 
 In `rulesmd.ini`:
