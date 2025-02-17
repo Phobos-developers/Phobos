@@ -494,8 +494,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->Insignia_Weapon.empty() || this->Insignia_Weapon.size() != weaponCount)
 		{
 			this->Insignia_Weapon.resize(weaponCount);
-			this->InsigniaFrame_Weapon.resize(weaponCount);
-			this->InsigniaFrames_Weapon.resize(weaponCount);
+			this->InsigniaFrame_Weapon.resize(weaponCount, Promotable<int>(-1));
+			Valueable<Vector3D<int>> frames;
+			frames = Vector3D<int>(-1, -1, -1);
+			this->InsigniaFrames_Weapon.resize(weaponCount, frames);
 		}
 
 		for (size_t i = 0; i < weaponCount; i++)
