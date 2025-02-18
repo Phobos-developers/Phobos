@@ -94,6 +94,7 @@ struct AttachEffectTechnoProperties
 	bool HasTint;
 	bool ReflectDamage;
 	bool HasOnFireDiscardables;
+	bool HasRestrictedArmorMultipliers;
 
 	AttachEffectTechnoProperties() :
 		FirepowerMultiplier { 1.0 }
@@ -107,5 +108,6 @@ struct AttachEffectTechnoProperties
 		, HasTint { false }
 		, ReflectDamage { false }
 		, HasOnFireDiscardables { false }
+		, HasRestrictedArmorMultipliers { false }
 	{ }
 };

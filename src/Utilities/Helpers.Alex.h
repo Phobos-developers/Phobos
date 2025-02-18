@@ -53,79 +53,15 @@ namespace Helpers
 
 	namespace Alex
 	{
-
-		//! Less comparison for pointer types.
-		/*!
-			Dereferences the values before comparing them using std::less.
-
-			This compares the actual objects pointed to instead of their
-			arbitrary pointer values.
-		*/
-		struct deref_less
-		{
-			using is_transparent = void;
-
-			template <typename T, typename U>
-			bool operator()(T&& lhs, U&& rhs) const
-			{
-				return std::less<>()(*lhs, *rhs);
-			}
-		};
-
 		//! Represents a set of unique items.
-		/*!
-			Items can be added using the insert method. Even though an item
-			can be added multiple times, it is only contained once in the set.
-
-			Use either the for_each method to call a method using each item as
-			a parameter, or iterate the set through the begin and end methods.
-		*/
 		template<typename T>
-		class DistinctCollector
-		{
-			using less_type = std::conditional_t<std::is_pointer<T>::value, deref_less, std::less<>>;
-			using set_type = std::set<T, less_type>;
-			set_type _set;
-
-		public:
-			bool operator() (T item)
+		using DistinctCollector = std::set<T, decltype([](T a, T b)
 			{
-				insert(item);
-				return true;
-			}
-
-			void insert(T value)
-			{
-				_set.insert(value);
-			}
-
-			size_t size() const
-			{
-				return _set.size();
-			}
-
-			typename set_type::const_iterator begin() const
-			{
-				return _set.begin();
-			}
-
-			typename set_type::const_iterator end() const
-			{
-				return _set.end();
-			}
-
-			template <typename Func>
-			void for_each(Func&& action) const
-			{
-				std::find_if_not(begin(), end(), action);
-			}
-
-			template <typename Func>
-			int for_each_count(Func&& action) const
-			{
-				return std::distance(begin(), std::find_if_not(begin(), end(), action));
-			}
-		};
+				if constexpr (std::is_pointer_v<std::remove_cv_t<T>>)
+					return *a < *b;
+				else
+					return a < b;
+			}) > ;
 
 		//! Gets the new duration a stackable or absolute effect will last.
 		/*!
@@ -197,8 +133,10 @@ namespace Helpers
 
 			\modifications by Starkku
 			\date 2024-05-20
+			\modifications by Trsdy
+			\date 2024-12-05
 		*/
-		inline std::vector<TechnoClass*> getCellSpreadItems(
+		inline DistinctCollector<TechnoClass*> getCellSpreadItems(
 			CoordStruct const& coords, double const spread,
 			bool const includeInAir = false)
 		{
@@ -211,7 +149,8 @@ namespace Helpers
 			auto const range = static_cast<size_t>(spread + 0.99);
 			for (CellSpreadEnumerator it(range); it; ++it)
 			{
-				auto const pCell = MapClass::Instance->GetCellAt(*it + cellCoords);
+				auto const pCell = MapClass::Instance->TryGetCellAt(*it + cellCoords);
+				if (!pCell)continue;
 				bool isCenter = pCell->MapCoords == cellCoords;
 				for (NextObject obj(pCell->GetContent()); obj; ++obj)
 				{
@@ -220,6 +159,8 @@ namespace Helpers
 						// Starkku: Buildings need their distance from the origin coords checked at cell level.
 						if (pTechno->WhatAmI() == AbstractType::Building)
 						{
+							if (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
+								continue;
 							auto const cellCenterCoords = pCell->GetCenterCoords();
 							double dist = cellCenterCoords.DistanceFrom(coords);
 
@@ -235,6 +176,10 @@ namespace Helpers
 							if (dist > spreadMult)
 								continue;
 						}
+						else if (pTechno->Location.DistanceFrom(coords) > spreadMult)
+						{
+							continue;
+						}
 
 						set.insert(pTechno);
 					}
@@ -245,60 +190,24 @@ namespace Helpers
 			// Starkku: Reimplemented using AircraftTrackerClass.
 			if (includeInAir)
 			{
-				auto const airTracker = &AircraftTrackerClass::Instance.get();
+				auto const airTracker = &AircraftTrackerClass::Instance;
 				airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
 
 				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 				{
 					if (pTechno->IsAlive && pTechno->IsOnMap && pTechno->Health > 0)
 					{
-						if (pTechno->Location.DistanceFrom(coords) <= spreadMult)
-						{
+						auto dist = pTechno->Location.DistanceFrom(coords);
+						// reduce the distance for flying aircraft
+						if (pTechno->WhatAmI() == AbstractType::Aircraft)
+							dist *= 0.5;
+						if (dist <= spreadMult)
 							set.insert(pTechno);
-						}
 					}
 				}
 			}
 
-			// look closer. the final selection. put all affected items in a vector.
-			std::vector<TechnoClass*> ret;
-			ret.reserve(set.size());
-
-			for (auto const& pTechno : set)
-			{
-				auto const abs = pTechno->WhatAmI();
-				bool isBuilding = false;
-
-				// ignore buildings that are not visible, like ambient light posts
-				if (abs == AbstractType::Building)
-				{
-					auto const pBuilding = static_cast<BuildingClass*>(pTechno);
-					if (pBuilding->Type->InvisibleInGame)
-					{
-						continue;
-					}
-					isBuilding = true;
-				}
-
-				// get distance from impact site
-				auto const target = pTechno->GetCoords();
-				auto dist = target.DistanceFrom(coords);
-
-				// reduce the distance for flying aircraft
-				if (abs == AbstractType::Aircraft && pTechno->IsInAir())
-				{
-					dist *= 0.5;
-				}
-
-				// this is good
-				// Starkku: Building distance is checked prior on cell level, skip here.
-				if (isBuilding || dist <= spreadMult)
-				{
-					ret.push_back(pTechno);
-				}
-			}
-
-			return ret;
+			return set;
 		}
 
 		//! Invokes an action for every cell or every object contained on the cells.
@@ -413,13 +322,13 @@ namespace Helpers
 		}
 
 		template <typename Value, typename Option>
-		inline bool is_any_of(Value&& value, Option&& option)
+		constexpr bool is_any_of(Value&& value, Option&& option)
 		{
 			return value == option;
 		}
 
 		template <typename Value, typename Option, typename... Options>
-		inline bool is_any_of(Value&& value, Option&& first_option, Options&&... other_options)
+		constexpr bool is_any_of(Value&& value, Option&& first_option, Options&&... other_options)
 		{
 			return value == first_option || is_any_of(std::forward<Value>(value), std::forward<Options>(other_options)...);
 		}
