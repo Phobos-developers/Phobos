@@ -296,7 +296,7 @@ bool EngraveTrajectory::InvalidFireCondition(BulletClass* pBullet, TechnoClass* 
 	for (auto pTrans = pTechno->Transporter; pTrans; pTrans = pTrans->Transporter)
 		pTechno = pTrans;
 
-	if (!TechnoExt::IsActive(pTechno) || this->TechnoInTransport != pTechno->UniqueID)
+	if (!TechnoExt::IsActive(pTechno) || (this->TechnoInTransport && this->TechnoInTransport != pTechno->UniqueID))
 		return true;
 
 	if (this->Type->AllowFirerTurning)
