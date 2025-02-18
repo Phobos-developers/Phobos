@@ -1036,7 +1036,6 @@ void TechnoExt::ExtData::UpdateRandomTargets()
 	auto pExt = this;
 	bool isBuilding = pThis->WhatAmI() != AbstractType::Building;
 	auto const pType = this->TypeExtData->OwnerObject();
-	auto const pTypeExt = this->TypeExtData;
 	int weaponIndex = pExt->OriginalTargetWeaponIndex;
 
 	if (weaponIndex < 0)

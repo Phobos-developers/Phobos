@@ -34,6 +34,7 @@ public:
 		Valueable<bool> Strafing_UseAmmoPerShot;
 		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
+		ValueableVector<TechnoTypeClass*> OnlyTargetTechnos;
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<AreaFireTarget> AreaFire_Target;
@@ -77,6 +78,7 @@ public:
 			, Strafing_UseAmmoPerShot { false }
 			, CanTarget { AffectedTarget::All }
 			, CanTargetHouses { AffectedHouse::All }
+			, OnlyTargetTechnos {}
 			, Burst_Delays {}
 			, Burst_FireWithinSequence { false }
 			, AreaFire_Target { AreaFireTarget::Base }
@@ -110,6 +112,7 @@ public:
 		int GetBurstDelay(int burstIndex) const;
 
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const;
+		bool CanOnlyTargetTheseTechnos(TechnoTypeClass* pType) const;
 
 		virtual ~ExtData() = default;
 

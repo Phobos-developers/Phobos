@@ -111,8 +111,6 @@ DEFINE_HOOK(0x6B76E3, SpawnerManagerClassAI_RandomTarget_AssignTargetToAircraft2
 	if (!pSpawn->Unit || pSpawn->IsSpawnMissile || pSpawn->Unit->GetCurrentMission() != Mission::Attack)
 		return 0;
 
-	Mission currentSpawnMission = pSpawn->Unit->GetCurrentMission();
-
 	const auto pSpawnExt = TechnoExt::ExtMap.Find(pSpawn->Unit);
 	if (!pSpawnExt)
 		return 0;

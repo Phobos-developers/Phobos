@@ -59,6 +59,22 @@ int WeaponTypeExt::ExtData::GetBurstDelay(int burstIndex) const
 	return burstDelay;
 }
 
+bool WeaponTypeExt::ExtData::CanOnlyTargetTheseTechnos(TechnoTypeClass* pType) const
+{
+	if (!pType)
+		return false;
+
+	if (this->OnlyTargetTechnos.size() > 0)
+	{
+		if (this->OnlyTargetTechnos.Contains(pType))
+			return true;
+		else
+			return false;
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 
