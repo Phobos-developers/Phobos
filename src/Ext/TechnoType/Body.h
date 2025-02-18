@@ -274,6 +274,7 @@ public:
 		Valueable<bool> Convert_TransferPassengers;
 		Valueable<bool> Convert_TransferPassengers_IgnoreInvalidOccupiers;
 		Valueable<bool> Convert_ForceVeterancyTransfer;
+		ValueableVector<TechnoTypeClass*> Convert_RefillWithPassengers;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -504,6 +505,7 @@ public:
 			, Convert_TransferPassengers { true }
 			, Convert_TransferPassengers_IgnoreInvalidOccupiers { false }
 			, Convert_ForceVeterancyTransfer { false }
+			, Convert_RefillWithPassengers {}
 		{ }
 
 		virtual ~ExtData() = default;

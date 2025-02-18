@@ -693,7 +693,7 @@ TechnoClass* TechnoExt::UniversalDeployConversion(TechnoClass* pOld, TechnoTypeC
 
 	bool selected = false;
 	if (pOld->IsSelected)
-		pOld->Select();
+		selected = true;
 
 	// Transfer enemies target (part 1/2)
 	DynamicVectorClass<TechnoClass*> enemiesTargetingMeList;
@@ -755,6 +755,9 @@ TechnoClass* TechnoExt::UniversalDeployConversion(TechnoClass* pOld, TechnoTypeC
 
 	// Transfer all the important details
 	TechnoExt::Techno2TechnoPropertiesTransfer(pOld, pNew);
+
+	if (selected)
+		pNew->Select();
 
 	pOldExt->Convert_UniversalDeploy_RememberTarget = nullptr;
 	pOwner->RemoveTracking(pOld);

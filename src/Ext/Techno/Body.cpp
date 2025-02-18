@@ -576,13 +576,19 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-bool TechnoExt::IsValidTechno(TechnoClass* pTechno)
+bool TechnoExt::IsValidTechno(AbstractClass* pObject, bool checkIfInTransportOrAbsorbed)
+{
+	const auto pTechno = abstract_cast<TechnoClass*>(pObject);
+	return pTechno ? IsValidTechno(pTechno, checkIfInTransportOrAbsorbed) : false;
+}
+
+bool TechnoExt::IsValidTechno(TechnoClass* pTechno, bool checkIfInTransportOrAbsorbed)
 {
 	if (!pTechno)
 		return false;
 
 	bool isValid = !pTechno->Dirty
-		&& ScriptExt::IsUnitAvailable(pTechno, true)
+		&& ScriptExt::IsUnitAvailable(pTechno, checkIfInTransportOrAbsorbed)
 		&& pTechno->Owner
 		&& (pTechno->WhatAmI() == AbstractType::Infantry
 			|| pTechno->WhatAmI() == AbstractType::Unit
