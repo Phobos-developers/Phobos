@@ -37,7 +37,7 @@ TechnoExt::ExtData::~ExtData()
 	AnimExt::InvalidateTechnoPointers(pThis);
 }
 
-bool TechnoExt::IsActive(TechnoClass* pThis)
+bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
 {
 	return pThis
 		&& pThis->IsAlive
@@ -45,6 +45,13 @@ bool TechnoExt::IsActive(TechnoClass* pThis)
 		&& !pThis->InLimbo
 		&& !pThis->TemporalTargetingMe
 		&& !pThis->BeingWarpedOut
+		;
+}
+
+bool TechnoExt::IsActive(TechnoClass* pThis)
+{
+	return TechnoExt::IsActiveIgnoreEMP(pThis)
+		&& !pThis->Deactivated
 		&& !pThis->IsUnderEMP()
 		;
 }
@@ -103,7 +110,7 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 
 		if (allowSyncing)
 		{
-			pTo->IronCurtain(pFrom->IronCurtainTimer.GetTimeLeft(), pFrom->Owner, false);
+			pTo->IronCurtainTimer = pFrom->IronCurtainTimer;
 			pTo->IronTintStage = pFrom->IronTintStage;
 			pTo->ForceShielded = isForceShielded;
 		}
@@ -228,7 +235,7 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 // BTW, who said it was merely a Type pointer replacement and he could make a better one than Ares?
 bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 {
-	if (IS_ARES_FUN_AVAILABLE(ConvertTypeTo))
+	if (AresFunctions::ConvertTypeTo)
 		return AresFunctions::ConvertTypeTo(pThis, pToType);
 	// In case not using Ares 3.0. Only update necessary vanilla properties
 	AbstractType rtti;
@@ -485,6 +492,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
+		.Process(this->ChargeTurretTimer)
 		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->Strafe_BombsDroppedThisRound)
@@ -495,6 +503,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployFireTimer)
 		.Process(this->SkipTargetChangeResetSequence)
 		.Process(this->ForceFullRearmDelay)
+		.Process(this->LastRearmWasFullDelay)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
 		.Process(this->FiringObstacleCell)
@@ -503,6 +512,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasRemainingWarpInDelay)
 		.Process(this->LastWarpInDelay)
 		.Process(this->IsBeingChronoSphered)
+		.Process(this->KeepTargetOnMove)
 		;
 }
 
