@@ -1,5 +1,5 @@
 #include "AresHelper.h"
-
+#include "AresFunctions.h"
 #include <Phobos.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
@@ -15,7 +15,6 @@ uintptr_t AresHelper::AresBaseAddress = 0x0;
 HMODULE AresHelper::AresDllHmodule = nullptr;
 AresHelper::Version AresHelper::AresVersion = AresHelper::Version::Unknown;
 bool AresHelper::CanUseAres = false;
-AresHelper::AresFunctionMap AresHelper::AresFunctionOffsetsFinal;
 
 const AresHelper::AresTimestampMap AresHelper::AresTimestampBytes =
 {
@@ -27,10 +26,34 @@ const AresHelper::AresTimestampMap AresHelper::AresTimestampBytes =
 #define PHOBOS_DLL "Phobos.dll"
 #endif
 
+bool module_has_syhks00(HMODULE hModule)
+{
+	auto* baseAddress = reinterpret_cast<unsigned char*>(hModule);
+
+	auto* dosHeader = reinterpret_cast<IMAGE_DOS_HEADER*>(baseAddress);
+	if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE)
+		return false;
+
+	auto* ntHeaders = reinterpret_cast<IMAGE_NT_HEADERS*>(baseAddress + dosHeader->e_lfanew);
+	if (ntHeaders->Signature != IMAGE_NT_SIGNATURE)
+		return false;
+
+	auto* sectionHeader = IMAGE_FIRST_SECTION(ntHeaders);
+
+	for (int i = 0; i < ntHeaders->FileHeader.NumberOfSections; ++i, ++sectionHeader)
+	{
+		if (strncmp(reinterpret_cast<const char*>(sectionHeader->Name), ".syhks00", IMAGE_SIZEOF_SHORT_NAME) == 0)
+			return true;
+	}
+
+	return false;
+}
+
 void AresHelper::GetGameModulesBaseAddresses()
 {
 	HANDLE hCurrentProcess = GetCurrentProcess();
-
+	std::vector<std::pair<std::string, BYTE*>> syringables;
+	std::vector<std::pair<std::string, BYTE*>> others;
 	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, GetProcessId(hCurrentProcess));
 	if (hSnap != INVALID_HANDLE_VALUE)
 	{
@@ -53,17 +76,33 @@ void AresHelper::GetGameModulesBaseAddresses()
 				if (!VerQueryValue(infoBuffer.data(), "\\StringFileInfo\\040904b0\\OriginalFilename", &nameBuffer, &nameBufferSize))
 					continue;
 				const char* originalModuleName = (const char*)nameBuffer;
-
-				Debug::LogDeferred("Module %s base address : 0x%p.\n", originalModuleName, modEntry.modBaseAddr);
-				if (!_strcmpi(originalModuleName, "Ares.dll"))
-					AresBaseAddress = (uintptr_t)modEntry.modBaseAddr;
-				else if (!_strcmpi(originalModuleName, PHOBOS_DLL))
-					PhobosBaseAddress = (uintptr_t)modEntry.modBaseAddr;
+				if (!_strcmpi(originalModuleName, "Sun.exe"))
+					continue;
+				if (module_has_syhks00(modEntry.hModule))
+				{
+					if (!_strcmpi(originalModuleName, "Ares.dll"))
+						AresBaseAddress = (uintptr_t)modEntry.modBaseAddr;
+					else if (!_strcmpi(originalModuleName, PHOBOS_DLL))
+						PhobosBaseAddress = (uintptr_t)modEntry.modBaseAddr;
+					syringables.emplace_back(originalModuleName, modEntry.modBaseAddr);
+				}
+				else
+				{
+					others.emplace_back(originalModuleName, modEntry.modBaseAddr);
+				}
 			}
 			while (Module32Next(hSnap, &modEntry));
 		}
 	}
 	CloseHandle(hSnap);
+#ifndef USING_MULTIFINITE_SYRINGE
+	Debug::LogDeferred("Modules presumably injected by Syringe:\n");
+	for (auto const& [modName, modBaseAddr] : syringables)
+		Debug::LogDeferred("Module %s  base address : 0x%p.\n", modName.c_str(), modBaseAddr);
+	Debug::LogDeferred("Other modules:\n");
+	for (auto const& [modName, modBaseAddr] : others)
+		Debug::LogDeferred("Module %s  base address : 0x%p.\n", modName.c_str(), modBaseAddr);
+#endif
 }
 
 void AresHelper::Init()
@@ -96,22 +135,14 @@ void AresHelper::Init()
 	{
 	case Version::Ares30:
 		Debug::LogDeferred("[Phobos] Detected Ares 3.0.\n");
+		AresFunctions::InitAres3_0();
 		break;
 	case Version::Ares30p:
 		Debug::LogDeferred("[Phobos] Detected Ares 3.0p1.\n");
+		AresFunctions::InitAres3_0p1();
 		break;
 	default:
 		Debug::LogDeferred("[Phobos] Detected a version of Ares that is not supported by Phobos. Disabling integration.\n");
 		break;
-	}
-
-	constexpr const wchar_t* ARES_DLL = L"Ares.dll";
-	if (CanUseAres && GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, ARES_DLL, &AresDllHmodule))
-	{
-		for (auto x : AresFunctionOffsets.at(AresVersion))
-			if (x.second > 0)
-				AresFunctionOffsetsFinal[x.first] = AresBaseAddress + x.second;
-			else
-				AresFunctionOffsetsFinal[x.first] = 0;
 	}
 }

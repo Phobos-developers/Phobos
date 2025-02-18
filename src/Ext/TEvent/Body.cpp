@@ -173,7 +173,7 @@ bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
 	if (!pType)
 		return false;
 
-	auto pHouse = HouseClass::FindByIndex(pThis->Value);
+	auto pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
 	if (!pHouse)
 		return false;
 
@@ -219,7 +219,7 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 			if (pThis->Value <= -2)
 				pHouse = pEventHouse;
 			else if (pThis->Value >= 0)
-				pHouse = HouseClass::Array->GetItem(pThis->Value);
+				pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
 
 			if (pHouse && pTechno->Owner != pHouse)
 				break;
@@ -257,7 +257,7 @@ bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject
 		if (pThis->Value <= -2)
 			pHouse = pEventHouse;
 		else if (pThis->Value >= 0)
-			pHouse = HouseClass::Array->GetItem(pThis->Value);
+			pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
 
 		if (pHouse)
 		{
