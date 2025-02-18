@@ -36,20 +36,20 @@ Due to technical incompatibilities, enabling this feature disables [Ares' Custom
 ![image](_static/images/objectinfo-01.png)
 *Object info dump from [CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
-- There's a new hotkey to dump selected/hovered object info on press. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
+- There's a [new hotkey](User-Interface.md#dump-object-info) to dump selected/hovered object info on press. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
 
 ### Display Damage Numbers
 
-- There's a new hotkey to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
+- There's a [new hotkey](User-Interface.md#display-damage-numbers) to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
 
 ### Frame Step In
 
-- There's a new hotkey to execute the game frame by frame for development usage.
+- There's a [new hotkey](User-Interface.md#toggle-frame-by-frame-mode) to execute the game frame by frame for development usage.
   - You can switch to frame by frame mode and then use frame step in command to forward 1, 5, 10, 15, 30 or 60 frames by one hit.
 
 ### Save variables to file
 
-- There's a new hotkey to write all local variables to `locals.ini` and all global variables to `globals.ini`. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
+- There's a [new hotkey](User-Interface.md#save-variables) to write all local variables to `locals.ini` and all global variables to `globals.ini`. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
 - Variables will be also automatically saved to file on scenario end if `[General]->SaveVariablesOnScenarioEnd=true` is set in `rulesmd.ini`.
 - Variable section will use the same name as the mission file name in capital letters, i.e. `[MYCAMPAIGN.MAP]`.
   - Variables will be written as key-value pairs, i.e. `MyVariable=1`.
