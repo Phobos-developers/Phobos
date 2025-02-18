@@ -5,6 +5,8 @@
 
 DEFINE_HOOK(0x687C9B, ReadScenarioINI_AITeamSelector_PreloadValidTriggers, 0x7)
 {
+	bool ignoreGlobalAITriggers = ScenarioClass::Instance->IgnoreGlobalAITriggers;
+
 	// For each house save a list with only AI Triggers that can be used
 	for (HouseClass* pHouse : *HouseClass::Array)
 	{
@@ -16,7 +18,7 @@ DEFINE_HOOK(0x687C9B, ReadScenarioINI_AITeamSelector_PreloadValidTriggers, 0x7)
 		for (int i = 0; i < AITriggerTypeClass::Array->Count; i++)
 		{
 			auto pTrigger = AITriggerTypeClass::Array->GetItem(i);
-			if (!pTrigger)
+			if (!pTrigger || ignoreGlobalAITriggers == pTrigger->IsGlobal || !pTrigger->Team1)
 				continue;
 
 			int triggerHouse = pTrigger->HouseIndex;

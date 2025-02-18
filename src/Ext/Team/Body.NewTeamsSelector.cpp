@@ -66,7 +66,9 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 	bool houseIsHuman = pHouse->IsHumanPlayer;
 
-	if (SessionClass::IsCampaign())
+	bool isCampaign = SessionClass::IsCampaign();
+
+	if (isCampaign)
 		houseIsHuman = pHouse->IsHumanPlayer || pHouse->IsInPlayerControl;
 
 	if (houseIsHuman || pHouse->Type->MultiplayPassive)
@@ -259,7 +261,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		int defensiveDice = ScenarioClass::Instance->Random.RandomRanged(0, 99);
 		int defenseTeamSelectionThreshold = 50;
 
-		if ((defensiveDice < defenseTeamSelectionThreshold) && !hasReachedMaxDefensiveTeamsLimit)
+		if ((defensiveDice < defenseTeamSelectionThreshold) && !hasReachedMaxDefensiveTeamsLimit && !isCampaign)
 			onlyPickDefensiveTeams = true;
 
 		if (hasReachedMaxDefensiveTeamsLimit)
@@ -324,11 +326,17 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			targetHouse = HouseClass::Array->GetItem(pHouse->EnemyHouseIndex);
 
 		bool onlyCheckImportantTriggers = false;
+		bool ignoreGlobalAITriggers = ScenarioClass::Instance->IgnoreGlobalAITriggers;
+
+		const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
 		// Gather all the trigger candidates into one place for posterior fast calculations
-		for (auto const pTrigger : *AITriggerTypeClass::Array)
+		//for (auto const pTrigger : *AITriggerTypeClass::Array)
+		for (int triggerIdx : pHouseExt->AITriggers_ValidList)
 		{
-			if (!pTrigger)
+			const auto pTrigger = AITriggerTypeClass::Array->GetItem(triggerIdx);
+
+			if (!pTrigger || ignoreGlobalAITriggers == pTrigger->IsGlobal || !pTrigger->Team1)
 				continue;
 
 			// Ignore offensive teams if the next trigger must be defensive
@@ -342,7 +350,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 			if (pTrigger->IsEnabled)
 			{
 				//pTrigger->OwnerHouseType;
-				if (pTrigger->TechLevel > pHouse->TechLevel)
+				if (pTrigger->Team1->TechLevel > pHouse->TechLevel)
 					continue;
 
 				// ignore it if isn't set for the house AI difficulty
