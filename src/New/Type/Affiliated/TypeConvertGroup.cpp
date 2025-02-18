@@ -6,7 +6,8 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 {
 	for (const auto& [fromTypes, toType, affectedHouses] : convertPairs)
 	{
-		if (!toType.isset() || !toType.Get()) continue;
+		if (!toType.Get())
+			continue;
 
 		if (pOwner && !EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTargetFoot->Owner))
 			continue;
@@ -19,15 +20,18 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 				if (from == pTargetFoot->GetTechnoType())
 				{
 					TechnoExt::ConvertToType(pTargetFoot, toType);
-					break;
+					goto end; // Breaking out of nested loops without extra checks one of the very few remaining valid usecases for goto, leave it be.
 				}
 			}
 		}
 		else
 		{
 			TechnoExt::ConvertToType(pTargetFoot, toType);
+			break;
 		}
 	}
+end:
+	return;
 }
 
 void TypeConvertGroup::UniversalConvert(TechnoClass* pTarget, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner, AnimTypeClass* pAnimType)
