@@ -64,6 +64,8 @@ public:
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
 	Valueable<double> FirepowerMultiplier;
 	Valueable<double> ArmorMultiplier;
+	ValueableVector<WarheadTypeClass*> ArmorMultiplier_AllowWarheads;
+	ValueableVector<WarheadTypeClass*> ArmorMultiplier_DisallowWarheads;
 	Valueable<double> SpeedMultiplier;
 	Valueable<double> ROFMultiplier;
 	Valueable<bool> ROFMultiplier_ApplyOnCurrentTimer;
@@ -113,6 +115,8 @@ public:
 		, Tint_VisibleToHouses { AffectedHouse::All }
 		, FirepowerMultiplier { 1.0 }
 		, ArmorMultiplier { 1.0 }
+		, ArmorMultiplier_AllowWarheads {}
+		, ArmorMultiplier_DisallowWarheads {}
 		, SpeedMultiplier { 1.0 }
 		, ROFMultiplier { 1.0 }
 		, ROFMultiplier_ApplyOnCurrentTimer { true }
@@ -201,7 +205,7 @@ public:
 	ValueableVector<int> DurationOverrides;
 	ValueableVector<int> Delays;
 	ValueableVector<int> InitialDelays;
-	NullableVector<int> RecreationDelays;
+	ValueableVector<int> RecreationDelays;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
