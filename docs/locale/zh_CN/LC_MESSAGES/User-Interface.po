@@ -114,8 +114,8 @@ msgid "image"
 msgstr "图像"
 
 #: ../../User-Interface.md:38
-msgid "You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points."
-msgstr "现在你可以配置各种类型的数字化计数器来显示技术类型的属性，例如生命值或护盾值。"
+msgid "You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points and can be turned on or off via a [new hotkey](#toggle-digital-display)."
+msgstr "现在你可以配置各种类型的数字化计数器来显示技术类型的属性，例如生命值或护盾值，并且可以通过一个[新的热键](#toggle-digital-display)开启或关闭。"
 
 #: ../../User-Interface.md:39
 msgid "`Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead."
