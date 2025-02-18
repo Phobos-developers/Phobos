@@ -88,7 +88,7 @@ msgstr "图像"
 
 #: ../../Miscellanous.md:39
 msgid "There's a new hotkey to dump selected/hovered object info on press. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`."
-msgstr "有一个新的热键可以在按下时输出被选中/鼠标悬停于其上的对象的信息。仅当 `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
+msgstr "有一个[新的热键](User-Interface.md#dump-object-info)可以在按下时输出被选中/鼠标悬停于其上的对象的信息。仅当 `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
 
 #: ../../Miscellanous.md:41
 msgid "Display Damage Numbers"
@@ -96,7 +96,7 @@ msgstr "显示伤害数字"
 
 #: ../../Miscellanous.md:43
 msgid "There's a new hotkey to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`."
-msgstr "有一个新的热键可以开关是否显示对单位与建筑造成的精确伤害数字。伤害数字以红色显示（对护盾为蓝色），治疗性质的伤害以绿色显示（对护盾为青色）。这些数字会显示在受影响的单位上，并在出现后向上移动。仅当 `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
+msgstr "有一个[新的热键](User-Interface.md#display-damage-numbers)可以开关是否显示对单位与建筑造成的精确伤害数字。伤害数字以红色显示（对护盾为蓝色），治疗性质的伤害以绿色显示（对护盾为青色）。这些数字会显示在受影响的单位上，并在出现后向上移动。仅当 `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
 
 #: ../../Miscellanous.md:45
 msgid "Frame Step In"
@@ -104,7 +104,7 @@ msgstr "进入逐帧模式"
 
 #: ../../Miscellanous.md:47
 msgid "There's a new hotkey to execute the game frame by frame for development usage."
-msgstr "有一个新的热键可以逐帧执行游戏以便开发。"
+msgstr "有一个[新的热键](User-Interface.md#toggle-frame-by-frame-mode)可以逐帧执行游戏以便开发。"
 
 #: ../../Miscellanous.md:48
 msgid "You can switch to frame by frame mode and then use frame step in command to forward 1, 5, 10, 15, 30 or 60 frames by one hit."
@@ -116,7 +116,7 @@ msgstr "保存变量至文件"
 
 #: ../../Miscellanous.md:52
 msgid "There's a new hotkey to write all local variables to `locals.ini` and all global variables to `globals.ini`. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`."
-msgstr "有一个新的热键可以将所有局部变量写入 `locals.ini` 并将所有全局变量写入 `globals.ini`。仅当 `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
+msgstr "有一个[新的热键](User-Interface.md#save-variables)可以将所有局部变量写入 `locals.ini` 并将所有全局变量写入 `globals.ini`。仅当 `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
 
 #: ../../Miscellanous.md:53
 msgid "Variables will be also automatically saved to file on scenario end if `[General]->SaveVariablesOnScenarioEnd=true` is set in `rulesmd.ini`."
@@ -240,7 +240,7 @@ msgstr "`{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}`"
 
 #: ../../Miscellanous.md:83
 msgid "`Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect."
-msgstr "`Chrono`并不是一个标准的 *别称*，但由于 `Locomotor` 值无效时将使用的默认行为也是 `Teleport`，因此显得好似 `Chrono` 生效了一般。"
+msgstr "`Chrono` 并不是一个标准的别称，但由于 `Locomotor` 值无效时将使用的默认行为也是 `Teleport`，因此显得好似 `Chrono` 生效了一般。"
 
 #: ../../Miscellanous.md:85
 msgid "Correspondingly, if such a writing method causes any errors, it is also not within the scope of responsibility of this function."
