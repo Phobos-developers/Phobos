@@ -2559,4 +2559,4 @@ msgstr "由于某些未知原因着陆速度不小于其当前高度 / 20 + 2 �
 
 #: ../../Fixed-or-Improved-Logics.md:1725
 msgid "`[General]` -> `DropPodTrailer`is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html)."
-msgstr "`[General]` -> `DropPodTrailer` 是 [Ares 功能](https://ares-developers.github.io/Ares-docs/new/droppod.html)。"
+msgstr "`[General]` -> `DropPodTrailer` 是一个 [Ares 功能](https://ares-developers.github.io/Ares-docs/new/droppod.html)。"
