@@ -240,7 +240,7 @@ msgstr "`{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}`"
 
 #: ../../Miscellanous.md:83
 msgid "`Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect."
-msgstr "`Chrono`并不是一个标准的 *别称*，但由于 `Locomotor` 值无效时将使用的默认行为也是 `Teleport`，因此显得好似 `Chrono` 生效了一般。"
+msgstr "`Chrono` 并不是一个标准的别称，但由于 `Locomotor` 值无效时将使用的默认行为也是 `Teleport`，因此显得好似 `Chrono` 生效了一般。"
 
 #: ../../Miscellanous.md:85
 msgid "Correspondingly, if such a writing method causes any errors, it is also not within the scope of responsibility of this function."
