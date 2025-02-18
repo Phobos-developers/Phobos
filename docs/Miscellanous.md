@@ -11,18 +11,18 @@ This page describes every change in Phobos that wasn't categorized into a proper
 - When enabled, the game will treat color indices passed from spawner as indices for `[Colors]` section entries.
   - In example, with original rules, index 6 will correspond to color `Orange=25,230,255`.
 
+In `rulesmd.ini`:
+```ini
+[General]
+SkirmishUnlimitedColors=false  ; boolean
+```
+
 ```{note}
 This feature should only be used if you use a spawner/outside client (i.e. CNCNet client). Using it in the original YR launcher will produce undesireable effects.
 ```
 
 ```{warning}
 Due to technical incompatibilities, enabling this feature disables [Ares' Customizable Dropdown Colors](https://ares-developers.github.io/Ares-docs/ui-features/customizabledropdowncolors.html).
-```
-
-In `rulesmd.ini`:
-```ini
-[General]
-SkirmishUnlimitedColors=false  ; boolean
 ```
 
 ## Developer tools
@@ -97,9 +97,6 @@ Correspondingly, if such a writing method causes any errors, it is also not with
   - `CustomGSN.DefaultDelay` sets the delay (game speed number) to use on other frames.
   - Using game speed 6 (Fastest) in either `CustomGSN.ChangeDelay` or `CustomGSN.DefaultDelay` allows to set FPS above 60.
     - **However, the resulting FPS may vary on different machines.**
-```{note}
-Currently there is no way to set desired FPS directly. Use the generator below to get required values. The generator supports values from 10 to 60.
-```
 
 In `rulesmd.ini`:
 ```ini
@@ -115,6 +112,10 @@ In `RA2MD.INI`:
 ```ini
 [Phobos]
 CampaignDefaultGameSpeed=4  ; integer
+```
+
+```{note}
+Currently there is no way to set desired FPS directly. Use the generator below to get required values. The generator supports values from 10 to 60.
 ```
 
 <details>
@@ -186,18 +187,18 @@ This feature must be enabled via a command line argument `-Include`.
   - When the same entry exists in two files, then the one read later will overwrite the value.
   - This feature can be used in *any* INI file, be it `rulesmd.ini`, `artmd.ini`, `soundmd.ini`, map file or anything else.
 
+In any file:
+```ini
+[$Include]
+0=somefile.ini	; file name
+```
+
 ```{warning}
 Due to a technical issue, there is a chance that ***the first line of a included file will be skipped!*** To prevent this, included files should start with an empty line or a comment.
 ```
 
 ```{warning}
 When this feature is enabled, the [Ares equivalent of `[$Include]`](https://ares-developers.github.io/Ares-docs/new/misc/include.html) is disabled!
-```
-
-In any file:
-```ini
-[$Include]
-0=somefile.ini	; file name
 ```
 
 ### Section inheritance
@@ -212,14 +213,6 @@ This feature must be enabled via a command line argument `-Inheritance`.
   - Inheritance can be nested recursively (parent sections can have their own parents). Recursion is depth-first (before inheriting from the next parent, check if the current parent has parents).
   - This feature can be used in *any* INI file, be it `rulesmd.ini`, `artmd.ini`, `soundmd.ini`, map file or anything else.
 
-```{warning}
-When this feature is enabled, the Ares equivalent of `$Inherits` (undocumented) is disabled!
-```
-
-```{warning}
-This feature may noticeably increase game loading time, depending on the size of game rules and used hardware.
-```
-
 In any file:
 ```ini
 [PARENT1SECTION]
@@ -228,4 +221,12 @@ In any file:
 
 [CHILDSECTION]
 $Inherits=PARENT1SECTION,PARENT2SECTION...  ; section names
+```
+
+```{warning}
+When this feature is enabled, the Ares equivalent of `$Inherits` (undocumented) is disabled!
+```
+
+```{warning}
+This feature may noticeably increase game loading time, depending on the size of game rules and used hardware.
 ```
