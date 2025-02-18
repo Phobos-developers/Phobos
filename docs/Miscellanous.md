@@ -79,6 +79,12 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 |Mech     | `{55D141B8-DB94-11d1-AC98-006008055BB5}` |
 |Ship     | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
 
+```{note}
+`Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect.
+
+Correspondingly, if such a writing method causes any errors, it is also not within the scope of responsibility of this function.
+```
+
 ## Game Speed
 
 ### Single player game speed
