@@ -84,6 +84,13 @@ public:
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
 
+		Nullable<bool> CombatAlert;
+		Nullable<bool> CombatAlert_NotBuilding;
+		Nullable<bool> CombatAlert_UseFeedbackVoice;
+		Nullable<bool> CombatAlert_UseAttackVoice;
+		Nullable<bool> CombatAlert_UseEVA;
+		NullableIdx<VoxClass> CombatAlert_EVA;
+
 		NullableIdx<VocClass> VoiceCreated;
 		NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
 
@@ -103,6 +110,7 @@ public:
 		Valueable<WeaponTypeClass*> WarpOutWeapon;
 		Valueable<bool> WarpInWeapon_UseDistanceAsDamage;
 
+		int SubterraneanSpeed;
 		Nullable<int> SubterraneanHeight;
 
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
@@ -229,6 +237,12 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
+		Valueable<bool> BunkerableAnyway;
+		Valueable<bool> KeepTargetOnMove;
+		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
+
+		Valueable<int> Power;
+
 		ValueableVector<double> DetectDisguise_Percent;
 
 		struct LaserTrailDataEntry
@@ -236,7 +250,7 @@ public:
 			ValueableIdx<LaserTrailTypeClass> idxType;
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
-			LaserTrailTypeClass* GetType() const { return &LaserTrailTypeClass::Array[idxType]; }
+			LaserTrailTypeClass* GetType() const { return LaserTrailTypeClass::Array[idxType].get(); }
 		};
 
 		std::vector<LaserTrailDataEntry> LaserTrailData;
@@ -249,7 +263,6 @@ public:
 		std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
-
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -299,6 +312,7 @@ public:
 			, WarpOutWeapon {}
 			, WarpInWeapon_UseDistanceAsDamage { false }
 
+			, SubterraneanSpeed { -1 }
 			, SubterraneanHeight {}
 
 			, OreGathering_Anims {}
@@ -356,6 +370,14 @@ public:
 			, SlavesFreeSound {}
 			, SellSound {}
 			, EVA_Sold {}
+
+			, CombatAlert {}
+			, CombatAlert_NotBuilding {}
+			, CombatAlert_UseFeedbackVoice {}
+			, CombatAlert_UseAttackVoice {}
+			, CombatAlert_UseEVA {}
+			, CombatAlert_EVA {}
+
 			, EnemyUIName {}
 
 			, VoiceCreated {}
@@ -453,6 +475,12 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+
+			, BunkerableAnyway { false }
+			, KeepTargetOnMove { false }
+			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
+
+			, Power { }
 		{ }
 
 		virtual ~ExtData() = default;
