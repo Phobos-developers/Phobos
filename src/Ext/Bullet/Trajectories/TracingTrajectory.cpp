@@ -349,10 +349,15 @@ bool TracingTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 	{
 		if (pTechno)
 		{
-			if (pBullet->Target != pTechno->Target && !pType->TolerantTime)
+			auto pTarget = pTechno->Target;
+
+			if (pBullet->Target != pTarget && !pType->TolerantTime)
 				return true;
 
-			pBullet->Target = pTechno->Target;
+			if (pTarget && !(pTarget->IsInAir() ? pBullet->Type->AA : pBullet->Type->AG))
+				pTarget = nullptr;
+
+			pBullet->Target = pTarget;
 		}
 	}
 
