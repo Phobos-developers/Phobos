@@ -21,7 +21,7 @@ public:
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
-		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
+		std::map<int, int> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
@@ -35,6 +35,7 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		CDTimerClass CombatAlertTimer;
 		CDTimerClass AISuperWeaponDelayTimer;
 		CDTimerClass AIFireSaleDelayTimer;
 
@@ -56,7 +57,7 @@ public:
 		int NumConYards_NonMFB;
 		int NumShipyards_NonMFB;
 
-		std::map<SuperClass*, std::vector<SuperClass*>> SuspendedEMPulseSWs;
+		std::map<int, std::vector<int>> SuspendedEMPulseSWs;
 		// standalone? no need and not a good idea
 		struct SWExt
 		{
@@ -81,6 +82,7 @@ public:
 			, RestrictedFactoryPlants {}
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
+			, CombatAlertTimer {}
 			, NumAirpads_NonMFB { 0 }
 			, NumBarracks_NonMFB { 0 }
 			, NumWarFactories_NonMFB { 0 }

@@ -52,6 +52,31 @@ DEFINE_JUMP(LJMP, 0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 // to proper techno but to their transports
 DEFINE_PATCH(0x707CF2, 0x55);
 
+//Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
+DEFINE_HOOK(0x62AA32, ParasiteClass_TryInfect_MissBehaviorFix, 0x5)
+{
+	GET(bool, isReturnSuccess, EAX);
+	GET(ParasiteClass* const, pParasite, ESI);
+
+	const auto pParasiteTechno = pParasite->Owner;
+
+	if (isReturnSuccess || !pParasiteTechno)
+		return 0;
+
+	const auto pType = pParasiteTechno->GetTechnoType();
+
+	if (!pType)
+		return 0;
+
+	const auto cell = MapClass::Instance->NearByLocation(pParasiteTechno->LastMapCoords, pType->SpeedType, -1,
+		pType->MovementZone, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
+
+	if (cell != CellStruct::Empty) // Cell2Coord makes X/Y values of CoordStruct non-zero, additional checks are required
+		R->AL(pParasiteTechno->Unlimbo(CellClass::Cell2Coord(cell), DirType::North));
+
+	return 0;
+}
+
 // WWP's shit code! Wrong check.
 // To avoid units dying when they are already dead.
 DEFINE_HOOK(0x5F53AA, ObjectClass_ReceiveDamage_DyingFix, 0x6)
@@ -719,7 +744,7 @@ DEFINE_HOOK(0x4D580B, FootClass_ApproachTarget_DeployToFire, 0x6)
 
 DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
 {
-	enum { SkipGameCode = 0x741086, MustDeploy = 0x7410A8 };
+	enum { SkipGameCode = 0x7410B7, MustDeploy = 0x7410A8 };
 
 	GET(UnitClass*, pThis, ESI);
 
@@ -1061,6 +1086,101 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 	return SkipGameCode;
 }
+
+#pragma endregion
+
+#pragma region StopEventFix
+
+DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
+{
+	enum { SkipGameCode = 0x4C762A };
+
+	GET(TechnoClass* const, pTechno, ESI);
+
+	// Check aircraft
+	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
+	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
+	const auto mission = pTechno->CurrentMission;
+
+	// To avoid aircraft overlap by keep link if is returning or is in airport now.
+	if (!commonAircraft || (mission != Mission::Sleep && mission != Mission::Guard && mission != Mission::Enter)
+		|| !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+	{
+		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
+	}
+
+	// To avoid technos being unable to stop in attack move mega mission
+	if (pTechno->MegaMissionIsAttackMove())
+		pTechno->ClearMegaMissionData();
+
+	// Clearing the current target should still be necessary for all technos
+	pTechno->SetTarget(nullptr);
+
+	if (commonAircraft)
+	{
+		if (pAircraft->Type->AirportBound)
+		{
+			// To avoid `AirportBound=yes` aircraft with ammo at low altitudes cannot correctly receive stop command and queue Mission::Guard with a `Destination`.
+			if (pAircraft->Ammo)
+				pTechno->SetDestination(nullptr, true);
+
+			// To avoid `AirportBound=yes` aircraft pausing in the air and let they returning to air base immediately.
+			if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())) // If the aircraft have no valid dock, try to find a new one
+				pAircraft->EnterIdleMode(false, true);
+		}
+		else if (pAircraft->Ammo)
+		{
+			// To avoid `AirportBound=no` aircraft ignoring the stop task or directly return to the airport.
+			if (pAircraft->Destination && static_cast<int>(CellClass::Coord2Cell(pAircraft->Destination->GetCoords()).DistanceFromSquared(pAircraft->GetMapCoords())) > 2) // If the aircraft is moving, find the forward cell then stop in it
+				pAircraft->SetDestination(pAircraft->GetCell()->GetNeighbourCell(static_cast<FacingType>(pAircraft->PrimaryFacing.Current().GetValue<3>())), true);
+		}
+		else if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+		{
+			pAircraft->EnterIdleMode(false, true);
+		}
+		// Otherwise landing or idling normally without answering the stop command
+	}
+	else
+	{
+		// Check Jumpjets
+		const auto pFoot = abstract_cast<FootClass*>(pTechno);
+		const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
+
+		// Clear archive target for infantries and vehicles like receive a mega mission
+		if (pFoot && !pAircraft)
+			pTechno->SetArchiveTarget(nullptr);
+
+		// To avoid foots stuck in Mission::Area_Guard
+		if (pTechno->CurrentMission == Mission::Area_Guard && !pTechno->GetTechnoType()->DefaultToGuardArea)
+			pTechno->QueueMission(Mission::Guard, true);
+
+		// To avoid jumpjets falling into a state of standing idly by
+		if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
+			pTechno->SetDestination(nullptr, true);
+		else if (!pFoot->Destination) // When in attack move and have had a target, the destination will be cleaned up, enter the guard mission can prevent the jumpjets stuck in a status of standing idly by
+			pTechno->QueueMission(Mission::Guard, true);
+		else if (static_cast<int>(CellClass::Coord2Cell(pFoot->Destination->GetCoords()).DistanceFromSquared(pTechno->GetMapCoords())) > 2) // If the jumpjet is moving, find the forward cell then stop in it
+			pTechno->SetDestination(pTechno->GetCell()->GetNeighbourCell(static_cast<FacingType>(pJumpjetLoco->LocomotionFacing.Current().GetValue<3>())), true);
+		// Otherwise landing or idling normally without answering the stop command
+	}
+
+	return SkipGameCode;
+}
+
+#pragma endregion
+
+#pragma region TeamCloseRangeFix
+
+int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
+{
+	// At present, it seems that aircraft use their own mapcoords and the team destination's mapcoords to check.
+    // During the previous test, it was found that if the aircraft uses this and needs to return to the airport
+	// with the script first, it will interrupt the remaining tasks for unknown reasons - CrimRecya
+	return (pSource->IsInAir() && pSource->WhatAmI() != AbstractType::Aircraft) // Jumpjets or sth in the air
+		? (pSource->DistanceFrom(pTarget) * 2) // 2D distance (2x is the bonus to units in the air)
+		: pSource->DistanceFrom3D(pTarget); // 3D distance (vanilla)
+}
+DEFINE_JUMP(CALL, 0x6EBCC9, GET_OFFSET(Check2DDistanceInsteadOf3D));
 
 #pragma endregion
 
