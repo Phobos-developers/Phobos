@@ -8,7 +8,7 @@ DEFINE_HOOK(0x6870D7, ReadScenario_LoadingScreens, 0x5)
 
 	LEA_STACK(CCINIClass*, pINI, STACK_OFFSET(0x174, -0x158));
 
-	auto const pScenario = ScenarioClass::Instance.get();
+	auto const pScenario = ScenarioClass::Instance();
 	auto const scenarioName = pScenario->FileName;
 	auto const defaultsSection = "Defaults";
 
@@ -25,3 +25,37 @@ DEFINE_HOOK(0x6870D7, ReadScenario_LoadingScreens, 0x5)
 
 	return SkipGameCode;
 }
+
+#pragma region PlayerAtX
+
+// Map <Player @ X> as object owner name to correct HouseClass index.
+DEFINE_HOOK(0x50C186, GetHouseIndexFromName_PlayerAtX, 0x6)
+{
+	enum { ReturnFromFunction = 0x50C203 };
+
+	GET(const char*, name, ECX);
+
+	// Bail out early in campaign mode or if the name does not start with <
+	if (SessionClass::IsCampaign() || *name != '<')
+		return 0;
+
+	int playerAtIndex = HouseClass::GetPlayerAtFromString(name);
+
+	if (playerAtIndex != -1)
+	{
+		auto const pHouse = HouseClass::FindByPlayerAt(playerAtIndex);
+
+		if (pHouse)
+		{
+			R->EDX(pHouse->ArrayIndex);
+			return ReturnFromFunction;
+		}
+	}
+
+	return 0;
+}
+
+// Skip check that prevents buildings from being created for local player.
+DEFINE_JUMP(LJMP, 0x44F8D5, 0x44F8E1);
+
+#pragma endregion
