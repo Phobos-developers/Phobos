@@ -140,7 +140,9 @@ void EngraveTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 	// When the launcher exists, the launcher's location will be used to calculate the direction of the coordinate axis instead of bullet's SourceCoords
 	if (pTechno)
 	{
-		this->TechnoInTransport = static_cast<bool>(pTechno->Transporter);
+		for (auto pTrans = pTechno->Transporter; pTrans; pTrans = pTrans->Transporter)
+			this->TechnoInTransport = pTrans->UniqueID;
+
 		this->GetTechnoFLHCoord(pBullet, pTechno);
 		this->CheckMirrorCoord(pTechno);
 
@@ -288,19 +290,14 @@ void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, double rotateA
 
 bool EngraveTrajectory::InvalidFireCondition(BulletClass* pBullet, TechnoClass* pTechno)
 {
-	if (!pTechno
-		|| !pTechno->IsAlive
-		|| (pTechno->InLimbo && !pTechno->Transporter)
-		|| pTechno->IsSinking
-		|| pTechno->Health <= 0
-		|| this->TechnoInTransport != static_cast<bool>(pTechno->Transporter)
-		|| pTechno->Deactivated
-		|| pTechno->TemporalTargetingMe
-		|| pTechno->BeingWarpedOut
-		|| pTechno->IsUnderEMP())
-	{
+	if (!pTechno)
 		return true;
-	}
+
+	for (auto pTrans = pTechno->Transporter; pTrans; pTrans = pTrans->Transporter)
+		pTechno = pTrans;
+
+	if (!TechnoExt::IsActive(pTechno) || this->TechnoInTransport != pTechno->UniqueID)
+		return true;
 
 	if (this->Type->AllowFirerTurning)
 		return false;
@@ -375,15 +372,15 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 	this->LaserTimer.Start(pType->LaserDelay);
 	auto fireCoord = pBullet->SourceCoords;
 
+	for (auto pTrans = pTechno->Transporter; pTrans; pTrans = pTrans->Transporter)
+		pTechno = pTrans;
+
 	// Considering that the CurrentBurstIndex may be different, it is not possible to call existing functions
-	if (!this->NotMainWeapon && pTechno && (pTechno->Transporter || !pTechno->InLimbo))
+	if (!this->NotMainWeapon && pTechno && !pTechno->InLimbo)
 	{
 		if (pTechno->WhatAmI() != AbstractType::Building)
 		{
-			if (const auto pTransporter = pTechno->Transporter)
-				fireCoord = TechnoExt::GetFLHAbsoluteCoords(pTransporter, this->FLHCoord, pTransporter->HasTurret());
-			else
-				fireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
+			fireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
 		}
 		else
 		{
