@@ -96,7 +96,7 @@ void TracingTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->OffsetCoord.Read(exINI, pSection, "Trajectory.Tracing.OffsetCoord");
 	this->WeaponCoord.Read(exINI, pSection, "Trajectory.Tracing.WeaponCoord");
 	this->UseDisperseCoord.Read(exINI, pSection, "Trajectory.Tracing.UseDisperseCoord");
-	this->AllowFirerTurning.Read(exINI, pSection, "Trajectory.Engrave.AllowFirerTurning");
+	this->AllowFirerTurning.Read(exINI, pSection, "Trajectory.Tracing.AllowFirerTurning");
 	this->Weapons.Read(exINI, pSection, "Trajectory.Tracing.Weapons");
 	this->WeaponCount.Read(exINI, pSection, "Trajectory.Tracing.WeaponCount");
 	this->WeaponDelay.Read(exINI, pSection, "Trajectory.Tracing.WeaponDelay");
