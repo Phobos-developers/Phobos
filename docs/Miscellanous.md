@@ -112,9 +112,12 @@ CampaignDefaultGameSpeed=4  ; integer
 ```
 
 <details>
-<summary>Click to show the generator</summary>
-<input id="customGameSpeedIn" type=number placeholder="Enter desired FPS" oninput="onInput()">
-<p>Results (remember to replace N with your game speed number!):</p>
+<summary>Click to show the generator<br>点击显示生成器</summary>
+<input id="customGameSpeedIn" type=number placeholder="Enter desired FPS                   输入所需的 FPS" oninput="onInput()" style="width:100%";>
+<p>
+Results (remember to replace N with your game speed number!):<br>
+&nbsp;&nbsp;结果&nbsp;（别忘了把 N 替换成你的游戏速度编号）：
+</p>
 <div id="codeBlockHere1"></div>
 </details>
 <script>
@@ -148,7 +151,7 @@ function onInput() {
 		j += 1;
 		let content = [];
 		if (foundAny) {
-			content.push({key: null, value: null, comment: "// Or"});
+			content.push({key: null, value: null, comment: "// Or 或"});
 		}
 		content.push({key: "CustomGSN.DefaultDelay", value: d, comment: null});
 		content.push({key: "CustomGSN.ChangeDelay", value: c, comment: null});
@@ -157,7 +160,7 @@ function onInput() {
 		foundAny = true;
 	}
 	if (!foundAny) {
-		addINILine(out, {key: null, value: null, comment: "// Sorry, couldn't find anything!"});
+		addINILine(out, {key: null, value: null, comment: "// Sorry, couldn't find anything!  本工具无能为力"});
 	}
 }
 </script>
