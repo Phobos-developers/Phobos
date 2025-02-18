@@ -1,8 +1,12 @@
 #include "Body.h"
 
+#include <TacticalClass.h>
+#include <RadarEventClass.h>
+
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/TEvent/Body.h>
+#include <Ext/House/Body.h>
 
 namespace ReceiveDamageTemp
 {
@@ -17,12 +21,75 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
+	const auto pRules = RulesExt::Global();
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
 	int nDamageLeft = *args->Damage;
 	int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
+	// Raise Combat Alert
+	if (pRules->CombatAlert && nDamageLeft > 1)
+	{
+		auto raiseCombatAlert = [&]()
+		{
+			const auto pHouse = pThis->Owner;
+
+			if (!pHouse->IsControlledByCurrentPlayer() || (pRules->CombatAlert_SuppressIfAllyDamage && pHouse->IsAlliedWith(args->SourceHouse)))
+				return;
+
+			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+			if (pHouseExt->CombatAlertTimer.HasTimeLeft())
+				return;
+
+			const auto pTypeExt = pExt->TypeExtData;
+			const auto pType = pTypeExt->OwnerObject();
+
+			if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
+				return;
+
+			const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+
+			if (pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
+				return;
+
+			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+
+			if (pRules->CombatAlert_IgnoreBuilding && pBuilding && !pTypeExt->CombatAlert_NotBuilding.Get(pBuilding->Type->IsVehicle()))
+				return;
+
+			const auto coordInMap = pThis->GetCoords();
+
+			if (pRules->CombatAlert_SuppressIfInScreen)
+			{
+				const auto pTactical = TacticalClass::Instance();
+				const auto coordInScreen = pTactical->CoordsToScreen(coordInMap) - pTactical->TacticalPos;
+				const auto screenArea = DSurface::Composite->GetRect();
+
+				if (screenArea.Width >= coordInScreen.X && screenArea.Height >= coordInScreen.Y && coordInScreen.X >= 0 && coordInScreen.Y >= 0) // check if the unit is in screen
+					return;
+			}
+
+			pHouseExt->CombatAlertTimer.Start(pRules->CombatAlert_Interval);
+			RadarEventClass::Create(RadarEventType::Combat, CellClass::Coord2Cell(coordInMap));
+			int index = -1;
+
+			if (!pRules->CombatAlert_MakeAVoice) // No one want to play two sound at a time, I guess?
+				return;
+			else if (pTypeExt->CombatAlert_UseFeedbackVoice.Get(pRules->CombatAlert_UseFeedbackVoice) && pType->VoiceFeedback.Count > 0) // Use VoiceFeedback first
+				VocClass::PlayGlobal(pType->VoiceFeedback.GetItem(0), 0x2000, 1.0);
+			else if (pTypeExt->CombatAlert_UseAttackVoice.Get(pRules->CombatAlert_UseAttackVoice) && pType->VoiceAttack.Count > 0) // Use VoiceAttack then
+				VocClass::PlayGlobal(pType->VoiceAttack.GetItem(0), 0x2000, 1.0);
+			else if (pTypeExt->CombatAlert_UseEVA.Get(pRules->CombatAlert_UseEVA)) // Use Eva finally
+				index = pTypeExt->CombatAlert_EVA.Get(VoxClass::FindIndex((const char*)"EVA_UnitsInCombat"));
+
+			if (index != -1)
+				VoxClass::PlayIndex(index);
+		};
+		raiseCombatAlert();
+	}
+
+	// Shield Receive Damage
 	if (!args->IgnoreDefenses)
 	{
 		if (const auto pShieldData = pExt->Shield.get())
