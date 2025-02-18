@@ -469,15 +469,15 @@ bool TracingTrajectory::CheckFireFacing(BulletClass* pBullet)
 BulletVelocity TracingTrajectory::ChangeVelocity(BulletClass* pBullet)
 {
 	const auto pType = this->Type;
-	auto pTechno = pBullet->Owner;
+	auto pFirer = pBullet->Owner;
 
-	if (pTechno)
+	if (pFirer)
 	{
-		for (auto pTrans = pTechno->Transporter; pTrans; pTrans = pTrans->Transporter)
-			pTechno = pTrans;
+		for (auto pTrans = pFirer->Transporter; pTrans; pTrans = pTrans->Transporter)
+			pFirer = pTrans;
 	}
 
-	const auto destination = (pType->TraceTheTarget || !pTechno) ? pBullet->TargetCoords : pTechno->GetCoords();
+	const auto destination = (pType->TraceTheTarget || !pFirer) ? pBullet->TargetCoords : pFirer->GetCoords();
 	const auto theCoords = pType->OffsetCoord.Get();
 	auto theOffset = theCoords;
 
