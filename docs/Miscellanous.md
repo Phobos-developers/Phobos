@@ -95,8 +95,8 @@ Correspondingly, if such a writing method causes any errors, it is also not with
   - `CustomGSN.ChangeInterval` describes the frame interval between applying the effect. A value of 2 means "every other frame", 3 means "every 3 frames" etc. Increase of speedup/slowdown is approximately logarithmic.
   - `CustomGSN.ChangeDelay` sets the delay (game speed number) to use every `CustomGSN.ChangeInterval` frames.
   - `CustomGSN.DefaultDelay` sets the delay (game speed number) to use on other frames.
-  - Using game speed 6 (Fastest) in either `CustomGSN.ChangeDelay` or `CustomGSN.DefaultDelay` allows to set FPS above 60. **However, the resulting FPS may vary on different machines.**
-
+  - Using game speed 6 (Fastest) in either `CustomGSN.ChangeDelay` or `CustomGSN.DefaultDelay` allows to set FPS above 60.
+    - **However, the resulting FPS may vary on different machines.**
 ```{note}
 Currently there is no way to set desired FPS directly. Use the generator below to get required values. The generator supports values from 10 to 60.
 ```

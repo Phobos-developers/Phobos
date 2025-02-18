@@ -1245,7 +1245,7 @@ AutoFire.TargetSelf=false  ; boolean
   - `BuildLimitGroup.ExtraLimit.MaxCount` determines the maximum amount of technos being counted into the extra value calculation. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. If not set or set to a value below 1, it'll be considered as no maximum count.
   - `BuildLimitGroup.ExtraLimit.MaxNum` determines the maximum of values in `BuildLimitGroup.Nums` after extra limit calculation. If not set or set to a value below 1, it'll be considered as no maximum value.
 
-  In `rulesmd.ini`:
+In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                    ; TechnoType
 BuildLimitGroup.Types=                          ; list of TechnoType names
@@ -1437,6 +1437,7 @@ MindControl.Anim=                     ; Animation, defaults to ControlledAnimati
 
 - You can now specify whether a TechnoType is unable to receive move command.
 
+In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]        ; TechnoType
 NoManualMove=false  ; boolean

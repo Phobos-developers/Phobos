@@ -76,7 +76,6 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 ### New user settings in RA2MD.INI
 
 - These are new user setting keys added by various features in Phobos. Most of them can be found in either in [user inteface](User-Interface.md) or [miscellaneous](Miscellanous.md) sections. Search functionality can be used to find them quickly if needed.
-
 ```ini
 [Phobos]
 CampaignDefaultGameSpeed=4       ; integer
