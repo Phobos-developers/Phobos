@@ -588,6 +588,51 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 	return 0;
 }
 
+static inline void SetChargeTurretDelay(TechnoClass* pThis, int rearmDelay, WeaponTypeClass* pWeapon)
+{
+	pThis->ChargeTurretDelay = rearmDelay;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeaponExt->ChargeTurret_Delays.size() > 0)
+	{
+		size_t burstIndex = pWeapon->Burst > 1 ? pThis->CurrentBurstIndex - 1 : 0;
+		size_t index = burstIndex < pWeaponExt->ChargeTurret_Delays.size() ? burstIndex : pWeaponExt->ChargeTurret_Delays.size() - 1;
+		int delay = pWeaponExt->ChargeTurret_Delays[index];
+
+		if (delay <= 0)
+			return;
+
+		pThis->ChargeTurretDelay = delay;
+		TechnoExt::ExtMap.Find(pThis)->ChargeTurretTimer.Start(delay);
+	}
+}
+
+DEFINE_HOOK(0x6FE4A4, TechnoClass_FireAt_ChargeTurret1, 0x6)
+{
+	enum { SkipGameCode = 0x6FE4AA };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, rearmDelay, EAX);
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0xB0, -0x70));
+
+	SetChargeTurretDelay(pThis, rearmDelay, pWeapon);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x6FF29E, TechnoClass_FireAt_ChargeTurret2, 0x6)
+{
+	enum { SkipGameCode = 0x6FF2A4 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, rearmDelay, EAX);
+	GET(WeaponTypeClass*, pWeapon, EBX);
+
+	SetChargeTurretDelay(pThis, rearmDelay, pWeapon);
+
+	return SkipGameCode;
+}
+
 #pragma endregion
 
 #pragma region TechnoClass_GetFLH
@@ -705,9 +750,10 @@ DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_ROF, 0x6)
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto range = pWeaponExt->ROF_RandomDelay.Get(RulesExt::Global()->ROF_RandomDelay);
-	double rof = pWeapon->ROF * pTechnoExt->AE.ROFMultiplier;
+	double rof = pWeapon->ROF * pExt->AE.ROFMultiplier;
+	pExt->LastRearmWasFullDelay = true;
 
 	R->EAX(GeneralUtils::GetRangedRandomOrSingleValue(range));
 	__asm { fld rof };
@@ -721,17 +767,17 @@ DEFINE_HOOK(0x6FD054, TechnoClass_RearmDelay_ForceFullDelay, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->LastRearmWasFullDelay = false;
+
 	// Currently only used with infantry, so a performance saving measure.
 	if (pThis->WhatAmI() == AbstractType::Infantry)
 	{
-		if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+		if (pExt->ForceFullRearmDelay)
 		{
-			if (pExt->ForceFullRearmDelay)
-			{
-				pExt->ForceFullRearmDelay = false;
-				pThis->CurrentBurstIndex = 0;
-				return ApplyFullRearmDelay;
-			}
+			pExt->ForceFullRearmDelay = false;
+			pThis->CurrentBurstIndex = 0;
+			return ApplyFullRearmDelay;
 		}
 	}
 
