@@ -225,7 +225,7 @@ namespace ProximityTemp
 	BuildingTypeClass* pType = nullptr;
 }
 
-DEFINE_HOOK(0x4A8F20, isplayClass_BuildingProximityCheck_SetContext, 0x5)
+DEFINE_HOOK(0x4A8F20, DisplayClass_BuildingProximityCheck_SetContext, 0x5)
 {
 	GET(BuildingTypeClass*, pType, ESI);
 

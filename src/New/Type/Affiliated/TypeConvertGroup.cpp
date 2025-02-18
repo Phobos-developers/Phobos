@@ -5,7 +5,8 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 {
 	for (const auto& [fromTypes, toType, affectedHouses] : convertPairs)
 	{
-		if (!toType.isset() || !toType.Get()) continue;
+		if (!toType.Get())
+			continue;
 
 		if (pOwner && !EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTargetFoot->Owner))
 			continue;
@@ -25,7 +26,7 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 							pAnim->SetOwnerObject(pTargetFoot);
 					}
 
-					break;
+					goto end; // Breaking out of nested loops without extra checks one of the very few remaining valid usecases for goto, leave it be.
 				}
 			}
 		}
@@ -38,8 +39,11 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pTargetFoot->Location))
 					pAnim->SetOwnerObject(pTargetFoot);
 			}
+			break;
 		}
 	}
+end:
+	return;
 }
 
 
