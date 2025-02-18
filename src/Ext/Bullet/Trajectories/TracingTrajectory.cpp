@@ -152,19 +152,20 @@ void TracingTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bul
 
 	this->FLHCoord = pBullet->SourceCoords;
 
-	if (const auto pFirer = pBullet->Owner)
+	if (const auto pTechno = pBullet->Owner)
 	{
-		this->TechnoInTransport = static_cast<bool>(pFirer->Transporter);
-		this->FirepowerMult = pFirer->FirepowerMultiplier;
+		for (auto pTrans = pTechno->Transporter; pTrans; pTrans = pTrans->Transporter)
+			this->TechnoInTransport = pTrans->UniqueID;
 
-		if (const auto pExt = TechnoExt::ExtMap.Find(pFirer))
+		this->FirepowerMult = pTechno->FirepowerMultiplier;
+
+		if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
 			this->FirepowerMult *= pExt->AE.FirepowerMultiplier;
 
-		this->GetTechnoFLHCoord(pBullet, pFirer);
+		this->GetTechnoFLHCoord(pBullet, pTechno);
 	}
 	else
 	{
-		this->TechnoInTransport = false;
 		this->NotMainWeapon = true;
 	}
 
@@ -304,21 +305,18 @@ void TracingTrajectory::InitializeDuration(BulletClass* pBullet, int duration)
 
 bool TracingTrajectory::InvalidFireCondition(BulletClass* pBullet, TechnoClass* pTechno)
 {
-	if (!pTechno
-		|| !pTechno->IsAlive
-		|| (pTechno->InLimbo && !pTechno->Transporter)
-		|| pTechno->IsSinking
-		|| pTechno->Health <= 0
-		|| this->TechnoInTransport != static_cast<bool>(pTechno->Transporter)
-		|| pTechno->Deactivated
-		|| pTechno->TemporalTargetingMe
-		|| pTechno->BeingWarpedOut
-		|| pTechno->IsUnderEMP())
-	{
+	if (!pTechno)
 		return true;
-	}
 
-	if (this->Type->AllowFirerTurning)
+	for (auto pTrans = pTechno->Transporter; pTrans; pTrans = pTrans->Transporter)
+		pTechno = pTrans;
+
+	if (!TechnoExt::IsActive(pTechno) || this->TechnoInTransport != pTechno->UniqueID)
+		return true;
+
+	const auto pType = this->Type;
+
+	if (pType->AllowFirerTurning)
 		return false;
 
 	const auto SourceCrd = pTechno->GetCoords();
@@ -340,10 +338,13 @@ bool TracingTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 	if (!pBullet->Target && !pType->TolerantTime)
 		return true;
 
-	const auto pTechno = pBullet->Owner;
+	auto pTechno = pBullet->Owner;
 
 	if (!pType->TraceTheTarget && !pTechno)
 		return true;
+
+	for (auto pTrans = pTechno->Transporter; pTrans; pTrans = pTrans->Transporter)
+		pTechno = pTrans;
 
 	if (pType->Synchronize)
 	{
@@ -468,9 +469,15 @@ bool TracingTrajectory::CheckFireFacing(BulletClass* pBullet)
 BulletVelocity TracingTrajectory::ChangeVelocity(BulletClass* pBullet)
 {
 	const auto pType = this->Type;
-	const auto pFirer = pBullet->Owner;
+	auto pTechno = pBullet->Owner;
 
-	const auto destination = (pType->TraceTheTarget || !pFirer) ? pBullet->TargetCoords : (pFirer->Transporter ? pFirer->Transporter->GetCoords() : pFirer->GetCoords());
+	if (pTechno)
+	{
+		for (auto pTrans = pTechno->Transporter; pTrans; pTrans = pTrans->Transporter)
+			pTechno = pTrans;
+	}
+
+	const auto destination = (pType->TraceTheTarget || !pTechno) ? pBullet->TargetCoords : pTechno->GetCoords();
 	const auto theCoords = pType->OffsetCoord.Get();
 	auto theOffset = theCoords;
 
@@ -642,17 +649,13 @@ CoordStruct TracingTrajectory::GetWeaponFireCoord(BulletClass* pBullet, TechnoCl
 
 	if (pType->TraceTheTarget)
 	{
-		const auto pTransporter = pTechno->Transporter;
+		for (auto pTrans = pTechno->Transporter; pTrans; pTrans = pTrans->Transporter)
+			pTechno = pTrans;
 
-		if (!this->NotMainWeapon && pTechno && (pTransporter || !pTechno->InLimbo))
+		if (!this->NotMainWeapon && pTechno && !pTechno->InLimbo)
 		{
 			if (pTechno->WhatAmI() != AbstractType::Building)
-			{
-				if (!pTransporter)
-					return TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
-
-				return TechnoExt::GetFLHAbsoluteCoords(pTransporter, this->FLHCoord, pTransporter->HasTurret());
-			}
+				return TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
 
 			const auto pBuilding = static_cast<BuildingClass*>(pTechno);
 			Matrix3D mtx;

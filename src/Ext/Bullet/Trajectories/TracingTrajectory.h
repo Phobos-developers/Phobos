@@ -86,7 +86,7 @@ public:
 		, ExistTimer {}
 		, WeaponTimer {}
 		, TolerantTimer {}
-		, TechnoInTransport { false }
+		, TechnoInTransport { 0 }
 		, NotMainWeapon { false }
 		, FLHCoord {}
 		, BuildingCoord {}
@@ -110,7 +110,7 @@ public:
 	CDTimerClass ExistTimer;
 	CDTimerClass WeaponTimer;
 	CDTimerClass TolerantTimer;
-	bool TechnoInTransport;
+	DWORD TechnoInTransport;
 	bool NotMainWeapon;
 	CoordStruct FLHCoord;
 	CoordStruct BuildingCoord;
