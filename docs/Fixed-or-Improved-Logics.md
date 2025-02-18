@@ -878,7 +878,6 @@ ForceShield.ExtraTintIntensity=0.0  ; floating point value
 - Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
 
 In `rulesmd.ini`:
-
 ```ini
 [SOMETECHNO]    ; TechnoType
 JumpjetRotateOnCrash=true  ; boolean
