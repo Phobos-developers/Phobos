@@ -467,6 +467,7 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 }
 
 UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const {
+
 	if (auto pUnit = abstract_cast<UnitClass*>(this->OwnerObject()))
 	{
 		auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);

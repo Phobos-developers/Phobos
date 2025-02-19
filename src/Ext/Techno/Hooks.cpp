@@ -554,13 +554,10 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 	{
 		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
 		{
-			ObjectTypeClass* Image = pCustomType;
-			R->EBX<ObjectTypeClass *>(Image);
+			R->EBX<ObjectTypeClass *>(pCustomType);
 		}
 	}
 
-	//R->EAX(pThis->WalkedFramesSoFar);
-	//return Continue;
 	return 0;
 }
 
