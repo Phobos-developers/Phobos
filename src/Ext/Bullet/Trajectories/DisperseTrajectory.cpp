@@ -943,6 +943,9 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet)
 						if (checkCells && EnumFunctions::IsCellEligible(pCell, pWeaponExt->CanTarget, true, true))
 							validCells.push_back(pCell);
 
+						if (!pType->WeaponHolistic && this->TargetInTheAir)
+							continue;
+
 						auto pObject = pCell->GetContent();
 
 						while (pObject)
