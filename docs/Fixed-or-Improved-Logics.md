@@ -190,6 +190,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed `AuxBuilding` to count building upgrades.
 - Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
 - Prevent the units with locomotors that cause problems from entering the tank bunker.
+- Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
 
 ## Fixes / interactions with other extensions
 
