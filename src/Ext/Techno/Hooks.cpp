@@ -575,8 +575,7 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 	{
 		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
 		{
-			SHPStruct* Image = pCustomType->GetImage();
-			if (Image)
+			if (SHPStruct* Image = pCustomType->GetImage())
 				R->EAX<SHPStruct *>(Image);
 		}
 	}
