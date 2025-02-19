@@ -860,7 +860,8 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet)
 		if (!pOwner || pOwner->Defeated)
 			pOwner = HouseClass::FindNeutral();
 
-		const auto pTarget = pBullet->Target ? pBullet->Target : MapClass::Instance->TryGetCellAt(pBullet->TargetCoords);
+		const auto pTarget = pBullet->Target ? pBullet->Target
+			: (this->TargetInTheAir ? nullptr : MapClass::Instance->TryGetCellAt(pBullet->TargetCoords));
 
 		for (size_t weaponNum = 0; weaponNum < validWeapons; weaponNum++)
 		{
@@ -1191,6 +1192,9 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet)
 					}
 				}
 			}
+
+			if (validTargets.empty() && pTarget)
+				validTargets.push_back(pTarget);
 
 			for (const auto& pNewTarget : validTargets)
 			{
