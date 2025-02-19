@@ -266,6 +266,9 @@ void TechnoExt::HandleStopRandomTargetTarNav(EventExt* event)
 			if (pFoot->Locomotor->Is_Moving_Now())
 				pFoot->StopMoving();
 
+			if (pTechno->SpawnManager)
+				pTechno->SpawnManager->ResetTarget();
+
 			break;
 		}
 	}

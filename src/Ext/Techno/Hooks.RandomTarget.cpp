@@ -188,6 +188,24 @@ DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected_RandomTarget_ClearRetarg
 					pTechno->SpawnManager->ResetTarget();
 			}
 		}
+		/*// This code must me uncomented for the OpenTopped.TransferPassengerStopCommand tag's PR
+		auto pExtType = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+		if (pExtType->OpenTopped_TransferPassengerStopCommand)
+		{
+			if (SessionClass::IsMultiplayer())
+			{
+				TechnoExt::SendStopPassengersTar(pTechno); // Prevent desyncs!
+			}
+			else
+			{
+				for (auto pNext = pTechno->Passengers.FirstPassenger; pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
+				{
+					pNext->SetTarget(nullptr);
+					pNext->SpawnManager->ResetTarget();
+				}
+			}
+		}*/
 	}
 
 	return 0;
