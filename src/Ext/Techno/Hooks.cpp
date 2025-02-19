@@ -592,21 +592,45 @@ DEFINE_HOOK(0x736480, UnitClass_AI_KeepTargetOnMove, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->KeepTargetOnMove && pExt->TypeExtData->KeepTargetOnMove && pThis->Target && pThis->CurrentMission == Mission::Move)
+	if (!pExt->KeepTargetOnMove)
+		return 0;
+
+	if (!pThis->Target)
 	{
-		int weaponIndex = pThis->SelectWeapon(pThis->Target);
+		pExt->KeepTargetOnMove = false;
+		return 0;
+	}
+
+	if (!pExt->TypeExtData->KeepTargetOnMove)
+	{
+		pThis->SetTarget(nullptr);
+		pExt->KeepTargetOnMove = false;
+		return 0;
+	}
+
+	if (pThis->CurrentMission == Mission::Move)
+	{
+		const int weaponIndex = pThis->SelectWeapon(pThis->Target);
 
 		if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
 		{
-			int extraDistance = static_cast<int>(pExt->TypeExtData->KeepTargetOnMove_ExtraDistance.Get());
-			int range = pWeapon->Range;
+			const int extraDistance = static_cast<int>(pExt->TypeExtData->KeepTargetOnMove_ExtraDistance.Get());
+			const int range = pWeapon->Range;
 			pWeapon->Range += extraDistance; // Temporarily adjust weapon range based on the extra distance.
 
 			if (!pThis->IsCloseEnough(pThis->Target, weaponIndex))
+			{
 				pThis->SetTarget(nullptr);
+				pExt->KeepTargetOnMove = false;
+			}
 
 			pWeapon->Range = range;
 		}
+	}
+	else if (pThis->CurrentMission == Mission::Guard)
+	{
+		pThis->QueueMission(Mission::Attack, false);
+		pExt->KeepTargetOnMove = false;
 	}
 
 	return 0;
