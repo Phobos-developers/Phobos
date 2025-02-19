@@ -959,7 +959,7 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet)
 								{
 									const auto pObjType = pObject->GetType();
 
-									if (pObjType && !pObjType->Immune)
+									if (pObjType && !pObjType->Immune && centerCoords.DistanceFrom(pObject->GetCoords()) <= pWeapon->Range)
 										validObjects.push_back(pObject);
 								}
 
@@ -1003,6 +1003,9 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet)
 									continue;
 							}
 
+							if (centerCoords.DistanceFrom(pTechno->GetCoords()) > pWeapon->Range)
+								continue;
+
 							if (MapClass::GetTotalDamage(100, pWeapon->Warhead, pTechnoType->Armor, 0) == 0)
 								continue;
 
@@ -1045,6 +1048,9 @@ bool DisperseTrajectory::PrepareDisperseWeapon(BulletClass* pBullet)
 						if (pTechno->CloakState == CloakState::Cloaked && !pCell->Sensors_InclHouse(pOwner->ArrayIndex))
 							continue;
 					}
+
+					if (centerCoords.DistanceFrom(pTechno->GetCoords()) > pWeapon->Range)
+						continue;
 
 					if (MapClass::GetTotalDamage(100, pWeapon->Warhead, pTechnoType->Armor, 0) == 0)
 						continue;
