@@ -394,8 +394,7 @@ This page lists all the individual contributions to the project by their author.
   - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
-- **NaotoYuuki**
-  - Vertical & meteor trajectory projectile prototypes
+- **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to jump back to previous script
 - **TaranDahl (航味麻酱)**
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
@@ -410,6 +409,7 @@ This page lists all the individual contributions to the project by their author.
   - Prevent the units with locomotors that cause problems from entering the tank bunker
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
+- **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

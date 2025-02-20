@@ -230,3 +230,15 @@ When this feature is enabled, the Ares equivalent of `$Inherits` (undocumented) 
 ```{warning}
 This feature may noticeably increase game loading time, depending on the size of game rules and used hardware.
 ```
+
+### Turning off/on in-game exception handling
+
+You can turn on/off the exception handler of the game's main loop using the following command line arg: `-ExceptionHandler=boolean` where `boolean` is `(true|false|yes|no|1|0)`.
+
+```{note}
+In **debug** builds the in-game exception handler is **turned off** by default.
+```
+
+```{warning}
+The CnCNet 5 spawner uses the main loop exception handler for fixes. If you get any issues (crashes, bugs) in combination with that then please first test with the exception handler enabled.
+```
