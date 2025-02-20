@@ -1,8 +1,13 @@
 #include "Body.h"
 
+#include <AircraftTrackerClass.h>
+#include <AnimClass.h>
+#include <FlyLocomotionClass.h>
+#include <JumpjetLocomotionClass.h>
 #include <TechnoTypeClass.h>
 #include <StringTable.h>
 
+#include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -25,12 +30,6 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	float z = static_cast<float>(offset->Z * factor);
 
 	mtx->Translate(x, y, z);
-}
-
-void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor)
-{
-	if (auto ext = TechnoTypeExt::ExtMap.Find(pType))
-		ext->ApplyTurretOffset(mtx, factor);
 }
 
 // Ares 0.A source
@@ -114,6 +113,151 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 	return nullptr;
 }
 
+TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct location, DirType facing, DirType* secondaryFacing, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse,
+	AnimTypeClass* pSpawnAnimType, int spawnHeight, bool alwaysOnGround, bool checkPathfinding, bool parachuteIfInAir, Mission mission, Mission* missionAI)
+{
+	auto const rtti = pType->WhatAmI();
+
+	if (rtti == AbstractType::BuildingType)
+		return nullptr;
+
+	HouseClass* decidedOwner = pOwner && !pOwner->Defeated
+		? pOwner : HouseClass::FindCivilianSide();
+
+	auto pCell = MapClass::Instance->GetCellAt(location);
+	auto const speedType = rtti != AbstractType::AircraftType ? pType->SpeedType : SpeedType::Wheel;
+	auto const mZone = rtti != AbstractType::AircraftType ? pType->MovementZone : MovementZone::Normal;
+	bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(speedType)] > 0.0;
+	bool isBridge = allowBridges && pCell->ContainsBridge();
+	int baseHeight = location.Z;
+	bool inAir = location.Z >= Unsorted::CellHeight * 2;
+
+	if (checkPathfinding && (!pCell || !pCell->IsClearToMove(speedType, false, false, -1, mZone, -1, isBridge)))
+	{
+		auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
+			speedType, -1, mZone, isBridge, 1, 1, true,
+			false, false, isBridge, CellStruct::Empty, false, false);
+
+		pCell = MapClass::Instance->TryGetCellAt(nCell);
+		location = pCell->GetCoords();
+	}
+
+	if (pCell)
+	{
+		isBridge = allowBridges && pCell->ContainsBridge();
+		int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
+		int zCoord = alwaysOnGround ? INT32_MIN : baseHeight;
+		int cellFloorHeight = MapClass::Instance->GetCellFloorHeight(location) + bridgeZ;
+
+		if (!alwaysOnGround && spawnHeight >= 0)
+			location.Z = cellFloorHeight + spawnHeight;
+		else
+			location.Z = Math::max(cellFloorHeight, zCoord);
+
+		if (auto const pTechno = static_cast<FootClass*>(pType->CreateObject(decidedOwner)))
+		{
+			bool success = false;
+			bool parachuted = false;
+			pTechno->OnBridge = isBridge;
+
+			if (rtti != AbstractType::AircraftType && parachuteIfInAir && !alwaysOnGround && inAir)
+			{
+				parachuted = true;
+				success = pTechno->SpawnParachuted(location);
+			}
+			else if (!pCell->GetBuilding() || !checkPathfinding)
+			{
+				++Unsorted::IKnowWhatImDoing;
+				success = pTechno->Unlimbo(location, facing);
+				--Unsorted::IKnowWhatImDoing;
+			}
+			else
+			{
+				success = pTechno->Unlimbo(location, facing);
+			}
+
+			if (success)
+			{
+				if (secondaryFacing)
+					pTechno->SecondaryFacing.SetCurrent(DirStruct(*secondaryFacing));
+
+				if (pSpawnAnimType)
+				{
+					if (auto const pAnim = GameCreate<AnimClass>(pSpawnAnimType, location))
+					{
+						AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
+
+						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+							pAnimExt->SetInvoker(pInvoker, pInvokerHouse);
+					}
+				}
+
+				if (!pTechno->InLimbo)
+				{
+					if (!alwaysOnGround)
+					{
+						inAir = pTechno->IsInAir();
+						if (auto const pFlyLoco = locomotion_cast<FlyLocomotionClass*>(pTechno->Locomotor))
+						{
+							pTechno->SetLocation(location);
+							bool airportBound = rtti == AbstractType::AircraftType && abstract_cast<AircraftTypeClass*>(pType)->AirportBound;
+
+							if (pCell->GetContent() || airportBound)
+								pTechno->EnterIdleMode(false, true);
+							else
+								pFlyLoco->Move_To(pCell->GetCoordsWithBridge());
+						}
+						else if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pTechno->Locomotor))
+						{
+							pJJLoco->LocomotionFacing.SetCurrent(DirStruct(facing));
+
+							if (pType->BalloonHover)
+							{
+								// Makes the jumpjet think it is hovering without actually moving.
+								pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+								pJJLoco->IsMoving = true;
+								pJJLoco->DestinationCoords = location;
+								pJJLoco->CurrentHeight = pType->JumpjetHeight;
+
+								if (!inAir)
+									AircraftTrackerClass::Instance->Add(pTechno);
+							}
+							else if (inAir)
+							{
+								// Order non-BalloonHover jumpjets to land.
+								pJJLoco->Move_To(location);
+							}
+						}
+						else if (inAir && !parachuted)
+						{
+							pTechno->IsFallingDown = true;
+						}
+					}
+
+					auto newMission = mission;
+
+					if (!decidedOwner->IsControlledByHuman() && missionAI)
+						newMission = *missionAI;
+
+					pTechno->QueueMission(mission, false);
+				}
+
+				if (!decidedOwner->Type->MultiplayPassive)
+					decidedOwner->RecheckTechTree = true;
+			}
+			else
+			{
+				if (pTechno)
+					pTechno->UnInit();
+			}
+
+			return pTechno;
+		}
+	}
+
+	return nullptr;
+}
+
 // =============================
 // load / save
 
@@ -131,10 +275,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
+	this->FactoryPlant_Multiplier.Read(exINI, pSection, "FactoryPlant.Multiplier");
 
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
 	this->Spawner_DelayFrames.Read(exINI, pSection, "Spawner.DelayFrames");
+	this->Spawner_AttackImmediately.Read(exINI, pSection, "Spawner.AttackImmediately");
 
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	if (!this->Harvester_Counted.isset() && pThis->Enslaves)
@@ -151,6 +297,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->InitialStrength = Math::clamp(this->InitialStrength, 1, pThis->Strength);
 
 	this->ReloadInTransport.Read(exINI, pSection, "ReloadInTransport");
+	this->ForbidParallelAIQueues.Read(exINI, pSection, "ForbidParallelAIQueues");
 	this->ShieldType.Read<true>(exINI, pSection, "ShieldType");
 
 	this->Ammo_AddOnDeploy.Read(exINI, pSection, "Ammo.AddOnDeploy");
@@ -177,6 +324,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SellSound.Read(exINI, pSection, "SellSound");
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
+	this->CombatAlert.Read(exINI, pSection, "CombatAlert");
+	this->CombatAlert_NotBuilding.Read(exINI, pSection, "CombatAlert.NotBuilding");
+	this->CombatAlert_UseFeedbackVoice.Read(exINI, pSection, "CombatAlert.UseFeedbackVoice");
+	this->CombatAlert_UseAttackVoice.Read(exINI, pSection, "CombatAlert.UseAttackVoice");
+	this->CombatAlert_UseEVA.Read(exINI, pSection, "CombatAlert.UseEVA");
+	this->CombatAlert_EVA.Read(exINI, pSection, "CombatAlert.EVA");
+
 	this->VoiceCreated.Read(exINI, pSection, "VoiceCreated");
 	this->VoicePickup.Read(exINI, pSection, "VoicePickup");
 
@@ -190,11 +344,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChronoMinimumDelay.Read(exINI, pSection, "ChronoMinimumDelay");
 	this->ChronoRangeMinimum.Read(exINI, pSection, "ChronoRangeMinimum");
 	this->ChronoDelay.Read(exINI, pSection, "ChronoDelay");
+	this->ChronoSpherePreDelay.Read(exINI, pSection, "ChronoSpherePreDelay");
+	this->ChronoSphereDelay.Read(exINI, pSection, "ChronoSphereDelay");
 
 	this->WarpInWeapon.Read<true>(exINI, pSection, "WarpInWeapon");
 	this->WarpInMinRangeWeapon.Read<true>(exINI, pSection, "WarpInMinRangeWeapon");
 	this->WarpOutWeapon.Read<true>(exINI, pSection, "WarpOutWeapon");
 	this->WarpInWeapon_UseDistanceAsDamage.Read(exINI, pSection, "WarpInWeapon.UseDistanceAsDamage");
+
+	exINI.ReadSpeed(pSection, "SubterraneanSpeed", &this->SubterraneanSpeed);
+	this->SubterraneanHeight.Read(exINI, pSection, "SubterraneanHeight");
 
 	this->OreGathering_Anims.Read(exINI, pSection, "OreGathering.Anims");
 	this->OreGathering_Tiberiums.Read(exINI, pSection, "OreGathering.Tiberiums");
@@ -293,12 +452,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 
-	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
-	this->AttachEffect_DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
-	this->AttachEffect_Delays.Read(exINI, pSection, "AttachEffect.Delays");
-	this->AttachEffect_InitialDelays.Read(exINI, pSection, "AttachEffect.InitialDelays");
-	this->AttachEffect_RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
-
 	this->BuildLimitGroup_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
 	this->BuildLimitGroup_Nums.Read(exINI, pSection, "BuildLimitGroup.Nums");
 	this->BuildLimitGroup_Factor.Read(exINI, pSection, "BuildLimitGroup.Factor");
@@ -311,6 +464,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
+	this->BunkerableAnyway.Read(exINI, pSection, "BunkerableAnyway");
+
+	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
+	this->KeepTargetOnMove_ExtraDistance.Read(exINI, pSection, "KeepTargetOnMove.ExtraDistance");
+
+	this->Power.Read(exINI, pSection, "Power");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -402,6 +561,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->DeployedWeaponBurstFLHs, this->EliteDeployedWeaponBurstFLHs, "Deployed");
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->CrouchedWeaponBurstFLHs, this->EliteCrouchedWeaponBurstFLHs, "Prone");
 
+	this->OnlyUseLandSequences.Read(exArtINI, pArtSection, "OnlyUseLandSequences");
 
 	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
@@ -427,21 +587,20 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	// Parasitic types
+	this->AttachEffects.LoadFromINI(pINI, pSection);
 
 	auto [canParse, resetValue] = PassengerDeletionTypeClass::CanParse(exINI, pSection);
 
-	if (canParse)
-	{
-		if (this->PassengerDeletionType == nullptr)
-			this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
+	if (canParse && !this->PassengerDeletionType)
+		this->PassengerDeletionType = std::make_unique<PassengerDeletionTypeClass>(this->OwnerObject());
 
-		this->PassengerDeletionType->LoadFromINI(pINI, pSection);
-	}
-	else if (resetValue)
+	if (this->PassengerDeletionType)
 	{
-		this->PassengerDeletionType.reset();
+		if (resetValue)
+			this->PassengerDeletionType.reset();
+		else
+			this->PassengerDeletionType->LoadFromINI(pINI, pSection);
 	}
-
 
 	Nullable<bool> isInterceptor;
 	isInterceptor.Read(exINI, pSection, "Interceptor");
@@ -481,6 +640,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
+		.Process(this->FactoryPlant_Multiplier)
 
 		.Process(this->InterceptorType)
 
@@ -495,6 +655,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Spawner_LimitRange)
 		.Process(this->Spawner_ExtraLimitRange)
 		.Process(this->Spawner_DelayFrames)
+		.Process(this->Spawner_AttackImmediately)
 		.Process(this->Harvester_Counted)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
@@ -503,6 +664,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
 		.Process(this->ReloadInTransport)
+		.Process(this->ForbidParallelAIQueues)
 		.Process(this->ShieldType)
 		.Process(this->PassengerDeletionType)
 
@@ -530,6 +692,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SellSound)
 		.Process(this->EVA_Sold)
 
+		.Process(this->CombatAlert)
+		.Process(this->CombatAlert_NotBuilding)
+		.Process(this->CombatAlert_UseFeedbackVoice)
+		.Process(this->CombatAlert_UseAttackVoice)
+		.Process(this->CombatAlert_UseEVA)
+		.Process(this->CombatAlert_EVA)
+
 		.Process(this->VoiceCreated)
 		.Process(this->VoicePickup)
 
@@ -541,10 +710,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChronoMinimumDelay)
 		.Process(this->ChronoRangeMinimum)
 		.Process(this->ChronoDelay)
+		.Process(this->ChronoSpherePreDelay)
+		.Process(this->ChronoSphereDelay)
 		.Process(this->WarpInWeapon)
 		.Process(this->WarpInMinRangeWeapon)
 		.Process(this->WarpOutWeapon)
 		.Process(this->WarpInWeapon_UseDistanceAsDamage)
+
+		.Process(this->SubterraneanSpeed)
+		.Process(this->SubterraneanHeight)
 
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)
@@ -589,6 +763,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealGainType)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
+
+		.Process(this->OnlyUseLandSequences)
 
 		.Process(this->PronePrimaryFireFLH)
 		.Process(this->ProneSecondaryFireFLH)
@@ -657,11 +833,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
 
-		.Process(this->AttachEffect_AttachTypes)
-		.Process(this->AttachEffect_DurationOverrides)
-		.Process(this->AttachEffect_Delays)
-		.Process(this->AttachEffect_InitialDelays)
-		.Process(this->AttachEffect_RecreationDelays)
+		.Process(this->AttachEffects)
 
 		.Process(this->BuildLimitGroup_Types)
 		.Process(this->BuildLimitGroup_Nums)
@@ -676,6 +848,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
+
+		.Process(this->BunkerableAnyway)
+		.Process(this->KeepTargetOnMove)
+		.Process(this->KeepTargetOnMove_ExtraDistance)
+
+		.Process(this->Power)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -688,26 +866,6 @@ void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<TechnoTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
-}
-
-bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Load(PhobosStreamReader& stm, bool registerForChange)
-{
-	return this->Serialize(stm);
-}
-
-bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Save(PhobosStreamWriter& stm) const
-{
-	return const_cast<LaserTrailDataEntry*>(this)->Serialize(stm);
-}
-
-template <typename T>
-bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Serialize(T& stm)
-{
-	return stm
-		.Process(this->idxType)
-		.Process(this->FLH)
-		.Process(this->IsOnTurret)
-		.Success();
 }
 
 // =============================

@@ -8,6 +8,7 @@
 // Jumpjets stuck at FireError::FACING because Jumpjet has its own facing just for JumpjetTurnRate
 // We should not touch the linked unit's PrimaryFacing when it's moving and just let the loco sync this shit in 54D692
 // The body facing never actually turns, it just syncs
+// Whatever, now let's totally forget PrimaryFacing and only use that loco facing
 DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
@@ -102,7 +103,7 @@ DEFINE_HOOK(0x54D208, JumpjetLocomotionClass_MovementAI_EMPWobble, 0x5)
 	GET(JumpjetLocomotionClass* const, pThis, ESI);
 	enum { ZeroWobble = 0x54D22C };
 
-	if (pThis->LinkedTo->IsUnderEMP())
+	if (pThis->LinkedTo->Deactivated || pThis->LinkedTo->IsUnderEMP())
 		return ZeroWobble;
 
 	return 0;
@@ -175,19 +176,6 @@ DEFINE_HOOK(0x70B649, TechnoClass_RigidBodyDynamics_NoTiltCrashBlyat, 0x6)
 	return 0;
 }
 
-DEFINE_JUMP(LJMP, 0x54DCCF, 0x54DCE8);//JumpjetLocomotionClass_DrawMatrix_NoTiltCrashJumpjetHereBlyat
-// and the tilt center looked bad visually
-DEFINE_HOOK(0x54DD3D, JumpjetLocomotionClass_DrawMatrix_AxisCenterInAir, 0x5)
-{
-	GET(ILocomotion*, iloco, ESI);
-	__assume(iloco != nullptr);
-
-	if (static_cast<JumpjetLocomotionClass*>(iloco)->State == JumpjetLocomotionClass::State::Grounded)
-		return 0;
-
-	return 0x54DE88;
-}
-
 FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
 {
 	__assume(pThis != nullptr);
@@ -208,6 +196,7 @@ DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 
 	pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
 	pThis->LocomotionFacing.SetDesired(pThis->LinkedTo->PrimaryFacing.Desired());
+	pThis->LinkedTo->PrimaryFacing.SetROT(pThis->TurnRate);
 
 	return 0;
 }
@@ -223,3 +212,20 @@ void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 }
 
 DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))
+
+DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
+{
+	GET(FootClass*, pLinked, EAX);
+	auto const* pType = pLinked->GetTechnoType();
+
+	pLinked->PrimaryFacing.SetROT(pType->ROT);
+
+	if (pType->SensorsSight)
+	{
+		pLinked->RemoveSensorsAt(pLinked->LastFlightMapCoords);
+		pLinked->RemoveSensorsAt(pLinked->GetMapCoords());
+		pLinked->AddSensorsAt(pLinked->GetMapCoords());
+	}
+
+	return 0;
+}

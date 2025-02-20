@@ -28,14 +28,39 @@ public:
 	void AI_Temporal();
 	void AI();
 
-	void DrawShieldBar(int length, Point2D* pLocation, RectangleStruct* pBound);
-	double GetHealthRatio() const;
-	void SetHP(int amount);
-	int GetHP() const;
-	bool IsActive() const;
-	bool IsAvailable() const;
-	bool IsBrokenAndNonRespawning() const;
-	ShieldTypeClass* GetType() const;
+	void DrawShieldBar_Building(const int length, RectangleStruct* pBound);
+	void DrawShieldBar_Other(const int length, RectangleStruct* pBound);
+	double GetHealthRatio() const
+	{
+		return static_cast<double>(this->HP) / this->Type->Strength;
+	}
+	void SetHP(int amount)
+	{
+		this->HP = std::min(amount, this->Type->Strength.Get());
+	}
+	int GetHP() const
+	{
+		return this->HP;
+	}
+	bool IsActive() const
+	{
+		return
+			this->Available &&
+			this->HP > 0 &&
+			this->Online;
+	}
+	bool IsAvailable() const
+	{
+		return this->Available;
+	}
+	bool IsBrokenAndNonRespawning() const
+	{
+		return this->HP <= 0 && !this->Type->Respawn;
+	}
+	ShieldTypeClass* GetType() const
+	{
+		return this->Type;
+	}
 	ArmorType GetArmorType() const;
 	int GetFramesSinceLastBroken() const;
 	void SetAnimationVisibility(bool visible);
@@ -75,8 +100,6 @@ private:
 	void TemporalCheck();
 	bool ConvertCheck();
 
-	void DrawShieldBar_Building(const int length, Point2D* pLocation, RectangleStruct* pBound);
-	void DrawShieldBar_Other(const int length, Point2D* pLocation, RectangleStruct* pBound);
 	int DrawShieldBar_Pip(const bool isBuilding) const;
 	int DrawShieldBar_PipAmount(const int length) const;
 

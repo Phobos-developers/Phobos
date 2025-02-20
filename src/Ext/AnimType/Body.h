@@ -18,17 +18,20 @@ public:
 	{
 	public:
 		CustomPalette Palette;
-		Valueable<UnitTypeClass*> CreateUnit;
+		Valueable<TechnoTypeClass*> CreateUnit;
 		Valueable<DirType> CreateUnit_Facing;
 		Valueable<bool> CreateUnit_InheritDeathFacings;
 		Valueable<bool> CreateUnit_InheritTurretFacings;
 		Valueable<bool> CreateUnit_RemapAnim;
 		Valueable<bool> CreateUnit_RandomFacing;
 		Valueable<Mission> CreateUnit_Mission;
+		Nullable<Mission> CreateUnit_AIMission;
 		Valueable<OwnerHouseKind> CreateUnit_Owner;
 		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
+		Valueable<bool> CreateUnit_SpawnParachutedInAir;
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
 		Valueable<AnimTypeClass*> CreateUnit_SpawnAnim;
+		Valueable<int> CreateUnit_SpawnHeight;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
@@ -47,6 +50,21 @@ public:
 		Valueable<OwnerHouseKind> MakeInfantryOwner;
 		Valueable<bool> ExtraShadow;
 		ValueableIdx<VocClass> DetachedReport;
+		Valueable<AffectedHouse> VisibleTo;
+		Valueable<bool> VisibleTo_ConsiderInvokerAsOwner;
+		Valueable<bool> RestrictVisibilityIfCloaked;
+		Valueable<bool> DetachOnCloak;
+		Valueable<bool> ConstrainFireAnimsToCellSpots;
+		Nullable<LandTypeFlags> FireAnimDisallowedLandTypes;
+		Nullable<bool> AttachFireAnimsToParent;
+		Nullable<int> SmallFireCount;
+		ValueableVector<AnimTypeClass*> SmallFireAnims;
+		ValueableVector<double> SmallFireChances;
+		ValueableVector<double> SmallFireDistances;
+		Valueable<int> LargeFireCount;
+		ValueableVector<AnimTypeClass*> LargeFireAnims;
+		ValueableVector<double> LargeFireChances;
+		ValueableVector<double> LargeFireDistances;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -56,10 +74,13 @@ public:
 			, CreateUnit_InheritTurretFacings { false }
 			, CreateUnit_RemapAnim { false }
 			, CreateUnit_Mission { Mission::Guard }
+			, CreateUnit_AIMission {}
 			, CreateUnit_Owner { OwnerHouseKind::Victim }
 			, CreateUnit_AlwaysSpawnOnGround { false }
+			, CreateUnit_SpawnParachutedInAir { false }
 			, CreateUnit_ConsiderPathfinding { false }
 			, CreateUnit_SpawnAnim {}
+			, CreateUnit_SpawnHeight { -1 }
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
@@ -78,6 +99,21 @@ public:
 			, MakeInfantryOwner { OwnerHouseKind::Victim }
 			, ExtraShadow { true }
 			, DetachedReport {}
+			, VisibleTo { AffectedHouse::All }
+			, VisibleTo_ConsiderInvokerAsOwner { false }
+			, RestrictVisibilityIfCloaked { false }
+			, DetachOnCloak { true }
+			, ConstrainFireAnimsToCellSpots { true }
+			, FireAnimDisallowedLandTypes {}
+			, AttachFireAnimsToParent { false }
+			, SmallFireCount {}
+			, SmallFireAnims {}
+			, SmallFireChances {}
+			, SmallFireDistances {}
+			, LargeFireCount { 1 }
+			, LargeFireAnims {}
+			, LargeFireChances {}
+			, LargeFireDistances {}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -102,15 +102,18 @@ public:
 		, Tint_VisibleToHouses { AffectedHouse::All }
 	{ };
 
-	virtual ~ShieldTypeClass() override = default;
+	void LoadFromINI(CCINIClass* pINI);
+	void LoadFromStream(PhobosStreamReader& Stm);
+	void SaveToStream(PhobosStreamWriter& Stm);
 
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	bool HasTint() const
+	{
+		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
+	}
 
-	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio);
-	double GetConditionYellow();
-	double GetConditionRed();
+	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const;
+	double GetConditionYellow() const;
+	double GetConditionRed() const;
 
 private:
 	template <typename T>

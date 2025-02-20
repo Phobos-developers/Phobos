@@ -10,6 +10,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WarheadType/Body.h>
 
 #include <Utilities/Macro.h>
 /*
@@ -118,7 +119,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 {
 	GET(BuildingClass* const, pBuilding, ECX);
 
-	if (pBuilding->IsIronCurtained() || pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || pBuilding->BeingWarpedOut || pBuilding->TemporalTargetingMe)
+	if (pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || pBuilding->BeingWarpedOut || pBuilding->TemporalTargetingMe)
 		return 0;
 
 	int radDelay = RulesExt::Global()->RadApplicationDelay_Building;
@@ -190,7 +191,7 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 
 	GET(FootClass* const, pFoot, ESI);
 
-	if (!pFoot->IsIronCurtained() && pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe &&
+	if (pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe &&
 		(!RulesExt::Global()->UseGlobalRadApplicationDelay || Unsorted::CurrentFrame % RulesClass::Instance->RadApplicationDelay == 0))
 	{
 		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;

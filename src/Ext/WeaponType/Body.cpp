@@ -1,11 +1,10 @@
 #include "Body.h"
-#include <GameStrings.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
-bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const
+bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
 {
 	bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
 	bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
@@ -14,19 +13,27 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, Te
 
 	if (hasRequiredTypes || hasDisallowedTypes || hasRequiredGroups || hasDisallowedGroups)
 	{
+		auto pTechno = pTarget;
+
+		if (this->AttachEffect_CheckOnFirer && pFirer)
+			pTechno = pFirer;
+
+		if (!pTechno)
+			return true;
+
 		auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
-		if (hasDisallowedTypes && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, this->AttachEffect_DisallowedMinCounts, this->AttachEffect_DisallowedMaxCounts))
+		if (hasDisallowedTypes && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, &this->AttachEffect_DisallowedMinCounts, &this->AttachEffect_DisallowedMaxCounts))
 			return false;
 
-		if (hasDisallowedGroups && pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_DisallowedGroups), false, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, this->AttachEffect_DisallowedMinCounts, this->AttachEffect_DisallowedMaxCounts))
+		if (hasDisallowedGroups && pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_DisallowedGroups), false, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, &this->AttachEffect_DisallowedMinCounts, &this->AttachEffect_DisallowedMaxCounts))
 			return false;
 
-		if (hasRequiredTypes &&!pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, this->AttachEffect_RequiredMinCounts, this->AttachEffect_RequiredMaxCounts))
+		if (hasRequiredTypes && !pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, &this->AttachEffect_RequiredMinCounts, &this->AttachEffect_RequiredMaxCounts))
 			return false;
 
 		if (hasRequiredGroups &&
-			!pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_RequiredGroups), true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, this->AttachEffect_RequiredMinCounts, this->AttachEffect_RequiredMaxCounts))
+			!pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_RequiredGroups), true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, &this->AttachEffect_RequiredMinCounts, &this->AttachEffect_RequiredMaxCounts))
 			return false;
 	}
 
@@ -66,6 +73,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
+	this->ProjectileRange.Read(exINI, pSection, "ProjectileRange");
 
 	this->Bolt_Disable1.Read(exINI, pSection, "Bolt.Disable1");
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
@@ -87,10 +95,13 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
+	this->ChargeTurret_Delays.Read(exINI, pSection, "ChargeTurret.Delays");
 	this->OmniFire_TurnToTarget.Read(exINI, pSection, "OmniFire.TurnToTarget");
+	this->FireOnce_ResetSequence.Read(exINI, pSection, "FireOnce.ResetSequence");
 	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
 	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
+	this->ExtraWarheads_FullDetonation.Read(exINI, pSection, "ExtraWarheads.FullDetonation");
 	this->AmbientDamage_Warhead.Read<true>(exINI, pSection, "AmbientDamage.Warhead");
 	this->AmbientDamage_IgnoreTarget.Read(exINI, pSection, "AmbientDamage.IgnoreTarget");
 	this->AttachEffect_RequiredTypes.Read(exINI, pSection, "AttachEffect.RequiredTypes");
@@ -101,6 +112,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_RequiredMaxCounts.Read(exINI, pSection, "AttachEffect.RequiredMaxCounts");
 	this->AttachEffect_DisallowedMinCounts.Read(exINI, pSection, "AttachEffect.DisallowedMinCounts");
 	this->AttachEffect_DisallowedMaxCounts.Read(exINI, pSection, "AttachEffect.DisallowedMaxCounts");
+	this->AttachEffect_CheckOnFirer.Read(exINI, pSection, "AttachEffect.CheckOnFirer");
 	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
 	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
 }
@@ -110,6 +122,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->DiskLaser_Radius)
+		.Process(this->ProjectileRange)
 		.Process(this->Bolt_Disable1)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)
@@ -127,10 +140,13 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)
 		.Process(this->ROF_RandomDelay)
+		.Process(this->ChargeTurret_Delays)
 		.Process(this->OmniFire_TurnToTarget)
+		.Process(this->FireOnce_ResetSequence)
 		.Process(this->ExtraWarheads)
 		.Process(this->ExtraWarheads_DamageOverrides)
 		.Process(this->ExtraWarheads_DetonationChances)
+		.Process(this->ExtraWarheads_FullDetonation)
 		.Process(this->AmbientDamage_Warhead)
 		.Process(this->AmbientDamage_IgnoreTarget)
 		.Process(this->AttachEffect_RequiredTypes)
@@ -141,6 +157,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_RequiredMaxCounts)
 		.Process(this->AttachEffect_DisallowedMinCounts)
 		.Process(this->AttachEffect_DisallowedMaxCounts)
+		.Process(this->AttachEffect_CheckOnFirer)
 		.Process(this->AttachEffect_IgnoreFromSameSource)
 		.Process(this->KickOutPassengers)
 		;
@@ -223,6 +240,11 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 	if (range == -512)
 		return range;
 
+	return WeaponTypeExt::GetRangeWithModifiers(pThis, pFirer, range);
+}
+
+int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range)
+{
 	auto pTechno = pFirer;
 
 	if (pTechno->Transporter && pTechno->Transporter->GetTechnoType()->OpenTopped)
@@ -233,32 +255,34 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 			pTechno = pTechno->Transporter;
 	}
 
-	if (auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno))
+	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+	if (!pTechnoExt->AE.HasRangeModifier)
+		return range;
+
+	int extraRange = 0;
+
+	for (auto const& attachEffect : pTechnoExt->AttachedEffects)
 	{
-		int extraRange = 0;
+		if (!attachEffect->IsActive())
+			continue;
 
-		for (auto const& attachEffect : pTechnoExt->AttachedEffects)
-		{
-			if (!attachEffect->IsActive())
-				continue;
+		auto const type = attachEffect->GetType();
 
-			auto const type = attachEffect->GetType();
+		if (type->WeaponRange_Multiplier == 1.0 && type->WeaponRange_ExtraRange == 0.0)
+			continue;
 
-			if (type->WeaponRange_Multiplier == 1.0 && type->WeaponRange_ExtraRange == 0.0)
-				continue;
+		if (type->WeaponRange_AllowWeapons.size() > 0 && !type->WeaponRange_AllowWeapons.Contains(pThis))
+			continue;
 
-			if (type->WeaponRange_AllowWeapons.size() > 0 && !type->WeaponRange_AllowWeapons.Contains(pThis))
-				continue;
+		if (type->WeaponRange_DisallowWeapons.size() > 0 && type->WeaponRange_DisallowWeapons.Contains(pThis))
+			continue;
 
-			if (type->WeaponRange_DisallowWeapons.size() > 0 && type->WeaponRange_DisallowWeapons.Contains(pThis))
-				continue;
-
-			range = static_cast<int>(range * Math::max(type->WeaponRange_Multiplier, 0.0));
-			extraRange += static_cast<int>(type->WeaponRange_ExtraRange * Unsorted::LeptonsPerCell);
-		}
-
-		range += extraRange;
+		range = static_cast<int>(range * Math::max(type->WeaponRange_Multiplier, 0.0));
+		extraRange += static_cast<int>(type->WeaponRange_ExtraRange * Unsorted::LeptonsPerCell);
 	}
+
+	range += extraRange;
 
 	return Math::max(range, 0);
 }

@@ -17,13 +17,18 @@ public:
 	void AI();
 	void AI_Temporal();
 	void KillAnim();
-	void SetAnimationVisibility(bool visible);
-	AttachEffectTypeClass* GetType() const;
+	void CreateAnim();
+	void UpdateCumulativeAnim();
+	void TransferCumulativeAnim(AttachEffectClass* pSource);
+	bool CanShowAnim() const;
+	void SetAnimationTunnelState(bool visible);
+	AttachEffectTypeClass* GetType() const { return this->Type; }
+	int GetRemainingDuration() const { return this->Duration; }
 	void RefreshDuration(int durationOverride = 0);
 	bool ResetIfRecreatable();
-	bool IsSelfOwned() const;
+	bool IsSelfOwned() const { return this->Source == this->Techno; }
 	bool HasExpired() const;
-	bool AllowedToBeActive() const;
+	bool ShouldBeDiscardedNow() const;
 	bool IsActive() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
 
@@ -31,25 +36,20 @@ public:
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
 
-	static bool Attach(AttachEffectTypeClass* pType, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
-		AbstractClass* pSource, int durationOverride = 0, int delay = 0, int initialDelay = 0, int recreationDelay = -1);
-
-	static int Attach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
-		AbstractClass* pSource, std::vector<int>& durationOverrides, std::vector<int> const& delays, std::vector<int> const& initialDelays, std::vector<int> const& recreationDelays);
-
-	static int Detach(AttachEffectTypeClass* pType, TechnoClass* pTarget,int minCount = -1, int maxCount = -1);
-	static int Detach(std::vector<AttachEffectTypeClass*> const& types, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts);
-	static int DetachByGroups(std::vector<std::string> const& groups, TechnoClass* pTarget, std::vector<int> const& minCounts, std::vector<int> const& maxCounts);
+	static int Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo);
+	static int Detach(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
+	static int DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo);
 	static void TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget);
 
 private:
 	void OnlineCheck();
 	void CloakCheck();
-	void CreateAnim();
+	void AnimCheck();
 
-	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs,
-		HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, int durationOverride = 0, int delay = 0, int initialDelay = 0, int recreationDelay = -1);
+	static AttachEffectClass* CreateAndAttach(AttachEffectTypeClass* pType, TechnoClass* pTarget, std::vector<std::unique_ptr<AttachEffectClass>>& targetAEs, HouseClass* pInvokerHouse, TechnoClass* pInvoker,
+		AbstractClass* pSource, AEAttachParams const& attachInfo);
 
+	static int DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo, std::vector<AttachEffectTypeClass*> const& types);
 	static int RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass* pTarget, int minCount, int maxCount);
 
 	template <typename T>
@@ -68,6 +68,7 @@ private:
 	AbstractClass* Source;
 	AnimClass* Animation;
 	bool IsAnimHidden;
+	bool IsInTunnel;
 	bool IsUnderTemporal;
 	bool IsOnline;
 	bool IsCloaked;
@@ -75,6 +76,38 @@ private:
 	bool NeedsDurationRefresh;
 
 public:
-	bool IsFirstCumulativeInstance;
+	bool HasCumulativeAnim;
+	bool ShouldBeDiscarded;
 };
 
+// Container for TechnoClass-specific AttachEffect fields.
+struct AttachEffectTechnoProperties
+{
+	double FirepowerMultiplier;
+	double ArmorMultiplier;
+	double SpeedMultiplier;
+	double ROFMultiplier;
+	bool Cloakable;
+	bool ForceDecloak;
+	bool DisableWeapons;
+	bool HasRangeModifier;
+	bool HasTint;
+	bool ReflectDamage;
+	bool HasOnFireDiscardables;
+	bool HasRestrictedArmorMultipliers;
+
+	AttachEffectTechnoProperties() :
+		FirepowerMultiplier { 1.0 }
+		, ArmorMultiplier { 1.0 }
+		, SpeedMultiplier { 1.0 }
+		, ROFMultiplier { 1.0 }
+		, Cloakable { false }
+		, ForceDecloak { false }
+		, DisableWeapons { false }
+		, HasRangeModifier { false }
+		, HasTint { false }
+		, ReflectDamage { false }
+		, HasOnFireDiscardables { false }
+		, HasRestrictedArmorMultipliers { false }
+	{ }
+};

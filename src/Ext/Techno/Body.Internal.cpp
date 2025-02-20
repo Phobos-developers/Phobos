@@ -15,11 +15,7 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 	{
 		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
-			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
-			{
-				this->LaserTrails.push_back(
-					LaserTrailClass { pLaserType, this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret });
-			}
+			this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
 		}
 	}
 }
@@ -84,7 +80,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
-	auto pickedFLHs = pExt->WeaponBurstFLHs;
+	std::span<std::vector<CoordStruct>> pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{
@@ -152,13 +148,11 @@ void TechnoExt::ExtData::InitializeAttachEffects()
 {
 	if (auto pTypeExt = this->TypeExtData)
 	{
-		if (pTypeExt->AttachEffect_AttachTypes.size() < 1)
+		if (pTypeExt->AttachEffects.AttachTypes.size() < 1)
 			return;
 
 		auto const pThis = this->OwnerObject();
-
-		AttachEffectClass::Attach(pTypeExt->AttachEffect_AttachTypes, pThis, pThis->Owner, pThis, pThis,
-			pTypeExt->AttachEffect_DurationOverrides, pTypeExt->AttachEffect_Delays, pTypeExt->AttachEffect_InitialDelays, pTypeExt->AttachEffect_RecreationDelays);
+		AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 	}
 }
 
@@ -198,45 +192,46 @@ int TechnoExt::GetCustomTintIntensity(TechnoClass* pThis)
 	return intensity;
 }
 
-// Applies custom tint color and intensity from TechnoTypes & Warheads on provided values.
+// Applies custom tint color and intensity from TechnoTypes and any AttachEffects and shields it might have on provided values.
 void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity)
 {
-	if (!pThis)
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
+	bool hasShieldTint = pExt->Shield && pExt->Shield->IsActive() && pExt->Shield->GetType()->HasTint();
+
+	// Bail out early if no custom tint is applied.
+	if (!hasTechnoTint && !pExt->AE.HasTint && !hasShieldTint)
 		return;
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if ((pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity != 0.0) && EnumFunctions::CanTargetHouse(pTypeExt->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+	if (hasTechnoTint && EnumFunctions::CanTargetHouse(pTypeExt->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
 	{
 		color |= Drawing::RGB_To_Int(pTypeExt->Tint_Color);
 		intensity += static_cast<int>(pTypeExt->Tint_Intensity * 1000);
 	}
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	for (auto const& attachEffect : pExt->AttachedEffects)
+	if (pExt->AE.HasTint)
 	{
-		auto const type = attachEffect->GetType();
+		for (auto const& attachEffect : pExt->AttachedEffects)
+		{
+			auto const type = attachEffect->GetType();
 
-		if (!attachEffect->IsActive() || !type->HasTint())
-			continue;
+			if (!attachEffect->IsActive() || !type->HasTint())
+				continue;
 
-		if (!EnumFunctions::CanTargetHouse(type->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
-			continue;
+			if (!EnumFunctions::CanTargetHouse(type->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+				continue;
 
-		color |= Drawing::RGB_To_Int(type->Tint_Color);
-		intensity += static_cast<int>(type->Tint_Intensity * 1000);
+			color |= Drawing::RGB_To_Int(type->Tint_Color);
+			intensity += static_cast<int>(type->Tint_Intensity * 1000);
+		}
 	}
 
-	if (pExt->Shield && pExt->Shield->IsActive())
+	if (hasShieldTint)
 	{
 		auto const pShieldType = pExt->Shield->GetType();
-
-		if (pShieldType->Tint_Color.isset())
-			color |= Drawing::RGB_To_Int(pShieldType->Tint_Color);
-
-		if (pShieldType->Tint_Intensity != 0.0)
-			intensity += static_cast<int>(pShieldType->Tint_Intensity * 1000);
+		color |= Drawing::RGB_To_Int(pShieldType->Tint_Color);
+		intensity += static_cast<int>(pShieldType->Tint_Intensity * 1000);
 	}
 }
 
