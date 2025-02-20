@@ -14,32 +14,28 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	bool isInfantryHeal = false;
 	int selfHealFrames = 0;
 
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::NoHeal)
+		return;
+
+	bool hasInfantrySelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
+	bool hasUnitSelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Units;
+	bool isOrganic = false;
+
+	if (pThis->WhatAmI() == AbstractType::Infantry || (pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit))
+		isOrganic = true;
+
+	if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)))
 	{
-		if (pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::None)
-			return;
-
-		bool hasInfantrySelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
-		bool hasUnitSelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Units;
-		bool isOrganic = false;
-
-		if (pThis->WhatAmI() == AbstractType::Infantry ||
-			pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit)
-		{
-			isOrganic = true;
-		}
-
-		if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)))
-		{
-			drawPip = true;
-			selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
-			isInfantryHeal = true;
-		}
-		else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)))
-		{
-			drawPip = true;
-			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
-		}
+		drawPip = true;
+		selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
+		isInfantryHeal = true;
+	}
+	else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)))
+	{
+		drawPip = true;
+		selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
 	}
 
 	if (drawPip)
@@ -178,13 +174,20 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	if (frameIndex != -1 && pShapeFile)
 	{
-		offset.X += 5;
-		offset.Y += 2;
-
-		if (pThis->WhatAmI() != AbstractType::Infantry)
+		switch (pThis->WhatAmI())
 		{
-			offset.X += 5;
-			offset.Y += 4;
+		case AbstractType::Infantry:
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Infantry;
+			break;
+		case AbstractType::Building:
+			if (RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor.isset())
+				offset = GetBuildingSelectBracketPosition(pThis, RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor) + RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
+			else
+				offset += RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
+			break;
+		default:
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units;
+			break;
 		}
 
 		DSurface::Temp->DrawSHP(
@@ -335,6 +338,12 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 
 		if (value == -1 || maxValue == -1)
 			continue;
+
+		if (pDisplayType->ValueScaleDivisor > 1)
+		{
+			value = Math::max(value / pDisplayType->ValueScaleDivisor, value != 0 ? 1 : 0);
+			maxValue = Math::max(maxValue / pDisplayType->ValueScaleDivisor, maxValue != 0 ? 1 : 0);
+		}
 
 		const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
 		const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;

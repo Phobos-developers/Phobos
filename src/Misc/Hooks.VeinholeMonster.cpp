@@ -1,20 +1,12 @@
-#include <AnimClass.h>
-#include <BuildingClass.h>
-#include <BuildingTypeClass.h>
+#include <Ext/Anim/Body.h>
+
 #include <GameOptionsClass.h>
-#include <GeneralDefinitions.h>
 #include <IonBlastClass.h>
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
-#include <SmudgeTypeClass.h>
-#include <TeleportLocomotionClass.h>
 #include <UnitClass.h>
 #include <VeinholeMonsterClass.h>
 
-#include <Ext/Anim/Body.h>
-#include <Ext/Rules/Body.h>
-
-#include <Utilities/Macro.h>
 
 ///
 /// Veinhole Monster
@@ -22,26 +14,17 @@
 
 // Loads the veinhole monster art
 // Call removed from YR by WW
-DEFINE_HOOK(0x4AD097, DisplayClass_ReadIni_LoadVeinholeArt, 0x5)
+DEFINE_HOOK(0x4AD097, DisplayClass_ReadIni_LoadVeinholeArt, 0x6)
 {
-	enum { ContinueReadIni = 0x4AD0A8 };
-
 	int theater = static_cast<int>(ScenarioClass::Instance->Theater);
-	SmudgeTypeClass::LoadFromIniList(theater);
 	VeinholeMonsterClass::LoadVeinholeArt(theater);
 
-	return ContinueReadIni;
+	return 0;
 }
 
 // Applies damage to the veinhole monster
 DEFINE_HOOK(0x489671, Damage_at_Cell_Update_Veinhole, 0x6)
 {
-	enum
-	{
-		ContinueDrawWall = 0x48967B,
-		ContinueNotWall = 0x4896B2
-	};
-
 	GET(OverlayTypeClass*, pOverlay, EAX);
 	GET(WarheadTypeClass*, pWH, ESI);
 	GET_STACK(CellStruct, pCell, STACK_OFFSET(0xE0, -0x4C));
@@ -55,7 +38,7 @@ DEFINE_HOOK(0x489671, Damage_at_Cell_Update_Veinhole, 0x6)
 			pVeinhole->ReceiveDamage(&damage, 0, pWH, pAttacker, false, false, pAttackingHouse);
 	}
 
-	return pOverlay->Wall ? ContinueDrawWall : ContinueNotWall;
+	return 0;
 }
 
 DEFINE_HOOK(0x6D4656, TacticalClass_Draw_Veinhole, 0x5)
@@ -75,30 +58,17 @@ DEFINE_HOOK(0x5349A5, Map_ClearVectors_Veinhole, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x55B4E1, LogicClass_Update_Veinhole, 0x5)
-{
-	VeinholeMonsterClass::UpdateAllVeinholes();
-	return 0;
-}
+// DEFINE_HOOK(0x55B4E1, LogicClass_Update_Veinhole, 0x5) // Goto ScenarioExt
 
 // Handles the veins' attack animation
 DEFINE_HOOK(0x4243BC, AnimClass_Update_VeinholeAttack, 0x6)
 {
-	enum
-	{
-		ContinueDrawTiberium = 0x4243CC,
-		ContinueNotTiberium = 0x42442E
-	};
-
 	GET(AnimClass*, pAnim, ESI);
 
 	if (pAnim->Type->IsVeins)
 		AnimExt::VeinAttackAI(pAnim);
 
-	GET(AnimClass*, pAnim2, ESI);
-
-	return pAnim2->Type->IsTiberium ?
-		ContinueDrawTiberium : ContinueNotTiberium;
+	return 0;
 }
 
 ///
@@ -298,25 +268,7 @@ DEFINE_HOOK(0x446EAD, BuildingClass_GrandOpening_FreeWeeder_Mission, 0x6)
 }
 
 // Teleport cooldown for weeders
-DEFINE_HOOK(0x719580, TeleportLocomotion_Weeder, 0x6)
-{
-	enum
-	{
-		Skip = 0x7195A0,
-		TeleportChargeTimer = 0x7195BC
-	};
-
-	GET(TeleportLocomotionClass*, pTeleport, ESI);
-
-	if (pTeleport->Owner->WhatAmI() == AbstractType::Unit)
-	{
-		UnitClass* pUnit = (UnitClass*)pTeleport->Owner;
-		if (pUnit->Type->Harvester || pUnit->Type->Weeder)
-			return Skip;
-	}
-
-	return TeleportChargeTimer;
-}
+// DEFINE_HOOK(0x719580, TeleportLocomotion_Weeder, 0x6) //Goto Hooks.Teleport.cpp
 
 // DockUnload bypass for Weeders when teleporting
 DEFINE_HOOK(0x7424BD, UnitClass_AssignDestination_Weeder_Teleport, 0x6)
@@ -356,7 +308,7 @@ DEFINE_HOOK(0x73E9A0, UnitClass_Weeder_StopHarvesting, 0x6)
 
 	if ((pUnit->Type->Harvester || pUnit->Type->Weeder) && pUnit->GetStoragePercentage() == 1.0)
 	{
-		return StopHarvesting;	
+		return StopHarvesting;
 	}
 
 	return Skip;

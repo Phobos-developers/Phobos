@@ -34,19 +34,20 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
 	this->VisibleToHouses.Read(exINI, section, "VisibleToHouses");
 	this->InfoType.Read(exINI, section, "InfoType");
+	this->ValueScaleDivisor.Read(exINI, section, "ValueScaleDivisor");
 }
 
 void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
 	position.X += Offset.Get().X;
-	position.Y -= Offset.Get().Y;
+	position.Y += Offset.Get().Y;
 
 	if (hasShield)
 	{
 		if (Offset_ShieldDelta.isset())
 		{
 			position.X += Offset_ShieldDelta.Get().X;
-			position.Y -= Offset_ShieldDelta.Get().Y;
+			position.Y += Offset_ShieldDelta.Get().Y;
 		}
 		else if (InfoType == DisplayInfoType::Shield)
 		{
@@ -88,8 +89,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 
 	double ratio = static_cast<double>(value) / maxValue;
 	COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
-	RectangleStruct rect = { 0, 0, 0, 0 };
-	DSurface::Composite->GetRect(&rect);
+	RectangleStruct rect = DSurface::Composite->GetRect();
 	rect.Height -= 32; // account for bottom bar
 	const int textHeight = 12;
 	const int pipsHeight = hasShield ? 4 : 0;
@@ -137,8 +137,8 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 	}
 	case TextAlign::Center:
 	{
-		position.X -= valueString.length() * spacing.X / 2;
-		position.Y += valueString.length() * spacing.Y / 2;
+		position.X -= static_cast<int>(valueString.length()) * spacing.X / 2;
+		position.Y += static_cast<int>(valueString.length()) * spacing.Y / 2;
 		break;
 	}
 	case TextAlign::Right:
@@ -211,6 +211,7 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->VisibleToHouses_Observer)
 		.Process(this->VisibleToHouses)
 		.Process(this->InfoType)
+		.Process(this->ValueScaleDivisor)
 		;
 }
 

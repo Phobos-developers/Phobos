@@ -48,29 +48,28 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 
 		if (pAnimType)
 		{
-			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
+			auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
+
+			//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
+			//	? pThis->GetOriginalOwner() : pThis->Owner;
+
+			auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
+			auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
+
+			pAnimExt->SetInvoker(pThis);
+			pAnimExt->FromDeathUnit = true;
+
+			if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
+				pAnimExt->DeathUnitFacing = facing;
+
+			if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
 			{
-				//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
-				//	? pThis->GetOriginalOwner() : pThis->Owner;
-
-				auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-				auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pThis->Owner);
-
-				pAnimExt->SetInvoker(pThis);
-				pAnimExt->FromDeathUnit = true;
-
-				if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
-					pAnimExt->DeathUnitFacing = facing;
-
-				if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
+				if (pThis->HasTurret())
 				{
-					if (pThis->HasTurret())
-					{
-						pAnimExt->DeathUnitHasTurret = true;
-						pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.Current();
-					}
+					pAnimExt->DeathUnitHasTurret = true;
+					pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.Current();
 				}
 			}
 		}
@@ -90,11 +89,14 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->CreateUnit_InheritTurretFacings.Read(exINI, pID, "CreateUnit.InheritTurretFacings");
 	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
 	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
+	this->CreateUnit_AIMission.Read(exINI, pID, "CreateUnit.AIMission");
 	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
 	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
 	this->CreateUnit_AlwaysSpawnOnGround.Read(exINI, pID, "CreateUnit.AlwaysSpawnOnGround");
+	this->CreateUnit_SpawnParachutedInAir.Read(exINI, pID, "CreateUnit.SpawnParachutedInAir");
 	this->CreateUnit_ConsiderPathfinding.Read(exINI, pID, "CreateUnit.ConsiderPathfinding");
 	this->CreateUnit_SpawnAnim.Read(exINI, pID, "CreateUnit.SpawnAnim");
+	this->CreateUnit_SpawnHeight.Read(exINI, pID, "CreateUnit.SpawnHeight");
 	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
 	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
 	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
@@ -113,6 +115,21 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->MakeInfantryOwner.Read(exINI, pID, "MakeInfantryOwner");
 	this->ExtraShadow.Read(exINI, pID, "ExtraShadow");
 	this->DetachedReport.Read(exINI, pID, "DetachedReport");
+	this->VisibleTo.Read(exINI, pID, "VisibleTo");
+	this->VisibleTo_ConsiderInvokerAsOwner.Read(exINI, pID, "VisibleTo.ConsiderInvokerAsOwner");
+	this->RestrictVisibilityIfCloaked.Read(exINI, pID, "RestrictVisibilityIfCloaked");
+	this->DetachOnCloak.Read(exINI, pID, "DetachOnCloak");
+	this->ConstrainFireAnimsToCellSpots.Read(exINI, pID, "ConstrainFireAnimsToCellSpots");
+	this->FireAnimDisallowedLandTypes.Read(exINI, pID, "FireAnimDisallowedLandTypes");
+	this->AttachFireAnimsToParent.Read(exINI, pID, "AttachFireAnimsToParent");
+	this->SmallFireCount.Read(exINI, pID, "SmallFireCount");
+	this->SmallFireAnims.Read(exINI, pID, "SmallFireAnims");
+	this->SmallFireChances.Read(exINI, pID, "SmallFireChances");
+	this->SmallFireDistances.Read(exINI, pID, "SmallFireDistances");
+	this->LargeFireCount.Read(exINI, pID, "LargeFireCount");
+	this->LargeFireAnims.Read(exINI, pID, "LargeFireAnims");
+	this->LargeFireChances.Read(exINI, pID, "LargeFireChances");
+	this->LargeFireDistances.Read(exINI, pID, "LargeFireDistances");
 }
 
 template <typename T>
@@ -125,12 +142,15 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateUnit_InheritDeathFacings)
 		.Process(this->CreateUnit_RemapAnim)
 		.Process(this->CreateUnit_Mission)
+		.Process(this->CreateUnit_AIMission)
 		.Process(this->CreateUnit_InheritTurretFacings)
 		.Process(this->CreateUnit_Owner)
 		.Process(this->CreateUnit_RandomFacing)
 		.Process(this->CreateUnit_AlwaysSpawnOnGround)
+		.Process(this->CreateUnit_SpawnParachutedInAir)
 		.Process(this->CreateUnit_ConsiderPathfinding)
 		.Process(this->CreateUnit_SpawnAnim)
+		.Process(this->CreateUnit_SpawnHeight)
 		.Process(this->XDrawOffset)
 		.Process(this->HideIfNoOre_Threshold)
 		.Process(this->Layer_UseObjectLayer)
@@ -149,6 +169,21 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MakeInfantryOwner)
 		.Process(this->ExtraShadow)
 		.Process(this->DetachedReport)
+		.Process(this->VisibleTo)
+		.Process(this->VisibleTo_ConsiderInvokerAsOwner)
+		.Process(this->RestrictVisibilityIfCloaked)
+		.Process(this->DetachOnCloak)
+		.Process(this->ConstrainFireAnimsToCellSpots)
+		.Process(this->FireAnimDisallowedLandTypes)
+		.Process(this->AttachFireAnimsToParent)
+		.Process(this->SmallFireCount)
+		.Process(this->SmallFireAnims)
+		.Process(this->SmallFireChances)
+		.Process(this->SmallFireDistances)
+		.Process(this->LargeFireCount)
+		.Process(this->LargeFireAnims)
+		.Process(this->LargeFireChances)
+		.Process(this->LargeFireDistances)
 		;
 }
 
