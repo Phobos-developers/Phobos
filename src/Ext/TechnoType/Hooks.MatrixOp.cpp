@@ -32,7 +32,7 @@ DEFINE_HOOK(0x6F3C56, TechnoClass_GetFLH_TurretMultiOffset, 0x0)
 	return 0x6F3C6D;
 }
 
-DEFINE_HOOK(0x6F3E6E, FootClass_firecoord_6F3D60_TurretMultiOffset, 0x0)
+DEFINE_HOOK(0x6F3E6E, TechnoClass_ActionLines_TurretMultiOffset, 0x0)
 {
 	LEA_STACK(Matrix3D*, mtx, STACK_OFFSET(0xCC, -0x90));
 	GET(TechnoTypeClass*, technoType, EBP);
@@ -48,7 +48,7 @@ DEFINE_HOOK(0x73B780, UnitClass_DrawVXL_TurretMultiOffset, 0x0)
 
 	auto const pTypeData = TechnoTypeExt::ExtMap.Find(technoType);
 
-	if (pTypeData && *pTypeData->TurretOffset.GetEx() == CoordStruct { 0, 0, 0 })
+	if (*pTypeData->TurretOffset.GetEx() == CoordStruct { 0, 0, 0 })
 		return 0x73B78A;
 
 	return 0x73B790;
@@ -65,7 +65,7 @@ DEFINE_HOOK(0x73BA4C, UnitClass_DrawVXL_TurretMultiOffset1, 0x0)
 	return 0x73BA68;
 }
 
-DEFINE_HOOK(0x73C890, UnitClass_Draw_1_TurretMultiOffset, 0x0)
+DEFINE_HOOK(0x73C890, UnitClass_DrawSHP_BarrelMultiOffset, 0x0)
 {
 	LEA_STACK(Matrix3D*, mtx, 0x80);
 	GET(TechnoTypeClass*, technoType, EAX);
@@ -75,7 +75,7 @@ DEFINE_HOOK(0x73C890, UnitClass_Draw_1_TurretMultiOffset, 0x0)
 	return 0x73C8B7;
 }
 
-DEFINE_HOOK(0x43E0C4, BuildingClass_Draw_43DA80_TurretMultiOffset, 0x0)
+DEFINE_HOOK(0x43E0C4, BuildingClass_Draw_VXLTurretMultiOffset, 0x0)
 {
 	LEA_STACK(Matrix3D*, mtx, 0x60);
 	GET(TechnoTypeClass*, technoType, EDX);
@@ -122,7 +122,7 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 	if (pThis->GetHeight() <= 0)
 	{
 		REF_STACK(Matrix3D, mat, STACK_OFFSET(0x38, -0x30));
-		auto slope_idx = MapClass::Instance->TryGetCellAt(pThis->Location)->SlopeIndex;
+		auto slope_idx = MapClass::Instance->GetCellAt(pThis->Location)->SlopeIndex;
 		mat = Matrix3D::VoxelRampMatrix[slope_idx] * mat;
 		float ars = pThis->AngleRotatedSideways;
 		float arf = pThis->AngleRotatedForwards;
@@ -147,7 +147,7 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	// no more TiltCrashJumpjet, do that above svp
 	bool const onGround = pThis->State == JumpjetLocomotionClass::State::Grounded;
 	// Man, what can I say, you don't want to stick your rotor into the ground
-	auto slope_idx = MapClass::Instance->TryGetCellAt(linked->Location)->SlopeIndex;
+	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
 	*ret = Matrix3D::VoxelRampMatrix[onGround ? slope_idx : 0];
 	auto curf = pThis->LocomotionFacing.Current();
 	ret->RotateZ((float)curf.GetRadian<32>());
@@ -196,7 +196,7 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<LocomotionClass*>(iloco);
 	auto linked = pThis->LinkedTo;
-	auto slope_idx = MapClass::Instance->TryGetCellAt(linked->Location)->SlopeIndex;
+	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
 
 	if (pIndex && pIndex->Is_Valid_Key())
 		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
