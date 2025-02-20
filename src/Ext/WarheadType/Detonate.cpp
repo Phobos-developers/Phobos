@@ -195,15 +195,15 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 	if (mission == Mission::Construction || mission == Mission::Selling)
 		return;
 
-	const auto pType = pBuilding->Type;
-
 	if (this->BuildingSell)
 	{
-		if (!pType->Unsellable || this->BuildingSell_IgnoreUnsellable)
+		if ((pBuilding->CanBeSold() && !pBuilding->IsStrange()) || this->BuildingSell_IgnoreUnsellable)
 			pBuilding->Sell(1);
 
 		return;
 	}
+
+	const auto pType = pBuilding->Type;
 
 	if (!pType->UndeploysInto || (pType->ConstructionYard && !GameModeOptionsClass::Instance->MCVRedeploy))
 		return;
