@@ -692,6 +692,20 @@ DEFINE_HOOK(0x444B83, BuildingClass_ExitObject_BarracksExitCell, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x54BC99, JumpjetLocomotionClass_Ascending_BarracksExitCell, 0x6)
+{
+	enum { Continue = 0x54BCA3 };
+
+	GET(BuildingTypeClass*, pType, EAX);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->BarracksExitCell.isset())
+		return Continue;
+
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region BuildingFiring
