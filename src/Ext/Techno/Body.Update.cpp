@@ -502,6 +502,27 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			}
 		}
 
+		if (auto pInf = specific_cast<InfantryClass*>(pFoot))
+		{
+			// It's still not recommended to have such idea, please avoid using this
+			if (static_cast<InfantryTypeClass*>(pOldType)->Deployer && !static_cast<InfantryTypeClass*>(pCurrentType)->Deployer)
+			{
+				switch (pInf->SequenceAnim)
+				{
+				case Sequence::Deploy:
+				case Sequence::Deployed:
+				case Sequence::DeployedIdle:
+					pInf->PlayAnim(Sequence::Ready, true);
+					break;
+				case Sequence::DeployedFire:
+					pInf->PlayAnim(Sequence::FireUp, true);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+
 		if (pOldType->Locomotor == LocomotionClass::CLSIDs::Teleport && pCurrentType->Locomotor != LocomotionClass::CLSIDs::Teleport && pThis->WarpingOut)
 			this->HasRemainingWarpInDelay = true;
 	}
