@@ -1870,15 +1870,17 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 ### Sell or undeploy building on impact
 
 - Warheads with `BuildingSell` can now sell buildings with build up image. It has a higher priority than `BuildingUndeploy`.
+  - `BuildingSell.IgnoreUnsellable` controls whether it can ignore `Unsellable` and sell buildings.
 - Warheads with `BuildingUndeploy` can now undeploy buildings with `UndeploysInto`.
   - `BuildingUndeploy.Leave` controls whether need to let them move to low threat locations nearby. The threat degree here is calculated using the technos' cost. If a nearby techno has no primary weapons or is owned by your allies, it will not be included.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                  ; Warhead
-BuildingSell=false             ; boolean
-BuildingUndeploy=false         ; boolean
-BuildingUndeploy.Leave=false   ; boolean
+[SOMEWARHEAD]                        ; Warhead
+BuildingSell=false                   ; boolean
+BuildingSell.IgnoreUnsellable=false  ; boolean
+BuildingUndeploy=false               ; boolean
+BuildingUndeploy.Leave=false         ; boolean
 ```
 
 ## Weapons
