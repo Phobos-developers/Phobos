@@ -600,6 +600,8 @@ Phobos fixes:
 - Fixed AircraftTypes gaining self-healing from `UnitsGainSelfHeal` by default (while not displaying the pip) when they should not (by Starkku)
 - Fixed `LaunchSW.IgnoreInhibitors` and `SW.Next.IgnoreInhibitors` overriding corresponding `IgnoreDesignators` settings (by Ollerus)
 - Type conversion on Warheads and Superweapons will no longer recursively convert units if applicable conversion pairs are listed, and only first applicable pair takes effect (by Starkku)
+- Fixed `Ammo.DeployUnlockMinimumAmount`/`Ammo.DeployUnlockMaximumAmount` behavior inside tank bunkers (by Fryone)
+- Fixed `Ammo.AddOnDeploy` behavior inside tank bunkers for non-converters (by Fryone)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.

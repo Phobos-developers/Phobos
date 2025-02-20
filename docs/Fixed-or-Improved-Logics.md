@@ -1239,6 +1239,10 @@ In `rulesmd.ini`:
 Ammo.AddOnDeploy=0      ; integer
 ```
 
+```{warning}
+Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
+```
+
 ## Veinholes & Weeds
 
 ### Veinholes
