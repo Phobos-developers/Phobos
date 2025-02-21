@@ -198,7 +198,7 @@ Due to a technical issue, there is a chance that ***the first line of a included
 ```
 
 ```{warning}
-When this feature is enabled, the [Ares equivalent of `[#include]`](https://ares-developers.github.io/Ares-docs/new/misc/include.html) is disabled!
+When this feature is enabled, `[#include]` (equivalent [Ares feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html)) is disabled because of technical incompatibilities.
 ```
 
 ### Section inheritance

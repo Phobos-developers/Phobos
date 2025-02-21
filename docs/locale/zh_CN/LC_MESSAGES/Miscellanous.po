@@ -451,12 +451,10 @@ msgstr "由于技术问题，包含文件的***第一行有可能会被跳过***
 
 #: ../../Miscellanous.md:201
 msgid ""
-"When this feature is enabled, the [Ares equivalent of `[#include]`](https"
-"://ares-developers.github.io/Ares-docs/new/misc/include.html) is "
-"disabled!"
+"When this feature is enabled, `[#include]` (equivalent [Ares feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html)) is disabled because of technical incompatibilities."
 msgstr ""
-"当此功能启用后，[Ares 的 `[$Include]` 功能](https://ares-developers.github.io/Ares-"
-"docs/new/misc/include.html) 将被禁用！"
+"当此功能启用后，由于技术不兼容所以 [Ares 与此等效的 `[#Include]` 功能](https://ares-developers.github.io/Ares-"
+"docs/new/misc/include.html) 将被禁用。"
 
 #: ../../Miscellanous.md:204
 msgid "Section inheritance"
