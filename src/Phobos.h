@@ -4,8 +4,6 @@
 
 #include <string>
 
-#define CAN_USE_ARES 1
-
 class CCINIClass;
 class AbstractClass;
 
@@ -64,6 +62,7 @@ public:
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
 		static const wchar_t* ShowBriefingResumeButtonLabel;
+		static const wchar_t* SWShotsFormat;
 		static char ShowBriefingResumeButtonStatusLabel[0x20];
 	};
 
@@ -91,6 +90,8 @@ public:
 		static bool ShowWeedsCounter;
 		static bool ShowPlanningPath;
 		static bool HideLightFlashEffects;
+		static bool ShowFlashOnSelecting;
+		static bool UnitPowerDrain;
 	};
 
 	class Misc

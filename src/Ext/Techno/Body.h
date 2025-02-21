@@ -33,6 +33,7 @@ public:
 		CDTimerClass PassengerDeletionTimer;
 		ShieldTypeClass* CurrentShieldType;
 		int LastWarpDistance;
+		CDTimerClass ChargeTurretTimer; // Used for charge turrets instead of RearmTimer if weapon has ChargeTurret.Delays set.
 		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
@@ -44,6 +45,7 @@ public:
 		CDTimerClass DeployFireTimer;
 		bool SkipTargetChangeResetSequence;
 		bool ForceFullRearmDelay;
+		bool LastRearmWasFullDelay;
 		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
 		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
@@ -56,6 +58,7 @@ public:
 		bool HasRemainingWarpInDelay;          // Converted from object with Teleport Locomotor to one with a different Locomotor while still phasing in OR set if ChronoSphereDelay > 0.
 		int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
+		bool KeepTargetOnMove;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -68,6 +71,7 @@ public:
 			, PassengerDeletionTimer {}
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
+			, ChargeTurretTimer {}
 			, AutoDeathTimer {}
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
@@ -79,6 +83,7 @@ public:
 			, DeployFireTimer {}
 			, SkipTargetChangeResetSequence { false }
 			, ForceFullRearmDelay { false }
+			, LastRearmWasFullDelay { false }
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
 			, CanCurrentlyDeployIntoBuilding { false }
@@ -88,6 +93,7 @@ public:
 			, HasRemainingWarpInDelay { false }
 			, LastWarpInDelay { 0 }
 			, IsBeingChronoSphered { false }
+			, KeepTargetOnMove { false }
 		{ }
 
 		void OnEarlyUpdate();
@@ -111,6 +117,7 @@ public:
 		void UpdateSelfOwnedAttachEffects();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
+		int ApplyForceWeaponInRange(TechnoClass* pTarget, int currentDistance);
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
@@ -135,6 +142,7 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static bool IsActive(TechnoClass* pThis);
+	static bool IsActiveIgnoreEMP(TechnoClass* pThis);
 
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);
@@ -146,7 +154,6 @@ public:
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo = false);
-	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
@@ -180,5 +187,4 @@ public:
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
-	static int ApplyForceWeaponInRange(TechnoClass* pThis, std::vector<int> weaponIndices, std::vector<double> rangeOverrides, bool applyRangeModifiers, int currentDistance);
 };

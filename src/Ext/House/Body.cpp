@@ -361,28 +361,6 @@ void HouseExt::GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSph
 	}
 }
 
-// Gives player houses names based on their spawning spot
-void HouseExt::SetSkirmishHouseName(HouseClass* pHouse)
-{
-	int spawn_position = pHouse->GetSpawnPosition();
-
-	// Default behaviour if something went wrong
-	if (spawn_position < 0 || spawn_position > 7)
-	{
-		if (pHouse->IsHumanPlayer)
-			sprintf(pHouse->PlainName, "<human player>");
-		else
-			sprintf(pHouse->PlainName, "Computer");
-	}
-	else
-	{
-		const char letters[9] = "ABCDEFGH";
-		sprintf(pHouse->PlainName, "<Player @ %c>", letters[spawn_position]);
-	}
-
-	Debug::Log("%s, %ls, position %d\n", pHouse->PlainName, pHouse->UIName, spawn_position);
-}
-
 // Ares
 HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRandom, HouseClass* const pDefault, HouseClass* const pInvoker, HouseClass* const pVictim)
 {
@@ -643,6 +621,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->RestrictedFactoryPlants)
 		.Process(this->LastBuiltNavalVehicleType)
 		.Process(this->ProducingNavalUnitTypeIndex)
+		.Process(this->CombatAlertTimer)
 		.Process(this->NumAirpads_NonMFB)
 		.Process(this->NumBarracks_NonMFB)
 		.Process(this->NumWarFactories_NonMFB)
@@ -650,6 +629,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->NumShipyards_NonMFB)
 		.Process(this->AIFireSaleDelayTimer)
 		.Process(this->SuspendedEMPulseSWs)
+		.Process(this->SuperExts)
 		;
 }
 
@@ -901,7 +881,8 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 int QueuedNum(const HouseClass* pHouse, const TechnoTypeClass* pType)
 {
 	const AbstractType absType = pType->WhatAmI();
-	const FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, BuildCat::DontCare);
+	const BuildCat buildCat = (pType->WhatAmI() == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
+	const FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, buildCat);
 	int queued = 0;
 
 	if (pFactory)
@@ -921,7 +902,8 @@ int QueuedNum(const HouseClass* pHouse, const TechnoTypeClass* pType)
 void RemoveProduction(const HouseClass* pHouse, const TechnoTypeClass* pType, int num)
 {
 	const AbstractType absType = pType->WhatAmI();
-	FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, BuildCat::DontCare);
+	const BuildCat buildCat = (pType->WhatAmI() == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
+	FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, buildCat);
 	if (pFactory)
 	{
 		int queued = pFactory->CountTotal(pType);

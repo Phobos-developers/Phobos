@@ -172,7 +172,7 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	int weaponIndex = -1;
 	auto pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndex);
 
-	if ((pTechnoType->TurretCount > 0 && !pTechnoType->IsGattling) || !pWallOverlayType || !pWallOverlayType->Wall)
+	if ((pTechnoType->TurretCount > 0 && !pTechnoType->IsGattling) || !pWallOverlayType || !pWallOverlayType->Wall || !RulesExt::Global()->AllowWeaponSelectAgainstWalls)
 		return weaponIndex;
 	else if (weaponIndex == -1)
 		return 0;
@@ -187,8 +187,8 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 		pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 		bool aeForbidsSecondary = pWeaponExt && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
 
-		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood)
-			&& (!TechnoTypeExt::ExtMap.Find(pTechnoType)->NoSecondaryWeaponFallback || aeForbidsPrimary)) && !aeForbidsSecondary)
+		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood))
+			&& (!TechnoTypeExt::ExtMap.Find(pTechnoType)->NoSecondaryWeaponFallback || aeForbidsPrimary) && !aeForbidsSecondary)
 		{
 			return weaponIndexSec;
 		}
@@ -199,27 +199,39 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	return weaponIndex;
 }
 
-int TechnoExt::ApplyForceWeaponInRange(TechnoClass* pThis, std::vector<int> weaponIndices, std::vector<double> rangeOverrides, bool applyRangeModifiers, int currentDistance)
+int TechnoExt::ExtData::ApplyForceWeaponInRange(TechnoClass* pTarget, int currentDistance)
 {
 	int forceWeaponIndex = -1;
+	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = this->TypeExtData;
+	
+	auto const& weaponIndices = pTypeExt->ForceWeapon_InRange;
+	auto const& rangeOverrides = pTypeExt->ForceWeapon_InRange_Overrides;
+	const bool applyRangeModifiers = pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers;
+
+	const int defaultWeaponIndex = pThis->SelectWeapon(pTarget);
+	auto const pDefaultWeapon = pThis->GetWeapon(defaultWeaponIndex)->WeaponType;
 
 	for (size_t i = 0; i < weaponIndices.size(); i++)
 	{
-		int distance = 0;
+		int range = 0;
 
 		// Value below 0 means Range won't be overriden
 		if (i < rangeOverrides.size() && rangeOverrides[i] > 0)
-			distance = static_cast<int>(rangeOverrides[i] * 256.0);
+			range = static_cast<int>(rangeOverrides[i] * Unsorted::LeptonsPerCell);
 
 		if (weaponIndices[i] >= 0)
 		{
-			auto const pWeapon = pThis->GetWeapon(weaponIndices[i])->WeaponType;
-			distance = distance > 0 ? distance : pWeapon->Range;
+			if (range > 0 || applyRangeModifiers)
+			{
+				auto const pWeapon = weaponIndices[i] == defaultWeaponIndex ? pDefaultWeapon : pThis->GetWeapon(weaponIndices[i])->WeaponType;
+				range = range > 0 ? range : pWeapon->Range;
 
-			if (applyRangeModifiers)
-				distance = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis, distance);
+				if (applyRangeModifiers)
+					range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis, range);
+			}
 
-			if (currentDistance <= distance)
+			if (currentDistance <= range)
 			{
 				forceWeaponIndex = weaponIndices[i];
 				break;
@@ -227,12 +239,16 @@ int TechnoExt::ApplyForceWeaponInRange(TechnoClass* pThis, std::vector<int> weap
 		}
 		else
 		{
-			// Apply range modifiers regardless of weapon
-			if (applyRangeModifiers)
-				distance = WeaponTypeExt::GetRangeWithModifiers(nullptr, pThis, distance);
+			if (range > 0 || applyRangeModifiers)
+			{
+				range = range > 0 ? range : pDefaultWeapon->Range;
+
+				if (applyRangeModifiers)
+					range = WeaponTypeExt::GetRangeWithModifiers(pDefaultWeapon, pThis, range);
+			}
 
 			// Don't force weapon if range satisfied
-			if (currentDistance <= distance)
+			if (currentDistance <= range)
 				break;
 		}
 	}

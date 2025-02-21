@@ -15,11 +15,7 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 	{
 		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
-			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.idxType].get())
-			{
-				this->LaserTrails.push_back(
-					LaserTrailClass { pLaserType, this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret });
-			}
+			this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
 		}
 	}
 }
@@ -84,7 +80,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
-	auto pickedFLHs = pExt->WeaponBurstFLHs;
+	std::span<std::vector<CoordStruct>> pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{
