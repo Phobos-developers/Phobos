@@ -50,7 +50,7 @@ Due to technical incompatibilities, enabling this feature disables [Ares' Custom
 ### Save variables to file
 
 - There's a [new hotkey](User-Interface.md#save-variables) to write all local variables to `locals.ini` and all global variables to `globals.ini`. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
-- Variables will be also automatically saved to file on scenario end if `[General]->SaveVariablesOnScenarioEnd=true` is set in `rulesmd.ini`.
+- Variables will be also automatically saved to file on scenario end if `[General] -> SaveVariablesOnScenarioEnd=true` is set in `rulesmd.ini`.
 - Variable section will use the same name as the mission file name in capital letters, i.e. `[MYCAMPAIGN.MAP]`.
   - Variables will be written as key-value pairs, i.e. `MyVariable=1`.
 - If an INI file with the same name (`locals.ini`/`globals.ini`) doesn't exist, it will be created. If it exists, all sections will be preserved.
@@ -198,7 +198,7 @@ Due to a technical issue, there is a chance that ***the first line of a included
 ```
 
 ```{warning}
-When this feature is enabled, the [Ares equivalent of `[$Include]`](https://ares-developers.github.io/Ares-docs/new/misc/include.html) is disabled!
+When this feature is enabled, `[#include]` (equivalent [Ares feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html)) is disabled because of technical incompatibilities.
 ```
 
 ### Section inheritance

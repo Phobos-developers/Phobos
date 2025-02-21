@@ -61,8 +61,8 @@ msgid "If a pre-placed building has a `NaturalParticleSystem`, it used to always
 msgstr "如果预先放置了拥有 `NaturalParticleSystem` 的建筑，它总是在游戏开始时被创建。这一行为已被移除。"
 
 #: ../../AI-Scripting-and-Mapping.md:15
-msgid "Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General]` -> `AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively."
-msgstr "用于 AI 脚本动作的超级武器 `56 超时空传送至建筑`、`57 超时空传送至目标` 和 `10104 超时空传送至敌方基地` 现在可以通过 `[General]` -> `AIChronoSphereSW` 和 `AIChronoWarpSW` 分别明确设置。如果设置了 `AIChronoSphereSW` 但没有设置 `AIChronoWarpSW`，那么游戏会检查前者指定的 `SW.PostDependent` 来获取关联的超级武器。如果也没有设置那么会分别使用 `[SuperWeaponTypes]` 列表中最后一个 `Type=ChronoSphere` 和 `Type=ChronoWarp` 的超级武器。"
+msgid "Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively."
+msgstr "用于 AI 脚本动作的超级武器 `56 超时空传送至建筑`、`57 超时空传送至目标` 和 `10104 超时空传送至敌方基地` 现在可以通过 `[General] -> AIChronoSphereSW` 和 `AIChronoWarpSW` 分别明确设置。如果设置了 `AIChronoSphereSW` 但没有设置 `AIChronoWarpSW`，那么游戏会检查前者指定的 `SW.PostDependent` 来获取关联的超级武器。如果也没有设置那么会分别使用 `[SuperWeaponTypes]` 列表中最后一个 `Type=ChronoSphere` 和 `Type=ChronoWarp` 的超级武器。"
 
 #: ../../AI-Scripting-and-Mapping.md:17
 msgid "Singleplayer Mission Maps"
@@ -77,8 +77,8 @@ msgid "In singleplayer campaign missions you can now decide whether AI can repai
 msgstr "在单人战役中你可以决定 AI 是否修复由 Deliver 超武（*Ares 功能*）提供的基地节点/建筑。"
 
 #: ../../AI-Scripting-and-Mapping.md:22
-msgid "You can control it globally by setting `[Basic]->RepairBaseNodes`, or locally by setting the flag with same name in `[Some House]` in certain map file. The global one will be overriden if the local one is set."
-msgstr "你可以通过设置 `[Basic]->RepairBaseNodes` 来全局控制，或者在特定地图文件的 `[Some House]` 中设置同名标签。局部标签会覆盖全局。"
+msgid "You can control it globally by setting `[Basic] -> RepairBaseNodes`, or locally by setting the flag with same name in `[Some House]` in certain map file. The global one will be overriden if the local one is set."
+msgstr "你可以通过设置 `[Basic] -> RepairBaseNodes` 来全局控制，或者在特定地图文件的 `[Some House]` 中设置同名标签。局部标签会覆盖全局。"
 
 #: ../../AI-Scripting-and-Mapping.md:24
 msgid "In `rulesmd.ini`:"
@@ -113,8 +113,8 @@ msgid "MCV redeploying"
 msgstr "基地车重部署"
 
 #: ../../AI-Scripting-and-Mapping.md:55
-msgid "You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `[Basic]->MCVRedeploys`. Overrides `[MultiplayerDialogSettings]`->`MCVRedeploys` only in singleplayer campaign missions."
-msgstr "现在你可以通过设置 `[Basic]->MCVRedeploys` 来决定单人战役中的基地车能否重部署。这会覆盖 `[MultiplayerDialogSettings]`->`MCVRedeploys` 但仅生效于单人战役地图中。"
+msgid "You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `[Basic] -> MCVRedeploys`. Overrides `[MultiplayerDialogSettings] -> MCVRedeploys` only in singleplayer campaign missions."
+msgstr "现在你可以通过设置 `[Basic] -> MCVRedeploys` 来决定单人战役中的基地车能否重部署。这会覆盖 `[MultiplayerDialogSettings] -> MCVRedeploys` 但仅生效于单人战役地图中。"
 
 #: ../../AI-Scripting-and-Mapping.md:63
 msgid "Set par times and related string labels in missionmd.ini"
@@ -484,8 +484,8 @@ msgid "Tech Buildings"
 msgstr "科技建筑"
 
 #: ../../AI-Scripting-and-Mapping.md:0
-msgid "Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI]->NeutralTechBuildings=` list"
-msgstr "任何拥有 `Unsellable=yes`、`Capturable=yes`、负值 `TechLevel=` 或位于 `[AI]->NeutralTechBuildings=` 列表中的`建筑类型`"
+msgid "Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI] -> NeutralTechBuildings=` list"
+msgstr "任何拥有 `Unsellable=yes`、`Capturable=yes`、负值 `TechLevel=` 或位于 `[AI] -> NeutralTechBuildings=` 列表中的`建筑类型`"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "12"
@@ -917,8 +917,8 @@ msgid "`10104` Chronoshift to Enemy Base"
 msgstr "`10104` 超时空传送至敌方基地"
 
 #: ../../AI-Scripting-and-Mapping.md:278
-msgid "Chronoshifts the members of the TeamType using first available `Type=ChronoSphere` superweapon to a location within `[General]` -> `AISafeDistance` (plus the additional distance defined in parameter, can be negative) cells from enemy house's base. The superweapon must be charged up to atleast `[General]` -> `AIMinorSuperReadyPercent` percentage of its recharge time to be available for use by this action."
-msgstr "使用第一个可用的 `Type=ChronoSphere` 超级武器将小队类型的成员超时空传送到敌方基地附近 `[General]` -> `AISafeDistance`（加上参数中定义的可为负值的额外距离）格的位置。超级武器必须先加载到 `[General]` -> `AIMinorSuperReadyPercent` 所指定百分比才能被此行为考虑。"
+msgid "Chronoshifts the members of the TeamType using first available `Type=ChronoSphere` superweapon to a location within `[General] -> AISafeDistance` (plus the additional distance defined in parameter, can be negative) cells from enemy house's base. The superweapon must be charged up to atleast `[General] -> AIMinorSuperReadyPercent` percentage of its recharge time to be available for use by this action."
+msgstr "使用第一个可用的 `Type=ChronoSphere` 超级武器将小队类型的成员超时空传送到敌方基地附近 `[General] -> AISafeDistance`（加上参数中定义的可为负值的额外距离）格的位置。超级武器必须先加载到 `[General] -> AIMinorSuperReadyPercent` 所指定百分比才能被此行为考虑。"
 
 #: ../../AI-Scripting-and-Mapping.md:286
 msgid "`12000-12999` Suplementary/Setup Pre-actions"
