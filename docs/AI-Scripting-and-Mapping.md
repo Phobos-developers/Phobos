@@ -12,14 +12,14 @@ This page describes all AI scripting and mapping related additions and changes i
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally. `InitialPayload` logic from Ares is not supported yet.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
-- Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General]` -> `AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
+- Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
 
 ## Singleplayer Mission Maps
 
 ### Base node repairing
 
 - In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW *(Ares feature)*.
-  - You can control it globally by setting `[Basic]->RepairBaseNodes`, or locally by setting the flag with same name in `[Some House]` in certain map file. The global one will be overriden if the local one is set.
+  - You can control it globally by setting `[Basic] -> RepairBaseNodes`, or locally by setting the flag with same name in `[Some House]` in certain map file. The global one will be overriden if the local one is set.
 
 In `rulesmd.ini`:
 ```ini
@@ -52,7 +52,7 @@ DefaultLS800BkgdPal=     ; filename - including the .pal extension
 
 ### MCV redeploying
 
-- You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `[Basic]->MCVRedeploys`. Overrides `[MultiplayerDialogSettings]`->`MCVRedeploys` only in singleplayer campaign missions.
+- You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `[Basic] -> MCVRedeploys`. Overrides `[MultiplayerDialogSettings] -> MCVRedeploys` only in singleplayer campaign missions.
 
 In map file:
 ```ini
@@ -168,7 +168,7 @@ x=i,n             ; For i values check the next table
 | 8       | House Threats            | Any object that targets anything of the Team's House or any enemy that is near to the Team Leader |
 | 9       | Power Plants             | Any enemy `BuildingTypes` with positive `Power=` values |
 | 10      | Occupied                 | Any `BuildingTypes` with garrisoned infantry |
-| 11      | Tech Buildings           | Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI]->NeutralTechBuildings=` list |
+| 11      | Tech Buildings           | Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI] -> NeutralTechBuildings=` list |
 | 12      |	Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
 | 13      | Mind Controller          | Anything `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` with `MindControl=yes` in the weapons Warheads |
 | 14      | Air Units (incl. landed) | Any enemy, `AircraftTypes` and `Jumpjet=yes` `VehicleTypes` or `InfantryTypes`, including landed ones as well as any other currently airborne units |
@@ -275,7 +275,7 @@ x=10103,0
 
 ##### `10104` Chronoshift to Enemy Base
 
-- Chronoshifts the members of the TeamType using first available `Type=ChronoSphere` superweapon to a location within `[General]` -> `AISafeDistance` (plus the additional distance defined in parameter, can be negative) cells from enemy house's base. The superweapon must be charged up to atleast `[General]` -> `AIMinorSuperReadyPercent` percentage of its recharge time to be available for use by this action.
+- Chronoshifts the members of the TeamType using first available `Type=ChronoSphere` superweapon to a location within `[General] -> AISafeDistance` (plus the additional distance defined in parameter, can be negative) cells from enemy house's base. The superweapon must be charged up to atleast `[General] -> AIMinorSuperReadyPercent` percentage of its recharge time to be available for use by this action.
 
 In `aimd.ini`:
 ```ini

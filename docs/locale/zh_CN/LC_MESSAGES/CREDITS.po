@@ -8,630 +8,1104 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-01 11:42+0800\n"
+"POT-Creation-Date: 2025-02-21 22:51+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.16.0\n"
 
-#: ../../CREDITS.md:1
+#: ../../../CREDITS.md:2
 msgid "Credits"
 msgstr "工作人员名单表"
 
-#: ../../CREDITS.md:3
+#: ../../../CREDITS.md:4
 msgid ""
 "This page lists all the individual contributions to the project by their "
 "author."
 msgstr "本页面列出所有对本项目做出贡献的人及其贡献名单。"
 
-#: ../../CREDITS.md:5
+#: ../../../CREDITS.md:6
 msgid "**Belonit (Gluk-v48)**:"
 msgstr ""
 
-#: ../../CREDITS.md:6
+#: ../../../CREDITS.md:7
 msgid "Disable empty spawn positions"
 msgstr "禁止空起始点"
 
-#: ../../CREDITS.md:7
+#: ../../../CREDITS.md:8
 msgid "`gamemd.exe` icon customization"
 msgstr "自定义`gamemd.exe`图标"
 
-#: ../../CREDITS.md:8
+#: ../../../CREDITS.md:9
 msgid "Full-color non-paletted PCX support"
 msgstr "全彩色PCX支持"
 
-#: ../../CREDITS.md:9
+#: ../../../CREDITS.md:10
 msgid "Initial SpySat, BigGap, TransactMoney warheads"
 msgstr "最初的视野弹头和金币弹头"
 
-#: ../../CREDITS.md:10
+#: ../../../CREDITS.md:11
 msgid "PCX Loading Screen support"
 msgstr "PCX载入图支持"
 
-#: ../../CREDITS.md:11
+#: ../../../CREDITS.md:12
 msgid "Custom DiskLaser radius"
 msgstr "自定义飞碟激光半径"
 
-#: ../../CREDITS.md:12 ../../CREDITS.md:25
+#: ../../../CREDITS.md:13 ../../../CREDITS.md:31
 msgid "Extended tooltips"
 msgstr "扩展工具提示"
 
-#: ../../CREDITS.md:13 ../../CREDITS.md:24
+#: ../../../CREDITS.md:14 ../../../CREDITS.md:30
 msgid "Building upgrades enhancement"
 msgstr "建筑升级增强"
 
-#: ../../CREDITS.md:14
+#: ../../../CREDITS.md:15
 msgid "Option to hide health bar"
 msgstr "隐藏血条"
 
-#: ../../CREDITS.md:15
+#: ../../../CREDITS.md:16
 msgid "Sidebar.GDIPosition"
 msgstr "侧边栏GDI位置"
 
-#: ../../CREDITS.md:16 ../../CREDITS.md:86
+#: ../../../CREDITS.md:17 ../../../CREDITS.md:100
 msgid "Help with CellSpread"
 msgstr "弹头波及范围协助"
 
-#: ../../CREDITS.md:17
+#: ../../../CREDITS.md:18
 msgid "Blowfish.dll-related errors fix"
 msgstr "Blowfish.dll相关错误修复"
 
-#: ../../CREDITS.md:18 ../../CREDITS.md:31
+#: ../../../CREDITS.md:19 ../../../CREDITS.md:37
 msgid "Zero size map previews fix"
 msgstr "0大小地图预览修复"
 
-#: ../../CREDITS.md:19
+#: ../../../CREDITS.md:20
 msgid "Semantic locomotor aliases"
 msgstr "运动模式代称"
 
-#: ../../CREDITS.md:20 ../../CREDITS.md:45
+#: ../../../CREDITS.md:21 ../../../CREDITS.md:57
 msgid "Shield logic"
 msgstr "护盾逻辑"
 
-#: ../../CREDITS.md:21
+#: ../../../CREDITS.md:22
 msgid "Non-ASCII input fix"
 msgstr "非ASCII输入修复"
 
-#: ../../CREDITS.md:22
+#: ../../../CREDITS.md:23
+msgid "Building Placement Preview Adjustment"
+msgstr ""
+
+#: ../../../CREDITS.md:24
+msgid "Check for Changelog/Documentation/Credits in Pull Requests"
+msgstr ""
+
+#: ../../../CREDITS.md:25
+msgid "Docs dark theme switcher"
+msgstr ""
+
+#: ../../../CREDITS.md:26
+msgid ""
+"Fix position and layer of info tip and reveal production cameo on "
+"selected building"
+msgstr ""
+
+#: ../../../CREDITS.md:27
+msgid "Fix a glitch related to incorrect target setting for missiles"
+msgstr ""
+
+#: ../../../CREDITS.md:28 ../../../CREDITS.md:49
+msgid "Ability to disable shadow for debris & meteor animations"
+msgstr ""
+
+#: ../../../CREDITS.md:29
 msgid "**Kerbiter (Metadorius)**:"
 msgstr ""
 
-#: ../../CREDITS.md:23
-msgid "SHP debris respect `Shadow` fix"
-msgstr "SHP碎片遵循`Shadow`修复"
-
-#: ../../CREDITS.md:26
+#: ../../../CREDITS.md:32
 msgid "Selection priority filtering"
 msgstr "选择优先级筛选"
 
-#: ../../CREDITS.md:27
+#: ../../../CREDITS.md:33
 msgid "`TurretOffset` enhancement"
 msgstr "`TurretOffset`增强"
 
-#: ../../CREDITS.md:28
+#: ../../../CREDITS.md:34
 msgid "Customizable ore spawners"
 msgstr "自定义矿柱"
 
-#: ../../CREDITS.md:29
+#: ../../../CREDITS.md:35
 msgid "Select next idle harvester hotkey"
 msgstr "选择下一个空闲矿车快捷键"
 
-#: ../../CREDITS.md:30
+#: ../../../CREDITS.md:36
 msgid "Interceptor enhancement"
 msgstr "拦截者增强"
 
-#: ../../CREDITS.md:32
+#: ../../../CREDITS.md:38
 msgid "LaserTrails port and rework"
 msgstr "激光尾迹导入与重做"
 
-#: ../../CREDITS.md:33
+#: ../../../CREDITS.md:39
 msgid "Laser graphics fixes"
 msgstr "激光图像修复"
 
-#: ../../CREDITS.md:34
+#: ../../../CREDITS.md:40
 msgid "Recursive transport killer fix"
 msgstr "递归载具击杀修复"
 
-#: ../../CREDITS.md:35
+#: ../../../CREDITS.md:41
+msgid "Custom locomotors example implementation and piggybacking test warheads"
+msgstr ""
+
+#: ../../../CREDITS.md:42
+#, fuzzy
+msgid "Jumpjet initial facing fix"
+msgstr "Jumpjet面向修复"
+
+#: ../../../CREDITS.md:43
 msgid "Migration utility"
 msgstr "迁移工具"
 
-#: ../../CREDITS.md:36
+#: ../../../CREDITS.md:44
 msgid "GitHub Actions setup"
 msgstr "GitHub Actions安装"
 
-#: ../../CREDITS.md:37
+#: ../../../CREDITS.md:45
 msgid "Official docs"
 msgstr "官方说明书"
 
-#: ../../CREDITS.md:38
+#: ../../../CREDITS.md:46
 msgid "VSCode configs"
 msgstr "VSCode配置"
 
-#: ../../CREDITS.md:39
+#: ../../../CREDITS.md:47
 msgid "Code style"
 msgstr "代码样式"
 
-#: ../../CREDITS.md:40
+#: ../../../CREDITS.md:48 ../../../CREDITS.md:372
+#, fuzzy
+msgid "Customizable ElectricBolt Arcs"
+msgstr "可开关的电弧"
+
+#: ../../../CREDITS.md:50 ../../../CREDITS.md:275
+#, fuzzy
+msgid "Voxel light source position customization"
+msgstr "自定义附加动画位置"
+
+#: ../../../CREDITS.md:51
+msgid "Voxel light source position and tilting fix"
+msgstr ""
+
+#: ../../../CREDITS.md:52
 msgid "**Uranusian (Thrifinesma)**:"
 msgstr "**[Uranusian](https://space.bilibili.com/3339044) (Thrifinesma)**:"
 
-#: ../../CREDITS.md:41 ../../CREDITS.md:66
+#: ../../../CREDITS.md:53 ../../../CREDITS.md:78
 msgid "Mind Control enhancement"
 msgstr "心灵控制增强"
 
-#: ../../CREDITS.md:42
+#: ../../../CREDITS.md:54
 msgid "Custom warhead splash list"
 msgstr "自定义弹头水花动画"
 
-#: ../../CREDITS.md:43
+#: ../../../CREDITS.md:55 ../../../CREDITS.md:308
 msgid "Harvester counter"
 msgstr "矿车计数器"
 
-#: ../../CREDITS.md:44
+#: ../../../CREDITS.md:56
 msgid "Spawns promotion"
 msgstr "子机升级"
 
-#: ../../CREDITS.md:46
+#: ../../../CREDITS.md:58
 msgid "Multiple death fix"
 msgstr "多重死亡修复"
 
-#: ../../CREDITS.md:47
+#: ../../../CREDITS.md:59
 msgid "Customizable missing cameo"
 msgstr "自定义缺省图标"
 
-#: ../../CREDITS.md:48
+#: ../../../CREDITS.md:60
 msgid "Cameo sorting priority"
 msgstr "图标排序优先级"
 
-#: ../../CREDITS.md:49
+#: ../../../CREDITS.md:61
 msgid "Tab hotkey placement fix"
 msgstr "标签快捷键放置修复"
 
-#: ../../CREDITS.md:50
+#: ../../../CREDITS.md:62
 msgid "Producing progress indicators"
 msgstr "生产进度指示器"
 
-#: ../../CREDITS.md:51 ../../CREDITS.md:73
+#: ../../../CREDITS.md:63 ../../../CREDITS.md:85
 msgid "Custom ore gathering anim"
 msgstr "自定义矿车采矿动画"
 
-#: ../../CREDITS.md:52
+#: ../../../CREDITS.md:64
 msgid "`NoManualMove`"
 msgstr "无法手动移动"
 
-#: ../../CREDITS.md:53
+#: ../../../CREDITS.md:65
 msgid "Weapon target house filtering"
 msgstr "武器瞄准所属方筛选"
 
-#: ../../CREDITS.md:54
+#: ../../../CREDITS.md:66
 msgid "`DeathWeapon` fix"
 msgstr "死亡武器修复"
 
-#: ../../CREDITS.md:55
+#: ../../../CREDITS.md:67
 msgid "Re-enable obsolete `JumpjetControls`"
 msgstr "重激活废弃的`JumpjetControls`"
 
-#: ../../CREDITS.md:56
+#: ../../../CREDITS.md:68
 msgid "`AITrigger` Building Upgrades support"
 msgstr "AI触发对建筑升级的支持"
 
-#: ../../CREDITS.md:57
+#: ../../../CREDITS.md:69
 msgid "Wall-Gate links"
 msgstr "闸门-围墙链接"
 
-#: ../../CREDITS.md:58
+#: ../../../CREDITS.md:70
 msgid "Ability for deployed infantry to use both weapons"
 msgstr "部署步兵可以使用双武器"
 
-#: ../../CREDITS.md:59
+#: ../../../CREDITS.md:71
 msgid "Observer PCX loading screen"
 msgstr "观战者PCX载入图"
 
-#: ../../CREDITS.md:60
+#: ../../../CREDITS.md:72
 msgid "Official CN docs"
 msgstr "官方中文说明书"
 
-#: ../../CREDITS.md:61
+#: ../../../CREDITS.md:73
 msgid "**secsome (SEC-SOME)**:"
 msgstr ""
 
-#: ../../CREDITS.md:62
+#: ../../../CREDITS.md:74
 msgid "Debug info dump hotkey"
 msgstr "调试信息快捷键"
 
-#: ../../CREDITS.md:63
+#: ../../../CREDITS.md:75
 msgid "Refactoring & porting of Ares helper code"
 msgstr "重构与导入Ares助手代码"
 
-#: ../../CREDITS.md:64
+#: ../../../CREDITS.md:76
 msgid "Disguise removal warhead"
 msgstr "伪装移除弹头"
 
-#: ../../CREDITS.md:65
+#: ../../../CREDITS.md:77
 msgid "Mind Control removal warhead"
 msgstr "心灵控制移除弹头"
 
-#: ../../CREDITS.md:67
+#: ../../../CREDITS.md:79
 msgid "Shields logic help"
 msgstr "护盾逻辑帮助"
 
-#: ../../CREDITS.md:68
+#: ../../../CREDITS.md:80
 msgid "`AnimList.PickRandom`"
 msgstr "弹头随机动画"
 
-#: ../../CREDITS.md:69
+#: ../../../CREDITS.md:81
 msgid "`MoveToCell` fix"
 msgstr "移动到单元格修复"
 
-#: ../../CREDITS.md:70
+#: ../../../CREDITS.md:82
 msgid "Unlimited waypoints"
 msgstr "无限路径点"
 
-#: ../../CREDITS.md:71
+#: ../../../CREDITS.md:83
 msgid "`Build At` trigger action buildup anim fix"
 msgstr "触发动作`将建筑建造于`建造动画修复"
 
-#: ../../CREDITS.md:72
+#: ../../../CREDITS.md:84
 msgid "Undeploy building into a unit plays `EVA_NewRallyPointEstablished` fix"
 msgstr "反部署建筑播放`EVA_NewRallyPointEstablished`修复"
 
-#: ../../CREDITS.md:74
+#: ../../../CREDITS.md:86
 msgid "`TemporalClass` related crash"
 msgstr "`TemporalClass`相关修复"
 
-#: ../../CREDITS.md:75
+#: ../../../CREDITS.md:87
 msgid "Retry dialog on mission failure"
 msgstr "任务失败重试对话框"
 
-#: ../../CREDITS.md:76
+#: ../../../CREDITS.md:88
 msgid "Default disguise for individual InfantryTypes"
 msgstr "步兵微观默认伪装"
 
-#: ../../CREDITS.md:77
+#: ../../../CREDITS.md:89
 msgid "PowerPlant Enhancer"
 msgstr "电厂增幅器"
 
-#: ../../CREDITS.md:78
+#: ../../../CREDITS.md:90
 msgid "SaveGame Trigger Action"
 msgstr "保存游戏触发动作"
 
-#: ../../CREDITS.md:79
+#: ../../../CREDITS.md:91
 msgid "QuickSave command"
 msgstr "快捷保存快捷键"
 
-#: ../../CREDITS.md:80
+#: ../../../CREDITS.md:92
 msgid "Numeric variables"
 msgstr "数字变量"
 
-#: ../../CREDITS.md:81
+#: ../../../CREDITS.md:93
 msgid "Custom gravity for projectiles"
 msgstr "抛射体自定义重力"
 
-#: ../../CREDITS.md:82
+#: ../../../CREDITS.md:94
 msgid "Retint map actions bugfix"
 msgstr "地图触发光照修复"
 
-#: ../../CREDITS.md:83
+#: ../../../CREDITS.md:95
 msgid "Sharpnel enhancement"
 msgstr "溅射增强"
 
-#: ../../CREDITS.md:84
+#: ../../../CREDITS.md:96
 msgid "Vanilla map preview reading bugfix"
 msgstr "原版地图预览读取修复"
 
-#: ../../CREDITS.md:85
+#: ../../../CREDITS.md:97
+msgid "Customizable tooltip background"
+msgstr ""
+
+#: ../../../CREDITS.md:98
+msgid "Parts of Ares calling code"
+msgstr ""
+
+#: ../../../CREDITS.md:99
 msgid "**Otamaa (Fahroni, BoredEXE)**:"
 msgstr ""
 
-#: ../../CREDITS.md:87
+#: ../../../CREDITS.md:101
 msgid "Ported and fixed custom RadType code"
 msgstr "导入并修复自定义辐射代码"
 
-#: ../../CREDITS.md:88
+#: ../../../CREDITS.md:102
 msgid "Togglable ElectricBolt bolts"
 msgstr "可开关的电弧"
 
-#: ../../CREDITS.md:89
+#: ../../../CREDITS.md:103
 msgid "Customizable Chrono Locomotor properties per TechnoClass"
 msgstr "微观超时空运动属性"
 
-#: ../../CREDITS.md:90
+#: ../../../CREDITS.md:104
+#, fuzzy
+msgid "Building Placement Preview"
+msgstr "建筑升级增强"
+
+#: ../../../CREDITS.md:105
 msgid "`DebrisMaximums` fixes"
 msgstr "碎片修复"
 
-#: ../../CREDITS.md:91
+#: ../../../CREDITS.md:106
 msgid "Anim-to-Unit"
 msgstr "动画生成单位"
 
-#: ../../CREDITS.md:92
+#: ../../../CREDITS.md:107
 msgid "`NotHuman` anim sequences improvements"
 msgstr "`NotHuman`动画序列增强"
 
-#: ../../CREDITS.md:93
+#: ../../../CREDITS.md:108
 msgid "Customizable `OpenTopped` Properties"
 msgstr "自定义对外开火属性"
 
-#: ../../CREDITS.md:94
+#: ../../../CREDITS.md:109
 msgid "Hooks for ScriptType Actions 92 & 93"
 msgstr "脚本动作92&93的hook"
 
-#: ../../CREDITS.md:95
+#: ../../../CREDITS.md:110
 msgid "Ore stage threshold for `HideIfNoOre`"
 msgstr "`HideIfNoOre`的矿石下限"
 
-#: ../../CREDITS.md:96
+#: ../../../CREDITS.md:111
 msgid "Occupied building `MuzzleFlashX` bugfix"
 msgstr "进驻建筑`MuzzleFlashX`修复"
 
-#: ../../CREDITS.md:97
+#: ../../../CREDITS.md:112
 msgid "`EnemyUIName=` for other TechnoTypes"
 msgstr "`EnemyUIName=`对其他单位"
 
-#: ../../CREDITS.md:98
+#: ../../../CREDITS.md:113
 msgid "TerrainType `DestroyAnim` & `DestroySound`"
 msgstr "地形对象的摧毁动画与摧毁音效"
 
-#: ../../CREDITS.md:99
+#: ../../../CREDITS.md:114
 msgid "Laser trails for VoxelAnims"
 msgstr "VXL碎片激光尾迹"
 
-#: ../../CREDITS.md:100
+#: ../../../CREDITS.md:115
+msgid "MakeInfantry logic on BombClass bugfix"
+msgstr ""
+
+#: ../../../CREDITS.md:116 ../../../CREDITS.md:195
+msgid "Debris & meteor impact behaviour settings"
+msgstr ""
+
+#: ../../../CREDITS.md:117
+msgid "Upgrade logic to allow altering of SpySat status"
+msgstr ""
+
+#: ../../../CREDITS.md:118 ../../../CREDITS.md:269
+msgid "Ares detection and integration"
+msgstr ""
+
+#: ../../../CREDITS.md:119
+#, fuzzy
+msgid "Help with custom locomotors"
+msgstr "说明书帮助"
+
+#: ../../../CREDITS.md:120 ../../../CREDITS.md:215
+#, fuzzy
+msgid "Extension class optimization"
+msgstr "自定义`gamemd.exe`图标"
+
+#: ../../../CREDITS.md:121
 msgid "**FS-21**:"
 msgstr ""
 
-#: ../../CREDITS.md:101
+#: ../../../CREDITS.md:122
 msgid "Dump Object Info enhancements"
 msgstr "输出目标信息增强"
 
-#: ../../CREDITS.md:102
+#: ../../../CREDITS.md:123
 msgid "`Powered.KillSpawns`"
 msgstr "断电子机坠毁"
 
-#: ../../CREDITS.md:103
+#: ../../../CREDITS.md:124
 msgid "`Spawner.LimitRange`"
 msgstr "子机最大航程"
 
-#: ../../CREDITS.md:104
-msgid "ScriptType Actions 71 to 113, 124 to 126"
-msgstr "脚本动作71到113、124到126"
+#: ../../../CREDITS.md:125
+#, fuzzy
+msgid "Majority of ScriptType actions"
+msgstr "脚本动作92&93的hook"
 
-#: ../../CREDITS.md:105
+#: ../../../CREDITS.md:126
 msgid "MC deployer fixes"
 msgstr "心控部署修复"
 
-#: ../../CREDITS.md:106 ../../CREDITS.md:163
+#: ../../../CREDITS.md:127 ../../../CREDITS.md:277
 msgid "Help with docs"
 msgstr "说明书帮助"
 
-#: ../../CREDITS.md:107
+#: ../../../CREDITS.md:128
 msgid "Automatic Passenger Deletion logic"
 msgstr "自动删除乘客逻辑"
 
-#: ../../CREDITS.md:108
+#: ../../../CREDITS.md:129
 msgid "`Fire SW At Location/Waypoint` Trigger Action"
 msgstr "`将超级武器发射到地点/路径点`触发动作"
 
-#: ../../CREDITS.md:109
+#: ../../../CREDITS.md:130
 msgid "Kill Object Automatically logic prototype"
 msgstr "单位自杀逻辑原型"
 
-#: ../../CREDITS.md:110
+#: ../../../CREDITS.md:131
 msgid "Customizable resource storage"
 msgstr "自定义资源存储"
 
-#: ../../CREDITS.md:111
-msgid "Override Uncloaked Underwater attack behavior"
+#: ../../../CREDITS.md:132
+#, fuzzy
+msgid "Override uncloaked underwater attack behavior"
 msgstr "覆盖隐形水下单位攻击行为"
 
-#: ../../CREDITS.md:112
+#: ../../../CREDITS.md:133
 msgid "AI Aircraft docks fix"
 msgstr "AI飞机停机坪修复"
 
-#: ../../CREDITS.md:113
-msgid "Shared Ammo logic"
+#: ../../../CREDITS.md:134
+#, fuzzy
+msgid "Shared ammo logic"
 msgstr "分享弹药逻辑"
 
-#: ../../CREDITS.md:114
-msgid "Customizable FLH When Infantry Is Prone Or Deployed"
+#: ../../../CREDITS.md:135
+#, fuzzy
+msgid "Customizable FLH when infantry is prone or deployed"
 msgstr "自定义步兵匍匐/部署FLH"
 
-#: ../../CREDITS.md:115
-msgid "Initial Strength for Cloned Infantry"
+#: ../../../CREDITS.md:136
+#, fuzzy
+msgid "Initial strength for cloned infantry"
 msgstr "克隆步兵初始生命值"
 
-#: ../../CREDITS.md:116
+#: ../../../CREDITS.md:137
+msgid "Map Events 604 & 605 for checking if a specific Techno enters in a cell"
+msgstr ""
+
+#: ../../../CREDITS.md:138
 msgid "**Starkku**:"
 msgstr ""
 
-#: ../../CREDITS.md:117
+#: ../../../CREDITS.md:139
+#, fuzzy
+msgid "Misc. minor bugfixes & improvements"
+msgstr "激光修复与增强"
+
+#: ../../../CREDITS.md:140
+msgid "AI script actions:"
+msgstr ""
+
+#: ../../../CREDITS.md:141
+msgid "Chronoshift to Enemy Base"
+msgstr ""
+
+#: ../../../CREDITS.md:142
 msgid "Warhead shield penetration & breaking"
 msgstr "护盾穿透与击破弹头"
 
-#: ../../CREDITS.md:118
+#: ../../../CREDITS.md:143 ../../../CREDITS.md:292
 msgid "Strafing aircraft weapon customization"
 msgstr "飞机扫射武器自定义"
 
-#: ../../CREDITS.md:119
+#: ../../../CREDITS.md:144
 msgid "Vehicle `DeployFire` fixes/improvements"
 msgstr "载具部署开火修复/增强"
 
-#: ../../CREDITS.md:120
+#: ../../../CREDITS.md:145
 msgid "Stationary VehicleTypes"
 msgstr "静止载具"
 
-#: ../../CREDITS.md:121
+#: ../../../CREDITS.md:146
 msgid "Burst logic improvements"
 msgstr "Burst逻辑增强"
 
-#: ../../CREDITS.md:122
+#: ../../../CREDITS.md:147
 msgid "TechnoType auto-firing weapons"
 msgstr "单位自动开火"
 
-#: ../../CREDITS.md:123
+#: ../../../CREDITS.md:148
 msgid "Secondary weapon fallback customization"
 msgstr "自定义副武器自动推算"
 
-#: ../../CREDITS.md:124
+#: ../../../CREDITS.md:149
 msgid "Weapon target type filtering"
 msgstr "武器瞄准目标筛选"
 
-#: ../../CREDITS.md:125
+#: ../../../CREDITS.md:150
 msgid "`AreaFire` targeting customization"
 msgstr "自定义`AreaFire`瞄准"
 
-#: ../../CREDITS.md:126
+#: ../../../CREDITS.md:151
 msgid "`CreateUnit` improvements"
 msgstr "`CreateUnit`增强"
 
-#: ../../CREDITS.md:127
+#: ../../../CREDITS.md:152
 msgid "Attached animation & jumpjet unit layer customization"
 msgstr "自定义附加动画与Jumpjet单位图层"
 
-#: ../../CREDITS.md:128
+#: ../../../CREDITS.md:153
 msgid "`IsSimpleDeployer` improvements"
 msgstr "`IsSimpleDeployer`增强"
 
-#: ../../CREDITS.md:129
+#: ../../../CREDITS.md:154
 msgid "Shield modification warheads"
 msgstr "护盾修改弹头"
 
-#: ../../CREDITS.md:130
+#: ../../../CREDITS.md:155
 msgid "Warhead decloaking toggle"
 msgstr "弹头反隐形开关"
 
-#: ../../CREDITS.md:131
+#: ../../../CREDITS.md:156
 msgid "Warp(In/Out)Weapon"
 msgstr "传送武器"
 
-#: ../../CREDITS.md:132
+#: ../../../CREDITS.md:157
 msgid "Grinder improvements / additions"
 msgstr "部队回收站逻辑增强/扩展"
 
-#: ../../CREDITS.md:133
+#: ../../../CREDITS.md:158
 msgid "Attached animation position customization"
 msgstr "自定义附加动画位置"
 
-#: ../../CREDITS.md:134
+#: ../../../CREDITS.md:159
 msgid "Critical hit logic additions"
 msgstr "暴击逻辑增强"
 
-#: ../../CREDITS.md:135
+#: ../../../CREDITS.md:160
 msgid "Aircraft & jumpjet speed modifiers fix"
 msgstr "飞机与Jumpjet速度加成修复"
 
-#: ../../CREDITS.md:136
+#: ../../../CREDITS.md:161
 msgid "Local warhead screen shaking"
 msgstr "局部弹头屏幕震动"
 
-#: ../../CREDITS.md:137
+#: ../../../CREDITS.md:162
 msgid "Vehicle custom palette fix"
 msgstr "载具自定义色盘"
 
-#: ../../CREDITS.md:138
+#: ../../../CREDITS.md:163
 msgid "Feedback weapon"
 msgstr "反馈武器"
 
-#: ../../CREDITS.md:139
+#: ../../../CREDITS.md:164
 msgid "TerrainType & ore minimap color customization"
 msgstr "地形对象小地图颜色自定义"
 
-#: ../../CREDITS.md:140
+#: ../../../CREDITS.md:165
 msgid "Laser fixes & improvements"
 msgstr "激光修复与增强"
 
-#: ../../CREDITS.md:141
+#: ../../../CREDITS.md:166
 msgid "Mind control indicator animation cloak fix"
 msgstr "心灵控制指示动画隐形修复"
 
-#: ../../CREDITS.md:142
+#: ../../../CREDITS.md:167
 msgid "Warhead / Play animation trigger animation owner fix"
 msgstr "弹头与播放动画触发动画所属方修复"
 
-#: ../../CREDITS.md:143
+#: ../../../CREDITS.md:168
 msgid "Nuke carrier & payload Bright fix"
 msgstr "核弹Bright修复"
 
-#: ../../CREDITS.md:144
+#: ../../../CREDITS.md:169
 msgid "Display damage numbers hotkey command"
 msgstr "快捷键显示伤害数字"
 
-#: ../../CREDITS.md:145
+#: ../../../CREDITS.md:170
 msgid "TransactMoney.Display"
 msgstr "显示金币弹头的钱"
 
-#: ../../CREDITS.md:146
+#: ../../../CREDITS.md:171
 msgid "Building-provided self-heal customization"
 msgstr "自定义建筑提供自愈"
 
-#: ../../CREDITS.md:147
+#: ../../../CREDITS.md:172
 msgid "AI deploy script DeploysInto fix"
 msgstr "AI部署脚本DeploysInto修复"
 
-#: ../../CREDITS.md:148
+#: ../../../CREDITS.md:173
 msgid "Passable & buildable-upon TerrainTypes"
 msgstr "可通行与可在其上建造的地形对象"
 
-#: ../../CREDITS.md:149
+#: ../../../CREDITS.md:174
 msgid "Automatic passenger owner change toggle"
 msgstr "自动变换乘客所属方"
 
-#: ../../CREDITS.md:150
+#: ../../../CREDITS.md:175
 msgid "Interceptor improvements"
 msgstr "拦截逻辑增强"
 
-#: ../../CREDITS.md:151
-msgid "OpenTopped transport rangefinding & deactivated state customizations"
+#: ../../../CREDITS.md:176
+#, fuzzy
+msgid "OpenTopped transport behaviour customizations"
 msgstr "自定义对外开火载具的寻敌与失活状态"
 
-#: ../../CREDITS.md:152
+#: ../../../CREDITS.md:177
 msgid "Animation damage / weapon improvements"
 msgstr "动画伤害/武器增强"
 
-#: ../../CREDITS.md:153
+#: ../../../CREDITS.md:178
 msgid "Warhead self-damaging toggle"
 msgstr "弹头自伤开关"
 
-#: ../../CREDITS.md:154
+#: ../../../CREDITS.md:179
 msgid "Trailer animation owner inheritance"
 msgstr "尾迹动画继承所属方"
 
-#: ../../CREDITS.md:155
+#: ../../../CREDITS.md:180
 msgid "Warhead detonation on all objects on map"
 msgstr "全图弹头"
 
-#: ../../CREDITS.md:156
+#: ../../../CREDITS.md:181
 msgid "Animated TerrainTypes extension"
 msgstr "可动地形对象扩展"
 
-#: ../../CREDITS.md:157
+#: ../../../CREDITS.md:182
+msgid "TerrainType damage & crumbling frames"
+msgstr ""
+
+#: ../../../CREDITS.md:183
+msgid "Exploding unit passenger killing customization"
+msgstr ""
+
+#: ../../../CREDITS.md:184
+msgid "Railgun particle target coordinate fix"
+msgstr ""
+
+#: ../../../CREDITS.md:185
+msgid "Building target coordinate offset fix"
+msgstr ""
+
+#: ../../../CREDITS.md:186
+msgid "Warhead / weapon detonation at superweapon target cell"
+msgstr ""
+
+#: ../../../CREDITS.md:187
+msgid "Cloaked & disguised objects displaying to observers"
+msgstr ""
+
+#: ../../../CREDITS.md:188
+#, fuzzy
+msgid "Building airstrike target eligibility customization"
+msgstr "自定义`AreaFire`瞄准"
+
+#: ../../../CREDITS.md:189
+msgid "IvanBomb detonation & image display centered on buildings"
+msgstr ""
+
+#: ../../../CREDITS.md:190
+#, fuzzy
+msgid "Customizable ROF random delay"
+msgstr "自定义资源存储"
+
+#: ../../../CREDITS.md:191
+msgid "BibShape drawing during buildup fix"
+msgstr ""
+
+#: ../../../CREDITS.md:192
+msgid "Spawner spawn delay customization"
+msgstr ""
+
+#: ../../../CREDITS.md:193
+msgid "Cluster scatter distance customization"
+msgstr ""
+
+#: ../../../CREDITS.md:194
+msgid "FlakScatter distance customization"
+msgstr ""
+
+#: ../../../CREDITS.md:196
+#, fuzzy
+msgid "Custom warhead debris animations"
+msgstr "自定义弹头水花动画"
+
+#: ../../../CREDITS.md:197
+msgid "Attached particle system for animations"
+msgstr ""
+
+#: ../../../CREDITS.md:198
+msgid "Removal of hardcoded AA & Gattling weapon selection restrictions"
+msgstr ""
+
+#: ../../../CREDITS.md:199
+#, fuzzy
+msgid "Projectile obstacle logic additions"
+msgstr "暴击逻辑增强"
+
+#: ../../../CREDITS.md:200
+msgid "`AnimList` on zero damage Warheads toggle"
+msgstr ""
+
+#: ../../../CREDITS.md:201
+#, fuzzy
+msgid "Additions to automatic passenger deletion"
+msgstr "自动删除乘客逻辑"
+
+#: ../../../CREDITS.md:202
+msgid "Buildings considered as vehicles"
+msgstr ""
+
+#: ../../../CREDITS.md:203
+msgid "TechnoType target evaluation map zone check behaviour customization"
+msgstr ""
+
+#: ../../../CREDITS.md:204
+msgid "CanC4 damage rounding fix & toggle"
+msgstr ""
+
+#: ../../../CREDITS.md:205
+msgid "Option to center pause menu background"
+msgstr ""
+
+#: ../../../CREDITS.md:206
+#, fuzzy
+msgid "Disguise logic improvements"
+msgstr "Burst逻辑增强"
+
+#: ../../../CREDITS.md:207
+msgid "Custom insignias"
+msgstr ""
+
+#: ../../../CREDITS.md:208
+msgid "`ZShapePointMove` buildup toggle"
+msgstr ""
+
+#: ../../../CREDITS.md:209
+msgid "`UndeploysInto` building selling buildup sequence length customization"
+msgstr ""
+
+#: ../../../CREDITS.md:210
+msgid "AI naval vehicle production fix"
+msgstr ""
+
+#: ../../../CREDITS.md:211
+#, fuzzy
+msgid "Crushing tilt and slowdown customization"
+msgstr "飞机扫射武器自定义"
+
+#: ../../../CREDITS.md:212
+#, fuzzy
+msgid "Extra warhead detonations on weapons"
+msgstr "全图弹头"
+
+#: ../../../CREDITS.md:213
+msgid "Chrono sparkle animation display customization and improvements"
+msgstr ""
+
+#: ../../../CREDITS.md:214
+msgid "PipScale pip size & ammo pip frame customization"
+msgstr ""
+
+#: ../../../CREDITS.md:216
+msgid "Additional sync logging"
+msgstr ""
+
+#: ../../../CREDITS.md:217
+msgid "`Arcing` elevation inaccuracy fix"
+msgstr ""
+
+#: ../../../CREDITS.md:218
+msgid "`EMPulseCannon` projectile gravity fix"
+msgstr ""
+
+#: ../../../CREDITS.md:219
+msgid "Custom palette support for wall overlays"
+msgstr ""
+
+#: ../../../CREDITS.md:220
+#, fuzzy
+msgid "Warhead animation improvements"
+msgstr "`CreateUnit`增强"
+
+#: ../../../CREDITS.md:221
+msgid "Reloading ammo in transports"
+msgstr ""
+
+#: ../../../CREDITS.md:222
+msgid "Straight projectile trajectory additions"
+msgstr ""
+
+#: ../../../CREDITS.md:223
+msgid "Airstrike & spy plane fixed spawn distance & height"
+msgstr ""
+
+#: ../../../CREDITS.md:224
+msgid "Negative damage `Verses/PercentAtMax` toggle"
+msgstr ""
+
+#: ../../../CREDITS.md:225
+#, fuzzy
+msgid "Misc. singleplayer mission improvements"
+msgstr "激光修复与增强"
+
+#: ../../../CREDITS.md:226
+msgid "Weapon effect obstacle interaction fix"
+msgstr ""
+
+#: ../../../CREDITS.md:227
+msgid "Fire particle rotation coordinate adjust toggle"
+msgstr ""
+
+#: ../../../CREDITS.md:228
+#, fuzzy
+msgid "`AmbientDamage` warhead & main target ignore customization"
+msgstr "自定义`AreaFire`瞄准"
+
+#: ../../../CREDITS.md:229
+msgid "Projectile return weapon"
+msgstr ""
+
+#: ../../../CREDITS.md:230
+msgid "Aircraft landing / docking direction"
+msgstr ""
+
+#: ../../../CREDITS.md:231
+msgid "`DeploysInto` cursor desync fix"
+msgstr ""
+
+#: ../../../CREDITS.md:232
+#, fuzzy
+msgid "Minor crate logic improvements"
+msgstr "Burst逻辑增强"
+
+#: ../../../CREDITS.md:233
+#, fuzzy
+msgid "Custom tint effects"
+msgstr "抛射体自定义重力"
+
+#: ../../../CREDITS.md:234
+#, fuzzy
+msgid "Revenge weapons"
+msgstr "反馈武器"
+
+#: ../../../CREDITS.md:235
+msgid "AttachEffect"
+msgstr ""
+
+#: ../../../CREDITS.md:236
+msgid "Air unit tracking fix for large range / `CellSpread`"
+msgstr ""
+
+#: ../../../CREDITS.md:237
+msgid "Extra tint intensity for Iron Curtain & Force Shield"
+msgstr ""
+
+#: ../../../CREDITS.md:238
+msgid ""
+"Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of "
+"RGB565"
+msgstr ""
+
+#: ../../../CREDITS.md:239
+msgid "Customizing height and speed at which subterranean units travel"
+msgstr ""
+
+#: ../../../CREDITS.md:240
+#, fuzzy
+msgid "AI superweapon delay timer customization"
+msgstr "自定义副武器自动推算"
+
+#: ../../../CREDITS.md:241
+msgid "Disabling `MultipleFactory` bonus from specific BuildingType"
+msgstr ""
+
+#: ../../../CREDITS.md:242
+msgid "Customizable ChronoSphere teleport delays for units"
+msgstr ""
+
+#: ../../../CREDITS.md:243
+msgid "Allowed and disallowed types for `FactoryPlant`"
+msgstr ""
+
+#: ../../../CREDITS.md:244
+#, fuzzy
+msgid "Forbidding parallel AI queues for specific TechnoTypes"
+msgstr "**NetsuNegi** - 阻止特定类型AI克隆"
+
+#: ../../../CREDITS.md:245
+msgid "Nonprovocative Warheads"
+msgstr ""
+
+#: ../../../CREDITS.md:246
+msgid "Customizing effect of level lighting on air units"
+msgstr ""
+
+#: ../../../CREDITS.md:247
+msgid "Reimplemented `Airburst` & `Splits` logic with more customization options"
+msgstr ""
+
+#: ../../../CREDITS.md:248
+msgid "Buildings considered as destroyable pathfinding obstacles"
+msgstr ""
+
+#: ../../../CREDITS.md:249
+#, fuzzy
+msgid "Animation visibility customization settings"
+msgstr "自定义附加动画位置"
+
+#: ../../../CREDITS.md:250
+#, fuzzy
+msgid "Light effect customizations"
+msgstr "自定义`gamemd.exe`图标"
+
+#: ../../../CREDITS.md:251
+#, fuzzy
+msgid "Building unit repair customizations"
+msgstr "自定义建筑提供自愈"
+
+#: ../../../CREDITS.md:252
+#, fuzzy
+msgid "Build area customizations"
+msgstr "自定义建筑提供自愈"
+
+#: ../../../CREDITS.md:253
+#, fuzzy
+msgid "`Scorch` / `Flamer` fire animation customization"
+msgstr "自定义`AreaFire`瞄准"
+
+#: ../../../CREDITS.md:254
+#, fuzzy
+msgid "EM Pulse cannon logic improvements"
+msgstr "Burst逻辑增强"
+
+#: ../../../CREDITS.md:255
+msgid "`<Player @ X>` as owner for pre-placed objects"
+msgstr ""
+
+#: ../../../CREDITS.md:256
+msgid "Custom exit cell for infantry factory"
+msgstr ""
+
+#: ../../../CREDITS.md:257
+msgid "Vehicles keeping target on move command"
+msgstr ""
+
+#: ../../../CREDITS.md:258
 msgid "**Morton (MortonPL)**:"
 msgstr ""
 
-#: ../../CREDITS.md:158
-msgid "`XDrawOffset`"
+#: ../../../CREDITS.md:259
+#, fuzzy
+msgid "`XDrawOffset` for animations"
 msgstr "X绘制偏移"
 
-#: ../../CREDITS.md:159
+#: ../../../CREDITS.md:260
 msgid "Shield passthrough & absorption"
 msgstr "护盾穿透与吸收"
 
-#: ../../CREDITS.md:160
+#: ../../../CREDITS.md:261
 msgid "Building `LimboDelivery` logic"
 msgstr "建筑虚拟投放逻辑"
 
-#: ../../CREDITS.md:161
+#: ../../../CREDITS.md:262
 msgid "Fix for `Image` in art rules"
 msgstr "修复art中Image逻辑"
 
-#: ../../CREDITS.md:162
+#: ../../../CREDITS.md:263
 msgid "Power delta counter"
 msgstr "电力变动指示器"
 
-#: ../../CREDITS.md:164
+#: ../../../CREDITS.md:264
+msgid "Super Weapons launching other Super Weapons"
+msgstr ""
+
+#: ../../../CREDITS.md:265
+msgid "SpyEffects expansion, launching Super Weapons on building infiltration"
+msgstr ""
+
+#: ../../../CREDITS.md:266
+msgid "Real time timers"
+msgstr ""
+
+#: ../../../CREDITS.md:267
+msgid "Default campaign game speed override and custom campaign game speed FPS"
+msgstr ""
+
+#: ../../../CREDITS.md:268
+msgid "Including INI files and inheriting INI sections"
+msgstr ""
+
+#: ../../../CREDITS.md:270
+msgid "TechnoType conversion warhead & superweapon"
+msgstr ""
+
+#: ../../../CREDITS.md:271
+msgid "Unlimited skirmish colors"
+msgstr ""
+
+#: ../../../CREDITS.md:272
+msgid "Show designator & inhibitor range"
+msgstr ""
+
+#: ../../../CREDITS.md:273
+msgid "Dump variables to file on scenario end / hotkey"
+msgstr ""
+
+#: ../../../CREDITS.md:274
+msgid ""
+"\"House owns TechnoType\" and \"House doesn't own TechnoType\" trigger "
+"events"
+msgstr ""
+
+#: ../../../CREDITS.md:276
+msgid "Extending `Power` to all TechnoTypes"
+msgstr ""
+
+#: ../../../CREDITS.md:278
 msgid ""
 "**ChrisLv_CN** (work relicensed under [following "
 "permission](https://github.com/Phobos-"
@@ -640,147 +1114,700 @@ msgstr ""
 "**ChrisLv_CN** (授权见[此处](https://github.com/Phobos-"
 "developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):"
 
-#: ../../CREDITS.md:165
+#: ../../../CREDITS.md:279
 msgid "General assistance"
 msgstr "一般协助"
 
-#: ../../CREDITS.md:166
+#: ../../../CREDITS.md:280
 msgid "Interceptor logic prototype"
 msgstr "拦截逻辑原型"
 
-#: ../../CREDITS.md:167
+#: ../../../CREDITS.md:281
 msgid "LaserTrails prototype"
 msgstr "激光尾迹原型"
 
-#: ../../CREDITS.md:168
+#: ../../../CREDITS.md:282
 msgid "Laser fixes prototype"
 msgstr "激光修复原型"
 
-#: ../../CREDITS.md:169
+#: ../../../CREDITS.md:283
 msgid "**Trsdy**"
 msgstr ""
 
-#: ../../CREDITS.md:170
+#: ../../../CREDITS.md:284
 msgid "Preserve IronCurtain status upon DeploysInto/UndeploysInto"
 msgstr "载具部署与建筑反部署保留铁幕"
 
-#: ../../CREDITS.md:171
-msgid "Jumpjet facing fix"
-msgstr "Jumpjet面向修复"
+#: ../../../CREDITS.md:285
+msgid "Several jumpjet fixes:"
+msgstr ""
 
-#: ../../CREDITS.md:172
+#: ../../../CREDITS.md:286
+msgid "Facing towards target even if not omni-firing"
+msgstr ""
+
+#: ../../../CREDITS.md:287
+msgid "Turret direction in idle state fix"
+msgstr ""
+
+#: ../../../CREDITS.md:288
+msgid "Sensor fix"
+msgstr ""
+
+#: ../../../CREDITS.md:289
+msgid "Allow to tilt regardless of TiltCrashJumpjet"
+msgstr ""
+
+#: ../../../CREDITS.md:290
+msgid "Forbid firing when crashing"
+msgstr ""
+
+#: ../../../CREDITS.md:291
+msgid "OmniFire.TurnToTarget"
+msgstr ""
+
+#: ../../../CREDITS.md:293
 msgid "Object Self-destruction logic"
 msgstr "单位自毁逻辑"
 
-#: ../../CREDITS.md:173
-msgid "Building EVA_StructureSold and SellSound dehardcode"
+#: ../../../CREDITS.md:294
+msgid "Misc vanilla suicidal behavior fix"
+msgstr ""
+
+#: ../../../CREDITS.md:295
+msgid "Post-type-conversion update"
+msgstr ""
+
+#: ../../../CREDITS.md:296
+msgid "Units retaining orders after changing ownership bugfix"
+msgstr ""
+
+#: ../../../CREDITS.md:297
+msgid "Several fixes and dehardcode related to building selling/undeploying:"
+msgstr ""
+
+#: ../../../CREDITS.md:298
+#, fuzzy
+msgid "Building `EVA_StructureSold` and `SellSound` dehardcode"
 msgstr "建筑EVA_StructureSold与变卖音效解硬编码"
 
-#: ../../CREDITS.md:174
+#: ../../../CREDITS.md:299
+msgid "Restore `EVA_StructureSold` for buildings with `UndeploysInto`"
+msgstr ""
+
+#: ../../../CREDITS.md:300
+msgid "Redeployable MCV in campaigns"
+msgstr ""
+
+#: ../../../CREDITS.md:301
+msgid ""
+"Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` even "
+"if not conyard"
+msgstr ""
+
+#: ../../../CREDITS.md:302
+msgid "Trigger actions that allow/forbid MCV to redeploy in game"
+msgstr ""
+
+#: ../../../CREDITS.md:303
+msgid "`AlternateFLH` of vehicles in `OpenTopped` transport."
+msgstr ""
+
+#: ../../../CREDITS.md:304
 msgid "Slaves' house customization when owner is killed"
 msgstr "自定义奴矿被毁后的奴隶所属方"
 
-#: ../../CREDITS.md:175
-msgid "Misc CN doc fix"
-msgstr "部分中文说明书修复"
+#: ../../../CREDITS.md:305
+msgid "Trigger Action spawned team IFV/Opentopped logic fix"
+msgstr ""
 
-#: ../../CREDITS.md:176
+#: ../../../CREDITS.md:306
+msgid ""
+"Singleplayer Campaign AI's base node/SW-delivered/trigger action "
+"125-delivered structures' auto-repairability dehardcode"
+msgstr ""
+
+#: ../../../CREDITS.md:307
+msgid "Power delta counter : blackout indication mark"
+msgstr ""
+
+#: ../../../CREDITS.md:309
+msgid "Income money string indication upon ore dump"
+msgstr ""
+
+#: ../../../CREDITS.md:310
 msgid "Warhead superweapon launch logic"
 msgstr "弹头超级武器发射逻辑"
 
-#: ../../CREDITS.md:177
+#: ../../../CREDITS.md:311 ../../../CREDITS.md:326
+msgid "TechnoType conversion placeholder"
+msgstr ""
+
+#: ../../../CREDITS.md:312
+msgid "\"Shield is broken\" trigger event"
+msgstr ""
+
+#: ../../../CREDITS.md:313
+msgid "RadialIndicator observer visibility"
+msgstr ""
+
+#: ../../../CREDITS.md:314
+msgid "Cloaked objects from allies displaying to player in singleplayer campaigns"
+msgstr ""
+
+#: ../../../CREDITS.md:315
+msgid "Skip `NaturalParticleSystem` displaying from in-map pre-placed structures"
+msgstr ""
+
+#: ../../../CREDITS.md:316
+msgid ""
+"Random crate generation limited to land option, optimization for crates' "
+"random sampling"
+msgstr ""
+
+#: ../../../CREDITS.md:317
+msgid "`ImmuneToCrit` for shields"
+msgstr ""
+
+#: ../../../CREDITS.md:318 ../../../CREDITS.md:349
 #, fuzzy
-msgid "**NetsuNegi** - Forbidding parallel AI queues by type"
+msgid "Forbidding parallel AI queues by type"
 msgstr "**NetsuNegi** - 阻止特定类型AI克隆"
 
-#: ../../CREDITS.md:178
+#: ../../../CREDITS.md:319
+msgid "The option to allow DieSound/VoiceDie being played when grinding"
+msgstr ""
+
+#: ../../../CREDITS.md:320
+msgid "Allow iron-curtain effects on infantries"
+msgstr ""
+
+#: ../../../CREDITS.md:321
+msgid ""
+"Break the mindcontrol link when capturing a mind-controlled building with"
+" engineer"
+msgstr ""
+
+#: ../../../CREDITS.md:322
+msgid ""
+"Remove sound events when mind-controlled vehicles deploy into buildings "
+"or when buildings considered as vehicles get captured"
+msgstr ""
+
+#: ../../../CREDITS.md:323
+msgid "Building LightSource tint S/L fix"
+msgstr ""
+
+#: ../../../CREDITS.md:324
+msgid "Permanent healthbar display on units targeted by temporal weapons fix"
+msgstr ""
+
+#: ../../../CREDITS.md:325
+msgid ""
+"Powered anims on buildings cease playing upon capture by different house "
+"fix"
+msgstr ""
+
+#: ../../../CREDITS.md:327
+msgid "TechnoType conversion upon ownership change"
+msgstr ""
+
+#: ../../../CREDITS.md:328
+msgid "EIP 00529A14 crash fix on Linux"
+msgstr ""
+
+#: ../../../CREDITS.md:329
+msgid "Teleport timer reset after load game fix"
+msgstr ""
+
+#: ../../../CREDITS.md:330
+msgid "Teleport, Tunnel and Fly loco visual tilt fix"
+msgstr ""
+
+#: ../../../CREDITS.md:331
+msgid "Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow"
+msgstr ""
+
+#: ../../../CREDITS.md:332
+msgid "Skip units' turret rotation and jumpjets' wobbling under EMP"
+msgstr ""
+
+#: ../../../CREDITS.md:333
+msgid "Droppod properties dehardcode"
+msgstr ""
+
+#: ../../../CREDITS.md:334
+msgid "`Deployer = yes->no` infantry conversion sequence fix"
+msgstr ""
+
+#: ../../../CREDITS.md:335
+msgid "Waypoint entering building together with engineer/agent bug fix"
+msgstr ""
+
+#: ../../../CREDITS.md:336
+msgid "Skippable game save on scenario start"
+msgstr ""
+
+#: ../../../CREDITS.md:337
+msgid "`InfDeath=9` versus jumpjet infantry 0 damage fix"
+msgstr ""
+
+#: ../../../CREDITS.md:338
+msgid "Skip rally point line drawing when undeploying a building"
+msgstr ""
+
+#: ../../../CREDITS.md:339
+msgid "Ares' `SW.Shots` hint on extended tooltips"
+msgstr ""
+
+#: ../../../CREDITS.md:340
+msgid "Ares' Abductor weapon fix"
+msgstr ""
+
+#: ../../../CREDITS.md:341
+msgid "Suppress Ares' swizzle warning when parsing tags and taskforces"
+msgstr ""
+
+#: ../../../CREDITS.md:342
+msgid ""
+"Better fix for Ares academy not working on the initial payloads of "
+"vehicles built from a war factory"
+msgstr ""
+
+#: ../../../CREDITS.md:343
+msgid "Fix Ares' InitialPayload for teams spawned by trigger actions"
+msgstr ""
+
+#: ../../../CREDITS.md:344
+msgid "Misc code refactor & maintenance, CN doc fixes, bugfixes"
+msgstr ""
+
+#: ../../../CREDITS.md:345
+msgid "**FlyStar**"
+msgstr ""
+
+#: ../../../CREDITS.md:346
+#, fuzzy
+msgid "Campaign load screen PCX support"
+msgstr "**FlyStar** - 战役载入图PCX支持"
+
+#: ../../../CREDITS.md:347
+msgid ""
+"New condition for automatic self-destruction logic when TechnoTypes "
+"exist/don't exist"
+msgstr ""
+
+#: ../../../CREDITS.md:348
+msgid "**NetsuNegi**"
+msgstr ""
+
+#: ../../../CREDITS.md:350
+msgid "Jumpjet crash speed fix when crashing onto building"
+msgstr ""
+
+#: ../../../CREDITS.md:351
+msgid ""
+"Disguised units not using the correct palette if target has custom "
+"palette bugfix"
+msgstr ""
+
+#: ../../../CREDITS.md:352
+msgid "Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix"
+msgstr ""
+
+#: ../../../CREDITS.md:353
+msgid "Assign Super Weapon cameo to any sidebar tab"
+msgstr ""
+
+#: ../../../CREDITS.md:354
+msgid ""
+"Fix impassable invisible barrier created by chronosphere on uncrushable "
+"unit."
+msgstr ""
+
+#: ../../../CREDITS.md:355
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明SHP绘制补丁"
 
-#: ../../CREDITS.md:179
-msgid "**FlyStar** - Campaign load screen PCX support"
-msgstr "**FlyStar** - 战役载入图PCX支持"
+#: ../../../CREDITS.md:356
+msgid "**ststl**"
+msgstr ""
 
-#: ../../CREDITS.md:180
+#: ../../../CREDITS.md:357
+msgid "Customizable ShowTimer priority of superweapons"
+msgstr ""
+
+#: ../../../CREDITS.md:358
+msgid "Iron Curtain effects customization on infantries and organic units"
+msgstr ""
+
+#: ../../../CREDITS.md:359
+msgid "Use `CustomPalette` for animations with `Tiled=yes`"
+msgstr ""
+
+#: ../../../CREDITS.md:360
+msgid "Unlimited `AlternateFLH` entries"
+msgstr ""
+
+#: ../../../CREDITS.md:361
+msgid "Build limit group"
+msgstr ""
+
+#: ../../../CREDITS.md:362
+msgid "Customizing whether passengers are kicked out when an aircraft fires"
+msgstr ""
+
+#: ../../../CREDITS.md:363
+msgid "**TwinkleStar**"
+msgstr ""
+
+#: ../../../CREDITS.md:364
+msgid "Custom slaves free sound"
+msgstr ""
+
+#: ../../../CREDITS.md:365
+msgid "Jumpjet crash rotation control"
+msgstr ""
+
+#: ../../../CREDITS.md:366
+msgid "Vehicle voxel turret shadows & body multi-section shadows"
+msgstr ""
+
+#: ../../../CREDITS.md:367
+msgid "`TurretOffset` support for SHP vehicles"
+msgstr ""
+
+#: ../../../CREDITS.md:368 ../../../CREDITS.md:394
+#, fuzzy
+msgid "Customizable rocker amplitude"
+msgstr "自定义缺省图标"
+
+#: ../../../CREDITS.md:369
+#, fuzzy
+msgid "Customizable wake anim"
+msgstr "自定义矿柱"
+
+#: ../../../CREDITS.md:370
+msgid "Initial effort on optimization for crates' random distribution"
+msgstr ""
+
+#: ../../../CREDITS.md:371
+msgid "**Fryone**"
+msgstr ""
+
+#: ../../../CREDITS.md:373
+msgid "Sound entry on unit's creation"
+msgstr ""
+
+#: ../../../CREDITS.md:374
+msgid "Auto-deploy/Deploy block on ammo change"
+msgstr ""
+
+#: ../../../CREDITS.md:375
+msgid "Flashing Technos on selecting"
+msgstr ""
+
+#: ../../../CREDITS.md:376
+msgid "Promotion animation"
+msgstr ""
+
+#: ../../../CREDITS.md:377
+msgid "**ZivDero**"
+msgstr ""
+
+#: ../../../CREDITS.md:378
+msgid "Re-enable the Veinhole Monster and Weeds from TS"
+msgstr ""
+
+#: ../../../CREDITS.md:379
+msgid "Recreate the weed-charging of SWs like the TS Chemical Missile"
+msgstr ""
+
+#: ../../../CREDITS.md:380
+msgid "Allow to change the speed of gas particles"
+msgstr ""
+
+#: ../../../CREDITS.md:381
+msgid "**CrimRecya**"
+msgstr ""
+
+#: ../../../CREDITS.md:382
+msgid "Fix `LimboKill` not working reliably"
+msgstr ""
+
+#: ../../../CREDITS.md:383
+msgid "Allow using waypoints, area guard and attack move with aircraft"
+msgstr ""
+
+#: ../../../CREDITS.md:384
+msgid "Fix `Stop` command not working so well in some cases"
+msgstr ""
+
+#: ../../../CREDITS.md:385
+msgid "Fix aircraft `MovementZone` and `SpeedType` inconsistencies"
+msgstr ""
+
+#: ../../../CREDITS.md:386
+msgid ""
+"Use 2D distance instead of 3D to check whether in air team members have "
+"arrived destination"
+msgstr ""
+
+#: ../../../CREDITS.md:387
+msgid "Enhanced Straight trajectory"
+msgstr ""
+
+#: ../../../CREDITS.md:388
+msgid "Enable Building Production Queue"
+msgstr ""
+
+#: ../../../CREDITS.md:389
+msgid "Fix for sidebar not updating queued unit numbers when on hold"
+msgstr ""
+
+#: ../../../CREDITS.md:390
+msgid "New Parabola trajectory"
+msgstr ""
+
+#: ../../../CREDITS.md:391 ../../../CREDITS.md:397
+msgid "Enhanced Bombard trajectory"
+msgstr ""
+
+#: ../../../CREDITS.md:392
+msgid "**Ollerus**"
+msgstr ""
+
+#: ../../../CREDITS.md:393
+#, fuzzy
+msgid "Build limit group enhancement"
+msgstr "建筑升级增强"
+
+#: ../../../CREDITS.md:395
+msgid ""
+"Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building "
+"upgrades"
+msgstr ""
+
+#: ../../../CREDITS.md:396
+msgid "Type select for buildings (doc)"
+msgstr ""
+
+#: ../../../CREDITS.md:398
+msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
+msgstr ""
+
+#: ../../../CREDITS.md:399
+msgid "**handama** - AI script action to jump back to previous script"
+msgstr ""
+
+#: ../../../CREDITS.md:400
+msgid "**TaranDahl (航味麻酱)**"
+msgstr ""
+
+#: ../../../CREDITS.md:401
+msgid ""
+"Skirmish AI \"sell all buildings and set all technos to hunt\" behavior "
+"dehardcode"
+msgstr ""
+
+#: ../../../CREDITS.md:402
+msgid "Skirmish AI \"gather when MCV deploy\" behavior dehardcode"
+msgstr ""
+
+#: ../../../CREDITS.md:403
+msgid "Global value of `RepairBaseNodes`"
+msgstr ""
+
+#: ../../../CREDITS.md:404
+msgid "Skip anim delay for burst fire"
+msgstr ""
+
+#: ../../../CREDITS.md:405
+msgid "Type select for buildings (code)"
+msgstr ""
+
+#: ../../../CREDITS.md:406
+msgid "Raise alert when technos are taking damage"
+msgstr ""
+
+#: ../../../CREDITS.md:407
+msgid "Toggle waypoint for building"
+msgstr ""
+
+#: ../../../CREDITS.md:408
+msgid "Parasite returning bug fix"
+msgstr ""
+
+#: ../../../CREDITS.md:409
+msgid "Bunkerable checks dehardcode"
+msgstr ""
+
+#: ../../../CREDITS.md:410
+msgid ""
+"Prevent the units with locomotors that cause problems from entering the "
+"tank bunker"
+msgstr ""
+
+#: ../../../CREDITS.md:411
+msgid ""
+"**tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when "
+"it is un-piggybacked bugfix"
+msgstr ""
+
+#: ../../../CREDITS.md:412
+msgid ""
+"**Aephiex** - initial fix for Ares academy not working on the initial "
+"payloads of vehicles built from a war factory"
+msgstr ""
+
+#: ../../../CREDITS.md:413
+msgid ""
+"**Multfinite** - Allow to toggle main exception handler via command line "
+"argument `-ExceptionHandler=boolean`"
+msgstr ""
+
+#: ../../../CREDITS.md:414
+msgid "**Ares developers**"
+msgstr ""
+
+#: ../../../CREDITS.md:415
+#, fuzzy
+msgid ""
+"YRpp and Syringe which are used, save/load, project foundation and "
+"generally useful code from Ares"
+msgstr "**Ares开发者** - YRpp和Syringe，存读档，Ares的项目基础与有助的代码，未完成的RadType代码，部署修复原型代码"
+
+#: ../../../CREDITS.md:416
+msgid "unfinished RadTypes code"
+msgstr ""
+
+#: ../../../CREDITS.md:417
+#, fuzzy
+msgid "prototype deployer fixes"
+msgstr "心控部署修复"
+
+#: ../../../CREDITS.md:418
+msgid "Superweapon launch site & availability code"
+msgstr ""
+
+#: ../../../CREDITS.md:419
+msgid "AI vehicle production update code"
+msgstr ""
+
+#: ../../../CREDITS.md:420
+msgid "parts of TechnoType conversion placeholder code"
+msgstr ""
+
+#: ../../../CREDITS.md:421
+msgid "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - Digital Display"
+msgstr ""
+
+#: ../../../CREDITS.md:422
 msgid "**SukaHati (Erzoid)** - Minimum interceptor guard range"
 msgstr "**SukaHati (Erzoid)** - 拦截者最小警戒距离"
 
-#: ../../CREDITS.md:181
+#: ../../../CREDITS.md:423
 msgid "**E1 Elite** - TileSet 255 and above bridge repair fix"
 msgstr "**E1 Elite** - TileSet 255以上桥梁维修修复"
 
-#: ../../CREDITS.md:182
+#: ../../../CREDITS.md:424
 msgid "**AutoGavy** - interceptor logic, Warhead critical hit logic"
 msgstr "**AutoGavy** - 拦截者逻辑，弹头暴击伤害系统"
 
-#: ../../CREDITS.md:183
+#: ../../../CREDITS.md:425
 msgid "**Chasheen (Chasheenburg)** - CN docs help"
 msgstr "**Chasheen (Chasheenburg)** - 中文说明书协助"
 
-#: ../../CREDITS.md:184
-msgid ""
-"**Ares developers** - YRpp and Syringe which are used, save/load, project"
-" foundation and generally useful code from Ares, unfinished RadTypes "
-"code, prototype deployer fixes"
-msgstr "**Ares开发者** - YRpp和Syringe，存读档，Ares的项目基础与有助的代码，未完成的RadType代码，部署修复原型代码"
-
-#: ../../CREDITS.md:185
+#: ../../../CREDITS.md:426
 msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
 "engineering, YR binary mappings"
 msgstr "**tomsons26** - 全方位帮助，逆向工程方面协助与指导，YR解析"
 
-#: ../../CREDITS.md:186
+#: ../../../CREDITS.md:427
+#, fuzzy
 msgid ""
 "**CCHyper** - all-around help, current project logo, assistance and "
-"guidance in reverse-engineering, YR binary mappings"
+"guidance in reverse-engineering, YR binary mappings, custom locomotors "
+"example implementation"
 msgstr "**CCHyper** - 全方位帮助，项目logo，逆向工程方面协助与指导，YR解析"
 
-#: ../../CREDITS.md:187
+#: ../../../CREDITS.md:428
 msgid "**AlexB** - Original FlyingStrings implementation"
 msgstr "**AlexB** - 原始 FlyingStrings 实装"
 
-#: ../../CREDITS.md:188
+#: ../../../CREDITS.md:429
 msgid "**Joshy** - Original FlyingStrings implementation"
 msgstr "**Joshy** - 原始 FlyingStrings 实装"
 
-#: ../../CREDITS.md:189
+#: ../../../CREDITS.md:430
+msgid "**CnCVK** - Original custom locomotors experiment"
+msgstr ""
+
+#: ../../../CREDITS.md:431
 msgid "**ZΞPHYɌUS** - win/lose themes code"
 msgstr "**ZΞPHYɌUS** - 胜利失败音乐"
 
-#: ../../CREDITS.md:190
+#: ../../../CREDITS.md:432
+msgid ""
+"**Neargye (Daniil Goncharov)** - [nameof "
+"library](https://github.com/Neargye/nameof) (MIT)"
+msgstr ""
+
+#: ../../../CREDITS.md:433
 msgid "**ayylmao** - help with docs, extensive and thorough testing"
 msgstr "**ayylmao** -  帮助书写说明书，广泛的深度测试"
 
-#: ../../CREDITS.md:191
+#: ../../../CREDITS.md:434
 msgid "**SMxReaver** - help with docs, extensive and thorough testing"
 msgstr "**SMxReaver** - 帮助书写说明书，广泛的深度测试"
 
-#: ../../CREDITS.md:192
+#: ../../../CREDITS.md:435
 msgid "**4SG** - help with docs"
 msgstr "**4SG** -  帮助书写说明书"
 
-#: ../../CREDITS.md:193
-msgid "**thomassneddon** - general assistance"
+#: ../../../CREDITS.md:436
+#, fuzzy
+msgid ""
+"**thomassneddon** - general assistance, knowledge about voxel lighting "
+"model"
 msgstr "**thomassneddon** - 一般协助"
 
-#: ../../CREDITS.md:194
+#: ../../../CREDITS.md:437
 msgid "**Xkein** - general assistance, YRpp edits"
 msgstr "**Xkein** -  一般协助，YRpp编辑"
 
-#: ../../CREDITS.md:195
+#: ../../../CREDITS.md:438
 msgid "**mevitar** - honorary shield tester *triple* award"
 msgstr "**mevitar** - 荣誉护盾测试员*三重*奖章"
 
-#: ../../CREDITS.md:196
+#: ../../../CREDITS.md:439
+msgid ""
+"**Phobos CN Tester Group (Reedom, Mantis, Swim Wing, Takitoru, Examon, "
+"AKB, Pusheen, ZQ, Claptrap, BunkerGeneral, Big J, Skywalker, "
+"ChickEmperor, Shifty, Mikain, Tobiichi Origami, Feiron, W_S502, Ailink, "
+"AbrahamMikhail, Tide, Fnfalsc, Yumeri_Rei, Nacho, Zhuzi, Ika_Aru)** - "
+"extensive and thorough testing"
+msgstr ""
+
+#: ../../../CREDITS.md:440
 msgid "**Damfoos** - extensive and thorough testing"
 msgstr "**Damfoos** - 广泛的深度测试"
 
-#: ../../CREDITS.md:197
+#: ../../../CREDITS.md:441
 msgid "**Dmitry Volkov** - extensive and thorough testing"
 msgstr "**Dmitry Volkov** - 广泛的深度测试"
 
-#: ../../CREDITS.md:198
+#: ../../../CREDITS.md:442
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发中功能的广泛游戏测试"
+
+#~ msgid "SHP debris respect `Shadow` fix"
+#~ msgstr "SHP碎片遵循`Shadow`修复"
+
+#~ msgid "ScriptType Actions 71 to 113, 124 to 126"
+#~ msgstr "脚本动作71到113、124到126"
+
+#~ msgid "Misc CN doc fix"
+#~ msgstr "部分中文说明书修复"
 
