@@ -326,14 +326,7 @@ New:
 - Bunkerable checks dehardcode (by TaranDahl)
 
 Vanilla fixes:
-- Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
-- Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied (by 航味麻酱)
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
-- Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct (by NetsuNegi)
-
-Phobos fixes:
-- Fixed `Ammo.DeployUnlockMinimumAmount`/`Ammo.DeployUnlockMaximumAmount` behavior inside tank bunkers (by Fryone)
-- Fixed `Ammo.AddOnDeploy` behavior inside tank bunkers for non-converters (by Fryone)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
@@ -592,6 +585,9 @@ Vanilla fixes:
 - Fix `Stop` command not working so well in some cases (by CrimRecya)
 - Use 2D distance instead of 3D to check whether in air team members have arrived destination (by CrimRecya)
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc. (by Starkku)
+- Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct (by NetsuNegi)
+- Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied (by 航味麻酱)
+- Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -638,6 +634,8 @@ Phobos fixes:
 - Fixed AircraftTypes gaining self-healing from `UnitsGainSelfHeal` by default (while not displaying the pip) when they should not (by Starkku)
 - Fixed `LaunchSW.IgnoreInhibitors` and `SW.Next.IgnoreInhibitors` overriding corresponding `IgnoreDesignators` settings (by Ollerus)
 - Type conversion on Warheads and Superweapons will no longer recursively convert units if applicable conversion pairs are listed, and only first applicable pair takes effect (by Starkku)
+- Fixed `Ammo.DeployUnlockMinimumAmount`/`Ammo.DeployUnlockMaximumAmount` behavior inside tank bunkers (by Fryone)
+- Fixed `Ammo.AddOnDeploy` behavior inside tank bunkers for non-converters (by Fryone)
 - Fixed an issue that caused new attack and move script actions to pick buildings with `InvisibleInGame=yes` as targets (FS-21)
 
 Fixes / interactions with other extensions:
