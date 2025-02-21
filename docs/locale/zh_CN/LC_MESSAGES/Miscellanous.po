@@ -1,177 +1,531 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2021, The Phobos Contributors
+# Copyright (C) 2024, The Phobos Contributors
 # This file is distributed under the same license as the Phobos package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-31 14:34+0800\n"
+"POT-Creation-Date: 2025-02-21 22:51+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.16.0\n"
 
-#: ../Miscellanous.md:1
+#: ../../Miscellanous.md:1
 msgid "Miscellanous"
-msgstr "杂项"
+msgstr "杂项内容"
 
-#: ../Miscellanous.md:3
+#: ../../Miscellanous.md:3
 msgid ""
 "This page describes every change in Phobos that wasn't categorized into a"
 " proper category yet."
-msgstr "此页面列出了未分类的杂项内容。"
+msgstr "此页面列出了 Phobos 中尚未归类到合适类别的所有更改。"
 
-#: ../Miscellanous.md:5
+#: ../../Miscellanous.md:5
+msgid "Player colors"
+msgstr "玩家颜色"
+
+#: ../../Miscellanous.md:7
+msgid "Unlimited skirmish colors"
+msgstr "无限制遭遇战颜色"
+
+#: ../../Miscellanous.md:9
+msgid ""
+"It is now possible to have an unlimited number of skirmish/multiplayer "
+"player colors, as opposed to 8 in Yuri's Revenge and 16 with Ares."
+msgstr "现在可以拥有无限数量的遭遇战/多人游戏玩家颜色，而《尤里的复仇》中仅有 8 种，Ares 下仅有 16 种。"
+
+#: ../../Miscellanous.md:10
+msgid ""
+"This feature must be enabled with `SkirmishUnlimitedColors=true` in "
+"`[General]` section of game rules."
+msgstr "此功能必须通过在游戏规则文件的 `[General]` 小节中设置 `SkirmishUnlimitedColors=true` 来启用。"
+
+#: ../../Miscellanous.md:11
+msgid ""
+"When enabled, the game will treat color indices passed from spawner as "
+"indices for `[Colors]` section entries."
+msgstr "启用后游戏将会把 spawner 传递的颜色索引视为 `[Colors]` 小节中条目的索引。"
+
+#: ../../Miscellanous.md:12
+msgid ""
+"In example, with original rules, index 6 will correspond to color "
+"`Orange=25,230,255`."
+msgstr "例如，在原本的规则中，索引 6 将对应颜色 `Orange=25,230,255`。"
+
+#: ../../Miscellanous.md:14 ../../Miscellanous.md:58 ../../Miscellanous.md:101
+msgid "In `rulesmd.ini`:"
+msgstr "在 `rulesmd.ini`："
+
+#: ../../Miscellanous.md:21
+msgid ""
+"This feature should only be used if you use a spawner/outside client "
+"(i.e. CNCNet client). Using it in the original YR launcher will produce "
+"undesireable effects."
+msgstr "此功能仅在使用 spanwer / 外部客户端（例如 XNA CNCNet Client）时使用。在原本的 YR 启动器下使用会产生不良效果。"
+
+#: ../../Miscellanous.md:25
+msgid ""
+"Due to technical incompatibilities, enabling this feature disables [Ares'"
+" Customizable Dropdown Colors](https://ares-developers.github.io/Ares-"
+"docs/ui-features/customizabledropdowncolors.html)."
+msgstr ""
+"例如：由于技术不兼容，启用此功能会禁用 [Ares 的“可定制的玩家颜色”功能](https://ares-"
+"developers.github.io/Ares-docs/ui-"
+"features/customizabledropdowncolors.html)。"
+
+#: ../../Miscellanous.md:28
 msgid "Developer tools"
 msgstr "开发者工具"
 
-#: ../Miscellanous.md:7
-msgid "Dump Object Info"
-msgstr "输出目标信息"
+#: ../../Miscellanous.md:30
+msgid "Additional sync logging"
+msgstr "额外的同步日志记录"
 
-#: ../Miscellanous.md:9
+#: ../../Miscellanous.md:32
+msgid ""
+"Phobos writes additional information to the `SYNC#.txt` log files when a "
+"desynchronization occurs such as calls to random number generator "
+"functions, facing / target / destination changes etc."
+msgstr "当发生不同步时 Phobos 会将例如随机数生成函数的调用、朝向、目标、目的地的更改等额外信息写入 `SYNC#.txt` 日志文件中。"
+
+#: ../../Miscellanous.md:34
+msgid "Dump Object Info"
+msgstr "输出对象信息"
+
+#: ../../Miscellanous.md:36
 msgid ""
 "![image](_static/images/objectinfo-01.png) *Object info dump from [CnC: "
 "Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
 msgstr ""
-"![image](_static/images/objectinfo-01.png)   \n"
-"*目标信息输出，来自[CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
+"![image](_static/images/objectinfo-01.png) *[CnC: "
+"Reloaded](https://www.moddb.com/mods/cncreloaded/) 中的对象信息输出效果*"
 
-#: ../Miscellanous.md:9
+#: ../../Miscellanous.md:36
 msgid "image"
-msgstr ""
+msgstr "图像"
 
-#: ../Miscellanous.md:12
+#: ../../Miscellanous.md:39
 msgid ""
-"There's a new hotkey to dump selected/hovered object info on press. "
-"Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to "
-"true in `rulesmd.ini`."
-msgstr "用以输出选择/悬浮目标信息的快捷键。仅当debug标签开启时启用。"
+"There's a [new hotkey](User-Interface.md#dump-object-info) to dump "
+"selected/hovered object info on press. Available only if "
+"`DebugKeysEnabled` under `[GlobalControls]` is set to true in "
+"`rulesmd.ini`."
+msgstr ""
+"有一个[新的热键](User-Interface.md#dump-object-info)可以在按下时输出被选中/鼠标悬停于其上的对象的信息。仅当"
+" `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
 
-#: ../Miscellanous.md:14
+#: ../../Miscellanous.md:41
 msgid "Display Damage Numbers"
 msgstr "显示伤害数字"
 
-#: ../Miscellanous.md:16
+#: ../../Miscellanous.md:43
 msgid ""
-"There's a new hotkey to show exact numbers of damage dealt on units & "
-"buildings. The numbers are shown in red (blue against shields) for "
-"damage, and for healing damage in green (cyan against shields). They are "
-"shown on the affected units and will move upwards after appearing. "
-"Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to "
-"true in `rulesmd.ini`."
-msgstr "一个新的快捷键用以显示精确的伤害数字。伤害数字固定显示为红色（对护盾为蓝色），治疗数字显示为绿色（对护盾为青色）。数字将显示在单位上，然后缓慢向上移动。此功能仅当开发者功能启用时有效。"
+"There's a [new hotkey](User-Interface.md#display-damage-numbers) to show "
+"exact numbers of damage dealt on units & buildings. The numbers are shown"
+" in red (blue against shields) for damage, and for healing damage in "
+"green (cyan against shields). They are shown on the affected units and "
+"will move upwards after appearing. Available only if `DebugKeysEnabled` "
+"under `[GlobalControls]` is set to true in `rulesmd.ini`."
+msgstr ""
+"有一个[新的热键](User-Interface.md#display-damage-"
+"numbers)可以开关是否显示对单位与建筑造成的精确伤害数字。伤害数字以红色显示（对护盾为蓝色），治疗性质的伤害以绿色显示（对护盾为青色）。这些数字会显示在受影响的单位上，并在出现后向上移动。仅当"
+" `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
 
-#: ../Miscellanous.md:18
+#: ../../Miscellanous.md:45
+msgid "Frame Step In"
+msgstr "进入逐帧模式"
+
+#: ../../Miscellanous.md:47
+msgid ""
+"There's a [new hotkey](User-Interface.md#toggle-frame-by-frame-mode) to "
+"execute the game frame by frame for development usage."
+msgstr "有一个[新的热键](User-Interface.md#toggle-frame-by-frame-mode)可以逐帧执行游戏以便开发。"
+
+#: ../../Miscellanous.md:48
+msgid ""
+"You can switch to frame by frame mode and then use frame step in command "
+"to forward 1, 5, 10, 15, 30 or 60 frames by one hit."
+msgstr "你可以切换到逐帧模式然后用逐帧命令一次前进 1、5、10、15、30 或 60 帧。"
+
+#: ../../Miscellanous.md:50
+msgid "Save variables to file"
+msgstr "保存变量至文件"
+
+#: ../../Miscellanous.md:52
+msgid ""
+"There's a [new hotkey](User-Interface.md#save-variables) to write all "
+"local variables to `locals.ini` and all global variables to "
+"`globals.ini`. Available only if `DebugKeysEnabled` under "
+"`[GlobalControls]` is set to true in `rulesmd.ini`."
+msgstr ""
+"有一个[新的热键](User-Interface.md#save-variables)可以将所有局部变量写入 `locals.ini` "
+"并将所有全局变量写入 `globals.ini`。仅当 `rulesmd.ini` 中 `[GlobalControls]` 下的 "
+"`DebugKeysEnabled` 设为 true 时可用。"
+
+#: ../../Miscellanous.md:53
+msgid ""
+"Variables will be also automatically saved to file on scenario end if "
+"`[General] -> SaveVariablesOnScenarioEnd=true` is set in `rulesmd.ini`."
+msgstr ""
+"变量也会在 `rulesmd.ini` 中设置了 `[General] -> SaveVariablesOnScenarioEnd=true` "
+"的情况下每次场景结束时自动保存到文件。"
+
+#: ../../Miscellanous.md:54
+msgid ""
+"Variable section will use the same name as the mission file name in "
+"capital letters, i.e. `[MYCAMPAIGN.MAP]`."
+msgstr "变量小节将使用与任务文件名相同名称的大写字母表示，例如 `[MYCAMPAIGN.MAP]`。"
+
+#: ../../Miscellanous.md:55
+msgid "Variables will be written as key-value pairs, i.e. `MyVariable=1`."
+msgstr "变量将以键值对的形式写入，例如 `MyVariable=1`。"
+
+#: ../../Miscellanous.md:56
+msgid ""
+"If an INI file with the same name (`locals.ini`/`globals.ini`) doesn't "
+"exist, it will be created. If it exists, all sections will be preserved."
+msgstr "如果同名的 INI 文件（`locals.ini`/`globals.ini`）不存在那么将会被创建。如果存在，所有小节都将被保留。"
+
+#: ../../Miscellanous.md:64
 msgid "Semantic locomotor aliases"
 msgstr "运动模式别称"
 
-#: ../Miscellanous.md:20
+#: ../../Miscellanous.md:66
 msgid ""
 "It's now possible to write locomotor aliases instead of their CLSIDs in "
 "the `Locomotor` tag value. Use the table below to find the needed alias "
 "for a locomotor."
-msgstr "现在可以用指定的文字代替原本的CLSID，可以更加一目了然的编辑`Locomotor`。"
+msgstr "现在可以在 `Locomotor` 标签值中写入运动模式的别称，而不再只能书写它们的 CLSIDs。使用下表查找运动模式所对应的别称。"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "*Alias*"
 msgstr "*别称*"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "*CLSID*"
-msgstr ""
+msgstr "*CLSID*"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "Drive"
-msgstr ""
+msgstr "Drive"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "`{4A582741-9839-11d1-B709-00A024DDAFD1}`"
-msgstr ""
+msgstr "`{4A582741-9839-11d1-B709-00A024DDAFD1}`"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "Jumpjet"
-msgstr ""
+msgstr "Jumpjet"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "`{92612C46-F71F-11d1-AC9F-006008055BB5}`"
-msgstr ""
+msgstr "`{92612C46-F71F-11d1-AC9F-006008055BB5}`"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "Hover"
-msgstr ""
+msgstr "Hover"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "`{4A582742-9839-11d1-B709-00A024DDAFD1}`"
-msgstr ""
+msgstr "`{4A582742-9839-11d1-B709-00A024DDAFD1}`"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "Rocket"
-msgstr ""
+msgstr "Rocket"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "`{B7B49766-E576-11d3-9BD9-00104B972FE8}`"
-msgstr ""
+msgstr "`{B7B49766-E576-11d3-9BD9-00104B972FE8}`"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "Tunnel"
-msgstr ""
+msgstr "Tunnel"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "`{4A582743-9839-11d1-B709-00A024DDAFD1}`"
-msgstr ""
+msgstr "`{4A582743-9839-11d1-B709-00A024DDAFD1}`"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "Walk"
-msgstr ""
+msgstr "Walk"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "`{4A582744-9839-11d1-B709-00A024DDAFD1}`"
-msgstr ""
+msgstr "`{4A582744-9839-11d1-B709-00A024DDAFD1}`"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "DropPod"
-msgstr ""
+msgstr "DropPod"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "`{4A582745-9839-11d1-B709-00A024DDAFD1}`"
-msgstr ""
+msgstr "`{4A582745-9839-11d1-B709-00A024DDAFD1}`"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "Fly"
-msgstr ""
+msgstr "Fly"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "`{4A582746-9839-11d1-B709-00A024DDAFD1}`"
-msgstr ""
+msgstr "`{4A582746-9839-11d1-B709-00A024DDAFD1}`"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "Teleport"
-msgstr ""
+msgstr "Teleport"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "`{4A582747-9839-11d1-B709-00A024DDAFD1}`"
-msgstr ""
+msgstr "`{4A582747-9839-11d1-B709-00A024DDAFD1}`"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "Mech"
-msgstr ""
+msgstr "Mech"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "`{55D141B8-DB94-11d1-AC98-006008055BB5}`"
-msgstr ""
+msgstr "`{55D141B8-DB94-11d1-AC98-006008055BB5}`"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "Ship"
-msgstr ""
+msgstr "Ship"
 
-#: ../Miscellanous.md
+#: ../../Miscellanous.md:24
 msgid "`{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}`"
+msgstr "`{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}`"
+
+#: ../../Miscellanous.md:83
+msgid ""
+"`Chrono` is not a standard Alias, but since the default behavior of using"
+" `Teleport` will be triggered when the value of `Locomotor` is incorrect,"
+" the result of the operation will appear as if `Chrono` has taken effect."
 msgstr ""
+"`Chrono` 并不是一个标准的别称，但由于 `Locomotor` 值无效时将使用的默认行为也是 `Teleport`，因此显得好似 "
+"`Chrono` 生效了一般。"
+
+#: ../../Miscellanous.md:85
+msgid ""
+"Correspondingly, if such a writing method causes any errors, it is also "
+"not within the scope of responsibility of this function."
+msgstr "但与之相对应的，如果这样的书写方式引发了什么错误，那也并不属于这个功能所涵盖的范围。"
+
+#: ../../Miscellanous.md:88
+msgid "Game Speed"
+msgstr "游戏速度"
+
+#: ../../Miscellanous.md:90
+msgid "Single player game speed"
+msgstr "单人游戏速度"
+
+#: ../../Miscellanous.md:92
+msgid ""
+"It is now possible to change the default (GS4/Fast/30FPS) campaign game "
+"speed with `CampaignDefaultGameSpeed`."
+msgstr "现在可以使用 `CampaignDefaultGameSpeed` 更改默认的（游戏速度 4 / 快 / 30FPS）战役游戏速度。"
+
+#: ../../Miscellanous.md:93
+msgid ""
+"It is now possible to change the *values* of single player game speed, by"
+" inputing a pair of values. This feature must be enabled with "
+"`CustomGS=true`. **Only values between 10 and 60 FPS can be consistently "
+"achieved.**"
+msgstr ""
+"现在可以输入一对值来更改单人游戏速度的值。此功能必须通过设置 `CustomGS=true` 来启用。**只能稳定控制在 10 到 60 FPS "
+"之间的值。**"
+
+#: ../../Miscellanous.md:94
+msgid ""
+"Custom game speed is achieved by periodically manipulating the delay "
+"between game frames, thus increasing or decreasing FPS."
+msgstr "自定义游戏速度是通过定期调整游戏帧之间的延迟来实现增加或减少 FPS 的。"
+
+#: ../../Miscellanous.md:95
+msgid ""
+"`CustomGSN.ChangeInterval` describes the frame interval between applying "
+"the effect. A value of 2 means \"every other frame\", 3 means \"every 3 "
+"frames\" etc. Increase of speedup/slowdown is approximately logarithmic."
+msgstr ""
+"`CustomGSN.ChangeInterval` 设置应用该效果的帧间隔。值为 2 表示“每**隔**一帧执行一次”，3 表示“每 3 "
+"帧**中**执行一次”等。加速/减速的改动大致呈对数关系。"
+
+#: ../../Miscellanous.md:96
+msgid ""
+"`CustomGSN.ChangeDelay` sets the delay (game speed number) to use every "
+"`CustomGSN.ChangeInterval` frames."
+msgstr "`CustomGSN.ChangeDelay` 设置了每个 `CustomGSN.ChangeInterval` 帧使用的延迟（游戏速度编号）。"
+
+#: ../../Miscellanous.md:97
+msgid ""
+"`CustomGSN.DefaultDelay` sets the delay (game speed number) to use on "
+"other frames."
+msgstr "`CustomGSN.DefaultDelay` 设置了在其他帧上应用的延迟（游戏速度编号）。"
+
+#: ../../Miscellanous.md:98
+msgid ""
+"Using game speed 6 (Fastest) in either `CustomGSN.ChangeDelay` or "
+"`CustomGSN.DefaultDelay` allows to set FPS above 60."
+msgstr ""
+"在 `CustomGSN.ChangeDelay` 或 `CustomGSN.DefaultDelay` 中使用游戏速度 6（最快）可以将 FPS"
+" 设置为超过 60 的值。"
+
+#: ../../Miscellanous.md:99
+msgid "**However, the resulting FPS may vary on different machines.**"
+msgstr "**然而实际的 FPS 可能在不同的机器上有所不同。**"
+
+#: ../../Miscellanous.md:111
+msgid "In `RA2MD.INI`:"
+msgstr "在 `RA2MD.INI`："
+
+#: ../../Miscellanous.md:118
+msgid ""
+"Currently there is no way to set desired FPS directly. Use the generator "
+"below to get required values. The generator supports values from 10 to "
+"60."
+msgstr "目前无法直接设置所需的 FPS。需要使用下面的生成器来获取所需的值。生成器支持 10 到 60 之间的值。"
+
+#: ../../Miscellanous.md:175
+msgid "INI"
+msgstr "INI"
+
+#: ../../Miscellanous.md:177
+msgid "Include files"
+msgstr "包含文件"
+
+#: ../../Miscellanous.md:180
+msgid "This feature must be enabled via a command line argument `-Include`."
+msgstr "此功能必须通过命令行参数 `-Include` 来启用。"
+
+#: ../../Miscellanous.md:183
+msgid ""
+"INI files can now include other files (merge them into self) using "
+"`[$Include]` section."
+msgstr "现在 INI 文件可以使用 `[$Include]` 小节来包含其他文件（将它们合并到自身中）。"
+
+#: ../../Miscellanous.md:184
+msgid ""
+"`[$Include]` section contains a list of files to read and include. Files "
+"can be directly in the Red Alert 2 directory or in a loaded MIX file."
+msgstr "`[$Include]` 小节包括了要读取和包含的文件列表。文件可以直接位于在《红色警戒 2》的目录中或已加载的 MIX 文件。"
+
+#: ../../Miscellanous.md:185
+msgid ""
+"Files will be added in the same order they are defined. Index of each "
+"file **must be unique among all included files**."
+msgstr "文件将按照它们定义的顺序添加。每个文件的索引**必须在所有包括文件中唯一**。"
+
+#: ../../Miscellanous.md:186
+msgid ""
+"Inclusion can be nested recursively (included files can include files "
+"further). Recursion is depth-first (before including next file, check if "
+"the current one includes anything)."
+msgstr "包含可以递归嵌套（被包含的文件包含其他文件）。递归深度优先（在包含下一个文件之前，检查当前文件是否包含任何内容）。"
+
+#: ../../Miscellanous.md:187
+msgid ""
+"When the same entry exists in two files, then the one read later will "
+"overwrite the value."
+msgstr "当两个文件中存在相同条目时，后读取的那个文件将覆盖前面的值。"
+
+#: ../../Miscellanous.md:188 ../../Miscellanous.md:214
+msgid ""
+"This feature can be used in *any* INI file, be it `rulesmd.ini`, "
+"`artmd.ini`, `soundmd.ini`, map file or anything else."
+msgstr "此功能可以用于任何 INI 文件，无论 `rulesmd.ini`、`artmd.ini`、`soundmd.ini`、地图文件还是其他任何文件。"
+
+#: ../../Miscellanous.md:190 ../../Miscellanous.md:216
+msgid "In any file:"
+msgstr "在任何文件中："
+
+#: ../../Miscellanous.md:197
+msgid ""
+"Due to a technical issue, there is a chance that ***the first line of a "
+"included file will be skipped!*** To prevent this, included files should "
+"start with an empty line or a comment."
+msgstr "由于技术问题，包含文件的***第一行有可能会被跳过***！为了防止这种情况，包含的文件应以空行或注释开头。"
+
+#: ../../Miscellanous.md:201
+msgid ""
+"When this feature is enabled, `[#include]` (equivalent [Ares feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html)) is disabled because of technical incompatibilities."
+msgstr ""
+"当此功能启用后，由于技术不兼容所以 [Ares 与此等效的 `[#Include]` 功能](https://ares-developers.github.io/Ares-"
+"docs/new/misc/include.html) 将被禁用。"
+
+#: ../../Miscellanous.md:204
+msgid "Section inheritance"
+msgstr "段落继承"
+
+#: ../../Miscellanous.md:207
+msgid "This feature must be enabled via a command line argument `-Inheritance`."
+msgstr "此功能必须通过命令行参数 `-Inheritance` 来启用。"
+
+#: ../../Miscellanous.md:210
+msgid ""
+"You can now make sections (children) inherit entries from other sections "
+"(parents) with `$Inherits` entry."
+msgstr "现在你可以通过 `$Inherits` 条目让段落（子节）继承其他段落（父节）的条目。"
+
+#: ../../Miscellanous.md:211
+msgid ""
+"When a section has no value set for an entry (or an entry is missing), "
+"the game will attempt to use parent's value. If no value is found, only "
+"then the default will be used."
+msgstr "当一个小节没有设置某个条目的值（或条目缺失）时，游戏将尝试使用父节中的值。如果也没有找到，那么才会使用默认值。"
+
+#: ../../Miscellanous.md:212
+msgid ""
+"When multiple parents are specified, the order of inheritance is \"first "
+"come, first served\", looking up comma separated parents from left to "
+"right."
+msgstr "当指定了多个父节时，继承到顺序是“先到先得”，从左到右查找逗号分隔的父节。"
+
+#: ../../Miscellanous.md:213
+msgid ""
+"Inheritance can be nested recursively (parent sections can have their own"
+" parents). Recursion is depth-first (before inheriting from the next "
+"parent, check if the current parent has parents)."
+msgstr "继承可以递归嵌套（父节可以有自己的父节）。递归是深度优先的（在下一个父节继承之前，检查当前父节是否有父节）。"
+
+#: ../../Miscellanous.md:227
+msgid ""
+"When this feature is enabled, the Ares equivalent of `$Inherits` "
+"(undocumented) is disabled!"
+msgstr ""
+"当此功能启用后，[Ares "
+"的继承功能](https://bbs.ra2diy.com/forum.php?mod=viewthread&tid=24681)（未在官方文档中列出）将被禁用！"
+
+#: ../../Miscellanous.md:231
+msgid ""
+"This feature may noticeably increase game loading time, depending on the "
+"size of game rules and used hardware."
+msgstr "此功能可能显著增大游戏加载时间，具体取决于游戏规则的大小和硬件环境。"
+
+#: ../../Miscellanous.md:234
+msgid "Turning off/on in-game exception handling"
+msgstr "游戏内异常处理开关"
+
+#: ../../Miscellanous.md:236
+msgid ""
+"You can turn on/off the exception handler of the game's main loop using "
+"the following command line arg: `-ExceptionHandler=boolean` where "
+"`boolean` is `(true|false|yes|no|1|0)`."
+msgstr "你可以使用以下命令行参数来开启/关闭游戏主循环的异常处理程序：`-ExceptionHandler=boolean`，其中 `boolean` 是 `(true|false|yes|no|1|0)`。"
+
+#: ../../Miscellanous.md:239
+msgid ""
+"In **debug** builds the in-game exception handler is **turned off** by "
+"default."
+msgstr "在 **debug** 版本中默认情况下游戏内异常处理程序是 **关闭** 的。"
+
+#: ../../Miscellanous.md:243
+msgid ""
+"The CnCNet 5 spawner uses the main loop exception handler for fixes. If "
+"you get any issues (crashes, bugs) in combination with that then please "
+"first test with the exception handler enabled."
+msgstr "CNCNet 5 启动器使用主循环异常处理程序进行修复。如果你在使用它时遇到任何问题（崩溃、错误），请先在异常处理程序开启的情况下进行测试。"
 
