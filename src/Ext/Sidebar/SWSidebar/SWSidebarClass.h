@@ -12,6 +12,7 @@ public:
 	bool RemoveColumn();
 
 	void InitClear();
+	void InitIO();
 
 	bool AddButton(int superIdx);
 	void SortButtons();

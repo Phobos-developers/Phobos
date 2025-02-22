@@ -231,48 +231,6 @@ DEFINE_HOOK(0x6A9316, SidebarClass_StripClass_HelpText, 0x6)
 	return 0x6A93DE;
 }
 
-DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_HelpText, 0x6)
-{
-	enum { ApplyToolTip = 0x4AE69D };
-
-	if (!SWSidebarClass::IsEnabled())
-		return 0;
-
-	const auto button = SWSidebarClass::Instance.CurrentButton;
-
-	if (!button)
-		return 0;
-
-	PhobosToolTip::Instance.IsCameo = true;
-
-	if (PhobosToolTip::Instance.IsEnabled())
-	{
-		PhobosToolTip::Instance.HelpText_Super(button->SuperIndex);
-		R->EAX(PhobosToolTip::Instance.GetBuffer());
-	}
-	else
-	{
-		const auto pSuper = HouseClass::CurrentPlayer->Supers[button->SuperIndex];
-		R->EAX(pSuper->Type->UIName);
-	}
-
-	return ApplyToolTip;
-}
-
-DEFINE_HOOK(0x724247, ToolTipManager_ProcessMessage_SetDelayTimer, 0x6)
-{
-	enum { SkipDelay = 0x72429E };
-
-	return SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentButton ? SkipDelay : 0;
-}
-
-DEFINE_HOOK(0x72428C, ToolTipManager_ProcessMessage_Redraw, 0x5)
-{
-	enum { SkipRedraw = 0x724297 };
-
-	return SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentButton ? SkipRedraw : 0;
-}
-
 DEFINE_HOOK(0x724B2E, ToolTipManager_SetX, 0x6)
 {
 	if (SWSidebarClass::IsEnabled())

@@ -132,6 +132,9 @@ void SWButtonClass::OnMouseEnter()
 	SWSidebarClass::Instance.CurrentButton = this;
 	SWSidebarClass::Instance.Columns[this->ColumnIndex]->OnMouseEnter();
 	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
+
+	CCToolTip::Instance->SaveTimerDelay();
+	CCToolTip::Instance->SetTimerDelay(0);
 }
 
 void SWButtonClass::OnMouseLeave()
@@ -143,7 +146,8 @@ void SWButtonClass::OnMouseLeave()
 	SWSidebarClass::Instance.CurrentButton = nullptr;
 	SWSidebarClass::Instance.Columns[this->ColumnIndex]->OnMouseLeave();
 	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
-	CCToolTip::Instance->MarkToRedraw(CCToolTip::Instance->CurrentToolTipData);
+
+	CCToolTip::Instance->RestoreTimeDelay();
 }
 
 bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)

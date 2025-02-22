@@ -1,9 +1,11 @@
 #include "Body.h"
+#include "SWSidebar/SWSidebarClass.h"
 
 #include <HouseClass.h>
 #include <FactoryClass.h>
 #include <FileSystem.h>
 #include <Ext/Side/Body.h>
+#include <Misc/PhobosToolTip.h>
 
 DEFINE_HOOK(0x6A593E, SidebarClass_InitForHouse_AdditionalFiles, 0x5)
 {
@@ -95,5 +97,52 @@ DEFINE_HOOK(0x72FCB5, InitSideRectangles_CenterBackground, 0x5)
 		R->EAX(pRect);
 	}
 
+	return 0;
+}
+
+DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_HelpText, 0x6)
+{
+	enum { ApplyToolTip = 0x4AE69D };
+
+	if (SWSidebarClass::IsEnabled())
+	{
+		const auto& swSidebar = SWSidebarClass::Instance;
+
+		if (const auto button = swSidebar.CurrentButton)
+		{
+			PhobosToolTip::Instance.IsCameo = true;
+
+			if (PhobosToolTip::Instance.IsEnabled())
+			{
+				PhobosToolTip::Instance.HelpText_Super(button->SuperIndex);
+				R->EAX(PhobosToolTip::Instance.GetBuffer());
+			}
+			else
+			{
+				const auto pSuper = HouseClass::CurrentPlayer->Supers[button->SuperIndex];
+				R->EAX(pSuper->Type->UIName);
+			}
+
+			return ApplyToolTip;
+		}
+		else if (swSidebar.CurrentColumn || (swSidebar.ToggleButton && swSidebar.ToggleButton->IsHovering))
+		{
+			R->EAX(0);
+			return ApplyToolTip;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6A5082, SidebarClass_InitClear_InitializeSWSidebar, 0x5)
+{
+	SWSidebarClass::Instance.InitClear();
+	return 0;
+}
+
+DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeSWSidebar, 0x5)
+{
+	SWSidebarClass::Instance.InitIO();
 	return 0;
 }
