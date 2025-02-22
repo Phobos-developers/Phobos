@@ -68,9 +68,9 @@ msgstr ""
 msgid ""
 "Translucent RLE SHPs will now be drawn using a more precise and "
 "performant algorithm that has no green tint and banding. Can be disabled "
-"with `rulesmd.ini->[General] -> FixTransparencyBlitters=no`."
+"with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`."
 msgstr ""
-"绘制半透明的RLE SHP时，现在会使用更精确更高效的算法，此算法没有绿色偏移和条纹，可通过`rulesmd.ini->[General] -> "
+"绘制半透明的RLE SHP时，现在会使用更精确更高效的算法，此算法没有绿色偏移和条纹，可通过`rulesmd.ini -> [General] -> "
 "FixTransparencyBlitters=no`关闭"
 
 #: ../../Whats-New.md:16
@@ -78,9 +78,9 @@ msgid ""
 "Iron Curtain status is now preserved by default when converting between "
 "TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be "
 "turned off per-TechnoType and global basis using "
-"`[SOMETECHNOTYPE]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`."
+"`[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`."
 msgstr ""
-"铁幕状态现在可以在单位通过`DeploysInto`/`UndeploysInto`转换时保留。此行为可以被标签关闭`[SOMETECHNOTYPE]/[CombatDamage]"
+"铁幕状态现在可以在单位通过`DeploysInto`/`UndeploysInto`转换时保留。此行为可以被标签关闭`[TechnoType]/[CombatDamage]"
 " -> IronCurtain.KeptOnDeploy=no`。"
 
 #: ../../Whats-New.md:17
@@ -366,12 +366,12 @@ msgstr "由0.2.2.2"
 
 #: ../../Whats-New.md:67
 msgid ""
-"Keys `rulesmd.ini->[SOMEWARHEAD] -> PenetratesShield` and "
-"`rulesmd.ini->[SOMEWARHEAD] -> BreaksShield` have been changed to "
+"Keys `rulesmd.ini -> [WarheadType] -> PenetratesShield` and "
+"`rulesmd.ini -> [WarheadType] -> BreaksShield` have been changed to "
 "`Shield.Penetrate` and `Shield.Break`, respectively."
 msgstr ""
-"`rulesmd.ini->[SOMEWARHEAD] -> "
-"PenetratesShield`与`rulesmd.ini->[SOMEWARHEAD] -> "
+"`rulesmd.ini -> [WarheadType] -> "
+"PenetratesShield`与`rulesmd.ini -> [WarheadType] -> "
 "BreaksShield`已分别变更为`Shield.Penetrate`和`Shield.Break`。"
 
 #: ../../Whats-New.md:68
@@ -395,11 +395,11 @@ msgstr "由0.1.1"
 
 #: ../../Whats-New.md:74
 msgid ""
-"Key `rulesmd.ini->[SOMETECHNOTYPE] -> Deployed.RememberTarget` is "
+"Key `rulesmd.ini -> [TechnoType] -> Deployed.RememberTarget` is "
 "deprecated and can be removed now, the bugfix for `DeployToFire` "
 "deployers is now always on."
 msgstr ""
-"`rulesmd.ini->[SOMETECHNOTYPE] -> "
+"`rulesmd.ini -> [TechnoType] -> "
 "Deployed.RememberTarget`已被弃用并可以移除，对`DeployToFire`的修复现在一直开启。"
 
 #: ../../Whats-New.md:76

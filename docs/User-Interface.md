@@ -52,10 +52,10 @@ In `rulesmd.ini`:
 0=SOMEDIGITALDISPLAYTYPE
 
 [AudioVisual]
-Buildings.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
-Infantry.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
-Vehicles.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
-Aircraft.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
+Buildings.DefaultDigitalDisplayTypes=   ; List of DigitalDisplayTypes
+Infantry.DefaultDigitalDisplayTypes=    ; List of DigitalDisplayTypes
+Vehicles.DefaultDigitalDisplayTypes=    ; List of DigitalDisplayTypes
+Aircraft.DefaultDigitalDisplayTypes=    ; List of DigitalDisplayTypes
 
 [SOMEDIGITALDISPLAYTYPE]                ; DigitalDisplayType
 ; Generic
@@ -81,9 +81,9 @@ Shape=                                  ; filename with .shp extension, if not p
 Palette=palette.pal                     ; filename with .pal extension
 Shape.Spacing=                          ; integers - horizontal, vertical spacing between digits
 
-[SOMETECHNOTYPE]
+[SOMETECHNO]                            ; TechnoType
 DigitalDisplay.Disable=false            ; boolean
-DigitalDisplayTypes=                    ; list of DigitalDisplayTypes
+DigitalDisplayTypes=                    ; List of DigitalDisplayTypes
 ```
 
 In `RA2MD.INI`:
@@ -108,7 +108,7 @@ In `rulesmd.ini`:
 [AudioVisual]
 ShowDesignatorRange=true    ; boolean
 
-[SOMESW]                    ; SuperWeapon
+[SOMESW]                    ; SuperWeaponType
 ShowDesignatorRange=true    ; boolean
 ```
 
@@ -202,7 +202,7 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 ![placepreview](_static/images/placepreview.png)
 *Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
-- Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual] -> PlacementPreview` and then further customized for each building with `[SOMEBUILDING] -> PlacementPreview`.
+- Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual] -> PlacementPreview` and then further customized for each building with `[BuildingType] -> PlacementPreview`.
 - The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is disabled and `PlacementGrid.TranslucencyWithPreview` if enabled.
 - If using the building's appropriate `Buildup` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to show as preview through `PlacementPreview.Shape`, `PlacementPreview.ShapeFrame` and `PlacementPreview.Palette`.
   - You can specify theater-specific palettes and shapes by putting three `~` marks to the theater specific part of the filename. `~~~` is replaced with the theater’s three-letter extension.
@@ -217,7 +217,7 @@ PlacementGrid.TranslucencyWithPreview=  ; translucency level (0/25/50/75), defau
 PlacementPreview=no                  ; boolean
 PlacementPreview.Translucency=75     ; translucency level (0/25/50/75)
 
-[SOMEBUILDING]
+[SOMEBUILDING]                       ; BuildingType
 PlacementPreview=yes                 ; boolean
 PlacementPreview.Shape=              ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
 PlacementPreview.ShapeFrame=         ; integer, zero-based frame index used for displaying the preview
@@ -261,7 +261,7 @@ RealTimeTimers.Adaptive=false   ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMESWTYPE]
+[SOMESW]              ; SuperWeaponType
 ShowTimer=yes
 ShowTimer.Priority=0  ; integer
 ```
@@ -324,11 +324,11 @@ SelectionFlashDuration=0    ; integer, number of frames
 
 - PCX files can now be used as loadscreen images.
   - You can specify custom loadscreen with Ares tag `File.LoadScreen`.
-  - Campaign loading screen (`missionmd.ini->[LS800BkgdName]`) can also use PCX image.
+  - Campaign loading screen (`missionmd.ini -> [LS800BkgdName]`) can also use PCX image.
   - Observer loading screen can use `ls800obs.pcx` *(or `ls640obs.pcx` when screen width is 640)* for this feature.
 - The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped.
   - This feature works in conjunction with CnCNet5 spawner DLL which resizes loadscreen window to actual monitor size and places the image in center. If there's no CnCNet5 spawner loaded, the window resolution will be always `800x600`.
-  - Same applies to campaign loading screen (`missionmd.ini->[LS800BkgdName]`).
+  - Same applies to campaign loading screen (`missionmd.ini -> [LS800BkgdName]`).
 - You can now disable hardcoded black dots that YR engine shows over empty spawn locations, which allows to use prettier and more correctly placed markers that are produced by Map Renderer instead.
 
 In `uimd.ini`:
@@ -566,7 +566,7 @@ Same as with harvester counter, you can download the improved font (v4 and highe
 
 In `rulesmd.ini`:
 ```ini
-[SOMESIDE]
+[SOMESIDE]                          ; Side
 ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to `0,0,0`
 ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual] -> ToolTip.Background.Opacity, which defaults to `100`
 ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to `0.0`

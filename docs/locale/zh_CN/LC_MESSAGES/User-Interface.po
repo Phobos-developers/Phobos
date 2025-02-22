@@ -178,7 +178,7 @@ msgstr "在 `RA2MD.INI`："
 
 #: ../../User-Interface.md:98
 msgid "An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)."
-msgstr "可以在 [Phobos 补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries)找到数字化显示的示例 Shape 文件。"
+msgstr "可以在 [Phobos 补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries) 找到数字化显示的示例 Shape 文件。"
 
 #: ../../User-Interface.md:101
 msgid "Show designator & inhibitor range"
@@ -295,8 +295,8 @@ msgid "placepreview"
 msgstr "放置预览"
 
 #: ../../User-Interface.md:207
-msgid "Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual] -> PlacementPreview` and then further customized for each building with `[SOMEBUILDING] -> PlacementPreview`."
-msgstr "现在放置建筑进行建造时可以启用建筑预览。这可以通过在全局设置 `[AudioVisual] -> PlacementPreview` 和每个建筑上设置 `[SOMEBUILDING] -> PlacementPreview` 来进一步自定义开启。"
+msgid "Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual] -> PlacementPreview` and then further customized for each building with `[BuildingType] -> PlacementPreview`."
+msgstr "现在放置建筑进行建造时可以启用建筑预览。这可以通过在全局设置 `[AudioVisual] -> PlacementPreview` 和每个建筑上设置 `[BuildingType] -> PlacementPreview` 来进一步自定义开启。"
 
 #: ../../User-Interface.md:208
 msgid "The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is disabled and `PlacementGrid.TranslucencyWithPreview` if enabled."
@@ -499,12 +499,12 @@ msgid "You can specify custom loadscreen with Ares tag `File.LoadScreen`."
 msgstr "你可以使用 Ares 标签 `File.LoadScreen` 指定自定义载入图。"
 
 #: ../../User-Interface.md:353
-msgid "Campaign loading screen (`missionmd.ini->[LS800BkgdName]`) can also use PCX image."
-msgstr "战役载入图（`missionmd.ini->[LS800BkgdName]`) 也可以使用 PCX 图像。"
+msgid "Campaign loading screen (`missionmd.ini -> [LS800BkgdName]`) can also use PCX image."
+msgstr "战役载入图（`missionmd.ini -> [LS800BkgdName]`) 也可以使用 PCX 图像。"
 
 #: ../../User-Interface.md:354
 msgid "Observer loading screen can use `ls800obs.pcx` *(or `ls640obs.pcx` when screen width is 640)* for this feature."
-msgstr "观察者载入图可以使用 `ls800obs.pcx`（当屏幕宽度为640时使用 `ls640obs.pcx`）。"
+msgstr "观察者载入图可以使用 `ls800obs.pcx`（当屏幕宽度为 640 时使用 `ls640obs.pcx`）。"
 
 #: ../../User-Interface.md:355
 msgid "The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped."
@@ -515,8 +515,8 @@ msgid "This feature works in conjunction with CnCNet5 spawner DLL which resizes 
 msgstr "此功能与 CnCNet5 的 -spawner DLL 相结合，它将把载入界面固定为当前游戏分辨率大小并把载入图置于中间。如果没有 CnCNet5 -spanwer，那么载入分辨率将被锁定为 `800x600`。"
 
 #: ../../User-Interface.md:357
-msgid "Same applies to campaign loading screen (`missionmd.ini->[LS800BkgdName]`)."
-msgstr "同样适用于战役载入图（`missionmd.ini->[LS800BkgdName]`)。"
+msgid "Same applies to campaign loading screen (`missionmd.ini -> [LS800BkgdName]`)."
+msgstr "同样适用于战役载入图（`missionmd.ini -> [LS800BkgdName]`)。"
 
 #: ../../User-Interface.md:358
 msgid "You can now disable hardcoded black dots that YR engine shows over empty spawn locations, which allows to use prettier and more correctly placed markers that are produced by Map Renderer instead."

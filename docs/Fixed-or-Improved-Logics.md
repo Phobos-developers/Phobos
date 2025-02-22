@@ -15,7 +15,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon.
 - Fixed the bug that temporaryed unit cannot be erased correctly and no longer raise an error.
 - Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore). Only applied when `DebrisMaximums` values amount is more than 1 for compatibility reasons.
-- Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled.
+- Fixed building and defense tab hotkeys not enabling the placement mode after *Cannot build here.* triggered and the placement mode cancelled.
 - Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set.
@@ -82,7 +82,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 ![image](_static/images/translucency-fix.png)
 *Example gradient SHP drawing with 75% translucency, before and after*
 
-- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General] -> FixTransparencyBlitters=no`.
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`.
   - Only applies to Z-aware drawing mode for now.
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
@@ -135,7 +135,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Removed jumpjet units' deceleration when crashing onto buildings.
 - Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by elevation changes.
 - Fixed railgun and fire particles being cut off by elevation changes.
-- Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
+- Fixed teleport units' (for example `[CLEG]`) frozen-still timer being cleared after load game.
 - Fixed teleport units being unable to visually tilt on slopes.
 - Fixed rockets' shadow location.
 - Fixed units with Teleport, Tunnel or Fly locomotor being unable to be visually flipped like other locomotors do.
@@ -202,7 +202,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 In `rulesmd.ini`:
 ```ini
 [SOMEAIRCRAFT]  ; AircraftType
-VoicePickup=    ; Sound
+VoicePickup=    ; Sound entry
 ```
 
 ### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
@@ -274,8 +274,8 @@ In `artmd.ini`:
 [SOMEANIM]                    ; AnimationType
 ExplodeOnWater=false          ; boolean
 Warhead.Detonate=false        ; boolean
-WakeAnim=                     ; Animation
-SplashAnims=                  ; list of animations
+WakeAnim=                     ; AnimationType
+SplashAnims=                  ; List of AnimationTypes
 SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
@@ -302,13 +302,13 @@ ConstrainFireAnimsToCellSpots=true  ; boolean
 FireAnimDisallowedLandTypes=        ; List of LandTypes (none | clear | road | water | rock | wall | tiberium | beach | rough | ice | railroad | tunnel | weeds)
 AttachFireAnimsToParent=            ; boolean
 SmallFireCount=                     ; integer
-SmallFireAnims=                     ; list of animations
-SmallFireChances=                   ; list of floating point values (percent or absolute)
-SmallFireDistances=                 ; list of floating point values, distance in cells
+SmallFireAnims=                     ; List of AnimationTypes
+SmallFireChances=                   ; List of floating point values (percent or absolute)
+SmallFireDistances=                 ; List of floating point values, distance in cells
 LargeFireCount=1                    ; integer
-LargeFireAnims=                     ; list of animations
-LargeFireChances=0.5                ; list of floating point values (percent or absolute)
-LargeFireDistances=0.4375           ; list of floating point values, distance in cells
+LargeFireAnims=                     ; List of AnimationTypes
+LargeFireChances=0.5                ; List of floating point values (percent or absolute)
+LargeFireDistances=0.4375           ; List of floating point values, distance in cells
 ```
 
 ```{note}
@@ -432,7 +432,7 @@ Grinding.AllowOwner=true           ; boolean
 Grinding.AllowTypes=               ; List of InfantryTypes / VehicleTypes
 Grinding.DisallowTypes=            ; List of InfantryTypes / VehicleTypes
 Grinding.PlayDieSound=true         ; boolean
-Grinding.Sound=                    ; Sound
+Grinding.Sound=                    ; Sound entry
 Grinding.Weapon=                   ; WeaponType
 Grinding.Weapon.RequiredCredits=0  ; integer
 ```
@@ -597,7 +597,7 @@ In `rulesmd.ini`:
 ```ini
 [General]
 ChronoSparkleDisplayDelay=24                         ; integer, game frames
-ChronoSparkleBuildingDisplayPositions=occupantslots  ; list of chrono sparkle position enum (building | occupants | occupantslots | all)
+ChronoSparkleBuildingDisplayPositions=occupantslots  ; List of chrono sparkle position enum (building | occupants | occupantslots | all)
 ```
 
 ### Customizable ChronoSphere teleport delays for units
@@ -679,9 +679,9 @@ Insignia customization besides the `InsigniaFrames` shorthand should function si
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                     ; TechnoType
-OreGathering.Anims=              ; list of animations
-OreGathering.FramesPerDir=15     ; list of integers
-OreGathering.Tiberiums=0         ; list of Tiberium IDs
+OreGathering.Anims=              ; List of AnimationTypes
+OreGathering.FramesPerDir=15     ; List of integers
+OreGathering.Tiberiums=0         ; List of Tiberium IDs
 ```
 
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
@@ -730,7 +730,7 @@ ArtImageSwap=false  ; disabled by default
 
 In `artmd.ini`:
 ```ini
-[SOMETECHNO]
+[SOMETECHNO]        ; TechnoType
 Image=              ; name of the file that will be used as image, without extension
 ```
 
@@ -754,8 +754,8 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]         ; TechnoType
 Wake=                ; Anim (played when Techno moving on the water), default to [General] -> Wake
-Wake.Grapple=        ; Anim (played when Techno being parasited on the water), defaults to [SOMETECHNO] -> Wake
-Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [SOMETECHNO] -> Wake
+Wake.Grapple=        ; Anim (played when Techno being parasited on the water), defaults to [TechnoType] -> Wake
+Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoType] -> Wake
 ```
 
 ### Customizing effect of level lighting on air units
@@ -797,15 +797,15 @@ In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 IronCurtain.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
-IronCurtain.KillOrganicsWarhead=   ; Warhead
+IronCurtain.KillOrganicsWarhead=   ; WarheadType
 ForceShield.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
-ForceShield.KillOrganicsWarhead=   ; Warhead
+ForceShield.KillOrganicsWarhead=   ; WarheadType
 
 [SOMETECHNO]                       ; InfantryType or Organic=true TechnoType
 IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
-IronCurtain.KillWarhead=           ; Warhead
+IronCurtain.KillWarhead=           ; WarheadType
 ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
-ForceShield.KillWarhead=           ; Warhead
+ForceShield.KillWarhead=           ; WarheadType
 ```
 
 ### Iron Curtain & Force Shield extra tint intensity
@@ -873,8 +873,8 @@ Pips.Generic.Buildings.Size=4,2      ; X,Y, increment in pixels to next pip
 Pips.Ammo.Size=4,0                   ; X,Y, increment in pixels to next pip
 Pips.Ammo.Buildings.Size=4,2         ; X,Y, increment in pixels to next pip
 Pips.Tiberiums.EmptyFrame=0          ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
-Pips.Tiberiums.Frames=2,5,2,2        ; list of integers, frames of pips.shp (buildings) or pips2.shp (others) (zero-based)
-Pips.Tiberiums.DisplayOrder=0,2,3,1  ; list of integers, tiberium type indices
+Pips.Tiberiums.Frames=2,5,2,2        ; List of integers, frames of pips.shp (buildings) or pips2.shp (others) (zero-based)
+Pips.Tiberiums.DisplayOrder=0,2,3,1  ; List of integers, tiberium type indices
 Pips.Tiberiums.WeedEmptyFrame=0      ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
 Pips.Tiberiums.WeedFrame=1           ; integer, frame of pips.shp (buildings) or pips2.shp (others) (zero-based)
 
@@ -893,7 +893,7 @@ SpawnsPipOffset=0,0                  ; X,Y, position offset from default
 
 ### Re-enable obsolete [JumpjetControls]
 
-- Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
+- Re-enable obsolete `[JumpjetControls]`, the keys in it will be as the default value of jumpjet units.
   - Moreover, added two tags for missing ones.
 
 In `rulesmd.ini`:
@@ -953,9 +953,9 @@ SubterraneanSpeed=-1     ; floating point value
 In `artmd.ini`:
 ```ini
 [SOMETECHNO]          ; TechnoType
-ShadowIndices=        ; list of integers (voxel section indices)
+ShadowIndices=        ; List of integers (voxel section indices)
 ShadowIndex.Frame=0   ; integer (HVA animation frame index)
-ShadowIndices.Frame=  ; list of integers (HVA animation frame indices)
+ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)
 ```
 
 ### Voxel light source customization
@@ -1085,7 +1085,7 @@ ConditionYellow.Terrain=  ; floating-point value
 [SOMETERRAINTYPE]         ; TerrainType
 HasDamagedFrames=false    ; boolean
 HasCrumblingFrames=false
-CrumblingSound=           ; Sound
+CrumblingSound=           ; Sound entry
 ```
 
 ### Minimap color customization
@@ -1149,7 +1149,7 @@ CrushSlowdownMultiplier=0.2        ; floating point value
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                          ; VehicleType
-DestroyAnim=                           ; list of animations
+DestroyAnim=                           ; List of AnimationTypes
 DestroyAnim.Random=true                ; boolean
 ```
 
@@ -1273,13 +1273,13 @@ VeinDamage=5                  ; integer
 VeinholeTypeClass=VEINTREE    ; TerrainType
 
 [CombatDamage]
-VeinholeWarhead=VeinholeWH    ; Warhead
+VeinholeWarhead=VeinholeWH    ; WarheadType
 
 [VeinholeWH]
 Veinhole=yes
 
 [AudioVisual]
-VeinAttack=VEINATAC           ; Animation
+VeinAttack=VEINATAC           ; AnimationType
 
 [TechnoType]
 EliteAbilities=VEIN_PROOF
@@ -1320,7 +1320,7 @@ As the code for the Chemical Missile had been removed, setting `Type=ChemMissile
 
 In `rulesmd.ini`:
 ```ini
-[SuperWeaponType]
+[SOMESW]                                        ; SuperWeaponType
 UseWeeds=no                                     ; boolean - should the SW use weeds to recharge?
 UseWeeds.Amount=                                ; integer - how many? default is General->WeedCapacity
 UseWeeds.StorageTimer=no                        ; boolean - should the counter on the sidebar display the % of weeds stored?
@@ -1354,7 +1354,7 @@ AnimList.CreateAll=false        ; boolean
 AnimList.CreationInterval=0     ; integer
 AnimList.ScatterMin=0.0         ; floating point value, distance in cells
 AnimList.ScatterMax=0.0         ; floating point value, distance in cells
-SplashList=                     ; List of animations
+SplashList=                     ; List of AnimationTypes
 SplashList.PickRandom=false     ; boolean
 SplashList.CreateAll=false      ; boolean
 SplashList.CreationInterval=0   ; integer
@@ -1372,7 +1372,7 @@ Conventional.IgnoreUnits=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]              ; WarheadType
-DebrisAnims=               ; List of animations
+DebrisAnims=               ; List of AnimationTypes
 Debris.Conventional=false  ; boolean
 ```
 
@@ -1475,7 +1475,7 @@ AmbientDamage.IgnoreTarget=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]          ; WeaponType
-ChargeTurret.Delays=  ; list of integers - game frames
+ChargeTurret.Delays=  ; List of integers - game frames
 ```
 
 ### Customizable disk laser radius
@@ -1509,7 +1509,7 @@ ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]
+[SOMEWEAPON]            ; WeaponType
 KickOutPassengers=true  ; boolean
 ```
 
@@ -1519,7 +1519,7 @@ KickOutPassengers=true  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]
+[SOMEWEAPON]                 ; WeaponType
 FireOnce.ResetSequence=true  ; boolean
 ```
 
@@ -1545,7 +1545,7 @@ IsSingleColor=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPONTYPE]       ; WeaponType
+[SOMEWEAPON]           ; WeaponType
 Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
@@ -1561,7 +1561,7 @@ Due to technical constraints, this does not work with electric bolts created fro
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPONTYPE]       ; WeaponType
+[SOMEWEAPON]           ; WeaponType
 Bolt.Arcs=8            ; integer, number of arcs in a bolt
 ```
 
@@ -1577,7 +1577,7 @@ On top of that, you can specify its visibility from other houses.
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-RadialIndicatorVisibility=allies  ; list of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
+RadialIndicatorVisibility=allies  ; List of Affected House Enumeration (owner/self | allies/ally | enemies/enemy | all)
 ```
 
 ## Crate improvements
@@ -1614,7 +1614,7 @@ DropPod properties can now be customized on a per-InfantryType basis.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]
+[SOMEINFANTRY]                ; InfantryType
 DropPod.Angle =               ; double, default to [General] -> DropPodAngle, measured in radians
 DropPod.AtmosphereEntry =     ; anim, default to [AudioVisual] -> AtmosphereEntry
 DropPod.GroundAnim =          ; 2 anims, default to [General] -> DropPod
