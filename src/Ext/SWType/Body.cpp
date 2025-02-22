@@ -4,6 +4,14 @@
 
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
 
+void SWTypeExt::ExtData::Initialize()
+{
+	this->EVA_InsufficientFunds = VoxClass::FindIndex(GameStrings::EVA_InsufficientFunds);
+	this->EVA_SelectTarget = VoxClass::FindIndex("EVA_SelectTarget");
+
+	this->Message_CannotFire = CSFText("MSG:CannotFire");
+}
+
 // =============================
 // load / save
 
