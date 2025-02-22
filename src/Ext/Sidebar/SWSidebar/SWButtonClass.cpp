@@ -9,7 +9,7 @@
 #include <Utilities/AresFunctions.h>
 
 SWButtonClass::SWButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::RightPress), true)
+	: ControlClass(id, x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::RightPress), false)
 	, SuperIndex(superIdx)
 {
 	if (const auto backColumn = SWSidebarClass::Instance.Columns.back())
@@ -131,22 +131,15 @@ void SWButtonClass::OnMouseEnter()
 	this->IsHovering = true;
 	SWSidebarClass::Instance.CurrentButton = this;
 	SWSidebarClass::Instance.Columns[this->ColumnIndex]->OnMouseEnter();
-	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
-
 	CCToolTip::Instance->SaveTimerDelay();
 	CCToolTip::Instance->SetTimerDelay(0);
 }
 
 void SWButtonClass::OnMouseLeave()
 {
-	if (!SWSidebarClass::IsEnabled())
-		return;
-
 	this->IsHovering = false;
 	SWSidebarClass::Instance.CurrentButton = nullptr;
 	SWSidebarClass::Instance.Columns[this->ColumnIndex]->OnMouseLeave();
-	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
-
 	CCToolTip::Instance->RestoreTimeDelay();
 }
 

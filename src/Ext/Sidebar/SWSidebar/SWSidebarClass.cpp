@@ -304,6 +304,13 @@ DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_SWSidebar, 0x7)
 				removeButtons.push_back(button->SuperIndex);
 			}
 
+			// A better solution is to swap the order of each function:
+			// first check the availability of SW,
+			// then remove the cameo from the SWsidebar,
+			// and finally remove the cameo from the YRsidebar
+			if (removeButtons.size())
+				pHouse->RecheckTechTree = true;
+
 			for (const auto& index : removeButtons)
 				column->RemoveButton(index);
 		}

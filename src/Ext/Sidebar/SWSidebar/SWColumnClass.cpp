@@ -5,7 +5,7 @@
 #include <Ext/Side/Body.h>
 
 SWColumnClass::SWColumnClass(unsigned int id, int maxButtons, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, static_cast<GadgetFlag>(0), true)
+	: ControlClass(id, x, y, width, height, static_cast<GadgetFlag>(0), false)
 	, MaxButtons(maxButtons)
 {
 	SWSidebarClass::Instance.Columns.emplace_back(this);
@@ -68,12 +68,6 @@ void SWColumnClass::OnMouseLeave()
 
 bool SWColumnClass::Clicked(DWORD* pKey, GadgetFlag flags, int x, int y, KeyModifier modifier)
 {
-	for (const auto button : this->Buttons)
-	{
-		if (button->Clicked(pKey, flags, x, y, modifier))
-			return true;
-	}
-
 	return false;
 }
 

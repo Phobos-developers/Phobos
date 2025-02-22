@@ -7,7 +7,7 @@
 #include <Ext/Side/Body.h>
 
 ToggleSWButtonClass::ToggleSWButtonClass(unsigned int id, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::LeftRelease), true)
+	: ControlClass(id, x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::LeftRelease), false)
 {
 	SWSidebarClass::Instance.ToggleButton = this;
 }
@@ -50,15 +50,9 @@ void ToggleSWButtonClass::OnMouseEnter()
 
 void ToggleSWButtonClass::OnMouseLeave()
 {
-	auto& columns = SWSidebarClass::Instance.Columns;
-
-	if (columns.empty())
-		return;
-
 	this->IsHovering = false;
 	this->IsPressed = false;
 	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
-	CCToolTip::Instance->MarkToRedraw(CCToolTip::Instance->CurrentToolTipData);
 }
 
 bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
@@ -83,7 +77,9 @@ bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 		ToggleSWButtonClass::SwitchSidebar();
 	}
 
-	return this->ControlClass::Action(flags, pKey, KeyModifier::None);
+	// this->ControlClass::Action(flags, pKey, KeyModifier::None);
+	reinterpret_cast<bool(__thiscall*)(ControlClass*, GadgetFlag, DWORD*, KeyModifier)>(0x48E5A0)(this, flags, pKey, KeyModifier::None);
+	return true;
 }
 
 void ToggleSWButtonClass::UpdatePosition()
