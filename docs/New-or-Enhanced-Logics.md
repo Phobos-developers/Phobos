@@ -180,40 +180,40 @@ This feature is not final and is under development.
 In `rulesmd.ini`:
 ```ini
 [AttachmentTypes]
-0=MNT                                 ; (example)
+0=MNT                                     ; (example)
 
 [MNT]
-RespawnAtCreation=true                ; boolean
-RespawnDelay=-1                       ; integer, non-negative values enable the respawn timer
-InheritOwner=true                     ; boolean, whether the child inherits owner of the parent while it's attached
-InheritStateEffects=true              ; boolean (state effects = chaos, iron curtain etc.)
-InheritCommands=true                  ; boolean
-InheritCommands.StopCommand=true      ; boolean
-InheritCommands.DeployCommand=true    ; boolean
-LowSelectionPriority=true             ; boolean, whether the child is low priority while attached
-TransparentToMouse=false              ; boolean, can't click on attached techno if set
-YSortPosition=default                 ; Attachment YSort position enumeration - default|underparent|overparent
-InheritDestruction=true               ; boolean
-InheritHeightStatus=true              ; boolean, whether the layer and InAir/OnGround/IsSurfaced inherited from parent
-OccupiesCell=true                     ; boolean
-DestructionWeapon.Child=              ; WeaponType, detonated on child when parent is destroyed
-DestructionWeapon.Parent=             ; WeaponType, detonated on parent when child is destroyed
-ParentDestructionMission=             ; MissionType, queued to child when parent is destroyed
-ParentDetachmentMission=              ; MissionType, queued to child when it's detached from parent
+RespawnAtCreation=true                    ; boolean
+RespawnDelay=-1                           ; integer, non-negative values enable the respawn timer
+InheritOwner=true                         ; boolean, whether the child inherits owner of the parent while it's attached
+InheritStateEffects=true                  ; boolean (state effects = chaos, iron curtain etc.)
+InheritCommands=true                      ; boolean
+InheritCommands.StopCommand=true          ; boolean
+InheritCommands.DeployCommand=true        ; boolean
+LowSelectionPriority=true                 ; boolean, whether the child is low priority while attached
+TransparentToMouse=false                  ; boolean, can't click on attached techno if set
+YSortPosition=default                     ; Attachment YSort position enumeration - default|underparent|overparent
+InheritDestruction=true                   ; boolean
+InheritHeightStatus=true                  ; boolean, whether the layer and InAir/OnGround/IsSurfaced inherited from parent
+OccupiesCell=true                         ; boolean
+DestructionWeapon.Child=                  ; WeaponType, detonated on child when parent is destroyed
+DestructionWeapon.Parent=                 ; WeaponType, detonated on parent when child is destroyed
+ParentDestructionMission=                 ; MissionType, queued to child when parent is destroyed
+ParentDetachmentMission=                  ; MissionType, queued to child when it's detached from parent
 
-[SOMETECHNO]                          ; TechnoTypeClass
+[SOMETECHNO]                              ; TechnoType
 ; used when this techno is attached
-AttachmentTopLayerMinHeight=          ; integer
-AttachmentUndergroundLayerMaxHeight=  ; integer
+AttachmentTopLayerMinHeight=              ; integer
+AttachmentUndergroundLayerMaxHeight=      ; integer
 ; used for attaching other technos
-AttachmentX.Type=MNT                  ; AttachmentType (example)
-AttachmentX.TechnoType=               ; TechnoType that can be attached, currently only units are supported
-AttachmentX.FLH=0,0,0                 ; integer - Forward, Lateral, Height
-AttachmentX.IsOnTurret=false          ; boolean
-AttachmentX.RotationAdjust=0          ; rotation in DirType, from -255 to 255
+AttachmentX.Type=MNT                      ; AttachmentType (example)
+AttachmentX.TechnoType=                   ; TechnoType that can be attached, currently only units are supported
+AttachmentX.FLH=0,0,0                     ; integer - Forward, Lateral, Height
+AttachmentX.IsOnTurret=false              ; boolean
+AttachmentX.RotationAdjust=0              ; rotation in DirType, from -255 to 255
 
 [General]
-AttachmentTopLayerMinHeight=500           ; integer,
+AttachmentTopLayerMinHeight=500           ; integer
 AttachmentUndergroundLayerMaxHeight=-256  ; integer
 ```
 
