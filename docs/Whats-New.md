@@ -324,6 +324,7 @@ New:
 - Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 - Toggle waypoint for building (by TaranDahl)
 - Bunkerable checks dehardcode (by TaranDahl)
+- Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
@@ -500,7 +501,6 @@ New:
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - Custom exit cell for infantry factory (by Starkku)
-- Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)
 - Extending `Power` to all TechnoTypes (by Morton)
 
 Vanilla fixes:
