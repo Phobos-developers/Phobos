@@ -1,4 +1,5 @@
 #include "Body.h"
+#include "SWSidebar/SWSidebarClass.h"
 
 #include <EventClass.h>
 #include <HouseClass.h>
@@ -36,7 +37,7 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 	{
 		const auto& supers = pCurrent->Supers;
 
-		if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent)
+		if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent && !SWSidebarClass::Instance.AddButton(pItem->ItemIndex))
 			return false;
 	}
 

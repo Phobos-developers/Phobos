@@ -100,6 +100,8 @@ DEFINE_HOOK(0x72FCB5, InitSideRectangles_CenterBackground, 0x5)
 	return 0;
 }
 
+#pragma region SWSidebarButtonsRelated
+
 DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_SWSidebar, 0x7)
 {
 	enum { DoNothing = 0x6925FC };
@@ -123,3 +125,5 @@ DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeSWSidebar, 0x5)
 	SWSidebarClass::Instance.InitIO();
 	return 0;
 }
+
+#pragma endregion
