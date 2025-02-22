@@ -4,9 +4,9 @@ This page describes all the engine features that are either new and introduced b
 
 ## New types / ingame entities
 
-### Attached effects
+### Attached Effects
 
-- Similar (but not identical) to Ares' AttachEffect, but with some differences and new features. The largest difference is that here attached effects are explicitly defined types.
+- Similar (but not identical) to [Ares' AttachEffect](https://ares-developers.github.io/Ares-docs/new/attacheffect.html), but with some differences and new features. The largest difference is that here attached effects are explicitly defined types.
   - `Duration` determines how long the effect lasts for. It can be overriden by `DurationOverrides` on TechnoTypes and Warheads.
   - `Cumulative`, if set to true, allows the same type of effect to be applied on same object multiple times, up to `Cumulative.MaxCount` number or with no limit if `Cumulative.MaxCount` is a negative number. If the target already has `Cumulative.MaxCount` number of the same effect applied on it, trying to attach another will refresh duration of the attached instance with shortest remaining duration.
   - `Powered` controls whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power. What happens to animation is controlled by `Animation.OfflineAction`.
@@ -45,7 +45,7 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
-  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage]`->`C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
+  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
@@ -62,7 +62,7 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
   - `AttachEffect.CumulativeRefreshAll` if set to true makes it so that trying to attach `Cumulative=true` effect to a target that already has `Cumulative.MaxCount` amount of effects will refresh duration of all attached effects of the same type instead of only the one with shortest remaining duration. If `AttachEffect.CumulativeRefreshAll.OnAttach` is also set to true, this refresh applies even if the target does not have maximum allowed amount of effects of same type.
   - `AttachEffect.CumulativeRefreshSameSourceOnly` controls whether or not trying to apply `Cumulative=true` effect on target requires any existing effects of same type to come from same Warhead by same firer for them to be eligible for duration refresh.
-  - Attached effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes` or `AttachEffect.RemoveGroups`.
+  - Attached Effects can be removed from objects by Warheads using `AttachEffect.RemoveTypes` or `AttachEffect.RemoveGroups`.
     - `AttachEffect.CumulativeRemoveMinCounts` sets minimum number of active instaces per `RemoveTypes`/`RemoveGroups` required for `Cumulative=true` types to be removed.
     - `AttachEffect.CumulativeRemoveMaxCounts` sets maximum number of active instaces per `RemoveTypes`/`RemoveGroups` for `Cumulative=true` that are removed at once by this Warhead.
 
@@ -215,13 +215,6 @@ RadHasInvoker=false                ; boolean
 - Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
 - Technos, Projectiles, and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
 
-```{warning}
-Laser trails are very resource intensive! Due to the game not utilizing GPU having a lot of trails can quickly drop the FPS on even good machines. To reduce that effect:
- - don't put too many laser trails on units and projectiles;
- - make sure you set as high `SegmentLength` value as possible without trails being too jagged;
- - try to keep the length of the trail minimal (can be achieved with smaller `FadeDuration` durations).
-```
-
 In `artmd.ini`:
 ```ini
 [LaserTrailTypes]
@@ -252,6 +245,13 @@ In `rulesmd.ini`:
 ```ini
 [SOMEVOXELANIM]             ; VoxelAnim
 LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
+```
+
+```{warning}
+Laser trails are very resource intensive! Due to the game not utilizing GPU having a lot of trails can quickly drop the FPS on even good machines. To reduce that effect:
+ - don't put too many laser trails on units and projectiles;
+ - make sure you set as high `SegmentLength` value as possible without trails being too jagged;
+ - try to keep the length of the trail minimal (can be achieved with smaller `FadeDuration` durations).
 ```
 
 ### Shields
@@ -365,10 +365,10 @@ Shield.InheritStateOnReplace=false          ; boolean
   - Shield will not take damage if the TechnoType is under effects of `Temporal` warhead, is Iron Curtained / Force Shielded, has `Immune=true` or if it has `TypeImmune=true` and the damage source is another instance of same TechnoType belonging to same house.
   - Negative damage will recover shield, unless shield has been broken. If shield isn't full, all negative damage will be absorbed by shield.
     - Negative damage weapons will consider targets with active, but not at full health shields in need of healing / repairing unless the Warhead has `Shield.Penetrate=true`, in which case only object health is considered.
-  - When a TechnoType has an unbroken shield, `[ShieldType]->Armor` will replace `[TechnoType]->Armor` for targeting and damage calculation purposes.
-    - `InheritArmorFromTechno` can be set to true to override this so that `[TechnoType]->Armor` is used even if shield is active and `[ShieldType]->Armor` is ignored.
+  - When a TechnoType has an unbroken shield, `[ShieldType] -> Armor` will replace `[TechnoType] -> Armor` for targeting and damage calculation purposes.
+    - `InheritArmorFromTechno` can be set to true to override this so that `[TechnoType] -> Armor` is used even if shield is active and `[ShieldType] -> Armor` is ignored.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
-  - `ConditionYellow` and `ConditionRed` can be used to set the thresholds for shield damage states, defaulting to `[AudioVisual]` -> `Shield.ConditionYellow` & `Shield.ConditionRed` respectively which in turn default to just `ConditionYellow` & `ConditionRed`.
+  - `ConditionYellow` and `ConditionRed` can be used to set the thresholds for shield damage states, defaulting to `[AudioVisual] -> Shield.ConditionYellow & Shield.ConditionRed` respectively which in turn default to just `ConditionYellow & ConditionRed`.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
   - This also works with Ares' `Convert.*`.
 - `Powered` controls whether or not the shield is active when a unit is running low on power or it is affected by EMP.
@@ -379,8 +379,8 @@ Shield.InheritStateOnReplace=false          ; boolean
   - If `SelfHealing.RestartInCombat` is set, self-healing timer pauses and then resumes after `SelfHealing.RestartInCombatDelay` frames have passed when the shield gets damaged.
 - `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
 - `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
-  - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual]`->`ConditionYellow`/`ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
-  - `IdleAnimDamaged`, `IdleAnimDamaged.ConditionYellow` and `IdleAnimDamaged.ConditionRed` are used in an identical manner, but only when health of the object the shield is attached to is at or below `[AudioVisual]`->`ConditionYellow`. Follows similar fallback sequence to regular `IdleAnim` variants and if none are set, falls back to the regular `IdleAnim` or variants thereof.
+  - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual] -> ConditionYellow`/`ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
+  - `IdleAnimDamaged`, `IdleAnimDamaged.ConditionYellow` and `IdleAnimDamaged.ConditionRed` are used in an identical manner, but only when health of the object the shield is attached to is at or below `[AudioVisual] -> ConditionYellow`. Follows similar fallback sequence to regular `IdleAnim` variants and if none are set, falls back to the regular `IdleAnim` or variants thereof.
   - `Bouncer=true` and `IsMeteor=true` animations can exhibit irregular behaviour when used as `IdleAnim` and should be avoided.
 - `IdleAnim.OfflineAction` indicates what happens to the animation when the shield is in a low power state.
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
@@ -401,7 +401,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
   - `Pips.Shield.Background` can be used to set the background or 'frame' for non-building pips, which defaults to `pipbrd.shp`. 4th frame is used to display an infantry's shield strength and the 3th frame for other units, or 2nd and 1st respectively if not enough frames are available.
   - `Pips.Shield.Building.Empty` can be used to set the frame of `pips.shp` displayed for empty building strength pips, defaults to 1st frame of `pips.shp`.
-  - The above customizations are also available on per ShieldType basis, e.g `[ShieldType]`->`Pips` instead of `[AudioVisual]`->`Pips.Shield` and so on. ShieldType settings take precedence over the global ones, but will fall back to them if not set.
+  - The above customizations are also available on per ShieldType basis, e.g `[ShieldType] -> Pips` instead of `[AudioVisual] -> Pips.Shield` and so on. ShieldType settings take precedence over the global ones, but will fall back to them if not set.
   - `BracketDelta` can be used as additional vertical offset (negative shifts it up) for shield strength bar. Much like `PixelSelectionBracketDelta`, it is not applied on buildings.
 - Warheads have new options that interact with shields. Note that all of these that do not by their very nature require ability to target the shield (such as modifiers like `Shield.Break` or removing / attaching) still require Warhead `Verses` to affect the target unless `EffectsRequireVerses` is set to false on the Warhead.
   - `Shield.Penetrate` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield doesn't exist.
@@ -665,12 +665,12 @@ Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | 
 
 ### Customizable `SlavesFreeSound`
 
-- `SlavesFreeSound` is now dehardcoded from `AudioVisual` and can be set individually for each enslavable infantry type.
+- `SlavesFreeSound` is now dehardcoded from `[AudioVisual]` and can be set individually for each enslavable infantry type.
 
 In `rulesmd.ini`
 
 ```ini
-[SOMEINFANTRY]  ; Slave type
+[SOMEINFANTRY]        ; Slave type
 SlavesFreeSound=      ; sound entry
 ```
 
@@ -689,7 +689,7 @@ OnlyUseLandSequences=false  ; boolean
 ### Projectile interception logic
 
 ![image](_static/images/projectile-interception-01.gif)
-*Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis) mod*
+*Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis)*
 
 - Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` and the TechnoType's firepower multipliers is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
@@ -933,7 +933,7 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
 ### Shrapnel enhancements
 
 ![image](_static/images/shrapnel.gif)
-*Shrapnel appearing against ground & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+*Shrapnel appearing against ground & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
 - Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
@@ -1004,14 +1004,6 @@ Convert.To=NEWSOLDIER
 Convert.AffectedHouses=team
 ```
 
-```{warning}
-This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
-```
-
-```{warning}
-This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
-```
-
 In `rulesmd.ini`:
 ```ini
 [SOMESW]                        ; SuperWeapon
@@ -1023,6 +1015,14 @@ ConvertN.AffectedHouses=owner   ; list of Affected House Enumeration (none|owner
 Convert.From=                   ; list of TechnoTypes
 Convert.To=                     ; TechnoType
 Convert.AffectedHouses=owner    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
 ```
 
 ### EMPulse settings
@@ -1069,10 +1069,6 @@ EMPulse.SuspendOthers=false  ; boolean
 - In order for this feature to work with AITriggerTypes conditions ("Owning house owns ???" and "Enemy house owns ???"), `LegalTarget` must be set to true.
 ```
 
-```{warning}
-Remember that Limbo Delivered buildings don't exist physically! This means they should never have enabled machanics that require interaction with the game world (i.e. factories, cloning vats, service depots, helipads). They also **should have either `KeepAlive=no` set or be killable with LimboKill** - otherwise the game might never end.
-```
-
 In `rulesmd.ini`:
 ```ini
 [SOMESW]                        ; Superweapon
@@ -1082,6 +1078,10 @@ LimboDelivery.RollChances=      ; List of percentages.
 LimboDelivery.RandomWeightsN=   ; List of integers.
 LimboKill.Affected=self         ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LimboKill.IDs=                  ; List of numeric IDs.
+```
+
+```{warning}
+Remember that Limbo Delivered buildings don't exist physically! This means they should never have enabled machanics that require interaction with the game world (i.e. factories, cloning vats, service depots, helipads). They also **should have either `KeepAlive=no` set or be killable with LimboKill** - otherwise the game might never end.
 ```
 
 ### Next
@@ -1231,7 +1231,7 @@ AutoFire.TargetSelf=false  ; boolean
   - `BuildLimitGroup.ExtraLimit.MaxCount` determines the maximum amount of technos being counted into the extra value calculation. Value matching the position in `BuildLimitGroup.ExtraLimit.Types` is used for that type. If not set or set to a value below 1, it'll be considered as no maximum count.
   - `BuildLimitGroup.ExtraLimit.MaxNum` determines the maximum of values in `BuildLimitGroup.Nums` after extra limit calculation. If not set or set to a value below 1, it'll be considered as no maximum value.
 
-  In `rulesmd.ini`:
+In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                    ; TechnoType
 BuildLimitGroup.Types=                          ; list of TechnoType names
@@ -1327,8 +1327,8 @@ ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary
 
 ### Make units try turning to target when firing with `OmniFire=yes`
 
-- The unit will try to turn the body to target even firing with `OmniFire=yes`
-  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`
+- The unit will try to turn the body to target even firing with `OmniFire=yes`.
+  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1423,6 +1423,7 @@ MindControl.Anim=                     ; Animation, defaults to ControlledAnimati
 
 - You can now specify whether a TechnoType is unable to receive move command.
 
+In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]        ; TechnoType
 NoManualMove=false  ; boolean
@@ -1479,7 +1480,7 @@ WarpOutWeapon=                          ; WeaponType
 - A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint Intensity`.
   - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
   - `Tint.VisibleToHouses` can be used to customize which houses can see the tint effect.
-  - Tint effects can also be applied by [attached effects](#attached-effects) and on shields.
+  - Tint effects can also be applied by [attached effects](#attached-effects) and on [shields](#shields).
 
 In `rulesmd.ini`:
 ```ini
@@ -1493,7 +1494,7 @@ Tint.VisibleToHouses=all  ; list of Affected House Enumeration (none|owner/self|
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
   - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
-  - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual]->SellSound`. Note that vanilla game played vehicles' SellSound globally. This has been changed in consistency with buildings' SellSound.
+  - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual] -> SellSound`. Note that vanilla game played vehicles' `SellSound` globally. This has been changed in consistency with buildings' `SellSound`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1532,19 +1533,19 @@ Promote.EliteAnimation=           ; Animation
 ### Raise alert when technos are taking damage
 
 - In Vanilla, non-building technos will not generate radar events or EVAs when attacked, so players can hardly notice them until they are destroyed. You can now receive a radar event (and optionally a sound effect) when your units is attacked, so you can respond to the combats in time.
-- `[AudioVisual]->CombatAlert` is a global switch, set it to `true` to enable the entire logic.
+- `[AudioVisual] -> CombatAlert` is a global switch, set it to `true` to enable the entire logic.
 - These flags controlls when to trigger a combat alert.
-  - You can disable this logic on specific techno by setting `[SOMETECHNO]->CombatAlert` to `false`, which default to `[AudioVisual]->CombatAlert.Default`. If `CombatAlert.Default` is also empty, it is defaultly disabled for technos with `Insignificant=yes` or `Spawned=yes`.
-  - `[AudioVisual]->CombatAlert.IgnoreBuilding` will turn the logic off on buildings. You can override it for specific building by setting `[SOMETECHNO]->CombatAlert.NotBuilding` to true. You may hope to use it on veh-buildings.
-  - `[AudioVisual]->CombatAlert.SuppressIfInScreen` decides whether to disable the logic for the units in the current screen.
-  - `[AudioVisual]->CombatAlert.Interval` decides the time interval (in frames) between alerts, to prevent the alert from being anonying. It is default to 150 frames.
-  - `[AudioVisual]->CombatAlert.SuppressIfAllyDamage` decides whether to disable the logic for the damage from allys.
-  - Technos hitted by a warhead with `[SOMEWARHEAD]->CombatAlert.Suppress` setted to `true` will not raise a radar event or EVA. This flag is default to the logical or of inverse value of ares flag `[SOMEWARHEAD]->Malicious` and `[SOMEWARHEAD]->Nonprovocative`.
+  - You can disable this logic on specific techno by setting `[SOMETECHNO] -> CombatAlert` to `false`, which default to `[AudioVisual] -> CombatAlert.Default`. If `CombatAlert.Default` is also empty, it is defaultly disabled for technos with `Insignificant=yes` or `Spawned=yes`.
+  - `[AudioVisual] -> CombatAlert.IgnoreBuilding` will turn the logic off on buildings. You can override it for specific building by setting `[SOMETECHNO] -> CombatAlert.NotBuilding` to true. You may hope to use it on veh-buildings.
+  - `[AudioVisual] -> CombatAlert.SuppressIfInScreen` decides whether to disable the logic for the units in the current screen.
+  - `[AudioVisual] -> CombatAlert.Interval` decides the time interval (in frames) between alerts, to prevent the alert from being anonying. It is default to 150 frames.
+  - `[AudioVisual] -> CombatAlert.SuppressIfAllyDamage` decides whether to disable the logic for the damage from allys.
+  - Technos hitted by a warhead with `[SOMEWARHEAD] -> CombatAlert.Suppress` setted to `true` will not raise a radar event or EVA. This flag is default to the logical or of inverse value of ares flag `[SOMEWARHEAD] -> Malicious` and `[SOMEWARHEAD] -> Nonprovocative`.
 - And the following flags controlls the effect of a combat alert.
-  - `[AudioVisual]->CombatAlert.MakeAVoice` decides whether to play some sound effect with the combat alert. Set it to `true` will enable the following flags, otherwise they will be ignored.
-  - `[SOMETECHNO]->CombatAlert.UseFeedbackVoice` decides whether to use the sound defined by `VoiceFeedback`. Default to `[AudioVisual]->CombatAlert.UseFeedbackVoice`.
-  - `[SOMETECHNO]->CombatAlert.UseAttackVoice` decides whether to use the sound defined by `VoiceAttack`. Default to `[AudioVisual]->CombatAlert.UseAttackVoice`.
-  - `[SOMETECHNO]->CombatAlert.UseEVA` decides whether to play an EVA. Default to `[AudioVisual]->CombatAlert.UseEVA`. The EVA to play is default to `EVA_UnitsInCombat`, and can be specified through `[SOMETECHNO]->CombatAlert.EVA`.
+  - `[AudioVisual] -> CombatAlert.MakeAVoice` decides whether to play some sound effect with the combat alert. Set it to `true` will enable the following flags, otherwise they will be ignored.
+  - `[SOMETECHNO] -> CombatAlert.UseFeedbackVoice` decides whether to use the sound defined by `VoiceFeedback`. Default to `[AudioVisual] -> CombatAlert.UseFeedbackVoice`.
+  - `[SOMETECHNO] -> CombatAlert.UseAttackVoice` decides whether to use the sound defined by `VoiceAttack`. Default to `[AudioVisual] -> CombatAlert.UseAttackVoice`.
+  - `[SOMETECHNO] -> CombatAlert.UseEVA` decides whether to play an EVA. Default to `[AudioVisual] -> CombatAlert.UseEVA`. The EVA to play is default to `EVA_UnitsInCombat`, and can be specified through `[SOMETECHNO] -> CombatAlert.EVA`.
   - The sound effect is taken **at order**, feedback first, attack then, eva finally. The flags in `[AudioVisual]` controlls whether to check it globally, and can be specify per techno.
   - An example: You set `CombatAlert.UseFeedbackVoice` and `CombatAlert.UseEVA` to `true` and `CombatAlert.UseAttackVoice` to `false`. A unit with `VoiceFeedback` `VoiceAttack` and `CombatAlert.EVA` are all set will play `VoiceFeedback`. A unit with `VoiceAttack` set will play `EVA_UnitsInCombat`.
 
@@ -1585,16 +1586,6 @@ Convert.HumanToComputer =   ; TechnoType
 Convert.ComputerToHuman =   ; TechnoType
 ```
 
-### Waypoint for building
-
-- In vanilla, building and aircraft is forbiddened to use waypoint. Now you can turn it on by the following flags.
-
-In `rulesmd.ini`:
-```ini
-[General]
-BuildingWaypoint=false    ; boolean
-```
-
 ## Terrain
 
 ### Destroy animation & sound
@@ -1612,7 +1603,7 @@ DestroySound=      ; Sound
 
 ```{hint}
 All new Warhead effects
-- Can be used with CellSpread and Ares' GenericWarhead superweapon where applicable.
+- Can be used with `CellSpread` and Ares' GenericWarhead superweapon where applicable.
 - Cannot be used with `MindControl.Permanent=yes` of Ares.
 - Respect `Verses` where applicable unless `EffectsRequireVerses` is set to false. If target has an active shield, its armor type is used instead unless warhead can penetrate the shield.
 ```
@@ -1620,7 +1611,7 @@ All new Warhead effects
 ### Break Mind Control on impact
 
 ![image](_static/images/remove-mc.gif)
-*Mind control break warhead being utilized* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
+*Mind control break warhead being utilized in [RA2: Reboot](https://www.moddb.com/mods/reboot)*
 
 - Warheads can now break mind control (doesn't apply to perma-MC-ed objects).
 
@@ -1687,14 +1678,6 @@ Convert.To=NEWSOLDIER
 Convert.AffectedHouses=team
 ```
 
-```{warning}
-This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
-```
-
-```{warning}
-This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
-```
-
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                   ; Warhead
@@ -1708,6 +1691,13 @@ Convert.To=                     ; TechnoType
 Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
 
 ### Custom 'SplashList' on Warheads
 
@@ -1722,10 +1712,6 @@ SplashList.PickRandom=false  ; boolean
 ```
 
 ### Detonate Warhead on all objects on map
-
-```{warning}
-While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/Houses/Types` etc.) is advised.
-```
 
 - Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
   - `DetonateOnAllMapObjects.Full` customizes whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
@@ -1747,16 +1733,20 @@ DetonateOnAllMapObjects.IgnoreTypes=         ; list of TechnoType names
 DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 ```
 
+```{warning}
+While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/Houses/Types` etc.) is advised.
+```
+
 ### Generate credits on impact
 
 ![image](_static/images/hackerfinallyworks-01.gif)
-*`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
+*`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - Warheads can now give credits to its owner at impact.
   - `TransactMoney.Display` can be set to display the amount of credits given or deducted. The number is displayed in green if given, red if deducted and will move upwards after appearing.
     - `TransactMoney.Display.AtFirer` if set, makes the credits display appear on firer instead of target. If set and firer is not known, it will display at target regardless.
     - `TransactMoney.Display.Houses` determines which houses can see the credits display.
-    - `TransactMoney.Display.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at target's/firer's center.
+    - `TransactMoney.Display.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at target's/firer's center.
 
 In `rulesmd.ini`:
 ```ini
@@ -1789,7 +1779,7 @@ PenetratesForceShield=       ; boolean
   - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
   - `LaunchSW.DisplayMoney` can be set to display the amount of credits given or deducted by the launched superweapon by `Money.Amount`. The number is displayed in green if given, red if deducted and will move upwards after appearing.
     - `LaunchSW.DisplayMoney.Houses` determines which houses can see the credits display.
-    - `LaunchSW.DisplayMoney.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at superweapon's target cell.
+    - `LaunchSW.DisplayMoney.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at superweapon's target cell.
 
 ```{note}
 - For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
@@ -1845,7 +1835,7 @@ SpySat=false   ; boolean
 ### Shroud map for enemies on impact
 
 - Warheads can now shroud the entire map on impact.
-- Shroud only applies to enemies of the warhead owner.
+  - Shroud only applies to enemies of the warhead owner.
 
 In `rulesmd.ini`:
 ```ini
@@ -1882,7 +1872,7 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 ### AreaFire target customization
 
 - You can now specify how AreaFire weapon picks its target. By default it targets the base cell the firer is currently on, but this can now be changed to fire on the firer itself or at a random cell within the radius of the weapon's `Range` by setting `AreaFire.Target` to `self` or `random` respectively.
-- `AreaFire.Target=self` respects normal targeting rules (Warhead Verses etc.) against the firer itself.
+- `AreaFire.Target=self` respects normal targeting rules (Warhead `Verses` etc.) against the firer itself.
 - `AreaFire.Target=random` ignores cells that are ineligible or contain ineligible objects based on listed values in weapon's `CanTarget` & `CanTargetHouses`.
 
 In `rulesmd.ini`:
@@ -1928,7 +1918,7 @@ ExtraWarheads.FullDetonation=     ; list of booleans
 ### Feedback weapon
 
 ![image](_static/images/feedbackweapon.gif)
-*`FeedbackWeapon` used to apply healing aura upon firing a weapon* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+*`FeedbackWeapon` used to apply healing aura upon firing a weapon in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
   - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
@@ -1967,7 +1957,7 @@ Strafing.UseAmmoPerShot=false  ; boolean
 ### Weapon targeting filter
 
 ![image](_static/images/weaponfilter.gif)
-*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings* ([Project Phantom](https://www.moddb.com/mods/project-phantom))
+*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
   - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
