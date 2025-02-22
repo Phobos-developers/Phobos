@@ -280,18 +280,6 @@ bool __stdcall SWSidebarClass::AresTabCameo_RemoveCameo(BuildType* pItem)
 
 // Hooks
 
-DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_SWSidebar, 0x7)
-{
-	enum { DoNothing = 0x6925FC };
-
-	if (SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentColumn)
-		return DoNothing;
-
-	const auto toggleButton = SWSidebarClass::Instance.ToggleButton;
-
-	return toggleButton && toggleButton->IsHovering ? DoNothing : 0;
-}
-
 DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_SWSidebar, 0x7)
 {
 	enum { SkipGameCode = 0x4F9302 };

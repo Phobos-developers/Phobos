@@ -231,6 +231,41 @@ DEFINE_HOOK(0x6A9316, SidebarClass_StripClass_HelpText, 0x6)
 	return 0x6A93DE;
 }
 
+DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_HelpText, 0x6)
+{
+	enum { ApplyToolTip = 0x4AE69D };
+
+	if (SWSidebarClass::IsEnabled())
+	{
+		const auto& swSidebar = SWSidebarClass::Instance;
+
+		if (const auto button = swSidebar.CurrentButton)
+		{
+			PhobosToolTip::Instance.IsCameo = true;
+
+			if (PhobosToolTip::Instance.IsEnabled())
+			{
+				PhobosToolTip::Instance.HelpText_Super(button->SuperIndex);
+				R->EAX(PhobosToolTip::Instance.GetBuffer());
+			}
+			else
+			{
+				const auto pSuper = HouseClass::CurrentPlayer->Supers[button->SuperIndex];
+				R->EAX(pSuper->Type->UIName);
+			}
+
+			return ApplyToolTip;
+		}
+		else if (swSidebar.CurrentColumn || (swSidebar.ToggleButton && swSidebar.ToggleButton->IsHovering))
+		{
+			R->EAX(0);
+			return ApplyToolTip;
+		}
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x724B2E, ToolTipManager_SetX, 0x6)
 {
 	if (SWSidebarClass::IsEnabled())
