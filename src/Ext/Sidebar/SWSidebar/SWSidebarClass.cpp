@@ -233,58 +233,111 @@ bool SWSidebarClass::IsEnabled()
 {
 	return SidebarExt::Global()->SWSidebar_Enable;
 }
+
+void SWSidebarClass::RecheckInput()
+{
+	const auto& sidebar = SWSidebarClass::Instance;
+
+	if (!sidebar.IsEnabled())
+	{
+		if (const auto pToggle = sidebar.ToggleButton)
+		{
+			pToggle->UpdatePosition();
+			pToggle->Input();
+		}
+
+		if (const auto pButton = sidebar.CurrentButton)
+			pButton->Input();
+		else if (const auto pColumn = sidebar.CurrentColumn)
+			pColumn->Input();
+
+		MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
+		return;
+	}
+
+	if (const auto pToggle = sidebar.ToggleButton)
+	{
+		pToggle->UpdatePosition();
+		pToggle->Input();
+	}
+
+	const auto& columns = sidebar.Columns;
+
+	if (!columns.empty())
+	{
+		for (const auto& pColumn : columns)
+		{
+			const auto& buttons = pColumn->Buttons;
+
+			if (!buttons.empty())
+			{
+				for (const auto& pButton : buttons)
+					pButton->Input();
+			}
+		}
+	}
+
+	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
+}
+
+void SWSidebarClass::RecheckCameo()
+{
+	auto& sidebar = SWSidebarClass::Instance;
+
+	for (const auto& column : sidebar.Columns)
+	{
+		std::vector<int> removeButtons;
+
+		for (const auto& button : column->Buttons)
+		{
+			if (HouseClass::CurrentPlayer->Supers[button->SuperIndex]->IsPresent)
+				continue;
+
+			removeButtons.push_back(button->SuperIndex);
+		}
+
+		for (const auto& index : removeButtons)
+			column->RemoveButton(index);
+	}
+
+	sidebar.SortButtons();
+	int removes = 0;
+
+	for (const auto& column : sidebar.Columns)
+	{
+		if (column->Buttons.empty())
+			++removes;
+	}
+
+	for (; removes > 0; --removes)
+		sidebar.RemoveColumn();
+
+	if (const auto toggleButton = sidebar.ToggleButton)
+		toggleButton->UpdatePosition();
+
+	sidebar.RecheckInput();
+}
+
 // Hooks
 
-DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_SWSidebar, 0x7)
+DEFINE_HOOK(0x4F92DD, HouseClass_UpdateTechTree_ReorderFunctions, 0x5)
 {
 	enum { SkipGameCode = 0x4F9302 };
 
-	GET(HouseClass*, pHouse, ESI);
+	GET(HouseClass*, pHouse, ESI); // Only HouseClass::CurrentPlayer
 
+	// Mark redraw
+	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+
+	// Update SWs
+	reinterpret_cast<void(__thiscall*)(HouseClass*)>(0x50AF10)(pHouse);
 	pHouse->AISupers();
 
-	if (pHouse->IsCurrentPlayer())
-	{
-		auto& sidebar = SWSidebarClass::Instance;
+	// Recheck SWSidebar Cameo
+	SWSidebarClass::RecheckCameo();
 
-		for (const auto& column : sidebar.Columns)
-		{
-			std::vector<int> removeButtons;
-
-			for (const auto& button : column->Buttons)
-			{
-				if (HouseClass::CurrentPlayer->Supers[button->SuperIndex]->IsPresent)
-					continue;
-
-				removeButtons.push_back(button->SuperIndex);
-			}
-
-			// A better solution is to swap the order of each function:
-			// first check the availability of SW,
-			// then remove the cameo from the SWsidebar,
-			// and finally remove the cameo from the YRsidebar
-			if (removeButtons.size())
-				pHouse->RecheckTechTree = true;
-
-			for (const auto& index : removeButtons)
-				column->RemoveButton(index);
-		}
-
-		SWSidebarClass::Instance.SortButtons();
-		int removes = 0;
-
-		for (const auto& column : sidebar.Columns)
-		{
-			if (column->Buttons.empty())
-				++removes;
-		}
-
-		for (; removes > 0; --removes)
-			sidebar.RemoveColumn();
-
-		if (const auto toggleButton = sidebar.ToggleButton)
-			toggleButton->UpdatePosition();
-	}
+	// Recheck YRSidebar Cameo
+	reinterpret_cast<void(__thiscall*)(SidebarClass*)>(0x6A7D20)(SidebarClass::Instance());
 
 	return SkipGameCode;
 }

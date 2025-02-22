@@ -73,7 +73,6 @@ bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 	if ((flags & GadgetFlag::LeftRelease) && this->IsPressed)
 	{
 		this->IsPressed = false;
-		VocClass::PlayGlobal(RulesClass::Instance->GUIMainButtonSound, 0x2000, 1.0);
 		ToggleSWButtonClass::SwitchSidebar();
 	}
 
@@ -104,10 +103,8 @@ void ToggleSWButtonClass::UpdatePosition()
 
 bool ToggleSWButtonClass::SwitchSidebar()
 {
+	VocClass::PlayGlobal(RulesClass::Instance->GUIMainButtonSound, 0x2000, 1.0);
 	SidebarExt::Global()->SWSidebar_Enable = !SidebarExt::Global()->SWSidebar_Enable;
-
-	if (const auto toggleButton = SWSidebarClass::Instance.ToggleButton)
-		toggleButton->UpdatePosition();
-
+	SWSidebarClass::Instance.RecheckInput();
 	return SWSidebarClass::Instance.IsEnabled();
 }
