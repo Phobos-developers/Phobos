@@ -14,6 +14,8 @@ SWButtonClass::SWButtonClass(unsigned int id, int superIdx, int x, int y, int wi
 {
 	if (const auto backColumn = SWSidebarClass::Instance.Columns.back())
 		backColumn->Buttons.emplace_back(this);
+
+	this->Disabled = !SWSidebarClass::IsEnabled();
 }
 
 bool SWButtonClass::Draw(bool forced)

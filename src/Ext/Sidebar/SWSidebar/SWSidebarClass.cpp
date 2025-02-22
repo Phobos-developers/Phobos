@@ -234,52 +234,6 @@ bool SWSidebarClass::IsEnabled()
 	return SidebarExt::Global()->SWSidebar_Enable;
 }
 
-void SWSidebarClass::RecheckInput()
-{
-	const auto& sidebar = SWSidebarClass::Instance;
-
-	if (!sidebar.IsEnabled())
-	{
-		if (const auto pToggle = sidebar.ToggleButton)
-		{
-			pToggle->UpdatePosition();
-			pToggle->Input();
-		}
-
-		if (const auto pButton = sidebar.CurrentButton)
-			pButton->Input();
-		else if (const auto pColumn = sidebar.CurrentColumn)
-			pColumn->Input();
-
-		MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
-		return;
-	}
-
-	if (const auto pToggle = sidebar.ToggleButton)
-	{
-		pToggle->UpdatePosition();
-		pToggle->Input();
-	}
-
-	const auto& columns = sidebar.Columns;
-
-	if (!columns.empty())
-	{
-		for (const auto& pColumn : columns)
-		{
-			const auto& buttons = pColumn->Buttons;
-
-			if (!buttons.empty())
-			{
-				for (const auto& pButton : buttons)
-					pButton->Input();
-			}
-		}
-	}
-
-	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
-}
-
 void SWSidebarClass::RecheckCameo()
 {
 	auto& sidebar = SWSidebarClass::Instance;
@@ -314,8 +268,6 @@ void SWSidebarClass::RecheckCameo()
 
 	if (const auto toggleButton = sidebar.ToggleButton)
 		toggleButton->UpdatePosition();
-
-	sidebar.RecheckInput();
 }
 
 // Hooks

@@ -9,6 +9,7 @@ SWColumnClass::SWColumnClass(unsigned int id, int maxButtons, int x, int y, int 
 	, MaxButtons(maxButtons)
 {
 	SWSidebarClass::Instance.Columns.emplace_back(this);
+	this->Disabled = !SWSidebarClass::IsEnabled();
 }
 
 bool SWColumnClass::Draw(bool forced)

@@ -20,7 +20,6 @@ public:
 	int GetMaximumButtonCount();
 
 	static bool IsEnabled();
-	static void RecheckInput();
 	static void RecheckCameo();
 
 	static SWSidebarClass Instance;

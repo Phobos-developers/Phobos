@@ -5,7 +5,6 @@
 #include <FactoryClass.h>
 #include <FileSystem.h>
 #include <Ext/Side/Body.h>
-#include <Misc/PhobosToolTip.h>
 
 DEFINE_HOOK(0x6A593E, SidebarClass_InitForHouse_AdditionalFiles, 0x5)
 {
