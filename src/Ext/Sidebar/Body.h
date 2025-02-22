@@ -19,7 +19,7 @@ public:
 	{
 	public:
 		bool SWSidebar_Enable;
-		DynamicVectorClass<int> SWSidebar_Indices;
+		std::vector<int> SWSidebar_Indices;
 
 		ExtData(SidebarClass* OwnerObject) : Extension<SidebarClass>(OwnerObject)
 			, SWSidebar_Enable { true }

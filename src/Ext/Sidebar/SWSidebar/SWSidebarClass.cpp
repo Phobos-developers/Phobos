@@ -78,6 +78,9 @@ void SWSidebarClass::InitClear()
 
 bool SWSidebarClass::AddButton(int superIdx)
 {
+	if (this->DisableEntry)
+		return false;
+
 	auto& columns = this->Columns;
 
 	if (columns.empty() && !this->AddColumn())
@@ -89,7 +92,7 @@ bool SWSidebarClass::AddButton(int superIdx)
 	const bool success = columns.back()->AddButton(superIdx);
 
 	if (success)
-		SidebarExt::Global()->SWSidebar_Indices.AddUnique(superIdx);
+		SidebarExt::Global()->SWSidebar_Indices.emplace_back(superIdx);
 
 	return success;
 }
@@ -268,10 +271,7 @@ DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_SWSidebar, 0x7)
 			}
 
 			for (const auto& index : removeButtons)
-			{
-				if (column->RemoveButton(index))
-					SidebarExt::Global()->SWSidebar_Indices.Remove(index);
-			}
+				column->RemoveButton(index);
 		}
 
 		SWSidebarClass::Instance.SortButtons();

@@ -29,6 +29,7 @@ public:
 	SWColumnClass* CurrentColumn { nullptr };
 	SWButtonClass* CurrentButton { nullptr };
 	ToggleSWButtonClass* ToggleButton { nullptr };
+	bool DisableEntry { false };
 
 	static CommandClass* Commands[10];
 };

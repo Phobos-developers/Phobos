@@ -79,33 +79,57 @@ bool SWColumnClass::Clicked(DWORD* pKey, GadgetFlag flags, int x, int y, KeyModi
 
 bool SWColumnClass::AddButton(int superIdx)
 {
-	if (const auto pSWType = SuperWeaponTypeClass::Array->GetItemOrDefault(superIdx))
-	{
-		const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+	const auto pSWType = SuperWeaponTypeClass::Array->GetItemOrDefault(superIdx);
 
-		if (!pSWExt->SW_ShowCameo)
-			return true;
+	if (!pSWType)
+		return false;
 
-		if (!Phobos::UI::SuperWeaponSidebar)
-			return false;
+	const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
 
-		if (!pSWExt->SuperWeaponSidebar_Allow.Get(RulesExt::Global()->SuperWeaponSidebar_AllowByDefault))
-			return false;
+	if (!pSWExt->SW_ShowCameo || !Phobos::UI::SuperWeaponSidebar || !pSWExt->SuperWeaponSidebar_Allow.Get(RulesExt::Global()->SuperWeaponSidebar_AllowByDefault))
+		return false;
 
-		const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
+	const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
 
-		if ((pSWExt->SuperWeaponSidebar_RequiredHouses & ownerBits) == 0)
-			return false;
-	}
-	else
-	{
-		return true;
-	}
+	if ((pSWExt->SuperWeaponSidebar_RequiredHouses & ownerBits) == 0)
+		return false;
 
 	auto& buttons = this->Buttons;
+	const int buttonCount = static_cast<int>(buttons.size());
+	auto& sidebar = SWSidebarClass::Instance;
 
-	if (static_cast<int>(buttons.size()) >= this->MaxButtons && !SWSidebarClass::Instance.AddColumn())
-		return false;
+	if (buttonCount >= this->MaxButtons && !SWSidebarClass::Instance.AddColumn())
+	{
+		std::vector<int> vec_SW;
+		vec_SW.reserve(buttonCount + 1);
+
+		for (const auto button : buttons)
+			vec_SW.emplace_back(button->SuperIndex);
+
+		vec_SW.emplace_back(superIdx);
+		std::stable_sort(vec_SW.begin(), vec_SW.end(), [ownerBits](const int left, const int right)
+			{
+				const auto pExtA = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItemOrDefault(left));
+				const auto pExtB = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItemOrDefault(right));
+
+				if (pExtB && (pExtB->SuperWeaponSidebar_PriorityHouses & ownerBits) && (!pExtA || !(pExtA->SuperWeaponSidebar_PriorityHouses & ownerBits)))
+					return false;
+
+				if ((!pExtB || !(pExtB->SuperWeaponSidebar_PriorityHouses & ownerBits)) && pExtA && (pExtA->SuperWeaponSidebar_PriorityHouses & ownerBits))
+					return true;
+
+				return BuildType::SortsBefore(AbstractType::Special, left, AbstractType::Special, right);
+			}
+		);
+
+		if (vec_SW.back() == superIdx)
+			return false;
+
+		this->RemoveButton(vec_SW.back());
+		sidebar.DisableEntry = true;
+		SidebarClass::Instance->AddCameo(AbstractType::Special, vec_SW.back());
+		sidebar.DisableEntry = false;
+	}
 
 	const int cameoWidth = 60, cameoHeight = 48;
 	const auto button = GameCreate<SWButtonClass>(SWButtonClass::StartID + superIdx, superIdx, 0, 0, cameoWidth, cameoHeight);
@@ -133,8 +157,14 @@ bool SWColumnClass::RemoveButton(int superIdx)
 		return false;
 
 	AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentButton, *it);
-	GScreenClass::Instance->RemoveButton(*it);
 
+	auto& indices = SidebarExt::Global()->SWSidebar_Indices;
+	const auto it_Idx = std::find(indices.cbegin(), indices.cend(), superIdx);
+
+	if (it_Idx != indices.cend())
+		indices.erase(it_Idx);
+
+	GScreenClass::Instance->RemoveButton(*it);
 	buttons.erase(it);
 	return true;
 }
