@@ -585,9 +585,6 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ### Building placing and deploying logic enhancement
 
 - In vanilla games, buildings are always cannot placing or deploying on the cells that other infantries or units on. Now this can be changed by setting `ExtendedBuildingPlacing` to true, when you try to place the building on these cells, it will check whether the occupiers can be scatter by yourself (include your own technos and allies technos) and whether there are enough spaces to scatter. If can, it will record which building you are placing and show a preview to you and your allies, then start a timer to record this placement and order the occupiers to leave this building area. When the area is cleared, the building will be truly place down and the production queue will be restored to original state. But when the timer expires or an unexpected situation has occurred which make the building impossible be constructed here anymore, it will stop the action and play "cannot deploy here", then you should re-place or re-deploy the building in a valid space.
-- `AutoBuilding` controls whether building can be automatically placed. Default to `[General]->AutoBuilding`
-  - `AutoBuilding.Gap` controls the gap of automatically placed buildings.
-  - For shortcut keys, see [User Interface -> Auto Building](User-Interface.md#Auto-Building).
 - `LimboBuild` controls whether building can be automatically placed like `LimboDelivery`.
   - `LimboBuildID` defines the numeric ID of the building placed by `LimboBuild`.
 - `PlaceBuilding.OnLand` controls building with `WaterBound=yes` will become which building when placed on land.
@@ -597,11 +594,8 @@ In `rulesmd.ini`:
 ```ini
 [General]
 ExtendedBuildingPlacing=false   ; boolean
-AutoBuilding=false              ; boolean
 
 [SOMEBUILDING]                  ; BuildingType
-AutoBuilding=                   ; boolean
-AutoBuilding.Gap=0              ; integer
 LimboBuild=false                ; boolean
 LimboBuildID=-1                 ; integer
 PlaceBuilding.OnLand=           ; BuildingType
@@ -609,7 +603,6 @@ PlaceBuilding.OnWater=          ; BuildingType
 ```
 
 ```{note}
-- `AutoBuilding` not support buildings with `LaserFence=true` , `Gate=true` or `ToTile=true`.
 - `PlaceBuilding.OnLand` and `PlaceBuilding.OnWater` are only work for players.
 ```
 

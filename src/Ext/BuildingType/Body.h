@@ -64,8 +64,6 @@ public:
 		Valueable<int> SellBuildupLength;
 		Valueable<bool> IsDestroyableObstacle;
 
-		Nullable<bool> AutoBuilding;
-		Valueable<int> AutoBuilding_Gap;
 		Valueable<bool> LimboBuild;
 		Valueable<int> LimboBuildID;
 		Valueable<BuildingTypeClass*> LaserFencePost_Fence;
@@ -127,8 +125,6 @@ public:
 			, ConsideredVehicle {}
 			, ZShapePointMove_OnBuildup { false }
 			, SellBuildupLength { 23 }
-			, AutoBuilding {}
-			, AutoBuilding_Gap { 1 }
 			, LimboBuild { false }
 			, LimboBuildID { -1 }
 			, LaserFencePost_Fence {}
@@ -190,7 +186,6 @@ public:
 	static bool CheckOccupierCanLeave(HouseClass* pBuildingHouse, HouseClass* pOccupierHouse);
 	static bool CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, CellStruct topLeftCell, HouseClass* pHouse, TechnoClass* pExceptTechno = nullptr);
 	static bool IsSameBuildingType(BuildingTypeClass* pType1, BuildingTypeClass* pType2);
-	static bool AutoPlaceBuilding(BuildingClass* pBuilding);
 	static bool BuildLimboBuilding(BuildingClass* pBuilding);
 	static void CreateLimboBuilding(BuildingClass* pBuilding, BuildingTypeClass* pType, HouseClass* pOwner, int ID);
 	static bool DeleteLimboBuilding(BuildingClass* pBuilding, int ID);

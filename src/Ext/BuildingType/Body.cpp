@@ -468,184 +468,6 @@ bool BuildingTypeExt::IsSameBuildingType(BuildingTypeClass* pType1, BuildingType
 	return ((pType1->BuildCat != BuildCat::Combat) == (pType2->BuildCat != BuildCat::Combat));
 }
 
-bool BuildingTypeExt::AutoPlaceBuilding(BuildingClass* pBuilding)
-{
-	if (!Phobos::Config::AutoBuilding_Enable)
-		return false;
-
-	const auto pType = pBuilding->Type;
-	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-
-	if (!pTypeExt->AutoBuilding.Get(RulesExt::Global()->AutoBuilding) || pType->LaserFence || pType->Gate || pType->ToTile)
-		return false;
-
-	const auto pHouse = pBuilding->Owner;
-
-	if (pHouse->Buildings.Count <= 0)
-		return false;
-
-	const auto foundation = pType->GetFoundationData(true);
-
-	auto canBuildHere = [&pType, &pHouse, &foundation](CellStruct cell)
-	{
-		return reinterpret_cast<bool(__thiscall*)(MapClass*, BuildingTypeClass*, int, CellStruct*, CellStruct*)>(0x4A8EB0)(MapClass::Instance(),
-			pType, pHouse->ArrayIndex, foundation, &cell) // Adjacent
-			&& reinterpret_cast<bool(__thiscall*)(MapClass*, BuildingTypeClass*, int, CellStruct*, CellStruct*)>(0x4A9070)(MapClass::Instance(),
-			pType, pHouse->ArrayIndex, foundation, &cell); // NoShroud
-	};
-
-	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-
-	auto getMapCell = [&pHouseExt](BuildingClass* pBuilding)
-	{
-		if (!pBuilding->IsAlive || pBuilding->Health <= 0 || !pBuilding->IsOnMap || pBuilding->InLimbo || pHouseExt->OwnsLimboDeliveredBuilding(pBuilding))
-			return CellStruct::Empty;
-
-		return pBuilding->GetMapCoords();
-	};
-
-	auto addPlaceEvent = [&pType, &pHouse](CellStruct cell)
-	{
-		const EventClass event (pHouse->ArrayIndex, EventType::Place, AbstractType::Building, pType->GetArrayIndex(), pType->Naval, cell);
-		EventClass::AddEvent(event);
-	};
-
-	if (pType->LaserFencePost || pType->Wall)
-	{
-		for (const auto& pOwned : pHouse->Buildings)
-		{
-			const auto pOwnedType = pOwned->Type;
-
-			if (!pOwnedType->ProtectWithWall)
-				continue;
-
-			const auto baseCell = getMapCell(pOwned);
-
-			if (baseCell == CellStruct::Empty)
-				continue;
-
-			const auto width = pOwnedType->GetFoundationWidth();
-			const auto height = pOwnedType->GetFoundationHeight(true);
-			auto cell = CellStruct::Empty;
-			int index = 0, check = width + 1, count = 0;
-
-			for (auto pFoundation = pOwnedType->FoundationOutside; *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
-			{
-				if (++index != check)
-					continue;
-
-				check += (++count & 1) ? 1 : (height * 2 + width + 1);
-				const auto outsideCell = baseCell + *pFoundation;
-				const auto pCell = MapClass::Instance->TryGetCellAt(outsideCell);
-
-				if (pCell && pCell->CanThisExistHere(pOwnedType->SpeedType, pOwnedType, pHouse) && canBuildHere(outsideCell))
-				{
-					addPlaceEvent(outsideCell);
-					return true;
-				}
-			}
-
-			for (auto pFoundation = pOwnedType->FoundationOutside; *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
-			{
-				const auto outsideCell = baseCell + *pFoundation;
-				const auto pCell = MapClass::Instance->TryGetCellAt(outsideCell);
-
-				if (pCell && pCell->CanThisExistHere(pOwnedType->SpeedType, pOwnedType, pHouse) && canBuildHere(outsideCell))
-					cell = outsideCell;
-			}
-
-			if (cell == CellStruct::Empty)
-				continue;
-
-			addPlaceEvent(cell);
-			return true;
-		}
-
-		return false;
-	}
-	else if (pType->PowersUpBuilding[0])
-	{
-		for (const auto& pOwned : pHouse->Buildings)
-		{
-			if (!reinterpret_cast<bool(__thiscall*)(BuildingClass*, BuildingTypeClass*, HouseClass*)>(0x452670)(pOwned, pType, pHouse)) // CanUpgradeBuilding
-				continue;
-
-			const auto cell = getMapCell(pOwned);
-
-			if (cell == CellStruct::Empty || pOwned->CurrentMission == Mission::Selling || !canBuildHere(cell))
-				continue;
-
-			addPlaceEvent(cell);
-			return true;
-		}
-
-		return false;
-	}
-	else if (pType->PlaceAnywhere)
-	{
-		for (const auto& pOwned : pHouse->Buildings)
-		{
-			if (!pOwned->Type->BaseNormal)
-				continue;
-
-			const auto cell = getMapCell(pOwned);
-
-			if (cell == CellStruct::Empty || !canBuildHere(cell))
-				continue;
-
-			addPlaceEvent(cell);
-			return true;
-		}
-
-		return false;
-	}
-
-	const auto buildGap = static_cast<short>(pTypeExt->AutoBuilding_Gap + pType->ProtectWithWall ? 1 : 0);
-	const auto doubleGap = buildGap * 2;
-	const auto width = pType->GetFoundationWidth() + doubleGap;
-	const auto height = pType->GetFoundationHeight(true) + doubleGap;
-	const auto speedType = pType->SpeedType == SpeedType::Float ? SpeedType::Float : SpeedType::Track;
-	const auto buildable = speedType != SpeedType::Float;
-
-	auto tryBuildAt = [&](DynamicVectorClass<BuildingClass*>& vector, bool baseNormal)
-	{
-		for (const auto& pBase : vector)
-		{
-			if (baseNormal && !pBase->Type->BaseNormal)
-				continue;
-
-			const auto baseCell = getMapCell(pBase);
-
-			if (baseCell == CellStruct::Empty)
-				continue;
-
-			// TODO The construction area does not actually need to be so large, the surrounding space should be able to be occupied by other things
-			// TODO It would be better if the Buildable check could be fit with ExtendedBuildingPlacing within this function.
-			// TODO Similarly, it would be better if the following Adjacent & NoShroud check could be made within this function.
-			auto cell = pType->PlaceAnywhere ? baseCell : MapClass::Instance->NearByLocation(baseCell, speedType, -1, MovementZone::Normal, false,
-				width, height, false, false, false, false, CellStruct::Empty, false, buildable);
-
-			if (cell == CellStruct::Empty)
-				return false;
-
-			cell += CellStruct { buildGap, buildGap };
-
-			if (!canBuildHere(cell))
-				continue;
-
-			addPlaceEvent(cell);
-			return true;
-		}
-
-		return false;
-	};
-
-	if (pHouse->ConYards.Count > 0 && tryBuildAt(pHouse->ConYards, false))
-		return true;
-
-	return tryBuildAt(pHouse->Buildings, true);
-}
-
 bool BuildingTypeExt::BuildLimboBuilding(BuildingClass* pBuilding)
 {
 	const auto pBuildingType = pBuilding->Type;
@@ -816,8 +638,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
 	this->IsDestroyableObstacle.Read(exINI, pSection, "IsDestroyableObstacle");
 
-	this->AutoBuilding.Read(exINI, pSection, "AutoBuilding");
-	this->AutoBuilding_Gap.Read(exINI, pSection, "AutoBuilding.Gap");
 	this->LimboBuild.Read(exINI, pSection, "LimboBuild");
 	this->LimboBuildID.Read(exINI, pSection, "LimboBuildID");
 	this->LaserFencePost_Fence.Read(exINI, pSection, "LaserFencePost.Fence");
@@ -950,8 +770,6 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ConsideredVehicle)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
-		.Process(this->AutoBuilding)
-		.Process(this->AutoBuilding_Gap)
 		.Process(this->LimboBuild)
 		.Process(this->LimboBuildID)
 		.Process(this->LaserFencePost_Fence)

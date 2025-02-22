@@ -79,7 +79,6 @@ public:
 		static bool DigitalDisplay_Enable;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
-		static bool AutoBuilding_Enable;
 		static int CampaignDefaultGameSpeed;
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;

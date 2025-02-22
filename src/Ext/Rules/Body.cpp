@@ -138,7 +138,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HeightShadowScaling_MinScale.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling.MinScale");
 
 	this->ExtendedBuildingPlacing.Read(exINI, GameStrings::General, "ExtendedBuildingPlacing");
-	this->AutoBuilding.Read(exINI, GameStrings::General, "AutoBuilding");
 
 	this->ExtendedAircraftMissions.Read(exINI, GameStrings::General, "ExtendedAircraftMissions");
 
@@ -354,7 +353,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HeightShadowScaling)
 		.Process(this->HeightShadowScaling_MinScale)
 		.Process(this->ExtendedBuildingPlacing)
-		.Process(this->AutoBuilding)
 		.Process(this->ExtendedAircraftMissions)
 		.Process(this->BuildingProductionQueue)
 		.Process(this->AllowParallelAIQueues)

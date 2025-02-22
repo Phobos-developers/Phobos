@@ -1078,31 +1078,7 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 {
 	GET(HouseClass* const, pHouse, ESI);
 
-	if (!pHouse->IsControlledByHuman())
-		return 0;
-
-	if (pHouse == HouseClass::CurrentPlayer && (pHouse->RecheckTechTree || !(Unsorted::CurrentFrame() % 15)))
-	{
-		if (const auto pFactory = pHouse->Primary_ForBuildings)
-		{
-			if (pFactory->IsDone())
-			{
-				if (const auto pBuilding = abstract_cast<BuildingClass*>(pFactory->Object))
-					BuildingTypeExt::AutoPlaceBuilding(pBuilding);
-			}
-		}
-
-		if (const auto pFactory = pHouse->Primary_ForDefenses)
-		{
-			if (pFactory->IsDone())
-			{
-				if (const auto pBuilding = abstract_cast<BuildingClass*>(pFactory->Object))
-					BuildingTypeExt::AutoPlaceBuilding(pBuilding);
-			}
-		}
-	}
-
-	if (!RulesExt::Global()->ExtendedBuildingPlacing)
+	if (!pHouse->IsControlledByHuman() || !RulesExt::Global()->ExtendedBuildingPlacing)
 		return 0;
 
 	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
@@ -1274,7 +1250,6 @@ DEFINE_HOOK(0x6A8E34, StripClass_Update_AutoBuildBuildings, 0x7)
 	GET(BuildingClass* const, pBuilding, ESI);
 
 	BuildingTypeExt::BuildLimboBuilding(pBuilding);
-	BuildingTypeExt::AutoPlaceBuilding(pBuilding);
 
 	return 0;
 }

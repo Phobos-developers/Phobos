@@ -94,7 +94,6 @@ public:
 		double AirShadowBaseScale_log;
 
 		Valueable<bool> ExtendedBuildingPlacing;
-		Valueable<bool> AutoBuilding;
 
 		Valueable<bool> ExtendedAircraftMissions;
 
@@ -247,7 +246,6 @@ public:
 			, AirShadowBaseScale_log { 0.693376137 }
 
 			, ExtendedBuildingPlacing { false }
-			, AutoBuilding { false }
 
 			, ExtendedAircraftMissions { false }
 

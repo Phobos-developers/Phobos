@@ -31,7 +31,6 @@
     <ClCompile Include="src\Commands\ToggleDesignatorRange.cpp" />
     <ClCompile Include="src\Commands\ToggleDigitalDisplay.cpp" />
     <ClCompile Include="src\Commands\SaveVariablesToFile.cpp" />
-    <ClCompile Include="src\Commands\AutoBuilding.cpp" />
     <ClCompile Include="src\Ext\Anim\Body.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.AnimCreateUnit.cpp" />
@@ -199,7 +198,6 @@
     <ClInclude Include="src\Commands\ToggleDesignatorRange.h" />
     <ClInclude Include="src\Commands\ToggleDigitalDisplay.h" />
     <ClInclude Include="src\Commands\SaveVariablesToFile.h" />
-    <ClInclude Include="src\Commands\AutoBuilding.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\StraightTrajectory.h" />
