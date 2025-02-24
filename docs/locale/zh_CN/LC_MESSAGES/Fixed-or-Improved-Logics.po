@@ -73,8 +73,8 @@ msgid "Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond spec
 msgstr "修复了 `DebrisMaximums`（被生成的碎片类型数量不能超过这里指定最大值）。仅当 `DebrisMaximums` 值数量大于 1 时才生效，以保持对旧有行为的兼容。"
 
 #: ../../Fixed-or-Improved-Logics.md:18
-msgid "Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled."
-msgstr "修复了在触发 `Cannot build here.`（摆放失败）并取消放置模式后使用切换到建筑栏和防御栏的快捷键无法再次进入放置模式的问题。"
+msgid "Fixed building and defense tab hotkeys not enabling the placement mode after *Cannot build here.* triggered and the placement mode cancelled."
+msgstr "修复了在触发 *Cannot build here.*（摆放失败）并取消放置模式后使用切换到建筑栏和防御栏的快捷键无法再次进入放置模式的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:19
 msgid "Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying."
@@ -85,8 +85,8 @@ msgid "Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to
 msgstr "修复了拥有 `Naval=yes` 的建筑会忽略 `WaterBound=no` 而被强制放置在水中的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:21
-msgid "Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` -> `AllowParallelAIQueues=no` is set."
-msgstr "修复了当设置 Ares 标签 `[GlobalControls]` -> `AllowParallelAIQueues=no` 时 AI 战机对接机场的 Bug。"
+msgid "Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set."
+msgstr "修复了当设置 Ares 标签 `[GlobalControls] -> AllowParallelAIQueues=no` 时 AI 战机对接机场的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:22
 msgid "Fixed laser drawing code to allow for thicker lasers in house color draw mode."
@@ -196,8 +196,8 @@ msgid "Aircraft with `Fighter` set to false or those using strafing pattern (wea
 msgstr "现在 `Fighter` 被设为 false 或使用扫射模式（抛射体 `ROT` 小于 2）的战机每次开火都会正常考虑武器的 `Burst` 设置而不仅限第一次开火。"
 
 #: ../../Fixed-or-Improved-Logics.md:50
-msgid "Vehicles using `DeployFire` will now use `DeployFireWeapon` for firing the deploy weapon if explicitly set, if not it behaves like previously (`Primary` if can fire, `Secondary` if not) and respect `FireOnce` setting on weapon and any stop commands issued during firing. If `FireOnce` is set to true the unit won't accept further deploy commands for number of frames that is equal to whichever is smaller between weapon `ROF` and `[Unload]` -> `Rate` times 900."
-msgstr "现在使用 `DeployFire` 的载具在明确设置了的情况下会严格遵照 `DeployFireWeapon` 开火，否则将像原有的行为（如果 `Primary` 可以开火则使用之，否则使用 `Secondary`）并且尊重武器的 `FireOnce` 设置以及开火期间发出的任何停止命令。如果 `FireOnce` 设置为 true 那么单位在等于武器的 `ROF` 和 `[Unload]` -> `Rate` * 900 的时间内不会接受新的的部署命令。"
+msgid "Vehicles using `DeployFire` will now use `DeployFireWeapon` for firing the deploy weapon if explicitly set, if not it behaves like previously (`Primary` if can fire, `Secondary` if not) and respect `FireOnce` setting on weapon and any stop commands issued during firing. If `FireOnce` is set to true the unit won't accept further deploy commands for number of frames that is equal to whichever is smaller between weapon `ROF` and `[Unload] -> Rate` times 900."
+msgstr "现在使用 `DeployFire` 的载具在明确设置了的情况下会严格遵照 `DeployFireWeapon` 开火，否则将像原有的行为（如果 `Primary` 可以开火则使用之，否则使用 `Secondary`）并且尊重武器的 `FireOnce` 设置以及开火期间发出的任何停止命令。如果 `FireOnce` 设置为 true 那么单位在等于武器的 `ROF` 和 `[Unload] -> Rate` * 900 的时间内不会接受新的的部署命令。"
 
 #: ../../Fixed-or-Improved-Logics.md:51
 msgid "Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not."
@@ -233,7 +233,7 @@ msgstr "现在 `EWGates` 和 `NSGates` 可以像 `xxGateOne` 和 `xxGateTwo` 那
 
 #: ../../Fixed-or-Improved-Logics.md:65
 msgid "Aircraft & jumpjet units are now affected by speed modifiers such as `SpeedAircraft/Infantry/UnitsMult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect *(Ares feature)*."
-msgstr "现在战机与 Jumpjet 单位正常受国家设置中的 `SpeedAircraft/Infantry/UnitsMult`、`VeteranSpeed` 以及箱子 / AttachEffect 中速度加成效果影响。"
+msgstr "现在战机与 Jumpjet 单位正常受国家设置中的 `SpeedAircraft/Infantry/UnitsMult`、`VeteranSpeed` 和箱子 / AttachEffect 中速度加成效果影响。"
 
 #: ../../Fixed-or-Improved-Logics.md:66
 msgid "Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`."
@@ -249,7 +249,7 @@ msgstr "现在心灵控制指示动画将在被心灵控制的单位解除隐形
 
 #: ../../Fixed-or-Improved-Logics.md:69
 msgid "Animations from Warhead `AnimList` & `SplashList` etc. as well as animations created through map trigger `41 Play Anim At` now have the appropriate house set as owner of the animation by default."
-msgstr "现在弹头 `AnimList` 与 `SplashList` 等语句以及地图触发 `41 播放动画在……` 创建的动画都将默认将适当的所属方设置为动画的所有者。"
+msgstr "现在弹头 `AnimList` 与 `SplashList` 等语句以及地图触发 `41 播放动画在...` 创建的动画都将默认将适当的所属方设置为动画的所有者。"
 
 #: ../../Fixed-or-Improved-Logics.md:70
 msgid "Nuke carrier & payload weapons now respect `Bright` setting on the weapons always when appropriate (previously only payload did and only if Superweapon had `Nuke.SiloLaunch=false` *(Ares feature)*)."
@@ -289,7 +289,7 @@ msgstr "现在建筑可以正确的使用副武器设置的激光参数而不再
 
 #: ../../Fixed-or-Improved-Logics.md:79
 msgid "Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc."
-msgstr "修复了只有所属方但没有开火者技术类型造成的伤害击杀（例如来自动画弹头伤害）未能正确记录为被击杀因此无法触发地图事件等问题。"
+msgstr "修复了只有所属方但没有开火者技术类型造成的伤害击杀（例如来自动画弹头伤害）未能正确记录为被击杀而无法触发地图事件等问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:81
 msgid "![Waving trees](_static/images/tree-shake.gif) *Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*"
@@ -308,8 +308,8 @@ msgid "![image](_static/images/translucency-fix.png) *Example gradient SHP drawi
 msgstr "![image](_static/images/translucency-fix.png) *75% 透明度的 Shape 绘制示例，前后对比*"
 
 #: ../../Fixed-or-Improved-Logics.md:89
-msgid "Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`."
-msgstr "现在半透明的 RLE SHP 将使用更精确且性能更高的算法进行绘制，不会出现绿色色调和条纹。可以通过 `rulesmd.ini->[General]->FixTransparencyBlitters=no` 来禁用。"
+msgid "Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`."
+msgstr "现在半透明的 RLE SHP 将使用更精确且性能更高的算法进行绘制，不会出现绿色色调和条纹。可以通过 `rulesmd.ini -> [General] -> FixTransparencyBlitters=no` 来禁用。"
 
 #: ../../Fixed-or-Improved-Logics.md:90
 msgid "Only applies to Z-aware drawing mode for now."
@@ -392,8 +392,8 @@ msgid "Fixed infantry without `C4=true` being killed in water if paradropped, ch
 msgstr "修复了没有 `C4=true` 的步兵即便可以正常进入水中但当被空投、超时空传送等情况下在水中会死亡的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:110
-msgid "Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings]->MCVRedeploys`."
-msgstr "允许在战役中使用一个与 `[MultiplayerDialogSettings]->MCVRedeploys` 不同的新开关设置重部署 MCV。"
+msgid "Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings] -> MCVRedeploys`."
+msgstr "允许在战役中使用一个与 `[MultiplayerDialogSettings] -> MCVRedeploys` 不同的新开关设置重部署 MCV。"
 
 #: ../../Fixed-or-Improved-Logics.md:111
 msgid "Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled."
@@ -424,8 +424,8 @@ msgid "Fixed disguised infantry not using custom palette for drawing the disguis
 msgstr "修复了伪装的步兵在必要时没有使用自定义色盘来绘制伪装图像的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:118
-msgid "Disguised infantry now show appropriate insignia when disguise is visible, based on the disguise type and house. Original unit's insignia is always shown to observers and if disguise blinking is enabled for the current player by `[General]`->`DisguiseBlinkingVisibility`."
-msgstr "现在当伪装闪烁时伪装的步兵将会根据伪装的类型和所属方显示对应的军衔。原始单位的军衔始终显示给观察者和 `[General]`->`DisguiseBlinkingVisibility` 设置所支持可见伪装闪烁的当前玩家。"
+msgid "Disguised infantry now show appropriate insignia when disguise is visible, based on the disguise type and house. Original unit's insignia is always shown to observers and if disguise blinking is enabled for the current player by `[General] -> DisguiseBlinkingVisibility`."
+msgstr "现在当伪装闪烁时伪装的步兵将会根据伪装的类型和所属方显示对应的军衔。原始单位的军衔始终显示给观察者和 `[General] -> DisguiseBlinkingVisibility` 设置所支持可见伪装闪烁的当前玩家。"
 
 #: ../../Fixed-or-Improved-Logics.md:119
 msgid "Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map."
@@ -448,8 +448,8 @@ msgid "Objects with `Palette` set now have their color tint adjusted accordingly
 msgstr "现在拥有 `Palette` 设置的对象可以正常根据超级武器、地图重绘光照行为等调整其色调。只要它们属于使用了任何配色方案的所属方而不仅限于 `[Colors]` 列表前半部分那些。"
 
 #: ../../Fixed-or-Improved-Logics.md:124
-msgid "Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud. Color scheme from `[AudioVisual]` -> `AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still."
-msgstr "现在使用 `AltPalette` 的动画会被重映射到其所属方的配色方案而不再是被列出的第一个配色方案并且不再绘制于黑幕之上。如果动画没有所属方那么将会使用 `[AudioVisual]` -> `AnimRemapDefaultColorScheme` 指定的配色方案，它同样默认为 `[Colors]` 中被列出的第一个配色方案。"
+msgid "Animations using `AltPalette` are now remapped to their owner's color scheme instead of first listed color scheme and no longer draw over shroud. Color scheme from `[AudioVisual] -> AnimRemapDefaultColorScheme` is used if anim has no owner, which defaults to first listed color scheme from `[Colors]` still."
+msgstr "现在使用 `AltPalette` 的动画会被重映射到其所属方的配色方案而不再是被列出的第一个配色方案并且不再绘制于黑幕之上。如果动画没有所属方那么将会使用 `[AudioVisual] -> AnimRemapDefaultColorScheme` 指定的配色方案，它同样默认为 `[Colors]` 中被列出的第一个配色方案。"
 
 #: ../../Fixed-or-Improved-Logics.md:125
 msgid "They can also have map lighting apply on them if `AltPalette.ApplyLighting` is set to true."
@@ -472,8 +472,8 @@ msgid "Wall overlays are now drawn with the custom palette defined in `Palette` 
 msgstr "现在如果可能的话墙类覆盖物将会使用 `artmd.ini` 中使用 `Palette` 指定的自定义色盘进行绘制。"
 
 #: ../../Fixed-or-Improved-Logics.md:130
-msgid "If `[CombatDamage]`->`AllowWeaponSelectAgainstWalls` is set to true, `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true."
-msgstr "现在如果 `[CombatDamage]`->`AllowWeaponSelectAgainstWalls` 设置为 true，假设 `Primary` 武器的弹头拥有 `Wall=false`，而 `Secondary` 武器拥有 `Wall=true` 且开火者没有将 `NoSecondaryWeaponFallback` 设为 true 那么在 `Secondary` 将在应对墙时被使用。"
+msgid "If `[CombatDamage] -> AllowWeaponSelectAgainstWalls` is set to true, `Secondary` will now be used against walls if `Primary` weapon Warhead has `Wall=false`, `Secondary` has `Wall=true` and the firer does not have `NoSecondaryWeaponFallback` set to true."
+msgstr "现在如果 `[CombatDamage] -> AllowWeaponSelectAgainstWalls` 设置为 true，假设 `Primary` 武器的弹头拥有 `Wall=false`，而 `Secondary` 武器拥有 `Wall=true` 且开火者没有将 `NoSecondaryWeaponFallback` 设为 true 那么在 `Secondary` 将在应对墙时被使用。"
 
 #: ../../Fixed-or-Improved-Logics.md:131
 msgid "Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport."
@@ -520,8 +520,8 @@ msgid "Fixed railgun and fire particles being cut off by elevation changes."
 msgstr "修复了轨道炮和火焰粒子被高度变化切断的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:142
-msgid "Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game."
-msgstr "修复了超时空单位（例如 CLEG）的僵直计时器在载入游戏后被清空的问题。"
+msgid "Fixed teleport units' (for example `[CLEG]`) frozen-still timer being cleared after load game."
+msgstr "修复了超时空单位（例如 `[CLEG]`）的僵直计时器在载入游戏后被清空的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:143
 msgid "Fixed teleport units being unable to visually tilt on slopes."
@@ -536,8 +536,8 @@ msgid "Fixed units with Teleport, Tunnel or Fly locomotor being unable to be vis
 msgstr "修复了使用 Teleport、Tunnel 或 Fly 运动模式的单位无法像其他运动模式那样视觉翻转的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:146
-msgid "Aircraft docking on buildings now respect `[AudioVisual]`->`PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction."
-msgstr "现在战机在建筑上停靠时尊重 `[AudioVisual]`->`PoseDir` 作为默认设置而不总是朝向北方，或者在预先放置建筑上面向建筑的方向。"
+msgid "Aircraft docking on buildings now respect `[AudioVisual] -> PoseDir` as the default setting and do not always land facing north or in case of pre-placed buildings, the building's direction."
+msgstr "现在战机在建筑上停靠时尊重 `[AudioVisual] -> PoseDir` 作为默认设置而不总是朝向北方，或者在预先放置建筑上面向建筑的方向。"
 
 #: ../../Fixed-or-Improved-Logics.md:147
 msgid "Spawned aircraft now align with the spawner's facing when landing."
@@ -545,11 +545,11 @@ msgstr "现在生成的子机在降落时会与其母舰的朝向对正。"
 
 #: ../../Fixed-or-Improved-Logics.md:148
 msgid "Fixed the bug that waypointing unarmed infantries with agent/engineer/occupier to a spyable/capturable/occupiable building triggers `EnteredBy` event by executing capture mission."
-msgstr "修复了在路径点中为间谍/工程师/需要驻军的无武装步兵设置目标为可渗透/占领/驻军的建筑执行行为时会触发`被……进入`条件的 Bug。"
+msgstr "修复了在路径点中为间谍/工程师/需要驻军的无武装步兵设置目标为可渗透/占领/驻军的建筑执行行为时会触发`被...进入`条件的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:149
 msgid "`PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys."
-msgstr "`PowerUpN` 建筑动画现在可以使用 `Powered` 和 `PoweredLight/Effect/Special` 键。"
+msgstr "`PowerUpN` 建筑动画现在可以使用 `Powered` 和 `PoweredLight/Effect/Special` 标签。"
 
 #: ../../Fixed-or-Improved-Logics.md:150
 msgid "Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units."
@@ -588,8 +588,8 @@ msgid "OverlayTypes now read and use `ZAdjust` if specified in their `artmd.ini`
 msgstr "现在如果被指定那么覆盖物可以正常读取并使用它们在 `artmd.ini` 条目中的 `ZAdjust`。"
 
 #: ../../Fixed-or-Improved-Logics.md:159
-msgid "Setting `[AudioVisual]` -> `ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`."
-msgstr "设置 `[AudioVisual]` -> `ColorAddUse8BitRGB` 为 true 时游戏会将 `[ColorAdd]` 中的值视为 8 位 RGB(0-255)而不是 RGB565（红色和蓝色为 0-31，绿色为 0-63）。这适用于 `LaserTargetColor`、`IronCurtainColor`、`BerserkColor` 和 `ForceShieldColor`。（已知 KratosPP v0.1.15会抵消该逻辑）"
+msgid "Setting `[AudioVisual] -> ColorAddUse8BitRGB` to true makes game treat values from `[ColorAdd]` as 8-bit RGB (0-255) instead of RGB565 (0-31 for red & blue, 0-63 for green). This works for `LaserTargetColor`, `IronCurtainColor`, `BerserkColor` and `ForceShieldColor`."
+msgstr "设置 `[AudioVisual] -> ColorAddUse8BitRGB` 为 true 时游戏会将 `[ColorAdd]` 中的值视为 8 位 RGB(0-255)而不是 RGB565（红色和蓝色为 0-31，绿色为 0-63）。这适用于 `LaserTargetColor`、`IronCurtainColor`、`BerserkColor` 和 `ForceShieldColor`。（已知 KratosPP v0.1.15会抵消该逻辑）"
 
 #: ../../Fixed-or-Improved-Logics.md:160
 msgid "Weapons with `AA=true` Projectile can now correctly fire at air units when both firer and target are over a bridge."
@@ -608,12 +608,12 @@ msgid "Subterranean units are no longer allowed to perform deploy functions like
 msgstr "现在钻地单位在钻地或正在钻地时不再允许执行例如发射武器或 `IsSimpleDeployer` 那样的部署功能，现在它们会先像运输工具释放乘客那样先钻出地面。"
 
 #: ../../Fixed-or-Improved-Logics.md:164
-msgid "The otherwise unused setting `[AI]` -> `PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI]` -> `EnablePowerSurplus` to true."
-msgstr "可以通过将 `[AI]` -> `EnablePowerSurplus` 设置为 true 来复原 `[AI]` -> `PowerSurplus`（默认为 50）以决定 AI 玩家将尽力保持的富余电力值。"
+msgid "The otherwise unused setting `[AI] -> PowerSurplus` (defaults to 50) which determines how much surplus power AI players will strive to have can be restored by setting `[AI] -> EnablePowerSurplus` to true."
+msgstr "可以通过将 `[AI] -> EnablePowerSurplus` 设置为 true 来复原 `[AI] -> PowerSurplus`（默认为 50）以决定 AI 玩家将尽力保持的富余电力值。"
 
 #: ../../Fixed-or-Improved-Logics.md:165
-msgid "Planning paths are now shown for all units under player control or when `[GlobalControls]->DebugPlanningPaths=yes` in singleplayer game modes."
-msgstr "现在当 `[GlobalControls]->DebugPlanningPaths=yes` 时在单人游戏模式中所有受玩家操作的单位都会显示路径点规划的路径。"
+msgid "Planning paths are now shown for all units under player control or when `[GlobalControls] -> DebugPlanningPaths=yes` in singleplayer game modes."
+msgstr "现在当 `[GlobalControls] -> DebugPlanningPaths=yes` 时在单人游戏模式中所有受玩家操作的单位都会显示路径点规划的路径。"
 
 #: ../../Fixed-or-Improved-Logics.md:166
 msgid "Fixed `Temporal=true` Warheads potentially crashing game if used to attack `Slaved=true` infantry."
@@ -644,8 +644,8 @@ msgid "Fixed damaged aircraft not repairing on `UnitReload=true` docks unless th
 msgstr "修复了受损的战机除非先降落于 `UnitReload=true` 的停靠点上否则不能修复的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:173
-msgid "Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater by setting `[General]` -> `ApplyLunarFixes` to true in `lunarmd.ini`. Do note that enabling this without fixing f.ex `WoodBridgeTileSet` pointing to a tileset with `TilesInSet=0` will cause issues in-game."
-msgstr "现在可以通过在 `lunarmd.ini` 中将 `[General]` -> `ApplyLunarFixes` 设置为 true 来切换某些全局地块索引（`ShorePieces`、`WaterSet`、`CliffSet`、`WaterCliffs`、`WaterBridge`、`BridgeSet` 和 `WoodBridgeSet`）以解析月球场景。注意如果不修复例如 `WoodBridgeTileSet` 指向 `TilesInSet=0` 的地块这样的隐患就启用本功能将在游戏中引发问题。"
+msgid "Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater by setting `[General] -> ApplyLunarFixes` to true in `lunarmd.ini`. Do note that enabling this without fixing f.ex `WoodBridgeTileSet` pointing to a tileset with `TilesInSet=0` will cause issues in-game."
+msgstr "现在可以通过在 `lunarmd.ini` 中将 `[General] -> ApplyLunarFixes` 设置为 true 来切换某些全局地块索引（`ShorePieces`、`WaterSet`、`CliffSet`、`WaterCliffs`、`WaterBridge`、`BridgeSet` 和 `WoodBridgeSet`）以解析月球场景。注意如果不修复例如 `WoodBridgeTileSet` 指向 `TilesInSet=0` 的地块这样的隐患就启用本功能将在游戏中引发问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:174
 msgid "Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being displayed in water instead of `WetAttack`."
@@ -722,6 +722,13 @@ msgstr "修复了寄生单位在错过目标且其先前单元格被占用时会
 #: ../../Fixed-or-Improved-Logics.md:192
 msgid "Prevent the units with locomotors that cause problems from entering the tank bunker."
 msgstr "防止拥有会导致问题的运动方式的单位进入坦克碉堡。"
+
+#: ../../Fixed-or-Improved-Logics.md:193
+msgid ""
+"Fix an issue where a unit will leave an impassable invisible barrier in "
+"its original position when it is teleported by ChronoSphere onto an "
+"uncrushable unit and self destruct."
+msgstr "修复了一个单位被超时空传送超武传送到一个不可碾压的单位上并自爆时会在原地留下空气墙的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:194
 msgid "Fixes / interactions with other extensions"
@@ -878,23 +885,23 @@ msgstr "在 `rulesmd.ini`："
 
 #: ../../Fixed-or-Improved-Logics.md:222
 msgid "Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft"
-msgstr "空袭和间谍战机的生成距离和生成高度"
+msgstr "空袭战机和侦察机的生成距离和生成高度"
 
 #: ../../Fixed-or-Improved-Logics.md:224
 msgid "It is now possible to have aircraft spawned from `(Elite)AirstrikeTeamType` or `Type=SpyPlane` superweapons to be created at fixed distance from their intended target/destination instead of from edge of the map by setting `SpawnDistanceFromTarget`."
 msgstr "现在可以通过设置 `SpawnDistanceFromTarget` 来让由 `(Elite)AirstrikeTeamType` 或 `Type=SpyPlane` 超级武器生成的战机在与目标/目的地固定距离处生成而不再是地图边界。"
 
 #: ../../Fixed-or-Improved-Logics.md:225
-msgid "`SpawnHeight` can also be used to override the initial height of the aircraft, which defaults to `FlightLevel`, or if not set then `[General]` -> `FlightLevel`."
-msgstr "也可以通过 `SpawnHeight` 来覆盖战机的初始高度，默认为 `FlightLevel`，如果没有设置则使用 `[General]` -> `FlightLevel`。"
+msgid "`SpawnHeight` can also be used to override the initial height of the aircraft, which defaults to `FlightLevel`, or if not set then `[General] -> FlightLevel`."
+msgstr "也可以通过 `SpawnHeight` 来覆盖战机的初始高度，默认为 `FlightLevel`，如果没有设置则使用 `[General] -> FlightLevel`。"
 
 #: ../../Fixed-or-Improved-Logics.md:234
 msgid "Landing direction"
 msgstr "降落方向"
 
 #: ../../Fixed-or-Improved-Logics.md:236
-msgid "By default aircraft land facing the direction specified by `[AudioVisual]`->`PoseDir`. This can now be customized per AircraftType via `LandingDir`, defaults to `[AudioVisual]`->`PoseDir`. If the building the aircraft is docking to has [aircraft docking direction](#aircraft-docking-direction) set, that setting takes priority over this."
-msgstr "默认情况下战机降落时朝向 `[AudioVisual]`->`PoseDir` 指定的方向。现在可以通过每个战机类型上的 `LandingDir` 进行自定义，默认为 `[AudioVisual]`->`PoseDir`。如果战机停靠的建筑设置了[战机停靠方向](#aircraft-docking-direction)，则该设置优先于此设置。"
+msgid "By default aircraft land facing the direction specified by `[AudioVisual] -> PoseDir`. This can now be customized per AircraftType via `LandingDir`, defaults to `[AudioVisual] -> PoseDir`. If the building the aircraft is docking to has [aircraft docking direction](#aircraft-docking-direction) set, that setting takes priority over this."
+msgstr "默认情况下战机降落时朝向 `[AudioVisual] -> PoseDir` 指定的方向。现在可以通过每个战机类型上的 `LandingDir` 进行自定义，默认为 `[AudioVisual] -> PoseDir`。如果战机停靠的建筑设置了[战机停靠方向](#aircraft-docking-direction)，则该设置优先于此设置。"
 
 #: ../../Fixed-or-Improved-Logics.md:237
 msgid "Negative values are allowed as a special case for `AirportBound=false` aircraft which makes them land facing their current direction."
@@ -968,7 +975,7 @@ msgstr "`Weapon` 和 `Damage.Delay`，除了其他新增功能外应与 Ares 引
 
 #: ../../Fixed-or-Improved-Logics.md:281
 msgid "Attached animation position customization"
-msgstr "自定义附加动画位置"
+msgstr "自定义附着动画位置"
 
 #: ../../Fixed-or-Improved-Logics.md:283
 msgid "You can now customize whether or not animations attached to objects are centered at the object's actual center rather than the bottom of their top-leftmost cell (cell #0)."
@@ -988,12 +995,12 @@ msgid "`Warhead.Detonate`, if set to true, makes the `Warhead` fully detonate in
 msgstr "如果将 `Warhead.Detonate` 设置为 true，则 `Warhead` 将完全引爆，而不仅仅是用于造成伤害和产生闪光（如果它拥有 `Bright=true`）。"
 
 #: ../../Fixed-or-Improved-Logics.md:295
-msgid "`WakeAnim` contains a wake animation to play if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[General]` -> `Wake` if `IsMeteor` is not set to true, otherwise no animation."
-msgstr "`WakeAnim` 包含一个在 `ExplodeOnWater` 没有设置且动画与水面接触时使用的水波动画。如果 `IsMeteor` 未设置为 true 则默认为 `[General]` -> `Wake`，否则无动画。"
+msgid "`WakeAnim` contains a wake animation to play if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[General] -> Wake` if `IsMeteor` is not set to true, otherwise no animation."
+msgstr "`WakeAnim` 包含一个在 `ExplodeOnWater` 没有设置且动画与水面接触时使用的水波动画。如果 `IsMeteor` 未设置为 true 则默认为 `[General] -> Wake`，否则无动画。"
 
 #: ../../Fixed-or-Improved-Logics.md:296
-msgid "`SplashAnims` contains list of splash animations used if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[CombatDamage]` -> `SplashList`."
-msgstr "`SplashAnims` 包含一组在 `ExplodeOnWater` 没有设置且动画与水面接触时使用的水花动画。默认为 `[CombatDamage]` -> `SplashList`。"
+msgid "`SplashAnims` contains list of splash animations used if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[CombatDamage] -> SplashList`."
+msgstr "`SplashAnims` 包含一组在 `ExplodeOnWater` 没有设置且动画与水面接触时使用的水花动画。默认为 `[CombatDamage] -> SplashList`。"
 
 #: ../../Fixed-or-Improved-Logics.md:297
 msgid "If `SplashAnims.PickRandom` is set to true, picks a random animation from `SplashAnims` to use on each impact with water. Otherwise last listed animation from `SplashAnims` is used."
@@ -1008,8 +1015,8 @@ msgid "Fire animations spawned by Scorch & Flamer"
 msgstr "由 Scorch 和 Flamer 生成的火焰动画"
 
 #: ../../Fixed-or-Improved-Logics.md:313
-msgid "Tiberian Sun allowed `Scorch=true` and `Flamer=true` animations to spawn fire animations from `[AudioVisual]` -> `SmallFire` & `LargeFire`. This behaviour has been reimplemented and is fully customizable."
-msgstr "《泰伯利亚之日》中允许 `Scorch=true` 和 `Flamer=true` 的动画生成 `[AudioVisual]` -> `SmallFire` 和 `LargeFire` 指定的火焰动画。此行为已重新实现，并且完全可自定义。"
+msgid "Tiberian Sun allowed `Scorch=true` and `Flamer=true` animations to spawn fire animations from `[AudioVisual] -> SmallFire` & `LargeFire`. This behaviour has been reimplemented and is fully customizable."
+msgstr "《泰伯利亚之日》中允许 `Scorch=true` 和 `Flamer=true` 的动画生成 `[AudioVisual] -> SmallFire` 和 `LargeFire` 指定的火焰动画。此行为已重新实现，并且完全可自定义。"
 
 #: ../../Fixed-or-Improved-Logics.md:314
 msgid "`ConstrainFireAnimsToCellSpots` controls whether or not spawned animations are locked to cell spots (e.g the subcell positions infantry are also constrained to)."
@@ -1028,8 +1035,8 @@ msgid "`SmallFireCount` determines number of small fire animations to spawn by b
 msgstr "`SmallFireCount` 决定由 `Scorch=true` 和 `Flamer=true` 动画生成小火焰动画的数量。对于 `Flamer=true` 默认为 2，否则为 1。"
 
 #: ../../Fixed-or-Improved-Logics.md:318
-msgid "`SmallFireAnims` can be used to set the animation types, defaults to `[AudioVisual]` -> `SmallFire` (single animation)."
-msgstr "`SmallFireAnims` 可以用于设置动画类型，默认为 `[AudioVisual]` -> `SmallFire`（单个动画）。"
+msgid "`SmallFireAnims` can be used to set the animation types, defaults to `[AudioVisual] -> SmallFire` (single animation)."
+msgstr "`SmallFireAnims` 可以用于设置动画类型，默认为 `[AudioVisual] -> SmallFire`（单个动画）。"
 
 #: ../../Fixed-or-Improved-Logics.md:319
 msgid "`SmallFireChances` is a list of probabilities for the animations to spawn, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `1.0,0.5` for `Flamer=true`, `1.0` otherwise."
@@ -1044,8 +1051,8 @@ msgid "`LargeFireCount` determines number of large fire animations to spawn by`F
 msgstr "`LargeFireCount` 决定仅由 `Flamer=true` 动画生成的大火焰动画的数量。"
 
 #: ../../Fixed-or-Improved-Logics.md:322
-msgid "`LargeFireAnims` can be used to set the animation types, defaults to `[AudioVisual]` -> `LargeFire` (single animation)."
-msgstr "`LargeFireAnims` 可以用于设置动画类型，默认为 `[AudioVisual]` -> `LargeFire`（单个动画）。"
+msgid "`LargeFireAnims` can be used to set the animation types, defaults to `[AudioVisual] -> LargeFire` (single animation)."
+msgstr "`LargeFireAnims` 可以用于设置动画类型，默认为 `[AudioVisual] -> LargeFire`（单个动画）。"
 
 #: ../../Fixed-or-Improved-Logics.md:323
 msgid "`LargeFireChances` is a list of probabilities for the animations to spawn, up to `LargeFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities."
@@ -1084,8 +1091,8 @@ msgid "Aircraft docking direction"
 msgstr "战机停靠方向"
 
 #: ../../Fixed-or-Improved-Logics.md:370
-msgid "It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir(N)` (`N` optionally replaced by 0-based index for each `DockingOffset` separately, `AircraftDockingDir` and `AircraftDockingDir0` are synonymous and will be used if direction is not set for a specific offset) on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting and defaults to `[AudioVisual]` -> `PoseDir`."
-msgstr "现在可以通过在停靠建筑上使用 `AircraftDockingDir(N)` （`N` 可选地分别替换为每个从 0 开始的 `DockingOffset` 索引，`AircraftDockingDir` 与 `AircraftDockingDir0` 是没有为特定偏移设置方向时将使用的同义词）来设置停靠战机的降落方向。这会覆盖战机自己的[降落方向](#landing-direction)设置并默认为 `[AudioVisual]` -> `PoseDir`。"
+msgid "It is now possible to customize the landing direction for docking aircraft via `AircraftDockingDir(N)` (`N` optionally replaced by 0-based index for each `DockingOffset` separately, `AircraftDockingDir` and `AircraftDockingDir0` are synonymous and will be used if direction is not set for a specific offset) on the dock building. This overrides the aircraft's own [landing direction](#landing-direction) setting and defaults to `[AudioVisual] -> PoseDir`."
+msgstr "现在可以通过在停靠建筑上使用 `AircraftDockingDir(N)` （`N` 可选地分别替换为每个从 0 开始的 `DockingOffset` 索引，`AircraftDockingDir` 与 `AircraftDockingDir0` 是没有为特定偏移设置方向时将使用的同义词）来设置停靠战机的降落方向。这会覆盖战机自己的[降落方向](#landing-direction)设置并默认为 `[AudioVisual] -> PoseDir`。"
 
 #: ../../Fixed-or-Improved-Logics.md:378
 msgid "Airstrike target eligibility"
@@ -1137,7 +1144,7 @@ msgstr "默认情况下如果 `GDIBarracks`、`NODBarracks` 或 `YuriBarracks` �
 
 #: ../../Fixed-or-Improved-Logics.md:342
 msgid "Key"
-msgstr "键"
+msgstr "标签"
 
 #: ../../Fixed-or-Improved-Logics.md:342
 msgid "Cell Offset"
@@ -1153,7 +1160,7 @@ msgstr "1,2"
 
 #: ../../Fixed-or-Improved-Logics.md:342
 msgid "`NODBarracks`"
-msgstr "`NODBarracks`""
+msgstr "`NODBarracks`"
 
 #: ../../Fixed-or-Improved-Logics.md:342
 msgid "2,2"
@@ -1200,8 +1207,8 @@ msgid "`Grinding.PlayDieSound` controls if the units' `DieSound` and `VoiceDie` 
 msgstr "`Grinding.PlayDieSound` 控制单位的 `DieSound` 和 `VoiceDie` 是否都会在进入回收站时播放。默认 `yes`。"
 
 #: ../../Fixed-or-Improved-Logics.md:448
-msgid "`Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`."
-msgstr "`Grinding.Sound` 用于定义物体被这座建筑回收时所播放的音效。如果不设置，默认为 `[AudioVisual]`->`EnterGrinderSound`。"
+msgid "`Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual] -> EnterGrinderSound`."
+msgstr "`Grinding.Sound` 用于定义物体被这座建筑回收时所播放的音效。如果不设置，默认为 `[AudioVisual] -> EnterGrinderSound`。"
 
 #: ../../Fixed-or-Improved-Logics.md:449
 msgid "`Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired."
@@ -1240,20 +1247,20 @@ msgid "It is now possible to customize the repairing of units by `UnitRepair=tru
 msgstr "现在可以通过 `UnitRepair=true`、`UnitReload=true` 和 `Hospital=true` 的建筑来自定义单位的维修参数。"
 
 #: ../../Fixed-or-Improved-Logics.md:489
-msgid "`Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General]`->`ReloadRate` if `UnitReload=true` and if overridden per AircraftType *(Ares feature)* can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General]`->`URepairRate`."
-msgstr "`Units.RepairRate` 自定义单位的维修速度。如果 `UnitReload=true` 则默认为 `[General]`->`ReloadRate` 并覆盖每个战机类型独立的时间设置（*Ares 功能*）。对于 `UnitRepair=true` 的建筑此默认值为 `[General]`->`URepairRate`。"
+msgid "`Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General] -> ReloadRate` if `UnitReload=true` and if overridden per AircraftType *(Ares feature)* can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General] -> URepairRate`."
+msgstr "`Units.RepairRate` 自定义单位的维修速度。如果 `UnitReload=true` 则默认为 `[General] -> ReloadRate` 并覆盖每个战机类型独立的时间设置（*Ares 功能*）。对于 `UnitRepair=true` 的建筑此默认值为 `[General] -> URepairRate`。"
 
 #: ../../Fixed-or-Improved-Logics.md:490
 msgid "On `UnitReload=true` building setting this to negative value will fully disable the repair functionality."
 msgstr "在 `UnitReload=true` 的建筑上将此值设置为附属将完全禁用维修功能。"
 
 #: ../../Fixed-or-Improved-Logics.md:491
-msgid "`Units.RepairStep` how much `Strength` is restored per repair tick. Defaults to `[General]`->`RepairStep`."
-msgstr "`Units.RepairStep` 设置每次维修时恢复多少 `Strength`。默认 `[General]`->`RepairStep`。"
+msgid "`Units.RepairStep` how much `Strength` is restored per repair tick. Defaults to `[General] -> RepairStep`."
+msgstr "`Units.RepairStep` 设置每次维修时恢复多少 `Strength`。默认 `[General] -> RepairStep`。"
 
 #: ../../Fixed-or-Improved-Logics.md:492
-msgid "`Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Defaults to `[General]`->`RepairPercent`. Note that the final cost is set to 1 if it is less than that."
-msgstr "`Units.RepairPercent` 是维修成本的倍率（Cost/（最大生命值/RepairStep））。默认值为 `[General]`->`RepairPercent`。注意如果最终的成本低于 1 那么会设为 1。"
+msgid "`Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Defaults to `[General] -> RepairPercent`. Note that the final cost is set to 1 if it is less than that."
+msgstr "`Units.RepairPercent` 是维修成本的倍率（Cost/（最大生命值/RepairStep））。默认值为 `[General] -> RepairPercent`。注意如果最终的成本低于 1 那么会设为 1。"
 
 #: ../../Fixed-or-Improved-Logics.md:493
 msgid "`Units.UseRepairCost` can be used to customize if repair cost is applied at all. Defaults to false for infantry, true for everything else."
@@ -1289,7 +1296,7 @@ msgstr "自定义 gas 粒子速度"
 
 #: ../../Fixed-or-Improved-Logics.md:530
 msgid "Gas particles can now drift at a custom speed."
-msgstr "Gas 粒子现在可以自定义漂浮速度。"
+msgstr "Gas 类的粒子现在可以自定义漂浮速度。"
 
 #: ../../Fixed-or-Improved-Logics.md:538
 msgid "Projectiles"
@@ -1388,8 +1395,8 @@ msgid "FlakScatter distance customization"
 msgstr "自定义 FlakScatter 距离"
 
 #: ../../Fixed-or-Improved-Logics.md:603
-msgid "By default `FlakScatter=true` makes `Inviso=true` projectiles scatter by random distance (in cells) from 0 to `[CombatDamage]` -> `BallisticScatter`. This distance range can now be customized by setting `BallisticScatter.Min` & `BallisticScatter.Max` on the projectile. If not set, the default values are used."
-msgstr "默认情况下 `FlakScatter=true` 会使 `Inviso=true` 抛射体以从 0 到 `[CombatDamage]` -> `BallisticScatter` 的随机距离（以单元格为单位）进行散布。现在可以通过在抛射体上设置 `BallisticScatter.Min` 与 `BallisticScatter.Max` 来自定义这个距离的范围。如果没有设置则使用默认值。"
+msgid "By default `FlakScatter=true` makes `Inviso=true` projectiles scatter by random distance (in cells) from 0 to `[CombatDamage] -> BallisticScatter`. This distance range can now be customized by setting `BallisticScatter.Min` & `BallisticScatter.Max` on the projectile. If not set, the default values are used."
+msgstr "默认情况下 `FlakScatter=true` 会使 `Inviso=true` 抛射体以从 0 到 `[CombatDamage] -> BallisticScatter` 的随机距离（以单元格为单位）进行散布。现在可以通过在抛射体上设置 `BallisticScatter.Min` 与 `BallisticScatter.Max` 来自定义这个距离的范围。如果没有设置则使用默认值。"
 
 #: ../../Fixed-or-Improved-Logics.md:612
 msgid "Technos"
@@ -1428,16 +1435,16 @@ msgid "Chrono sparkle animation customization & improvements"
 msgstr "超时空闪光动画的自定义与改进"
 
 #: ../../Fixed-or-Improved-Logics.md:644
-msgid "It is now possible to customize the frame delay between instances of `[General]` -> `ChronoSparkle1` animations created on objects being warped by setting `[General]` -> `ChronoSparkleDisplayDelay`."
-msgstr "现在可以通过设置 `[General]` -> `ChronoSparkleDisplayDelay` 来自定义被结的对象上创建 `[General]` -> `ChronoSparkle1` 动画之间的帧间隔。"
+msgid "It is now possible to customize the frame delay between instances of `[General] -> ChronoSparkle1` animations created on objects being warped by setting `[General] -> ChronoSparkleDisplayDelay`."
+msgstr "现在可以通过设置 `[General] -> ChronoSparkleDisplayDelay` 来自定义被结的对象上创建 `[General] -> ChronoSparkle1` 动画之间的帧间隔。"
 
 #: ../../Fixed-or-Improved-Logics.md:645
 msgid "By default on buildings with `MaxOccupants` higher than 0, chrono sparkle animation would be shown at each of the `MuzzleFlashX` coordinates. This behaviour is now customizable, and supports `MuzzleFlashX` indices higher than 10."
 msgstr "默认情况下对于 `MaxOccupants` 大于 0 的建筑，超时空闪烁动画会在每个 `MuzzleFlashX` 坐标处显示。现在这种行为可以自定义，并且支持大于 10 的 `MuzzleFlashX` 索引。"
 
 #: ../../Fixed-or-Improved-Logics.md:646
-msgid "`[General]` -> `ChronoSparkleBuildingDisplayPositions` can be set to show the sparkle animation on the building (`building`), muzzle flash coordinates of current occupants (`occupants`), muzzle flash coordinates of all occupant slots (`occupantslots`) or any combination of these."
-msgstr "`[General]` -> `ChronoSparkleBuildingDisplayPositions` 可以设置闪烁动画为在建筑上闪烁 (`building`)、在当前驻军的枪口坐标闪烁 (`occupants`)、所有驻军的枪口闪烁坐标 (`occupantslots`) 或这些中任意组合的情况下显示。"
+msgid "`[General] -> ChronoSparkleBuildingDisplayPositions` can be set to show the sparkle animation on the building (`building`), muzzle flash coordinates of current occupants (`occupants`), muzzle flash coordinates of all occupant slots (`occupantslots`) or any combination of these."
+msgstr "`[General] -> ChronoSparkleBuildingDisplayPositions` 可以设置闪烁动画为在建筑上闪烁 (`building`)、在当前驻军的枪口坐标闪烁 (`occupants`)、所有驻军的枪口闪烁坐标 (`occupantslots`) 或这些中任意组合的情况下显示。"
 
 #: ../../Fixed-or-Improved-Logics.md:647
 msgid "If `occupants` or `occupantslots` is listed without `building`, a single chrono sparkle animation is still displayed on building if it doesn't have any occupants or it has `MaxOccupants` value less than 1, respectively."
@@ -1456,8 +1463,8 @@ msgid "It is now possible to customize (globally and per TechnoType) the warp-in
 msgstr "现在可以自定义（全局和所有技术类型）单位通过 `Type=ChronoSphere/Warp` 超级武器传送前后的延迟。"
 
 #: ../../Fixed-or-Improved-Logics.md:673
-msgid "Due to technical constraints, these settings do not apply to buildings teleported by Ares' customizable ChronoSphere SW. They only have a pre-teleport delay equal to `[General]` -> `ChronoDelay`."
-msgstr "由于技术限制，这些设置不适用于 Ares 的自定义 ChronoSphere 超级武器传送的建筑。它们仅有一个共用的 `[General]` -> `ChronoDelay`。"
+msgid "Due to technical constraints, these settings do not apply to buildings teleported by Ares' customizable ChronoSphere SW. They only have a pre-teleport delay equal to `[General] -> ChronoDelay`."
+msgstr "由于技术限制，这些设置不适用于 Ares 的自定义 ChronoSphere 超级武器传送的建筑。它们仅有一个共用的 `[General] -> ChronoDelay`。"
 
 #: ../../Fixed-or-Improved-Logics.md:676
 msgid "Customizable veterancy insignias"
@@ -1484,8 +1491,8 @@ msgid "Normal insignia can be overridden for specific weapon modes of `Gunner=tr
 msgstr "可以通过设置 `Insignia.(Frame/Frames).WeaponN` 来为 `Gunner=true` 的单位使用不同武器时换成不同的军衔，其中 `N` 表示基于 1 的武器模式索引。如果不设置，默认使用非特定模式的军衔设置。"
 
 #: ../../Fixed-or-Improved-Logics.md:683
-msgid "`Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General]` -> `EnemyInsignia`, which in turn defaults to true."
-msgstr "`Insignia.ShowEnemy` 控制军衔是否对敌方玩家可见。默认为 `[General]` -> `EnemyInsignia`，而后者默认为 true。"
+msgid "`Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General] -> EnemyInsignia`, which in turn defaults to true."
+msgstr "`Insignia.ShowEnemy` 控制军衔是否对敌方玩家可见。默认为 `[General] -> EnemyInsignia`，而后者默认为 true。"
 
 #: ../../Fixed-or-Improved-Logics.md:684
 msgid "You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`."
@@ -1525,7 +1532,7 @@ msgstr "![image](_static/images/cust-Chrono.gif) *[YR: New War](https://www.modd
 
 #: ../../Fixed-or-Improved-Logics.md:746
 msgid "You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`."
-msgstr "现在你可以为每个技术类型指定其超时空运动方式设置以覆盖默认规则的值。未填充值则默认使用 `General` 中的值。"
+msgstr "现在你可以为每个技术类型指定其超时空运动方式设置以覆盖默认规则的值。未填充值则默认使用 `[General]` 中的值。"
 
 #: ../../Fixed-or-Improved-Logics.md:747
 msgid "Only applicable to Techno that have Teleport/Chrono Locomotor attached."
@@ -1628,8 +1635,8 @@ msgid "`ignore` : Iron Curtain doesn't give any effect on the organic object."
 msgstr "`ignore`：铁幕不会对有机体造成任何影响。"
 
 #: ../../Fixed-or-Improved-Logics.md:847
-msgid "`IronCurtain.KillOrganicsWarhead` and `IronCurtain.KillWarhead` can be used to customize the Warhead used to kill units, globally or per TechnoType-basis respectively, with latter defaulting to former and former defaulting to `[CombatDamage]` -> `C4Warhead`."
-msgstr "`IronCurtain.KillOrganicsWarhead` 和 `IronCurtain.KillWarhead` 可用于自定义击杀单位的弹头，前者用于全局设置，后者用于单独的技术类型基础设置，后者默认为前者，前者默认为 `[CombatDamage]` -> `C4Warhead`。"
+msgid "`IronCurtain.KillOrganicsWarhead` and `IronCurtain.KillWarhead` can be used to customize the Warhead used to kill units, globally or per TechnoType-basis respectively, with latter defaulting to former and former defaulting to `[CombatDamage] -> C4Warhead`."
+msgstr "`IronCurtain.KillOrganicsWarhead` 和 `IronCurtain.KillWarhead` 可用于自定义击杀单位的弹头，前者用于全局设置，后者用于单独的技术类型基础设置，后者默认为前者，前者默认为 `[CombatDamage] -> C4Warhead`。"
 
 #: ../../Fixed-or-Improved-Logics.md:848
 msgid "Identical controls are available for Force Shield as well."
@@ -1712,8 +1719,8 @@ msgid "`SpawnsPipFrame` and `EmptySpawnsPipFrame` are frames (zero-based) of `pi
 msgstr "`SpawnsPipFrame` 和 `EmptySpawnsPipFrame` 分别是 `pips.shp`（对于建筑）或 `pips2.shp`（对于其他）中（从 0 开始的）帧，用于子机 pip 和空子机 pip。"
 
 #: ../../Fixed-or-Improved-Logics.md:914
-msgid "`SpawnsPipSize` determines the pixel increment to the next pip drawn. Defaults to `[AudioVisual]` -> `Pips.Generic.(Buildings.)Size` if not set."
-msgstr "`SpawnsPipSize` 决定了到下一个 pip 绘制的像素增量。若未设置则默认为 `[AudioVisual]` -> `Pips.Generic.(Buildings.)Size`。"
+msgid "`SpawnsPipSize` determines the pixel increment to the next pip drawn. Defaults to `[AudioVisual] -> Pips.Generic.(Buildings.)Size` if not set."
+msgstr "`SpawnsPipSize` 决定了到下一个 pip 绘制的像素增量。若未设置则默认为 `[AudioVisual] -> Pips.Generic.(Buildings.)Size`。"
 
 #: ../../Fixed-or-Improved-Logics.md:915
 msgid "`SpawnsPipoffset` can be used to shift the starting position of spawnee pips."
@@ -1721,7 +1728,7 @@ msgstr "`SpawnsPipoffset` 可以被用于移动子机 pip 的起始位置。"
 
 #: ../../Fixed-or-Improved-Logics.md:916
 msgid "Pips for `Storage` can now also be customized via new keys in `[AudioVisual]`."
-msgstr "现在可以通过 `[AudioVisual]` 中的新键来自定义 `Storage` 的 pip。"
+msgstr "现在可以通过 `[AudioVisual]` 中的新标签来自定义 `Storage` 的 pip。"
 
 #: ../../Fixed-or-Improved-Logics.md:917
 msgid "`Pips.Tiberiums.Frames` can be used to list frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for tiberium types, in the listed order corresponding to tiberium type index. Defaults to 5 for tiberium type index 1, otherwise 2."
@@ -1756,8 +1763,8 @@ msgid "Re-enable obsolete [JumpjetControls]"
 msgstr "重启废弃的 [JumpjetControls]"
 
 #: ../../Fixed-or-Improved-Logics.md:964
-msgid "Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units."
-msgstr "重启了废弃的 [JumpjetControls]，其中的键将用于 Jumpjet 单位的默认值。"
+msgid "Re-enable obsolete `[JumpjetControls]`, the keys in it will be as the default value of jumpjet units."
+msgstr "重启了废弃的 `[JumpjetControls]`，其中的标签将用于 Jumpjet 单位的默认值。"
 
 #: ../../Fixed-or-Improved-Logics.md:965
 msgid "Moreover, added two tags for missing ones."
@@ -1765,7 +1772,7 @@ msgstr "此外，新增了两个标签用于空缺项。"
 
 #: ../../Fixed-or-Improved-Logics.md:975
 msgid "`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix."
-msgstr "`CruiseHeight` 对应 `JumpjetHeight`、`WobblesPerSecond` 对应 `JumpjetWobbles`、`WobbleDeviation` 对应 `JumpjetDeviation` 以及 `Acceleration` 对应 `JumpjetAccel`。其他所有相应的键只是去掉了 Jumpjet 前缀。"
+msgstr "`CruiseHeight` 对应 `JumpjetHeight`、`WobblesPerSecond` 对应 `JumpjetWobbles`、`WobbleDeviation` 对应 `JumpjetDeviation` 以及 `Acceleration` 对应 `JumpjetAccel`。其他所有相应的标签只是去掉了 Jumpjet 前缀。"
 
 #: ../../Fixed-or-Improved-Logics.md:978
 msgid "Skirmish AI behavior dehardcode"
@@ -1776,12 +1783,12 @@ msgid "In vanilla, there is a hardcoded behavior that when an skirmish AI player
 msgstr "在原版中存在一个遭遇战 AI 玩家没有 Factory 类建筑且一段时间未受到伤害将会发起卖家冲锋（让所有单位进入 Hunt）的硬编码的行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:981
-msgid "`[General]->AIFireSale` and `[General]->AIAllToHunt` control whether the AI will act selling and hunting respectively."
-msgstr "`[General]->AIFireSale` 和 `[General]->AIAllToHunt` 分别控制 AI 是否会执行卖家和狩猎（冲锋）行为。"
+msgid "`[General] -> AIFireSale` and `[General] -> AIAllToHunt` control whether the AI will act selling and hunting respectively."
+msgstr "`[General] -> AIFireSale` 和 `[General] -> AIAllToHunt` 分别控制 AI 是否会执行卖家和狩猎（冲锋）行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:982
-msgid "`[General]->AIFireSaleDelay` defines a timer, it will only work if `[General]->AIFireSale` is set to `true`. When the first time the AI reaches the trigger condition of vanilla behavior, the timer starts and prevents the selling behavior from happening until the timer is expired."
-msgstr "`[General]->AIFireSaleDelay` 定义了一个计时器，它只有当 `[General]->AIFireSale` 设为 true 时才会生效。当 AI 首次达到原有行为的触发条件时计时器开始计时，并在计时器到期之前阻止出售建筑的行为。"
+msgid "`[General] -> AIFireSaleDelay` defines a timer, it will only work if `[General] -> AIFireSale` is set to `true`. When the first time the AI reaches the trigger condition of vanilla behavior, the timer starts and prevents the selling behavior from happening until the timer is expired."
+msgstr "`[General] -> AIFireSaleDelay` 定义了一个计时器，它只有当 `[General] -> AIFireSale` 设为 true 时才会生效。当 AI 首次达到原有行为的触发条件时计时器开始计时，并在计时器到期之前阻止出售建筑的行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:983
 msgid "You can use these flags to make the AIs \"all in\" before they are defeated."
@@ -1792,8 +1799,8 @@ msgid "Another hardcoded behavior is that, when the AI deploys a MCV, it will ga
 msgstr "另一个硬编码行为是，当 AI 部署 MCV 时，它会将所有不对集结到该地点。现在可以关闭这一行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:985
-msgid "`[General]->GatherWhenMCVDeploy` controls this behavior."
-msgstr "`[General]->GatherWhenMCVDeploy` 控制这一行为。"
+msgid "`[General] -> GatherWhenMCVDeploy` controls this behavior."
+msgstr "`[General] -> GatherWhenMCVDeploy` 控制这一行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:996
 msgid "Subterranean unit travel height and speed"
@@ -1804,8 +1811,8 @@ msgid "It is now possible to control the height at which units with subterranean
 msgstr "现在可以控制拥有钻地（Tunnel）`Locomotor` 的单位移动的高度，可以在全局和每个技术类型上定义。"
 
 #: ../../Fixed-or-Improved-Logics.md:999
-msgid "Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used. This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General]`->`TunnelSpeed`."
-msgstr "钻地移动速度现在也可以自定义，同样拥有全局和微观标签。如果微观标签的值为负数则使用全局值。这不会影响单位在钻地时的垂直移动速度。该速度由 `Speed` * `[General]`->`TunnelSpeed` 决定。"
+msgid "Subterranean movement speed is now also customizable, both globally and per TechnoType. If per-TechnoType value is negative, global value is used. This does not affect the speed at which the unit moves vertically when burrowing which is determined by `Speed` multiplied by `[General] -> TunnelSpeed`."
+msgstr "钻地移动速度现在也可以自定义，同样拥有全局和微观标签。如果微观标签的值为负数则使用全局值。这不会影响单位在钻地时的垂直移动速度。该速度由 `Speed` * `[General] -> TunnelSpeed` 决定。"
 
 #: ../../Fixed-or-Improved-Logics.md:1013
 msgid "`SubterraneanHeight` expects negative values to be used and may behave erratically if set to above -50."
@@ -1944,8 +1951,8 @@ msgid "By default game shows damage frame only for TerrainTypes alive at only 1 
 msgstr "默认情况下游戏在地形对象仅 1 点血时显示破损帧。由于原本游戏中的地形对象资源文件并未考虑这一点因此目前该逻辑仅限添加了 `HasDamagedFrames` 的情况下使用。"
 
 #: ../../Fixed-or-Improved-Logics.md:1138
-msgid "Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual]` -> `ConditionYellow.Terrain` percentage of their maximum health. Defaults to `ConditionYellow` if not set."
-msgstr "地形对象不再在仅剩 1 点血时显示破损帧，而是在其血量达到 `[AudioVisual]` -> `ConditionYellow.Terrain` 的百分比时才进行切换。如果未设置则默认为 `ConditionYellow`。"
+msgid "Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual] -> ConditionYellow.Terrain` percentage of their maximum health. Defaults to `ConditionYellow` if not set."
+msgstr "地形对象不再在仅剩 1 点血时显示破损帧，而是在其血量达到 `[AudioVisual] -> ConditionYellow.Terrain` 的百分比时才进行切换。如果未设置则默认为 `ConditionYellow`。"
 
 #: ../../Fixed-or-Improved-Logics.md:1139
 msgid "In addition, TerrainTypes can now show 'crumbling' animation after their health has reached zero and before they are deleted from the map by setting `HasCrumblingFrames` to true."
@@ -2125,8 +2132,8 @@ msgid "Voxel turret shadow"
 msgstr "Voxel 炮塔影子"
 
 #: ../../Fixed-or-Improved-Logics.md:1294
-msgid "Vehicle voxel turrets can now draw shadows if `[AudioVisual]` -> `DrawTurretShadow` is set to true. This can be overridden per VehicleType by setting `TurretShadow` in the vehicle's `artmd.ini` section."
-msgstr "如果 `[AudioVisual]` -> `DrawTurretShadow` 被设为 true 那么载具的 Voxel 炮塔现在可以绘制影子。这可以在载具的 `artmd.ini` 小节中设置 `TurretShadow` 来覆盖。"
+msgid "Vehicle voxel turrets can now draw shadows if `[AudioVisual] -> DrawTurretShadow` is set to true. This can be overridden per VehicleType by setting `TurretShadow` in the vehicle's `artmd.ini` section."
+msgstr "如果 `[AudioVisual] -> DrawTurretShadow` 被设为 true 那么载具的 Voxel 炮塔现在可以绘制影子。这可以在载具的 `artmd.ini` 小节中设置 `TurretShadow` 来覆盖。"
 
 #: ../../Fixed-or-Improved-Logics.md:1308
 msgid "`IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change"
@@ -2163,6 +2170,9 @@ msgstr "`IsSimpleDeployer` 载具在部署时更改弹药"
 #: ../../Fixed-or-Improved-Logics.md:1331
 msgid "`Ammo.AddOnDeploy` determines the number of ammo added or substracted on unit deploy."
 msgstr "`Ammo.AddOnDeploy` 决定单位部署时增加或减少的弹药量。"
+
+msgid "Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker."
+msgstr "由于技术限制，使用 [Ares 单位转换](https://ares-developers.github.io/Ares-docs/new/typeconversion.html)中 `Convert.Deploy` 的单位通过 `Ammo.AddOnDeploy` 改变类型时无论转换是否成功都会改变弹药量。这同样发生在单位离开坦克碉堡时。"
 
 #: ../../Fixed-or-Improved-Logics.md:1339
 msgid "Veinholes & Weeds"
@@ -2217,8 +2227,8 @@ msgid "Vehicles with `Weeder=yes` can now collect weeds. The weeds can then be d
 msgstr "拥有 `Weeder=yes` 的载具现在可以收集泰伯利亚废矿。然后这些废矿可以存入 `Weeder=yes` 的建筑中。"
 
 #: ../../Fixed-or-Improved-Logics.md:1400
-msgid "Weeds are not stored in a building's storage, but rather in a House's storage. The weed capacity is listed under `[General]->WeedCapacity`."
-msgstr "泰伯利亚废矿并不是储藏在储存仓建筑中而是这个阵营的内部数据。废矿的储藏量读取自 `[General]->WeedCapacity`。"
+msgid "Weeds are not stored in a building's storage, but rather in a House's storage. The weed capacity is listed under `[General] -> WeedCapacity`."
+msgstr "泰伯利亚废矿并不是储藏在储存仓建筑中而是这个阵营的内部数据。废矿的储藏量读取自 `[General] -> WeedCapacity`。"
 
 #: ../../Fixed-or-Improved-Logics.md:1401
 msgid "Weeders now show the ore gathering animation. It can be customized the same way as for harvesters."
@@ -2250,7 +2260,7 @@ msgstr "Voxel 碎片"
 
 #: ../../Fixed-or-Improved-Logics.md:1426
 msgid "The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`."
-msgstr "INI 键的行为与[常规动画的等效行为](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour)基本相同。主要区别是这些键必须列在 `rulesmd.ini` 中的 Voxel 碎片条目中，而不是 `artmd.ini` 中。"
+msgstr "INI 标签的行为与[常规动画的等效行为](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour)基本相同。主要区别是这些标签必须列在 `rulesmd.ini` 中的 Voxel 碎片条目中，而不是 `artmd.ini` 中。"
 
 #: ../../Fixed-or-Improved-Logics.md:1428
 msgid "Warheads"
@@ -2277,12 +2287,12 @@ msgid "`AnimList.ScatterMin` & `AnimList.ScatterMax` can be used to set a range 
 msgstr "`AnimList.ScatterMin` 和 `AnimList.ScatterMax` 可用于设置从爆炸中心点开始一定范围内的动画随机散布范围。"
 
 #: ../../Fixed-or-Improved-Logics.md:1436
-msgid "`SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage]` -> `SplashList` are used."
-msgstr "`SplashList` 可以在拥有 `Conventional=true` 的弹头击中水面时覆盖显示的动画，默认使用 `[CombatDamage]` -> `SplashList` 中的动画。"
+msgid "`SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage] -> SplashList` are used."
+msgstr "`SplashList` 可以在拥有 `Conventional=true` 的弹头击中水面时覆盖显示的动画，默认使用 `[CombatDamage] -> SplashList` 中的动画。"
 
 #: ../../Fixed-or-Improved-Logics.md:1437
 msgid "`SplashList.PickRandom`, `SplashList.CreateAll`, `SplashList.CreationInterval` and `SplashList.ScatterMin/Max` apply to these animations in same manner as the `AnimList` equivalents."
-msgstr "`SplashList.PickRandom`、`SplashList.CreateAll`、`SplashList.CreationInterval` 和 `SplashList.ScatterMin/Max` 与 `AnimList` 同类语句行为相同。"
+msgstr "`SplashList.PickRandom`、`SplashList.CreateAll`、`SplashList.CreationInterval` 和 `SplashList.ScatterMin/Max` 与 `AnimList` 同类语句相同。"
 
 #: ../../Fixed-or-Improved-Logics.md:1438
 msgid "`CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage."
@@ -2297,8 +2307,8 @@ msgid "Custom debris animations and additional debris spawn settings"
 msgstr "自定义碎片动画和额外的碎片生成设置"
 
 #: ../../Fixed-or-Improved-Logics.md:1461
-msgid "You can now use `DebrisAnims` to specify a list of debris animations to spawn instead of animations from `[General]` -> `MetallicDebris` when Warhead with `MaxDebris` > 0 and no `DebrisTypes` (VoxelAnims) listed is detonated."
-msgstr "现在可以使用 `DebrisAnims` 指定要生成的碎片动画列表，而不是仅能在引爆拥有 `MaxDebris` > 0 且没有 `DebrisTypes`（指定 Voxel 碎片）的弹头时使用 `[General]` -> `MetallicDebris` 列表中的动画。"
+msgid "You can now use `DebrisAnims` to specify a list of debris animations to spawn instead of animations from `[General] -> MetallicDebris` when Warhead with `MaxDebris` > 0 and no `DebrisTypes` (VoxelAnims) listed is detonated."
+msgstr "现在可以使用 `DebrisAnims` 指定要生成的碎片动画列表，而不是仅能在引爆拥有 `MaxDebris` > 0 且没有 `DebrisTypes`（指定 Voxel 碎片）的弹头时使用 `[General] -> MetallicDebris` 列表中的动画。"
 
 #: ../../Fixed-or-Improved-Logics.md:1462
 msgid "`Debris.Conventional`, if set to true, makes `DebrisTypes` or `DebrisAnims` only spawn if Warhead is fired on non-water cell."
@@ -2321,8 +2331,8 @@ msgid "Combat light customizations"
 msgstr "自定义战斗闪光"
 
 #: ../../Fixed-or-Improved-Logics.md:1484
-msgid "You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual]` -> `CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead, latter defaults to former."
-msgstr "现在你可以通过设置 `[AudioVisual]` -> `CombatLightDetailLevel` 或在弹头上设置 `CombatLightDetailLevel` 来限定显示闪光效果的最小画质级别，后者默认为前者。"
+msgid "You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead, latter defaults to former."
+msgstr "现在你可以通过设置 `[AudioVisual] -> CombatLightDetailLevel` 或在弹头上设置 `CombatLightDetailLevel` 来限定显示闪光效果的最小画质级别，后者默认为前者。"
 
 #: ../../Fixed-or-Improved-Logics.md:1485
 msgid "You can now set a percentage chance a combat light effect is shown on Warhead impact by setting `CombatLightChance`."
@@ -2354,7 +2364,7 @@ msgstr "当命中目标时无论是是矿车、基地建筑还是盟友的基地
 
 #: ../../Fixed-or-Improved-Logics.md:1513
 msgid "They will not spring 'attacked' / 'attacked by' events. Note that if the Warhead deals actual damage, events that check for that can still be sprung."
-msgstr "它们不会触发“受到攻击”/“被……攻击”事件。注意如果弹头造成了实际杀伤那么检查杀伤的事件仍可能被触发。"
+msgstr "它们不会触发“受到攻击”/“被...攻击”事件。注意如果弹头造成了实际杀伤那么检查杀伤的事件仍可能被触发。"
 
 #: ../../Fixed-or-Improved-Logics.md:1514
 msgid "They will not evoke defense response from AI players when used to attack base buildings, `ToProtect=true` TechnoTypes or members of TeamTypes with `Whiner=true`."
@@ -2382,7 +2392,7 @@ msgstr "自定义掀起幅度"
 
 #: ../../Fixed-or-Improved-Logics.md:1539
 msgid "The rocker amplitude of warheads with `Rocker=yes` used to be determined by `Damage` value of the weapon. You can now override it with fixed value and add a multiplier to it."
-msgstr "拥有 `Rocker=yes` 的弹头其气波掀起载具的复读过去由武器的 `Damage` 值所决定。现在可以通过固定值覆盖它并添加一个倍率。"
+msgstr "拥有 `Rocker=yes` 的弹头其气波掀起载具的幅度过去由武器的 `Damage` 值所决定。现在可以通过固定值覆盖它并添加一个倍率。"
 
 #: ../../Fixed-or-Improved-Logics.md:1540
 msgid "When both multiplier and override values are set - both are used."
@@ -2474,8 +2484,8 @@ msgstr "现在你可以为 `IsElectricBolt=true` 的武器指定你想要关闭�
 
 #: ../../Fixed-or-Improved-Logics.md:1647
 #: ../../Fixed-or-Improved-Logics.md:1661
-msgid "Due to technical constraints, this does not work with electric bolts created from support weapon of Ares' Prism Forwarding."
-msgstr "由于技术限制，这不适用于 Ares 中光棱塔递光武器所创建的 EBolt 效果。"
+msgid "Due to technical constraints, this does not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html)."
+msgstr "由于技术限制，这不适用于 [Ares 中光棱塔递光武器](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html)所创建的 EBolt 效果。"
 
 #: ../../Fixed-or-Improved-Logics.md:1650
 msgid "Customizable ElectricBolt Arcs"
@@ -2506,16 +2516,16 @@ msgid "The statistic distribution of the randomly generated crates is now more u
 msgstr "优化了随机算法使得随机生成的升级工具箱在可见地图区域内的统计分布更加均匀。"
 
 #: ../../Fixed-or-Improved-Logics.md:1679
-msgid "You can now limit the crates' spawn region to land only by setting `[CrateRules]` -> `CreateOnlyOnLand` to true."
-msgstr "现在你可以通过将 `[CrateRules]` -> `CreateOnlyOnLand` 设为 true 来让升级工具箱的生成区域仅限陆地。"
+msgid "You can now limit the crates' spawn region to land only by setting `[CrateRules] -> CreateOnlyOnLand` to true."
+msgstr "现在你可以通过将 `[CrateRules] -> CreateOnlyOnLand` 设为 true 来让升级工具箱的生成区域仅限陆地。"
 
 #: ../../Fixed-or-Improved-Logics.md:1680
 msgid "The limit of vehicles a player can own before unit crates start giving money instead can now be customized by setting `UnitCrateVehicleCap`. Negative numbers disable the cap entirely."
 msgstr "现在可以通过 `UnitCrateVehicleCap` 来设置玩家在单位箱子转为给予金钱之前可以拥有的载具数量上限。负数将禁用上限也就是永久生成载具不会达到一定数目后转为金钱。"
 
 #: ../../Fixed-or-Improved-Logics.md:1681
-msgid "`FreeMCV` setting is now actually respected and can be used to disable the forced unit selected from `[General]` -> `BaseUnit` that is given if player picks a crate and has enough credits but no existing buildings or `BaseUnit` vehicles."
-msgstr "现在尊重 `FreeMCV` 设置并且可以用来禁止玩家拾取升级工具箱且拥有足够的资金单然而没有建筑或 `BaseUnit` 载具时强制将内容选择为 `[General]` -> `BaseUnit` 中的单位。"
+msgid "`FreeMCV` setting is now actually respected and can be used to disable the forced unit selected from `[General] -> BaseUnit` that is given if player picks a crate and has enough credits but no existing buildings or `BaseUnit` vehicles."
+msgstr "现在尊重 `FreeMCV` 设置并且可以用来禁止玩家拾取升级工具箱且拥有足够的资金单然而没有建筑或 `BaseUnit` 载具时强制将内容选择为 `[General] -> BaseUnit` 中的单位。"
 
 #: ../../Fixed-or-Improved-Logics.md:1682
 msgid "The previously hardcoded credits threshold that must be passed can also now be customized via `FreeMCV.CreditsThreshold`."
@@ -2558,5 +2568,5 @@ msgid "The landing speed is not smaller than it's current height /10 + 2 for unk
 msgstr "由于某些未知原因着陆速度不小于其当前高度 / 20 + 2 的值。因此较小的 `DropPod.Speed` 值会导致指数级减速。"
 
 #: ../../Fixed-or-Improved-Logics.md:1725
-msgid "`[General]` -> `DropPodTrailer`is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html)."
-msgstr "`[General]` -> `DropPodTrailer` 是一个 [Ares 功能](https://ares-developers.github.io/Ares-docs/new/droppod.html)。"
+msgid "`[General] -> DropPodTrailer`is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html)."
+msgstr "`[General] -> DropPodTrailer` 是一个 [Ares 功能](https://ares-developers.github.io/Ares-docs/new/droppod.html)。"

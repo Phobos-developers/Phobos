@@ -461,6 +461,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimitGroup_ExtraLimit_Nums.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.Nums");
 	this->BuildLimitGroup_ExtraLimit_MaxCount.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxCount");
 	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
+
+	this->NoTurret_TrackTarget.Read(exINI, pSection, "NoTurret.TrackTarget");
+
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
@@ -487,30 +490,29 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	char tempBuffer[32];
 
-	if (this->OwnerObject()->Gunner && this->Insignia_Weapon.empty())
+	if (this->OwnerObject()->Gunner)
 	{
-		int weaponCount = this->OwnerObject()->WeaponCount;
-		this->Insignia_Weapon.resize(weaponCount);
-		this->InsigniaFrame_Weapon.resize(weaponCount);
-		this->InsigniaFrames_Weapon.resize(weaponCount);
+		size_t weaponCount = this->OwnerObject()->WeaponCount;
 
-		for (int i = 0; i < weaponCount; i++)
+		if (this->Insignia_Weapon.empty() || this->Insignia_Weapon.size() != weaponCount)
 		{
-			Promotable<SHPStruct*> insignia;
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
-			insignia.Read(exINI, pSection, tempBuffer);
-			this->Insignia_Weapon[i] = insignia;
-
-			Promotable<int> frame = Promotable<int>(-1);
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
-			frame.Read(exINI, pSection, tempBuffer);
-			this->InsigniaFrame_Weapon[i] = frame;
-
+			this->Insignia_Weapon.resize(weaponCount);
+			this->InsigniaFrame_Weapon.resize(weaponCount, Promotable<int>(-1));
 			Valueable<Vector3D<int>> frames;
 			frames = Vector3D<int>(-1, -1, -1);
+			this->InsigniaFrames_Weapon.resize(weaponCount, frames);
+		}
+
+		for (size_t i = 0; i < weaponCount; i++)
+		{
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
+			this->Insignia_Weapon[i].Read(exINI, pSection, tempBuffer);
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
+			this->InsigniaFrame_Weapon[i].Read(exINI, pSection, tempBuffer);
+
 			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
-			frames.Read(exINI, pSection, tempBuffer);
-			this->InsigniaFrames_Weapon[i] = frames;
+			this->InsigniaFrames_Weapon[i].Read(exINI, pSection, tempBuffer);
 		}
 	}
 
@@ -844,6 +846,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimitGroup_ExtraLimit_Nums)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxCount)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
+
+		.Process(this->NoTurret_TrackTarget)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
