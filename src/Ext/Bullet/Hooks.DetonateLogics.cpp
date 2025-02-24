@@ -23,7 +23,7 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 	if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 	{
 		// Check if the WH should affect the techno target or skip it
-		if (!pExt->IsHealthInThreshold(pTarget))
+		if (!pExt->IsHealthInThreshold(pTarget) && pBullet->Owner != pBullet->Target)
 			return GoToExtras;
 	}
 
