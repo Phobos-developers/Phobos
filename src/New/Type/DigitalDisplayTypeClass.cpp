@@ -21,7 +21,6 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Text_Color.Read(exINI, section, "Text.Color.%s");
 	this->Text_Background.Read(exINI, section, "Text.Background");
-	this->VisibleInSpecialState.Read(exINI, section, "VisibleInSpecialState");
 	this->Offset.Read(exINI, section, "Offset");
 	this->Offset_ShieldDelta.Read(exINI, section, "Offset.ShieldDelta");
 	this->Align.Read(exINI, section, "Align");
@@ -33,10 +32,12 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Shape_PercentageFrame.Read(exINI, section, "Shape.PercentageFrame");
 	this->Percentage.Read(exINI, section, "Percentage");
 	this->HideMaxValue.Read(exINI, section, "HideMaxValue");
-	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
 	this->VisibleToHouses.Read(exINI, section, "VisibleToHouses");
+	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
+	this->VisibleInSpecialState.Read(exINI, section, "VisibleInSpecialState");
 	this->InfoType.Read(exINI, section, "InfoType");
 	this->ValueScaleDivisor.Read(exINI, section, "ValueScaleDivisor");
+	this->ValueAsTimer.Read(exINI, section, "ValueAsTimer");
 }
 
 void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
@@ -76,7 +77,16 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 	wchar_t text[0x20];
 	double ratio = static_cast<double>(value) / maxValue;
 
-	if (Percentage.Get())
+	if (ValueAsTimer)
+	{
+		const int minute = value / 60;
+
+		if (const int hour = minute / 60)
+			swprintf_s(text, L"%u:%02u:%02u", hour, minute % 60, value % 60);
+		else
+			swprintf_s(text, L"%u:%02u", minute % 60, value % 60);
+	}
+	if (Percentage)
 	{
 		swprintf_s(text, L"%d", static_cast<int>(ratio * 100));
 		wcscat_s(text, L"%%");
@@ -109,25 +119,49 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
 {
 	double ratio = static_cast<double>(value) / maxValue;
-	std::string valueString(std::move(Percentage ?
-		GeneralUtils::IntToDigits(static_cast<int>(ratio * 100)) :
-		GeneralUtils::IntToDigits(value)
-	));
-	std::string maxValueString(!Percentage && !HideMaxValue.Get(isInfantry) ?
-		std::move(GeneralUtils::IntToDigits(maxValue)) :
-		""
-	);
+	std::string valueString("");
+
+	if (!Shape_PercentageFrame)
+	{
+		if (!ValueAsTimer)
+		{
+			if (Percentage)
+				valueString += std::move(GeneralUtils::IntToDigits(static_cast<int>(ratio * 100))) + '%';
+			else if (HideMaxValue.Get(isInfantry))
+				valueString += std::move(GeneralUtils::IntToDigits(value));
+			else
+				valueString += std::move(GeneralUtils::IntToDigits(value)) + '/' + std::move(GeneralUtils::IntToDigits(maxValue));
+		}
+		else
+		{
+			const int minute = value / 60;
+			const int hour = minute / 60;
+
+			if (hour)
+				valueString += std::move(GeneralUtils::IntToDigits(hour)) + '%';
+
+			const int min = minute % 60;
+
+			if (!(min / 10) && hour)
+				valueString += '0';
+
+			valueString += std::move(GeneralUtils::IntToDigits(min)) + '%';
+
+			const int sec = value % 60;
+
+			if (!(sec / 10))
+				valueString += '0';
+
+			valueString += std::move(GeneralUtils::IntToDigits(sec));
+		}
+	}
+
 	Vector2D<int> spacing = (
 		Shape_Spacing.isset() ?
 		Shape_Spacing.Get() :
 		(isBuilding ? Vector2D<int> { 4, -2 } : Vector2D<int> { 4, 0 }) // default
 	);
 	const int pipsHeight = hasShield ? 4 : 0;
-
-	if (Percentage)
-		valueString.push_back('%');
-	else if (!HideMaxValue.Get(isInfantry))
-		valueString += '/' + maxValueString;
 
 	if (AnchorType.Vertical == VerticalPosition::Top)
 		position.Y -= Shape->Height + pipsHeight; // upper of healthbar and shieldbar
@@ -225,7 +259,6 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 	Stm
 		.Process(this->Text_Color)
 		.Process(this->Text_Background)
-		.Process(this->VisibleInSpecialState)
 		.Process(this->Offset)
 		.Process(this->Offset_ShieldDelta)
 		.Process(this->Align)
@@ -237,10 +270,12 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->Shape_PercentageFrame)
 		.Process(this->Percentage)
 		.Process(this->HideMaxValue)
-		.Process(this->VisibleToHouses_Observer)
 		.Process(this->VisibleToHouses)
+		.Process(this->VisibleToHouses_Observer)
+		.Process(this->VisibleInSpecialState)
 		.Process(this->InfoType)
 		.Process(this->ValueScaleDivisor)
+		.Process(this->ValueAsTimer)
 		;
 }
 

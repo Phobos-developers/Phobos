@@ -10,7 +10,6 @@ class DigitalDisplayTypeClass final : public Enumerable<DigitalDisplayTypeClass>
 public:
 	Damageable<ColorStruct> Text_Color;
 	Valueable<bool> Text_Background;
-	Valueable<bool> VisibleInSpecialState;
 	Valueable<Vector2D<int>> Offset;
 	Nullable<Vector2D<int>> Offset_ShieldDelta;
 	Valueable<TextAlign> Align;
@@ -22,15 +21,16 @@ public:
 	Valueable<bool> Shape_PercentageFrame;
 	Valueable<bool> Percentage;
 	Nullable<bool> HideMaxValue;
-	Valueable<bool> VisibleToHouses_Observer;
 	Valueable<AffectedHouse> VisibleToHouses;
+	Valueable<bool> VisibleToHouses_Observer;
+	Valueable<bool> VisibleInSpecialState;
 	Valueable<DisplayInfoType> InfoType;
-	Valueable<int> ValueScaleDivisor;
+	Nullable<int> ValueScaleDivisor;
+	Valueable<bool> ValueAsTimer;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
 		, Text_Color({ 0, 255, 0 }, { 255,255,0 }, { 255,0,0 })
 		, Text_Background(false)
-		, VisibleInSpecialState(true)
 		, Offset({ 0, 0 })
 		, Offset_ShieldDelta()
 		, Align(TextAlign::Right)
@@ -42,10 +42,12 @@ public:
 		, Shape_PercentageFrame(false)
 		, Percentage(false)
 		, HideMaxValue()
-		, VisibleToHouses_Observer(true)
 		, VisibleToHouses(AffectedHouse::All)
+		, VisibleToHouses_Observer(true)
+		, VisibleInSpecialState(true)
 		, InfoType(DisplayInfoType::Health)
-		, ValueScaleDivisor { 1 }
+		, ValueScaleDivisor()
+		, ValueAsTimer(false)
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);
