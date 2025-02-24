@@ -498,6 +498,7 @@ New:
 - Allow infantry to use land sequences in water (by Starkku)
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps (by Starkku)
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
+- No turret unit turn to the target (by CrimRecya & TaranDahl)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - Extending `Power` to all TechnoTypes (by Morton)
 
