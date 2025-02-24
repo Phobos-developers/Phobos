@@ -25,7 +25,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	const auto pType = pTypeExt->OwnerObject();
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
-	int nDamageLeft = *args->Damage;
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
 
@@ -50,7 +49,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	}
 
 	// Raise Combat Alert
-	if (pRules->CombatAlert && nDamageLeft > 1)
+	if (pRules->CombatAlert && *args->Damage > 1)
 	{
 		auto raiseCombatAlert = [&]()
 		{
@@ -108,7 +107,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (!pShieldData->IsActive())
 				return 0;
 
-			nDamageLeft = pShieldData->ReceiveDamage(args);
+			int nDamageLeft = pShieldData->ReceiveDamage(args);
 
 			if (nDamageLeft >= 0)
 			{
