@@ -5,8 +5,10 @@
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
+#include <Unsorted.h>
 
 #include "Utilities/AresHelper.h"
+#include "Utilities/Parser.h"
 
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
@@ -35,11 +37,19 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
 	bool foundInheritance = false;
 	bool foundInclude = false;
+	bool dontSetExceptionHandler =
+#ifdef DEBUG
+		true;
+#else
+		false;
+#endif // DEBUG
+	Parser<bool> boolParser { };
 
 	// > 1 because the exe path itself counts as an argument, too!
 	for (int i = 1; i < nNumArgs; i++)
 	{
 		const char* pArg = ppArgs[i];
+		std::string arg = pArg;
 
 		if (_stricmp(pArg, "-Icon") == 0)
 		{
@@ -58,6 +68,15 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		if (_stricmp(pArg, "-Include") == 0)
 		{
 			foundInclude = true;
+		}
+		if (arg.starts_with("-ExceptionHandler="))
+		{
+			auto delimIndex = arg.find("=");
+			auto value = arg.substr(delimIndex + 1, arg.size() - delimIndex - 1);
+			
+			bool v = dontSetExceptionHandler;
+			if (boolParser.TryParse(value.c_str(), &v))
+				dontSetExceptionHandler = !v;
 		}
 	}
 
@@ -95,7 +114,10 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		);
 	}
 
+	Game::DontSetExceptionHandler = dontSetExceptionHandler;
+
 	Debug::Log("Initialized version: " PRODUCT_VERSION "\n");
+	Debug::Log("ExceptionHandler is %s\n", dontSetExceptionHandler ? "not present" : "present");
 }
 
 void Phobos::ExeRun()
