@@ -324,6 +324,8 @@ New:
 - Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 - Toggle waypoint for building (by TaranDahl)
 - Bunkerable checks dehardcode (by TaranDahl)
+- No turret unit turn to the target (by CrimRecya & TaranDahl)
+- Damage multiplier for different houses (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
@@ -464,7 +466,6 @@ New:
 - Map events `604-605` for checking if a specific Techno enters in a cell (by FS-21)
 - Waypoint path is drawn for all units under player control or if `[GlobalControls] -> DebugPlanningPaths=yes` (by Trsdy)
 - `RemoveDisguise` now works on vehicle disguises (by Trsdy)
-- Damage multiplier for different houses (by CrimRecya)
 - Allow anchoring extended tooltips to the left side of the sidebar (by Trsdy)
 - Toggle to allow spawned aircraft to attack immediately after being spawned (by Starkku)
 - `ZAdjust` for OverlayTypes (by Starkku)
@@ -499,7 +500,6 @@ New:
 - Allow infantry to use land sequences in water (by Starkku)
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps (by Starkku)
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
-- No turret unit turn to the target (by CrimRecya & TaranDahl)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - Extending `Power` to all TechnoTypes (by Morton)
 
