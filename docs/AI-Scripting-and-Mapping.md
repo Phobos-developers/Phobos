@@ -30,7 +30,7 @@ RepairBaseNodes=false              ; boolean
 In map file:
 ```ini
 [Country House]
-RepairBaseNodes=                   ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
+RepairBaseNodes=                   ; List of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
 ```
 
 ### Default loading screen and briefing offsets
@@ -427,7 +427,7 @@ In `rulesmd.ini`:
 ; ...
 ```
 
-### `16005` Jump Back To Previous Script
+#### `16005` Jump Back To Previous Script
 
 - Used in a Random Script picked by action `94`. It can jump back to the previous script, and continue in the line after `x=94,n`.
 
@@ -441,7 +441,7 @@ x=16005,0
 
 #### `18000-18023` Edit Variable
 
-- Operate a variable's value
+- Operate a variable's value.
 - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
 - **Any numbers exceeding this limit will lead to unexpected results!**
 
@@ -496,7 +496,7 @@ ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
 
 ### `501` Edit Variable
 
-- Operate a variable's value
+- Operate a variable's value.
 - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
 - **Any numbers exceeding this limit will lead to unexpected results!**
 
@@ -525,7 +525,7 @@ ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVar
 
 ### `502` Generate random number
 
-- Generate a random integer ranged in [Min, Max] and store it in a given variable
+- Generate a random integer ranged in [Min, Max] and store it in a given variable.
 
 In `mycampaign.map`:
 ```ini
@@ -537,7 +537,7 @@ ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,
 
 ### `503` Print variable value
 
-- Print a variable value to the message list
+- Print a variable value to the message list.
 
 In `mycampaign.map`:
 ```ini
@@ -549,8 +549,8 @@ ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[Actio
 
 ### `504` Binary Operation
 
-- Operate a variable's value with another variable's value
-- Similar to `501`, but the operation number is read from another variable
+- Operate a variable's value with another variable's value.
+- Similar to `501`, but the operation number is read from another variable.
 
 In `mycampaign.map`:
 ```ini
@@ -560,7 +560,7 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 ...
 ```
 
-`Operation` can be looked up at action `501`
+`Operation` can be looked up at action `501`.
 
 ### `505` Fire Super Weapon at specified location
 
@@ -615,7 +615,7 @@ ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 
 ### `500-511` Variable comparation
 
-- Compares the variable's value with given number
+- Compares the variable's value with given number.
 
 In `mycampaign.map`:
 ```ini
@@ -642,7 +642,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
 
 ### `512-523` Variable comparation with local variable
 
-- Compares the variable's value with given local variable value
+- Compares the variable's value with given local variable value.
 
 In `mycampaign.map`:
 ```ini
@@ -669,7 +669,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
 
 ### `524-535` Variable comparation with global variable
 
-- Compares the variable's value with given global variable value
+- Compares the variable's value with given global variable value.
 
 In `mycampaign.map`:
 ```ini

@@ -73,8 +73,8 @@ msgid "Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond spec
 msgstr "修复了 `DebrisMaximums`（被生成的碎片类型数量不能超过这里指定最大值）。仅当 `DebrisMaximums` 值数量大于 1 时才生效，以保持对旧有行为的兼容。"
 
 #: ../../Fixed-or-Improved-Logics.md:18
-msgid "Fixed building and defense tab hotkeys not enabling the placement mode after `Cannot build here.` triggered and the placement mode cancelled."
-msgstr "修复了在触发 `Cannot build here.`（摆放失败）并取消放置模式后使用切换到建筑栏和防御栏的快捷键无法再次进入放置模式的问题。"
+msgid "Fixed building and defense tab hotkeys not enabling the placement mode after *Cannot build here.* triggered and the placement mode cancelled."
+msgstr "修复了在触发 *Cannot build here.*（摆放失败）并取消放置模式后使用切换到建筑栏和防御栏的快捷键无法再次进入放置模式的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:19
 msgid "Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying."
@@ -308,8 +308,8 @@ msgid "![image](_static/images/translucency-fix.png) *Example gradient SHP drawi
 msgstr "![image](_static/images/translucency-fix.png) *75% 透明度的 Shape 绘制示例，前后对比*"
 
 #: ../../Fixed-or-Improved-Logics.md:89
-msgid "Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General] -> FixTransparencyBlitters=no`."
-msgstr "现在半透明的 RLE SHP 将使用更精确且性能更高的算法进行绘制，不会出现绿色色调和条纹。可以通过 `rulesmd.ini->[General] -> FixTransparencyBlitters=no` 来禁用。"
+msgid "Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`."
+msgstr "现在半透明的 RLE SHP 将使用更精确且性能更高的算法进行绘制，不会出现绿色色调和条纹。可以通过 `rulesmd.ini -> [General] -> FixTransparencyBlitters=no` 来禁用。"
 
 #: ../../Fixed-or-Improved-Logics.md:90
 msgid "Only applies to Z-aware drawing mode for now."
@@ -520,8 +520,8 @@ msgid "Fixed railgun and fire particles being cut off by elevation changes."
 msgstr "修复了轨道炮和火焰粒子被高度变化切断的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:142
-msgid "Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game."
-msgstr "修复了超时空单位（例如 CLEG）的僵直计时器在载入游戏后被清空的问题。"
+msgid "Fixed teleport units' (for example `[CLEG]`) frozen-still timer being cleared after load game."
+msgstr "修复了超时空单位（例如 `[CLEG]`）的僵直计时器在载入游戏后被清空的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:143
 msgid "Fixed teleport units being unable to visually tilt on slopes."
@@ -549,7 +549,7 @@ msgstr "修复了在路径点中为间谍/工程师/需要驻军的无武装步�
 
 #: ../../Fixed-or-Improved-Logics.md:149
 msgid "`PowerUpN` building animations can now use `Powered` & `PoweredLight/Effect/Special` keys."
-msgstr "`PowerUpN` 建筑动画现在可以使用 `Powered` 和 `PoweredLight/Effect/Special` 键。"
+msgstr "`PowerUpN` 建筑动画现在可以使用 `Powered` 和 `PoweredLight/Effect/Special` 标签。"
 
 #: ../../Fixed-or-Improved-Logics.md:150
 msgid "Fixed a desync potentially caused by displaying of cursor over selected `DeploysInto` units."
@@ -885,7 +885,7 @@ msgstr "在 `rulesmd.ini`："
 
 #: ../../Fixed-or-Improved-Logics.md:222
 msgid "Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft"
-msgstr "空袭和间谍战机的生成距离和生成高度"
+msgstr "空袭战机和侦察机的生成距离和生成高度"
 
 #: ../../Fixed-or-Improved-Logics.md:224
 msgid "It is now possible to have aircraft spawned from `(Elite)AirstrikeTeamType` or `Type=SpyPlane` superweapons to be created at fixed distance from their intended target/destination instead of from edge of the map by setting `SpawnDistanceFromTarget`."
@@ -975,7 +975,7 @@ msgstr "`Weapon` 和 `Damage.Delay`，除了其他新增功能外应与 Ares 引
 
 #: ../../Fixed-or-Improved-Logics.md:281
 msgid "Attached animation position customization"
-msgstr "自定义附加动画位置"
+msgstr "自定义附着动画位置"
 
 #: ../../Fixed-or-Improved-Logics.md:283
 msgid "You can now customize whether or not animations attached to objects are centered at the object's actual center rather than the bottom of their top-leftmost cell (cell #0)."
@@ -1144,7 +1144,7 @@ msgstr "默认情况下如果 `GDIBarracks`、`NODBarracks` 或 `YuriBarracks` �
 
 #: ../../Fixed-or-Improved-Logics.md:342
 msgid "Key"
-msgstr "键"
+msgstr "标签"
 
 #: ../../Fixed-or-Improved-Logics.md:342
 msgid "Cell Offset"
@@ -1160,7 +1160,7 @@ msgstr "1,2"
 
 #: ../../Fixed-or-Improved-Logics.md:342
 msgid "`NODBarracks`"
-msgstr "`NODBarracks`""
+msgstr "`NODBarracks`"
 
 #: ../../Fixed-or-Improved-Logics.md:342
 msgid "2,2"
@@ -1296,7 +1296,7 @@ msgstr "自定义 gas 粒子速度"
 
 #: ../../Fixed-or-Improved-Logics.md:530
 msgid "Gas particles can now drift at a custom speed."
-msgstr "Gas 粒子现在可以自定义漂浮速度。"
+msgstr "Gas 类的粒子现在可以自定义漂浮速度。"
 
 #: ../../Fixed-or-Improved-Logics.md:538
 msgid "Projectiles"
@@ -1728,7 +1728,7 @@ msgstr "`SpawnsPipoffset` 可以被用于移动子机 pip 的起始位置。"
 
 #: ../../Fixed-or-Improved-Logics.md:916
 msgid "Pips for `Storage` can now also be customized via new keys in `[AudioVisual]`."
-msgstr "现在可以通过 `[AudioVisual]` 中的新键来自定义 `Storage` 的 pip。"
+msgstr "现在可以通过 `[AudioVisual]` 中的新标签来自定义 `Storage` 的 pip。"
 
 #: ../../Fixed-or-Improved-Logics.md:917
 msgid "`Pips.Tiberiums.Frames` can be used to list frames (zero-based) of `pips.shp` (for buildings) or `pips2.shp` (for others) used for tiberium types, in the listed order corresponding to tiberium type index. Defaults to 5 for tiberium type index 1, otherwise 2."
@@ -1763,8 +1763,8 @@ msgid "Re-enable obsolete [JumpjetControls]"
 msgstr "重启废弃的 [JumpjetControls]"
 
 #: ../../Fixed-or-Improved-Logics.md:964
-msgid "Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units."
-msgstr "重启了废弃的 [JumpjetControls]，其中的键将用于 Jumpjet 单位的默认值。"
+msgid "Re-enable obsolete `[JumpjetControls]`, the keys in it will be as the default value of jumpjet units."
+msgstr "重启了废弃的 `[JumpjetControls]`，其中的标签将用于 Jumpjet 单位的默认值。"
 
 #: ../../Fixed-or-Improved-Logics.md:965
 msgid "Moreover, added two tags for missing ones."
@@ -1772,7 +1772,7 @@ msgstr "此外，新增了两个标签用于空缺项。"
 
 #: ../../Fixed-or-Improved-Logics.md:975
 msgid "`CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix."
-msgstr "`CruiseHeight` 对应 `JumpjetHeight`、`WobblesPerSecond` 对应 `JumpjetWobbles`、`WobbleDeviation` 对应 `JumpjetDeviation` 以及 `Acceleration` 对应 `JumpjetAccel`。其他所有相应的键只是去掉了 Jumpjet 前缀。"
+msgstr "`CruiseHeight` 对应 `JumpjetHeight`、`WobblesPerSecond` 对应 `JumpjetWobbles`、`WobbleDeviation` 对应 `JumpjetDeviation` 以及 `Acceleration` 对应 `JumpjetAccel`。其他所有相应的标签只是去掉了 Jumpjet 前缀。"
 
 #: ../../Fixed-or-Improved-Logics.md:978
 msgid "Skirmish AI behavior dehardcode"
@@ -2260,7 +2260,7 @@ msgstr "Voxel 碎片"
 
 #: ../../Fixed-or-Improved-Logics.md:1426
 msgid "The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`."
-msgstr "INI 键的行为与[常规动画的等效行为](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour)基本相同。主要区别是这些键必须列在 `rulesmd.ini` 中的 Voxel 碎片条目中，而不是 `artmd.ini` 中。"
+msgstr "INI 标签的行为与[常规动画的等效行为](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour)基本相同。主要区别是这些标签必须列在 `rulesmd.ini` 中的 Voxel 碎片条目中，而不是 `artmd.ini` 中。"
 
 #: ../../Fixed-or-Improved-Logics.md:1428
 msgid "Warheads"

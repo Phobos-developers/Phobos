@@ -388,6 +388,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix for sidebar not updating queued unit numbers when on hold
   - New Parabola trajectory
   - Enhanced Bombard trajectory
+  - No turret unit turn to the target
+  - Damage multiplier for different houses
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -407,6 +409,7 @@ This page lists all the individual contributions to the project by their author.
   - Parasite returning bug fix
   - Bunkerable checks dehardcode
   - Prevent the units with locomotors that cause problems from entering the tank bunker
+  - No turret unit turn to the target
 - **tyuah8**
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

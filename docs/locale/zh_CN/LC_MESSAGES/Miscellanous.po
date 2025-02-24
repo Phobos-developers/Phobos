@@ -202,7 +202,7 @@ msgid ""
 "It's now possible to write locomotor aliases instead of their CLSIDs in "
 "the `Locomotor` tag value. Use the table below to find the needed alias "
 "for a locomotor."
-msgstr "现在可以在 `Locomotor` 标签值中写入运动模式的别称，而不再只能书写它们的 CLSIDs。使用下表查找运动模式所对应的别称。"
+msgstr "现在可以在 `Locomotor` 标签值中写入运动模式的别称，而不再只能书写它们的 CLSID。使用下表查找运动模式所对应的别称。"
 
 #: ../../Miscellanous.md:24
 msgid "*Alias*"
@@ -447,7 +447,7 @@ msgid ""
 "Due to a technical issue, there is a chance that ***the first line of a "
 "included file will be skipped!*** To prevent this, included files should "
 "start with an empty line or a comment."
-msgstr "由于技术问题，包含文件的***第一行有可能会被跳过***！为了防止这种情况，包含的文件应以空行或注释开头。"
+msgstr "由于技术问题，包含文件的<b><em>第一行有可能会被跳过！</em></b>为了防止这种情况，包含的文件应以空行或注释开头。"
 
 #: ../../Miscellanous.md:201
 msgid ""
