@@ -139,55 +139,49 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 
 DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 {
-	//enum { RecycleIsOk = 0x6B77FF, RecycleIsNotOk = 0x6B7838 };
-
 	GET(SpawnManagerClass* const, pThis, ESI);
-	GET(AircraftClass* const, pSpawned, EDI);
-	GET(CellStruct* const, pSpawnerMapCrd, EBP);
+	GET(AircraftClass* const, pSpawner, EDI);
+	GET(CellStruct* const, pCarrierMapCrd, EBP);
 
 	if (!pThis)
 		return 0;
 
-	auto pSpawner = pThis->Owner;
+	auto pCarrier = pThis->Owner;
 
-	if (!pSpawner || !pSpawned)
+	if (!pCarrier || !pSpawner)
 		return 0;
 
-	auto const pSpawnerType = pSpawner->GetTechnoType();
-	auto spawnedMapCrd = pSpawned->GetMapCoords();
+	auto const pCarrierType = pCarrier->GetTechnoType();
+	auto spawnerMapCrd = pSpawner->GetMapCoords();
 
-	if (!pSpawnerType)
+	if (!pCarrierType)
 		return 0;
 
-	auto const pSpawnerExt = TechnoTypeExt::ExtMap.Find(pSpawnerType);
+	auto const pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrierType);
 
-	if (!pSpawnerExt)
+	if (!pCarrierTypeExt)
 		return 0;
 
 	auto spawnerCrd = pSpawner->GetCoords();
-	auto spawnedCrd = pSpawned->GetCoords();
-	auto recycleCrd = spawnerCrd;
-	auto deltaCrd = spawnedCrd - recycleCrd;
+	auto recycleCrd = TechnoExt::GetFLHAbsoluteCoords(pCarrier, pCarrierTypeExt->Spawner_RecycleFLH, pCarrierTypeExt->Spawner_RecycleOnTurret);
+	auto deltaCrd = spawnerCrd - recycleCrd;
 	bool shouldRecycleSpawned = false;
-	int recycleRange = pSpawnerExt->Spawner_RecycleRange;
+	int recycleRange = pCarrierTypeExt->Spawner_RecycleRange;
 
 	if (recycleRange < 0)
 	{
-		if (pSpawner->WhatAmI() == AbstractType::Building && deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
-		{
+		// This is a fix to vanilla behavior. Buildings bigger than 1x1 will recycle the spawner correctly.
+		// 182 is √2/2 * 256. 20 is same to vanilla behavior.
+		if (pCarrier->WhatAmI() == AbstractType::Building && deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
 			shouldRecycleSpawned = true;
-		}
-		if (pSpawner->WhatAmI() != AbstractType::Building && spawnedMapCrd == *pSpawnerMapCrd && deltaCrd.Z < 20)
-		{
+
+		if (pCarrier->WhatAmI() != AbstractType::Building && spawnerMapCrd == *pCarrierMapCrd && deltaCrd.Z < 20)
 			shouldRecycleSpawned = true;
-		}
 	}
 	else
 	{
 		if (deltaCrd.Magnitude() <= recycleRange)
-		{
 			shouldRecycleSpawned = true;
-		}
 	}
 
 	if (!shouldRecycleSpawned)
@@ -196,15 +190,33 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 	}
 	else
 	{
-		if (pSpawnerExt->Spawner_RecycleAnim)
-		{
-			GameCreate<AnimClass>(pSpawnerExt->Spawner_RecycleAnim, spawnedCrd);
-		}
-		pSpawned->SetLocation(spawnerCrd);
-		R->EAX(pSpawnerMapCrd);
+		if (pCarrierTypeExt->Spawner_RecycleAnim)
+			GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
+
+		pSpawner->SetLocation(pCarrier->GetCoords());
+		R->EAX(pCarrierMapCrd);
 		return 0;
 	}
 }
+
+// Change destination to RecycleFLH.
+DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
+{
+	GET(FootClass* const, pThis, EBP);
+	GET(CoordStruct*, pDestCrd, EAX);
+
+	auto pCarrier = pThis->SpawnOwner;
+
+	if (pCarrier && pCarrier == pThis->Destination) // This is a spawner returning to its carrier.
+	{
+		auto pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
+		auto deltaCrd = TechnoExt::GetFLHAbsoluteCoords(pCarrier, pCarrierTypeExt->Spawner_RecycleFLH, pCarrierTypeExt->Spawner_RecycleOnTurret) - pCarrier->GetCoords();
+		*pDestCrd += deltaCrd;
+	}
+
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region WakeAnims
