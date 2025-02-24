@@ -204,7 +204,8 @@ DEFINE_HOOK(0x62E08B, ParticleSystemClass_DTOR_DetachAttachedSystem, 0x7)
 {
 	GET(ParticleSystemClass*, pParticleSystem, EDI);
 
-	AnimExt::InvalidateParticleSystemPointers(pParticleSystem);
+	if (pParticleSystem->Owner && pParticleSystem->Owner->WhatAmI() == AbstractType::Anim)
+		AnimExt::InvalidateParticleSystemPointers(pParticleSystem);
 
 	return 0;
 }

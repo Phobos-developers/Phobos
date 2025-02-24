@@ -8,6 +8,7 @@
 #include <Misc/SyncLogging.h>
 
 AnimExt::ExtContainer AnimExt::ExtMap;
+std::vector<AnimClass*> AnimExt::AnimsWithAttachedParticles;
 
 void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
 {
@@ -29,6 +30,7 @@ void AnimExt::ExtData::CreateAttachedSystem()
 	if (pTypeExt && pTypeExt->AttachedSystem && !this->AttachedSystem)
 	{
 		this->AttachedSystem = GameCreate<ParticleSystemClass>(pTypeExt->AttachedSystem.Get(), pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr);
+		AnimExt::AnimsWithAttachedParticles.push_back(pThis);
 	}
 }
 
@@ -39,6 +41,9 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 		this->AttachedSystem->Owner = nullptr;
 		this->AttachedSystem->UnInit();
 		this->AttachedSystem = nullptr;
+
+		auto& vec = AnimExt::AnimsWithAttachedParticles;
+		vec.erase(std::remove(vec.begin(), vec.end(), this->OwnerObject()), vec.end());
 	}
 }
 
@@ -393,6 +398,9 @@ void AnimExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<AnimClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	if (this->AttachedSystem)
+		AnimExt::AnimsWithAttachedParticles.push_back(this->OwnerObject());
 }
 
 void AnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
@@ -430,7 +438,7 @@ void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
 
 void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem)
 {
-	for (auto const& pAnim : *AnimClass::Array)
+	for (auto const& pAnim : AnimExt::AnimsWithAttachedParticles)
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
 
