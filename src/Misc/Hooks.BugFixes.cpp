@@ -1239,6 +1239,16 @@ DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensorsAt, 0x5)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensorsAt, 0x5)
+{
+	GET(FootClass*, pLinkedTo, EAX);
+
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+		pLinkedTo->RemoveSensorsAt(pLinkedTo->LastFlightMapCoords);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensorsAt, 0x6)
 {
 	enum { SkipGameCode = 0x4DBF01 };
