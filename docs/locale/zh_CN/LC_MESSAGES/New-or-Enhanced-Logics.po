@@ -595,7 +595,7 @@ msgid "`ImmuneToBerserk` gives the immunity against `Psychedelic=yes` warhead. O
 msgstr "`ImmuneToBerserk` 给予对 `Psychedelic=yes` 弹头的免疫能力。否则混乱默认可以穿过护盾。注意这不应组织单位对护盾所保护对象进行索敌。在这种情况下 `Versus.shieldArmor=0%` 仍然是必需的。"
 
 #: ../../New-or-Enhanced-Logics.md:396
-msgid "A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to to TechnoTypes with shields by setting `Tint.Color` and/or `Tint Intensity`."
+msgid "A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes with shields by setting `Tint.Color` and/or `Tint Intensity`."
 msgstr "通过设置 `Tint.Color` 和/或 `Tint Intensity` 可以为拥有护盾的技术类型使用类似于铁幕/力场护盾或 `Psychedelic=true` 弹头的染色效果。"
 
 #: ../../New-or-Enhanced-Logics.md:397
@@ -698,7 +698,7 @@ msgstr "`Shield.AffectTypes` 允许列出哪些护盾类型受上述效果的影
 
 #: ../../New-or-Enhanced-Logics.md:421
 msgid "`Shield.AffectTypes` can be overriden for specific shield interactions by using keys `Shield.Penetrate.Types`, `Shield.Break.Types`, `Shield.Respawn.Types` and `Shield.SelfHealing.Types` respectively."
-msgstr "`Shield.AffectTypes` 可以通过使用键 `Shield.Penetrate.Types`、`Shield.Break.Types`、`Shield.Respawn.Types` 和 `Shield.SelfHealing.Types` 分别为特定的护盾分离覆盖的参数类型。"
+msgstr "`Shield.AffectTypes` 可以通过使用标签 `Shield.Penetrate.Types`、`Shield.Break.Types`、`Shield.Respawn.Types` 和 `Shield.SelfHealing.Types` 分别为特定的护盾分离覆盖的参数类型。"
 
 #: ../../New-or-Enhanced-Logics.md:422
 msgid "`Shield.AttachTypes` & `Shield.RemoveTypes` allows listing ShieldTypes that are attached or removed, respectively from any targets affected by the warhead (positive `Verses` values). Normally only first listed ShieldType in `Shield.AttachTypes` is applied."
@@ -946,7 +946,7 @@ msgstr "自定义步兵匍匐或部署状态的 FLH"
 
 #: ../../New-or-Enhanced-Logics.md:600
 msgid "Now infantry can override `PrimaryFireFLH` and `SecondaryFireFLH` if is prone (crawling) or deployed. Also works in conjunction with [burst-index specific firing offsets](#firing-offsets-for-specific-burst-shots)."
-msgstr "现在步兵处于匍匐（爪巴）或部署状态的 FLH 可以独立于 `PrimaryFireFLH` 和 `SecondaryFireFLH` 进行设置。同样对 [Burst 开火坐标]生效。"
+msgstr "现在步兵处于匍匐（爪巴）或部署状态的 FLH 可以独立于 `PrimaryFireFLH` 和 `SecondaryFireFLH` 进行设置。同样对 [Burst 开火坐标](#firing-offsets-for-specific-burst-shots) 生效。"
 
 #: ../../New-or-Enhanced-Logics.md:611
 msgid "Default disguise for individual InfantryTypes"
@@ -1047,7 +1047,7 @@ msgstr "抛射体拦截"
 
 #: ../../New-or-Enhanced-Logics.md:691
 msgid "![image](_static/images/projectile-interception-01.gif) *Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis)*"
-msgstr "![image](_static/images/projectile-interception-01.gif) *[泰伯利亚危机](https://www.moddb.com/mods/tiberium-crisis) mod 中的拦截抛射体*"
+msgstr "![image](_static/images/projectile-interception-01.gif) *[泰伯利亚危机](https://www.moddb.com/mods/tiberium-crisis) 中的拦截抛射体*"
 
 #: ../../New-or-Enhanced-Logics.md:694
 msgid "Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` and the TechnoType's firepower multipliers is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated."
@@ -1195,7 +1195,7 @@ msgstr "`Trajectory.Straight.UseDisperseBurst` 控制 `Trajectory.Straight.Rotat
 
 #: ../../New-or-Enhanced-Logics.md:770
 msgid "`Trajectory.Straight.AxisOfRotation` controls the rotation axis when calculating `Trajectory.Straight.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position."
-msgstr "`Trajectory.Straight.AxisOfRotation` 控制计算 `Trajectory.Straight.RotateCoord` 的转轴。轴将随着单位朝向或从目标位置到源位置的向量旋转。"
+msgstr "`Trajectory.Straight.AxisOfRotation` 控制计算 `Trajectory.Straight.RotateCoord` 的转轴。随单位朝向或目标位置到源位置的向量旋转。"
 
 #: ../../New-or-Enhanced-Logics.md:771
 msgid "`Trajectory.Straight.ProximityImpact` controls the initial proximity fuse times. When there are enough remaining times and the projectile approaches another valid target, it will detonate a warhead defined by `Trajectory.Straight.ProximityWarhead` on it. If the times is about to run out, it will also detonate itself at its location. This function can be cancelled by setting to 0. A negative integer means unlimited times. By the way, you can use the weapon's `Warhead` with low versus only to aim at the target, and use the `Trajectory.Straight.ProximityWarhead` to causing actual harm. (You can use this to cause non repeated damage to all units encountered during the flight of the projectile.)"
@@ -1263,7 +1263,7 @@ msgstr "轰击轨迹"
 
 #: ../../New-or-Enhanced-Logics.md:828
 msgid "Similar trajectory to `Straight`, but targets a coordinate between the attacker and intended target first. When the projectile approaches that turning point, it'll turn to the intended target and explodes when it hits the target or ground."
-msgstr "类似于 `Straight`但首先瞄准攻击者和目标间的某个坐标。当抛射体接近该拐点后它才会转向目标并在击中目标或地面时引爆。"
+msgstr "类似于 `Straight` 但首先瞄准攻击者和目标间的某个坐标。当抛射体接近该拐点后它才会转向目标并在击中目标或地面时引爆。"
 
 #: ../../New-or-Enhanced-Logics.md:829
 msgid "`Trajectory.Bombard.Height` controls the height of the turning point."
@@ -1335,7 +1335,7 @@ msgstr "`Trajectory.Bombard.UseDisperseBurst` 控制 `Trajectory.Bombard.RotateC
 
 #: ../../New-or-Enhanced-Logics.md:846
 msgid "`Trajectory.Bombard.AxisOfRotation` controls the rotation axis when calculating `Trajectory.Bombard.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position."
-msgstr "`Trajectory.Bombard.AxisOfRotation` 控制计算 `Trajectory.Bombard.RotateCoord` 的转轴。轴将随着单位朝向或从目标位置到源位置的向量旋转。"
+msgstr "`Trajectory.Bombard.AxisOfRotation` 控制计算 `Trajectory.Bombard.RotateCoord` 的转轴。随单位朝向或目标位置到源位置的向量旋转。"
 
 #: ../../New-or-Enhanced-Logics.md:847
 msgid "`Trajectory.Bombard.SubjectToGround` controls whether the projectile should explode when it hits the ground. Note that this will not make AI search for suitable attack locations."
@@ -1443,7 +1443,7 @@ msgstr "`Trajectory.Parabola.UseDisperseBurst` 控制 `Trajectory.Parabola.Rotat
 
 #: ../../New-or-Enhanced-Logics.md:902
 msgid "`Trajectory.Parabola.AxisOfRotation` controls the rotation axis when calculating `Trajectory.Parabola.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position."
-msgstr "`Trajectory.Parabola.AxisOfRotation` 控制计算 `Trajectory.Parabola.RotateCoord` 的转轴。轴将随着单位朝向或从目标位置到源位置的向量旋转。"
+msgstr "`Trajectory.Parabola.AxisOfRotation` 控制计算 `Trajectory.Parabola.RotateCoord` 的转轴。随单位朝向或目标位置到源位置的向量旋转。"
 
 #: ../../New-or-Enhanced-Logics.md:929
 msgid "Compared to vanilla `Arcing`, this can also be used for aircrafts and airburst weapon."
@@ -1483,7 +1483,7 @@ msgstr "现在可以通过将 `SubjectToLand/Water` 分别设为 true 以使抛�
 
 #: ../../New-or-Enhanced-Logics.md:953
 msgid "`Level=true` projectiles detonate on tiles belonging to non-water tilesets by default, but will not consider such tiles as true obstacles. This behaviour can be overridden by setting these keys."
-msgstr "默认情况下 `Level=true` 的抛射体在非水域的地块上爆炸，但不会将这些地块视为真正的障碍物。通过设置这些键可以覆盖此行为。"
+msgstr "默认情况下 `Level=true` 的抛射体在非水域的地块上爆炸，但不会将这些地块视为真正的障碍物。通过设置这些标签可以覆盖此行为。"
 
 #: ../../New-or-Enhanced-Logics.md:964
 msgid "Return weapon"
@@ -1578,7 +1578,7 @@ msgstr "现在如果发射的超级武器拥有 `EMPulse.SuspendOthers=true` 那
 
 #: ../../New-or-Enhanced-Logics.md:1043
 msgid "`Type=EMPulse` superweapon and any associated keys are [Ares features](https://ares-developers.github.io/Ares-docs/new/superweapons/types/empulse.html)."
-msgstr "`Type=EMPulse` 超级武器及其任何关联键是 [Ares 功能](https://ares-developers.github.io/Ares-docs/new/superweapons/types/empulse.html)。"
+msgstr "`Type=EMPulse` 超级武器及其任何关联标签是 [Ares 功能](https://ares-developers.github.io/Ares-docs/new/superweapons/types/empulse.html)。"
 
 #: ../../New-or-Enhanced-Logics.md:1046
 msgid "LimboDelivery"
@@ -1917,7 +1917,7 @@ msgid "`OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` t
 msgstr "`OpenTransportWeapon=1` 的单位在一个 `OpenTopped=true` 的运输工具内开火。"
 
 #: ../../New-or-Enhanced-Logics.md:1269
-msgid "`NoAmmoWeapon=1` on an unit with  `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`."
+msgid "`NoAmmoWeapon=1` on an unit with `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`."
 msgstr "`NoAmmoWeapon=1` 的单位在 `Ammo` 大于 0 且当前弹药数量小于等于 `NoAmmoAmount`。"
 
 #: ../../New-or-Enhanced-Logics.md:1270
@@ -1966,7 +1966,7 @@ msgstr "Burst 开火坐标"
 
 #: ../../New-or-Enhanced-Logics.md:1301
 msgid "You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used."
-msgstr "现在你可以通过使用 `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` 键为拥有 `Burst` 的武器指定每个连发单独的开火坐标，具体取决于你的技术类型使用哪些武器。`BurstN` 中的 *N* 是从 0 开始的连发索引，这些值将按顺序解析，直到没有常规或精英武器的值为止，如果只有精英武器缺少值则默认使用常规武器的 FLH。如果特定连发索引缺少值，则使用基础键（例如 `PrimaryFireFLH`）的值。"
+msgstr "现在你可以通过使用 `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` 标签为拥有 `Burst` 的武器指定每个连发单独的开火坐标，具体取决于你的技术类型使用哪些武器。`BurstN` 中的 *N* 是从 0 开始的连发索引，这些值将按顺序解析，直到没有常规或精英武器的值为止，如果精英武器缺少值则默认使用常规武器的 FLH。如果特定连发索引缺少值，则使用基础标签（例如 `PrimaryFireFLH`）的值。"
 
 #: ../../New-or-Enhanced-Logics.md:1302
 msgid "Burst-index specific firing offsets are absolute firing offsets and the lateral shifting based on burst index that occurs with the base firing offsets is not applied."
@@ -1978,7 +1978,7 @@ msgstr "对特定目标使用特定武器"
 
 #: ../../New-or-Enhanced-Logics.md:1312
 msgid "![image](_static/images/underwater-new-attack-tag.gif) *Naval underwater target behavior with `ForceWeapon.Naval.Decloaked` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*"
-msgstr "![image](_static/images/underwater-new-attack-tag.gif) *[C&C: Reloaded](https://www.moddb.com/mods/cncreloaded) 中使用 `ForceWeapon.Naval.Decloaked` 的海军水下目标行为*"
+msgstr "![image](_static/images/underwater-new-attack-tag.gif) *[C&C: Reloaded](https://www.moddb.com/mods/cncreloaded) 中使用 `ForceWeapon.Naval.Decloaked` 的海军对水下目标行为*"
 
 #: ../../New-or-Enhanced-Logics.md:1315
 msgid "Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect."
@@ -2237,12 +2237,12 @@ msgid "These flags controlls when to trigger a combat alert."
 msgstr "这些标签控制什么时候触发战斗警报。"
 
 #: ../../New-or-Enhanced-Logics.md:1538
-msgid "You can disable this logic on specific techno by setting `[SOMETECHNO] -> CombatAlert` to `false`, which default to `[AudioVisual] -> CombatAlert.Default`. If `CombatAlert.Default` is also empty, it is defaultly disabled for technos with `Insignificant=yes` or `Spawned=yes`."
-msgstr "你可以通过将 `[SOMETECHNO] -> CombatAlert` 设置为 `false` 来为特定技术类型禁用此逻辑，默认为 `[AudioVisual] -> CombatAlert.Default`。如果 `CombatAlert.Default` 也为空，则默认为对 `Insignificant=yes` 或 `Spawned=yes` 的技术类型禁用。"
+msgid "You can disable this logic on specific techno by setting `[TechnoType] -> CombatAlert` to `false`, which default to `[AudioVisual] -> CombatAlert.Default`. If `CombatAlert.Default` is also empty, it is defaultly disabled for technos with `Insignificant=yes` or `Spawned=yes`."
+msgstr "你可以通过将 `[TechnoType] -> CombatAlert` 设置为 `false` 来为特定技术类型禁用此逻辑，默认为 `[AudioVisual] -> CombatAlert.Default`。如果 `CombatAlert.Default` 也为空，则默认为对 `Insignificant=yes` 或 `Spawned=yes` 的技术类型禁用。"
 
 #: ../../New-or-Enhanced-Logics.md:1539
-msgid "`[AudioVisual] -> CombatAlert.IgnoreBuilding` will turn the logic off on buildings. You can override it for specific building by setting `[SOMETECHNO] -> CombatAlert.NotBuilding` to true. You may hope to use it on veh-buildings."
-msgstr "`[AudioVisual] -> CombatAlert.IgnoreBuilding` 将在建筑上关闭此逻辑，你可以通过设置 `[SOMETECHNO] -> CombatAlert.NotBuilding` 为 `true` 来为特定建筑覆盖设置。你可能希望将其用于载具性质的建筑。"
+msgid "`[AudioVisual] -> CombatAlert.IgnoreBuilding` will turn the logic off on buildings. You can override it for specific building by setting `[TechnoType] -> CombatAlert.NotBuilding` to true. You may hope to use it on veh-buildings."
+msgstr "`[AudioVisual] -> CombatAlert.IgnoreBuilding` 将在建筑上关闭此逻辑，你可以通过设置 `[TechnoType] -> CombatAlert.NotBuilding` 为 `true` 来为特定建筑覆盖设置。你可能希望将其用于载具性质的建筑。"
 
 #: ../../New-or-Enhanced-Logics.md:1540
 msgid "`[AudioVisual] -> CombatAlert.SuppressIfInScreen` decides whether to disable the logic for the units in the current screen."
@@ -2257,8 +2257,8 @@ msgid "`[AudioVisual] -> CombatAlert.SuppressIfAllyDamage` decides whether to di
 msgstr "`[AudioVisual] -> CombatAlert.SuppressIfAllyDamage` 决定是否为盟友造成的伤害禁用此逻辑。"
 
 #: ../../New-or-Enhanced-Logics.md:1543
-msgid "Technos hitted by a warhead with `[SOMEWARHEAD] -> CombatAlert.Suppress` setted to `true` will not raise a radar event or EVA. This flag is default to the logical or of inverse value of ares flag `[SOMEWARHEAD] -> Malicious` and `[SOMEWARHEAD] -> Nonprovocative`."
-msgstr "技术类型被拥有 `[SOMEWARHEAD] -> CombatAlert.Suppress` 设置为 `true` 的弹头击中将不会触发雷达事件或 EVA。此标签默认为 Ares 标签 `[SOMEWARHEAD] -> Malicious` 的相反值和 `[SOMEWARHEAD] -> Nonprovocative` 的值。"
+msgid "Technos hitted by a warhead with `[WarheadType] -> CombatAlert.Suppress` setted to `true` will not raise a radar event or EVA. This flag is default to the logical or of inverse value of ares flag `[WarheadType] -> Malicious` and `[WarheadType] -> Nonprovocative`."
+msgstr "技术类型被拥有 `[WarheadType] -> CombatAlert.Suppress` 设置为 `true` 的弹头击中将不会触发雷达事件或 EVA。此标签默认为 Ares 标签 `[WarheadType] -> Malicious` 的相反值和 `[WarheadType] -> Nonprovocative` 的值。"
 
 #: ../../New-or-Enhanced-Logics.md:1544
 msgid "And the following flags controlls the effect of a combat alert."
@@ -2269,16 +2269,16 @@ msgid "`[AudioVisual] -> CombatAlert.MakeAVoice` decides whether to play some so
 msgstr "`[AudioVisual] -> CombatAlert.MakeAVoice` 决定是否与战斗警报一起播放一些音效。将其设为 true 以启用以下标签，否则它们将被忽略。"
 
 #: ../../New-or-Enhanced-Logics.md:1546
-msgid "`[SOMETECHNO] -> CombatAlert.UseFeedbackVoice` decides whether to use the sound defined by `VoiceFeedback`. Default to `[AudioVisual] -> CombatAlert.UseFeedbackVoice`."
-msgstr "`[SOMETECHNO] -> CombatAlert.UseFeedbackVoice` 决定是否使用 `VoiceFeedback` 定义的声音。默认为 `[AudioVisual] -> CombatAlert.UseFeedbackVoice`。"
+msgid "`[TechnoType] -> CombatAlert.UseFeedbackVoice` decides whether to use the sound defined by `VoiceFeedback`. Default to `[AudioVisual] -> CombatAlert.UseFeedbackVoice`."
+msgstr "`[TechnoType] -> CombatAlert.UseFeedbackVoice` 决定是否使用 `VoiceFeedback` 定义的声音。默认为 `[AudioVisual] -> CombatAlert.UseFeedbackVoice`。"
 
 #: ../../New-or-Enhanced-Logics.md:1547
-msgid "`[SOMETECHNO] -> CombatAlert.UseAttackVoice` decides whether to use the sound defined by `VoiceAttack`. Default to `[AudioVisual] -> CombatAlert.UseAttackVoice`."
-msgstr "`[SOMETECHNO] -> CombatAlert.UseAttackVoice` 决定是否使用 `VoiceAttack` 定义的声音。默认为 `[AudioVisual] -> CombatAlert.UseAttackVoice`。"
+msgid "`[TechnoType] -> CombatAlert.UseAttackVoice` decides whether to use the sound defined by `VoiceAttack`. Default to `[AudioVisual] -> CombatAlert.UseAttackVoice`."
+msgstr "`[TechnoType] -> CombatAlert.UseAttackVoice` 决定是否使用 `VoiceAttack` 定义的声音。默认为 `[AudioVisual] -> CombatAlert.UseAttackVoice`。"
 
 #: ../../New-or-Enhanced-Logics.md:1548
-msgid "`[SOMETECHNO] -> CombatAlert.UseEVA` decides whether to play an EVA. Default to `[AudioVisual] -> CombatAlert.UseEVA`. The EVA to play is default to `EVA_UnitsInCombat`, and can be specified through `[SOMETECHNO] -> CombatAlert.EVA`."
-msgstr "`[SOMETECHNO] -> CombatAlert.UseEVA` 决定是否使用 EVA。默认为 `[AudioVisual] -> CombatAlert.UseEVA`。所用的 EVA 默认为 `EVA_UnitsInCombat`，可以通过 `[SOMETECHNO] -> CombatAlert.EVA` 指定。"
+msgid "`[TechnoType] -> CombatAlert.UseEVA` decides whether to play an EVA. Default to `[AudioVisual] -> CombatAlert.UseEVA`. The EVA to play is default to `EVA_UnitsInCombat`, and can be specified through `[TechnoType] -> CombatAlert.EVA`."
+msgstr "`[TechnoType] -> CombatAlert.UseEVA` 决定是否使用 EVA。默认为 `[AudioVisual] -> CombatAlert.UseEVA`。所用的 EVA 默认为 `EVA_UnitsInCombat`，可以通过 `[TechnoType] -> CombatAlert.EVA` 指定。"
 
 #: ../../New-or-Enhanced-Logics.md:1549
 msgid "The sound effect is taken **at order**, feedback first, attack then, eva finally. The flags in `[AudioVisual]` controlls whether to check it globally, and can be specify per techno."
@@ -2585,8 +2585,8 @@ msgid "Spawn powerup crate"
 msgstr "生成工具箱"
 
 #: ../../New-or-Enhanced-Logics.md:1848
-msgid "Warheads can now spawn powerup crates of specified type(s) on their impact cells (if free, or nearby cells if occupied something other than a crate) akin to map trigger action 108 ('Create Crate')."
-msgstr "现在弹头可以在其引爆的单元格上创建指定类型的升级工具箱（如果空置，若被非工具箱的对象占据则生成到附近的单元格）类似于地图触发动作 108（创建工具箱...)。"
+msgid "Warheads can now spawn powerup crates of specified type(s) on their impact cells (if free, or nearby cells if occupied something other than a crate) akin to map trigger action `108 Create Crate`."
+msgstr "现在弹头可以在其引爆的单元格上创建指定类型的升级工具箱（如果空置，若被非工具箱的对象占据则生成到附近的单元格）类似于地图触发动作 `108 创建工具箱...`。"
 
 #: ../../New-or-Enhanced-Logics.md:1849
 msgid "`SpawnsCrateN` where N is a number starting from 0, parsed until no key is found can be used to define the type of crate spawned."
