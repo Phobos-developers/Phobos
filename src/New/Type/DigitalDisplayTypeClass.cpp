@@ -86,7 +86,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 		else
 			swprintf_s(text, L"%u:%02u", minute % 60, value % 60);
 	}
-	if (Percentage)
+	else if (Percentage)
 	{
 		swprintf_s(text, L"%d", static_cast<int>(ratio * 100));
 		wcscat_s(text, L"%%");
