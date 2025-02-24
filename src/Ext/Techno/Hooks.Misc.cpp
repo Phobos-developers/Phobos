@@ -353,7 +353,7 @@ DEFINE_HOOK(0x7410BB, UnitClass_GetFireError_CheckFacingError, 0x8)
 
 	const auto pType = pThis->Type;
 
-	if (!TechnoTypeExt::ExtMap.Find(pType)->NoTurret_EarlyTurnToTarget.Get(RulesExt::Global()->NoTurret_EarlyTurnToTarget))
+	if (!TechnoTypeExt::ExtMap.Find(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
 		return NoNeedToCheck;
 
 	return (fireError == FireError::REARM && !pType->Turret && !pThis->IsWarpingIn()) ? ContinueCheck : NoNeedToCheck;

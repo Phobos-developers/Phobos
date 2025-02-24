@@ -462,7 +462,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimitGroup_ExtraLimit_MaxCount.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxCount");
 	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
 
-	this->NoTurret_EarlyTurnToTarget.Read(exINI, pSection, "NoTurret.EarlyTurnToTarget");
+	this->NoTurret_TrackTarget.Read(exINI, pSection, "NoTurret.TrackTarget");
 
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
@@ -847,7 +847,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxCount)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
 
-		.Process(this->NoTurret_EarlyTurnToTarget)
+		.Process(this->NoTurret_TrackTarget)
 
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)

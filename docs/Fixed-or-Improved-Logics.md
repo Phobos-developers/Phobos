@@ -1341,15 +1341,15 @@ Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type
 
 ### Unit Without Turret Always Turn To Target
 
-- Now vehicles (exclude jumpjets) without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting to `NoTurret.EarlyTurnToTarget` true.
+- Now vehicles (exclude jumpjets) without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting to `NoTurret.TrackTarget` true.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-NoTurret.EarlyTurnToTarget=false   ; boolean
+NoTurret.TrackTarget=false   ; boolean
 
-[SOMEUNIT]                         ; UnitType
-NoTurret.EarlyTurnToTarget=        ; boolean, defaults to [General]->NoTurret.EarlyTurnToTarget
+[SOMEUNIT]                   ; UnitType
+NoTurret.TrackTarget=        ; boolean, defaults to [General]->NoTurret.TrackTarget
 ```{warning}
 Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
 ```
