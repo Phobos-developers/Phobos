@@ -407,8 +407,9 @@ This page lists all the individual contributions to the project by their author.
   - Parasite returning bug fix
   - Bunkerable checks dehardcode
   - Prevent the units with locomotors that cause problems from entering the tank bunker
-  - `Spawner.RecycleRange`
-  - `Spawner.RecycleAnim`
+  - Recycle spawner in long-range (by TaranDahl)
+  - Play an anim when recycling a spawner (by TaranDahl)
+  - Recycle the spawner on other FLH (by TaranDahl)
   - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
