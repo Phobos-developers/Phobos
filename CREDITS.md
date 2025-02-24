@@ -389,6 +389,7 @@ This page lists all the individual contributions to the project by their author.
   - New Parabola trajectory
   - Enhanced Bombard trajectory
   - No turret unit turn to the target
+  - Damage multiplier for different houses
 - **Ollerus**
   - Build limit group enhancement
   - Customizable rocker amplitude
