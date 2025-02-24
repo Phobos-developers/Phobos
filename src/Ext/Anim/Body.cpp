@@ -10,14 +10,32 @@
 AnimExt::ExtContainer AnimExt::ExtMap;
 std::vector<AnimClass*> AnimExt::AnimsWithAttachedParticles;
 
+AnimExt::ExtData::~ExtData()
+{
+	this->DeleteAttachedSystem();
+
+	if (this->Invoker)
+		TechnoExt::ExtMap.Find(this->Invoker)->AnimRefCount--;
+
+	if (this->ParentBuilding)
+		TechnoExt::ExtMap.Find(this->ParentBuilding)->AnimRefCount--;
+}
+
 void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
 {
-	this->Invoker = pInvoker;
-	this->InvokerHouse = pInvoker ? pInvoker->Owner : nullptr;
+	this->SetInvoker(pInvoker, pInvoker ? pInvoker->Owner : nullptr);
 }
 
 void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse)
 {
+	if (pInvoker && this->Invoker != pInvoker)
+	{
+		if (this->Invoker)
+			TechnoExt::ExtMap.Find(this->Invoker)->AnimRefCount--;
+
+		TechnoExt::ExtMap.Find(pInvoker)->AnimRefCount++;
+	}
+
 	this->Invoker = pInvoker;
 	this->InvokerHouse = pInvokerHouse;
 }
@@ -269,8 +287,7 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 			auto const pAnim = GameCreate<AnimClass>(pType, newCoords, 0, loopCount, 0x600u, 0, false);
 			pAnim->Owner = pThis->Owner;
 			auto const pExtNew = AnimExt::ExtMap.Find(pAnim);
-			pExtNew->Invoker = pExt->Invoker;
-			pExtNew->InvokerHouse = pExt->InvokerHouse;
+			pExtNew->SetInvoker(pExt->Invoker, pExt->InvokerHouse);
 
 			if (attach && pThis->OwnerObject)
 				pAnim->SetOwnerObject(pThis->OwnerObject);

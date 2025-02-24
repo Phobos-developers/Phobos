@@ -46,10 +46,7 @@ public:
 		void CreateAttachedSystem();
 		void DeleteAttachedSystem();
 
-		virtual ~ExtData()
-		{
-			this->DeleteAttachedSystem();
-		}
+		virtual ~ExtData() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
