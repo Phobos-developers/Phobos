@@ -247,6 +247,7 @@ DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
 
 	auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
 	pAnimExt->ParentBuilding = pThis;
+	TechnoExt::ExtMap.Find(pThis)->AnimRefCount++;
 
 	return 0;
 }
