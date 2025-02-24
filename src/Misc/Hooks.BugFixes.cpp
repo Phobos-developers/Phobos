@@ -991,7 +991,11 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 // Patch tileset parsing to not reset certain tileset indices for Lunar theater.
 DEFINE_JUMP(LJMP, 0x546C8B, 0x546CBF);
 
-// Skip the Disappear func calling in cloak process.
-// Disappear announces the techno's pointer invalid and make the references in bullet or missile spawns null.
-DEFINE_JUMP(LJMP, 0x703789, 0x703795);
-DEFINE_JUMP(LJMP, 0x6FBBC3, 0x6FBBCE);
+// Fix the bug that Bombers can't get EXP if they cloak before the missiles hit the target.
+// Add checks for bRemoved.
+DEFINE_HOOK(0x7077FD, TechnoClass_PointerExpired_SpawnOwnerFix, 0x6)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0x20, 0x8));
+	// Skip the reset for SpawnOwner if !removed.
+	return removed ? 0 : 0x707803;
+}
