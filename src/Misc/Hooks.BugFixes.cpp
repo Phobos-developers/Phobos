@@ -1231,7 +1231,11 @@ DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensorsAt, 0x5)
 
 	GET(FootClass*, pThis, EDI);
 
-	pThis->RemoveSensorsAt(pThis->LastMapCoords);
+	if (locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		pThis->RemoveSensorsAt(pThis->LastFlightMapCoords);
+	else
+		pThis->RemoveSensorsAt(pThis->LastMapCoords);
+
 	return SkipGameCode;
 }
 
@@ -1241,6 +1245,10 @@ DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensorsAt, 0x6)
 
 	GET(FootClass*, pThis, ESI);
 
-	pThis->RemoveSensorsAt(pThis->LastMapCoords);
+	if (locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		pThis->RemoveSensorsAt(pThis->LastFlightMapCoords);
+	else
+		pThis->RemoveSensorsAt(pThis->LastMapCoords);
+
 	return SkipGameCode;
 }
