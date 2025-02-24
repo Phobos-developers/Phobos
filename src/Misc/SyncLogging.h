@@ -46,7 +46,7 @@ public:
 			return T();
 
 		if (LastReadPosition == -1 && HasBeenFilled)
-			LastReadPosition = LastWritePosition ;
+			LastReadPosition = LastWritePosition;
 		else if (LastReadPosition == -1 || static_cast<size_t>(LastReadPosition) >= Data.size())
 			LastReadPosition = 0;
 
@@ -84,8 +84,7 @@ struct RNGCallSyncLogEvent : SyncLogEvent
 
 	RNGCallSyncLogEvent(int Type, bool IsCritical, unsigned int Index1, unsigned int Index2, unsigned int Caller, unsigned int Frame, int Min, int Max)
 		: Type(Type), IsCritical(IsCritical), Index1(Index1), Index2(Index2), Min(Min), Max(Max), SyncLogEvent(Caller, Frame)
-	{
-	}
+	{ }
 };
 
 struct FacingChangeSyncLogEvent : SyncLogEvent
@@ -96,8 +95,7 @@ struct FacingChangeSyncLogEvent : SyncLogEvent
 
 	FacingChangeSyncLogEvent(unsigned short Facing, unsigned int Caller, unsigned int Frame)
 		: Facing(Facing), SyncLogEvent(Caller, Frame)
-	{
-	}
+	{ }
 };
 
 struct TargetChangeSyncLogEvent : SyncLogEvent
@@ -111,8 +109,7 @@ struct TargetChangeSyncLogEvent : SyncLogEvent
 
 	TargetChangeSyncLogEvent(const AbstractType& Type, const DWORD& ID, const AbstractType& TargetType, const DWORD& TargetID, unsigned int Caller, unsigned int Frame)
 		: Type(Type), ID(ID), TargetType(TargetType), TargetID(TargetID), SyncLogEvent(Caller, Frame)
-	{
-	}
+	{ }
 };
 
 struct MissionOverrideSyncLogEvent : SyncLogEvent
@@ -125,8 +122,7 @@ struct MissionOverrideSyncLogEvent : SyncLogEvent
 
 	MissionOverrideSyncLogEvent(const AbstractType& Type, const DWORD& ID, int Mission, unsigned int Caller, unsigned int Frame)
 		: Type(Type), ID(ID), Mission(Mission), SyncLogEvent(Caller, Frame)
-	{
-	}
+	{ }
 };
 
 struct AnimCreationSyncLogEvent : SyncLogEvent
@@ -137,8 +133,7 @@ struct AnimCreationSyncLogEvent : SyncLogEvent
 
 	AnimCreationSyncLogEvent(const CoordStruct& Coords, unsigned int Caller, unsigned int Frame)
 		: Coords(Coords), SyncLogEvent(Caller, Frame)
-	{
-	}
+	{ }
 };
 
 class SyncLogger

@@ -9,11 +9,12 @@
 #include <BitFont.h>
 #include <SuperClass.h>
 
-#include <Utilities/Helpers.Alex.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <Utilities/Helpers.Alex.h>
 #include <Utilities/EnumFunctions.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
@@ -76,7 +77,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 				if (pHouse->CanTransactMoney(pSWExt->Money_Amount) && (!this->LaunchSW_RealLaunch || (pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended)))
 				{
-					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
+					if ((this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell))
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
 						if (this->LaunchSW_DisplayMoney && pSWExt->Money_Amount != 0)
@@ -102,14 +103,19 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 	}
 
+	this->Crit_Active = false;
 	this->Crit_CurrentChance = this->GetCritChance(pOwner);
 
 	if (this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0)
 	{
-		this->Crit_Active = false;
-
 		if (!this->Crit_ApplyChancePerTarget)
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
+
+		if (this->Crit_ActiveChanceAnims.size() > 0 && this->Crit_CurrentChance > 0.0)
+		{
+			int idx = ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_ActiveChanceAnims.size() - 1);
+			GameCreate<AnimClass>(this->Crit_ActiveChanceAnims[idx], coords);
+		}
 
 		bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 		const float cellSpread = this->OwnerObject()->CellSpread;
@@ -129,12 +135,17 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 			}
 		}
+		else if (this->DamageAreaTarget)
+		{
+			if (coords.DistanceFrom(this->DamageAreaTarget->GetCoords()) < Unsorted::LeptonsPerCell / 4)
+				this->DetonateOnOneUnit(pHouse, this->DamageAreaTarget, pOwner, bulletWasIntercepted);
+		}
 	}
 }
 
 void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking)
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
 		return;
 
 	TechnoExt::ExtData* pTargetExt = nullptr;
@@ -148,7 +159,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyRemoveDisguise(pHouse, pTarget);
 
 	if (this->RemoveMindControl)
-		this->ApplyRemoveMindControl(pHouse, pTarget);
+		this->ApplyRemoveMindControl(pTarget);
 
 	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner, pTargetExt);
@@ -156,7 +167,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->Convert_Pairs.size() > 0)
 		this->ApplyConvert(pHouse, pTarget);
 
-	if (this->AttachEffect_AttachTypes.size() > 0 || this->AttachEffect_RemoveTypes.size() > 0 || this->AttachEffect_RemoveGroups.size() > 0)
+	if (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0)
 		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
 
 #ifdef LOCO_TEST_WARHEADS
@@ -233,19 +244,19 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 		// Apply other modifiers.
 		if (pTargetExt->Shield)
 		{
-			auto isShieldTypeEligible = [pTargetExt](Iterator<ShieldTypeClass*> elements) -> bool
+			auto isShieldTypeEligible = [pTargetExt](Iterator<ShieldTypeClass*> pShieldTypeList) -> bool
 				{
-				if (elements.size() > 0 && !elements.contains(pTargetExt->Shield->GetType()))
-						return false;
-
-					return true;
+					return !(pShieldTypeList.size() > 0 && !pShieldTypeList.contains(pTargetExt->Shield->GetType()));
 				};
 
 			if (this->Shield_Break && pTargetExt->Shield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
 				pTargetExt->Shield->BreakShield(this->Shield_BreakAnim, this->Shield_BreakWeapon);
 
 			if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
-				pTargetExt->Shield->SetRespawn(this->Shield_Respawn_Duration, this->Shield_Respawn_Amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
+			{
+				double amount = this->Shield_Respawn_Amount.Get(pTargetExt->Shield->GetType()->Respawn);
+				pTargetExt->Shield->SetRespawn(this->Shield_Respawn_Duration, amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
+			}
 
 			if (this->Shield_SelfHealing_Duration > 0 && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
 			{
@@ -259,12 +270,6 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget)
-{
-	if (auto pController = pTarget->MindControlledBy)
-		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
-}
-
 void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	if (pTarget->IsDisguised())
@@ -274,6 +279,12 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClas
 		else if (auto pMirage = specific_cast<UnitClass*>(pTarget))
 			pMirage->ClearDisguise();
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyRemoveMindControl(TechnoClass* pTarget)
+{
+	if (auto pController = pTarget->MindControlledBy)
+		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
 }
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, TechnoExt::ExtData* pTargetExt = nullptr)
@@ -319,16 +330,35 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 
 	if (this->Crit_AnimOnAffectedTargets && this->Crit_AnimList.size())
 	{
-		int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(this->AnimList_PickRandom) ?
-			ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
+		if (!this->Crit_AnimList_CreateAll.Get(false))
+		{
+			int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(false) ?
+				ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
 
-		GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
+			auto const pAnim = GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
+			pAnim->Owner = pHouse;
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
+		}
+		else
+		{
+			for (auto const& pType : this->Crit_AnimList)
+			{
+				auto const pAnim = GameCreate<AnimClass>(pType, pTarget->Location);
+				pAnim->Owner = pHouse;
+				AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
+			}
+		}
 	}
 
 	auto damage = this->Crit_ExtraDamage.Get();
 
 	if (this->Crit_Warhead)
-		WarheadTypeExt::DetonateAt(this->Crit_Warhead, pTarget, pOwner, damage);
+	{
+		if (this->Crit_Warhead_FullDetonation)
+			WarheadTypeExt::DetonateAt(this->Crit_Warhead, pTarget, pOwner, damage, pHouse);
+		else
+			this->DamageAreaWithTarget(pTarget->GetCoords(), damage, pOwner, this->Crit_Warhead, true, pHouse, pTarget);
+	}
 	else
 		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }
@@ -356,7 +386,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 	else
 	{
-		for (auto const pBullet: *BulletClass::Array)
+		for (auto const pBullet : *BulletClass::Array)
 		{
 			if (pBullet->Location.DistanceFrom(coords) > cellSpread * Unsorted::LeptonsPerCell)
 				continue;
@@ -433,10 +463,10 @@ void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pTarget, HouseClas
 		return;
 
 	std::vector<int> dummy = std::vector<int>();
-
-	AttachEffectClass::Attach(this->AttachEffect_AttachTypes, pTarget, pInvokerHouse, pInvoker, this->OwnerObject(), this->AttachEffect_DurationOverrides, dummy, dummy, dummy);
-	AttachEffectClass::Detach(this->AttachEffect_RemoveTypes, pTarget, this->AttachEffect_CumulativeRemoveMinCounts, this->AttachEffect_CumulativeRemoveMaxCounts);
-	AttachEffectClass::DetachByGroups(this->AttachEffect_RemoveGroups, pTarget, this->AttachEffect_CumulativeRemoveMinCounts, this->AttachEffect_CumulativeRemoveMaxCounts);
+	auto const& info = this->AttachEffects;
+	AttachEffectClass::Attach(pTarget, pInvokerHouse, pInvoker, this->OwnerObject(), info);
+	AttachEffectClass::Detach(pTarget, info);
+	AttachEffectClass::DetachByGroups(pTarget, info);
 }
 
 double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
@@ -471,4 +501,3 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 
 	return critChance + extraChance;
 }
-

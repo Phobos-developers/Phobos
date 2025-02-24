@@ -48,16 +48,30 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto& [pExt, nCount] : pHouseExt->PowerPlantEnhancers)
+	for (const auto& [bTypeIdx, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
-		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		auto bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array->Items[bTypeIdx]);
+		if (bTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
-			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
-			nAmount += pExt->PowerPlantEnhancer_Amount * nCount;
+			fFactor *= std::powf(bTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
+			nAmount += bTypeExt->PowerPlantEnhancer_Amount * nCount;
 		}
 	}
 
 	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
+}
+
+int BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pType, HouseClass* pHouse)
+{
+	const auto upgrades = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
+
+	if (upgrades != -1)
+		return upgrades;
+
+	if (const auto pUndeploy = pType->UndeploysInto)
+		return pHouse->CountOwnedNow(pType) + pHouse->CountOwnedNow(pUndeploy);
+
+	return pHouse->CountOwnedNow(pType);
 }
 
 int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades
@@ -98,8 +112,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 }
 
 void BuildingTypeExt::ExtData::Initialize()
-{
-}
+{ }
 
 // =============================
 // load / save
@@ -131,6 +144,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+	this->ExcludeFromMultipleFactoryBonus.Read(exINI, pSection, "ExcludeFromMultipleFactoryBonus");
 
 	this->Grinding_AllowAllies.Read(exINI, pSection, "Grinding.AllowAllies");
 	this->Grinding_AllowOwner.Read(exINI, pSection, "Grinding.AllowOwner");
@@ -147,6 +161,22 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ConsideredVehicle.Read(exINI, pSection, "ConsideredVehicle");
 	this->SellBuildupLength.Read(exINI, pSection, "SellBuildupLength");
+	this->IsDestroyableObstacle.Read(exINI, pSection, "IsDestroyableObstacle");
+
+	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
+	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
+
+	this->IsAnimDelayedBurst.Read(exArtINI, pSection, "IsAnimDelayedBurst");
+	this->Units_RepairRate.Read(exINI, pSection, "Units.RepairRate");
+	this->Units_RepairStep.Read(exINI, pSection, "Units.RepairStep");
+	this->Units_RepairPercent.Read(exINI, pSection, "Units.RepairPercent");
+	this->Units_UseRepairCost.Read(exINI, pSection, "Units.UseRepairCost");
+
+	this->NoBuildAreaOnBuildup.Read(exINI, pSection, "NoBuildAreaOnBuildup");
+	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
+	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
+
+	this->BarracksExitCell.Read(exINI, pSection, "BarracksExitCell");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -233,6 +263,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowAirstrike)
 		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->ExcludeFromMultipleFactoryBonus)
 		.Process(this->Refinery_UseStorage)
 		.Process(this->Grinding_AllowAllies)
 		.Process(this->Grinding_AllowOwner)
@@ -259,6 +290,18 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ZShapePointMove_OnBuildup)
 		.Process(this->SellBuildupLength)
 		.Process(this->AircraftDockingDirs)
+		.Process(this->FactoryPlant_AllowTypes)
+		.Process(this->FactoryPlant_DisallowTypes)
+		.Process(this->IsAnimDelayedBurst)
+		.Process(this->IsDestroyableObstacle)
+		.Process(this->Units_RepairRate)
+		.Process(this->Units_RepairStep)
+		.Process(this->Units_RepairPercent)
+		.Process(this->Units_UseRepairCost)
+		.Process(this->NoBuildAreaOnBuildup)
+		.Process(this->Adjacent_Allowed)
+		.Process(this->Adjacent_Disallowed)
+		.Process(this->BarracksExitCell)
 		;
 }
 
