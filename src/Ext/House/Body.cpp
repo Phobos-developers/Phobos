@@ -291,9 +291,9 @@ int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 {
 	int result = 0;
-	auto const pExt = HouseExt::ExtMap.Find(pThis);
+	auto const pHouseExt = HouseExt::ExtMap.Find(pThis);
 
-	for (auto const pTechno : pExt->OwnedCountedHarvesters)
+	for (auto const pTechno : pHouseExt->OwnedCountedHarvesters)
 	{
 		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 		result += pExt->HasBeenPlacedOnMap;
