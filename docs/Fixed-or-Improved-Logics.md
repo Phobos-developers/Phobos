@@ -1284,7 +1284,7 @@ DrawTurretShadow=false  ; boolean
 
 In `artmd.ini`:
 ```ini
-[SOMEUNIT]      ; UnitType
+[SOMEVEHICLE]   ; VehicleType
 TurretShadow=   ; boolean
 ```
 
@@ -1348,8 +1348,8 @@ In `rulesmd.ini`:
 [General]
 NoTurret.TrackTarget=false   ; boolean
 
-[SOMEUNIT]                   ; UnitType
-NoTurret.TrackTarget=        ; boolean, defaults to [General]->NoTurret.TrackTarget
+[SOMEVEHICLE]                ; VehicleType
+NoTurret.TrackTarget=        ; boolean, defaults to [General] -> NoTurret.TrackTarget
 ```
 
 ## Veinholes & Weeds

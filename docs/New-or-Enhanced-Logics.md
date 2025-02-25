@@ -1499,7 +1499,7 @@ Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]    ; BuildingType or UnitType
+[SOMETECHNO]    ; BuildingType or VehicleType
 EVA.Sold=       ; EVA entry
 SellSound=      ; Sound entry
 ```
@@ -1514,7 +1514,7 @@ In `rulesmd.ini`:
 [AudioVisual]
 IsVoiceCreatedGlobal=false   ; boolean
 
-[SOMETECHNO]                 ; UnitType
+[SOMETECHNO]                 ; TechnoType
 VoiceCreated=                ; Sound entry
 ```
 
